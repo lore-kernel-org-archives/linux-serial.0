@@ -1,50 +1,31 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFC 00/24] OMAP serial driver flow control fixes, and
-	preparation for DMA engine conversion
-Date: Sat, 6 Oct 2012 16:35:28 +0100
-Message-ID: <20121006153528.GA28061@n2100.arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC 20/24] SERIAL: core: add xmit buffer allocation callbacks
+Date: Sat, 6 Oct 2012 16:49:56 +0100
+Message-ID: <20121006164956.2956375c@pyramind.ukuu.org.uk>
 References: <20121006123803.GD15246@n2100.arm.linux.org.uk>
+	<E1TKTlL-0002ni-MB@rmk-PC.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20121006123803.GD15246@n2100.arm.linux.org.uk>
+In-Reply-To: <E1TKTlL-0002ni-MB@rmk-PC.arm.linux.org.uk>
 Sender: linux-omap-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+To: Russell King <rmk+kernel@arm.linux.org.uk>
+Cc: Tony Lindgren <tony@atomide.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Another issue:
+On Sat, 06 Oct 2012 13:45:47 +0100
+Russell King <rmk+kernel@arm.linux.org.uk> wrote:
 
-serial_omap_set_termios()
-{
-...
-        /* FIFOs and DMA Settings */
- 
-        /* FCR can be changed only when the
-         * baud clock is not running
-         * DLL_REG and DLH_REG set to 0.
-         */
-        serial_out(up, UART_LCR, UART_LCR_CONF_MODE_A);     
-        serial_out(up, UART_DLL, 0);
-        serial_out(up, UART_DLM, 0);
-        serial_out(up, UART_LCR, 0);
-...
-        serial_out(up, UART_FCR, up->fcr);
-...
-}
+> This allows drivers (such as OMAP serial) to allocate and free their
+> transmit buffers in a sane manner, rather than working around the
+> buffer allocation provided by serial_core.
 
-serial_omap_restore_context()
-{
-        serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B); /* Config B mode */
-        serial_out(up, UART_DLL, up->dll);
-        serial_out(up, UART_DLM, up->dlh);
-        serial_out(up, UART_LCR, 0x0); /* Operational mode */
-        serial_out(up, UART_IER, up->ier);
-        serial_out(up, UART_FCR, up->fcr);
-}
+I think this just illustrates how broken the serial_core layering is in
+that drivers can't treat it as a library but get constrained by it.
 
-Either the comment is wrong, or the code in serial_omap_restore_context()
-is wrong; they can't both be right.  Please can someone let me know which
-is the right version so we can fix that inconsistency.
+Fine for now and actually probably a useful hook to begin removing the
+circ buffers for the kernel generic kfifo and other work that needs doing
+eventually.
 
-Thanks.
+Alan
