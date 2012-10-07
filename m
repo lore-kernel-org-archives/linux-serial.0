@@ -1,45 +1,48 @@
-From: Fengguang Wu <fengguang.wu@intel.com>
-Subject: [tty:tty-next 9/39] drivers/staging/dgrp/dgrp_tty.c:3177
- dgrp_tty_init() error: potential null dereference 'nd->nd_serial_ttdriver'.
-Date: Sun, 7 Oct 2012 20:35:49 +0800
-Message-ID: <20121007123549.GA24374@localhost>
+From: Greg KH <greg@kroah.com>
+Subject: Re: PL2303 Driver Issue
+Date: Sun, 7 Oct 2012 07:47:00 -0700
+Message-ID: <20121007144700.GA18178@kroah.com>
+References: <523E9909A6DFCF469669581BEB8DA7AA56928B25@G2W2441.americas.hpqcorp.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:30547 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751002Ab2JGMfy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 7 Oct 2012 08:35:54 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:54315 "EHLO
+	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753129Ab2JGOrD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 7 Oct 2012 10:47:03 -0400
 Content-Disposition: inline
+In-Reply-To: <523E9909A6DFCF469669581BEB8DA7AA56928B25@G2W2441.americas.hpqcorp.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bill Pemberton <wfp5p@virginia.edu>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: "Reddy Kaveri, Praveen Kumar" <praveen-kumar.reddy-kaveri@hp.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Hi Bill,
+On Sat, Oct 06, 2012 at 06:33:19PM +0000, Reddy Kaveri, Praveen Kumar w=
+rote:
+> Hi,
+>=20
+> I am using Telxon PTC-710 device in linux environment and I am using
+> RS232 Serial to USB converter. When I connect the device to USB port
+> it is detecting and showing in the system log as "attached to
+> ttyUSB0".=A0 I have written a java program to display all the availab=
+le
+> ports. But this program is displaying only ttyS0 &ttyS1. I have tried
+> to set all permissions to the user as well as to port. Please help me
+> if I am missing any configuration related to this driver.
 
-FYI, there are new smatch warnings show up in
+You are going to have to modify your userspace program to know to look
+for the ttyUSBX devices as well.  There's nothing the kernel can do
+about this.
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   0c57dfcc6c1d037243c2f8fbf62eab3633326ec0
-commit: 7b6d45c211a401a9bdeebfa96f8a4c811bd3eeaf [9/39] staging: dgrp: add dgrp to the build
+As you wrote the program, how are you getting the list of serial device=
+s
+in the system?
 
-It seems that the dgrp_dpa_ops.c ones are false warnings, while the
-'potential null deference' ones are worth looking at.
-
-+ drivers/staging/dgrp/dgrp_dpa_ops.c:377 dgrp_dpa_ioctl() warn: 'vpd' puts 516 bytes on stack
+greg k-h
 --
-+ drivers/staging/dgrp/dgrp_net_ops.c:277 dgrp_input() error: we previously assumed 'ld' could be null (see line 238)
-+ drivers/staging/dgrp/dgrp_net_ops.c:3159 dgrp_receive() error: strncpy() 'nd->nd_ps_desc' too small (101 vs 988)
-+ drivers/staging/dgrp/dgrp_net_ops.c:3160 dgrp_receive() error: buffer overflow 'nd->nd_ps_desc' 101 <= 988
---
-+ drivers/staging/dgrp/dgrp_specproc.c:273 register_proc_table() error: we previously assumed 'table->child' could be null (see line 263)
---
-+ drivers/staging/dgrp/dgrp_tty.c:2341 dgrp_set_custom_speed() info: ignoring unreachable code.
-+ drivers/staging/dgrp/dgrp_tty.c:3177 dgrp_tty_init() error: potential null dereference 'nd->nd_serial_ttdriver'.  (alloc_tty_driver returns null)
-+ drivers/staging/dgrp/dgrp_tty.c:3236 dgrp_tty_init() error: potential null dereference 'nd->nd_callout_ttdriver'.  (alloc_tty_driver returns null)
-+ drivers/staging/dgrp/dgrp_tty.c:3273 dgrp_tty_init() error: potential null dereference 'nd->nd_xprint_ttdriver'.  (alloc_tty_driver returns null)
-
----
-0-DAY kernel build testing backend         Open Source Technology Center
-Fengguang Wu, Yuanhan Liu                              Intel Corporation
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
