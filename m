@@ -1,49 +1,49 @@
-From: Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [REPOST] RFC: sched: Prevent wakeup to enter critical section
-	needlessly
-Date: Tue, 9 Oct 2012 17:17:29 +0200
-Message-ID: <20121009151729.GA3521@redhat.com>
-References: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com> <1349782235-8896-1-git-send-email-meltedpianoman@gmail.com> <m2r4p7u5pk.fsf@firstfloor.org> <1349792104.7880.41.camel@twins>
+From: wfp5p@viridian.itc.virginia.edu (Bill Pemberton)
+Subject: Re: [tty:tty-next 9/39] drivers/staging/dgrp/dgrp_tty.c:3177
+Date: Tue, 09 Oct 2012 12:46:48 -0400
+Message-ID: <20121009164648.84EB2801A1@viridian.itc.virginia.edu>
+References: <20121007123549.GA24374@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:42178 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756091Ab2JIPQD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Oct 2012 11:16:03 -0400
-Content-Disposition: inline
-In-Reply-To: <1349792104.7880.41.camel@twins>
+Received: from viridian.itc.Virginia.EDU ([128.143.12.139]:34569 "EHLO
+	viridian.itc.virginia.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751358Ab2JIQyw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Oct 2012 12:54:52 -0400
+In-Reply-To: <20121007123549.GA24374@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Andi Kleen <andi@firstfloor.org>, Ivo Sieben <meltedpianoman@gmail.com>, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+To: Fengguang Wu <fengguang.wu@intel.com>
+Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On 10/09, Peter Zijlstra wrote:
+Fengguang Wu writes:
+> 
+> Hi Bill,
+> 
+> FYI, there are new smatch warnings show up in
 >
-> One thing you might need to consider is the memory ordering, will the
-> list_empty -- either careful or not -- observe the right list pointer,
-> or could it -- when racing with wait_event()/prepare_to_wait() --
-> observe a stale value. Or.. is that all already covered in on the use
-> site.
+> + drivers/staging/dgrp/dgrp_net_ops.c:277 dgrp_input() error: we previously assumed 'ld' could be null (see line 238)
 
-I agree.
+This one looks fine, if ld is NULL then len is set to 0.  ld is then
+only dereferenced if len != 0
 
-Without spin_lock(q->lock) (or some other barriers) wait_event-like
-code can miss an event.
+> --
+> + drivers/staging/dgrp/dgrp_specproc.c:273 register_proc_table() error: we previously assumed 'table->child' could be null (see line 263)
 
-wait_event:
+It seems weird where smatch is seeing the NULL test vs. the call to
+register_proc_table(), but it is correct that register_proc_table will
+do bad things if the first arg is a NULL.  I'll submit a patch for it.
 
-	prepare_to_wait(wq)	// takes wq->lock
+> --
+> + drivers/staging/dgrp/dgrp_tty.c:3177 dgrp_tty_init() error: potential null dereference 'nd->nd_serial_ttdriver'.  (alloc_tty_driver returns null)
+> + drivers/staging/dgrp/dgrp_tty.c:3236 dgrp_tty_init() error: potential null dereference 'nd->nd_callout_ttdriver'.  (alloc_tty_driver returns null)
+> + drivers/staging/dgrp/dgrp_tty.c:3273 dgrp_tty_init() error: potential null dereference 'nd->nd_xprint_ttdriver'.  (alloc_tty_driver returns null)
+> 
 
-	if (!CONDITION)
-		schedule();
+Yes, the return value of alloc_tty_driver needs to be checked.  I'll
+fix these.
 
-Now,
-
-	CONDITION = 1;
-	wake_up(wq);
-
-at least need the full mb() before lits_empty().
-
-Oleg.
-
+-- 
+Bill
