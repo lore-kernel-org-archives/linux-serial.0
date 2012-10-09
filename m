@@ -1,42 +1,65 @@
-From: Andi Kleen <andi@firstfloor.org>
-Subject: Re: [REPOST] RFC: sched: Prevent wakeup to enter critical section needlessly
-Date: Tue, 09 Oct 2012 06:37:27 -0700
-Message-ID: <m2r4p7u5pk.fsf@firstfloor.org>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [REPOST] RFC: sched: Prevent wakeup to enter critical section
+ needlessly
+Date: Tue, 09 Oct 2012 16:15:04 +0200
+Message-ID: <1349792104.7880.41.camel@twins>
 References: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com>
-	<1349782235-8896-1-git-send-email-meltedpianoman@gmail.com>
+	 <1349782235-8896-1-git-send-email-meltedpianoman@gmail.com>
+	 <m2r4p7u5pk.fsf@firstfloor.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:61262 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755655Ab2JINhb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Oct 2012 09:37:31 -0400
-In-Reply-To: <1349782235-8896-1-git-send-email-meltedpianoman@gmail.com> (Ivo
-	Sieben's message of "Tue, 9 Oct 2012 13:30:35 +0200")
+Received: from casper.infradead.org ([85.118.1.10]:52921 "EHLO
+	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752391Ab2JIOPQ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Oct 2012 10:15:16 -0400
+In-Reply-To: <m2r4p7u5pk.fsf@firstfloor.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+To: Andi Kleen <andi@firstfloor.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Oleg Nesterov <oleg@redhat.com>
 
-Ivo Sieben <meltedpianoman@gmail.com> writes:
+On Tue, 2012-10-09 at 06:37 -0700, Andi Kleen wrote:
+> Ivo Sieben <meltedpianoman@gmail.com> writes:
+> 
+> > Check the waitqueue task list to be non empty before entering the critical
+> > section. This prevents locking the spin lock needlessly in case the queue
+> > was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
+> > system.
+> >
+> > Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
+> > ---
+> >
+> >  REPOST:
+> >  Request for comments:
+> >  - Does this make any sense?
+> 
+> Looks good to me. Avoiding any spinlock is good.  I don't even think you
+> need "careful", if you miss an update it was just as it happened a
+> little later.
 
-> Check the waitqueue task list to be non empty before entering the critical
-> section. This prevents locking the spin lock needlessly in case the queue
-> was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-> system.
->
-> Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
-> ---
->
->  REPOST:
->  Request for comments:
->  - Does this make any sense?
+Yeah, so I've started looking at this several times, but never had the
+time to actually think it through. I think I'll agree with you that
+using the careful list empty check isn't needed.
 
-Looks good to me. Avoiding any spinlock is good.  I don't even think you
-need "careful", if you miss an update it was just as it happened a
-little later.
+In general there's already the race of doing a wakeup before the wait
+and if the code using the waitqueue doesn't deal with that its already
+broken, so in that respect you should be good, since you're simply
+shifting the timing a little.
 
--Andi
+One thing you might need to consider is the memory ordering, will the
+list_empty -- either careful or not -- observe the right list pointer,
+or could it -- when racing with wait_event()/prepare_to_wait() --
+observe a stale value. Or.. is that all already covered in on the use
+site.
 
--- 
-ak@linux.intel.com -- Speaking for myself only
+I started auditing a few users to see what they all assume, if they're
+already broken and or if they would now be broken.. but like said, I
+didn't get anywhere.
+
+
+I'd like to see this patch/Changelog amended to at least cover these
+points so that I feel all warm and fuzzy when I read it and not have to
+think too hard ;-)
