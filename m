@@ -1,76 +1,128 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: [REPOST] RFC: sched: Prevent wakeup to enter critical section needlessly
-Date: Tue, 9 Oct 2012 13:30:35 +0200
-Message-ID: <1349782235-8896-1-git-send-email-meltedpianoman@gmail.com>
-References: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com>
+From: Sourav <sourav.poddar@ti.com>
+Subject: Re: [RFC 00/24] OMAP serial driver flow control fixes, and preparation
+ for DMA engine conversion
+Date: Tue, 9 Oct 2012 19:04:18 +0530
+Message-ID: <507427DA.6020409@ti.com>
+References: <20121006123803.GD15246@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:53501 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752553Ab2JILcS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Oct 2012 07:32:18 -0400
-In-Reply-To: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20121006123803.GD15246@n2100.arm.linux.org.uk>
+Sender: linux-omap-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Ivo Sieben <meltedpianoman@gmail.com>
 
-Check the waitqueue task list to be non empty before entering the critical
-section. This prevents locking the spin lock needlessly in case the queue
-was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-system.
+Hi,
 
-Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
----
+On Saturday 06 October 2012 06:08 PM, Russell King - ARM Linux wrote:
+> Hi,
+>
+> This series of patches fixes multiple flow control issues with the OMAP
+> serial driver, and prepares the driver for DMA engine conversion.  We
+> require hardware assisted flow control to work properly for DMA support
+> otherwise we have no way to properly pause the transmitter.
+>
+> This is generated against v3.6, and has been developed mainly by testing
+> on the OMAP4430 SDP platform.
+>
+> Flow control seems to be really broken in the OMAP serial driver as things
+> stand today.  It just about works with software flow control because the
+> generic serial core layer is inserting those characters, but only when the
+> legacy DMA support is not being used.  Otherwise, flow control is
+> completely non-functional.
+>
+> Issues identified in the OMAP serial driver are:
+> - set_mctrl() can only assert modem control lines, once asserted it
+>    is not possible to deassert them.
+> - IXOFF controls sending of XON/XOFF characters, not the reception of
+>    these sequences.
+> - IXON controls the recognition of XON/XOFF characters, not the transmission
+>    of the same.
+> - Wrong bitmasks for hardware assisted software flow control.  Bit 2
+>    in EFR enables sending of XON2/XOFF2 which are never set.
+> - No point comparing received characters against XOFF2 ('special character
+>    detect') as XOFF2 is not set.
+> - Fix multiple places where bits 6 and 5 of MCR are attempted to be
+>    altered, but because EFR ECB is unset, these bits remain unaffected.
+>    This effectively prevents us accessing the right XON/XOFF/TCR/TLR
+>    registers.
+> - Remove unnecessary read-backs of EFR/MCR/LCR registers - these registers
+>    don't change beneath us, they are configuration registers which hold their
+>    values.  Not only does this simplify the code, but it makes it more
+>    readable, and more importantly ensures that we work from a consistent
+>    state where ->efr never has ECB set, and ->mcr never has the TCRTLR
+>    bit set.
+> - Fix disablement of hardware flow control and IXANY modes; once enabled
+>    these could never be disabled because nothing in the code ever clears
+>    these configuration bits.
+>
+> Once that lot is fixed, these patches expand serial_core to permit hardware
+> assisted flow control by:
+> - adding throttle/unthrottle callbacks into low level serial drivers,
+>    which allow them to take whatever action is necessary with hardware
+>    assisted flow control to throttle the remote end.  In the case of
+>    OMAP serial, this means disabling the RX interrupts so that the FIFO
+>    fills to the watermark.
+>
+> We then have a number of cleanups to the OMAP serial code to make the
+> set_termios() function clearer and less prone to the kinds of mistakes
+> identified above.  This results in a great simplification of the flow
+> control configuration code.
+>
+> The OMAP serial driver hacks around with the transmit buffer allocation;
+> lets clean that up so that drivers can cleanly allocate their transmitter
+> buffer using coherent memory if that's what they desire.
+>
+> Finally, the last few patches clean up the plat/omap-serial.h header file,
+> moving most of its contents into the OMAP serial driver itself.  Most of
+> this is private to the OMAP serial driver and should never have been
+> shared with anything else.
+>
+> I have omitted to include the conversion of the transmit paths to DMA
+> engine.  Even with all the above fixed, it has issues when DMA transmit
+> is in progress, and a program issues a TCSETS call (as `less' does after
+> it has written its prompt.)  At the moment, this causes lots of junk to
+> be emitted from the serial port when issuing `dmesg | less' which sometimes
+> brings the port to a complete halt.
+>
+> As the OMAP DMA hardware does not have a clean pause when performing a
+> MEM->DEV transfer (it discards its FIFO) I do not see a solution to this,
+> which probably means that we can _not_ ever support transmit DMA on OMAP
+> platforms.
+>
+> This means the xmit buffer allocation patches are not that useful unless
+> a solution to that can be found.
+>
+> Now, the remaining question is, how much of this patch set do we think
+> about merging, and when.  Given that flow control in this driver has been
+> broken for a very long time, and no one has apparantly noticed, I don't
+> think there's any urgency to this, so given its size, my preference would
+> be to queue it up for the next merge window.  The thing that would worry
+> me about applying some of the initial patches is that they may change
+> the behaviour today and make any problems here more visible.
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Boot Tested this patch series against v3.6 tag(applied cleanly) on panda 
+board and
+PM tested(hitting off in Idle and suspend) on omap3630 based beagle board.
 
- REPOST:
- Request for comments:
- - Does this make any sense?
- - I assume that I can safely use the list_empty_careful() function here, but is
-   that correct?
+Note, I also tested the patches against the current master but only 
+after rebasing, since the current master includes serial patches from 
+Felipe Balbi[1].
+[1] https://lkml.org/lkml/2012/8/24/139
 
- Background to this patch:
- Testing on a PREEMPT_RT system with TTY serial communication. Each time the TTY
- line discipline is dereferenced the Idle handling wait queue is woken up (see
- function put_ldisc in /drivers/tty/tty_ldisc.c)
- However line discipline idle handling is not used very often so the wait queue
- is empty most of the time. But still the wake_up() function enters the critical
- section guarded by spin locks. This causes additional scheduling overhead when
- a lower priority thread has control of that same lock.
+Tested-by: Sourav Poddar <sourav.poddar@ti.com>
 
- kernel/sched/core.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+Thanks,
+Sourav
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index c177472..c1667c4 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3090,9 +3090,19 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&q->lock, flags);
--	__wake_up_common(q, mode, nr_exclusive, 0, key);
--	spin_unlock_irqrestore(&q->lock, flags);
-+	/*
-+	 * We can check for list emptiness outside the lock by using the
-+	 * "careful" check that verifies both the next and prev pointers, so
-+	 * that there cannot be any half-pending updates in progress.
-+	 *
-+	 * This prevents the wake up to enter the critical section needlessly
-+	 * when the task list is empty.
-+	 */
-+	if (!list_empty_careful(&q->task_list)) {
-+		spin_lock_irqsave(&q->lock, flags);
-+		__wake_up_common(q, mode, nr_exclusive, 0, key);
-+		spin_unlock_irqrestore(&q->lock, flags);
-+	}
- }
- EXPORT_SYMBOL(__wake_up);
- 
--- 
-1.7.9.5
+
+
+
 
 
