@@ -1,43 +1,47 @@
-From: Andi Kleen <andi@firstfloor.org>
-Subject: Re: [REPOST] RFC: sched: Prevent wakeup to enter critical section needlessly
-Date: Wed, 10 Oct 2012 16:02:49 +0200
-Message-ID: <20121010140249.GX16230@one.firstfloor.org>
-References: <1348491997-30898-1-git-send-email-meltedpianoman@gmail.com> <1349782235-8896-1-git-send-email-meltedpianoman@gmail.com> <m2r4p7u5pk.fsf@firstfloor.org> <1349792104.7880.41.camel@twins> <20121009151729.GA3521@redhat.com>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [RFC 00/24] OMAP serial driver flow control fixes, and preparation for DMA engine conversion
+Date: Wed, 10 Oct 2012 11:29:03 -0700
+Message-ID: <87mwzuxjtc.fsf@deeprootsystems.com>
+References: <20121006123803.GD15246@n2100.arm.linux.org.uk>
+	<507427DA.6020409@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from one.firstfloor.org ([213.235.205.2]:49443 "EHLO
-	one.firstfloor.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756330Ab2JJOCu (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:64212 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751560Ab2JJS3B (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Oct 2012 10:02:50 -0400
-Content-Disposition: inline
-In-Reply-To: <20121009151729.GA3521@redhat.com>
+	Wed, 10 Oct 2012 14:29:01 -0400
+Received: by mail-pb0-f46.google.com with SMTP id rr4so999599pbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 10 Oct 2012 11:29:01 -0700 (PDT)
+In-Reply-To: <507427DA.6020409@ti.com> (Sourav's message of "Tue, 9 Oct 2012
+	19:04:18 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Oleg Nesterov <oleg@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Andi Kleen <andi@firstfloor.org>, Ivo Sieben <meltedpianoman@gmail.com>, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+To: Sourav <sourav.poddar@ti.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-> wait_event:
-> 
-> 	prepare_to_wait(wq)	// takes wq->lock
-> 
-> 	if (!CONDITION)
-> 		schedule();
-> 
-> Now,
-> 
-> 	CONDITION = 1;
-> 	wake_up(wq);
-> 
-> at least need the full mb() before lits_empty().
+Hi Sourav,
 
-You're right, but it would probably only matter for inlining with LTO
-(if the LTO compiler ever decides to do that)
+Sourav <sourav.poddar@ti.com> writes:
 
-Without that a call should be always enough barrier in practice.
+[...]
 
-So yes I would add the mb, but most likely it will not make much
-difference. Just make sure to comment it.
+> Boot Tested this patch series against v3.6 tag(applied cleanly) on
+> panda board and
+> PM tested(hitting off in Idle and suspend) on omap3630 based beagle board.
+>
+> Note, I also tested the patches against the current master but only
+> after rebasing, since the current master includes serial patches from
+> Felipe Balbi[1].
+> [1] https://lkml.org/lkml/2012/8/24/139
+>
+> Tested-by: Sourav Poddar <sourav.poddar@ti.com>
 
--Andi
+Did you test flow control after off-mode transitons?
+
+Russell indicated that the context save/restore is not saving important
+bits related to HW flow control, so I suspect some more testing,
+specifically of flow control after off-mode is needed.
+
+Kevin
