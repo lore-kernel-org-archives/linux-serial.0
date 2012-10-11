@@ -1,47 +1,59 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [RFC 00/24] OMAP serial driver flow control fixes, and preparation for DMA engine conversion
-Date: Wed, 10 Oct 2012 11:29:03 -0700
-Message-ID: <87mwzuxjtc.fsf@deeprootsystems.com>
-References: <20121006123803.GD15246@n2100.arm.linux.org.uk>
-	<507427DA.6020409@ti.com>
+From: <Vineet.Gupta1@synopsys.com>
+Subject: [RESEND PATCH v3] serial/arc-uart: Add new driver
+Date: Thu, 11 Oct 2012 14:13:20 +0530
+Message-ID: <1349945001-31909-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:64212 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751560Ab2JJS3B (ORCPT
+Received: from alvesta.synopsys.com ([198.182.60.77]:52139 "EHLO
+	alvesta.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755436Ab2JKInn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Oct 2012 14:29:01 -0400
-Received: by mail-pb0-f46.google.com with SMTP id rr4so999599pbb.19
-        for <linux-serial@vger.kernel.org>; Wed, 10 Oct 2012 11:29:01 -0700 (PDT)
-In-Reply-To: <507427DA.6020409@ti.com> (Sourav's message of "Tue, 9 Oct 2012
-	19:04:18 +0530")
+	Thu, 11 Oct 2012 04:43:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sourav <sourav.poddar@ti.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+To: alan@linux.intel.com, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 
-Hi Sourav,
+From: Vineet Gupta <vgupta@synopsys.com>
 
-Sourav <sourav.poddar@ti.com> writes:
+Hi,
 
-[...]
+Please find following ARC UART driver with all the review comments incorporated.
+It's rebased off of current tip (commit 12250d843e)
 
-> Boot Tested this patch series against v3.6 tag(applied cleanly) on
-> panda board and
-> PM tested(hitting off in Idle and suspend) on omap3630 based beagle board.
->
-> Note, I also tested the patches against the current master but only
-> after rebasing, since the current master includes serial patches from
-> Felipe Balbi[1].
-> [1] https://lkml.org/lkml/2012/8/24/139
->
-> Tested-by: Sourav Poddar <sourav.poddar@ti.com>
+Please consider merging.
 
-Did you test flow control after off-mode transitons?
+Thx,
+-Vineet
 
-Russell indicated that the context save/restore is not saving important
-bits related to HW flow control, so I suspect some more testing,
-specifically of flow control after off-mode is needed.
+v3:
+* Removed empty arc_serial_set_ldisc()
+* More set_termios fixes - CSIZE forced to CS8 (for 8N1)
+* global @running_on_iss replaced with platform data, saved in device
+  specific port structure.
 
-Kevin
+v2:
+* ttyARC used as device name
+* Dynamic assignment of major/minor numbers.
+* Ref counting tty in rx routine to prevent it from disappearing in
+  case of a hangup
+* set_termios fixes:
+  - hardware flow control/parity are marked as unsupported
+  - baud written back to termios
+* cosmetics such as commenting the need for @running_on_iss, empty lines
+  etc
+
+Vineet Gupta (1):
+  serial/arc-uart: Add new driver
+
+ drivers/tty/serial/Kconfig    |   25 ++
+ drivers/tty/serial/Makefile   |    1 +
+ drivers/tty/serial/arc_uart.c |  747 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h   |    3 +
+ 4 files changed, 776 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/tty/serial/arc_uart.c
+
+-- 
+1.7.4.1
+
