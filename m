@@ -1,29 +1,44 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
- suspended.
-Date: Thu, 11 Oct 2012 18:28:00 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
-References: <1347972050-3509-1-git-send-email-sourav.poddar@ti.com> <CAKdam572krJZcayRdJ_AciCUZH3LuzD9yoHenhxrB6j9xDZ6JQ@mail.gmail.com> <20120925083029.GG31374@n2100.arm.linux.org.uk> <20120925083118.GI9137@arwen.pp.htv.fi> <20120925091228.GI31374@n2100.arm.linux.org.uk>
- <20120925091112.GK9137@arwen.pp.htv.fi> <20120925092118.GJ31374@n2100.arm.linux.org.uk> <CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com> <87ipas2y4h.fsf@deeprootsystems.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: clps711x: reworked driver version
+Date: Fri, 12 Oct 2012 03:34:06 +0900
+Message-ID: <20121011183406.GC32470@kroah.com>
+References: <1349970689-24198-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([74.50.51.50]:35714 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758141Ab2JKS2B (ORCPT
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:49618 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759149Ab2JKSeN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Oct 2012 14:28:01 -0400
-In-Reply-To: <87ipas2y4h.fsf@deeprootsystems.com>
+	Thu, 11 Oct 2012 14:34:13 -0400
+Received: by mail-pa0-f46.google.com with SMTP id hz1so2028789pad.19
+        for <linux-serial@vger.kernel.org>; Thu, 11 Oct 2012 11:34:12 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1349970689-24198-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Poddar\\, Sourav" <sourav.poddar@ti.com>, Felipe Balbi <balbi@ti.com>
-Cc: Kevin Hilman <khilman@deeprootsystems.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, gregkh@linuxfoundation.org, tony@atomide.com, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
+On Thu, Oct 11, 2012 at 07:51:29PM +0400, Alexander Shiyan wrote:
+> This patch presents reworked version of CLPS711X serial driver.
+> The changes from the old version:
+> - Driver converted to platform_device.
+> - Using CPU clock subsystem for getting base UART speed, since CPU can run
+>   on different speeds.
+> - Remove console_initcall and make console dynamically. Earler messages in
+>   this case can be retrieved by using "earlyprintk" kernel option.
+> - Using resource-managed functions (devm_xx).
+> - Make all variables dynamically (reduce BSS).
+> - Cleanup code & comments.
 
-Hi Sourav, Felipe,
+That's a lot of different things, all at once, making it very hard to
+review.
 
-any progress on fixing the N800 problem?  Would be good to keep it booting 
-since we use it as our primary 2420 test platform.
+Can you please break this up into the individual patches of what you are
+doing above, one patch per thing, as is needed for Linux kernel patches?
+That way it is much easier to accept and review.
 
+thanks,
 
-- Paul
+greg k-h
