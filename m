@@ -1,84 +1,40 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
-Date: Fri, 12 Oct 2012 13:32:34 -0700
-Message-ID: <87lifbwhwd.fsf@deeprootsystems.com>
-References: <20120925091228.GI31374@n2100.arm.linux.org.uk>
-	<20120925091112.GK9137@arwen.pp.htv.fi>
-	<20120925092118.GJ31374@n2100.arm.linux.org.uk>
-	<CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com>
-	<87ipas2y4h.fsf@deeprootsystems.com>
-	<alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
-	<50784458.9080806@ti.com> <877gqv7imt.fsf@deeprootsystems.com>
-	<20121012164202.GQ28061@n2100.arm.linux.org.uk>
-	<877gqv4lmt.fsf@deeprootsystems.com>
-	<20121012185426.GS28061@n2100.arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: 8250_early for big-endian
+Date: Fri, 12 Oct 2012 22:06:04 +0100
+Message-ID: <20121012220604.3f99d003@pyramind.ukuu.org.uk>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+	<20121012175150.4b081343@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20121012185426.GS28061@n2100.arm.linux.org.uk> (Russell King's
-	message of "Fri, 12 Oct 2012 19:54:26 +0100")
-Sender: linux-omap-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Sourav <sourav.poddar@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, gregkh@linuxfoundation.org, tony@atomide.com, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37498 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751848Ab2JLVBD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 12 Oct 2012 17:01:03 -0400
+In-Reply-To: <264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Noam Camus <noamc@ezchip.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Russell King - ARM Linux <linux@arm.linux.org.uk> writes:
+On Fri, 12 Oct 2012 21:08:15 +0200
+Noam Camus <noamc@ezchip.com> wrote:
 
-> On Fri, Oct 12, 2012 at 10:59:22AM -0700, Kevin Hilman wrote:
->> Russell King - ARM Linux <linux@arm.linux.org.uk> writes:
->> 
->> > On Fri, Oct 12, 2012 at 09:35:54AM -0700, Kevin Hilman wrote:
->> >> Sourav <sourav.poddar@ti.com> writes:
->> >> > diff --git a/drivers/tty/serial/omap-serial.c
->> >> > b/drivers/tty/serial/omap-serial.c
->> >> > index 6ede6fd..3fbc7f7 100644
->> >> > --- a/drivers/tty/serial/omap-serial.c
->> >> > +++ b/drivers/tty/serial/omap-serial.c
->> >> > @@ -1414,6 +1414,7 @@ static int __devinit serial_omap_probe(struct
->> >> > platform_device *pdev)
->> >> >         INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
->> >> >
->> >> >         platform_set_drvdata(pdev, up);
->> >> > +       pm_runtime_set_active(&pdev->dev);
->> >> 
->> >> NAK.
->> >> 
->> >> This will obviously break platforms where the UARTs are not active
->> >> before driver loads.
->> >
->> > I thought I had proposed a solution for this issue, which was this
->> > sequence:
->> >
->> >         omap_device_enable(dev);                                                
->> >         pm_runtime_set_active(dev);                                             
->> >         pm_runtime_enable(dev);                                                 
->> >
->> > Yes, I can understand people not liking the omap_device_enable()
->> > there, but I also notice that the email suggesting that never got a
->> > reply either - not even a "I tried this and it doesn't work" or "it
->> > does work".
->> 
->> Yes, that solution would work (though I didn't actually try it.)
->> 
->> However, we can't use omap_device_enable() in the driver.  We're trying
->> to clean all the drivers of OMAP-specific APIs.  That being said,
->> something similar could be done in the device/board init code to ensure
->> the UART HW is in the state that the driver is expecting it, but again,
->> that would just mask the real problem which is that a (re)init of the
->> console UART on 2420/n800 is causing output to disappear.
->
-> See my more expansive suggestion just posted.
->
-> Whatever way, this discrepancy between runtime PM state and actual device
-> state is what is biting you, and it is that which needs fixing.  
+> Sorry,but I wrote that I am using mmio32.
 
-I'm not conviced (yet) that a mismatch is the root cause.  Yes, that's
-what the author of $SUBJECT patch assumed and stated, but I'm not
-pursuaded.  
+Yes but you also keep talking about endian-ness. The underlying registers
+are 8bit so they are not 'endian' at all. They might be at the address
+"base + 4 * offset + 3" perhaps ?
 
-If it's an improperly configured mux issue, then the UART will break
-whenever the device is actually omap_device_enable'd, whether in the
-driver or in the bus layer.
+If so they to use mmio32 presumably you just need to set the base address
+properly (ie 0xXXXXXXX3 or similar).
 
-Kevin
+Do the values have to be read with 32bit operations and do they have to
+be read on 32bi alignment ?
 
+Alan
