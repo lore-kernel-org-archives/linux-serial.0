@@ -1,41 +1,44 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: 8250_early for big-endian
-Date: Fri, 12 Oct 2012 15:05:42 +0200
-Message-ID: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+From: Grazvydas Ignotas <notasas@gmail.com>
+Subject: Re: [RFC 00/24] OMAP serial driver flow control fixes, and
+ preparation for DMA engine conversion
+Date: Fri, 12 Oct 2012 17:51:51 +0300
+Message-ID: <CANOLnOOewDVnsTmh9YyYCyG-5BrwDsTbSqDahazPsnM-6wBQYw@mail.gmail.com>
+References: <20121006123803.GD15246@n2100.arm.linux.org.uk>
+	<507427DA.6020409@ti.com>
+	<87mwzuxjtc.fsf@deeprootsystems.com>
+	<507694CF.3020204@ti.com>
+	<20121011095443.GH28061@n2100.arm.linux.org.uk>
+	<50769D8C.8030401@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ezexch.ezchip.com ([212.179.42.101]:26645 "EHLO
-	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756366Ab2JLNLu convert rfc822-to-8bit (ORCPT
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:43937 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757961Ab2JLOvx convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Oct 2012 09:11:50 -0400
-Content-Language: en-US
+	Fri, 12 Oct 2012 10:51:53 -0400
+In-Reply-To: <50769D8C.8030401@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Sourav <sourav.poddar@ti.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Kevin Hilman <khilman@deeprootsystems.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-Hello
+On Thu, Oct 11, 2012 at 1:21 PM, Sourav <sourav.poddar@ti.com> wrote:
+> If you have any pointers on how to test hardware flow control, I will=
+ like
+> to do that on my beagle board.
 
-I am using 8250 console and wish to use the 8250_early as well.
+If you can find some board with BT chip connected to UART, that would
+be a good test as they usually have flow control lines connected and
+can run at high bitrates. I think some EVM or Zoom boards have BT
+chips.
 
-I encounter endianess problem while using this driver for mmio32.
 
-The problem is since my serial peripheral like my cpu is in BIG endian.
-
-Driver through serial_in/serial_out uses readl/writel from asm-generic/io.h.
-
-These macros assume peripheral is always in LITTLE endian.
-
-Therefore all data needs a swab. 
-
-In 8250 driver I can register replacement for default serial_in/serial_out and workaround the problem.
-In 8250_early I had no choice but to change code with additional swab to workaround the problem.
-
-I am looking for proper solution so it can be added to upstream.
-I got several ideas if interest arise.
-
-Waiting for your comments
-Noam Camus 
-
+--=20
+Gra=C5=BEvydas
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
