@@ -1,85 +1,62 @@
-From: Kevin Hilman <khilman@deeprootsystems.com>
-Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
-Date: Fri, 12 Oct 2012 10:59:22 -0700
-Message-ID: <877gqv4lmt.fsf@deeprootsystems.com>
-References: <20120925083029.GG31374@n2100.arm.linux.org.uk>
-	<20120925083118.GI9137@arwen.pp.htv.fi>
-	<20120925091228.GI31374@n2100.arm.linux.org.uk>
-	<20120925091112.GK9137@arwen.pp.htv.fi>
-	<20120925092118.GJ31374@n2100.arm.linux.org.uk>
-	<CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com>
-	<87ipas2y4h.fsf@deeprootsystems.com>
-	<alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
-	<50784458.9080806@ti.com> <877gqv7imt.fsf@deeprootsystems.com>
-	<20121012164202.GQ28061@n2100.arm.linux.org.uk>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: 8250_early for big-endian
+Date: Fri, 12 Oct 2012 20:41:56 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>,<20121012175150.4b081343@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:45663 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759921Ab2JLR7R (ORCPT
+Received: from ezexch.ezchip.com ([212.179.42.101]:43632 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753973Ab2JLSmh convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Oct 2012 13:59:17 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so3050105pad.19
-        for <linux-serial@vger.kernel.org>; Fri, 12 Oct 2012 10:59:17 -0700 (PDT)
-In-Reply-To: <20121012164202.GQ28061@n2100.arm.linux.org.uk> (Russell King's
-	message of "Fri, 12 Oct 2012 17:42:02 +0100")
+	Fri, 12 Oct 2012 14:42:37 -0400
+In-Reply-To: <20121012175150.4b081343@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Sourav <sourav.poddar@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, gregkh@linuxfoundation.org, tony@atomide.com, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Russell King - ARM Linux <linux@arm.linux.org.uk> writes:
-
-> On Fri, Oct 12, 2012 at 09:35:54AM -0700, Kevin Hilman wrote:
->> Sourav <sourav.poddar@ti.com> writes:
->> > diff --git a/drivers/tty/serial/omap-serial.c
->> > b/drivers/tty/serial/omap-serial.c
->> > index 6ede6fd..3fbc7f7 100644
->> > --- a/drivers/tty/serial/omap-serial.c
->> > +++ b/drivers/tty/serial/omap-serial.c
->> > @@ -1414,6 +1414,7 @@ static int __devinit serial_omap_probe(struct
->> > platform_device *pdev)
->> >         INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
->> >
->> >         platform_set_drvdata(pdev, up);
->> > +       pm_runtime_set_active(&pdev->dev);
->> 
->> NAK.
->> 
->> This will obviously break platforms where the UARTs are not active
->> before driver loads.
+________________________________________
+>From: Alan Cox [alan@lxorguk.ukuu.org.uk]
+>Sent: Friday, October 12, 2012 6:51 PM
+>To: Noam Camus
+>Cc: linux-serial@vger.kernel.org
+>Subject: Re: 8250_early for big-endian
 >
-> I thought I had proposed a solution for this issue, which was this
-> sequence:
+>> I am using 8250 console and wish to use the 8250_early as well.
+>>
+>> I encounter endianess problem while using this driver for mmio32.
+.>>
+>> The problem is since my serial peripheral like my cpu is in BIG endian.
+>>
+>> Driver through serial_in/serial_out uses readl/writel from asm-generic/io.h.
+>>
+>> These macros assume peripheral is always in LITTLE endian.
+>>
+>> Therefore all data needs a swab.
+>>
+>> In 8250 driver I can register replacement for default serial_in/serial_out and workaround the problem.
+>> In 8250_early I had no choice but to change code with additional swab to workaround the problem.
+>>
+>> I am looking for proper solution so it can be added to upstream.
+>> I got several ideas if interest arise.
 >
->         omap_device_enable(dev);                                                
->         pm_runtime_set_active(dev);                                             
->         pm_runtime_enable(dev);                                                 
+>Given they are all byte registers so how can they need swapping ? They are
+>merely 3 further bytes offset.
 >
-> Yes, I can understand people not liking the omap_device_enable()
-> there, but I also notice that the email suggesting that never got a
-> reply either - not even a "I tried this and it doesn't work" or "it
-> does work".
+>Alan
 
-Yes, that solution would work (though I didn't actually try it.)
+Of course swapping is a waste of cpu cycles.
+Workaround can be 3 further bytes offset.
+Thanks
 
-However, we can't use omap_device_enable() in the driver.  We're trying
-to clean all the drivers of OMAP-specific APIs.  That being said,
-something similar could be done in the device/board init code to ensure
-the UART HW is in the state that the driver is expecting it, but again,
-that would just mask the real problem which is that a (re)init of the
-console UART on 2420/n800 is causing output to disappear.
+Back to my problem.
+How can 8250_early be enhanced to support big endian registers.
+Is it configuation?
+Maybe command line flag?
+both? other?
 
-As I detailed in an earlier response, I still think it's the fact that
-the pinmux is not setup correctly for the console UART pins in the board
-file, so when the UART is initialized, its mux settings are changed from
-the bootloader defaults, causing output to disappear.
-
-> As such, it seems this issue isn't making any progress as we had
-> already established that merely doing a "pm_runtime_set_active()"
-> before "pm_runtime_enable()" was going to break other platforms.
-
-Agreed.
-
-Kevin
+Noam
