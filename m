@@ -1,40 +1,46 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: 8250_early for big-endian
-Date: Fri, 12 Oct 2012 22:06:04 +0100
-Message-ID: <20121012220604.3f99d003@pyramind.ukuu.org.uk>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-	<20121012175150.4b081343@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
-	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not
+ suspended.
+Date: Fri, 12 Oct 2012 14:51:56 -0700
+Message-ID: <20121012215156.GL30339@atomide.com>
+References: <20120925092118.GJ31374@n2100.arm.linux.org.uk>
+ <CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com>
+ <87ipas2y4h.fsf@deeprootsystems.com>
+ <alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
+ <50784458.9080806@ti.com>
+ <877gqv7imt.fsf@deeprootsystems.com>
+ <20121012164202.GQ28061@n2100.arm.linux.org.uk>
+ <877gqv4lmt.fsf@deeprootsystems.com>
+ <20121012185426.GS28061@n2100.arm.linux.org.uk>
+ <87lifbwhwd.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37498 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751848Ab2JLVBD (ORCPT
+Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:50197 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752512Ab2JLVwG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Oct 2012 17:01:03 -0400
-In-Reply-To: <264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	Fri, 12 Oct 2012 17:52:06 -0400
+Content-Disposition: inline
+In-Reply-To: <87lifbwhwd.fsf@deeprootsystems.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Sourav <sourav.poddar@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
 
-On Fri, 12 Oct 2012 21:08:15 +0200
-Noam Camus <noamc@ezchip.com> wrote:
+* Kevin Hilman <khilman@deeprootsystems.com> [121012 13:34]:
+>
+> I'm not conviced (yet) that a mismatch is the root cause.  Yes, that's
+> what the author of $SUBJECT patch assumed and stated, but I'm not
+> pursuaded.  
+> 
+> If it's an improperly configured mux issue, then the UART will break
+> whenever the device is actually omap_device_enable'd, whether in the
+> driver or in the bus layer.
 
-> Sorry,but I wrote that I am using mmio32.
+I tried booting n800 here with CONFIG_OMAP_MUX disabled, and no
+change. Serial console output stops right when the console initializes.
 
-Yes but you also keep talking about endian-ness. The underlying registers
-are 8bit so they are not 'endian' at all. They might be at the address
-"base + 4 * offset + 3" perhaps ?
+Regards,
 
-If so they to use mmio32 presumably you just need to set the base address
-properly (ie 0xXXXXXXX3 or similar).
-
-Do the values have to be read with 32bit operations and do they have to
-be read on 32bi alignment ?
-
-Alan
+Tony
