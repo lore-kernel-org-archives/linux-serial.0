@@ -1,61 +1,41 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: clps711x: reworked driver version
-Date: Fri, 12 Oct 2012 04:20:14 +0900
-Message-ID: <20121011192014.GB1801@kroah.com>
-References: <1349970689-24198-1-git-send-email-shc_work@mail.ru>
- <20121011183406.GC32470@kroah.com>
- <20121011225703.3f930bf1.shc_work@mail.ru>
+From: Noam Camus <noamc@ezchip.com>
+Subject: 8250_early for big-endian
+Date: Fri, 12 Oct 2012 15:05:42 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:38028 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756163Ab2JKTUV (ORCPT
+Received: from ezexch.ezchip.com ([212.179.42.101]:26645 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756366Ab2JLNLu convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Oct 2012 15:20:21 -0400
-Received: by mail-pb0-f46.google.com with SMTP id rr4so2166972pbb.19
-        for <linux-serial@vger.kernel.org>; Thu, 11 Oct 2012 12:20:20 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20121011225703.3f930bf1.shc_work@mail.ru>
+	Fri, 12 Oct 2012 09:11:50 -0400
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Thu, Oct 11, 2012 at 10:57:03PM +0400, Alexander Shiyan wrote:
-> On Fri, 12 Oct 2012 03:34:06 +0900
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> 
-> > On Thu, Oct 11, 2012 at 07:51:29PM +0400, Alexander Shiyan wrote:
-> > > This patch presents reworked version of CLPS711X serial driver.
-> > > The changes from the old version:
-> > > - Driver converted to platform_device.
-> > > - Using CPU clock subsystem for getting base UART speed, since CPU can run
-> > >   on different speeds.
-> > > - Remove console_initcall and make console dynamically. Earler messages in
-> > >   this case can be retrieved by using "earlyprintk" kernel option.
-> > > - Using resource-managed functions (devm_xx).
-> > > - Make all variables dynamically (reduce BSS).
-> > > - Cleanup code & comments.
-> > 
-> > That's a lot of different things, all at once, making it very hard to
-> > review.
-> > Can you please break this up into the individual patches of what you are
-> > doing above, one patch per thing, as is needed for Linux kernel patches?
-> > That way it is much easier to accept and review.
-> 
-> It's too hard to do, since each modification depends on the other...
+Hello
 
-That's why you do one patch after the other, a series of patches, all
-depending on the previous ones.
+I am using 8250 console and wish to use the 8250_early as well.
 
-> Maybe make a patch through renaming, for example clps711x_uart? Or you
-> still insist to split it into separate patches?
+I encounter endianess problem while using this driver for mmio32.
 
-Linux kernel development is all about individual patches, each one only
-doing one thing.  We've been doing this for 20+ years now, it's not
-anything "new" :)
+The problem is since my serial peripheral like my cpu is in BIG endian.
 
-thanks,
+Driver through serial_in/serial_out uses readl/writel from asm-generic/io.h.
 
-greg k-h
+These macros assume peripheral is always in LITTLE endian.
+
+Therefore all data needs a swab. 
+
+In 8250 driver I can register replacement for default serial_in/serial_out and workaround the problem.
+In 8250_early I had no choice but to change code with additional swab to workaround the problem.
+
+I am looking for proper solution so it can be added to upstream.
+I got several ideas if interest arise.
+
+Waiting for your comments
+Noam Camus 
+
