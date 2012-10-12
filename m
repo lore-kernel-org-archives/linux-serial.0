@@ -1,42 +1,79 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: 8250_early for big-endian
-Date: Fri, 12 Oct 2012 17:51:50 +0100
-Message-ID: <20121012175150.4b081343@pyramind.ukuu.org.uk>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+From: "Poddar, Sourav" <sourav.poddar@ti.com>
+Subject: RE: [RFT/PATCH] serial: omap: prevent resume if device is not
+	suspended.
+Date: Fri, 12 Oct 2012 17:29:55 +0000
+Message-ID: <FEB1293C1A07484EA4E9721B32981131CC2362@DBDE01.ent.ti.com>
+References: <20120925083029.GG31374@n2100.arm.linux.org.uk>
+ <20120925083118.GI9137@arwen.pp.htv.fi>
+ <20120925091228.GI31374@n2100.arm.linux.org.uk>
+ <20120925091112.GK9137@arwen.pp.htv.fi>
+ <20120925092118.GJ31374@n2100.arm.linux.org.uk>
+ <CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com>
+ <87ipas2y4h.fsf@deeprootsystems.com>
+ <alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
+ <50784458.9080806@ti.com>
+ <877gqv7imt.fsf@deeprootsystems.com>,<20121012164202.GQ28061@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:37287 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759814Ab2JLQqu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Oct 2012 12:46:50 -0400
-In-Reply-To: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20121012164202.GQ28061@n2100.arm.linux.org.uk>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Kevin Hilman <khilman@deeprootsystems.com>
+Cc: Paul Walmsley <paul@pwsan.com>, "Balbi, Felipe" <balbi@ti.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tony@atomide.com" <tony@atomide.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "alan@linux.intel.com" <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-> I am using 8250 console and wish to use the 8250_early as well.
-> 
-> I encounter endianess problem while using this driver for mmio32.
-> 
-> The problem is since my serial peripheral like my cpu is in BIG endian.
-> 
-> Driver through serial_in/serial_out uses readl/writel from asm-generic/io.h.
-> 
-> These macros assume peripheral is always in LITTLE endian.
-> 
-> Therefore all data needs a swab. 
-> 
-> In 8250 driver I can register replacement for default serial_in/serial_out and workaround the problem.
-> In 8250_early I had no choice but to change code with additional swab to workaround the problem.
-> 
-> I am looking for proper solution so it can be added to upstream.
-> I got several ideas if interest arise.
+Hi Russell,
+________________________________________
+From: Russell King - ARM Linux [linux@arm.linux.org.uk]
+Sent: Friday, October 12, 2012 10:12 PM
+To: Kevin Hilman
+Cc: Poddar, Sourav; Paul Walmsley; Balbi, Felipe; gregkh@linuxfoundation.org; tony@atomide.com; linux-kernel@vger.kernel.org; Shilimkar, Santosh; linux-serial@vger.kernel.org; linux-omap@vger.kernel.org; linux-arm-kernel@lists.infradead.org; alan@linux.intel.com
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not  suspended.
 
-Given they are all byte registers so how can they need swapping ? They are
-merely 3 further bytes offset.
+On Fri, Oct 12, 2012 at 09:35:54AM -0700, Kevin Hilman wrote:
+> Sourav <sourav.poddar@ti.com> writes:
+> > diff --git a/drivers/tty/serial/omap-serial.c
+> > b/drivers/tty/serial/omap-serial.c
+> > index 6ede6fd..3fbc7f7 100644
+> > --- a/drivers/tty/serial/omap-serial.c
+> > +++ b/drivers/tty/serial/omap-serial.c
+> > @@ -1414,6 +1414,7 @@ static int __devinit serial_omap_probe(struct
+> > platform_device *pdev)
+> >         INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
+> >
+> >         platform_set_drvdata(pdev, up);
+> > +       pm_runtime_set_active(&pdev->dev);
+>
+> NAK.
+>
+> This will obviously break platforms where the UARTs are not active
+> before driver loads.
 
-Alan
+I thought I had proposed a solution for this issue, which was this
+sequence:
+
+        omap_device_enable(dev);
+        pm_runtime_set_active(dev);
+        pm_runtime_enable(dev);
+
+Yes, I can understand people not liking the omap_device_enable()
+there, but I also notice that the email suggesting that never got a
+reply either - not even a "I tried this and it doesn't work" or "it
+does work".
+
+Sorry for the late reply on this. I tried this sequence and it worked perfectly fine on
+panda and beagle. 
+
+As such, it seems this issue isn't making any progress as we had
+already established that merely doing a "pm_runtime_set_active()"
+before "pm_runtime_enable()" was going to break other platforms.
+
+ I was  trying to analyse your explanations on this and since omap_device_enable is not generally 
+recommended,  I was trying to see if anything else can be done to get around this.
+
+I send this patch for N800 testing so  as to see how it behaves. (We are suspecting that there might be
+mux setting issue also with N800).   
+
+~Sourav
