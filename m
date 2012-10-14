@@ -1,61 +1,100 @@
 From: Alexander Shiyan <shc_work@mail.ru>
-Subject: Re: [PATCH] serial: clps711x: reworked driver version
-Date: Sun, 14 Oct 2012 11:05:00 +0400
-Message-ID: <20121014110500.f81f5070d536274245aaca5c@mail.ru>
-References: <1349970689-24198-1-git-send-email-shc_work@mail.ru>
-	<20121011183406.GC32470@kroah.com>
-	<20121011225703.3f930bf1.shc_work@mail.ru>
-	<20121011192014.GB1801@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 01/12] serial: clps711x: Add platform_driver interface to clps711x driver
+Date: Sun, 14 Oct 2012 11:05:23 +0400
+Message-ID: <1350198334-18737-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp5.mail.ru ([94.100.176.132]:41788 "EHLO smtp5.mail.ru"
+Received: from smtp17.mail.ru ([94.100.176.154]:37937 "EHLO smtp17.mail.ru"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751606Ab2JNHFI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Oct 2012 03:05:08 -0400
-In-Reply-To: <20121011192014.GB1801@kroah.com>
+	id S1751606Ab2JNHFo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 14 Oct 2012 03:05:44 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Alexander Shiyan <shc_work@mail.ru>
 
-On Fri, 12 Oct 2012 04:20:14 +0900
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-...
-> > > > This patch presents reworked version of CLPS711X serial driver.
-> > > > The changes from the old version:
-> > > > - Driver converted to platform_device.
-> > > > - Using CPU clock subsystem for getting base UART speed, since CPU can run
-> > > >   on different speeds.
-> > > > - Remove console_initcall and make console dynamically. Earler messages in
-> > > >   this case can be retrieved by using "earlyprintk" kernel option.
-> > > > - Using resource-managed functions (devm_xx).
-> > > > - Make all variables dynamically (reduce BSS).
-> > > > - Cleanup code & comments.
-> > > 
-> > > That's a lot of different things, all at once, making it very hard to
-> > > review.
-> > > Can you please break this up into the individual patches of what you are
-> > > doing above, one patch per thing, as is needed for Linux kernel patches?
-> > > That way it is much easier to accept and review.
-> > 
-> > It's too hard to do, since each modification depends on the other...
-> 
-> That's why you do one patch after the other, a series of patches, all
-> depending on the previous ones.
-> 
-> > Maybe make a patch through renaming, for example clps711x_uart? Or you
-> > still insist to split it into separate patches?
-> 
-> Linux kernel development is all about individual patches, each one only
-> doing one thing.  We've been doing this for 20+ years now, it's not
-> anything "new" :)
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/clps711x.c |   39 +++++++++++++++++++++++++++++++++------
+ 1 files changed, 33 insertions(+), 6 deletions(-)
 
-Yes, this is understandable. This patch is the result of several years of work
-with this driver. I tried to split into separate functional parts and send the
-new version in a new thread. Please comment.
-
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index d0f719f..07fef1c 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -37,10 +37,13 @@
+ #include <linux/serial_core.h>
+ #include <linux/serial.h>
+ #include <linux/io.h>
++#include <linux/platform_device.h>
+ 
+ #include <mach/hardware.h>
+ #include <asm/irq.h>
+ 
++#define UART_CLPS711X_NAME	"uart-clps711x"
++
+ #define UART_NR		2
+ 
+ #define SERIAL_CLPS711X_MAJOR	204
+@@ -543,7 +546,7 @@ static struct uart_driver clps711x_reg = {
+ 	.cons			= CLPS711X_CONSOLE,
+ };
+ 
+-static int __init clps711xuart_init(void)
++static int __devinit uart_clps711x_probe(struct platform_device *pdev)
+ {
+ 	int ret, i;
+ 
+@@ -559,7 +562,7 @@ static int __init clps711xuart_init(void)
+ 	return 0;
+ }
+ 
+-static void __exit clps711xuart_exit(void)
++static int __devexit uart_clps711x_remove(struct platform_device *pdev)
+ {
+ 	int i;
+ 
+@@ -567,12 +570,36 @@ static void __exit clps711xuart_exit(void)
+ 		uart_remove_one_port(&clps711x_reg, &clps711x_ports[i]);
+ 
+ 	uart_unregister_driver(&clps711x_reg);
++
++	return 0;
+ }
+ 
+-module_init(clps711xuart_init);
+-module_exit(clps711xuart_exit);
++static struct platform_driver clps711x_uart_driver = {
++	.driver = {
++		.name	= UART_CLPS711X_NAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe	= uart_clps711x_probe,
++	.remove	= __devexit_p(uart_clps711x_remove),
++};
++module_platform_driver(clps711x_uart_driver);
++
++static struct platform_device clps711x_uart_device = {
++	.name	= UART_CLPS711X_NAME,
++};
++
++static int __init uart_clps711x_init(void)
++{
++	return platform_device_register(&clps711x_uart_device);
++}
++module_init(uart_clps711x_init);
++
++static void __exit uart_clps711x_exit(void)
++{
++	platform_device_unregister(&clps711x_uart_device);
++}
++module_exit(uart_clps711x_exit);
+ 
+ MODULE_AUTHOR("Deep Blue Solutions Ltd");
+-MODULE_DESCRIPTION("CLPS-711x generic serial driver");
++MODULE_DESCRIPTION("CLPS711X serial driver");
+ MODULE_LICENSE("GPL");
+-MODULE_ALIAS_CHARDEV(SERIAL_CLPS711X_MAJOR, SERIAL_CLPS711X_MINOR);
 -- 
-Alexander Shiyan <shc_work@mail.ru>
+1.7.8.6
+
