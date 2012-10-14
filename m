@@ -1,74 +1,38 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: New serial card development
-Date: Sun, 14 Oct 2012 05:37:04 -0400
-Message-ID: <20121014093704.GA6207@thunk.org>
-References: <5074703E.408@commtech-fastcom.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: 8250_early for big-endian
+Date: Sun, 14 Oct 2012 18:18:40 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC30010D0@ezexch.ezchip.com>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+	<20121012175150.4b081343@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
+	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
+ <20121014133216.686277e1@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from li9-11.members.linode.com ([67.18.176.11]:55433 "EHLO
-	imap.thunk.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754136Ab2JNOlw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Oct 2012 10:41:52 -0400
-Content-Disposition: inline
-In-Reply-To: <5074703E.408@commtech-fastcom.com>
+Received: from ezexch.ezchip.com ([212.179.42.101]:10877 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751603Ab2JNQTX convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 14 Oct 2012 12:19:23 -0400
+In-Reply-To: <20121014133216.686277e1@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Tue, Oct 09, 2012 at 01:43:10PM -0500, Matt Schulte wrote:
-> Hello, my name is Matt and I have recently developed a PCIe card based
-> on the Exar 17v35x series of PCIe multiport UART chips.
-> 
-> We have written Linux drivers for our other products in the past but
-> they have never been what I would call the best practice for Linux
-> development.
-> 
-> This time I would like to write a driver that uses the best practices
-> and possibly submit it to the kernel when I'm done.
-> 
-> I am a little bit confused about what method would be best for this
-> device.   I have been examining the sample driver provided by Exar
-> and it seems that the only things that they have that are really
-> different from the generic 8250 serial driver are the interrupt
-> handler (optimized for their multiple ports), the transmit and
-> receive character functions (modified to use their 256 byte FIFOs)
-> and the function that calculates the baud.  Also I have two features
-> specific to my card that I would likely need to use an ioctl for.
+From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+Sent: Sunday, October 14, 2012 2:32 PM
 
-Hi Matt,
+> For 8250_early it may well be the right thing is to support similar serial_in/serial_out methods.
 
-It's been a while since I've done serial development (probably close
-to a decade ago), but way back when I was responsible for most of the
-code which is now in drivers/tty/serial/8250/serial.c, I had added
-support for the Exar 16C850 UART; since then someone else has added
-support for the Exar XR17D15x UART.
+Is it acceptable solution to add attribute __weak (and remove static) from serial_in/serial_out methods?
 
-The EXAR 16C850 had a 128 byte FIFO; it sounds like this EXAR variant
-is similar to the 16C850, although it's been further extended.
-
-> If these are the only differences would I be able to create a driver
-> like what is seen in the /drivers/tty/serial/8250 directory (8250_dw.c
-> for example)?  Or would I need to do something similar to what I find in
-> the /drviers/tty/serial directory?
-
-We support a very large number of 8250-like UART's already.  It
-doesn't make sense create a new driver which is essentially a clone of
-the 8250.c driver.  Instead, the 8250.c driver should be extended to
-support this new Exar UART variant.  The preferred way to do this is
-to detect the EXAR UART directly, via the method documented in the
-EXAR data sheet, instead of using the PCI id numbers to make this
-determination.  This way, we will be able to support that UART on
-other PCI serial cards, and not just yours.
-
-If you have some features which are explicitly specific to your card,
-and which are not specific to the UART, then that may need to be
-separately triggered via the PCI vendor/device id numbers.  What
-feature is it, by the way?  If it has to do with controlling the clock
-crystal, there's infrastructure to deal with this already that you may
-be able to leverage.
-
-Regards,
-
-						- Ted
+Noam
