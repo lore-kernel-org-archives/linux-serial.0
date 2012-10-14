@@ -1,13 +1,13 @@
 From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 03/12] serial: clps711x: Do not use "uart_port->unused" field
-Date: Sun, 14 Oct 2012 11:05:25 +0400
-Message-ID: <1350198334-18737-3-git-send-email-shc_work@mail.ru>
+Subject: [PATCH 04/12] serial: clps711x: Using CPU clock subsystem for getting base UART speed
+Date: Sun, 14 Oct 2012 11:05:26 +0400
+Message-ID: <1350198334-18737-4-git-send-email-shc_work@mail.ru>
 References: <1350198334-18737-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp17.mail.ru ([94.100.176.154]:39405 "EHLO smtp17.mail.ru"
+Received: from smtp17.mail.ru ([94.100.176.154]:43987 "EHLO smtp17.mail.ru"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751606Ab2JNHF5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Oct 2012 03:05:57 -0400
+	id S1751606Ab2JNHGC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 14 Oct 2012 03:06:02 -0400
 In-Reply-To: <1350198334-18737-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -17,100 +17,82 @@ Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.
 
 Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/tty/serial/clps711x.c |   32 +++++++++++++++++---------------
- 1 files changed, 17 insertions(+), 15 deletions(-)
+ drivers/tty/serial/clps711x.c |   20 +++++++++++++++-----
+ 1 files changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index de6aa33..3b17d19 100644
+index 3b17d19..0884939 100644
 --- a/drivers/tty/serial/clps711x.c
 +++ b/drivers/tty/serial/clps711x.c
-@@ -56,11 +56,10 @@
+@@ -37,6 +37,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/serial.h>
+ #include <linux/io.h>
++#include <linux/clk.h>
+ #include <linux/platform_device.h>
  
- #define UART_ANY_ERR		(UARTDR_FRMERR | UARTDR_PARERR | UARTDR_OVERR)
+ #include <mach/hardware.h>
+@@ -58,6 +59,7 @@
  
--#define tx_enabled(port)	((port)->unused[0])
--
  struct clps711x_port {
  	struct uart_driver	uart;
++	struct clk		*uart_clk;
  	struct uart_port	port[UART_CLPS711X_NR];
-+	int			tx_enabled[UART_CLPS711X_NR];
+ 	int			tx_enabled[UART_CLPS711X_NR];
  #ifdef CONFIG_SERIAL_CLPS711X_CONSOLE
- 	struct console		console;
- #endif
-@@ -68,17 +67,21 @@ struct clps711x_port {
+@@ -299,10 +301,9 @@ clps711xuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 */
+ 	termios->c_cflag |= CREAD;
  
- static void clps711xuart_stop_tx(struct uart_port *port)
- {
--	if (tx_enabled(port)) {
-+	struct clps711x_port *s = dev_get_drvdata(port->dev);
-+
-+	if (s->tx_enabled[port->line]) {
- 		disable_irq(TX_IRQ(port));
--		tx_enabled(port) = 0;
-+		s->tx_enabled[port->line] = 0;
+-	/*
+-	 * Ask the core to calculate the divisor for us.
+-	 */
+-	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
++	/* Ask the core to calculate the divisor for us */
++	baud = uart_get_baud_rate(port, termios, old, port->uartclk / 4096,
++						      port->uartclk / 16);
+ 	quot = uart_get_divisor(port, baud);
+ 
+ 	switch (termios->c_cflag & CSIZE) {
+@@ -487,6 +488,13 @@ static int __devinit uart_clps711x_probe(struct platform_device *pdev)
  	}
- }
+ 	platform_set_drvdata(pdev, s);
  
- static void clps711xuart_start_tx(struct uart_port *port)
- {
--	if (!tx_enabled(port)) {
-+	struct clps711x_port *s = dev_get_drvdata(port->dev);
-+
-+	if (!s->tx_enabled[port->line]) {
- 		enable_irq(TX_IRQ(port));
--		tx_enabled(port) = 1;
-+		s->tx_enabled[port->line] = 1;
- 	}
- }
- 
-@@ -148,6 +151,7 @@ static irqreturn_t clps711xuart_int_rx(int irq, void *dev_id)
- static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
-+	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 	struct circ_buf *xmit = &port->state->xmit;
- 	int count;
- 
-@@ -158,8 +162,11 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
- 		return IRQ_HANDLED;
- 	}
- 
--	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
--		goto disable_tx_irq;
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
-+		disable_irq_nosync(TX_IRQ(port));
-+		s->tx_enabled[port->line] = 0;
-+		return IRQ_HANDLED;
++	s->uart_clk = devm_clk_get(&pdev->dev, "uart");
++	if (IS_ERR(s->uart_clk)) {
++		dev_err(&pdev->dev, "Can't get UART clocks\n");
++		ret = PTR_ERR(s->uart_clk);
++		goto err_out;
 +	}
++
+ 	s->uart.owner		= THIS_MODULE;
+ 	s->uart.dev_name	= "ttyCL";
+ 	s->uart.major		= UART_CLPS711X_MAJOR;
+@@ -505,6 +513,7 @@ static int __devinit uart_clps711x_probe(struct platform_device *pdev)
+ 	ret = uart_register_driver(&s->uart);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Registering UART driver failed\n");
++		devm_clk_put(&pdev->dev, s->uart_clk);
+ 		goto err_out;
+ 	}
  
- 	count = port->fifosize >> 1;
- 	do {
-@@ -173,12 +180,6 @@ static irqreturn_t clps711xuart_int_tx(int irq, void *dev_id)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
+@@ -516,7 +525,7 @@ static int __devinit uart_clps711x_probe(struct platform_device *pdev)
+ 		s->port[i].type		= PORT_CLPS711X;
+ 		s->port[i].fifosize	= 16;
+ 		s->port[i].flags	= UPF_SKIP_TEST | UPF_FIXED_TYPE;
+-		s->port[i].uartclk	= 3686400;
++		s->port[i].uartclk	= clk_get_rate(s->uart_clk);
+ 		s->port[i].ops		= &uart_clps711x_ops;
+ 		WARN_ON(uart_add_one_port(&s->uart, &s->port[i]));
+ 	}
+@@ -537,6 +546,7 @@ static int __devexit uart_clps711x_remove(struct platform_device *pdev)
+ 	for (i = 0; i < UART_CLPS711X_NR; i++)
+ 		uart_remove_one_port(&s->uart, &s->port[i]);
  
--	if (uart_circ_empty(xmit)) {
--	disable_tx_irq:
--		disable_irq_nosync(TX_IRQ(port));
--		tx_enabled(port) = 0;
--	}
--
- 	return IRQ_HANDLED;
- }
++	devm_clk_put(&pdev->dev, s->uart_clk);
+ 	uart_unregister_driver(&s->uart);
+ 	platform_set_drvdata(pdev, NULL);
  
-@@ -230,10 +231,11 @@ static void clps711xuart_break_ctl(struct uart_port *port, int break_state)
- 
- static int clps711xuart_startup(struct uart_port *port)
- {
-+	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 	unsigned int syscon;
- 	int retval;
- 
--	tx_enabled(port) = 1;
-+	s->tx_enabled[port->line] = 1;
- 
- 	/*
- 	 * Allocate the IRQs
 -- 
 1.7.8.6
 
