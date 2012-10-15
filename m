@@ -1,39 +1,51 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [PATCH RESEND] serial/amba-pl011: use devm_* managed resources
-Date: Mon, 15 Oct 2012 15:52:36 +0200
-Message-ID: <20121015135236.GX12801@game.jcrosoft.org>
-References: <1350300961-7036-1-git-send-email-linus.walleij@stericsson.com>
+From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
+Subject: RE: [RESET PATCH 2/2] Documentation: of-serial.txt - update for
+ clocks phandle for clk
+Date: Mon, 15 Oct 2012 15:05:03 +0000
+Message-ID: <3E54258959B69E4282D79E01AB1F32B704201C79@DFLE12.ent.ti.com>
+References: <1350313178-3753-1-git-send-email-m-karicheri2@ti.com>
+ <1350313178-3753-3-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1350300961-7036-1-git-send-email-linus.walleij@stericsson.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Linus Walleij <linus.walleij@stericsson.com>
-Cc: Anmar Oueja <anmar.oueja@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1350313178-3753-3-git-send-email-m-karicheri2@ti.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Karicheri, Muralidharan" <m-karicheri2@ti.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-keystone@list.ti.com - Linux developers for Keystone family of
+	devices (May contain non-TIers)" <linux-keystone@list.ti.com>
+Cc: "Chemparathy, Cyril" <cyril@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 13:36 Mon 15 Oct     , Linus Walleij wrote:
-> From: Linus Walleij <linus.walleij@linaro.org>
-> 
-> This switches a bunch of allocation and remapping to use the
-> devm_* garbage collected methods and cleans up the error
-> path and remove() paths consequently.
-> 
-> devm_ioremap() is only in <linux/io.h> so fix up the
-> erroneous <asm/*> include as well.
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-
-Best Regards,
-J.
+>> -----Original Message-----
+>> From: Karicheri, Muralidharan
+>> Sent: Monday, October 15, 2012 11:00 AM
+>> To: alan@linux.intel.com; gregkh@linuxfoundation.org; linux-serial@vger.kernel.org;
+>> linux-kernel@vger.kernel.org; linux-keystone@list.ti.com - Linux developers for Keystone
+>> family of devices (May contain non-TIers)
+>> Cc: Chemparathy, Cyril; Karicheri, Muralidharan
+>> Subject: [RESET PATCH 2/2] Documentation: of-serial.txt - update for clocks phandle for
+>> clk
+Sorry for the typo, RESET->RESEND. 
+>> 
+>> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+>> 
+>> diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+>> b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+>> index 0847fde..423b7ff 100644
+>> --- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+>> +++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+>> @@ -14,7 +14,10 @@ Required properties:
+>>  	- "serial" if the port type is unknown.
+>>  - reg : offset and length of the register set for the device.
+>>  - interrupts : should contain uart interrupt.
+>> -- clock-frequency : the input clock frequency for the UART.
+>> +- clock-frequency : the input clock frequency for the UART
+>> +	 or
+>> +  clocks phandle to refer to the clk used as per Documentation/devicetree
+>> +  /bindings/clock/clock-bindings.txt
+>> 
+>>  Optional properties:
+>>  - current-speed : the current active speed of the UART.
+>> --
+>> 1.7.9.5
