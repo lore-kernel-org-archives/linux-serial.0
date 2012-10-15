@@ -1,84 +1,85 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] serial/8250_hp300: Missing 8250 register interface conversion bits
-Date: Mon, 15 Oct 2012 22:13:12 +0200
-Message-ID: <1350331992-15119-1-git-send-email-geert@linux-m68k.org>
+From: Kevin Hilman <khilman@deeprootsystems.com>
+Subject: Re: [RFT/PATCH] serial: omap: prevent resume if device is not suspended.
+Date: Mon, 15 Oct 2012 15:37:17 -0700
+Message-ID: <87391fs6oy.fsf@deeprootsystems.com>
+References: <20120925092118.GJ31374@n2100.arm.linux.org.uk>
+	<CAKdam57bpTJ94Gn=mKVw1Fm-76fVPp3DGjFuNu_HfesybM1hPg@mail.gmail.com>
+	<87ipas2y4h.fsf@deeprootsystems.com>
+	<alpine.DEB.2.00.1210111748010.5736@utopia.booyaka.com>
+	<50784458.9080806@ti.com> <877gqv7imt.fsf@deeprootsystems.com>
+	<20121012164202.GQ28061@n2100.arm.linux.org.uk>
+	<877gqv4lmt.fsf@deeprootsystems.com>
+	<20121012185426.GS28061@n2100.arm.linux.org.uk>
+	<87lifbwhwd.fsf@deeprootsystems.com>
+	<20121012215156.GL30339@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philip Blundell <philb@gnu.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:60877 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750823Ab2JOWhI (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Oct 2012 18:37:08 -0400
+Received: by mail-pa0-f46.google.com with SMTP id hz1so5293193pad.19
+        for <linux-serial@vger.kernel.org>; Mon, 15 Oct 2012 15:37:07 -0700 (PDT)
+In-Reply-To: <20121012215156.GL30339@atomide.com> (Tony Lindgren's message of
+	"Fri, 12 Oct 2012 14:51:56 -0700")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Sourav <sourav.poddar@ti.com>, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, santosh.shilimkar@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
 
-commit 2655a2c76f80d91da34faa8f4e114d1793435ed3 ("8250: use the 8250
-register interface not the legacy one") forgot to fully switch one
-instance of struct uart_port to struct uart_8250_port, causing the
-following compile failure:
+Tony Lindgren <tony@atomide.com> writes:
 
-drivers/tty/serial/8250/8250_hp300.c: In function =E2=80=98hpdca_init_o=
-ne=E2=80=99:
-drivers/tty/serial/8250/8250_hp300.c:174: error: =E2=80=98uart=E2=80=99=
- undeclared (first use in this function)
-drivers/tty/serial/8250/8250_hp300.c:174: error: (Each undeclared ident=
-ifier is reported only once
-drivers/tty/serial/8250/8250_hp300.c:174: error: for each function it a=
-ppears in.)
+> * Kevin Hilman <khilman@deeprootsystems.com> [121012 13:34]:
+>>
+>> I'm not conviced (yet) that a mismatch is the root cause.  Yes, that's
+>> what the author of $SUBJECT patch assumed and stated, but I'm not
+>> pursuaded.  
+>> 
+>> If it's an improperly configured mux issue, then the UART will break
+>> whenever the device is actually omap_device_enable'd, whether in the
+>> driver or in the bus layer.
+>
+> I tried booting n800 here with CONFIG_OMAP_MUX disabled, and no
+> change. Serial console output stops right when the console initializes.
 
-This went unnoticed in -next, as CONFIG_HPDCA is not set to y by
-allmodconfig.
+OK, since it's not mux, and since those who actually maintain this
+driver don't seem to be taking care of this, I did some digging today.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-Only compile-tested, due to lack of hardware
+Russell is right.  It's a mismatch between assumed runtime PM state
+(disabled) and actual HW state.
 
- drivers/tty/serial/8250/8250_hp300.c |   20 ++++++++++----------
- 1 files changed, 10 insertions(+), 10 deletions(-)
+During init, all omap_devices are idled by default, so that they are
+correctly in the state that the runtime PM framework will later expect
+them to be.  That is, all devices *except* the console UART.  For that
+one, we use the special hwmod flag to not idle/reset the UART since that
+will cause problems during earlyprintk usage, and the switch between
+the earlyprintk console and the real console driver.
 
-diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/=
-8250/8250_hp300.c
-index 8f1dd2c..f3d0edf 100644
---- a/drivers/tty/serial/8250/8250_hp300.c
-+++ b/drivers/tty/serial/8250/8250_hp300.c
-@@ -162,7 +162,7 @@ int __init hp300_setup_serial_console(void)
- static int __devinit hpdca_init_one(struct dio_dev *d,
- 				const struct dio_device_id *ent)
- {
--	struct uart_port port;
-+	struct uart_8250_port uart;
- 	int line;
-=20
- #ifdef CONFIG_SERIAL_8250_CONSOLE
-@@ -174,19 +174,19 @@ static int __devinit hpdca_init_one(struct dio_de=
-v *d,
- 	memset(&uart, 0, sizeof(uart));
-=20
- 	/* Memory mapped I/O */
--	port.iotype =3D UPIO_MEM;
--	port.flags =3D UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF;
--	port.irq =3D d->ipl;
--	port.uartclk =3D HPDCA_BAUD_BASE * 16;
--	port.mapbase =3D (d->resource.start + UART_OFFSET);
--	port.membase =3D (char *)(port.mapbase + DIO_VIRADDRBASE);
--	port.regshift =3D 1;
--	port.dev =3D &d->dev;
-+	uart.port.iotype =3D UPIO_MEM;
-+	uart.port.flags =3D UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF=
-;
-+	uart.port.irq =3D d->ipl;
-+	uart.port.uartclk =3D HPDCA_BAUD_BASE * 16;
-+	uart.port.mapbase =3D (d->resource.start + UART_OFFSET);
-+	uart.port.membase =3D (char *)(uart.port.mapbase + DIO_VIRADDRBASE);
-+	uart.port.regshift =3D 1;
-+	uart.port.dev =3D &d->dev;
- 	line =3D serial8250_register_8250_port(&uart);
-=20
- 	if (line < 0) {
- 		printk(KERN_NOTICE "8250_hp300: register_serial() DCA scode %d"
--		       " irq %d failed\n", d->scode, port.irq);
-+		       " irq %d failed\n", d->scode, uart.port.irq);
- 		return -ENOMEM;
- 	}
-=20
---=20
-1.7.0.4
+Since the console uart was left enabled during init, it needs to be
+fully enabled and the runtime PM status set accordingly.
+
+The patch below does this, and works fine on 2420/n810, as well as on
+3530/Overo, 3730/OveroSTORM, 3730/Beagle-XM and 4430/PandaES.
+
+Will send patch with a proper changelog shortly,
+
+Kevin
+
+diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+index 0405c81..37b5dbe 100644
+--- a/arch/arm/mach-omap2/serial.c
++++ b/arch/arm/mach-omap2/serial.c
+@@ -327,6 +327,11 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
+ 	if ((console_uart_id == bdata->id) && no_console_suspend)
+ 		omap_device_disable_idle_on_suspend(pdev);
+ 
++	if (console_uart_id == bdata->id) {
++		omap_device_enable(pdev);
++		pm_runtime_set_active(&pdev->dev);
++	}
++
+ 	oh->mux = omap_hwmod_mux_init(bdata->pads, bdata->pads_cnt);
+ 
+ 	oh->dev_attr = uart;
