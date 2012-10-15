@@ -1,38 +1,65 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: 8250_early for big-endian
-Date: Sun, 14 Oct 2012 18:18:40 +0200
-Message-ID: <264C179F799EF24AB26D5319053335E80CC30010D0@ezexch.ezchip.com>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-	<20121012175150.4b081343@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
-	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
-	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
-	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
- <20121014133216.686277e1@pyramind.ukuu.org.uk>
+From: James Hogan <james.hogan@imgtec.com>
+Subject: [PATCH] tty: serial: 8250_dw: Implement suspend/resume
+Date: Mon, 15 Oct 2012 10:25:58 +0100
+Message-ID: <1350293158-27159-1-git-send-email-james.hogan@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ezexch.ezchip.com ([212.179.42.101]:10877 "EHLO
-	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751603Ab2JNQTX convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Oct 2012 12:19:23 -0400
-In-Reply-To: <20121014133216.686277e1@pyramind.ukuu.org.uk>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Axel Lin <axel.lin@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
-Sent: Sunday, October 14, 2012 2:32 PM
+Implement suspend and resume callbacks for DesignWare 8250 driver.
+They're simple wrappers around serial8250_{suspend,resume}_port.
 
-> For 8250_early it may well be the right thing is to support similar serial_in/serial_out methods.
+Signed-off-by: James Hogan <james.hogan@imgtec.com>
+---
+ drivers/tty/serial/8250/8250_dw.c |   25 +++++++++++++++++++++++++
+ 1 files changed, 25 insertions(+), 0 deletions(-)
 
-Is it acceptable solution to add attribute __weak (and remove static) from serial_in/serial_out methods?
-
-Noam
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f574eef..53db7e8 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -161,6 +161,29 @@ static int __devexit dw8250_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM
++static int dw8250_suspend(struct platform_device *pdev, pm_message_t state)
++{
++	struct dw8250_data *data = platform_get_drvdata(pdev);
++
++	serial8250_suspend_port(data->line);
++
++	return 0;
++}
++
++static int dw8250_resume(struct platform_device *pdev)
++{
++	struct dw8250_data *data = platform_get_drvdata(pdev);
++
++	serial8250_resume_port(data->line);
++
++	return 0;
++}
++#else
++#define dw8250_suspend NULL
++#define dw8250_resume NULL
++#endif /* CONFIG_PM */
++
+ static const struct of_device_id dw8250_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+ 	{ /* Sentinel */ }
+@@ -175,6 +198,8 @@ static struct platform_driver dw8250_platform_driver = {
+ 	},
+ 	.probe			= dw8250_probe,
+ 	.remove			= __devexit_p(dw8250_remove),
++	.suspend		= dw8250_suspend,
++	.resume			= dw8250_resume,
+ };
+ 
+ module_platform_driver(dw8250_platform_driver);
+-- 
+1.7.7.6
