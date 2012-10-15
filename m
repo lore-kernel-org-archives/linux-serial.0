@@ -1,65 +1,32 @@
-From: James Hogan <james.hogan@imgtec.com>
-Subject: [PATCH] tty: serial: 8250_dw: Implement suspend/resume
-Date: Mon, 15 Oct 2012 10:25:58 +0100
-Message-ID: <1350293158-27159-1-git-send-email-james.hogan@imgtec.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH] serial: clps711x: reworked driver version
+Date: Mon, 15 Oct 2012 11:15:09 +0100
+Message-ID: <20121015111509.01bc71d0@bob.linux.org.uk>
+References: <1349970689-24198-1-git-send-email-shc_work@mail.ru>
+	<20121011183406.GC32470@kroah.com>
+	<20121011225703.3f930bf1.shc_work@mail.ru>
+	<20121011192014.GB1801@kroah.com>
+	<20121014110500.f81f5070d536274245aaca5c@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Axel Lin <axel.lin@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga14.intel.com ([143.182.124.37]:48196 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751300Ab2JOKNY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Oct 2012 06:13:24 -0400
+In-Reply-To: <20121014110500.f81f5070d536274245aaca5c@mail.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Implement suspend and resume callbacks for DesignWare 8250 driver.
-They're simple wrappers around serial8250_{suspend,resume}_port.
+> Yes, this is understandable. This patch is the result of several
+> years of work with this driver. I tried to split into separate
+> functional parts and send the new version in a new thread. Please
+> comment.
 
-Signed-off-by: James Hogan <james.hogan@imgtec.com>
----
- drivers/tty/serial/8250/8250_dw.c |   25 +++++++++++++++++++++++++
- 1 files changed, 25 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f574eef..53db7e8 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -161,6 +161,29 @@ static int __devexit dw8250_remove(struct platform_device *pdev)
- 	return 0;
- }
+Acked-by: Alan Cox <alan@linux.intel.com> for all the tty layer parts
  
-+#ifdef CONFIG_PM
-+static int dw8250_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	struct dw8250_data *data = platform_get_drvdata(pdev);
-+
-+	serial8250_suspend_port(data->line);
-+
-+	return 0;
-+}
-+
-+static int dw8250_resume(struct platform_device *pdev)
-+{
-+	struct dw8250_data *data = platform_get_drvdata(pdev);
-+
-+	serial8250_resume_port(data->line);
-+
-+	return 0;
-+}
-+#else
-+#define dw8250_suspend NULL
-+#define dw8250_resume NULL
-+#endif /* CONFIG_PM */
-+
- static const struct of_device_id dw8250_match[] = {
- 	{ .compatible = "snps,dw-apb-uart" },
- 	{ /* Sentinel */ }
-@@ -175,6 +198,8 @@ static struct platform_driver dw8250_platform_driver = {
- 	},
- 	.probe			= dw8250_probe,
- 	.remove			= __devexit_p(dw8250_remove),
-+	.suspend		= dw8250_suspend,
-+	.resume			= dw8250_resume,
- };
- 
- module_platform_driver(dw8250_platform_driver);
--- 
-1.7.7.6
+
