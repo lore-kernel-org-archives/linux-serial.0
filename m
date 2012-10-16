@@ -1,72 +1,122 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: New serial card development
-Date: Mon, 15 Oct 2012 22:32:26 -0400
-Message-ID: <20121016023226.GA17446@thunk.org>
-References: <5074703E.408@commtech-fastcom.com>
- <20121014093704.GA6207@thunk.org>
- <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
- <20121016002608.64b33de5@pyramind.ukuu.org.uk>
+From: Domenico Andreoli <cavokz@gmail.com>
+Subject: Re: [PATCH RESEND] serial/amba-pl011: use devm_* managed resources
+Date: Tue, 16 Oct 2012 06:34:30 +0200
+Message-ID: <20121016043430.GA24258@glitch>
+References: <1350300961-7036-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from li9-11.members.linode.com ([67.18.176.11]:55650 "EHLO
-	imap.thunk.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751061Ab2JPCcb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Oct 2012 22:32:31 -0400
+Received: from mail-wi0-f172.google.com ([209.85.212.172]:43179 "EHLO
+	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755655Ab2JPEef (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 16 Oct 2012 00:34:35 -0400
+Received: by mail-wi0-f172.google.com with SMTP id hq12so2981605wib.1
+        for <linux-serial@vger.kernel.org>; Mon, 15 Oct 2012 21:34:34 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20121016002608.64b33de5@pyramind.ukuu.org.uk>
+In-Reply-To: <1350300961-7036-1-git-send-email-linus.walleij@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Matt Schulte <matts@commtech-fastcom.com>, linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Anmar Oueja <anmar.oueja@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-On Tue, Oct 16, 2012 at 12:26:08AM +0100, Alan Cox wrote:
-> > That sounds reasonable but I am not sure what you mean my the "method
-> > documented in the Exar data sheet."  I've been through this thing
-> > quite a bit and I don't see anything about how one might detect the
-> > ports without the PCI id numbers.  Could you explain what you mean by
-> > this?
+On Mon, Oct 15, 2012 at 01:36:01PM +0200, Linus Walleij wrote:
+> From: Linus Walleij <linus.walleij@linaro.org>
 > 
-> I don't believe you can identify the new Exars except by PCI id - which
-> is fine as the type can be passed via the 8250_pci driver.
-
-Yeah, I just checked out the data sheet, and it looks like there isn't
-a way to do this.  That's unfortunate, since board vendors can change
-the PCI vendor and device ID.  So if they reprogram the EEPROM to use
-their own id numbers, we won't be able to support that new board
-without modifying the kernel source.  This is why I had tried to
-implement ways where if the PCI class indicated a 16550 compatible
-port, we would try to probe the UART registers to figure out exactly
-what type of advanced features beyond those supported by the standard
-16550A UART.  Sigh, it looks like we won't be able to do things that
-way.
-
-> > * I need to change two UART specific registers to change the sampling
-> > mode (16x, 8x and 4x).
+> This switches a bunch of allocation and remapping to use the
+> devm_* garbage collected methods and cleans up the error
+> path and remove() paths consequently.
 > 
-> What determines this.
-
-We have support for things like this already; see
-serial8250_get_divisor and UPF_MAGIC_MULTIPLIER.  In general you only
-want to change the sampling mode when you need it (i.e, for the high
-speed baud rates).
-
-> They should provide the basics.
+> devm_ioremap() is only in <linux/io.h> so fix up the
+> erroneous <asm/*> include as well.
 > 
-> > * I need to be able to enable 9-bit mode, what they call Normal
-> > Multi-drop as well as the Auto Address Detection Mode used in
-> > conjunction with the Multi-drop mode.
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 25 +++++++++----------------
+>  1 file changed, 9 insertions(+), 16 deletions(-)
 > 
-> That may actually be the most "fun" bit - the entire Linux tty layer is
-> devoutly 5-8bit, although people do some horrible hacks with  "8 plus
-> parity".
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index d7e1ede..7fca402 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -56,8 +56,7 @@
+>  #include <linux/of_device.h>
+>  #include <linux/pinctrl/consumer.h>
+>  #include <linux/sizes.h>
+> -
+> -#include <asm/io.h>
+> +#include <linux/io.h>
+>  
+>  #define UART_NR			14
+>  
+> @@ -1973,7 +1972,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  		goto out;
+>  	}
+>  
+> -	uap = kzalloc(sizeof(struct uart_amba_port), GFP_KERNEL);
+> +	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
+> +			   GFP_KERNEL);
+>  	if (uap == NULL) {
+>  		ret = -ENOMEM;
+>  		goto out;
+> @@ -1981,16 +1981,17 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  
+>  	i = pl011_probe_dt_alias(i, &dev->dev);
+>  
+> -	base = ioremap(dev->res.start, resource_size(&dev->res));
+> +	base = devm_ioremap(&dev->dev, dev->res.start,
+> +			    resource_size(&dev->res));
+>  	if (!base) {
+>  		ret = -ENOMEM;
+> -		goto free;
+> +		goto out;
+>  	}
+>  
+>  	uap->pinctrl = devm_pinctrl_get(&dev->dev);
+>  	if (IS_ERR(uap->pinctrl)) {
+>  		ret = PTR_ERR(uap->pinctrl);
+> -		goto unmap;
+> +		goto out;
+>  	}
+>  	uap->pins_default = pinctrl_lookup_state(uap->pinctrl,
+>  						 PINCTRL_STATE_DEFAULT);
+> @@ -2002,10 +2003,10 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  	if (IS_ERR(uap->pins_sleep))
+>  		dev_dbg(&dev->dev, "could not get sleep pinstate\n");
+>  
+> -	uap->clk = clk_get(&dev->dev, NULL);
+> +	uap->clk = devm_clk_get(&dev->dev, NULL);
+>  	if (IS_ERR(uap->clk)) {
+>  		ret = PTR_ERR(uap->clk);
+> -		goto unmap;
+> +		goto out;
+>  	}
+>  
+>  	uap->vendor = vendor;
+> @@ -2038,11 +2039,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  		amba_set_drvdata(dev, NULL);
+>  		amba_ports[i] = NULL;
+>  		pl011_dma_remove(uap);
+> -		clk_put(uap->clk);
+> - unmap:
+> -		iounmap(base);
+> - free:
+> -		kfree(uap);
+>  	}
+>   out:
+>  	return ret;
+> @@ -2062,9 +2058,6 @@ static int pl011_remove(struct amba_device *dev)
+>  			amba_ports[i] = NULL;
+>  
+>  	pl011_dma_remove(uap);
+> -	iounmap(uap->port.membase);
+> -	clk_put(uap->clk);
+> -	kfree(uap);
+>  	return 0;
+>  }
+>  
 
-That's what is actually recommended by the Exar application note;
-since setting the 9th bit is only used for indicating that the lower 8
-bits is the "address" bit for demultiplexing destination "drop", you
-don't need to do it very often compared to the data bytes.  So
-toggling the parity bit is the best way to deal with the fact you can
-only use outb to send 8 bits.
+Tested-by: Domenico Andreoli <domenico.andreoli@linux.com>
 
-						- Ted
-
+Thanks,
+Domenido
