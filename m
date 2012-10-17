@@ -1,161 +1,113 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: [REPOST] tty: Use raw spin lock to protect TTY ldisc administration
-Date: Wed, 17 Oct 2012 14:03:14 +0200
-Message-ID: <1350475394-3747-1-git-send-email-meltedpianoman@gmail.com>
-References: <1348149928-4681-1-git-send-email-meltedpianoman@gmail.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: New serial card development
+Date: Wed, 17 Oct 2012 15:23:45 -0500
+Message-ID: <CAJp1Oe7zyDh9w7Nc-xtbPQrbg7FEBr73QmYh_er3UX53KcGL8A@mail.gmail.com>
+References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk> <CAJp1Oe6k7NWqdbYkJnd787JiT55-wSbG+tX1tP7Cy-oPShdVaA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <1348149928-4681-1-git-send-email-meltedpianoman@gmail.com>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Steven Rostedt <rostedt@goodmis.org>
-Cc: Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Ivo Sieben <meltedpianoman@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:39901 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753279Ab2JQUYH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Oct 2012 16:24:07 -0400
+Received: by mail-vb0-f46.google.com with SMTP id ff1so7844338vbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 17 Oct 2012 13:24:06 -0700 (PDT)
+In-Reply-To: <CAJp1Oe6k7NWqdbYkJnd787JiT55-wSbG+tX1tP7Cy-oPShdVaA@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-The global "normal" spin lock that guards the line discipline
-administration is replaced by a raw spin lock. On a PREEMPT_RT system this
-prevents unwanted scheduling overhead around the line discipline administration.
-
-On a 200 MHz AT91SAM9261 processor setup this fixes about 100us of scheduling
-overhead on a TTY read or write call.
-
-Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
----
-
- Repost:
-
- @Thomas Gleixner & Steven Rostedt:
- I think this patch makes sense... a global spin lock causes additional
- scheduling overhead. Since the critical section is small a raw spinlock
- can be used here.
-
- I tested this on a 3.0.43-rt65 kernel, with the following Kernel Hacking
- options enabled:
- - CONFIG_DEBUG_RT_MUTEXES
- - CONFIG_DEBUG_SPINLOCK
- - CONFIG_DEBUG_MUTEXES
- - CONFIG_DEBUG_LOCK_ALLOC
- - CONFIG_PROVE_LOCKING
- - CONFIG_DEBUG_SPINLOCK_SLEEP
-
- drivers/tty/tty_ldisc.c |   32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 0f2a2c5..4eb24b1 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -26,7 +26,7 @@
-  *	callers who will do ldisc lookups and cannot sleep.
-  */
- 
--static DEFINE_SPINLOCK(tty_ldisc_lock);
-+static DEFINE_RAW_SPINLOCK(tty_ldisc_lock);
- static DECLARE_WAIT_QUEUE_HEAD(tty_ldisc_wait);
- /* Line disc dispatch table */
- static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
-@@ -49,21 +49,21 @@ static void put_ldisc(struct tty_ldisc *ld)
- 	 * If this is the last user, free the ldisc, and
- 	 * release the ldisc ops.
- 	 *
--	 * We really want an "atomic_dec_and_lock_irqsave()",
-+	 * We really want an "atomic_dec_and_raw_lock_irqsave()",
- 	 * but we don't have it, so this does it by hand.
- 	 */
--	local_irq_save(flags);
--	if (atomic_dec_and_lock(&ld->users, &tty_ldisc_lock)) {
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	if (atomic_dec_and_test(&ld->users)) {
- 		struct tty_ldisc_ops *ldo = ld->ops;
- 
- 		ldo->refcount--;
- 		module_put(ldo->owner);
--		spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+		raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 
- 		kfree(ld);
- 		return;
- 	}
--	local_irq_restore(flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 	wake_up(&ld->wq_idle);
- }
- 
-@@ -88,11 +88,11 @@ int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc)
- 	if (disc < N_TTY || disc >= NR_LDISCS)
- 		return -EINVAL;
- 
--	spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
- 	tty_ldiscs[disc] = new_ldisc;
- 	new_ldisc->num = disc;
- 	new_ldisc->refcount = 0;
--	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 
- 	return ret;
- }
-@@ -118,12 +118,12 @@ int tty_unregister_ldisc(int disc)
- 	if (disc < N_TTY || disc >= NR_LDISCS)
- 		return -EINVAL;
- 
--	spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
- 	if (tty_ldiscs[disc]->refcount)
- 		ret = -EBUSY;
- 	else
- 		tty_ldiscs[disc] = NULL;
--	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 
- 	return ret;
- }
-@@ -134,7 +134,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
- 	unsigned long flags;
- 	struct tty_ldisc_ops *ldops, *ret;
- 
--	spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
- 	ret = ERR_PTR(-EINVAL);
- 	ldops = tty_ldiscs[disc];
- 	if (ldops) {
-@@ -144,7 +144,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
- 			ret = ldops;
- 		}
- 	}
--	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 	return ret;
- }
- 
-@@ -152,10 +152,10 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
- 	ldops->refcount--;
- 	module_put(ldops->owner);
--	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- }
- 
- /**
-@@ -287,11 +287,11 @@ static struct tty_ldisc *tty_ldisc_try(struct tty_struct *tty)
- 	unsigned long flags;
- 	struct tty_ldisc *ld;
- 
--	spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
- 	ld = NULL;
- 	if (test_bit(TTY_LDISC, &tty->flags))
- 		ld = get_ldisc(tty->ldisc);
--	spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- 	return ld;
- }
- 
--- 
-1.7.9.5
+Forgot to reply to all.
+---------- Forwarded message ----------
+From: Matt Schulte <matts@commtech-fastcom.com>
+Date: Wed, Oct 17, 2012 at 2:10 PM
+Subject: Re: New serial card development
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 
 
+On Mon, Oct 15, 2012 at 6:26 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> That sounds reasonable but I am not sure what you mean my the "method
+>> documented in the Exar data sheet."  I've been through this thing
+>> quite a bit and I don't see anything about how one might detect the
+>> ports without the PCI id numbers.  Could you explain what you mean by
+>> this?
+>
+> I don't believe you can identify the new Exars except by PCI id - which
+> is fine as the type can be passed via the 8250_pci driver.
+>
+>> * This new Exar UART does not use a crystal it uses a clock from the
+>> PCI Express bus.  Also it has a fractional divisor that gets them
+>> 1/16th (0.0625) resolution on their divisors.  The normal DLL and DLM
+>> registers contain the integer part of the divisor and the DLD register
+>> provides the fractional component.  The divisor is able to be set to
+>> anything between 1 and (2^16 - 0.0625) in increments of 0.0625.
+>
+> That probably needs a bit of tweaking to getthe best results
+
+Does this make you lean one way or the other in how I would best
+implement this driver?
+
+>> * These UARTs have 256 byte FIFOs per port per direction.  I would
+>> like to utilize these to their fullest potential.
+>
+> We already handle other similar fifos so again in theory you just need to
+> set the size and it works.
+
+Good, I'm sure it will be fine ;)
+
+>> * I need to toggle 16-bit general purpose IO signals to control two
+>> things on my card: Receive Echo Cancel (useful for 2-wire 485) and the
+>> selectable termination resistance on my receiver chips.
+>
+> Ok - we don't have a generalized way of doing that in the RS485 bits but
+> anything liek this should get added generically (in case other chips want
+> to do it)
+
+I have two features, one that could be considered part of RS485 and
+one that has nothing at all to do with RS485.
+
+>> * I need to change two UART specific registers to change the sampling
+>> mode (16x, 8x and 4x).
+>
+> What determines this.
+
+User would have to decide to turn on non-standard 8x or 4x sampling mode.
+
+>> * I need to figure out if the new RS485 elements that have been added
+>> to 8250 can be used on these Exar parts and if not I need something
+>> that can enable RS485 for us.
+>
+> They should provide the basics.
+
+Where will I take the built in 485 flags and turn them into whatever
+my board needs?
+
+>> * I need to be able to enable 9-bit mode, what they call Normal
+>> Multi-drop as well as the Auto Address Detection Mode used in
+>> conjunction with the Multi-drop mode.
+>
+> That may actually be the most "fun" bit - the entire Linux tty layer is
+> devoutly 5-8bit, although people do some horrible hacks with  "8 plus
+> parity".
+
+Transmitting is a little bit interesting but manageable.  In the
+receive direction the chip can detect the 9th bit and recognize it as
+an address bit and then check that byte against a preset station
+address that has been specified by the user.
+
+>> With this laundry list of items that I would like to include, do you
+>> still feel like this is something that should be included in the
+>> kernel's 8250.c/8250_pci.c drivers?
+>
+> I think so. It's also the path that lets you do basic enabling, get
+> it working upstream and then extend as is needed for the other features.
+
+So is there an example of a device already in the kernel that you
+think I should try to emulate? Will I be best served with something
+like 8250_dw.c or do you think I should try to get all of my things
+directly into 8250 and 8250_pci?
+
+Matt Schulte
