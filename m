@@ -1,84 +1,74 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY patches for 3.7-rc2
-Date: Fri, 19 Oct 2012 11:26:22 -0700
-Message-ID: <20121019182622.GA32140@kroah.com>
+From: Theodore Ts'o <tytso@mit.edu>
+Subject: Re: New serial card development
+Date: Fri, 19 Oct 2012 17:21:58 -0400
+Message-ID: <20121019212158.GB4721@thunk.org>
+References: <5074703E.408@commtech-fastcom.com>
+ <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk>
+ <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:41963 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756035Ab2JSS00 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Oct 2012 14:26:26 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so556921pad.19
-        for <linux-serial@vger.kernel.org>; Fri, 19 Oct 2012 11:26:26 -0700 (PDT)
+Received: from li9-11.members.linode.com ([67.18.176.11]:56359 "EHLO
+	imap.thunk.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754746Ab2JSVWF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Oct 2012 17:22:05 -0400
 Content-Disposition: inline
+In-Reply-To: <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Matt Schulte <matts@commtech-fastcom.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-The following changes since commit ddffeb8c4d0331609ef2581d84de4d763607bd37:
+On Wed, Oct 17, 2012 at 03:24:06PM -0500, Matt Schulte wrote:
+> 
+> What I would need to have happen is for a flag to be set that says
+> "enable 9-bit mode transmit" or something.  When set, the first byte
+> of data of a given write will go out with mark parity, then the rest
+> of the bytes will have space parity.  The one byte with mark is the
+> address byte.
 
-  Linux 3.7-rc1 (2012-10-14 14:41:04 -0700)
+Why not just have a userspace library routine which simply uses
+tcgetattr/tcsetattr to toggle a bit (probably a new bit in c_cflag) in
+struct termios, issue the single byte write, and then toggle the bit
+back?
 
-are available in the git repository at:
+If you really want to implement a special case "the first byte should
+treated differently from the rest", that gets problemtic for a number
+of reasons.  First of all, it's just a lot more kernel code; you'd
+probably need to implement a new line displine, and secondly, if
+userspace sends too much data so that it can't fit in the kernel
+buffer, you might get a partial write.  In which case, when you send a
+second write call to send the rest of the data, you'd have to go
+through extra work to make sure the first byte of that second,
+follow-up byte doesn't have the high 9th bit set.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.7-rc1
+Of course, you could hack in even more changes to make the write
+system call behave entirely differently in your magic "9th bit mode",
+where the write system call becomes a "all or nothing" sort of thing,
+but that's even more evil hackery that almost certainly would be
+rejected with extreme prejudice by the kernel maintainers.
 
-for you to fetch changes up to 178e485a0ebbfdb7165b4363d8fea2a07d650c0b:
+In Linux, system calls are fast, so using some extra ioctl's to toggle
+the termios structure is probably the way to go.  It's also much more
+general since it doesn't presume a very specific protocol (i.e., your
+magic multi-drop protocol).
 
-  staging: dgrp: check return value of alloc_tty_driver (2012-10-17 14:10:10 -0700)
+> In the receive direction I would need to optionally enable a station
+> address which the chip will use to verify all incoming data and will
+> reject anything that is not of the appropriate address.
 
-----------------------------------------------------------------
-TTY fixes for 3.7-rc2
+For the receive direction, my suggestion is to encode it as an
+extension for how PARMRK does things, and then leave the parsing of
+the address bits to userspace.  Otherwise you'll end up needing to
+make the kernel know what are "appropriate" addresses, which again is
+a lot of very protocol specific knowledge that you would have to push
+into the kernel.
 
-Here are some tty and serial driver fixes for your 3.7-rc1 tree.
+Alan's advice to get your card working as a basic serial card is very
+good one.  Get basic functionality working, and then you can add the
+support for the extra bits later....
 
-Again, the UABI header file fixes, and a number of build and runtime serial
-driver bugfixes that solve problems people have been reporting (the staging
-driver is a tty driver, hence the fixes coming in through this tree.)
-
-All of these have been in the linux-next tree for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alexander Shiyan (1):
-      serial: sccnxp: Allows the driver to be compiled as a module
-
-Bill Pemberton (2):
-      staging: dgrp: check for NULL pointer in (un)register_proc_table
-      staging: dgrp: check return value of alloc_tty_driver
-
-David Howells (1):
-      UAPI: (Scripted) Disintegrate include/linux/hsi
-
-Geert Uytterhoeven (2):
-      staging: serial: dgrp: Add missing #include <linux/uaccess.h>
-      serial/8250_hp300: Missing 8250 register interface conversion bits
-
-Greg Kroah-Hartman (3):
-      tty: serial: sccnxp: Fix bug with unterminated platform_id list
-      Merge 3.7-rc1 into tty-linus
-      Merge tag 'disintegrate-tty-20121009' of git://git.infradead.org/users/dhowells/linux-headers into tty-linus
-
-Markus Trippelsdorf (1):
-      tty: Fix bogus "callbacks suppressed" messages
-
-Sasha Levin (1):
-      net, TTY: initialize tty->driver_data before usage
-
- drivers/staging/dgrp/dgrp_mon_ops.c     |  1 +
- drivers/staging/dgrp/dgrp_specproc.c    |  7 +++++++
- drivers/staging/dgrp/dgrp_tty.c         | 10 ++++++++++
- drivers/tty/serial/8250/8250_hp300.c    | 20 ++++++++++----------
- drivers/tty/serial/Kconfig              |  4 ++--
- drivers/tty/serial/sccnxp.c             |  1 +
- include/linux/hsi/Kbuild                |  1 -
- include/linux/ratelimit.h               | 27 +++++++++------------------
- include/uapi/linux/hsi/Kbuild           |  1 +
- include/{ => uapi}/linux/hsi/hsi_char.h |  0
- net/irda/ircomm/ircomm_tty.c            |  2 ++
- 11 files changed, 43 insertions(+), 31 deletions(-)
- rename include/{ => uapi}/linux/hsi/hsi_char.h (100%)
+						- Ted
