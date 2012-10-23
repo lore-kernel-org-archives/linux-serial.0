@@ -1,58 +1,138 @@
-From: Fengguang Wu <fengguang.wu@intel.com>
-Subject: Re: [tty:tty-next 15/23] drivers/staging/dgrp/dgrp_net_ops.c:216:27:
- error: 'struct tty_struct' has no member named 'real_raw'
-Date: Tue, 23 Oct 2012 11:54:59 +0800
-Message-ID: <20121023035459.GA21181@localhost>
-References: <20121023022545.GG6830@localhost>
- <20121023030543.GB22018@kroah.com>
+From: chao bi <chao.bi@intel.com>
+Subject: Subject: [PATCH] serial:ifx6x60:add swap_buf_32 function in case
+ SPI word width is 32 bits
+Date: Tue, 23 Oct 2012 16:32:50 +0800
+Message-ID: <1350981170.18855.83.camel@bichao>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:58113 "EHLO mga14.intel.com"
+Received: from mga14.intel.com ([143.182.124.37]:29361 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755308Ab2JWDzM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Oct 2012 23:55:12 -0400
-Content-Disposition: inline
-In-Reply-To: <20121023030543.GB22018@kroah.com>
+	id S1756657Ab2JWISb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Oct 2012 04:18:31 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Yuanhan Liu <yuanhan.liu@linux.intel.com>, linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, jun.d.chen@intel.com, chuansheng.liu@intel.com
 
-On Mon, Oct 22, 2012 at 08:05:43PM -0700, Greg KH wrote:
-> On Tue, Oct 23, 2012 at 10:25:45AM +0800, Fengguang Wu wrote:
-> > Hi Jiri,
-> > 
-> > FYI, kernel build failed on
-> > 
-> > tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-> > head:   ecbbfd44a08fa80e0d664814efd4c187721b85f6
-> > commit: 53c5ee2cfb4dadc4f5c24fe671e2fbfc034c875e [15/23] TTY: move ldisc data from tty_struct: simple members
-> > config: x86_64-allmodconfig # make ARCH=x86_64 allmodconfig
-> > 
-> > All error/warnings:
-> > 
-> > drivers/staging/dgrp/dgrp_net_ops.c: In function 'dgrp_input':
-> > drivers/staging/dgrp/dgrp_net_ops.c:216:27: error: 'struct tty_struct' has no member named 'real_raw'
-> > drivers/staging/dgrp/dgrp_net_ops.c:261:30: error: 'struct tty_struct' has no member named 'real_raw'
-> > drivers/staging/dgrp/dgrp_net_ops.c:276:28: error: 'struct tty_struct' has no member named 'real_raw'
-> > 
-> > vim +216 drivers/staging/dgrp/dgrp_net_ops.c
-> > 
-> > 0b52b749 Bill Pemberton 2012-09-20  215  	/* Decide how much data we can send into the tty layer */
-> > 0b52b749 Bill Pemberton 2012-09-20 @216  	if (dgrp_rawreadok && tty->real_raw)
-> > 0b52b749 Bill Pemberton 2012-09-20  217  		flip_len = MYFLIPLEN;
-> > 0b52b749 Bill Pemberton 2012-09-20  218  	else
-> > 0b52b749 Bill Pemberton 2012-09-20  219  		flip_len = TTY_FLIPBUF_SIZE;
-> 
-> 
-> Thanks for this, and the other report, I already pointed them out to
-> Jiri and hopefully will get a patch from him when he returns from the
-> openSUSE conference.
 
-OK, thanks for the info. BTW, expect another related error:
+SPI protocol driver only provide one function (swap_buf()) to swap SPI data
+into big endian format, which is only available when SPI controller's word width
+is 16 bits. But per our experiment and validation on medfield platform, 16 bit
+word width cannot cover all scenarioes, 32 bits word width is a better choice
+to avoid SPI FIFO overrun. Therefore, SPI controller is likely to configure its
+word width as either 16 bits or 32 bits. This patch is to implement 2 functions
+(swap_buf_16() and swap_buf_32()) to adapt the two configurations.
 
-arch/um/drivers/chan_kern.c:89:42: error: 'struct tty_struct' has no member named 'raw'
+cc: liu chuansheng <chuansheng.liu@intel.com>
+cc: Chen Jun <jun.d.chen@intel.com>
+Signed-off-by: channing <chao.bi@intel.com>
+---
+ drivers/tty/serial/ifx6x60.c |   51 +++++++++++++++++++++++++++++++++--------
+ 1 files changed, 41 insertions(+), 10 deletions(-)
 
-Thanks,
-Fengguang
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 5b9bc19..ad718ec 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -151,29 +151,60 @@ ifx_spi_power_state_clear(struct ifx_spi_device *ifx_dev, unsigned char val)
+ 	spin_unlock_irqrestore(&ifx_dev->power_lock, flags);
+ }
+ 
++#ifdef SPI_CONTROLLER_USE_32_BITS_PER_WORD
++#define SWAP_BUF swap_buf_32
+ /**
+- *	swap_buf
++ *	swap_buf_32
+  *	@buf: our buffer
+  *	@len : number of bytes (not words) in the buffer
+  *	@end: end of buffer
+  *
+  *	Swap the contents of a buffer into big endian format
+  */
+-static inline void swap_buf(u16 *buf, int len, void *end)
++static inline void swap_buf_32(unsigned char *buf, int len, void *end)
+ {
+ 	int n;
+ 
++	u32 *buf_32 = (u32 *)buf;
++	len = (0 == (len&0x03)) ? (len >> 2) : ((len >> 2) + 1);
++
++	if ((void *)&buf_32[len] > end) {
++		pr_err("swap_buf_32: swap exceeds boundary (%p > %p)!\n",
++		       &buf_32[len], end);
++		return;
++	}
++	for (n = 0; n < len; n++) {
++		*buf_32 = cpu_to_be32(*buf_32);
++		buf_32++;
++	}
++}
++#else
++#define SWAP_BUF swap_buf_16
++/**
++ *	swap_buf_16
++ *	@buf: our buffer
++ *	@len : number of bytes (not words) in the buffer
++ *	@end: end of buffer
++ *
++ *	Swap the contents of a buffer into big endian format
++ */
++static inline void swap_buf_16(unsigned char *buf, int len, void *end)
++{
++	int n;
++
++	u16 *buf_16 = (u16 *)buf;
+ 	len = ((len + 1) >> 1);
+-	if ((void *)&buf[len] > end) {
+-		pr_err("swap_buf: swap exceeds boundary (%p > %p)!",
+-		       &buf[len], end);
++	if ((void *)&buf_16[len] > end) {
++		pr_err("swap_buf_16: swap exceeds boundary (%p > %p)!",
++		       &buf_16[len], end);
+ 		return;
+ 	}
+ 	for (n = 0; n < len; n++) {
+-		*buf = cpu_to_be16(*buf);
+-		buf++;
++		*buf_16 = cpu_to_be16(*buf_16);
++		buf_16++;
+ 	}
+ }
++#endif
+ 
+ /**
+  *	mrdy_assert		-	assert MRDY line
+@@ -449,7 +480,7 @@ static int ifx_spi_prepare_tx_buffer(struct ifx_spi_device *ifx_dev)
+ 					tx_count-IFX_SPI_HEADER_OVERHEAD,
+ 					ifx_dev->spi_more);
+ 	/* swap actual data in the buffer */
+-	swap_buf((u16 *)(ifx_dev->tx_buffer), tx_count,
++	SWAP_BUF((ifx_dev->tx_buffer), tx_count,
+ 		&ifx_dev->tx_buffer[IFX_SPI_TRANSFER_SIZE]);
+ 	return tx_count;
+ }
+@@ -617,7 +648,7 @@ static void ifx_spi_complete(void *ctx)
+ 
+ 	if (!ifx_dev->spi_msg.status) {
+ 		/* check header validity, get comm flags */
+-		swap_buf((u16 *)ifx_dev->rx_buffer, IFX_SPI_HEADER_OVERHEAD,
++		SWAP_BUF(ifx_dev->rx_buffer, IFX_SPI_HEADER_OVERHEAD,
+ 			&ifx_dev->rx_buffer[IFX_SPI_HEADER_OVERHEAD]);
+ 		decode_result = ifx_spi_decode_spi_header(ifx_dev->rx_buffer,
+ 				&length, &more, &cts);
+@@ -636,7 +667,7 @@ static void ifx_spi_complete(void *ctx)
+ 
+ 		actual_length = min((unsigned int)length,
+ 					ifx_dev->spi_msg.actual_length);
+-		swap_buf((u16 *)(ifx_dev->rx_buffer + IFX_SPI_HEADER_OVERHEAD),
++		SWAP_BUF((ifx_dev->rx_buffer + IFX_SPI_HEADER_OVERHEAD),
+ 			 actual_length,
+ 			 &ifx_dev->rx_buffer[IFX_SPI_TRANSFER_SIZE]);
+ 		ifx_spi_insert_flip_string(
+-- 
+1.7.1
+
+
+
