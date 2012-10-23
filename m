@@ -1,45 +1,120 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH-v3] tty: prevent unnecessary work queue lock checking on
- flip buffer copy
-Date: Mon, 22 Oct 2012 16:47:46 -0700
-Message-ID: <20121022234746.GA12743@kroah.com>
-References: <1348747101-13462-1-git-send-email-meltedpianoman@gmail.com>
- <1348747325-13539-1-git-send-email-meltedpianoman@gmail.com>
+From: Min Zhang <mzhang@mvista.com>
+Subject: [PATCH] serial: 8250 check iir rdi in interrupt
+Date: Mon, 22 Oct 2012 17:19:06 -0700 (PDT)
+Message-ID: <alpine.LFD.2.02.1210221633450.28146@nightowl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:48141 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751778Ab2JVXru (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Oct 2012 19:47:50 -0400
-Received: by mail-pb0-f46.google.com with SMTP id rr4so2458pbb.19
-        for <linux-serial@vger.kernel.org>; Mon, 22 Oct 2012 16:47:49 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1348747325-13539-1-git-send-email-meltedpianoman@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
 
-On Thu, Sep 27, 2012 at 02:02:05PM +0200, Ivo Sieben wrote:
-> When low_latency flag is set the TTY receive flip buffer is copied to the
-> line discipline directly instead of using a work queue in the background.
-> Therefor only in case a workqueue is actually used for copying data to the
-> line discipline we'll have to flush the workqueue.
-> 
-> This prevents unnecessary spin lock/unlock on the workqueue spin lock that
-> can cause additional scheduling overhead on a PREEMPT_RT system. On a 200
-> MHz AT91SAM9261 processor setup this fixes about 100us of scheduling
-> overhead on the TTY read call.
-> 
-> Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
+The patch works around two UART interrupt bugs when the serial console is 
+flooded with inputs:
+1. syslog shows "serial8250: too much works for irq"
+2. serial console stops responding to key stroke
 
-Note, I took out the WARN_ON() in this patch, as what is that really
-going to help here?  It also will conflict with a patch from Jiri I'll
-ba applying after this one, so if you think it's needed, care to send a
-follow-on patch based on linux-next in a few days?
+serial8250_handle_irq() checks UART_IIR_RDI before reading receive fifo
+and clears bogus interrupt UART_IIR_RDI without accompanying UART_LSR_DR,
+otherwise RDI interrupt could freeze or too many unhandled RDI interrupts.
 
-thanks,
+Added module parameter skip_rdi_check to opt out this workaround.
 
-greg k-h
+Tested on Radisys ATCA 46XX which uses FPGA 16550-compatible and
+other generic 16550 UART. It takes from an hour to days to reproduce by
+pumping inputs to serial console continously using TeraTerm script:
+
+---
+  drivers/tty/serial/8250/8250.c |   55 ++++++++++++++++++++++++++++++++++++++++
+  1 files changed, 55 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 3ba4234..838dd22 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -64,6 +64,7 @@ static int serial_index(struct uart_port *port)
+  }
+
+  static unsigned int skip_txen_test; /* force skip of txen test at init time */
++static unsigned int skip_rdi_check; /* skip of IIR RDI check in interrupt */
+
+  /*
+   * Debugging.
+@@ -1479,6 +1480,51 @@ unsigned int serial8250_modem_status(struct uart_8250_port *up)
+  EXPORT_SYMBOL_GPL(serial8250_modem_status);
+
+  /*
++ * Check if status UART_LSR_RD accompanies with interrupt UART_IIR_RDI.
++ * If they are mismatch, massage the status or interupt cause accordingly:
++ *
++ * Return a cleared UART_LSR_RD status if there is no accompanying
++ * UART_IIR_RDI. Hopefully the new status is used by interrupt handler
++ * to skip reading receive FIFO. Otherwise some UART controller stops
++ * generating RDI interrupt after this unnotified FIFO read, until other
++ * interrupts maybe transmit interrupt reads UART_LSR again.
++ *
++ * Or clear interrupt cause UART_IIR_RDI without UART_LSR_RD. The UART sets
++ * UART_IIR_RDI *even* if the received data has been read out from the FIFO
++ * before the timeout occurs.  To clear UART_IIR_RDI, read receive buffer
++ * register. Reading it also clears timeout interrupt for 16550+. Otherwise
++ * the uncleared UART_IIR_RDI will keep triggering IRQ but interrupt
++ * handler finds nothing to do.
++ *
++ * Skip this workaround if interrupt is not expected, such as backup timer,
++ * so that handler can still solely rely on original status register.
++ */
++static unsigned char serial8250_iir_rdi_check(struct uart_8250_port *up,
++					     unsigned char status,
++					     unsigned int iir)
++{
++	unsigned int ier, rdi_stat, rdi_intr;
++
++	/* skip for handler without interrupt */
++	if (!up->port.irq)
++		return status;
++
++	/* skip for polling handler such as backup timer */
++	ier = serial_in(up, UART_IER);
++	if (!(ier & UART_IER_RDI))
++		return status;
++
++	rdi_stat = status & UART_LSR_DR;
++	rdi_intr = iir & UART_IIR_RDI;
++
++	if (rdi_stat && !rdi_intr)
++		status &= ~UART_LSR_DR;
++	else if (!rdi_stat && rdi_intr)
++		serial_in(up, UART_RX);
++	return status;
++}
++
++/*
+   * This handles the interrupt from one port.
+   */
+  int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+@@ -1497,6 +1543,12 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+
+  	DEBUG_INTR("status = %x...", status);
+
++	/* Some UART controller has mismatched UART_IIR_RDI and UART_LSR_DR,
++	   which causes either too many interrupts or interrupt freeze
++	 */
++	if (!skip_rdi_check)
++		status = serial8250_iir_rdi_check(up, status, iir);
++
+  	if (status & (UART_LSR_DR | UART_LSR_BI))
+  		status = serial8250_rx_chars(up, status);
+  	serial8250_modem_status(up);
+@@ -3338,6 +3390,9 @@ MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STR
+  module_param(skip_txen_test, uint, 0644);
+  MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
+
++module_param(skip_rdi_check, uint, 0644);
++MODULE_PARM_DESC(skip_rdi_check, "Skip checking IIR RDI bug in interrupt");
++
+  #ifdef CONFIG_SERIAL_8250_RSA
+  module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
+  MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+-- 
+1.7.7.4
