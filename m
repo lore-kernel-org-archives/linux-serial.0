@@ -1,81 +1,108 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: New serial card development
-Date: Tue, 23 Oct 2012 11:27:10 -0500
-Message-ID: <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
-References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
- <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
- <20121016002608.64b33de5@pyramind.ukuu.org.uk> <20121016023226.GA17446@thunk.org>
- <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com> <20121019212158.GB4721@thunk.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 0/1] staging: Add firewire-serial driver
+Date: Tue, 23 Oct 2012 12:30:22 -0400
+Message-ID: <1351009822.2621.158.camel@thor>
+References: <1350565015.23730.4.camel@thor>
+	 <20121022224505.GD24489@kroah.com> <1350959679.2621.55.camel@thor>
+	 <20121023105140.5996c3a5@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:57829 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757212Ab2JWQ1c (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2012 12:27:32 -0400
-Received: by mail-vb0-f46.google.com with SMTP id ff1so4464304vbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 09:27:31 -0700 (PDT)
-In-Reply-To: <20121019212158.GB4721@thunk.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20121023105140.5996c3a5@pyramind.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stefan Richter <stefanr@s5r6.in-berlin.de>, devel@driverdev.osuosl.org, linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
-> On Wed, Oct 17, 2012 at 03:24:06PM -0500, Matt Schulte wrote:
->>
->> What I would need to have happen is for a flag to be set that says
->> "enable 9-bit mode transmit" or something.  When set, the first byte
->> of data of a given write will go out with mark parity, then the rest
->> of the bytes will have space parity.  The one byte with mark is the
->> address byte.
->
-> Why not just have a userspace library routine which simply uses
-> tcgetattr/tcsetattr to toggle a bit (probably a new bit in c_cflag) in
-> struct termios, issue the single byte write, and then toggle the bit
-> back?
+[cc'ing linux-serial]
 
-> In Linux, system calls are fast, so using some extra ioctl's to toggle
-> the termios structure is probably the way to go.  It's also much more
-> general since it doesn't presume a very specific protocol (i.e., your
-> magic multi-drop protocol).
+On Tue, 2012-10-23 at 10:51 +0100, Alan Cox wrote:
+> > 1. The ldisc drops the contents of tty_buffer on hangup (rather than
+> > waiting for completion). Maybe for other devices this isn't so
+> > noticeable because the ldisc can mostly keep up with the device, but on
+> > firewire the ldisc lags well behind. Right now, this driver works around
+> > this by holding off the hangup until the ldisc empties the tty_buffer.
+> > The driver determines how much data is still left in the tty_buffer by
+> > walking the flip buffers.
+> 
+> The driver should not be trying to look at this, so it's good that it
+> broke now. If you need it to process the data on then hangup then the
+> core code wants fixing to allow this to occur.
 
-The only reason that I could come up with as to why not to do that is
-the probably delay between the first byte and the second byte.
-Perhaps the system calls will be so quick that this delay won't be an
-issue.  Other than that I think that a new bit in c_cflag would be a
-pretty decent solution.
+Sorry. I assumed not waiting for ldisc completion on hangup was
+architectural.
 
-Also this isn't a magic protocol, it is a very old protocol that is
-apparently still in use today because I have several customers still
-asking for it.
+tty_ldisc_hangup() has this comment from '09:
 
->> In the receive direction I would need to optionally enable a station
->> address which the chip will use to verify all incoming data and will
->> reject anything that is not of the appropriate address.
->
-> For the receive direction, my suggestion is to encode it as an
-> extension for how PARMRK does things, and then leave the parsing of
-> the address bits to userspace.  Otherwise you'll end up needing to
-> make the kernel know what are "appropriate" addresses, which again is
-> a lot of very protocol specific knowledge that you would have to push
-> into the kernel.
+	/*
+	 * FIXME: Once we trust the LDISC code better we can wait here for
+	 * ldisc completion and fix the driver call race
+	 */
 
-The address is something that is decided by the user, it could
-literally be anything.  All I need is a way to write a byte to the
-appropriate UART register and a bit to turn it on and off.
+and then several lines below specifically stops emptying the tty_buffer:
 
-> Alan's advice to get your card working as a basic serial card is very
-> good one.  Get basic functionality working, and then you can add the
-> support for the extra bits later....
+	cancel_work_sync(&tty->buf.work);
 
-I can see the logic in getting it working as a basic serial card
-first.  I think at minimum I would still need to implement the extra
-divisor calculations to get accurate bit rates.
+But even earlier in tty_ldisc_hangup(), the ldisc has been flushed
+(which the n_tty ldisc interprets as a reset).
 
-So when it works as a basic serial card, I assume you would want me to
-use the default PCI IDs to keep it more generic.  Then would I add my
-own PCI IDs and refer them back to the generic port?
+> > 2. Because this driver can fill the entire tty_buffer (64K +) before the
+> > ldisc even runs once, this driver has to self-throttle when feeding the
+> > tty_buffer.
+> 
+> That wants investigating properly. We do multiple megabits quite happily
+> via the tty layer with 3G modems over USB. What is your data rate ?
 
-Matt
+The _slowest_ Firewire does 125 Mbits/sec using only the portion of the
+bus cycle assigned for async tx (which is what this driver uses). That's
+2Kbytes every 125us. Real world can be pretty close to that because
+Firewire uses autonomous DMA and most controllers allow spillover into
+the portion of bus cycle assigned for sync tx (which is another 4Kbytes
+per 125us).  (Technical note: the actual total max for combined async
+and sync tx is 6144 bytes per 125us clock)
+
+2Kbytes/125us = 16Kbytes/1ms = 160Kbytes/jiffy (for CONFIG_HZ_100)
+
+Some retail Firewire controllers do twice that, controllers in
+early-production do 4x that, and reportedly at least one prototype does
+8x that (although I haven't seen it or tested it).
+
+'cat /dev/fwtty0' using this driver gets considerably less that, but
+still enough to find this race.
+
+Ignoring for a moment the data rates, the throttling logic is racy
+because the ldisc sends the throttle from non-atomic context (so that
+termios can be locked and accessed) but the driver fills the tty_buffer
+from atomic context. In other words, the condition for which the ldisc
+will send a throttle (receive_room < TTY_THRESHOLD_THROTTLE) hasn't yet
+happened, but it will the next time receive_buf() runs.
+
+So, the best that tty_insert_flip_string_* can do is return an error
+that tty_buffer_alloc() refuses to allocate more than 64k. But the
+problem is this driver has data that __must__ go somewhere at that
+particular point in time. This driver could introduce another layer of
+buffering in front of this but that would defeat the purpose of even
+having tty_buffer in the first place.
+
+Checking how much space might be avail for future rx and throttling if
+too low seems like the natural solution here. Of course, directly
+peeking at tty_buffer is the wrong way to go about doing it. But what if
+that was properly exposed by tty_buffer, such as (adjusted for Jiri's
+recent changes):
+
+int tty_buffer_space_avail(struct tty_struct *tty)
+{
+	struct tty_port *port = tty->port;
+	struct tty_bufhead *buf = &port->buf;
+	unsigned long flags;
+	int avail;
+
+	spin_lock_irqsave(&buf->lock, flags);
+	avail = 65536 - buf.memory_used;  /* threshold used by tty_buffer_alloc() */
+	spin_unlock_irqrestore(&buf->lock, flags);
+	return avail;
+}
+
+Regards,
+Peter Hurley
