@@ -1,46 +1,51 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Subject: [PATCH] serial:ifx6x60:add swap_buf_32 function in
- case SPI word width is 32 bits
-Date: Tue, 23 Oct 2012 10:39:20 +0100
-Message-ID: <20121023103920.3bcb9159@pyramind.ukuu.org.uk>
-References: <1350981170.18855.83.camel@bichao>
+Subject: Re: [tty:tty-next 17/23] drivers/staging/dgrp/dgrp_net_ops.c:229:8:
+ error: 'struct tty_struct' has no member named 'read_cnt'
+Date: Tue, 23 Oct 2012 10:53:30 +0100
+Message-ID: <20121023105330.13d31938@pyramind.ukuu.org.uk>
+References: <20121023023054.GI6830@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:49891 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:49919 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932768Ab2JWJeW (ORCPT
+	with ESMTP id S932811Ab2JWJsb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2012 05:34:22 -0400
-In-Reply-To: <1350981170.18855.83.camel@bichao>
+	Tue, 23 Oct 2012 05:48:31 -0400
+In-Reply-To: <20121023023054.GI6830@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: chao bi <chao.bi@intel.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, jun.d.chen@intel.com, chuansheng.liu@intel.com
+To: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Yuanhan Liu <yuanhan.liu@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-> is 16 bits. But per our experiment and validation on medfield platform, 16 bit
-> word width cannot cover all scenarioes, 32 bits word width is a better choice
-> to avoid SPI FIFO overrun. Therefore, SPI controller is likely to configure its
-> word width as either 16 bits or 32 bits. This patch is to implement 2 functions
-> (swap_buf_16() and swap_buf_32()) to adapt the two configurations.
+On Tue, 23 Oct 2012 10:30:54 +0800
+Fengguang Wu <fengguang.wu@intel.com> wrote:
 
-And how will you get both to work with the same kernel, which is the way
-Linux wants to work (and avoids the nasty mess some other embedded
-platforms have gotten themselves into).
+> Hi Jiri,
+> 
+> FYI, kernel build failed on
+> 
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+> head:   ecbbfd44a08fa80e0d664814efd4c187721b85f6
+> commit: ba2e68ac6157004ee4922fb39ebd9459bbae883e [17/23] TTY: move ldisc data from tty_struct: read_* and echo_* and canon_* stuff
+> config: x86_64-allmodconfig # make ARCH=x86_64 allmodconfig
+> 
+> All error/warnings:
+> 
+> drivers/staging/dgrp/dgrp_net_ops.c: In function 'dgrp_input':
+> drivers/staging/dgrp/dgrp_net_ops.c:216:27: error: 'struct tty_struct' has no member named 'real_raw'
+> drivers/staging/dgrp/dgrp_net_ops.c:229:8: error: 'struct tty_struct' has no member named 'read_cnt'
+> drivers/staging/dgrp/dgrp_net_ops.c:229:8: error: 'struct tty_struct' has no member named 'read_cnt'
+> drivers/staging/dgrp/dgrp_net_ops.c:261:30: error: 'struct tty_struct' has no member named 'real_raw'
+> drivers/staging/dgrp/dgrp_net_ops.c:276:28: error: 'struct tty_struct' has no member named 'real_raw'
+> 
+> vim +229 drivers/staging/dgrp/dgrp_net_ops.c
+> 
+> 0b52b749 Bill Pemberton 2012-09-20  228  	/* take into consideration length of ldisc */
+> 0b52b749 Bill Pemberton 2012-09-20 @229  	len = min(len, (N_TTY_BUF_SIZE - 1) - tty->read_cnt);
 
-What you probably want to do is is put a 16/32bit flag into the platform
-data and then in ifx_spi_spi_probe() just do
-
-
-	if (pl_data->spi_32)
-		ifx_dev->swap = swap_buf_32;
-	else
-		ifx_dev->swap = swap_buf;
-
-
-then call
-
-	ifx_dev->swap_buf()
+This is broken and unsafe. It's always been broken and unsafe. Probably
+the report wants directing to whoever signed up to fix it all in staging.
 
 Alan
