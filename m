@@ -1,7 +1,7 @@
-From: Greg KH <greg@kroah.com>
+From: Grant Edwards <grant.b.edwards@gmail.com>
 Subject: Re: New serial card development
-Date: Tue, 23 Oct 2012 11:38:59 -0700
-Message-ID: <20121023183859.GA3317@kroah.com>
+Date: Tue, 23 Oct 2012 18:45:51 +0000 (UTC)
+Message-ID: <k66okv$811$1@ger.gmane.org>
 References: <5074703E.408@commtech-fastcom.com>
  <20121014093704.GA6207@thunk.org>
  <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
@@ -10,46 +10,57 @@ References: <5074703E.408@commtech-fastcom.com>
  <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
  <20121019212158.GB4721@thunk.org>
  <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
- <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+ <k66mc1$cml$1@ger.gmane.org> <20121023192633.18849645@pyramind.ukuu.org.uk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:49652 "EHLO
-	out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S933251Ab2JWSpr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2012 14:45:47 -0400
-Content-Disposition: inline
-In-Reply-To: <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
+Received: from plane.gmane.org ([80.91.229.3]:51991 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932824Ab2JWSqN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Oct 2012 14:46:13 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TQjUV-00080q-L2
+	for linux-serial@vger.kernel.org; Tue, 23 Oct 2012 20:46:15 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 20:46:15 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 20:46:15 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Oct 23, 2012 at 11:31:41AM -0500, Matt Schulte wrote:
-> On Tue, Oct 23, 2012 at 11:27 AM, Matt Schulte
-> <matts@commtech-fastcom.com> wrote:
-> > On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
-> >> Alan's advice to get your card working as a basic serial card is very
-> >> good one.  Get basic functionality working, and then you can add the
-> >> support for the extra bits later....
-> >
-> > I can see the logic in getting it working as a basic serial card
-> > first.  I think at minimum I would still need to implement the extra
-> > divisor calculations to get accurate bit rates.
-> >
-> > So when it works as a basic serial card, I assume you would want me to
-> > use the default PCI IDs to keep it more generic.  Then would I add my
-> > own PCI IDs and refer them back to the generic port?
-> >
-> 
-> As more of a procedural question, when I go to make the patch(es) to
-> submit which, kernel repo do I start with?  Do I start with Greg KH's
-> tty repo and then generate the patches and submit them here?
+On 2012-10-23, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> Can it be guaranteed that it's going to be fast enough at high
+>> baud-rates to prevent any gap between the first byte and subsequent
+>> bytes?
+>
+> Possibly not for some protocols (or worse yet 'almost always' for
+> some protocols).
+>
+> It's something to look at once the basic bits are in.
+>
+>> I now work for a company that has manufactured PC serial boards for
+>> 25+ years, and we still get regular requests for that feature (and our
+>> boards do support it -- though our Linux driver does not).
+>
+> In which case when we get to addressing this it will be good to make
+> sure we cover your needs as well.
 
-That would be a great place to work off of, use the tty-next branch
-please.
+FWIW, in some products we're planning that will require support for
+various industrial serial protocols, I'm leaning towards abandoning
+the tty driver approach and writing a stand-alone character device
+driver.  The byte-stream oriented tty/line-discipline layer just
+doesn't fit well when dealing with frame-oriented industrial protocols
+that depend on things like 9th bit addressing and detecting
+sub-millisecond inter-byte timeouts.  When I add in the lack of
+long-term stability in the tty API it seems like it might not be such
+a bad idea to give up trying to make the tty abstraction fit a use
+case that's just nothing like a teletype.
 
-thanks,
+-- 
+Grant Edwards               grant.b.edwards        Yow! Gibble, Gobble, we
+                                  at               ACCEPT YOU ...
+                              gmail.com            
 
-greg k-h
