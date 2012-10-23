@@ -1,52 +1,55 @@
-From: Stefan Richter <stefanr@s5r6.in-berlin.de>
-Subject: Re: [PATCH 0/1] staging: Add firewire-serial driver
-Date: Tue, 23 Oct 2012 20:41:11 +0200
-Message-ID: <20121023204111.63e13986@stein>
-References: <1350565015.23730.4.camel@thor> <20121022224505.GD24489@kroah.com>
-	<1350959679.2621.55.camel@thor>
-	<20121023105140.5996c3a5@pyramind.ukuu.org.uk>
-	<1351009822.2621.158.camel@thor>
+From: Greg KH <greg@kroah.com>
+Subject: Re: New serial card development
+Date: Tue, 23 Oct 2012 11:38:59 -0700
+Message-ID: <20121023183859.GA3317@kroah.com>
+References: <5074703E.408@commtech-fastcom.com>
+ <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk>
+ <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
+ <20121019212158.GB4721@thunk.org>
+ <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
+ <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux1394-devel-bounces@lists.sourceforge.net>
-In-Reply-To: <1351009822.2621.158.camel@thor>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/linux1394-devel>,
-	<mailto:linux1394-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=linux1394-devel>
-List-Post: <mailto:linux1394-devel@lists.sourceforge.net>
-List-Help: <mailto:linux1394-devel-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/linux1394-devel>,
-	<mailto:linux1394-devel-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: linux1394-devel-bounces@lists.sourceforge.net
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: devel@driverdev.osuosl.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux1394-devel@lists.sourceforge.net, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:49652 "EHLO
+	out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933251Ab2JWSpr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Oct 2012 14:45:47 -0400
+Content-Disposition: inline
+In-Reply-To: <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Matt Schulte <matts@commtech-fastcom.com>
+Cc: Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-On Oct 23 Peter Hurley wrote:
-> most controllers allow spillover into
-> the portion of bus cycle assigned for sync tx (which is another 4Kbytes
-> per 125us).
+On Tue, Oct 23, 2012 at 11:31:41AM -0500, Matt Schulte wrote:
+> On Tue, Oct 23, 2012 at 11:27 AM, Matt Schulte
+> <matts@commtech-fastcom.com> wrote:
+> > On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
+> >> Alan's advice to get your card working as a basic serial card is very
+> >> good one.  Get basic functionality working, and then you can add the
+> >> support for the extra bits later....
+> >
+> > I can see the logic in getting it working as a basic serial card
+> > first.  I think at minimum I would still need to implement the extra
+> > divisor calculations to get accurate bit rates.
+> >
+> > So when it works as a basic serial card, I assume you would want me to
+> > use the default PCI IDs to keep it more generic.  Then would I add my
+> > own PCI IDs and refer them back to the generic port?
+> >
+> 
+> As more of a procedural question, when I go to make the patch(es) to
+> submit which, kernel repo do I start with?  Do I start with Greg KH's
+> tty repo and then generate the patches and submit them here?
 
-All controllers do so and are expected to do so.  Asynchronous traffic is
-not supposed to depend on a cycle master being active.
+That would be a great place to work off of, use the tty-next branch
+please.
 
-> (Technical note: the actual total max for combined async
-> and sync tx is 6144 bytes per 125us clock)
+thanks,
 
-It depends on bus topology, transaction types, and more.  For a single-hop
-S400 1394a bus (vulgo FireWire 400) I once calculated 44 MB/s bandwidth of
-asynchronous unified write transactions:
-http://marc.info/?l=linux1394-devel&m=109128028930225
-That's at the physical layer; link layer and application layer performances
-are less than that of course.
--- 
-Stefan Richter
--=====-===-- =-=- =-===
-http://arcgraph.de/sr/
-
-------------------------------------------------------------------------------
-Everyone hates slow websites. So do we.
-Make your web apps faster with AppDynamics
-Download AppDynamics Lite for free today:
-http://p.sf.net/sfu/appdyn_sfd2d_oct
+greg k-h
