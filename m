@@ -1,96 +1,67 @@
-From: Min Zhang <mzhang@mvista.com>
-Subject: Re: [PATCH] serial: 8250 check iir rdi in interrupt
-Date: Tue, 23 Oct 2012 12:43:50 -0700
-Message-ID: <CAJ0e-Fofs48N9VnYr1_8Kch6+yHjGx9iCWBRtRsqpD-B_rWutQ@mail.gmail.com>
-References: <alpine.LFD.2.02.1210221633450.28146@nightowl>
-	<20121023110133.62bed522@pyramind.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: New serial card development
+Date: Tue, 23 Oct 2012 19:48:01 +0000 (UTC)
+Message-ID: <k66s9h$4ir$2@ger.gmane.org>
+References: <5074703E.408@commtech-fastcom.com>
+ <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk>
+ <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
+ <20121019212158.GB4721@thunk.org>
+ <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
+ <k66mc1$cml$1@ger.gmane.org> <20121023192633.18849645@pyramind.ukuu.org.uk>
+ <k66okv$811$1@ger.gmane.org> <20121023202404.7e916cca@pyramind.ukuu.org.uk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:65318 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756855Ab2JWTnv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2012 15:43:51 -0400
-Received: by mail-ie0-f174.google.com with SMTP id k13so5880329iea.19
-        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 12:43:51 -0700 (PDT)
-In-Reply-To: <20121023110133.62bed522@pyramind.ukuu.org.uk>
+Received: from plane.gmane.org ([80.91.229.3]:52869 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932223Ab2JWTsT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Oct 2012 15:48:19 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TQkSc-00084k-MG
+	for linux-serial@vger.kernel.org; Tue, 23 Oct 2012 21:48:22 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 21:48:22 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 21:48:22 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Oct 23, 2012 at 3:01 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+On 2012-10-23, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> FWIW, in some products we're planning that will require support for
+>> various industrial serial protocols, I'm leaning towards abandoning
+>> the tty driver approach and writing a stand-alone character device
+>> driver.  The byte-stream oriented tty/line-discipline layer just
+>> doesn't fit well when dealing with frame-oriented industrial protocols
+>> that depend on things like 9th bit addressing and detecting
+>> sub-millisecond inter-byte timeouts.  When I add in the lack of
+>> long-term stability in the tty API it seems like it might not be such
+>> a bad idea to give up trying to make the tty abstraction fit a use
+>> case that's just nothing like a teletype.
 >
-> > Added module parameter skip_rdi_check to opt out this workaround.
->
-> NAK. Anything like this should be runtime.
+> Not unreasonable but we do need to cover it to some extent because there
+> are a lot of 'multi-use' port types where you need to share the hardware
+> or switch modes.
 
-One can echo 1 (or 0) > /sys/modules/8250/parameters/skip_rdi_check
-during run time to turn it off (or on) dynamically. Does it count as
-runtime?
+Agreed. Providing support for things like 9 bit mode, inter-byte
+timeouts, arbitrary baud rates, half-duplex mode, and user-selectable
+electrical interfaces (232/422/485/etc.) in the standard tty API would
+be a good thing. Half-duplex mode (sometimes called RS485 mode) and
+arbitrary baud rate are great recent additions.
 
-> > Tested on Radisys ATCA 46XX which uses FPGA 16550-compatible and
-> > other generic 16550 UART. It takes from an hour to days to reproduce by
-> > pumping inputs to serial console continously using TeraTerm script:
->
-> You turn this on by default but it's a nasty IRQ latency penalty
-> on a lot of x86 platforms with the uarts on the lpc bus.
+> Although we don't use it that way its not entirely accidental that the
+> tty buffer code supports chains of buffers with lengths 8)
 
-I agree. Will this patch be more acceptable if default is off? I can't
-narrow it hardware down since it is all generic UART.,
+Thanks, that's good to know.
 
-> What I am not clear on from this is
->
-> - do you see it on both the ports (the bug that is)
+-- 
+Grant Edwards               grant.b.edwards        Yow! I can't decide which
+                                  at               WRONG TURN to make first!!
+                              gmail.com            I wonder if BOB GUCCIONE
+                                                   has these problems!
 
-No, each hardware only has one serial console port that has traffic,
-and only one of the two symptom occur on one type of hardware. That is
-hardware 1 ttyS0 has "too much work for irq", and hardware 2 ttyS0 has
-console freeze under a separate test. I group them together since they
-occur using the same console flooding test script and under similar
-RDI root cause.
-
-> - if you do see it on both are you sure its not in reality a symptom of
->   some other console/irq handling race ?
-
-It is racing. For "too much work for irq", here is sequence events
-analyzed by a Motorola engineer:
-
-        1) Data arrives in the FIFO, but not enough to cause an
-interrupt
-        2) The transmitter is started.
-        3) A transmit needs data interrupt occurs (0xC2 in the
-IIR)
-        4) The processing function is called and it reads the
-LSR
-        5) The LSR indicates that the transmitter needs data,
-but also indicates the presence of data in the FIFO (0x61 in the LSR)
-        6) The processing function receives the characters, and
-outputs data to the FIFO
-        7) At the exact time (very very small window) that the
-character is read from the FIFO, the FIFO timeout occurs locking in an
-interrupt cause
-        8) The next loop through the interrupt code begins
-        9) The IIR now indicates the data timeout interrupt
-(0xCC in the IIR)
-        10) The processing function is called and it reads the
-LSR
-        11) The LSR is 0 indicating nothing to do
-        12) The interrupt loop continues (the IIR won't clear
-until a character is pulled) until it reaches its max count and
-displays the error.
-
-The other console freeze symptom is caused by similar sequence. The
-last interrupt before interrupt stops always shows IIR=0xC2 and
-LSR=0x21, which means has transmit interrupt but both transmit and
-receive status.
-
-After interrupt stops, i insmod a module to force read: IIR=0xC6,
-IER=0x0F, still no interrupt. Then I read LSR=0xE3., which is what the
-next interrupt would have done, makes interrupt resume again. Instead
-of force reading LSR, I can also resume interrupt by forcing a printk,
-which triggers a new transmit interrupt that reads LSR anyway.
-
->
-> Alan
