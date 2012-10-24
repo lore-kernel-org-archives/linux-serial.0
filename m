@@ -1,60 +1,37 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH] [tty]: Report warning when low_latency flag is wrongly
- used
-Date: Wed, 24 Oct 2012 10:32:28 -0400
-Message-ID: <5087FBFC.6050506@windriver.com>
-References: <20121023111659.6f4427c7@bob.linux.org.uk> <1351082142-28633-1-git-send-email-meltedpianoman@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 0/1] staging: Add firewire-serial driver
+Date: Wed, 24 Oct 2012 11:56:19 -0400
+Message-ID: <1351094179.8875.86.camel@thor>
+References: <1350565015.23730.4.camel@thor>
+	 <20121022224505.GD24489@kroah.com> <20121024154141.3029ad92@stein>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:42548 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934903Ab2JXOcg (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:44911 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756985Ab2JXP40 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 10:32:36 -0400
-In-Reply-To: <1351082142-28633-1-git-send-email-meltedpianoman@gmail.com>
+	Wed, 24 Oct 2012 11:56:26 -0400
+In-Reply-To: <20121024154141.3029ad92@stein>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+To: Stefan Richter <stefanr@s5r6.in-berlin.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devel@driverdev.osuosl.org, linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 12-10-24 08:35 AM, Ivo Sieben wrote:
-> When a driver has the low_latency flag set and uses the schedule_flip()
-> function to initiate copying data to the line discipline, a workqueue is
-> scheduled in but never actually flushed. This is incorrect use of the
-> low_latency flag (driver should not support the low_latency flag, or use
-> the tty_flip_buffer_push() function instead). Make sure a warning is
-> reported to catch incorrect use of the low_latency flag.
+> > >  drivers/staging/fwserial/dma_fifo.c |  310 ++++
+> > >  drivers/staging/fwserial/dma_fifo.h |  130 ++
+> > >  drivers/staging/fwserial/fwserial.c | 2885 +++++++++++++++++++++++++++++++++++
+> > >  drivers/staging/fwserial/fwserial.h |  355 +++++
 > 
-> This patch goes with: cee4ad1ed90a0959fc29f9d30a2526e5e9522cfa
+> drivers/firewire/net.c is 1721 lines, sbp_target is 2868 lines.
+> Why is fwserial bigger?
 
-Ideally you shouldn't put commit IDs in the commit log when they
-are not "permanent" (i.e. already part of mainline).  For example,
-I have no idea what cee4ad1e contains, or what tree it lives in,
-and I can't even search for it, since you've not also included
-the short log.
+1) Exclude the dma_fifo* files in the comparison, because block & net
+devices get dma-able memory management from their subsystems.
+2) Certain tty concepts don't map well to an automated bus, so these are
+simulated (eg, break handling)
+3) fwserial has to implement a protocol to virtually cable peers
+4) sbp_target only supports 1 target.
 
-Paul.
---
 
-> 
-> Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
-> 
-> ---
->  drivers/tty/tty_buffer.c |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 06725f5..6cf87d7 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -365,6 +365,7 @@ void tty_schedule_flip(struct tty_struct *tty)
->  {
->  	struct tty_bufhead *buf = &tty->port->buf;
->  	unsigned long flags;
-> +	WARN_ON(tty->low_latency);
->  
->  	spin_lock_irqsave(&buf->lock, flags);
->  	if (buf->tail != NULL)
-> 
