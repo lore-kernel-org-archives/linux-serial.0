@@ -1,38 +1,43 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH-v3] tty: prevent unnecessary work queue lock checking on
- flip buffer copy
-Date: Wed, 24 Oct 2012 11:22:12 -0700
-Message-ID: <20121024182212.GA23291@kroah.com>
-References: <1348747101-13462-1-git-send-email-meltedpianoman@gmail.com>
- <1348747325-13539-1-git-send-email-meltedpianoman@gmail.com>
- <20121022234746.GA12743@kroah.com>
- <20121023111659.6f4427c7@bob.linux.org.uk>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty/serial/8250: Make omap hardware workarounds local to
+ 8250.h
+Date: Wed, 24 Oct 2012 11:31:34 -0700
+Message-ID: <20121024183134.GA18003@kroah.com>
+References: <20121003223158.GL4840@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:50157 "EHLO
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:49049 "EHLO
 	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S935321Ab2JXSWP (ORCPT
+	with ESMTP id S964778Ab2JXSbh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 14:22:15 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so544222pad.19
-        for <linux-serial@vger.kernel.org>; Wed, 24 Oct 2012 11:22:15 -0700 (PDT)
+	Wed, 24 Oct 2012 14:31:37 -0400
+Received: by mail-pa0-f46.google.com with SMTP id hz1so549593pad.19
+        for <linux-serial@vger.kernel.org>; Wed, 24 Oct 2012 11:31:37 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20121023111659.6f4427c7@bob.linux.org.uk>
+In-Reply-To: <20121003223158.GL4840@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Ivo Sieben <meltedpianoman@gmail.com>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On Tue, Oct 23, 2012 at 11:16:59AM +0100, Alan Cox wrote:
-> > Note, I took out the WARN_ON() in this patch, as what is that really
-> > going to help here?  It also will conflict with a patch from Jiri I'll
-> > ba applying after this one, so if you think it's needed, care to send
-> > a follow-on patch based on linux-next in a few days?
+On Wed, Oct 03, 2012 at 03:31:58PM -0700, Tony Lindgren wrote:
+> This allows us to get rid of the ifdefs in 8250.c.
 > 
-> It catches anyone flipping low_latency wrongly or in other places. It's
-> fairly important as WARN_ON() goes !
+> Cc: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> 
+> ---
+> 
+> Would appreciate some minimal immutable branch
+> with this commit that I can also pull in to my
+> upcoming omap cleanup branch for v3.8 merge window
+> as I'll be moving plat/serial.h for the ARM common
+> zImage changes.
 
-Ok, I've applied the patch that Ivo sent doing this.
+This is now in my tty-next branch of the tty.git tree, if you want to
+pull from that.
+
+thanks,
 
 greg k-h
