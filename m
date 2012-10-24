@@ -1,42 +1,26 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/serial/8250: Make omap hardware workarounds local to
- 8250.h
-Date: Wed, 24 Oct 2012 11:31:34 -0700
-Message-ID: <20121024183134.GA18003@kroah.com>
-References: <20121003223158.GL4840@atomide.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] serial/arc-uart: Add new driver
+Date: Wed, 24 Oct 2012 11:32:17 -0700
+Message-ID: <20121024183217.GA18389@kroah.com>
+References: <1349336152-30443-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:49049 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964778Ab2JXSbh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 14:31:37 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so549593pad.19
-        for <linux-serial@vger.kernel.org>; Wed, 24 Oct 2012 11:31:37 -0700 (PDT)
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20121003223158.GL4840@atomide.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1349336152-30443-1-git-send-email-vgupta@synopsys.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vineet.Gupta1@synopsys.com
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On Wed, Oct 03, 2012 at 03:31:58PM -0700, Tony Lindgren wrote:
-> This allows us to get rid of the ifdefs in 8250.c.
+On Thu, Oct 04, 2012 at 01:05:52PM +0530, Vineet.Gupta1@synopsys.com wrote:
+> From: Vineet Gupta <vgupta@synopsys.com>
 > 
-> Cc: Alan Cox <alan@linux.intel.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> 
-> ---
-> 
-> Would appreciate some minimal immutable branch
-> with this commit that I can also pull in to my
-> upcoming omap cleanup branch for v3.8 merge window
-> as I'll be moving plat/serial.h for the ARM common
-> zImage changes.
+> Driver for non-standard on-chip UART, instantiated in the ARC (Synopsys)
+> FPGA Boards such as ARCAngel4/ML50x
 
-This is now in my tty-next branch of the tty.git tree, if you want to
-pull from that.
+This patch does not apply against my tty-next tree, care to rebase it
+and resend it so that I can apply it?
 
 thanks,
 
