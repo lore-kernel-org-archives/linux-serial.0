@@ -1,67 +1,173 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: New serial card development
-Date: Tue, 23 Oct 2012 20:41:52 +0000 (UTC)
-Message-ID: <k66veg$1h4$1@ger.gmane.org>
-References: <20121014093704.GA6207@thunk.org>
- <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
- <20121016002608.64b33de5@pyramind.ukuu.org.uk>
- <20121016023226.GA17446@thunk.org>
- <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
- <20121019212158.GB4721@thunk.org>
- <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
- <k66mc1$cml$1@ger.gmane.org> <20121023192633.18849645@pyramind.ukuu.org.uk>
- <k66okv$811$1@ger.gmane.org> <20121023203102.GA28626@thunk.org>
+From: chao bi <chao.bi@intel.com>
+Subject: [PATCH] serial:ifx6x60:different SPI word width configure requires
+ different swap process
+Date: Wed, 24 Oct 2012 14:48:48 +0800
+Message-ID: <1351061328.18855.95.camel@bichao>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:57582 "EHLO plane.gmane.org"
+Received: from mga02.intel.com ([134.134.136.20]:41283 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S964822Ab2JWUmH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Oct 2012 16:42:07 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1TQlIg-00060Q-My
-	for linux-serial@vger.kernel.org; Tue, 23 Oct 2012 22:42:12 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 22:42:10 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 23 Oct 2012 22:42:10 +0200
+	id S933275Ab2JXGe2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Oct 2012 02:34:28 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, chuansheng.liu@intel.com, jun.d.chen@intel.com
 
-On 2012-10-23, Theodore Ts'o <tytso@mit.edu> wrote:
-> On Tue, Oct 23, 2012 at 06:45:51PM +0000, Grant Edwards wrote:
 
->> FWIW, in some products we're planning that will require support for
->> various industrial serial protocols, I'm leaning towards abandoning
->> the tty driver approach and writing a stand-alone character device
->> driver.  The byte-stream oriented tty/line-discipline layer just
->> doesn't fit well when dealing with frame-oriented industrial protocols
->> that depend on things like 9th bit addressing and detecting
->> sub-millisecond inter-byte timeouts.  
->
-> You might want to take a look at how the ppp line discipline (which
-> is obviously highly packet oriented) works.  One advantage of doing
-> things that way is if you have a multiport serial card, where some
-> ports want to play this packet-oriented approach, and other cards
-> might be connected to a traditional modem or terminal sort of device,
-> you won't have to figure out how to share a PCI board between two
-> different drivers, allocating one port to the traditional tty/serial
-> driver, and another one to your new driver, etc.
+SPI protocol driver only provide one function (swap_buf()) to swap SPI data
+into big endian format, which is only available when SPI controller's word width
+is 16 bits. But word width could be configured as 8/16/32 bits, different word
+width configure should be mapped to different swap methods.This patch is to make
+SPI protocol driver choose the right swap function corresponding to SPI word
+width configuration.
 
-Thanks for the suggestion.  I did look into line-disciplines briefly
-quite a while back. Most of the information I found implied that
-adding a line disciplilne wasn't something you could do at run-time by
-loading a user-built module -- it would require recompiling parts of
-the kernel.  Articles made statements about having to modify kernel
-include files like tty.h. If that's wrong, then a line discipline
-might be a good option.
+cc: liu chuansheng <chuansheng.liu@intel.com>
+cc: Chen Jun <jun.d.chen@intel.com>
+Signed-off-by: channing <chao.bi@intel.com>
+---
+ drivers/tty/serial/ifx6x60.c |   70 ++++++++++++++++++++++++++++++++++++------
+ drivers/tty/serial/ifx6x60.h |    1 +
+ 2 files changed, 61 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 5b9bc19..c52b4b0 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -152,26 +152,67 @@ ifx_spi_power_state_clear(struct ifx_spi_device *ifx_dev, unsigned char val)
+ }
+ 
+ /**
+- *	swap_buf
++ *	swap_buf_8
+  *	@buf: our buffer
+  *	@len : number of bytes (not words) in the buffer
+  *	@end: end of buffer
+  *
+  *	Swap the contents of a buffer into big endian format
+  */
+-static inline void swap_buf(u16 *buf, int len, void *end)
++static inline void swap_buf_8(unsigned char *buf, int len, void *end)
++{
++	/* don't swap buffer if SPI word width is 8 bits */
++	return;
++}
++
++/**
++ *	swap_buf_16
++ *	@buf: our buffer
++ *	@len : number of bytes (not words) in the buffer
++ *	@end: end of buffer
++ *
++ *	Swap the contents of a buffer into big endian format
++ */
++static inline void swap_buf_16(unsigned char *buf, int len, void *end)
+ {
+ 	int n;
+ 
++	u16 *buf_16 = (u16 *)buf;
+ 	len = ((len + 1) >> 1);
+-	if ((void *)&buf[len] > end) {
+-		pr_err("swap_buf: swap exceeds boundary (%p > %p)!",
+-		       &buf[len], end);
++	if ((void *)&buf_16[len] > end) {
++		pr_err("swap_buf_16: swap exceeds boundary (%p > %p)!",
++		       &buf_16[len], end);
+ 		return;
+ 	}
+ 	for (n = 0; n < len; n++) {
+-		*buf = cpu_to_be16(*buf);
+-		buf++;
++		*buf_16 = cpu_to_be16(*buf_16);
++		buf_16++;
++	}
++}
++
++/**
++ *	swap_buf_32
++ *	@buf: our buffer
++ *	@len : number of bytes (not words) in the buffer
++ *	@end: end of buffer
++ *
++ *	Swap the contents of a buffer into big endian format
++ */
++static inline void swap_buf_32(unsigned char *buf, int len, void *end)
++{
++	int n;
++
++	u32 *buf_32 = (u32 *)buf;
++	len = (0 == (len&0x03)) ? (len >> 2) : ((len >> 2) + 1);
++
++	if ((void *)&buf_32[len] > end) {
++		pr_err("swap_buf_32: swap exceeds boundary (%p > %p)!\n",
++		       &buf_32[len], end);
++		return;
++	}
++	for (n = 0; n < len; n++) {
++		*buf_32 = cpu_to_be32(*buf_32);
++		buf_32++;
+ 	}
+ }
+ 
+@@ -449,7 +490,7 @@ static int ifx_spi_prepare_tx_buffer(struct ifx_spi_device *ifx_dev)
+ 					tx_count-IFX_SPI_HEADER_OVERHEAD,
+ 					ifx_dev->spi_more);
+ 	/* swap actual data in the buffer */
+-	swap_buf((u16 *)(ifx_dev->tx_buffer), tx_count,
++	ifx_dev->swap_buf((ifx_dev->tx_buffer), tx_count,
+ 		&ifx_dev->tx_buffer[IFX_SPI_TRANSFER_SIZE]);
+ 	return tx_count;
+ }
+@@ -617,7 +658,7 @@ static void ifx_spi_complete(void *ctx)
+ 
+ 	if (!ifx_dev->spi_msg.status) {
+ 		/* check header validity, get comm flags */
+-		swap_buf((u16 *)ifx_dev->rx_buffer, IFX_SPI_HEADER_OVERHEAD,
++		ifx_dev->swap_buf(ifx_dev->rx_buffer, IFX_SPI_HEADER_OVERHEAD,
+ 			&ifx_dev->rx_buffer[IFX_SPI_HEADER_OVERHEAD]);
+ 		decode_result = ifx_spi_decode_spi_header(ifx_dev->rx_buffer,
+ 				&length, &more, &cts);
+@@ -636,7 +677,8 @@ static void ifx_spi_complete(void *ctx)
+ 
+ 		actual_length = min((unsigned int)length,
+ 					ifx_dev->spi_msg.actual_length);
+-		swap_buf((u16 *)(ifx_dev->rx_buffer + IFX_SPI_HEADER_OVERHEAD),
++		ifx_dev->swap_buf(
++			(ifx_dev->rx_buffer + IFX_SPI_HEADER_OVERHEAD),
+ 			 actual_length,
+ 			 &ifx_dev->rx_buffer[IFX_SPI_TRANSFER_SIZE]);
+ 		ifx_spi_insert_flip_string(
+@@ -1001,6 +1043,14 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
+ 		return -ENODEV;
+ 	}
+ 
++	/* init swap_buf function according to word width configuration */
++	if (spi->bits_per_word == 32)
++		ifx_dev->swap_buf = swap_buf_32;
++	else if (spi->bits_per_word == 16)
++		ifx_dev->swap_buf = swap_buf_16;
++	else
++		ifx_dev->swap_buf = swap_buf_8;
++
+ 	/* ensure SPI protocol flags are initialized to enable transfer */
+ 	ifx_dev->spi_more = 0;
+ 	ifx_dev->spi_slave_cts = 0;
+diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
+index e8464ba..d8869f5 100644
+--- a/drivers/tty/serial/ifx6x60.h
++++ b/drivers/tty/serial/ifx6x60.h
+@@ -124,6 +124,7 @@ struct ifx_spi_device {
+ #define MR_INPROGRESS	1
+ #define MR_COMPLETE	2
+ 	wait_queue_head_t mdm_reset_wait;
++	void (*swap_buf)(unsigned char *buf, int len, void *end);
+ };
+ 
+ #endif /* _IFX6X60_H */
 -- 
-Grant Edwards               grant.b.edwards        Yow! I'm having a
-                                  at               quadrophonic sensation
-                              gmail.com            of two winos alone in a
-                                                   steel mill!
+1.7.1
+
+
 
