@@ -1,43 +1,45 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial:ifx6x60:different SPI word width configure
- requires different swap process
-Date: Wed, 24 Oct 2012 13:31:29 +0100
-Message-ID: <20121024133129.1155cc2e@pyramind.ukuu.org.uk>
-References: <1351061328.18855.95.camel@bichao>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [PATCH] [tty]: Report warning when low_latency flag is wrongly used
+Date: Wed, 24 Oct 2012 14:35:42 +0200
+Message-ID: <1351082142-28633-1-git-send-email-meltedpianoman@gmail.com>
+References: <20121023111659.6f4427c7@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:51933 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758041Ab2JXM00 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 08:26:26 -0400
-In-Reply-To: <1351061328.18855.95.camel@bichao>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <20121023111659.6f4427c7@bob.linux.org.uk>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
+Cc: Ivo Sieben <meltedpianoman@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: chao bi <chao.bi@intel.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, chuansheng.liu@intel.com, jun.d.chen@intel.com
 
-On Wed, 24 Oct 2012 14:48:48 +0800
-chao bi <chao.bi@intel.com> wrote:
+When a driver has the low_latency flag set and uses the schedule_flip()
+function to initiate copying data to the line discipline, a workqueue is
+scheduled in but never actually flushed. This is incorrect use of the
+low_latency flag (driver should not support the low_latency flag, or use
+the tty_flip_buffer_push() function instead). Make sure a warning is
+reported to catch incorrect use of the low_latency flag.
 
-> 
-> SPI protocol driver only provide one function (swap_buf()) to swap SPI data
-> into big endian format, which is only available when SPI controller's word width
-> is 16 bits. But word width could be configured as 8/16/32 bits, different word
-> width configure should be mapped to different swap methods.This patch is to make
-> SPI protocol driver choose the right swap function corresponding to SPI word
-> width configuration.
-> 
-> cc: liu chuansheng <chuansheng.liu@intel.com>
-> cc: Chen Jun <jun.d.chen@intel.com>
-> Signed-off-by: channing <chao.bi@intel.com>
+This patch goes with: cee4ad1ed90a0959fc29f9d30a2526e5e9522cfa
 
-> +	len = (0 == (len&0x03)) ? (len >> 2) : ((len >> 2) + 1);
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
 
-Minor question - is that not just (len + 3) >> 2 ?
+---
+ drivers/tty/tty_buffer.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-The SPI swapping stuff at runtime looks right so.
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 06725f5..6cf87d7 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -365,6 +365,7 @@ void tty_schedule_flip(struct tty_struct *tty)
+ {
+ 	struct tty_bufhead *buf = &tty->port->buf;
+ 	unsigned long flags;
++	WARN_ON(tty->low_latency);
+ 
+ 	spin_lock_irqsave(&buf->lock, flags);
+ 	if (buf->tail != NULL)
+-- 
+1.7.9.5
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+
