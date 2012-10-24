@@ -1,42 +1,43 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH v2 3/3] ARM: dts: enable dma support for auart0 in mx28
-Date: Wed, 24 Oct 2012 18:27:36 +0800
-Message-ID: <1351074456-25863-4-git-send-email-b32955@freescale.com>
-References: <1351074456-25863-1-git-send-email-b32955@freescale.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial:ifx6x60:different SPI word width configure
+ requires different swap process
+Date: Wed, 24 Oct 2012 13:31:29 +0100
+Message-ID: <20121024133129.1155cc2e@pyramind.ukuu.org.uk>
+References: <1351061328.18855.95.camel@bichao>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:5732 "EHLO
-	va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S934677Ab2JXLCX (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:51933 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758041Ab2JXM00 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 07:02:23 -0400
-In-Reply-To: <1351074456-25863-1-git-send-email-b32955@freescale.com>
+	Wed, 24 Oct 2012 08:26:26 -0400
+In-Reply-To: <1351061328.18855.95.camel@bichao>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, lauri.hintsala@bluegiga.com, vinod.koul@intel.com, Huang Shijie <b32955@freescale.com>
+To: chao bi <chao.bi@intel.com>
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, chuansheng.liu@intel.com, jun.d.chen@intel.com
 
-enable the dma support for auart0 in mx28.
+On Wed, 24 Oct 2012 14:48:48 +0800
+chao bi <chao.bi@intel.com> wrote:
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- arch/arm/boot/dts/imx28.dtsi |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+> 
+> SPI protocol driver only provide one function (swap_buf()) to swap SPI data
+> into big endian format, which is only available when SPI controller's word width
+> is 16 bits. But word width could be configured as 8/16/32 bits, different word
+> width configure should be mapped to different swap methods.This patch is to make
+> SPI protocol driver choose the right swap function corresponding to SPI word
+> width configuration.
+> 
+> cc: liu chuansheng <chuansheng.liu@intel.com>
+> cc: Chen Jun <jun.d.chen@intel.com>
+> Signed-off-by: channing <chao.bi@intel.com>
 
-diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
-index e16d631..73d1a9f 100644
---- a/arch/arm/boot/dts/imx28.dtsi
-+++ b/arch/arm/boot/dts/imx28.dtsi
-@@ -798,6 +798,7 @@
- 				compatible = "fsl,imx28-auart", "fsl,imx23-auart";
- 				reg = <0x8006a000 0x2000>;
- 				interrupts = <112 70 71>;
-+				fsl,auart-dma-channel = <8 9>;
- 				clocks = <&clks 45>;
- 				status = "disabled";
- 			};
--- 
-1.7.0.4
+> +	len = (0 == (len&0x03)) ? (len >> 2) : ((len >> 2) + 1);
 
+Minor question - is that not just (len + 3) >> 2 ?
 
+The SPI swapping stuff at runtime looks right so.
+
+Acked-by: Alan Cox <alan@linux.intel.com>
