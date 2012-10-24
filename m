@@ -1,63 +1,56 @@
-From: "Bi, Chao" <chao.bi@intel.com>
-Subject: RE: Subject: [PATCH] serial:ifx6x60:add swap_buf_32 function in
- case SPI word width is 32 bits
-Date: Wed, 24 Oct 2012 06:43:33 +0000
-Message-ID: <253F3AA5ECB4EC43A2CA0147545F67F2102A4D15@SHSMSX102.ccr.corp.intel.com>
-References: <1350981170.18855.83.camel@bichao>
- <20121023103920.3bcb9159@pyramind.ukuu.org.uk>
+From: Huang Shijie <b32955@freescale.com>
+Subject: [PATCH v2 0/3] serial: mxs-auart: add DMA support for auart in mx28
+Date: Wed, 24 Oct 2012 18:27:33 +0800
+Message-ID: <1351074456-25863-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:3599 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933331Ab2JXGni convert rfc822-to-8bit (ORCPT
+Received: from tx2ehsobe003.messaging.microsoft.com ([65.55.88.13]:27717 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933770Ab2JXLCG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Oct 2012 02:43:38 -0400
-In-Reply-To: <20121023103920.3bcb9159@pyramind.ukuu.org.uk>
-Content-Language: en-US
+	Wed, 24 Oct 2012 07:02:06 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "Chen, Jun D" <jun.d.chen@intel.com>, "Liu, Chuansheng" <chuansheng.liu@intel.com>
+To: gregkh@linuxfoundation.org
+Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, lauri.hintsala@bluegiga.com, vinod.koul@intel.com, Huang Shijie <b32955@freescale.com>
 
-Hi Alan,
+This patch set adds the DMA support for auart in mx28.
+patch 1:
+	In mx23, the DMA has a bug(see errata:2836). We can not add the
+	DMA support in mx23, but we can add DMA support to auart in mx28.
+	So in order to add the DMA support for the auart in mx28, we should add
+	the platform_device_id to distinguish the distinguish SOCs.
 
-Yes, you're right.
-SPI word width is configured by Protocol driver in ifx_spi_spi_probe(), it could be 8/16/32 bits, so Protocol driver should choose diff swap method according to the configuration.
-I've update the patch as your suggestion, please check another PATCH mail.
-Thanks!
+patch 2: add the DMA support for mx28
+	Only we meet the following conditions, we can enable the DMA support
+	for auart:
+        (1) We enable the DMA support in the dts file, such as
+            arch/arm/boot/dts/imx28.dtsi.
+        (2) We enable the hardware flow control.
+        (3) We use the mx28, not the mx23. Due to hardware bug(see errata: 2836),
+            we can not add the DMA support to mx23.
 
-Chao
+patch 3: enable the DMA support in dts for mx28 
+	You can use the /ttyAPP0 to test this patch set. 
+	I tested this patch in mx28-evk board.
+
+v1 --> v2:
+	[1] use the inline function, not a macro, to distinguish the SOCs.
+	[2] remove the "inline" for mxs_auart_tx_chars().
+	[3] use the `pio`, not the `pio[1]` to fill the DMA descriptor.
+	[4] use bit operation to serialize the DMA TX.
+	[5] use the RX/TX DMA channel to enable the DMA support, remove the
+	    "fsl,auart-enable-dma".
+
+Huang Shijie (3):
+  serial: mxs-auart: distinguish the different SOCs
+  serial: mxs-auart: add the DMA support for mx28
+  ARM: dts: enable dma support for auart0 in mx28
+
+ .../bindings/tty/serial/fsl-mxs-auart.txt          |    8 +
+ arch/arm/boot/dts/imx28.dtsi                       |    1 +
+ drivers/tty/serial/mxs-auart.c                     |  360 +++++++++++++++++++-
+ 3 files changed, 358 insertions(+), 11 deletions(-)
 
 
------Original Message-----
-From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
-Sent: Tuesday, October 23, 2012 5:39 PM
-To: Bi, Chao
-Cc: alan@linux.intel.com; linux-serial@vger.kernel.org; Gorby, Russ; Chen, Jun D; Liu, Chuansheng
-Subject: Re: Subject: [PATCH] serial:ifx6x60:add swap_buf_32 function in case SPI word width is 32 bits
-
-> is 16 bits. But per our experiment and validation on medfield 
-> platform, 16 bit word width cannot cover all scenarioes, 32 bits word 
-> width is a better choice to avoid SPI FIFO overrun. Therefore, SPI 
-> controller is likely to configure its word width as either 16 bits or 
-> 32 bits. This patch is to implement 2 functions
-> (swap_buf_16() and swap_buf_32()) to adapt the two configurations.
-
-And how will you get both to work with the same kernel, which is the way Linux wants to work (and avoids the nasty mess some other embedded platforms have gotten themselves into).
-
-What you probably want to do is is put a 16/32bit flag into the platform data and then in ifx_spi_spi_probe() just do
-
-
-	if (pl_data->spi_32)
-		ifx_dev->swap = swap_buf_32;
-	else
-		ifx_dev->swap = swap_buf;
-
-
-then call
-
-	ifx_dev->swap_buf()
-
-Alan
