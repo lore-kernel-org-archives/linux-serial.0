@@ -1,75 +1,74 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: [REPOST-v2] sched: Prevent wakeup to enter critical section needlessly
-Date: Thu, 25 Oct 2012 12:12:54 +0200
-Message-ID: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
-References: <1350549005-18309-1-git-send-email-meltedpianoman@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: 8250_early for big-endian
+Date: Thu, 25 Oct 2012 12:18:15 +0100
+Message-ID: <20121025121815.0689c196@pyramind.ukuu.org.uk>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+	<20121012175150.4b081343@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
+	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
+	<20121014133216.686277e1@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe006.messaging.microsoft.com ([216.32.180.189]:52655
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S935601Ab2JYKYE (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53454 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422669Ab2JYLNN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Oct 2012 06:24:04 -0400
-In-Reply-To: <1350549005-18309-1-git-send-email-meltedpianoman@gmail.com>
+	Thu, 25 Oct 2012 07:13:13 -0400
+In-Reply-To: <264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Ivo Sieben <meltedpianoman@gmail.com>
+To: Noam Camus <noamc@ezchip.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
 
-Check the waitqueue task list to be non empty before entering the critical
-section. This prevents locking the spin lock needlessly in case the queue
-was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-system.
+On Thu, 25 Oct 2012 09:08:53 +0200
+Noam Camus <noamc@ezchip.com> wrote:
 
-Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
----
+> ________________________________________
+> From: Alan Cox [alan@lxorguk.ukuu.org.uk]
+> Sent: Sunday, October 14, 2012 2:32 PM
+> 
+> >For 8250_early it may well be the right thing is to support similar
+> serial_in/serial_out methods.
+> 
+> Hello Alan,
+> Below is my proposed patch could you apply it?
+> 
+> >From e819fbbf9690b72620c54a62fa34545c7b035f91 Mon Sep 17 00:00:00 2001
+> From: Noam Camus <noamc@ezchip.com>
+> Date: Wed, 3 Oct 2012 09:40:36 +0200
+> Subject: [PATCH] tty/8250_early: Make serial_in/serial_out be over-ridden
+> 
+> Now one can replace default methods with similar fit to its needs.
+> e.g. choose other regshift, register offset...
+> 
+> Signed-off-by: Noam Camus <noamc@ezchip.com>
+> CC: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> ---
+>  drivers/tty/serial/8250/8250_early.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index eaafb98..ac31b0c 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -48,7 +48,7 @@ struct early_serial8250_device {
+>  
+>  static struct early_serial8250_device early_device;
+>  
+> -static unsigned int __init serial_in(struct uart_port *port, int offset)
+> +unsigned int __weak __init serial_in(struct uart_port *port, int offset)
 
- repost:
- Did I apply the memory barrier correct?
+If you make the symbols global then they need a prefix to avoid clashes -
+just rename them something like serial8250_early_in/serial8250_early_out
 
- v2:
- - We don't need the "careful" list empty, a normal list empty is sufficient:
-   if you miss an update it was just as it happened a little later.
- - Because of memory ordering problems we can observe an unupdated list
-   administration. This can cause an wait_event-like code to miss an event.
-   Adding a memory barrier befor checking the list to be empty will guarantee we
-   evaluate a 100% updated list adminsitration.
+and of course they ought to be in the header files somewhere...
 
- kernel/sched/core.c |   19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 2d8927f..168a9b2 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3090,9 +3090,22 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&q->lock, flags);
--	__wake_up_common(q, mode, nr_exclusive, 0, key);
--	spin_unlock_irqrestore(&q->lock, flags);
-+	/*
-+	 * We check for list emptiness outside the lock. This prevents the wake
-+	 * up to enter the critical section needlessly when the task list is
-+	 * empty.
-+	 *
-+	 * Placed a full memory barrier before checking list emptiness to make
-+	 * 100% sure this function sees an up-to-date list administration.
-+	 * Note that other code that manipulates the list uses a spin_lock and
-+	 * therefore doesn't need additional memory barriers.
-+	 */
-+	smp_mb();
-+	if (!list_empty(&q->task_list)) {
-+		spin_lock_irqsave(&q->lock, flags);
-+		__wake_up_common(q, mode, nr_exclusive, 0, key);
-+		spin_unlock_irqrestore(&q->lock, flags);
-+	}
- }
- EXPORT_SYMBOL(__wake_up);
- 
--- 
-1.7.9.5
-
-
+Alan
