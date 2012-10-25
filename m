@@ -1,81 +1,113 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: 8250_early for big-endian
-Date: Thu, 25 Oct 2012 09:08:53 +0200
-Message-ID: <264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-	<20121012175150.4b081343@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
-	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
-	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
-	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
- <20121014133216.686277e1@pyramind.ukuu.org.uk>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH v2 2/3] serial: mxs-auart: add the DMA support for mx28
+Date: Thu, 25 Oct 2012 17:15:43 +0800
+Message-ID: <5089033F.9040100@freescale.com>
+References: <1351074456-25863-1-git-send-email-b32955@freescale.com>	 <1351074456-25863-3-git-send-email-b32955@freescale.com>	 <1351138689.5263.68.camel@vkoul-udesk3>  <5088D336.7040206@freescale.com> <1351145272.7077.8.camel@vkoul-udesk3>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ezexch.ezchip.com ([212.179.42.101]:36152 "EHLO
-	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758383Ab2JYHJf convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Oct 2012 03:09:35 -0400
-In-Reply-To: <20121014133216.686277e1@pyramind.ukuu.org.uk>
-Content-Language: en-US
+Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:52604 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S934834Ab2JYJMV convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 25 Oct 2012 05:12:21 -0400
+In-Reply-To: <1351145272.7077.8.camel@vkoul-udesk3>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
+To: Vinod Koul <vkoul@infradead.org>
+Cc: vinod.koul@intel.com, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, lauri.hintsala@bluegiga.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
 
-________________________________________
-From: Alan Cox [alan@lxorguk.ukuu.org.uk]
-Sent: Sunday, October 14, 2012 2:32 PM
+=E4=BA=8E 2012=E5=B9=B410=E6=9C=8825=E6=97=A5 14:07, Vinod Koul =E5=86=99=
+=E9=81=93:
+> On Thu, 2012-10-25 at 13:50 +0800, Huang Shijie wrote:
+>> =E4=BA=8E 2012=E5=B9=B410=E6=9C=8825=E6=97=A5 12:18, Vinod Koul =E5=86=
+=99=E9=81=93:
+>>>> +
+>>>> +static int mxs_auart_dma_tx(struct mxs_auart_port *s, int size)
+>>>> +{
+>>>> +	struct dma_async_tx_descriptor *desc;
+>>>> +	struct scatterlist *sgl =3D&s->tx_sgl;
+>>>> +	struct dma_chan *channel =3D s->tx_dma_chan;
+>>>> +	u32 pio;
+>>>> +
+>>>> +	/* [1] : send PIO. Note, the first pio word is CTRL1. */
+>>>> +	pio =3D AUART_CTRL1_XFER_COUNT(size);
+>>>> +	desc =3D dmaengine_prep_slave_sg(channel, (struct scatterlist *)=
+&pio,
+>>>> +					1, DMA_TRANS_NONE, 0);
+>>> this seems like a hack. API expects a scatterlist as argument.
+>>> Same thing about direction, NONE doesnt mean anything for dma trans=
+fer.
+>> It's not a hack. this DMA descriptor is used to set the registers.
+>> Please see the code in drivers/dma/mxs-dma.c:mxs_dam_prep_slave_sg()=
+=2E
+> yes it is, and also an abuse of the api.
+> prep_slave_sg() expects a scatter list and you are passing something
+> else and using DMA_TRANS_NONE to do that, which makes no sense!!!
+>
+> If you have to setup your registers you need to setup based on what A=
+PIs
+> passed you and not by abusing.
+>
+yes. I have to setup the register. Could you told me which API is the=20
+right API?
 
->For 8250_early it may well be the right thing is to support similar
-serial_in/serial_out methods.
+It seems to the mxs-dma needs a patch again.
 
-Hello Alan,
-Below is my proposed patch could you apply it?
+>>>> +	if (!desc) {
+>>>> +		dev_err(s->dev, "step 1 error\n");
+>>>> +		return -EINVAL;
+>>>> +	}
+>>>> +
+>>>> +	/* [2] : set DMA buffer. */
+>>>> +	sg_init_one(sgl, s->tx_dma_buf, size);
+>>>> +	dma_map_sg(s->dev, sgl, 1, DMA_TO_DEVICE);
+>>>> +	desc =3D dmaengine_prep_slave_sg(channel, sgl,
+>>>> +			1, DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+>>>> +	if (!desc) {
+>>>> +		dev_err(s->dev, "step 2 error\n");
+>>>> +		return -EINVAL;
+>>>> +	}
+>>>> +
+>>>> +	/* [3] : submit the DMA */
+>>>> +	desc->callback =3D dma_tx_callback;
+>>>> +	desc->callback_param =3D s;
+>>>> +	dmaengine_submit(desc);
+>>>> +	dma_async_issue_pending(channel);
+>>>> +	return 0;
+>>>> +}
+>>>> +
+>>>>
+>>>> +static bool mxs_auart_dma_filter(struct dma_chan *chan, void *par=
+am)
+>>>> +{
+>>>> +	struct mxs_auart_port *s =3D param;
+>>>> +
+>>>> +	if (!mxs_dma_is_apbx(chan))
+>>>> +		return false;
+>>>> +
+>>>> +	if (s->dma_channel =3D=3D chan->chan_id) {
+>>>> +		chan->private =3D&s->dma_data;
+>>> dont use chan->private. You need to dmaengine_slave_config API
+>> please see the drivers/dma/mxs-dma.c:mxs_dam_alloc_chan_resoures().
+>>
+>> The mxs-dma driver uses ->private to store the channel interrupt num=
+ber.
+> And which it should not be doing. private is not supposed to be used =
+for
+> passing info. If it is generic add to slave config.
+>
+Could you give me an example which do not use the private?
+The imx-sdma also uses the private to pass some info.
 
->From e819fbbf9690b72620c54a62fa34545c7b035f91 Mon Sep 17 00:00:00 2001
-From: Noam Camus <noamc@ezchip.com>
-Date: Wed, 3 Oct 2012 09:40:36 +0200
-Subject: [PATCH] tty/8250_early: Make serial_in/serial_out be over-ridden
-
-Now one can replace default methods with similar fit to its needs.
-e.g. choose other regshift, register offset...
-
-Signed-off-by: Noam Camus <noamc@ezchip.com>
-CC: Alan Cox <alan@lxorguk.ukuu.org.uk>
----
- drivers/tty/serial/8250/8250_early.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index eaafb98..ac31b0c 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -48,7 +48,7 @@ struct early_serial8250_device {
- 
- static struct early_serial8250_device early_device;
- 
--static unsigned int __init serial_in(struct uart_port *port, int offset)
-+unsigned int __weak __init serial_in(struct uart_port *port, int offset)
- {
- 	switch (port->iotype) {
- 	case UPIO_MEM:
-@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
- 	}
- }
- 
--static void __init serial_out(struct uart_port *port, int offset, int value)
-+void __weak __init serial_out(struct uart_port *port, int offset, int value)
- {
- 	switch (port->iotype) {
- 	case UPIO_MEM:
--- 
-1.7.1
+thanks
+Huang Shijie
 
 
-Noam
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
