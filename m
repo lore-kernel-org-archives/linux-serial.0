@@ -1,176 +1,843 @@
-From: Guillaume Juan <guillaume.juan@sagemcom.com>
-Subject: [PATCH] n_gsm: prevent crash due to dereferencing NULL gsm->tty
-Date: Fri, 26 Oct 2012 10:11:45 +0200
-Message-ID: <26026_1351239109_508A45C4_26026_63_1_508A45C1.3010407@sagemcom.com>
+From: <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH v5] serial/arc-uart: Add new driver
+Date: Fri, 26 Oct 2012 17:33:16 +0530
+Message-ID: <1351252996-28484-2-git-send-email-vgupta@synopsys.com>
+References: <1351252996-28484-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.smmp-rueil.gmessaging.net ([81.80.3.134]:42447 "EHLO
-	smtp1.smmp-rueil.gmessaging.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757043Ab2JZIWI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Oct 2012 04:22:08 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1351252996-28484-1-git-send-email-vgupta@synopsys.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, alan@linux.intel.com
+Cc: arc-linux-dev@synopsys.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org
 
-=46rom: Guillaume Juan <guillaume.juan@sagemcom.com>
+From: Vineet Gupta <vgupta@synopsys.com>
 
-If gsm->tty happens to be NULL in gsmld_output, avoid crashing the kern=
-el (the crash is replaced by a warning dump).
-Prevent at earlier level such situation:
-- gsmtty_hangup does no longer call gsm_dlci_begin_close when called sy=
-nchronously from gsm_cleanup_mux, because this would arm a timer that w=
-ill asynchronously lead to use gms->tty, potentially after it is nullif=
-ied.
-- in gsm_cleanup_mux, release DLCIs (other than DLCI#0 which is the con=
-trol one) before closing mux. Else, it can happen that the T2 timer is =
-rearmed by another thread scheduled between del_timer_sync and gsm_dlci=
- release
-(for example by the following call-stack: fput =3D> tty_release =3D> tt=
-y_port_close_start =3D> tty_port_lower_dtr_rts =3D> gsm_dtr_rts =3D> gs=
-mtty_modem_update)
+Driver for non-standard on-chip UART, instantiated in the ARC (Synopsys)
+FPGA Boards such as ARCAngel4/ML50x
 
-Signed-off-by: Guillaume Juan <guillaume.juan@sagemcom.com>
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- drivers/tty/n_gsm.c |   35 ++++++++++++++++++++++++++---------
- 1 files changed, 26 insertions(+), 9 deletions(-)
+ drivers/tty/serial/Kconfig       |   23 ++
+ drivers/tty/serial/Makefile      |    1 +
+ drivers/tty/serial/arc_uart.c    |  754 ++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/serial_core.h |    2 +
+ 4 files changed, 780 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/tty/serial/arc_uart.c
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1e8e8ce..fe3c6ad 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1510,8 +1510,8 @@ static void gsm_dlci_begin_open(struct gsm_dlci *=
-dlci)
- }
-=20
- /**
-- *	gsm_dlci_begin_close	-	start channel open procedure
-- *	@dlci: DLCI to open
-+ *	gsm_dlci_begin_close	-	start channel close procedure
-+ *	@dlci: DLCI to close
-  *
-  *	Commence closing a DLCI from the Linux side. We issue DISC messages
-  *	to the modem which should then reply with a UA, at which point we
-@@ -2031,6 +2031,13 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
- 	spin_unlock(&gsm_mux_lock);
- 	WARN_ON(i =3D=3D MAX_MUX);
-=20
-+	/* Free up any link layer users */
-+	if (dlci)
-+		dlci->dead =3D 1;
-+	for (i =3D 1; i < NUM_DLCI; i++)
-+		if (gsm->dlci[i])
-+			gsm_dlci_release(gsm->dlci[i]);
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2a53be5..b176801 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1423,4 +1423,27 @@ config SERIAL_EFM32_UART_CONSOLE
+ 	depends on SERIAL_EFM32_UART=y
+ 	select SERIAL_CORE_CONSOLE
+ 
++config SERIAL_ARC
++	tristate "ARC UART driver support"
++	select SERIAL_CORE
++	help
++	  Driver for on-chip UART for ARC(Synopsys) for the legacy
++	  FPGA Boards (ML50x/ARCAngel4)
 +
- 	/* In theory disconnecting DLCI 0 is sufficient but for some
- 	   modems this is apparently not the case. */
- 	if (dlci) {
-@@ -2041,15 +2048,11 @@ void gsm_cleanup_mux(struct gsm_mux *gsm)
- 	del_timer_sync(&gsm->t2_timer);
- 	/* Now we are sure T2 has stopped */
- 	if (dlci) {
--		dlci->dead =3D 1;
- 		gsm_dlci_begin_close(dlci);
- 		wait_event_interruptible(gsm->event,
- 					dlci->state =3D=3D DLCI_CLOSED);
-+		gsm_dlci_release(dlci);
- 	}
--	/* Free up any link layer users */
--	for (i =3D 0; i < NUM_DLCI; i++)
--		if (gsm->dlci[i])
--			gsm_dlci_release(gsm->dlci[i]);
- 	/* Now wipe the queues */
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
-@@ -2192,6 +2195,10 @@ EXPORT_SYMBOL_GPL(gsm_alloc_mux);
-=20
- static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
- {
-+	if (gsm->tty =3D=3D NULL) {
-+		WARN(1, "NULL gsm->tty pointer in gsmld_output\n");
-+		return -EINVAL;
-+	}
- 	if (tty_write_room(gsm->tty) < len) {
- 		set_bit(TTY_DO_WRITE_WAKEUP, &gsm->tty->flags);
- 		return -ENOSPC;
-@@ -2323,7 +2330,7 @@ static void gsmld_flush_buffer(struct tty_struct =
-*tty)
-  *	@tty: device
-  *
-  *	Called from the terminal layer when this line discipline is
-- *	being shut down, either because of a close or becsuse of a
-+ *	being shut down, either because of a close or because of a
-  *	discipline change. The function will not be called while other
-  *	ldisc methods are in progress.
-  */
-@@ -2954,6 +2961,15 @@ static void gsmtty_close(struct tty_struct *tty,=
- struct file *filp)
- 	gsm =3D dlci->gsm;
- 	if (tty_port_close_start(&dlci->port, tty, filp) =3D=3D 0)
- 		goto out;
-+	/* Should not happen because the DLCI ttys are hung up (which causes
-+	   tty_port_close_start to return 0) by gsm_dlci_release before setti=
-ng
-+	   gsm->tty to NULL */
-+	if (gsm->tty =3D=3D NULL) {
-+		WARN(1, "NULL gsm->tty pointer in gsmtty_close for %s\n",
-+			tty->name);
-+		goto out;
++config SERIAL_ARC_CONSOLE
++	bool "Console on ARC UART"
++	depends on SERIAL_ARC=y
++	select SERIAL_CORE_CONSOLE
++	help
++	  Enable system Console on ARC UART
++
++config SERIAL_ARC_NR_PORTS
++	int "Number of ARC UART ports"
++	depends on SERIAL_ARC
++	range 1 3
++	default "1"
++	help
++	  Set this to the number of serial ports you want the driver
++	  to support.
++
+ endmenu
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 4f694da..df1b998 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -82,3 +82,4 @@ obj-$(CONFIG_SERIAL_XILINX_PS_UART) += xilinx_uartps.o
+ obj-$(CONFIG_SERIAL_SIRFSOC) += sirfsoc_uart.o
+ obj-$(CONFIG_SERIAL_AR933X)   += ar933x_uart.o
+ obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
++obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+new file mode 100644
+index 0000000..c12efae
+--- /dev/null
++++ b/drivers/tty/serial/arc_uart.c
+@@ -0,0 +1,754 @@
++/*
++ * ARC On-Chip(fpga) UART Driver
++ *
++ * Copyright (C) 2010-2012 Synopsys, Inc. (www.synopsys.com)
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * vineetg: July 10th 2012
++ *  -Decoupled the driver from arch/arc
++ *    +Using platform_get_resource() for irq/membase (thx to bfin_uart.c)
++ *    +Using early_platform_xxx() for early console (thx to mach-shmobile/xxx)
++ *
++ * Vineetg: Aug 21st 2010
++ *  -Is uart_tx_stopped() not done in tty write path as it has already been
++ *   taken care of, in serial core
++ *
++ * Vineetg: Aug 18th 2010
++ *  -New Serial Core based ARC UART driver
++ *  -Derived largely from blackfin driver albiet with some major tweaks
++ *
++ * TODO:
++ *  -check if sysreq works
++ */
++
++#if defined(CONFIG_SERIAL_ARC_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
++
++#include <linux/module.h>
++#include <linux/serial.h>
++#include <linux/console.h>
++#include <linux/sysrq.h>
++#include <linux/platform_device.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
++#include <linux/serial_core.h>
++#include <linux/io.h>
++
++/*************************************
++ * ARC UART Hardware Specs
++ ************************************/
++#define ARC_UART_TX_FIFO_SIZE  1
++
++/*
++ * UART Register set (this is not a Standards Compliant IP)
++ * Also each reg is Word aligned, but only 8 bits wide
++ */
++#define R_ID0	0
++#define R_ID1	4
++#define R_ID2	8
++#define R_ID3	12
++#define R_DATA	16
++#define R_STS	20
++#define R_BAUDL	24
++#define R_BAUDH	28
++
++/* Bits for UART Status Reg (R/W) */
++#define RXIENB  0x04	/* Receive Interrupt Enable */
++#define TXIENB  0x40	/* Transmit Interrupt Enable */
++
++#define RXEMPTY 0x20	/* Receive FIFO Empty: No char receivede */
++#define TXEMPTY 0x80	/* Transmit FIFO Empty, thus char can be written into */
++
++#define RXFULL  0x08	/* Receive FIFO full */
++#define RXFULL1 0x10	/* Receive FIFO has space for 1 char (tot space=4) */
++
++#define RXFERR  0x01	/* Frame Error: Stop Bit not detected */
++#define RXOERR  0x02	/* OverFlow Err: Char recv but RXFULL still set */
++
++/* Uart bit fiddling helpers: lowest level */
++#define RBASE(uart, reg)      (uart->port.membase + reg)
++#define UART_REG_SET(u, r, v) writeb((v), RBASE(u, r))
++#define UART_REG_GET(u, r)    readb(RBASE(u, r))
++
++#define UART_REG_OR(u, r, v)  UART_REG_SET(u, r, UART_REG_GET(u, r) | (v))
++#define UART_REG_CLR(u, r, v) UART_REG_SET(u, r, UART_REG_GET(u, r) & ~(v))
++
++/* Uart bit fiddling helpers: API level */
++#define UART_SET_DATA(uart, val)   UART_REG_SET(uart, R_DATA, val)
++#define UART_GET_DATA(uart)        UART_REG_GET(uart, R_DATA)
++
++#define UART_SET_BAUDH(uart, val)  UART_REG_SET(uart, R_BAUDH, val)
++#define UART_SET_BAUDL(uart, val)  UART_REG_SET(uart, R_BAUDL, val)
++
++#define UART_CLR_STATUS(uart, val) UART_REG_CLR(uart, R_STS, val)
++#define UART_GET_STATUS(uart)      UART_REG_GET(uart, R_STS)
++
++#define UART_ALL_IRQ_DISABLE(uart) UART_REG_CLR(uart, R_STS, RXIENB|TXIENB)
++#define UART_RX_IRQ_DISABLE(uart)  UART_REG_CLR(uart, R_STS, RXIENB)
++#define UART_TX_IRQ_DISABLE(uart)  UART_REG_CLR(uart, R_STS, TXIENB)
++
++#define UART_ALL_IRQ_ENABLE(uart)  UART_REG_OR(uart, R_STS, RXIENB|TXIENB)
++#define UART_RX_IRQ_ENABLE(uart)   UART_REG_OR(uart, R_STS, RXIENB)
++#define UART_TX_IRQ_ENABLE(uart)   UART_REG_OR(uart, R_STS, TXIENB)
++
++#define ARC_SERIAL_DEV_NAME	"ttyARC"
++
++struct arc_uart_port {
++	struct uart_port port;
++	unsigned long baud;
++	int is_emulated;	/* H/w vs. Instruction Set Simulator */
++};
++
++static struct arc_uart_port arc_uart_ports[CONFIG_SERIAL_ARC_NR_PORTS];
++
++#ifdef CONFIG_SERIAL_ARC_CONSOLE
++static struct console arc_console;
++#endif
++
++#define DRIVER_NAME	"arc-uart"
++
++static struct uart_driver arc_uart_driver = {
++	.owner		= THIS_MODULE,
++	.driver_name	= DRIVER_NAME,
++	.dev_name	= ARC_SERIAL_DEV_NAME,
++	.major		= 0,
++	.minor		= 0,
++	.nr		= CONFIG_SERIAL_ARC_NR_PORTS,
++#ifdef CONFIG_SERIAL_ARC_CONSOLE
++	.cons		= &arc_console,
++#else
++	.cons		= NULL,
++#endif
++};
++
++static void arc_serial_stop_rx(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	UART_RX_IRQ_DISABLE(uart);
++}
++
++static void arc_serial_stop_tx(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	while (!(UART_GET_STATUS(uart) & TXEMPTY))
++		cpu_relax();
++
++	UART_TX_IRQ_DISABLE(uart);
++}
++
++/*
++ * Return TIOCSER_TEMT when transmitter is not busy.
++ */
++static unsigned int arc_serial_tx_empty(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++	unsigned int stat;
++
++	stat = UART_GET_STATUS(uart);
++	if (stat & TXEMPTY)
++		return TIOCSER_TEMT;
++	else
++		return 0;
++}
++
++/*
++ * Driver internal routine, used by both tty(serial core) as well as tx-isr
++ *  -Called under spinlock in either cases
++ *  -also tty->stopped / tty->hw_stopped has already been checked
++ *     = by uart_start( ) before calling us
++ *     = tx_ist checks that too before calling
++ */
++static void arc_serial_tx_chars(struct arc_uart_port *uart)
++{
++	struct circ_buf *xmit = &uart->port.state->xmit;
++	int sent = 0;
++	unsigned char ch;
++
++	if (unlikely(uart->port.x_char)) {
++		UART_SET_DATA(uart, uart->port.x_char);
++		uart->port.icount.tx++;
++		uart->port.x_char = 0;
++		sent = 1;
++	} else if (xmit->tail != xmit->head) {	/* TODO: uart_circ_empty */
++		ch = xmit->buf[xmit->tail];
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		uart->port.icount.tx++;
++		while (!(UART_GET_STATUS(uart) & TXEMPTY))
++			cpu_relax();
++		UART_SET_DATA(uart, ch);
++		sent = 1;
 +	}
 +
- 	gsm_dlci_begin_close(dlci);
- 	tty_port_close_end(&dlci->port, tty);
- 	tty_port_tty_set(&dlci->port, NULL);
-@@ -2967,7 +2983,8 @@ static void gsmtty_hangup(struct tty_struct *tty)
- {
- 	struct gsm_dlci *dlci =3D tty->driver_data;
- 	tty_port_hangup(&dlci->port);
--	gsm_dlci_begin_close(dlci);
-+	if (!dlci->gsm->dead)
-+		gsm_dlci_begin_close(dlci);
- }
-=20
- static int gsmtty_write(struct tty_struct *tty, const unsigned char *b=
-uf,
---=20
-1.7.0.4
-
-
-
-#
-" Ce courriel et les documents qui lui sont joints peuvent contenir des
-informations confidentielles ou ayant un caract=E8re priv=E9. S'ils ne =
-vous sont
-pas destin=E9s, nous vous signalons qu'il est strictement interdit de l=
-es
-divulguer, de les reproduire ou d'en utiliser de quelque mani=E8re que =
-ce
-soit le contenu. Si ce message vous a =E9t=E9 transmis par erreur, merc=
-i d'en
-informer l'exp=E9diteur et de supprimer imm=E9diatement de votre syst=E8=
-me
-informatique ce courriel ainsi que tous les documents qui y sont attach=
-=E9s."
-
-
-                               ******
-
-" This e-mail and any attached documents may contain confidential or
-proprietary information. If you are not the intended recipient, you are
-notified that any dissemination, copying of this e-mail and any attachm=
-ents
-thereto or use of their contents by any means whatsoever is strictly
-prohibited. If you have received this e-mail in error, please advise th=
-e
-sender immediately and delete this e-mail and all attached documents
-from your computer system."
-#
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
++	/*
++	 * If num chars in xmit buffer are too few, ask tty layer for more.
++	 * By Hard ISR to schedule processing in software interrupt part
++	 */
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(&uart->port);
++
++	if (sent)
++		UART_TX_IRQ_ENABLE(uart);
++}
++
++/*
++ * port is locked and interrupts are disabled
++ * uart_start( ) calls us under the port spinlock irqsave
++ */
++static void arc_serial_start_tx(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	arc_serial_tx_chars(uart);
++}
++
++static void arc_serial_rx_chars(struct arc_uart_port *uart)
++{
++	struct tty_struct *tty = tty_port_tty_get(&uart->port.state->port);
++	unsigned int status, ch, flg = 0;
++
++	if (!tty)
++		return;
++
++	/*
++	 * UART has 4 deep RX-FIFO. Driver's recongnition of this fact
++	 * is very subtle. Here's how ...
++	 * Upon getting a RX-Intr, such that RX-EMPTY=0, meaning data available,
++	 * driver reads the DATA Reg and keeps doing that in a loop, until
++	 * RX-EMPTY=1. Multiple chars being avail, with a single Interrupt,
++	 * before RX-EMPTY=0, implies some sort of buffering going on in the
++	 * controller, which is indeed the Rx-FIFO.
++	 */
++	while (!((status = UART_GET_STATUS(uart)) & RXEMPTY)) {
++
++		ch = UART_GET_DATA(uart);
++		uart->port.icount.rx++;
++
++		if (unlikely(status & (RXOERR | RXFERR))) {
++			if (status & RXOERR) {
++				uart->port.icount.overrun++;
++				flg = TTY_OVERRUN;
++				UART_CLR_STATUS(uart, RXOERR);
++			}
++
++			if (status & RXFERR) {
++				uart->port.icount.frame++;
++				flg = TTY_FRAME;
++				UART_CLR_STATUS(uart, RXFERR);
++			}
++		} else
++			flg = TTY_NORMAL;
++
++		if (unlikely(uart_handle_sysrq_char(&uart->port, ch)))
++			goto done;
++
++		uart_insert_char(&uart->port, status, RXOERR, ch, flg);
++
++done:
++		tty_flip_buffer_push(tty);
++	}
++
++	tty_kref_put(tty);
++}
++
++/*
++ * A note on the Interrupt handling state machine of this driver
++ *
++ * kernel printk writes funnel thru the console driver framework and in order
++ * to keep things simple as well as efficient, it writes to UART in polled
++ * mode, in one shot, and exits.
++ *
++ * OTOH, Userland output (via tty layer), uses interrupt based writes as there
++ * can be undeterministic delay between char writes.
++ *
++ * Thus Rx-interrupts are always enabled, while tx-interrupts are by default
++ * disabled.
++ *
++ * When tty has some data to send out, serial core calls driver's start_tx
++ * which
++ *   -checks-if-tty-buffer-has-char-to-send
++ *   -writes-data-to-uart
++ *   -enable-tx-intr
++ *
++ * Once data bits are pushed out, controller raises the Tx-room-avail-Interrupt.
++ * The first thing Tx ISR does is disable further Tx interrupts (as this could
++ * be the last char to send, before settling down into the quiet polled mode).
++ * It then calls the exact routine used by tty layer write to send out any
++ * more char in tty buffer. In case of sending, it re-enables Tx-intr. In case
++ * of no data, it remains disabled.
++ * This is how the transmit state machine is dynamically switched on/off
++ */
++
++static irqreturn_t arc_serial_isr(int irq, void *dev_id)
++{
++	struct arc_uart_port *uart = dev_id;
++	unsigned int status;
++
++	status = UART_GET_STATUS(uart);
++
++	/*
++	 * Single IRQ for both Rx (data available) Tx (room available) Interrupt
++	 * notifications from the UART Controller.
++	 * To demultiplex between the two, we check the relevant bits
++	 */
++	if ((status & RXIENB) && !(status & RXEMPTY)) {
++
++		/* already in ISR, no need of xx_irqsave */
++		spin_lock(&uart->port.lock);
++		arc_serial_rx_chars(uart);
++		spin_unlock(&uart->port.lock);
++	}
++
++	if ((status & TXIENB) && (status & TXEMPTY)) {
++
++		/* Unconditionally disable further Tx-Interrupts.
++		 * will be enabled by tx_chars() if needed.
++		 */
++		UART_TX_IRQ_DISABLE(uart);
++
++		spin_lock(&uart->port.lock);
++
++		if (!uart_tx_stopped(&uart->port))
++			arc_serial_tx_chars(uart);
++
++		spin_unlock(&uart->port.lock);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static unsigned int arc_serial_get_mctrl(struct uart_port *port)
++{
++	/*
++	 * Pretend we have a Modem status reg and following bits are
++	 *  always set, to satify the serial core state machine
++	 *  (DSR) Data Set Ready
++	 *  (CTS) Clear To Send
++	 *  (CAR) Carrier Detect
++	 */
++	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
++}
++
++static void arc_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	/* MCR not present */
++}
++
++/* Enable Modem Status Interrupts */
++
++static void arc_serial_enable_ms(struct uart_port *port)
++{
++	/* MSR not present */
++}
++
++static void arc_serial_break_ctl(struct uart_port *port, int break_state)
++{
++	/* ARC UART doesn't support sending Break signal */
++}
++
++static int arc_serial_startup(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	/* Before we hook up the ISR, Disable all UART Interrupts */
++	UART_ALL_IRQ_DISABLE(uart);
++
++	if (request_irq(uart->port.irq, arc_serial_isr, 0, "arc uart rx-tx",
++			uart)) {
++		pr_warn("Unable to attach ARC UART interrupt\n");
++		return -EBUSY;
++	}
++
++	UART_RX_IRQ_ENABLE(uart); /* Only Rx IRQ enabled to begin with */
++
++	return 0;
++}
++
++/* This is not really needed */
++static void arc_serial_shutdown(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++	free_irq(uart->port.irq, uart);
++}
++
++static void
++arc_serial_set_termios(struct uart_port *port, struct ktermios *new,
++		       struct ktermios *old)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++	unsigned int baud, uartl, uarth, hw_val;
++	unsigned long flags;
++
++	/*
++	 * Use the generic handler so that any specially encoded baud rates
++	 * such as SPD_xx flags or "%B0" can be handled
++	 * Max Baud I suppose will not be more than current 115K * 4
++	 * Formula for ARC UART is: hw-val = ((CLK/(BAUD*4)) -1)
++	 * spread over two 8-bit registers
++	 */
++	baud = uart_get_baud_rate(port, new, old, 0, 460800);
++
++	hw_val = port->uartclk / (uart->baud * 4) - 1;
++	uartl = hw_val & 0xFF;
++	uarth = (hw_val >> 8) & 0xFF;
++
++	/*
++	 * UART ISS(Instruction Set simulator) emulation has a subtle bug:
++	 * A existing value of Baudh = 0 is used as a indication to startup
++	 * it's internal state machine.
++	 * Thus if baudh is set to 0, 2 times, it chokes.
++	 * This happens with BAUD=115200 and the formaula above
++	 * Until that is fixed, when running on ISS, we will set baudh to !0
++	 */
++	if (uart->is_emulated)
++		uarth = 1;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	UART_ALL_IRQ_DISABLE(uart);
++
++	UART_SET_BAUDL(uart, uartl);
++	UART_SET_BAUDH(uart, uarth);
++
++	UART_RX_IRQ_ENABLE(uart);
++
++	/*
++	 * UART doesn't support Parity/Hardware Flow Control;
++	 * Only supports 8N1 character size
++	 */
++	new->c_cflag &= ~(CMSPAR|CRTSCTS|CSIZE);
++	new->c_cflag |= CS8;
++
++	if (old)
++		tty_termios_copy_hw(new, old);
++
++	/* Don't rewrite B0 */
++	if (tty_termios_baud_rate(new))
++		tty_termios_encode_baud_rate(new, baud, baud);
++
++	uart_update_timeout(port, new->c_cflag, baud);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static const char *arc_serial_type(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	return uart->port.type == PORT_ARC ? DRIVER_NAME : NULL;
++}
++
++/*
++ * Release the memory region(s) being used by 'port'.
++ */
++static void arc_serial_release_port(struct uart_port *port)
++{
++}
++
++/*
++ * Request the memory region(s) being used by 'port'.
++ */
++static int arc_serial_request_port(struct uart_port *port)
++{
++	return 0;
++}
++
++/*
++ * Verify the new serial_struct (for TIOCSSERIAL).
++ */
++static int
++arc_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
++{
++	return 0;
++}
++
++/*
++ * Configure/autoconfigure the port.
++ */
++static void arc_serial_config_port(struct uart_port *port, int flags)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	if (flags & UART_CONFIG_TYPE &&
++	    arc_serial_request_port(&uart->port) == 0)
++		uart->port.type = PORT_ARC;
++}
++
++#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_ARC_CONSOLE)
++
++static void arc_serial_poll_putchar(struct uart_port *port, unsigned char chr)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++
++	while (!(UART_GET_STATUS(uart) & TXEMPTY))
++		cpu_relax();
++
++	UART_SET_DATA(uart, chr);
++}
++#endif
++
++#ifdef CONFIG_CONSOLE_POLL
++static int arc_serial_poll_getchar(struct uart_port *port)
++{
++	struct arc_uart_port *uart = (struct arc_uart_port *)port;
++	unsigned char chr;
++
++	while (!(UART_GET_STATUS(uart) & RXEMPTY))
++		cpu_relax();
++
++	chr = UART_GET_DATA(uart);
++	return chr;
++}
++#endif
++
++static struct uart_ops arc_serial_pops = {
++	.tx_empty	= arc_serial_tx_empty,
++	.set_mctrl	= arc_serial_set_mctrl,
++	.get_mctrl	= arc_serial_get_mctrl,
++	.stop_tx	= arc_serial_stop_tx,
++	.start_tx	= arc_serial_start_tx,
++	.stop_rx	= arc_serial_stop_rx,
++	.enable_ms	= arc_serial_enable_ms,
++	.break_ctl	= arc_serial_break_ctl,
++	.startup	= arc_serial_startup,
++	.shutdown	= arc_serial_shutdown,
++	.set_termios	= arc_serial_set_termios,
++	.type		= arc_serial_type,
++	.release_port	= arc_serial_release_port,
++	.request_port	= arc_serial_request_port,
++	.config_port	= arc_serial_config_port,
++	.verify_port	= arc_serial_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_put_char = arc_serial_poll_putchar,
++	.poll_get_char = arc_serial_poll_getchar,
++#endif
++};
++
++static int __devinit
++arc_uart_init_one(struct platform_device *pdev, struct arc_uart_port *uart)
++{
++	struct resource *res, *res2;
++	unsigned long *plat_data;
++
++	if (pdev->id < 0 || pdev->id >= CONFIG_SERIAL_ARC_NR_PORTS) {
++		dev_err(&pdev->dev, "Wrong uart platform device id.\n");
++		return -ENOENT;
++	}
++
++	plat_data = ((unsigned long *)(pdev->dev.platform_data));
++	uart->baud = plat_data[0];
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
++
++	res2 = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (!res2)
++		return -ENODEV;
++
++	uart->port.mapbase = res->start;
++	uart->port.membase = ioremap_nocache(res->start, resource_size(res));
++	if (!uart->port.membase)
++		/* No point of pr_err since UART itself is hosed here */
++		return -ENXIO;
++
++	uart->port.irq = res2->start;
++	uart->port.dev = &pdev->dev;
++	uart->port.iotype = UPIO_MEM;
++	uart->port.flags = UPF_BOOT_AUTOCONF;
++	uart->port.line = pdev->id;
++	uart->port.ops = &arc_serial_pops;
++
++	uart->port.uartclk = plat_data[1];
++	uart->port.fifosize = ARC_UART_TX_FIFO_SIZE;
++
++	/*
++	 * uart_insert_char( ) uses it in decideding whether to ignore a
++	 * char or not. Explicitly setting it here, removes the subtelty
++	 */
++	uart->port.ignore_status_mask = 0;
++
++	/* Real Hardware vs. emulated to work around a bug */
++	uart->is_emulated = !!plat_data[2];
++
++	return 0;
++}
++
++#ifdef CONFIG_SERIAL_ARC_CONSOLE
++
++static int __devinit arc_serial_console_setup(struct console *co, char *options)
++{
++	struct uart_port *port;
++	int baud = 115200;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
++
++	if (co->index < 0 || co->index >= CONFIG_SERIAL_ARC_NR_PORTS)
++		return -ENODEV;
++
++	/*
++	 * The uart port backing the console (e.g. ttyARC1) might not have been
++	 * init yet. If so, defer the console setup to after the port.
++	 */
++	port = &arc_uart_ports[co->index].port;
++	if (!port->membase)
++		return -ENODEV;
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++
++	/*
++	 * Serial core will call port->ops->set_termios( )
++	 * which will set the baud reg
++	 */
++	return uart_set_options(port, co, baud, parity, bits, flow);
++}
++
++static void arc_serial_console_putchar(struct uart_port *port, int ch)
++{
++	arc_serial_poll_putchar(port, (unsigned char)ch);
++}
++
++/*
++ * Interrupts are disabled on entering
++ */
++static void arc_serial_console_write(struct console *co, const char *s,
++				     unsigned int count)
++{
++	struct uart_port *port = &arc_uart_ports[co->index].port;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	uart_console_write(port, s, count, arc_serial_console_putchar);
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static struct console arc_console = {
++	.name	= ARC_SERIAL_DEV_NAME,
++	.write	= arc_serial_console_write,
++	.device	= uart_console_device,
++	.setup	= arc_serial_console_setup,
++	.flags	= CON_PRINTBUFFER,
++	.index	= -1,
++	.data	= &arc_uart_driver
++};
++
++static __init void early_serial_write(struct console *con, const char *s,
++					unsigned int n)
++{
++	struct uart_port *port = &arc_uart_ports[con->index].port;
++	unsigned int i;
++
++	for (i = 0; i < n; i++, s++) {
++		if (*s == '\n')
++			arc_serial_poll_putchar(port, '\r');
++		arc_serial_poll_putchar(port, *s);
++	}
++}
++
++static struct __initdata console arc_early_serial_console = {
++	.name = "early_ARCuart",
++	.write = early_serial_write,
++	.flags = CON_PRINTBUFFER | CON_BOOT,
++	.index = -1
++};
++
++static int __devinit arc_serial_probe_earlyprintk(struct platform_device *pdev)
++{
++	arc_early_serial_console.index = pdev->id;
++
++	arc_uart_init_one(pdev, &arc_uart_ports[pdev->id]);
++
++	arc_serial_console_setup(&arc_early_serial_console, NULL);
++
++	register_console(&arc_early_serial_console);
++	return 0;
++}
++#else
++static int __devinit arc_serial_probe_earlyprintk(struct platform_device *pdev)
++{
++	return -ENODEV;
++}
++#endif	/* CONFIG_SERIAL_ARC_CONSOLE */
++
++static int __devinit arc_serial_probe(struct platform_device *pdev)
++{
++	struct arc_uart_port *uart;
++	int rc;
++
++	if (is_early_platform_device(pdev))
++		return arc_serial_probe_earlyprintk(pdev);
++
++	uart = &arc_uart_ports[pdev->id];
++	rc = arc_uart_init_one(pdev, uart);
++	if (rc)
++		return rc;
++
++	return uart_add_one_port(&arc_uart_driver, &uart->port);
++}
++
++static int __devexit arc_serial_remove(struct platform_device *pdev)
++{
++	/* This will never be called */
++	return 0;
++}
++
++static struct platform_driver arc_platform_driver = {
++	.probe = arc_serial_probe,
++	.remove = __devexit_p(arc_serial_remove),
++	.driver = {
++		.name = DRIVER_NAME,
++		.owner = THIS_MODULE,
++	 },
++};
++
++#ifdef CONFIG_SERIAL_ARC_CONSOLE
++/*
++ * Register an early platform driver of "earlyprintk" class.
++ * ARCH platform code installs the driver and probes the early devices
++ * The installation could rely on user specifying earlyprintk=xyx in cmd line
++ * or it could be done independently, for all "earlyprintk" class drivers.
++ * [see arch/arc/plat-arcfpga/platform.c]
++ */
++early_platform_init("earlyprintk", &arc_platform_driver);
++
++#endif  /* CONFIG_SERIAL_ARC_CONSOLE */
++
++static int __init arc_serial_init(void)
++{
++	int ret;
++
++	pr_info("Serial: ARC serial driver: platform register\n");
++
++	ret = uart_register_driver(&arc_uart_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&arc_platform_driver);
++	if (ret) {
++		pr_debug("uart register failed\n");
++		uart_unregister_driver(&arc_uart_driver);
++	}
++
++	return ret;
++}
++
++static void __exit arc_serial_exit(void)
++{
++	platform_driver_unregister(&arc_platform_driver);
++	uart_unregister_driver(&arc_uart_driver);
++}
++
++module_init(arc_serial_init);
++module_exit(arc_serial_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("plat-arcfpga/uart");
++MODULE_AUTHOR("Vineet Gupta");
++MODULE_DESCRIPTION("ARC(Synopsys) On-Chip(fpga) serial driver");
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 7e1ab20..ebcc73f 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -215,5 +215,7 @@
+ /* Energy Micro efm32 SoC */
+ #define PORT_EFMUART   100
+ 
++/* ARC (Synopsys) on-chip UART */
++#define PORT_ARC       101
+ 
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
+-- 
+1.7.4.1
