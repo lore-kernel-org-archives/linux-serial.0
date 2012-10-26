@@ -1,40 +1,48 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fix for 3.7-rc3
-Date: Fri, 26 Oct 2012 10:16:57 -0700
-Message-ID: <20121026171657.GA11406@kroah.com>
+From: Min Zhang <mzhang@mvista.com>
+Subject: Re: [PATCH] serial: 8250 check iir rdi in interrupt
+Date: Fri, 26 Oct 2012 14:57:31 -0700
+Message-ID: <CAJ0e-Fqzq6s6H=9CMpqJKug2=oR89_qw_52Yz-ihJd-8Bc-_+Q@mail.gmail.com>
+References: <alpine.LFD.2.02.1210221633450.28146@nightowl>
+	<20121023110133.62bed522@pyramind.ukuu.org.uk>
+	<CAJ0e-Fofs48N9VnYr1_8Kch6+yHjGx9iCWBRtRsqpD-B_rWutQ@mail.gmail.com>
+	<20121026151902.0a382d16@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ia0-f174.google.com ([209.85.210.174]:48850 "EHLO
+	mail-ia0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755376Ab2JZV5c (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Oct 2012 17:57:32 -0400
+Received: by mail-ia0-f174.google.com with SMTP id y32so2545690iag.19
+        for <linux-serial@vger.kernel.org>; Fri, 26 Oct 2012 14:57:32 -0700 (PDT)
+In-Reply-To: <20121026151902.0a382d16@pyramind.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The following changes since commit 6f0c0580b70c89094b3422ba81118c7b959c7556:
+On Fri, Oct 26, 2012 at 7:19 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
 
-  Linux 3.7-rc2 (2012-10-20 12:11:32 -0700)
+> So we only need to check this in serial8250_handle_irq when IIR indicates
+> a data timeout interrupt ?
+>
+> Can we do
+>
+>         if ((iir & 0x0F) == 0x0C) {
+>                 /* Expensive RDI check */
+>         }
+>
+>
+>
+> Alan
 
-are available in the git repository at:
+Checking data timeout interrupt is only for "too much work for irq"
+problem. There is another console freeze problem which is caused by
+reading receive FIFO when there is no RDI interrupt, such as during
+THRI transmit interrupt, so no timeout interrupt. This time one has to
+check two both IIR and LSR. After all these checking, it becomes the
+original patch anyway.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.7-rc3
-
-for you to fetch changes up to a4f743851f74fc3e0cc40c13082e65c24139f481:
-
-  Revert "serial: omap: fix software flow control" (2012-10-24 11:57:21 -0700)
-
-----------------------------------------------------------------
-Serial fix for 3.7-rc3
-
-Here is one patch, a revert of a omap serial driver patch that was causing
-problems, for your 3.7-rc tree.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Felipe Balbi (1):
-      Revert "serial: omap: fix software flow control"
-
- arch/arm/plat-omap/include/plat/omap-serial.h |  4 ++--
- drivers/tty/serial/omap-serial.c              | 12 ++++++------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+I am posting another simpler revision to exclude timer handler from
+this workaround, and make this workaround default off and inline.
