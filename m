@@ -1,47 +1,91 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [GIT PATCH] TTY patches for 3.7-rc1
-Date: Sun, 28 Oct 2012 15:22:16 +0000
-Message-ID: <20121028152216.2339f828@pyramind.ukuu.org.uk>
-References: <20121001183046.GA13042@kroah.com>
-	<506A0FCA.2020908@suse.cz>
-	<20121001221350.GA10172@kroah.com>
-	<508D033E.8030109@suse.cz>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH v5] serial/arc-uart: Add new driver
+Date: Mon, 29 Oct 2012 13:06:50 +0200
+Message-ID: <20121029110650.GA29410@arwen.pp.htv.fi>
+References: <1351252996-28484-1-git-send-email-vgupta@synopsys.com>
+ <1351252996-28484-2-git-send-email-vgupta@synopsys.com>
+ <20121026121032.GD26342@arwen.pp.htv.fi>
+ <508B8536.1080303@synopsys.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:56845 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751695Ab2J1PRN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 28 Oct 2012 11:17:13 -0400
-In-Reply-To: <508D033E.8030109@suse.cz>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:58311 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758580Ab2J2LMo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Oct 2012 07:12:44 -0400
+Content-Disposition: inline
+In-Reply-To: <508B8536.1080303@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Stanislav Kozina <skozina@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: balbi@ti.com, gregkh@linuxfoundation.org, alan@linux.intel.com, arc-linux-dev@synopsys.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sun, 28 Oct 2012 11:04:46 +0100
-Jiri Slaby <jslaby@suse.cz> wrote:
+--2fHTh5uZTiUOsy+g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On 10/02/2012 12:13 AM, Greg KH wrote:
-> > On Mon, Oct 01, 2012 at 11:48:58PM +0200, Jiri Slaby wrote:
-> >> On 10/01/2012 08:30 PM, Greg KH wrote:
-> >>> Stanislav Kozina (2):
-> >>>       tty: Fix possible race in n_tty_read()
-> >>
-> >> The (pretty hopeless) commit log says:
-> >>     Fix possible panic caused by unlocked access to tty->read_cnt in
-> >>     while-loop condition in n_tty_read().
-> >>
-> >> Just curious, what kind of panic that can cause, can you be more
-> >> concrete on that? I suppose two readers, one eats everything, the other
-> >> is a killer? And should we backport to -stable?
-> > 
-> > Stanislav, you are the one who could reproduce this, any answers here?
-> 
-> Ping?
+On Sat, Oct 27, 2012 at 12:24:46PM +0530, Vineet Gupta wrote:
+> On Friday 26 October 2012 05:40 PM, Felipe Balbi wrote:
+> > On Fri, Oct 26, 2012 at 05:33:16PM +0530, Vineet.Gupta1@synopsys.com wr=
+ote:
+> >> +/*
+> >> + * Release the memory region(s) being used by 'port'.
+> >> + */
+> >> +static void arc_serial_release_port(struct uart_port *port)
+> >> +{
+> >> +}
+> >> +
+> >> +/*
+> >> + * Request the memory region(s) being used by 'port'.
+> >> + */
+> >> +static int arc_serial_request_port(struct uart_port *port)
+> >> +{
+> >> +	return 0;
+> >> +}
+> >> +
+> >> +/*
+> >> + * Verify the new serial_struct (for TIOCSSERIAL).
+> >> + */
+> >> +static int
+> >> +arc_serial_verify_port(struct uart_port *port, struct serial_struct *=
+ser)
+> >> +{
+> >> +	return 0;
+> >> +}
+> > why all these empty functions with wrong comments above them ??
+>=20
+> Actually serial_core.c invokes the reqest/release callbacks w/o
+> verifying for a NULL pointer check. Thus they need to be in there even
+> if empty. I've removed the offending comments though !
 
-Thread here
+fair enough ;-)
 
-http://permalink.gmane.org/gmane.linux.serial/8365
+--=20
+balbi
+
+--2fHTh5uZTiUOsy+g
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQjmNKAAoJEIaOsuA1yqRE3zwP/R+Jzu4KhdGasFkldkT5b9CQ
+mLNwPYMZjFowLRMmt2wOExg3+4xBr3i5yngrrVXzydd8BMIeJnlXMpAKjJSMKr2I
+4RY9eFvGCDldJX9seCTRDR3ffHuQau2VlblGqGWo+96/JimBwwccnG9VLQA65u3o
+mgWoBWVJS+35o+nYDKichvzzALB8uFr5G6uPnSftWmh8FUwnIs8RjUUbJdev5wUV
+2ndksOOi7AqCvcttnWE69C5T760AzpaESB0xD9Oo2L91mt/8hrSrEpWQ33/MKHtY
+D9VwcgQlx5X+8q03nEk+60XpBLUWGxmuvUDknVhyFbORMQCMDMUHrJhP5RedeY6a
+WCWQSyAOhGMYmcRiXPcaa0h53byoyFhrD2bn3V3Dx3uCcQtM95ZXkV0PMzgpgcAS
+9QeN1RhPy7tsefT2dSVsOdfwj0fIVnXSHaQGtcDA6twzt7Z+gFgYSS8QF2v72ton
+bBmCjeCd83Iy42J0IFNrQPVUhDK+1LXy0qCl1Sx0U0F/1elYi+DZZI37swbq95Ek
+tQTmxq67r7g5Kfr6GeSeKtu0stMP3H8ARKxmFI0wLZ4z/OBjAh2ayEkXtoS/iKQ2
+8zVXljaHIRn1crFxUo2lxL4IkkoJsQc91lZ9LIQejN/UrS0w/TX5C6NgF1BGWBm8
+QS3aQuqdCiex90ji1VDB
+=LO9b
+-----END PGP SIGNATURE-----
+
+--2fHTh5uZTiUOsy+g--
