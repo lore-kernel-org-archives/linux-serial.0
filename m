@@ -1,139 +1,62 @@
-From: Guillaume Juan <guillaume.juan@sagemcom.com>
-Subject: Re: [PATCH] n_gsm: prevent crash due to dereferencing NULL gsm->tty
-Date: Mon, 29 Oct 2012 19:16:17 +0100
-Message-ID: <29600_1351534580_508EC7F3_29600_2345_1_508EC7F1.9030102@sagemcom.com>
-References: <26026_1351239109_508A45C4_26026_63_1_508A45C1.3010407@sagemcom.com> <20121029162947.6270b4da@pyramind.ukuu.org.uk>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: New serial card development
+Date: Mon, 29 Oct 2012 15:04:02 -0500
+Message-ID: <CAJp1Oe7MMuk8TNBom2EDXx6UBdMV6qAE5fDdKTZ0o-329QSdaA@mail.gmail.com>
+References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk> <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
+ <20121019212158.GB4721@thunk.org> <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
+ <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com> <20121023183859.GA3317@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp1.smmp-rueil.gmessaging.net ([81.80.3.134]:48475 "EHLO
-	smtp1.smmp-rueil.gmessaging.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932181Ab2J2SQW (ORCPT
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:52930 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759048Ab2J2UEX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 14:16:22 -0400
-In-Reply-To: <20121029162947.6270b4da@pyramind.ukuu.org.uk>
+	Mon, 29 Oct 2012 16:04:23 -0400
+Received: by mail-vb0-f46.google.com with SMTP id ff1so5748957vbb.19
+        for <linux-serial@vger.kernel.org>; Mon, 29 Oct 2012 13:04:22 -0700 (PDT)
+In-Reply-To: <20121023183859.GA3317@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Le 29/10/2012 17:29, Alan Cox a =E9crit :
+On Tue, Oct 23, 2012 at 1:38 PM, Greg KH <greg@kroah.com> wrote:
+> On Tue, Oct 23, 2012 at 11:31:41AM -0500, Matt Schulte wrote:
+>> On Tue, Oct 23, 2012 at 11:27 AM, Matt Schulte
+>> <matts@commtech-fastcom.com> wrote:
+>> > On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
+>> >> Alan's advice to get your card working as a basic serial card is very
+>> >> good one.  Get basic functionality working, and then you can add the
+>> >> support for the extra bits later....
+>> >
+>> > I can see the logic in getting it working as a basic serial card
+>> > first.  I think at minimum I would still need to implement the extra
+>> > divisor calculations to get accurate bit rates.
+>> >
+>> > So when it works as a basic serial card, I assume you would want me to
+>> > use the default PCI IDs to keep it more generic.  Then would I add my
+>> > own PCI IDs and refer them back to the generic port?
+>> >
 
->=20
-> More important is fixing the bug completely. I agree there is a bug I
-> don't think your fix is sufficient however.
->
+I am working to get the Exar devices added to the 8250 driver.  I
+think I get most of what I need to make happen until I get to the
+detection of the EFR register.  Can someone explain to me what is
+going on here and where the Exar device is supposed to end up?  It
+seems to me that I would expect them to show up somewhere around :
 
-It may not fix all cases but I think it improves things both from a
-practical and theoretical point of view.
-In particular the part in gsmtty_hangup: the crash was systematic if th=
-e
-user space released the virtual ttys fds only after the N_GSM line
-discipline was removed (with ioctl).
-I explained all the crashes I had, and did not reproduced crashes after
-my patch. Note that I don't have use-cases where the DCE itself opens
-some DLCIs, which certainly can cause a lot more trouble.
+/*
+ * Exar uarts have EFR in a weird location
+ */
 
+But instead I am getting my UARTs detected as EFRv1, iir=3 and marked
+as type=ST16650.
 
->=20
-> You no longer set dlci->dead before doing the dlci release
+For reference the Exar chips have EFR located at an address of 1001
+(UART_XR_EFR).  There isn't anything special that has to be done to
+access this location, just look at 1001.
 
-Yes I do, see line 2036:
-+	if (dlci)
-+		dlci->dead =3D 1;
-I do it only for DLCI#0 but this is the same as what the previous code
-was doing (I don't understand why but I thought that was another topic)=
-=2E
-I was not sure that this dlci->dead was really efficient, but I decided
-to keep it because addressing the relevance of dlci->dead was not the
-purpose of my patch.
-
-> Also moving the gsm_dlci_release seems to have no value at all becaus=
-e
-> there is no locking in the code concerned so viewed from any other th=
-read
-> you've changed nothing but timings. Yes its probably way harder to hi=
-t.
->=20
-
-I don't really see your point, or I think you may be speaking of a
-different matter. Once gsm_dlci_release has done its job, the T2 timer
-should no longer be rearmed by anything the user-space could do, becaus=
-e
-the tty will be hung up (tty_vhangup is synchronous isn't it ?). At
-least tty_port_close_start would not call tty_port_lower_dtr_rts
-anymore. So then the comment /* Now we are sure T2 has stopped */ after
-del_timer_sync will be true.
-Do you see any other paths that may lead to relaunch the T2 timer
-afterwards? Don't you agree that gsmtty_release should be done before
-del_timer_sync?
-
-> I can see two ways of tackling it both of which basically come down t=
-o
-> the same thing. In gsmld_detach_gsm after the gsm_cleanup_mux we need=
- to
->=20
-> - be sure the thing cannot re-open
-
-If you talk about reopening from the other side, I agree with you that
-dlci->dead does not seem to protect enough. However I can read in the
-description of gsmld_close that "the function will not be called while
-other ldisc methods are in progress". If this is true, the concurrence
-of gsmld_receive_buf should not be possible ?
-
-> - wait until all the DLCIs are dead
-
-I am not sure what you mean by this:
-- gsm_cleanup_mux already waits for the answer to CLD command and to th=
-e
-closure of DLCI#0. As I reported previously, it will never see the
-answers coming because of the line-discipline life-cycle design, but
-this is yet another topic.
-- or maybe you mean wait until we are sure there are no longer
-references to the virtual ttys. This seems to me impossible to achieve
-because the user-space closes them at its own pace.
-
-> then do the tty_kref_put and gsm->tty =3D NULL
->=20
-> Thoughts ?
->=20
-> Alan
-
-
-Guillaume
-
-#
-" Ce courriel et les documents qui lui sont joints peuvent contenir des
-informations confidentielles ou ayant un caract=E8re priv=E9. S'ils ne =
-vous sont
-pas destin=E9s, nous vous signalons qu'il est strictement interdit de l=
-es
-divulguer, de les reproduire ou d'en utiliser de quelque mani=E8re que =
-ce
-soit le contenu. Si ce message vous a =E9t=E9 transmis par erreur, merc=
-i d'en
-informer l'exp=E9diteur et de supprimer imm=E9diatement de votre syst=E8=
-me
-informatique ce courriel ainsi que tous les documents qui y sont attach=
-=E9s."
-
-
-                               ******
-
-" This e-mail and any attached documents may contain confidential or
-proprietary information. If you are not the intended recipient, you are
-notified that any dissemination, copying of this e-mail and any attachm=
-ents
-thereto or use of their contents by any means whatsoever is strictly
-prohibited. If you have received this e-mail in error, please advise th=
-e
-sender immediately and delete this e-mail and all attached documents
-from your computer system."
-#
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Matt Schulte
