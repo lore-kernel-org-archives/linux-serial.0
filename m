@@ -1,60 +1,112 @@
 From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 1/3] uart: update the sysfs handler to use uart_get_info
-Date: Mon, 29 Oct 2012 15:19:57 +0000
-Message-ID: <20121029151901.9451.41783.stgit@localhost.localdomain>
+Subject: [PATCH 2/3] uart: tidy the uart_get_info API
+Date: Mon, 29 Oct 2012 15:20:25 +0000
+Message-ID: <20121029152008.9451.42147.stgit@localhost.localdomain>
+References: <20121029151901.9451.41783.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58100 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58105 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759269Ab2J2PSm (ORCPT
+	with ESMTP id S1757995Ab2J2PTH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 11:18:42 -0400
+	Mon, 29 Oct 2012 11:19:07 -0400
+In-Reply-To: <20121029151901.9451.41783.stgit@localhost.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, greg@kroah.com
 
 From: Alan Cox <alan@linux.intel.com>
 
-The two patches needed are now in the tree. The first added the sysfs
-interface and directly accesses the uartclk. The second provides a
-proper interface for getting the values.
+We pass both port and state because the original caller had both to hand.
+With all the attribute callers this won't be true so do the conversion in
+the function itself.
 
-Wire them together.
-
-This formes a basis for both get and set methods for any of the other uart
-properties and we can now fill them out further.
+The current callers all do lock/query/unlock. This won't be true for future
+set based cases but there are plenty of get ones that will exist so split
+the code with a helper for the future cases.
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
 
- drivers/tty/serial/serial_core.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/serial_core.c |   29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0fcfd98..477e079 100644
+index 477e079..0c4304e 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -2329,15 +2329,15 @@ struct tty_driver *uart_console_device(struct console *co, int *index)
- static ssize_t uart_get_attr_uartclk(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
--	int ret;
-+	struct serial_struct tmp;
- 	struct tty_port *port = dev_get_drvdata(dev);
- 	struct uart_state *state = container_of(port, struct uart_state, port);
- 
--	mutex_lock(&state->port.mutex);
--	ret = snprintf(buf, PAGE_SIZE, "%d\n", state->uart_port->uartclk);
--	mutex_unlock(&state->port.mutex);
-+	mutex_lock(&port->mutex);
-+	uart_get_info(port, state, &tmp);
-+	mutex_unlock(&port->mutex);
- 
--	return ret;
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.baud_base * 16);
+@@ -634,10 +634,10 @@ static void uart_unthrottle(struct tty_struct *tty)
+ 		uart_set_mctrl(port, TIOCM_RTS);
  }
  
- static DEVICE_ATTR(uartclk, S_IRUSR | S_IRGRP, uart_get_attr_uartclk, NULL);
+-static void uart_get_info(struct tty_port *port,
+-                        struct uart_state *state,
++static void do_uart_get_info(struct tty_port *port,
+ 			struct serial_struct *retinfo)
+ {
++	struct uart_state *state = container_of(port, struct uart_state, port);
+ 	struct uart_port *uport = state->uart_port;
+ 
+ 	memset(retinfo, 0, sizeof(*retinfo));
+@@ -662,17 +662,21 @@ static void uart_get_info(struct tty_port *port,
+ 	retinfo->iomem_base      = (void *)(unsigned long)uport->mapbase;
+ }
+ 
+-static int uart_get_info_user(struct uart_state *state,
+-			 struct serial_struct __user *retinfo)
++static void uart_get_info(struct tty_port *port,
++			struct serial_struct *retinfo)
+ {
+-	struct tty_port *port = &state->port;
+-	struct serial_struct tmp;
+-
+ 	/* Ensure the state we copy is consistent and no hardware changes
+ 	   occur as we go */
+ 	mutex_lock(&port->mutex);
+-	uart_get_info(port, state, &tmp);
++	do_uart_get_info(port, retinfo);
+ 	mutex_unlock(&port->mutex);
++}
++
++static int uart_get_info_user(struct tty_port *port,
++			 struct serial_struct __user *retinfo)
++{
++	struct serial_struct tmp;
++	uart_get_info(port, &tmp);
+ 
+ 	if (copy_to_user(retinfo, &tmp, sizeof(*retinfo)))
+ 		return -EFAULT;
+@@ -1131,7 +1135,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	 */
+ 	switch (cmd) {
+ 	case TIOCGSERIAL:
+-		ret = uart_get_info_user(state, uarg);
++		ret = uart_get_info_user(port, uarg);
+ 		break;
+ 
+ 	case TIOCSSERIAL:
+@@ -2331,12 +2335,8 @@ static ssize_t uart_get_attr_uartclk(struct device *dev,
+ {
+ 	struct serial_struct tmp;
+ 	struct tty_port *port = dev_get_drvdata(dev);
+-	struct uart_state *state = container_of(port, struct uart_state, port);
+-
+-	mutex_lock(&port->mutex);
+-	uart_get_info(port, state, &tmp);
+-	mutex_unlock(&port->mutex);
+ 
++	uart_get_info(port, &tmp);
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.baud_base * 16);
+ }
+ 
+@@ -2356,6 +2356,7 @@ static const struct attribute_group *tty_dev_attr_groups[] = {
+ 	NULL
+ 	};
+ 
++
+ /**
+  *	uart_add_one_port - attach a driver-defined port structure
+  *	@drv: pointer to the uart low level driver structure for this port
 
