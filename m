@@ -1,60 +1,60 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH v5] serial/arc-uart: Add new driver
-Date: Mon, 29 Oct 2012 16:48:02 +0530
-Message-ID: <508E65EA.2080402@synopsys.com>
-References: <1351252996-28484-1-git-send-email-vgupta@synopsys.com> <1351252996-28484-2-git-send-email-vgupta@synopsys.com> <20121026121032.GD26342@arwen.pp.htv.fi> <508B8536.1080303@synopsys.com> <20121029110650.GA29410@arwen.pp.htv.fi>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH 1/3] uart: update the sysfs handler to use uart_get_info
+Date: Mon, 29 Oct 2012 15:19:57 +0000
+Message-ID: <20121029151901.9451.41783.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vaxjo.synopsys.com ([198.182.60.75]:62236 "EHLO
-	vaxjo.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752457Ab2J2LSR (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58100 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759269Ab2J2PSm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 07:18:17 -0400
-In-Reply-To: <20121029110650.GA29410@arwen.pp.htv.fi>
+	Mon, 29 Oct 2012 11:18:42 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, arc-linux-dev@synopsys.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org, greg@kroah.com
 
-I've already posted a v7 of the driver - with all your comments.
-If you think it's ok - can you ACK it please !
+From: Alan Cox <alan@linux.intel.com>
 
-TIA,
--Vineet
+The two patches needed are now in the tree. The first added the sysfs
+interface and directly accesses the uartclk. The second provides a
+proper interface for getting the values.
 
-On Monday 29 October 2012 04:36 PM, Felipe Balbi wrote:
-> On Sat, Oct 27, 2012 at 12:24:46PM +0530, Vineet Gupta wrote:
->> On Friday 26 October 2012 05:40 PM, Felipe Balbi wrote:
->>> On Fri, Oct 26, 2012 at 05:33:16PM +0530, Vineet.Gupta1@synopsys.com wrote:
->>>> +/*
->>>> + * Release the memory region(s) being used by 'port'.
->>>> + */
->>>> +static void arc_serial_release_port(struct uart_port *port)
->>>> +{
->>>> +}
->>>> +
->>>> +/*
->>>> + * Request the memory region(s) being used by 'port'.
->>>> + */
->>>> +static int arc_serial_request_port(struct uart_port *port)
->>>> +{
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +/*
->>>> + * Verify the new serial_struct (for TIOCSSERIAL).
->>>> + */
->>>> +static int
->>>> +arc_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
->>>> +{
->>>> +	return 0;
->>>> +}
->>> why all these empty functions with wrong comments above them ??
->> Actually serial_core.c invokes the reqest/release callbacks w/o
->> verifying for a NULL pointer check. Thus they need to be in there even
->> if empty. I've removed the offending comments though !
-> fair enough ;-)
->
+Wire them together.
+
+This formes a basis for both get and set methods for any of the other uart
+properties and we can now fill them out further.
+
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
+
+ drivers/tty/serial/serial_core.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0fcfd98..477e079 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2329,15 +2329,15 @@ struct tty_driver *uart_console_device(struct console *co, int *index)
+ static ssize_t uart_get_attr_uartclk(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	int ret;
++	struct serial_struct tmp;
+ 	struct tty_port *port = dev_get_drvdata(dev);
+ 	struct uart_state *state = container_of(port, struct uart_state, port);
+ 
+-	mutex_lock(&state->port.mutex);
+-	ret = snprintf(buf, PAGE_SIZE, "%d\n", state->uart_port->uartclk);
+-	mutex_unlock(&state->port.mutex);
++	mutex_lock(&port->mutex);
++	uart_get_info(port, state, &tmp);
++	mutex_unlock(&port->mutex);
+ 
+-	return ret;
++	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.baud_base * 16);
+ }
+ 
+ static DEVICE_ATTR(uartclk, S_IRUSR | S_IRGRP, uart_get_attr_uartclk, NULL);
 
