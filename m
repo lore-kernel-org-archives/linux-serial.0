@@ -1,99 +1,70 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: 8250_early for big-endian
-Date: Mon, 29 Oct 2012 17:38:07 +0200
-Message-ID: <264C179F799EF24AB26D5319053335E80CC3001B83@ezexch.ezchip.com>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-	<20121012175150.4b081343@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
-	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
-	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
-	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
-	<20121014133216.686277e1@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
- <20121025121815.0689c196@pyramind.ukuu.org.uk>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH v7] serial/arc-uart: Add new driver
+Date: Mon, 29 Oct 2012 18:13:24 +0200
+Message-ID: <20121029161324.GH27566@arwen.pp.htv.fi>
+References: <1351322232-32137-1-git-send-email-vgupta@synopsys.com>
+ <1351322232-32137-2-git-send-email-vgupta@synopsys.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="+PbGPm1eXpwOoWkI"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ezexch.ezchip.com ([212.179.42.101]:25352 "EHLO
-	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753616Ab2J2Pis convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 11:38:48 -0400
-In-Reply-To: <20121025121815.0689c196@pyramind.ukuu.org.uk>
-Content-Language: en-US
+Received: from comal.ext.ti.com ([198.47.26.152]:43201 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932173Ab2J2QTS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Oct 2012 12:19:18 -0400
+Content-Disposition: inline
+In-Reply-To: <1351322232-32137-2-git-send-email-vgupta@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
+To: Vineet.Gupta1@synopsys.com
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, balbi@ti.com, arc-linux-dev@synopsys.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
->From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
->Sent: Thursday, October 25, 2012 1:18 PM
+--+PbGPm1eXpwOoWkI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->If you make the symbols global then they need a prefix to avoid clashes - just rename them something like serial8250_early_in/serial8250_early_out
+Hi,
 
-> and of course they ought to be in the header files somewhere...
+On Sat, Oct 27, 2012 at 12:47:12PM +0530, Vineet.Gupta1@synopsys.com wrote:
+> From: Vineet Gupta <vgupta@synopsys.com>
+>=20
+> Driver for non-standard on-chip UART, instantiated in the ARC (Synopsys)
+> FPGA Boards such as ARCAngel4/ML50x
+>=20
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 
-Thanks for your comments. I polished my patch and below is the updated.
-Please comment on this patch.
+I'm by no means an expert on the tty layer, but this looks a lot better
+than previous version.
 
->From 0ebe0d2d39d76a1d2983321599e138474f5e96d3 Mon Sep 17 00:00:00 2001
-From: Noam Camus <noamc@ezchip.com>
-Date: Mon, 29 Oct 2012 17:16:58 +0200
-Subject: [PATCH] tty/8250_early: Turn serial_in/serial_out to weak symbols to allow platforms to override them.
+FWIW:
 
-Now one can replace default methods with similar fit to its needs.
-e.g. choose other regshift, register offset, or any other manipulation.
+Reviewed-by: Felipe Balbi <balbi@ti.com>
 
-This is useful for big endian platforms wishing to use the early serial driver.
-Platform that needs to swab bytes before the register accesses.
+--=20
+balbi
 
-Signed-off-by: Noam Camus <noamc@ezchip.com>
----
- drivers/tty/serial/8250/8250_early.c |    4 ++--
- include/linux/serial_8250.h          |    2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+--+PbGPm1eXpwOoWkI
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index eaafb98..a359504 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -48,7 +48,7 @@ struct early_serial8250_device {
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
 
- static struct early_serial8250_device early_device;
+iQIcBAEBAgAGBQJQjqskAAoJEIaOsuA1yqRE11sP/iWHvpFHz0z8iAsqjblmzTAe
+K2aN7ZvwiMNKR/WtP1qlxRQ6wwIJqHg5iegxDvsh1KFXXQKyVAMTIbxWqujc8hPG
+I32IE5R3HzNiDFtxS7CnoAiY6DGDlkV4tKqNX/a5ZHMsXUNLKbMPhlpD49NY9UNL
+Rg3px8uHsdl2Q4/gs0Rx3rH8rmmVdGC5WNWlcu3tt5IcGirAGfBURVPPw136h1lc
+dAjB44CFitEpr8HDltXnNFRil8zkcISSt4q/J+4e/4C7wpN4I2auUw744pNl28vM
+Rvcqub+0MMPCJshO6Z86U7El6+cdi5PsHCLuF4g/6bzjmGk2Hf+2+aiHAW/1DsjN
+gYK9CoaCmpkPHsorj8p+t1qZ5zUyb7LLCe7AAKJ57XI/NLPxMFgFlJ5u1HOnAaYz
+Ogl6SxDFVtrqmEbSJ6hm1kUUS8wdkNeM3m3G9oTjgASjfPTfe2l+cTx5yKIJ8J2i
+mqZmWvWm1oFm0XmnVInmyryghBfjEYtxj/e2BFw4VpVpzhcDNZpv224/9DAnv1Vj
+uf4GYohsjP6WbXh3hPScz6wApaz0G1mrKPK3vKFFHHGCLDBeaJjAZgKLyw5L2doh
+sJ39HntvstbbiU8+ocygLcPHGh2maPENVfTcmbjnEJ6MEtFBRgod6mxEVxcsLKqQ
+FxDgKm0XxXcxk1lkMTrr
+=cW/y
+-----END PGP SIGNATURE-----
 
--static unsigned int __init serial_in(struct uart_port *port, int offset)
-+unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
- {
-        switch (port->iotype) {
-        case UPIO_MEM:
-@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
-        }
- }
-
--static void __init serial_out(struct uart_port *port, int offset, int value)
-+void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
- {
-        switch (port->iotype) {
-        case UPIO_MEM:
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index c174c90..c490d20 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -105,6 +105,8 @@ extern int early_serial_setup(struct uart_port *port);
-
- extern int serial8250_find_port(struct uart_port *p);
- extern int serial8250_find_port_for_earlycon(void);
-+extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
-+extern void serial8250_early_out(struct uart_port *port, int offset, int value);
- extern int setup_early_serial8250_console(char *cmdline);
- extern void serial8250_do_set_termios(struct uart_port *port,
-                struct ktermios *termios, struct ktermios *old);
--- 
-1.7.1
-
-Regards,
-Noam
+--+PbGPm1eXpwOoWkI--
