@@ -1,309 +1,99 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: [PATCH 3/3] uart: add other serial core layer get attributes
-Date: Mon, 29 Oct 2012 15:20:40 +0000
-Message-ID: <20121029152035.9451.29163.stgit@localhost.localdomain>
-References: <20121029151901.9451.41783.stgit@localhost.localdomain>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: 8250_early for big-endian
+Date: Mon, 29 Oct 2012 17:38:07 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC3001B83@ezexch.ezchip.com>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+	<20121012175150.4b081343@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
+	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
+	<20121014133216.686277e1@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
+ <20121025121815.0689c196@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58109 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759053Ab2J2PTW (ORCPT
+Received: from ezexch.ezchip.com ([212.179.42.101]:25352 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753616Ab2J2Pis convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 11:19:22 -0400
-In-Reply-To: <20121029151901.9451.41783.stgit@localhost.localdomain>
+	Mon, 29 Oct 2012 11:38:48 -0400
+In-Reply-To: <20121025121815.0689c196@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, greg@kroah.com
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
 
-From: Alan Cox <alan@linux.intel.com>
+>From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+>Sent: Thursday, October 25, 2012 1:18 PM
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+>If you make the symbols global then they need a prefix to avoid clashes - just rename them something like serial8250_early_in/serial8250_early_out
+
+> and of course they ought to be in the header files somewhere...
+
+Thanks for your comments. I polished my patch and below is the updated.
+Please comment on this patch.
+
+>From 0ebe0d2d39d76a1d2983321599e138474f5e96d3 Mon Sep 17 00:00:00 2001
+From: Noam Camus <noamc@ezchip.com>
+Date: Mon, 29 Oct 2012 17:16:58 +0200
+Subject: [PATCH] tty/8250_early: Turn serial_in/serial_out to weak symbols to allow platforms to override them.
+
+Now one can replace default methods with similar fit to its needs.
+e.g. choose other regshift, register offset, or any other manipulation.
+
+This is useful for big endian platforms wishing to use the early serial driver.
+Platform that needs to swab bytes before the register accesses.
+
+Signed-off-by: Noam Camus <noamc@ezchip.com>
 ---
+ drivers/tty/serial/8250/8250_early.c |    4 ++--
+ include/linux/serial_8250.h          |    2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
- Documentation/ABI/testing/sysfs-tty |  112 +++++++++++++++++++++++++++
- drivers/tty/serial/serial_core.c    |  145 +++++++++++++++++++++++++++++++++++
- 2 files changed, 257 insertions(+)
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index eaafb98..a359504 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -48,7 +48,7 @@ struct early_serial8250_device {
 
-diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
-index 0c43015..c0e2471 100644
---- a/Documentation/ABI/testing/sysfs-tty
-+++ b/Documentation/ABI/testing/sysfs-tty
-@@ -26,3 +26,115 @@ Description:
- 		 UART port in serial_core, that is bound to TTY like ttyS0.
- 		 uartclk = 16 * baud_base
- 
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/type
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Shows the current tty type for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/line
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Shows the current tty line number for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/port
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Shows the current tty port I/O address for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/irq
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Shows the current primary interrupt for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/flags
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the tty port status flags for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/xmit_fifo_size
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the transmit FIFO size for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/close_delay
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the closing delay time for this port in ms.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/closing_wait
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the close wait time for this port in ms.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/custom_divisor
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description: 
-+		 Show the custom divisor if any that is set on this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/io_type
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the I/O type that is to be used with the iomem base
-+		 address.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/iomem_base
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 The I/O memory base for this port.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/iomem_reg_shift
-+Date:		October 2012
-+Contact:	Alan Cox <alan@linux.intel.com>
-+Description:
-+		 Show the register shift indicating the spacing to be used
-+		 for accesses on this iomem address.
-+
-+		 These sysfs values expose the TIOCGSERIAL interface via
-+		 sysfs rather than via ioctls.
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0c4304e..d3dd4ad 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2340,10 +2340,155 @@ static ssize_t uart_get_attr_uartclk(struct device *dev,
- 	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.baud_base * 16);
+ static struct early_serial8250_device early_device;
+
+-static unsigned int __init serial_in(struct uart_port *port, int offset)
++unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
+ {
+        switch (port->iotype) {
+        case UPIO_MEM:
+@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
+        }
  }
- 
-+static ssize_t uart_get_attr_type(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.type);
-+}
-+static ssize_t uart_get_attr_line(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.line);
-+}
-+
-+static ssize_t uart_get_attr_port(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "0x%lX\n", (unsigned long)(tmp.port | (tmp.port_high << HIGH_BITS_OFFSET)));
-+}
-+
-+static ssize_t uart_get_attr_irq(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.irq);
-+}
-+
-+static ssize_t uart_get_attr_flags(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "0x%X\n", tmp.flags);
-+}
-+
-+static ssize_t uart_get_attr_xmit_fifo_size(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.xmit_fifo_size);
-+}
-+
-+
-+static ssize_t uart_get_attr_close_delay(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.close_delay);
-+}
-+
-+
-+static ssize_t uart_get_attr_closing_wait(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.closing_wait);
-+}
-+
-+static ssize_t uart_get_attr_custom_divisor(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.custom_divisor);
-+}
-+
-+static ssize_t uart_get_attr_io_type(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.io_type);
-+}
-+
-+static ssize_t uart_get_attr_iomem_base(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "0x%lX\n", (unsigned long)tmp.iomem_base);
-+}
-+
-+static ssize_t uart_get_attr_iomem_reg_shift(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct serial_struct tmp;
-+	struct tty_port *port = dev_get_drvdata(dev);
-+
-+	uart_get_info(port, &tmp);
-+	return snprintf(buf, PAGE_SIZE, "%d\n", tmp.iomem_reg_shift);
-+}
-+
-+static DEVICE_ATTR(type, S_IRUSR | S_IRGRP, uart_get_attr_type, NULL);
-+static DEVICE_ATTR(line, S_IRUSR | S_IRGRP, uart_get_attr_line, NULL);
-+static DEVICE_ATTR(port, S_IRUSR | S_IRGRP, uart_get_attr_port, NULL);
-+static DEVICE_ATTR(irq, S_IRUSR | S_IRGRP, uart_get_attr_irq, NULL);
-+static DEVICE_ATTR(flags, S_IRUSR | S_IRGRP, uart_get_attr_flags, NULL);
-+static DEVICE_ATTR(xmit_fifo_size, S_IRUSR | S_IRGRP, uart_get_attr_xmit_fifo_size, NULL);
- static DEVICE_ATTR(uartclk, S_IRUSR | S_IRGRP, uart_get_attr_uartclk, NULL);
-+static DEVICE_ATTR(close_delay, S_IRUSR | S_IRGRP, uart_get_attr_close_delay, NULL);
-+static DEVICE_ATTR(closing_wait, S_IRUSR | S_IRGRP, uart_get_attr_closing_wait, NULL);
-+static DEVICE_ATTR(custom_divisor, S_IRUSR | S_IRGRP, uart_get_attr_custom_divisor, NULL);
-+static DEVICE_ATTR(io_type, S_IRUSR | S_IRGRP, uart_get_attr_io_type, NULL);
-+static DEVICE_ATTR(iomem_base, S_IRUSR | S_IRGRP, uart_get_attr_iomem_base, NULL);
-+static DEVICE_ATTR(iomem_reg_shift, S_IRUSR | S_IRGRP, uart_get_attr_iomem_reg_shift, NULL);
- 
- static struct attribute *tty_dev_attrs[] = {
-+	&dev_attr_type.attr,
-+	&dev_attr_line.attr,
-+	&dev_attr_port.attr,
-+	&dev_attr_irq.attr,
-+	&dev_attr_flags.attr,
-+	&dev_attr_xmit_fifo_size.attr,
- 	&dev_attr_uartclk.attr,
-+	&dev_attr_close_delay.attr,
-+	&dev_attr_closing_wait.attr,
-+	&dev_attr_custom_divisor.attr,
-+	&dev_attr_io_type.attr,
-+	&dev_attr_iomem_base.attr,
-+	&dev_attr_iomem_reg_shift.attr,
- 	NULL,
- 	};
- 
 
+-static void __init serial_out(struct uart_port *port, int offset, int value)
++void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
+        switch (port->iotype) {
+        case UPIO_MEM:
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index c174c90..c490d20 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -105,6 +105,8 @@ extern int early_serial_setup(struct uart_port *port);
+
+ extern int serial8250_find_port(struct uart_port *p);
+ extern int serial8250_find_port_for_earlycon(void);
++extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
++extern void serial8250_early_out(struct uart_port *port, int offset, int value);
+ extern int setup_early_serial8250_console(char *cmdline);
+ extern void serial8250_do_set_termios(struct uart_port *port,
+                struct ktermios *termios, struct ktermios *old);
+-- 
+1.7.1
+
+Regards,
+Noam
