@@ -1,70 +1,44 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH v7] serial/arc-uart: Add new driver
-Date: Mon, 29 Oct 2012 18:13:24 +0200
-Message-ID: <20121029161324.GH27566@arwen.pp.htv.fi>
-References: <1351322232-32137-1-git-send-email-vgupta@synopsys.com>
- <1351322232-32137-2-git-send-email-vgupta@synopsys.com>
-Reply-To: <balbi@ti.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] n_gsm: prevent crash due to dereferencing NULL gsm->tty
+Date: Mon, 29 Oct 2012 16:29:47 +0000
+Message-ID: <20121029162947.6270b4da@pyramind.ukuu.org.uk>
+References: <26026_1351239109_508A45C4_26026_63_1_508A45C1.3010407@sagemcom.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+PbGPm1eXpwOoWkI"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:43201 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932173Ab2J2QTS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 12:19:18 -0400
-Content-Disposition: inline
-In-Reply-To: <1351322232-32137-2-git-send-email-vgupta@synopsys.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <26026_1351239109_508A45C4_26026_63_1_508A45C1.3010407@sagemcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guillaume Juan <guillaume.juan@sagemcom.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet.Gupta1@synopsys.com
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, balbi@ti.com, arc-linux-dev@synopsys.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
---+PbGPm1eXpwOoWkI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, 26 Oct 2012 10:11:45 +0200
+Guillaume Juan <guillaume.juan@sagemcom.com> wrote:
 
-Hi,
+> From: Guillaume Juan <guillaume.juan@sagemcom.com>
+> 
+> If gsm->tty happens to be NULL in gsmld_output, avoid crashing the kernel (the crash is replaced by a warning dump).
 
-On Sat, Oct 27, 2012 at 12:47:12PM +0530, Vineet.Gupta1@synopsys.com wrote:
-> From: Vineet Gupta <vgupta@synopsys.com>
->=20
-> Driver for non-standard on-chip UART, instantiated in the ARC (Synopsys)
-> FPGA Boards such as ARCAngel4/ML50x
->=20
-> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+More important is fixing the bug completely. I agree there is a bug I
+don't think your fix is sufficient however.
 
-I'm by no means an expert on the tty layer, but this looks a lot better
-than previous version.
 
-FWIW:
+You no longer set dlci->dead before doing the dlci release so what stops
+a SABM from the other end racing this ?
 
-Reviewed-by: Felipe Balbi <balbi@ti.com>
+Also moving the gsm_dlci_release seems to have no value at all because
+there is no locking in the code concerned so viewed from any other thread
+you've changed nothing but timings. Yes its probably way harder to hit.
 
---=20
-balbi
+I can see two ways of tackling it both of which basically come down to
+the same thing. In gsmld_detach_gsm after the gsm_cleanup_mux we need to
 
---+PbGPm1eXpwOoWkI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+- be sure the thing cannot re-open
+- wait until all the DLCIs are dead
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+then do the tty_kref_put and gsm->tty = NULL
 
-iQIcBAEBAgAGBQJQjqskAAoJEIaOsuA1yqRE11sP/iWHvpFHz0z8iAsqjblmzTAe
-K2aN7ZvwiMNKR/WtP1qlxRQ6wwIJqHg5iegxDvsh1KFXXQKyVAMTIbxWqujc8hPG
-I32IE5R3HzNiDFtxS7CnoAiY6DGDlkV4tKqNX/a5ZHMsXUNLKbMPhlpD49NY9UNL
-Rg3px8uHsdl2Q4/gs0Rx3rH8rmmVdGC5WNWlcu3tt5IcGirAGfBURVPPw136h1lc
-dAjB44CFitEpr8HDltXnNFRil8zkcISSt4q/J+4e/4C7wpN4I2auUw744pNl28vM
-Rvcqub+0MMPCJshO6Z86U7El6+cdi5PsHCLuF4g/6bzjmGk2Hf+2+aiHAW/1DsjN
-gYK9CoaCmpkPHsorj8p+t1qZ5zUyb7LLCe7AAKJ57XI/NLPxMFgFlJ5u1HOnAaYz
-Ogl6SxDFVtrqmEbSJ6hm1kUUS8wdkNeM3m3G9oTjgASjfPTfe2l+cTx5yKIJ8J2i
-mqZmWvWm1oFm0XmnVInmyryghBfjEYtxj/e2BFw4VpVpzhcDNZpv224/9DAnv1Vj
-uf4GYohsjP6WbXh3hPScz6wApaz0G1mrKPK3vKFFHHGCLDBeaJjAZgKLyw5L2doh
-sJ39HntvstbbiU8+ocygLcPHGh2maPENVfTcmbjnEJ6MEtFBRgod6mxEVxcsLKqQ
-FxDgKm0XxXcxk1lkMTrr
-=cW/y
------END PGP SIGNATURE-----
+Thoughts ?
 
---+PbGPm1eXpwOoWkI--
+Alan
