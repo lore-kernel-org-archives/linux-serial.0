@@ -1,62 +1,63 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: New serial card development
-Date: Mon, 29 Oct 2012 15:04:02 -0500
-Message-ID: <CAJp1Oe7MMuk8TNBom2EDXx6UBdMV6qAE5fDdKTZ0o-329QSdaA@mail.gmail.com>
-References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
- <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
- <20121016002608.64b33de5@pyramind.ukuu.org.uk> <20121016023226.GA17446@thunk.org>
- <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
- <20121019212158.GB4721@thunk.org> <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
- <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com> <20121023183859.GA3317@kroah.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: 8250 check iir rdi in interrupt
+Date: Tue, 30 Oct 2012 14:24:57 +0000
+Message-ID: <20121030142457.00840d63@pyramind.ukuu.org.uk>
+References: <alpine.LFD.2.02.1210221633450.28146@nightowl>
+	<20121023110133.62bed522@pyramind.ukuu.org.uk>
+	<CAJ0e-Fofs48N9VnYr1_8Kch6+yHjGx9iCWBRtRsqpD-B_rWutQ@mail.gmail.com>
+	<20121026151902.0a382d16@pyramind.ukuu.org.uk>
+	<CAJ0e-Fqzq6s6H=9CMpqJKug2=oR89_qw_52Yz-ihJd-8Bc-_+Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:52930 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759048Ab2J2UEX (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59607 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751149Ab2J3OT5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Oct 2012 16:04:23 -0400
-Received: by mail-vb0-f46.google.com with SMTP id ff1so5748957vbb.19
-        for <linux-serial@vger.kernel.org>; Mon, 29 Oct 2012 13:04:22 -0700 (PDT)
-In-Reply-To: <20121023183859.GA3317@kroah.com>
+	Tue, 30 Oct 2012 10:19:57 -0400
+In-Reply-To: <CAJ0e-Fqzq6s6H=9CMpqJKug2=oR89_qw_52Yz-ihJd-8Bc-_+Q@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: Min Zhang <mzhang@mvista.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Oct 23, 2012 at 1:38 PM, Greg KH <greg@kroah.com> wrote:
-> On Tue, Oct 23, 2012 at 11:31:41AM -0500, Matt Schulte wrote:
->> On Tue, Oct 23, 2012 at 11:27 AM, Matt Schulte
->> <matts@commtech-fastcom.com> wrote:
->> > On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
->> >> Alan's advice to get your card working as a basic serial card is very
->> >> good one.  Get basic functionality working, and then you can add the
->> >> support for the extra bits later....
->> >
->> > I can see the logic in getting it working as a basic serial card
->> > first.  I think at minimum I would still need to implement the extra
->> > divisor calculations to get accurate bit rates.
->> >
->> > So when it works as a basic serial card, I assume you would want me to
->> > use the default PCI IDs to keep it more generic.  Then would I add my
->> > own PCI IDs and refer them back to the generic port?
->> >
+On Fri, 26 Oct 2012 14:57:31 -0700
+Min Zhang <mzhang@mvista.com> wrote:
 
-I am working to get the Exar devices added to the 8250 driver.  I
-think I get most of what I need to make happen until I get to the
-detection of the EFR register.  Can someone explain to me what is
-going on here and where the Exar device is supposed to end up?  It
-seems to me that I would expect them to show up somewhere around :
+> On Fri, Oct 26, 2012 at 7:19 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+> 
+> > So we only need to check this in serial8250_handle_irq when IIR indicates
+> > a data timeout interrupt ?
+> >
+> > Can we do
+> >
+> >         if ((iir & 0x0F) == 0x0C) {
+> >                 /* Expensive RDI check */
+> >         }
+> >
+> >
+> >
+> > Alan
+> 
+> Checking data timeout interrupt is only for "too much work for irq"
+> problem. There is another console freeze problem which is caused by
+> reading receive FIFO when there is no RDI interrupt, such as during
+> THRI transmit interrupt, so no timeout interrupt. This time one has to
+> check two both IIR and LSR. After all these checking, it becomes the
+> original patch anyway.
+> 
+> I am posting another simpler revision to exclude timer handler from
+> this workaround, and make this workaround default off and inline.
 
-/*
- * Exar uarts have EFR in a weird location
- */
+We have two problems one of which is understood. Your patch continues to
+do an extra read in an absolutely critical hot path and one that on many
+systems will cost upwards of 8uS.
 
-But instead I am getting my UARTs detected as EFRv1, iir=3 and marked
-as type=ST16650.
+Can we therefore work through this neatly one problem at a time ?
 
-For reference the Exar chips have EFR located at an address of 1001
-(UART_XR_EFR).  There isn't anything special that has to be done to
-access this location, just look at 1001.
+In addition it seems your patch causes data loss if your check triggers
+and a character appears during the check, at which point I don't see what
+stops your RX read from dropping a byte of real user data ?
 
-Matt Schulte
+Alan
