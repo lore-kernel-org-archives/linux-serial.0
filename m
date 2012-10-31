@@ -1,63 +1,68 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: 8250 check iir rdi in interrupt
-Date: Tue, 30 Oct 2012 14:24:57 +0000
-Message-ID: <20121030142457.00840d63@pyramind.ukuu.org.uk>
-References: <alpine.LFD.2.02.1210221633450.28146@nightowl>
-	<20121023110133.62bed522@pyramind.ukuu.org.uk>
-	<CAJ0e-Fofs48N9VnYr1_8Kch6+yHjGx9iCWBRtRsqpD-B_rWutQ@mail.gmail.com>
-	<20121026151902.0a382d16@pyramind.ukuu.org.uk>
-	<CAJ0e-Fqzq6s6H=9CMpqJKug2=oR89_qw_52Yz-ihJd-8Bc-_+Q@mail.gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
+Subject: drivers/tty/serial/8250/8250_early.c:160:18: error: 'BASE_BAUD'
+ undeclared
+Date: Wed, 31 Oct 2012 08:36:44 +0800
+Message-ID: <20121031003644.GB28279@localhost>
+References: <50906924.youLpm6PCxNnfMeP%yuanhan.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59607 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751149Ab2J3OT5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Oct 2012 10:19:57 -0400
-In-Reply-To: <CAJ0e-Fqzq6s6H=9CMpqJKug2=oR89_qw_52Yz-ihJd-8Bc-_+Q@mail.gmail.com>
+Received: from mga09.intel.com ([134.134.136.24]:40661 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759366Ab2JaAgs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Oct 2012 20:36:48 -0400
+Content-Disposition: inline
+In-Reply-To: <50906924.youLpm6PCxNnfMeP%yuanhan.liu@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Min Zhang <mzhang@mvista.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Chris Zankel <chris@zankel.net>, linux-serial@vger.kernel.org, linux-xtensa@linux-xtensa.org
 
-On Fri, 26 Oct 2012 14:57:31 -0700
-Min Zhang <mzhang@mvista.com> wrote:
+Hi Max,
 
-> On Fri, Oct 26, 2012 at 7:19 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> 
-> > So we only need to check this in serial8250_handle_irq when IIR indicates
-> > a data timeout interrupt ?
-> >
-> > Can we do
-> >
-> >         if ((iir & 0x0F) == 0x0C) {
-> >                 /* Expensive RDI check */
-> >         }
-> >
-> >
-> >
-> > Alan
-> 
-> Checking data timeout interrupt is only for "too much work for irq"
-> problem. There is another console freeze problem which is caused by
-> reading receive FIFO when there is no RDI interrupt, such as during
-> THRI transmit interrupt, so no timeout interrupt. This time one has to
-> check two both IIR and LSR. After all these checking, it becomes the
-> original patch anyway.
-> 
-> I am posting another simpler revision to exclude timer handler from
-> this workaround, and make this workaround default off and inline.
+FYI, kernel build failed on
 
-We have two problems one of which is understood. Your patch continues to
-do an extra read in an absolutely critical hot path and one that on many
-systems will cost upwards of 8uS.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux master
+head:   35fd3dc58da675d659513384221349ef90749a01
+commit: 695c617ceec7954545285f1aa065edcbfe71fcee xtensa: ISS: add dummy serial.h for ISS platform
+date:   4 weeks ago
+config: make ARCH=xtensa allyesconfig
 
-Can we therefore work through this neatly one problem at a time ?
+All error/warnings:
 
-In addition it seems your patch causes data loss if your check triggers
-and a character appears during the check, at which point I don't see what
-stops your RX read from dropping a byte of real user data ?
+drivers/tty/serial/8250/8250_early.c: In function 'parse_options':
+drivers/tty/serial/8250/8250_early.c:160:18: error: 'BASE_BAUD' undeclared (first use in this function)
+drivers/tty/serial/8250/8250_early.c:160:18: note: each undeclared identifier is reported only once for each function it appears in
 
-Alan
+vim +160 drivers/tty/serial/8250/8250_early.c
+
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  144  	c = serial_in(port, UART_LCR);
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  145  	serial_out(port, UART_LCR, c | UART_LCR_DLAB);
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  146  	serial_out(port, UART_DLL, divisor & 0xff);
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  147  	serial_out(port, UART_DLM, (divisor >> 8) & 0xff);
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  148  	serial_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  149  }
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  150  
+ce2e204f drivers/serial/8250_early.c Alan Cox       2008-02-08  151  static int __init parse_options(struct early_serial8250_device *device,
+ce2e204f drivers/serial/8250_early.c Alan Cox       2008-02-08  152  								char *options)
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  153  {
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  154  	struct uart_port *port = &device->port;
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  155  	int mmio, mmio32, length;
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  156  
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  157  	if (!options)
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  158  		return -ENODEV;
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16  159  
+^1da177e drivers/serial/8250_early.c Linus Torvalds 2005-04-16 @160  	port->uartclk = BASE_BAUD * 16;
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  161  
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  162  	mmio = !strncmp(options, "mmio,", 5);
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  163  	mmio32 = !strncmp(options, "mmio32,", 7);
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  164  	if (mmio || mmio32) {
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  165  		port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  166  		port->mapbase = simple_strtoul(options + (mmio ? 5 : 7),
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  167  					       &options, 0);
+1917ac76 drivers/serial/8250_early.c Samium Gromoff 2010-07-20  168  		if (mmio32)
+
+
+---
+0-DAY kernel build testing backend         Open Source Technology Center
+Fengguang Wu, Yuanhan Liu                              Intel Corporation
