@@ -1,95 +1,97 @@
-From: chao bi <chao.bi@intel.com>
-Subject: [PATCH] serial:ifx6x60:Prevent data transfer when IFX6x60 port is
- shutdown
-Date: Wed, 31 Oct 2012 16:54:07 +0800
-Message-ID: <1351673647.4445.25.camel@bichao>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: New serial card development
+Date: Wed, 31 Oct 2012 16:55:56 -0500
+Message-ID: <CAJp1Oe7Lk2q6v+5jrj2wD4cW=M9LX6kkia=AQnJKOiUEod5uRQ@mail.gmail.com>
+References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk> <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
+ <20121019212158.GB4721@thunk.org> <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
+ <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
+ <20121023183859.GA3317@kroah.com> <CAJp1Oe7MMuk8TNBom2EDXx6UBdMV6qAE5fDdKTZ0o-329QSdaA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:59499 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S935029Ab2JaIkE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 31 Oct 2012 04:40:04 -0400
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:54246 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760596Ab2JaV4R (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 31 Oct 2012 17:56:17 -0400
+Received: by mail-vb0-f46.google.com with SMTP id ff1so2059786vbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 31 Oct 2012 14:56:16 -0700 (PDT)
+In-Reply-To: <CAJp1Oe7MMuk8TNBom2EDXx6UBdMV6qAE5fDdKTZ0o-329QSdaA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com
-Cc: linux-serial@vger.kernel.org, richardx.r.gorby@intel.com, chuansheng.liu@intel.com, jun.d.chen@intel.com
+To: Greg KH <greg@kroah.com>
+Cc: Theodore Ts'o <tytso@mit.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
+On Mon, Oct 29, 2012 at 3:04 PM, Matt Schulte
+<matts@commtech-fastcom.com> wrote:
+> On Tue, Oct 23, 2012 at 1:38 PM, Greg KH <greg@kroah.com> wrote:
+>> On Tue, Oct 23, 2012 at 11:31:41AM -0500, Matt Schulte wrote:
+>>> On Tue, Oct 23, 2012 at 11:27 AM, Matt Schulte
+>>> <matts@commtech-fastcom.com> wrote:
+>>> > On Fri, Oct 19, 2012 at 4:21 PM, Theodore Ts'o <tytso@mit.edu> wrote:
+>>> >> Alan's advice to get your card working as a basic serial card is very
+>>> >> good one.  Get basic functionality working, and then you can add the
+>>> >> support for the extra bits later....
+>>> >
+>>> > I can see the logic in getting it working as a basic serial card
+>>> > first.  I think at minimum I would still need to implement the extra
+>>> > divisor calculations to get accurate bit rates.
+>>> >
+>>> > So when it works as a basic serial card, I assume you would want me to
+>>> > use the default PCI IDs to keep it more generic.  Then would I add my
+>>> > own PCI IDs and refer them back to the generic port?
+>>> >
+>
+> I am working to get the Exar devices added to the 8250 driver.  I
+> think I get most of what I need to make happen until I get to the
+> detection of the EFR register.  Can someone explain to me what is
+> going on here and where the Exar device is supposed to end up?  It
+> seems to me that I would expect them to show up somewhere around :
+>
+> /*
+>  * Exar uarts have EFR in a weird location
+>  */
+>
+> But instead I am getting my UARTs detected as EFRv1, iir=3 and marked
+> as type=ST16650.
+>
+> For reference the Exar chips have EFR located at an address of 1001
+> (UART_XR_EFR).  There isn't anything special that has to be done to
+> access this location, just look at 1001.
 
-This patch is to implement following 2 places to avoid potential error when IFX6x60 port shutdown:
-1) Clear Flag IFX_SPI_STATE_IO_AVAILABLE to disable data transfer when Modem port is shutdown;
-2) Clear Flag IFX_SPI_STATE_IO_IN_PROGRESS and IFX_SPI_STATE_IO_READY when reopen port.
-This is because last port shutdown may happen when SPI/DMA transfer is in progress, if the last
-data transfer is not completed(for example due to modem reset), the Flag IFX_SPI_STATE_IO_IN_PROGRESS
-will be set forever, so when IFX port is activated again, IFX_SPI_STATE_IO_IN_PROGRESS will prevent
-transferring data forever. And if don't clear IFX_SPI_STATE_IO_READY, it may cause one more SPI frame
-transferring in spit there is not data need to be transfer.
+I was able to work my way through the funky EFR detection.  Hopefully
+you guys will like what I did when you see the patch.
 
-cc: liu chuansheng <chuansheng.liu@intel.com>
-cc: Chen Jun <jun.d.chen@intel.com>
-Signed-off-by: channing <chao.bi@intel.com>
----
- drivers/tty/serial/ifx6x60.c |   11 ++++++++++-
- drivers/tty/serial/ifx6x60.h |    1 +
- 2 files changed, 11 insertions(+), 1 deletions(-)
+Next I need to know the channel number of a given UART port.  If I
+have a 4 port UART I need to know that a given channel is 0,1,2 or 3.
+If I have an 8 port UART I need to know if a given channel is
+0,1,2,3,4,5,6 or 7.
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 5b9bc19..ce6e08a 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -530,12 +530,19 @@ static int ifx_port_activate(struct tty_port *port, struct tty_struct *tty)
- 	/* clear any old data; can't do this in 'close' */
- 	kfifo_reset(&ifx_dev->tx_fifo);
- 
-+	/* clear any flag which may be set in port shutdown procedure */
-+	clear_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &ifx_dev->flags);
-+	clear_bit(IFX_SPI_STATE_IO_READY, &ifx_dev->flags);
-+
- 	/* put port data into this tty */
- 	tty->driver_data = ifx_dev;
- 
- 	/* allows flip string push from int context */
- 	tty->low_latency = 1;
- 
-+	/* set flag to allows data transfer */
-+	set_bit(IFX_SPI_STATE_IO_AVAILABLE, &ifx_dev->flags);
-+
- 	return 0;
- }
- 
-@@ -551,6 +558,7 @@ static void ifx_port_shutdown(struct tty_port *port)
- 	struct ifx_spi_device *ifx_dev =
- 		container_of(port, struct ifx_spi_device, tty_port);
- 
-+	clear_bit(IFX_SPI_STATE_IO_AVAILABLE, &ifx_dev->flags);
- 	mrdy_set_low(ifx_dev);
- 	clear_bit(IFX_SPI_STATE_TIMER_PENDING, &ifx_dev->flags);
- 	tasklet_kill(&ifx_dev->io_work_tasklet);
-@@ -705,7 +713,8 @@ static void ifx_spi_io(unsigned long data)
- 	int retval;
- 	struct ifx_spi_device *ifx_dev = (struct ifx_spi_device *) data;
- 
--	if (!test_and_set_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &ifx_dev->flags)) {
-+	if (!test_and_set_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &ifx_dev->flags) &&
-+		test_bit(IFX_SPI_STATE_IO_AVAILABLE, &ifx_dev->flags)) {
- 		if (ifx_dev->gpio.unack_srdy_int_nb > 0)
- 			ifx_dev->gpio.unack_srdy_int_nb--;
- 
-diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
-index e8464ba..0583476 100644
---- a/drivers/tty/serial/ifx6x60.h
-+++ b/drivers/tty/serial/ifx6x60.h
-@@ -41,6 +41,7 @@
- #define IFX_SPI_STATE_IO_IN_PROGRESS	1
- #define IFX_SPI_STATE_IO_READY		2
- #define IFX_SPI_STATE_TIMER_PENDING	3
-+#define IFX_SPI_STATE_IO_AVAILABLE	4
- 
- /* flow control bitfields */
- #define IFX_SPI_DCD			0
--- 
-1.7.1
+The only way that I can find to get this number is using the idx
+variable that is passed to the port's .setup operation.  Would I be
+able to add a member to the uart_port structure so that I could store
+this number inside my UARTs setup function?
 
+Something like:
 
+struct uart_port {
+.
+.
+.
+unsigned int channel;
+};
 
+pci_myuart_setup(struct serial_private *priv,
+                const struct pciserial_board *board,
+                struct uart_8250_port *port, int idx)
+{
+...
+        port->port.channel = idx;
+        return pci_default_setup(priv, board, port, idx);
+}
+
+Thank you,
+Matt Schulte
