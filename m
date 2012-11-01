@@ -1,33 +1,43 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH -next] tty: of_serial: fix return value check in
- of_platform_serial_setup()
-Date: Thu, 1 Nov 2012 14:48:52 +0000
-Message-ID: <20121101144852.763ffa6f@bob.linux.org.uk>
-References: <CAPgLHd--dWeXNH_QVU34afv5Q1ju2MZJcwLKwyRr89+RvOTOBw@mail.gmail.com>
-	<50928060.3010806@ti.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: [PATCH 1/2] moxa: dcd handling of CLOCAL is backwards
+Date: Thu, 01 Nov 2012 16:43:49 +0000
+Message-ID: <20121101164336.31727.23069.stgit@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:48972 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1761748Ab2KAOqx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Nov 2012 10:46:53 -0400
-In-Reply-To: <50928060.3010806@ti.com>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34908 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932447Ab2KAQlz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Nov 2012 12:41:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: Wei Yongjun <weiyj.lk@gmail.com>, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, rob.herring@calxeda.com, seth.heasley@intel.com, yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: greg@kroah.com, linux-serial@vger.kernel.org
+
+From: Alan Cox <alan@linux.intel.com>
+
+We should do hangup on dcd loss if CLOCAL is false not true.
+
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+Resolves-bug: https://bugzilla.kernel.org/show_bug.cgi?id=49911
+---
+
+ drivers/tty/moxa.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-> >   				"clk or clock-frequency not
-> > defined\n");
-> > -			return -ENODEV;
-> > +			return PTR_ERR(info->clk);
-> I think this is wrong. it should return -ENODEV;
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 56e616b..9b57aae 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1370,7 +1370,7 @@ static void moxa_new_dcdstate(struct moxa_port *p, u8 dcd)
+         	p->DCDState = dcd;
+         	spin_unlock_irqrestore(&p->port.lock, flags);
+ 		tty = tty_port_tty_get(&p->port);
+-		if (tty && C_CLOCAL(tty) && !dcd)
++		if (tty && !C_CLOCAL(tty) && !dcd)
+ 			tty_hangup(tty);
+ 		tty_kref_put(tty);
+ 	}
 
-Returning the clock error at least ensures the real reason for the fail
-is reported. I think its better to use the PTR_ERR but I'd not class
-either as wrong.
-
-Alan
