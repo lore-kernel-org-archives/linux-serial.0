@@ -1,143 +1,52 @@
-From: Josh Cartwright <josh.cartwright@ni.com>
-Subject: [PATCH 4/8] ARM: zynq: dts: split up device tree
-Date: Wed, 31 Oct 2012 12:24:48 -0600
-Message-ID: <1dc81a3260da0a911dbcabd737547b7bff16a99c.1351721190.git.josh.cartwright@ni.com>
-References: <cover.1351721190.git.josh.cartwright@ni.com>
+From: Wei Yongjun <weiyj.lk@gmail.com>
+Subject: [PATCH -next] tty: of_serial: fix return value check in of_platform_serial_setup()
+Date: Thu, 1 Nov 2012 13:27:34 +0800
+Message-ID: <CAPgLHd--dWeXNH_QVU34afv5Q1ju2MZJcwLKwyRr89+RvOTOBw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1351721190.git.josh.cartwright@ni.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@ti.com>, John Stultz <johnstul@us.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Linn <John.Linn@xilinx.com>, Michal Simek <michal.simek@xilinx.com>
-Cc: Michal Simek <monstr@monstr.eu>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qa0-f46.google.com ([209.85.216.46]:33368 "EHLO
+	mail-qa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751063Ab2KAF1f (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Nov 2012 01:27:35 -0400
+Received: by mail-qa0-f46.google.com with SMTP id c26so32347qad.19
+        for <linux-serial@vger.kernel.org>; Wed, 31 Oct 2012 22:27:34 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, rob.herring@calxeda.com, seth.heasley@intel.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-The purpose of the created zynq-7000.dtsi file is to describe the
-hardware common to all Zynq 7000-based boards.  Also, get rid of the
-zynq-ep107 device tree, since it is not hardware anyone can purchase.
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-Add a zc702 dts file based on the zynq-7000.dtsi.  Add it to the
-dts/Makefile so it is built with the 'dtbs' target.
+In case of error, the function clk_get() returns ERR_PTR()
+and never returns NULL. The NULL test in the return value
+check should be replaced with IS_ERR().
 
-Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
+dpatch engine is used to auto generate this patch.
+(https://github.com/weiyj/dpatch)
+
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 ---
- arch/arm/boot/dts/Makefile                         |  1 +
- .../boot/dts/{zynq-ep107.dts => zynq-7000.dtsi}    | 19 +++-----------
- arch/arm/boot/dts/zynq-zc702.dts                   | 30 ++++++++++++++++++++++
- arch/arm/mach-zynq/common.c                        |  3 ++-
- 4 files changed, 36 insertions(+), 17 deletions(-)
- rename arch/arm/boot/dts/{zynq-ep107.dts => zynq-7000.dtsi} (79%)
- create mode 100644 arch/arm/boot/dts/zynq-zc702.dts
+ drivers/tty/serial/of_serial.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index f37cf9f..76ed11e 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -103,5 +103,6 @@ dtb-$(CONFIG_ARCH_VEXPRESS) += vexpress-v2p-ca5s.dtb \
- dtb-$(CONFIG_ARCH_VT8500) += vt8500-bv07.dtb \
- 	wm8505-ref.dtb \
- 	wm8650-mid.dtb
-+dtb-$(CONFIG_ARCH_ZYNQ) += zynq-zc702.dtb
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 533ccfe..b9fdccb 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -66,10 +66,10 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
  
- endif
-diff --git a/arch/arm/boot/dts/zynq-ep107.dts b/arch/arm/boot/dts/zynq-7000.dtsi
-similarity index 79%
-rename from arch/arm/boot/dts/zynq-ep107.dts
-rename to arch/arm/boot/dts/zynq-7000.dtsi
-index 5caf100..8b30e59 100644
---- a/arch/arm/boot/dts/zynq-ep107.dts
-+++ b/arch/arm/boot/dts/zynq-7000.dtsi
-@@ -10,29 +10,16 @@
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  */
-+/include/ "skeleton.dtsi"
+ 		/* Get clk rate through clk driver if present */
+ 		info->clk = clk_get(&ofdev->dev, NULL);
+-		if (info->clk == NULL) {
++		if (IS_ERR(info->clk)) {
+ 			dev_warn(&ofdev->dev,
+ 				"clk or clock-frequency not defined\n");
+-			return -ENODEV;
++			return PTR_ERR(info->clk);
+ 		}
  
--/dts-v1/;
- / {
--	model = "Xilinx Zynq EP107";
--	compatible = "xlnx,zynq-ep107";
--	#address-cells = <1>;
--	#size-cells = <1>;
--	interrupt-parent = <&intc>;
--
--	memory {
--		device_type = "memory";
--		reg = <0x0 0x10000000>;
--	};
--
--	chosen {
--		bootargs = "console=ttyPS0,9600 root=/dev/ram rw initrd=0x800000,8M earlyprintk";
--		linux,stdout-path = &uart0;
--	};
-+	compatible = "xlnx,zynq-7000";
- 
- 	amba {
- 		compatible = "simple-bus";
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-+		interrupt-parent = <&intc>;
- 		ranges;
- 
- 		intc: interrupt-controller@f8f01000 {
-diff --git a/arch/arm/boot/dts/zynq-zc702.dts b/arch/arm/boot/dts/zynq-zc702.dts
-new file mode 100644
-index 0000000..e25a307
---- /dev/null
-+++ b/arch/arm/boot/dts/zynq-zc702.dts
-@@ -0,0 +1,30 @@
-+/*
-+ *  Copyright (C) 2011 Xilinx
-+ *  Copyright (C) 2012 National Instruments Corp.
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+/dts-v1/;
-+/include/ "zynq-7000.dtsi"
-+
-+/ {
-+	model = "Zynq ZC702 Development Board";
-+	compatible = "xlnx,zynq-zc702", "xlnx,zynq-7000";
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0x0 0x40000000>;
-+	};
-+
-+	chosen {
-+		bootargs = "console=ttyPS1,115200 earlyprintk";
-+	};
-+
-+};
-diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
-index 0279ea7..447904b 100644
---- a/arch/arm/mach-zynq/common.c
-+++ b/arch/arm/mach-zynq/common.c
-@@ -115,7 +115,8 @@ static void __init xilinx_map_io(void)
- }
- 
- static const char *xilinx_dt_match[] = {
--	"xlnx,zynq-ep107",
-+	"xlnx,zynq-zc702",
-+	"xlnx,zynq-7000",
- 	NULL
- };
- 
--- 
-1.8.0
+ 		clk_prepare_enable(info->clk);
+
+
