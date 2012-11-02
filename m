@@ -1,117 +1,52 @@
-From: Josh Cartwright <josh.cartwright@ni.com>
-Subject: Re: [PATCH 5/8] ARM: zynq: add COMMON_CLK support
-Date: Fri, 2 Nov 2012 09:28:26 -0600
-Message-ID: <20121102152826.GQ5190@beefymiracle.amer.corp.natinst.com>
-References: <cover.1351721190.git.josh.cartwright@ni.com>
- <94af5ee92c2d68f245eb902de74909aadf159be1.1351721190.git.josh.cartwright@ni.com>
- <50939378.2050500@metafoo.de>
- <20121102133850.GO5190@beefymiracle.amer.corp.natinst.com>
- <5093E2D5.2000304@metafoo.de>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: New serial card development
+Date: Fri, 2 Nov 2012 13:47:25 -0500
+Message-ID: <CAJp1Oe7Gsi_5jYQwj8xdLRBqTQEvOWMwAoa2e4CDZH5FD5ZbVw@mail.gmail.com>
+References: <5074703E.408@commtech-fastcom.com> <20121014093704.GA6207@thunk.org>
+ <CAJp1Oe6F+KiXoWdhb7JjbYmNBY4gxbtBzwNu0gWC7XzA_ZJxMg@mail.gmail.com>
+ <20121016002608.64b33de5@pyramind.ukuu.org.uk> <20121016023226.GA17446@thunk.org>
+ <CAJp1Oe4n-TtxDM8D82bFQxjBtx8rSAX8mWrFk0bSM6uGL9X=Eg@mail.gmail.com>
+ <20121019212158.GB4721@thunk.org> <CAJp1Oe6ekkaZ29iwJ91VXwM_CSL6Z0_KEaqVQTa1XMzTB5niEQ@mail.gmail.com>
+ <CAJp1Oe67Jd+FaaDPosexrVrrUFS=c-0FUZx_JHTbpTN5RCCcUw@mail.gmail.com>
+ <20121023183859.GA3317@kroah.com> <CAJp1Oe7MMuk8TNBom2EDXx6UBdMV6qAE5fDdKTZ0o-329QSdaA@mail.gmail.com>
+ <CAJp1Oe7Lk2q6v+5jrj2wD4cW=M9LX6kkia=AQnJKOiUEod5uRQ@mail.gmail.com>
+ <CAJp1Oe4cnWot=wgou91dea81hHNxo8RWOPwXJj3o+JL4zOwQpg@mail.gmail.com> <20121101222619.12bb9c50@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8268079967215480304=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5093E2D5.2000304@metafoo.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michal Simek <monstr@monstr.eu>, Russell King <linux@arm.linux.org.uk>, John Stultz <johnstul@us.ibm.com>, devicetree-discuss@lists.ozlabs.org, Michal Simek <michal.simek@xilinx.com>, Rob Herring <rob.herring@calxeda.com>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, John Linn <John.Linn@xilinx.com>, linux-arm-kernel@lists.infradead.org, Mike Turquette <mturquette@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:34534 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932260Ab2KBSrq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Nov 2012 14:47:46 -0400
+Received: by mail-vb0-f46.google.com with SMTP id ff1so4091076vbb.19
+        for <linux-serial@vger.kernel.org>; Fri, 02 Nov 2012 11:47:45 -0700 (PDT)
+In-Reply-To: <20121101222619.12bb9c50@pyramind.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Greg KH <greg@kroah.com>, Theodore Ts'o <tytso@mit.edu>, linux-serial@vger.kernel.org
 
+On Thu, Nov 1, 2012 at 5:26 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> Hello, the next question that I have is how to handle the interrupts
+>> on this UART.  It has a more complex interrupt scheme than a
+>> traditional 8250 UART.  There is a global ISR register that tells you
+>> which port had the interrupt and then there is another set of
+>> registers that hold the actual interrupts.
+>
+> port->handle_irq is half of what you need, but you probably need to be
+> able to hook serial8250_interruot and provide your own alternative. Given
+> you don't need the irq chain handling either probably the bit that wants
+> to be hookable is the calls to serial_link_irq_chain and
+> serial_unlink_irq_chain in the startup/shutdown methods.
+>
+> In yor case all that and all the irq scanning the chain becomes a simple
+> read of the port and call of the handlers (serial8250_handlee_irq(port,
+> iir)
 
---===============8268079967215480304==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bZ2MuwyI/0uB8yuJ"
-Content-Disposition: inline
+To be clear, I shouldn't put a custom irq handler inside 8250.c, correct?
 
+I would want to do something along the vein of 8250_dw.c with a custom
+probe and a custome handle_irq?
 
---bZ2MuwyI/0uB8yuJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Nov 02, 2012 at 04:12:21PM +0100, Lars-Peter Clausen wrote:
-> On 11/02/2012 02:38 PM, Josh Cartwright wrote:
-> > On Fri, Nov 02, 2012 at 10:33:44AM +0100, Lars-Peter Clausen wrote:
-> >> On 10/31/2012 07:58 PM, Josh Cartwright wrote:
-[...]
-> >>> +static void __init zynq_periph_clk_setup(struct device_node *np)
-> >>> +{
-> >>> +	struct zynq_periph_clk *periph;
-> >>> +	const char *parent_names[3];
-> >>> +	struct clk_init_data init;
-> >>> +	struct clk *clk;
-> >>> +	int err;
-> >>> +	u32 reg;
-> >>> +	int i;
-> >>> +
-> >>> +	err = of_property_read_u32(np, "reg", &reg);
-> >>> +	WARN_ON(err);
-> >>
-> >> Shouldn't the function abort if a error happens somewhere? Continuing here
-> >> will lead to undefined behavior. Same is probably true for the other WARN_ONs.
-> >
-> > The way I see it is: the kernel is will be left in a bad state in the
-> > case of any failure, regardless of if we bail out or continue.  AFAICT,
-> > there is no clean way to recover from a failure this early.
-> >
-> > Given that, it seems simpler (albeit marginally so) just to continue; so
-> > that's what I chose to do.  I'm not opposed to bailing out, just not
-> > convinced it does anything for us.
-> >
-> The issue with this approach is that, while you get a warning, unexpected
-> seemingly unrelated side-effects may happen later on. E.g. if no reg
-> property for the clock is specified the reg variable will be uninitialized
-> and contain whatever was on the stack before. The clock will be registered
-> nonetheless and the boot process continues. Now if the clock is enabled a
-> bit in a random register will be modified, which could result in strange and
-> abnormal behavior, which can be very hard to track down.
-
-Okay.....but any reasonable person would start their debugging quest at
-the source of the WARN_ON.  If someone sees the WARN_ON message but
-stupidly chooses to ignore it, they deserves to spend the time trying to
-track down abnormal behavior, so I'm still not convinced.
-
-  Josh
-
---bZ2MuwyI/0uB8yuJ
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQk+aaAAoJEEef0niEbw+lWcgQAMTdcIdNLeov4zNXCFyWaHRP
-Rc+pPQEfJzvX6Z61ashVfUdMu/rq3LosFutrfmKshDnjut7JGunhazAhhRedHeTK
-ImoPNlAdjW8stnTuauch9/gCpuOCWxqormemU/SLcs0FNjgPivqiK32E967RQb+7
-dAk4kF2ZmAjJY9vsfRCfuKXcKKMK4O128pqK9LsKRM3zqECv/fOjl6n/ik4P8CIH
-YXUnMTF9LaAR+Gm0E4fesg+N9E3wt/44BGZ9GpyoRp0U5W/FcUqE80lqJkRgBLNb
-FMgBqC1zO5zW6crHKRUVoGb1oOjPpR4bLXRlH7ug2rz4kSx1GrziC1IpFypjvjjr
-ezdoSeW+A3YdHb26aYqVfK7ISfvGGrky9PylWVt+YP6P5wfsUAL+/EBfeIWhkQV7
-9DSswBLBctSAyFsN/RQBoTjU0vJ8vTg3H2ApxNKwKTBqPA0kRobRcRdkORjDyNs/
-1om0myGGqwj0xxyzPUqbZ0l4mM72NTgBP5YV2YiqUsYfThslHSlr4LLBKL7x1mJW
-x82fmJVQOcfEtWRiNcBzpZxWBz6+1pGAXWg2JJ15Qa2WIxOtBFtYOOQwGJUnXSOt
-p/G7Id+Dv/6hH6+PN8lgmyZ14U9eZRzbhrmht443dCtH1pItLA1UA7ok2ulXJ4Lu
-XLsad0R5wCL8YrGf0pK6
-=7OXW
------END PGP SIGNATURE-----
-
---bZ2MuwyI/0uB8yuJ--
-
-
---===============8268079967215480304==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============8268079967215480304==--
+Matt Schulte
