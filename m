@@ -1,111 +1,104 @@
-From: Josh Cartwright <josh.cartwright@ni.com>
-Subject: Re: [PATCH 7/8] serial: xilinx_uartps: get clock rate info from dts
-Date: Fri, 2 Nov 2012 07:39:29 -0600
-Message-ID: <20121102133929.GP5190@beefymiracle.amer.corp.natinst.com>
-References: <cover.1351721190.git.josh.cartwright@ni.com>
- <23a299ee5e89cfd17bb9affd8fbb9f41b79cfd46.1351721190.git.josh.cartwright@ni.com>
- <50939061.9060201@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 5/8] ARM: zynq: add COMMON_CLK support
+Date: Fri, 02 Nov 2012 16:12:21 +0100
+Message-ID: <5093E2D5.2000304@metafoo.de>
+References: <cover.1351721190.git.josh.cartwright@ni.com> <94af5ee92c2d68f245eb902de74909aadf159be1.1351721190.git.josh.cartwright@ni.com> <50939378.2050500@metafoo.de> <20121102133850.GO5190@beefymiracle.amer.corp.natinst.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5677360756366201045=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <50939061.9060201@metafoo.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michal Simek <monstr@monstr.eu>, Russell King <linux@arm.linux.org.uk>, John Stultz <johnstul@us.ibm.com>, devicetree-discuss@lists.ozlabs.org, Michal Simek <michal.simek@xilinx.com>, Rob Herring <rob.herring@calxeda.com>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, John Linn <John.Linn@xilinx.com>, linux-arm-kernel@lists.infradead.org, Mike Turquette <mturquette@ti.com>
-List-Id: linux-serial@vger.kernel.org
-
-
---===============5677360756366201045==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sMZCuqyhuhd4ycTi"
-Content-Disposition: inline
-
-
---sMZCuqyhuhd4ycTi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Nov 02, 2012 at 10:20:33AM +0100, Lars-Peter Clausen wrote:
-> On 10/31/2012 08:28 PM, Josh Cartwright wrote:
-> > Add support for specifying clock information for the uart clk via the
-> > device tree.  This eliminates the need to hardcode rates in the device
-> > tree.
-> >=20
-> > Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
-> > ---
-> >  arch/arm/boot/dts/zynq-7000.dtsi   |  4 ++--
-> >  drivers/tty/serial/xilinx_uartps.c | 30 +++++++++++++++++-------------
-> >  2 files changed, 19 insertions(+), 15 deletions(-)
-> >=20
-> > diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/zynq-=
-7000.dtsi
-> > index bb3085c..5fb763f 100644
-> > --- a/arch/arm/boot/dts/zynq-7000.dtsi
-> > +++ b/arch/arm/boot/dts/zynq-7000.dtsi
-> > @@ -44,14 +44,14 @@
-> >  			compatible =3D "xlnx,xuartps";
-> >  			reg =3D <0xE0000000 0x1000>;
-> >  			interrupts =3D <0 27 4>;
-> > -			clock =3D <50000000>;
-> > +			clocks =3D <&uart_clk 0>;
-> >  		};
-> > =20
-> >  		uart1: uart@e0001000 {
-> >  			compatible =3D "xlnx,xuartps";
-> >  			reg =3D <0xE0001000 0x1000>;
-> >  			interrupts =3D <0 50 4>;
-> > -			clock =3D <50000000>;
-> > +			clocks =3D <&uart_clk 0>;
->=20
-> Shouldn't this be <&uart_clk 1>?
-
-Yes, indeed.
-
-Thanks,
-  Josh
-
---sMZCuqyhuhd4ycTi
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQk80RAAoJEEef0niEbw+lVz8QAIgrOMIAe4j45xbHk3FISYvp
-tKczq+rVKoS89bCR8Y1SwCHZ95vxR22UulCer3Ipc60KyIY/Zi1EOj/CNDauOz84
-mteTZ77kv6bL4BNdh5xw6mDBwkFPDq/QgYt8+rcHVDzAUwwG4GX2U8kPCuBrgnOF
-Xp5UrScOSRj+LwpSz50+g2y1aJmu9aI2fM6nlEwYxb85PqV7ujfXxAoT3dkdyITu
-PkZiWL4YPLq8pfOZ7qBLkIVu0oKShnLQXBQHOr3x6sNV+ICNj1HuB56cmMSrBJkd
-3rvPf2d7pjXAI5H5i7TygEKlLgl4ikpo/N2auelM2lYg7WeRAf5Gpe1F9l0gBrC8
-E06ilrcyF04OzdKSMIdRVYkLJSjq9KEqPeYAtITkdLnfZCu7KdQDnNlkQgEOzsMd
-FKvDmEfTg0QNY50X6KTCKlnb00XQ+NY4opgWjr/DLc+GzfKJgaexLaV9UtCh4Xqa
-2AgPa9R9Xafr4mAiw2eKkHydr84QX04xKVc9BznIlJ694EP4bi+F0URtP7BstCTs
-G8qWBaqP6Bw+rvYz1+6qragDGjBJ9wo6gavln7N94yy7CHMO28P9RS0GPKqrSdjZ
-h94E7RF13W5QzFqUgIxfyR6AgXhaIgpri+Nw8R3T5UgBIZLk7ZZHHmNmqAK9X+a5
-HnO8jrmKse7aV4OG8mrK
-=Tx3u
------END PGP SIGNATURE-----
-
---sMZCuqyhuhd4ycTi--
-
-
---===============5677360756366201045==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp-out-184.synserver.de ([212.40.185.184]:1332 "EHLO
+	smtp-out-184.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755802Ab2KBPMe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Nov 2012 11:12:34 -0400
+In-Reply-To: <20121102133850.GO5190@beefymiracle.amer.corp.natinst.com>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
+To: Josh Cartwright <josh.cartwright@ni.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@ti.com>, John Stultz <johnstul@us.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Linn <John.Linn@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Michal Simek <monstr@monstr.eu>
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+On 11/02/2012 02:38 PM, Josh Cartwright wrote:
+> Thanks for the review.
+> 
+> On Fri, Nov 02, 2012 at 10:33:44AM +0100, Lars-Peter Clausen wrote:
+>> On 10/31/2012 07:58 PM, Josh Cartwright wrote:
+>>> [...]
+>>> +#define PERIPH_CLK_CTRL_SRC(x)	(periph_clk_parent_map[((x)&3)>>4])
+>>> +#define PERIPH_CLK_CTRL_DIV(x)	(((x)&0x3F00)>>8)
+>>
+>> A few more spaces wouldn't hurt ;)
+> 
+> Okay, sure.
+> 
+>>> [...]
+>>> +static void __init zynq_periph_clk_setup(struct device_node *np)
+>>> +{
+>>> +	struct zynq_periph_clk *periph;
+>>> +	const char *parent_names[3];
+>>> +	struct clk_init_data init;
+>>> +	struct clk *clk;
+>>> +	int err;
+>>> +	u32 reg;
+>>> +	int i;
+>>> +
+>>> +	err = of_property_read_u32(np, "reg", &reg);
+>>> +	WARN_ON(err);
+>>
+>> Shouldn't the function abort if a error happens somewhere? Continuing here
+>> will lead to undefined behavior. Same is probably true for the other WARN_ONs.
+> 
+> The way I see it is: the kernel is will be left in a bad state in the
+> case of any failure, regardless of if we bail out or continue.  AFAICT,
+> there is no clean way to recover from a failure this early.
+> 
+> Given that, it seems simpler (albeit marginally so) just to continue; so
+> that's what I chose to do.  I'm not opposed to bailing out, just not
+> convinced it does anything for us.
+> 
 
---===============5677360756366201045==--
+The issue with this approach is that, while you get a warning, unexpected
+seemingly unrelated side-effects may happen later on. E.g. if no reg
+property for the clock is specified the reg variable will be uninitialized
+and contain whatever was on the stack before. The clock will be registered
+nonetheless and the boot process continues. Now if the clock is enabled a
+bit in a random register will be modified, which could result in strange and
+abnormal behavior, which can be very hard to track down.
+
+Also if for example just one clock has its reg property missing the system
+will continue to boot if we bail out here. It is just that the peripherals
+using that clock won't work. Which will certainly be easier to diagnose than
+random abnormal behavior.
+
+>>> +
+>>> +	periph = kzalloc(sizeof(*periph), GFP_KERNEL);
+>>> +	WARN_ON(!periph);
+>>> +
+>>> +	periph->clk_ctrl = slcr_base + reg;
+>>> +	spin_lock_init(&periph->clkact_lock);
+>>> +
+>>> +	init.name = np->name;
+>>> +	init.ops = &zynq_periph_clk_ops;
+>>> +	for (i = 0; i < ARRAY_SIZE(parent_names); i++)
+>>> +		parent_names[i] = of_clk_get_parent_name(np, i);
+>>> +	init.parent_names = parent_names;
+>>> +	init.num_parents = ARRAY_SIZE(parent_names);
+>>> +
+>>> +	periph->hw.init = &init;
+>>> +
+>>> +	clk = clk_register(NULL, &periph->hw);
+>>> +	WARN_ON(IS_ERR(clk));
+>>> +
+>>> +	err = of_clk_add_provider(np, of_clk_src_simple_get, clk);
+>>> +	WARN_ON(err);
+>>> +
+>>> +	for (i = 0; i < 2; i++) {
+>>
+>> Not all of the peripheral clock generators have two output clocks. I think
+>> it makes sense to use the number entries in clock-output-names here.
+> 
+> Yes, I agree.  I'll also update the bindings documentation.
+> 
+> Thanks again,
+>   Josh
+
