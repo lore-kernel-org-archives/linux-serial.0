@@ -1,46 +1,79 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the
- modem status through sysfs.
-Date: Fri, 2 Nov 2012 11:29:45 +0000
-Message-ID: <20121102112945.535bfea7@pyramind.ukuu.org.uk>
-References: <1351872943.4332.37.camel@chenjun-workstation>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 0/1] staging: Add firewire-serial driver
+Date: Fri,  2 Nov 2012 08:16:32 -0400
+Message-ID: <cover.1351817601.git.peter@hurleysoftware.com>
+References: <1350565015.23730.4.camel@thor>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:35963 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752520Ab2KBLYk (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:37032 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750858Ab2KBMRB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Nov 2012 07:24:40 -0400
-In-Reply-To: <1351872943.4332.37.camel@chenjun-workstation>
+	Fri, 2 Nov 2012 08:17:01 -0400
+In-Reply-To: <1350565015.23730.4.camel@thor>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jun Chen <jun.d.chen@intel.com>
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, russ.gorby@intel.com, chuansheng.liu@intel.com, chao.bi@intel.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stefan Richter <stefanr@s5r6.in-berlin.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org, linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-> +	if (reset_request == IFX_COLD_RESET_REQ) {
-> +		/*  Need to add these action for modem cold reset:
-> +		* - Set the RESET_BB_N to low (better SIM protection)
-> +		* - Set the EXT1P35VREN field to low  during 20ms (V1P35CNT_W  register)
-> +		* - set the EXT1P35VREN field to high during 10ms (V1P35CNT_W  register)
-> +		*/
+v2 of this driver submission builds and runs cleanly against Greg KH's
+tty-next and (hopefully) addresses the concerns raised regarding the
+dependence on tty_buffer internals; specifically with the workarounds to fix
+1) data loss on hangup and 2) throttling before the flip buffers are full.
 
-You seem to have submitted an unfinished version ?
+1) Data loss on hangup
+Although I experimented with alternative solutions as Alan suggested, none
+were practical. For example, this sequence (which is almost identical to
+what the n_tty ldisc does in input_available_p()):
 
-Also can you explain the locking on your new reset_ongoing variable and
-hangup_reasons variable ? What stops the sysfs code being run in parallel
-with the other bits or even twice at once.
+     tty_flush_to_ldisc(tty);
+     n = ldisc->ops->chars_in_buffer(tty);
 
-Looking at it I get the impression that
+suffers from a race that the ldisc could have _just_ emptied the read
+buffer between these calls, so that n == 0 but data is still in the
+flip buffers.
 
-a) the variable should be in the device structure not a static global
-b) it is write only which seems pointless
-c) you probably want a mutex around the actual reset processes so that
-reset is single threaded in each case.
-d) that mutex probably belongs in the device structure
- 
+For now, the driver v2 delays the hangup on carrier loss by a fixed timeout.
 
-The hangup reasons in this patch also appears to be write only ?
+2) Flip buffers full before throttle received from ldisc
+Because driver throttling is performed by the ldisc, and not by the
+tty_buffer, the flip buffers can be filled before receiving a throttle
+request.
 
-Alan
+For now, the driver v2 pre-buffers in front of the tty_buffer; ie, rx data
+which is not accepted by tty_insert_flip_string...() is buffered in the
+driver, the sender is throttled and when ldisc unthrottles, normal operation
+resumes by feeding the tty_buffer from the pre-buffered data.
+
+This driver v2 also fixes the occasionally flaky auto-connect, 2 (valid)
+lockdep warnings, racy line status changes, and delays fifo allocation
+until .activate() to minimize memory footprint.
+
+As before, the TODO file notes the remaining issues.
+
+Regards,
+Peter
+
+Peter Hurley (1):
+  staging: fwserial: Add TTY-over-Firewire serial driver
+
+ drivers/staging/Kconfig             |    2 +
+ drivers/staging/Makefile            |    1 +
+ drivers/staging/fwserial/Kconfig    |    9 +
+ drivers/staging/fwserial/Makefile   |    2 +
+ drivers/staging/fwserial/TODO       |   37 +
+ drivers/staging/fwserial/dma_fifo.c |  310 ++++
+ drivers/staging/fwserial/dma_fifo.h |  130 ++
+ drivers/staging/fwserial/fwserial.c | 2946 +++++++++++++++++++++++++++++++++++
+ drivers/staging/fwserial/fwserial.h |  387 +++++
+ 9 files changed, 3824 insertions(+)
+ create mode 100644 drivers/staging/fwserial/Kconfig
+ create mode 100644 drivers/staging/fwserial/Makefile
+ create mode 100644 drivers/staging/fwserial/TODO
+ create mode 100644 drivers/staging/fwserial/dma_fifo.c
+ create mode 100644 drivers/staging/fwserial/dma_fifo.h
+ create mode 100644 drivers/staging/fwserial/fwserial.c
+ create mode 100644 drivers/staging/fwserial/fwserial.h
+
+-- 
+1.7.12.3
+
