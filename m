@@ -1,82 +1,58 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH 8/8] clocksource: xilinx_ttc: add OF_CLK support
-Date: Mon, 5 Nov 2012 14:02:32 +0100
-Message-ID: <CAHTX3d+3CMo1bfJgWexkkgmOFyj9dp-2H4nzKygXOc94LoW0+w@mail.gmail.com>
-References: <cover.1351721190.git.josh.cartwright@ni.com>
-	<0ea1ba71afb3f4551ac27a6dfa41bd97b63cef48.1351721190.git.josh.cartwright@ni.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 2/8] ARM: zynq: move ttc timer code to drivers/clocksource
+Date: Mon, 05 Nov 2012 08:49:12 -0600
+Message-ID: <5097D1E8.2000403@gmail.com>
+References: <cover.1351721190.git.josh.cartwright@ni.com> <c0347788fbad559a249a25128a23f40c85d9cbda.1351721190.git.josh.cartwright@ni.com> <CAHTX3d++0fGSw7GQHcc-S1X1Qh-rfekpr-E8Jkg2_vFqdCFFTg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:43799 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752643Ab2KENCd (ORCPT
+Received: from mail-oa0-f46.google.com ([209.85.219.46]:56603 "EHLO
+	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754125Ab2KEOtS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Nov 2012 08:02:33 -0500
-Received: by mail-ee0-f46.google.com with SMTP id b15so2923422eek.19
-        for <linux-serial@vger.kernel.org>; Mon, 05 Nov 2012 05:02:32 -0800 (PST)
-In-Reply-To: <0ea1ba71afb3f4551ac27a6dfa41bd97b63cef48.1351721190.git.josh.cartwright@ni.com>
+	Mon, 5 Nov 2012 09:49:18 -0500
+In-Reply-To: <CAHTX3d++0fGSw7GQHcc-S1X1Qh-rfekpr-E8Jkg2_vFqdCFFTg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Josh Cartwright <josh.cartwright@ni.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@ti.com>, John Stultz <johnstul@us.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Linn <John.Linn@xilinx.com>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: Josh Cartwright <josh.cartwright@ni.com>, Grant Likely <grant.likely@secretlab.ca>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@ti.com>, John Stultz <johnstul@us.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Linn <John.Linn@xilinx.com>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-2012/10/31 Josh Cartwright <josh.cartwright@ni.com>:
-> Add support for retrieving TTC configuration from device tree.  This
-> includes the ability to pull information about the driving clocks from
-> the of_clk bindings.
->
-> Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
-> ---
->  arch/arm/boot/dts/zynq-7000.dtsi |  53 ++++++++
->  arch/arm/boot/dts/zynq-zc702.dts |  10 ++
->  drivers/clocksource/xilinx_ttc.c | 273 ++++++++++++++++++++++-----------------
->  3 files changed, 218 insertions(+), 118 deletions(-)
->
-> diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/zynq-7000.dtsi
-> index 5fb763f..9a2442c 100644
-> --- a/arch/arm/boot/dts/zynq-7000.dtsi
-> +++ b/arch/arm/boot/dts/zynq-7000.dtsi
-> @@ -109,5 +109,58 @@
->                                 };
->                         };
->                 };
-> +
-> +               ttc0: ttc0@f8001000 {
-> +                       #address-cells = <1>;
-> +                       #size-cells = <0>;
-> +                       compatible = "xlnx,ttc";
-> +                       reg = <0xF8001000 0x1000>;
-> +                       clocks = <&cpu_clk 3>;
-> +                       clock-names = "cpu_1x";
-> +                       clock-ranges;
-> +
-> +                       ttc0_0: ttc0.0 {
-> +                               status = "disabled";
-> +                               reg = <0>;
-> +                               interrupts = <0 10 4>;
-> +                       };
-> +                       ttc0_1: ttc0.1 {
-> +                               status = "disabled";
-> +                               reg = <1>;
-> +                               interrupts = <0 11 4>;
-> +                       };
-> +                       ttc0_2: ttc0.2 {
-> +                               status = "disabled";
-> +                               reg = <2>;
-> +                               interrupts = <0 12 4>;
-> +                       };
-> +               };
-> +
-> +               ttc1: ttc0@f8002000 {
 
-Also this is ttc1: ttc1.
-These type of faults can be simple removed by proper dts node generation.
 
-Thanks,
-Michal
+On 11/05/2012 05:22 AM, Michal Simek wrote:
+> 2012/10/29 Josh Cartwright <josh.cartwright@ni.com>:
+>> Suggested cleanup by Arnd Bergmann.  Move the ttc timer.c code to
+>> drivers/clocksource, and out of the mach-zynq directory.
+>>
+>> The common.h (which only held the timer declaration) was renamed to
+>> xilinx_ttc.h and moved into include/linux.
+>>
+>> Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
+>> Cc: Arnd Bergmann <arnd@arndb.de>
+>> ---
+>>  arch/arm/mach-zynq/Makefile                                    | 2 +-
+>>  arch/arm/mach-zynq/common.c                                    | 2 +-
+>>  drivers/clocksource/Makefile                                   | 1 +
+>>  arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c | 1 -
+>>  arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h      | 4 ++--
+>>  5 files changed, 5 insertions(+), 5 deletions(-)
+>>  rename arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c (99%)
+>>  rename arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h (91%)
+> 
+> Not going to apply this patch till there is clean way how to move all
+> drivers there.
+> Especially I don't like to add xilinx_ttc.h to include/linux folder.
+> 
 
--- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+A cleaner way is how we are doing irqchips [1]. This needs a single
+function (or one each for clksrc and clkevt) that has a DT match list of
+all known timers and calls their init function. It should be a bit
+simpler than irqchips init function because you don't need to worry
+about hierarchy init ordering. That doesn't solve non-DT though and if
+there are any extra functions like we have with irqchips, you still need
+the header in include/linux.
+
+Rob
+
+[1] http://www.spinics.net/lists/arm-kernel/msg203687.html
