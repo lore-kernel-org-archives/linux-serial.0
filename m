@@ -1,82 +1,71 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH v2 2/3] serial: mxs-auart: add the DMA support for mx28
-Date: Mon, 5 Nov 2012 11:16:53 +0800
-Message-ID: <50972FA5.4020605@freescale.com>
-References: <1351074456-25863-1-git-send-email-b32955@freescale.com>	 <1351074456-25863-3-git-send-email-b32955@freescale.com>	 <1351138689.5263.68.camel@vkoul-udesk3> <5088D336.7040206@freescale.com>	 <1351145272.7077.8.camel@vkoul-udesk3>  <5089033F.9040100@freescale.com> <1351163280.7077.11.camel@vkoul-udesk3>
+From: "Chen, Jun D" <jun.d.chen@intel.com>
+Subject: RE: [PATCH] serial: ifx6x60: Add module parameters to manage the
+ modem status through sysfs.
+Date: Mon, 5 Nov 2012 08:26:08 +0000
+Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD6FE1F@SHSMSX102.ccr.corp.intel.com>
+References: <1351872943.4332.37.camel@chenjun-workstation>
+ <20121102112945.535bfea7@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe005.messaging.microsoft.com ([216.32.181.185]:22561
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752400Ab2KEDNO convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 4 Nov 2012 22:13:14 -0500
-In-Reply-To: <1351163280.7077.11.camel@vkoul-udesk3>
+Received: from mga14.intel.com ([143.182.124.37]:52902 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751032Ab2KEI0N convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Nov 2012 03:26:13 -0500
+In-Reply-To: <20121102112945.535bfea7@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vinod Koul <vkoul@infradead.org>
-Cc: vinod.koul@intel.com, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, lauri.hintsala@bluegiga.com, linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, alan@linux.intel.com
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "Liu, Chuansheng" <chuansheng.liu@intel.com>, "Bi, Chao" <chao.bi@intel.com>
 
-=E4=BA=8E 2012=E5=B9=B410=E6=9C=8825=E6=97=A5 19:08, Vinod Koul =E5=86=99=
-=E9=81=93:
-> On Thu, 2012-10-25 at 17:15 +0800, Huang Shijie wrote:
->> yes. I have to setup the register. Could you told me which API is th=
-e
->> right API?
-> dmaengine_slave_config() should be used to send the slave specfic
-> parameters
-It seems hard to set the registers by the
+Hi,Alan
+    Thank your reply and advice. 
+> +	if (reset_request == IFX_COLD_RESET_REQ) {
+> +		/*  Need to add these action for modem cold reset:
+> +		* - Set the RESET_BB_N to low (better SIM protection)
+> +		* - Set the EXT1P35VREN field to low  during 20ms (V1P35CNT_W  register)
+> +		* - set the EXT1P35VREN field to high during 10ms (V1P35CNT_W  register)
+> +		*/
+I want to submit one finished version, but these code need to call the intel_scu_ipc_readv and intel_scu_ipc_writev function defined in the file <asm/intel_scu_ipc.h>
+But this module seem not to be maked. Now I add one macro to disable these functions. I will send the new patch to you and would you like to give more suggestion about this issue.
 
-dmaengine_slave_config().
+About the reset_ongoing variable and hangup_reasons variable, I have modify these codes, use mdm_reset_state variable(old ) and hangup_reasons 
+variable( add ) in the the device structure to realize the codes. 
+The variable mdm_reset_state used to tell the user space the status about modem reset status and void to run even twice at once.
+The variable hangup_reasons used to give one interface to user space to know and clear the reason of modem reset, which don't need to locked.
+I've update the patch as your suggestion, please check another PATCH mail.
 
-[1] firstly, there are several drivers use the mxs-dma, the gpmi-nand, =
-mxs-mmc,spi-mxs, i2c-mxs.
-        If we set the registers by the dmaengine_slave_config(), we mus=
-t have the register base address for gpmi, mxs, spi, i2c.
-      It's not a good idea to access these registers in the mxs-dma dri=
-ver.
+Jun
 
-[2] secondly, take gpmi_read_page() for example, it uses the DMA_TRANS_=
-NONE several times :
-     If we set the registers by the dmaengine_slave_config(), the gpmi_=
-read_page() will become like:
-     .....................................
-     dmaengine_slave_config()
-     dmaengine_prep_slave_sg().
-     ...................................
+-----Original Message-----
+From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+Sent: Friday, November 02, 2012 7:30 PM
+To: Chen, Jun D
+Cc: alan@linux.intel.com; linux-serial@vger.kernel.org; Gorby, Russ; Liu, Chuansheng; Bi, Chao
+Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the modem status through sysfs.
 
-     dmaengine_slave_config()
-     dmaengine_prep_slave_sg().
-     ...................................
+> +	if (reset_request == IFX_COLD_RESET_REQ) {
+> +		/*  Need to add these action for modem cold reset:
+> +		* - Set the RESET_BB_N to low (better SIM protection)
+> +		* - Set the EXT1P35VREN field to low  during 20ms (V1P35CNT_W  register)
+> +		* - set the EXT1P35VREN field to high during 10ms (V1P35CNT_W  register)
+> +		*/
 
-      dmaengine_slave_config()
-      dmaengine_prep_slave_sg().
-     ...................................
+You seem to have submitted an unfinished version ?
 
-     Is it a nice look?
+Also can you explain the locking on your new reset_ongoing variable and hangup_reasons variable ? What stops the sysfs code being run in parallel with the other bits or even twice at once.
 
-  [3] dma_slave_config{} does not have the fields to contain the regist=
-ers value.
+Looking at it I get the impression that
 
+a) the variable should be in the device structure not a static global
+b) it is write only which seems pointless
+c) you probably want a mutex around the actual reset processes so that reset is single threaded in each case.
+d) that mutex probably belongs in the device structure
+ 
 
-So I think the  current code it's ok, we'd better do not change it.
+The hangup reasons in this patch also appears to be write only ?
 
-thanks
-Huang Shijie
-
-
-
-
-
-
-
-
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Alan
