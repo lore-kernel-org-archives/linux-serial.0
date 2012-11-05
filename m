@@ -1,58 +1,87 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH 2/8] ARM: zynq: move ttc timer code to drivers/clocksource
-Date: Mon, 05 Nov 2012 08:49:12 -0600
-Message-ID: <5097D1E8.2000403@gmail.com>
-References: <cover.1351721190.git.josh.cartwright@ni.com> <c0347788fbad559a249a25128a23f40c85d9cbda.1351721190.git.josh.cartwright@ni.com> <CAHTX3d++0fGSw7GQHcc-S1X1Qh-rfekpr-E8Jkg2_vFqdCFFTg@mail.gmail.com>
+From: Josh Cartwright <josh.cartwright@ni.com>
+Subject: [PATCH v2] serial: xilinx_uartps: kill CONFIG_OF conditional
+Date: Mon, 5 Nov 2012 15:24:26 -0600
+Message-ID: <20121105212426.GA1972@beefymiracle.amer.corp.natinst.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f46.google.com ([209.85.219.46]:56603 "EHLO
-	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754125Ab2KEOtS (ORCPT
+Received: from mailserver6.natinst.com ([130.164.80.6]:55835 "EHLO
+	spamkiller06.natinst.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751499Ab2KEVYT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Nov 2012 09:49:18 -0500
-In-Reply-To: <CAHTX3d++0fGSw7GQHcc-S1X1Qh-rfekpr-E8Jkg2_vFqdCFFTg@mail.gmail.com>
+	Mon, 5 Nov 2012 16:24:19 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Michal Simek <michal.simek@xilinx.com>
-Cc: Josh Cartwright <josh.cartwright@ni.com>, Grant Likely <grant.likely@secretlab.ca>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@ti.com>, John Stultz <johnstul@us.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Linn <John.Linn@xilinx.com>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+The Zynq platform requires the use of CONFIG_OF.  Remove the #ifdef
+conditionals in the uartps driver.  Make dependency explicit in Kconfig.
 
+Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
+---
+Michal-
 
-On 11/05/2012 05:22 AM, Michal Simek wrote:
-> 2012/10/29 Josh Cartwright <josh.cartwright@ni.com>:
->> Suggested cleanup by Arnd Bergmann.  Move the ttc timer.c code to
->> drivers/clocksource, and out of the mach-zynq directory.
->>
->> The common.h (which only held the timer declaration) was renamed to
->> xilinx_ttc.h and moved into include/linux.
->>
->> Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
->> Cc: Arnd Bergmann <arnd@arndb.de>
->> ---
->>  arch/arm/mach-zynq/Makefile                                    | 2 +-
->>  arch/arm/mach-zynq/common.c                                    | 2 +-
->>  drivers/clocksource/Makefile                                   | 1 +
->>  arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c | 1 -
->>  arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h      | 4 ++--
->>  5 files changed, 5 insertions(+), 5 deletions(-)
->>  rename arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c (99%)
->>  rename arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h (91%)
-> 
-> Not going to apply this patch till there is clean way how to move all
-> drivers there.
-> Especially I don't like to add xilinx_ttc.h to include/linux folder.
-> 
+Here's a version of this patch outside of my COMMON_CLK patchset as you
+requested ontop of your arm-next branch.  An explicit dependency was
+added in Kconfig as you had suggested.
 
-A cleaner way is how we are doing irqchips [1]. This needs a single
-function (or one each for clksrc and clkevt) that has a DT match list of
-all known timers and calls their init function. It should be a bit
-simpler than irqchips init function because you don't need to worry
-about hierarchy init ordering. That doesn't solve non-DT though and if
-there are any extra functions like we have with irqchips, you still need
-the header in include/linux.
+Thanks,
+   Josh
 
-Rob
+ drivers/tty/serial/Kconfig         | 1 +
+ drivers/tty/serial/xilinx_uartps.c | 9 ---------
+ 2 files changed, 1 insertion(+), 9 deletions(-)
 
-[1] http://www.spinics.net/lists/arm-kernel/msg203687.html
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2a53be5..8cb29b5 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1376,6 +1376,7 @@ config SERIAL_MXS_AUART_CONSOLE
+ 
+ config SERIAL_XILINX_PS_UART
+ 	tristate "Xilinx PS UART support"
++	depends on OF
+ 	select SERIAL_CORE
+ 	help
+ 	  This driver supports the Xilinx PS UART port.
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index b627363..23efe17 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -946,15 +946,11 @@ static int __devinit xuartps_probe(struct platform_device *pdev)
+ 	struct resource *res, *res2;
+ 	int clk = 0;
+ 
+-#ifdef CONFIG_OF
+ 	const unsigned int *prop;
+ 
+ 	prop = of_get_property(pdev->dev.of_node, "clock", NULL);
+ 	if (prop)
+ 		clk = be32_to_cpup(prop);
+-#else
+-	clk = *((unsigned int *)(pdev->dev.platform_data));
+-#endif
+ 	if (!clk) {
+ 		dev_err(&pdev->dev, "no clock specified\n");
+ 		return -ENODEV;
+@@ -1044,16 +1040,11 @@ static int xuartps_resume(struct platform_device *pdev)
+ }
+ 
+ /* Match table for of_platform binding */
+-
+-#ifdef CONFIG_OF
+ static struct of_device_id xuartps_of_match[] __devinitdata = {
+ 	{ .compatible = "xlnx,xuartps", },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, xuartps_of_match);
+-#else
+-#define xuartps_of_match NULL
+-#endif
+ 
+ static struct platform_driver xuartps_platform_driver = {
+ 	.probe   = xuartps_probe,		/* Probe method */
+-- 
+1.8.0
