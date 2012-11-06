@@ -1,47 +1,58 @@
-From: Jun Chen <jun.d.chen@intel.com>
-Subject: [PATCH] serial: ifx6x60: ifx_spi_write don't need to do
- mrdy_assert when fifo is not empty.
-Date: Tue, 06 Nov 2012 04:28:54 -0500
-Message-ID: <1352194134.4332.47.camel@chenjun-workstation>
+From: "Chen, Jun D" <jun.d.chen@intel.com>
+Subject: RE: [PATCH] serial: ifx6x60: Add module parameters to manage the
+ modem status through sysfs.
+Date: Tue, 6 Nov 2012 01:32:28 +0000
+Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD6FF97@SHSMSX102.ccr.corp.intel.com>
+References: <1351872943.4332.37.camel@chenjun-workstation>
+	<20121102112945.535bfea7@pyramind.ukuu.org.uk>
+	<9E44E06DBBA23A489DED933DBC291A850FD6FE1F@SHSMSX102.ccr.corp.intel.com>
+ <20121105114329.0f60b484@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:14819 "EHLO mga03.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:42036 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754638Ab2KFB0X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 Nov 2012 20:26:23 -0500
+	id S932372Ab2KFBdp convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 5 Nov 2012 20:33:45 -0500
+In-Reply-To: <20121105114329.0f60b484@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: serial <linux-serial@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>, chao.bi@intel.com, jun.d.chen@intel.com
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "Liu, Chuansheng" <chuansheng.liu@intel.com>, "Bi, Chao" <chao.bi@intel.com>
 
+Hi, Alan,
+    Thank you very much! 
 
-This patch check whether the kfifo lenth equal to the count of write data.If condition
-is true,ifx_spi_write need to trigger one mrdy_assert. If condition is false,the mrdy_assert
-will be triggered by the next ifx_spi_io.
-Cc: Bi Chao <chao.bi@intel.com>
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
----
- drivers/tty/serial/ifx6x60.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+Jun
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index ac718e1..b52ef8d 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -522,7 +522,8 @@ static int ifx_spi_write(struct tty_struct *tty, const unsigned char *buf,
- 	unsigned char *tmp_buf = (unsigned char *)buf;
- 	int tx_count = kfifo_in_locked(&ifx_dev->tx_fifo, tmp_buf, count,
- 				   &ifx_dev->fifo_lock);
--	mrdy_assert(ifx_dev);
-+	if (kfifo_len(&ifx_dev->tx_fifo) == count)
-+		mrdy_assert(ifx_dev);
- 	return tx_count;
- }
- 
--- 
-1.7.4.1
+-----Original Message-----
+From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
+Sent: Monday, November 05, 2012 7:43 PM
+To: Chen, Jun D
+Cc: alan@linux.intel.com; linux-serial@vger.kernel.org; Gorby, Russ; Liu, Chuansheng; Bi, Chao
+Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the modem status through sysfs.
 
+On Mon, 5 Nov 2012 08:26:08 +0000
+"Chen, Jun D" <jun.d.chen@intel.com> wrote:
 
+> Hi,Alan
+>     Thank your reply and advice. 
+> > +	if (reset_request == IFX_COLD_RESET_REQ) {
+> > +		/*  Need to add these action for modem cold reset:
+> > +		* - Set the RESET_BB_N to low (better SIM protection)
+> > +		* - Set the EXT1P35VREN field to low  during 20ms (V1P35CNT_W  register)
+> > +		* - set the EXT1P35VREN field to high during 10ms (V1P35CNT_W  register)
+> > +		*/
+> I want to submit one finished version, but these code need to call the 
+> intel_scu_ipc_readv and intel_scu_ipc_writev function defined in the file <asm/intel_scu_ipc.h> But this module seem not to be maked. Now I add one macro to disable these functions. I will send the new patch to you and would you like to give more suggestion about this issue.
 
+You probably need your Kconfig entry to have
+
+	depends on X86_INTEL_MID && INTEL_SCU_IPC
+
+so that it can only be compiled when the feature is present.
+
+Alan
