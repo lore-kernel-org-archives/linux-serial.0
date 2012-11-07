@@ -1,43 +1,30 @@
-From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-Subject: Re: [PATCH 00/10] serial: sh-sci fixes - console PM, SCIFB,
- SMP lockup, etc.
-Date: Wed, 07 Nov 2012 16:18:38 +0900
-Message-ID: <509A0B4E.1030801@renesas.com>
-References: <509A0658.1010503@renesas.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the
+ modem status through sysfs.
+Date: Wed, 7 Nov 2012 08:47:54 +0000
+Message-ID: <20121107084754.00167bfb@pyramind.ukuu.org.uk>
+References: <1352286374.4332.52.camel@chenjun-workstation>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relmlor1.renesas.com ([210.160.252.171]:53209 "EHLO
-	relmlor1.renesas.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751880Ab2KGHSq (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:42386 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750996Ab2KGImq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Nov 2012 02:18:46 -0500
-In-reply-to: <509A0658.1010503@renesas.com>
+	Wed, 7 Nov 2012 03:42:46 -0500
+In-Reply-To: <1352286374.4332.52.camel@chenjun-workstation>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, gregkh@linuxfoundation.org, takashi.yoshii.zj@renesas.com
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
+To: Jun Chen <jun.d.chen@intel.com>
+Cc: Alan Cox <alan@linux.intel.com>, serial <linux-serial@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>, liu chuansheng <chuansheng.liu@intel.com>, Bi Chao <chao.bi@intel.com>
 
-On 11/7/2012 3:57 PM, Shinya Kuribayashi wrote:
-> Hi Paul and serial forks,
-[...]
-> Takashi YOSHII (4):
->       serial: sh-sci: fix condition test to set SCBRR
->       serial: sh-sci: support lower baud rate
->       serial: sh-sci: mask SCTFDR/RFDR according to fifosize
->       serial: sh-sci: fix common SCIFB regmap definition
+
+> Hangup_reasons used to give one interface to user space to know and clear the modem reset reasons.
+> Now there are four reasons:SPI timeout, modem initiative reset,modem coredump,spi tranfer error.
 > 
-> Teppei Kamijou (1):
->       serial: sh-sci: console runtime PM support (revisit)
-> 
->  drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
->  1 file changed, 56 insertions(+), 84 deletions(-)
+> Cc: Bi Chao <chao.bi@intel.com>
+> Cc: Liu chuansheng <chuansheng.liu@intel.com>
+> Signed-off-by: Chen Jun <jun.d.chen@intel.com>
 
-Oops, I forgot to append proper From: author lines in five commits
-(patch 04/10 to 09/10).  Didn't mean to supersede your authoship.
-
-I'd respin the patchset later, waiting for some feedback.
---
-Shinya Kuribayashi
-Renesas Electronics
+Acked-by: Alan Cox <alan@linux.intel.com>
