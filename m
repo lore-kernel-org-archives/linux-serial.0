@@ -1,78 +1,46 @@
-From: "Chen, Jun D" <jun.d.chen@intel.com>
-Subject: RE: [PATCH] serial: ifx6x60: Add module parameters to manage the
- modem status through sysfs.
-Date: Wed, 7 Nov 2012 03:09:51 +0000
-Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD703E2@SHSMSX102.ccr.corp.intel.com>
-References: <1352193872.4332.44.camel@chenjun-workstation>
- <20121106094535.17daa290@pyramind.ukuu.org.uk>
+From: Sonic Zhang <sonic.adi@gmail.com>
+Subject: [PATCH] serial: bfin_uart: Don't switch baud rate untill the transfer buffer is empty.
+Date: Wed, 7 Nov 2012 12:55:42 +0800
+Message-ID: <1352264142-30771-1-git-send-email-sonic.adi@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:4638 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753207Ab2KGDKm convert rfc822-to-8bit (ORCPT
+Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:46660
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750747Ab2KGE4m (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 6 Nov 2012 22:10:42 -0500
-In-Reply-To: <20121106094535.17daa290@pyramind.ukuu.org.uk>
-Content-Language: en-US
+	Tue, 6 Nov 2012 23:56:42 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Alan Cox <alan@linux.intel.com>, serial <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "Bi, Chao" <chao.bi@intel.com>, "Liu, Chuansheng" <chuansheng.liu@intel.com>
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
 
-Hi,Alan,
-    Thank for your suggestion for two point, I have updated the patch in other email.
+From: Sonic Zhang <sonic.zhang@analog.com>
 
------Original Message-----
-From: Alan Cox [mailto:alan@lxorguk.ukuu.org.uk] 
-Sent: Tuesday, November 06, 2012 5:46 PM
-To: Chen, Jun D
-Cc: Alan Cox; serial; Gorby, Russ; Bi, Chao; Liu, Chuansheng
-Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the modem status through sysfs.
+set_termios may be invoked before the former data transfer is completed. Block until the
+tranfer is done.
 
->  	dev_warn(&ifx_dev->spi_dev->dev, "*** SPI Timeout ***");
-> +	saved_ifx_dev->hangup_reasons |= HU_TIMEOUT;
->  	ifx_spi_ttyhangup(ifx_dev);
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+---
+ drivers/tty/serial/bfin_uart.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
-This one should be using ifx_dev->hangup_reasons |=
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index 9242d56..71c0c09 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -869,6 +869,10 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	UART_SET_ANOMALY_THRESHOLD(uart, USEC_PER_SEC / baud * 15);
+ 
++	/* Wait till the transfer buffer is empty */
++	while (UART_GET_GCTL(uart) & UCEN && !(UART_GET_LSR(uart) & TEMT))
++		barrier();
++
+ 	/* Disable UART */
+ 	ier = UART_GET_IER(uart);
+ 	UART_PUT_GCTL(uart, UART_GET_GCTL(uart) & ~UCEN);
+-- 
+1.7.0.4
 
-this part of the code is clean for multiple devices so the ifx_dev pointer should be used (it will always be the same as saved_ifx_dev currently so it's just a tidy up)
 
-
-> +/**
-> + * reset_modem - modem reset command function
-> + * @val: a reference to the string where the modem reset query is 
-> +given
-> + * @kp: an unused reference to the kernel parameter  */
-> +
-> +static int reset_modem(const char *val, const struct kernel_param 
-> +*kp) {
-> +	unsigned long reset_request;
-> +	int err = 0;
-> +
-> +	u16 addr = V1P35CNT_W;
-> +	u8 data, def_value;
-> +
-> +	if (kstrtoul(val, 10, &reset_request) < 0)
-> +		return -EINVAL;
-> +
-> +	if (!saved_ifx_dev) {
-> +		dev_dbg(&saved_ifx_dev->spi_dev->dev,
-> +				"%s is called before probe\n", __func__);
-> +		return -ENODEV;
-> +	}
-> +
-> +	dev_dbg(&saved_ifx_dev->spi_dev->dev,
-> +					"%s requested !\n", __func__);
-> +
-> +	if (test_and_set_bit(MR_START, &saved_ifx_dev->mdm_reset_state))
-> +		goto out;
-
-This case returns 0 - rather than an error like -EBUSY - is that intentional ?
-
-Otherwise
-
-Acked-by: Alan Cox <alan@linux.intel.com>
-
-and the two points noted can be fixed up with a later patch IMHO.
