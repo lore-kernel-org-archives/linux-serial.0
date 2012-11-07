@@ -1,84 +1,43 @@
 From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-Subject: [PATCH 10/10] serial: sh-sci: fix possible race cases on SCSCR
- register accesses
-Date: Wed, 07 Nov 2012 16:01:05 +0900
-Message-ID: <509A0731.6020908@renesas.com>
+Subject: Re: [PATCH 00/10] serial: sh-sci fixes - console PM, SCIFB,
+ SMP lockup, etc.
+Date: Wed, 07 Nov 2012 16:18:38 +0900
+Message-ID: <509A0B4E.1030801@renesas.com>
 References: <509A0658.1010503@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from relmlor1.renesas.com ([210.160.252.171]:53209 "EHLO
+	relmlor1.renesas.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751880Ab2KGHSq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 7 Nov 2012 02:18:46 -0500
 In-reply-to: <509A0658.1010503@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: lethal@linux-sh.org, magnus.damm@gmail.com, alan@linux.intel.com, gregkh@linuxfoundation.org
-Cc: rjw@sisk.pl, takashi.yoshii.zj@renesas.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, gregkh@linuxfoundation.org, takashi.yoshii.zj@renesas.com
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 
-In the previous commit, console write function (serial_console_write)
-is changed to disable SCI interrupts while printing console strings.
-This introduces possible race cases in the serial startup / shutdown
-functions on SMP systems.
+On 11/7/2012 3:57 PM, Shinya Kuribayashi wrote:
+> Hi Paul and serial forks,
+[...]
+> Takashi YOSHII (4):
+>       serial: sh-sci: fix condition test to set SCBRR
+>       serial: sh-sci: support lower baud rate
+>       serial: sh-sci: mask SCTFDR/RFDR according to fifosize
+>       serial: sh-sci: fix common SCIFB regmap definition
+> 
+> Teppei Kamijou (1):
+>       serial: sh-sci: console runtime PM support (revisit)
+> 
+>  drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
+>  1 file changed, 56 insertions(+), 84 deletions(-)
 
-This patch fixes the sh-sci in the same way as commit 9ec1882df2
-(tty: serial: imx: console write routing is unsafe on SMP, from
-Xinyu Chen <xinyu.chen@freescale.com>, 2012-08-27) did.
+Oops, I forgot to append proper From: author lines in five commits
+(patch 04/10 to 09/10).  Didn't mean to supersede your authoship.
 
-There could be several consumers of the console,
-* the kernel printk
-* the init process using /dev/kmsg to call printk to show log
-* shell, which opens /dev/console and writes with sys_write()
-
-The shell goes into the normal UART open() and write() system calls,
-while the other two go into the console operations.  The open() call
-invokes serial startup function (sci_startup), which will write to
-the SCSCR register (to enable or disable SCI interrupts) without any
-locking.  This will conflict with the console serial function.
-
-Add spinlock protections in sci_startup() and sci_shutdown() properly.
-
-Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
----
- drivers/tty/serial/sh-sci.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 0b8d029..8e3c7f7 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1742,6 +1742,7 @@ static inline void sci_free_dma(struct uart_port *port)
- static int sci_startup(struct uart_port *port)
- {
- 	struct sci_port *s = to_sci_port(port);
-+	unsigned long flags;
- 	int ret;
- 
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
-@@ -1752,8 +1753,10 @@ static int sci_startup(struct uart_port *port)
- 
- 	sci_request_dma(port);
- 
-+	spin_lock_irqsave(&port->lock, flags);
- 	sci_start_tx(port);
- 	sci_start_rx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	return 0;
- }
-@@ -1761,11 +1764,14 @@ static int sci_startup(struct uart_port *port)
- static void sci_shutdown(struct uart_port *port)
- {
- 	struct sci_port *s = to_sci_port(port);
-+	unsigned long flags;
- 
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
- 
-+	spin_lock_irqsave(&port->lock, flags);
- 	sci_stop_rx(port);
- 	sci_stop_tx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	sci_free_dma(port);
- 	sci_free_irq(s);
--- 
-1.7.12.4
-
+I'd respin the patchset later, waiting for some feedback.
+--
+Shinya Kuribayashi
+Renesas Electronics
