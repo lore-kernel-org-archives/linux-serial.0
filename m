@@ -1,58 +1,58 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH] serial: bfin-uart: avoid dead lock in rx irq handler in smp kernel
-Date: Wed, 7 Nov 2012 13:27:56 +0800
-Message-ID: <1352266076-31683-1-git-send-email-sonic.adi@gmail.com>
+From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
+Subject: [PATCH 00/10] serial: sh-sci fixes - console PM, SCIFB, SMP lockup,
+ etc.
+Date: Wed, 07 Nov 2012 15:57:28 +0900
+Message-ID: <509A0658.1010503@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe004.messaging.microsoft.com ([65.55.88.14]:23129 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750747Ab2KGF26 (ORCPT
+Received: from relmlor1.renesas.com ([210.160.252.171]:48661 "EHLO
+	relmlor1.renesas.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751512Ab2KGG5b (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Nov 2012 00:28:58 -0500
+	Wed, 7 Nov 2012 01:57:31 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: uclinux-dist-devel@blackfin.uclinux.org, Steven Miao <realmz6@gmail.com>, Sonic Zhang <sonic.zhang@analog.com>
+To: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, gregkh@linuxfoundation.org, takashi.yoshii.zj@renesas.com
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 
-From: Steven Miao <realmz6@gmail.com>
+Hi Paul and serial forks,
 
-Disabing dma irq and lock bottom half in smp kernel doesn't ensure exclusive
-uart access. Call spin_lock_irqsave() instead.
+Here are sh-sci serial driver fixes that have been cooking for months
+privately on my end:
+* console PM rework with the help of serial-core's uart_change_pm()
+* provide missing piece in SCIFB support (from Yoshii-san)
+* address console write function vs. SMP lockup issue
 
-Signed-off-by: Steven Miao <realmz6@gmail.com>
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
----
- drivers/tty/serial/bfin_uart.c |    7 +++----
- 1 files changed, 3 insertions(+), 4 deletions(-)
+and so on.  Comments and suggestions are welcome.
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index 71c0c09..870a744 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -477,9 +477,9 @@ static void bfin_serial_dma_rx_chars(struct bfin_serial_port *uart)
- void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- {
- 	int x_pos, pos;
-+	unsigned long flags;
- 
--	dma_disable_irq_nosync(uart->rx_dma_channel);
--	spin_lock_bh(&uart->rx_lock);
-+	spin_lock_irqsave(&uart->rx_lock, flags);
- 
- 	/* 2D DMA RX buffer ring is used. Because curr_y_count and
- 	 * curr_x_count can't be read as an atomic operation,
-@@ -510,8 +510,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
- 		uart->rx_dma_buf.tail = uart->rx_dma_buf.head;
- 	}
- 
--	spin_unlock_bh(&uart->rx_lock);
--	dma_enable_irq(uart->rx_dma_channel);
-+	spin_unlock_irqrestore(&uart->rx_lock, flags);
- 
- 	mod_timer(&(uart->rx_dma_timer), jiffies + DMA_RX_FLUSH_JIFFIES);
- }
+Build tested with vanilla v3.6, but not boot- nor PM-tested with
+newer kernels after v3.4.  Anyone with can-sleep shmobile systems,
+please give it try.
+
+Thanks in advance,
+
+----------------------------------------------------------------
+Shinya Kuribayashi (5):
+      Revert "sh-sci / PM: Avoid deadlocking runtime PM"
+      Revert "sh-sci / PM: Use power.irq_safe"
+      Partially revert "serial: sh-sci: console Runtime PM support"
+      serial: sh-sci: add locking to console write function to avoid SMP lockup
+      serial: sh-sci: fix possible race cases on SCSCR register accesses
+
+Takashi YOSHII (4):
+      serial: sh-sci: fix condition test to set SCBRR
+      serial: sh-sci: support lower baud rate
+      serial: sh-sci: mask SCTFDR/RFDR according to fifosize
+      serial: sh-sci: fix common SCIFB regmap definition
+
+Teppei Kamijou (1):
+      serial: sh-sci: console runtime PM support (revisit)
+
+ drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
+ 1 file changed, 56 insertions(+), 84 deletions(-)
+
 -- 
-1.7.0.4
-
-
+Shinya Kuribayashi
+Renesas Electronics
