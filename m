@@ -1,166 +1,27 @@
-From: Mingli Wu <mingli@southpole.se>
-Subject: [PATCH 1/2] serial: mxs-auart: Allow device tree probing
-Date: Thu,  8 Nov 2012 12:08:13 +0100
-Message-ID: <1352372894-21072-1-git-send-email-mingli@southpole.se>
+From: Ming Li Wu <mingli@southpole.se>
+Subject: Sorry,  please ignore the last email
+Date: Thu, 08 Nov 2012 13:06:48 +0100
+Message-ID: <509BA058.9020104@southpole.se>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.southpole.se ([37.247.8.11]:40761 "EHLO mail.southpole.se"
+Received: from mail.southpole.se ([37.247.8.11]:40876 "EHLO mail.southpole.se"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751360Ab2KHL3A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Nov 2012 06:29:00 -0500
+	id S1751814Ab2KHMGv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Nov 2012 07:06:51 -0500
+Received: from [192.168.16.101] (assp.southpole.se [37.247.8.10])
+	by mail.southpole.se (Postfix) with ESMTPSA id 3946F48018F
+	for <linux-serial@vger.kernel.org>; Thu,  8 Nov 2012 13:06:48 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: jonas@southpole.se
-Cc: jonash@southpole.se, Fabio Estevam <fabio.estevam@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Subodh Nijsure <snijsure@grid-net.com>, Shawn Guo <shawn.guo@linaro.org>
+To: linux-serial@vger.kernel.org
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Allow device tree probing.
 
-Cc: Grant Likely <grant.likely@secretlab.ca>
-Cc: Rob Herring <rob.herring@calxeda.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: <linux-serial@vger.kernel.org>
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-Signed-off-by: Subodh Nijsure <snijsure@grid-net.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
----
- .../bindings/tty/serial/fsl-mxs-auart.txt          |   27 +++++++++++++
- drivers/tty/serial/mxs-auart.c                     |   42 +++++++++++++++++++-
- 2 files changed, 67 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+Hi,
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-new file mode 100644
-index 0000000..2ee903f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-@@ -0,0 +1,27 @@
-+* Freescale MXS Application UART (AUART)
-+
-+Required properties:
-+- compatible : Should be "fsl,<soc>-auart". The supported SoCs include
-+  imx23 and imx28.
-+- reg : Address and length of the register set for the device
-+- interrupts : Should contain the auart interrupt numbers
-+
-+Example:
-+auart0: serial@8006a000 {
-+	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
-+	reg = <0x8006a000 0x2000>;
-+	interrupts = <112 70 71>;
-+};
-+
-+Note: Each auart port should have an alias correctly numbered in "aliases"
-+node.
-+
-+Example:
-+
-+aliases {
-+	serial0 = &auart0;
-+	serial1 = &auart1;
-+	serial2 = &auart2;
-+	serial3 = &auart3;
-+	serial4 = &auart4;
-+};
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ec56d83..2e341b8 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -33,6 +33,7 @@
- #include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/of_device.h>
- 
- #include <asm/cacheflush.h>
- 
-@@ -675,6 +676,30 @@ static struct uart_driver auart_driver = {
- #endif
- };
- 
-+/*
-+ * This function returns 1 if pdev isn't a device instatiated by dt, 0 if it
-+ * could successfully get all information from dt or a negative errno.
-+ */
-+static int serial_mxs_probe_dt(struct mxs_auart_port *s,
-+		struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	int ret;
-+
-+	if (!np)
-+		/* no device tree device */
-+		return 1;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
-+		return ret;
-+	}
-+	s->port.line = ret;
-+
-+	return 0;
-+}
-+
- static int __devinit mxs_auart_probe(struct platform_device *pdev)
- {
- 	struct mxs_auart_port *s;
-@@ -689,6 +714,12 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
- 		goto out;
- 	}
- 
-+	ret = serial_mxs_probe_dt(s, pdev);
-+	if (ret > 0)
-+		s->port.line = pdev->id < 0 ? 0 : pdev->id;
-+	else if (ret < 0)
-+		goto out_free;
-+
- 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
- 	if (IS_ERR(pinctrl)) {
- 		ret = PTR_ERR(pinctrl);
-@@ -711,7 +742,6 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
- 	s->port.membase = ioremap(r->start, resource_size(r));
- 	s->port.ops = &mxs_auart_ops;
- 	s->port.iotype = UPIO_MEM;
--	s->port.line = pdev->id < 0 ? 0 : pdev->id;
- 	s->port.fifosize = 16;
- 	s->port.uartclk = clk_get_rate(s->clk);
- 	s->port.type = PORT_IMX;
-@@ -728,7 +758,7 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, s);
- 
--	auart_port[pdev->id] = s;
-+	auart_port[s->port.line] = s;
- 
- 	mxs_auart_reset(&s->port);
- 
-@@ -769,12 +799,19 @@ static int __devexit mxs_auart_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static struct of_device_id mxs_auart_dt_ids[] = {
-+	{ .compatible = "fsl,imx23-auart", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mxs_auart_dt_ids);
-+
- static struct platform_driver mxs_auart_driver = {
- 	.probe = mxs_auart_probe,
- 	.remove = __devexit_p(mxs_auart_remove),
- 	.driver = {
- 		.name = "mxs-auart",
- 		.owner = THIS_MODULE,
-+		.of_match_table = mxs_auart_dt_ids,
- 	},
- };
- 
-@@ -807,3 +844,4 @@ module_init(mxs_auart_init);
- module_exit(mxs_auart_exit);
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Freescale MXS application uart driver");
-+MODULE_ALIAS("platform:mxs-auart");
--- 
-1.7.9.5
+I am really sorry. please ignore the last email.
 
+
+Mingli
