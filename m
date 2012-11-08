@@ -1,32 +1,166 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: mfd: Add nmi_touch_watchdog() into the console
- write function
-Date: Thu, 8 Nov 2012 10:54:55 +0000
-Message-ID: <20121108105455.48af4824@pyramind.ukuu.org.uk>
-References: <1352355053-30040-1-git-send-email-feng.tang@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Mingli Wu <mingli@southpole.se>
+Subject: [PATCH 1/2] serial: mxs-auart: Allow device tree probing
+Date: Thu,  8 Nov 2012 12:08:13 +0100
+Message-ID: <1352372894-21072-1-git-send-email-mingli@southpole.se>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:44074 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751157Ab2KHKtu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Nov 2012 05:49:50 -0500
-In-Reply-To: <1352355053-30040-1-git-send-email-feng.tang@intel.com>
+Received: from mail.southpole.se ([37.247.8.11]:40761 "EHLO mail.southpole.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751360Ab2KHL3A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Nov 2012 06:29:00 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.tang@intel.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
+To: jonas@southpole.se
+Cc: jonash@southpole.se, Fabio Estevam <fabio.estevam@freescale.com>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Subodh Nijsure <snijsure@grid-net.com>, Shawn Guo <shawn.guo@linaro.org>
 
-On Thu,  8 Nov 2012 14:10:53 +0800
-Feng Tang <feng.tang@intel.com> wrote:
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-> This is following what 8250 driver is doing in console write function,
-> to avoid the hardware lockup case.
-> 
-> Signed-off-by: Feng Tang <feng.tang@intel.com>
+Allow device tree probing.
 
-Looks fine to me.
+Cc: Grant Likely <grant.likely@secretlab.ca>
+Cc: Rob Herring <rob.herring@calxeda.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: <linux-serial@vger.kernel.org>
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Signed-off-by: Subodh Nijsure <snijsure@grid-net.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ .../bindings/tty/serial/fsl-mxs-auart.txt          |   27 +++++++++++++
+ drivers/tty/serial/mxs-auart.c                     |   42 +++++++++++++++++++-
+ 2 files changed, 67 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+new file mode 100644
+index 0000000..2ee903f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+@@ -0,0 +1,27 @@
++* Freescale MXS Application UART (AUART)
++
++Required properties:
++- compatible : Should be "fsl,<soc>-auart". The supported SoCs include
++  imx23 and imx28.
++- reg : Address and length of the register set for the device
++- interrupts : Should contain the auart interrupt numbers
++
++Example:
++auart0: serial@8006a000 {
++	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
++	reg = <0x8006a000 0x2000>;
++	interrupts = <112 70 71>;
++};
++
++Note: Each auart port should have an alias correctly numbered in "aliases"
++node.
++
++Example:
++
++aliases {
++	serial0 = &auart0;
++	serial1 = &auart1;
++	serial2 = &auart2;
++	serial3 = &auart3;
++	serial4 = &auart4;
++};
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index ec56d83..2e341b8 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -33,6 +33,7 @@
+ #include <linux/delay.h>
+ #include <linux/io.h>
+ #include <linux/pinctrl/consumer.h>
++#include <linux/of_device.h>
+ 
+ #include <asm/cacheflush.h>
+ 
+@@ -675,6 +676,30 @@ static struct uart_driver auart_driver = {
+ #endif
+ };
+ 
++/*
++ * This function returns 1 if pdev isn't a device instatiated by dt, 0 if it
++ * could successfully get all information from dt or a negative errno.
++ */
++static int serial_mxs_probe_dt(struct mxs_auart_port *s,
++		struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	int ret;
++
++	if (!np)
++		/* no device tree device */
++		return 1;
++
++	ret = of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
++		return ret;
++	}
++	s->port.line = ret;
++
++	return 0;
++}
++
+ static int __devinit mxs_auart_probe(struct platform_device *pdev)
+ {
+ 	struct mxs_auart_port *s;
+@@ -689,6 +714,12 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
+ 		goto out;
+ 	}
+ 
++	ret = serial_mxs_probe_dt(s, pdev);
++	if (ret > 0)
++		s->port.line = pdev->id < 0 ? 0 : pdev->id;
++	else if (ret < 0)
++		goto out_free;
++
+ 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
+ 	if (IS_ERR(pinctrl)) {
+ 		ret = PTR_ERR(pinctrl);
+@@ -711,7 +742,6 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
+ 	s->port.membase = ioremap(r->start, resource_size(r));
+ 	s->port.ops = &mxs_auart_ops;
+ 	s->port.iotype = UPIO_MEM;
+-	s->port.line = pdev->id < 0 ? 0 : pdev->id;
+ 	s->port.fifosize = 16;
+ 	s->port.uartclk = clk_get_rate(s->clk);
+ 	s->port.type = PORT_IMX;
+@@ -728,7 +758,7 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, s);
+ 
+-	auart_port[pdev->id] = s;
++	auart_port[s->port.line] = s;
+ 
+ 	mxs_auart_reset(&s->port);
+ 
+@@ -769,12 +799,19 @@ static int __devexit mxs_auart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static struct of_device_id mxs_auart_dt_ids[] = {
++	{ .compatible = "fsl,imx23-auart", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mxs_auart_dt_ids);
++
+ static struct platform_driver mxs_auart_driver = {
+ 	.probe = mxs_auart_probe,
+ 	.remove = __devexit_p(mxs_auart_remove),
+ 	.driver = {
+ 		.name = "mxs-auart",
+ 		.owner = THIS_MODULE,
++		.of_match_table = mxs_auart_dt_ids,
+ 	},
+ };
+ 
+@@ -807,3 +844,4 @@ module_init(mxs_auart_init);
+ module_exit(mxs_auart_exit);
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Freescale MXS application uart driver");
++MODULE_ALIAS("platform:mxs-auart");
+-- 
+1.7.9.5
+
