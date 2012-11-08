@@ -1,53 +1,38 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH v2] serial: xilinx_uartps: kill CONFIG_OF conditional
-Date: Wed, 7 Nov 2012 14:04:20 +0100
-Message-ID: <CAHTX3dLjz=WMX_YtRQSwfUDFt1=yMoTeWd7mfqhxi1-TkSggfQ@mail.gmail.com>
-References: <20121105212426.GA1972@beefymiracle.amer.corp.natinst.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Feng Tang <feng.tang@intel.com>
+Subject: [PATCH] serial: mfd: Add nmi_touch_watchdog() into the console write function
+Date: Thu,  8 Nov 2012 14:10:53 +0800
+Message-ID: <1352355053-30040-1-git-send-email-feng.tang@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:42826 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755034Ab2KGNEW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Nov 2012 08:04:22 -0500
-Received: by mail-ee0-f46.google.com with SMTP id b15so880108eek.19
-        for <linux-serial@vger.kernel.org>; Wed, 07 Nov 2012 05:04:21 -0800 (PST)
-In-Reply-To: <20121105212426.GA1972@beefymiracle.amer.corp.natinst.com>
+Received: from mga11.intel.com ([192.55.52.93]:13068 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750881Ab2KHGLd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Nov 2012 01:11:33 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Josh Cartwright <josh.cartwright@ni.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
+Cc: Feng Tang <feng.tang@intel.com>
 
-2012/11/5 Josh Cartwright <josh.cartwright@ni.com>:
-> The Zynq platform requires the use of CONFIG_OF.  Remove the #ifdef
-> conditionals in the uartps driver.  Make dependency explicit in Kconfig.
->
-> Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
-> ---
-> Michal-
->
-> Here's a version of this patch outside of my COMMON_CLK patchset as you
-> requested ontop of your arm-next branch.  An explicit dependency was
-> added in Kconfig as you had suggested.
->
-> Thanks,
->    Josh
->
->  drivers/tty/serial/Kconfig         | 1 +
->  drivers/tty/serial/xilinx_uartps.c | 9 ---------
->  2 files changed, 1 insertion(+), 9 deletions(-)
+This is following what 8250 driver is doing in console write function,
+to avoid the hardware lockup case.
 
-Tested-by: Michal Simek <monstr@monstr.eu>
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ drivers/tty/serial/mfd.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-Alan: Can you please add this patch to your tree?
-
-Thanks,
-Michal
-
-
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index c4b50af..bde9fce 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -1113,6 +1113,8 @@ serial_hsu_console_write(struct console *co, const char *s, unsigned int count)
+ 	unsigned int ier;
+ 	int locked = 1;
+ 
++	touch_nmi_watchdog();
++
+ 	local_irq_save(flags);
+ 	if (up->port.sysrq)
+ 		locked = 0;
 -- 
-Michal Simek, Ing. (M.Eng)
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel 2.6 Microblaze Linux - http://www.monstr.eu/fdt/
-Microblaze U-BOOT custodian
+1.7.9.5
+
