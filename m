@@ -1,92 +1,66 @@
-From: Joachim Eastwood <manabian@gmail.com>
-Subject: Re: [PATCH 02/10] arm: at91: move platfarm_data to include/linux/platform_data/atmel.h
-Date: Sat, 10 Nov 2012 11:54:27 +0100
-Message-ID: <CAGhQ9VxgbCGzOPVtQq-LYsEPuyyGjRDfB3jHPtvbHr1xLgntXA@mail.gmail.com>
-References: <20121107111235.GH20063@game.jcrosoft.org>
-	<1352287374-25176-1-git-send-email-plagnioj@jcrosoft.com>
-	<1352287374-25176-2-git-send-email-plagnioj@jcrosoft.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: [PATCH] serial/8250: Add support for Exar's XR17V35x family of
+ multi-port PCIe UARTs.
+Date: Sat, 10 Nov 2012 11:52:32 -0600
+Message-ID: <CAJp1Oe652P=eGTQjo2aWwn2f0iMDz0dM172QjkBcZhx+O2_Ygw@mail.gmail.com>
+References: <CAJp1Oe4DuffN_EWP-zVznBX+JqnE6kEAsXS1oHvfvfLC5DVOAw@mail.gmail.com>
+ <20121109235800.745dcf15@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-can-owner@vger.kernel.org>
-In-Reply-To: <1352287374-25176-2-git-send-email-plagnioj@jcrosoft.com>
-Sender: linux-can-owner@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org, linux-usb@vger.kernel.org, rtc-linux@googlegroups.com, linux-mmc@vger.kernel.org, linux-pcmcia@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-can@vger.kernel.org, linux-ide@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, spi-devel-general@lists.sourceforge.net
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:47948 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751281Ab2KJRwx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 10 Nov 2012 12:52:53 -0500
+Received: by mail-vb0-f46.google.com with SMTP id ff1so4972381vbb.19
+        for <linux-serial@vger.kernel.org>; Sat, 10 Nov 2012 09:52:52 -0800 (PST)
+In-Reply-To: <20121109235800.745dcf15@pyramind.ukuu.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>, Theodore Ts'o <tytso@mit.edu>
 
-Hi Jean-Christophe,
-
-On 7 November 2012 12:22, Jean-Christophe PLAGNIOL-VILLARD
-<plagnioj@jcrosoft.com> wrote:
-> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Cc: linux-ide@vger.kernel.org
-> Cc: linux-input@vger.kernel.org
-> Cc: linux-mmc@vger.kernel.org
-> Cc: linux-can@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-pcmcia@lists.infradead.org
-> Cc: rtc-linux@googlegroups.com
-> Cc: spi-devel-general@lists.sourceforge.net
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-usb@vger.kernel.org
-> Cc: linux-fbdev@vger.kernel.org
-> ---
-> HI all,
+On Fri, Nov 9, 2012 at 5:58 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
+>> @@ -1484,6 +1526,7 @@ EXPORT_SYMBOL_GPL(serial8250_modem_status);
+>>  int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+>>  {
+>>       unsigned char status;
+>> +     unsigned char int0, int1, int2, int3;
+>>       unsigned long flags;
+>>       struct uart_8250_port *up =
+>>               container_of(port, struct uart_8250_port, port);
+>> @@ -1503,6 +1546,19 @@ int serial8250_handle_irq(struct uart_port
+>> *port, unsigned int iir)
+>>       if (status & UART_LSR_THRE)
+>>               serial8250_tx_chars(up);
+>>
+>> +     /*
+>> +      * These Exar UARTs have an extra interrupt indicator that could
+>> +      * fire for a few unimplemented interrupts.  Put this here just
+>> +      * to be on the safe side that these interrupts don't go unhandled.
+>> +      */
+>> +
+>> +     if (up->port.type == PORT_XR17V35X && status == 0) {
+>> +             int0 = serial_port_in(port, 0x80);
+>> +             int1 = serial_port_in(port, 0x81);
+>> +             int2 = serial_port_in(port, 0x82);
+>> +             int3 = serial_port_in(port, 0x83);
+>> +     }
+>> +
+>>       spin_unlock_irqrestore(&port->lock, flags);
+>>       return 1;
 >
->         If it's ok with everyone this will go via at91
->         with the patch serie than clean up the include/mach
+> Provide your own handle_irq method rather than adding more special cases
+> to the default one (you can just wrap the default one and then perform
+> the extra actions). Just a case of trying to keep the fast paths clean and
+> maintainable.
 >
->         For preparation to switch to arm multiarch kernel
+> Otherwise looks good.
 >
-> Best Regards,
-> J.
->  arch/arm/mach-at91/include/mach/board.h     |   55 ----------------------
->  arch/avr32/mach-at32ap/include/mach/board.h |    7 ---
->  drivers/ata/pata_at91.c                     |    2 +-
->  drivers/input/touchscreen/atmel_tsadcc.c    |    2 +-
->  drivers/mmc/host/atmel-mci.c                |    2 +-
->  drivers/net/can/at91_can.c                  |    3 +-
->  drivers/net/ethernet/cadence/at91_ether.c   |    2 +-
->  drivers/pcmcia/at91_cf.c                    |    2 +-
->  drivers/rtc/rtc-at91sam9.c                  |    2 +-
->  drivers/spi/spi-atmel.c                     |    2 +-
->  drivers/tty/serial/atmel_serial.c           |    2 +-
->  drivers/usb/gadget/at91_udc.c               |    2 +-
->  drivers/usb/gadget/atmel_usba_udc.c         |    2 +-
->  drivers/usb/host/ohci-at91.c                |    2 +-
->  drivers/video/atmel_lcdfb.c                 |    2 +-
->  include/linux/platform_data/atmel.h         |   67 +++++++++++++++++++++++++++
->  16 files changed, 80 insertions(+), 76 deletions(-)
+> Alan
 
-<snip>
+Thanks Alan, would the new Exar_handle_irq method be allowed to be
+inside 8250.c?
 
-> diff --git a/drivers/net/ethernet/cadence/at91_ether.c b/drivers/net/ethernet/cadence/at91_ether.c
-> index 4e980a7..35fc6edb 100644
-> --- a/drivers/net/ethernet/cadence/at91_ether.c
-> +++ b/drivers/net/ethernet/cadence/at91_ether.c
-> @@ -31,6 +31,7 @@
->  #include <linux/clk.h>
->  #include <linux/gfp.h>
->  #include <linux/phy.h>
-> +#include <linux/platform_data/atmel.h>
->
->  #include <asm/io.h>
->  #include <asm/uaccess.h>
-> @@ -38,7 +39,6 @@
->
->  #include <mach/at91rm9200_emac.h>
->  #include <asm/gpio.h>
-> -#include <mach/board.h>
->
->  #include "at91_ether.h"
-
-The at91_ether driver in net-next does not need to be change since it
-all mach includes has already been removed by other patches and it
-includes linux/platform_data/macb.h directly.
-
-What tree was these patches based on?
-The at91_ether driver changes has been in linux-next for a long while now.
-
-regards
-Joachim Eastwood
+Matt
