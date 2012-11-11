@@ -1,71 +1,188 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial/8250: Add support for Exar's XR17V35x family of
- multi-port PCIe UARTs.
-Date: Sat, 10 Nov 2012 23:24:44 +0000
-Message-ID: <20121110232444.7914f76f@pyramind.ukuu.org.uk>
-References: <CAJp1Oe4DuffN_EWP-zVznBX+JqnE6kEAsXS1oHvfvfLC5DVOAw@mail.gmail.com>
-	<20121109235800.745dcf15@pyramind.ukuu.org.uk>
-	<CAJp1Oe652P=eGTQjo2aWwn2f0iMDz0dM172QjkBcZhx+O2_Ygw@mail.gmail.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: 8250_early for big-endian
+Date: Sun, 11 Nov 2012 06:34:30 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC30499FF@ezexch.ezchip.com>
+References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
+	<20121012175150.4b081343@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
+	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
+	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
+	<20121014133216.686277e1@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>,<20121025121815.0689c196@pyramind.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47004 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750897Ab2KJXTl (ORCPT
+Received: from ezexch.ezchip.com ([212.179.42.101]:51298 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752339Ab2KKEfK convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 10 Nov 2012 18:19:41 -0500
-In-Reply-To: <CAJp1Oe652P=eGTQjo2aWwn2f0iMDz0dM172QjkBcZhx+O2_Ygw@mail.gmail.com>
+	Sat, 10 Nov 2012 23:35:10 -0500
+In-Reply-To: <20121025121815.0689c196@pyramind.ukuu.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>, Theodore Ts'o <tytso@mit.edu>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
 
-On Sat, 10 Nov 2012 11:52:32 -0600
-Matt Schulte <matts@commtech-fastcom.com> wrote:
+________________________________________
+From: Alan Cox [alan@lxorguk.ukuu.org.uk]
+Sent: Thursday, October 25, 2012 1:18 PM
 
-> On Fri, Nov 9, 2012 at 5:58 PM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> >> @@ -1484,6 +1526,7 @@ EXPORT_SYMBOL_GPL(serial8250_modem_status);
-> >>  int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
-> >>  {
-> >>       unsigned char status;
-> >> +     unsigned char int0, int1, int2, int3;
-> >>       unsigned long flags;
-> >>       struct uart_8250_port *up =
-> >>               container_of(port, struct uart_8250_port, port);
-> >> @@ -1503,6 +1546,19 @@ int serial8250_handle_irq(struct uart_port
-> >> *port, unsigned int iir)
-> >>       if (status & UART_LSR_THRE)
-> >>               serial8250_tx_chars(up);
-> >>
-> >> +     /*
-> >> +      * These Exar UARTs have an extra interrupt indicator that could
-> >> +      * fire for a few unimplemented interrupts.  Put this here just
-> >> +      * to be on the safe side that these interrupts don't go unhandled.
-> >> +      */
-> >> +
-> >> +     if (up->port.type == PORT_XR17V35X && status == 0) {
-> >> +             int0 = serial_port_in(port, 0x80);
-> >> +             int1 = serial_port_in(port, 0x81);
-> >> +             int2 = serial_port_in(port, 0x82);
-> >> +             int3 = serial_port_in(port, 0x83);
-> >> +     }
-> >> +
-> >>       spin_unlock_irqrestore(&port->lock, flags);
-> >>       return 1;
-> >
-> > Provide your own handle_irq method rather than adding more special cases
-> > to the default one (you can just wrap the default one and then perform
-> > the extra actions). Just a case of trying to keep the fast paths clean and
-> > maintainable.
-> >
-> > Otherwise looks good.
-> >
-> > Alan
-> 
-> Thanks Alan, would the new Exar_handle_irq method be allowed to be
-> inside 8250.c?
+>If you make the symbols global then they need a prefix to avoid clashes -
+>just rename them something like serial8250_early_in/serial8250_early_out
 
-If its probed generically then it probably should - we can move it later
-anyway
+>and of course they ought to be in the header files somewhere...
 
+Hello Alan,
+
+I will appreciate if you can review and comment on below patch.
+
+>From e2dda56ab679d81bb0a021e102519185028deded Mon Sep 17 00:00:00 2001
+From: Noam Camus <noamc@ezchip.com>
+Date: Sun, 11 Nov 2012 05:49:39 +0200
+Subject: [PATCH] tty/8250_early: Turn serial_in/serial_out into weak symbols.
+
+Allows overriding default methods serial_in/serial_out.
+
+In such platform specific replacement it is possible to use,
+other regshift, biased register offset, any other manipulation
+that is not covered with common default methods.
+
+Overriding default methods may be useful for platforms which got
+serial peripheral with registers represented in big endian.
+In this situation and assuming that 32 bit operations / alignment
+is required then it may be useful to swab words before/after
+accessing the serial registers.
+
+Signed-off-by: Noam Camus <noamc@ezchip.com>
+CC: Alan Cox <alan@lxorguk.ukuu.org.uk>
+---
+ drivers/tty/serial/8250/8250_early.c |   42 +++++++++++++++++-----------------
+ include/linux/serial_8250.h          |    2 +
+ 2 files changed, 23 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index eaafb98..eb88f6d 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -48,7 +48,7 @@ struct early_serial8250_device {
+ 
+ static struct early_serial8250_device early_device;
+ 
+-static unsigned int __init serial_in(struct uart_port *port, int offset)
++unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
+ 	}
+ }
+ 
+-static void __init serial_out(struct uart_port *port, int offset, int value)
++void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -84,7 +84,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
+ 	unsigned int status;
+ 
+ 	for (;;) {
+-		status = serial_in(port, UART_LSR);
++		status = serial8250_early_in(port, UART_LSR);
+ 		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
+ 			return;
+ 		cpu_relax();
+@@ -94,7 +94,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
+ static void __init serial_putc(struct uart_port *port, int c)
+ {
+ 	wait_for_xmitr(port);
+-	serial_out(port, UART_TX, c);
++	serial8250_early_out(port, UART_TX, c);
+ }
+ 
+ static void __init early_serial8250_write(struct console *console,
+@@ -104,14 +104,14 @@ static void __init early_serial8250_write(struct console *console,
+ 	unsigned int ier;
+ 
+ 	/* Save the IER and disable interrupts */
+-	ier = serial_in(port, UART_IER);
+-	serial_out(port, UART_IER, 0);
++	ier = serial8250_early_in(port, UART_IER);
++	serial8250_early_out(port, UART_IER, 0);
+ 
+ 	uart_console_write(port, s, count, serial_putc);
+ 
+ 	/* Wait for transmitter to become empty and restore the IER */
+ 	wait_for_xmitr(port);
+-	serial_out(port, UART_IER, ier);
++	serial8250_early_out(port, UART_IER, ier);
+ }
+ 
+ static unsigned int __init probe_baud(struct uart_port *port)
+@@ -119,11 +119,11 @@ static unsigned int __init probe_baud(struct uart_port *port)
+ 	unsigned char lcr, dll, dlm;
+ 	unsigned int quot;
+ 
+-	lcr = serial_in(port, UART_LCR);
+-	serial_out(port, UART_LCR, lcr | UART_LCR_DLAB);
+-	dll = serial_in(port, UART_DLL);
+-	dlm = serial_in(port, UART_DLM);
+-	serial_out(port, UART_LCR, lcr);
++	lcr = serial8250_early_in(port, UART_LCR);
++	serial8250_early_out(port, UART_LCR, lcr | UART_LCR_DLAB);
++	dll = serial8250_early_in(port, UART_DLL);
++	dlm = serial8250_early_in(port, UART_DLM);
++	serial8250_early_out(port, UART_LCR, lcr);
+ 
+ 	quot = (dlm << 8) | dll;
+ 	return (port->uartclk / 16) / quot;
+@@ -135,17 +135,17 @@ static void __init init_port(struct early_serial8250_device *device)
+ 	unsigned int divisor;
+ 	unsigned char c;
+ 
+-	serial_out(port, UART_LCR, 0x3);	/* 8n1 */
+-	serial_out(port, UART_IER, 0);		/* no interrupt */
+-	serial_out(port, UART_FCR, 0);		/* no fifo */
+-	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
++	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
++	serial8250_early_out(port, UART_IER, 0);		/* no interrupt */
++	serial8250_early_out(port, UART_FCR, 0);		/* no fifo */
++	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+ 
+ 	divisor = port->uartclk / (16 * device->baud);
+-	c = serial_in(port, UART_LCR);
+-	serial_out(port, UART_LCR, c | UART_LCR_DLAB);
+-	serial_out(port, UART_DLL, divisor & 0xff);
+-	serial_out(port, UART_DLM, (divisor >> 8) & 0xff);
+-	serial_out(port, UART_LCR, c & ~UART_LCR_DLAB);
++	c = serial8250_early_in(port, UART_LCR);
++	serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
++	serial8250_early_out(port, UART_DLL, divisor & 0xff);
++	serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
++	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+ }
+ 
+ static int __init parse_options(struct early_serial8250_device *device,
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index c174c90..c490d20 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -105,6 +105,8 @@ extern int early_serial_setup(struct uart_port *port);
+ 
+ extern int serial8250_find_port(struct uart_port *p);
+ extern int serial8250_find_port_for_earlycon(void);
++extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
++extern void serial8250_early_out(struct uart_port *port, int offset, int value);
+ extern int setup_early_serial8250_console(char *cmdline);
+ extern void serial8250_do_set_termios(struct uart_port *port,
+ 		struct ktermios *termios, struct ktermios *old);
+-- 
+1.7.1
+
+regards,
+Noam
