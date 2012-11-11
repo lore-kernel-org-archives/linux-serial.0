@@ -1,188 +1,141 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: 8250_early for big-endian
-Date: Sun, 11 Nov 2012 06:34:30 +0200
-Message-ID: <264C179F799EF24AB26D5319053335E80CC30499FF@ezexch.ezchip.com>
-References: <264C179F799EF24AB26D5319053335E80CC30499A2@ezexch.ezchip.com>
-	<20121012175150.4b081343@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A4@ezexch.ezchip.com>
-	<20121012195102.5781c7d4@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
-	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
-	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
-	<20121014133216.686277e1@pyramind.ukuu.org.uk>
-	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>,<20121025121815.0689c196@pyramind.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: Unneeded ARCH dependencies are removed
+Date: Sun, 11 Nov 2012 10:24:19 +0400
+Message-ID: <1352615059-2573-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ezexch.ezchip.com ([212.179.42.101]:51298 "EHLO
-	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752339Ab2KKEfK convert rfc822-to-8bit (ORCPT
+Received: from fallback7.mail.ru ([94.100.176.135]:60973 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751141Ab2KKGYt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 10 Nov 2012 23:35:10 -0500
-In-Reply-To: <20121025121815.0689c196@pyramind.ukuu.org.uk>
-Content-Language: en-US
+	Sun, 11 Nov 2012 01:24:49 -0500
+Received: from smtp53.i.mail.ru (smtp53.i.mail.ru [94.100.177.113])
+	by fallback7.mail.ru (mPOP.Fallback_MX) with ESMTP id 45144B042A6D
+	for <linux-serial@vger.kernel.org>; Sun, 11 Nov 2012 10:24:46 +0400 (MSK)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 
-________________________________________
-From: Alan Cox [alan@lxorguk.ukuu.org.uk]
-Sent: Thursday, October 25, 2012 1:18 PM
+This patch performs a small cleanup tty/Serial/Kconfig file by removing
+unneeded ARCH dependencies. This dependencies already included in
+board/type symbols.
 
->If you make the symbols global then they need a prefix to avoid clashes -
->just rename them something like serial8250_early_in/serial8250_early_out
-
->and of course they ought to be in the header files somewhere...
-
-Hello Alan,
-
-I will appreciate if you can review and comment on below patch.
-
->From e2dda56ab679d81bb0a021e102519185028deded Mon Sep 17 00:00:00 2001
-From: Noam Camus <noamc@ezchip.com>
-Date: Sun, 11 Nov 2012 05:49:39 +0200
-Subject: [PATCH] tty/8250_early: Turn serial_in/serial_out into weak symbols.
-
-Allows overriding default methods serial_in/serial_out.
-
-In such platform specific replacement it is possible to use,
-other regshift, biased register offset, any other manipulation
-that is not covered with common default methods.
-
-Overriding default methods may be useful for platforms which got
-serial peripheral with registers represented in big endian.
-In this situation and assuming that 32 bit operations / alignment
-is required then it may be useful to swab words before/after
-accessing the serial registers.
-
-Signed-off-by: Noam Camus <noamc@ezchip.com>
-CC: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/tty/serial/8250/8250_early.c |   42 +++++++++++++++++-----------------
- include/linux/serial_8250.h          |    2 +
- 2 files changed, 23 insertions(+), 21 deletions(-)
+ drivers/tty/serial/Kconfig |   24 ++++++++++++------------
+ 1 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index eaafb98..eb88f6d 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -48,7 +48,7 @@ struct early_serial8250_device {
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index b176801..500f043 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -93,7 +93,7 @@ config SERIAL_SB1250_DUART_CONSOLE
  
- static struct early_serial8250_device early_device;
+ config SERIAL_ATMEL
+ 	bool "AT91 / AT32 on-chip serial port support"
+-	depends on (ARM && ARCH_AT91) || AVR32
++	depends on ARCH_AT91 || AVR32
+ 	select SERIAL_CORE
+ 	help
+ 	  This enables the driver for the on-chip UARTs of the Atmel
+@@ -198,7 +198,7 @@ config SERIAL_CLPS711X_CONSOLE
  
--static unsigned int __init serial_in(struct uart_port *port, int offset)
-+unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
- {
- 	switch (port->iotype) {
- 	case UPIO_MEM:
-@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
- 	}
- }
+ config SERIAL_SAMSUNG
+ 	tristate "Samsung SoC serial support"
+-	depends on ARM && PLAT_SAMSUNG
++	depends on PLAT_SAMSUNG
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+@@ -208,14 +208,14 @@ config SERIAL_SAMSUNG
  
--static void __init serial_out(struct uart_port *port, int offset, int value)
-+void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
- {
- 	switch (port->iotype) {
- 	case UPIO_MEM:
-@@ -84,7 +84,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
- 	unsigned int status;
+ config SERIAL_SAMSUNG_UARTS_4
+ 	bool
+-	depends on ARM && PLAT_SAMSUNG
++	depends on PLAT_SAMSUNG
+ 	default y if !(CPU_S3C2410 || SERIAL_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
+ 	help
+ 	  Internal node for the common case of 4 Samsung compatible UARTs
  
- 	for (;;) {
--		status = serial_in(port, UART_LSR);
-+		status = serial8250_early_in(port, UART_LSR);
- 		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
- 			return;
- 		cpu_relax();
-@@ -94,7 +94,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
- static void __init serial_putc(struct uart_port *port, int c)
- {
- 	wait_for_xmitr(port);
--	serial_out(port, UART_TX, c);
-+	serial8250_early_out(port, UART_TX, c);
- }
+ config SERIAL_SAMSUNG_UARTS
+ 	int
+-	depends on ARM && PLAT_SAMSUNG
++	depends on PLAT_SAMSUNG
+ 	default 6 if ARCH_S5P6450
+ 	default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
+ 	default 3
+@@ -249,7 +249,7 @@ config SERIAL_SAMSUNG_CONSOLE
  
- static void __init early_serial8250_write(struct console *console,
-@@ -104,14 +104,14 @@ static void __init early_serial8250_write(struct console *console,
- 	unsigned int ier;
+ config SERIAL_SIRFSOC
+         tristate "SiRF SoC Platform Serial port support"
+-        depends on ARM && ARCH_PRIMA2
++        depends on ARCH_PRIMA2
+         select SERIAL_CORE
+         help
+           Support for the on-chip UART on the CSR SiRFprimaII series,
+@@ -347,7 +347,7 @@ config SERIAL_ZS_CONSOLE
  
- 	/* Save the IER and disable interrupts */
--	ier = serial_in(port, UART_IER);
--	serial_out(port, UART_IER, 0);
-+	ier = serial8250_early_in(port, UART_IER);
-+	serial8250_early_out(port, UART_IER, 0);
+ config SERIAL_21285
+ 	tristate "DC21285 serial port support"
+-	depends on ARM && FOOTBRIDGE
++	depends on FOOTBRIDGE
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a machine based on a 21285 (Footbridge) StrongARM(R)/
+@@ -371,7 +371,7 @@ config SERIAL_21285_CONSOLE
  
- 	uart_console_write(port, s, count, serial_putc);
+ config SERIAL_MPSC
+ 	bool "Marvell MPSC serial port support"
+-	depends on PPC32 && MV64X60
++	depends on MV64X60
+ 	select SERIAL_CORE
+ 	help
+ 	  Say Y here if you want to use the Marvell MPSC serial controller.
+@@ -408,7 +408,7 @@ config SERIAL_PXA_CONSOLE
  
- 	/* Wait for transmitter to become empty and restore the IER */
- 	wait_for_xmitr(port);
--	serial_out(port, UART_IER, ier);
-+	serial8250_early_out(port, UART_IER, ier);
- }
+ config SERIAL_SA1100
+ 	bool "SA1100 serial port support"
+-	depends on ARM && ARCH_SA1100
++	depends on ARCH_SA1100
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a machine based on a SA1100/SA1110 StrongARM(R) CPU you
+@@ -716,7 +716,7 @@ config SERIAL_SH_SCI_DMA
  
- static unsigned int __init probe_baud(struct uart_port *port)
-@@ -119,11 +119,11 @@ static unsigned int __init probe_baud(struct uart_port *port)
- 	unsigned char lcr, dll, dlm;
- 	unsigned int quot;
+ config SERIAL_PNX8XXX
+ 	bool "Enable PNX8XXX SoCs' UART Support"
+-	depends on MIPS && (SOC_PNX8550 || SOC_PNX833X)
++	depends on SOC_PNX8550 || SOC_PNX833X
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a MIPS-based Philips SoC such as PNX8550 or PNX8330
+@@ -1013,7 +1013,7 @@ config SERIAL_SGI_IOC3
  
--	lcr = serial_in(port, UART_LCR);
--	serial_out(port, UART_LCR, lcr | UART_LCR_DLAB);
--	dll = serial_in(port, UART_DLL);
--	dlm = serial_in(port, UART_DLM);
--	serial_out(port, UART_LCR, lcr);
-+	lcr = serial8250_early_in(port, UART_LCR);
-+	serial8250_early_out(port, UART_LCR, lcr | UART_LCR_DLAB);
-+	dll = serial8250_early_in(port, UART_DLL);
-+	dlm = serial8250_early_in(port, UART_DLM);
-+	serial8250_early_out(port, UART_LCR, lcr);
+ config SERIAL_MSM
+ 	bool "MSM on-chip serial port support"
+-	depends on ARM && ARCH_MSM
++	depends on ARCH_MSM
+ 	select SERIAL_CORE
  
- 	quot = (dlm << 8) | dll;
- 	return (port->uartclk / 16) / quot;
-@@ -135,17 +135,17 @@ static void __init init_port(struct early_serial8250_device *device)
- 	unsigned int divisor;
- 	unsigned char c;
+ config SERIAL_MSM_CONSOLE
+@@ -1035,7 +1035,7 @@ config SERIAL_MSM_HS
  
--	serial_out(port, UART_LCR, 0x3);	/* 8n1 */
--	serial_out(port, UART_IER, 0);		/* no interrupt */
--	serial_out(port, UART_FCR, 0);		/* no fifo */
--	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
-+	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
-+	serial8250_early_out(port, UART_IER, 0);		/* no interrupt */
-+	serial8250_early_out(port, UART_FCR, 0);		/* no fifo */
-+	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+ config SERIAL_VT8500
+ 	bool "VIA VT8500 on-chip serial port support"
+-	depends on ARM && ARCH_VT8500
++	depends on ARCH_VT8500
+ 	select SERIAL_CORE
  
- 	divisor = port->uartclk / (16 * device->baud);
--	c = serial_in(port, UART_LCR);
--	serial_out(port, UART_LCR, c | UART_LCR_DLAB);
--	serial_out(port, UART_DLL, divisor & 0xff);
--	serial_out(port, UART_DLM, (divisor >> 8) & 0xff);
--	serial_out(port, UART_LCR, c & ~UART_LCR_DLAB);
-+	c = serial8250_early_in(port, UART_LCR);
-+	serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
-+	serial8250_early_out(port, UART_DLL, divisor & 0xff);
-+	serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
-+	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
- }
+ config SERIAL_VT8500_CONSOLE
+@@ -1045,7 +1045,7 @@ config SERIAL_VT8500_CONSOLE
  
- static int __init parse_options(struct early_serial8250_device *device,
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index c174c90..c490d20 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -105,6 +105,8 @@ extern int early_serial_setup(struct uart_port *port);
- 
- extern int serial8250_find_port(struct uart_port *p);
- extern int serial8250_find_port_for_earlycon(void);
-+extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
-+extern void serial8250_early_out(struct uart_port *port, int offset, int value);
- extern int setup_early_serial8250_console(char *cmdline);
- extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
+ config SERIAL_NETX
+ 	tristate "NetX serial port support"
+-	depends on ARM && ARCH_NETX
++	depends on ARCH_NETX
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a machine based on a Hilscher NetX SoC you
 -- 
-1.7.1
+1.7.8.6
 
-regards,
-Noam
