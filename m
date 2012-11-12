@@ -1,19 +1,59 @@
-From: Jayne Montgomery <23@jaynemon.com>
-Subject: (unknown)
-Date: Mon, 12 Nov 2012 05:52:33 -0500
-Message-ID: <37A0F1D4D0F31B4CA00369C02ED9EB886320CF8B@winxbeus26.exchange.xchg>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH 2/8] ARM: zynq: move ttc timer code to drivers/clocksource
+Date: Mon, 12 Nov 2012 12:53:47 +0100
+Message-ID: <CAHTX3dKYJ_rWy-bWdhz24R=0ksw9YDixtqpJfEwRGcffu6vwkA@mail.gmail.com>
+References: <cover.1351721190.git.josh.cartwright@ni.com>
+	<c0347788fbad559a249a25128a23f40c85d9cbda.1351721190.git.josh.cartwright@ni.com>
+	<CAHTX3d++0fGSw7GQHcc-S1X1Qh-rfekpr-E8Jkg2_vFqdCFFTg@mail.gmail.com>
+	<20121105214753.GB1254@beefymiracle.amer.corp.natinst.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.perfora.net ([74.208.4.195]:61111 "EHLO mout.perfora.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751386Ab2KLLZW convert rfc822-to-8bit (ORCPT
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:51022 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752462Ab2KLLxt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 Nov 2012 06:25:22 -0500
-Subject: 
-Content-Language: en-US
+	Mon, 12 Nov 2012 06:53:49 -0500
+Received: by mail-ee0-f46.google.com with SMTP id b15so3294398eek.19
+        for <linux-serial@vger.kernel.org>; Mon, 12 Nov 2012 03:53:48 -0800 (PST)
+In-Reply-To: <20121105214753.GB1254@beefymiracle.amer.corp.natinst.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Josh Cartwright <josh.cartwright@ni.com>
+Cc: Russell King <linux@arm.linux.org.uk>, John Stultz <johnstul@us.ibm.com>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Alan Cox <alan@linux.intel.com>, linux-arm-kernel@lists.infradead.org, Mike Turquette <mturquette@ti.com>
 
-Loan Offer at 3% interest rate, if interested in obtaining a loan contact us for more info via jason.harris511@hotmail.com
+2012/11/5 Josh Cartwright <josh.cartwright@ni.com>:
+> On Mon, Nov 05, 2012 at 12:22:55PM +0100, Michal Simek wrote:
+>> 2012/10/29 Josh Cartwright <josh.cartwright@ni.com>:
+>> > Suggested cleanup by Arnd Bergmann.  Move the ttc timer.c code to
+>> > drivers/clocksource, and out of the mach-zynq directory.
+>> >
+>> > The common.h (which only held the timer declaration) was renamed to
+>> > xilinx_ttc.h and moved into include/linux.
+>> >
+>> > Signed-off-by: Josh Cartwright <josh.cartwright@ni.com>
+>> > Cc: Arnd Bergmann <arnd@arndb.de>
+>> > ---
+>> >  arch/arm/mach-zynq/Makefile                                    | 2 +-
+>> >  arch/arm/mach-zynq/common.c                                    | 2 +-
+>> >  drivers/clocksource/Makefile                                   | 1 +
+>> >  arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c | 1 -
+>> >  arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h      | 4 ++--
+>> >  5 files changed, 5 insertions(+), 5 deletions(-)
+>> >  rename arch/arm/mach-zynq/timer.c => drivers/clocksource/xilinx_ttc.c (99%)
+>> >  rename arch/arm/mach-zynq/common.h => include/linux/xilinx_ttc.h (91%)
+>>
+>> Not going to apply this patch till there is clean way how to move all
+>> drivers there.  Especially I don't like to add xilinx_ttc.h to
+>> include/linux folder.
+>
+> Okay;  I think it's best to defer the moving of the ttc driver from this
+> patchset.  It is not a dependency of the clk driver support stuff.
+> If you agree, I can spin up a v2 of the patchset w/o this change, and
+> without the serial CONFIG_OF stuff.  Should v2 contain the patches
+> you've already pulled into testing?
+
+Sure and I see you have done which is good.
+
+Thanks,
+Michal
