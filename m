@@ -1,507 +1,199 @@
-From: Lauri Hintsala <lauri.hintsala@bluegiga.com>
-Subject: Re: [PATCH v2 2/3] serial: mxs-auart: add the DMA support for mx28
-Date: Tue, 13 Nov 2012 11:42:43 +0200
-Message-ID: <50A21613.6030709@bluegiga.com>
-References: <1351074456-25863-1-git-send-email-b32955@freescale.com> <1351074456-25863-3-git-send-email-b32955@freescale.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 1/1] staging: fwserial: Add TTY-over-Firewire serial
+ driver
+Date: Tue, 13 Nov 2012 14:14:32 -0500
+Message-ID: <1352834072.16401.100.camel@thor>
+References: <1350565015.23730.4.camel@thor>
+	 <cover.1351817601.git.peter@hurleysoftware.com>
+	 <55547e779e65e6865f18d537ef1a42191a4b7e46.1351817601.git.peter@hurleysoftware.com>
+	 <20121113003338.6aafd7c8@stein>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bluegiga.fi ([194.100.31.45]:44851 "EHLO darkblue.bluegiga.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754398Ab2KMJmq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Nov 2012 04:42:46 -0500
-In-Reply-To: <1351074456-25863-3-git-send-email-b32955@freescale.com>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:37687 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754579Ab2KMTOp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 13 Nov 2012 14:14:45 -0500
+In-Reply-To: <20121113003338.6aafd7c8@stein>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, vinod.koul@intel.com, Veli-Pekka Peltola <veli-pekka.peltola@bluegiga.com>
+To: Stefan Richter <stefanr@s5r6.in-berlin.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org, linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org
 
-Hi Huang,
+On Tue, 2012-11-13 at 00:33 +0100, Stefan Richter wrote:
+> On Nov 02 Peter Hurley wrote:
+> > This patch provides the kernel driver for high-speed TTY
+> > communication over the IEEE 1394 bus.
+> > 
+> > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> 
+> Hi Greg,
+> 
+> you asked for an Ack.  Here it is:  I am OK with this getting added to the
+> staging tree.
+> 
+> (Sorry for the delay, I was ill and at the same time buried in work at the
+> day job.)  Note, I only quickly scrolled through v1 and v2.  I will do an
+> actual review when somebody asks to move this from staging into a proper
+> mainline place.
 
-DMA support doesn't work with latest stable v3.6.5 or development 
-3.7-rc5 kernels. I get following error message when I open the serial 
-port /dev/ttyAPP0:
+Hi Stefan,
 
-[   48.730000] mxs-auart 8006a000.serial: step 1 error
-[   48.750000] mxs-auart 8006a000.serial: We can not start up the DMA.
+Thanks very much for looking over this submission. (I hope you're
+feeling better.)
+
+> Peter,
+> below are some high-level comments to your TODOs.
+
+> > --- /dev/null
+> > +++ b/drivers/staging/fwserial/Kconfig
+> > @@ -0,0 +1,9 @@
+> > +config FIREWIRE_SERIAL
+> > +       tristate "TTY over Firewire"
+> > +       depends on FIREWIRE
+> > +       help
+> > +          This enables TTY over IEEE 1394, providing high-speed serial
+> > +	  connectivity to cabled peers.
+> > +
+> > +	  To compile this driver as a module, say M here:  the module will
+> > +	  be called firewire-serial.
+> 
+> This should mention that this is a Linux-only affair at this time:  It uses
+> an ad-hoc defined protocol which no other platform is known to support for
+> the time being.
+
+Good point. I'll make this change.
+
+> > --- /dev/null
+> > +++ b/drivers/staging/fwserial/TODO
+> > @@ -0,0 +1,37 @@
+> > +TODOs
+> > +-----
+> > +1. Implement retries for RCODE_BUSY, RCODE_NO_ACK and RCODE_SEND_ERROR
+> > +   - I/O is handled asynchronously which presents some issues when error
+> > +     conditions occur.
+> > +2. Implement _robust_ console on top of this. The existing prototype console
+> > +   driver is not ready for the big leagues yet.
+> > +3. Expose means of controlling attach/detach of peers via sysfs. Include
+> > +   GUID-to-port matching/whitelist/blacklist.
+> > +
+> > +-- Issues with firewire stack --
+> > +1. This driver uses the same unregistered vendor id that the firewire core does
+> > +     (0xd00d1e). Perhaps this could be exposed as a define in
+> > +     firewire-constants.h?
+> 
+> I guess there is no better OUI for this purpose.
+> 
+> The constant could be added to linux/firewire.h, but IMO rather not to
+> uapi/linux/firewire-constants.h.  We don't want this definition to leak
+> out to userland; userland can hardwire its own hacks itself. :-)
+> 
+> This trivial move to a header should be deferred until the driver moves
+> out of staging.
+
+You're right. I'll update the TODO.
+
+And I should have noted in the TODO file itself that the issues noted
+are for moving the driver out of staging.
+
+> > +2. MAX_ASYNC_PAYLOAD needs to be publicly exposed by core/ohci
+> > +   - otherwise how will this driver know the max size of address window to
+> > +     open for one packet write?
+> 
+> Hmm, don't firewire-sbp2 and firewire-net deal with this very problem
+> already on their own?  Firewire-sbp2 tells the target what maximum payload
+> the local node is ready to accept, and firewire-net figures out whether it
+> needs to fragment the datagrams in unicast TX depending on the remote
+> node's capabilities.
+
+I wasn't as clear as I should have been here. This is only about how big
+to make the address handler window. Just like firewire-net, this driver
+communicates with remotes at S100 speeds (and packet sizes) to
+query the largest packet size that the remote supports.
+
+Currently, firewire-net sets an arbitrary address handler length of
+4096. This works because the largest AR packet size the current
+firewire-ohci driver handles is 4096 (value of MAX_ASYNC_PAYLOAD) +
+header/trailer. Note that firewire-ohci does not limit card->max_receive
+to this value.
+
+So if the ohci driver changes to handle 8K+ AR packets and the hardware
+supports it, these address handler windows will be too small.
+
+> > +3. Maybe device_max_receive() and link_speed_to_max_payload() should be
+> > +     taken up by the firewire core?
+> 
+> Sounds like an extension of item 2, and is easier resolved after the
+> driver moves out of staging.
+
+Ok.
+
+> > +4. To avoid dropping rx data while still limiting the maximum buffering,
+> > +     the size of the AR context must be known. How to expose this to drivers?
+> 
+> I don't see a requirement to know the local or remote node's size of AR
+> DMA buffer.  Rather, keep the traffic throttled such that too frequent
+> ack-busy are avoided.  As far as I have learned from firewire-net, just
+> limiting the number or in-flight transactions should work reasonably.  Of
+> course, hardware ack-busy retries which the OHCI performs on its own won't
+> be noticed by software but take away from overall bus bandwidth.  IOW the
+> optimum queue depth is by a certain margin less than the depth at which
+> software starts to see ack-busy transaction terminations.
+> 
+> Furthermore:  In order to avoid dropping data, you don't need to know the
+> buffer size at all.  You need to implement proper software retries.  I.e.
+> either those which you noted yourself at the top of this TODO file, or you
+> let the userland on top of the TTY handle it if this is possible.  (I
+> don't know how the TTY subsystem and TTY based applications work.)
+
+I do need to implement retries but that will be of limited benefit to
+this particular problem.
+
+Data is written from the remote as a posted write into the AR buffer.
+The remote receives hardware ack and continues writing more. Meanwhile,
+the local node schedules the AR tasklet. The AR tasklet runs,
+dispatching the packets to each appropriate handler. So, by the time
+this driver's handler is delivered the first packet, many packets could
+already have been acked and sitting in the AR buffer. At this point,
+throttling the remote will only prevent the remote from sending even
+more, and can't help with the data which has already been received.
+
+The driver already limits the max in-flight transactions to 8. But since
+they're unified transactions, that doesn't do much. Under heavy loads,
+there may be many (small) completed packets in the AR buffer (NB: the
+driver already does write aggregation but this isn't appropriate in the
+console driver).
+
+Besides the inefficiency of re-sending data that has already been
+received, retrying may not be possible. Consider when a console driver
+(work-in-progress) writes to the remote using the same interface. It
+could be one of the last things the remote does. And the most crucial
+information is that last write.
+
+Despite my lengthy description, I agree that knowing the size of the AR
+context is not a requirement, and we can drop this as an issue. As you
+suggest, I can determine the appropriate buffer size experimentally (and
+implement retries).
+
+> > +5. Explore if bigger AR context will reduce RCODE_BUSY responses
+> > +   (or auto-grow to certain max size -- but this would require major surgery
+> > +    as the current AR is contiguously mapped)
+> 
+> For the particular application "firewire-net", the present AR-Req DMA
+> buffer size has apparently been determined as suitable.  Of course if you
+> find a different optimum, that could certainly be changed.
+> 
+> I haven't looked closely, but I suppose your bandwidth requirement
+> concerns AR-Request DMA, not so much AR-Response DMA, right?
+
+Exactly. And I was just thinking to myself there which unfortunately
+slipped into a public document :)
+
+Thanks again for your time, Stefan.
+
+Regards,
+Peter Hurley
 
 
-On 10/24/2012 01:27 PM, Huang Shijie wrote:
-> Only we meet the following conditions, we can enable the DMA support for
-> auart:
->
->    (1) We enable the DMA support in the dts file, such as
->        arch/arm/boot/dts/imx28.dtsi.
->
->    (2) We enable the hardware flow control.
-
-Why HW flow control is required?
-
-We need high speed auart without flow control. I have tested kernel from 
-Freescale's BSP and the performance was good without HW flow control.
-
-Best Regards,
-Lauri Hintsala
-
-
->    (3) We use the mx28, not the mx23. Due to hardware bug(see errata: 2836),
->        we can not add the DMA support to mx23.
->
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-> ---
->   .../bindings/tty/serial/fsl-mxs-auart.txt          |    8 +
->   drivers/tty/serial/mxs-auart.c                     |  318 +++++++++++++++++++-
->   2 files changed, 321 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-> index 2ee903f..273a8d5 100644
-> --- a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-> +++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-> @@ -6,11 +6,19 @@ Required properties:
->   - reg : Address and length of the register set for the device
->   - interrupts : Should contain the auart interrupt numbers
->
-> +Optional properties:
-> +- fsl,auart-dma-channel : The DMA channels, the first is for RX, the other
-> +		is for TX. If you add this property, it also means that you
-> +		will enable the DMA support for the auart.
-> +		Note: due to the hardware bug in imx23(see errata : 2836),
-> +		only the imx28 can enable the DMA support for the auart.
-> +
->   Example:
->   auart0: serial@8006a000 {
->   	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
->   	reg = <0x8006a000 0x2000>;
->   	interrupts = <112 70 71>;
-> +	fsl,auart-dma-channel = <8 9>;
->   };
->
->   Note: Each auart port should have an alias correctly numbered in "aliases"
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index 06d7271..d593e0a 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -34,6 +34,8 @@
->   #include <linux/io.h>
->   #include <linux/pinctrl/consumer.h>
->   #include <linux/of_device.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/fsl/mxs-dma.h>
->
->   #include <asm/cacheflush.h>
->
-> @@ -71,6 +73,15 @@
->
->   #define AUART_CTRL0_SFTRST			(1 << 31)
->   #define AUART_CTRL0_CLKGATE			(1 << 30)
-> +#define AUART_CTRL0_RXTO_ENABLE			(1 << 27)
-> +#define AUART_CTRL0_RXTIMEOUT(v)		(((v) & 0x7ff) << 16)
-> +#define AUART_CTRL0_XFER_COUNT(v)		((v) & 0xffff)
-> +
-> +#define AUART_CTRL1_XFER_COUNT(v)		((v) & 0xffff)
-> +
-> +#define AUART_CTRL2_DMAONERR			(1 << 26)
-> +#define AUART_CTRL2_TXDMAE			(1 << 25)
-> +#define AUART_CTRL2_RXDMAE			(1 << 24)
->
->   #define AUART_CTRL2_CTSEN			(1 << 15)
->   #define AUART_CTRL2_RTSEN			(1 << 14)
-> @@ -111,6 +122,7 @@
->   #define AUART_STAT_BERR				(1 << 18)
->   #define AUART_STAT_PERR				(1 << 17)
->   #define AUART_STAT_FERR				(1 << 16)
-> +#define AUART_STAT_RXCOUNT_MASK			0xffff
->
->   static struct uart_driver auart_driver;
->
-> @@ -122,7 +134,10 @@ enum mxs_auart_type {
->   struct mxs_auart_port {
->   	struct uart_port port;
->
-> -	unsigned int flags;
-> +#define MXS_AUART_DMA_CONFIG	0x1
-> +#define MXS_AUART_DMA_ENABLED	0x2
-> +#define MXS_AUART_DMA_TX_SYNC	2  /* bit 2 */
-> +	unsigned long flags;
->   	unsigned int ctrl;
->   	enum mxs_auart_type devtype;
->
-> @@ -130,6 +145,20 @@ struct mxs_auart_port {
->
->   	struct clk *clk;
->   	struct device *dev;
-> +
-> +	/* for DMA */
-> +	struct mxs_dma_data dma_data;
-> +	int dma_channel_rx, dma_channel_tx;
-> +	int dma_irq_rx, dma_irq_tx;
-> +	int dma_channel;
-> +
-> +	struct scatterlist tx_sgl;
-> +	struct dma_chan	*tx_dma_chan;
-> +	void *tx_dma_buf;
-> +
-> +	struct scatterlist rx_sgl;
-> +	struct dma_chan	*rx_dma_chan;
-> +	void *rx_dma_buf;
->   };
->
->   static struct platform_device_id mxs_auart_devtype[] = {
-> @@ -155,14 +184,107 @@ static inline int is_imx28_auart(struct mxs_auart_port *s)
->   	return s->devtype == IMX28_AUART;
->   }
->
-> +static inline bool auart_dma_enabled(struct mxs_auart_port *s)
-> +{
-> +	return s->flags & MXS_AUART_DMA_ENABLED;
-> +}
-> +
->   static void mxs_auart_stop_tx(struct uart_port *u);
->
->   #define to_auart_port(u) container_of(u, struct mxs_auart_port, port)
->
-> -static inline void mxs_auart_tx_chars(struct mxs_auart_port *s)
-> +static void mxs_auart_tx_chars(struct mxs_auart_port *s);
-> +
-> +static void dma_tx_callback(void *param)
->   {
-> +	struct mxs_auart_port *s = param;
->   	struct circ_buf *xmit = &s->port.state->xmit;
->
-> +	dma_unmap_sg(s->dev, &s->tx_sgl, 1, DMA_TO_DEVICE);
-> +
-> +	/* clear the bit used to serialize the DMA tx. */
-> +	clear_bit(MXS_AUART_DMA_TX_SYNC, &s->flags);
-> +	smp_mb__after_clear_bit();
-> +
-> +	/* wake up the possible processes. */
-> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> +		uart_write_wakeup(&s->port);
-> +
-> +	mxs_auart_tx_chars(s);
-> +}
-> +
-> +static int mxs_auart_dma_tx(struct mxs_auart_port *s, int size)
-> +{
-> +	struct dma_async_tx_descriptor *desc;
-> +	struct scatterlist *sgl = &s->tx_sgl;
-> +	struct dma_chan *channel = s->tx_dma_chan;
-> +	u32 pio;
-> +
-> +	/* [1] : send PIO. Note, the first pio word is CTRL1. */
-> +	pio = AUART_CTRL1_XFER_COUNT(size);
-> +	desc = dmaengine_prep_slave_sg(channel, (struct scatterlist *)&pio,
-> +					1, DMA_TRANS_NONE, 0);
-> +	if (!desc) {
-> +		dev_err(s->dev, "step 1 error\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* [2] : set DMA buffer. */
-> +	sg_init_one(sgl, s->tx_dma_buf, size);
-> +	dma_map_sg(s->dev, sgl, 1, DMA_TO_DEVICE);
-> +	desc = dmaengine_prep_slave_sg(channel, sgl,
-> +			1, DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-> +	if (!desc) {
-> +		dev_err(s->dev, "step 2 error\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* [3] : submit the DMA */
-> +	desc->callback = dma_tx_callback;
-> +	desc->callback_param = s;
-> +	dmaengine_submit(desc);
-> +	dma_async_issue_pending(channel);
-> +	return 0;
-> +}
-> +
-> +static void mxs_auart_tx_chars(struct mxs_auart_port *s)
-> +{
-> +	struct circ_buf *xmit = &s->port.state->xmit;
-> +
-> +	if (auart_dma_enabled(s)) {
-> +		int i = 0;
-> +		int size;
-> +		void *buffer = s->tx_dma_buf;
-> +
-> +		if (test_and_set_bit(MXS_AUART_DMA_TX_SYNC, &s->flags))
-> +			return;
-> +
-> +		while (!uart_circ_empty(xmit) && !uart_tx_stopped(&s->port)) {
-> +			size = min_t(u32, UART_XMIT_SIZE - i,
-> +				     CIRC_CNT_TO_END(xmit->head,
-> +						     xmit->tail,
-> +						     UART_XMIT_SIZE));
-> +			memcpy(buffer + i, xmit->buf + xmit->tail, size);
-> +			xmit->tail = (xmit->tail + size) & (UART_XMIT_SIZE - 1);
-> +
-> +			i += size;
-> +			if (i >= UART_XMIT_SIZE)
-> +				break;
-> +		}
-> +
-> +		if (uart_tx_stopped(&s->port))
-> +			mxs_auart_stop_tx(&s->port);
-> +
-> +		if (i) {
-> +			mxs_auart_dma_tx(s, i);
-> +		} else {
-> +			clear_bit(MXS_AUART_DMA_TX_SYNC, &s->flags);
-> +			smp_mb__after_clear_bit();
-> +		}
-> +		return;
-> +	}
-> +
-> +
->   	while (!(readl(s->port.membase + AUART_STAT) &
->   		 AUART_STAT_TXFF)) {
->   		if (s->port.x_char) {
-> @@ -316,10 +438,155 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
->   	return mctrl;
->   }
->
-> +static bool mxs_auart_dma_filter(struct dma_chan *chan, void *param)
-> +{
-> +	struct mxs_auart_port *s = param;
-> +
-> +	if (!mxs_dma_is_apbx(chan))
-> +		return false;
-> +
-> +	if (s->dma_channel == chan->chan_id) {
-> +		chan->private = &s->dma_data;
-> +		return true;
-> +	}
-> +	return false;
-> +}
-> +
-> +static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
-> +static void dma_rx_callback(void *arg)
-> +{
-> +	struct mxs_auart_port *s = (struct mxs_auart_port *) arg;
-> +	struct tty_struct *tty = s->port.state->port.tty;
-> +	int count;
-> +	u32 stat;
-> +
-> +	stat = readl(s->port.membase + AUART_STAT);
-> +	stat &= ~(AUART_STAT_OERR | AUART_STAT_BERR |
-> +			AUART_STAT_PERR | AUART_STAT_FERR);
-> +
-> +	count = stat & AUART_STAT_RXCOUNT_MASK;
-> +	tty_insert_flip_string(tty, s->rx_dma_buf, count);
-> +
-> +	writel(stat, s->port.membase + AUART_STAT);
-> +	tty_flip_buffer_push(tty);
-> +
-> +	/* start the next DMA for RX. */
-> +	mxs_auart_dma_prep_rx(s);
-> +}
-> +
-> +static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s)
-> +{
-> +	struct dma_async_tx_descriptor *desc;
-> +	struct scatterlist *sgl = &s->rx_sgl;
-> +	struct dma_chan *channel = s->rx_dma_chan;
-> +	u32 pio[1];
-> +
-> +	/* [1] : send PIO */
-> +	pio[0] = AUART_CTRL0_RXTO_ENABLE
-> +		| AUART_CTRL0_RXTIMEOUT(0x80)
-> +		| AUART_CTRL0_XFER_COUNT(UART_XMIT_SIZE);
-> +	desc = dmaengine_prep_slave_sg(channel, (struct scatterlist *)pio,
-> +					1, DMA_TRANS_NONE, 0);
-> +	if (!desc) {
-> +		dev_err(s->dev, "step 1 error\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* [2] : send DMA request */
-> +	sg_init_one(sgl, s->rx_dma_buf, UART_XMIT_SIZE);
-> +	dma_map_sg(s->dev, sgl, 1, DMA_FROM_DEVICE);
-> +	desc = dmaengine_prep_slave_sg(channel, sgl, 1, DMA_DEV_TO_MEM,
-> +					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-> +	if (!desc) {
-> +		dev_err(s->dev, "step 2 error\n");
-> +		return -1;
-> +	}
-> +
-> +	/* [3] : submit the DMA, but do not issue it. */
-> +	desc->callback = dma_rx_callback;
-> +	desc->callback_param = s;
-> +	dmaengine_submit(desc);
-> +	dma_async_issue_pending(channel);
-> +	return 0;
-> +}
-> +
-> +static void mxs_auart_dma_exit_channel(struct mxs_auart_port *s)
-> +{
-> +	if (s->tx_dma_chan) {
-> +		dma_release_channel(s->tx_dma_chan);
-> +		s->tx_dma_chan = NULL;
-> +	}
-> +	if (s->rx_dma_chan) {
-> +		dma_release_channel(s->rx_dma_chan);
-> +		s->rx_dma_chan = NULL;
-> +	}
-> +
-> +	kfree(s->tx_dma_buf);
-> +	kfree(s->rx_dma_buf);
-> +	s->tx_dma_buf = NULL;
-> +	s->rx_dma_buf = NULL;
-> +}
-> +
-> +static void mxs_auart_dma_exit(struct mxs_auart_port *s)
-> +{
-> +
-> +	writel(AUART_CTRL2_TXDMAE | AUART_CTRL2_RXDMAE | AUART_CTRL2_DMAONERR,
-> +		s->port.membase + AUART_CTRL2_CLR);
-> +
-> +	mxs_auart_dma_exit_channel(s);
-> +	s->flags &= ~MXS_AUART_DMA_ENABLED;
-> +}
-> +
-> +static int mxs_auart_dma_init(struct mxs_auart_port *s)
-> +{
-> +	dma_cap_mask_t mask;
-> +
-> +	if (auart_dma_enabled(s))
-> +		return 0;
-> +
-> +	/* We do not get the right DMA channels. */
-> +	if (s->dma_channel_rx == -1 || s->dma_channel_rx == -1)
-> +		return -EINVAL;
-> +
-> +	/* init for RX */
-> +	dma_cap_zero(mask);
-> +	dma_cap_set(DMA_SLAVE, mask);
-> +	s->dma_channel = s->dma_channel_rx;
-> +	s->dma_data.chan_irq = s->dma_irq_rx;
-> +	s->rx_dma_chan = dma_request_channel(mask, mxs_auart_dma_filter, s);
-> +	if (!s->rx_dma_chan)
-> +		goto err_out;
-> +	s->rx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
-> +	if (!s->rx_dma_buf)
-> +		goto err_out;
-> +
-> +	/* init for TX */
-> +	s->dma_channel = s->dma_channel_tx;
-> +	s->dma_data.chan_irq = s->dma_irq_tx;
-> +	s->tx_dma_chan = dma_request_channel(mask, mxs_auart_dma_filter, s);
-> +	if (!s->tx_dma_chan)
-> +		goto err_out;
-> +	s->tx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
-> +	if (!s->tx_dma_buf)
-> +		goto err_out;
-> +
-> +	/* set the flags */
-> +	s->flags |= MXS_AUART_DMA_ENABLED;
-> +	dev_dbg(s->dev, "enabled the DMA support.");
-> +
-> +	return 0;
-> +
-> +err_out:
-> +	mxs_auart_dma_exit_channel(s);
-> +	return -EINVAL;
-> +
-> +}
-> +
->   static void mxs_auart_settermios(struct uart_port *u,
->   				 struct ktermios *termios,
->   				 struct ktermios *old)
->   {
-> +	struct mxs_auart_port *s = to_auart_port(u);
->   	u32 bm, ctrl, ctrl2, div;
->   	unsigned int cflag, baud;
->
-> @@ -391,10 +658,23 @@ static void mxs_auart_settermios(struct uart_port *u,
->   		ctrl |= AUART_LINECTRL_STP2;
->
->   	/* figure out the hardware flow control settings */
-> -	if (cflag & CRTSCTS)
-> +	if (cflag & CRTSCTS) {
-> +		/*
-> +		 * The DMA has a bug(see errata:2836) in mx23.
-> +		 * So we can not implement the DMA for auart in mx23,
-> +		 * we can only implement the DMA support for auart
-> +		 * in mx28.
-> +		 */
-> +		if (is_imx28_auart(s) && (s->flags & MXS_AUART_DMA_CONFIG)) {
-> +			if (!mxs_auart_dma_init(s))
-> +				/* enable DMA tranfer */
-> +				ctrl2 |= AUART_CTRL2_TXDMAE | AUART_CTRL2_RXDMAE
-> +				       | AUART_CTRL2_DMAONERR;
-> +		}
->   		ctrl2 |= AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN;
-> -	else
-> +	} else {
->   		ctrl2 &= ~(AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN);
-> +	}
->
->   	/* set baud rate */
->   	baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
-> @@ -406,6 +686,17 @@ static void mxs_auart_settermios(struct uart_port *u,
->   	writel(ctrl2, u->membase + AUART_CTRL2);
->
->   	uart_update_timeout(u, termios->c_cflag, baud);
-> +
-> +	/* prepare for the DMA RX. */
-> +	if (auart_dma_enabled(s)) {
-> +		if (!mxs_auart_dma_prep_rx(s)) {
-> +			/* Disable the normal RX interrupt. */
-> +			writel(AUART_INTR_RXIEN, u->membase + AUART_INTR_CLR);
-> +		} else {
-> +			mxs_auart_dma_exit(s);
-> +			dev_err(s->dev, "We can not start up the DMA.\n");
-> +		}
-> +	}
->   }
->
->   static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
-> @@ -484,6 +775,9 @@ static void mxs_auart_shutdown(struct uart_port *u)
->   {
->   	struct mxs_auart_port *s = to_auart_port(u);
->
-> +	if (auart_dma_enabled(s))
-> +		mxs_auart_dma_exit(s);
-> +
->   	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
->
->   	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
-> @@ -717,6 +1011,7 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
->   		struct platform_device *pdev)
->   {
->   	struct device_node *np = pdev->dev.of_node;
-> +	u32 dma_channel[2];
->   	int ret;
->
->   	if (!np)
-> @@ -730,6 +1025,20 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
->   	}
->   	s->port.line = ret;
->
-> +	s->dma_irq_rx = platform_get_irq(pdev, 1);
-> +	s->dma_irq_tx = platform_get_irq(pdev, 2);
-> +
-> +	ret = of_property_read_u32_array(np, "fsl,auart-dma-channel",
-> +					dma_channel, 2);
-> +	if (ret == 0) {
-> +		s->dma_channel_rx = dma_channel[0];
-> +		s->dma_channel_tx = dma_channel[1];
-> +
-> +		s->flags |= MXS_AUART_DMA_CONFIG;
-> +	} else {
-> +		s->dma_channel_rx = -1;
-> +		s->dma_channel_tx = -1;
-> +	}
->   	return 0;
->   }
->
-> @@ -787,7 +1096,6 @@ static int __devinit mxs_auart_probe(struct platform_device *pdev)
->   	s->port.type = PORT_IMX;
->   	s->port.dev = s->dev = get_device(&pdev->dev);
->
-> -	s->flags = 0;
->   	s->ctrl = 0;
->
->   	s->irq = platform_get_irq(pdev, 0);
->
