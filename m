@@ -1,250 +1,62 @@
-From: Gabor Juhos <juhosg@openwrt.org>
-Subject: [PATCH] tty/serial/ar933x_uart: fix baud rate calculation
-Date: Wed, 14 Nov 2012 10:38:13 +0100
-Message-ID: <1352885893-28248-1-git-send-email-juhosg@openwrt.org>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Comments requested: driver for Quatech PCI serial cards
+Date: Wed, 14 Nov 2012 12:12:22 +0000
+Message-ID: <20121114121222.3e42860f@pyramind.ukuu.org.uk>
+References: <20121114060724.GN30156@marvin.atrad.com.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arrakis.dune.hu ([78.24.191.176]:40781 "EHLO arrakis.dune.hu"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932820Ab2KNJrM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Nov 2012 04:47:12 -0500
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52267 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756722Ab2KNMHG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Nov 2012 07:07:06 -0500
+In-Reply-To: <20121114060724.GN30156@marvin.atrad.com.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>
+To: Jonathan Woithe <jwoithe@just42.net>
+Cc: linux-serial@vger.kernel.org
 
-The UART of the AR933x SoC implements a fractional divisor
-for generating the desired baud rate.
+> The driver supports a wide range of Quatech DSC/ESC/QSC cards, including the
+> custom functionality which allow various aspects of the signal routing to be
+> altered under software control.
 
-The current code uses a fixed value for the fractional
-part of the divisor, and this leads to improperly
-calculated baud rates:
+This has actually been kicked around with another couple of cards. We
+have a draft but never test implemented API for binding gpio numbers on
+a device to signals for the tty layer.
 
-   baud    scale   step  real baud         diff
-     300   5207*   8192     17756     17456   5818.66%
-     600   2603*   8192     35511     34911   5818.50%
-    1200   1301*   8192     71023     69823   5818.58%
-    2400    650*   8192     11241      8841    368.37%
-    4800    324*   8192     22645     17845    371.77%
-    9600    161    8192      9645        45      0.46%
-   14400    107    8192     14468        68      0.47%
-   19200     80    8192     19290        90      0.46%
-   28800     53    8192     28935       135      0.46%
-   38400     39    8192     39063       663      1.72%
-   57600     26    8192     57870       270      0.46%
-  115200     12    8192    120192      4992      4.33%
-  230400      5    8192    260417     30017     13.02%
-  460800      2    8192    520833     60033     13.02%
-  921600      0    8192   1562500    640900     69.93%
+>  - the name of the module.  Anything with "qt" in it will confuse people.
+>    I'm thinking along the lines of serial-quatech or quatech-serial:
+>    comments welcome.
 
-After the patch, the integer and fractional parts of the
-divisor will be calculated dynamically. This ensures that
-the UART will use correct baud rates:
+qt is fine in kernel - just be careful of the qt usb module.
 
-   baud    scale   step  real baud         diff
-     300      6      11       300         0      0.00%
-     600     54     173       600         0      0.00%
-    1200     30     195      1200         0      0.00%
-    2400     30     390      2400         0      0.00%
-    4800     48    1233      4800         0      0.00%
-    9600     78    3976      9600         0      0.00%
-   14400     98    7474     14400         0      0.00%
-   19200     55    5637     19200         0      0.00%
-   28800    130   19780     28800         0      0.00%
-   38400     36    7449     38400         0      0.00%
-   57600     78   23857     57600         0      0.00%
-  115200     43   26575    115200         0      0.00%
-  230400     23   28991    230400         0      0.00%
-  460800     11   28991    460800         0      0.00%
-  921600      5   28991    921599        -1      0.00%
+I think in the same place I'd start by just adding the needed identifiers
+to the 8250_pci driver along with any needed init helper.
 
-Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
----
- drivers/tty/serial/ar933x_uart.c |   90 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 85 insertions(+), 5 deletions(-)
+For the ioctls a lot appear to be just exposing values which as you say
+would fit sysfs. The tty layer now (as of 3.7rc) usefully supports sysfs
+nodes on a tty itself too.
 
-diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index e4f60e2b..0f5b28a 100644
---- a/drivers/tty/serial/ar933x_uart.c
-+++ b/drivers/tty/serial/ar933x_uart.c
-@@ -25,11 +25,19 @@
- #include <linux/io.h>
- #include <linux/irq.h>
- 
-+#include <asm/div64.h>
-+
- #include <asm/mach-ath79/ar933x_uart.h>
- #include <asm/mach-ath79/ar933x_uart_platform.h>
- 
- #define DRIVER_NAME "ar933x-uart"
- 
-+#define AR933X_UART_MAX_SCALE	0xff
-+#define AR933X_UART_MAX_STEP	0xffff
-+
-+#define AR933X_UART_MIN_BAUD	300
-+#define AR933X_UART_MAX_BAUD	3000000
-+
- #define AR933X_DUMMY_STATUS_RD	0x01
- 
- static struct uart_driver ar933x_uart_driver;
-@@ -37,6 +45,8 @@ static struct uart_driver ar933x_uart_driver;
- struct ar933x_uart_port {
- 	struct uart_port	port;
- 	unsigned int		ier;	/* shadow Interrupt Enable Register */
-+	unsigned int		min_baud;
-+	unsigned int		max_baud;
- };
- 
- static inline unsigned int ar933x_uart_read(struct ar933x_uart_port *up,
-@@ -162,6 +172,57 @@ static void ar933x_uart_enable_ms(struct uart_port *port)
- {
- }
- 
-+/*
-+ * baudrate = (clk / (scale + 1)) * (step * (1 / 2^17))
-+ */
-+static unsigned long ar933x_uart_get_baud(unsigned int clk,
-+					  unsigned int scale,
-+					  unsigned int step)
-+{
-+	u64 t;
-+	u32 div;
-+
-+	div = (2 << 16) * (scale + 1);
-+	t = clk;
-+	t *= step;
-+	t += (div / 2);
-+	do_div(t, div);
-+
-+	return t;
-+}
-+
-+static void ar933x_uart_get_scale_step(unsigned int clk,
-+				       unsigned int baud,
-+				       unsigned int *scale,
-+				       unsigned int *step)
-+{
-+	unsigned int tscale;
-+	long min_diff;
-+
-+	*scale = 0;
-+	*step = 0;
-+
-+	min_diff = baud;
-+	for (tscale = 0; tscale < AR933X_UART_MAX_SCALE; tscale++) {
-+		u64 tstep;
-+		int diff;
-+
-+		tstep = baud * (tscale + 1);
-+		tstep *= (2 << 16);
-+		do_div(tstep, clk);
-+
-+		if (tstep > AR933X_UART_MAX_STEP)
-+			break;
-+
-+		diff = abs(ar933x_uart_get_baud(clk, tscale, tstep) - baud);
-+		if (diff < min_diff) {
-+			min_diff = diff;
-+			*scale = tscale;
-+			*step = tstep;
-+		}
-+	}
-+}
-+
- static void ar933x_uart_set_termios(struct uart_port *port,
- 				    struct ktermios *new,
- 				    struct ktermios *old)
-@@ -169,7 +230,7 @@ static void ar933x_uart_set_termios(struct uart_port *port,
- 	struct ar933x_uart_port *up = (struct ar933x_uart_port *) port;
- 	unsigned int cs;
- 	unsigned long flags;
--	unsigned int baud, scale;
-+	unsigned int baud, scale, step;
- 
- 	/* Only CS8 is supported */
- 	new->c_cflag &= ~CSIZE;
-@@ -191,8 +252,8 @@ static void ar933x_uart_set_termios(struct uart_port *port,
- 	/* Mark/space parity is not supported */
- 	new->c_cflag &= ~CMSPAR;
- 
--	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
--	scale = (port->uartclk / (16 * baud)) - 1;
-+	baud = uart_get_baud_rate(port, new, old, up->min_baud, up->max_baud);
-+	ar933x_uart_get_scale_step(port->uartclk, baud, &scale, &step);
- 
- 	/*
- 	 * Ok, we're now changing the port state. Do it with
-@@ -200,6 +261,10 @@ static void ar933x_uart_set_termios(struct uart_port *port,
- 	 */
- 	spin_lock_irqsave(&up->port.lock, flags);
- 
-+	/* disable the UART */
-+	ar933x_uart_rmw_clear(up, AR933X_UART_CS_REG,
-+		      AR933X_UART_CS_IF_MODE_M << AR933X_UART_CS_IF_MODE_S);
-+
- 	/* Update the per-port timeout. */
- 	uart_update_timeout(port, new->c_cflag, baud);
- 
-@@ -210,7 +275,7 @@ static void ar933x_uart_set_termios(struct uart_port *port,
- 		up->port.ignore_status_mask |= AR933X_DUMMY_STATUS_RD;
- 
- 	ar933x_uart_write(up, AR933X_UART_CLOCK_REG,
--			  scale << AR933X_UART_CLOCK_SCALE_S | 8192);
-+			  scale << AR933X_UART_CLOCK_SCALE_S | step);
- 
- 	/* setup configuration register */
- 	ar933x_uart_rmw(up, AR933X_UART_CS_REG, AR933X_UART_CS_PARITY_M, cs);
-@@ -219,6 +284,11 @@ static void ar933x_uart_set_termios(struct uart_port *port,
- 	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
- 			    AR933X_UART_CS_HOST_INT_EN);
- 
-+	/* reenable the UART */
-+	ar933x_uart_rmw(up, AR933X_UART_CS_REG,
-+			AR933X_UART_CS_IF_MODE_M << AR933X_UART_CS_IF_MODE_S,
-+			AR933X_UART_CS_IF_MODE_DCE << AR933X_UART_CS_IF_MODE_S);
-+
- 	spin_unlock_irqrestore(&up->port.lock, flags);
- 
- 	if (tty_termios_baud_rate(new))
-@@ -401,6 +471,8 @@ static void ar933x_uart_config_port(struct uart_port *port, int flags)
- static int ar933x_uart_verify_port(struct uart_port *port,
- 				   struct serial_struct *ser)
- {
-+	struct ar933x_uart_port *up = (struct ar933x_uart_port *) port;
-+
- 	if (ser->type != PORT_UNKNOWN &&
- 	    ser->type != PORT_AR933X)
- 		return -EINVAL;
-@@ -408,7 +480,8 @@ static int ar933x_uart_verify_port(struct uart_port *port,
- 	if (ser->irq < 0 || ser->irq >= NR_IRQS)
- 		return -EINVAL;
- 
--	if (ser->baud_base < 28800)
-+	if (ser->baud_base < up->min_baud ||
-+	    ser->baud_base > up->max_baud)
- 		return -EINVAL;
- 
- 	return 0;
-@@ -561,6 +634,7 @@ static int __devinit ar933x_uart_probe(struct platform_device *pdev)
- 	struct uart_port *port;
- 	struct resource *mem_res;
- 	struct resource *irq_res;
-+	unsigned int baud;
- 	int id;
- 	int ret;
- 
-@@ -611,6 +685,12 @@ static int __devinit ar933x_uart_probe(struct platform_device *pdev)
- 	port->fifosize = AR933X_UART_FIFO_SIZE;
- 	port->ops = &ar933x_uart_ops;
- 
-+	baud = ar933x_uart_get_baud(port->uartclk, AR933X_UART_MAX_SCALE, 1);
-+	up->min_baud = max_t(unsigned int, baud, AR933X_UART_MIN_BAUD);
-+
-+	baud = ar933x_uart_get_baud(port->uartclk, 0, AR933X_UART_MAX_STEP);
-+	up->max_baud = min_t(unsigned int, baud, AR933X_UART_MAX_BAUD);
-+
- 	ar933x_uart_add_console_port(up);
- 
- 	ret = uart_add_one_port(&ar933x_uart_driver, &up->port);
--- 
-1.7.10
+The basic ones are already handled by 8250_pci.c (QSC100, DSC100,
+ESC100D, ESC100M).
 
+As far as I can see the issues are
+
+1.	Clock multiplier feature
+
+Supportable by flags in 8250.c and worst case by providing a custom
+set_termios. No API needed.
+
+2.	RS485/RS422 options
+
+Supportable by adding TIOCRS485 handling/callout to 8250.c (needs doing
+anyway)
+
+The RS485 ioctl might need some extending but we've been gradually doing
+this as we hit chips with more features in hardware so that's not a
+problem beyond synchronizing with other platforms who can use the extra
+flags.
+
+Alan
