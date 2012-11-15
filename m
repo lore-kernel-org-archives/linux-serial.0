@@ -1,49 +1,55 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH v2] serial: mfd: Add nmi_touch_watchdog() into the console write function
-Date: Thu, 15 Nov 2012 16:03:16 +0800
-Message-ID: <1352966596-4420-1-git-send-email-feng.tang@intel.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH 1/3] OF: Add helper for matching against linux,stdout-path
+Date: Thu, 15 Nov 2012 09:04:53 +0100
+Message-ID: <20121115080453.GW10369@pengutronix.de>
+References: <1351849734-9836-1-git-send-email-s.hauer@pengutronix.de>
+ <1351849734-9836-2-git-send-email-s.hauer@pengutronix.de>
+ <CACxGe6uW+XN6RDnP+8QFXaCYqqPZO4dZM_aynR6AVMYZT=KuMg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:12718 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S2992679Ab2KOID4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 03:03:56 -0500
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40932 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S2992717Ab2KOIFD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Nov 2012 03:05:03 -0500
+Content-Disposition: inline
+In-Reply-To: <CACxGe6uW+XN6RDnP+8QFXaCYqqPZO4dZM_aynR6AVMYZT=KuMg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
-Cc: Feng Tang <feng.tang@intel.com>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 
-This is following what 8250 driver is doing in console write function,
-to avoid the hardware lockup case.
+On Wed, Nov 14, 2012 at 08:49:54PM +0000, Grant Likely wrote:
+> > +int of_device_is_stdout_path(struct device_node *dn)
+> > +{
+> > +       const char *name;
+> > +
+> > +       name = of_get_property(of_chosen, "linux,stdout-path", NULL);
+> > +       if (name == NULL)
+> > +               return 0;
+> > +
+> > +       if (dn == of_find_node_by_path(name))
+> 
+> need to of_node_put() the return value of of_find_node_by_path()
+> 
+> > +               return 1;
+> > +
+> > +       return 0;
+> > +}
+> 
+> Hi Sascha,
+> 
+> I'm fine with the helper, but there really is no need for a completely
+> separate .c file. Just put it in drivers/of/base.c.
 
-v2: incldudes the <linux/nmi.h>
+Agreed.
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Acked-by: Alan Cox <alan@linux.intel.com>
----
- drivers/tty/serial/mfd.c |    3 +++
- 1 file changed, 3 insertions(+)
+Thanks,
+ Sascha
 
-diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
-index c4b50af..79fe59b 100644
---- a/drivers/tty/serial/mfd.c
-+++ b/drivers/tty/serial/mfd.c
-@@ -36,6 +36,7 @@
- #include <linux/serial_mfd.h>
- #include <linux/dma-mapping.h>
- #include <linux/pci.h>
-+#include <linux/nmi.h>
- #include <linux/io.h>
- #include <linux/debugfs.h>
- #include <linux/pm_runtime.h>
-@@ -1113,6 +1114,8 @@ serial_hsu_console_write(struct console *co, const char *s, unsigned int count)
- 	unsigned int ier;
- 	int locked = 1;
- 
-+	touch_nmi_watchdog();
-+
- 	local_irq_save(flags);
- 	if (up->port.sysrq)
- 		locked = 0;
 -- 
-1.7.9.5
-
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
