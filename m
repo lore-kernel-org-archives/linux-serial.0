@@ -1,44 +1,52 @@
-From: Jonathan Woithe <jwoithe@just42.net>
-Subject: Re: Comments requested: driver for Quatech PCI serial cards
-Date: Thu, 15 Nov 2012 10:41:10 +1030
-Message-ID: <20121115001110.GE4505@marvin.atrad.com.au>
-References: <20121114060724.GN30156@marvin.atrad.com.au>
- <20121114121222.3e42860f@pyramind.ukuu.org.uk>
- <20121114231054.GC4505@marvin.atrad.com.au>
- <20121114235719.794a9bdc@pyramind.ukuu.org.uk>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH v2 2/3] serial: mxs-auart: add the DMA support for mx28
+Date: Thu, 15 Nov 2012 11:20:35 +0800
+Message-ID: <50A45F83.1010009@freescale.com>
+References: <1351074456-25863-1-git-send-email-b32955@freescale.com> <1351074456-25863-3-git-send-email-b32955@freescale.com> <50A21613.6030709@bluegiga.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server.atrad.com.au ([150.101.241.2]:48576 "EHLO
-	server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933000Ab2KOAL1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Nov 2012 19:11:27 -0500
-Content-Disposition: inline
-In-Reply-To: <20121114235719.794a9bdc@pyramind.ukuu.org.uk>
+Received: from co9ehsobe002.messaging.microsoft.com ([207.46.163.25]:17492
+	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1423500Ab2KODQm convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Nov 2012 22:16:42 -0500
+In-Reply-To: <50A21613.6030709@bluegiga.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, jwoithe@just42.net
+To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, vinod.koul@intel.com, Veli-Pekka Peltola <veli-pekka.peltola@bluegiga.com>
 
-On Wed, Nov 14, 2012 at 11:57:19PM +0000, Alan Cox wrote:
-> > our upcoming system.  I'm guessing that the difficulties with the driver as
-> > it's currently structured may have been the reason it was never pushed to
-> > mainline by the original author in 2007.
-> 
-> There are not many difficulties I can see. You just add the identifiers
-> to the 8250_pci tables and a couple of small bits of code and everything
-> but the RS422/485 stuff just works.
-> 
-> If you need the RS422 stuff then yes its a bit more work.
+=E4=BA=8E 2012=E5=B9=B411=E6=9C=8813=E6=97=A5 17:42, Lauri Hintsala =E5=
+=86=99=E9=81=93:
+> Hi Huang,
+>
+> DMA support doesn't work with latest stable v3.6.5 or development=20
+> 3.7-rc5 kernels. I get following error message when I open the serial=
+=20
+> port /dev/ttyAPP0:
+>
+> [ 48.730000] mxs-auart 8006a000.serial: step 1 error
+> [ 48.750000] mxs-auart 8006a000.serial: We can not start up the DMA.
+>
+I tested this patch set in imx28-evk board Rev C with linux-next-201211=
+14.
+it works fine.
 
-Unfortunately we need the RS422 stuff - that's the reason for using the
-DSC-200/300 card.
+Maybe you can try the linux-next code.
 
-Thanks for the comments and feedback - I'll take another look at things in
-the light of the information.  If the functionality we require requires a
-significant amount of new code to be written, I suspect that the work will
-be deemed too time consuming by those who call the shots.  We'll see.
+About the flow control:
+If we do not enable the HW flow control, the data may lost. And I do no=
+t=20
+know how to handle with the Xon/Xoff when the DMA is supported.
 
-Regards
-  jonathan
+Best Regards
+Huang Shijie
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
