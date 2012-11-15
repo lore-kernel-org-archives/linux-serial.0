@@ -1,119 +1,131 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/3] OF: Add helper for matching against linux,stdout-path
-Date: Thu, 15 Nov 2012 09:49:45 +0100
-Message-ID: <20121115084945.GZ10369@pengutronix.de>
-References: <1351849734-9836-1-git-send-email-s.hauer@pengutronix.de>
- <1351849734-9836-2-git-send-email-s.hauer@pengutronix.de>
- <CACxGe6uW+XN6RDnP+8QFXaCYqqPZO4dZM_aynR6AVMYZT=KuMg@mail.gmail.com>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH v2 2/3] serial: mxs-auart: add the DMA support for mx28
+Date: Thu, 15 Nov 2012 17:11:42 +0800
+Message-ID: <50A4B1CE.5070203@freescale.com>
+References: <1351074456-25863-1-git-send-email-b32955@freescale.com> <1351074456-25863-3-git-send-email-b32955@freescale.com> <50A21613.6030709@bluegiga.com> <50A45F83.1010009@freescale.com> <50A4983F.8080407@bluegiga.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed;
+	boundary="------------000706060904090302040907"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60326 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S2992537Ab2KOItw (ORCPT
+Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:29038 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754505Ab2KOJHr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 03:49:52 -0500
-Content-Disposition: inline
-In-Reply-To: <CACxGe6uW+XN6RDnP+8QFXaCYqqPZO4dZM_aynR6AVMYZT=KuMg@mail.gmail.com>
+	Thu, 15 Nov 2012 04:07:47 -0500
+In-Reply-To: <50A4983F.8080407@bluegiga.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, vinod.koul@intel.com, Veli-Pekka Peltola <veli-pekka.peltola@bluegiga.com>, Fabio Estevam <fabio.estevam@freescale.com>
 
-On Wed, Nov 14, 2012 at 08:49:54PM +0000, Grant Likely wrote:
-> On Fri, Nov 2, 2012 at 9:48 AM, Sascha Hauer <s.hauer@pengutronix.de> wrote:
-> > devicetrees may have a linux,stdout-path property in the chosen
-> > node describing the console device. This adds a helper function
-> > to match a device against this property so a driver can call
-> > add_preferred_console for a matching device.
-> >
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> >  drivers/of/Kconfig        |    3 +++
-> >  drivers/of/Makefile       |    1 +
-> >  drivers/of/of_stdout.c    |   27 +++++++++++++++++++++++++++
-> >  include/linux/of_stdout.h |   24 ++++++++++++++++++++++++
-> >  4 files changed, 55 insertions(+)
-> >  create mode 100644 drivers/of/of_stdout.c
-> >  create mode 100644 include/linux/of_stdout.h
-> >
-> > diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-> > index dfba3e6..8574ebb 100644
-> > --- a/drivers/of/Kconfig
-> > +++ b/drivers/of/Kconfig
-> > @@ -67,6 +67,9 @@ config OF_MDIO
-> >         help
-> >           OpenFirmware MDIO bus (Ethernet PHY) accessors
-> >
-> > +config OF_STDOUT
-> > +       def_bool y
-> > +
-> >  config OF_PCI
-> >         def_tristate PCI
-> >         depends on PCI
-> > diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-> > index e027f44..c9f3f2f 100644
-> > --- a/drivers/of/Makefile
-> > +++ b/drivers/of/Makefile
-> > @@ -8,6 +8,7 @@ obj-$(CONFIG_OF_I2C)    += of_i2c.o
-> >  obj-$(CONFIG_OF_NET)   += of_net.o
-> >  obj-$(CONFIG_OF_SELFTEST) += selftest.o
-> >  obj-$(CONFIG_OF_MDIO)  += of_mdio.o
-> > +obj-$(CONFIG_OF_STDOUT) += of_stdout.o
-> >  obj-$(CONFIG_OF_PCI)   += of_pci.o
-> >  obj-$(CONFIG_OF_PCI_IRQ)  += of_pci_irq.o
-> >  obj-$(CONFIG_OF_MTD)   += of_mtd.o
-> > diff --git a/drivers/of/of_stdout.c b/drivers/of/of_stdout.c
-> > new file mode 100644
-> > index 0000000..c9e370e
-> > --- /dev/null
-> > +++ b/drivers/of/of_stdout.c
-> > @@ -0,0 +1,27 @@
-> > +/*
-> > + * OF helper for linux,stdoutpath property.
-> > + *
-> > + * This file is released under the GPLv2
-> > + */
-> > +#include <linux/of_stdout.h>
-> > +
-> > +/**
-> > + * of_device_is_stdout_path - check if a device node matches the
-> > + *                            linux,stdout-path property
-> > + *
-> > + * Check if this device node matches the linux,stdout-path property
-> > + * in the chosen node. return true if yes, false otherwise.
-> > + */
-> > +int of_device_is_stdout_path(struct device_node *dn)
-> > +{
-> > +       const char *name;
-> > +
-> > +       name = of_get_property(of_chosen, "linux,stdout-path", NULL);
-> > +       if (name == NULL)
-> > +               return 0;
-> > +
-> > +       if (dn == of_find_node_by_path(name))
-> 
-> need to of_node_put() the return value of of_find_node_by_path()
-> 
-> > +               return 1;
-> > +
-> > +       return 0;
-> > +}
-> 
-> Hi Sascha,
-> 
-> I'm fine with the helper, but there really is no need for a completely
-> separate .c file. Just put it in drivers/of/base.c.
+--------------000706060904090302040907
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-I guess the same applies to include/linux/of_stdout.h.
+=E4=BA=8E 2012=E5=B9=B411=E6=9C=8815=E6=97=A5 15:22, Lauri Hintsala =E5=86=
+=99=E9=81=93:
+> Hi,
+>
+> On 11/15/2012 05:20 AM, Huang Shijie wrote:
+>> =E4=BA=8E 2012=E5=B9=B411=E6=9C=8813=E6=97=A5 17:42, Lauri Hintsala =E5=
+=86=99=E9=81=93:
+>>> Hi Huang,
+>>>
+>>> DMA support doesn't work with latest stable v3.6.5 or development
+>>> 3.7-rc5 kernels. I get following error message when I open the serial
+>>> port /dev/ttyAPP0:
+>>>
+>>> [ 48.730000] mxs-auart 8006a000.serial: step 1 error
+>>> [ 48.750000] mxs-auart 8006a000.serial: We can not start up the DMA.
+>>>
+>> I tested this patch set in imx28-evk board Rev C with=20
+>> linux-next-20121114.
+>> it works fine.
+>>
+>> Maybe you can try the linux-next code.
+>
+> I tested linux-next-20121114 on apx4devkit (imx28 based device) and I=20
+> got the same error message:
+>
+> # stty -F /dev/ttyAPP0 crtscts; microcom /dev/ttyAPP0 -s 115200
+> [  133.710000] mxs-auart 8006a000.serial: step 1 error
+> [  133.720000] mxs-auart 8006a000.serial: We can not start up the DMA.
+Could you test this patch?
 
-Should I drop the CONFIG_OF_STDOUT aswell?
+thanks
+Huang  Shijie
 
-Sascha
+--------------000706060904090302040907
+Content-Type: text/x-patch; name="0001-fix-patch.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="0001-fix-patch.patch"
+
+>From 502db325af8664e239be3da47f32d496f3db036f Mon Sep 17 00:00:00 2001
+From: Huang Shijie <b32955@freescale.com>
+Date: Thu, 15 Nov 2012 16:24:31 +0800
+Subject: [PATCH] fix patch
 
 
+Signed-off-by: Huang Shijie <b32955@freescale.com>
+---
+ drivers/tty/serial/mxs-auart.c |   25 +++++++++++++------------
+ 1 files changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index d593e0a..0e60ef2 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -542,7 +542,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
+ 	dma_cap_mask_t mask;
+ 
+ 	if (auart_dma_enabled(s))
+-		return 0;
++		return -EBUSY;
+ 
+ 	/* We do not get the right DMA channels. */
+ 	if (s->dma_channel_rx == -1 || s->dma_channel_rx == -1)
+@@ -666,10 +666,21 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 		 * in mx28.
+ 		 */
+ 		if (is_imx28_auart(s) && (s->flags & MXS_AUART_DMA_CONFIG)) {
+-			if (!mxs_auart_dma_init(s))
++			if (!mxs_auart_dma_init(s)) {
+ 				/* enable DMA tranfer */
+ 				ctrl2 |= AUART_CTRL2_TXDMAE | AUART_CTRL2_RXDMAE
+ 				       | AUART_CTRL2_DMAONERR;
++
++				/* prepare for the DMA RX. */
++				if (!mxs_auart_dma_prep_rx(s)) {
++					/* Disable the normal RX irq. */
++					writel(AUART_INTR_RXIEN,
++						u->membase + AUART_INTR_CLR);
++				} else {
++					mxs_auart_dma_exit(s);
++					dev_err(s->dev, "DMA failed.\n");
++				}
++			}
+ 		}
+ 		ctrl2 |= AUART_CTRL2_CTSEN | AUART_CTRL2_RTSEN;
+ 	} else {
+@@ -687,16 +698,6 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 
+ 	uart_update_timeout(u, termios->c_cflag, baud);
+ 
+-	/* prepare for the DMA RX. */
+-	if (auart_dma_enabled(s)) {
+-		if (!mxs_auart_dma_prep_rx(s)) {
+-			/* Disable the normal RX interrupt. */
+-			writel(AUART_INTR_RXIEN, u->membase + AUART_INTR_CLR);
+-		} else {
+-			mxs_auart_dma_exit(s);
+-			dev_err(s->dev, "We can not start up the DMA.\n");
+-		}
+-	}
+ }
+ 
+ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.7.0.4
+
+
+--------------000706060904090302040907--
