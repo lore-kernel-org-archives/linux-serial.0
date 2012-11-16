@@ -1,46 +1,44 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: Re: [RFC 3/3] ARM/AVR32: get rid of serial_at91.h
-Date: Fri, 16 Nov 2012 11:38:40 +0000
-Message-ID: <20121116113840.GQ3290@n2100.arm.linux.org.uk>
-References: <20120921093530.GB31374@n2100.arm.linux.org.uk> <E1TEzfE-000780-1t@rmk-PC.arm.linux.org.uk> <20121116095352.GF4398@game.jcrosoft.org> <50A6119E.8010303@atmel.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the
+ modem status through sysfs
+Date: Fri, 16 Nov 2012 04:38:06 -0800
+Message-ID: <20121116123806.GA9303@kroah.com>
+References: <1353070789.24092.6.camel@chenjun-workstation>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <50A6119E.8010303-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-Cc: Jean-Christophe PLAGNIOL-VILLARD <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Andrew Victor <avictor.za-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1353070789.24092.6.camel@chenjun-workstation>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jun Chen <jun.d.chen@intel.com>
+Cc: serial <linux-serial@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>, liu chuansheng <chuansheng.liu@intel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Bi Chao <chao.bi@intel.com>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Nov 16, 2012 at 11:12:46AM +0100, Nicolas Ferre wrote:
-> On 11/16/2012 10:53 AM, Jean-Christophe PLAGNIOL-VILLARD :
-> > On 10:36 Fri 21 Sep     , Russell King wrote:
-> >> The definitions provided by serial_at91.h are only used by the
-> >> atmel_serial driver, and the function that uses it is never called
-> >> from anywhere in the kernel.  Therefore, these definitions are unused
-> >> and/or obsolete, and can be removed.
-> >>
-> >> Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-> > personnaly I'm ok with it too
-> > Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
-> > 
-> > but Andrew seems use it so let him reply
+On Fri, Nov 16, 2012 at 07:59:49AM -0500, Jun Chen wrote:
 > 
-> Yes, during previous attempt to remove the files, Andrew said that it
-> was used internally in his former company. I had no serious reason to
-> remove it, so we kept it back then.
-> But now it seems the situation has evolved and we must consider the move
-> to a single kernel image and the will to clean the include/asm/mach
-> directory.
+> The Medfield Platform implements a recovery procedure consisting in an escalation
+> from simple and light recovery procedures to stronger ones with increased visibility
+> and impact to end-user.After platform find some problem from Modem,such as no response,
+> platform will try do modem warm reset.If several tries failed, platform will try to
+> do modem cold boot procedure.For Modem Cold Boot, AP is responsible to generate
+> blob (binary object containing PIN code and other necessary information).
+> Blob is stored in AP volatile memory. AP decides to read PIN code from cache instead of
+> prompting end-user, and sends it to modem as if end-user had entered it.
 > 
-> So, now, on my side:
+> This patch add module parameters to manage the modem status through sysfs.
+> Reset_modem can be read and write by user space.When read the reset_modem,user space will
+> get the mdm_reset_state which used to avoid to run twice at once.When set the reset_modem to
+> IFX_COLD_RESET_REQ,modem will do cold reset, other val value will trigger modem reset.
 > 
-> Acked-by: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+> Hangup_reasons used to give one interface to user space to know and clear the modem reset reasons.
+> Now there are four reasons:SPI timeout, modem initiative reset,modem coredump,spi tranfer error.
 
-Thanks for reminding me about this series, I'd completely forgotten about
-it.  It'll be in the next linux-next tree now.
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Why are these module parameters?  Why not just "real" sysfs files
+instead?  That way, if you have multiple devices in a system, it will
+work properly for them.  Right now you are limited to 1 device, right?
+
+And where have you documented these options?
+
+thanks,
+
+greg k-h
