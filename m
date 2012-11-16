@@ -1,43 +1,136 @@
 From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-Subject: [PATCH v2 02/10] Revert "sh-sci / PM: Use power.irq_safe"
-Date: Fri, 16 Nov 2012 10:51:01 +0900
-Message-ID: <50A59C05.1090902@renesas.com>
+Subject: [PATCH v2 03/10] Partially revert
+ "serial: sh-sci: console Runtime PM support"
+Date: Fri, 16 Nov 2012 10:51:24 +0900
+Message-ID: <50A59C1C.9020904@renesas.com>
 References: <509A0658.1010503@renesas.com> <509A0B4E.1030801@renesas.com>
  <20121116010107.GA6068@kroah.com> <50A59B9B.2010501@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from relmlor4.renesas.com ([210.160.252.174]:47069 "EHLO
+	relmlor4.renesas.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750937Ab2KPBvm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 15 Nov 2012 20:51:42 -0500
 In-reply-to: <50A59B9B.2010501@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, gregkh@linuxfoundation.org
 Cc: takashi.yoshii.zj@renesas.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 5a50a01bf0 (sh-sci / PM: Use power.irq_safe, from
-Rafael J. Wysocki <rjw@sisk.pl>, 2011-08-24).
+This partially reverts commit 1ba7622094 (serial: sh-sci: console
+Runtime PM support, from Magnus Damm <damm@opensource.se>, 2011-08-03).
 
-In order to get console PM work properly, we should implement uart_ops
-->pm() operation, rather than sprinkle band-ading runtime PM calls in
-the driver.
+The generic 'serial_core' can take care of console PM maintenance,
+so all (or at least the first thing) we have to do to get console PM
+work properly, is to implement uart_ops ->pm() operation in the sh-sci
+serial client driver.
+
+This patch partially reverts the commit above, but leaving sci_reset()
+change in place, because sci_reset() is already part of another commit
+(73c3d53f38 serial: sh-sci: Avoid FIFO clear for MCE toggle.).
+
+A revised version of console PM support follows next.
 
 Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 ---
- drivers/tty/serial/sh-sci.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 53 +--------------------------------------------
+ 1 file changed, 1 insertion(+), 52 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 526ad04..9abe977 100644
+index 9abe977..e9e8883 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2116,7 +2116,6 @@ static int __devinit sci_init_single(struct platform_device *dev,
+@@ -99,12 +99,6 @@ struct sci_port {
+ #endif
  
- 		sci_init_gpios(sci_port);
+ 	struct notifier_block		freq_transition;
+-
+-#ifdef CONFIG_SERIAL_SH_SCI_CONSOLE
+-	unsigned short saved_smr;
+-	unsigned short saved_fcr;
+-	unsigned char saved_brr;
+-#endif
+ };
  
--		pm_runtime_irq_safe(&dev->dev);
- 		pm_runtime_enable(&dev->dev);
- 	}
+ /* Function prototypes */
+@@ -2247,8 +2241,7 @@ static int __devinit serial_console_setup(struct console *co, char *options)
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
  
+-	sci_port_disable(sci_port);
+-
++	/* TODO: disable clock */
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
+@@ -2291,46 +2284,6 @@ static int __devinit sci_probe_earlyprintk(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#define uart_console(port)	((port)->cons->index == (port)->line)
+-
+-static int sci_runtime_suspend(struct device *dev)
+-{
+-	struct sci_port *sci_port = dev_get_drvdata(dev);
+-	struct uart_port *port = &sci_port->port;
+-
+-	if (uart_console(port)) {
+-		struct plat_sci_reg *reg;
+-
+-		sci_port->saved_smr = serial_port_in(port, SCSMR);
+-		sci_port->saved_brr = serial_port_in(port, SCBRR);
+-
+-		reg = sci_getreg(port, SCFCR);
+-		if (reg->size)
+-			sci_port->saved_fcr = serial_port_in(port, SCFCR);
+-		else
+-			sci_port->saved_fcr = 0;
+-	}
+-	return 0;
+-}
+-
+-static int sci_runtime_resume(struct device *dev)
+-{
+-	struct sci_port *sci_port = dev_get_drvdata(dev);
+-	struct uart_port *port = &sci_port->port;
+-
+-	if (uart_console(port)) {
+-		sci_reset(port);
+-		serial_port_out(port, SCSMR, sci_port->saved_smr);
+-		serial_port_out(port, SCBRR, sci_port->saved_brr);
+-
+-		if (sci_port->saved_fcr)
+-			serial_port_out(port, SCFCR, sci_port->saved_fcr);
+-
+-		serial_port_out(port, SCSCR, sci_port->cfg->scscr);
+-	}
+-	return 0;
+-}
+-
+ #define SCI_CONSOLE	(&serial_console)
+ 
+ #else
+@@ -2340,8 +2293,6 @@ static inline int __devinit sci_probe_earlyprintk(struct platform_device *pdev)
+ }
+ 
+ #define SCI_CONSOLE	NULL
+-#define sci_runtime_suspend	NULL
+-#define sci_runtime_resume	NULL
+ 
+ #endif /* CONFIG_SERIAL_SH_SCI_CONSOLE */
+ 
+@@ -2459,8 +2410,6 @@ static int sci_resume(struct device *dev)
+ }
+ 
+ static const struct dev_pm_ops sci_dev_pm_ops = {
+-	.runtime_suspend = sci_runtime_suspend,
+-	.runtime_resume = sci_runtime_resume,
+ 	.suspend	= sci_suspend,
+ 	.resume		= sci_resume,
+ };
 -- 
 1.7.12.4
 
