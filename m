@@ -1,87 +1,61 @@
 From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-Subject: [PATCH v2 00/10] serial: sh-sci fixes - console PM, SCIFB, SMP lockup,
- etc.
-Date: Fri, 16 Nov 2012 10:49:15 +0900
-Message-ID: <50A59B9B.2010501@renesas.com>
+Subject: [PATCH v2 01/10] Revert "sh-sci / PM: Avoid deadlocking runtime PM"
+Date: Fri, 16 Nov 2012 10:50:03 +0900
+Message-ID: <50A59BCB.2040606@renesas.com>
 References: <509A0658.1010503@renesas.com> <509A0B4E.1030801@renesas.com>
- <20121116010107.GA6068@kroah.com>
+ <20121116010107.GA6068@kroah.com> <50A59B9B.2010501@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-reply-to: <20121116010107.GA6068@kroah.com>
+In-reply-to: <50A59B9B.2010501@renesas.com>
 Sender: linux-sh-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, takashi.yoshii.zj@renesas.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
+To: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, gregkh@linuxfoundation.org
+Cc: takashi.yoshii.zj@renesas.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+This reverts commit 048be431e4 (sh-sci / PM: Avoid deadlocking runtime
+PM, from Rafael J. Wysocki <rjw@sisk.pl>, 2012-03-09).
 
-On 11/16/2012 10:01 AM, Greg KH wrote:> On Wed, Nov 07, 2012 at 04:18:38PM +0900, Shinya Kuribayashi wrote:
->> On 11/7/2012 3:57 PM, Shinya Kuribayashi wrote:
->>> Hi Paul and serial forks,
->> [...]
->>> Takashi YOSHII (4):
->>>       serial: sh-sci: fix condition test to set SCBRR
->>>       serial: sh-sci: support lower baud rate
->>>       serial: sh-sci: mask SCTFDR/RFDR according to fifosize
->>>       serial: sh-sci: fix common SCIFB regmap definition
->>>
->>> Teppei Kamijou (1):
->>>       serial: sh-sci: console runtime PM support (revisit)
->>>
->>>  drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
->>>  1 file changed, 56 insertions(+), 84 deletions(-)
->>
->> Oops, I forgot to append proper From: author lines in five commits
->> (patch 04/10 to 09/10).  Didn't mean to supersede your authoship.
->>
->> I'd respin the patchset later, waiting for some feedback.
-> 
-> Can you please resend this with this fixed up if you want to get this
-> into 3.8?
+In order to get console PM work properly, we should implement uart_ops
+->pm() operation, rather than sprinkle band-ading runtime PM calls in
+the driver.
 
-Thanks for your kind reminder.  Here's v2, providing From: authorship
-lines in five patches (04 to 08).  No logical change in the patches.
+Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
+---
+ drivers/tty/serial/sh-sci.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
---- 8< ---
-
-V2: provide missing authorship From: lines in five patches (04 to 08)
-
-Here are sh-sci serial driver fixes that have been cooking for months
-privately on my end:
-* rework console PM with the help of serial-core's uart_change_pm()
-* provide missing piece in SCIFB support (from Yoshii-san)
-* address console write function vs. SMP lockup issue
-
-and so on.  Comments and suggestions are welcome.
-
-Build tested with vanilla v3.6, but not boot- nor PM-tested with
-newer kernels after v3.4.  Anyone with can-sleep shmobile systems,
-please give it try.
-
-Thanks in advance,
-
-----------------------------------------------------------------
-Shinya Kuribayashi (5):
-      Revert "sh-sci / PM: Avoid deadlocking runtime PM"
-      Revert "sh-sci / PM: Use power.irq_safe"
-      Partially revert "serial: sh-sci: console Runtime PM support"
-      serial: sh-sci: add locking to console write function to avoid SMP lockup
-      serial: sh-sci: fix possible race cases on SCSCR register accesses
-
-Takashi YOSHII (4):
-      serial: sh-sci: fix condition test to set SCBRR
-      serial: sh-sci: support lower baud rate
-      serial: sh-sci: mask SCTFDR/RFDR according to fifosize
-      serial: sh-sci: fix common SCIFB regmap definition
-
-Teppei Kamijou (1):
-      serial: sh-sci: console runtime PM support (revisit)
-
- drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
- 1 file changed, 56 insertions(+), 84 deletions(-)
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 9be296c..526ad04 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1752,8 +1752,6 @@ static int sci_startup(struct uart_port *port)
+ 
+ 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+ 
+-	pm_runtime_put_noidle(port->dev);
+-
+ 	sci_port_enable(s);
+ 
+ 	ret = sci_request_irq(s);
+@@ -1781,8 +1779,6 @@ static void sci_shutdown(struct uart_port *port)
+ 	sci_free_irq(s);
+ 
+ 	sci_port_disable(s);
+-
+-	pm_runtime_get_noresume(port->dev);
+ }
+ 
+ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
+@@ -2121,7 +2117,6 @@ static int __devinit sci_init_single(struct platform_device *dev,
+ 		sci_init_gpios(sci_port);
+ 
+ 		pm_runtime_irq_safe(&dev->dev);
+-		pm_runtime_get_noresume(&dev->dev);
+ 		pm_runtime_enable(&dev->dev);
+ 	}
+ 
 -- 
-Shinya Kuribayashi
-Renesas Electronics
+1.7.12.4
+
