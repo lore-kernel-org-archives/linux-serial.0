@@ -1,329 +1,185 @@
-From: Jun Chen <jun.d.chen@intel.com>
-Subject: [PATCH] serial: ifx6x60: Add module parameters to manage the modem
- status through sysfs
-Date: Fri, 16 Nov 2012 07:59:49 -0500
-Message-ID: <1353070789.24092.6.camel@chenjun-workstation>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: [PATCH] tty/8250_early: Turn serial_in/serial_out into weak
+	symbols.
+Date: Fri, 16 Nov 2012 07:03:05 +0200
+Message-ID: <264C179F799EF24AB26D5319053335E80CC3049A0F@ezexch.ezchip.com>
+References: <20121012195102.5781c7d4@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
+	<20121012220604.3f99d003@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
+	<20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
+	<20121014133216.686277e1@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
+	<20121025121815.0689c196@pyramind.ukuu.org.uk>
+	<264C179F799EF24AB26D5319053335E80CC30499FF@ezexch.ezchip.com>,<20121116011124.GA12506@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:24140 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750960Ab2KPE5Y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 23:57:24 -0500
+Received: from ezexch.ezchip.com ([212.179.42.101]:45226 "EHLO
+	ezexch.ezchip.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750817Ab2KPFDm convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Nov 2012 00:03:42 -0500
+In-Reply-To: <20121116011124.GA12506@kroah.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: serial <linux-serial@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>, liu chuansheng <chuansheng.liu@intel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Jun Chen <jun.d.chen@intel.com>, Bi Chao <chao.bi@intel.com>, Alan Cox <alan@linux.intel.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
 
 
-The Medfield Platform implements a recovery procedure consisting in an escalation
-from simple and light recovery procedures to stronger ones with increased visibility
-and impact to end-user.After platform find some problem from Modem,such as no response,
-platform will try do modem warm reset.If several tries failed, platform will try to
-do modem cold boot procedure.For Modem Cold Boot, AP is responsible to generate
-blob (binary object containing PIN code and other necessary information).
-Blob is stored in AP volatile memory. AP decides to read PIN code from cache instead of
-prompting end-user, and sends it to modem as if end-user had entered it.
+>From: Greg KH [gregkh@linuxfoundation.org]
+>Sent: Friday, November 16, 2012 3:11 AM
 
-This patch add module parameters to manage the modem status through sysfs.
-Reset_modem can be read and write by user space.When read the reset_modem,user space will
-get the mdm_reset_state which used to avoid to run twice at once.When set the reset_modem to
-IFX_COLD_RESET_REQ,modem will do cold reset, other val value will trigger modem reset.
+>This patch no longer applies to my tree.  Can you please refresh it
+>against the tty-next tree and resend it, with Alan's ack kept on it, so
+>I remember it is there?
 
-Hangup_reasons used to give one interface to user space to know and clear the modem reset reasons.
-Now there are four reasons:SPI timeout, modem initiative reset,modem coredump,spi tranfer error.
+Hello Greg,
+Here is my refreshed patch:
 
-Cc: Bi Chao <chao.bi@intel.com>
-Cc: Liu chuansheng <chuansheng.liu@intel.com>
+>From b1f527ea26ce6ef2bbe3efcb7872aa4a4e6b77d5 Mon Sep 17 00:00:00 2001
+From: Noam Camus <noamc@ezchip.com>
+Date: Fri, 16 Nov 2012 06:42:53 +0200
+Subject: [PATCH] tty/8250_early: Turn serial_in/serial_out into weak symbols.
+
+Allows overriding default methods serial_in/serial_out.
+
+In such platform specific replacement it is possible to use
+other regshift, biased register offset, any other manipulation
+that is not covered with common default methods.
+
+Overriding default methods may be useful for platforms which got
+serial peripheral with registers represented in big endian.
+In this situation and assuming that 32 bit operations / alignment
+is required then it may be useful to swab words before/after
+accessing the serial registers.
+
+Signed-off-by: Noam Camus <noamc@ezchip.com>
 Acked-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
 ---
- drivers/tty/serial/Kconfig   |    2 +-
- drivers/tty/serial/ifx6x60.c |  193 ++++++++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/ifx6x60.h |    8 ++
- 3 files changed, 202 insertions(+), 1 deletions(-)
+ drivers/tty/serial/8250/8250_early.c |   42 +++++++++++++++++-----------------
+ include/linux/serial_8250.h          |    2 +
+ 2 files changed, 23 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 2a53be5..640b36a 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1323,7 +1323,7 @@ config SERIAL_ALTERA_UART_CONSOLE
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 843a150..f53a7db 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -48,7 +48,7 @@ struct early_serial8250_device {
  
- config SERIAL_IFX6X60
-         tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
--	depends on GPIOLIB && SPI
-+	depends on GPIOLIB && SPI && X86_INTEL_MID && INTEL_SCU_IPC
- 	help
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
+ static struct early_serial8250_device early_device;
  
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 5b9bc19..c17efc6 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -60,6 +60,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/spi/ifx_modem.h>
- #include <linux/delay.h>
-+#include <asm/intel_scu_ipc.h>
+-static unsigned int __init serial_in(struct uart_port *port, int offset)
++unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -62,7 +62,7 @@ static unsigned int __init serial_in(struct uart_port *port, int offset)
+ 	}
+ }
  
- #include "ifx6x60.h"
+-static void __init serial_out(struct uart_port *port, int offset, int value)
++void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -84,7 +84,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
+ 	unsigned int status;
  
-@@ -72,6 +73,27 @@
- #define IFX_SPI_HEADER_0		(-1)
- #define IFX_SPI_HEADER_F		(-2)
+ 	for (;;) {
+-		status = serial_in(port, UART_LSR);
++		status = serial8250_early_in(port, UART_LSR);
+ 		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
+ 			return;
+ 		cpu_relax();
+@@ -94,7 +94,7 @@ static void __init wait_for_xmitr(struct uart_port *port)
+ static void __init serial_putc(struct uart_port *port, int c)
+ {
+ 	wait_for_xmitr(port);
+-	serial_out(port, UART_TX, c);
++	serial8250_early_out(port, UART_TX, c);
+ }
  
-+
-+/* Delays for powering up/resetting the modem, ms */
-+#define PO_INTERLINE_DELAY	1
-+#define PO_POST_DELAY		200
-+
-+#define IFX_COLD_RESET_REQ	1
-+
-+#define IFX_MDM_PWR_ON	3
-+#define IFX_MDM_RST_PMU	4
-+
-+/* For modem cold boot */
-+#define V1P35CNT_W		0x0E0	/* PMIC register used to power off */
-+/* the modem */
-+#define V1P35_OFF	4
-+#define V1P35_ON		6
-+#define COLD_BOOT_DELAY_OFF_MIN	20000	/* 20 ms (use of usleep_range) */
-+#define COLD_BOOT_DELAY_OFF_MAX	25000	/* 25 ms (use of usleep_range) */
-+#define COLD_BOOT_DELAY_ON_MIN	10000	/* 10 ms (use of usleep_range) */
-+#define COLD_BOOT_DELAY_ON_MAX	15000	/* 15 ms (use of usleep_range) */
-+
-+
- /* forward reference */
- static void ifx_spi_handle_srdy(struct ifx_spi_device *ifx_dev);
+ static void __init early_serial8250_write(struct console *console,
+@@ -104,14 +104,14 @@ static void __init early_serial8250_write(struct console *console,
+ 	unsigned int ier;
  
-@@ -81,6 +103,35 @@ static struct tty_driver *tty_drv;
- static struct ifx_spi_device *saved_ifx_dev;
- static struct lock_class_key ifx_spi_key;
+ 	/* Save the IER and disable interrupts */
+-	ier = serial_in(port, UART_IER);
+-	serial_out(port, UART_IER, 0);
++	ier = serial8250_early_in(port, UART_IER);
++	serial8250_early_out(port, UART_IER, 0);
  
-+
-+/**
-+ * do_modem_power - activity required to bring up modem
-+ *
-+ * Toggle gpios required to bring up modem power and start modem.
-+ */
-+static void do_modem_power(void)
-+{
-+	gpio_set_value(IFX_MDM_PWR_ON, 1);
-+	mdelay(PO_INTERLINE_DELAY);
-+	gpio_set_value(IFX_MDM_PWR_ON, 0);
-+	msleep(PO_POST_DELAY);
-+}
-+
-+/**
-+ * do_modem_reset - activity required to reset modem
-+ *
-+ * Toggle gpios required to reset modem.
-+ */
-+static void do_modem_reset(void)
-+{
-+	gpio_set_value(IFX_MDM_RST_PMU, 0);
-+	mdelay(PO_INTERLINE_DELAY);
-+	gpio_set_value(IFX_MDM_RST_PMU, 1);
-+	msleep(PO_POST_DELAY);
-+}
-+
-+
-+
- /* GPIO/GPE settings */
+ 	uart_console_write(port, s, count, serial_putc);
  
- /**
-@@ -229,6 +280,7 @@ static void ifx_spi_timeout(unsigned long arg)
- 	struct ifx_spi_device *ifx_dev = (struct ifx_spi_device *)arg;
+ 	/* Wait for transmitter to become empty and restore the IER */
+ 	wait_for_xmitr(port);
+-	serial_out(port, UART_IER, ier);
++	serial8250_early_out(port, UART_IER, ier);
+ }
  
- 	dev_warn(&ifx_dev->spi_dev->dev, "*** SPI Timeout ***");
-+	ifx_dev->hangup_reasons |= HU_TIMEOUT;
- 	ifx_spi_ttyhangup(ifx_dev);
- 	mrdy_set_low(ifx_dev);
- 	clear_bit(IFX_SPI_STATE_TIMER_PENDING, &ifx_dev->flags);
-@@ -881,6 +933,7 @@ static irqreturn_t ifx_spi_reset_interrupt(int irq, void *dev)
- 		/* exited reset */
- 		clear_bit(MR_INPROGRESS, &ifx_dev->mdm_reset_state);
- 		if (solreset) {
-+			clear_bit(MR_START, &ifx_dev->mdm_reset_state);
- 			set_bit(MR_COMPLETE, &ifx_dev->mdm_reset_state);
- 			wake_up(&ifx_dev->mdm_reset_wait);
- 		}
-@@ -1405,6 +1458,146 @@ static int __init ifx_spi_init(void)
- module_init(ifx_spi_init);
- module_exit(ifx_spi_exit);
+ static unsigned int __init probe_baud(struct uart_port *port)
+@@ -119,11 +119,11 @@ static unsigned int __init probe_baud(struct uart_port *port)
+ 	unsigned char lcr, dll, dlm;
+ 	unsigned int quot;
  
-+/*
-+ * Module parameters to manage the modem status through sysfs
-+ */
-+
-+/**
-+ * reset_modem - modem reset command function
-+ * @val: a reference to the string where the modem reset query is given
-+ * @kp: an unused reference to the kernel parameter
-+ */
-+
-+static int reset_modem(const char *val, const struct kernel_param *kp)
-+{
-+	unsigned long reset_request;
-+	int err = 0;
-+
-+	u16 addr = V1P35CNT_W;
-+	u8 data, def_value;
-+
-+	if (kstrtoul(val, 10, &reset_request) < 0)
-+		return -EINVAL;
-+
-+	if (!saved_ifx_dev) {
-+		dev_dbg(&saved_ifx_dev->spi_dev->dev,
-+				"%s is called before probe\n", __func__);
-+		return -ENODEV;
-+	}
-+
-+	dev_dbg(&saved_ifx_dev->spi_dev->dev,
-+					"%s requested !\n", __func__);
-+
-+	if (test_and_set_bit(MR_START, &saved_ifx_dev->mdm_reset_state))
-+		return -EBUSY;
-+
-+	if (reset_request == IFX_COLD_RESET_REQ) {
-+		gpio_set_value(IFX_MDM_RST_PMU, 0);
-+
-+		/* Save the current register value */
-+		err = intel_scu_ipc_readv(&addr, &def_value, 1);
-+		if (err) {
-+			dev_err(&saved_ifx_dev->spi_dev->dev,
-+				" - %s -  read error: %d", __func__, err);
-+			goto out;
-+		}
-+
-+		/* Write the new register value (V1P35_OFF) */
-+		data = (def_value & 0xf8) | V1P35_OFF;
-+		err =  intel_scu_ipc_writev(&addr, &data, 1);
-+		if (err) {
-+			dev_err(&saved_ifx_dev->spi_dev->dev,
-+				" - %s -  write error: %d", __func__, err);
-+			goto out;
-+		}
-+		usleep_range(COLD_BOOT_DELAY_OFF_MIN, COLD_BOOT_DELAY_OFF_MAX);
-+
-+		/* Write the new register value (V1P35_ON) */
-+		data = (def_value & 0xf8) | V1P35_ON;
-+		err =  intel_scu_ipc_writev(&addr, &data, 1);
-+		if (err) {
-+			dev_err(&saved_ifx_dev->spi_dev->dev,
-+				" - %s -  write error: %d", __func__, err);
-+			goto out;
-+		}
-+		usleep_range(COLD_BOOT_DELAY_ON_MIN, COLD_BOOT_DELAY_ON_MAX);
-+
-+		/* Write back the initial register value */
-+		err =  intel_scu_ipc_writev(&addr, &def_value, 1);
-+		if (err) {
-+			dev_err(&saved_ifx_dev->spi_dev->dev,
-+				" - %s -  write error: %d", __func__, err);
-+			goto out;
-+		}
-+
-+	}
-+
-+	/* Perform a complete modem reset */
-+	do_modem_reset();
-+	do_modem_power();
-+
-+out:
-+
-+	return err;
-+}
-+
-+
-+/**
-+* is_modem_reset - modem reset status module parameter callback function
-+ * @val: a reference to the string where the modem reset status is returned
-+ * @kp: an unused reference to the kernel parameter
-+ */
-+static int is_modem_reset(char *val, const struct kernel_param *kp)
-+{
-+	if (saved_ifx_dev)
-+		return sprintf(val, "%lu", saved_ifx_dev->mdm_reset_state);
-+	else
-+		return -ENOTTY;
-+}
-+
-+
-+/**
-+ * clear_hangup_reasons - clearing all hangup reasons
-+ * @val: a reference to the string where the hangup reasons clear query is given
-+ * @kp: an unused reference to the kernel parameter
-+ */
-+static int clear_hangup_reasons(const char *val, const struct kernel_param *kp)
-+{
-+	if (saved_ifx_dev) {
-+		saved_ifx_dev->hangup_reasons = 0;
-+		return 0;
-+	} else
-+		return -ENOTTY;
-+}
-+
-+/**
-+ * hangup_reasons - modem hangup reasons module parameter callback function
-+ * @val: a reference to the string where the hangup reasons are returned
-+ * @kp: an unused reference to the kernel parameter
-+ */
-+
-+static int hangup_reasons(char *val, const struct kernel_param *kp)
-+{
-+	if (saved_ifx_dev)
-+		return sprintf(val, "%lu", saved_ifx_dev->hangup_reasons);
-+	else
-+		return -ENOTTY;
-+}
-+
-+
-+static struct kernel_param_ops reset_modem_ops = {
-+	.set = reset_modem,
-+	.get = is_modem_reset,
-+};
-+module_param_cb(reset_modem, &reset_modem_ops, NULL, 0644);
-+
-+static struct kernel_param_ops hangup_reasons_ops = {
-+	.set = clear_hangup_reasons,
-+	.get = hangup_reasons,
-+};
-+module_param_cb(hangup_reasons, &hangup_reasons_ops, NULL, 0644);
-+
-+
- MODULE_AUTHOR("Intel");
- MODULE_DESCRIPTION("IFX6x60 spi driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
-index e8464ba..274b468 100644
---- a/drivers/tty/serial/ifx6x60.h
-+++ b/drivers/tty/serial/ifx6x60.h
-@@ -66,6 +66,13 @@
- #define IFX_SPI_POWER_DATA_PENDING	1
- #define IFX_SPI_POWER_SRDY		2
+-	lcr = serial_in(port, UART_LCR);
+-	serial_out(port, UART_LCR, lcr | UART_LCR_DLAB);
+-	dll = serial_in(port, UART_DLL);
+-	dlm = serial_in(port, UART_DLM);
+-	serial_out(port, UART_LCR, lcr);
++	lcr = serial8250_early_in(port, UART_LCR);
++	serial8250_early_out(port, UART_LCR, lcr | UART_LCR_DLAB);
++	dll = serial8250_early_in(port, UART_DLL);
++	dlm = serial8250_early_in(port, UART_DLM);
++	serial8250_early_out(port, UART_LCR, lcr);
  
-+
-+/* reasons for hanging up */
-+#define	HU_TIMEOUT		1	/* spi timer out */
-+#define	HU_RESET			2	/* modem initiative reset */
-+#define	HU_COREDUMP		4	/* modem crash coredump */
-+#define	HU_RORTUR			8	/* transfer error:ROR or TUR */
-+
- struct ifx_spi_device {
- 	/* Our SPI device */
- 	struct spi_device *spi_dev;
-@@ -120,6 +127,7 @@ struct ifx_spi_device {
+ 	quot = (dlm << 8) | dll;
+ 	return (port->uartclk / 16) / quot;
+@@ -135,17 +135,17 @@ static void __init init_port(struct early_serial8250_device *device)
+ 	unsigned int divisor;
+ 	unsigned char c;
  
- 	/* modem reset */
- 	unsigned long mdm_reset_state;
-+	unsigned long hangup_reasons;
- #define MR_START	0
- #define MR_INPROGRESS	1
- #define MR_COMPLETE	2
+-	serial_out(port, UART_LCR, 0x3);	/* 8n1 */
+-	serial_out(port, UART_IER, 0);		/* no interrupt */
+-	serial_out(port, UART_FCR, 0);		/* no fifo */
+-	serial_out(port, UART_MCR, 0x3);	/* DTR + RTS */
++	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
++	serial8250_early_out(port, UART_IER, 0);	/* no interrupt */
++	serial8250_early_out(port, UART_FCR, 0);	/* no fifo */
++	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+ 
+ 	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
+-	c = serial_in(port, UART_LCR);
+-	serial_out(port, UART_LCR, c | UART_LCR_DLAB);
+-	serial_out(port, UART_DLL, divisor & 0xff);
+-	serial_out(port, UART_DLM, (divisor >> 8) & 0xff);
+-	serial_out(port, UART_LCR, c & ~UART_LCR_DLAB);
++	c = serial8250_early_in(port, UART_LCR);
++	serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
++	serial8250_early_out(port, UART_DLL, divisor & 0xff);
++	serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
++	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+ }
+ 
+ static int __init parse_options(struct early_serial8250_device *device,
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index c174c90..c490d20 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -105,6 +105,8 @@ extern int early_serial_setup(struct uart_port *port);
+ 
+ extern int serial8250_find_port(struct uart_port *p);
+ extern int serial8250_find_port_for_earlycon(void);
++extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
++extern void serial8250_early_out(struct uart_port *port, int offset, int value);
+ extern int setup_early_serial8250_console(char *cmdline);
+ extern void serial8250_do_set_termios(struct uart_port *port,
+ 		struct ktermios *termios, struct ktermios *old);
 -- 
-1.7.4.1
+1.7.1
 
-
-
+Noam Camus
