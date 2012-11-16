@@ -1,60 +1,47 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/8250_early: Turn serial_in/serial_out into weak
- symbols.
-Date: Thu, 15 Nov 2012 17:11:24 -0800
-Message-ID: <20121116011124.GA12506@kroah.com>
-References: <20121012195102.5781c7d4@pyramind.ukuu.org.uk>
- <264C179F799EF24AB26D5319053335E80CC30499A5@ezexch.ezchip.com>
- <20121012220604.3f99d003@pyramind.ukuu.org.uk>
- <264C179F799EF24AB26D5319053335E80CC30499A9@ezexch.ezchip.com>
- <20121013145212.27f6fcbd@pyramind.ukuu.org.uk>
- <264C179F799EF24AB26D5319053335E80CC3001073@ezexch.ezchip.com>
- <20121014133216.686277e1@pyramind.ukuu.org.uk>
- <264C179F799EF24AB26D5319053335E80CC300184F@ezexch.ezchip.com>
- <20121025121815.0689c196@pyramind.ukuu.org.uk>
- <264C179F799EF24AB26D5319053335E80CC30499FF@ezexch.ezchip.com>
+Subject: Re: [PATCH -next] tty: of_serial: fix return value check in
+ of_platform_serial_setup()
+Date: Thu, 15 Nov 2012 17:22:32 -0800
+Message-ID: <20121116012232.GB12364@kroah.com>
+References: <CAPgLHd--dWeXNH_QVU34afv5Q1ju2MZJcwLKwyRr89+RvOTOBw@mail.gmail.com>
+ <20121115120811.B9EB63E0B12@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f46.google.com ([209.85.210.46]:36830 "EHLO
-	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751054Ab2KPBL1 (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:37649 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751146Ab2KPBWg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 20:11:27 -0500
-Received: by mail-da0-f46.google.com with SMTP id n41so908433dak.19
-        for <linux-serial@vger.kernel.org>; Thu, 15 Nov 2012 17:11:27 -0800 (PST)
+	Thu, 15 Nov 2012 20:22:36 -0500
+Received: by mail-pb0-f46.google.com with SMTP id wy7so1558597pbc.19
+        for <linux-serial@vger.kernel.org>; Thu, 15 Nov 2012 17:22:36 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <264C179F799EF24AB26D5319053335E80CC30499FF@ezexch.ezchip.com>
+In-Reply-To: <20121115120811.B9EB63E0B12@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Gilad Ben Yossef <giladb@ezchip.com>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Wei Yongjun <weiyj.lk@gmail.com>, alan@linux.intel.com, rob.herring@calxeda.com, seth.heasley@intel.com, stable@kernel.org, yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-On Sun, Nov 11, 2012 at 06:34:30AM +0200, Noam Camus wrote:
-> From: Noam Camus <noamc@ezchip.com>
+On Thu, Nov 15, 2012 at 12:08:11PM +0000, Grant Likely wrote:
+> On Thu, 1 Nov 2012 13:27:34 +0800, Wei Yongjun <weiyj.lk@gmail.com> wrote:
+> > From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> > 
+> > In case of error, the function clk_get() returns ERR_PTR()
+> > and never returns NULL. The NULL test in the return value
+> > check should be replaced with IS_ERR().
+> > 
+> > dpatch engine is used to auto generate this patch.
+> > (https://github.com/weiyj/dpatch)
+> > 
+> > Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 > 
-> Allows overriding default methods serial_in/serial_out.
+> Looks correct to me.
 > 
-> In such platform specific replacement it is possible to use,
-> other regshift, biased register offset, any other manipulation
-> that is not covered with common default methods.
+> Acked-by: Grant Likely <grant.likely@secretlab.ca>
 > 
-> Overriding default methods may be useful for platforms which got
-> serial peripheral with registers represented in big endian.
-> In this situation and assuming that 32 bit operations / alignment
-> is required then it may be useful to swab words before/after
-> accessing the serial registers.
-> 
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> Acked-by: Alan Cox <alan@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_early.c |   42 +++++++++++++++++-----------------
->  include/linux/serial_8250.h          |    2 +
->  2 files changed, 23 insertions(+), 21 deletions(-)
+> Alan, which tree should this go through?
 
-This patch no longer applies to my tree.  Can you please refresh it
-against the tty-next tree and resend it, with Alan's ack kept on it, so
-I remember it is there?
+My tty tree, I'll take it.
 
 thanks,
 
