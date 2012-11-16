@@ -1,69 +1,59 @@
-From: "Chen, Jun D" <jun.d.chen@intel.com>
-Subject: RE: [PATCH] serial: ifx6x60: Add module parameters to manage the
- modem status through sysfs.
-Date: Fri, 16 Nov 2012 01:55:52 +0000
-Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD7600F@SHSMSX102.ccr.corp.intel.com>
-References: <1352286374.4332.52.camel@chenjun-workstation>
- <20121116005215.GA12849@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 00/10] serial: sh-sci fixes - console PM, SCIFB, SMP
+ lockup, etc.
+Date: Thu, 15 Nov 2012 18:04:34 -0800
+Message-ID: <20121116020434.GA15188@kroah.com>
+References: <509A0658.1010503@renesas.com>
+ <509A0B4E.1030801@renesas.com>
+ <20121116010107.GA6068@kroah.com>
+ <50A59B9B.2010501@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:57111 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750784Ab2KPBzz convert rfc822-to-8bit (ORCPT
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:49033 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750911Ab2KPCEw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 20:55:55 -0500
-In-Reply-To: <20121116005215.GA12849@kroah.com>
-Content-Language: en-US
+	Thu, 15 Nov 2012 21:04:52 -0500
+Received: by mail-pa0-f46.google.com with SMTP id hz1so1507594pad.19
+        for <linux-serial@vger.kernel.org>; Thu, 15 Nov 2012 18:04:51 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <50A59B9B.2010501@renesas.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, serial <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "Liu, Chuansheng" <chuansheng.liu@intel.com>, "Bi, Chao" <chao.bi@intel.com>
+To: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
+Cc: lethal@linux-sh.org, magnus.damm@gmail.com, rjw@sisk.pl, alan@linux.intel.com, takashi.yoshii.zj@renesas.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 
-Hi,Greg,
-Got it, I will resend the new patch based on the tty-next branch to Alan again.  
-Thanks!
-
-
------Original Message-----
-From: Greg KH [mailto:gregkh@linuxfoundation.org] 
-Sent: Friday, November 16, 2012 8:52 AM
-To: Chen, Jun D
-Cc: Alan Cox; serial; Gorby, Russ; Liu, Chuansheng; Bi, Chao
-Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the modem status through sysfs.
-
-On Wed, Nov 07, 2012 at 06:06:14AM -0500, Jun Chen wrote:
+On Fri, Nov 16, 2012 at 10:49:15AM +0900, Shinya Kuribayashi wrote:
+> Hi Greg,
 > 
-> The Medfield Platform implements a recovery procedure consisting in an 
-> escalation from simple and light recovery procedures to stronger ones 
-> with increased visibility and impact to end-user.After platform find 
-> some problem from Modem,such as no response, platform will try do 
-> modem warm reset.If several tries failed, platform will try to do 
-> modem cold boot procedure.For Modem Cold Boot, AP is responsible to generate blob (binary object containing PIN code and other necessary information).
-> Blob is stored in AP volatile memory. AP decides to read PIN code from 
-> cache instead of prompting end-user, and sends it to modem as if end-user had entered it.
+> On 11/16/2012 10:01 AM, Greg KH wrote:> On Wed, Nov 07, 2012 at 04:18:38PM +0900, Shinya Kuribayashi wrote:
+> >> On 11/7/2012 3:57 PM, Shinya Kuribayashi wrote:
+> >>> Hi Paul and serial forks,
+> >> [...]
+> >>> Takashi YOSHII (4):
+> >>>       serial: sh-sci: fix condition test to set SCBRR
+> >>>       serial: sh-sci: support lower baud rate
+> >>>       serial: sh-sci: mask SCTFDR/RFDR according to fifosize
+> >>>       serial: sh-sci: fix common SCIFB regmap definition
+> >>>
+> >>> Teppei Kamijou (1):
+> >>>       serial: sh-sci: console runtime PM support (revisit)
+> >>>
+> >>>  drivers/tty/serial/sh-sci.c | 140 ++++++++++++++++++--------------------------
+> >>>  1 file changed, 56 insertions(+), 84 deletions(-)
+> >>
+> >> Oops, I forgot to append proper From: author lines in five commits
+> >> (patch 04/10 to 09/10).  Didn't mean to supersede your authoship.
+> >>
+> >> I'd respin the patchset later, waiting for some feedback.
+> > 
+> > Can you please resend this with this fixed up if you want to get this
+> > into 3.8?
 > 
-> This patch add module parameters to manage the modem status through sysfs.
-> Reset_modem can be read and write by user space.When read the 
-> reset_modem,user space will get the mdm_reset_state which used to 
-> avoid to run twice at once.When set the reset_modem to IFX_COLD_RESET_REQ,modem will do cold reset, other val value will trigger modem reset.
-> 
-> Hangup_reasons used to give one interface to user space to know and clear the modem reset reasons.
-> Now there are four reasons:SPI timeout, modem initiative reset,modem coredump,spi tranfer error.
-> 
-> Cc: Bi Chao <chao.bi@intel.com>
-> Cc: Liu chuansheng <chuansheng.liu@intel.com>
-> Signed-off-by: Chen Jun <jun.d.chen@intel.com>
-> Acked-by: Alan Cox <alan@linux.intel.com>
-> ---
->  drivers/tty/serial/Kconfig   |    2 +-
->  drivers/tty/serial/ifx6x60.c |  194 +++++++++++++++++++++++++++++++++++++++++-
->  drivers/tty/serial/ifx6x60.h |    8 ++
->  3 files changed, 202 insertions(+), 2 deletions(-)
+> Thanks for your kind reminder.  Here's v2, providing From: authorship
+> lines in five patches (04 to 08).  No logical change in the patches.
 
-This patch fails to apply, can you please refresh it against my tty-next branch and resend it, keeping Alan's ack on it, so I remember it's there?
-
-thanks,
+All now applied, thanks.
 
 greg k-h
