@@ -1,51 +1,51 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.7-rc5
-Date: Fri, 16 Nov 2012 06:20:27 -0800
-Message-ID: <20121116142027.GA2216@kroah.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: ifx6x60: Add module parameters to manage the
+ modem status through sysfs
+Date: Fri, 16 Nov 2012 15:00:07 +0000
+Message-ID: <20121116150007.273b7038@pyramind.ukuu.org.uk>
+References: <1353070789.24092.6.camel@chenjun-workstation>
+	<20121116123806.GA9303@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:47961 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752092Ab2KPOTh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Nov 2012 09:19:37 -0500
-Content-Disposition: inline
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:55964 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751450Ab2KPOy6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Nov 2012 09:54:58 -0500
+In-Reply-To: <20121116123806.GA9303@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jun Chen <jun.d.chen@intel.com>, serial <linux-serial@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>, liu chuansheng <chuansheng.liu@intel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Bi Chao <chao.bi@intel.com>, Alan Cox <alan@linux.intel.com>
 
-The following changes since commit 77b67063bb6bce6d475e910d3b886a606d0d91f7:
+On Fri, 16 Nov 2012 04:38:06 -0800
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-  Linux 3.7-rc5 (2012-11-11 13:44:33 +0100)
+> On Fri, Nov 16, 2012 at 07:59:49AM -0500, Jun Chen wrote:
+> > 
+> > The Medfield Platform implements a recovery procedure consisting in an escalation
+> > from simple and light recovery procedures to stronger ones with increased visibility
+> > and impact to end-user.After platform find some problem from Modem,such as no response,
+> > platform will try do modem warm reset.If several tries failed, platform will try to
+> > do modem cold boot procedure.For Modem Cold Boot, AP is responsible to generate
+> > blob (binary object containing PIN code and other necessary information).
+> > Blob is stored in AP volatile memory. AP decides to read PIN code from cache instead of
+> > prompting end-user, and sends it to modem as if end-user had entered it.
+> > 
+> > This patch add module parameters to manage the modem status through sysfs.
+> > Reset_modem can be read and write by user space.When read the reset_modem,user space will
+> > get the mdm_reset_state which used to avoid to run twice at once.When set the reset_modem to
+> > IFX_COLD_RESET_REQ,modem will do cold reset, other val value will trigger modem reset.
+> > 
+> > Hangup_reasons used to give one interface to user space to know and clear the modem reset reasons.
+> > Now there are four reasons:SPI timeout, modem initiative reset,modem coredump,spi tranfer error.
+> 
+> Why are these module parameters?  Why not just "real" sysfs files
+> instead?  That way, if you have multiple devices in a system, it will
+> work properly for them.  Right now you are limited to 1 device, right?
 
-are available in the git repository at:
+Yes and its highly unlikely that there will ever be anyone who needs two.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.7-rc5
-
-for you to fetch changes up to 1838b8c487378c6c576029d9e0e07b5a73036bac:
-
-  tty: serial: max310x: Add terminating entry for spi_device_id table (2012-11-14 14:49:42 -0800)
-
-----------------------------------------------------------------
-TTY fixes for 3.7-rc5
-
-Here are two TTY driver fixes for 3.7-rc5.
-
-They resolve a bug in the hvc driver that has been reported, and fix a
-problem with the list of device ids in the max310x serial driver.
-
-Both have been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Axel Lin (1):
-      tty: serial: max310x: Add terminating entry for spi_device_id table
-
-Paul Mackerras (1):
-      TTY: hvc_console, fix port reference count going to zero prematurely
-
- drivers/tty/hvc/hvc_console.c | 7 -------
- drivers/tty/serial/max310x.c  | 1 +
- 2 files changed, 1 insertion(+), 7 deletions(-)
+Alan
