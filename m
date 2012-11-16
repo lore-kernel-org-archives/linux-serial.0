@@ -1,54 +1,48 @@
-From: "Chen, Jun D" <jun.d.chen@intel.com>
-Subject: RE: [tty:tty-next 76/76] drivers/tty/serial/ifx6x60.c:516:2:
- warning: ISO C90 forbids mixed declarations and code
-Date: Fri, 16 Nov 2012 02:16:37 +0000
-Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD77037@SHSMSX102.ccr.corp.intel.com>
-References: <50a59244.WYf95+M2VB2UsDXN%fengguang.wu@intel.com>
- <20121116020605.GA30669@kroah.com>
+From: Wei Yongjun <weiyj.lk@gmail.com>
+Subject: Re: [PATCH -next] tty: of_serial: fix return value check in of_platform_serial_setup()
+Date: Fri, 16 Nov 2012 10:21:20 +0800
+Message-ID: <CAPgLHd9demYGjb6mCWK-=mcLfw=Jo73WMfsLfa-3AxHwqpOEuA@mail.gmail.com>
+References: <CAPgLHd--dWeXNH_QVU34afv5Q1ju2MZJcwLKwyRr89+RvOTOBw@mail.gmail.com>
+	<20121115120811.B9EB63E0B12@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:43372 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750921Ab2KPCQv convert rfc822-to-8bit (ORCPT
+Received: from mail-qa0-f53.google.com ([209.85.216.53]:63618 "EHLO
+	mail-qa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751098Ab2KPCVV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 21:16:51 -0500
-In-Reply-To: <20121116020605.GA30669@kroah.com>
-Content-Language: en-US
+	Thu, 15 Nov 2012 21:21:21 -0500
+Received: by mail-qa0-f53.google.com with SMTP id k31so1585202qat.19
+        for <linux-serial@vger.kernel.org>; Thu, 15 Nov 2012 18:21:20 -0800 (PST)
+In-Reply-To: <20121115120811.B9EB63E0B12@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wu, Fengguang" <fengguang.wu@intel.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: grant.likely@secretlab.ca
+Cc: alan@linux.intel.com, gregkh@linuxfoundation.org, rob.herring@calxeda.com, seth.heasley@intel.com, stable@kernel.org, yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-Hi,Grek,
-OK, I will fix this warning. Sorry for this mistake.
+On 11/15/2012 08:08 PM, Grant Likely wrote:
+> On Thu, 1 Nov 2012 13:27:34 +0800, Wei Yongjun <weiyj.lk@gmail.com> wrote:
+>> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+>>
+>> In case of error, the function clk_get() returns ERR_PTR()
+>> and never returns NULL. The NULL test in the return value
+>> check should be replaced with IS_ERR().
+>>
+>> dpatch engine is used to auto generate this patch.
+>> (https://github.com/weiyj/dpatch)
+>>
+>> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> Looks correct to me.
+>
+> Acked-by: Grant Likely <grant.likely@secretlab.ca>
+>
+> Alan, which tree should this go through?
+>
+> Wei, did you run into this causing a bug? Do you think it should go back
+> into linux-stable? It looks like it should to me.
 
------Original Message-----
-From: Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org] 
-Sent: Friday, November 16, 2012 10:06 AM
-To: Wu, Fengguang
-Cc: Chen, Jun D; linux-serial@vger.kernel.org
-Subject: Re: [tty:tty-next 76/76] drivers/tty/serial/ifx6x60.c:516:2: warning: ISO C90 forbids mixed declarations and code
+Hi,
 
-On Fri, Nov 16, 2012 at 09:09:24AM +0800, kbuild test robot wrote:
-> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-> head:   e8823f1ca8d5a0c5d69a8862682ee8bde26990ca
-> commit: e8823f1ca8d5a0c5d69a8862682ee8bde26990ca [76/76] serial: ifx6x60: ifx_spi_write don't need to do mrdy_assert when fifo is not empty
-> config: i386-randconfig-b691 (attached as .config)
-> 
-> All warnings:
-> 
-> drivers/tty/serial/ifx6x60.c: In function 'ifx_spi_write':
-> drivers/tty/serial/ifx6x60.c:516:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+this only happens in the -next tree, so I think no need for stable.
+ 
 
-Ah, missed that one.  Jun, care to send a fix for this?
-
-> drivers/tty/serial/ifx6x60.c: In function 'ifx_spi_complete':
-> drivers/tty/serial/ifx6x60.c:726:8: warning: 'more' may be used uninitialized in this function [-Wmaybe-uninitialized]
-
-And verify that this isn't a real problem please.
-
-thanks,
-
-greg k-h
