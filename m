@@ -1,25 +1,35 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [tty:tty-next 76/76] drivers/tty/serial/ifx6x60.c:516:2:
+From: "Chen, Jun D" <jun.d.chen@intel.com>
+Subject: RE: [tty:tty-next 76/76] drivers/tty/serial/ifx6x60.c:516:2:
  warning: ISO C90 forbids mixed declarations and code
-Date: Thu, 15 Nov 2012 18:06:05 -0800
-Message-ID: <20121116020605.GA30669@kroah.com>
+Date: Fri, 16 Nov 2012 02:16:37 +0000
+Message-ID: <9E44E06DBBA23A489DED933DBC291A850FD77037@SHSMSX102.ccr.corp.intel.com>
 References: <50a59244.WYf95+M2VB2UsDXN%fengguang.wu@intel.com>
+ <20121116020605.GA30669@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:63700 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750921Ab2KPCGI (ORCPT
+Received: from mga14.intel.com ([143.182.124.37]:43372 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750921Ab2KPCQv convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 15 Nov 2012 21:06:08 -0500
-Received: by mail-pa0-f46.google.com with SMTP id hz1so1508397pad.19
-        for <linux-serial@vger.kernel.org>; Thu, 15 Nov 2012 18:06:08 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <50a59244.WYf95+M2VB2UsDXN%fengguang.wu@intel.com>
+	Thu, 15 Nov 2012 21:16:51 -0500
+In-Reply-To: <20121116020605.GA30669@kroah.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: kbuild test robot <fengguang.wu@intel.com>
-Cc: Jun Chen <jun.d.chen@intel.com>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wu, Fengguang" <fengguang.wu@intel.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+
+Hi,Grek,
+OK, I will fix this warning. Sorry for this mistake.
+
+-----Original Message-----
+From: Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org] 
+Sent: Friday, November 16, 2012 10:06 AM
+To: Wu, Fengguang
+Cc: Chen, Jun D; linux-serial@vger.kernel.org
+Subject: Re: [tty:tty-next 76/76] drivers/tty/serial/ifx6x60.c:516:2: warning: ISO C90 forbids mixed declarations and code
 
 On Fri, Nov 16, 2012 at 09:09:24AM +0800, kbuild test robot wrote:
 > tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
