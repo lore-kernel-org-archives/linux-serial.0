@@ -1,45 +1,51 @@
-From: willims gebrel <willims.gebrel@9y.com>
-Subject: Williams
-Date: Fri, 16 Nov 2012 13:00:27 +0000 (GMT)
-Message-ID: <1353070827.32093.YahooMailClassic__16609.1846688234$1353071251$gmane$org@web171705.mail.ir2.yahoo.com>
-Reply-To: williamsgebrel786@yahoo.com
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.7-rc5
+Date: Fri, 16 Nov 2012 06:20:27 -0800
+Message-ID: <20121116142027.GA2216@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm4-vm1.bullet.mail.ird.yahoo.com ([77.238.189.201]:34411 "EHLO
-	nm4-vm1.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751669Ab2KPNHI convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Nov 2012 08:07:08 -0500
+Received: from mail.kernel.org ([198.145.19.201]:47961 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752092Ab2KPOTh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Nov 2012 09:19:37 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+The following changes since commit 77b67063bb6bce6d475e910d3b886a606d0d91f7:
 
-My Dear,
+  Linux 3.7-rc5 (2012-11-11 13:44:33 +0100)
 
- 
+are available in the git repository at:
 
-I'm happy to inform you about my success in getting those funds transferred under the cooperation of my new partner from Canada based business man; presently I'm in Bahamas for investment projects with my own share of the total sum. Meanwhile, I didn't forget your past efforts and attempts to assist me in transferring those funds despite that it failed us somehow.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.7-rc5
 
- 
+for you to fetch changes up to 1838b8c487378c6c576029d9e0e07b5a73036bac:
 
-Now contact my patina personal adviser in Togo, his name is HON REV.PETER SMITH of church embassy ministry Togo, E-mail: fortbendlawlegal@gmail.com
+  tty: serial: max310x: Add terminating entry for spi_device_id table (2012-11-14 14:49:42 -0800)
 
- 
+----------------------------------------------------------------
+TTY fixes for 3.7-rc5
 
-Ask him to send you the official Draft check of $500.000.00 or by cash which I gave him as order to kept for your compensation for all the past efforts and attempts to assist me in this matter before. I appreciated your collective efforts at that time, so feel free and get in touch with my patina adviser HON.REV. PETER SMITH and instruct him where to send the amount to you. Please do let me know immediately you receive it so that we can share the joy after all the sufferings at that time.
+Here are two TTY driver fixes for 3.7-rc5.
 
- 
+They resolve a bug in the hvc driver that has been reported, and fix a
+problem with the list of device ids in the max310x serial driver.
 
-in the moment, I am very busy here In Bahamas because of the investment projects which myself and the new partner are having at hand without confrontations, finally, remember that I had forwarded instruction to the REV.PETER SMITH on your behalf to send you the check or by cash as my patina deposited to him on your name before he left to Canada where he based.
+Both have been in linux-next for a while.
 
- 
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-So feel free to get in touch with HON REV.PETER SMITH he will send the amount to you without any delay.
+----------------------------------------------------------------
+Axel Lin (1):
+      tty: serial: max310x: Add terminating entry for spi_device_id table
 
- 
+Paul Mackerras (1):
+      TTY: hvc_console, fix port reference count going to zero prematurely
 
-With best regards,
-
-Williams
+ drivers/tty/hvc/hvc_console.c | 7 -------
+ drivers/tty/serial/max310x.c  | 1 +
+ 2 files changed, 1 insertion(+), 7 deletions(-)
