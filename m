@@ -1,90 +1,113 @@
-From: Joachim Eastwood <manabian@gmail.com>
-Subject: [PATCH] serial: atmel_serial: remove atmel open/close hooks
-Date: Sat, 17 Nov 2012 01:09:16 +0100
-Message-ID: <1353110956-17541-1-git-send-email-manabian@gmail.com>
+From: Huang Shijie <shijie8@gmail.com>
+Subject: Re: [PATCH v3 0/3] serial: mxs-auart: add DMA support for auart in mx28
+Date: Sat, 17 Nov 2012 11:37:54 +0800
+Message-ID: <CAMiH66E0QB9JwHqGyM_jDRU8zzULzqDNJzTJAHXTguAdXMgeWA@mail.gmail.com>
+References: <1353053034-10944-1-git-send-email-b32955@freescale.com>
+	<50A656DE.6080506@bluegiga.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f46.google.com ([209.85.215.46]:36678 "EHLO
-	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753780Ab2KQAKF (ORCPT
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:63160 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753837Ab2KQDhz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Nov 2012 19:10:05 -0500
-Received: by mail-la0-f46.google.com with SMTP id h6so2536953lag.19
-        for <linux-serial@vger.kernel.org>; Fri, 16 Nov 2012 16:10:04 -0800 (PST)
+	Fri, 16 Nov 2012 22:37:55 -0500
+Received: by mail-vc0-f174.google.com with SMTP id fk26so3530884vcb.19
+        for <linux-serial@vger.kernel.org>; Fri, 16 Nov 2012 19:37:55 -0800 (PST)
+In-Reply-To: <50A656DE.6080506@bluegiga.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org
-Cc: nicolas.ferre@atmel.com, plagnioj@jcrosoft.com, avictor.za@gmail.com, alan@linux.intel.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>
+To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+Cc: Huang Shijie <b32955@freescale.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux@arm.linux.org.uk, vinod.koul@intel.com
 
-After serial_at91.h was removed the atmel_open/close_hook
-code is now useless.
+On Fri, Nov 16, 2012 at 11:08 PM, Lauri Hintsala
+<lauri.hintsala@bluegiga.com> wrote:
+> Hi Huang,
+>
+> Thanks for new version. Now I don't get any errors and the CPU doesn't
+> freeze any more but:
+>
+> 1) AUART corrupts data with baudrate over 1Mbits/s
+The tranceivers, such as MAX3380E, will limit the speed.
+i ever removed it, and tested the AUART in 3M bits/s.
 
-Signed-off-by: Joachim Eastwood <manabian@gmail.com>
----
-Hi,
+>
+> 2) We would need DMA support without flow control.
+:)
+I really think it's not wise to support the DMA withou flow control.
+it will losts the data in some case.
+Even use the FREESCALE's bsp code, I also recomand to use the flow control.
 
-This patch depends on [RFC 3/3] ARM/AVR32: get rid of serial_at91.h
-patch from Russell King.
 
-Patch based on current linux-next with "[RFC 3/3] ARM/AVR32: get rid of serial_at91.h"
-patch on top. There is a small conflict with Russell's patch
-in next now due to another header change.
+>
+> By the way, how do you test drivers? Is there any standard tools for uart
+> data and throughput testing?
+I tested the driver with our own small tool.
+If you want to test it too, I can send you the resource next monday.
+You can use it to test if you have received the right data.
 
-If there is another tree this patch should be based on please
-let me know.
+thanks
+Huang Shijie
 
-regards
-Joachim Eastwood
 
- drivers/tty/serial/atmel_serial.c | 22 ----------------------
- 1 file changed, 22 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 76e4c05..5c2337d 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -113,9 +113,6 @@ static void atmel_stop_rx(struct uart_port *port);
- #define UART_PUT_TCR(port,v)	__raw_writel(v, (port)->membase + ATMEL_PDC_TCR)
- #define UART_GET_TCR(port)	__raw_readl((port)->membase + ATMEL_PDC_TCR)
- 
--static int (*atmel_open_hook)(struct uart_port *);
--static void (*atmel_close_hook)(struct uart_port *);
--
- struct atmel_dma_buffer {
- 	unsigned char	*buf;
- 	dma_addr_t	dma_addr;
-@@ -976,18 +973,6 @@ static int atmel_startup(struct uart_port *port)
- 		pdc->ofs = 0;
- 	}
- 
--	/*
--	 * If there is a specific "open" function (to register
--	 * control line interrupts)
--	 */
--	if (atmel_open_hook) {
--		retval = atmel_open_hook(port);
--		if (retval) {
--			free_irq(port->irq, port);
--			return retval;
--		}
--	}
--
- 	/* Save current CSR for comparison in atmel_tasklet_func() */
- 	atmel_port->irq_status_prev = UART_GET_CSR(port);
- 	atmel_port->irq_status = atmel_port->irq_status_prev;
-@@ -1062,13 +1047,6 @@ static void atmel_shutdown(struct uart_port *port)
- 	 * Free the interrupt
- 	 */
- 	free_irq(port->irq, port);
--
--	/*
--	 * If there is a specific "close" function (to unregister
--	 * control line interrupts)
--	 */
--	if (atmel_close_hook)
--		atmel_close_hook(port);
- }
- 
- /*
--- 
-1.8.0
-
+>
+> Lauri
+>
+>
+> On 11/16/2012 10:03 AM, Huang Shijie wrote:
+>>
+>> This patch set adds the DMA support for auart in mx28.
+>> patch 1:
+>>         In mx23, the DMA has a bug(see errata:2836). We can not add the
+>>         DMA support in mx23, but we can add DMA support to auart in mx28.
+>>         So in order to add the DMA support for the auart in mx28, we
+>> should add
+>>         the platform_device_id to distinguish the distinguish SOCs.
+>>
+>> patch 2: add the DMA support for mx28
+>>         Only we meet the following conditions, we can enable the DMA
+>> support
+>>         for auart:
+>>          (1) We enable the DMA support in the dts file, such as
+>>              arch/arm/boot/dts/imx28.dtsi.
+>>          (2) We enable the hardware flow control.
+>>          (3) We use the mx28, not the mx23. Due to hardware bug(see
+>> errata: 2836),
+>>              we can not add the DMA support to mx23.
+>>
+>> patch 3: enable the DMA support in dts for mx28
+>>         You can use the /ttyAPP0 to test this patch set.
+>>         I tested this patch in mx28-evk board.
+>>
+>>
+>> To Lauri: Please try this patch set. thanks.
+>>
+>>
+>> v2 --> v3:
+>>         [1] fix a multi-open issue found by Lauri.
+>>
+>> v1 --> v2:
+>>         [1] use the inline function, not a macro, to distinguish the SOCs.
+>>         [2] remove the "inline" for mxs_auart_tx_chars().
+>>         [3] use the `pio`, not the `pio[1]` to fill the DMA descriptor.
+>>         [4] use bit operation to serialize the DMA TX.
+>>         [5] use the RX/TX DMA channel to enable the DMA support, remove
+>> the
+>>             "fsl,auart-enable-dma".
+>>
+>> Huang Shijie (3):
+>>    serial: mxs-auart: distinguish the different SOCs
+>>    serial: mxs-auart: add the DMA support for mx28
+>>    ARM: dts: enable dma support for auart0 in mx28
+>>
+>>   .../bindings/tty/serial/fsl-mxs-auart.txt          |    8 +
+>>   arch/arm/boot/dts/imx28.dtsi                       |    1 +
+>>   drivers/tty/serial/mxs-auart.c                     |  364
+>> +++++++++++++++++++-
+>>   3 files changed, 362 insertions(+), 11 deletions(-)
+>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
