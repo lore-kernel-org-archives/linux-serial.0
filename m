@@ -1,31 +1,90 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFC 3/3] ARM/AVR32: get rid of serial_at91.h
-Date: Fri, 16 Nov 2012 23:08:36 +0000
-Message-ID: <20121116230835.GR3290@n2100.arm.linux.org.uk>
-References: <20120921093530.GB31374@n2100.arm.linux.org.uk> <E1TEzfE-000780-1t@rmk-PC.arm.linux.org.uk> <CAGhQ9VzYc8qqvZxU=AB+NHa4nGKJFxPYR7grc8Ssn-kP1bfq3w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Joachim Eastwood <manabian@gmail.com>
+Subject: [PATCH] serial: atmel_serial: remove atmel open/close hooks
+Date: Sat, 17 Nov 2012 01:09:16 +0100
+Message-ID: <1353110956-17541-1-git-send-email-manabian@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:44124 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753501Ab2KPXPz (ORCPT
+Received: from mail-la0-f46.google.com ([209.85.215.46]:36678 "EHLO
+	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753780Ab2KQAKF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Nov 2012 18:15:55 -0500
-Content-Disposition: inline
-In-Reply-To: <CAGhQ9VzYc8qqvZxU=AB+NHa4nGKJFxPYR7grc8Ssn-kP1bfq3w@mail.gmail.com>
+	Fri, 16 Nov 2012 19:10:05 -0500
+Received: by mail-la0-f46.google.com with SMTP id h6so2536953lag.19
+        for <linux-serial@vger.kernel.org>; Fri, 16 Nov 2012 16:10:04 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joachim Eastwood <manabian@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Alan Cox <alan@linux.intel.com>
+To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org
+Cc: nicolas.ferre@atmel.com, plagnioj@jcrosoft.com, avictor.za@gmail.com, alan@linux.intel.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>
 
-On Fri, Nov 16, 2012 at 11:08:47PM +0100, Joachim Eastwood wrote:
-> When the atmel_open_hook/atmel_open_close assignment is dropped, these
-> global variables will be useless so we should remove them as well.
-> There are also some other code that uses the variables that can be
-> dropped. Should shave another 22 lines of code off atmel_serial.c
-> 
-> I can send out a patch on top of yours if you prefer that.
+After serial_at91.h was removed the atmel_open/close_hook
+code is now useless.
 
-Yes please.
+Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+---
+Hi,
 
-Thanks.
+This patch depends on [RFC 3/3] ARM/AVR32: get rid of serial_at91.h
+patch from Russell King.
+
+Patch based on current linux-next with "[RFC 3/3] ARM/AVR32: get rid of serial_at91.h"
+patch on top. There is a small conflict with Russell's patch
+in next now due to another header change.
+
+If there is another tree this patch should be based on please
+let me know.
+
+regards
+Joachim Eastwood
+
+ drivers/tty/serial/atmel_serial.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 76e4c05..5c2337d 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -113,9 +113,6 @@ static void atmel_stop_rx(struct uart_port *port);
+ #define UART_PUT_TCR(port,v)	__raw_writel(v, (port)->membase + ATMEL_PDC_TCR)
+ #define UART_GET_TCR(port)	__raw_readl((port)->membase + ATMEL_PDC_TCR)
+ 
+-static int (*atmel_open_hook)(struct uart_port *);
+-static void (*atmel_close_hook)(struct uart_port *);
+-
+ struct atmel_dma_buffer {
+ 	unsigned char	*buf;
+ 	dma_addr_t	dma_addr;
+@@ -976,18 +973,6 @@ static int atmel_startup(struct uart_port *port)
+ 		pdc->ofs = 0;
+ 	}
+ 
+-	/*
+-	 * If there is a specific "open" function (to register
+-	 * control line interrupts)
+-	 */
+-	if (atmel_open_hook) {
+-		retval = atmel_open_hook(port);
+-		if (retval) {
+-			free_irq(port->irq, port);
+-			return retval;
+-		}
+-	}
+-
+ 	/* Save current CSR for comparison in atmel_tasklet_func() */
+ 	atmel_port->irq_status_prev = UART_GET_CSR(port);
+ 	atmel_port->irq_status = atmel_port->irq_status_prev;
+@@ -1062,13 +1047,6 @@ static void atmel_shutdown(struct uart_port *port)
+ 	 * Free the interrupt
+ 	 */
+ 	free_irq(port->irq, port);
+-
+-	/*
+-	 * If there is a specific "close" function (to unregister
+-	 * control line interrupts)
+-	 */
+-	if (atmel_close_hook)
+-		atmel_close_hook(port);
+ }
+ 
+ /*
+-- 
+1.8.0
+
