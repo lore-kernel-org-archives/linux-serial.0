@@ -1,41 +1,75 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: [PATCH v3 resubmit] Add support for new devices: Exar's XR17V35x
- family of multi-port PCIe UARTs
-Date: Mon, 19 Nov 2012 09:34:36 -0600
-Message-ID: <CAJp1Oe4SKUh6w6q==pOZy-S3Xqd2LoE3jOi-3-MupxQwjOhuFg@mail.gmail.com>
-References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
- <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com> <20121119152619.3752b591@pyramind.ukuu.org.uk>
+From: Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [REPOST-v2] sched: Prevent wakeup to enter critical section
+	needlessly
+Date: Mon, 19 Nov 2012 16:49:40 +0100
+Message-ID: <20121119154940.GA6354@redhat.com>
+References: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com> <1353310211-3011-1-git-send-email-meltedpianoman@gmail.com> <20121119151050.GA4270@redhat.com> <CAMSQXEF9BGBVRRtuz88XFqVmPBdbWisepq4qjah3vM05_7hztw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:43102 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753040Ab2KSPe5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 10:34:57 -0500
-Received: by mail-vc0-f174.google.com with SMTP id m18so1257962vcm.19
-        for <linux-serial@vger.kernel.org>; Mon, 19 Nov 2012 07:34:57 -0800 (PST)
-In-Reply-To: <20121119152619.3752b591@pyramind.ukuu.org.uk>
+Received: from mx1.redhat.com ([209.132.183.28]:40516 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752229Ab2KSPtO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 19 Nov 2012 10:49:14 -0500
+Content-Disposition: inline
+In-Reply-To: <CAMSQXEF9BGBVRRtuz88XFqVmPBdbWisepq4qjah3vM05_7hztw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
 
-On Mon, Nov 19, 2012 at 9:26 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> On Mon, 19 Nov 2012 09:12:04 -0600
-> Matt Schulte <matts@commtech-fastcom.com> wrote:
+On 11/19, Ivo Sieben wrote:
 >
->> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
->>
->> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
->>
->> Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+> Hi
 >
-> Acked-by: Alan Cox <alan@linux.intel.com>
+> 2012/11/19 Oleg Nesterov <oleg@redhat.com>:
+> >
+> > I am wondering if it makes sense unconditionally. A lot of callers do
+> >
+> >         if (waitqueue_active(q))
+> >                 wake_up(...);
+> >
+> > this patch makes the optimization above pointless and adds mb().
+> >
+> >
+> > But I won't argue.
+> >
+> > Oleg.
+> >
 >
-> Alan
+> This patch solved an issue for me that I had with the TTY line
+> discipline idle handling:
+> Testing on a PREEMPT_RT system with TTY serial communication. Each
+> time the TTY line discipline is dereferenced the Idle handling wait
+> queue is woken up (see function put_ldisc in /drivers/tty/tty_ldisc.c)
+> However line discipline idle handling is not used very often so the
+> wait queue is empty most of the time. But still the wake_up() function
+> enters the critical section guarded by spin locks. This causes
+> additional scheduling overhead when a lower priority thread has
+> control of that same lock.
+>
+> The /drivers/tty/tty_ldisc.c did not use the waitqueue_active() call
+> to check if the waitqueue was filled.... maybe I should solve this
+> problem the other way around: and make tty_ldisc.c first do the
+> waitqueue_active() call?
 
-Now so that I am completely sure, because this has been Acked by Alan,
-this means that I can submit a patch that relies on this one?
+IMHO yes...
 
-Matt
+Because on a second thought I suspect this change is wrong.
+
+Just for example, please look at kauditd_thread(). It does
+
+	set_current_state(TASK_INTERRUPTIBLE);
+
+	add_wait_queue(&kauditd_wait, &wait);
+
+	if (!CONDITION)		// <-- LOAD
+		schedule();
+
+And the last LOAD can leak into the critical section protected by
+wait_queue_head_t->lock, and it can be reordered with list_add()
+inside this critical section. In this case we can race with wake_up()
+unless it takes the same lock.
+
+Oleg.
+
