@@ -1,50 +1,75 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: [PATCH v3] Add support for new devices: Exar's XR17V35x family of
- multi-port PCIe UARTs
-Date: Sun, 18 Nov 2012 23:15:06 -0600
-Message-ID: <CAJp1Oe5Hcb-n-gWUZs1ypZztzXa4h5QMOadPiuP7FEY8162Y9w@mail.gmail.com>
-References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
- <CAJp1Oe6GG34JKaDus9pc8Geo14Wros6S1mmYbAv_oWQQKt7GSQ@mail.gmail.com> <20121119044233.GA30007@kroah.com>
+From: "Zhang, Sonic" <Sonic.Zhang@analog.com>
+Subject: RE: [PATCH] serial: bfin_uart: Don't switch baud rate untill the
+ transfer buffer is empty.
+Date: Mon, 19 Nov 2012 01:31:29 -0500
+Message-ID: <DB904C5425BA6F4E8424B3B51A1414D173F33FAE06@NWD2CMBX1.ad.analog.com>
+References: <1352264142-30771-1-git-send-email-sonic.adi@gmail.com>
+ <20121116005946.GA1727@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:41769 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752145Ab2KSFP2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 00:15:28 -0500
-Received: by mail-vb0-f46.google.com with SMTP id ff1so4688367vbb.19
-        for <linux-serial@vger.kernel.org>; Sun, 18 Nov 2012 21:15:27 -0800 (PST)
-In-Reply-To: <20121119044233.GA30007@kroah.com>
+Received: from db3ehsobe003.messaging.microsoft.com ([213.199.154.141]:42753
+	"EHLO db3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751252Ab2KSGbg convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 19 Nov 2012 01:31:36 -0500
+In-Reply-To: <20121116005946.GA1727@kroah.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Theodore Ts'o <tytso@mit.edu>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sonic Zhang <sonic.adi@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>
 
-On Sun, Nov 18, 2012 at 10:42 PM, Greg Kroah-Hartman <greg@kroah.com> wrote:
-> On Sun, Nov 18, 2012 at 10:33:33PM -0600, Matt Schulte wrote:
->> On Thu, Nov 15, 2012 at 5:01 PM, Matt Schulte
->> <matts@commtech-fastcom.com> wrote:
->> > Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
->> >
->> > Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
->> >
->> > Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
->> > ---
->> > v3: Moved overriding of handle_irq to serial8250_config_port
->> >
->> > v2: Moved extra interrupt handling to its own custom handle_irq
->> >
->> > v1: Hopefully if this gets accepted I will be able to submit an additional
->> > patch to add support for my company's PCIe cards that use these
->> > UARTs.
+
+
+>-----Original Message-----
+>From: Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org]
+>Sent: Friday, November 16, 2012 9:00 AM
+>To: Sonic Zhang
+>Cc: linux-serial@vger.kernel.org; uclinux-dist-devel@blackfin.uclinux.org; Zhang,
+>Sonic
+>Subject: Re: [PATCH] serial: bfin_uart: Don't switch baud rate untill the transfer
+>buffer is empty.
+>
+>On Wed, Nov 07, 2012 at 12:55:42PM +0800, Sonic Zhang wrote:
+>> From: Sonic Zhang <sonic.zhang@analog.com>
 >>
->> What should I do if I would like to submit an additional patch that
->> depends on this one that has not yet been accepted?  Should I combine
->> them and resubmit both or do I just need to wait?
+>> set_termios may be invoked before the former data transfer is
+>> completed. Block until the tranfer is done.
+>>
+>> Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+>> ---
+>>  drivers/tty/serial/bfin_uart.c |    4 ++++
+>>  1 files changed, 4 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/bfin_uart.c
+>> b/drivers/tty/serial/bfin_uart.c index 9242d56..71c0c09 100644
+>> --- a/drivers/tty/serial/bfin_uart.c
+>> +++ b/drivers/tty/serial/bfin_uart.c
+>> @@ -869,6 +869,10 @@ bfin_serial_set_termios(struct uart_port *port,
+>> struct ktermios *termios,
+>>
+>>      UART_SET_ANOMALY_THRESHOLD(uart, USEC_PER_SEC / baud * 15);
+>>
+>> +    /* Wait till the transfer buffer is empty */
+>> +    while (UART_GET_GCTL(uart) & UCEN && !(UART_GET_LSR(uart) &
+>TEMT))
+>> +            barrier();
 >
-> I was waiting for Alan's ack on your first patch here.  I suggest
-> resending it, and a second one with your additional changes as well.
+>Where is the "the hardware is hung" break out of this loop?
 >
 
-Should I change anything in the original or just resend in its entirety?
+Sorry, I will add time_after check soon.
+
+Regards,
+
+Sonic
+
+>And why "barrier()"?
+>
+>thanks,
+>
+>greg k-h
+
+
