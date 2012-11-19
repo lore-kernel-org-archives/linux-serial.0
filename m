@@ -1,75 +1,101 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: [REPOST-v2] sched: Prevent wakeup to enter critical section needlessly
-Date: Mon, 19 Nov 2012 08:30:11 +0100
-Message-ID: <1353310211-3011-1-git-send-email-meltedpianoman@gmail.com>
-References: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH] serial: atmel_serial: remove atmel open/close hooks
+Date: Mon, 19 Nov 2012 09:54:27 +0100
+Message-ID: <50A9F3C3.2020908@atmel.com>
+References: <1353110956-17541-1-git-send-email-manabian@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:38302
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751620Ab2KSHac (ORCPT
+Received: from eusmtp01.atmel.com ([212.144.249.242]:46002 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753183Ab2KSIyb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 02:30:32 -0500
-In-Reply-To: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
+	Mon, 19 Nov 2012 03:54:31 -0500
+In-Reply-To: <1353110956-17541-1-git-send-email-manabian@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Ivo Sieben <meltedpianoman@gmail.com>
+To: Joachim Eastwood <manabian@gmail.com>, linux@arm.linux.org.uk
+Cc: gregkh@linuxfoundation.org, plagnioj@jcrosoft.com, avictor.za@gmail.com, alan@linux.intel.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Check the waitqueue task list to be non empty before entering the critical
-section. This prevents locking the spin lock needlessly in case the queue
-was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-system.
+On 11/17/2012 01:09 AM, Joachim Eastwood :
+> After serial_at91.h was removed the atmel_open/close_hook
+> code is now useless.
+> 
+> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
 
-Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
----
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
- a second repost of this patch v2: Can anyone respond?
- Did I apply the memory barrier correct?
+Thanks Joachim.
 
- v2:
- - We don't need the "careful" list empty, a normal list empty is sufficient:
-   if you miss an update it was just as it happened a little later.
- - Because of memory ordering problems we can observe an unupdated list
-   administration. This can cause an wait_event-like code to miss an event.
-   Adding a memory barrier befor checking the list to be empty will guarantee we
-   evaluate a 100% updated list adminsitration.
+> ---
+> Hi,
+> 
+> This patch depends on [RFC 3/3] ARM/AVR32: get rid of serial_at91.h
+> patch from Russell King.
+> 
+> Patch based on current linux-next with "[RFC 3/3] ARM/AVR32: get rid of serial_at91.h"
+> patch on top. There is a small conflict with Russell's patch
+> in next now due to another header change.
+> 
+> If there is another tree this patch should be based on please
+> let me know.
+> 
+> regards
+> Joachim Eastwood
+> 
+>  drivers/tty/serial/atmel_serial.c | 22 ----------------------
+>  1 file changed, 22 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 76e4c05..5c2337d 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -113,9 +113,6 @@ static void atmel_stop_rx(struct uart_port *port);
+>  #define UART_PUT_TCR(port,v)	__raw_writel(v, (port)->membase + ATMEL_PDC_TCR)
+>  #define UART_GET_TCR(port)	__raw_readl((port)->membase + ATMEL_PDC_TCR)
+>  
+> -static int (*atmel_open_hook)(struct uart_port *);
+> -static void (*atmel_close_hook)(struct uart_port *);
+> -
+>  struct atmel_dma_buffer {
+>  	unsigned char	*buf;
+>  	dma_addr_t	dma_addr;
+> @@ -976,18 +973,6 @@ static int atmel_startup(struct uart_port *port)
+>  		pdc->ofs = 0;
+>  	}
+>  
+> -	/*
+> -	 * If there is a specific "open" function (to register
+> -	 * control line interrupts)
+> -	 */
+> -	if (atmel_open_hook) {
+> -		retval = atmel_open_hook(port);
+> -		if (retval) {
+> -			free_irq(port->irq, port);
+> -			return retval;
+> -		}
+> -	}
+> -
+>  	/* Save current CSR for comparison in atmel_tasklet_func() */
+>  	atmel_port->irq_status_prev = UART_GET_CSR(port);
+>  	atmel_port->irq_status = atmel_port->irq_status_prev;
+> @@ -1062,13 +1047,6 @@ static void atmel_shutdown(struct uart_port *port)
+>  	 * Free the interrupt
+>  	 */
+>  	free_irq(port->irq, port);
+> -
+> -	/*
+> -	 * If there is a specific "close" function (to unregister
+> -	 * control line interrupts)
+> -	 */
+> -	if (atmel_close_hook)
+> -		atmel_close_hook(port);
+>  }
+>  
+>  /*
+> 
 
- kernel/sched/core.c |   19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 2d8927f..168a9b2 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3090,9 +3090,22 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&q->lock, flags);
--	__wake_up_common(q, mode, nr_exclusive, 0, key);
--	spin_unlock_irqrestore(&q->lock, flags);
-+	/*
-+	 * We check for list emptiness outside the lock. This prevents the wake
-+	 * up to enter the critical section needlessly when the task list is
-+	 * empty.
-+	 *
-+	 * Placed a full memory barrier before checking list emptiness to make
-+	 * 100% sure this function sees an up-to-date list administration.
-+	 * Note that other code that manipulates the list uses a spin_lock and
-+	 * therefore doesn't need additional memory barriers.
-+	 */
-+	smp_mb();
-+	if (!list_empty(&q->task_list)) {
-+		spin_lock_irqsave(&q->lock, flags);
-+		__wake_up_common(q, mode, nr_exclusive, 0, key);
-+		spin_unlock_irqrestore(&q->lock, flags);
-+	}
- }
- EXPORT_SYMBOL(__wake_up);
- 
 -- 
-1.7.9.5
-
-
+Nicolas Ferre
