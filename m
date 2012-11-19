@@ -1,86 +1,63 @@
-From: Preeti U Murthy <preeti@linux.vnet.ibm.com>
-Subject: Re: [REPOST-v2] sched: Prevent wakeup to enter critical section needlessly
-Date: Mon, 19 Nov 2012 15:50:42 +0530
-Message-ID: <50AA07FA.5020503@linux.vnet.ibm.com>
-References: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com> <1353310211-3011-1-git-send-email-meltedpianoman@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] TTY: serial 8250: Support MCR CLK_SEL bit.
+Date: Mon, 19 Nov 2012 12:00:43 +0000
+Message-ID: <20121119120043.39f59baf@pyramind.ukuu.org.uk>
+References: <20121119085421.315.47347.stgit@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e23smtp02.au.ibm.com ([202.81.31.144]:40907 "EHLO
-	e23smtp02.au.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751637Ab2KSKVV (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58704 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751799Ab2KSLzh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 05:21:21 -0500
-Received: from /spool/local
-	by e23smtp02.au.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-	for <linux-serial@vger.kernel.org> from <preeti@linux.vnet.ibm.com>;
-	Mon, 19 Nov 2012 20:17:50 +1000
-In-Reply-To: <1353310211-3011-1-git-send-email-meltedpianoman@gmail.com>
+	Mon, 19 Nov 2012 06:55:37 -0500
+In-Reply-To: <20121119085421.315.47347.stgit@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+To: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Hi Ivo,
+>     * Allows the CLK_SEL bit to be forced to /1, /4 or left as is.
 
-On 11/19/2012 01:00 PM, Ivo Sieben wrote:
-> Check the waitqueue task list to be non empty before entering the critical
-> section. This prevents locking the spin lock needlessly in case the queue
-> was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
-> system.
-> 
-> Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
-> ---
-> 
->  a second repost of this patch v2: Can anyone respond?
->  Did I apply the memory barrier correct?
-> 
->  v2:
->  - We don't need the "careful" list empty, a normal list empty is sufficient:
->    if you miss an update it was just as it happened a little later.
->  - Because of memory ordering problems we can observe an unupdated list
->    administration. This can cause an wait_event-like code to miss an event.
->    Adding a memory barrier befor checking the list to be empty will guarantee we
->    evaluate a 100% updated list adminsitration.
-> 
->  kernel/sched/core.c |   19 ++++++++++++++++---
->  1 file changed, 16 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 2d8927f..168a9b2 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -3090,9 +3090,22 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
+This seems to be the wrong place to set such stuff. The kernel knows what
+speed is selected and therefore what clock would be best.
+
+Having a clocksel (and probably an of value indicating which type of
+clock sel) is a good thing, but it also ought to be set based on the
+requested baud rate, so a custom set_termios would be better.
+
+That would also handle serial console, and suspend/resume without other
+tweaks as far as I can see.
+
+It also seems some devices use different clksel algorithms so rather than
+a CAP_CLKSEL flag we probably need to key it off the uart type.
+
+
+>  static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
 >  {
->  	unsigned long flags;
->  
-> -	spin_lock_irqsave(&q->lock, flags);
-> -	__wake_up_common(q, mode, nr_exclusive, 0, key);
-> -	spin_unlock_irqrestore(&q->lock, flags);
-> +	/*
-> +	 * We check for list emptiness outside the lock. This prevents the wake
-> +	 * up to enter the critical section needlessly when the task list is
-> +	 * empty.
-> +	 *
-> +	 * Placed a full memory barrier before checking list emptiness to make
-> +	 * 100% sure this function sees an up-to-date list administration.
-> +	 * Note that other code that manipulates the list uses a spin_lock and
-> +	 * therefore doesn't need additional memory barriers.
-> +	 */
-> +	smp_mb();
-> +	if (!list_empty(&q->task_list)) {
-> +		spin_lock_irqsave(&q->lock, flags);
-> +		__wake_up_common(q, mode, nr_exclusive, 0, key);
-> +		spin_unlock_irqrestore(&q->lock, flags);
-> +	}
->  }
->  EXPORT_SYMBOL(__wake_up);
->  
-> 
-Looks good to me.
-Reviewed-by: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+>  	if (p->capabilities & UART_CAP_SLEEP) {
+> -		if (p->capabilities & UART_CAP_EFR) {
+> -			serial_out(p, UART_LCR, UART_LCR_CONF_MODE_B);
+> -			serial_out(p, UART_EFR, UART_EFR_ECB);
+> -			serial_out(p, UART_LCR, 0);
+> -		}
+> +		serial8250_enable_extended(p);
+>  		serial_out(p, UART_IER, sleep ? UART_IERX_SLEEP : 0);
 
-Regards
-Preeti U Murthy
+This seems wrong if theere is no EFR
 
+> +static int serial8250_configure_clock_predivisor(struct uart_8250_port *p)
+> +{
+
+Ought to be named to reflect that it appears to be exar specific
+
+Architecturally the patch seems wrong though. I'd expect a device with a
+clock predivisor to be treated as a device with a wider clock range and
+just handle it when the speed is set. Eg wrapping set_termios or adding a 
+
+	->select_clock(port, bitrate);
+
+helper.
+
+Alan
