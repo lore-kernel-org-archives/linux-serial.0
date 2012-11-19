@@ -1,34 +1,56 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v3 resubmit] Add support for new devices: Exar's
- XR17V35x family of multi-port PCIe UARTs
-Date: Mon, 19 Nov 2012 15:26:19 +0000
-Message-ID: <20121119152619.3752b591@pyramind.ukuu.org.uk>
-References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
-	<CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: [REPOST-v2] sched: Prevent wakeup to enter critical section needlessly
+Date: Mon, 19 Nov 2012 16:34:04 +0100
+Message-ID: <CAMSQXEF9BGBVRRtuz88XFqVmPBdbWisepq4qjah3vM05_7hztw@mail.gmail.com>
+References: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
+	<1353310211-3011-1-git-send-email-meltedpianoman@gmail.com>
+	<20121119151050.GA4270@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58984 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752321Ab2KSPVK (ORCPT
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:61241 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752735Ab2KSPeF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 10:21:10 -0500
-In-Reply-To: <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com>
+	Mon, 19 Nov 2012 10:34:05 -0500
+In-Reply-To: <20121119151050.GA4270@redhat.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+To: Oleg Nesterov <oleg@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
 
-On Mon, 19 Nov 2012 09:12:04 -0600
-Matt Schulte <matts@commtech-fastcom.com> wrote:
+Hi
 
-> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
-> 
-> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
-> 
-> Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+2012/11/19 Oleg Nesterov <oleg@redhat.com>:
+>
+> I am wondering if it makes sense unconditionally. A lot of callers do
+>
+>         if (waitqueue_active(q))
+>                 wake_up(...);
+>
+> this patch makes the optimization above pointless and adds mb().
+>
+>
+> But I won't argue.
+>
+> Oleg.
+>
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+This patch solved an issue for me that I had with the TTY line
+discipline idle handling:
+Testing on a PREEMPT_RT system with TTY serial communication. Each
+time the TTY line discipline is dereferenced the Idle handling wait
+queue is woken up (see function put_ldisc in /drivers/tty/tty_ldisc.c)
+However line discipline idle handling is not used very often so the
+wait queue is empty most of the time. But still the wake_up() function
+enters the critical section guarded by spin locks. This causes
+additional scheduling overhead when a lower priority thread has
+control of that same lock.
 
-Alan
+The /drivers/tty/tty_ldisc.c did not use the waitqueue_active() call
+to check if the waitqueue was filled.... maybe I should solve this
+problem the other way around: and make tty_ldisc.c first do the
+waitqueue_active() call?
+
+Regards,
+Ivo
