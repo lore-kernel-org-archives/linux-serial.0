@@ -1,51 +1,43 @@
-From: Jun Chen <jun.d.chen@intel.com>
-Subject: [PATCH] serial: ifx6x60: ifx_spi_write don't need to do
- mrdy_assert when fifo is not empty
-Date: Mon, 19 Nov 2012 05:07:10 -0500
-Message-ID: <1353319630.23300.1.camel@chenjun-workstation>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: [PATCH v3] Add support for new devices: Exar's XR17V35x family of
+ multi-port PCIe UARTs
+Date: Sun, 18 Nov 2012 22:33:33 -0600
+Message-ID: <CAJp1Oe6GG34JKaDus9pc8Geo14Wros6S1mmYbAv_oWQQKt7GSQ@mail.gmail.com>
+References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, Bi Chao <chao.bi@intel.com>, Jun Chen <jun.d.chen@intel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, serial <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:57719 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752741Ab2KSEdz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 18 Nov 2012 23:33:55 -0500
+Received: by mail-vc0-f174.google.com with SMTP id m18so757237vcm.19
+        for <linux-serial@vger.kernel.org>; Sun, 18 Nov 2012 20:33:54 -0800 (PST)
+In-Reply-To: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <greg@kroah.com>, Theodore Ts'o <tytso@mit.edu>
 
+On Thu, Nov 15, 2012 at 5:01 PM, Matt Schulte
+<matts@commtech-fastcom.com> wrote:
+> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
+>
+> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
+>
+> Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+> ---
+> v3: Moved overriding of handle_irq to serial8250_config_port
+>
+> v2: Moved extra interrupt handling to its own custom handle_irq
+>
+> v1: Hopefully if this gets accepted I will be able to submit an additional
+> patch to add support for my company's PCIe cards that use these
+> UARTs.
 
-This patch check whether the fifo lenth is empty before writing new data to fifo.If condition
-is true,ifx_spi_write need to trigger one mrdy_assert. If condition is false,the mrdy_assert
-will be trigger by the next ifx_spi_io.
-Cc: Bi Chao <chao.bi@intel.com>
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
----
- drivers/tty/serial/ifx6x60.c |   14 +++++++++++---
- 1 files changed, 11 insertions(+), 3 deletions(-)
+What should I do if I would like to submit an additional patch that
+depends on this one that has not yet been accepted?  Should I combine
+them and resubmit both or do I just need to wait?
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 5b9bc19..aa01989 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -469,9 +469,17 @@ static int ifx_spi_write(struct tty_struct *tty, const unsigned char *buf,
- {
- 	struct ifx_spi_device *ifx_dev = tty->driver_data;
- 	unsigned char *tmp_buf = (unsigned char *)buf;
--	int tx_count = kfifo_in_locked(&ifx_dev->tx_fifo, tmp_buf, count,
--				   &ifx_dev->fifo_lock);
--	mrdy_assert(ifx_dev);
-+	int tx_count;
-+	unsigned long flags;
-+	bool is_fifo_empty;
-+
-+	spin_lock_irqsave(&ifx_dev->fifo_lock, flags);
-+	is_fifo_empty = kfifo_is_empty(&ifx_dev->tx_fifo);
-+	tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
-+	spin_unlock_irqrestore(&ifx_dev->fifo_lock, flags);
-+	if (is_fifo_empty)
-+		mrdy_assert(ifx_dev);
-+
- 	return tx_count;
- }
- 
--- 
-1.7.4.1
+Matt Schutle
