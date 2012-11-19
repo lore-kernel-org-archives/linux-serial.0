@@ -1,35 +1,51 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: ifx6x60: ifx_spi_write don't need to do
- mrdy_assert when fifo is not empty.
-Date: Sat, 17 Nov 2012 19:30:12 -0800
-Message-ID: <20121118033012.GA2394@kroah.com>
-References: <1353064117.24092.4.camel@chenjun-workstation>
- <20121116123834.GA9327@kroah.com>
- <9E44E06DBBA23A489DED933DBC291A850FD7A645@SHSMSX102.ccr.corp.intel.com>
+From: Jun Chen <jun.d.chen@intel.com>
+Subject: [PATCH] serial: ifx6x60: ifx_spi_write don't need to do
+ mrdy_assert when fifo is not empty
+Date: Mon, 19 Nov 2012 05:07:10 -0500
+Message-ID: <1353319630.23300.1.camel@chenjun-workstation>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:33275 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752550Ab2KRD3T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 17 Nov 2012 22:29:19 -0500
-Content-Disposition: inline
-In-Reply-To: <9E44E06DBBA23A489DED933DBC291A850FD7A645@SHSMSX102.ccr.corp.intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Bi Chao <chao.bi@intel.com>, Jun Chen <jun.d.chen@intel.com>, Linux Kernel <linux-kernel@vger.kernel.org>, serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: "Chen, Jun D" <jun.d.chen@intel.com>
-Cc: Alan Cox <alan@linux.intel.com>, "Bi, Chao" <chao.bi@intel.com>, serial <linux-serial@vger.kernel.org>, "Gorby, Russ" <russ.gorby@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Wu, Fengguang" <fengguang.wu@intel.com>
 
 
-http://daringfireball.net/2007/07/on_top
+This patch check whether the fifo lenth is empty before writing new data to fifo.If condition
+is true,ifx_spi_write need to trigger one mrdy_assert. If condition is false,the mrdy_assert
+will be trigger by the next ifx_spi_io.
+Cc: Bi Chao <chao.bi@intel.com>
+Signed-off-by: Chen Jun <jun.d.chen@intel.com>
+---
+ drivers/tty/serial/ifx6x60.c |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
 
-On Sun, Nov 18, 2012 at 03:14:28AM +0000, Chen, Jun D wrote:
-> Hi,
->    I make this patch on your tty-next tree,  Do I need to make it on the branch 3.7-rc6 against?
-
-No, my tty-next branch.  But something is odd, it didn't apply at all.
-Please try again.
-
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 5b9bc19..aa01989 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -469,9 +469,17 @@ static int ifx_spi_write(struct tty_struct *tty, const unsigned char *buf,
+ {
+ 	struct ifx_spi_device *ifx_dev = tty->driver_data;
+ 	unsigned char *tmp_buf = (unsigned char *)buf;
+-	int tx_count = kfifo_in_locked(&ifx_dev->tx_fifo, tmp_buf, count,
+-				   &ifx_dev->fifo_lock);
+-	mrdy_assert(ifx_dev);
++	int tx_count;
++	unsigned long flags;
++	bool is_fifo_empty;
++
++	spin_lock_irqsave(&ifx_dev->fifo_lock, flags);
++	is_fifo_empty = kfifo_is_empty(&ifx_dev->tx_fifo);
++	tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
++	spin_unlock_irqrestore(&ifx_dev->fifo_lock, flags);
++	if (is_fifo_empty)
++		mrdy_assert(ifx_dev);
++
+ 	return tx_count;
+ }
+ 
+-- 
+1.7.4.1
