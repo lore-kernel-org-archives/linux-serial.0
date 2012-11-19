@@ -1,58 +1,75 @@
-From: Sonic Zhang <sonic.adi@gmail.com>
-Subject: [PATCH 1/2 v2] serial: bfin_uart: Don't switch baud rate untill the transfer buffer is empty.
-Date: Mon, 19 Nov 2012 14:40:56 +0800
-Message-ID: <1353307256-25676-1-git-send-email-sonic.adi@gmail.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: [REPOST-v2] sched: Prevent wakeup to enter critical section needlessly
+Date: Mon, 19 Nov 2012 08:30:11 +0100
+Message-ID: <1353310211-3011-1-git-send-email-meltedpianoman@gmail.com>
+References: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe004.messaging.microsoft.com ([216.32.180.187]:14836
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751365Ab2KSGmW (ORCPT
+Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:38302
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751620Ab2KSHac (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Nov 2012 01:42:22 -0500
+	Mon, 19 Nov 2012 02:30:32 -0500
+In-Reply-To: <1351159974-980-1-git-send-email-meltedpianoman@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, Sonic Zhang <sonic.zhang@analog.com>
+To: linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Ivo Sieben <meltedpianoman@gmail.com>
 
-From: Sonic Zhang <sonic.zhang@analog.com>
+Check the waitqueue task list to be non empty before entering the critical
+section. This prevents locking the spin lock needlessly in case the queue
+was empty, and therefor also prevent scheduling overhead on a PREEMPT_RT
+system.
 
-set_termios may be invoked before the former data transfer is completed. Block until the
-tranfer is done.
-
-Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Ivo Sieben <meltedpianoman@gmail.com>
 ---
- drivers/tty/serial/bfin_uart.c |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index 9242d56..f8dc8f1 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -800,6 +800,7 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
+ a second repost of this patch v2: Can anyone respond?
+ Did I apply the memory barrier correct?
+
+ v2:
+ - We don't need the "careful" list empty, a normal list empty is sufficient:
+   if you miss an update it was just as it happened a little later.
+ - Because of memory ordering problems we can observe an unupdated list
+   administration. This can cause an wait_event-like code to miss an event.
+   Adding a memory barrier befor checking the list to be empty will guarantee we
+   evaluate a 100% updated list adminsitration.
+
+ kernel/sched/core.c |   19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 2d8927f..168a9b2 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3090,9 +3090,22 @@ void __wake_up(wait_queue_head_t *q, unsigned int mode,
+ {
  	unsigned long flags;
- 	unsigned int baud, quot;
- 	unsigned int ier, lcr = 0;
-+	unsigned long timeout;
  
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS8:
-@@ -869,6 +870,14 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
+-	spin_lock_irqsave(&q->lock, flags);
+-	__wake_up_common(q, mode, nr_exclusive, 0, key);
+-	spin_unlock_irqrestore(&q->lock, flags);
++	/*
++	 * We check for list emptiness outside the lock. This prevents the wake
++	 * up to enter the critical section needlessly when the task list is
++	 * empty.
++	 *
++	 * Placed a full memory barrier before checking list emptiness to make
++	 * 100% sure this function sees an up-to-date list administration.
++	 * Note that other code that manipulates the list uses a spin_lock and
++	 * therefore doesn't need additional memory barriers.
++	 */
++	smp_mb();
++	if (!list_empty(&q->task_list)) {
++		spin_lock_irqsave(&q->lock, flags);
++		__wake_up_common(q, mode, nr_exclusive, 0, key);
++		spin_unlock_irqrestore(&q->lock, flags);
++	}
+ }
+ EXPORT_SYMBOL(__wake_up);
  
- 	UART_SET_ANOMALY_THRESHOLD(uart, USEC_PER_SEC / baud * 15);
- 
-+	/* Wait till the transfer buffer is empty */
-+	timeout = jiffies + msecs_to_jiffies(10);
-+	while (UART_GET_GCTL(uart) & UCEN && !(UART_GET_LSR(uart) & TEMT))
-+		if (time_after(jiffies, timeout)) {
-+			dev_warn(port->dev, "timeout waiting for TX buffer empty\n");
-+			break;
-+		}
-+
- 	/* Disable UART */
- 	ier = UART_GET_IER(uart);
- 	UART_PUT_GCTL(uart, UART_GET_GCTL(uart) & ~UCEN);
 -- 
-1.7.0.4
+1.7.9.5
 
 
