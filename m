@@ -1,30 +1,58 @@
-From: David Brown <davidb@codeaurora.org>
-Subject: Re: [PATCH 429/493] tty: remove use of __devexit
-Date: Tue, 20 Nov 2012 09:06:25 -0800
-Message-ID: <20121120170624.GF21706@codeaurora.org>
-References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
- <1353349642-3677-429-git-send-email-wfp5p@virginia.edu>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: [PATCH 1/3] Add register definitions used in several Exar PCI/PCIe UARTs
+Date: Tue, 20 Nov 2012 11:21:17 -0600
+Message-ID: <CAJp1Oe4aoeEQnDQWFAVaKNXVMn+294ZhNX6GfYx7F3Ym3ux6xQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <sparclinux-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1353349642-3677-429-git-send-email-wfp5p@virginia.edu>
-Sender: sparclinux-owner@vger.kernel.org
-To: Bill Pemberton <wfp5p@virginia.edu>
-Cc: gregkh@linuxfoundation.org, Jiri Slaby <jirislaby@gmail.com>, Alan Cox <alan@linux.intel.com>, Tobias Klauser <tklauser@distanz.ch>, Lucas Tavares <lucaskt@linux.vnet.ibm.com>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, "David S. Miller" <davem@davemloft.net>, Peter Korsgaard <jacmet@sunsite.dk>, Tony Prisk <linux@prisktech.co.nz>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, nios2-dev@sopc.et.ntust.edu.tw, uclinux-dist-devel@blackfin.uclinux.org, linux-arm-msm@vger.kernel.org, sparclinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:54559 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751770Ab2KTRVj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 Nov 2012 12:21:39 -0500
+Received: by mail-vb0-f46.google.com with SMTP id ff1so758011vbb.19
+        for <linux-serial@vger.kernel.org>; Tue, 20 Nov 2012 09:21:38 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <greg@kroah.com>
 
-On Mon, Nov 19, 2012 at 01:26:18PM -0500, Bill Pemberton wrote:
-> CONFIG_HOTPLUG is going away as an option so __devexit is no
-> longer needed.
-> 
-> Signed-off-by: Bill Pemberton <wfp5p@virginia.edu>
-> ---
->  drivers/tty/serial/msm_serial.c             |  2 +-
->  drivers/tty/serial/msm_serial_hs.c          |  2 +-
+Add register definitions used in several Exar PCI/PCIe UARTs
 
-Acked-by: David Brown <davidb@codeaurora.org>
+Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+---
+Built against tty-next commit: 1e619a1bf9ac878e6a984e4e279ccf712a65bc23
+
+ include/uapi/linux/serial_reg.h |   14 +++++++++++++-
+ 1 files changed, 13 insertions(+), 1 deletions(-)
+
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index d0b4760..f27aa29 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -368,10 +368,22 @@
+ #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
+
+ /*
+- * These are definitions for the XR17V35X and XR17D15X
++ * These are definitions for the Exar XR17V35X and XR17(C|D)15X
+  */
++#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
+ #define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
+ #define UART_EXAR_DVID		0x8d	/* Device identification */
+
++#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
++#define UART_FCTR_EXAR_IRDA	0x08	/* IrDa data encode select */
++#define UART_FCTR_EXAR_485	0x10	/* Auto 485 half duplex dir ctl */
++#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
++#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
++#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
++#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
++
++#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
++#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
++
+ #endif /* _LINUX_SERIAL_REG_H */
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+1.7.2.5
