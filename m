@@ -1,61 +1,42 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: [PATCH 2/2] tty/8250 Add XR17D15x devices to the exar_handle_irq override
-Date: Tue, 20 Nov 2012 10:42:00 -0600
-Message-ID: <CAJp1Oe5hxCSzLy3JRWJjOOiyoYjoiheTUriYaZNCmzDN-aYj=A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:41876 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751804Ab2KTQmW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 Nov 2012 11:42:22 -0500
-Received: by mail-vb0-f46.google.com with SMTP id ff1so712331vbb.19
-        for <linux-serial@vger.kernel.org>; Tue, 20 Nov 2012 08:42:21 -0800 (PST)
-Sender: linux-serial-owner@vger.kernel.org
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH 1/3] OF: Add helper for matching against linux,stdout-path
+Date: Tue, 20 Nov 2012 16:51:56 +0000
+Message-ID: <20121120165156.395713E102F@localhost>
+References: <1352971866-540-1-git-send-email-s.hauer@pengutronix.de> <1352971866-540-2-git-send-email-s.hauer@pengutronix.de> <20121119095202.GL4398@game.jcrosoft.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20121119095202.GL4398@game.jcrosoft.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <greg@kroah.com>
 
-Add XR17D15x devices to the exar_handle_irq override: they have the
-same extra interrupt register that could fire and never be serviced by
-the standard handle_irq.
+On Mon, 19 Nov 2012 10:52:02 +0100, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com> wrote:
+> On 10:31 Thu 15 Nov     , Sascha Hauer wrote:
+> > devicetrees may have a linux,stdout-path property in the chosen
+> > node describing the console device. This adds a helper function
+> > to match a device against this property so a driver can call
+> > add_preferred_console for a matching device.
+> 
+> I like it but I've an issue with it I cannot specify the option for
+> 
+> as example I need to set the uart at 38400n8 or 115200n8 regarless of wath the
+> booloader did
 
-Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
----
-Built against tty-next commit: 1e619a1bf9ac878e6a984e4e279ccf712a65bc23
+Right. stdout-path can have a set of arguments appended for things like
+serial speed.  ePAPR says this about stdout-path:
 
-This depends on my previous patch submission:
-[PATCH v3] Add support for new devices: Exar's XR17V35x family of
-multi-port PCIe UARTs
+A string that specifies the full path to the node representing the
+device to be used for boot console output. If the character ":" is
+present in the value it terminates the path. The value may be an alias.
 
- drivers/tty/serial/8250/8250.c |    6 ++++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
+If the stdin-path property is not specified, stdout-path should be
+assumed to define the input device.
 
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 44be636..1cda869 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -1578,7 +1578,8 @@ static int exar_handle_irq(struct uart_port *port)
+So, this function needs to do three more things:
+- also look for 'stdout-path' (in addition to 'linux,stdout-path')
+- Parse for a ':' in the path and trim that off so it can be used for
+  arguments. (Bonus: return the arguments to the caller)
+- make sure that it can handle the path containing an alias (I've just
+  not checked if the current code will handle this)
 
- 	ret = serial8250_handle_irq(port, iir);
-
--	if (port->type == PORT_XR17V35X) {
-+	if ((port->type == PORT_XR17V35X) ||
-+	   (port->type == PORT_XR17D15X)) {
- 		int0 = serial_port_in(port, 0x80);
- 		int1 = serial_port_in(port, 0x81);
- 		int2 = serial_port_in(port, 0x82);
-@@ -2689,7 +2690,8 @@ static void serial8250_config_port(struct
-uart_port *port, int flags)
- 		serial8250_release_std_resource(up);
-
- 	/* Fixme: probably not the best place for this */
--	if (port->type == PORT_XR17V35X)
-+	if ((port->type == PORT_XR17V35X) ||
-+	   (port->type == PORT_XR17D15X))
- 		port->handle_irq = exar_handle_irq;
- }
-
--- 
-1.7.2.5
+g.
