@@ -1,7 +1,7 @@
 From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: [PATCH 2/4] serial: i.MX: Make console support non optional
-Date: Wed, 21 Nov 2012 16:57:06 +0100
-Message-ID: <1353513428-25697-2-git-send-email-plagnioj@jcrosoft.com>
+Subject: [PATCH 4/4] tty: Atmel serial: add linux,stdout-path support
+Date: Wed, 21 Nov 2012 16:57:08 +0100
+Message-ID: <1353513428-25697-4-git-send-email-plagnioj@jcrosoft.com>
 References: <20121121155312.GX4398@game.jcrosoft.org>
  <1353513428-25697-1-git-send-email-plagnioj@jcrosoft.com>
 Mime-Version: 1.0
@@ -19,17 +19,10 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: linux-arm-kernel-bounces@lists.infradead.org
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Grant Likely <grant.likely@secretlab.ca>, kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>, Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Grant Likely <grant.likely@secretlab.ca>, kernel@pengutronix.de, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
-
-Traditionally console support is optional for serial drivers. This
-makes it non optional for the i.MX driver since it's not worth
-asking questions for a feature virtually every user of this driver
-wants to have.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 Cc: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: kernel@pengutronix.de
@@ -37,74 +30,31 @@ Cc: Alan Cox <alan@linux.intel.com>
 Cc: Grant Likely <grant.likely@secretlab.ca>
 Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- drivers/tty/serial/Kconfig |   16 +---------------
- drivers/tty/serial/imx.c   |    8 +-------
- 2 files changed, 2 insertions(+), 22 deletions(-)
+ drivers/tty/serial/atmel_serial.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index b176801..10e5eec 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -541,26 +541,12 @@ config SERIAL_IMX
- 	bool "IMX serial port support"
- 	depends on ARCH_MXC
- 	select SERIAL_CORE
-+	select SERIAL_CORE_CONSOLE
- 	select RATIONAL
- 	help
- 	  If you have a machine based on a Motorola IMX CPU you
- 	  can enable its onboard serial port by enabling this option.
- 
--config SERIAL_IMX_CONSOLE
--	bool "Console on IMX serial port"
--	depends on SERIAL_IMX
--	select SERIAL_CORE_CONSOLE
--	help
--	  If you have enabled the serial port on the Motorola IMX
--	  CPU you can make it the console by answering Y to this option.
--
--	  Even if you say Y here, the currently visible virtual console
--	  (/dev/tty0) will still be used as the system console by default, but
--	  you can alter that using a kernel command line option such as
--	  "console=ttySA0". (Try "man bootparam" or see the documentation of
--	  your boot loader (lilo or loadlin) about how to pass options to the
--	  kernel at boot time.)
--
- config SERIAL_UARTLITE
- 	tristate "Xilinx uartlite serial port support"
- 	depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 5981912..07a8ca1 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1192,7 +1192,6 @@ static struct uart_ops imx_pops = {
- 
- static struct imx_port *imx_ports[UART_NR];
- 
--#ifdef CONFIG_SERIAL_IMX_CONSOLE
- static void imx_console_putchar(struct uart_port *port, int ch)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 5608b6b..f62a3c3 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1427,6 +1427,7 @@ static struct uart_ops atmel_pops = {
+ static void __devinit atmel_of_init_port(struct atmel_uart_port *atmel_port,
+ 					 struct device_node *np)
  {
- 	struct imx_port *sport = (struct imx_port *)port;
-@@ -1348,11 +1347,6 @@ static struct console imx_console = {
- 	.data		= &imx_reg,
- };
++	char *option = NULL;
+ 	u32 rs485_delay[2];
  
--#define IMX_CONSOLE	&imx_console
--#else
--#define IMX_CONSOLE	NULL
--#endif
--
- static struct uart_driver imx_reg = {
- 	.owner          = THIS_MODULE,
- 	.driver_name    = DRIVER_NAME,
-@@ -1360,7 +1354,7 @@ static struct uart_driver imx_reg = {
- 	.major          = SERIAL_IMX_MAJOR,
- 	.minor          = MINOR_START,
- 	.nr             = ARRAY_SIZE(imx_ports),
--	.cons           = IMX_CONSOLE,
-+	.cons           = &imx_console,
- };
+ 	/* DMA/PDC usage specification */
+@@ -1453,6 +1454,10 @@ static void __devinit atmel_of_init_port(struct atmel_uart_port *atmel_port,
  
- static int serial_imx_suspend(struct platform_device *dev, pm_message_t state)
+ 		if (of_get_property(np, "linux,rs485-enabled-at-boot-time", NULL))
+ 			rs485conf->flags |= SER_RS485_ENABLED;
++	} else if (of_device_is_stdout_path(np, &option)) {
++		pr_info("add preferred console %s%d option=%s\n",
++			ATMEL_DEVICENAME, atmel_port->uart.line, option);
++		add_preferred_console(ATMEL_DEVICENAME, atmel_port->uart.line, option);
+ 	}
+ }
+ 
 -- 
 1.7.10.4
