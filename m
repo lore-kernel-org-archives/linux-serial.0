@@ -1,31 +1,39 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 3/5] ARM: OMAP: Move plat/omap-serial.h to
- include/linux/platform_data/serial-omap.h
-Date: Wed, 21 Nov 2012 10:41:32 -0800
-Message-ID: <20121121184131.GA18567@atomide.com>
-References: <20121121174201.25576.61961.stgit@muffinssi.local>
- <20121121174230.25576.64507.stgit@muffinssi.local>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20121121174230.25576.64507.stgit@muffinssi.local>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Kevin Hilman <khilman@ti.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: max310x: Setup missing "can_sleep" field for GPIO
+Date: Thu, 22 Nov 2012 00:07:32 +0400
+Message-ID: <1353528452-27801-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback2.mail.ru ([94.100.176.87]:46304 "EHLO
+	fallback2.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964783Ab2KUUo6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 21 Nov 2012 15:44:58 -0500
+Received: from smtp36.i.mail.ru (smtp36.i.mail.ru [94.100.177.96])
+	by fallback2.mail.ru (mPOP.Fallback_MX) with ESMTP id 19D11BCEFF18
+	for <linux-serial@vger.kernel.org>; Thu, 22 Nov 2012 00:07:59 +0400 (MSK)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 
-* Tony Lindgren <tony@atomide.com> [121121 09:44]:
-> We need to move this file to allow ARM multiplatform configurations
-> to build for omap2+. This can now be done as this file now only
-> contains platform_data.
 
-Russell, this one depends on your commit fd9980c7 (SERIAL: omap:
-remove OMAP_UART_SYSC_RESET and OMAP_UART_FIFO_CLR).
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/max310x.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Is that commit immutable and OK to merge as a dependency to my
-branch?
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 1ab1d2c..343becb 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1178,6 +1178,7 @@ static int __devinit max310x_probe(struct spi_device *spi)
+ 		s->gpio.set		= max310x_gpio_set;
+ 		s->gpio.base		= pdata->gpio_base;
+ 		s->gpio.ngpio		= s->nr_gpio;
++		s->gpio.can_sleep	= 1;
+ 		if (gpiochip_add(&s->gpio)) {
+ 			/* Indicate that we should not call gpiochip_remove */
+ 			s->gpio.base = 0;
+-- 
+1.7.8.6
 
-Regards,
-
-Tony
