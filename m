@@ -1,40 +1,33 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH 2/2] serial: mxs-auart: unmap the scatter list before we copy the data
-Date: Thu, 22 Nov 2012 15:06:30 +0800
-Message-ID: <1353567990-19907-2-git-send-email-b32955@freescale.com>
-References: <1353567990-19907-1-git-send-email-b32955@freescale.com>
+From: Greg Kroah-Hartman <greg@kroah.com>
+Subject: Re: Serial: Add support for new devices: Exar's XR17V35x family of
+ multi-port PCIe UARTs
+Date: Wed, 21 Nov 2012 15:37:37 -0800
+Message-ID: <20121121233737.GA8964@kroah.com>
+References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
+ <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1353567990-19907-1-git-send-email-b32955@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, lauri.hintsala@bluegiga.com, Huang Shijie <b32955@freescale.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44482 "EHLO
+	out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755511Ab2KVTAu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Nov 2012 14:00:50 -0500
+Content-Disposition: inline
+In-Reply-To: <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Matt Schulte <matts@commtech-fastcom.com>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Theodore Ts'o <tytso@mit.edu>
 
-We should first unmap the DMA scatter list for receiving data, and
-then copy the data from the DMA buffer.
+On Mon, Nov 19, 2012 at 09:12:04AM -0600, Matt Schulte wrote:
+> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
+> 
+> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
 
-The old code misses unmap the scatter list for RX. This patch fixes it.
+This patch was line-wrapped, and I had to hand-edit it to get it to
+apply.  Next time, please fix your email client to not do that.
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
-Tested-by: Lauri Hintsala <lauri.hintsala@bluegiga.com> 
----
- drivers/tty/serial/mxs-auart.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 2342b0d..6b51448 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -461,6 +461,8 @@ static void dma_rx_callback(void *arg)
- 	int count;
- 	u32 stat;
- 
-+	dma_unmap_sg(s->dev, &s->rx_sgl, 1, DMA_FROM_DEVICE);
-+
- 	stat = readl(s->port.membase + AUART_STAT);
- 	stat &= ~(AUART_STAT_OERR | AUART_STAT_BERR |
- 			AUART_STAT_PERR | AUART_STAT_FERR);
--- 
-1.7.0.4
+greg k-h
