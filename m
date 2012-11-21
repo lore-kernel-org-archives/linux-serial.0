@@ -1,78 +1,76 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/8250 Add support for Commtech's Fastcom Async-335
- and Fastcom Async-PCIe cards
-Date: Wed, 21 Nov 2012 15:27:41 +0000
-Message-ID: <20121121152741.49be9fcc@pyramind.ukuu.org.uk>
-References: <CAJp1Oe7syKV54oOisSO=DX+hBaZxugSqQoHXoCPmDVWUiT1dOQ@mail.gmail.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: [PATCH 1/2 - Resubmit] tty/8250: Add sleep capability to XR17D15X ports
+Date: Wed, 21 Nov 2012 09:39:07 -0600
+Message-ID: <CAJp1Oe7w__kcpKy8t8zKkM+ZXD3Dbq338pKwzim_c0iwf-uf-g@mail.gmail.com>
+References: <CAJp1Oe4UiEpt4fXMD5X=bPR8q4-y3RsLGgFa3MGxbvvDauiwbg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34535 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754856Ab2KUPW1 (ORCPT
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:63158 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755106Ab2KUPj3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Nov 2012 10:22:27 -0500
-In-Reply-To: <CAJp1Oe7syKV54oOisSO=DX+hBaZxugSqQoHXoCPmDVWUiT1dOQ@mail.gmail.com>
+	Wed, 21 Nov 2012 10:39:29 -0500
+Received: by mail-vb0-f46.google.com with SMTP id ff1so1747273vbb.19
+        for <linux-serial@vger.kernel.org>; Wed, 21 Nov 2012 07:39:28 -0800 (PST)
+In-Reply-To: <CAJp1Oe4UiEpt4fXMD5X=bPR8q4-y3RsLGgFa3MGxbvvDauiwbg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matt Schulte <matts@commtech-fastcom.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+To: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <greg@kroah.com>
 
-> +	p = pci_ioremap_bar(priv->dev, 0);
+Add sleep capability to XR17D15X ports
 
-This can in theory fail so should be checked.
-> +
-> +	port->port.flags |= UPF_EXAR_EFR;
-> +
-> +	/*
-> +	 * Setup Multipurpose Input/Output pins.
-> +	 */
-> +	if (idx == 0) {
-> +		switch (priv->dev->device) {
-> +		case 0x04: /* PCI_DEVICE_ID_COMMTECH_4222PCI335 */
-> +		case 0x02: /* PCI_DEVICE_ID_COMMTECH_4224PCI335 */
-> +			writeb(0x78, p + 0x90); /* MPIOLVL[7:0] */
-> +			writeb(0x00, p + 0x92); /* MPIOINV[7:0] */
-> +			writeb(0x00, p + 0x93); /* MPIOSEL[7:0] */
-> +			break;
-> +		case 0x0a: /* PCI_DEVICE_ID_COMMTECH_2324PCI335 */
-> +		case 0x0b: /* PCI_DEVICE_ID_COMMTECH_2328PCI335 */
-> +			writeb(0x00, p + 0x90); /* MPIOLVL[7:0] */
-> +			writeb(0xc0, p + 0x92); /* MPIOINV[7:0] */
-> +			writeb(0xc0, p + 0x93); /* MPIOSEL[7:0] */
-> +			break;
-> +		}
-> +		writeb(0x00, p + 0x8f); /* MPIOINT[7:0] */
-> +		writeb(0x00, p + 0x91); /* MPIO3T[7:0] */
-> +		writeb(0x00, p + 0x94); /* MPIOOD[7:0] */
-> +	}
-> +	writeb(0x00, p + UART_EXAR_8XMODE);
-> +	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
-> +	writeb(32, p + UART_EXAR_TXTRG);
-> +	writeb(32, p + UART_EXAR_RXTRG);
-> +	iounmap(p);
-> +
-> +	return pci_default_setup(priv, board, port, idx);
-> +}
-> +
-> +static int
->  pci_wch_ch353_setup(struct serial_private *priv,
->                      const struct pciserial_board *board,
->                      struct uart_8250_port *port, int idx)
-> @@ -1246,6 +1288,13 @@ pci_wch_ch353_setup(struct serial_private *priv,
->  #define PCI_VENDOR_ID_AGESTAR		0x5372
->  #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
->  #define PCI_VENDOR_ID_ASIX		0x9710
-> +#define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
-> +#define PCI_DEVICE_ID_COMMTECH_4224PCI335 0x0002
-> +#define PCI_DEVICE_ID_COMMTECH_2324PCI335 0x000a
-> +#define PCI_DEVICE_ID_COMMTECH_2328PCI335 0x000b
-> +#define PCI_DEVICE_ID_COMMTECH_4222PCIE 0x0019
-> +#define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
-> +#define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
+Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+---
+[PATCH 1/2] tty/8250: Add sleep capability to XR17D15X ports
+Built against tty-next commit: 1e619a1bf9ac878e6a984e4e279ccf712a65bc23
 
-Would be better if these defines were above where you use them commented
-in the code...
+This depends on my previous patch submission:
+[PATCH v3] Add support for new devices: Exar's XR17V35x family of
+multi-port PCIe UARTs
 
-Otherwise looks good.
+ drivers/tty/serial/8250/8250.c |   12 +++++++++---
+ 1 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index df7f433..44be636 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -280,7 +280,8 @@ static const struct serial8250_config uart_config[] = {
+ 		.fifo_size	= 64,
+ 		.tx_loadsz	= 64,
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+-		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR |
++				  UART_CAP_SLEEP,
+ 	},
+ 	[PORT_XR17V35X] = {
+ 		.name		= "XR17V35X",
+@@ -591,7 +592,8 @@ static void serial8250_set_sleep(struct
+uart_8250_port *p, int sleep)
+ 	 * offset but the UART channel may only write to the corresponding
+ 	 * bit.
+ 	 */
+-	if (p->port.type == PORT_XR17V35X) {
++	if ((p->port.type == PORT_XR17V35X) ||
++	   (p->port.type == PORT_XR17D15X)) {
+ 		serial_out(p, UART_EXAR_SLEEP, 0xff);
+ 		return;
+ 	}
+@@ -1056,8 +1058,12 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 	 * Exar uarts have EFR in a weird location
+ 	 */
+ 	if (up->port.flags & UPF_EXAR_EFR) {
++		DEBUG_AUTOCONF("Exar XR17D15x ");
+ 		up->port.type = PORT_XR17D15X;
+-		up->capabilities |= UART_CAP_AFE | UART_CAP_EFR;
++		up->capabilities |= UART_CAP_AFE | UART_CAP_EFR |
++				    UART_CAP_SLEEP;
++
++		return;
+ 	}
+
+ 	/*
+-- 
+1.7.2.5
