@@ -1,103 +1,74 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/4] OF: Add helper for matching against linux,stdout-path
-Date: Wed, 21 Nov 2012 18:26:31 +0100
-Message-ID: <20121121172631.GV10369@pengutronix.de>
-References: <20121121155312.GX4398@game.jcrosoft.org>
- <1353513428-25697-1-git-send-email-plagnioj@jcrosoft.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 3/5] ARM: OMAP: Move plat/omap-serial.h to
+ include/linux/platform_data/serial-omap.h
+Date: Wed, 21 Nov 2012 09:42:30 -0800
+Message-ID: <20121121174230.25576.64507.stgit@muffinssi.local>
+References: <20121121174201.25576.61961.stgit@muffinssi.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:58720 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755174Ab2KUR0k (ORCPT
+Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:63863 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751821Ab2KURmf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Nov 2012 12:26:40 -0500
-Content-Disposition: inline
-In-Reply-To: <1353513428-25697-1-git-send-email-plagnioj@jcrosoft.com>
+	Wed, 21 Nov 2012 12:42:35 -0500
+In-Reply-To: <20121121174201.25576.61961.stgit@muffinssi.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree-discuss@lists.ozlabs.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Alan Cox <alan@linux.intel.com>, Grant Likely <grant.likely@secretlab.ca>, Nicolas Ferre <nicolas.ferre@atmel.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Kevin Hilman <khilman@ti.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On Wed, Nov 21, 2012 at 04:57:05PM +0100, Jean-Christophe PLAGNIOL-VILLARD wrote:
-> From: Sascha Hauer <s.hauer@pengutronix.de>
-> 
-> devicetrees may have a linux,stdout-path or stdout-path property
-> in the chosen node describing the console device. This adds a helper
-> function to match a device against this property and retrieve the options
-> so a driver can call add_preferred_console for a matching device.
-> 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Cc: linux-serial@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: kernel@pengutronix.de
-> Cc: Alan Cox <alan@linux.intel.com>
-> Cc: Grant Likely <grant.likely@secretlab.ca>
-> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> ---
->  drivers/of/base.c  |   46 ++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/of.h |    7 +++++++
->  2 files changed, 53 insertions(+)
-> 
-> diff --git a/drivers/of/base.c b/drivers/of/base.c
-> index f2f63c8..72c49ce 100644
-> --- a/drivers/of/base.c
-> +++ b/drivers/of/base.c
-> @@ -1470,3 +1470,49 @@ const char *of_prop_next_string(struct property *prop, const char *cur)
->  	return curv;
->  }
->  EXPORT_SYMBOL_GPL(of_prop_next_string);
-> +
-> +/**
-> + * of_device_is_stdout_path - check if a device node matches the
-> + *			      linux,stdout-path property
-> + * @np:		Pointer to the given device_node
-> + * @option:	parsed option
-> + *
-> + * Check if this device node matches the linux,stdout-path property
-> + * in the chosen node. return true if yes, false otherwise.
-> + */
-> +int of_device_is_stdout_path(struct device_node *dn, char **option)
-> +{
-> +	const char *name;
-> +	struct device_node *dn_stdout;
-> +	bool is_stdout = 0;
-> +	const char *tmp;
-> +	const char *tmp_option;
-> +
-> +	name = of_get_property(of_chosen, "linux,stdout-path", NULL);
-> +	if (name == NULL)
-> +		name = of_get_property(of_chosen, "stdout-path", NULL);
-> +
-> +	if (name == NULL)
-> +		return 0;
-> +
-> +	tmp_option = strchr(name, ':');
-> +
-> +	tmp = kstrndup(name, strlen(name) - strlen(tmp_option), GFP_KERNEL);
+We need to move this file to allow ARM multiplatform configurations
+to build for omap2+. This can now be done as this file now only
+contains platform_data.
 
-tmp_option may be NULL.
+cc: Russell King <linux@arm.linux.org.uk>
+cc: Alan Cox <alan@linux.intel.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Govindraj.R <govindraj.raja@ti.com>
+cc: Kevin Hilman <khilman@ti.com>
+cc: Felipe Balbi <balbi@ti.com>
+cc: linux-serial@vger.kernel.org
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ arch/arm/mach-omap2/serial.c                  |    4 +---
+ drivers/tty/serial/omap-serial.c              |    3 +--
+ include/linux/platform_data/serial-omap.h     |    0 
+ 3 files changed, 2 insertions(+), 5 deletions(-)
+ rename arch/arm/plat-omap/include/plat/omap-serial.h => include/linux/platform_data/serial-omap.h (100%)
 
-> +	if (!tmp)
-> +		return 0;
-> +
-> +	dn_stdout = of_find_node_by_path(tmp);
-> +
-> +	if (dn_stdout && dn_stdout == dn) {
-> +		is_stdout = 1;
-> +		tmp_option++;
-> +		*option = kstrdup(tmp_option, GFP_KERNEL);
-> +	}
-> +
-> +	of_node_put(dn_stdout);
+diff --git a/arch/arm/mach-omap2/serial.c b/arch/arm/mach-omap2/serial.c
+index aa30a3c..25c799b 100644
+--- a/arch/arm/mach-omap2/serial.c
++++ b/arch/arm/mach-omap2/serial.c
+@@ -26,9 +26,7 @@
+ #include <linux/slab.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/console.h>
+-
+-#include <plat/omap-serial.h>
+-#include <plat-omap/dma-omap.h>
++#include <linux/platform_data/serial-omap.h>
+ 
+ #include "common.h"
+ #include "omap_hwmod.h"
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 17babde..0240aa8 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -41,8 +41,7 @@
+ #include <linux/of.h>
+ #include <linux/gpio.h>
+ #include <linux/pinctrl/consumer.h>
+-
+-#include <plat/omap-serial.h>
++#include <linux/platform_data/serial-omap.h>
+ 
+ #define OMAP_MAX_HSUART_PORTS	6
+ 
+diff --git a/arch/arm/plat-omap/include/plat/omap-serial.h b/include/linux/platform_data/serial-omap.h
+similarity index 100%
+rename from arch/arm/plat-omap/include/plat/omap-serial.h
+rename to include/linux/platform_data/serial-omap.h
 
-dn_stdout may be NULL aswell.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
