@@ -1,113 +1,33 @@
-From: Jun Chen <jun.d.chen@intel.com>
-Subject: [PATCH] serial: ifx6x60: Add modem power off function in the
- platform reboot process
-Date: Thu, 22 Nov 2012 06:19:23 -0500
-Message-ID: <1353583163.23300.7.camel@chenjun-workstation>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
+Date: Wed, 21 Nov 2012 21:30:37 +0000
+Message-ID: <20121121213037.154306da@pyramind.ukuu.org.uk>
+References: <50AD43DB.4030800@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Bi Chao <chao.bi@intel.com>, Jun Chen <jun.d.chen@intel.com>, serial <linux-serial@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:36289 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755740Ab2KVSrF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 22 Nov 2012 13:47:05 -0500
+In-Reply-To: <50AD43DB.4030800@ilyx.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+
+> Function reset_buffer_flags() also invoked during the
+> ioctl(...,TCFLSH,..). At the time of request we can have full buffers
+> and throttled driver too. If we don't unthrottle driver, we can get
+> forever throttled driver, because after request, we will have
+> empty buffers and throttled driver and there is no place to unthrottle driver.
+> It simple reproduce with "pty" pair then one side sleep on tty->write_wait,
+> and other side do ioctl(...,TCFLSH,..). Then there is no place to do writers wake up.
 
 
-This patch add modem power off function in the reboot process according registering
-reboot callback to the reboot_notifier_list. Also realizing the spi shutdown function.
+So instead of revertng it why not just fix it ? Just add an argument to
+the reset_buffer_flags function to indicate if unthrottling is permitted.
 
-Signed-off-by: Bi Chao <chao.bi@intel.com>
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
----
- drivers/tty/serial/ifx6x60.c |   39 +++++++++++++++++++++++++++++++++++++++
- 1 files changed, 39 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 5b9bc19..a91f4cb 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -60,6 +60,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/spi/ifx_modem.h>
- #include <linux/delay.h>
-+#include <linux/reboot.h>
- 
- #include "ifx6x60.h"
- 
-@@ -72,8 +73,14 @@
- #define IFX_SPI_HEADER_0		(-1)
- #define IFX_SPI_HEADER_F		(-2)
- 
-+#define PO_POST_DELAY		200
-+#define IFX_MDM_RST_PMU	4
-+
- /* forward reference */
- static void ifx_spi_handle_srdy(struct ifx_spi_device *ifx_dev);
-+static int ifx_modem_reboot_callback(struct notifier_block *nfb,
-+				unsigned long event, void *data);
-+static int ifx_modem_power_off(struct ifx_spi_device *ifx_dev);
- 
- /* local variables */
- static int spi_bpw = 16;		/* 8, 16 or 32 bit word length */
-@@ -81,6 +88,29 @@ static struct tty_driver *tty_drv;
- static struct ifx_spi_device *saved_ifx_dev;
- static struct lock_class_key ifx_spi_key;
- 
-+static struct notifier_block ifx_modem_reboot_notifier_block = {
-+	.notifier_call = ifx_modem_reboot_callback,
-+};
-+
-+static int ifx_modem_power_off(struct ifx_spi_device *ifx_dev)
-+{
-+	gpio_set_value(IFX_MDM_RST_PMU, 1);
-+	msleep(PO_POST_DELAY);
-+
-+	return 0;
-+}
-+
-+static int ifx_modem_reboot_callback(struct notifier_block *nfb,
-+				 unsigned long event, void *data)
-+{
-+	if (saved_ifx_dev)
-+		ifx_modem_power_off(saved_ifx_dev);
-+	else
-+		pr_warn("no ifx modem active \n");
-+
-+	return NOTIFY_OK;
-+}
-+
- /* GPIO/GPE settings */
- 
- /**
-@@ -1219,6 +1249,9 @@ static int ifx_spi_spi_remove(struct spi_device *spi)
- 
- static void ifx_spi_spi_shutdown(struct spi_device *spi)
- {
-+	struct ifx_spi_device *ifx_dev = spi_get_drvdata(spi);
-+
-+	ifx_modem_power_off(ifx_dev);
- }
- 
- /*
-@@ -1368,6 +1401,7 @@ static void __exit ifx_spi_exit(void)
- static int __init ifx_spi_init(void)
- {
- 	int result;
-+	int ret;
- 
- 	tty_drv = alloc_tty_driver(1);
- 	if (!tty_drv) {
-@@ -1399,6 +1433,11 @@ static int __init ifx_spi_init(void)
- 			DRVNAME, result);
- 		tty_unregister_driver(tty_drv);
- 	}
-+
-+	ret = register_reboot_notifier(&ifx_modem_reboot_notifier_block);
-+	if (ret)
-+		pr_err("cannot register reboot notifier (err=%d)\n", ret);
-+
- 	return result;
- }
- 
--- 
-1.7.4.1
+Alan
