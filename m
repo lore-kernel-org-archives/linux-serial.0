@@ -1,64 +1,46 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: [PATCH 2/2 Resubmit] tty/8250 Add XR17D15x devices to the
- exar_handle_irq override
-Date: Wed, 21 Nov 2012 09:40:49 -0600
-Message-ID: <CAJp1Oe6jT3=UdGWQfTbaemAqaf_q8GtW+K8TQ0Rh4LOjXWaFag@mail.gmail.com>
-References: <CAJp1Oe5hxCSzLy3JRWJjOOiyoYjoiheTUriYaZNCmzDN-aYj=A@mail.gmail.com>
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Subject: [PATCH v5] linux,stdout-path helper
+Date: Wed, 21 Nov 2012 16:53:12 +0100
+Message-ID: <20121121155312.GX4398@game.jcrosoft.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:63729 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755106Ab2KUPlM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Nov 2012 10:41:12 -0500
-Received: by mail-vc0-f174.google.com with SMTP id m18so3646526vcm.19
-        for <linux-serial@vger.kernel.org>; Wed, 21 Nov 2012 07:41:11 -0800 (PST)
-In-Reply-To: <CAJp1Oe5hxCSzLy3JRWJjOOiyoYjoiheTUriYaZNCmzDN-aYj=A@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <greg@kroah.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+List-Id: linux-serial@vger.kernel.org
 
-Add XR17D15x devices to the exar_handle_irq override: they have the
-same extra interrupt register that could fire and never be serviced by
-the standard handle_irq.
+The following adds a helper for matching the linux,stdout-path property
+in the chosen node and makes use of it in the i.MX serial and Atmel serial driver.
 
-Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
----
-Built against tty-next commit: 1e619a1bf9ac878e6a984e4e279ccf712a65bc23
+changes since v4:
 
-This depends on my previous patch submission:
-[PATCH v3] Add support for new devices: Exar's XR17V35x family of
-multi-port PCIe UARTs
+ - add option support and check stdout-path too
 
- drivers/tty/serial/8250/8250.c |    6 ++++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
+changes since v3:
 
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 44be636..1cda869 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -1578,7 +1578,8 @@ static int exar_handle_irq(struct uart_port *port)
+- move code from separate files to drivers/of/base.c and include/linux/of.h
 
- 	ret = serial8250_handle_irq(port, iir);
+changes since v2:
 
--	if (port->type == PORT_XR17V35X) {
-+	if ((port->type == PORT_XR17V35X) ||
-+	   (port->type == PORT_XR17D15X)) {
- 		int0 = serial_port_in(port, 0x80);
- 		int1 = serial_port_in(port, 0x81);
- 		int2 = serial_port_in(port, 0x82);
-@@ -2689,7 +2690,8 @@ static void serial8250_config_port(struct
-uart_port *port, int flags)
- 		serial8250_release_std_resource(up);
+- move helper to OF core and make it independent of serial devices
 
- 	/* Fixme: probably not the best place for this */
--	if (port->type == PORT_XR17V35X)
-+	if ((port->type == PORT_XR17V35X) ||
-+	   (port->type == PORT_XR17D15X))
- 		port->handle_irq = exar_handle_irq;
- }
+changes since v1:
 
--- 
-1.7.2.5
+- move it out of the i.MX serial driver and make it generic for serial
+  devices.
+
+_______________________________________________
+devicetree-discuss mailing list
+devicetree-discuss@lists.ozlabs.org
+https://lists.ozlabs.org/listinfo/devicetree-discuss
