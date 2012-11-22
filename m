@@ -1,57 +1,50 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: [PATCH] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
-Date: Thu, 22 Nov 2012 01:12:59 +0400
-Message-ID: <50AD43DB.4030800@ilyx.ru>
+From: =?utf-8?Q?Lothar_Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH 1/4] OF: Add helper for matching against linux, stdout-path
+Date: Thu, 22 Nov 2012 06:33:13 +0100
+Message-ID: <20653.47385.793796.215803@ipc1.ka-ro>
+References: <20121121155312.GX4398@game.jcrosoft.org>
+ <1353513428-25697-1-git-send-email-plagnioj@jcrosoft.com>
+ <20121121172631.GV10369@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:44273 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S964856Ab2KUVT5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Nov 2012 16:19:57 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20121121172631.GV10369@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Grant Likely <grant.likely@secretlab.ca>, linux-serial@vger.kernel.org, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Revert 'tty: fix "IRQ45: nobody cared"'
-
-This revert commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
-
-Function reset_buffer_flags() also invoked during the
-ioctl(...,TCFLSH,..). At the time of request we can have full buffers
-and throttled driver too. If we don't unthrottle driver, we can get
-forever throttled driver, because after request, we will have
-empty buffers and throttled driver and there is no place to unthrottle driver.
-It simple reproduce with "pty" pair then one side sleep on tty->write_wait,
-and other side do ioctl(...,TCFLSH,..). Then there is no place to do writers wake up.
-
-About 'tty: fix "IRQ45: nobody cared"':
-We don't call tty_unthrottle() if release last filp - ('tty->count == 0')
-In other case it must be safely. Maybe we have bug in other place.
-
-Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
----
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 26f0d0e..a783d0e 100644
-
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -184,6 +184,7 @@ static void reset_buffer_flags(struct tty_struct *tty)
-        tty->canon_head = tty->canon_data = tty->erasing = 0;
-        memset(&tty->read_flags, 0, sizeof tty->read_flags);
-        n_tty_set_room(tty);
-+       check_unthrottle(tty);
- }
- 
- /**
-@@ -1585,7 +1586,6 @@ static int n_tty_open(struct tty_struct *tty)
-                        return -ENOMEM;
-        }
-        reset_buffer_flags(tty);
--       tty_unthrottle(tty);
-        tty->column = 0;
-        n_tty_set_termios(tty, NULL);
-        tty->minimum_to_wake = 1;
+SGksCgpTYXNjaGEgSGF1ZXIgd3JpdGVzOgo+IE9uIFdlZCwgTm92IDIxLCAyMDEyIGF0IDA0OjU3
+OjA1UE0gKzAxMDAsIEplYW4tQ2hyaXN0b3BoZSBQTEFHTklPTC1WSUxMQVJEIHdyb3RlOgo+ID4g
+RnJvbTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPgo+ID4gCj4gPiBkZXZp
+Y2V0cmVlcyBtYXkgaGF2ZSBhIGxpbnV4LHN0ZG91dC1wYXRoIG9yIHN0ZG91dC1wYXRoIHByb3Bl
+cnR5Cj4gPiBpbiB0aGUgY2hvc2VuIG5vZGUgZGVzY3JpYmluZyB0aGUgY29uc29sZSBkZXZpY2Uu
+IFRoaXMgYWRkcyBhIGhlbHBlcgo+ID4gZnVuY3Rpb24gdG8gbWF0Y2ggYSBkZXZpY2UgYWdhaW5z
+dCB0aGlzIHByb3BlcnR5IGFuZCByZXRyaWV2ZSB0aGUgb3B0aW9ucwo+ID4gc28gYSBkcml2ZXIg
+Y2FuIGNhbGwgYWRkX3ByZWZlcnJlZF9jb25zb2xlIGZvciBhIG1hdGNoaW5nIGRldmljZS4KPiA+
+IApbLi4uXQo+ID4gKwlpZiAoIXRtcCkKPiA+ICsJCXJldHVybiAwOwo+ID4gKwo+ID4gKwlkbl9z
+dGRvdXQgPSBvZl9maW5kX25vZGVfYnlfcGF0aCh0bXApOwo+ID4gKwo+ID4gKwlpZiAoZG5fc3Rk
+b3V0ICYmIGRuX3N0ZG91dCA9PSBkbikgewo+ID4gKwkJaXNfc3Rkb3V0ID0gMTsKPiA+ICsJCXRt
+cF9vcHRpb24rKzsKPiA+ICsJCSpvcHRpb24gPSBrc3RyZHVwKHRtcF9vcHRpb24sIEdGUF9LRVJO
+RUwpOwo+ID4gKwl9Cj4gPiArCj4gPiArCW9mX25vZGVfcHV0KGRuX3N0ZG91dCk7Cj4gCj4gZG5f
+c3Rkb3V0IG1heSBiZSBOVUxMIGFzd2VsbC4KPiAKd2hpY2ggaXMgaGFuZGxlZCBncmFjZWZ1bGx5
+IGJ5IG9mX25vZGVfcHV0KCkuLi4KCgpMb3RoYXIgV2HDn21hbm4KLS0gCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCgpLYS1SbyBlbGVj
+dHJvbmljcyBHbWJIIHwgUGFzY2Fsc3RyYcOfZSAyMiB8IEQgLSA1MjA3NiBBYWNoZW4KUGhvbmU6
+ICs0OSAyNDA4IDE0MDItMCB8IEZheDogKzQ5IDI0MDggMTQwMi0xMApHZXNjaMOkZnRzZsO8aHJl
+cjogTWF0dGhpYXMgS2F1c3NlbgpIYW5kZWxzcmVnaXN0ZXJlaW50cmFnOiBBbXRzZ2VyaWNodCBB
+YWNoZW4sIEhSQiA0OTk2Cgp3d3cua2Fyby1lbGVjdHJvbmljcy5kZSB8IGluZm9Aa2Fyby1lbGVj
+dHJvbmljcy5kZQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGlu
+Zm8vbGludXgtYXJtLWtlcm5lbAo=
