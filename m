@@ -1,61 +1,110 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [PATCH 1/4] OF: Add helper for matching against
- linux,stdout-path
-Date: Thu, 22 Nov 2012 20:35:21 +0100
-Message-ID: <20121122193521.GA4398@game.jcrosoft.org>
-References: <20121121155312.GX4398@game.jcrosoft.org>
- <1353513428-25697-1-git-send-email-plagnioj@jcrosoft.com>
- <CACxGe6tyPpjx4OtjHmhB9Cvnb7OwAjPEE4=K+wgWKYHcAV-ESQ@mail.gmail.com>
- <20121122054138.GY4398@game.jcrosoft.org>
- <20121122153152.2B9CB3E129E@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Thomas Abraham <thomas.abraham@linaro.org>
+Subject: [PATCH] serial: samsung: fix potential soft lockup during uart write
+Date: Thu, 22 Nov 2012 18:06:28 +0530
+Message-ID: <1353587788-21538-1-git-send-email-thomas.abraham@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 12.mo5.mail-out.ovh.net ([46.105.39.65]:35756 "EHLO
-	mo5.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755512Ab2KVThV (ORCPT
+Received: from mailout3.samsung.com ([203.254.224.33]:11557 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755458Ab2KVUSy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Nov 2012 14:37:21 -0500
-Received: from mail173.ha.ovh.net (b9.ovh.net [213.186.33.59])
-	by mo5.mail-out.ovh.net (Postfix) with SMTP id 19B6EFFB869
-	for <linux-serial@vger.kernel.org>; Thu, 22 Nov 2012 20:45:13 +0100 (CET)
-Content-Disposition: inline
-In-Reply-To: <20121122153152.2B9CB3E129E@localhost>
+	Thu, 22 Nov 2012 15:18:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>, Sascha Hauer <s.hauer@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <kernel@pengutronix.de>, Alan Cox <alan@linux.intel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, linux-samsung-soc@vger.kernel.org, kgene.kim@samsung.com, ben-linux@fluff.org, kyungmin.park@samsung.com, hk619.kim@samsung.com
 
-On 15:31 Thu 22 Nov     , Grant Likely wrote:
-> On Thu, 22 Nov 2012 06:41:38 +0100, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com> wrote:
-> > On 18:03 Wed 21 Nov     , Grant Likely wrote:
-> > > On Wed, Nov 21, 2012 at 3:57 PM, Jean-Christophe PLAGNIOL-VILLARD
-> > > <plagnioj@jcrosoft.com> wrote:
-> > > > From: Sascha Hauer <s.hauer@pengutronix.de>
-> > > >
-> > > > devicetrees may have a linux,stdout-path or stdout-path property
-> > > > in the chosen node describing the console device. This adds a helper
-> > > > function to match a device against this property and retrieve the options
-> > > > so a driver can call add_preferred_console for a matching device.
-> > > 
-> > > NIce. Looks like the right behaviour, but is a little inefficient.
-> > > Since the stdout property doesn't change this code could be called
-> > > once right after the tree is unflattened and then cache the pointer to
-> > > the node anarguments. Can you add the code to of_alias_scan()?
-> > do we assume that we can have only one stdout-path?
-> > 
-> > I think we could have more serial, framebuffer console
-> 
-> Nope. stdout-path as currently defined is only one device. Someone would
-> need to propose an extension for multiple stdout's before I'd bother
-> trying to support that.
-ok for this version I do not put it but I need it
+Certain tty line discipline implementations such slip and bluetooth hci invoke
+the serial core uart_write() api in their write_wakeup callback. This leads to
+a soft lockup with samsung serial driver since the uart port lock is taken in
+the driver's interrupt handler and uart_write() attempts to take the same lock
+again.
 
-I want to have 2 console uart and framebuffer
+Fix this issue by releasing the uart port lock before the call to
+uart_write_wakeup() in the tx handler. Also move the spin-lock/unlock sequence
+from s3c64xx_serial_handle_irq() function into the tx and rx irq handlers so
+that this change is applicable to s3c24xx platforms as well.
 
-Personnaly I'd just allow multiple instance of stdout-path
+Reported-by: Kyungmin Park <kyungmin.park@samsung.com>
+Reported-by: Hyeonkook Kim <hk619.kim@samsung.com>
+Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
+---
+ drivers/tty/serial/samsung.c |   16 ++++++++++++----
+ 1 files changed, 12 insertions(+), 4 deletions(-)
 
-what do you prefer
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 7f04717..97bac4c 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -223,8 +223,11 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ 	struct uart_port *port = &ourport->port;
+ 	struct tty_struct *tty = port->state->port.tty;
+ 	unsigned int ufcon, ch, flag, ufstat, uerstat;
++	unsigned long flags;
+ 	int max_count = 64;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	while (max_count-- > 0) {
+ 		ufcon = rd_regl(port, S3C2410_UFCON);
+ 		ufstat = rd_regl(port, S3C2410_UFSTAT);
+@@ -299,6 +302,7 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ 	tty_flip_buffer_push(tty);
+ 
+  out:
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -307,8 +311,11 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 	struct s3c24xx_uart_port *ourport = id;
+ 	struct uart_port *port = &ourport->port;
+ 	struct circ_buf *xmit = &port->state->xmit;
++	unsigned long flags;
+ 	int count = 256;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	if (port->x_char) {
+ 		wr_regb(port, S3C2410_UTXH, port->x_char);
+ 		port->icount.tx++;
+@@ -336,13 +343,17 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 		port->icount.tx++;
+ 	}
+ 
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
++		spin_unlock(&port->lock);
+ 		uart_write_wakeup(port);
++		spin_lock(&port->lock);
++	}
+ 
+ 	if (uart_circ_empty(xmit))
+ 		s3c24xx_serial_stop_tx(port);
+ 
+  out:
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -352,10 +363,8 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ 	struct s3c24xx_uart_port *ourport = id;
+ 	struct uart_port *port = &ourport->port;
+ 	unsigned int pend = rd_regl(port, S3C64XX_UINTP);
+-	unsigned long flags;
+ 	irqreturn_t ret = IRQ_HANDLED;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	if (pend & S3C64XX_UINTM_RXD_MSK) {
+ 		ret = s3c24xx_serial_rx_chars(irq, id);
+ 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_RXD_MSK);
+@@ -364,7 +373,6 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ 		ret = s3c24xx_serial_tx_chars(irq, id);
+ 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_TXD_MSK);
+ 	}
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 	return ret;
+ }
+ 
+-- 
+1.6.6.rc2
 
-Best Regards,
-J.
