@@ -1,41 +1,27 @@
-From: Yan Hong <clouds.yan@gmail.com>
-Subject: [PATCH 2/2] tty: remove useless initialization in tty_open
-Date: Fri, 23 Nov 2012 22:41:48 +0800
-Message-ID: <1353681708-5413-2-git-send-email-clouds.yan@gmail.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] tty: remove redundant initialization in
+ initialize_tty_struct()
+Date: Fri, 23 Nov 2012 14:51:07 +0000
+Message-ID: <20121123145107.22bab04c@pyramind.ukuu.org.uk>
 References: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f46.google.com ([209.85.210.46]:53623 "EHLO
-	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750714Ab2KWOmJ (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:38218 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751312Ab2KWOpt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Nov 2012 09:42:09 -0500
-Received: by mail-da0-f46.google.com with SMTP id p5so2667283dak.19
-        for <linux-serial@vger.kernel.org>; Fri, 23 Nov 2012 06:42:09 -0800 (PST)
+	Fri, 23 Nov 2012 09:45:49 -0500
 In-Reply-To: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org
+To: Yan Hong <clouds.yan@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 
-retval must be zero here, no need to set it to zero explicitly.
+On Fri, 23 Nov 2012 22:41:47 +0800
+Yan Hong <clouds.yan@gmail.com> wrote:
 
-Signed-off-by: Yan Hong <clouds.yan@gmail.com>
----
- drivers/tty/tty_io.c |    1 -
- 1 file changed, 1 deletion(-)
+> tty_struct is already zeroed, no need to zero its field again.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index e278edf..6d90e9b 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1928,7 +1928,6 @@ retry_open:
- 
- 	noctty = filp->f_flags & O_NOCTTY;
- 	index  = -1;
--	retval = 0;
- 
- 	mutex_lock(&tty_mutex);
- 	/* This is protected by the tty_mutex */
--- 
-1.7.9.5
-
+True but its asking for impossible to find bugs later if this changes
