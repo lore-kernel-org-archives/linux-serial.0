@@ -1,37 +1,105 @@
-From: Jun Chen <jun.d.chen@intel.com>
-Subject: Re: [PATCH] serial: ifx6x60: Add modem power off function in the
- platform reboot process
-Date: Fri, 23 Nov 2012 06:14:14 -0500
-Message-ID: <1353669254.23300.16.camel@chenjun-workstation>
-References: <1353583163.23300.7.camel@chenjun-workstation>
-	 <20121122110857.2f7c9804@bob.linux.org.uk>
+From: KINGDOM NELSON <kingdomnelson1@gmail.com>
+Subject: KINGDOM NELSON
+Date: Thu, 22 Nov 2012 22:50:05 -0800 (PST)
+Message-ID: <1353653405.29408.YahooMailClassic__39320.7141933546$1353653779$gmane$org@web5717.biz.mail.ne1.yahoo.com>
+Reply-To: nelson.kingdom@yahoo.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="1400012850-1229417939-1353653406=:29408"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:9644 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758923Ab2KWDL0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 22 Nov 2012 22:11:26 -0500
-In-Reply-To: <20121122110857.2f7c9804@bob.linux.org.uk>
+Received: from nm36-vm9.bullet.mail.bf1.yahoo.com ([72.30.239.71]:32893 "EHLO
+	nm36-vm9.bullet.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932612Ab2KWG4C (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 23 Nov 2012 01:56:02 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Bi Chao <chao.bi@intel.com>, serial <linux-serial@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>, "russ.gorby" <russ.gorby@intel.com>
 
-On Thu, 2012-11-22 at 11:08 +0000, Alan Cox wrote:
-> On Thu, 22 Nov 2012 06:19:23 -0500
-> Jun Chen <jun.d.chen@intel.com> wrote:
-> 
-> > 
-> > This patch add modem power off function in the reboot process
-> > according registering reboot callback to the reboot_notifier_list.
-> > Also realizing the spi shutdown function.
-> 
-> Need to unregister the reboot notifier in the ifx_spi_exit path. If the
-> driver module is unloaded you leave the callback present and the kernel
-> will call into freed memory.
-> 
-> Alan
-Yes,thanks! I will update this patch again.
+--1400012850-1229417939-1353653406=:29408
+Content-Type: text/plain; charset=us-ascii
 
+
+--1400012850-1229417939-1353653406=:29408
+Content-Type: application/msword; name=KINGDOM
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="KINGDOM NELSON.rtf"
+
+e1xydGYxXGFuc2lcYW5zaWNwZzEyNTJcZGVmZjBcZGVmbGFuZzEwMzN7XGZv
+bnR0Ymx7XGYwXGZzd2lzc1xmY2hhcnNldDAgQXJpYWw7fX0NCntcKlxnZW5l
+cmF0b3IgTXNmdGVkaXQgNS40MS4xNS4xNTA3O31cdmlld2tpbmQ0XHVjMVxw
+YXJkXGYwXGZzMjAgIEZST00gS0lOR0RPTSBORUxTT05ccGFyDQpHTEVORE9W
+RU4gRkFSTVMsIFpJTUJBQldFIERlYXIgUGFydG5lcixOYXR1cmFsbHksdGhp
+cyBsZXR0ZXIgd2lsbCBjb21lIHRvIHlvdSBhcyBhIHN1cnByaXNlIHNpbmNl
+IHdlIGhhdmUgbm90IG1ldCxwZXJtaXQgbWUgaG93ZXZlciB0byBpbnRyb2R1
+Y2UgbXlzZWxmLEkgYW0gS2luZ2RvbSBOZWxzb24sYSBibGFjayBaaW1iYWJ3
+ZWFuIGZhcm1lcixjdXJyZW50bHkgaW4gc291dGggYWZyaWNhIGFzIHJlZmZ1
+Z2UuIEkgdXNlZCB0byB3b3JrIGluIHRocmVlIHRvYmFjY28gZmFybXMgaW4g
+Q2hpcGluZ2UsYW5kIEkgd2FzIGFsc28gcGFydCBvd25lciBvZiB0aGVzZSBm
+YXJtcyB3aGljaCB3ZXJlIG93bmVkIGJ5IG15IGxhdGUgZmF0aGVyLiBJIGFt
+IGNvbnRhY3RpbmcgeW91IGFzIHRoZSBuZWVkIGZvciBtZSB0byBoYXZlIGEg
+Zm9yZWlnbiBwYXJ0bmVyIGluIHlvdXIgY291bnRyeSBoYXMgYmVjb21lIG5l
+Y2Vzc2FyeSBkdWUgdG8gbXkgcGxhbnMgdG8gcmVsb2NhdGUgdG8gdGhhdCBj
+b3VudHJ5IHNvIHRoYXQgSSBjYW4gcHVyY2hhc2Ugc29tZSBsYW5kIGFuZCBz
+dGFydCBmYXJtaW5nIGFsbCBvdmVyIGFnYWluLGFzIHRoZSBwcmVzZW50IHBv
+bGl0aWNhbCBpbnN0YWJpbGl0eSBpbiBaaW1iYWJ3ZSxkb2VzIG5vdCBlbmNv
+dXJhZ2UgZmluYW5jaWFsIGludmVzdG1lbnQgYXMgdGhlIGVudmlyb25tZW50
+IGlzIG5vIGxvbmdlciBjb25kdWNpdmUgZm9yIGZhcm1pbmcgaW52ZXN0bWVu
+dCBhbmQgbW9zdCBvZiBhbGwsc2VjdXJpdHkgaXMgbm90IGd1YXJhbnRlZWQs
+anVzdCBhcyByZXBvcnRlZCBieSBpbnRlcm5hdGlvbmFsIG1lZGlhLlRoaXMg
+cHJvYmxlbSBzdGFydGVkIHdoZW4gdGhlIFppbWJhYndlYW4gZ292ZXJubWVu
+dCB1bmRlciB0aGUgbGVhZGVyc2hpcCBvZiBQcmVzaWRlbnQgUm9iZXJ0IE11
+Z2FiZSBhbm5vdW5jZWQgYSBkZWNyZWUgb24gTWF5IDMxc3QgMjAwMCB0byBz
+ZWl6ZSBtb3JlIHRoYW44NDlccGFyDQp3aGl0ZS1vd25lZCBmYXJtcy5EdXJp
+bmcgdGhpcyBwZXJpb2QsYXMgcmVwb3J0ZWQgYnkgaW50ZXJuYXRpb25hbCBt
+ZWRpYSBhbmQgaGUgQ05OLG1vcmUgdGhhbiA2MDAgZmFybWVycyhpbmNsdWRp
+bmcgbXkgZmF0aGVyKSB3ZXJlIGtpbGxlZDsgdGhlIGdvdmVybm1lbnQgaXMg
+bm90IHN0b3BwaW5nIGF0IHRoaXMsIGFzIHRoZSBnb3Zlcm5tZW50IGhhcyBh
+bHJlYWR5IGFza2VkIGFsbCBmYXJtZXJzIHRvIGdpdmUgdXAgdGhlaXIgZmFy
+bXMgdG8gZ292ZXJubWVudCBvciByaXNrIGdvaW5nIHRvIHByaXNvbi5TbyBm
+YXIsbW9yZSB0aGFuIDEsNDAwIG93bmVkIGZhcm1zIGhhdmUgYmVlbiBpbnZh
+ZGVkIGFuZCBjb25maXNjYXRlZCxhcyB3ZWxsIGFzIGNsYWltaW5nIHRoZSBw
+cm9wZXJ0aWVzIG9mIHRoZSBmYXJtZXJzLiBBbHNvLGFib3V0IDEzMzMgZmFy
+bWVycyBhcnJlc3RlZCBmb3IgZGVmeWluZyB0aGUgb3JkZXJzIHRvIGxlYXZl
+IHRoZWlyIGZhcm1zIHVuZGVyIHRoZSBjb250cm92ZXJzaWFsIGxhbmQgcmVm
+b3JtIHByb2dyYW0gb2YgdGhlIGdvdmVybm1lbnQuIEhhdmluZyBsaXZlZCBp
+biB0aGlzIGNvdW50cnkgc291dGggYWZyaWNhIGZvciB5ZWFycyxBbSByZWZm
+dWdlIHNvbWUgeWVhcnMgdGhlcmVmb3JlLEkgZGVjaWRlZCB0byBjb250YWN0
+IHlvdSxmb3IgeW91ciBhc3Npc3RhbmNlLHNvIHRoYXQgSSBjYW4gZGl2ZXJ0
+IG15IGludGVyZXN0IGluIHNvdXRoIGFmcmljYSB0byBhIG1vcmUgc3RhYmxl
+IGNvdW50cnkgYXMgeW91cnMuIEFsc28sSSBtdXN0IHJlLWl0ZXJhdGUgdGhl
+IGltcG9ydGFuY2Ugb2YgaGF2aW5nIGEgY2l0aXplbiBvZiB5b3VyIGNvdW50
+cnkgdG8gZnJvbnQgb3IgbWUsc2luY2UgaSBpbnRlbmQgdG8gcHVyY2hhc2Ug
+c29tZSBsYW5kIGZvciBmYXJtaW5nLEkgZG8gbm90IGtub3cgbXVjaCBhYm91
+dCB5b3VyIGxhbmQtb3duZXJzaGlwIGxhd3MsSSB0aG91Z2h0IGl0IHdpc2Ug
+dG9ccGFyDQpzZWVrIHRoZSBoZWxwIG9mIGEgZm9yZWlnbmVyIHRvIGFjdCBh
+cyBwcm94eSBmb3IgbWUuRm9yIHRoaXMgcHVycG9zZSxJIGhhdmUgcHV0IGlu
+IGEgc2VjdXJpdHkgZGVwb3NpdCBhbGwgbW9uaWVzIGZyb20gdGhlIHNhbGUg
+b2YgbXkgZmFybWluZyBlcXVpcG1lbnQoaW5jbHVkaW5nIHRyYWN0b3JzIGV0
+YykgYW5kIGFsc28gYWxsIGZpbmFuY2lhbCBwcm9maXRzLkFsbCB0aGVzZSBh
+cmUgYSB0b3RhbCBvZiBVUyQxOC41bWlsbGlvbi5JIHdpbGwgdXBvbiByZWNl
+aXZpbmcgeW91ciBjb25zZW50IHByZXBhcmUgZXZlcnkgZG9jdW1lbnQgdG8g
+ZW5hYmxlIHlvdSByZWNlaXZlIHRoaXMgbW9uZXkgb24gbXkgYmVoYWxmLHBl
+bmRpbmcgbXkgYXJyaXZhbCB0byBtZWV0IHdpdGggeW91IGluIHlvdXIgY291
+bnRyeSBzbyB0aGF0IHdlIGNhbiBib3RoIG1ha2UgZnVydGhlciBhcnJhbmdl
+bWVudHMgd2l0aCByZWdhcmRzIHRvIHRoZSBwdXJjaGFzZSBvZiBsYW5kLkZv
+ciB5b3VyIGFzc2lzdGFuY2UgdG8gbWUseW91IHdpbGwgYmUgZW50aXRsZWQg
+dG8gYSBjb21taXNzaW9uIG9mIDE1JSBvZiB0aGUgdG90YWwgc3VtIHRoYXQg
+eW91IHdpbGwgYmUgcmVjZWl2aW5nIG9uIG15IGJlaGFsZiBmb3IgdGhlIGFi
+b3ZlIHB1cnBvc2UuSWYgeW91IGFyZSBpbnRlcmVzdGVkIGFuZCB3aWxsaW5n
+IHRvIGFzc2lzdCBtZSx5b3Ugc2hvdWxkIHBsZWFzZSBmb3J3YXJkIHRvIG1l
+IHRoZSBmb2xsb3dpbmcgaW5mb3JtYXRpb24gc28gdGhhdCBJIGNhbiByZWFj
+aCB5b3Ugb3IgY2FsbCBtZSBpbiB0aGlzIG51bWJlciArMjctNzg0MDIzMjA2
+IEkgd2lsbCB0ZWxsIHlvdSBtb3JlIGRldGFpbHMuIDEuIFlPVVIgQ09OVEFD
+VCBBRERSRVNTIDIuIFlPVVIgVEVMRVBIT05FIEFORCBGQVggTlVNQkVSLCAz
+LiBWQUxJRCBJRCBPRiBZT1VSU0VMRiwgSSBhbSB3YWl0aW5nIHVyZ2VudGx5
+IGZvciB5b3VyIHJlc3BvbnNlLHdoaWxlIGFsc29ccGFyDQpyZXF1ZXN0aW5n
+IHRoYXQgeW91IHRyZWF0IHRoaXMgbWF0dGVyIGluIHN0cmljdCBwcml2YWN5
+LkNoZWVycyBhbmQgR29kIGJsZXNzLiBJIHdpbGwgZ2l2ZSB5b3UgbW9yZSBk
+ZXRhaWxzIHdoZW4gaSBoZWFyIGZyb20geW91LllvdSBjYW4gY2xpY2sgb24g
+dGhlIGxpbmsgYmVsb3cgdG8gZ2V0IGEgYmV0dGVyIHVuZGVyc3RhbmRpbmcg
+bXkgc2l0dWF0aW9uIGFuZCB3aHkgaSBuZWVkIHRvIG1vdmUgb3V0IG15IG1v
+bmV5OiBodHRwOi8vbmV3cy5iYmMuY28udWsvMS9oaS93b3JsZC9hZnJpY2Ev
+MTA2ODUyOC5zdG0gQmVzdCBSZWdhcmRzXHBhcg0KXHBhcg0KS2luZ2RvbSBO
+ZWxzb25ccGFyDQpccGFyDQpccGFyDQpccGFyDQpccGFyDQpccGFyDQp9DQoA
+
+
+--1400012850-1229417939-1353653406=:29408--
