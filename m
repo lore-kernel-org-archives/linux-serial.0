@@ -1,46 +1,41 @@
 From: Yan Hong <clouds.yan@gmail.com>
-Subject: [PATCH 1/2] tty: remove redundant initialization in initialize_tty_struct()
-Date: Fri, 23 Nov 2012 22:41:47 +0800
-Message-ID: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
+Subject: [PATCH 2/2] tty: remove useless initialization in tty_open
+Date: Fri, 23 Nov 2012 22:41:48 +0800
+Message-ID: <1353681708-5413-2-git-send-email-clouds.yan@gmail.com>
+References: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:44289 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750714Ab2KWOmE (ORCPT
+Received: from mail-da0-f46.google.com ([209.85.210.46]:53623 "EHLO
+	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750714Ab2KWOmJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Nov 2012 09:42:04 -0500
-Received: by mail-pa0-f46.google.com with SMTP id bh2so3584561pad.19
-        for <linux-serial@vger.kernel.org>; Fri, 23 Nov 2012 06:42:04 -0800 (PST)
+	Fri, 23 Nov 2012 09:42:09 -0500
+Received: by mail-da0-f46.google.com with SMTP id p5so2667283dak.19
+        for <linux-serial@vger.kernel.org>; Fri, 23 Nov 2012 06:42:09 -0800 (PST)
+In-Reply-To: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org
 
-tty_struct is already zeroed, no need to zero its field again.
+retval must be zero here, no need to set it to zero explicitly.
 
 Signed-off-by: Yan Hong <clouds.yan@gmail.com>
 ---
-Actually alloc_tty_struct() already zerod tty_struct. Logically speaking
-these two functions can be called independently, but they are always called
-in pair in current code. Maybe someday we can arrange only one of them
-zero the memory and let the other expect a zeroed tty_struct (and document
-this assumption).
-
- drivers/tty/tty_io.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/tty_io.c |    1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 2ea176b..e278edf 100644
+index e278edf..6d90e9b 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -2935,8 +2935,6 @@ void initialize_tty_struct(struct tty_struct *tty,
- 	kref_init(&tty->kref);
- 	tty->magic = TTY_MAGIC;
- 	tty_ldisc_init(tty);
--	tty->session = NULL;
--	tty->pgrp = NULL;
- 	tty->overrun_time = jiffies;
- 	tty_buffer_init(tty);
- 	mutex_init(&tty->legacy_mutex);
+@@ -1928,7 +1928,6 @@ retry_open:
+ 
+ 	noctty = filp->f_flags & O_NOCTTY;
+ 	index  = -1;
+-	retval = 0;
+ 
+ 	mutex_lock(&tty_mutex);
+ 	/* This is protected by the tty_mutex */
 -- 
 1.7.9.5
 
