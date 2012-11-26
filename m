@@ -1,20 +1,22 @@
 From: Ilya Zykov <ilya@ilyx.ru>
 Subject: [PATCH v3] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
-Date: Tue, 27 Nov 2012 02:09:27 +0400
-Message-ID: <50B3E897.3020901@ilyx.ru>
+Date: Tue, 27 Nov 2012 03:15:53 +0400
+Message-ID: <50B3F829.4060908@ilyx.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:46860 "EHLO
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:46887 "EHLO
 	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755818Ab2KZWJr (ORCPT
+	by vger.kernel.org with ESMTP id S1757153Ab2KZXQN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Nov 2012 17:09:47 -0500
+	Mon, 26 Nov 2012 18:16:13 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, ilya@ilyx.ru
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ilya@ilyx.ru
+
+Sorry. Correct patch format.
 
 Regression 'tty: fix "IRQ45: nobody cared"'
 Regression commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
@@ -36,15 +38,15 @@ index 12b1fa0..a038be1 100644
 --- a/drivers/tty/tty_ioctl.c
 +++ b/drivers/tty/tty_ioctl.c
 @@ -1098,10 +1098,12 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
-        case TCIFLUSH:
-                if (ld && ld->ops->flush_buffer)
-                        ld->ops->flush_buffer(tty);
-+               tty_unthrottle(tty);
-                break;
-        case TCIOFLUSH:
-                if (ld && ld->ops->flush_buffer)
-                        ld->ops->flush_buffer(tty);
-+                tty_unthrottle(tty);
-                /* fall through */
-        case TCOFLUSH:
-                tty_driver_flush_buffer(tty);
+ 	case TCIFLUSH:
+ 		if (ld && ld->ops->flush_buffer)
+ 			ld->ops->flush_buffer(tty);
++		tty_unthrottle(tty);
+ 		break;
+ 	case TCIOFLUSH:
+ 		if (ld && ld->ops->flush_buffer)
+ 			ld->ops->flush_buffer(tty);
++		tty_unthrottle(tty);
+ 		/* fall through */
+ 	case TCOFLUSH:
+ 		tty_driver_flush_buffer(tty);
