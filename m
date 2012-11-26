@@ -1,52 +1,55 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: [PATCH v3] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
-Date: Tue, 27 Nov 2012 03:15:53 +0400
-Message-ID: <50B3F829.4060908@ilyx.ru>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fix for 3.7-rc7
+Date: Mon, 26 Nov 2012 15:19:23 -0800
+Message-ID: <20121126231923.GA21621@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:46887 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757153Ab2KZXQN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Nov 2012 18:16:13 -0500
+Received: from mail.kernel.org ([198.145.19.201]:38422 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754842Ab2KZXT0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Nov 2012 18:19:26 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ilya@ilyx.ru
+To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Sorry. Correct patch format.
+The following changes since commit f4a75d2eb7b1e2206094b901be09adb31ba6=
+3681:
 
-Regression 'tty: fix "IRQ45: nobody cared"'
-Regression commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
+  Linux 3.7-rc6 (2012-11-16 17:42:40 -0800)
 
-  Function reset_buffer_flags() also invoked during the ioctl(...,TCFLSH,..). 
-At the time of request we can have full buffers and throttled driver too. 
-If we don't unthrottle driver, we can get forever throttled driver, because,
-after request, we will have empty buffers and throttled driver and 
-there is no place to unthrottle driver.
-It simple reproduce with "pty" pair then one side sleep on tty->write_wait,
-and other side do ioctl(...,TCFLSH,..). Then there is no place to do writers wake up.
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-3.7-rc7
 
-Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
----
+for you to fetch changes up to b1a925f44a3a21c538144e30b08f966cad7adb63=
+:
 
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 12b1fa0..a038be1 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -1098,10 +1098,12 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
- 	case TCIFLUSH:
- 		if (ld && ld->ops->flush_buffer)
- 			ld->ops->flush_buffer(tty);
-+		tty_unthrottle(tty);
- 		break;
- 	case TCIOFLUSH:
- 		if (ld && ld->ops->flush_buffer)
- 			ld->ops->flush_buffer(tty);
-+		tty_unthrottle(tty);
- 		/* fall through */
- 	case TCOFLUSH:
- 		tty_driver_flush_buffer(tty);
+  tty vt: Fix a regression in command line edition (2012-11-21 16:45:32=
+ -0800)
+
+----------------------------------------------------------------
+TTY fix for 3.7-rc7
+
+Here is a single fix for a reported regression in 3.7-rc5 for the tty
+layer.  This fix has been in the linux-next tree and solves the reporte=
+d
+problem.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Jean-Fran=E7ois Moine (1):
+      tty vt: Fix a regression in command line edition
+
+ drivers/tty/vt/vt.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
