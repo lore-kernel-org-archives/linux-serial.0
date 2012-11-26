@@ -1,55 +1,69 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fix for 3.7-rc7
-Date: Mon, 26 Nov 2012 15:19:23 -0800
-Message-ID: <20121126231923.GA21621@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCHv3] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Mon, 26 Nov 2012 15:38:24 -0800
+Message-ID: <20121126233824.GA8868@kroah.com>
+References: <1353033035-4928-1-git-send-email-jmillenbach@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:38422 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:39034 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754842Ab2KZXT0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Nov 2012 18:19:26 -0500
+	id S1755796Ab2KZXi0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Nov 2012 18:38:26 -0500
 Content-Disposition: inline
+In-Reply-To: <1353033035-4928-1-git-send-email-jmillenbach@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Joe Millenbach <jmillenbach@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>
 
-The following changes since commit f4a75d2eb7b1e2206094b901be09adb31ba6=
-3681:
+On Thu, Nov 15, 2012 at 06:30:35PM -0800, Joe Millenbach wrote:
+> The option allows you to remove TTY and compile without errors. This
+> saves space on systems that won't support TTY interfaces anyway.
+> bloat-o-meter output is below.
+> 
+> The bulk of this patch consists of Kconfig changes adding "depends on
+> TTY" to various serial devices and similar drivers that require the TTY
+> layer.  Ideally, these dependencies would occur on a common intermediate
+> symbol such as SERIO, but most drivers "select SERIO" rather than
+> "depends on SERIO", and "select" does not respect dependencies.
+> 
+> bloat-o-meter output filtered to not show removed entries with awk
+> '$3 != "-"' as the list was very long.
+> 
+> add/remove: 0/385 grow/shrink: 2/18 up/down: 14/-54016 (-54002)
+> function                                     old     new   delta
+> chr_dev_init                                 193     205     +12
+> selinux_setprocattr                         1167    1169      +2
+> static.__warned                              557     556      -1
+> start_kernel                                 840     835      -5
+> proc_root_init                               167     162      -5
+> unregister_console                           165     157      -8
+> sys_setsid                                   213     205      -8
+> sys_vhangup                                   37      21     -16
+> daemonize                                    689     673     -16
+> t_stop                                        72      54     -18
+> t_next                                       129     108     -21
+> static.do_acct_process                       838     806     -32
+> release_task                                1157    1125     -32
+> do_exit                                     2325    2288     -37
+> t_start                                      269     221     -48
+> static.__func__                            18289   18219     -70
+> do_task_stat                                2962    2892     -70
+> flush_unauthorized_files                     740     614    -126
+> static._rs                                  1440    1280    -160
+> static.__key                                8560    8384    -176
+> 
+> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
+> Reviewed-by: Josh Triplett <josh@joshtriplett.org>
 
-  Linux 3.7-rc6 (2012-11-16 17:42:40 -0800)
+This is a nice idea, but I feel it's a bit too late in the 3.8 merge
+window cycle for me to add this to linux-next at this point in time.
 
-are available in the git repository at:
+Can you rediff this once 3.8-rc1 is out and send it to me then?  That
+way we can get a lot more testing in linux-next in order to make sure
+it's ready for 3.9?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
-y-3.7-rc7
+thanks,
 
-for you to fetch changes up to b1a925f44a3a21c538144e30b08f966cad7adb63=
-:
-
-  tty vt: Fix a regression in command line edition (2012-11-21 16:45:32=
- -0800)
-
-----------------------------------------------------------------
-TTY fix for 3.7-rc7
-
-Here is a single fix for a reported regression in 3.7-rc5 for the tty
-layer.  This fix has been in the linux-next tree and solves the reporte=
-d
-problem.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Jean-Fran=E7ois Moine (1):
-      tty vt: Fix a regression in command line edition
-
- drivers/tty/vt/vt.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
