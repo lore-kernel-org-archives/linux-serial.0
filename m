@@ -1,34 +1,36 @@
-From: Yan Hong <clouds.yan@gmail.com>
-Subject: Re: [PATCH 1/2] tty: remove redundant initialization in initialize_tty_struct()
-Date: Fri, 23 Nov 2012 23:04:52 +0800
-Message-ID: <CAH+=+MEpjwXUnD0Hey18fRbvY56wDHVmD5L1PsHwK_QmHCg4TA@mail.gmail.com>
-References: <1353681708-5413-1-git-send-email-clouds.yan@gmail.com>
-	<20121123145107.22bab04c@pyramind.ukuu.org.uk>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: Serial: Add support for new devices: Exar's XR17V35x family of
+ multi-port PCIe UARTs
+Date: Sun, 25 Nov 2012 18:54:11 -0600
+Message-ID: <CAJp1Oe5yS2MOfCpMs3=_DnQ5Jo1mUwhO0rSBSd9oNynSBRCPtQ@mail.gmail.com>
+References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
+ <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com> <20121121233737.GA8964@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:33399 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752166Ab2KWPEy (ORCPT
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:44776 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753756Ab2KZAyc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 Nov 2012 10:04:54 -0500
-Received: by mail-vc0-f174.google.com with SMTP id m18so5673982vcm.19
-        for <linux-serial@vger.kernel.org>; Fri, 23 Nov 2012 07:04:53 -0800 (PST)
-In-Reply-To: <20121123145107.22bab04c@pyramind.ukuu.org.uk>
+	Sun, 25 Nov 2012 19:54:32 -0500
+Received: by mail-vb0-f46.google.com with SMTP id ff1so5126157vbb.19
+        for <linux-serial@vger.kernel.org>; Sun, 25 Nov 2012 16:54:31 -0800 (PST)
+In-Reply-To: <20121121233737.GA8964@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Theodore Ts'o <tytso@mit.edu>
 
-2012/11/23 Alan Cox <alan@lxorguk.ukuu.org.uk>:
-> On Fri, 23 Nov 2012 22:41:47 +0800
-> Yan Hong <clouds.yan@gmail.com> wrote:
+On Wed, Nov 21, 2012 at 5:37 PM, Greg Kroah-Hartman <greg@kroah.com> wrote:
+> On Mon, Nov 19, 2012 at 09:12:04AM -0600, Matt Schulte wrote:
+>> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
+>>
+>> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
 >
->> tty_struct is already zeroed, no need to zero its field again.
+> This patch was line-wrapped, and I had to hand-edit it to get it to
+> apply.  Next time, please fix your email client to not do that.
 >
-> True but its asking for impossible to find bugs later if this changes
 
-If it's true, we should have concern for all memset() usage. Is this
-case special?
+Sorry about that, don't know why that last one line-wrapped and the rest didn't.
 
-Thanks
+Matt Schulte
