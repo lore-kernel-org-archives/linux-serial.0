@@ -1,25 +1,31 @@
-From: Jiri Slaby <jirislaby@gmail.com>
-Subject: Re: [PATCHv3] tty: Added a CONFIG_TTY option to allow removal of
- TTY
-Date: Tue, 27 Nov 2012 00:44:24 +0100
-Message-ID: <50B3FED8.7090100@gmail.com>
-References: <1353033035-4928-1-git-send-email-jmillenbach@gmail.com> <20121126233824.GA8868@kroah.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] serial:ifx6x60:Delete SPI timer when shut down port
+Date: Mon, 26 Nov 2012 15:45:53 -0800
+Message-ID: <20121126234553.GA14899@kroah.com>
+References: <1353634413.22077.15.camel@bichao>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20121126233824.GA8868@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Joe Millenbach <jmillenbach@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:39179 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754842Ab2KZXpz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Nov 2012 18:45:55 -0500
+Content-Disposition: inline
+In-Reply-To: <1353634413.22077.15.camel@bichao>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: chao bi <chao.bi@intel.com>
+Cc: Alan Cox <alan@linux.intel.com>, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 11/27/2012 12:38 AM, Greg Kroah-Hartman wrote:
-> Can you rediff this once 3.8-rc1 is out and send it to me then?
+On Fri, Nov 23, 2012 at 09:33:33AM +0800, chao bi wrote:
+> 
+> When shut down SPI port, it's possible that MRDY has been asserted and a SPI
+> timer was activated waiting for SRDY assert, in the case, it needs to delete
+> this timer.
 
-So if you are going to respin, please take care of the newly added
-drivers like drivers/staging/fwserial.
+This doesn't apply without fuzz, so I don't know what tree you are
+working against here.
 
-thanks,
--- 
-js
+Please redo it against the latest version of the tty-next tree.
+
+greg k-h
