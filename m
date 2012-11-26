@@ -1,45 +1,50 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH -next] tty/serial: fix ifx6x60.c declaration warning
-Date: Mon, 26 Nov 2012 11:07:25 -0800
-Message-ID: <50B3BDED.1030306@infradead.org>
-References: <20121127011738.9ecd7971a7ea2e3d09a9450d@canb.auug.org.au>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH v3] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
+Date: Tue, 27 Nov 2012 02:09:27 +0400
+Message-ID: <50B3E897.3020901@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20121127011738.9ecd7971a7ea2e3d09a9450d@canb.auug.org.au>
-Sender: linux-next-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Russ Gorby <russ.gorby@intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:46860 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755818Ab2KZWJr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Nov 2012 17:09:47 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, ilya@ilyx.ru
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Regression 'tty: fix "IRQ45: nobody cared"'
+Regression commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
 
-Fix gcc warning of mixed data/code:
+  Function reset_buffer_flags() also invoked during the ioctl(...,TCFLSH,..). 
+At the time of request we can have full buffers and throttled driver too. 
+If we don't unthrottle driver, we can get forever throttled driver, because,
+after request, we will have empty buffers and throttled driver and 
+there is no place to unthrottle driver.
+It simple reproduce with "pty" pair then one side sleep on tty->write_wait,
+and other side do ioctl(...,TCFLSH,..). Then there is no place to do writers wake up.
 
-drivers/tty/serial/ifx6x60.c:516:2: warning: ISO C90 forbids mixed declarations and code
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Russ Gorby <russ.gorby@intel.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 ---
- drivers/tty/serial/ifx6x60.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- linux-next-20121126.orig/drivers/tty/serial/ifx6x60.c
-+++ linux-next-20121126/drivers/tty/serial/ifx6x60.c
-@@ -510,10 +510,11 @@ static int ifx_spi_write(struct tty_stru
- 	unsigned char *tmp_buf = (unsigned char *)buf;
- 	unsigned long flags;
- 	bool is_fifo_empty;
-+	int tx_count;
- 
- 	spin_lock_irqsave(&ifx_dev->fifo_lock, flags);
- 	is_fifo_empty = kfifo_is_empty(&ifx_dev->tx_fifo);
--	int tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
-+	tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
- 	spin_unlock_irqrestore(&ifx_dev->fifo_lock, flags);
- 	if (is_fifo_empty)
- 		mrdy_assert(ifx_dev);
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 12b1fa0..a038be1 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -1098,10 +1098,12 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
+        case TCIFLUSH:
+                if (ld && ld->ops->flush_buffer)
+                        ld->ops->flush_buffer(tty);
++               tty_unthrottle(tty);
+                break;
+        case TCIOFLUSH:
+                if (ld && ld->ops->flush_buffer)
+                        ld->ops->flush_buffer(tty);
++                tty_unthrottle(tty);
+                /* fall through */
+        case TCOFLUSH:
+                tty_driver_flush_buffer(tty);
