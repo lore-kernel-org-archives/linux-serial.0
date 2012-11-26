@@ -1,42 +1,45 @@
-From: Matt Schulte <matts@commtech-fastcom.com>
-Subject: Re: Serial: Add support for new devices: Exar's XR17V35x family of
- multi-port PCIe UARTs
-Date: Sun, 25 Nov 2012 20:56:54 -0600
-Message-ID: <CAJp1Oe4i1tFFpiApEC=j2j3HZ+Yi2G0T-nbcQzenNxTR0j0oAA@mail.gmail.com>
-References: <CAJp1Oe4Xh6SDQc43hue5qanm7G5Lw9vMdv-+5nRQ_S+RPpRALQ@mail.gmail.com>
- <CAJp1Oe4vSwBgVe_bOV00ojvYy2fd7YWNfrEfJ+de_JSiyb7AHA@mail.gmail.com>
- <20121121233737.GA8964@kroah.com> <CAJp1Oe5yS2MOfCpMs3=_DnQ5Jo1mUwhO0rSBSd9oNynSBRCPtQ@mail.gmail.com>
- <20121126022222.GA5046@kroah.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH -next] tty/serial: fix ifx6x60.c declaration warning
+Date: Mon, 26 Nov 2012 11:07:25 -0800
+Message-ID: <50B3BDED.1030306@infradead.org>
+References: <20121127011738.9ecd7971a7ea2e3d09a9450d@canb.auug.org.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:38466 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753702Ab2KZC5P (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 25 Nov 2012 21:57:15 -0500
-Received: by mail-vb0-f46.google.com with SMTP id ff1so5188221vbb.19
-        for <linux-serial@vger.kernel.org>; Sun, 25 Nov 2012 18:57:14 -0800 (PST)
-In-Reply-To: <20121126022222.GA5046@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-next-owner@vger.kernel.org>
+In-Reply-To: <20121127011738.9ecd7971a7ea2e3d09a9450d@canb.auug.org.au>
+Sender: linux-next-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Russ Gorby <russ.gorby@intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, Theodore Ts'o <tytso@mit.edu>
 
-On Sun, Nov 25, 2012 at 8:22 PM, Greg Kroah-Hartman <greg@kroah.com> wrote:
-> On Sun, Nov 25, 2012 at 06:54:11PM -0600, Matt Schulte wrote:
->> On Wed, Nov 21, 2012 at 5:37 PM, Greg Kroah-Hartman <greg@kroah.com> wrote:
->> > On Mon, Nov 19, 2012 at 09:12:04AM -0600, Matt Schulte wrote:
->> >> Add support for new devices: Exar's XR17V35x family of multi-port PCIe UARTs.
->> >>
->> >> Built against tty-next 54d5f88f25c38e5500a17b16240cb3775af00876
->> >
->> > This patch was line-wrapped, and I had to hand-edit it to get it to
->> > apply.  Next time, please fix your email client to not do that.
->> >
->>
->> Sorry about that, don't know why that last one line-wrapped and the rest didn't.
->
-> The others did to, I edited them by hand :)
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Then a very big thank you!
+Fix gcc warning of mixed data/code:
+
+drivers/tty/serial/ifx6x60.c:516:2: warning: ISO C90 forbids mixed declarations and code
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/ifx6x60.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- linux-next-20121126.orig/drivers/tty/serial/ifx6x60.c
++++ linux-next-20121126/drivers/tty/serial/ifx6x60.c
+@@ -510,10 +510,11 @@ static int ifx_spi_write(struct tty_stru
+ 	unsigned char *tmp_buf = (unsigned char *)buf;
+ 	unsigned long flags;
+ 	bool is_fifo_empty;
++	int tx_count;
+ 
+ 	spin_lock_irqsave(&ifx_dev->fifo_lock, flags);
+ 	is_fifo_empty = kfifo_is_empty(&ifx_dev->tx_fifo);
+-	int tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
++	tx_count = kfifo_in(&ifx_dev->tx_fifo, tmp_buf, count);
+ 	spin_unlock_irqrestore(&ifx_dev->fifo_lock, flags);
+ 	if (is_fifo_empty)
+ 		mrdy_assert(ifx_dev);
