@@ -1,31 +1,62 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] serial:ifx6x60:Delete SPI timer when shut down port
-Date: Mon, 26 Nov 2012 15:45:53 -0800
-Message-ID: <20121126234553.GA14899@kroah.com>
-References: <1353634413.22077.15.camel@bichao>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH]tty: Incorrect use tty_ldisc_flush() in TTY drivers.
+Date: Tue, 27 Nov 2012 04:06:52 +0400
+Message-ID: <50B4041C.9030002@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:39179 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754842Ab2KZXpz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Nov 2012 18:45:55 -0500
-Content-Disposition: inline
-In-Reply-To: <1353634413.22077.15.camel@bichao>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:46917 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755501Ab2K0AHM (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 Nov 2012 19:07:12 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: chao bi <chao.bi@intel.com>
-Cc: Alan Cox <alan@linux.intel.com>, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ilya@ilyx.ru
 
-On Fri, Nov 23, 2012 at 09:33:33AM +0800, chao bi wrote:
-> 
-> When shut down SPI port, it's possible that MRDY has been asserted and a SPI
-> timer was activated waiting for SRDY assert, in the case, it needs to delete
-> this timer.
+Sorry. Correct patch format.
 
-This doesn't apply without fuzz, so I don't know what tree you are
-working against here.
+Related bug 'tty: fix "IRQ45: nobody cared"'
+Related commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
 
-Please redo it against the latest version of the tty-next tree.
+  Unfortunately, some drivers indirectly call ldisc's flush_buffer() function 
+in own callback function close(). In particularly, by the use of tty_ldisc_flush(),
+before TTY LAYER calls ldisc's flush_buffer() in the right moment.
 
-greg k-h
+1. It disturb the logic of work ldisc's layer.
+2. It is simple overhead because we call ldisc's flush_buffer() at least two times.
+
+Please, tell me what do you think about this? Can I make the adjustment for other drivers?
+
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+---
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0fcfd98..d87f353 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1304,7 +1304,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	uart_shutdown(tty, state);
+ 	uart_flush_buffer(tty);
+ 
+-	tty_ldisc_flush(tty);
++	tty_buffer_flush(tty);
+ 
+ 	tty_port_tty_set(port, NULL);
+ 	spin_lock_irqsave(&port->lock, flags);
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index d7bdd8d..8a02996 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -428,8 +428,8 @@ int tty_port_close_start(struct tty_port *port,
+ 			timeout = 2 * HZ;
+ 		schedule_timeout_interruptible(timeout);
+ 	}
+-	/* Flush the ldisc buffering */
+-	tty_ldisc_flush(tty);
++	/* Flush the driver buffering */
++	tty_buffer_flush(tty);
+ 
+ 	/* Drop DTR/RTS if HUPCL is set. This causes any attached modem to
+ 	   hang up the line */
