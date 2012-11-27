@@ -1,35 +1,88 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PULL REQUEST] Tweak to support 1Mbaud and similar baudrates
- that require Mode16 instead of Mode13
-Date: Tue, 27 Nov 2012 23:00:13 +0000
-Message-ID: <20121127230013.6904e8d3@pyramind.ukuu.org.uk>
-References: <CAOmKuSpRJhBibSDxTFCH157-XokhaFhvQ-gYxKZe+PfzokaBoA@mail.gmail.com>
-	<CAOmKuSpjitfTeeXz6VKQbhe+iUFb8wYy4n3tAzbjr9g_GOAn4g@mail.gmail.com>
-	<CAOmKuSrQW1j_tmQNbXMO-GUH7zrUR0WR3K4rJNok=2LZmRKVYg@mail.gmail.com>
+From: Stefan Richter <stefanr@s5r6.in-berlin.de>
+Subject: Re: [PATCH v2 1/1] staging: fwserial: Add TTY-over-Firewire serial
+ driver
+Date: Wed, 28 Nov 2012 00:58:46 +0100
+Message-ID: <20121128005846.0f1d4d5e@stein>
+References: <1350565015.23730.4.camel@thor>
+ <cover.1351817601.git.peter@hurleysoftware.com>
+ <55547e779e65e6865f18d537ef1a42191a4b7e46.1351817601.git.peter@hurleysoftware.com>
+ <20121113003338.6aafd7c8@stein> <1352834072.16401.100.camel@thor>
+ <20121114022522.633a44d4@stein> <1354041196.3284.121.camel@thor>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43092 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750899Ab2K0Wyy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Nov 2012 17:54:54 -0500
-In-Reply-To: <CAOmKuSrQW1j_tmQNbXMO-GUH7zrUR0WR3K4rJNok=2LZmRKVYg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devel-bounces@linuxdriverproject.org>
+In-Reply-To: <1354041196.3284.121.camel@thor>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/devel>,
+ <mailto:devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/devel/>
+List-Post: <mailto:devel@linuxdriverproject.org>
+List-Help: <mailto:devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/devel>,
+ <mailto:devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: devel-bounces@linuxdriverproject.org
+Sender: "devel" <devel-bounces@linuxdriverproject.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: devel@driverdev.osuosl.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux1394-devel@lists.sourceforge.net, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Alexey Pelykh <alexey.pelykh@gmail.com>
-Cc: linux-serial@vger.kernel.org
 
-> In old driver that served UART devices (8250.c and serial_core.c) this
-> divisor could have been configured by user-space program, but in
-> omap_serial.c driver implementation this ability was not implemented
-> (afaik, by design) thus disallowing proper usage of MODE16-compatible
-> baudrates.
-
-Yes in the ideal case the kernel should manage should things.
-
-Looks fine to me from a tty perspective (style wise one might quibble
-about baudAbsDiff but I really don;t care 8))
-
-Acked-by: Alan Cox <alan@linux.intel.com>
+T24gTm92IDI3IFBldGVyIEh1cmxleSB3cm90ZToKPiA+ID4gQ3VycmVudGx5LCBmaXJld2lyZS1u
+ZXQgc2V0cyBhbiBhcmJpdHJhcnkgYWRkcmVzcyBoYW5kbGVyIGxlbmd0aCBvZgo+ID4gPiA0MDk2
+LiBUaGlzIHdvcmtzIGJlY2F1c2UgdGhlIGxhcmdlc3QgQVIgcGFja2V0IHNpemUgdGhlIGN1cnJl
+bnQKPiA+ID4gZmlyZXdpcmUtb2hjaSBkcml2ZXIgaGFuZGxlcyBpcyA0MDk2ICh2YWx1ZSBvZiBN
+QVhfQVNZTkNfUEFZTE9BRCkgKwo+ID4gPiBoZWFkZXIvdHJhaWxlci4gTm90ZSB0aGF0IGZpcmV3
+aXJlLW9oY2kgZG9lcyBub3QgbGltaXQgY2FyZC0+bWF4X3JlY2VpdmUKPiA+ID4gdG8gdGhpcyB2
+YWx1ZS4KPiA+ID4gCj4gPiA+IFNvIGlmIHRoZSBvaGNpIGRyaXZlciBjaGFuZ2VzIHRvIGhhbmRs
+ZSA4SysgQVIgcGFja2V0cyBhbmQgdGhlIGhhcmR3YXJlCj4gPiA+IHN1cHBvcnRzIGl0LCB0aGVz
+ZSBhZGRyZXNzIGhhbmRsZXIgd2luZG93cyB3aWxsIGJlIHRvbyBzbWFsbC4gIAo+ID4gCj4gPiBX
+aGlsZSB0aGUgSUVFRSAxMzk0OjIwMDggbGluayBsYXllciBzcGVjaWZpY2F0aW9uIChzZWN0aW9u
+IDYpIHByb3ZpZGVzIGZvcgo+ID4gYXN5bmNocm9ub3VzIHBhY2tldCBwYXlsb2FkcyBvZiB1cCB0
+byAxNjM4NCBieXRlcyAodGFibGUgNi00KSwgdGhlIElFRUUKPiA+IDEzOTQgYmV0YSBtb2RlIHBv
+cnQgc3BlY2lmaWNhdGlvbiAoc2VjdGlvbiAxMykgb25seSBhbGxvd3MgdXAgdG8gNDA5Ngo+ID4g
+Ynl0ZXMgKHRhYmxlIDE2LTE4KS4gIEFuZCBhbHBoYSBtb2RlIGlzIG9mIGNvdXJzZSBsaW1pdGVk
+IHRvIDIwNDggYnl0ZXMuCj4gPiAKPiA+IFNvLCBhc3luY2hyb25vdXMgcGFja2V0IHBheWxvYWRz
+IGdyZWF0ZXIgdGhhbiA0MDk2IGJ5dGVzIGFyZSBvdXQgb2Ygc2NvcGUKPiA+IG9mIHRoZSBjdXJy
+ZW50IHJldmlzaW9uIG9mIElFRUUgMTM5NC4gIAo+IAo+IFlvdSBzaG91bGQgbG9vayBhdCB0aGlz
+IDEzOTR0YS5vcmcgdmlkZW8KPiBodHRwOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eFZYTnZY
+SE5RVFkgb2YgREFQIFRlY2hub2xvZ2llcyBTMTYwMAo+IE9IQ0kgY29udHJvbGxlcnMgcnVubmlu
+ZyBTMTYwMCBjYW1lcmFzIHVzaW5nIGJldGEgY2FibGVzLgoKSSBkb24ndCBrbm93IHRoZSBkZXRh
+aWxzIG9mIHRoZWlyIGltcGxlbWVudGF0aW9uLCBidXQgSSBzdXBwb3NlIHRoZXkgY29uZm9ybQp3
+aXRoIHRoZSAxMzk0IGJldGEgbW9kZSBwb3J0IHNwZWNpZmljYXRpb24uICBXaGljaCBpbiB0dXJu
+IG1lYW5zIHRoYXQgdGhlaXIKUzE2MDAgc29sdXRpb24gKGFuZCBieSBleHRyYXBvbGF0aW9uLCB0
+aGVpciBTMzIwMCBwcm90b3R5cGVzKSBjb21wbHkgd2l0aCBhCm1heGltdW0gYXN5bmNocm9ub3Vz
+IHBhY2tldCBwYXlsb2FkIG9mIDQwOTYgYnl0ZXMuICBDaXRpbmcgSUVFRSAxMzk0LTIwMDg6Cgo+
+Pj4KCVRhYmxlIDE2LTE44oCU4oCU4oCUTWF4aW11bSBwYXlsb2FkIHNpemUgZm9yIEJldGEgZGF0
+YSBwYWNrZXRzCiBEYXRhIHJhdGUgfCBNYXhpbXVtIGFzeW5jaHJvbm91cyBwYXlsb2FkIHNpemUg
+fCBNYXhpbXVtIGlzb2Nocm9ub3VzIHBheWxvYWQKICAgICAgICAgICB8ICAgICAgICAgICAgICAo
+Ynl0ZXMpICAgICAgICAgICAgICB8ICAgICAgICAgICAoYnl0ZXMpCiAtLS0tLS0tLS0tKy0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0KICAgIFMxMDAgICB8ICAgICAgICAgICAgICAgICA1MTIgICAgICAgICAgICAgICB8ICAgICAg
+ICAgICAgIDEwMjQKICAgIFMyMDAgICB8ICAgICAgICAgICAgICAgIDEwMjQgICAgICAgICAgICAg
+ICB8ICAgICAgICAgICAgIDIwNDgKICAgIFM0MDAgICB8ICAgICAgICAgICAgICAgIDIwNDggICAg
+ICAgICAgICAgICB8ICAgICAgICAgICAgIDQwOTYKICAgIFM4MDAgICB8ICAgICAgICAgICAgICAg
+IDQwOTYgICAgICAgICAgICAgICB8ICAgICAgICAgICAgIDgxOTIKICAgIFMxNjAwICB8ICAgICAg
+ICAgICAgICAgIDQwOTYgICAgICAgICAgICAgICB8ICAgICAgICAgICAgMTYzODQKICAgIFMzMjAw
+ICB8ICAgICAgICAgICAgICAgIDQwOTYgICAgICAgICAgICAgICB8ICAgICAgICAgICAgMzI3NjgK
+PDw8CgooQWxwaGEgbW9kZSBwYXlsb2FkIGxpbWl0cyBhcmUgdGhlIHNhbWUgYXMgdGhlIFMxMDAu
+Li5TNDAwIHN1YnNldCBvZiBiZXRhIG1vZGUuCkluIElFRUUgMTM5NGItMjAwMiwgdGhlIHRhYmxl
+IG51bWJlciBpcyAxNi0zLikKCllvdSBjYW4gb2YgY291cnNlIGRlZmluZSByZWdpc3RlcnMgKG9y
+IGJldHRlciB0ZXJtZWQ6IGJ1ZmZlcnMpIHdoaWNoIGFyZSBsYXJnZXIKdGhhbiB3aGF0IGNhbiBi
+ZSBhdG9taWNhbGx5IHJlYWQgb3Igd3JpdHRlbiwgb3IgYXRvbWljYWxseSBjb21wYXJlZC1zd2Fw
+cGVkOwpJT1cgd2hpY2ggYXJlIGxhcmdlciB0aGFuIHdoYXQgY2FuIGJlIGFjY2Vzc2VkIGluIGEg
+c2luZ2xlIHRyYW5zYWN0aW9uLCBpZiBzdWNoCnJlZ2lzdGVycyBvciBidWZmZXJzIGFyZSB1c2Vm
+dWwuICBCdXQgaWYgeW91IHBhcnRpY3VsYXJseSBuZWVkIGEgcmVnaXN0ZXIgd2hpY2gKaXMganVz
+dCBsYXJnZSBlbm91Z2ggdG8gYWNjb21tb2RhdGUgdGhlIGxhcmdlc3QgcG9zc2libGUgaW5ib3Vu
+ZCBibG9jayB3cml0ZQp0cmFuc2FjdGlvbiB3aGljaCBjb21wbGllcyB3aXRoIElFRUUgMTM5NCwg
+YW5kIHlvdSBkb24ndCBrbm93IHRoZSBwZWVyJ3MKY2FwYWJpbGl0eSBhbmQgdGhlIHNwZWVkcyBv
+ZiBhbGwgaW50ZXJtZWRpYXJ5IGNhYmxlIGhvcHMsIHRoZW4KZndfY2FyZC5tYXhfcmVjZWl2ZSBp
+cyB0aGUgbnVtYmVyIHRoYXQgeW91IG5lZWQuICBPciB5b3UgaWdub3JlIHRoZSBjYXJkcyBhY3R1
+YWwKY2FwYWJpbGl0eSBhbmQganVzdCBhbGxvY2F0ZSA0MDk2IGJ5dGVzLgoKT0hDSXMgdGhhdCB5
+b3UgY2FuIGJ1eSBvZmZlciBmd19jYXJkLm1heF9yZWNlaXZlIG9mIDEwMjQsIG9yIDIwNDgsIG9y
+IDQwOTYgYnl0ZXMuCjEwMjQgYnl0ZXMgaXMgdGhlIGxpbWl0IG9mIG1hbnkgYnV0IG5vdCBhbGwg
+MTM5NGEgUzQwMCBDYXJkQnVzIGNhcmRzLgoKW0lzc3VlcyBvZiB0cmFuc2FjdGlvbiByZXRyaWVz
+IGFuZCBwb3NzaWJsZSBsb3NzIGF0IHNlc3Npb24gdGVybWluYXRpb24gdG8gYmUKbGVmdCB0byBh
+bm90aGVyIHJlcGx5IGF0IGFub3RoZXIgdGltZS5dCi0tIApTdGVmYW4gUmljaHRlcgotPT09PT0t
+PT09LS0gPS09PSA9PS09PQpodHRwOi8vYXJjZ3JhcGguZGUvc3IvCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRldmVsIG1haWxpbmcgbGlzdApkZXZlbEBs
+aW51eGRyaXZlcnByb2plY3Qub3JnCmh0dHA6Ly9kcml2ZXJkZXYubGludXhkcml2ZXJwcm9qZWN0
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RldmVsCg==
