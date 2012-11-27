@@ -1,45 +1,56 @@
-From: chao bi <chao.bi@intel.com>
-Subject: [PATCH] serial:ifx6x60:Delete SPI timer when shut down port
-Date: Tue, 27 Nov 2012 13:30:53 +0800
-Message-ID: <1353994253.30354.4.camel@bichao>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH v4] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
+Date: Tue, 27 Nov 2012 10:14:33 +0400
+Message-ID: <50B45A49.2040104@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:5441 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750903Ab2K0FQa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Nov 2012 00:16:30 -0500
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:47018 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753881Ab2K0GOx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Nov 2012 01:14:53 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>
-Cc: richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, ilya@ilyx.ru
 
+Sorry. More correct.
 
-When shut down SPI port, it's possible that MRDY has been asserted and a SPI
-timer was activated waiting for SRDY assert, in the case, it needs to delete
-this timer.
+Regression 'tty: fix "IRQ45: nobody cared"'
+Regression commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
 
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
-Signed-off-by: channing <chao.bi@intel.com>
+  Function reset_buffer_flags() also invoked during the ioctl(...,TCFLSH,..). 
+At the time of request we can have full buffers and throttled driver too. 
+If we don't unthrottle driver, we can get forever throttled driver, because,
+after request, we will have empty buffers and throttled driver and 
+there is no place to unthrottle driver.
+It simple reproduce with "pty" pair then one side sleep on tty->write_wait,
+and other side do ioctl(...,TCFLSH,..). Then there is no place to do writers wake up.
+
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 ---
- drivers/tty/serial/ifx6x60.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 5b9bc19..f5e9666 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -552,6 +552,7 @@ static void ifx_port_shutdown(struct tty_port *port)
- 		container_of(port, struct ifx_spi_device, tty_port);
- 
- 	mrdy_set_low(ifx_dev);
-+	del_timer(&ifx_dev->spi_timer);
- 	clear_bit(IFX_SPI_STATE_TIMER_PENDING, &ifx_dev->flags);
- 	tasklet_kill(&ifx_dev->io_work_tasklet);
- }
--- 
-1.7.1
-
-
-
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 12b1fa0..4071a8f 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -1096,12 +1096,16 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
+ 	ld = tty_ldisc_ref_wait(tty);
+ 	switch (arg) {
+ 	case TCIFLUSH:
+-		if (ld && ld->ops->flush_buffer)
++		if (ld && ld->ops->flush_buffer) {
+ 			ld->ops->flush_buffer(tty);
++			tty_unthrottle(tty);
++		}
+ 		break;
+ 	case TCIOFLUSH:
+-		if (ld && ld->ops->flush_buffer)
++		if (ld && ld->ops->flush_buffer) {
+ 			ld->ops->flush_buffer(tty);
++			tty_unthrottle(tty);
++		}
+ 		/* fall through */
+ 	case TCOFLUSH:
+ 		tty_driver_flush_buffer(tty);
