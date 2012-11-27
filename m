@@ -1,36 +1,45 @@
-From: Joe Millenbach <jmillenbach@gmail.com>
-Subject: Re: [PATCHv3] tty: Added a CONFIG_TTY option to allow removal of TTY
-Date: Mon, 26 Nov 2012 18:36:57 -0800
-Message-ID: <CADwDc1CtMuwv6R4asdG9MnT-=Fasj7cWtLA4xf9UFWRUeAjQsg@mail.gmail.com>
-References: <1353033035-4928-1-git-send-email-jmillenbach@gmail.com>
-	<20121126233824.GA8868@kroah.com>
-	<50B3FED8.7090100@gmail.com>
+From: chao bi <chao.bi@intel.com>
+Subject: [PATCH] serial:ifx6x60:Delete SPI timer when shut down port
+Date: Tue, 27 Nov 2012 13:30:53 +0800
+Message-ID: <1353994253.30354.4.camel@bichao>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:65421 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755207Ab2K0Cg6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 Nov 2012 21:36:58 -0500
-In-Reply-To: <50B3FED8.7090100@gmail.com>
+Received: from mga09.intel.com ([134.134.136.24]:5441 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750903Ab2K0FQa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Nov 2012 00:16:30 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jirislaby@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>
+To: Alan Cox <alan@linux.intel.com>
+Cc: richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Nov 26, 2012 at 3:44 PM, Jiri Slaby <jirislaby@gmail.com> wrote:
-> On 11/27/2012 12:38 AM, Greg Kroah-Hartman wrote:
->> Can you rediff this once 3.8-rc1 is out and send it to me then?
->
-> So if you are going to respin, please take care of the newly added
-> drivers like drivers/staging/fwserial.
->
-> thanks,
-> --
-> js
 
-Will do on both counts (wait until 3.8-rc1, rebase, and search for TTY
-uses in new drivers).
+When shut down SPI port, it's possible that MRDY has been asserted and a SPI
+timer was activated waiting for SRDY assert, in the case, it needs to delete
+this timer.
 
-- Joe Millenbach
+Signed-off-by: Chen Jun <jun.d.chen@intel.com>
+Signed-off-by: channing <chao.bi@intel.com>
+---
+ drivers/tty/serial/ifx6x60.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 5b9bc19..f5e9666 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -552,6 +552,7 @@ static void ifx_port_shutdown(struct tty_port *port)
+ 		container_of(port, struct ifx_spi_device, tty_port);
+ 
+ 	mrdy_set_low(ifx_dev);
++	del_timer(&ifx_dev->spi_timer);
+ 	clear_bit(IFX_SPI_STATE_TIMER_PENDING, &ifx_dev->flags);
+ 	tasklet_kill(&ifx_dev->io_work_tasklet);
+ }
+-- 
+1.7.1
+
+
+
