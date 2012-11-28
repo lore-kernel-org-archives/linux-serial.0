@@ -1,445 +1,134 @@
-From: Jonathan Woithe <jwoithe@just42.net>
-Subject: Re: Comments requested: driver for Quatech PCI serial cards
-Date: Wed, 28 Nov 2012 12:59:17 +1030
-Message-ID: <20121128022917.GD28558@marvin.atrad.com.au>
-References: <20121114060724.GN30156@marvin.atrad.com.au>
- <20121114121222.3e42860f@pyramind.ukuu.org.uk>
- <20121114231054.GC4505@marvin.atrad.com.au>
- <20121114235719.794a9bdc@pyramind.ukuu.org.uk>
- <20121115001110.GE4505@marvin.atrad.com.au>
- <20121115155347.4be3dce8@pyramind.ukuu.org.uk>
+From: Alexey Pelykh <alexey.pelykh@gmail.com>
+Subject: Re: Fwd: [PULL REQUEST] Tweak to support 1Mbaud and similar baudrates
+ that require Mode16 instead of Mode13
+Date: Wed, 28 Nov 2012 11:05:08 +0200
+Message-ID: <CAOmKuSr+PYcs37DdiOj+h8wq0hjrdtHN4pCUvj-y97fr6-0DCA@mail.gmail.com>
+References: <CAOmKuSpRJhBibSDxTFCH157-XokhaFhvQ-gYxKZe+PfzokaBoA@mail.gmail.com>
+	<CAOmKuSpjitfTeeXz6VKQbhe+iUFb8wYy4n3tAzbjr9g_GOAn4g@mail.gmail.com>
+	<CAOmKuSrQW1j_tmQNbXMO-GUH7zrUR0WR3K4rJNok=2LZmRKVYg@mail.gmail.com>
+	<20121128004204.GB3857@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server.atrad.com.au ([150.101.241.2]:59673 "EHLO
-	server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750889Ab2K1C3f (ORCPT
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:50907 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751670Ab2K1JFJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Nov 2012 21:29:35 -0500
-Content-Disposition: inline
-In-Reply-To: <20121115155347.4be3dce8@pyramind.ukuu.org.uk>
+	Wed, 28 Nov 2012 04:05:09 -0500
+Received: by mail-vc0-f174.google.com with SMTP id m18so9915886vcm.19
+        for <linux-serial@vger.kernel.org>; Wed, 28 Nov 2012 01:05:09 -0800 (PST)
+In-Reply-To: <20121128004204.GB3857@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org, jwoithe@just42.net
+To: Greg KH <gregkh@linuxfoundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: linux-serial@vger.kernel.org
 
-On Thu, Nov 15, 2012 at 03:53:47PM +0000, Alan Cox wrote:
-> > Unfortunately we need the RS422 stuff - that's the reason for using the
-> > DSC-200/300 card.
-> > 
-> > Thanks for the comments and feedback - I'll take another look at things in
-> > the light of the information.  If the functionality we require requires a
-> > significant amount of new code to be written, I suspect that the work will
-> > be deemed too time consuming by those who call the shots.  We'll see.
-> 
-> First guess at what you need except for the RS422 registers is attached.
-> To get the RS422 features working needs the tool tracing (or driver
-> printks adding) to see what QMCR and QOPR bits map to which RS422
-> features.
-> 
-> Given that if you just force the bits you want in with the RS422 warning I
-> expect it'll just work for your case and should then be trivial to add the
-> ioctl.
+Original table in OMAP TRM named "UART Mode Baud Rates, Divisor
+Values, and Error Rates" determines modes not for all common baud
+rates. E.g. for 1000000 baud rate mode should be 16x, but according to
+that table it's determined as 13x. According to current implementation
+of mode
+divisor selection, after requesting 1000000 baudrate from driver,
+later one will configure chip to use MODE13 divisor. Assuming 48Mhz as
+common UART clock speed, MODE13 divisor will effectively give 1230769
+baudrate, what is quite far from desired 1000000 baudrate. While with
+MODE16 divisor, chip will produce exact 1000000 baudrate.
 
-Apologies for the delay in getting back to this.
+In old driver that served UART devices (8250.c and serial_core.c) this
+divisor could have been configured by user-space program, but in
+omap_serial.c driver implementation this ability was not implemented
+(afaik, by design) thus disallowing proper usage of MODE16-compatible
+baudrates.
 
-With a minor change (the port IO base must be set prior to calling
-pci_quatech_clock() and pci_quatech_rs422() in pci_quatech_setup()) this
-seems to do the job for us (with a DSC-200/300 card).  As it turns out, the
-card configuration we need happens to match the power-on default state of
-the card when the jumpers are not in use, so no further manipulation is
-required at this stage.  Revised patch is below, against the tty git tree.
+Changes: I've fixed styling errors using ./scripts/checkpatch.pl
 
-I also tweaked the warning a little to make it clearer that it is the
-software control of RS422 features that aren't supported.  If the defaults
-are fine (or the hardware jumpers are used to control the features) then
-RS422 will work just fine.
+Signed-off-by: Alexey Pelykh <alexey.pelykh@gmail.com>
 
-So far as getting something working for our case, the patch below is all
-that is required.  I do know the QMCR and QOPR bit map details for at least
-the DSC-200/300 card as it's more or less described in the manual.  I will
-try to prepare a second patch which at least creates the necessary defines
-for these in the next few days.
+The following changes since commit 77b67063bb6bce6d475e910d3b886a606d0d91f7:
 
-With regard to the ioctl, should this be an implementation of the ioctl
-provided by the old out-of-tree driver, or is there an established
-standard/example which I should write against instead?
+  Linux 3.7-rc5 (2012-11-11 13:44:33 +0100)
 
-jonathan
+are available in the git repository at:
 
+  git://github.com/alexey-pelykh/linux.git omap_serial_mode_fix
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 17b7d26..43c6b4f 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1040,6 +1040,253 @@ static int pci_asix_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
+for you to fetch changes up to cf827bb4057fdcdaeac20b95b01c29c068109185:
+
+  Tweak to support 1Mbaud and similar baudrates that require Mode16
+instead of Mode13 (2012-11-12 19:29:27 +0200)
+
+----------------------------------------------------------------
+Alexey Pelykh (1):
+      Tweak to support 1Mbaud and similar baudrates that require
+Mode16 instead of Mode13
+
+ drivers/tty/serial/omap-serial.c |   38 ++++++++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 6d3d26a..6d567dd 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -182,24 +182,42 @@ static void serial_omap_enable_wakeup(struct
+uart_omap_port *up, bool enable)
  }
- 
-+/* Quatech devices have their own extra interface features */
-+
-+struct quatech_feature {
-+	u16 devid;
-+	bool amcc;
-+};
-+
-+#define QPCR_TEST_FOR1		0x3F
-+#define QPCR_TEST_GET1		0x00
-+#define QPCR_TEST_FOR2		0x40
-+#define QPCR_TEST_GET2		0x40
-+#define QPCR_TEST_FOR3		0x80
-+#define QPCR_TEST_GET3		0x40
-+#define QPCR_TEST_FOR4		0xC0
-+#define QPCR_TEST_GET4		0x80
-+
-+#define QOPR_CLOCK_X1		0x0000
-+#define QOPR_CLOCK_X2		0x0001
-+#define QOPR_CLOCK_X4		0x0002
-+#define QOPR_CLOCK_X8		0x0003
-+#define QOPR_CLOCK_RATE_MASK	0x0003
-+
-+
-+static struct quatech_feature quatech_cards[] = {
-+	{ PCI_DEVICE_ID_QUATECH_QSC100,   1 },
-+	{ PCI_DEVICE_ID_QUATECH_DSC100,   1 },
-+	{ PCI_DEVICE_ID_QUATECH_DSC100E,  0 },
-+	{ PCI_DEVICE_ID_QUATECH_DSC200,   1 },
-+	{ PCI_DEVICE_ID_QUATECH_DSC200E,  0 },
-+	{ PCI_DEVICE_ID_QUATECH_ESC100D,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_ESC100M,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_QSCP100,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_DSCP100,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_QSCP200,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_DSCP200,  1 },
-+	{ PCI_DEVICE_ID_QUATECH_ESCLP100, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_QSCLP100, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_DSCLP100, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_SSCLP100, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_QSCLP200, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_DSCLP200, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_SSCLP200, 0 },
-+	{ PCI_DEVICE_ID_QUATECH_SPPXP_100, 0 },
-+	{ 0, }
-+};
-+
-+static int pci_quatech_amcc(u16 devid)
-+{
-+	struct quatech_feature *qf = &quatech_cards[0];
-+	while (qf->devid) {
-+		if (qf->devid == devid)
-+			return qf->amcc;
-+		qf++;
-+	}
-+	pr_err("quatech: unknown port type '0x%04X'.\n", devid);
-+	return 0;
-+};
-+
-+static int pci_quatech_rqopr(struct uart_8250_port *port)
-+{
-+	unsigned long base = port->port.iobase;
-+	u8 LCR, val;
-+
-+	LCR = inb(base + UART_LCR);
-+	outb(0xBF, base + UART_LCR);
-+	val = inb(base + UART_SCR);
-+	outb(LCR, base + UART_LCR);
-+	return val;
-+}
-+
-+static void pci_quatech_wqopr(struct uart_8250_port *port, u8 qopr)
-+{
-+	unsigned long base = port->port.iobase;
-+	u8 LCR, val;
-+
-+	LCR = inb(base + UART_LCR);
-+	outb(0xBF, base + UART_LCR);
-+	val = inb(base + UART_SCR);
-+	outb(qopr, base + UART_SCR);
-+	outb(LCR, base + UART_LCR);
-+}
-+
-+static int pci_quatech_rqmcr(struct uart_8250_port *port)
-+{
-+	unsigned long base = port->port.iobase;
-+	u8 LCR, val, qmcr;
-+
-+	LCR = inb(base + UART_LCR);
-+	outb(0xBF, base + UART_LCR);
-+	val = inb(base + UART_SCR);
-+	outb(val | 0x10, base + UART_SCR);
-+	qmcr = inb(base + UART_MCR);
-+	outb(val, base + UART_SCR);
-+	outb(LCR, base + UART_LCR);
-+
-+	return qmcr;
-+}
-+
-+static void pci_quatech_wqmcr(struct uart_8250_port *port, u8 qmcr)
-+{
-+	unsigned long base = port->port.iobase;
-+	u8 LCR, val;
-+
-+	LCR = inb(base + UART_LCR);
-+	outb(0xBF, base + UART_LCR);
-+	val = inb(base + UART_SCR);
-+	outb(val | 0x10, base + UART_SCR);
-+	outb(qmcr, base + UART_MCR);
-+	outb(val, base + UART_SCR);
-+	outb(LCR, base + UART_LCR);
-+}
-+
-+static int pci_quatech_has_qmcr(struct uart_8250_port *port)
-+{
-+	unsigned long base = port->port.iobase;
-+	u8 LCR, val;
-+
-+	LCR = inb(base + UART_LCR);
-+	outb(0xBF, base + UART_LCR);
-+	val = inb(base + UART_SCR);
-+	if (val & 0x20) {
-+		outb(0x80, UART_LCR);
-+		if (!(inb(UART_SCR) & 0x20)) {
-+			outb(LCR, base + UART_LCR);
-+			return 1;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int pci_quatech_test(struct uart_8250_port *port)
-+{
-+	u8 reg;
-+	u8 qopr = pci_quatech_rqopr(port);
-+	pci_quatech_wqopr(port, qopr & QPCR_TEST_FOR1);
-+	reg = pci_quatech_rqopr(port) & 0xC0;
-+	if (reg != QPCR_TEST_GET1)
-+		return -EINVAL;
-+	pci_quatech_wqopr(port, (qopr & QPCR_TEST_FOR1)|QPCR_TEST_FOR2);
-+	reg = pci_quatech_rqopr(port) & 0xC0;
-+	if (reg != QPCR_TEST_GET2)
-+		return -EINVAL;
-+	pci_quatech_wqopr(port, (qopr & QPCR_TEST_FOR1)|QPCR_TEST_FOR3);
-+	reg = pci_quatech_rqopr(port) & 0xC0;
-+	if (reg != QPCR_TEST_GET3)
-+		return -EINVAL;
-+	pci_quatech_wqopr(port, (qopr & QPCR_TEST_FOR1)|QPCR_TEST_FOR4);
-+	reg = pci_quatech_rqopr(port) & 0xC0;
-+	if (reg != QPCR_TEST_GET4)
-+		return -EINVAL;
-+
-+	pci_quatech_wqopr(port, qopr);
-+	return 0;	
-+}
-+
-+static int pci_quatech_clock(struct uart_8250_port *port)
-+{
-+	u8 qopr, reg, set;
-+	unsigned long clock;
-+
-+	if (pci_quatech_test(port) < 0)
-+		return 1843200;
-+
-+	qopr = pci_quatech_rqopr(port);
-+
-+	pci_quatech_wqopr(port, qopr & ~QOPR_CLOCK_X8);
-+	reg = pci_quatech_rqopr(port);
-+	if (reg & QOPR_CLOCK_X8) {
-+		clock = 1843200;
-+		goto out;
-+	}
-+	pci_quatech_wqopr(port, qopr | QOPR_CLOCK_X8);
-+	reg = pci_quatech_rqopr(port);
-+	if (!(reg & QOPR_CLOCK_X8)) {
-+		clock = 1843200;
-+		goto out;
-+	}
-+	reg &= QOPR_CLOCK_X8;
-+	if (reg == QOPR_CLOCK_X2) {
-+		clock =  3685400;
-+		set = QOPR_CLOCK_X2;
-+	} else if (reg == QOPR_CLOCK_X4) {
-+		clock = 7372800;
-+		set = QOPR_CLOCK_X4;
-+	} else if (reg == QOPR_CLOCK_X8) {
-+		clock = 14745600;
-+		set = QOPR_CLOCK_X8;
-+	} else {
-+		clock = 1843200;
-+		set = QOPR_CLOCK_X1;
-+	}
-+	qopr &= ~QOPR_CLOCK_RATE_MASK;
-+	qopr |= set;
-+
-+out:
-+	pci_quatech_wqopr(port, qopr);
-+	return clock;
-+}
-+
-+static int pci_quatech_rs422(struct uart_8250_port *port)
-+{
-+	u8 qmcr;
-+	int rs422 = 0;
-+
-+	if (!pci_quatech_has_qmcr(port))
-+		return 0;
-+	qmcr = pci_quatech_rqmcr(port);
-+	pci_quatech_wqmcr(port, 0xFF);
-+	if (pci_quatech_rqmcr(port))
-+		rs422 = 1;
-+	pci_quatech_wqmcr(port, qmcr);
-+	return rs422;
-+}
-+
-+static int pci_quatech_init(struct pci_dev *dev)
-+{
-+	if (pci_quatech_amcc(dev->device)) {
-+		unsigned long base = pci_resource_start(dev, 0);
-+		if (base) {
-+			u32 tmp;
-+			outl(inl(base + 0x38), base + 0x38);
-+			tmp = inl(base + 0x3c);
-+			outl(tmp | 0x01000000, base + 0x3c);
-+			outl(tmp, base + 0x3c);
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int pci_quatech_setup(struct serial_private *priv,
-+		  const struct pciserial_board *board,
-+		  struct uart_8250_port *port, int idx)
-+{
-+	/* Needed by pci_quatech calls below */
-+	port->port.iobase = pci_resource_start(priv->dev, FL_GET_BASE(board->flags));
-+	/* Set up the clocking */
-+	port->port.uartclk = pci_quatech_clock(port);
-+	/* For now just warn about RS422 */
-+	if (pci_quatech_rs422(port)) 
-+		pr_warn( "quatech: software control of RS422 features not currently supported.\n");
-+	return pci_default_setup(priv, board, port, idx);
-+}
-+
-+static void __devexit pci_quatech_exit(struct pci_dev *dev)
-+{
-+}
-+
- static int pci_default_setup(struct serial_private *priv,
- 		  const struct pciserial_board *board,
- 		  struct uart_8250_port *port, int idx)
-@@ -1503,6 +1750,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.setup		= pci_default_setup,
- 		.exit		= __devexit_p(pci_plx9050_exit),
- 	},
-+	/* Quatech */
-+	{
-+		.vendor		= PCI_VENDOR_ID_QUATECH,
-+		.device		= PCI_ANY_ID,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_quatech_init,
-+		.setup		= pci_quatech_setup,
-+		.exit		= __devexit_p(pci_quatech_exit),
-+	},
- 	/*
- 	 * SBS Technologies, Inc., PMC-OCTALPRO 232
- 	 */
-@@ -3257,18 +3514,70 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_ROMULUS,
- 		0x10b5, 0x106a, 0, 0,
- 		pbn_plx_romulus },
-+	/*
-+	 * Quatech cards. These actually have configurable clocks but for
-+	 * now we just use the default.
-+	 *
-+	 * 100 series are RS232, 200 series RS422, 
-+	 */
- 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSC100,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b1_4_115200 },
- 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC100,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b1_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC100E,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSC200E,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSC200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_4_115200 },
- 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100D,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b1_8_115200 },
- 	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESC100M,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
- 		pbn_b1_8_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSCP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_4_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSCP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSCP200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_4_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSCP200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b1_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSCLP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_4_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSCLP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SSCLP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_1_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_QSCLP200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_4_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_DSCLP200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SSCLP200,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b2_1_115200 },
-+	{	PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_ESCLP100,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_b0_8_115200 },
-+
- 	{	PCI_VENDOR_ID_SPECIALIX, PCI_DEVICE_ID_OXSEMI_16PCI954,
- 		PCI_VENDOR_ID_SPECIALIX, PCI_SUBDEVICE_ID_SPECIALIX_SPEED4,
- 		0, 0,
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index 9d36b82..ce45006 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -1867,8 +1867,23 @@
- #define PCI_VENDOR_ID_QUATECH		0x135C
- #define PCI_DEVICE_ID_QUATECH_QSC100	0x0010
- #define PCI_DEVICE_ID_QUATECH_DSC100	0x0020
-+#define PCI_DEVICE_ID_QUATECH_DSC200	0x0030
-+#define PCI_DEVICE_ID_QUATECH_QSC200	0x0040
- #define PCI_DEVICE_ID_QUATECH_ESC100D	0x0050
- #define PCI_DEVICE_ID_QUATECH_ESC100M	0x0060
-+#define PCI_DEVICE_ID_QUATECH_QSCP100	0x0120
-+#define PCI_DEVICE_ID_QUATECH_DSCP100	0x0130
-+#define PCI_DEVICE_ID_QUATECH_QSCP200	0x0140
-+#define PCI_DEVICE_ID_QUATECH_DSCP200	0x0150
-+#define PCI_DEVICE_ID_QUATECH_QSCLP100	0x0170
-+#define PCI_DEVICE_ID_QUATECH_DSCLP100	0x0180
-+#define PCI_DEVICE_ID_QUATECH_DSC100E	0x0181
-+#define PCI_DEVICE_ID_QUATECH_SSCLP100	0x0190
-+#define PCI_DEVICE_ID_QUATECH_QSCLP200	0x01A0
-+#define PCI_DEVICE_ID_QUATECH_DSCLP200	0x01B0
-+#define PCI_DEVICE_ID_QUATECH_DSC200E	0x01B1
-+#define PCI_DEVICE_ID_QUATECH_SSCLP200	0x01C0
-+#define PCI_DEVICE_ID_QUATECH_ESCLP100	0x01E0
- #define PCI_DEVICE_ID_QUATECH_SPPXP_100 0x0278
- 
- #define PCI_VENDOR_ID_SEALEVEL		0x135e
 
+ /*
++ * serial_omap_baud_is_mode16 - check if baud rate is MODE16X
++ * @port: uart port info
++ * @baud: baudrate for which mode needs to be determined
++ *
++ * Returns true if baud rate is MODE16X and false if MODE13X
++ * Original table in OMAP TRM named "UART Mode Baud Rates, Divisor Values,
++ * and Error Rates" determines modes not for all common baud rates.
++ * E.g. for 1000000 baud rate mode must be 16x, but according to that
++ * table it's determined as 13x.
++ */
++static bool
++serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
++{
++       unsigned int n13 = port->uartclk / (13 * baud);
++       unsigned int n16 = port->uartclk / (16 * baud);
++       int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
++       int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
++       if (baudAbsDiff13 < 0)
++               baudAbsDiff13 = -baudAbsDiff13;
++       if (baudAbsDiff16 < 0)
++               baudAbsDiff16 = -baudAbsDiff16;
++
++       return (baudAbsDiff13 > baudAbsDiff16);
++}
++
++/*
+  * serial_omap_get_divisor - calculate divisor value
+  * @port: uart port info
+  * @baud: baudrate for which divisor needs to be calculated.
+- *
+- * We have written our own function to get the divisor so as to support
+- * 13x mode. 3Mbps Baudrate as an different divisor.
+- * Reference OMAP TRM Chapter 17:
+- * Table 17-1. UART Mode Baud Rates, Divisor Values, and Error Rates
+- * referring to oversampling - divisor value
+- * baudrate 460,800 to 3,686,400 all have divisor 13
+- * except 3,000,000 which has divisor value 16
+  */
+ static unsigned int
+ serial_omap_get_divisor(struct uart_port *port, unsigned int baud)
+ {
+        unsigned int divisor;
+
+-       if (baud > OMAP_MODE13X_SPEED && baud != 3000000)
++       if (!serial_omap_baud_is_mode16(port, baud))
+                divisor = 13;
+        else
+                divisor = 16;
+@@ -893,7 +911,7 @@ serial_omap_set_termios(struct uart_port *port,
+struct ktermios *termios,
+        serial_out(up, UART_EFR, up->efr);
+        serial_out(up, UART_LCR, cval);
+
+-       if (baud > 230400 && baud != 3000000)
++       if (!serial_omap_baud_is_mode16(port, baud))
+                up->mdr1 = UART_OMAP_MDR1_13X_MODE;
+        else
+                up->mdr1 = UART_OMAP_MDR1_16X_MODE;
