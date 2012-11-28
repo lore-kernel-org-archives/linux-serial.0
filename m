@@ -1,55 +1,69 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: [PATCH] tty: Correct tty buffer flushing.
-Date: Wed, 28 Nov 2012 04:28:03 +0400
-Message-ID: <50B55A93.4090900@ilyx.ru>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Fwd: [PULL REQUEST] Tweak to support 1Mbaud and similar
+ baudrates that require Mode16 instead of Mode13
+Date: Tue, 27 Nov 2012 16:42:04 -0800
+Message-ID: <20121128004204.GB3857@kroah.com>
+References: <CAOmKuSpRJhBibSDxTFCH157-XokhaFhvQ-gYxKZe+PfzokaBoA@mail.gmail.com>
+ <CAOmKuSpjitfTeeXz6VKQbhe+iUFb8wYy4n3tAzbjr9g_GOAn4g@mail.gmail.com>
+ <CAOmKuSrQW1j_tmQNbXMO-GUH7zrUR0WR3K4rJNok=2LZmRKVYg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:50044 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753060Ab2K1A2Q (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:47381 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753625Ab2K1Akr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Nov 2012 19:28:16 -0500
+	Tue, 27 Nov 2012 19:40:47 -0500
+Received: by mail-pb0-f46.google.com with SMTP id wy7so9293741pbc.19
+        for <linux-serial@vger.kernel.org>; Tue, 27 Nov 2012 16:40:47 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <CAOmKuSrQW1j_tmQNbXMO-GUH7zrUR0WR3K4rJNok=2LZmRKVYg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, ilya@ilyx.ru
+To: Alexey Pelykh <alexey.pelykh@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-CANCEL - [PATCH] tty: hold lock across tty buffer finding and buffer filling.
-commit f8f72f047b96c6c8b13f6e3ba53fa6feb4266813
+On Tue, Nov 27, 2012 at 11:56:06PM +0200, Alexey Pelykh wrote:
+> Hello everyone,
+> 
+> Original table in OMAP TRM named "UART Mode Baud Rates, Divisor
+> Values, and Error Rates" determines modes not for all common baud
+> rates. E.g. for 1000000 baud rate mode should be 16x, but according to
+> that table it's determined as 13x. According to current implementation
+> of mode
+> divisor selection, after requesting 1000000 baudrate from driver,
+> later one will configure chip to use MODE13 divisor. Assuming 48Mhz as
+> common UART clock speed, MODE13 divisor will effectively give 1230769
+> baudrate, what is quite far from desired 1000000 baudrate. While with
+> MODE16 divisor, chip will produce exact 1000000 baudrate.
+> 
+> In old driver that served UART devices (8250.c and serial_core.c) this
+> divisor could have been configured by user-space program, but in
+> omap_serial.c driver implementation this ability was not implemented
+> (afaik, by design) thus disallowing proper usage of MODE16-compatible
+> baudrates.
+> 
+> Best regards,
+> Alexey Pelykh
+> 
+> The following changes since commit 77b67063bb6bce6d475e910d3b886a606d0d91f7:
+> 
+>   Linux 3.7-rc5 (2012-11-11 13:44:33 +0100)
+> 
+> are available in the git repository at:
+> 
+>   git://github.com/alexey-pelykh/linux.git omap_serial_mode_fix
+> 
+> for you to fetch changes up to cf827bb4057fdcdaeac20b95b01c29c068109185:
+> 
+>   Tweak to support 1Mbaud and similar baudrates that require Mode16
+> instead of Mode13 (2012-11-12 19:29:27 +0200)
 
-The commit above very dirty, has many degradation on SMP systems, because take
-spinlock on long time, and not resolve problem with tty_prepare_string*()(Jiri Slaby).
-We lose all advantage from the use of flip buffer.
+Sorry, I can't take a git pull request for a single patch, please just
+send it in an email (the patch that is), with the correct signed-off-by:
+information, as described in Documentation/SubmittingPatches, and I will
+be glad to queue it up.
 
-The root of problem it use carelessly buffer flushing, then another thread can write to it.
-This patch resolve this problem and doesn't let lose advantage from flip buffer use.
-Before use need REVERT commit f8f72f047b96c6c8b13f6e3ba53fa6feb4266813.
+thanks,
 
-Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
----
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 6c9b7cd..4f02f9c 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -114,11 +114,14 @@ static void __tty_buffer_flush(struct tty_struct *tty)
- {
- 	struct tty_buffer *thead;
- 
--	while ((thead = tty->buf.head) != NULL) {
--		tty->buf.head = thead->next;
--		tty_buffer_free(tty, thead);
-+	if (tty->buf.head == NULL)
-+		return;
-+	while ((thead = tty->buf.head->next) != NULL) {
-+		tty_buffer_free(tty, tty->buf.head);
-+		tty->buf.head = thead;
- 	}
--	tty->buf.tail = NULL;
-+	WARN_ON(tty->buf.head != tty->buf.tail);
-+	tty->buf.head->read = tty->buf.head->commit;
- }
- 
- /**
-
+greg k-h
