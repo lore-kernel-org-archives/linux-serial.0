@@ -1,42 +1,29 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 3/5] serial: 8250_dw: Map IO memory
-Date: Wed, 28 Nov 2012 14:48:42 +0200
-Message-ID: <1354106924-11013-4-git-send-email-heikki.krogerus@linux.intel.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 5/5] serial: 8250_dw: Set FIFO size dynamically
+Date: Wed, 28 Nov 2012 13:18:26 +0000
+Message-ID: <20121128131826.38391319@pyramind.ukuu.org.uk>
 References: <1354106924-11013-1-git-send-email-heikki.krogerus@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1354106924-11013-1-git-send-email-heikki.krogerus@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+	<1354106924-11013-6-git-send-email-heikki.krogerus@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43994 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754562Ab2K1NNK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 28 Nov 2012 08:13:10 -0500
+In-Reply-To: <1354106924-11013-6-git-send-email-heikki.krogerus@linux.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-This needs to be done in order to later access the
-Designware specific registers.
+> +	if (!reg || (reg & 0xff) != '*')
+> +		return;
+> +
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+That looks bogus. If reg == 0 then reg & 0xFF != '*'
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 8d45be5..8394f85 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -111,10 +111,13 @@ static int __devinit dw8250_probe(struct platform_device *pdev)
- 	uart.port.irq = irq->start;
- 	uart.port.handle_irq = dw8250_handle_irq;
- 	uart.port.type = PORT_8250;
--	uart.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP |
--		UPF_FIXED_PORT;
-+	uart.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
- 	uart.port.dev = &pdev->dev;
- 
-+	uart.port.membase = ioremap(regs->start, regs->end - regs->start);
-+	if (!uart.port.membase)
-+		return -ENOMEM;
-+
- 	uart.port.iotype = UPIO_MEM;
- 	uart.port.serial_in = dw8250_serial_in;
- 	uart.port.serial_out = dw8250_serial_out;
--- 
-1.7.10.4
+So why the double test ?
+
