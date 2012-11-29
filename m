@@ -1,43 +1,43 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] MAINTAINERS: TTY - Add linux-serial mailing list
-Date: Thu, 29 Nov 2012 09:23:04 +0100
-Message-ID: <50B71B68.2090601@suse.cz>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com>  <50B6F967.3050000@asianux.com> <1354169679.29762.28.camel@joe-AO722>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty: Correct tty buffer flushing.
+Date: Thu, 29 Nov 2012 13:54:18 +0000
+Message-ID: <20121129135418.4237e7f8@pyramind.ukuu.org.uk>
+References: <50B55A93.4090900@ilyx.ru>
+	<50B6A652.9000107@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:49800 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750922Ab2K2IXJ (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:45939 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753394Ab2K2Ntv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Nov 2012 03:23:09 -0500
-In-Reply-To: <1354169679.29762.28.camel@joe-AO722>
+	Thu, 29 Nov 2012 08:49:51 -0500
+In-Reply-To: <50B6A652.9000107@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Chen Gang <gang.chen@asianux.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Xiaobing Tu <xiaobing.tu@intel.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Alek Du <alek.du@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 11/29/2012 07:14 AM, Joe Perches wrote:
-> Signed-off-by: Joe Perches <joe@perches.com>
-> ---
->  MAINTAINERS |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index afc0b27..255dafb 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -7658,6 +7658,7 @@ K:	^Subject:.*(?i)trivial
->  TTY LAYER
->  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->  M:	Jiri Slaby <jslaby@suse.cz>
-> +L:	linux-serial@vger.kernel.org
+> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> index 6c9b7cd..4f02f9c 100644
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -114,11 +114,14 @@ static void __tty_buffer_flush(struct tty_struct *tty)
+>  {
+>  	struct tty_buffer *thead;
+>  
+> -	while ((thead = tty->buf.head) != NULL) {
+> -		tty->buf.head = thead->next;
+> -		tty_buffer_free(tty, thead);
+> +	if (tty->buf.head == NULL)
+> +		return;
+> +	while ((thead = tty->buf.head->next) != NULL) {
+> +		tty_buffer_free(tty, tty->buf.head);
+> +		tty->buf.head = thead;
 
-This might have the effect that people will try to reach us at that
-list. But this is not true at least for me. serial != tty.
+This part of the change seems to have no effect at all. There are no
+locks held so there is nothing guaranteeing how the other processors
+views of the order of operations will be affected.
 
-thanks,
--- 
-js
-suse labs
+Alan
