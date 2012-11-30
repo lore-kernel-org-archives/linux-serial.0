@@ -1,39 +1,108 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: Correct tty buffer flushing.
-Date: Thu, 29 Nov 2012 20:14:14 -0500
-Message-ID: <1354238054.2860.18.camel@thor>
-References: <50B55A93.4090900@ilyx.ru> <50B6A652.9000107@ilyx.ru>
-	 <20121129135418.4237e7f8@pyramind.ukuu.org.uk> <50B76D96.20809@ilyx.ru>
-	 <20121129212809.5bc12088@bob.linux.org.uk>
+From: Chen Gang <gang.chen@asianux.com>
+Subject: Re: [Suggestion] drivers/tty: drivers/char/:  for MAX_ASYNC_BUFFER_SIZE
+Date: Fri, 30 Nov 2012 10:52:38 +0800
+Message-ID: <50B81F76.8020508@asianux.com>
+References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:49090 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752859Ab2K3BO2 (ORCPT
+Received: from intranet.asianux.com ([58.214.24.6]:45191 "EHLO
+	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754097Ab2K3Cvr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 Nov 2012 20:14:28 -0500
-In-Reply-To: <20121129212809.5bc12088@bob.linux.org.uk>
+	Thu, 29 Nov 2012 21:51:47 -0500
+In-Reply-To: <20121129183207.GA4688@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Ilya Zykov <ilya@ilyx.ru>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Xiaobing Tu <xiaobing.tu@intel.com>, Jiri Slaby <jslaby@suse.cz>, Alek Du <alek.du@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Thu, 2012-11-29 at 21:28 +0000, Alan Cox wrote:
-> > Sorry, In you reply not all patch.
-> > Main idea here -  we never flash last (struct tty_buffer) in the
-> > active buffer. Only data for ldisc. (tty->buf.head->read =
-> > tty->buf.head->commit). At that moment driver can collect(write) data
-> > in buffer without conflict.
-> 
-> Ah.. now I understand. Yes that makes sense.  I will think about that
-> carefully. This is why a good explanation with a patch is important.
+=E4=BA=8E 2012=E5=B9=B411=E6=9C=8830=E6=97=A5 02:32, Greg KH =E5=86=99=E9=
+=81=93:
+> On Thu, Nov 29, 2012 at 01:57:59PM +0800, Chen Gang wrote:
+>>> And, I really don't understand here, why do you want to change this=
+?
+>>> What is it going to change?  And why?
+>>>
+>>
+>> Why:
+>>   for the context MGSLPC_INFO *info in drivers/char/pcmcia/synclink_=
+cs.c
+>>     info->max_frame_size can be the value between 4096 .. 65535 (can=
+ be
+>> set by its module input parameter)
+>>     info->flag_buf length is 4096 (MAX_ASYNC_BUFFER_SIZE)
+>>   in function rx_get_frame
+>>     the framesize is limit by info->max_frame_size, but may still be
+>> larger that 4096.
+>>     when call function ldisc_receive_buf, info->flag_buf is equal to
+>> 4096, but framesize can be more than 4096. it will cause memory over=
+ flow.
+>=20
+> Do you use that pcmcia driver for anything?  Are those cards still
+> around?
 
-FWIW, I've been running this on -next. The logic seems sound to me --
-fundamentally, this technique is what flush_to_ldisc() does.
+I am not use them.
 
-Regards,
-Peter Hurley
+I am just through code review (so it is only a suggestion).
+
+this issue has effect with 4 synclink drivers
+I checked their source code, all of them have the same issue.
+  drivers/char/pcmcia/synclink_cs.c:213:        char flag_buf[MAX_ASYNC=
+_BUFFER_SIZE];
+  drivers/tty/synclink_gt.c:320:        char flag_buf[MAX_ASYNC_BUFFER_=
+SIZE];
+  drivers/tty/synclink.c:294:   char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+  drivers/tty/synclinkmp.c:265: char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+
+by the way, for the char_buf, has already useless (can be removed)
+  drivers/tty/synclink_gt.c:321:        char char_buf[MAX_ASYNC_BUFFER_=
+SIZE];
+  drivers/tty/synclink.c:295:   char char_buf[MAX_ASYNC_BUFFER_SIZE];  =
+=20
+  drivers/tty/synclinkmp.c:266: char char_buf[MAX_ASYNC_BUFFER_SIZE];
 
 
+
+>=20
+>> What:
+>>   #define MAX_ASYNC_BUFFER_SIZE  0x10000 (instead of 4096, originall=
+y).
+>>   let it match the max frame size.
+>>
+>> At last:
+>>   my suggestion may be incorrect, need relative member (who expert a=
+bout
+>> it) to help checking.
+>=20
+> That driver might be incorrect, yes, care to make up a patch for it a=
+nd
+> test it to verify it fixes the problem?
+>=20
+
+and now Alan Cox has his own opinions
+  at least, I think it is valuable to continue discussing about it.
+
+if Alan Cox agree with it (but it seems not),  I will make patch, and t=
+ry to perform test.
+also welcome another members to help testing.
+
+
+
+> thanks,
+>=20
+> greg k-h
+>=20
+>=20
+
+
+--=20
+Chen Gang
+
+Asianux Corporation
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
