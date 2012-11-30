@@ -1,42 +1,33 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: Re: [Suggestion] drivers/tty: drivers/char/:  for MAX_ASYNC_BUFFER_SIZE
-Date: Fri, 30 Nov 2012 15:14:09 +0800
-Message-ID: <50B85CC1.9010403@asianux.com>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <C7D3911F-7B6B-4353-A84B-0218FAB27198@microgate.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 0/5] serial: 8250: 8250_dw changes and dynamic
+ capabilities
+Date: Fri, 30 Nov 2012 15:48:58 +0200
+Message-ID: <20121130134858.GA12481@as23.pp.htv.fi>
+References: <1354106924-11013-1-git-send-email-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <C7D3911F-7B6B-4353-A84B-0218FAB27198@microgate.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from filtteri6.pp.htv.fi ([213.243.153.189]:38349 "EHLO
+	filtteri6.pp.htv.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752197Ab2K3NtC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 30 Nov 2012 08:49:02 -0500
+Content-Disposition: inline
+In-Reply-To: <1354106924-11013-1-git-send-email-heikki.krogerus@linux.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-=E4=BA=8E 2012=E5=B9=B411=E6=9C=8830=E6=97=A5 11:27, Paul Fulghum =E5=86=
-=99=E9=81=93:
->=20
-> I=E2=80=99m the maintainer for these drivers. I only caught this mess=
-age by
-> chance and
-> have not had a chance to review the entire thread and original patche=
-s.
-> It=E2=80=99s late and I=E2=80=99m tired so I won=E2=80=99t be able to=
- look at this until tomorrow.
->=20
-> I do not doubt there is a problem that needs cleaning up. I just need=
- a
-> day to
-> review and make sure this does not cause any problems.
+On Wed, Nov 28, 2012 at 02:48:39PM +0200, Heikki Krogerus wrote:
+> Hi,
+> 
+> These are mainly small changes to 8250_dw.c. The interesting patch is
+> probable the addition to 8250.c that would allow the drivers to
+> deliver their UART's capabilities when they are registering ports.
 
-  if it is surely an issue,
-    is it suitable to let Paul Fulghum to provide the relative patch ?
-    for synclink, he is more expert than me.
-    for test and test environments, he is also more expert than me.
+These don't apply on top of tty-next so I need to make version two.
+I'll send it next week in case somebody has comments.
 
-  thanks.
-
---=20
-Chen Gang
-
-Asianux Corporation
+-- 
+heikki
