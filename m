@@ -1,91 +1,189 @@
 From: Paul Fulghum <paulkf@microgate.com>
-Subject: Re: [Suggestion] drivers/tty: drivers/char/:  for MAX_ASYNC_BUFFER_SIZE
-Date: Fri, 30 Nov 2012 10:24:12 -0600
-Message-ID: <50B8DDAC.8070901@microgate.com>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com>
+Subject: [PATCH] synclink fix ldisc buffer argument
+Date: Fri, 30 Nov 2012 13:46:21 -0600
+Message-ID: <50B90D0D.9040401@microgate.com>
+References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <50B81F76.8020508@asianux.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chen Gang <gang.chen@asianux.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from atl4mhob06.myregisteredsite.com ([209.17.115.44]:50198 "EHLO
+	atl4mhob06.myregisteredsite.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752991Ab2K3TqT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 30 Nov 2012 14:46:19 -0500
+Received: from mailpod1.hostingplatform.com (mailpod1.networksolutionsemail.com [206.188.198.65])
+	by atl4mhob06.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id qAUJkI7h008184
+	for <linux-serial@vger.kernel.org>; Fri, 30 Nov 2012 14:46:18 -0500
+In-Reply-To: <50B8DDAC.8070901@microgate.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Chen Gang <gang.chen@asianux.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On 11/29/2012 8:52 PM, Chen Gang wrote:
-> =E4=BA=8E 2012=E5=B9=B411=E6=9C=8830=E6=97=A5 02:32, Greg KH =E5=86=99=
-=E9=81=93:
->> On Thu, Nov 29, 2012 at 01:57:59PM +0800, Chen Gang wrote:
->>>> And, I really don't understand here, why do you want to change thi=
-s?
->>>> What is it going to change?  And why?
->>>
->>> Why:
->>>   for the context MGSLPC_INFO *info in drivers/char/pcmcia/synclink=
-_cs.c
->>>     info->max_frame_size can be the value between 4096 .. 65535 (ca=
-n be
->>> set by its module input parameter)
->>>     info->flag_buf length is 4096 (MAX_ASYNC_BUFFER_SIZE)
->>>   in function rx_get_frame
->>>     the framesize is limit by info->max_frame_size, but may still b=
-e
->>> larger that 4096.
->>>     when call function ldisc_receive_buf, info->flag_buf is equal t=
-o
->>> 4096, but framesize can be more than 4096. it will cause memory ove=
-r flow.
+Fix call to line discipline receive_buf by synclink drivers.
+Dummy flag buffer argument is ignored by N_HDLC line discipline but might
+be of insufficient size if accessed by a different line discipline
+selected by mistake. Calls are changed to use data buffer argument for
+both data and flag buffer so valid memory is provided if the wrong
+line discipline is used. Unused char_buf and flag_buf are removed.
 
-The confusion centers on calling the line discipline receive_buf
-function with a data buffer larger than the flag buffer.
+Signed-off-by: Paul Fulghum <paulkf@microgate.com>
 
-The synclink drivers support asynchronous and synchronous (HDLC)
-serial communications.
 
-In asynchronous mode, the tty flip buffer is used to feed
-data to the line discipline. In this mode, the above argument
-does not apply. The receive_buf function is not called directly.
+--- a/drivers/char/pcmcia/synclink_cs.c	2012-11-26 14:15:45.000000000 -0600
++++ b/drivers/char/pcmcia/synclink_cs.c	2012-11-30 12:50:23.000000000 -0600
+@@ -210,7 +210,6 @@ typedef struct _mgslpc_info {
+ 	char testing_irq;
+ 	unsigned int init_error;	/* startup error (DIAGS)	*/
+ 
+-	char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+ 	bool drop_rts_on_tx_done;
+ 
+ 	struct	_input_signal_events	input_signal_events;
+@@ -3707,7 +3706,16 @@ static bool rx_get_frame(MGSLPC_INFO *in
+ 				hdlcdev_rx(info, buf->data, framesize);
+ 			else
+ #endif
+-				ldisc_receive_buf(tty, buf->data, info->flag_buf, framesize);
++			{
++				/*
++				 * Call N_HDLC line discipline directly to maintain
++				 * frame boundaries. Reuse the data buffer argument for the
++				 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++				 * If a different line discipline is selected by mistake it
++				 * will have valid memory for both arguments.
++				 */
++				ldisc_receive_buf(tty, buf->data, buf->data, framesize);
++			}
+ 		}
+ 	}
+ 
+--- a/drivers/tty/synclink.c	2012-11-26 14:15:45.000000000 -0600
++++ b/drivers/tty/synclink.c	2012-11-30 12:59:29.000000000 -0600
+@@ -291,8 +291,6 @@ struct mgsl_struct {
+ 	bool lcr_mem_requested;
+ 
+ 	u32 misc_ctrl_value;
+-	char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+-	char char_buf[MAX_ASYNC_BUFFER_SIZE];	
+ 	bool drop_rts_on_tx_done;
+ 
+ 	bool loopmode_insert_requested;
+@@ -6661,7 +6659,17 @@ static bool mgsl_get_rx_frame(struct mgs
+ 				hdlcdev_rx(info,info->intermediate_rxbuffer,framesize);
+ 			else
+ #endif
+-				ldisc_receive_buf(tty, info->intermediate_rxbuffer, info->flag_buf, framesize);
++			{
++				/*
++				 * Call N_HDLC line discipline directly to maintain
++				 * frame boundaries. Reuse the data buffer argument for the
++				 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++				 * If a different line discipline is selected by mistake it
++				 * will have valid memory for both arguments.
++				 */
++				ldisc_receive_buf(tty, info->intermediate_rxbuffer,
++						  info->intermediate_rxbuffer, framesize);
++			}
+ 		}
+ 	}
+ 	/* Free the buffers used by this frame. */
+@@ -6833,7 +6841,15 @@ static bool mgsl_get_raw_rx_frame(struct
+ 			memcpy( info->intermediate_rxbuffer, pBufEntry->virt_addr, framesize);
+ 			info->icount.rxok++;
+ 
+-			ldisc_receive_buf(tty, info->intermediate_rxbuffer, info->flag_buf, framesize);
++			/*
++			 * Call N_HDLC line discipline directly to maintain
++			 * block boundaries. Reuse the data buffer argument for the
++			 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++			 * If a different line discipline is selected by mistake it
++			 * will have valid memory for both arguments.
++			 */
++			ldisc_receive_buf(tty, info->intermediate_rxbuffer,
++					   info->intermediate_rxbuffer, framesize);
+ 		}
+ 
+ 		/* Free the buffers used by this frame. */
+--- a/drivers/tty/synclinkmp.c	2012-11-26 14:15:45.000000000 -0600
++++ b/drivers/tty/synclinkmp.c	2012-11-30 13:01:36.000000000 -0600
+@@ -262,8 +262,6 @@ typedef struct _synclinkmp_info {
+ 	bool sca_statctrl_requested;
+ 
+ 	u32 misc_ctrl_value;
+-	char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+-	char char_buf[MAX_ASYNC_BUFFER_SIZE];
+ 	bool drop_rts_on_tx_done;
+ 
+ 	struct	_input_signal_events	input_signal_events;
+@@ -4979,8 +4977,17 @@ CheckAgain:
+ 				hdlcdev_rx(info,info->tmp_rx_buf,framesize);
+ 			else
+ #endif
+-				ldisc_receive_buf(tty,info->tmp_rx_buf,
+-						  info->flag_buf, framesize);
++			{
++				/*
++				 * Call N_HDLC line discipline directly to maintain
++				 * frame boundaries. Reuse the data buffer argument for the
++				 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++				 * If a different line discipline is selected by mistake it
++				 * will have valid memory for both arguments.
++				 */
++				ldisc_receive_buf(tty, info->tmp_rx_buf,
++						  info->tmp_rx_buf, framesize);
++			}
+ 		}
+ 	}
+ 	/* Free the buffers used by this frame. */
+--- a/drivers/tty/synclink_gt.c	2012-11-26 14:15:45.000000000 -0600
++++ b/drivers/tty/synclink_gt.c	2012-11-30 12:53:25.000000000 -0600
+@@ -317,8 +317,6 @@ struct slgt_info {
+ 	unsigned char *tx_buf;
+ 	int tx_count;
+ 
+-	char flag_buf[MAX_ASYNC_BUFFER_SIZE];
+-	char char_buf[MAX_ASYNC_BUFFER_SIZE];
+ 	bool drop_rts_on_tx_done;
+ 	struct	_input_signal_events	input_signal_events;
+ 
+@@ -4760,7 +4758,16 @@ check_again:
+ 				hdlcdev_rx(info,info->tmp_rbuf, framesize);
+ 			else
+ #endif
+-				ldisc_receive_buf(tty, info->tmp_rbuf, info->flag_buf, framesize);
++			{
++				/*
++				 * Call N_HDLC line discipline directly to maintain
++				 * frame boundaries. Reuse the data buffer argument for the
++				 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++				 * If a different line discipline is selected by mistake it
++				 * will have valid memory for both arguments.
++				 */
++				ldisc_receive_buf(tty, info->tmp_rbuf, info->tmp_rbuf, framesize);
++			}
+ 		}
+ 	}
+ 	free_rbufs(info, start, end);
+@@ -4793,9 +4800,17 @@ static bool rx_get_buf(struct slgt_info 
+ 	}
+ 	DBGDATA(info, info->rbufs[i].buf, count, "rx");
+ 	DBGINFO(("rx_get_buf size=%d\n", count));
+-	if (count)
++	if (count) {
++		/*
++		 * Call N_HDLC line discipline directly to maintain
++		 * block boundaries. Reuse the data buffer argument for the
++		 * flag buffer argument. The flag buffer is ignored by N_HDLC.
++		 * If a different line discipline is selected by mistake it
++		 * will have valid memory for both arguments.
++		 */
+ 		ldisc_receive_buf(info->port.tty, info->rbufs[i].buf,
+-				  info->flag_buf, count);
++				  info->rbufs[i].buf, count);
++	}
+ 	free_rbufs(info, i, i);
+ 	return true;
+ }
 
-In synchronous mode, the driver calls the line discipline
-receive_buf function directly to feed one HDLC frame
-of data per call. Maintaining frame boundaries is needed
-in this mode. This is done only with the N_HDLC line
-discipline which expects this format and ignores the flag buffer.
-The flag buffer passed is just a place holder to meet the
-calling conventions of the line discipline receive_buf function.
-
-The only danger is if:
-1. driver is configured for synchronous mode
-2. driver is configured for frames > 4K
-3. line discipline other than N_HDLC is selected
-
-In this case the line discipline might try to access
-beyond the end of the flag buffer. This is a non-functional
-configuration that would not occur on purpose.
-
-Increasing the flag buffer size would prevent a problem
-in this degenerate case of purposeful misconfiguration.
-This would be at the expense of larger allocations that are
-not used.
-
-I think the correct fix is for me to change the direct
-calls to pass the same buffer for both data and flag and
-add a comment describing the fact the flag buffer is ignored
-when using N_HDLC. That way a misconfigured setup won't
-cause problems and no unneeded allocations are made.
-
-My suggestion is to leave it as is for now until I can make
-those changes. I admit the current code is ugly enough to
-cause confusion (sorry Chen Gang), but I don't see any immediate danger=
-=2E
-
---=20
-Paul Fulghum
-MicroGate Systems, Ltd.
-=3DCustomer Driven, by Design=3D
-(800)444-1982 (US Sales)
-(512)345-7791 x102 (Direct)
-(512)343-9046 (Fax)
-Central Time Zone (GMT -6h)
-www.microgate.com
