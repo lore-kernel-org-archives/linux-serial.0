@@ -1,21 +1,21 @@
 From: Wei Yongjun <weiyj.lk@gmail.com>
-Subject: [PATCH] tty: serial: vt8500: fix return value check in vt8500_serial_probe()
-Date: Sun, 2 Dec 2012 05:10:44 -0500
-Message-ID: <CAPgLHd_gx3BmZh+L1k6koa6eH5SKKEVFedSC_M=nju+Dzq=rug@mail.gmail.com>
+Subject: [PATCH -next] serial: xilinx_uartps: fix return value check in xuartps_probe()
+Date: Sun, 2 Dec 2012 05:12:43 -0500
+Message-ID: <CAPgLHd-upT_0ThHxU9rXtsw6CP4vU8zvOnLp6u0ZC_2unpDbTw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:35722 "EHLO
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:40897 "EHLO
 	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751748Ab2LBKKp (ORCPT
+	with ESMTP id S1751808Ab2LBKMo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 2 Dec 2012 05:10:45 -0500
-Received: by mail-qc0-f174.google.com with SMTP id o22so1017265qcr.19
-        for <linux-serial@vger.kernel.org>; Sun, 02 Dec 2012 02:10:44 -0800 (PST)
+	Sun, 2 Dec 2012 05:12:44 -0500
+Received: by mail-qc0-f174.google.com with SMTP id o22so1017598qcr.19
+        for <linux-serial@vger.kernel.org>; Sun, 02 Dec 2012 02:12:43 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux@prisktech.co.nz, alan@linux.intel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, rob.herring@calxeda.com
-Cc: yongjun_wei@trendmicro.com.cn, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: alan@linux.intel.com, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@secretlab.ca, rob.herring@calxeda.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
 From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
@@ -25,21 +25,24 @@ check should be replaced with IS_ERR().
 
 Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 ---
- drivers/tty/serial/vt8500_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 205d4cf..f528cc2 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -604,7 +604,7 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
- 	vt8500_port->uart.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 2be22a2..1eb4657 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -948,9 +948,9 @@ static int xuartps_probe(struct platform_device *pdev)
+ 	struct clk *clk;
  
- 	vt8500_port->clk = of_clk_get(pdev->dev.of_node, 0);
--	if (vt8500_port->clk) {
-+	if (!IS_ERR(vt8500_port->clk)) {
- 		vt8500_port->uart.uartclk = clk_get_rate(vt8500_port->clk);
- 	} else {
- 		/* use the default of 24Mhz if not specified and warn */
+ 	clk = of_clk_get(pdev->dev.of_node, 0);
+-	if (!clk) {
++	if (IS_ERR(clk)) {
+ 		dev_err(&pdev->dev, "no clock specified\n");
+-		return -ENODEV;
++		return PTR_ERR(clk);
+ 	}
+ 
+ 	rc = clk_prepare_enable(clk);
 
 
