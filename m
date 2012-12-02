@@ -1,59 +1,45 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: [Suggestion] drivers/tty/serial: sprintf for filename[32].
-Date: Sat, 01 Dec 2012 18:01:04 +0800
-Message-ID: <50B9D560.8090003@asianux.com>
+From: Wei Yongjun <weiyj.lk@gmail.com>
+Subject: [PATCH] tty: serial: vt8500: fix return value check in vt8500_serial_probe()
+Date: Sun, 2 Dec 2012 05:10:44 -0500
+Message-ID: <CAPgLHd_gx3BmZh+L1k6koa6eH5SKKEVFedSC_M=nju+Dzq=rug@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from intranet.asianux.com ([58.214.24.6]:50288 "EHLO
-	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751644Ab2LAKAO (ORCPT
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:35722 "EHLO
+	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751748Ab2LBKKp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 1 Dec 2012 05:00:14 -0500
+	Sun, 2 Dec 2012 05:10:45 -0500
+Received: by mail-qc0-f174.google.com with SMTP id o22so1017265qcr.19
+        for <linux-serial@vger.kernel.org>; Sun, 02 Dec 2012 02:10:44 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: linux@prisktech.co.nz, alan@linux.intel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, rob.herring@calxeda.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-Hello Alan Cox:
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-in drives/tty/serial/ucc_uart.c:
-  at line 1231, the filename buffer length is 32.
-  at line 1242, "fsl_qe_ucode_uart_%u_%u%u.bin" is 23 + 3*%u.
-  at line 1237, after call soc_info. soc within 4 bytes, rev_h within 2 bytes, rev_l within 2 bytes.
+In case of error, function of_clk_get() returns ERR_PTR()
+and never returns NULL. The NULL test in the return value
+check should be replaced with IS_ERR().
 
-my suggestion is:
-  use "fsl_qe_ucode_uart_%.4u_%.2u%.2u.bin" instead of "fsl_qe_ucode_uart_%u_%u%u.bin";
-  or use "char filename[64]" instead of "char filename[32]".
-  please give your choice (or provide new choice).
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/tty/serial/vt8500_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  it is not a bug, it is only to make source code clearer or extensible.
-
-  thanks.
-
-
-1231                 } else {
-1232                         char filename[32];
-1233                         unsigned int soc;
-1234                         unsigned int rev_h;
-1235                         unsigned int rev_l;
-1236 
-1237                         soc = soc_info(&rev_h, &rev_l);
-1238                         if (!soc) {
-1239                                 dev_err(&ofdev->dev, "unknown CPU model\n");
-1240                                 return -ENXIO;
-1241                         }
-1242                         sprintf(filename, "fsl_qe_ucode_uart_%u_%u%u.bin",
-1243                                 soc, rev_h, rev_l);
-1244 
-1245                         dev_info(&ofdev->dev, "waiting for firmware %s\n",
-1246                                 filename);
-1247 
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index 205d4cf..f528cc2 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -604,7 +604,7 @@ static int __devinit vt8500_serial_probe(struct platform_device *pdev)
+ 	vt8500_port->uart.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
+ 
+ 	vt8500_port->clk = of_clk_get(pdev->dev.of_node, 0);
+-	if (vt8500_port->clk) {
++	if (!IS_ERR(vt8500_port->clk)) {
+ 		vt8500_port->uart.uartclk = clk_get_rate(vt8500_port->clk);
+ 	} else {
+ 		/* use the default of 24Mhz if not specified and warn */
 
 
-
--- 
-Chen Gang
-
-Asianux Corporation
