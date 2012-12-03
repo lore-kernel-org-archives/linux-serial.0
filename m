@@ -1,92 +1,89 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: flush_to_ldisc accesses tty after free  (was: [PATCH 21/21]
- TTY: move tty buffers to tty_port)
-Date: Sun, 02 Dec 2012 14:57:34 -0500
-Message-ID: <1354478254.2531.161.camel@thor>
-References: <1350592007-9216-1-git-send-email-jslaby@suse.cz>
-	 <1350592007-9216-22-git-send-email-jslaby@suse.cz>
-	 <50897E98.5080502@gmail.com> <50911F67.3040303@suse.cz>
-	 <CA+1xoqfZ5DHVi44Y_a5EmXYeN6Eh=COSP4CiA6tM-aqJE1vBoQ@mail.gmail.com>
-	 <5091448D.3@suse.cz>
-	 <CA+1xoqdRBCQYBQdK-=KJohtua_wD_fp4akk6_jS0x3x82fRp5g@mail.gmail.com>
-	 <5093EC1B.2050800@suse.cz>
-	 <CA+1xoqdRV5LORTDM9iiTRQwCdGK9XqcW54zyh03M-c-mVU2YLQ@mail.gmail.com>
-	 <5093F262.6000301@suse.cz> <50947B7B.8080601@gmail.com>
-	 <50953E8D.9000504@suse.cz> <5095A384.5080205@gmail.com>
-	 <5095BC6E.2010505@gmail.com> <1354046255.2444.10.camel@thor>
-	 <50B946A9.9070306@gmail.com> <1354373995.2531.48.camel@thor>
-	 <1354392383.2531.118.camel@thor>
+From: Chen Gang <gang.chen@asianux.com>
+Subject: Re: [PATCH] synclink fix ldisc buffer argument
+Date: Mon, 03 Dec 2012 10:20:52 +0800
+Message-ID: <50BC0C84.4060802@asianux.com>
+References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <20121202151332.3b6a6504@pyramind.ukuu.org.uk> <F6B8A325-7DBF-4623-B16C-CDC5642EFD16@microgate.com> <20121202181057.097012c6@pyramind.ukuu.org.uk> <989CB961-79F8-479B-B16C-41358A60AC94@microgate.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:42348 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753582Ab2LBT5s (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 2 Dec 2012 14:57:48 -0500
-In-Reply-To: <1354392383.2531.118.camel@thor>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <989CB961-79F8-479B-B16C-41358A60AC94@microgate.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Fulghum <paulkf@microgate.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>, Jiri Slaby <jirislaby@gmail.com>, alan@linux.intel.com
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, Dave Jones <davej@redhat.com>, Sasha Levin <levinsasha928@gmail.com>, linux-serial <linux-serial@vger.kernel.org>
 
-[whoops... cc: linux-serial]
+=E4=BA=8E 2012=E5=B9=B412=E6=9C=8803=E6=97=A5 04:05, Paul Fulghum =E5=86=
+=99=E9=81=93:
+> OK, I=E2=80=99ll do that.
+>=20
 
-On Sat, 2012-12-01 at 15:06 -0500, Peter Hurley wrote:
-> On Sat, 2012-12-01 at 09:59 -0500, Peter Hurley wrote:
-> ....
-> > From instrumenting the tty_release() path, it's clear that tty_buffer
-> > work is still scheduled even after tty_release_ldisc() has run. For
-> > example, with this patch I get the warning below it.
-> > 
-> > [Further analysis to follow in subsequent mail...]
-> 
-> [ Please note: this analysis only refers to the pty driver. The
-> situation with hardware drivers has further complications.]
-> 
-> Firstly, this problem predates Jiri's changes; only because he was
-> cautious by checking the lifetime of the itty in flush_to_ldisc(), did
-> he uncover this existing problem.
-> 
-> One example of how it is possible for buffer work to be scheduled even
-> after tty_release_ldisc() stems from how tty_ldisc_halt() works (or
-> rather doesn't). (I've snipped out the relevant code from tty_ldisc.c
-> for annotation below.)
+pardon (I am just learning)
+  does 65535 mean HDLC_MAX_FRAME_SIZE ?
+  why do we need info->max_frame_size >=3D 4096 ?
 
-Naturally, I found the least obvious problem first.
+in drivers/tty/synclink_gt.c:
+3550         if (info->max_frame_size < 4096)
+3551                 info->max_frame_size =3D 4096;
+3552         else if (info->max_frame_size > 65535)
+3553                 info->max_frame_size =3D 65535;
+3554
+ ...
+3603                 info->max_frame_size =3D 4096;
 
-The more obvious problem is that the pty driver doesn't have an ldisc
-reference to the 'other' tty when pty_write() is called. So doing the
-tty_flip_buffer_push() has scheduled buffer work for a potentially
-halted ldisc.
 
-static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
-{
-	struct tty_struct *to = tty->link;	<==== this is the 'other' tty
+if possible:
+  can we move the relative comments (which are inside function) to the
+location just above ldisc_receive_buf ?
 
-	if (tty->stopped)
-		return 0;
 
-	if (c > 0) {
-		/* Stuff the data into the input queue of the other end */
-		c = tty_insert_flip_string(to, buf, c);
-		/* And shovel */
-		if (c) {
-			tty_flip_buffer_push(to);
-			tty_wakeup(tty);
-		}
-	}
-	return c;
-}
+  thanks.
 
-There are several possible ways to fix this:
-1. Halt both ldiscs and ensure that both ldiscs have no outstanding
-references before cancelling their work.
-2. Claim an ldisc reference for the 'other' ldisc in things like
-tty_write().
-3. I'm sure there's other ways....
+gchen.
 
-Regards,
-Peter Hurley
 
+> On Dec 2, 2012, at 12:10 PM, Alan Cox <alan@lxorguk.ukuu.org.uk
+> <mailto:alan@lxorguk.ukuu.org.uk>> wrote:
+>=20
+>> On Sun, 2 Dec 2012 10:11:58 -0600
+>> Paul Fulghum <paulkf@microgate.com <mailto:paulkf@microgate.com>> wr=
+ote:
+>>
+>>> True, in this mode line disciplines other than N_HDLC would not be
+>>> functional and N_HDLC ignores the flag buffer.
+>>> This change won=E2=80=99t make other line disciplines useful, it wi=
+ll just
+>>> prevent the case of a mistakenly selected line discipline accessing
+>>> beyond the end of the (dummy) flag buffer.
+>>>
+>>> I=E2=80=99m fine with or without the change. It is functional now w=
+ith a
+>>> chance to read past then end of a buffer if misconfigured. With the
+>>> change, it has the same functionality without the ability to read
+>>> past the end of a buffer if misconfigured.
+>>
+>> With the change its feeding crap in the flags buffer, which may matt=
+er in
+>> future depending what happens to the other bits.
+>>
+>> If this is a real issue far better to just kzalloc a blank flag buff=
+er to
+>> match the mtu.
+>>
+>=20
+> --=20
+> Paul Fulghum
+> MicroGate Systems, Ltd.
+> =3DCustomer Driven, by Design=3D
+> (800)444-1982
+> (512)345-7791 (Direct)
+> (512)343-9046 (Fax)
+> Central Time Zone (GMT -5h)
+> www.microgate.com <http://www.microgate.com/>
+>=20
+
+
+--=20
+Chen Gang
+
+Asianux Corporation
