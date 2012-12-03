@@ -1,144 +1,148 @@
 From: Lv Zheng <lv.zheng@intel.com>
-Subject: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
-Date: Mon,  3 Dec 2012 11:39:59 +0800
-Message-ID: <6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
+Subject: [RFC PATCH 3/3] UART: Add dummy devices to test the enumeration.
+Date: Mon,  3 Dec 2012 11:40:15 +0800
+Message-ID: <5a1174c1b6d140fc7f828361fd3080336656de6c.1354505472.git.lv.zheng@intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:19699 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754530Ab2LCDkk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 2 Dec 2012 22:40:40 -0500
 In-Reply-To: <cover.1354505471.git.lv.zheng@intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>
 Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
-List-Id: linux-serial@vger.kernel.org
 
-Tranditional UARTs are used as communication pipes between the hosts
-while the modern computing systems equipped with HSU (High Speed UARTs)
-would connect on-board target devices using the UART ports. The role of
-the UART controllers are changed from the communication facility to the
-platform bus.
+This is a hidden test patch that would not be sent to the public.
+There might be some udev add-ons for matching the UART target devices from
+the user space.
 
-In the recent ACPI 5.0 specification updates, firmwares are provided the
-possibilities to enumerate the UART target devices known to the platform
-vendors.
-Thus there is the needs for enumerating the UART target devices:
-1. hotplug uevent
-2. serial configuration
-Currently, only serial cards on the specific bus (ex. PCMCIA) can be
-enumerated and userspace can obtain the hotplug event of the UART target
-devices. Linux kernel is lack of an overall enumeration mechanism for
-UART target devices.
-In order to send uevent, a device need to be a class device or a bus
-device. This patch introduces a bus_type subsystem to manage the new
-UART target device type for the purpose of the possible future
-extensions.
-When the UART target devices are created, userspace uevent rules can
-pass the creation details to the userspace driver managers
-(ex. hciattach). Here is an example of the uevents and exported
-attributes of the new type of devices:
+1. The result of the UART dummy target device is as follows:
 
-Test DSDT (dummy UART host adapter INTF000 and target device INTF001):
-  Device (UA00)
-  {
-      Name (_HID, "INTF000")  // _HID: Hardware ID
-      Name (RBUF, ResourceTemplate ()
-      {
-          Memory32Fixed (ReadWrite,
-              0x00000000,         // Address Base
-              0x00001000)         // Address Length
-      })
-      Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
-      {
-          Return (RBUF)
-      }
-      Method (_STA, 0, NotSerialized)  // _STA: Status
-      {
-          Return (0x0F)
-      }
-      Device (BTH0)
-      {
-          Name (_HID, "INTF001")  // _HID: Hardware ID
-          Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
-          {
-              Name (UBUF, ResourceTemplate ()
-              {
-                  UartSerialBus (0x0001C200, DataBitsEight, StopBitsOne,
-                      0xC0, LittleEndian, ParityTypeNone, FlowControlHardware,
-                      0x0020, 0x0020, "\\_SB.PCI0.UA00",
-                      0x00, ResourceConsumer, ,
-                      )
-              })
-              Return (UBUF)
-          }
-          Method (_STA, 0, NotSerialized)  // _STA: Status
-          {
-              Return (0x0F)
-          }
-      }
-  }
+# udevadm monitor --kernel --environment > ~/uart.uevents
+# echo add > /sys/bus/uart/uevent
+# echo add > /sys/bus/uart/devices/DUMMY/uevent
+# cat ~/uart.uevents
+monitor will print the received events for:
+KERNEL - the kernel uevent
 
-uevent and environments:
 KERNEL[252.443458] add      /bus/uart (bus)
 ACTION=add
 DEVPATH=/bus/uart
 SEQNUM=1142
 SUBSYSTEM=bus
 
-KERNEL[268.491709] add      /devices/platform/INTF000:00/INTF001:00 (uart)
+KERNEL[268.491709] add      /devices/platform/serial8250/DUMMY (uart)
 ACTION=add
-DEVPATH=/devices/platform/INTF000:00/INTF001:00
+DEVPATH=/devices/platform/serial8250/DUMMY
 DEVTYPE=uart_device
-MODALIAS=uart:INTF001:00
+MODALIAS=uart:DUMMY
 SEQNUM=1144
 SUBSYSTEM=uart
 
-kobject attribute files:
-# cat /sys/bus/uart/devices/INTF001:00/modalias
-uart:INTF001:00
-# cat /sys/bus/uart/devices/INTF001:00/tty_dev
+# cat /sys/bus/uart/devices/DUMMY/modalias
+uart:DUMMY
+# cat /sys/bus/uart/devices/DUMMY/tty_dev
 ttyS0
-# cat /sys/bus/uart/devices/INTF001:00/tty_attrs
-115200 8N0 HW
-# cat /sys/bus/uart/devices/INTF001:00/modem_lines
-LE:RTS,CTS,
+# cat /sys/bus/uart/devices/DUMMY/tty_attrs
+115200 8N1 HW SW
+# cat /sys/bus/uart/devices/DUMMY/modem_lines
+LE:RTS,
 
-kobject sysfs links:
-# ls -l /sys/bus/uart/devices
-INTF001:00 -> ../../../devices/platform/INTF000:00/INTF001:00
-# ls -l /sys/devices/platform/INTF000:00/INTF001:00
-subsystem -> ../../../../bus/uart
-host_node -> ../tty/ttyS0
-# ls -l /sys/devices/platform/INTF000:00/tty/ttyS0
-target_node -> ../../INTF001:00
+2. The result of the UART customized DSDT target device is as follows:
+
+The test result is attached as part of the first patch in this series.
 
 Signed-off-by: Lv Zheng <lv.zheng@intel.com>
 ---
- drivers/tty/serial/Makefile     |    2 +-
- drivers/tty/serial/serial_bus.c |  409 +++++++++++++++++++++++++++++++++++++++
- include/linux/mod_devicetable.h |    5 +
- include/linux/serial_core.h     |   56 ++++++
- 4 files changed, 471 insertions(+), 1 deletion(-)
- create mode 100644 drivers/tty/serial/serial_bus.c
+ drivers/acpi/scan.c                  |    1 +
+ drivers/tty/serial/8250/8250.c       |   10 ++-
+ drivers/tty/serial/8250/8250_dummy.c |  128 ++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig      |   10 +++
+ drivers/tty/serial/8250/Makefile     |    1 +
+ drivers/tty/serial/serial_bus.c      |   17 +++++
+ include/linux/serial_8250.h          |    2 +
+ include/linux/serial_core.h          |    3 +
+ 8 files changed, 170 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_dummy.c
 
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 4f694da..4400521 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -2,7 +2,7 @@
- # Makefile for the kernel serial device drivers.
- #
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 67a7fa6..4892015 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -36,6 +36,7 @@ static const char *dummy_hid = "device";
+ static const struct acpi_device_id acpi_platform_device_ids[] = {
  
--obj-$(CONFIG_SERIAL_CORE) += serial_core.o
-+obj-$(CONFIG_SERIAL_CORE) += serial_core.o serial_bus.o
- obj-$(CONFIG_SERIAL_21285) += 21285.o
+ 	{ "PNP0D40" },
++	{ "INTF000" },
  
- # These Sparc drivers have to appear before others such as 8250
-diff --git a/drivers/tty/serial/serial_bus.c b/drivers/tty/serial/serial_bus.c
+ 	{ }
+ };
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 3ba4234..6f503f4 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -56,7 +56,7 @@ static unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
+ 
+ static unsigned int nr_uarts = CONFIG_SERIAL_8250_RUNTIME_UARTS;
+ 
+-static struct uart_driver serial8250_reg;
++struct uart_driver serial8250_reg;
+ 
+ static int serial_index(struct uart_port *port)
+ {
+@@ -2902,7 +2902,7 @@ int serial8250_find_port(struct uart_port *p)
+ #define SERIAL8250_CONSOLE	NULL
+ #endif
+ 
+-static struct uart_driver serial8250_reg = {
++struct uart_driver serial8250_reg = {
+ 	.owner			= THIS_MODULE,
+ 	.driver_name		= "serial",
+ 	.dev_name		= "ttyS",
+@@ -2910,6 +2910,7 @@ static struct uart_driver serial8250_reg = {
+ 	.minor			= 64,
+ 	.cons			= SERIAL8250_CONSOLE,
+ };
++EXPORT_SYMBOL_GPL(serial8250_reg);
+ 
+ /*
+  * early_serial_setup - early registration for 8250 ports
+@@ -2987,6 +2988,8 @@ void serial8250_resume_port(int line)
+ 	uart_resume_port(&serial8250_reg, port);
+ }
+ 
++struct uart_device *uart_dummy;
++
+ /*
+  * Register a set of serial devices attached to a platform device.  The
+  * list is terminated with a zero flags entry, which means we expect
+@@ -3032,6 +3035,8 @@ static int __devinit serial8250_probe(struct platform_device *dev)
+ 				p->irq, ret);
+ 		}
+ 	}
++	uart_dummy = uart_register_dummy(&serial8250_reg, &dev->dev, 0);
++
+ 	return 0;
+ }
+ 
+@@ -3042,6 +3047,7 @@ static int __devexit serial8250_remove(struct platform_device *dev)
+ {
+ 	int i;
+ 
++	uart_unregister_device(uart_dummy);
+ 	for (i = 0; i < nr_uarts; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
+ 
+diff --git a/drivers/tty/serial/8250/8250_dummy.c b/drivers/tty/serial/8250/8250_dummy.c
 new file mode 100644
-index 0000000..a6674da
+index 0000000..5720fbb
 --- /dev/null
-+++ b/drivers/tty/serial/serial_bus.c
-@@ -0,0 +1,409 @@
++++ b/drivers/tty/serial/8250/8250_dummy.c
+@@ -0,0 +1,128 @@
 +/*
-+ * serial_bus.c - UART bus implementation
++ * 8250_dummy.c: Dummy 8250 UART target device enumerator
 + *
 + * Copyright (c) 2012, Intel Corporation
 + * Author: Lv Zheng <lv.zheng@intel.com>
@@ -148,496 +152,206 @@ index 0000000..a6674da
 + * as published by the Free Software Foundation; version 2
 + * of the License.
 + */
-+
-+/*
-+ * Tranditional UARTs are used as communication pipes between the hosts
-+ * while the modern computing systems equipped with HSU (High Speed UARTs)
-+ * would connect on-board target devices using the UART ports. The role of
-+ * the UART controllers are changed from the communication facility to the
-+ * platform bus.
-+ *
-+ * UART target devices are created in the kernel as struct uart_device.
-+ * It is defined for the following purposes:
-+ * 1. Sending hotplug notifications to the userspace
-+ * 2. Exporting serial configuration parameters to the userspace
-+ * 3. Allowing target device based PM to be added easily
-+ *
-+ */
-+
-+#include <linux/tty.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
 +#include <linux/device.h>
-+#include <linux/slab.h>
 +#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/serial_8250.h>
++#include <linux/serial_core.h>
++#include <linux/serial_reg.h>
++#include <linux/acpi.h>
++#include <linux/acpi_uart.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
 +
-+
-+struct uart_match {
-+	dev_t devt;
++struct dummy8250_data {
++	int	last_lcr;
++	int	line;
 +};
 +
-+static int do_uart_tty_find(struct device *dev, void *data)
++static void dummy8250_serial_out(struct uart_port *p, int offset, int value)
 +{
-+	struct uart_match *match = data;
-+	return dev->devt == match->devt;
 +}
 +
-+/**
-+ * uart_tty_find - find the associated TTY device for the UART target
-+ *		   device
-+ * @drv: the low level UART driver
-+ * @dev: the parent physical device for the TTY devices
-+ * @line: the line number of the UART target device
-+ *
-+ * Return a matching TTY device for the UART target device.
-+ */
-+struct device *uart_tty_find(struct uart_driver *drv,
-+			     struct device *dev, unsigned int line)
++static unsigned int dummy8250_serial_in(struct uart_port *p, int offset)
 +{
-+	struct uart_match match;
-+
-+	match.devt = MKDEV(drv->tty_driver->major,
-+			   drv->tty_driver->minor_start + line);
-+
-+	return device_find_child(dev, &match, do_uart_tty_find);
-+}
-+EXPORT_SYMBOL_GPL(uart_tty_find);
-+
-+/**
-+ * uart_tty_name - get the associated TTY device name for the UART target
-+ *		   device
-+ * @drv: the low level UART driver
-+ * @line: the line number of the UART target device
-+ * @p: pointer to the buffer containing the returned name
-+ *
-+ * Return a TTY device name for the UART target device.
-+ */
-+void uart_tty_name(struct uart_driver *driver, int line, char *p)
-+{
-+	struct tty_driver *drv;
-+
-+	BUG_ON(!driver || !driver->tty_driver || !p);
-+	drv = driver->tty_driver;
-+
-+	if (drv->flags & TTY_DRIVER_UNNUMBERED_NODE)
-+		strcpy(p, drv->name);
-+	else
-+		sprintf(p, "%s%d", drv->name, line + drv->name_base);
-+}
-+EXPORT_SYMBOL_GPL(uart_tty_name);
-+
-+static ssize_t uart_dev_show_name(struct device *dev,
-+				  struct device_attribute *attr, char *buf)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+	return sprintf(buf, "%s\n", udev->name);
-+}
-+
-+static ssize_t uart_dev_show_modalias(struct device *dev,
-+				      struct device_attribute *attr, char *buf)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+	return sprintf(buf, "%s%s\n", UART_MODULE_PREFIX, udev->name);
-+}
-+
-+static ssize_t uart_dev_show_tty_dev(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+	return sprintf(buf, "%s\n", udev->tty_name);
-+}
-+
-+static ssize_t uart_dev_show_tty_attrs(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+	int len = 0;
-+
-+	/* baud rate */
-+	len += sprintf(buf+len, "%d ", udev->baud);
-+
-+	/* data bits */
-+	switch (udev->cflag & CSIZE) {
-+	case CS5:
-+		len += sprintf(buf+len, "5");
-+		break;
-+	case CS6:
-+		len += sprintf(buf+len, "6");
-+		break;
-+	case CS7:
-+		len += sprintf(buf+len, "7");
-+		break;
-+	case CS8:
-+	default:
-+		len += sprintf(buf+len, "8");
-+		break;
-+	}
-+
-+	/* parity */
-+	if (udev->cflag & PARODD)
-+		len += sprintf(buf+len, "O");
-+	else if (udev->cflag & PARENB)
-+		len += sprintf(buf+len, "E");
-+	else
-+		len += sprintf(buf+len, "N");
-+
-+	/* stop bits */
-+	len += sprintf(buf+len, "%d", udev->cflag & CSTOPB ? 1 : 0);
-+
-+	/* HW/SW control */
-+	if (udev->cflag & CRTSCTS)
-+		len += sprintf(buf+len, " HW");
-+	if ((udev->iflag & (IXON|IXOFF|IXANY)) != 0)
-+		len += sprintf(buf+len, " SW");
-+
-+	len += sprintf(buf+len, "\n");
-+	return len;
-+}
-+
-+static ssize_t uart_dev_show_modem_lines(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+	int len = 0;
-+
-+	/* endian */
-+	if (udev->mctrl & TIOCM_LE)
-+		len += sprintf(buf+len, "LE:");
-+	else
-+		len += sprintf(buf+len, "BE:");
-+
-+	/* terminal lines */
-+	if (udev->mctrl & TIOCM_DTR)
-+		len += sprintf(buf+len, "DTR,");
-+	if (udev->mctrl & TIOCM_RTS)
-+		len += sprintf(buf+len, "RTS,");
-+
-+	/* modem lines */
-+	if (udev->mctrl & TIOCM_CTS)
-+		len += sprintf(buf+len, "CTS,");
-+	if (udev->mctrl & TIOCM_CAR)
-+		len += sprintf(buf+len, "CAR,");
-+	if (udev->mctrl & TIOCM_RNG)
-+		len += sprintf(buf+len, "RNG,");
-+	if (udev->mctrl & TIOCM_DSR)
-+		len += sprintf(buf+len, "DSR,");
-+
-+	len += sprintf(buf+len, "\n");
-+	return len;
-+}
-+
-+static DEVICE_ATTR(name, S_IRUGO, uart_dev_show_name, NULL);
-+static DEVICE_ATTR(modalias, S_IRUGO, uart_dev_show_modalias, NULL);
-+static DEVICE_ATTR(tty_dev, S_IRUGO, uart_dev_show_tty_dev, NULL);
-+static DEVICE_ATTR(tty_attrs, S_IRUGO, uart_dev_show_tty_attrs, NULL);
-+static DEVICE_ATTR(modem_lines, S_IRUGO, uart_dev_show_modem_lines, NULL);
-+
-+static struct attribute *uart_dev_attrs[] = {
-+	&dev_attr_name.attr,
-+	/* coldplug: modprobe $(cat .../modalias) */
-+	&dev_attr_modalias.attr,
-+	&dev_attr_tty_dev.attr,
-+	&dev_attr_tty_attrs.attr,
-+	&dev_attr_modem_lines.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group uart_dev_attr_group = {
-+	.attrs	= uart_dev_attrs,
-+};
-+
-+static const struct attribute_group *uart_dev_attr_groups[] = {
-+	&uart_dev_attr_group,
-+	NULL,
-+};
-+
-+#ifdef CONFIG_HOTPLUG
-+static int uart_device_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+
-+	if (add_uevent_var(env, "MODALIAS=%s%s",
-+			   UART_MODULE_PREFIX, udev->name))
-+		return -ENOMEM;
-+
-+	dev_dbg(dev, "uevent\n");
 +	return 0;
 +}
-+#else
-+#define uart_device_uevent	NULL
++
++struct klist *dummy8250_mgr;
++int dummy8250_num;
++
++static int __devinit dummy8250_probe(struct platform_device *pdev)
++{
++	struct uart_8250_port uart = {};
++	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	struct dummy8250_data *data;
++#ifdef CONFIG_ACPI_UART
++	struct klist *mgr;
 +#endif
 +
-+static void uart_device_release(struct device *dev)
-+{
-+	struct uart_device *udev = to_uart_device(dev);
-+
-+	put_device(udev->tty);
-+	kfree(udev);
-+}
-+
-+struct device_type uart_device_type = {
-+	.name		= "uart_device",
-+	.groups		= uart_dev_attr_groups,
-+	.uevent		= uart_device_uevent,
-+	.release	= uart_device_release,
-+};
-+EXPORT_SYMBOL_GPL(uart_device_type);
-+
-+/**
-+ * uart_register_device - instantiate a UART device
-+ * @drv: low level driver structure
-+ * @adap: pointer to the UART target device manager
-+ * @device: the physical device communicating with the target device
-+ * @info: describes one UART target
-+ *
-+ * Create a UART target device.
-+ *
-+ * This returns the new UART target device, which may be saved for later use
-+ * with uart_unregister_device; or NULL to indicate an error.
-+ */
-+struct uart_device *uart_register_device(struct uart_driver *drv,
-+					 struct klist *adap,
-+					 struct device *dev,
-+					 struct uart_board_info const *info)
-+{
-+	struct uart_device *udev;
-+	struct device *tty;
-+	int status;
-+
-+	BUG_ON(info->line >= drv->nr);
-+	BUG_ON((!adap && !dev) || !drv);
-+
-+	udev = kzalloc(sizeof(struct uart_device), GFP_KERNEL);
-+	if (!udev)
-+		return NULL;
-+
-+	strlcpy(udev->name, info->type, sizeof(udev->name));
-+
-+	udev->baud = info->baud;
-+	udev->cflag = info->cflag;
-+	udev->iflag = info->iflag;
-+	udev->mctrl = info->mctrl;
-+
-+	udev->dev.parent = dev;
-+	udev->dev.bus = &uart_bus_type;
-+	udev->dev.type = &uart_device_type;
-+
-+	tty = uart_tty_find(drv, dev, info->line);
-+	if (!tty) {
-+		dev_err(&udev->dev, "Cannot find associated tty device.\n");
-+		goto fail;
-+	}
-+	udev->tty = get_device(tty);
-+	uart_tty_name(drv, info->line, udev->tty_name);
-+
-+	dev_set_name(&udev->dev, "%s", udev->name);
-+	status = device_register(&udev->dev);
-+	if (status) {
-+		dev_err(&udev->dev, "Failed to register uart device.\n");
-+		goto fail2;
++	dev_info(&pdev->dev, "1\n");
++	if (!regs) {
++		dev_err(&pdev->dev, "no registers defined\n");
++		return -EINVAL;
 +	}
 +
-+	status = sysfs_create_link(&tty->kobj, &udev->dev.kobj, "target_node");
-+	status = sysfs_create_link(&udev->dev.kobj, &tty->kobj, "host_node");
++	dev_info(&pdev->dev, "2\n");
++	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++	uart.port.private_data = data;
 +
-+	if (adap) {
-+		udev->adap = adap;
-+		klist_add_tail(&udev->klist_parent, adap);
++	spin_lock_init(&uart.port.lock);
++	uart.port.mapbase = regs->start;
++	uart.port.type = PORT_8250;
++	uart.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP |
++		UPF_FIXED_PORT | UPF_FIXED_TYPE;
++	uart.port.dev = &pdev->dev;
++
++	uart.port.iotype = UPIO_MEM;
++	uart.port.serial_in = dummy8250_serial_in;
++	uart.port.serial_out = dummy8250_serial_out;
++	uart.port.uartclk = 40000000;
++
++	dev_info(&pdev->dev, "3\n");
++	data->line = serial8250_register_8250_port(&uart);
++	if (data->line < 0)
++		return data->line;
++
++#ifdef CONFIG_ACPI_UART
++	dev_info(&pdev->dev, "4\n");
++	mgr = acpi_uart_register_devices(&serial8250_reg, dummy8250_mgr,
++					 &pdev->dev, data->line);
++	if (mgr) {
++		dummy8250_mgr = mgr;
++		dummy8250_num++;
 +	}
-+
-+	return udev;
-+
-+fail2:
-+	put_device(tty);
-+fail:
-+	kfree(udev);
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(uart_register_device);
-+
-+/**
-+ * uart_unregister_device - unregister a UART device
-+ * @device: value returned from uart_register_device()
-+ *
-+ * Reverse effect of uart_register_device().
-+ */
-+void uart_unregister_device(struct uart_device *udev)
-+{
-+	if (udev->adap)
-+		klist_del(&udev->klist_parent);
-+	sysfs_remove_link(&udev->dev.kobj, "host_node");
-+	if (udev->tty)
-+		sysfs_remove_link(&udev->tty->kobj, "target_node");
-+	device_unregister(&udev->dev);
-+}
-+EXPORT_SYMBOL_GPL(uart_unreigster_device);
-+
-+static void klist_uart_get(struct klist_node *n)
-+{
-+	struct uart_device *udev = uart_device_from_parent(n);
-+	get_device(&udev->dev);
-+}
-+
-+static void klist_uart_put(struct klist_node *n)
-+{
-+	struct uart_device *udev = uart_device_from_parent(n);
-+	put_device(&udev->dev);
-+}
-+
-+static struct uart_device *uart_next_device(struct klist_iter *i)
-+{
-+	struct klist_node *n = klist_next(i);
-+	return n ? uart_device_from_parent(n) : NULL;
-+}
-+
-+/**
-+ * uart_add_adapter - register a UART adapter
-+ * @adap: pointer to the device manager
-+ *
-+ * Initialize a UART target device manager - adapter.
-+ */
-+int uart_add_adapter(struct klist *adap)
-+{
-+	klist_init(adap, klist_uart_get, klist_uart_put);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(uart_add_adapter);
-+
-+/**
-+ * uart_del_adapter - unregister a UART adapter
-+ * @adap: pointer to the device manager
-+ *
-+ * Reverse effect of uart_add_adapter().
-+ */
-+void uart_del_adapter(struct klist *adap)
-+{
-+	struct klist_iter i;
-+	struct uart_device *udev;
-+
-+	klist_iter_init(adap, &i);
-+	while ((udev = uart_next_device(&i)))
-+		uart_unregister_device(udev);
-+	klist_iter_exit(&i);
-+}
-+EXPORT_SYMBOL_GPL(uart_del_adapter);
-+
-+struct bus_type uart_bus_type = {
-+	.name		= "uart",
-+};
-+EXPORT_SYMBOL_GPL(uart_bus_type);
-+
-+static int __init uart_bus_init(void)
-+{
-+	int retval;
-+
-+	retval = bus_register(&uart_bus_type);
-+	if (retval)
-+		return retval;
++#endif
++	dev_info(&pdev->dev, "5\n");
++	platform_set_drvdata(pdev, data);
 +
 +	return 0;
 +}
 +
-+static void __exit uart_bus_exit(void)
++static int __devexit dummy8250_remove(struct platform_device *pdev)
 +{
-+	bus_unregister(&uart_bus_type);
++	struct dummy8250_data *data = platform_get_drvdata(pdev);
++
++#ifdef CONFIG_ACPI_UART
++	dummy8250_num--;
++	if (!dummy8250_num)
++		acpi_uart_unregister_devices(dummy8250_mgr);
++#endif
++	serial8250_unregister_port(data->line);
++
++	return 0;
 +}
 +
-+subsys_initcall(uart_bus_init);
-+module_exit(uart_bus_exit);
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index fed3def..28df140 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -455,6 +455,11 @@ struct spi_device_id {
- 			__attribute__((aligned(sizeof(kernel_ulong_t))));
- };
++static const struct acpi_device_id dummy8250_match[] = {
++	{ .id = "INTF000" },
++	{ /* Sentinel */ }
++};
++MODULE_DEVICE_TABLE(acpi, dummy8250_match);
++
++static struct platform_driver dummy8250_platform_driver = {
++	.driver = {
++		.name			= "dummy-uart",
++		.owner			= THIS_MODULE,
++		.acpi_match_table	= dummy8250_match,
++	},
++	.probe				= dummy8250_probe,
++	.remove				= __devexit_p(dummy8250_remove),
++};
++
++module_platform_driver(dummy8250_platform_driver);
++
++MODULE_AUTHOR("Lv Zheng");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Dummy 8250 serial port driver");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index f3d283f..3ba480a 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -270,6 +270,16 @@ config SERIAL_8250_DW
+ 	  Selecting this option will enable handling of the extra features
+ 	  present in the Synopsys DesignWare APB UART.
  
-+/* uart */
++config SERIAL_8250_DUMMY
++	tristate "Support for dummy ACPI 8250"
++	depends on SERIAL_8250 && ACPI
++	help
++	  Selecting this option will enable a test UART target device DUMMY
++	  under the ISA serial8250 and a test UART host adapter INTF000
++	  as an platform device for the purpose of testing the ACPI UART
++	  enumeration support.
++	  If unsure, say "N" here.
 +
-+#define UART_NAME_SIZE	32
-+#define UART_MODULE_PREFIX "uart:"
+ config SERIAL_8250_EM
+ 	tristate "Support for Emma Mobile intergrated serial port"
+ 	depends on SERIAL_8250 && ARM && HAVE_CLK
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 108fe7f..fb82aa9 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -19,3 +19,4 @@ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+ obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
+ obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
+ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
++obj-$(CONFIG_SERIAL_8250_DUMMY)		+= 8250_dummy.o
+diff --git a/drivers/tty/serial/serial_bus.c b/drivers/tty/serial/serial_bus.c
+index a6674da..e3d0509 100644
+--- a/drivers/tty/serial/serial_bus.c
++++ b/drivers/tty/serial/serial_bus.c
+@@ -384,6 +384,23 @@ void uart_del_adapter(struct klist *adap)
+ }
+ EXPORT_SYMBOL_GPL(uart_del_adapter);
+ 
++static struct uart_board_info dummy_target = {
++	.type = "DUMMY",
++	.baud = 115200,
++	.cflag = CS8 | CSTOPB | CRTSCTS,
++	.iflag = (IXON | IXOFF),
++	.mctrl = TIOCM_LE | TIOCM_RTS,
++};
 +
- /* dmi */
- enum dmi_field {
- 	DMI_NONE,
++struct uart_device *uart_register_dummy(struct uart_driver *drv,
++					struct device *dev,
++					unsigned int line)
++{
++	dummy_target.line = line;
++	return uart_register_device(drv, NULL, dev, &dummy_target);
++}
++EXPORT_SYMBOL_GPL(uart_register_dummy);
++
+ struct bus_type uart_bus_type = {
+ 	.name		= "uart",
+ };
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index c174c90..3b6c260 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -120,4 +120,6 @@ extern void serial8250_set_isa_configurator(void (*v)
+ 					(int port, struct uart_port *up,
+ 						unsigned short *capabilities));
+ 
++extern struct uart_driver serial8250_reg;
++
+ #endif
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 3c43022..422f8cc4 100644
+index 422f8cc4..a3d1d5d 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -31,10 +31,13 @@
- #include <linux/sysrq.h>
- #include <linux/pps_kernel.h>
- #include <uapi/linux/serial_core.h>
-+#include <linux/mod_devicetable.h>
+@@ -418,6 +418,9 @@ struct uart_device *uart_register_device(struct uart_driver *drv,
+ 					 struct device *dev,
+ 					 struct uart_board_info const *info);
+ void uart_unregister_device(struct uart_device *udev);
++struct uart_device *uart_register_dummy(struct uart_driver *drv,
++					struct device *dev,
++					unsigned int line);
  
- struct uart_port;
-+struct uart_device;
- struct serial_struct;
- struct device;
-+struct uart_board_info;
- 
- /*
-  * This structure describes all the operations that can be
-@@ -367,4 +370,57 @@ static inline int uart_handle_break(struct uart_port *port)
- 					 (cflag) & CRTSCTS || \
- 					 !((cflag) & CLOCAL))
- 
-+/*
-+ * UART Bus
-+ */
-+struct uart_board_info {
-+	char type[UART_NAME_SIZE];
-+	unsigned int line;	/* port index */
-+	unsigned int cflag;	/* termio cflag */
-+	unsigned int iflag;	/* termio iflag */
-+	unsigned int mctrl;	/* modem ctrl settings */
-+	unsigned int baud;
-+	int irq;
-+};
-+
-+extern struct bus_type uart_bus_type;
-+
-+int uart_add_adapter(struct klist *adap);
-+void uart_del_adapter(struct klist *adap);
-+
-+struct uart_device {
-+	char			name[UART_NAME_SIZE];
-+	char			tty_name[64];
-+	unsigned int		cflag;	/* termio cflag */
-+	unsigned int		iflag;	/* termio iflag */
-+	unsigned int		mctrl;	/* modem ctrl settings */
-+	unsigned int		baud;
-+	struct device		dev;
-+	struct device		*tty;
-+	struct klist_node	klist_parent;
-+	struct klist		*adap;	/* set for multi-port adapter */
-+};
-+
-+extern struct device_type uart_device_type;
-+
-+#define is_uart_device(d) ((d) && (d)->type == &uart_device_type)
-+#define to_uart_device(d) container_of(d, struct uart_device, dev)
-+#define uart_device_from_parent(n)	\
-+	container_of(n, struct uart_device, klist_parent)
-+
-+static inline struct uart_device *uart_verify_device(struct device *dev)
-+{
-+	return is_uart_device(dev) ? to_uart_device(dev) : NULL;
-+}
-+
-+struct uart_device *uart_register_device(struct uart_driver *drv,
-+					 struct klist *adap,
-+					 struct device *dev,
-+					 struct uart_board_info const *info);
-+void uart_unregister_device(struct uart_device *udev);
-+
-+struct device *uart_tty_find(struct uart_driver *drv,
-+			     struct device *dev, unsigned int line);
-+void uart_tty_name(struct uart_driver *driver, int index, char *p);
-+
- #endif /* LINUX_SERIAL_CORE_H */
+ struct device *uart_tty_find(struct uart_driver *drv,
+ 			     struct device *dev, unsigned int line);
 -- 
 1.7.10
 
