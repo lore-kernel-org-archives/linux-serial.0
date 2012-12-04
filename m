@@ -1,38 +1,37 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCHv2 3/5] serial: 8250_dw: Map IO memory
-Date: Tue, 4 Dec 2012 10:17:13 +0200
-Message-ID: <20121204081713.GA8071@xps8300>
-References: <1354533479-27306-1-git-send-email-heikki.krogerus@linux.intel.com>
- <1354533479-27306-4-git-send-email-heikki.krogerus@linux.intel.com>
- <20121203154014.GA20140@page>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH] tty: Correct tty buffer flushing.
+Date: Tue, 4 Dec 2012 08:53:59 +0000
+Message-ID: <20121204085359.03894026@bob.linux.org.uk>
+References: <50B55A93.4090900@ilyx.ru>
+	<50B6A652.9000107@ilyx.ru>
+	<20121129135418.4237e7f8@pyramind.ukuu.org.uk>
+	<50B76D96.20809@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:19461 "EHLO mga11.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:55209 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751350Ab2LDIRS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 03:17:18 -0500
-Content-Disposition: inline
-In-Reply-To: <20121203154014.GA20140@page>
+	id S1751388Ab2LDIvh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Dec 2012 03:51:37 -0500
+In-Reply-To: <50B76D96.20809@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jamie Iles <jamie@jamieiles.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Xiaobing Tu <xiaobing.tu@intel.com>, Jiri Slaby <jslaby@suse.cz>, Alek Du <alek.du@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Jamie,
+> Main idea here -  we never flash last (struct tty_buffer) in the
+> active buffer. Only data for ldisc. (tty->buf.head->read =
+> tty->buf.head->commit). At that moment driver can collect(write) data
+> in buffer without conflict.
 
-On Mon, Dec 03, 2012 at 03:40:14PM +0000, Jamie Iles wrote:
-> > +	uart.port.membase = ioremap(regs->start, regs->end - regs->start);
-> 
-> Doesn't this have an off-by-one error?
+This one I agree with (sorry it took a while to get to, I wanted to sit
+and think carefully about it as it is subtle and clever)
 
-True.
+Can you generate a single patch which reverts the unneeded locks and
+adds this instead. Add a Signed-off-by and send it to Greg to get it
+into 3.8/3.9 somewhere.
 
-> +	uart.port.membase = ioremap(regs->start, resource_size(regs));
-> 
-> instead?
+Thanks
 
-Yes, I'll fix this. Thanks!
-
--- 
-heikki
+Alan
