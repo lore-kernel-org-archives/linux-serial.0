@@ -1,102 +1,53 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 4/9] tty: Refactor wait for ldisc refs out of tty_ldisc_hangup()
-Date: Tue,  4 Dec 2012 02:07:40 -0500
-Message-ID: <1354604865-10278-5-git-send-email-peter@hurleysoftware.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: Re: [PATCH -next 0/9] tty: Fix buffer work access-after-free
+Date: Tue, 04 Dec 2012 11:40:10 +0400
+Message-ID: <50BDA8DA.7070109@ilyx.ru>
 References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:53154 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751406Ab2LDHk2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Dec 2012 02:40:28 -0500
 In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Refactor tty_ldisc_hangup() to extract standalone function,
-tty_ldisc_hangup_wait_idle(), to wait for ldisc references
-to be released.
+On 04.12.2012 11:07, Peter Hurley wrote:
+> This patch series addresses the causes of flush_to_ldisc accessing
+> the tty after freeing.
+> 
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+I think, it is have sense only if you can take effect,
+with this patch or something like. I can't. :)
+
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 ---
- drivers/tty/tty_ldisc.c | 54 ++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 36 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index f986bb0..6c1d8aa 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -549,6 +549,41 @@ static int tty_ldisc_halt(struct tty_struct *tty)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 2ea176b..f24751d 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -170,6 +170,10 @@ struct tty_struct *alloc_tty_struct(void)
+ 	return kzalloc(sizeof(struct tty_struct), GFP_KERNEL);
  }
- 
- /**
-+ *	tty_ldisc_hangup_wait_idle - wait for the ldisc to become idle
-+ *	@tty: tty to wait for
-+ *
-+ *	Wait for the line discipline to become idle. The discipline must
-+ *	have been halted for this to guarantee it remains idle.
-+ *
-+ *	Caller must hold legacy and ->ldisc_mutex.
-+ */
-+static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
+
++static void flush_to_ldisc2(struct work_struct *work)
 +{
-+	while (tty->ldisc) {	/* Not yet closed */
-+		if (atomic_read(&tty->ldisc->users) != 1) {
-+			char cur_n[TASK_COMM_LEN], tty_n[64];
-+			long timeout = 3 * HZ;
-+			tty_unlock(tty);
-+
-+			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
-+				timeout = MAX_SCHEDULE_TIMEOUT;
-+				printk_ratelimited(KERN_WARNING
-+					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
-+					__func__, get_task_comm(cur_n, current),
-+					tty_name(tty, tty_n));
-+			}
-+			/* must reacquire both locks and preserve lock order */
-+			mutex_unlock(&tty->ldisc_mutex);
-+			tty_lock(tty);
-+			mutex_lock(&tty->ldisc_mutex);
-+			continue;
-+		}
-+		break;
-+	}
-+	return !!(tty->ldisc);
++	printk(KERN_WARNING "Possible intrusion detected.\n");
 +}
-+
-+/**
-  *	tty_set_ldisc		-	set line discipline
-  *	@tty: the terminal to set
-  *	@ldisc: the line discipline
-@@ -824,7 +859,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	cancel_work_sync(&tty->port->buf.work);
- 	set_bit(TTY_LDISC_HALTED, &tty->flags);
- 	mutex_unlock(&tty->ldisc_mutex);
--retry:
- 	tty_lock(tty);
- 	mutex_lock(&tty->ldisc_mutex);
- 
-@@ -832,23 +866,7 @@ retry:
- 	   reopen it. We could defer this to the next open but
- 	   it means auditing a lot of other paths so this is
- 	   a FIXME */
--	if (tty->ldisc) {	/* Not yet closed */
--		if (atomic_read(&tty->ldisc->users) != 1) {
--			char cur_n[TASK_COMM_LEN], tty_n[64];
--			long timeout = 3 * HZ;
--			tty_unlock(tty);
--
--			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
--				timeout = MAX_SCHEDULE_TIMEOUT;
--				printk_ratelimited(KERN_WARNING
--					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
--					__func__, get_task_comm(cur_n, current),
--					tty_name(tty, tty_n));
--			}
--			mutex_unlock(&tty->ldisc_mutex);
--			goto retry;
--		}
--
-+	if (tty_ldisc_hangup_wait_idle(tty)) {
- 		if (reset == 0) {
- 
- 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
--- 
-1.8.0
+ /**
+  *	free_tty_struct		-	free a disused tty
+  *	@tty: tty struct to free
+@@ -188,6 +192,8 @@ void free_tty_struct(struct tty_struct *tty)
+ 	kfree(tty->write_buf);
+ 	tty_buffer_free_all(tty);
+ 	tty->magic = 0xDEADDEAD;
++	PREPARE_WORK(&tty->buf.work,flush_to_ldisc2);
++	//memset(tty, 0, sizeof(struct tty_struct));
+ 	kfree(tty);
+ }
