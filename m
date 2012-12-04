@@ -1,41 +1,33 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH -next 0/9] tty: Fix buffer work access-after-free
-Date: Tue, 04 Dec 2012 08:58:00 -0500
-Message-ID: <1354629480.475.7.camel@thor>
-References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
-	 <20121204085426.389ca79b@bob.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty: Correct tty buffer flush.
+Date: Tue, 4 Dec 2012 14:12:23 +0000
+Message-ID: <20121204141223.2ecb0f76@pyramind.ukuu.org.uk>
+References: <50BDF661.30303@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:50945 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751613Ab2LDN6Z (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 08:58:25 -0500
-In-Reply-To: <20121204085426.389ca79b@bob.linux.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <50BDF661.30303@ilyx.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Ilya Zykov <ilya@ilyx.ru>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, 2012-12-04 at 08:54 +0000, Alan Cox wrote:
-> On Tue,  4 Dec 2012 02:07:36 -0500
-> Peter Hurley <peter@hurleysoftware.com> wrote:
+On Tue, 04 Dec 2012 17:10:57 +0400
+Ilya Zykov <ilya@ilyx.ru> wrote:
+
+>   The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
+> when another thread can use it. It can be cause of "NULL pointer dereference".
+>   Main idea of the patch, this is never free last (struct tty_buffer) in the active buffer.
+> Only flush the data for ldisc(tty->buf.head->read = tty->buf.head->commit).
+> At that moment driver can collect(write) data in buffer without conflict.
+> It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
 > 
-> > This patch series addresses the causes of flush_to_ldisc accessing
-> > the tty after freeing.
+> Also revert:
+>   commit c56a00a165712fd73081f40044b1e64407bb1875
+>   tty: hold lock across tty buffer finding and buffer filling
+> In order to delete the unneeded locks any more.
 > 
-> Looks good to me. Would be nice to keep a copy of the test that shows
-> it up in the comments of the patches somewhere.
+> Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 
-I assume you mean somewhere other than ml archives:
-https://lkml.org/lkml/2012/12/1/57
-
-Setting up a mini-testsuite is good idea. As I noted in that email
-though, that test jig is a derivative work that I'd want a ok from Ilya
-Zykov to put somewhere more permanent.
-
-Regards,
-Peter Hurley
-
+Acked-by: Alan Cox <alan@linux.intel.com>
