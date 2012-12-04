@@ -1,86 +1,145 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 0/9] tty: Fix buffer work access-after-free
-Date: Tue,  4 Dec 2012 02:07:36 -0500
-Message-ID: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:43961 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751212Ab2LDHIo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 02:08:44 -0500
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH -next 2/9] tty: Add diagnostic for halted line discipline
+Date: Tue,  4 Dec 2012 02:07:38 -0500
+Message-ID: <1354604865-10278-3-git-send-email-peter@hurleysoftware.com>
+References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-This patch series addresses the causes of flush_to_ldisc accessing
-the tty after freeing.
+Flip buffer work must not be scheduled after the line discipline
+has been halted; issue warning.
 
-The most common cause stems from the n_tty_close() path spuriously
-scheduling buffer work, when the ldisc has already been halted.
-This is fixed in 'tty: Don't reschedule buffer work while closing'
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c      |  6 ++++++
+ drivers/tty/tty_buffer.c |  3 +++
+ drivers/tty/tty_ldisc.c  | 45 +++++++++++++++++++++++++--------------------
+ include/linux/tty.h      |  1 +
+ 4 files changed, 35 insertions(+), 20 deletions(-)
 
-The other causes have a central theme: incorrect order-of-operations
-when halting a line discipline. In general, to prevent buffer work
-from being scheduled requires:
-  1. Disallowing further ldisc references
-  2. Waiting for all existing ldisc references to be released
-  3. Cancelling existing buffer work
-If the wait takes place _after_ cancellation, then new work
-can be scheduled by existing holder(s) of ldisc reference(s). That's
-bad.
-
-Halting the line discipline is performed when,
- - hanging up the tty (tty_ldisc_hangup())
- - TIOCSETD ioctl (tty_set_ldisc())
- - finally closing the tty (pair) (tty_ldisc_release())
-
-Concurrent halts are governed by the following requirements:
-1. tty_ldisc_release is not concurrent with the other two and so
-   does not need lock or state protection during the ldiscs halt.
-2. Accesses through tty->ldisc must be protected by the ldisc_mutex.
-   The wait operation checks the user count (ldisc references)
-   in tty->ldisc->users.
-3. tty_set_ldisc() reschedules buffer work that was pending when
-   the ldiscs were halted. That must be an atomic operation in
-   conjunction with re-enabling the ldisc -- which necessitates
-   locking concurrent halts (tty_ldisc_release is exempt here)
-4. The legacy mutex cannot be held while waiting for ldisc
-   reference(s) release -or- for cancelling buffer work.
-5. Because of #4, the legacy mutex must be dropped prior to or
-   during the halt. Which means reacquiring after the halt. But
-   to preserve lock order the ldisc_mutex must be dropped and
-   reacquired after reacquiring the legacy mutex.
-6. Because of #5, the ldisc state may have changed while the
-   ldisc mutex was dropped.
-
-Note: this series does not include the lock correction initially
-reported on by Sebastian Andrzej Siewior <bigeasy@linutronix.de> here
-https://lkml.org/lkml/2012/11/21/267 . I commented on the latest
-version here https://lkml.org/lkml/2012/12/3/362
-
-This series also does not include Jiri's debug patch here
-https://lkml.org/lkml/2012/11/2/278 for identifying which itty cleanup
-path is used. I think it may be helpful to include this in -next.
-
-Peter Hurley (9):
-  tty: WARN if buffer work racing with tty free
-  tty: Add diagnostic for halted line discipline
-  tty: Don't reschedule buffer work while closing
-  tty: Refactor wait for ldisc refs out of tty_ldisc_hangup()
-  tty: Remove unnecessary re-test of ldisc ref count
-  tty: Fix ldisc halt sequence on hangup
-  tty: Strengthen no-subsequent-use guarantee of tty_ldisc_halt()
-  tty: Remove unnecessary buffer work flush
-  tty: Halt both ldiscs concurrently
-
- drivers/tty/n_tty.c      |   8 ++-
- drivers/tty/tty_buffer.c |   3 +
- drivers/tty/tty_io.c     |   2 +
- drivers/tty/tty_ldisc.c  | 171 +++++++++++++++++++++++++++++------------------
- include/linux/tty.h      |   1 +
- 5 files changed, 119 insertions(+), 66 deletions(-)
-
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 19083ef..3f704a9 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -152,6 +152,12 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	if (left && !old_left) {
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
++		/* see if ldisc has been killed - if so, this means that
++		 * even though the ldisc has been halted and ->buf.work
++		 * cancelled, ->buf.work is about to be rescheduled
++		 */
++		WARN_RATELIMIT(test_bit(TTY_LDISC_HALTED, &tty->flags),
++			       "scheduling buffer work for halted ldisc\n");
+ 		schedule_work(&tty->port->buf.work);
+ 	}
+ }
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index cc9cbcf..d8d6f77 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -520,6 +520,9 @@ void tty_flip_buffer_push(struct tty_struct *tty)
+ 	struct tty_bufhead *buf = &tty->port->buf;
+ 	unsigned long flags;
+ 
++	WARN_RATELIMIT(test_bit(TTY_LDISC_HALTED, &tty->flags),
++		       "scheduling buffer work for halted ldisc\n");
++
+ 	spin_lock_irqsave(&buf->lock, flags);
+ 	if (buf->tail != NULL)
+ 		buf->tail->commit = buf->tail->used;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index c578229..f986bb0 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -373,6 +373,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
+ 
+ void tty_ldisc_enable(struct tty_struct *tty)
+ {
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	set_bit(TTY_LDISC, &tty->flags);
+ 	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
+ 	wake_up(&tty_ldisc_wait);
+@@ -496,26 +497,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ }
+ 
+ /**
+- *	tty_ldisc_halt		-	shut down the line discipline
+- *	@tty: tty device
+- *
+- *	Shut down the line discipline and work queue for this tty device.
+- *	The TTY_LDISC flag being cleared ensures no further references can
+- *	be obtained while the delayed work queue halt ensures that no more
+- *	data is fed to the ldisc.
+- *
+- *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
+- *	in order to make sure any currently executing ldisc work is also
+- *	flushed.
+- */
+-
+-static int tty_ldisc_halt(struct tty_struct *tty)
+-{
+-	clear_bit(TTY_LDISC, &tty->flags);
+-	return cancel_work_sync(&tty->port->buf.work);
+-}
+-
+-/**
+  *	tty_ldisc_flush_works	-	flush all works of a tty
+  *	@tty: tty device to flush works for
+  *
+@@ -545,6 +526,29 @@ static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
+ }
+ 
+ /**
++ *	tty_ldisc_halt		-	shut down the line discipline
++ *	@tty: tty device
++ *
++ *	Shut down the line discipline and work queue for this tty device.
++ *	The TTY_LDISC flag being cleared ensures no further references can
++ *	be obtained while the delayed work queue halt ensures that no more
++ *	data is fed to the ldisc.
++ *
++ *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
++ *	in order to make sure any currently executing ldisc work is also
++ *	flushed.
++ */
++
++static int tty_ldisc_halt(struct tty_struct *tty)
++{
++	int scheduled;
++	clear_bit(TTY_LDISC, &tty->flags);
++	scheduled = cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
++	return scheduled;
++}
++
++/**
+  *	tty_set_ldisc		-	set line discipline
+  *	@tty: the terminal to set
+  *	@ldisc: the line discipline
+@@ -818,6 +822,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	clear_bit(TTY_LDISC, &tty->flags);
+ 	tty_unlock(tty);
+ 	cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	mutex_unlock(&tty->ldisc_mutex);
+ retry:
+ 	tty_lock(tty);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 8db1b56..e6b968d 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -314,6 +314,7 @@ struct tty_file_private {
+ #define TTY_NO_WRITE_SPLIT 	17	/* Preserve write boundaries to driver */
+ #define TTY_HUPPED 		18	/* Post driver->hangup() */
+ #define TTY_HUPPING 		21	/* ->hangup() in progress */
++#define TTY_LDISC_HALTED	22	/* Line discipline is halted */
+ 
+ #define TTY_WRITE_FLUSH(tty) tty_write_flush((tty))
+ 
 -- 
 1.8.0
-
