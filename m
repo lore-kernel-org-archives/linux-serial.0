@@ -1,39 +1,35 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH -next 0/9] tty: Fix buffer work access-after-free
-Date: Tue, 04 Dec 2012 10:38:27 +0100
-Message-ID: <50BDC493.1050809@suse.cz>
-References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: Re: [PATCH] tty: Correct tty buffer flushing.
+Date: Tue, 04 Dec 2012 14:11:27 +0400
+Message-ID: <50BDCC4F.10505@ilyx.ru>
+References: <50B55A93.4090900@ilyx.ru> <50B6A652.9000107@ilyx.ru> <20121129135418.4237e7f8@pyramind.ukuu.org.uk> <50B76D96.20809@ilyx.ru> <20121204085359.03894026@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:43541 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751937Ab2LDJib (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 04:38:31 -0500
-In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20121204085359.03894026@bob.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Xiaobing Tu <xiaobing.tu@intel.com>, Jiri Slaby <jslaby@suse.cz>, Alek Du <alek.du@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 12/04/2012 08:07 AM, Peter Hurley wrote:
-> This patch series addresses the causes of flush_to_ldisc accessing
-> the tty after freeing.
+On 04.12.2012 12:53, Alan Cox wrote:
+>> Main idea here -  we never flash last (struct tty_buffer) in the
+>> active buffer. Only data for ldisc. (tty->buf.head->read =
+>> tty->buf.head->commit). At that moment driver can collect(write) data
+>> in buffer without conflict.
+> 
+> This one I agree with (sorry it took a while to get to, I wanted to sit
+> and think carefully about it as it is subtle and clever)
+> 
+> Can you generate a single patch which reverts the unneeded locks and
+> adds this instead. Add a Signed-off-by and send it to Greg to get it
+> into 3.8/3.9 somewhere.
+> 
+> Thanks
+> 
+> Alan
+> 
 
-Hi, thanks for doing the work. The series looks good to me.
-
-> This series also does not include Jiri's debug patch here
-> https://lkml.org/lkml/2012/11/2/278 for identifying which itty cleanup
-> path is used. I think it may be helpful to include this in -next.
-
-Feel free to add your SOB and repost. Even though I have some patches in
-my queue, I'm not going to send anything for the next merge window as I
-will be on longish vacation and don't want to spend it by fixing tty
-bugs I could introduce 8).
-
-thanks,
--- 
-js
-suse labs
+OK.
+Thank you.
