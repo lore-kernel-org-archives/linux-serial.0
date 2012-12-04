@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 6/9] tty: Fix ldisc halt sequence on hangup
-Date: Tue,  4 Dec 2012 02:07:42 -0500
-Message-ID: <1354604865-10278-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 5/9] tty: Remove unnecessary re-test of ldisc ref count
+Date: Tue,  4 Dec 2012 02:07:41 -0500
+Message-ID: <1354604865-10278-6-git-send-email-peter@hurleysoftware.com>
 References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
@@ -10,95 +10,72 @@ To: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Har
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Flip buffer work cannot be cancelled until all outstanding ldisc
-references have been released. Convert the ldisc ref wait into
-a full ldisc halt with buffer work cancellation.
+Since the tty->ldisc is prevented from being changed by tty_set_ldisc()
+when a tty is being hung up, re-testing the ldisc user count is
+unnecessary -- ie, it cannot be a different ldisc and the user count
+cannot have increased (assuming the caller meets the precondition that
+TTY_LDISC flag is cleared)
 
-Note that the legacy mutex is not held while cancelling.
+Removal of the 'early-out' locking optimization is necessary for
+the subsequent patch 'tty: Fix ldisc halt sequence on hangup'.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 40 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+ drivers/tty/tty_ldisc.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 0d18d1e..c3dec37 100644
+index 6c1d8aa..0d18d1e 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -549,22 +549,31 @@ static int tty_ldisc_halt(struct tty_struct *tty)
- }
- 
- /**
-- *	tty_ldisc_hangup_wait_idle - wait for the ldisc to become idle
-- *	@tty: tty to wait for
-- *
-- *	Wait for the line discipline to become idle. The discipline must
-- *	have been halted for this to guarantee it remains idle.
-+ *	tty_ldisc_hangup_halt - halt the line discipline for hangup
-+ *	@tty: tty being hung up
+@@ -556,29 +556,29 @@ static int tty_ldisc_halt(struct tty_struct *tty)
+  *	have been halted for this to guarantee it remains idle.
   *
-+ *	Shut down the line discipline and work queue for the tty device
-+ *	being hungup. Clear the TTY_LDISC flag to ensure no further
-+ *	references can be obtained, wait for remaining references to be
-+ *	released, and cancel pending buffer work to ensure no more
-+ *	data is fed to the ldisc.
   *	Caller must hold legacy and ->ldisc_mutex.
-  *
-  *	NB: tty_set_ldisc() is prevented from changing the ldisc concurrently
-  *	with this function when it checks the TTY_HUPPING state.
 + *
-+ *	NB: if tty->ldisc is NULL then buffer work does not need to be
-+ *	cancelled because it must already have done as a precondition
-+ *	of setting tty->ldisc to NULL
-+ *
++ *	NB: tty_set_ldisc() is prevented from changing the ldisc concurrently
++ *	with this function when it checks the TTY_HUPPING state.
   */
--static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
-+static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
+ static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
  {
- 	char cur_n[TASK_COMM_LEN], tty_n[64];
- 	long timeout = 3 * HZ;
- 
-+	clear_bit(TTY_LDISC, &tty->flags);
-+
- 	if (tty->ldisc) {	/* Not yet closed */
- 		tty_unlock(tty);
- 
-@@ -575,6 +584,10 @@ static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
- 				__func__, get_task_comm(cur_n, current),
- 				tty_name(tty, tty_n));
- 		}
-+
-+		cancel_work_sync(&tty->port->buf.work);
-+		set_bit(TTY_LDISC_HALTED, &tty->flags);
-+
- 		/* must reacquire both locks and preserve lock order */
- 		mutex_unlock(&tty->ldisc_mutex);
- 		tty_lock(tty);
-@@ -849,24 +862,11 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	 */
- 	mutex_lock(&tty->ldisc_mutex);
- 
--	/*
--	 * this is like tty_ldisc_halt, but we need to give up
--	 * the BTM before calling cancel_work_sync, which may
--	 * need to wait for another function taking the BTM
--	 */
--	clear_bit(TTY_LDISC, &tty->flags);
--	tty_unlock(tty);
--	cancel_work_sync(&tty->port->buf.work);
--	set_bit(TTY_LDISC_HALTED, &tty->flags);
--	mutex_unlock(&tty->ldisc_mutex);
--	tty_lock(tty);
--	mutex_lock(&tty->ldisc_mutex);
+-	while (tty->ldisc) {	/* Not yet closed */
+-		if (atomic_read(&tty->ldisc->users) != 1) {
+-			char cur_n[TASK_COMM_LEN], tty_n[64];
+-			long timeout = 3 * HZ;
+-			tty_unlock(tty);
 -
- 	/* At this point we have a closed ldisc and we want to
- 	   reopen it. We could defer this to the next open but
- 	   it means auditing a lot of other paths so this is
- 	   a FIXME */
--	if (tty_ldisc_hangup_wait_idle(tty)) {
-+	if (tty_ldisc_hangup_halt(tty)) {
- 		if (reset == 0) {
- 
- 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
+-			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
+-				timeout = MAX_SCHEDULE_TIMEOUT;
+-				printk_ratelimited(KERN_WARNING
+-					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
+-					__func__, get_task_comm(cur_n, current),
+-					tty_name(tty, tty_n));
+-			}
+-			/* must reacquire both locks and preserve lock order */
+-			mutex_unlock(&tty->ldisc_mutex);
+-			tty_lock(tty);
+-			mutex_lock(&tty->ldisc_mutex);
+-			continue;
++	char cur_n[TASK_COMM_LEN], tty_n[64];
++	long timeout = 3 * HZ;
++
++	if (tty->ldisc) {	/* Not yet closed */
++		tty_unlock(tty);
++
++		while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
++			timeout = MAX_SCHEDULE_TIMEOUT;
++			printk_ratelimited(KERN_WARNING
++				"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
++				__func__, get_task_comm(cur_n, current),
++				tty_name(tty, tty_n));
+ 		}
+-		break;
++		/* must reacquire both locks and preserve lock order */
++		mutex_unlock(&tty->ldisc_mutex);
++		tty_lock(tty);
++		mutex_lock(&tty->ldisc_mutex);
+ 	}
+ 	return !!(tty->ldisc);
+ }
 -- 
 1.8.0
