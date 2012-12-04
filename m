@@ -1,53 +1,38 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: Re: [PATCH -next 0/9] tty: Fix buffer work access-after-free
-Date: Tue, 04 Dec 2012 11:40:10 +0400
-Message-ID: <50BDA8DA.7070109@ilyx.ru>
-References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCHv2 3/5] serial: 8250_dw: Map IO memory
+Date: Tue, 4 Dec 2012 10:17:13 +0200
+Message-ID: <20121204081713.GA8071@xps8300>
+References: <1354533479-27306-1-git-send-email-heikki.krogerus@linux.intel.com>
+ <1354533479-27306-4-git-send-email-heikki.krogerus@linux.intel.com>
+ <20121203154014.GA20140@page>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:53154 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751406Ab2LDHk2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 02:40:28 -0500
-In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+Received: from mga11.intel.com ([192.55.52.93]:19461 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751350Ab2LDIRS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Dec 2012 03:17:18 -0500
+Content-Disposition: inline
+In-Reply-To: <20121203154014.GA20140@page>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jamie Iles <jamie@jamieiles.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-On 04.12.2012 11:07, Peter Hurley wrote:
-> This patch series addresses the causes of flush_to_ldisc accessing
-> the tty after freeing.
+Hi Jamie,
+
+On Mon, Dec 03, 2012 at 03:40:14PM +0000, Jamie Iles wrote:
+> > +	uart.port.membase = ioremap(regs->start, regs->end - regs->start);
 > 
+> Doesn't this have an off-by-one error?
 
-I think, it is have sense only if you can take effect,
-with this patch or something like. I can't. :)
+True.
 
-Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
----
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 2ea176b..f24751d 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -170,6 +170,10 @@ struct tty_struct *alloc_tty_struct(void)
- 	return kzalloc(sizeof(struct tty_struct), GFP_KERNEL);
- }
+> +	uart.port.membase = ioremap(regs->start, resource_size(regs));
+> 
+> instead?
 
-+static void flush_to_ldisc2(struct work_struct *work)
-+{
-+	printk(KERN_WARNING "Possible intrusion detected.\n");
-+}
- /**
-  *	free_tty_struct		-	free a disused tty
-  *	@tty: tty struct to free
-@@ -188,6 +192,8 @@ void free_tty_struct(struct tty_struct *tty)
- 	kfree(tty->write_buf);
- 	tty_buffer_free_all(tty);
- 	tty->magic = 0xDEADDEAD;
-+	PREPARE_WORK(&tty->buf.work,flush_to_ldisc2);
-+	//memset(tty, 0, sizeof(struct tty_struct));
- 	kfree(tty);
- }
+Yes, I'll fix this. Thanks!
+
+-- 
+heikki
