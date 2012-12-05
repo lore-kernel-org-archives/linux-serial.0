@@ -1,39 +1,50 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
-Date: Tue, 4 Dec 2012 19:50:30 +0000
-Message-ID: <20121204195030.238d1b71@bob.linux.org.uk>
-References: <cover.1354505471.git.lv.zheng@intel.com>
-	<6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
-	<20121204185404.GQ3117@intel.com>
+From: Chen Gang <gang.chen@asianux.com>
+Subject: Re: [PATCH] synclink fix ldisc buffer argument
+Date: Wed, 05 Dec 2012 09:35:11 +0800
+Message-ID: <50BEA4CF.2030207@asianux.com>
+References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <50BCDDB4.6010608@microgate.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:53810 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752101Ab2LDTr5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 14:47:57 -0500
-In-Reply-To: <20121204185404.GQ3117@intel.com>
+Received: from intranet.asianux.com ([58.214.24.6]:51094 "EHLO
+	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752329Ab2LEBeS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Dec 2012 20:34:18 -0500
+In-Reply-To: <50BCDDB4.6010608@microgate.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Lv Zheng <lv.zheng@intel.com>, Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+To: Paul Fulghum <paulkf@microgate.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-> What if instead of exporting these to userspace we just set the
-> defaults based on the UartSerialBus() value? This way the user only
-> needs to find the right tty to pass to hciattach.
+=E4=BA=8E 2012=E5=B9=B412=E6=9C=8804=E6=97=A5 01:13, Paul Fulghum =E5=86=
+=99=E9=81=93:
+> Fix call to line discipline receive_buf by synclink drivers.
+> Dummy flag buffer argument is ignored by N_HDLC line discipline but m=
+ight
+> be of insufficient size if accessed by a different line discipline
+> selected by mistake. flag buffer allocation now matches max size of d=
+ata
+> buffer. Unused char_buf buffers are removed.
+>=20
+> Signed-off-by: Paul Fulghum <paulkf@microgate.com>
+>=20
 
-We should also make sure the types are generic because there are lots
-of platforms that can use DT to describe devices usefully this way, and
-there are types not in the ACPI spec (eg Loconet) that some apps could
-do with finding.
+  thank you very much.
 
-> And if we have enumerated the UART controller from ACPI (it is
-> probably attached to the platform bus) we can find the tty device it
-> exports like:
 
-The property should not be in any ACPI specific form or space - just
-attach it directly to the tty from ACPI, DT, driver internal knowledge,
-PCI id, whatever
+  might we use macro instead of hard code number ? (such as 4096,
+65535). it is only an idea, not means need regression.
 
-Alan
+  thanks.
+
+--=20
+Chen Gang
+
+Asianux Corporation
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
