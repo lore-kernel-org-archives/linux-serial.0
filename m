@@ -1,30 +1,40 @@
-From: CORREO <gpena@psuv.org.ve>
-Subject: Webmail Limit
-Date: Wed, 5 Dec 2012 07:58:44 -0430 (VET)
-Message-ID: <6989119.60261354710523626.JavaMail.root__13070.3321578496$1354720768$gmane$org@mail.psuv.org.ve>
-Reply-To: CORREO <accountant.support@filipinos.ca>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Matt Schulte <matts_old@commtech-fastcom.com>
+Subject: [PATCH 1/2] pbn_b0_8_1152000_200 is supposed to be an 8 port definition
+Date: Wed,  5 Dec 2012 14:56:21 -0600
+Message-ID: <1354740983-4352-1-git-send-email-matts@commtech-fastcom.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.psuv.org.ve ([190.202.83.144]:56432 "EHLO mail.psuv.org.ve"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753311Ab2LEPTM convert rfc822-to-8bit (ORCPT
+Received: from mail-gg0-f174.google.com ([209.85.161.174]:48996 "EHLO
+	mail-gg0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751828Ab2LEU7e (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Dec 2012 10:19:12 -0500
+	Wed, 5 Dec 2012 15:59:34 -0500
+Received: by mail-gg0-f174.google.com with SMTP id k2so897874ggd.19
+        for <linux-serial@vger.kernel.org>; Wed, 05 Dec 2012 12:59:33 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: alan@lxorguk.ukuu.org.uk, greg@kroah.com, Matt Schulte <matts@commtech-fastcom.com>
 
-Din Webmail Kvot har =C3=B6verskridit den fastst=C3=A4llda kvoten / gr=C3=
-=A4ns som =C3=A4r 20GB. Din f=C3=B6r n=C3=A4rvarande k=C3=B6r p=C3=A5 2=
-3SE grund dolda filer och mappar p=C3=A5 din Mailbox. V=C3=A4nligen fyl=
-l nedanst=C3=A5ende l=C3=A4nk f=C3=B6r att bekr=C3=A4fta din brevl=C3=A5=
-da och =C3=B6ka din kvot.
-Anv=C3=A4ndarnamn:
-Gammal nyckel:
-Ny nyckel:
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+---
+Built against tty-next commit: b0ab02361167faa82198b783a8d555eb6f58901c
+
+ drivers/tty/serial/8250/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 26b9dc0..bf2f1a0 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2246,7 +2246,7 @@ static struct pciserial_board pci_boards[] = {
+ 
+ 	[pbn_b0_8_1152000_200] = {
+ 		.flags		= FL_BASE0,
+-		.num_ports	= 2,
++		.num_ports	= 8,
+ 		.base_baud	= 1152000,
+ 		.uart_offset	= 0x200,
+ 	},
+-- 
+1.7.2.5
+
