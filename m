@@ -1,65 +1,31 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
-Date: Wed, 5 Dec 2012 09:42:03 +0200
-Message-ID: <20121205074203.GS3117@intel.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
- <6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
- <20121204185404.GQ3117@intel.com>
- <20121204195030.238d1b71@bob.linux.org.uk>
- <20121205062015.GR3117@intel.com>
- <1AE640813FDE7649BE1B193DEA596E88BD6A54@SHSMSX101.ccr.corp.intel.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH -next 0/2] tty: Correct tty buffer flush.
+Date: Wed, 05 Dec 2012 12:47:54 +0400
+Message-ID: <50BF0A3A.1090801@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:3710 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750948Ab2LEHis (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Dec 2012 02:38:48 -0500
-Content-Disposition: inline
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E88BD6A54@SHSMSX101.ccr.corp.intel.com>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:53612 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751710Ab2LEIr6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Dec 2012 03:47:58 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Zheng, Lv" <lv.zheng@intel.com>
-Cc: Alan Cox <alan@linux.intel.com>, "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Dec 05, 2012 at 07:07:52AM +0000, Zheng, Lv wrote:
-> > On Tue, Dec 04, 2012 at 07:50:30PM +0000, Alan Cox wrote:
-> > > > And if we have enumerated the UART controller from ACPI (it is
-> > > > probably attached to the platform bus) we can find the tty device it
-> > > > exports like:
-> > >
-> > > The property should not be in any ACPI specific form or space - just
-> > > attach it directly to the tty from ACPI, DT, driver internal
-> > > knowledge, PCI id, whatever
-> > 
-> > The only property that comes into mind is _HID/_CID (referring to the ACPI
-> > ID) that can be used by userspace to find out type of the device behind the
-> > UART port. I don't know what name would be generic enough for the property,
-> > though.
-> > 
-> > There are other resources as well in addition to the UartSerialBus(). For
-> > example we might have two GPIO lines connected to the bluetooth chip and
-> > these are represented as GpioIo ACPI resources.
-> > 
-> > Since the bluetooth is mostly handled by the N_HCI line discipline, should the
-> > GPIO handling be done there as well? It can distinguish between DT and ACPI
-> > enumerated devices by comparing dev->of_node and ACPI_HANDLE(dev) so it
-> > can get the resources from both DT and ACPI but I'm not sure if it really
-> > belongs there. Or should this be in a separate driver?
-> 
-> IMO, 
-> For ACPI enumerated target devices, ACPI can provide GPIO enumeration API
-> by feeding ACPI_HANDLE(tty->target) to obtain the GPIO resources while OF
-> can offer its own implementation.
-> Then there are 2 possible solutions can be found by calling such APIs:
-> 1. implement GPIO enabling in the kernel side N_HCI proto driver.
-> 2. implement GPIO enabling in the kernel side UART driver on TIOCSETD.
+  The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
+when another thread can use it. It can be cause of "NULL pointer dereference".
+  Main idea of the patch, this is never free last (struct tty_buffer) in the active buffer.
+Only flush the data for ldisc(tty->buf.head->read = tty->buf.head->commit).
+At that moment driver can collect(write) data in buffer without conflict.
+It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
 
-OK.
+Also revert:
+  commit c56a00a165712fd73081f40044b1e64407bb1875
+  tty: hold lock across tty buffer finding and buffer filling
+In order to delete the unneeded locks any more.
 
-> Same issues can be found for the ACPI enumerated SPI/I2C target devices.
-> Thus the GpioIrq and GpioIo is not handled in this patch set.
-
-Yeah, I wasn't expecting that this series addresses that :-) However, this
-is something we need to solve at some point - we probably don't want that
-userspace deals with the GPIOs.
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
