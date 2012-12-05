@@ -1,55 +1,52 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
-Date: Wed, 5 Dec 2012 09:43:43 +0000
-Message-ID: <20121205094343.09d653c5@pyramind.ukuu.org.uk>
-References: <cover.1354505471.git.lv.zheng@intel.com>
-	<6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
-	<20121204185404.GQ3117@intel.com>
-	<20121204195030.238d1b71@bob.linux.org.uk>
-	<20121205062015.GR3117@intel.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH -next 2/2] tty: Correct tty buffer flush.
+Date: Wed, 05 Dec 2012 16:53:19 +0400
+Message-ID: <50BF43BF.3050506@ilyx.ru>
+References: <50BF0A56.9050209@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53067 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751762Ab2LEJic (ORCPT
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:53762 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752171Ab2LEMxW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Dec 2012 04:38:32 -0500
-In-Reply-To: <20121205062015.GR3117@intel.com>
+	Wed, 5 Dec 2012 07:53:22 -0500
+In-Reply-To: <50BF0A56.9050209@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Alan Cox <alan@linux.intel.com>, Lv Zheng <lv.zheng@intel.com>, Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-> > The property should not be in any ACPI specific form or space - just
-> > attach it directly to the tty from ACPI, DT, driver internal knowledge,
-> > PCI id, whatever
-> 
-> The only property that comes into mind is _HID/_CID (referring to the ACPI
-> ID) that can be used by userspace to find out type of the device behind the
-> UART port. I don't know what name would be generic enough for the property,
-> though.
+  The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
+when another thread can use it. It can be cause of "NULL pointer dereference".
+  Main idea of the patch, this is never free last (struct tty_buffer) in the active buffer.
+Only flush the data for ldisc(tty->buf.head->read = tty->buf.head->commit).
+At that moment driver can collect(write) data in buffer without conflict.
+It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
 
-We just need a set of type names for the sysfs node I think
-"bluetooth", "ups", "loconet", "serial", "modem", "cir" etc...
-
-> There are other resources as well in addition to the UartSerialBus(). For
-> example we might have two GPIO lines connected to the bluetooth chip and
-> these are represented as GpioIo ACPI resources.
-
-There was some planning on this some time ago. I think we know how to
-deal with GPIOs
-
-> Since the bluetooth is mostly handled by the N_HCI line discipline, should
-> the GPIO handling be done there as well? It can distinguish between DT and
-> ACPI enumerated devices by comparing dev->of_node and ACPI_HANDLE(dev) so
-> it can get the resources from both DT and ACPI but I'm not sure if it
-> really belongs there. Or should this be in a separate driver?
-
-The plan was that the tty device would know its gpio lines and also
-support a gpio structure giving mappings for extra control lines. It
-seems we want that both visible to kernel (N_HCI etc) and visible to user
-space (userspace custom handling using the gpio userspace interfaces).
-
-Alan
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+---
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 7602df8..8a3333d 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -119,11 +119,14 @@ static void __tty_buffer_flush(struct tty_port *port)
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *thead;
+ 
+-	while ((thead = buf->head) != NULL) {
+-		buf->head = thead->next;
+-		tty_buffer_free(port, thead);
++	if (unlikely(buf->head == NULL))
++		return;
++	while ((thead = buf->head->next) != NULL) {
++		tty_buffer_free(port, buf->head);
++		buf->head = thead;
+ 	}
+-	buf->tail = NULL;
++	WARN_ON(buf->head != buf->tail);
++	buf->head->read = buf->head->commit;
+ }
+ 
+ /**
