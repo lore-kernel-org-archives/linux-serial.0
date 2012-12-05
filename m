@@ -1,95 +1,49 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
-Date: Wed, 5 Dec 2012 03:49:23 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88BD66D3@SHSMSX101.ccr.corp.intel.com>
+From: Lv Zheng <lv.zheng@intel.com>
+Subject: [PATCH v2 0/4] ACPI/UART: Add ACPI 5.0 enueration support for UART.
+Date: Wed,  5 Dec 2012 11:51:20 +0800
+Message-ID: <cover.1354677952.git.lv.zheng@intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com>
- <6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
- <20121204185404.GQ3117@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20121204185404.GQ3117@intel.com>
-Content-Language: en-US
+In-Reply-To: <cover.1354505471.git.lv.zheng@intel.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-> On Mon, Dec 03, 2012 at 11:39:59AM +0800, Lv Zheng wrote:
-> > kobject attribute files:
-> > # cat /sys/bus/uart/devices/INTF001:00/modalias
-> > uart:INTF001:00
-> > # cat /sys/bus/uart/devices/INTF001:00/tty_dev
-> > ttyS0
-> > # cat /sys/bus/uart/devices/INTF001:00/tty_attrs
-> > 115200 8N0 HW
-> > # cat /sys/bus/uart/devices/INTF001:00/modem_lines
-> > LE:RTS,CTS,
-> 
-> What if instead of exporting these to userspace we just set the defaults based
-> on the UartSerialBus() value? This way the user only needs to find the right tty
-> to pass to hciattach.
-> 
-> > kobject sysfs links:
-> > # ls -l /sys/bus/uart/devices
-> > INTF001:00 -> ../../../devices/platform/INTF000:00/INTF001:00
-> > # ls -l /sys/devices/platform/INTF000:00/INTF001:00
-> > subsystem -> ../../../../bus/uart
-> > host_node -> ../tty/ttyS0
-> > # ls -l /sys/devices/platform/INTF000:00/tty/ttyS0
-> > target_node -> ../../INTF001:00
-> 
-> And if we have enumerated the UART controller from ACPI (it is probably
-> attached to the platform bus) we can find the tty device it exports like:
-> 
-> /sys/bus/platform/devices/INTF000:00/tty/ttyS1/dev
-> 
-> Only thing that is missing then is the type of the connected device. That can be
-> extracted by following the firmware_node symlink:
-> 
-> # ls /sys/bus/platform/devices/INTF000\:00/firmware_node/
-> INTF001:00
-> ...
-> 
-> # cat
-> /sys/bus/platform/devices/INTF000\:00/firmware_node/INTF001:00/hid
-> INTF001
-> 
-> This ACPI ID then can be used to find out what device it is.
-> 
-> Well, this is probably not the simplest solution :-) I'm just trying to understand
-> why we need to add a new bus type if only thing it adds is the sysfs files.
+ACPI 5.0 specification introduces enumeration support for SPB buses. This
+patch set adds the UART serial bus enumeration support to Linux using such
+mechanism.
 
-In our team, we've been discussing this solution like your suggestion for some times.
-ACPI UART enumeration can be done in this way without kernel modifications.
+NOTE: The [PATCH 4/4] is only for the demonstration purpose and should not
+      be merged into any of the published Linux source tree.
 
-IMO:
-1. tty_device is current used as "host" side device, you can find .pm support in most of the serial drivers.
-  They are always the codes turning off/on the clock of the host controller.
-  If we want to support PM for a target device, there is no such node in the kernel device hierarchy.
-2. firmware_node is based on the "likely deprecated" acpi_device solution, I need to find another one. Maybe this is still a shadow device.
-  Like dmi-id device, a shadow device exporting attributes and generating uevents for the user space drivers may be helpful.
-  It would be better if the PM support of the target devices can benefit from the existence of the shadow uart target devices.
+Lv Zheng (4):
+  UART: Add UART subsystem as a bus.
+  ACPI / UART: Add ACPI enumeration support for UART bus.
+  UART / 8250: Add declearation of serial8250 driver.
+  UART: Add dummy devices to test the enumeration.
 
-> > +/**
-> > + * uart_unregister_device - unregister a UART device
-> > + * @device: value returned from uart_register_device()
-> > + *
-> > + * Reverse effect of uart_register_device().
-> > + */
-> > +void uart_unregister_device(struct uart_device *udev) {
-> > +	if (udev->adap)
-> > +		klist_del(&udev->klist_parent);
-> > +	sysfs_remove_link(&udev->dev.kobj, "host_node");
-> > +	if (udev->tty)
-> > +		sysfs_remove_link(&udev->tty->kobj, "target_node");
-> > +	device_unregister(&udev->dev);
-> > +}
-> > +EXPORT_SYMBOL_GPL(uart_unreigster_device);
-> 
-> Typo in the function name.
+ drivers/acpi/Kconfig                 |    7 +
+ drivers/acpi/Makefile                |    1 +
+ drivers/acpi/acpi_uart.c             |  262 +++++++++++++++++++++
+ drivers/acpi/scan.c                  |    1 +
+ drivers/tty/serial/8250/8250.c       |   17 +-
+ drivers/tty/serial/8250/8250_dummy.c |  129 ++++++++++
+ drivers/tty/serial/8250/Kconfig      |   10 +
+ drivers/tty/serial/8250/Makefile     |    1 +
+ drivers/tty/serial/Makefile          |    2 +-
+ drivers/tty/serial/serial_bus.c      |  429 ++++++++++++++++++++++++++++++++++
+ include/linux/acpi_uart.h            |   40 ++++
+ include/linux/mod_devicetable.h      |    5 +
+ include/linux/serial_8250.h          |    2 +
+ include/linux/serial_bus.h           |   80 +++++++
+ 14 files changed, 982 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/acpi/acpi_uart.c
+ create mode 100644 drivers/tty/serial/8250/8250_dummy.c
+ create mode 100644 drivers/tty/serial/serial_bus.c
+ create mode 100644 include/linux/acpi_uart.h
+ create mode 100644 include/linux/serial_bus.h
 
-Fixed...
+-- 
+1.7.10
 
-Thanks and best regards/Lv Zheng
