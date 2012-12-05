@@ -1,97 +1,55 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: Re: [PATCH] synclink fix ldisc buffer argument
-Date: Wed, 05 Dec 2012 09:57:34 +0800
-Message-ID: <50BEAA0E.9000603@asianux.com>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <20121202151332.3b6a6504@pyramind.ukuu.org.uk> <F6B8A325-7DBF-4623-B16C-CDC5642EFD16@microgate.com> <20121202181057.097012c6@pyramind.ukuu.org.uk> <989CB961-79F8-479B-B16C-41358A60AC94@microgate.com> <50BC0C84.4060802@asianux.com> <50BCCD4C.8050209@microgate.com>
+From: "Zheng, Lv" <lv.zheng@intel.com>
+Subject: RE: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
+Date: Wed, 5 Dec 2012 03:37:45 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88BD66B0@SHSMSX101.ccr.corp.intel.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
+	<6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
+ <20121203114604.079a2721@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from intranet.asianux.com ([58.214.24.6]:37996 "EHLO
-	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753281Ab2LEB4l (ORCPT
+Received: from mga03.intel.com ([143.182.124.21]:17490 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752808Ab2LEDiB convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Dec 2012 20:56:41 -0500
-In-Reply-To: <50BCCD4C.8050209@microgate.com>
+	Tue, 4 Dec 2012 22:38:01 -0500
+In-Reply-To: <20121203114604.079a2721@bob.linux.org.uk>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-=E4=BA=8E 2012=E5=B9=B412=E6=9C=8804=E6=97=A5 00:03, Paul Fulghum =E5=86=
-=99=E9=81=93:
-> On 12/2/2012 8:20 PM, Chen Gang wrote:
->> pardon (I am just learning)
->>   does 65535 mean HDLC_MAX_FRAME_SIZE ?
->>   why do we need info->max_frame_size >=3D 4096 ?
->> in drivers/tty/synclink_gt.c:
->> 3550         if (info->max_frame_size < 4096)
->> 3551                 info->max_frame_size =3D 4096;
->> 3552         else if (info->max_frame_size > 65535)
->> 3553                 info->max_frame_size =3D 65535;
->> 3554
->>  ...
->> 3603                 info->max_frame_size =3D 4096;
->=20
-> The hardware can send and receive HDLC frames up to
-> 64K in size. The driver defaults to 4K max frame size
-> to save buffer space for the common case
-> (line 3603 in alloc_dev()).
->=20
-> The module parameter max_frame_size can override the default
-> in add_device() (lines 3550-3554 are from add_device()
-> range checking the module parameter)
->=20
+OK, all uart_driver and serial_core.h stuff will be removed from the next revision.
 
-  thank you.
+Best regards/Lv Zheng
 
-  sorry for reply late (yesterday, I have an annual leave for personal =
-things, and not connect net).
-
-by the way:
-  does it also need check the length in function rx_get_buf ?=20
-  (it seems not, but I am not quite sure, can you give a confirm ?)
-
-4779 /*
-4780  * pass receive buffer (RAW synchronous mode) to tty layer
-4781  * return true if buffer available, otherwise false
-4782  */
-4783 static bool rx_get_buf(struct slgt_info *info)
-4784 {
-4785         unsigned int i =3D info->rbuf_current;
-4786         unsigned int count;
-4787=20
-4788         if (!desc_complete(info->rbufs[i]))
-4789                 return false;
-4790         count =3D desc_count(info->rbufs[i]);
-4791         switch(info->params.mode) {
-4792         case MGSL_MODE_MONOSYNC:
-4793         case MGSL_MODE_BISYNC:
-4794         case MGSL_MODE_XSYNC:
-4795                 /* ignore residue in byte synchronous modes */
-4796                 if (desc_residue(info->rbufs[i]))
-4797                         count--;
-4798                 break;
-4799         }
-4800         DBGDATA(info, info->rbufs[i].buf, count, "rx");
-4801         DBGINFO(("rx_get_buf size=3D%d\n", count));
-4802         if (count)
-4803                 ldisc_receive_buf(info->port.tty, info->rbufs[i].b=
-uf,
-4804                                   info->flag_buf, count);
-4805         free_rbufs(info, i, i);
-4806         return true;
-4807 }
-
-
-
-
---=20
-Chen Gang
-
-Asianux Corporation
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -----Original Message-----
+> From: linux-serial-owner@vger.kernel.org
+> [mailto:linux-serial-owner@vger.kernel.org] On Behalf Of Alan Cox
+> Sent: Monday, December 03, 2012 7:46 PM
+> To: Zheng, Lv
+> Cc: Brown, Len; Wysocki, Rafael J; Greg Kroah-Hartman;
+> linux-acpi@vger.kernel.org; linux-serial@vger.kernel.org
+> Subject: Re: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
+> 
+> > + * uart_tty_find - find the associated TTY device for the UART target
+> > + *		   device
+> > + * @drv: the low level UART driver
+> > + * @dev: the parent physical device for the TTY devices
+> > + * @line: the line number of the UART target device
+> > + *
+> 
+> Our top level abstraction is struct tty and struct tty_port. There is nothing
+> requiring a serial tty is using the uart helper layer, nor should there be, so your
+> code needs to support devices not using the uart layer. Otherwise it looks quite
+> reasonable.
+> 
+> our 3.7 tty layer has sysfs nodes on the tty which may also help
+> 
+> Alan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in the body
+> of a message to majordomo@vger.kernel.org More majordomo info at
+> http://vger.kernel.org/majordomo-info.html
