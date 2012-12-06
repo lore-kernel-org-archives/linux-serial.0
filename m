@@ -1,31 +1,43 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [RFC PATCH v3 1/4] UART: Add UART subsystem as a bus.
-Date: Thu, 6 Dec 2012 13:40:20 +0000
-Message-ID: <20121206134020.0747af0f@bob.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC PATCH 1/3] UART: Add UART subsystem as a bus.
+Date: Thu, 6 Dec 2012 13:53:41 +0000
+Message-ID: <20121206135341.148b325e@pyramind.ukuu.org.uk>
 References: <cover.1354505471.git.lv.zheng@intel.com>
-	<cover.1354785372.git.lv.zheng@intel.com>
-	<c561ccd12ef845a7f30f26dfb706bb569e7244a7.1354785372.git.lv.zheng@intel.com>
+	<6d5fc2e0799c12554aa8acdb2d7782ba8643902b.1354505472.git.lv.zheng@intel.com>
+	<20121204185404.GQ3117@intel.com>
+	<20121204195030.238d1b71@bob.linux.org.uk>
+	<20121205062015.GR3117@intel.com>
+	<20121205094343.09d653c5@pyramind.ukuu.org.uk>
+	<1AE640813FDE7649BE1B193DEA596E88BD6C94@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <c561ccd12ef845a7f30f26dfb706bb569e7244a7.1354785372.git.lv.zheng@intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Lv Zheng <lv.zheng@intel.com>
-Cc: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:54879 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755026Ab2LFNs2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Dec 2012 08:48:28 -0500
+In-Reply-To: <1AE640813FDE7649BE1B193DEA596E88BD6C94@SHSMSX101.ccr.corp.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "Zheng, Lv" <lv.zheng@intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Mathias Nyman <mathias.nyman@linux.intel.com>, "Huang, Ying" <ying.huang@intel.com>
 
-> enumerated and userspace can obtain the hotplug event of the UART
-> target devices. Linux kernel is lack of an overall enumeration
-> mechanism for UART target devices.
+> > We just need a set of type names for the sysfs node I think "bluetooth", "ups",
+> > "loconet", "serial", "modem", "cir" etc...
+> 
+> Is it a good idea to introduce uart_device driver in the kernel to fill a new 'ldisc' member in the uart_device or to load ldisc by default for the corresponding tty_port?
 
-ls /sys/class/tty/
+No but it can provide information to help user space. In many cases the
+decision isn't about a line discipline but about automatically setting
+permissions or linking ports to the right driver.
 
-> In order to send uevent, a device need to be a class device or a bus
-> device. This patch introduces a bus_type subsystem to manage the new
+The hints need to be generic - they can come from open firmware, from pci
+identifiers, from ACPI and so on.
 
-I still don't see why the existing tty class interfaces cannot be used,
-the hints from ACPI (or anywhere else) cannot be attached as properties
-to the tty driver and device sysfs
+> Shall we change the uart_bus to the tty_bus, then introduce tty_host / tty_target for the bus?
+
+We have a tty class - is that not sufficient ?
 
 Alan
