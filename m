@@ -1,61 +1,75 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: Re: [PATCH] synclink fix ldisc buffer argument
-Date: Fri, 07 Dec 2012 10:15:22 +0800
-Message-ID: <50C1513A.4010600@asianux.com>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <50BCDDB4.6010608@microgate.com>
+From: "Zheng, Lv" <lv.zheng@intel.com>
+Subject: RE: [RFC PATCH v3 1/4] UART: Add UART subsystem as a bus.
+Date: Fri, 7 Dec 2012 03:52:03 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88BD7485@SHSMSX101.ccr.corp.intel.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
+	<cover.1354785372.git.lv.zheng@intel.com>
+	<c561ccd12ef845a7f30f26dfb706bb569e7244a7.1354785372.git.lv.zheng@intel.com>
+ <20121206134020.0747af0f@bob.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from intranet.asianux.com ([58.214.24.6]:64279 "EHLO
-	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754671Ab2LGCOa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Dec 2012 21:14:30 -0500
-In-Reply-To: <50BCDDB4.6010608@microgate.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20121206134020.0747af0f@bob.linux.org.uk>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "H. Peter Anvin (hpa@linux.intel.com)" <hpa@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-Hello Greg Kroah-Hartman:
+> > enumerated and userspace can obtain the hotplug event of the UART
+> > target devices. Linux kernel is lack of an overall enumeration
+> > mechanism for UART target devices.
+> 
+> ls /sys/class/tty/
 
+I'm searching for a target "physical" device while the "tty device" looks more like a "functional" device.
 
-=E4=BA=8E 2012=E5=B9=B412=E6=9C=8804=E6=97=A5 01:13, Paul Fulghum =E5=86=
-=99=E9=81=93:
-> Fix call to line discipline receive_buf by synclink drivers.
-> Dummy flag buffer argument is ignored by N_HDLC line discipline but m=
-ight
-> be of insufficient size if accessed by a different line discipline
-> selected by mistake. flag buffer allocation now matches max size of d=
-ata
-> buffer. Unused char_buf buffers are removed.
->=20
-> Signed-off-by: Paul Fulghum <paulkf@microgate.com>
+IMO, an ideal driver model is:
+Creating a strict IO topology for all of the physical buses w/ physical devices created within this hierarchy, then make the abstract things "class devices", including the "functional devices" and the "filter devices".
+The examples of the "physical devices": platform device, uart_device, i2c_client, spi_device
+The examples of the "functional devices": tty device, i2c_adapter, spi_master
+The examples of the "filter devices": ppp device
 
-if no additional questions:
-  is it suitable to let this patch pass checking ?
-  at least for me, it is surely solve an issue, and no negative effect.
+If this rule is strictly obeyed by all of the subsystems, then:
+1. the hardware PM can be added to the physical devices
+2. the functional devices will inc/dec the PM reference count for the physical devices <- this can help to add request based runtime PM
+3. the other filter devices/drivers can call the APIs provided by the functional devices, some of them may affect the PM ref count.
+Implementing OS guided power management might be simpler:
+1. if a bus offered PM support, it should appear in the bus_type
+2. if a platform offered PM support, it should appear as PM_domain
+Currently, Linux allows enabling of PM support for device_type, if things are cleaned up, the use of device_type PM can be reduced.
 
-now, maybe Paul Fulghum is busy...
-  the left questions what I have sent seems minor.
-  so they can be delayed, until he has free time.
+If a device was handling hardware stuff including the PM, it should be a "physical device".
+If a device was offering communication means, it should be a "functional device".
+If a device was using the communication means, it should be a "filter device".
+So how could a tty device be a physical device? If we enable PM for it, dpm_list order will be crushed, issues might occur on system suspending/resuming.
 
-when Paul Fulghum has free time.
-  can still check what my left questions whether valid.
-  if they are valid, can send additional patch for them.
+> > In order to send uevent, a device need to be a class device or a bus
+> > device. This patch introduces a bus_type subsystem to manage the new
+> 
+> I still don't see why the existing tty class interfaces cannot be used, the hints
+> from ACPI (or anywhere else) cannot be attached as properties to the tty driver
+> and device sysfs
 
+I checked the PM call chain, then found the followings:
 
-  is it OK ?
+On system suspending:
+  adapter.suspend -> for_each_port(uart_suspend_port) -> uart_change_pm(3) -> uart_ops->pm -> uart_port->pm
+On system resuming:
+  adapter.resume -> for_each_port(uart_resume_port) -> uart_change_pm(0) -> uart_ops->pm -> uart_port->pm
+Where the adapter could be platform devices.
 
-  Regards
+On tty file opening:
+ uart_open -> uart_change_pm(0) -> uart_ops->pm -> uart_port->pm
+On tty file closing:
+ uart_close -> uart_change_pm(3) -> uart_ops->pm -> uart_port->pm
 
---=20
-Chen Gang
+And I checked the PM implementation, most of the drivers will enable/disable the "HOST" side port clock there and only few of them will lower the required terminal lines to tell the target devices to enter a low power state.
+So I was just thinking if the tty device was used as physical device in the community, it might be used as "host" side physical device, and my patch was trying to enable a "target" side physical device.
 
-Asianux Corporation
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Adding driver support for such "target physical uart device" sounds a good idea. But I need an explicit approval for adding the kernel resident driver.
+
+Best regards
+-Lv
+
