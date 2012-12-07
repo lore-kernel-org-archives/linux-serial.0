@@ -1,75 +1,46 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [RFC PATCH v3 1/4] UART: Add UART subsystem as a bus.
-Date: Fri, 7 Dec 2012 03:52:03 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88BD7485@SHSMSX101.ccr.corp.intel.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
-	<cover.1354785372.git.lv.zheng@intel.com>
-	<c561ccd12ef845a7f30f26dfb706bb569e7244a7.1354785372.git.lv.zheng@intel.com>
- <20121206134020.0747af0f@bob.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20121206134020.0747af0f@bob.linux.org.uk>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: "Brown, Len" <len.brown@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "H. Peter Anvin (hpa@linux.intel.com)" <hpa@linux.intel.com>
+From: matts_old@commtech-fastcom.com
+Subject: [PATCHv2 1/2] tty/8250: pbn_b0_8_1152000_200 is supposed to be an 8 port definition
+Date: Thu,  6 Dec 2012 22:19:58 -0600
+Message-ID: <1354853999-6789-1-git-send-email-matts@commtech-fastcom.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ye0-f174.google.com ([209.85.213.174]:33414 "EHLO
+	mail-ye0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932307Ab2LGEWj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Dec 2012 23:22:39 -0500
+Received: by mail-ye0-f174.google.com with SMTP id m6so16016yen.19
+        for <linux-serial@vger.kernel.org>; Thu, 06 Dec 2012 20:22:38 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: alan@lxorguk.ukuu.org.uk, greg@kroah.com, Matt Schulte <matts@commtech-fastcom.com>
 
-> > enumerated and userspace can obtain the hotplug event of the UART
-> > target devices. Linux kernel is lack of an overall enumeration
-> > mechanism for UART target devices.
-> 
-> ls /sys/class/tty/
+From: Matt Schulte <matts@commtech-fastcom.com>
 
-I'm searching for a target "physical" device while the "tty device" looks more like a "functional" device.
+tty/8250: pbn_b0_8_1152000_200 is supposed to be an 8 port definition
 
-IMO, an ideal driver model is:
-Creating a strict IO topology for all of the physical buses w/ physical devices created within this hierarchy, then make the abstract things "class devices", including the "functional devices" and the "filter devices".
-The examples of the "physical devices": platform device, uart_device, i2c_client, spi_device
-The examples of the "functional devices": tty device, i2c_adapter, spi_master
-The examples of the "filter devices": ppp device
+Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+---
+Built against tty-next commit: b0ab02361167faa82198b783a8d555eb6f58901c
 
-If this rule is strictly obeyed by all of the subsystems, then:
-1. the hardware PM can be added to the physical devices
-2. the functional devices will inc/dec the PM reference count for the physical devices <- this can help to add request based runtime PM
-3. the other filter devices/drivers can call the APIs provided by the functional devices, some of them may affect the PM ref count.
-Implementing OS guided power management might be simpler:
-1. if a bus offered PM support, it should appear in the bus_type
-2. if a platform offered PM support, it should appear as PM_domain
-Currently, Linux allows enabling of PM support for device_type, if things are cleaned up, the use of device_type PM can be reduced.
+v2: Reorder define in patch 2 as requested by Alan
 
-If a device was handling hardware stuff including the PM, it should be a "physical device".
-If a device was offering communication means, it should be a "functional device".
-If a device was using the communication means, it should be a "filter device".
-So how could a tty device be a physical device? If we enable PM for it, dpm_list order will be crushed, issues might occur on system suspending/resuming.
+ drivers/tty/serial/8250/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-> > In order to send uevent, a device need to be a class device or a bus
-> > device. This patch introduces a bus_type subsystem to manage the new
-> 
-> I still don't see why the existing tty class interfaces cannot be used, the hints
-> from ACPI (or anywhere else) cannot be attached as properties to the tty driver
-> and device sysfs
-
-I checked the PM call chain, then found the followings:
-
-On system suspending:
-  adapter.suspend -> for_each_port(uart_suspend_port) -> uart_change_pm(3) -> uart_ops->pm -> uart_port->pm
-On system resuming:
-  adapter.resume -> for_each_port(uart_resume_port) -> uart_change_pm(0) -> uart_ops->pm -> uart_port->pm
-Where the adapter could be platform devices.
-
-On tty file opening:
- uart_open -> uart_change_pm(0) -> uart_ops->pm -> uart_port->pm
-On tty file closing:
- uart_close -> uart_change_pm(3) -> uart_ops->pm -> uart_port->pm
-
-And I checked the PM implementation, most of the drivers will enable/disable the "HOST" side port clock there and only few of them will lower the required terminal lines to tell the target devices to enter a low power state.
-So I was just thinking if the tty device was used as physical device in the community, it might be used as "host" side physical device, and my patch was trying to enable a "target" side physical device.
-
-Adding driver support for such "target physical uart device" sounds a good idea. But I need an explicit approval for adding the kernel resident driver.
-
-Best regards
--Lv
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 26b9dc0..bf2f1a0 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2246,7 +2246,7 @@ static struct pciserial_board pci_boards[] = {
+ 
+ 	[pbn_b0_8_1152000_200] = {
+ 		.flags		= FL_BASE0,
+-		.num_ports	= 2,
++		.num_ports	= 8,
+ 		.base_baud	= 1152000,
+ 		.uart_offset	= 0x200,
+ 	},
+-- 
+1.7.2.5
 
