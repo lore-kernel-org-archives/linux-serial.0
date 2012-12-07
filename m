@@ -1,43 +1,61 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH -next 0/9] tty: Fix buffer work access-after-free
-Date: Thu, 06 Dec 2012 19:57:35 -0500
-Message-ID: <1354841855.3026.7.camel@thor>
-References: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+From: Chen Gang <gang.chen@asianux.com>
+Subject: Re: [PATCH] synclink fix ldisc buffer argument
+Date: Fri, 07 Dec 2012 10:15:22 +0800
+Message-ID: <50C1513A.4010600@asianux.com>
+References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <50BCDDB4.6010608@microgate.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:49507 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1423263Ab2LGA5p (ORCPT
+Received: from intranet.asianux.com ([58.214.24.6]:64279 "EHLO
+	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754671Ab2LGCOa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Dec 2012 19:57:45 -0500
-In-Reply-To: <1354604865-10278-1-git-send-email-peter@hurleysoftware.com>
+	Thu, 6 Dec 2012 21:14:30 -0500
+In-Reply-To: <50BCDDB4.6010608@microgate.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sasha Levin <levinsasha928@gmail.com>
+To: Paul Fulghum <paulkf@microgate.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Tue, 2012-12-04 at 02:07 -0500, Peter Hurley wrote:
-> This patch series addresses the causes of flush_to_ldisc accessing
-> the tty after freeing.
+Hello Greg Kroah-Hartman:
 
-Well, there's going to be a v2 of this series.
 
-Sasha found that PATCH 3/9 is an insufficient fix. I've already worked
-out the correct solution but I've been plagued by the kswapd/flush
-problem so that's making this more challenging then it ought to be.
+=E4=BA=8E 2012=E5=B9=B412=E6=9C=8804=E6=97=A5 01:13, Paul Fulghum =E5=86=
+=99=E9=81=93:
+> Fix call to line discipline receive_buf by synclink drivers.
+> Dummy flag buffer argument is ignored by N_HDLC line discipline but m=
+ight
+> be of insufficient size if accessed by a different line discipline
+> selected by mistake. flag buffer allocation now matches max size of d=
+ata
+> buffer. Unused char_buf buffers are removed.
+>=20
+> Signed-off-by: Paul Fulghum <paulkf@microgate.com>
 
-Plus I tripped across a GP fault in the SLUB allocator which turns out
-to be a free list corruption (probably because of the low memory
-condition brought on by the kswapd problem. Good times...)
+if no additional questions:
+  is it suitable to let this patch pass checking ?
+  at least for me, it is surely solve an issue, and no negative effect.
 
-There is also going to be a v3 because I just came up with an idea to
-clean up the whole ldisc ref situation, but I'm going to take some time
-testing it out first.
+now, maybe Paul Fulghum is busy...
+  the left questions what I have sent seems minor.
+  so they can be delayed, until he has free time.
 
-Anyway, just wanted to hold this off for another respin.
+when Paul Fulghum has free time.
+  can still check what my left questions whether valid.
+  if they are valid, can send additional patch for them.
 
-Regards,
-Peter Hurley
 
+  is it OK ?
+
+  Regards
+
+--=20
+Chen Gang
+
+Asianux Corporation
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
