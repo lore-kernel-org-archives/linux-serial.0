@@ -1,201 +1,106 @@
-From: Linus Walleij <linus.walleij@stericsson.com>
-Subject: [PATCH v2] tty: serial core: decouple pm states from ACPI
-Date: Fri, 7 Dec 2012 11:36:08 +0100
-Message-ID: <1354876568-10617-1-git-send-email-linus.walleij@stericsson.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v2] tty: serial core: decouple pm states from ACPI
+Date: Fri, 07 Dec 2012 12:19:30 +0100
+Message-ID: <50C1D0C2.4030002@linaro.org>
+References: <1354876568-10617-1-git-send-email-linus.walleij@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, Rickard Andersson <rickard.andersson@stericsson.com>, linux-acpi@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bk0-f46.google.com ([209.85.214.46]:33141 "EHLO
+	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932732Ab2LGLTc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Dec 2012 06:19:32 -0500
+Received: by mail-bk0-f46.google.com with SMTP id q16so155417bkw.19
+        for <linux-serial@vger.kernel.org>; Fri, 07 Dec 2012 03:19:31 -0800 (PST)
+In-Reply-To: <1354876568-10617-1-git-send-email-linus.walleij@stericsson.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@stericsson.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Rickard Andersson <rickard.andersson@stericsson.com>, linux-acpi@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 
-From: Linus Walleij <linus.walleij@linaro.org>
+On 12/07/2012 11:36 AM, Linus Walleij wrote:
+> From: Linus Walleij <linus.walleij@linaro.org>
+>=20
+> The serial core is using power states lifted from ACPI for no
+> good reason. Remove this reference from the documentation and
+> alter all users to use an enum specific to the serial core
+> instead, and define it in <linux/serial_core.h>.
+>=20
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - rename states from _DEFAULT and _SLEEP to simply _ON
+>   and _OFF as Rafael suggests.
+> ---
 
-The serial core is using power states lifted from ACPI for no
-good reason. Remove this reference from the documentation and
-alter all users to use an enum specific to the serial core
-instead, and define it in <linux/serial_core.h>.
+Reviewed-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- rename states from _DEFAULT and _SLEEP to simply _ON
-  and _OFF as Rafael suggests.
----
- Documentation/serial/driver      |  5 ++---
- drivers/tty/serial/serial_core.c | 30 ++++++++++++++++--------------
- include/linux/serial_core.h      | 14 +++++++++++++-
- 3 files changed, 31 insertions(+), 18 deletions(-)
+One suggestion below.
 
-diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 0a25a91..a6ef8dc 100644
---- a/Documentation/serial/driver
-+++ b/Documentation/serial/driver
-@@ -242,9 +242,8 @@ hardware.
- 
-   pm(port,state,oldstate)
- 	Perform any power management related activities on the specified
--	port.  State indicates the new state (defined by ACPI D0-D3),
--	oldstate indicates the previous state.  Essentially, D0 means
--	fully on, D3 means powered down.
-+	port.  State indicates the new state (defined by
-+	enum uart_pm_state), oldstate indicates the previous state.
- 
- 	This function should not be used to grab any resources.
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2c7230a..82d7ce8 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -59,7 +59,8 @@ static struct lock_class_key port_lock_key;
- static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 					struct ktermios *old_termios);
- static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
--static void uart_change_pm(struct uart_state *state, int pm_state);
-+static void uart_change_pm(struct uart_state *state,
-+			   enum uart_pm_state pm_state);
- 
- static void uart_port_shutdown(struct tty_port *port);
- 
-@@ -1365,7 +1366,7 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 		spin_lock_irqsave(&port->lock, flags);
- 	} else if (!uart_console(uport)) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		uart_change_pm(state, 3);
-+		uart_change_pm(state, UART_PM_STATE_OFF);
- 		spin_lock_irqsave(&port->lock, flags);
- 	}
- 
-@@ -1579,7 +1580,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 	 * Make sure the device is in D0 state.
- 	 */
- 	if (port->count == 1)
--		uart_change_pm(state, 0);
-+		uart_change_pm(state, UART_PM_STATE_ON);
- 
- 	/*
- 	 * Start up the serial port.
-@@ -1620,7 +1621,7 @@ static void uart_line_info(struct seq_file *m, struct uart_driver *drv, int i)
- {
- 	struct uart_state *state = drv->state + i;
- 	struct tty_port *port = &state->port;
--	int pm_state;
-+	enum uart_pm_state pm_state;
- 	struct uart_port *uport = state->uart_port;
- 	char stat_buf[32];
- 	unsigned int status;
-@@ -1645,12 +1646,12 @@ static void uart_line_info(struct seq_file *m, struct uart_driver *drv, int i)
- 	if (capable(CAP_SYS_ADMIN)) {
- 		mutex_lock(&port->mutex);
- 		pm_state = state->pm_state;
--		if (pm_state)
--			uart_change_pm(state, 0);
-+		if (pm_state != UART_PM_STATE_ON)
-+			uart_change_pm(state, UART_PM_STATE_ON);
- 		spin_lock_irq(&uport->lock);
- 		status = uport->ops->get_mctrl(uport);
- 		spin_unlock_irq(&uport->lock);
--		if (pm_state)
-+		if (pm_state != UART_PM_STATE_ON)
- 			uart_change_pm(state, pm_state);
- 		mutex_unlock(&port->mutex);
- 
-@@ -1897,7 +1898,8 @@ EXPORT_SYMBOL_GPL(uart_set_options);
-  *
-  * Locking: port->mutex has to be held
-  */
--static void uart_change_pm(struct uart_state *state, int pm_state)
-+static void uart_change_pm(struct uart_state *state,
-+			   enum uart_pm_state pm_state)
- {
- 	struct uart_port *port = state->uart_port;
- 
-@@ -1982,7 +1984,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		console_stop(uport->cons);
- 
- 	if (console_suspend_enabled || !uart_console(uport))
--		uart_change_pm(state, 3);
-+		uart_change_pm(state, UART_PM_STATE_OFF);
- 
- 	mutex_unlock(&port->mutex);
- 
-@@ -2027,7 +2029,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 			termios = port->tty->termios;
- 
- 		if (console_suspend_enabled)
--			uart_change_pm(state, 0);
-+			uart_change_pm(state, UART_PM_STATE_ON);
- 		uport->ops->set_termios(uport, &termios, NULL);
- 		if (console_suspend_enabled)
- 			console_start(uport->cons);
-@@ -2037,7 +2039,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 		const struct uart_ops *ops = uport->ops;
- 		int ret;
- 
--		uart_change_pm(state, 0);
-+		uart_change_pm(state, UART_PM_STATE_ON);
- 		spin_lock_irq(&uport->lock);
- 		ops->set_mctrl(uport, 0);
- 		spin_unlock_irq(&uport->lock);
-@@ -2137,7 +2139,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		uart_report_port(drv, port);
- 
- 		/* Power up port for set_mctrl() */
--		uart_change_pm(state, 0);
-+		uart_change_pm(state, UART_PM_STATE_ON);
- 
- 		/*
- 		 * Ensure that the modem control lines are de-activated.
-@@ -2161,7 +2163,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * console if we have one.
- 		 */
- 		if (!uart_console(port))
--			uart_change_pm(state, 3);
-+			uart_change_pm(state, UART_PM_STATE_OFF);
- 	}
- }
- 
-@@ -2588,7 +2590,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	}
- 
- 	state->uart_port = uport;
--	state->pm_state = -1;
-+	state->pm_state = UART_PM_STATE_UNDEFINED;
- 
- 	uport->cons = drv->cons;
- 	uport->state = state;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index c6690a2..a116daa 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -208,13 +208,25 @@ static inline void serial_port_out(struct uart_port *up, int offset, int value)
- 	up->serial_out(up, offset, value);
- }
- 
-+/**
-+ * enum uart_pm_state - power states for UARTs
-+ * @UART_PM_STATE_ON: UART is powered, up and operational
-+ * @UART_PM_STATE_OFF: UART is powered off
-+ * @UART_PM_STATE_UNDEFINED: sentinel
-+ */
-+enum uart_pm_state {
-+	UART_PM_STATE_ON = 0,
-+	UART_PM_STATE_OFF = 3, /* number taken from ACPI */
-+	UART_PM_STATE_UNDEFINED,
-+};
-+
- /*
-  * This is the state information which is persistent across opens.
-  */
- struct uart_state {
- 	struct tty_port		port;
- 
--	int			pm_state;
-+	enum uart_pm_state	pm_state;
- 	struct circ_buf		xmit;
- 
- 	struct uart_port	*uart_port;
--- 
-1.7.11.3
 
+[ ... ]
+
+> @@ -1620,7 +1621,7 @@ static void uart_line_info(struct seq_file *m, =
+struct uart_driver *drv, int i)
+>  {
+>  	struct uart_state *state =3D drv->state + i;
+>  	struct tty_port *port =3D &state->port;
+> -	int pm_state;
+> +	enum uart_pm_state pm_state;
+>  	struct uart_port *uport =3D state->uart_port;
+>  	char stat_buf[32];
+>  	unsigned int status;
+> @@ -1645,12 +1646,12 @@ static void uart_line_info(struct seq_file *m=
+, struct uart_driver *drv, int i)
+>  	if (capable(CAP_SYS_ADMIN)) {
+>  		mutex_lock(&port->mutex);
+>  		pm_state =3D state->pm_state;
+> -		if (pm_state)
+> -			uart_change_pm(state, 0);
+> +		if (pm_state !=3D UART_PM_STATE_ON)
+> +			uart_change_pm(state, UART_PM_STATE_ON);
+
+The check is already done in the uart_change_pm function, no ?
+
+>  		spin_lock_irq(&uport->lock);
+>  		status =3D uport->ops->get_mctrl(uport);
+>  		spin_unlock_irq(&uport->lock);
+> -		if (pm_state)
+> +		if (pm_state !=3D UART_PM_STATE_ON)
+>  			uart_change_pm(state, pm_state);
+
+Maybe it could be worth to change uart_change_pm to return the old stat=
+e
+value.
+
+So the code will be simpler:
+
+pm_state =3D uart_change_pm(state, UART_PM_STATE_ON);
+
+=2E..
+
+uart_change_pm(state, pm_state);
+
+
+The uart_change_pm already takes care of changing the value if the
+current one is different.
+
+Well, maybe that could come on a different patch.
+
+[ ... ]
+
+--=20
+ <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software for=
+ ARM SoCs
+
+=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
