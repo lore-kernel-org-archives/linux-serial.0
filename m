@@ -1,60 +1,92 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Did quatech changes make 3.8? (was: Re: Comments requested:
- driver for Quatech PCI serial cards)
-Date: Sun, 9 Dec 2012 18:19:28 -0800
-Message-ID: <20121210021927.GB7562@kroah.com>
-References: <20121114231054.GC4505@marvin.atrad.com.au>
- <20121114235719.794a9bdc@pyramind.ukuu.org.uk>
- <20121115001110.GE4505@marvin.atrad.com.au>
- <20121115155347.4be3dce8@pyramind.ukuu.org.uk>
- <20121128022917.GD28558@marvin.atrad.com.au>
- <20121128132419.1094d2d3@pyramind.ukuu.org.uk>
- <20121128134140.GA29452@marvin.atrad.com.au>
- <20121128173010.GC32286@kroah.com>
- <20121128223300.GA24713@marvin.atrad.com.au>
- <20121210001347.GB22907@marvin.atrad.com.au>
+From: Rickard Andersson <rickard.andersson@stericsson.com>
+Subject: [PATCH 2/2] TTY: serial, add pm function
+Date: Mon, 10 Dec 2012 13:34:18 +0100
+Message-ID: <1355142858-11046-2-git-send-email-rickard.andersson@stericsson.com>
+References: <1355142858-11046-1-git-send-email-rickard.andersson@stericsson.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:46095 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750821Ab2LJCRK (ORCPT
+Received: from eu1sys200aog114.obsmtp.com ([207.126.144.137]:56726 "EHLO
+	eu1sys200aog114.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752539Ab2LJMec (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 9 Dec 2012 21:17:10 -0500
-Received: by mail-pb0-f46.google.com with SMTP id wy7so1534576pbc.19
-        for <linux-serial@vger.kernel.org>; Sun, 09 Dec 2012 18:17:09 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <20121210001347.GB22907@marvin.atrad.com.au>
+	Mon, 10 Dec 2012 07:34:32 -0500
+In-Reply-To: <1355142858-11046-1-git-send-email-rickard.andersson@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jonathan Woithe <jwoithe@just42.net>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, linus.walleij@stericsson.com
+Cc: alan@linux.intel.com, daniel.lezcano@linaro.org, rickard.andersson@stericsson.com
 
-On Mon, Dec 10, 2012 at 10:43:47AM +1030, Jonathan Woithe wrote:
-> On Thu, Nov 29, 2012 at 09:03:00AM +1030, Jonathan Woithe wrote:
-> > On Wed, Nov 28, 2012 at 09:30:10AM -0800, Greg KH wrote:
-> > > On Thu, Nov 29, 2012 at 12:11:40AM +1030, Jonathan Woithe wrote:
-> > > > On Wed, Nov 28, 2012 at 01:24:19PM +0000, Alan Cox wrote:
-> > > > > Can we get a Signed-off-by: for the first patch so we can try and get it
-> > > > > into 3.8 ?
-> > > > 
-> > > > Sure.  See below.  The rest of the previous commit message was fine so I
-> > > > haven't replicated it here.
-> > > 
-> > > Please do, otherwise I have to hand-edit the patch to add it back, and
-> > > odds are, I will get it wrong...
-> > 
-> > No problem.  See below.  I took the opportunity to tweak the commit message
-> > a touch.
-> 
-> I am wondering (for documentation purposes) whether the quatech changes
-> below made 3.8 or whether they'll appear in 3.9.  I don't see them in
-> linux-next or tty-next, but I'm still learning git and might have done
-> something wrong while searching.
+Add power management function to tty driver interface
+and add implementation for serial core.
 
-Odd, I somehow missed this, thinking Alan would resend it later, I'll
-queue it up next week and it should make 3.8-final.
+Signed-off-by: Rickard Andersson <rickard.andersson@stericsson.com>
+---
+ drivers/tty/serial/serial_core.c | 10 ++++++++++
+ include/linux/tty_driver.h       |  8 ++++++++
+ 2 files changed, 18 insertions(+)
 
-thanks,
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b2fc8d7..3597dc8 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1114,6 +1114,15 @@ static int uart_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
+ 
++static int uart_pm(struct tty_struct *tty, enum tty_pm_state state)
++{
++	struct uart_state *ustate = tty->driver_data;
++
++	uart_change_pm(ustate, state);
++
++	return 0;
++}
++
+ /*
+  * Called via sys_ioctl.  We can use spin_lock_irq() here.
+  */
+@@ -2217,6 +2226,7 @@ static const struct tty_operations uart_ops = {
+ 	.tiocmget	= uart_tiocmget,
+ 	.tiocmset	= uart_tiocmset,
+ 	.get_icount	= uart_get_icount,
++	.pm		= uart_pm,
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_init	= uart_poll_init,
+ 	.poll_get_char	= uart_poll_get_char,
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index d150a6f..ba34b7f 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -229,6 +229,12 @@
+  *	Called when the device receives a TIOCGICOUNT ioctl. Passed a kernel
+  *	structure to complete. This method is optional and will only be called
+  *	if provided (otherwise EINVAL will be returned).
++ *
++ * int (*pm)(struct tty_struct * tty, enum tty_pm_state state);
++ *
++ *      Perform any power management related activities on the specified
++ *      tty. State indicates the new state.
++ *
+  */
+ 
+ #include <linux/export.h>
+@@ -249,6 +255,7 @@ struct serial_icounter_struct;
+  */
+ enum tty_pm_state {
+ 	TTY_PM_STATE_ON = 0,
++	TTY_PM_STATE_SLEEP,
+ 	TTY_PM_STATE_OFF = 3, /* number taken from ACPI */
+ 	TTY_PM_STATE_UNDEFINED,
+ };
+@@ -290,6 +297,7 @@ struct tty_operations {
+ 	int (*set_termiox)(struct tty_struct *tty, struct termiox *tnew);
+ 	int (*get_icount)(struct tty_struct *tty,
+ 				struct serial_icounter_struct *icount);
++	int (*pm)(struct tty_struct *tty, enum tty_pm_state state);
+ #ifdef CONFIG_CONSOLE_POLL
+ 	int (*poll_init)(struct tty_driver *driver, int line, char *options);
+ 	int (*poll_get_char)(struct tty_driver *driver, int line);
+-- 
+1.8.0
 
-greg k-h
