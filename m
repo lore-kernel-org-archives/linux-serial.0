@@ -1,82 +1,60 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: [Consult]: Re: [PATCH] synclink fix ldisc buffer argument
-Date: Mon, 10 Dec 2012 09:32:21 +0800
-Message-ID: <50C53BA5.2030805@asianux.com>
-References: <50B6E751.9000000@asianux.com> <20121129051335.GA4375@kroah.com> <50B6F967.3050000@asianux.com> <20121129183207.GA4688@kroah.com> <50B81F76.8020508@asianux.com> <50B8DDAC.8070901@microgate.com> <50B90D0D.9040401@microgate.com> <50BCDDB4.6010608@microgate.com> <50C1513A.4010600@asianux.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Did quatech changes make 3.8? (was: Re: Comments requested:
+ driver for Quatech PCI serial cards)
+Date: Sun, 9 Dec 2012 18:19:28 -0800
+Message-ID: <20121210021927.GB7562@kroah.com>
+References: <20121114231054.GC4505@marvin.atrad.com.au>
+ <20121114235719.794a9bdc@pyramind.ukuu.org.uk>
+ <20121115001110.GE4505@marvin.atrad.com.au>
+ <20121115155347.4be3dce8@pyramind.ukuu.org.uk>
+ <20121128022917.GD28558@marvin.atrad.com.au>
+ <20121128132419.1094d2d3@pyramind.ukuu.org.uk>
+ <20121128134140.GA29452@marvin.atrad.com.au>
+ <20121128173010.GC32286@kroah.com>
+ <20121128223300.GA24713@marvin.atrad.com.au>
+ <20121210001347.GB22907@marvin.atrad.com.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from intranet.asianux.com ([58.214.24.6]:17647 "EHLO
-	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750754Ab2LJBb2 (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:46095 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750821Ab2LJCRK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 9 Dec 2012 20:31:28 -0500
-In-Reply-To: <50C1513A.4010600@asianux.com>
+	Sun, 9 Dec 2012 21:17:10 -0500
+Received: by mail-pb0-f46.google.com with SMTP id wy7so1534576pbc.19
+        for <linux-serial@vger.kernel.org>; Sun, 09 Dec 2012 18:17:09 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <20121210001347.GB22907@marvin.atrad.com.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Fulghum <paulkf@microgate.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Jonathan Woithe <jwoithe@just42.net>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
 
-Hello Paul Fulghum:
+On Mon, Dec 10, 2012 at 10:43:47AM +1030, Jonathan Woithe wrote:
+> On Thu, Nov 29, 2012 at 09:03:00AM +1030, Jonathan Woithe wrote:
+> > On Wed, Nov 28, 2012 at 09:30:10AM -0800, Greg KH wrote:
+> > > On Thu, Nov 29, 2012 at 12:11:40AM +1030, Jonathan Woithe wrote:
+> > > > On Wed, Nov 28, 2012 at 01:24:19PM +0000, Alan Cox wrote:
+> > > > > Can we get a Signed-off-by: for the first patch so we can try and get it
+> > > > > into 3.8 ?
+> > > > 
+> > > > Sure.  See below.  The rest of the previous commit message was fine so I
+> > > > haven't replicated it here.
+> > > 
+> > > Please do, otherwise I have to hand-edit the patch to add it back, and
+> > > odds are, I will get it wrong...
+> > 
+> > No problem.  See below.  I took the opportunity to tweak the commit message
+> > a touch.
+> 
+> I am wondering (for documentation purposes) whether the quatech changes
+> below made 3.8 or whether they'll appear in 3.9.  I don't see them in
+> linux-next or tty-next, but I'm still learning git and might have done
+> something wrong while searching.
 
-  Firstly, sorry for my mistake:
-    I am a reporter (not reviewer), and not suitable to review maintain=
-er's patch.
-    when you send relative patch, need not cc to me (I am not reviewer)
+Odd, I somehow missed this, thinking Alan would resend it later, I'll
+queue it up next week and it should make 3.8-final.
 
-  so:
-    could you send patch again (not need cc to me) ?
-      (and also it is better to mark me as Reported-by in your patch)
+thanks,
 
-  sorry for my mistake, again.
-
-gchen.
-
-
-=E4=BA=8E 2012=E5=B9=B412=E6=9C=8807=E6=97=A5 10:15, Chen Gang =E5=86=99=
-=E9=81=93:
-> Hello Greg Kroah-Hartman:
->=20
->=20
-> =E4=BA=8E 2012=E5=B9=B412=E6=9C=8804=E6=97=A5 01:13, Paul Fulghum =E5=
-=86=99=E9=81=93:
->> Fix call to line discipline receive_buf by synclink drivers.
->> Dummy flag buffer argument is ignored by N_HDLC line discipline but =
-might
->> be of insufficient size if accessed by a different line discipline
->> selected by mistake. flag buffer allocation now matches max size of =
-data
->> buffer. Unused char_buf buffers are removed.
->>
->> Signed-off-by: Paul Fulghum <paulkf@microgate.com>
->=20
-> if no additional questions:
->   is it suitable to let this patch pass checking ?
->   at least for me, it is surely solve an issue, and no negative effec=
-t.
->=20
-> now, maybe Paul Fulghum is busy...
->   the left questions what I have sent seems minor.
->   so they can be delayed, until he has free time.
->=20
-> when Paul Fulghum has free time.
->   can still check what my left questions whether valid.
->   if they are valid, can send additional patch for them.
->=20
->=20
->   is it OK ?
->=20
->   Regards
->=20
-
-
---=20
-Chen Gang
-
-Asianux Corporation
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
