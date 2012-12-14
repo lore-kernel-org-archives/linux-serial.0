@@ -1,110 +1,63 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 00/11] tty: Fix buffer work access-after-free
-Date: Fri, 14 Dec 2012 13:22:39 -0500
-Message-ID: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:51115 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756652Ab2LNSXQ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Dec 2012 13:23:16 -0500
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH v2 01/11] tty: debug buffer work race with tty free
+Date: Fri, 14 Dec 2012 13:22:40 -0500
+Message-ID: <1355509370-5883-2-git-send-email-peter@hurleysoftware.com>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ilya Zykov <ilya@ilyx.ru>, Sasha Levin <levinsasha928@gmail.com>, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-
-I wasn't sure if this is something to squeeze into 3.8, so don't yell
-if not. At least Sasha can apply this and re-test against trinity.
-
-Changes in v2:
-
-- Please review "tty: Don't flush buffer when closing ldisc".
-  This patch replaces the earlier
-  "tty: Don't reschedule buffer work while closing". The text of
-  this commit details why not calling n_tty_flush_buffer() is the
-  correct thing to do, so I won't repeat it here.
-
-- Jiri's debug patch "tty: debug buffer work race with tty free"
-  has been included (albeit a slightly different version)
-  Jiri, please sign off (or point out what you'd like changed).
-
-- The test jig has been included in the commit message for
-  "tty: Don't flush buffer when closing ldisc" as Alan requested.
-
-- Ilya Zykov was added as the Signed-off-by: for the test jig in
-  that same commit message.
-
-- Sasha Levin was added as the Reported-by: in that same patch.
+List-Id: linux-serial@vger.kernel.org
 
 
-This patch series addresses the causes of flush_to_ldisc accessing
-the tty after freeing.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/pty.c        | 3 ++-
+ drivers/tty/tty_buffer.c | 2 +-
+ drivers/tty/tty_io.c     | 2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
-The most common cause stems from the n_tty_close() path spuriously
-scheduling buffer work, when the ldisc has already been halted.
-This is fixed in 'tty: Don't flush buffer when closing ldisc'
-
-The other causes have a central theme: incorrect order-of-operations
-when halting a line discipline. In general, to prevent buffer work
-from being scheduled requires:
-  1. Disallowing further ldisc references
-  2. Waiting for all existing ldisc references to be released
-  3. Cancelling existing buffer work
-If the wait takes place _after_ cancellation, then new work
-can be scheduled by existing holder(s) of ldisc reference(s). That's
-bad.
-
-Halting the line discipline is performed when,
- - hanging up the tty (tty_ldisc_hangup())
- - TIOCSETD ioctl (tty_set_ldisc())
- - finally closing the tty (pair) (tty_ldisc_release())
-
-Concurrent halts are governed by the following requirements:
-1. tty_ldisc_release is not concurrent with the other two and so
-   does not need lock or state protection during the ldiscs halt.
-2. Accesses through tty->ldisc must be protected by the ldisc_mutex.
-   The wait operation checks the user count (ldisc references)
-   in tty->ldisc->users.
-3. tty_set_ldisc() reschedules buffer work that was pending when
-   the ldiscs were halted. That must be an atomic operation in
-   conjunction with re-enabling the ldisc -- which necessitates
-   locking concurrent halts (tty_ldisc_release is exempt here)
-4. The legacy mutex cannot be held while waiting for ldisc
-   reference(s) release -or- for cancelling buffer work.
-5. Because of #4, the legacy mutex must be dropped prior to or
-   during the halt. Which means reacquiring after the halt. But
-   to preserve lock order the ldisc_mutex must be dropped and
-   reacquired after reacquiring the legacy mutex.
-6. Because of #5, the ldisc state may have changed while the
-   ldisc mutex was dropped.
-
-Note: this series does not include the lock correction initially
-reported on by Sebastian Andrzej Siewior <bigeasy@linutronix.de> here
-https://lkml.org/lkml/2012/11/21/267 . I commented on the latest
-version here https://lkml.org/lkml/2012/12/3/362
-
-
-Peter Hurley (11):
-  tty: debug buffer work race with tty free
-  tty: WARN if buffer work racing with tty free
-  tty: Add diagnostic for halted line discipline
-  tty: Refactor n_tty_flush_buffer
-  tty: Don't flush buffer when closing ldisc
-  tty: Refactor wait for ldisc refs out of tty_ldisc_hangup()
-  tty: Remove unnecessary re-test of ldisc ref count
-  tty: Fix ldisc halt sequence on hangup
-  tty: Strengthen no-subsequent-use guarantee of tty_ldisc_halt()
-  tty: Remove unnecessary buffer work flush
-  tty: Halt both ldiscs concurrently
-
- drivers/tty/n_tty.c      |  34 +++++++---
- drivers/tty/pty.c        |   3 +-
- drivers/tty/tty_buffer.c |   5 +-
- drivers/tty/tty_io.c     |   4 +-
- drivers/tty/tty_ldisc.c  | 171 +++++++++++++++++++++++++++++------------------
- include/linux/tty.h      |   1 +
- 6 files changed, 139 insertions(+), 79 deletions(-)
-
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index be6a373..baf52b4 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -407,8 +407,9 @@ static void pty_unix98_shutdown(struct tty_struct *tty)
+ 
+ static void pty_cleanup(struct tty_struct *tty)
+ {
+-	tty->port->itty = NULL;
++	tty->port->itty = ERR_PTR(-2);
+ 	tty_port_put(tty->port);
++	tty->port = NULL;
+ }
+ 
+ /* Traditional BSD devices */
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index b29ba87..cc9cbcf 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -432,7 +432,7 @@ static void flush_to_ldisc(struct work_struct *work)
+ 	struct tty_ldisc *disc;
+ 
+ 	tty = port->itty;
+-	if (WARN_RATELIMIT(tty == NULL, "tty is NULL\n"))
++	if (WARN_RATELIMIT(IS_ERR_OR_NULL(tty), "tty is bad=%ld", PTR_ERR(tty)))
+ 		return;
+ 
+ 	disc = tty_ldisc_ref(tty);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index da9fde8..78c3000 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1553,7 +1553,7 @@ static void release_tty(struct tty_struct *tty, int idx)
+ 		tty->ops->shutdown(tty);
+ 	tty_free_termios(tty);
+ 	tty_driver_remove_tty(tty->driver, tty);
+-	tty->port->itty = NULL;
++	tty->port->itty = ERR_PTR(-1);
+ 
+ 	if (tty->link)
+ 		tty_kref_put(tty->link);
 -- 
 1.8.0.1
-
