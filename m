@@ -1,132 +1,110 @@
-From: David Robillard <david.robillard@gmail.com>
-Subject: Re: Edgeport/416 io_edgeport problem.
-Date: Fri, 14 Dec 2012 11:47:47 -0500
-Message-ID: <CADH15GiJeTmL=WPNoc_8g17AkzyrU4w-jRB0H2wy_+OoGGQByQ@mail.gmail.com>
-References: <CADH15GikmfJh+nFbMFVcrW8RB8pmLsJvhtutue7L7iq8+7sdHQ@mail.gmail.com>
-	<20121214095220.1be799ee@pyramind.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 00/11] tty: Fix buffer work access-after-free
+Date: Fri, 14 Dec 2012 13:22:39 -0500
+Message-ID: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:46183 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756706Ab2LNQrt (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:51115 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756652Ab2LNSXQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Dec 2012 11:47:49 -0500
-Received: by mail-wi0-f180.google.com with SMTP id hj13so646812wib.1
-        for <linux-serial@vger.kernel.org>; Fri, 14 Dec 2012 08:47:48 -0800 (PST)
-In-Reply-To: <20121214095220.1be799ee@pyramind.ukuu.org.uk>
+	Fri, 14 Dec 2012 13:23:16 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ilya Zykov <ilya@ilyx.ru>, Sasha Levin <levinsasha928@gmail.com>, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Hello Alan,
+I wasn't sure if this is something to squeeze into 3.8, so don't yell
+if not. At least Sasha can apply this and re-test against trinity.
 
-Thank you for the suggestion.
+Changes in v2:
 
-> Please try a recent upstream kernel. 2.6.32 is old, and the Red
-> Hat/CentOS version quite a bit different. If 3.6/3.7 break then yes we
-> might care about it.
+- Please review "tty: Don't flush buffer when closing ldisc".
+  This patch replaces the earlier
+  "tty: Don't reschedule buffer work while closing". The text of
+  this commit details why not calling n_tty_flush_buffer() is the
+  correct thing to do, so I won't repeat it here.
 
-I've tried with kernel 3.7.0-1.el6.elrepo.i686 from
-http://elrepo.org/tiki/kernel-ml but unfortunately it's even worse.
-Now the OS only sees half of the Edgeport/416. Ports 1 to 8 are seen
-and /dev/ttyUSB0 to 7 are created. But I still can't access them.
-Ports 10 to 16 are not seen and the character devices are not created.
+- Jiri's debug patch "tty: debug buffer work race with tty free"
+  has been included (albeit a slightly different version)
+  Jiri, please sign off (or point out what you'd like changed).
 
-Performing `sudo strace cat /dev/ttyUSB0` results in this error :
+- The test jig has been included in the commit message for
+  "tty: Don't flush buffer when closing ldisc" as Alan requested.
 
-open("/dev/ttyUSB0", O_RDONLY|O_LARGEFILE) = -1 ENODEV (No such device)
+- Ilya Zykov was added as the Signed-off-by: for the test jig in
+  that same commit message.
 
-Which is exactly the same error I used to get with kernel
-2.6.32-279.14.1.el6.i686. But at least with that kernel version, the
-OS would see the full 16 ports of the Edgeport/416.
+- Sasha Levin was added as the Reported-by: in that same patch.
 
-This Edgeport/416 hardware successfully passed the Digi digital
-loopback test as explained in this article
-http://www.digi.com/support/kbase/kbaseresultdetl?id=3061. The test
-was performed on a Windows 7 machine.
 
-The model's PN is (1P) 50000780-01 E.
+This patch series addresses the causes of flush_to_ldisc accessing
+the tty after freeing.
 
-This device appears to be faulty according this Digi forum thread :
-http://forums.digi.com/support/forum/viewthread_thread,4977#15792
+The most common cause stems from the n_tty_close() path spuriously
+scheduling buffer work, when the ldisc has already been halted.
+This is fixed in 'tty: Don't flush buffer when closing ldisc'
 
-Any help would be appreciated.
+The other causes have a central theme: incorrect order-of-operations
+when halting a line discipline. In general, to prevent buffer work
+from being scheduled requires:
+  1. Disallowing further ldisc references
+  2. Waiting for all existing ldisc references to be released
+  3. Cancelling existing buffer work
+If the wait takes place _after_ cancellation, then new work
+can be scheduled by existing holder(s) of ldisc reference(s). That's
+bad.
 
-Many thanks,
+Halting the line discipline is performed when,
+ - hanging up the tty (tty_ldisc_hangup())
+ - TIOCSETD ioctl (tty_set_ldisc())
+ - finally closing the tty (pair) (tty_ldisc_release())
 
-David
+Concurrent halts are governed by the following requirements:
+1. tty_ldisc_release is not concurrent with the other two and so
+   does not need lock or state protection during the ldiscs halt.
+2. Accesses through tty->ldisc must be protected by the ldisc_mutex.
+   The wait operation checks the user count (ldisc references)
+   in tty->ldisc->users.
+3. tty_set_ldisc() reschedules buffer work that was pending when
+   the ldiscs were halted. That must be an atomic operation in
+   conjunction with re-enabling the ldisc -- which necessitates
+   locking concurrent halts (tty_ldisc_release is exempt here)
+4. The legacy mutex cannot be held while waiting for ldisc
+   reference(s) release -or- for cancelling buffer work.
+5. Because of #4, the legacy mutex must be dropped prior to or
+   during the halt. Which means reacquiring after the halt. But
+   to preserve lock order the ldisc_mutex must be dropped and
+   reacquired after reacquiring the legacy mutex.
+6. Because of #5, the ldisc state may have changed while the
+   ldisc mutex was dropped.
 
-P.S. Syslog messages when connecting the device to a CentOS 6.3
-machine running kernel 3.7.0-1.el6.elrepo.i686
+Note: this series does not include the lock correction initially
+reported on by Sebastian Andrzej Siewior <bigeasy@linutronix.de> here
+https://lkml.org/lkml/2012/11/21/267 . I commented on the latest
+version here https://lkml.org/lkml/2012/12/3/362
 
-ec 14 11:30:52 solo kernel: usb 1-2: new full-speed USB device number
-20 using ohci_hcd
-Dec 14 11:30:52 solo kernel: usb 1-2: New USB device found,
-idVendor=0451, idProduct=2077
-Dec 14 11:30:52 solo kernel: usb 1-2: New USB device strings: Mfr=0,
-Product=1, SerialNumber=0
-Dec 14 11:30:52 solo kernel: usb 1-2: Product: General Purpose USB Hub
-Dec 14 11:30:52 solo kernel: hub 1-2:1.0: USB hub found
-Dec 14 11:30:52 solo kernel: usb 1-2.5: new full-speed USB device
-number 21 using ohci_hcd
-Dec 14 11:30:52 solo kernel: usb 1-2.5: device descriptor read/64, error -62
-Dec 14 11:30:53 solo kernel: usb 1-2.5: device descriptor read/64, error -62
-Dec 14 11:30:53 solo kernel: usb 1-2.5: new full-speed USB device
-number 22 using ohci_hcd
-Dec 14 11:30:53 solo kernel: usb 1-2.5: device descriptor read/64, error -62
-Dec 14 11:30:53 solo kernel: usb 1-2.5: device descriptor read/64, error -62
-Dec 14 11:30:53 solo kernel: usb 1-2.5: new full-speed USB device
-number 23 using ohci_hcd
-Dec 14 11:30:54 solo kernel: usb 1-2.5: device not accepting address
-23, error -62
-Dec 14 11:30:54 solo kernel: usb 1-2.5: new full-speed USB device
-number 24 using ohci_hcd
-Dec 14 11:30:54 solo kernel: usb 1-2.5: device not accepting address
-24, error -62
-Dec 14 11:30:54 solo kernel: hub 1-2:1.0: unable to enumerate USB
-device on port 5
-Dec 14 11:30:54 solo kernel: usb 1-2.6: new full-speed USB device
-number 25 using ohci_hcd
-Dec 14 11:30:54 solo kernel: usb 1-2.6: New USB device found,
-idVendor=1608, idProduct=0012
-Dec 14 11:30:54 solo kernel: usb 1-2.6: New USB device strings: Mfr=1,
-Product=2, SerialNumber=5
-Dec 14 11:30:54 solo kernel: usb 1-2.6: Product: Edgeport/416
-Dec 14 11:30:54 solo kernel: usb 1-2.6: Manufacturer: Inside Out Networks
-Dec 14 11:30:54 solo kernel: usb 1-2.6: SerialNumber: V70430350-1
-Dec 14 11:30:54 solo kernel: usb 1-2.6: Inside Out Networks
-Edgeport/416 detected
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB0
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB1
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB2
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB3
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB4
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB5
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB6
-Dec 14 11:30:56 solo kernel: usb 1-2.6: Edgeport 8 port adapter
-converter now attached to ttyUSB7
 
-On Fri, Dec 14, 2012 at 4:52 AM, Alan Cox <alan@lxorguk.ukuu.org.uk> wrote:
-> On Thu, 13 Dec 2012 15:03:59 -0500
-> David Robillard <david.robillard@gmail.com> wrote:
->
->> Hello everyone,
->>
->> I'm having a problem with a Digi Inside Out Networks Edgeport/416
->> device. According to the kernel.org file (see exerpt below) this
->> particular model is not listed in the supported products.
->>
->> The device is connected to a 32 bit CentOS 6.3 machine running with
->> kernel 2.6.32-279.14.1.el6.i686.
->
->
-> Alan
+Peter Hurley (11):
+  tty: debug buffer work race with tty free
+  tty: WARN if buffer work racing with tty free
+  tty: Add diagnostic for halted line discipline
+  tty: Refactor n_tty_flush_buffer
+  tty: Don't flush buffer when closing ldisc
+  tty: Refactor wait for ldisc refs out of tty_ldisc_hangup()
+  tty: Remove unnecessary re-test of ldisc ref count
+  tty: Fix ldisc halt sequence on hangup
+  tty: Strengthen no-subsequent-use guarantee of tty_ldisc_halt()
+  tty: Remove unnecessary buffer work flush
+  tty: Halt both ldiscs concurrently
+
+ drivers/tty/n_tty.c      |  34 +++++++---
+ drivers/tty/pty.c        |   3 +-
+ drivers/tty/tty_buffer.c |   5 +-
+ drivers/tty/tty_io.c     |   4 +-
+ drivers/tty/tty_ldisc.c  | 171 +++++++++++++++++++++++++++++------------------
+ include/linux/tty.h      |   1 +
+ 6 files changed, 139 insertions(+), 79 deletions(-)
+
+-- 
+1.8.0.1
+
