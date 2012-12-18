@@ -1,329 +1,240 @@
-From: David Robillard <david.robillard@gmail.com>
-Subject: Re: Edgeport/416 io_edgeport problem.
-Date: Tue, 18 Dec 2012 11:56:47 -0500
-Message-ID: <CADH15Ghu3VqwZ-XFHzMFHjcYwkP-q0P9LudTyckgO15Xeq_N0Q@mail.gmail.com>
-References: <CADH15GikmfJh+nFbMFVcrW8RB8pmLsJvhtutue7L7iq8+7sdHQ@mail.gmail.com>
-	<20121214095220.1be799ee@pyramind.ukuu.org.uk>
-	<CADH15GiJeTmL=WPNoc_8g17AkzyrU4w-jRB0H2wy_+OoGGQByQ@mail.gmail.com>
-	<20121215020331.GA21221@kroah.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: Re: [PATCH v2 00/11] tty: Fix buffer work access-after-free
+Date: Wed, 19 Dec 2012 00:44:37 +0400
+Message-ID: <50D0D5B5.5080506@ilyx.ru>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>  <CA+1xoqeRfg7iY_vS7nVG6W7hqLOmVUmJaz-c4_Sr3h_XMg++sg@mail.gmail.com> <1355849302.26487.15.camel@thor.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f53.google.com ([209.85.215.53]:56872 "EHLO
-	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754609Ab2LRRXQ (ORCPT
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:60351 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754964Ab2LRUok (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Dec 2012 12:23:16 -0500
-Received: by mail-la0-f53.google.com with SMTP id w12so791713lag.12
-        for <linux-serial@vger.kernel.org>; Tue, 18 Dec 2012 09:23:15 -0800 (PST)
-In-Reply-To: <20121215020331.GA21221@kroah.com>
+	Tue, 18 Dec 2012 15:44:40 -0500
+In-Reply-To: <1355849302.26487.15.camel@thor.lan>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
 
-Hello Greg,
+Stress test for tty. :)
+You can use this program for debug new tty changes.
+Use with caution.
 
-Thanks for the suggestion. See my comments below.
+In any case(with/without Peter's patches) I have BUG():
 
-> This looks good, so you should be able to talk to the device, the fact
-> that it returns -ENODEV is odd.
+BUG: unable to handle kernel NULL pointer dereference at 000000000000004c
+IP: [<ffffffff81116650>] devpts_pty_kill+0x17/0x81
+PGD 48696067 PUD a79c5067 PMD 0 
+Oops: 0000 [#1] SMP 
+Pid: 7877, comm: a.out Tainted: P           O 3.7.0-next-20121214-tty.1+ #9 System manufacturer P5K Premium/P5K Premium
+RIP: 0010:[<ffffffff81116650>]  [<ffffffff81116650>] devpts_pty_kill+0x17/0x81
+RSP: 0018:ffff8800484a3aa8  EFLAGS: 00010292
+RAX: ffff88012f0385a0 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000282 RDI: 0000000000000000
+RBP: ffff8800484a3ac8 R08: 0000000000000000 R09: ffff880046f26d40
+R10: ffffffff81426ec8 R11: 0000000000000246 R12: ffff8800486a6c00
+R13: ffff8800484c7180 R14: ffff880046ec4890 R15: 00000000fffffffb
+FS:  00007f9a64345700(0000) GS:ffff88012fd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+CR2: 000000000000004c CR3: 00000000a7a01000 CR4: 00000000000407e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+Process a.out (pid: 7877, threadinfo ffff8800484a2000, task ffff88007576d220)
+Stack:
+ ffff880000000001 ffff88004854a400 ffff8800486a6c00 ffff8800484c7180
+ ffff8800484a3ae8 ffffffff811e0c1b ffff8800484c7180 ffff88004854a400
+ ffff8800484a3bd8 ffffffff811d83aa ffff880046f26d78 0000000000000009
+Call Trace:
+ [<ffffffff811e0c1b>] pty_close+0x123/0x14f
+ [<ffffffff811d83aa>] tty_release+0x17a/0x53d
+ [<ffffffff812e7442>] ? __mutex_unlock_slowpath+0x15/0x39
+ [<ffffffff811e1003>] ptmx_open+0x12c/0x161
+ [<ffffffff810c6d4b>] chrdev_open+0x12a/0x14b
+ [<ffffffff810c6c21>] ? cdev_put+0x23/0x23
+ [<ffffffff810c27a9>] do_dentry_open+0x170/0x217
+ [<ffffffff810c2933>] finish_open+0x34/0x40
+ [<ffffffff810ce069>] do_last+0x8c4/0xa72
+ [<ffffffff810ce2ed>] ? path_init+0xd6/0x2fe
+ [<ffffffff810ceaf4>] path_openat+0xcb/0x363
+ [<ffffffff81051033>] ? __dequeue_entity+0x2e/0x33
+ [<ffffffff810cee91>] do_filp_open+0x38/0x84
+ [<ffffffff810d9846>] ? __alloc_fd+0x51/0x110
+ [<ffffffff810c24ed>] do_sys_open+0x6d/0xff
+ [<ffffffff810c25ac>] sys_open+0x1c/0x1e
+ [<ffffffff812ee652>] system_call_fastpath+0x16/0x1b
+Code: 08 02 00 00 48 89 c7 e8 6c f3 fb ff 5b 4c 89 e0 41 5c c9 c3 55 48 89 e5 41 55 41 54 53 48 89 fb 48 83 ec 08 48 8b 05 80 43 71 00 <81> 7f 4c 02 00 50 00 48 8b 40 08 4c 8b 60 60 75 04 0f 0b eb fe 
+RIP  [<ffffffff81116650>] devpts_pty_kill+0x17/0x81
+ RSP <ffff8800484a3aa8>
+CR2: 000000000000004c
 
-I totally agree here.
 
-> Can you do the following from a command line as root:
-> Clear out the kernel log:
->         dmesg -c
-> remove the io_edgeport driver
->         rmmod io_edgeport
-> Unplug the device.
-> load the edgeport driver with debugging enabled:
->         modprobe io_edgeport debug=1
+Without Peter's patches I have WARN():
 
-Everytime I try this with kernel 3.7.0-1.el6.elrepo.i686 I always get
-this error :
+7388:Dec 18 22:43:12 bm kernel: [ 2484.054010] WARNING: at drivers/tty/tty_buffer.c:476 flush_to_ldisc+0x52/0x1b2()
+7389-Dec 18 22:43:12 bm kernel: [ 2484.054011] Hardware name: P5K Premium
+7390-Dec 18 22:43:12 bm kernel: [ 2484.054012] tty is NULL
+7392-Dec 18 22:43:12 bm kernel: [ 2484.054042] Pid: 3030, comm: kworker/0:0 Tainted: P        W  O 3.7.0-next-20121214-tty.1 #8
+7393-Dec 18 22:43:12 bm kernel: [ 2484.054044] Call Trace:
+7394-Dec 18 22:43:12 bm kernel: [ 2484.054047]  [<ffffffff8102ce58>] warn_slowpath_common+0x80/0x98
+7395-Dec 18 22:43:12 bm kernel: [ 2484.054049]  [<ffffffff8102cf04>] warn_slowpath_fmt+0x41/0x43
+7396-Dec 18 22:43:12 bm kernel: [ 2484.054051]  [<ffffffff811df175>] flush_to_ldisc+0x52/0x1b2
+7397-Dec 18 22:43:12 bm kernel: [ 2484.054053]  [<ffffffff812e81a9>] ? __schedule+0x5d1/0x613
+7398-Dec 18 22:43:12 bm kernel: [ 2484.054056]  [<ffffffff8103ee42>] process_one_work+0x1c1/0x279
+7399-Dec 18 22:43:12 bm kernel: [ 2484.054058]  [<ffffffff811df123>] ? tty_buffer_free_all+0x4d/0x4d
+7400-Dec 18 22:43:12 bm kernel: [ 2484.054060]  [<ffffffff81040d47>] worker_thread+0x154/0x24e
+7401-Dec 18 22:43:12 bm kernel: [ 2484.054062]  [<ffffffff81040bf3>] ? manage_workers+0x26c/0x26c
+7402-Dec 18 22:43:12 bm kernel: [ 2484.054064]  [<ffffffff810443eb>] kthread+0xb0/0xb8
+7403-Dec 18 22:43:12 bm kernel: [ 2484.054066]  [<ffffffff8104433b>] ? kthread_parkme+0x1f/0x1f
+7404-Dec 18 22:43:12 bm kernel: [ 2484.054068]  [<ffffffff812ee46c>] ret_from_fork+0x7c/0xb0
+7405-Dec 18 22:43:12 bm kernel: [ 2484.054070]  [<ffffffff8104433b>] ? kthread_parkme+0x1f/0x1f
 
-FATAL: Error inserting io_edgeport
-(/lib/modules/3.7.0-1.el6.elrepo.i686/kernel/drivers/usb/serial/io_edgeport.ko):
-Invalid argument
 
-I've tried different syntaxes, but it always fails.
+With Peter's patches I have WARN():
 
-Meanwhile, I power cycled the Edgeport/416 device and now kernel
-3.7.0-1.el6.elrepo.i686 can see all 16 ports. But I still can't access
-any of the /dev/ttyUSB* devices.
+WARNING: at drivers/tty/n_tty.c:160 n_tty_set_room+0xe7/0xf8()
+Hardware name: P5K Premium
+scheduling buffer work for halted ldisc
+Pid: 3127, comm: a.out Tainted: P        W  O 3.7.0-next-20121214-tty.1+ #9
+Call Trace:
+ [<ffffffff8102ce58>] warn_slowpath_common+0x80/0x98
+ [<ffffffff8102cf04>] warn_slowpath_fmt+0x41/0x43
+ [<ffffffff811dae01>] n_tty_set_room+0xe7/0xf8
+ [<ffffffff811db2cf>] reset_buffer_flags+0xad/0xb6
+ [<ffffffff811dd01b>] n_tty_open+0xca/0x11f
+ [<ffffffff811de4c9>] tty_ldisc_open+0x4e/0x5f
+ [<ffffffff811ded14>] tty_ldisc_hangup+0x1f5/0x292
+ [<ffffffff810d0289>] ? fasync_helper+0x22/0x6c
+ [<ffffffff811d7a03>] __tty_hangup+0x102/0x30e
+ [<ffffffff810d52ad>] ? d_delete+0x12d/0x136
+ [<ffffffff811d7c2a>] tty_vhangup+0x9/0xb
+ [<ffffffff811e0c3b>] pty_close+0x143/0x14f
+ [<ffffffff811d83aa>] tty_release+0x17a/0x53d
+ [<ffffffff8104b9f7>] ? __wake_up+0x3f/0x48
+ [<ffffffff810efb55>] ? fsnotify+0x21d/0x244
+ [<ffffffff810c4bc5>] __fput+0xf9/0x1bd
+ [<ffffffff810c4ccf>] ____fput+0x9/0xb
+ [<ffffffff81041cd4>] task_work_run+0x80/0x98
+ [<ffffffff810025bd>] do_notify_resume+0x58/0x69
+ [<ffffffff812ee8da>] int_signal+0x12/0x17
 
-So I installed kernel 2.6.32-279.14.1.el6.i686 from the base CentOS
-repository and this time the sudo modprobe io_edgeport debug=1 command
-worked (i.e. I was able to load the kernel module without the invalid
-argument error). This kernel has io_edgeport module version 2.7.
 
-> plug the device in.
->
-> Try to access the device
->         cat /dev/ttyUSB0
+---
+/*
+ *  stress_test_tty.c
+ *
+ *  Created on: Dec, 2012
+ *  Copyright (C) 2012  Ilya Zykov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-I'm still on kernel and I still get this error :
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <signal.h>
 
-open("/dev/ttyUSB0", O_RDONLY|O_LARGEFILE) = -1 ENODEV (No such device)
+#define BUF_SIZE 2
+#define ERROR_EXIT_CODE 1
+#define parent child_id
 
-I tried both module sides (i.e. ttyUSB0 and ttyUSB10) as this unit is
-basically two 8 port switches bundled together. Both sides fail with
-the ENODEV error.
+static int
+mfd=-1, sfd=-1, parent=1;
 
-> Send us the output of the kernel log:
->         dmesg
+static pthread_t
+pth_id;
 
-Here goes :
+static char
+pty_name[24], buf[]={ '1', '\n' };
 
-usbcore: registered new interface driver usbserial
-USB Serial support registered for generic
-usbcore: registered new interface driver usbserial_generic
-usbserial: USB Serial Driver core
-USB Serial support registered for Edgeport 2 port adapter
-USB Serial support registered for Edgeport 4 port adapter
-USB Serial support registered for Edgeport 8 port adapter
-USB Serial support registered for EPiC device
-usbcore: registered new interface driver io_edgeport
-io_edgeport: v2.7:Edgeport USB Serial Driver
-usb 1-2: new full speed USB device number 2 using ohci_hcd
-usb 1-2: New USB device found, idVendor=0451, idProduct=2077
-usb 1-2: New USB device strings: Mfr=0, Product=1, SerialNumber=0
-usb 1-2: Product: General Purpose USB Hub
-usb 1-2: configuration #1 chosen from 1 choice
-hub 1-2:1.0: USB hub found
-hub 1-2:1.0: 7 ports detected
-usb 1-2.5: new full speed USB device number 3 using ohci_hcd
-usb 1-2.5: New USB device found, idVendor=1608, idProduct=0012
-usb 1-2.5: New USB device strings: Mfr=1, Product=2, SerialNumber=5
-usb 1-2.5: Product: Edgeport/416
-usb 1-2.5: Manufacturer: Inside Out Networks
-usb 1-2.5: SerialNumber: V70430350-0
-usb 1-2.5: configuration #1 chosen from 1 choice
-io_edgeport 1-2.5:1.0: Edgeport 8 port adapter converter detected
-drivers/usb/serial/io_edgeport.c: get_string - USB String ID = 1
-drivers/usb/serial/io_edgeport.c: get_string - USB String Inside Out Networks
-drivers/usb/serial/io_edgeport.c: get_string - USB String ID = 2
-drivers/usb/serial/io_edgeport.c: get_string - USB String Edgeport/416G
-usb 1-2.5: Inside Out Networks Edgeport/416G detected
-drivers/usb/serial/io_edgeport.c: get_epic_descriptor result = -32
-drivers/usb/serial/io_edgeport.c: getting manufacturer descriptor
-drivers/usb/serial/io_edgeport.c: rom_read - ff, 7c00, 960
-drivers/usb/serial/io_edgeport.c: **Manufacturer Descriptor
-drivers/usb/serial/io_edgeport.c:   RomSize:        8K
-drivers/usb/serial/io_edgeport.c:   RamSize:        32K
-drivers/usb/serial/io_edgeport.c:   CpuRev:         1
-drivers/usb/serial/io_edgeport.c:   BoardRev:       1
-drivers/usb/serial/io_edgeport.c:   NumPorts:       8
-drivers/usb/serial/io_edgeport.c:   DescDate:       11/2/2000
-drivers/usb/serial/io_edgeport.c:   SerialNumber: V70430350-0
-drivers/usb/serial/io_edgeport.c:   AssemblyNumber:
-drivers/usb/serial/io_edgeport.c:   OemAssyNumber:
-drivers/usb/serial/io_edgeport.c:   UartType:       1
-drivers/usb/serial/io_edgeport.c:   IonPid:         18
-drivers/usb/serial/io_edgeport.c:   IonConfig:      0
-drivers/usb/serial/io_edgeport.c: getting boot descriptor
-drivers/usb/serial/io_edgeport.c: rom_read - ff, 7fc0, 64
-drivers/usb/serial/io_edgeport.c: **Boot Descriptor:
-drivers/usb/serial/io_edgeport.c:   BootCodeLength: 7044
-drivers/usb/serial/io_edgeport.c:   MajorVersion:   1
-drivers/usb/serial/io_edgeport.c:   MinorVersion:   13
-drivers/usb/serial/io_edgeport.c:   BuildNumber:    7
-drivers/usb/serial/io_edgeport.c:   Capabilities:   0x1
-drivers/usb/serial/io_edgeport.c:   UConfig0:       241
-drivers/usb/serial/io_edgeport.c:   UConfig1:       127
-drivers/usb/serial/io_edgeport.c: **Product Information:
-drivers/usb/serial/io_edgeport.c:   ProductId             12
-drivers/usb/serial/io_edgeport.c:   NumPorts              8
-drivers/usb/serial/io_edgeport.c:   ProdInfoVer           0
-drivers/usb/serial/io_edgeport.c:   IsServer              0
-drivers/usb/serial/io_edgeport.c:   IsRS232               1
-drivers/usb/serial/io_edgeport.c:   IsRS422               0
-drivers/usb/serial/io_edgeport.c:   IsRS485               0
-drivers/usb/serial/io_edgeport.c:   RomSize               8
-drivers/usb/serial/io_edgeport.c:   RamSize               32
-drivers/usb/serial/io_edgeport.c:   CpuRev                1
-drivers/usb/serial/io_edgeport.c:   BoardRev              1
-drivers/usb/serial/io_edgeport.c:   BootMajorVersion      1.13.7
-drivers/usb/serial/io_edgeport.c:   FirmwareMajorVersion  0.0.0
-drivers/usb/serial/io_edgeport.c:   ManufactureDescDate   11/2/2000
-drivers/usb/serial/io_edgeport.c:   iDownloadFile         0xff
-drivers/usb/serial/io_edgeport.c:   EpicVer               0
-drivers/usb/serial/io_edgeport.c: edge_startup - time 1 495604
-usb 1-2.5: firmware: requesting edgeport/down.fw
-drivers/usb/serial/io_edgeport.c: downloading firmware version (930) 1.16.4
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 0, 6
-drivers/usb/serial/io_edgeport.c: sram_write - ff, b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 13, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 1b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 23, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 2b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 33, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 3b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 43, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 4b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 53, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 80, 7
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 3000, 2178
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 4000, 15381
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7fc6, 4
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7c15, 330
-drivers/usb/serial/io_edgeport.c: sending exec_dl_code
-drivers/usb/serial/io_edgeport.c: edge_startup - time 2 496829
-usb 1-2.5: firmware: requesting edgeport/boot.fw
-drivers/usb/serial/io_edgeport.c: Current Boot Image version 1.13.7
-drivers/usb/serial/io_edgeport.c: Boot Image -- already up to date
-drivers/usb/serial/io_edgeport.c: edge_startup - time 3 496849
-drivers/usb/serial/io_edgeport.c:   FirmwareMajorVersion  0.0.4
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB0
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB1
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB2
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB3
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB4
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB5
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB6
-usb 1-2.5: Edgeport 8 port adapter converter now attached to ttyUSB7
-usb 1-2.6: new full speed USB device number 4 using ohci_hcd
-usb 1-2.6: New USB device found, idVendor=1608, idProduct=0012
-usb 1-2.6: New USB device strings: Mfr=1, Product=2, SerialNumber=5
-usb 1-2.6: Product: Edgeport/416
-usb 1-2.6: Manufacturer: Inside Out Networks
-usb 1-2.6: SerialNumber: V70430350-1
-usb 1-2.6: configuration #1 chosen from 1 choice
-io_edgeport 1-2.6:1.0: Edgeport 8 port adapter converter detected
-drivers/usb/serial/io_edgeport.c: get_string - USB String ID = 1
-drivers/usb/serial/io_edgeport.c: get_string - USB String Inside Out Networksb
-drivers/usb/serial/io_edgeport.c: get_string - USB String ID = 2
-drivers/usb/serial/io_edgeport.c: get_string - USB String Edgeport/416G
-usb 1-2.6: Inside Out Networksb Edgeport/416G detected
-drivers/usb/serial/io_edgeport.c: get_epic_descriptor result = -32
-drivers/usb/serial/io_edgeport.c: getting manufacturer descriptor
-drivers/usb/serial/io_edgeport.c: rom_read - ff, 7c00, 960
-drivers/usb/serial/io_edgeport.c: **Manufacturer Descriptor
-drivers/usb/serial/io_edgeport.c:   RomSize:        8K
-drivers/usb/serial/io_edgeport.c:   RamSize:        32K
-drivers/usb/serial/io_edgeport.c:   CpuRev:         1
-drivers/usb/serial/io_edgeport.c:   BoardRev:       1
-drivers/usb/serial/io_edgeport.c:   NumPorts:       8
-drivers/usb/serial/io_edgeport.c:   DescDate:       11/2/2000
-drivers/usb/serial/io_edgeport.c:   SerialNumber: V70430350-1
-drivers/usb/serial/io_edgeport.c:   AssemblyNumber:
-drivers/usb/serial/io_edgeport.c:   OemAssyNumber:
-drivers/usb/serial/io_edgeport.c:   UartType:       1
-drivers/usb/serial/io_edgeport.c:   IonPid:         18
-drivers/usb/serial/io_edgeport.c:   IonConfig:      0
-drivers/usb/serial/io_edgeport.c: getting boot descriptor
-drivers/usb/serial/io_edgeport.c: rom_read - ff, 7fc0, 64
-drivers/usb/serial/io_edgeport.c: **Boot Descriptor:
-drivers/usb/serial/io_edgeport.c:   BootCodeLength: 7044
-drivers/usb/serial/io_edgeport.c:   MajorVersion:   1
-drivers/usb/serial/io_edgeport.c:   MinorVersion:   13
-drivers/usb/serial/io_edgeport.c:   BuildNumber:    7
-drivers/usb/serial/io_edgeport.c:   Capabilities:   0x1
-drivers/usb/serial/io_edgeport.c:   UConfig0:       241
-drivers/usb/serial/io_edgeport.c:   UConfig1:       127
-drivers/usb/serial/io_edgeport.c: **Product Information:
-drivers/usb/serial/io_edgeport.c:   ProductId             12
-drivers/usb/serial/io_edgeport.c:   NumPorts              8
-drivers/usb/serial/io_edgeport.c:   ProdInfoVer           0
-drivers/usb/serial/io_edgeport.c:   IsServer              0
-drivers/usb/serial/io_edgeport.c:   IsRS232               1
-drivers/usb/serial/io_edgeport.c:   IsRS422               0
-drivers/usb/serial/io_edgeport.c:   IsRS485               0
-drivers/usb/serial/io_edgeport.c:   RomSize               8
-drivers/usb/serial/io_edgeport.c:   RamSize               32
-drivers/usb/serial/io_edgeport.c:   CpuRev                1
-drivers/usb/serial/io_edgeport.c:   BoardRev              1
-drivers/usb/serial/io_edgeport.c:   BootMajorVersion      1.13.7
-drivers/usb/serial/io_edgeport.c:   FirmwareMajorVersion  0.0.0
-drivers/usb/serial/io_edgeport.c:   ManufactureDescDate   11/2/2000
-drivers/usb/serial/io_edgeport.c:   iDownloadFile         0xff
-drivers/usb/serial/io_edgeport.c:   EpicVer               0
-drivers/usb/serial/io_edgeport.c: edge_startup - time 1 497118
-usb 1-2.6: firmware: requesting edgeport/down.fw
-drivers/usb/serial/io_edgeport.c: downloading firmware version (930) 1.16.4
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 0, 6
-drivers/usb/serial/io_edgeport.c: sram_write - ff, b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 13, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 1b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 23, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 2b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 33, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 3b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 43, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 4b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 53, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7b, 3
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 80, 7
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 3000, 2178
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 4000, 15381
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7fc6, 4
-drivers/usb/serial/io_edgeport.c: sram_write - ff, 7c15, 330
-drivers/usb/serial/io_edgeport.c: sending exec_dl_code
-drivers/usb/serial/io_edgeport.c: edge_startup - time 2 498316
-usb 1-2.6: firmware: requesting edgeport/boot.fw
-drivers/usb/serial/io_edgeport.c: Current Boot Image version 1.13.7
-drivers/usb/serial/io_edgeport.c: Boot Image -- already up to date
-drivers/usb/serial/io_edgeport.c: edge_startup - time 3 498329
-drivers/usb/serial/io_edgeport.c:   FirmwareMajorVersion  0.0.4
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB8
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB9
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB10
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB11
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB12
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB13
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB14
-usb 1-2.6: Edgeport 8 port adapter converter now attached to ttyUSB15
-drivers/usb/serial/io_edgeport.c: edge_open - port 0
-drivers/usb/serial/io_edgeport.c: send_iosp_ext_cmd - 0, 0
-edgeport_8 ttyUSB0: write_cmd_usb - length = 3, data = c8 00 00
-drivers/usb/serial/io_edgeport.c: write_cmd_usb - ALLOCATE URB
-c17b3240 (outstanding 1)
-drivers/usb/serial/io_edgeport.c: edge_bulk_out_cmd_callback
-drivers/usb/serial/io_edgeport.c: edge_bulk_out_cmd_callback - FREE
-URB c17b3240 (outstanding 0)
-drivers/usb/serial/io_edgeport.c: edge_open - open timedout
-drivers/usb/serial/io_edgeport.c: edge_open - port 10
-drivers/usb/serial/io_edgeport.c: send_iosp_ext_cmd - 0, 0
-edgeport_8 ttyUSB10: write_cmd_usb - length = 3, data = ca 00 00
-drivers/usb/serial/io_edgeport.c: write_cmd_usb - ALLOCATE URB
-f613aae0 (outstanding 1)
-drivers/usb/serial/io_edgeport.c: edge_bulk_out_cmd_callback
-drivers/usb/serial/io_edgeport.c: edge_bulk_out_cmd_callback - FREE
-URB f613aae0 (outstanding 0)
-drivers/usb/serial/io_edgeport.c: edge_open - open timedout
 
-> Hopefully that should show us what is going on here.
+static void
+pty_exit(int ret, char * exit_message){
+	if (sfd >= 0) close(sfd);
+	if (mfd >= 0) close(mfd);
+	printf("%s %s %s exit. \n",exit_message?exit_message:"",
+		ret?"Error":"Normal", parent?"parent":"child");
+	exit(ret);
+}
 
-Indeed.
+static void
+pty_init(void){
+	int ptn;
+	if( (mfd=open("/dev/ptmx", O_RDWR )) < 0 )
+		pty_exit(ERROR_EXIT_CODE,"Couldn't open /dev/ptmx. \n");
+	if (ioctl(mfd, TIOCGPTN, &ptn) < 0 )
+		pty_exit(ERROR_EXIT_CODE,"Couldn't get pty number. \n");
+	snprintf(pty_name, sizeof(pty_name), "/dev/pts/%d", ptn);
+	//printf("Slave pty name = %s.\n",pty_name);
+	ptn=0;
+	if (ioctl(mfd, TIOCSPTLCK, &ptn) < 0 )
+		pty_exit(ERROR_EXIT_CODE,"Couldn't unlock pty slave. \n");
+	if ( (sfd=open(pty_name, O_RDWR )) < 0 )
+		pty_exit(ERROR_EXIT_CODE, "Couldn't open pty slave. \n");
+}
 
-I'm no expert of kernel modules, but what I see and I don't understand
-is those lines...
+static void *
+pty_thread_open(void * arg) {
+	static char ret[]="Thread open has been created.\n";
+	printf(ret);
+	do {
+		close(open(pty_name, O_RDWR ));
+	} while(1);
+	return ret;
+}
 
-drivers/usb/serial/io_edgeport.c: downloading firmware version (930) 1.16.4
+static void *
+pty_thread_read(void * arg) {
+	static char ret[]="Thread read has been created.\n";
+	printf(ret);
+	do {
+		read(sfd, buf, BUF_SIZE);
+	} while(1);
+	return ret;
+}
 
-...then...
+static void *
+pty_thread_write(void * arg) {
+	static char ret[]="Thread write has been created.\n";
+	printf(ret);
+	do {
+		write(mfd, buf, BUF_SIZE);
+	} while(1);
+	return ret;
+}
+int main(int argc,char *argv[]) {
+	pty_init();
+	child_id=fork();
+	if(parent) {
+		sleep(100);
+		kill(child_id, SIGINT);
+		pty_exit(0,"Parent normal exit\n");
+	}
+	pthread_create(&pth_id, NULL, &pty_thread_open, 0);
+/*	For WARNINGS.
+	pthread_create(&pth_id, NULL, &pty_thread_write, 0);
+	pthread_create(&pth_id, NULL, &pty_thread_read, 0);
+*/
+	do {
+		close(sfd);
+		close(mfd);
+		pty_init();
+	} while(1);
+	return 0;
+}
 
-drivers/usb/serial/io_edgeport.c: Current Boot Image version 1.13.7
-drivers/usb/serial/io_edgeport.c: Boot Image -- already up to date
-
-...but didn't it download version 1.16.4 and now it's saying that
-1.13.7 is up to date? Unless these are different firmware for
-different parts of the unit.
-
-Also, the driver seems to be hitting a timeout when it tries to open a
-port. This error shows up for both /dev/ttyUSB0 and /dev/ttyUSB10 :
-
-drivers/usb/serial/io_edgeport.c: edge_open - open timedout
-
-Maybe we can increase the timeout value in the driver? Again, I'm no
-expert, just trying to help :)
-
-> thanks,
->
-> greg k-h
-
-Thank you for your help,
-
-David
