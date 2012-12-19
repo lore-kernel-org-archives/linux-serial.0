@@ -1,52 +1,41 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH] serial: tegra: add serial driver
-Date: Wed, 19 Dec 2012 09:58:18 -0700
-Message-ID: <50D1F22A.6090801@wwwdotorg.org>
-References: <1355746249-15347-1-git-send-email-ldewangan@nvidia.com>
- <20121217171027.6AE573E0BDD@localhost> <50CF8F36.2030309@wwwdotorg.org>
- <20121219130151.F29CA3E0AD7@localhost> <50D1CC07.6070506@nvidia.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH] tty: Fix unreasonable write toward closed pty.
+Date: Wed, 19 Dec 2012 22:59:19 +0400
+Message-ID: <50D20E87.9060403@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <50D1CC07.6070506-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:60429 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751187Ab2LSS7W (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Dec 2012 13:59:22 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 12/19/2012 07:15 AM, Laxman Dewangan wrote:
-> On Wednesday 19 December 2012 06:31 PM, Grant Likely wrote:
->> On Mon, 17 Dec 2012 14:31:34 -0700, Stephen
->> Warren<swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>  wrote:
->>> On 12/17/2012 10:10 AM, Grant Likely wrote:
->>>> On Mon, 17 Dec 2012 17:40:49 +0530, Laxman
->>>> Dewangan<ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>  wrote:
->>>
->>> Aren't we still supposed to support platform data so that it can
->>> override what's in DT in order to fix up bad DTs? Or, has that
->>> requirement been dropped. If it has, we can drop a bunch of code from a
->>> variety of Tegra-specific drivers, I expect.
->> Do you have an actual user for this? If not, then don't borrow trouble.
->> Just drop it. Things like platform_data can always be added later only
->> if it is needed.
-> 
-> Currently all our board supports DT. we are not using any driver
-> instantiated by board files.
-> I will remove the platform data for current patch and if it is require
-> then will add later with reasoning.
-> 
-> Hope this will be fine with Stephen also so that  this basic patch can
-> be included into tree soon.
+We should not write toward the closed pty. 
+Now it happens, if one side close last file descriptor,
+and other side in this moment write to it.
+It also prevents scheduling unnecessary work.
 
-I'm fine with it; it's just a change in policy that hadn't been
-communicated before.
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+---
+ drivers/tty/pty.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index a82b399..1ce1362 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -116,6 +116,8 @@ static int pty_space(struct tty_struct *to)
+ 
+ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
+ {
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		return -EIO;
+ 	struct tty_struct *to = tty->link;
+ 
+ 	if (tty->stopped)
