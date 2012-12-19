@@ -1,44 +1,67 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: Re: [PATCH] tty: Fix unreasonable write toward closed pty.
-Date: Wed, 19 Dec 2012 23:38:28 +0400
-Message-ID: <50D217B4.6000104@ilyx.ru>
-References: <50D20E87.9060403@ilyx.ru> <20121219191030.4ee20a1c@pyramind.ukuu.org.uk>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 5/6] tty: of_serial: Add pinctrl support
+Date: Wed, 19 Dec 2012 21:18:14 +0100
+Message-ID: <1355948295-19680-6-git-send-email-maxime.ripard@free-electrons.com>
+References: <1355948295-19680-1-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:60482 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751614Ab2LSTib (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Dec 2012 14:38:31 -0500
-In-Reply-To: <20121219191030.4ee20a1c@pyramind.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1355948295-19680-1-git-send-email-maxime.ripard@free-electrons.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+Cc: Alejandro Mery <amery@geeks.cl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Stefan Roese <sr@denx.de>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 19.12.2012 23:10, Alan Cox wrote:
->> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
->> index a82b399..1ce1362 100644
->> --- a/drivers/tty/pty.c
->> +++ b/drivers/tty/pty.c
->> @@ -116,6 +116,8 @@ static int pty_space(struct tty_struct *to)
->>  
->>  static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
->>  {
->> +	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
->> +		return -EIO;
-> 
-> The flag can change between the test and ny further code being executed ?
-> 
-> Alan
-> 
+Use pinctrl to configure the SoCs pins directly from the driver.
 
-Yes, if I understand you correctly, but this is no matter here,
-because ldisc's layer will wait, flush this data later.
-Here, only beginning stage of tty_close.
-This is safe later stage from unnecessary data.
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/of_serial.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Ilya
-
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index df443b9..f66bdab 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/delay.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_reg.h>
+@@ -54,6 +55,7 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 					int type, struct uart_port *port)
+ {
+ 	struct resource resource;
++	struct pinctrl *pinctrl;
+ 	struct device_node *np = ofdev->dev.of_node;
+ 	u32 clk, spd, prop;
+ 	int ret;
+@@ -73,6 +75,11 @@ static int __devinit of_platform_serial_setup(struct platform_device *ofdev,
+ 		return ret;
+ 	}
+ 
++	pinctrl = devm_pinctrl_get_select_default(&ofdev->dev);
++	if (IS_ERR(pinctrl))
++		dev_warn(&ofdev->dev,
++			"pins are not configured from the driver\n");
++
+ 	spin_lock_init(&port->lock);
+ 	port->mapbase = resource.start;
+ 
+-- 
+1.7.9.5
