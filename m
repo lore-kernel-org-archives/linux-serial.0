@@ -1,42 +1,43 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: [PATCH] drivers/tty/serial: avoid double free after call ioc4_serial_remove_one
-Date: Wed, 26 Dec 2012 18:06:39 +0800
-Message-ID: <50DACC2F.5080302@asianux.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] seria: sirf: only use lookup table to set baudrate
+	when ioclk=150MHz
+Date: Wed, 26 Dec 2012 15:04:33 +0000
+Message-ID: <20121226150433.GB24604@n2100.arm.linux.org.uk>
+References: <1356431162-8372-1-git-send-email-Barry.Song@csr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from intranet.asianux.com ([58.214.24.6]:48355 "EHLO
-	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753967Ab2LZKFt (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:36968 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751772Ab2LZPG1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Dec 2012 05:05:49 -0500
+	Wed, 26 Dec 2012 10:06:27 -0500
+Content-Disposition: inline
+In-Reply-To: <1356431162-8372-1-git-send-email-Barry.Song@csr.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: alan@linux.intel.com
-Cc: linux-serial@vger.kernel.org
+To: Barry Song <Barry.Song@csr.com>
+Cc: alan@linux.intel.com, workgroup.linux@csr.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Barry Song <Baohua.Song@csr.com>
 
+On Tue, Dec 25, 2012 at 06:26:02PM +0800, Barry Song wrote:
+> @@ -375,7 +375,12 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
+>  	int		threshold_div;
+>  	int		temp;
+>  
+> -	ioclk_rate = 150000000;
+> +	struct clk *clk = clk_get_sys("io", NULL);
+> +	BUG_ON(IS_ERR(clk));
 
-  before goto out5,  soft, control, serial are all assigned to idd
-  after finish call ioc4_serial_remove_one, all resources are released
-  we need return instead of go on, or double free
+No.  Really, no.  Stop using BUG_ON() as some kind of crappy assert().
+BUG_ON() takes the entire kernel out when it fails.  There's absolutely
+no need for this what so ever - especially here.
 
-Signed-off-by: Chen Gang <gang.chen@asianux.com>
----
- drivers/tty/serial/ioc4_serial.c |    1 +
- 1 file changed, 1 insertion(+)
+Get the clock at probe or port initialization time.  Save that pointer.
+Only give it up when the port is torn down.  And treat it as any other
+clock - prepare and enable it, and disable and unprepare it when you're
+done with it.
 
-diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index 3e7da10..c4e30b8 100644
---- a/drivers/tty/serial/ioc4_serial.c
-+++ b/drivers/tty/serial/ioc4_serial.c
-@@ -2883,6 +2883,7 @@ ioc4_serial_attach_one(struct ioc4_driver_data *idd)
- 	/* error exits that give back resources */
- out5:
- 	ioc4_serial_remove_one(idd);
-+	return ret;
- out4:
- 	kfree(soft);
- out3:
--- 
-1.7.10.4
+And there's no need to use this clk_get_sys() crap in drivers.  Add the
+necessary clkdev entries or deal with it in DT.  Absolutely do not use
+clk_get_sys() in drivers; it's there for *PLATFORM* code to use when
+there's no other possibility for them and NOT drivers.
