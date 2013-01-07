@@ -1,88 +1,73 @@
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: Re: [PATCH v3] mxs: uart: allow setting RTS from software
-Date: Mon, 07 Jan 2013 10:43:38 +0100
-Message-ID: <50EA98CA.1060303@pengutronix.de>
-References: <1355405263-29625-1-git-send-email-s.trumtrar@pengutronix.de> <50CA8E8C.5060906@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH v1 25/31] ARC: [plat-arcfpga] Hooking up platform to ARC UART
+Date: Mon, 07 Jan 2013 14:36:47 +0000
+Message-ID: <2626403.I2tzc2MAVY@wuerfel>
+References: <1352281674-2186-1-git-send-email-vgupta@synopsys.com> <201301071346.01620.arnd@arndb.de> <50EAD5F3.7030204@synopsys.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="------------enig104547F1DADB7B09D44B1483"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <50CA8E8C.5060906@freescale.com>
-Sender: stable-owner@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <50EAD5F3.7030204@synopsys.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>, linux-serial@vger.kernel.org
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig104547F1DADB7B09D44B1483
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
+On Monday 07 January 2013 19:34:35 Vineet Gupta wrote:
+> On Monday 07 January 2013 07:16 PM, Arnd Bergmann wrote:
 
-On 12/14/2012 03:27 AM, Huang Shijie wrote:
-> =D3=DA 2012=C4=EA12=D4=C213=C8=D5 21:27, Steffen Trumtrar =D0=B4=B5=C0:=
+> >> static struct of_dev_auxdata arcuart_auxdata_lookup[] __initdata = {
+> >> 	OF_DEV_AUXDATA("snps,arc-uart", UART0_BASE, "arc-uart", arc_uart_info),
+> >> 	{}
+> >> };
+> > It should be enough to fill the drv->of_match_table member of the
+> > platform_driver with the match table.
+> 
+> Not sure if I understand. My concern is the #define UART0_BASE (=0xc0fc1000) which
+> needs to be defined in code despite that value being present in the device tree.
+> And this is needed so that framework could match the device against the driver. I
+> would have thought that some device property (in device tree) could enable the
+> matching with Linux name (actually DRIVER_NAME defined in the uart driver).  Am I
+> missing something ?
 
->> With the patch "serial: mxs-auart: fix the wrong RTS hardware flow con=
-trol" the
->> mainline mxs-uart driver now sets RTSEN only when hardware flow contro=
-l is
->> enabled via software. It is not possible any longer to set RTS manuall=
-y via
->> software. However, the manual modification is a valid operation.
->> Regain the possibility to set RTS via software and only set RTSEN when=
- hardware
->> flow control is explicitly enabled via settermios cflag CRTSCTS.
->>
->> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
->> ---
->>  drivers/tty/serial/mxs-auart.c |    4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-a=
-uart.c
->> index 6db23b0..9f63f88 100644
->> --- a/drivers/tty/serial/mxs-auart.c
->> +++ b/drivers/tty/serial/mxs-auart.c
->> @@ -412,10 +412,12 @@ static void mxs_auart_set_mctrl(struct uart_port=
- *u, unsigned mctrl)
->> =20
->>  	u32 ctrl =3D readl(u->membase + AUART_CTRL2);
->> =20
->> -	ctrl &=3D ~AUART_CTRL2_RTSEN;
->> +	ctrl &=3D ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
->>  	if (mctrl & TIOCM_RTS) {
->>  		if (tty_port_cts_enabled(&u->state->port))
->>  			ctrl |=3D AUART_CTRL2_RTSEN;
->> +		else
->> +			ctrl |=3D AUART_CTRL2_RTS;
->>  	}
->> =20
->>  	s->ctrl =3D mctrl;
-> Reviewed-by: Huang Shijie <b32955@freescale.com>
+I mean you should not need the auxdata entry if the driver does everything
+right, and you get rid of the platform_data.
 
-This patch is not not in today's next. What's the current status? Who
-will take it?
+> >> (3) After above, driver's probe routine is getting called with platform_device->id
+> >> = -1 and it seems of_device_add() is doing that purposely. How do I handle that.
+> > What do you need the id for?
+> 
+> In case of multiple instances of UART, driver uses this value to index into struct
+> arc_uart_port [ ]
+> 
+> struct arc_uart_port {
+>     struct uart_port port;
+>     unsigned long baud;
+>     int is_emulated;
+> };
+> 
+> static struct arc_uart_port arc_uart_ports[CONFIG_SERIAL_ARC_NR_PORTS];
+> 
+> arc_serial_probe(struct platform_device *pdev)
+>     uart = &arc_uart_ports[pdev->id];
+>     arc_uart_init_one(pdev, ..)
+>           if (pdev->id < 0 ...)
+>                   return -ENOENT;
+>  
+> Although the current driver is flawed in that it checks for -ve value after
+> already indexing into the array :-(
+> I'll send a patch to serial list to fix that.
 
-Marc
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+(adding linux-serial to Cc)
 
+Generally speaking, drivers should not have static or fixed-size arrays of
+devices in them. What you should do instead is to allocate the arc_uart_port
+at from arc_serial_probe() and remove all the references to the global
+array. I'm not completely sure if that's possible with the uart_port yet,
+maybe someone else can comment on that.
 
---------------enig104547F1DADB7B09D44B1483
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+For the id value, have a look at the drivers/tty/serial/mxs-auart.c and how
+it gets the id from the /aliases node in the device tree using
+of_alias_get_id().
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with undefined - http://www.enigmail.net/
-
-iEYEARECAAYFAlDqmM8ACgkQjTAFq1RaXHPpoQCeINw17Fd/78wKWLgyXGswMDb1
-fncAn18iREtoC7ierWtB+++uenGm/9lu
-=yfUb
------END PGP SIGNATURE-----
-
---------------enig104547F1DADB7B09D44B1483--
+	Arnd
