@@ -1,82 +1,50 @@
-From: Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
-	queue is active
-Date: Thu, 3 Jan 2013 19:36:11 +0100
-Message-ID: <20130103183611.GA28225@redhat.com>
-References: <1355842130-15482-1-git-send-email-meltedpianoman@gmail.com> <50E3FDFA.4070203@suse.cz> <20130102114311.66215bf5@pyramind.ukuu.org.uk> <CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com> <50E4854E.8060801@suse.cz> <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH 1/1] serial: Samsung: Use of_match_ptr() macro
+Date: Mon,  7 Jan 2013 09:50:42 +0530
+Message-ID: <1357532442-5896-1-git-send-email-sachin.kamat@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:54197 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753017Ab3ACSiB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Jan 2013 13:38:01 -0500
-Content-Disposition: inline
-In-Reply-To: <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com>
+Received: from mail-pa0-f45.google.com ([209.85.220.45]:63574 "EHLO
+	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753516Ab3AGE35 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 6 Jan 2013 23:29:57 -0500
+Received: by mail-pa0-f45.google.com with SMTP id bg2so10454330pad.32
+        for <linux-serial@vger.kernel.org>; Sun, 06 Jan 2013 20:29:56 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Preeti U Murthy <preeti@linux.vnet.ibm.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, jslaby@suse.cz, sachin.kamat@linaro.org, patches@linaro.org
 
-On 01/03, Ivo Sieben wrote:
->
-> Oleg, Peter, Ingo, Andi & Preeti,
->
-> 2013/1/2 Jiri Slaby <jslaby@suse.cz>:
-> > On 01/02/2013 04:21 PM, Ivo Sieben wrote:
-> >> I don't understand your responses: do you suggest to implement this
-> >> "if active" behavior in:
-> >> * A new wake_up function called wake_up_if_active() that is part of
-> >> the waitqueue layer?
-> >
-> > Sounds good.
-> >
-> > --
-> > js
-> > suse labs
->
-> I want to ask you 'scheduler' people for your opinion:
->
-> Maybe you remember my previous patch where I suggested an extra
-> 'waitqueue empty' check before entering the critical section of the
-> wakeup() function (If you do not remember see
-> https://lkml.org/lkml/2012/10/25/159)
->
-> Finally Oleg responded that a lot of callers do
->
-> 	if (waitqueue_active(q))
-> 		wake_up(...);
->
-> what made my patch pointless and adds a memory barrier.
+This eliminates having an #ifdef returning NULL for the case
+when OF is disabled.
 
-Plus this change doesn't look 100% correct, at least in theory.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/tty/serial/samsung.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
-> I then decided
-> to also implement the 'waitqueue_active' approach for my problem.
-
-Well, if you ask me I think this is the best solution ;)
-
-But I won't insist.
-
-> But now I get a review comment by Jiri that he would like to hide this
-> 'if active behavior' in a wake_up_if_active() kind of function. I
-> think he is right that implementing this check in the wakeup function
-> would clean things up, right?
->
-> I would like to have your opinion on the following two suggestions:
-> - We still can do the original patch on the wake_up() that I
-> suggested. I then can do an additional code cleanup patch that removes
-> the double 'waitqueue_active' call (a quick grep found about 150 of
-> these waitqueue active calls) on several places in the code.
-
-In this case we should also fix some users of add_wait_queue().
-
-> - Or - as an alternative - I could add extra _if_active() versions of
-> all wake_up() functions, that implement this extra test.
-
-Not sure this will actually help to make the code cleaner. The last
-patch you sent looks simple and clean. IMHO it doesn't make sense
-to create _if_active helper for each wake_up*.
-
-Oleg.
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 12e5249..e393b0a 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1725,8 +1725,6 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
+-#else
+-#define s3c24xx_uart_dt_match NULL
+ #endif
+ 
+ static struct platform_driver samsung_serial_driver = {
+@@ -1737,7 +1735,7 @@ static struct platform_driver samsung_serial_driver = {
+ 		.name	= "samsung-uart",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= SERIAL_SAMSUNG_PM_OPS,
+-		.of_match_table	= s3c24xx_uart_dt_match,
++		.of_match_table	= of_match_ptr(s3c24xx_uart_dt_match),
+ 	},
+ };
+ 
+-- 
+1.7.4.1
 
