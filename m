@@ -1,73 +1,41 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC PATCH v1 25/31] ARC: [plat-arcfpga] Hooking up platform to ARC UART
-Date: Mon, 07 Jan 2013 14:36:47 +0000
-Message-ID: <2626403.I2tzc2MAVY@wuerfel>
-References: <1352281674-2186-1-git-send-email-vgupta@synopsys.com> <201301071346.01620.arnd@arndb.de> <50EAD5F3.7030204@synopsys.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <50EAD5F3.7030204@synopsys.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>, linux-serial@vger.kernel.org
-Cc: Grant Likely <grant.likely@secretlab.ca>, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: [PATCH 1/2] Fix incorrect device ID for the Commtech 422/2-PCIe.
+Date: Mon,  7 Jan 2013 15:17:14 -0600
+Message-ID: <1357593435-3566-1-git-send-email-matts@commtech-fastcom.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ye0-f175.google.com ([209.85.213.175]:34225 "EHLO
+	mail-ye0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752841Ab3AGVna (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 7 Jan 2013 16:43:30 -0500
+Received: by mail-ye0-f175.google.com with SMTP id q7so3133379yen.20
+        for <linux-serial@vger.kernel.org>; Mon, 07 Jan 2013 13:43:29 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, Matt Schulte <matts@commtech-fastcom.com>
 
-On Monday 07 January 2013 19:34:35 Vineet Gupta wrote:
-> On Monday 07 January 2013 07:16 PM, Arnd Bergmann wrote:
 
-> >> static struct of_dev_auxdata arcuart_auxdata_lookup[] __initdata = {
-> >> 	OF_DEV_AUXDATA("snps,arc-uart", UART0_BASE, "arc-uart", arc_uart_info),
-> >> 	{}
-> >> };
-> > It should be enough to fill the drv->of_match_table member of the
-> > platform_driver with the match table.
-> 
-> Not sure if I understand. My concern is the #define UART0_BASE (=0xc0fc1000) which
-> needs to be defined in code despite that value being present in the device tree.
-> And this is needed so that framework could match the device against the driver. I
-> would have thought that some device property (in device tree) could enable the
-> matching with Linux name (actually DRIVER_NAME defined in the uart driver).  Am I
-> missing something ?
+Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+---
+ drivers/tty/serial/8250/8250_pci.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-I mean you should not need the auxdata entry if the driver does everything
-right, and you get rid of the platform_data.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 26b9dc0..18f1d79 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1301,9 +1301,9 @@ pci_wch_ch353_setup(struct serial_private *priv,
+ #define PCI_VENDOR_ID_AGESTAR		0x5372
+ #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
+ #define PCI_VENDOR_ID_ASIX		0x9710
+-#define PCI_DEVICE_ID_COMMTECH_4222PCIE 0x0019
+ #define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
+ #define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
++#define PCI_DEVICE_ID_COMMTECH_4222PCIE 0x0022
+ 
+ 
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+-- 
+1.7.2.5
 
-> >> (3) After above, driver's probe routine is getting called with platform_device->id
-> >> = -1 and it seems of_device_add() is doing that purposely. How do I handle that.
-> > What do you need the id for?
-> 
-> In case of multiple instances of UART, driver uses this value to index into struct
-> arc_uart_port [ ]
-> 
-> struct arc_uart_port {
->     struct uart_port port;
->     unsigned long baud;
->     int is_emulated;
-> };
-> 
-> static struct arc_uart_port arc_uart_ports[CONFIG_SERIAL_ARC_NR_PORTS];
-> 
-> arc_serial_probe(struct platform_device *pdev)
->     uart = &arc_uart_ports[pdev->id];
->     arc_uart_init_one(pdev, ..)
->           if (pdev->id < 0 ...)
->                   return -ENOENT;
->  
-> Although the current driver is flawed in that it checks for -ve value after
-> already indexing into the array :-(
-> I'll send a patch to serial list to fix that.
-
-(adding linux-serial to Cc)
-
-Generally speaking, drivers should not have static or fixed-size arrays of
-devices in them. What you should do instead is to allocate the arc_uart_port
-at from arc_serial_probe() and remove all the references to the global
-array. I'm not completely sure if that's possible with the uart_port yet,
-maybe someone else can comment on that.
-
-For the id value, have a look at the drivers/tty/serial/mxs-auart.c and how
-it gets the id from the /aliases node in the device tree using
-of_alias_get_id().
-
-	Arnd
