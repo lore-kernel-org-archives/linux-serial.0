@@ -1,1543 +1,1324 @@
-From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH V4 RESEND] serial: tegra: add serial driver
-Date: Tue, 8 Jan 2013 16:27:44 +0530
-Message-ID: <1357642664-10816-1-git-send-email-ldewangan@nvidia.com>
+From: Yuanhan Liu <yuanhan.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 5/5] kfifo: log based kfifo API
+Date: Tue,  8 Jan 2013 22:57:53 +0800
+Message-ID: <1357657073-27352-6-git-send-email-yuanhan.liu@linux.intel.com>
+References: <1357657073-27352-1-git-send-email-yuanhan.liu@linux.intel.com>
+Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <open-iscsi+bncBC6IV5F6ZECBBVPHWCDQKGQEOTAD5MY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+In-Reply-To: <1357657073-27352-1-git-send-email-yuanhan.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Post: <http://groups.google.com/group/open-iscsi/post?hl=en_US>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/?hl=en_US>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/open-iscsi?hl=en_US>
+Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/open-iscsi/subscribe?hl=en_US>,
+ <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/open-iscsi/subscribe?hl=en_US>,
+ <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Yuanhan Liu <yuanhan.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stefani Seibold <stefani-mkwtCZVSLSnR7s880joybQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, platform-driver-x86-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, libertas-dev-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, dccp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sctp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-NVIDIA's Tegra has multiple UART controller which supports:
-- APB DMA based controller fifo read/write.
-- End Of Data interrupt in incoming data to know whether end
-  of frame achieve or not.
-- HW controlled RTS and CTS flow control to reduce SW overhead.
+The current kfifo API take the kfifo size as input, while it rounds
+ _down_ the size to power of 2 at __kfifo_alloc. This may introduce
+potential issue.
 
-Add serial driver to use all above feature.
+Take the code at drivers/hid/hid-logitech-dj.c as example:
 
-Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Acked-by: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+	if (kfifo_alloc(&djrcv_dev->notif_fifo,
+                       DJ_MAX_NUMBER_NOTIFICATIONS * sizeof(struct dj_report),
+                       GFP_KERNEL)) {
+
+Where, DJ_MAX_NUMBER_NOTIFICATIONS is 8, and sizeo of(struct dj_report)
+is 15.
+
+Which means it wants to allocate a kfifo buffer which can store 8
+dj_report entries at once. The expected kfifo buffer size would be
+8 * 15 = 120 then. While, in the end, __kfifo_alloc will turn the
+size to rounddown_power_of_2(120) =  64, and then allocate a buf
+with 64 bytes, which I don't think this is the original author want.
+
+With the new log API, we can do like following:
+
+	int kfifo_size_order = order_base_2(DJ_MAX_NUMBER_NOTIFICATIONS *
+					    sizeof(struct dj_report));
+
+	if (kfifo_alloc(&djrcv_dev->notif_fifo, kfifo_size_order, GFP_KERNEL)) {
+
+This make sure we will allocate enough kfifo buffer for holding
+DJ_MAX_NUMBER_NOTIFICATIONS dj_report entries.
+
+Cc: Stefani Seibold <stefani-mkwtCZVSLSnR7s880joybQ@public.gmane.org>
+Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: platform-driver-x86-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: libertas-dev-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Cc: linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
+Cc: dccp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-sctp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Yuanhan Liu <yuanhan.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
-Changes from V1:
-- Remove port-number parameter and use the of_alias_get().
-- put the ref count for the tty.
-- rename the binding document file to serial-tegra.txt to match with
-  driver name.
-- Remove falsy introduced line from Kconfig.
-- Move platform data file to linux/platfor_data. Not removing the
-  platform datacompletely now. if it is requie to remove the will
-  be remove later along with other tegra driver also.
-- Simplify tegra_uart_set_mctrl
-- Clear flag for CMSPAR as driver dose not support this.
-- Modify uart_get_baud_rate() to use actual baudrate.
-- reorder compatibles in documentation file.
-- used of_property_read_bool for modem interrupt.
-- remove check if (pdev->dev.of_node) as it si always true.
-- Drop devinit and devexit compiler option.
-- nit cleanups for moving struture to the usage area.
+ arch/arm/plat-omap/Kconfig                  |    2 +-
+ arch/arm/plat-omap/mailbox.c                |    6 +++-
+ arch/powerpc/sysdev/fsl_rmu.c               |    2 +-
+ drivers/char/sonypi.c                       |    9 ++++---
+ drivers/hid/hid-logitech-dj.c               |    7 +++--
+ drivers/iio/industrialio-event.c            |    2 +-
+ drivers/iio/kfifo_buf.c                     |    3 +-
+ drivers/infiniband/hw/cxgb3/cxio_resource.c |    8 ++++--
+ drivers/media/i2c/cx25840/cx25840-ir.c      |    9 +++++--
+ drivers/media/pci/cx23885/cx23888-ir.c      |    9 +++++--
+ drivers/media/pci/meye/meye.c               |    6 +---
+ drivers/media/pci/meye/meye.h               |    2 +
+ drivers/media/rc/ir-raw.c                   |    7 +++--
+ drivers/memstick/host/r592.h                |    2 +-
+ drivers/mmc/card/sdio_uart.c                |    4 ++-
+ drivers/mtd/sm_ftl.c                        |    5 +++-
+ drivers/net/wireless/libertas/main.c        |    4 ++-
+ drivers/net/wireless/rt2x00/rt2x00dev.c     |    5 +--
+ drivers/pci/pcie/aer/aerdrv_core.c          |    3 +-
+ drivers/platform/x86/fujitsu-laptop.c       |    5 ++-
+ drivers/platform/x86/sony-laptop.c          |    6 ++--
+ drivers/rapidio/devices/tsi721.c            |    5 ++-
+ drivers/scsi/libiscsi_tcp.c                 |    6 +++-
+ drivers/staging/omapdrm/omap_plane.c        |    5 +++-
+ drivers/tty/n_gsm.c                         |    4 ++-
+ drivers/tty/nozomi.c                        |    5 +--
+ drivers/tty/serial/ifx6x60.c                |    2 +-
+ drivers/tty/serial/ifx6x60.h                |    3 +-
+ drivers/tty/serial/kgdb_nmi.c               |    7 +++--
+ drivers/usb/host/fhci.h                     |    4 ++-
+ drivers/usb/serial/cypress_m8.c             |    4 +-
+ drivers/usb/serial/io_ti.c                  |    4 +-
+ drivers/usb/serial/ti_usb_3410_5052.c       |    7 +++--
+ drivers/usb/serial/usb-serial.c             |    2 +-
+ include/linux/kfifo.h                       |   31 +++++++++++++--------------
+ include/linux/rio.h                         |    1 +
+ include/media/lirc_dev.h                    |    4 ++-
+ kernel/kfifo.c                              |    9 +------
+ mm/memory-failure.c                         |    3 +-
+ net/dccp/probe.c                            |    6 +++-
+ net/sctp/probe.c                            |    6 +++-
+ samples/kfifo/bytestream-example.c          |    8 +++---
+ samples/kfifo/dma-example.c                 |    5 ++-
+ samples/kfifo/inttype-example.c             |    7 +++--
+ samples/kfifo/record-example.c              |    6 ++--
+ 45 files changed, 142 insertions(+), 108 deletions(-)
 
-Changes from V2:
-- Rename the binding document to nvidia,tegra20-hsuart.txt
-- Some nit cleanups and use Caps for aliases like APB, DMA, UART.
-- Adding Alan's ack.
-
-Changes from V3:
-- Dropped support for platform data and hence remove header file.
-- In clk_get, pass NULL for connection name.
-
-Resending patch as V4 version was sent before long holiday (19 dec) and
-in the case of if it is missed. Just change the copyright year for this
-resend to have 2013.
-
- .../bindings/serial/nvidia,tegra20-hsuart.txt      |   24 +
- drivers/tty/serial/Kconfig                         |   11 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/serial-tegra.c                  | 1399 ++++++++++++++++++++
- 4 files changed, 1435 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
- create mode 100644 drivers/tty/serial/serial-tegra.c
-
-diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-new file mode 100644
-index 0000000..392a449
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-@@ -0,0 +1,24 @@
-+NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver.
-+
-+Required properties:
-+- compatible : should be "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart".
-+- reg: Should contain UART controller registers location and length.
-+- interrupts: Should contain UART controller interrupts.
-+- nvidia,dma-request-selector : The Tegra DMA controller's phandle and
-+  request selector for this UART controller.
-+
-+Optional properties:
-+- nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
-+		only if all 8 lines of UART controller are pinmuxed.
-+
-+Example:
-+
-+serial@70006000 {
-+	compatible = "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart";
-+	reg = <0x70006000 0x40>;
-+	reg-shift = <2>;
-+	interrupts = <0 36 0x04>;
-+	nvidia,dma-request-selector = <&apbdma 8>;
-+	nvidia,enable-modem-interrupt;
-+	status = "disabled";
-+};
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 59c23d0..aff3cd3 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -269,6 +269,17 @@ config SERIAL_SIRFSOC_CONSOLE
-           your boot loader about how to pass options to the kernel at
-           boot time.)
+diff --git a/arch/arm/plat-omap/Kconfig b/arch/arm/plat-omap/Kconfig
+index 665870d..7eda02c 100644
+--- a/arch/arm/plat-omap/Kconfig
++++ b/arch/arm/plat-omap/Kconfig
+@@ -124,7 +124,7 @@ config OMAP_MBOX_FWK
+ 	  DSP, IVA1.0 and IVA2 in OMAP1/2/3.
  
-+config SERIAL_TEGRA
-+	tristate "NVIDIA Tegra20/30 SoC serial controller"
-+	depends on ARCH_TEGRA && TEGRA20_APB_DMA
-+	select SERIAL_CORE
-+	help
-+	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
-+	  providing /dev/ttyHS0, 1, 2, 3 and 4 (note, some machines may not
-+	  provide all of these ports, depending on how the serial port
-+	  are enabled). This driver uses the APB DMA to achieve higher baudrate
-+	  and better performance.
-+
- config SERIAL_MAX3100
- 	tristate "MAX3100 support"
- 	depends on SPI
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index df1b998..82e4306 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -80,6 +80,7 @@ obj-$(CONFIG_SERIAL_MXS_AUART) += mxs-auart.o
- obj-$(CONFIG_SERIAL_LANTIQ)	+= lantiq.o
- obj-$(CONFIG_SERIAL_XILINX_PS_UART) += xilinx_uartps.o
- obj-$(CONFIG_SERIAL_SIRFSOC) += sirfsoc_uart.o
-+obj-$(CONFIG_SERIAL_TEGRA) += serial-tegra.o
- obj-$(CONFIG_SERIAL_AR933X)   += ar933x_uart.o
- obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
- obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-new file mode 100644
-index 0000000..ad094d2
---- /dev/null
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -0,0 +1,1399 @@
-+/*
-+ * serial_tegra.c
-+ *
-+ * High-speed serial driver for NVIDIA Tegra SoCs
-+ *
-+ * Copyright (c) 2012-2013, NVIDIA CORPORATION.  All rights reserved.
-+ *
-+ * Author: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/debugfs.h>
-+#include <linux/delay.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/dmapool.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/pagemap.h>
-+#include <linux/platform_device.h>
-+#include <linux/serial.h>
-+#include <linux/serial_8250.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+#include <linux/termios.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+
-+#include <mach/clk.h>
-+
-+#define TEGRA_UART_TYPE				"TEGRA_UART"
-+#define TX_EMPTY_STATUS				(UART_LSR_TEMT | UART_LSR_THRE)
-+#define BYTES_TO_ALIGN(x)			((unsigned long)(x) & 0x3)
-+
-+#define TEGRA_UART_RX_DMA_BUFFER_SIZE		4096
-+#define TEGRA_UART_LSR_TXFIFO_FULL		0x100
-+#define TEGRA_UART_IER_EORD			0x20
-+#define TEGRA_UART_MCR_RTS_EN			0x40
-+#define TEGRA_UART_MCR_CTS_EN			0x20
-+#define TEGRA_UART_LSR_ANY			(UART_LSR_OE | UART_LSR_BI | \
-+						UART_LSR_PE | UART_LSR_FE)
-+#define TEGRA_UART_IRDA_CSR			0x08
-+#define TEGRA_UART_SIR_ENABLED			0x80
-+
-+#define TEGRA_UART_TX_PIO			1
-+#define TEGRA_UART_TX_DMA			2
-+#define TEGRA_UART_MIN_DMA			16
-+#define TEGRA_UART_FIFO_SIZE			32
-+
-+/*
-+ * Tx fifo trigger level setting in tegra uart is in
-+ * reverse way then conventional uart.
-+ */
-+#define TEGRA_UART_TX_TRIG_16B			0x00
-+#define TEGRA_UART_TX_TRIG_8B			0x10
-+#define TEGRA_UART_TX_TRIG_4B			0x20
-+#define TEGRA_UART_TX_TRIG_1B			0x30
-+
-+#define TEGRA_UART_MAXIMUM			5
-+
-+/* Default UART setting when started: 115200 no parity, stop, 8 data bits */
-+#define TEGRA_UART_DEFAULT_BAUD			115200
-+#define TEGRA_UART_DEFAULT_LSR			UART_LCR_WLEN8
-+
-+/* Tx transfer mode */
-+#define TEGRA_TX_PIO				1
-+#define TEGRA_TX_DMA				2
-+
-+/**
-+ * tegra_uart_chip_data: SOC specific data.
-+ *
-+ * @tx_fifo_full_status: Status flag available for checking tx fifo full.
-+ * @allow_txfifo_reset_fifo_mode: allow_tx fifo reset with fifo mode or not.
-+ *			Tegra30 does not allow this.
-+ * @support_clk_src_div: Clock source support the clock divider.
-+ */
-+struct tegra_uart_chip_data {
-+	bool	tx_fifo_full_status;
-+	bool	allow_txfifo_reset_fifo_mode;
-+	bool	support_clk_src_div;
-+};
-+
-+struct tegra_uart_port {
-+	struct uart_port			uport;
-+	const struct tegra_uart_chip_data	*cdata;
-+
-+	struct clk				*uart_clk;
-+	unsigned int				current_baud;
-+
-+	/* Register shadow */
-+	unsigned long				fcr_shadow;
-+	unsigned long				mcr_shadow;
-+	unsigned long				lcr_shadow;
-+	unsigned long				ier_shadow;
-+	bool					rts_active;
-+
-+	int					tx_in_progress;
-+	unsigned int				tx_bytes;
-+
-+	bool					enable_modem_interrupt;
-+
-+	bool					rx_timeout;
-+	int					rx_in_progress;
-+	int					symb_bit;
-+	int					dma_req_sel;
-+
-+	struct dma_chan				*rx_dma_chan;
-+	struct dma_chan				*tx_dma_chan;
-+	dma_addr_t				rx_dma_buf_phys;
-+	dma_addr_t				tx_dma_buf_phys;
-+	unsigned char				*rx_dma_buf_virt;
-+	unsigned char				*tx_dma_buf_virt;
-+	struct dma_async_tx_descriptor		*tx_dma_desc;
-+	struct dma_async_tx_descriptor		*rx_dma_desc;
-+	dma_cookie_t				tx_cookie;
-+	dma_cookie_t				rx_cookie;
-+	int					tx_bytes_requested;
-+	int					rx_bytes_requested;
-+};
-+
-+static void tegra_uart_start_next_tx(struct tegra_uart_port *tup);
-+static int tegra_uart_start_rx_dma(struct tegra_uart_port *tup);
-+
-+static inline unsigned long tegra_uart_read(struct tegra_uart_port *tup,
-+		unsigned long reg)
-+{
-+	return readl(tup->uport.membase + (reg << tup->uport.regshift));
-+}
-+
-+static inline void tegra_uart_write(struct tegra_uart_port *tup, unsigned val,
-+	unsigned long reg)
-+{
-+	writel(val, tup->uport.membase + (reg << tup->uport.regshift));
-+}
-+
-+static inline struct tegra_uart_port *to_tegra_uport(struct uart_port *u)
-+{
-+	return container_of(u, struct tegra_uart_port, uport);
-+}
-+
-+static unsigned int tegra_uart_get_mctrl(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+
-+	/*
-+	 * RI - Ring detector is active
-+	 * CD/DCD/CAR - Carrier detect is always active. For some reason
-+	 *	linux has different names for carrier detect.
-+	 * DSR - Data Set ready is active as the hardware doesn't support it.
-+	 *	Don't know if the linux support this yet?
-+	 * CTS - Clear to send. Always set to active, as the hardware handles
-+	 *	CTS automatically.
-+	 */
-+	if (tup->enable_modem_interrupt)
-+		return TIOCM_RI | TIOCM_CD | TIOCM_DSR | TIOCM_CTS;
-+	return TIOCM_CTS;
-+}
-+
-+static void set_rts(struct tegra_uart_port *tup, bool active)
-+{
-+	unsigned long mcr;
-+
-+	mcr = tup->mcr_shadow;
-+	if (active)
-+		mcr |= TEGRA_UART_MCR_RTS_EN;
-+	else
-+		mcr &= ~TEGRA_UART_MCR_RTS_EN;
-+	if (mcr != tup->mcr_shadow) {
-+		tegra_uart_write(tup, mcr, UART_MCR);
-+		tup->mcr_shadow = mcr;
-+	}
-+	return;
-+}
-+
-+static void set_dtr(struct tegra_uart_port *tup, bool active)
-+{
-+	unsigned long mcr;
-+
-+	mcr = tup->mcr_shadow;
-+	if (active)
-+		mcr |= UART_MCR_DTR;
-+	else
-+		mcr &= ~UART_MCR_DTR;
-+	if (mcr != tup->mcr_shadow) {
-+		tegra_uart_write(tup, mcr, UART_MCR);
-+		tup->mcr_shadow = mcr;
-+	}
-+	return;
-+}
-+
-+static void tegra_uart_set_mctrl(struct uart_port *u, unsigned int mctrl)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	unsigned long mcr;
-+	int dtr_enable;
-+
-+	mcr = tup->mcr_shadow;
-+	tup->rts_active = !!(mctrl & TIOCM_RTS);
-+	set_rts(tup, tup->rts_active);
-+
-+	dtr_enable = !!(mctrl & TIOCM_DTR);
-+	set_dtr(tup, dtr_enable);
-+	return;
-+}
-+
-+static void tegra_uart_break_ctl(struct uart_port *u, int break_ctl)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	unsigned long lcr;
-+
-+	lcr = tup->lcr_shadow;
-+	if (break_ctl)
-+		lcr |= UART_LCR_SBC;
-+	else
-+		lcr &= ~UART_LCR_SBC;
-+	tegra_uart_write(tup, lcr, UART_LCR);
-+	tup->lcr_shadow = lcr;
-+}
-+
-+/* Wait for a symbol-time. */
-+static void tegra_uart_wait_sym_time(struct tegra_uart_port *tup,
-+		unsigned int syms)
-+{
-+	if (tup->current_baud)
-+		udelay(DIV_ROUND_UP(syms * tup->symb_bit * 1000000,
-+			tup->current_baud));
-+}
-+
-+static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
-+{
-+	unsigned long fcr = tup->fcr_shadow;
-+
-+	if (tup->cdata->allow_txfifo_reset_fifo_mode) {
-+		fcr |= fcr_bits & (UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
-+		tegra_uart_write(tup, fcr, UART_FCR);
-+	} else {
-+		fcr &= ~UART_FCR_ENABLE_FIFO;
-+		tegra_uart_write(tup, fcr, UART_FCR);
-+		udelay(60);
-+		fcr |= fcr_bits & (UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
-+		tegra_uart_write(tup, fcr, UART_FCR);
-+		fcr |= UART_FCR_ENABLE_FIFO;
-+		tegra_uart_write(tup, fcr, UART_FCR);
-+	}
-+
-+	/* Dummy read to ensure the write is posted */
-+	tegra_uart_read(tup, UART_SCR);
-+
-+	/* Wait for the flush to propagate. */
-+	tegra_uart_wait_sym_time(tup, 1);
-+}
-+
-+static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
-+{
-+	unsigned long rate;
-+	unsigned int divisor;
-+	unsigned long lcr;
-+	int ret;
-+
-+	if (tup->current_baud == baud)
-+		return 0;
-+
-+	if (tup->cdata->support_clk_src_div) {
-+		rate = baud * 16;
-+		ret = clk_set_rate(tup->uart_clk, rate);
-+		if (ret < 0) {
-+			dev_err(tup->uport.dev,
-+				"clk_set_rate() failed for rate %lu\n", rate);
-+			return ret;
-+		}
-+		divisor = 1;
-+	} else {
-+		rate = clk_get_rate(tup->uart_clk);
-+		divisor = DIV_ROUND_CLOSEST(rate, baud * 16);
-+	}
-+
-+	lcr = tup->lcr_shadow;
-+	lcr |= UART_LCR_DLAB;
-+	tegra_uart_write(tup, lcr, UART_LCR);
-+
-+	tegra_uart_write(tup, divisor & 0xFF, UART_TX);
-+	tegra_uart_write(tup, ((divisor >> 8) & 0xFF), UART_IER);
-+
-+	lcr &= ~UART_LCR_DLAB;
-+	tegra_uart_write(tup, lcr, UART_LCR);
-+
-+	/* Dummy read to ensure the write is posted */
-+	tegra_uart_read(tup, UART_SCR);
-+
-+	tup->current_baud = baud;
-+
-+	/* wait two character intervals at new rate */
-+	tegra_uart_wait_sym_time(tup, 2);
-+	return 0;
-+}
-+
-+static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
-+			unsigned long lsr)
-+{
-+	char flag = TTY_NORMAL;
-+
-+	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
-+		if (lsr & UART_LSR_OE) {
-+			/* Overrrun error */
-+			flag |= TTY_OVERRUN;
-+			tup->uport.icount.overrun++;
-+			dev_err(tup->uport.dev, "Got overrun errors\n");
-+		} else if (lsr & UART_LSR_PE) {
-+			/* Parity error */
-+			flag |= TTY_PARITY;
-+			tup->uport.icount.parity++;
-+			dev_err(tup->uport.dev, "Got Parity errors\n");
-+		} else if (lsr & UART_LSR_FE) {
-+			flag |= TTY_FRAME;
-+			tup->uport.icount.frame++;
-+			dev_err(tup->uport.dev, "Got frame errors\n");
-+		} else if (lsr & UART_LSR_BI) {
-+			dev_err(tup->uport.dev, "Got Break\n");
-+			tup->uport.icount.brk++;
-+			/* If FIFO read error without any data, reset Rx FIFO */
-+			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
-+				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-+		}
-+	}
-+	return flag;
-+}
-+
-+static int tegra_uart_request_port(struct uart_port *u)
-+{
-+	return 0;
-+}
-+
-+static void tegra_uart_release_port(struct uart_port *u)
-+{
-+	/* Nothing to do here */
-+}
-+
-+static void tegra_uart_fill_tx_fifo(struct tegra_uart_port *tup, int max_bytes)
-+{
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+	int i;
-+
-+	for (i = 0; i < max_bytes; i++) {
-+		BUG_ON(uart_circ_empty(xmit));
-+		if (tup->cdata->tx_fifo_full_status) {
-+			unsigned long lsr = tegra_uart_read(tup, UART_LSR);
-+			if ((lsr & TEGRA_UART_LSR_TXFIFO_FULL))
-+				break;
-+		}
-+		tegra_uart_write(tup, xmit->buf[xmit->tail], UART_TX);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		tup->uport.icount.tx++;
-+	}
-+}
-+
-+static void tegra_uart_start_pio_tx(struct tegra_uart_port *tup,
-+		unsigned int bytes)
-+{
-+	if (bytes > TEGRA_UART_MIN_DMA)
-+		bytes = TEGRA_UART_MIN_DMA;
-+
-+	tup->tx_in_progress = TEGRA_UART_TX_PIO;
-+	tup->tx_bytes = bytes;
-+	tup->ier_shadow |= UART_IER_THRI;
-+	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-+}
-+
-+static void tegra_uart_tx_dma_complete(void *args)
-+{
-+	struct tegra_uart_port *tup = args;
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+	struct dma_tx_state state;
-+	unsigned long flags;
-+	int count;
-+
-+	dmaengine_tx_status(tup->tx_dma_chan, tup->rx_cookie, &state);
-+	count = tup->tx_bytes_requested - state.residue;
-+	async_tx_ack(tup->tx_dma_desc);
-+	spin_lock_irqsave(&tup->uport.lock, flags);
-+	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
-+	tup->tx_in_progress = 0;
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(&tup->uport);
-+	tegra_uart_start_next_tx(tup);
-+	spin_unlock_irqrestore(&tup->uport.lock, flags);
-+}
-+
-+static int tegra_uart_start_tx_dma(struct tegra_uart_port *tup,
-+		unsigned long count)
-+{
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+	dma_addr_t tx_phys_addr;
-+
-+	dma_sync_single_for_device(tup->uport.dev, tup->tx_dma_buf_phys,
-+				UART_XMIT_SIZE, DMA_TO_DEVICE);
-+
-+	tup->tx_bytes = count & ~(0xF);
-+	tx_phys_addr = tup->tx_dma_buf_phys + xmit->tail;
-+	tup->tx_dma_desc = dmaengine_prep_slave_single(tup->tx_dma_chan,
-+				tx_phys_addr, tup->tx_bytes, DMA_MEM_TO_DEV,
-+				DMA_PREP_INTERRUPT);
-+	if (!tup->tx_dma_desc) {
-+		dev_err(tup->uport.dev, "Not able to get desc for Tx\n");
-+		return -EIO;
-+	}
-+
-+	tup->tx_dma_desc->callback = tegra_uart_tx_dma_complete;
-+	tup->tx_dma_desc->callback_param = tup;
-+	tup->tx_in_progress = TEGRA_UART_TX_DMA;
-+	tup->tx_bytes_requested = tup->tx_bytes;
-+	tup->tx_cookie = dmaengine_submit(tup->tx_dma_desc);
-+	dma_async_issue_pending(tup->tx_dma_chan);
-+	return 0;
-+}
-+
-+static void tegra_uart_start_next_tx(struct tegra_uart_port *tup)
-+{
-+	unsigned long tail;
-+	unsigned long count;
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+
-+	tail = (unsigned long)&xmit->buf[xmit->tail];
-+	count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-+	if (!count)
-+		return;
-+
-+	if (count < TEGRA_UART_MIN_DMA)
-+		tegra_uart_start_pio_tx(tup, count);
-+	else if (BYTES_TO_ALIGN(tail) > 0)
-+		tegra_uart_start_pio_tx(tup, BYTES_TO_ALIGN(tail));
-+	else
-+		tegra_uart_start_tx_dma(tup, count);
-+}
-+
-+/* Called by serial core driver with u->lock taken. */
-+static void tegra_uart_start_tx(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	struct circ_buf *xmit = &u->state->xmit;
-+
-+	if (!uart_circ_empty(xmit) && !tup->tx_in_progress)
-+		tegra_uart_start_next_tx(tup);
-+}
-+
-+static unsigned int tegra_uart_tx_empty(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	unsigned int ret = 0;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&u->lock, flags);
-+	if (!tup->tx_in_progress) {
-+		unsigned long lsr = tegra_uart_read(tup, UART_LSR);
-+		if ((lsr & TX_EMPTY_STATUS) == TX_EMPTY_STATUS)
-+			ret = TIOCSER_TEMT;
-+	}
-+	spin_unlock_irqrestore(&u->lock, flags);
-+	return ret;
-+}
-+
-+static void tegra_uart_stop_tx(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+	struct dma_tx_state state;
-+	int count;
-+
-+	dmaengine_terminate_all(tup->tx_dma_chan);
-+	dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
-+	count = tup->tx_bytes_requested - state.residue;
-+	async_tx_ack(tup->tx_dma_desc);
-+	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
-+	tup->tx_in_progress = 0;
-+	return;
-+}
-+
-+static void tegra_uart_handle_tx_pio(struct tegra_uart_port *tup)
-+{
-+	struct circ_buf *xmit = &tup->uport.state->xmit;
-+
-+	tegra_uart_fill_tx_fifo(tup, tup->tx_bytes);
-+	tup->tx_in_progress = 0;
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(&tup->uport);
-+	tegra_uart_start_next_tx(tup);
-+	return;
-+}
-+
-+static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
-+		struct tty_struct *tty)
-+{
-+	do {
-+		char flag = TTY_NORMAL;
-+		unsigned long lsr = 0;
-+		unsigned char ch;
-+
-+		lsr = tegra_uart_read(tup, UART_LSR);
-+		if (!(lsr & UART_LSR_DR))
-+			break;
-+
-+		flag = tegra_uart_decode_rx_error(tup, lsr);
-+		ch = (unsigned char) tegra_uart_read(tup, UART_RX);
-+		tup->uport.icount.rx++;
-+
-+		if (!uart_handle_sysrq_char(&tup->uport, ch) && tty)
-+			tty_insert_flip_char(tty, ch, flag);
-+	} while (1);
-+
-+	return;
-+}
-+
-+static void tegra_uart_copy_rx_to_tty(struct tegra_uart_port *tup,
-+		struct tty_struct *tty, int count)
-+{
-+	int copied;
-+
-+	tup->uport.icount.rx += count;
-+	if (!tty) {
-+		dev_err(tup->uport.dev, "No tty port\n");
-+		return;
-+	}
-+	dma_sync_single_for_cpu(tup->uport.dev, tup->rx_dma_buf_phys,
-+				TEGRA_UART_RX_DMA_BUFFER_SIZE, DMA_FROM_DEVICE);
-+	copied = tty_insert_flip_string(tty,
-+			((unsigned char *)(tup->rx_dma_buf_virt)), count);
-+	if (copied != count) {
-+		WARN_ON(1);
-+		dev_err(tup->uport.dev, "RxData copy to tty layer failed\n");
-+	}
-+	dma_sync_single_for_device(tup->uport.dev, tup->rx_dma_buf_phys,
-+				TEGRA_UART_RX_DMA_BUFFER_SIZE, DMA_TO_DEVICE);
-+}
-+
-+static void tegra_uart_rx_dma_complete(void *args)
-+{
-+	struct tegra_uart_port *tup = args;
-+	struct uart_port *u = &tup->uport;
-+	int count = tup->rx_bytes_requested;
-+	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
-+	unsigned long flags;
-+
-+	async_tx_ack(tup->rx_dma_desc);
-+	spin_lock_irqsave(&u->lock, flags);
-+
-+	/* Deactivate flow control to stop sender */
-+	if (tup->rts_active)
-+		set_rts(tup, false);
-+
-+	/* If we are here, DMA is stopped */
-+	if (count)
-+		tegra_uart_copy_rx_to_tty(tup, tty, count);
-+
-+	tegra_uart_handle_rx_pio(tup, tty);
-+	if (tty) {
-+		tty_flip_buffer_push(tty);
-+		tty_kref_put(tty);
-+	}
-+	tegra_uart_start_rx_dma(tup);
-+
-+	/* Activate flow control to start transfer */
-+	if (tup->rts_active)
-+		set_rts(tup, true);
-+
-+	spin_unlock_irqrestore(&u->lock, flags);
-+}
-+
-+static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
-+{
-+	struct dma_tx_state state;
-+	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
-+	int count;
-+
-+	/* Deactivate flow control to stop sender */
-+	if (tup->rts_active)
-+		set_rts(tup, false);
-+
-+	dmaengine_terminate_all(tup->rx_dma_chan);
-+	dmaengine_tx_status(tup->rx_dma_chan,  tup->rx_cookie, &state);
-+	count = tup->rx_bytes_requested - state.residue;
-+
-+	/* If we are here, DMA is stopped */
-+	if (count)
-+		tegra_uart_copy_rx_to_tty(tup, tty, count);
-+
-+	tegra_uart_handle_rx_pio(tup, tty);
-+	if (tty) {
-+		tty_flip_buffer_push(tty);
-+		tty_kref_put(tty);
-+	}
-+	tegra_uart_start_rx_dma(tup);
-+
-+	if (tup->rts_active)
-+		set_rts(tup, true);
-+}
-+
-+static int tegra_uart_start_rx_dma(struct tegra_uart_port *tup)
-+{
-+	unsigned int count = TEGRA_UART_RX_DMA_BUFFER_SIZE;
-+
-+	tup->rx_dma_desc = dmaengine_prep_slave_single(tup->rx_dma_chan,
-+				tup->rx_dma_buf_phys, count, DMA_DEV_TO_MEM,
-+				DMA_PREP_INTERRUPT);
-+	if (!tup->rx_dma_desc) {
-+		dev_err(tup->uport.dev, "Not able to get desc for Rx\n");
-+		return -EIO;
-+	}
-+
-+	tup->rx_dma_desc->callback = tegra_uart_rx_dma_complete;
-+	tup->rx_dma_desc->callback_param = tup;
-+	dma_sync_single_for_device(tup->uport.dev, tup->rx_dma_buf_phys,
-+				count, DMA_TO_DEVICE);
-+	tup->rx_bytes_requested = count;
-+	tup->rx_cookie = dmaengine_submit(tup->rx_dma_desc);
-+	dma_async_issue_pending(tup->rx_dma_chan);
-+	return 0;
-+}
-+
-+static void tegra_uart_handle_modem_signal_change(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	unsigned long msr;
-+
-+	msr = tegra_uart_read(tup, UART_MSR);
-+	if (!(msr & UART_MSR_ANY_DELTA))
-+		return;
-+
-+	if (msr & UART_MSR_TERI)
-+		tup->uport.icount.rng++;
-+	if (msr & UART_MSR_DDSR)
-+		tup->uport.icount.dsr++;
-+	/* We may only get DDCD when HW init and reset */
-+	if (msr & UART_MSR_DDCD)
-+		uart_handle_dcd_change(&tup->uport, msr & UART_MSR_DCD);
-+	/* Will start/stop_tx accordingly */
-+	if (msr & UART_MSR_DCTS)
-+		uart_handle_cts_change(&tup->uport, msr & UART_MSR_CTS);
-+	return;
-+}
-+
-+static irqreturn_t tegra_uart_isr(int irq, void *data)
-+{
-+	struct tegra_uart_port *tup = data;
-+	struct uart_port *u = &tup->uport;
-+	unsigned long iir;
-+	unsigned long ier;
-+	bool is_rx_int = false;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&u->lock, flags);
-+	while (1) {
-+		iir = tegra_uart_read(tup, UART_IIR);
-+		if (iir & UART_IIR_NO_INT) {
-+			if (is_rx_int) {
-+				tegra_uart_handle_rx_dma(tup);
-+				if (tup->rx_in_progress) {
-+					ier = tup->ier_shadow;
-+					ier |= (UART_IER_RLSI | UART_IER_RTOIE |
-+						TEGRA_UART_IER_EORD);
-+					tup->ier_shadow = ier;
-+					tegra_uart_write(tup, ier, UART_IER);
-+				}
-+			}
-+			spin_unlock_irqrestore(&u->lock, flags);
-+			return IRQ_HANDLED;
-+		}
-+
-+		switch ((iir >> 1) & 0x7) {
-+		case 0: /* Modem signal change interrupt */
-+			tegra_uart_handle_modem_signal_change(u);
-+			break;
-+
-+		case 1: /* Transmit interrupt only triggered when using PIO */
-+			tup->ier_shadow &= ~UART_IER_THRI;
-+			tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-+			tegra_uart_handle_tx_pio(tup);
-+			break;
-+
-+		case 4: /* End of data */
-+		case 6: /* Rx timeout */
-+		case 2: /* Receive */
-+			if (!is_rx_int) {
-+				is_rx_int = true;
-+				/* Disable Rx interrupts */
-+				ier = tup->ier_shadow;
-+				ier |= UART_IER_RDI;
-+				tegra_uart_write(tup, ier, UART_IER);
-+				ier &= ~(UART_IER_RDI | UART_IER_RLSI |
-+					UART_IER_RTOIE | TEGRA_UART_IER_EORD);
-+				tup->ier_shadow = ier;
-+				tegra_uart_write(tup, ier, UART_IER);
-+			}
-+			break;
-+
-+		case 3: /* Receive error */
-+			tegra_uart_decode_rx_error(tup,
-+					tegra_uart_read(tup, UART_LSR));
-+			break;
-+
-+		case 5: /* break nothing to handle */
-+		case 7: /* break nothing to handle */
-+			break;
-+		}
-+	}
-+}
-+
-+static void tegra_uart_stop_rx(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
-+	struct dma_tx_state state;
-+	unsigned long ier;
-+	int count;
-+
-+	if (tup->rts_active)
-+		set_rts(tup, false);
-+
-+	if (!tup->rx_in_progress)
-+		return;
-+
-+	tegra_uart_wait_sym_time(tup, 1); /* wait a character interval */
-+
-+	ier = tup->ier_shadow;
-+	ier &= ~(UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE |
-+					TEGRA_UART_IER_EORD);
-+	tup->ier_shadow = ier;
-+	tegra_uart_write(tup, ier, UART_IER);
-+	tup->rx_in_progress = 0;
-+	if (tup->rx_dma_chan) {
-+		dmaengine_terminate_all(tup->rx_dma_chan);
-+		dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
-+		async_tx_ack(tup->rx_dma_desc);
-+		count = tup->rx_bytes_requested - state.residue;
-+		tegra_uart_copy_rx_to_tty(tup, tty, count);
-+		tegra_uart_handle_rx_pio(tup, tty);
-+	} else {
-+		tegra_uart_handle_rx_pio(tup, tty);
-+	}
-+	if (tty) {
-+		tty_flip_buffer_push(tty);
-+		tty_kref_put(tty);
-+	}
-+	return;
-+}
-+
-+static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
-+{
-+	unsigned long flags;
-+	unsigned long char_time = DIV_ROUND_UP(10000000, tup->current_baud);
-+	unsigned long fifo_empty_time = tup->uport.fifosize * char_time;
-+	unsigned long wait_time;
-+	unsigned long lsr;
-+	unsigned long msr;
-+	unsigned long mcr;
-+
-+	/* Disable interrupts */
-+	tegra_uart_write(tup, 0, UART_IER);
-+
-+	lsr = tegra_uart_read(tup, UART_LSR);
-+	if ((lsr & UART_LSR_TEMT) != UART_LSR_TEMT) {
-+		msr = tegra_uart_read(tup, UART_MSR);
-+		mcr = tegra_uart_read(tup, UART_MCR);
-+		if ((mcr & TEGRA_UART_MCR_CTS_EN) && (msr & UART_MSR_CTS))
-+			dev_err(tup->uport.dev,
-+				"Tx Fifo not empty, CTS disabled, waiting\n");
-+
-+		/* Wait for Tx fifo to be empty */
-+		while ((lsr & UART_LSR_TEMT) != UART_LSR_TEMT) {
-+			wait_time = min(fifo_empty_time, 100lu);
-+			udelay(wait_time);
-+			fifo_empty_time -= wait_time;
-+			if (!fifo_empty_time) {
-+				msr = tegra_uart_read(tup, UART_MSR);
-+				mcr = tegra_uart_read(tup, UART_MCR);
-+				if ((mcr & TEGRA_UART_MCR_CTS_EN) &&
-+					(msr & UART_MSR_CTS))
-+					dev_err(tup->uport.dev,
-+						"Slave not ready\n");
-+				break;
-+			}
-+			lsr = tegra_uart_read(tup, UART_LSR);
-+		}
-+	}
-+
-+	spin_lock_irqsave(&tup->uport.lock, flags);
-+	/* Reset the Rx and Tx FIFOs */
-+	tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_XMIT | UART_FCR_CLEAR_RCVR);
-+	tup->current_baud = 0;
-+	spin_unlock_irqrestore(&tup->uport.lock, flags);
-+
-+	clk_disable_unprepare(tup->uart_clk);
-+}
-+
-+static int tegra_uart_hw_init(struct tegra_uart_port *tup)
-+{
-+	int ret;
-+
-+	tup->fcr_shadow = 0;
-+	tup->mcr_shadow = 0;
-+	tup->lcr_shadow = 0;
-+	tup->ier_shadow = 0;
-+	tup->current_baud = 0;
-+
-+	clk_prepare_enable(tup->uart_clk);
-+
-+	/* Reset the UART controller to clear all previous status.*/
-+	tegra_periph_reset_assert(tup->uart_clk);
-+	udelay(10);
-+	tegra_periph_reset_deassert(tup->uart_clk);
-+
-+	tup->rx_in_progress = 0;
-+	tup->tx_in_progress = 0;
-+
-+	/*
-+	 * Set the trigger level
-+	 *
-+	 * For PIO mode:
-+	 *
-+	 * For receive, this will interrupt the CPU after that many number of
-+	 * bytes are received, for the remaining bytes the receive timeout
-+	 * interrupt is received. Rx high watermark is set to 4.
-+	 *
-+	 * For transmit, if the trasnmit interrupt is enabled, this will
-+	 * interrupt the CPU when the number of entries in the FIFO reaches the
-+	 * low watermark. Tx low watermark is set to 16 bytes.
-+	 *
-+	 * For DMA mode:
-+	 *
-+	 * Set the Tx trigger to 16. This should match the DMA burst size that
-+	 * programmed in the DMA registers.
-+	 */
-+	tup->fcr_shadow = UART_FCR_ENABLE_FIFO;
-+	tup->fcr_shadow |= UART_FCR_R_TRIG_01;
-+	tup->fcr_shadow |= TEGRA_UART_TX_TRIG_16B;
-+	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
-+
-+	/*
-+	 * Initialize the UART with default configuration
-+	 * (115200, N, 8, 1) so that the receive DMA buffer may be
-+	 * enqueued
-+	 */
-+	tup->lcr_shadow = TEGRA_UART_DEFAULT_LSR;
-+	tegra_set_baudrate(tup, TEGRA_UART_DEFAULT_BAUD);
-+	tup->fcr_shadow |= UART_FCR_DMA_SELECT;
-+	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
-+
-+	ret = tegra_uart_start_rx_dma(tup);
-+	if (ret < 0) {
-+		dev_err(tup->uport.dev, "Not able to start Rx DMA\n");
-+		return ret;
-+	}
-+	tup->rx_in_progress = 1;
-+
-+	/*
-+	 * Enable IE_RXS for the receive status interrupts like line errros.
-+	 * Enable IE_RX_TIMEOUT to get the bytes which cannot be DMA'd.
-+	 *
-+	 * If using DMA mode, enable EORD instead of receive interrupt which
-+	 * will interrupt after the UART is done with the receive instead of
-+	 * the interrupt when the FIFO "threshold" is reached.
-+	 *
-+	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
-+	 * the DATA is sitting in the FIFO and couldn't be transferred to the
-+	 * DMA as the DMA size alignment(4 bytes) is not met. EORD will be
-+	 * triggered when there is a pause of the incomming data stream for 4
-+	 * characters long.
-+	 *
-+	 * For pauses in the data which is not aligned to 4 bytes, we get
-+	 * both the EORD as well as RX_TIMEOUT - SW sees RX_TIMEOUT first
-+	 * then the EORD.
-+	 */
-+	tup->ier_shadow = UART_IER_RLSI | UART_IER_RTOIE | TEGRA_UART_IER_EORD;
-+	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-+	return 0;
-+}
-+
-+static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
-+			bool dma_to_memory)
-+{
-+	struct dma_chan *dma_chan;
-+	unsigned char *dma_buf;
-+	dma_addr_t dma_phys;
-+	int ret;
-+	struct dma_slave_config dma_sconfig;
-+	dma_cap_mask_t mask;
-+
-+	dma_cap_zero(mask);
-+	dma_cap_set(DMA_SLAVE, mask);
-+	dma_chan = dma_request_channel(mask, NULL, NULL);
-+	if (!dma_chan) {
-+		dev_err(tup->uport.dev,
-+			"Dma channel is not available, will try later\n");
-+		return -EPROBE_DEFER;
-+	}
-+
-+	if (dma_to_memory) {
-+		dma_buf = dma_alloc_coherent(tup->uport.dev,
-+				TEGRA_UART_RX_DMA_BUFFER_SIZE,
-+				 &dma_phys, GFP_KERNEL);
-+		if (!dma_buf) {
-+			dev_err(tup->uport.dev,
-+				"Not able to allocate the dma buffer\n");
-+			dma_release_channel(dma_chan);
-+			return -ENOMEM;
-+		}
-+	} else {
-+		dma_phys = dma_map_single(tup->uport.dev,
-+			tup->uport.state->xmit.buf, UART_XMIT_SIZE,
-+			DMA_TO_DEVICE);
-+		dma_buf = tup->uport.state->xmit.buf;
-+	}
-+
-+	dma_sconfig.slave_id = tup->dma_req_sel;
-+	if (dma_to_memory) {
-+		dma_sconfig.src_addr = tup->uport.mapbase;
-+		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+		dma_sconfig.src_maxburst = 4;
-+	} else {
-+		dma_sconfig.dst_addr = tup->uport.mapbase;
-+		dma_sconfig.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+		dma_sconfig.dst_maxburst = 16;
-+	}
-+
-+	ret = dmaengine_slave_config(dma_chan, &dma_sconfig);
-+	if (ret < 0) {
-+		dev_err(tup->uport.dev,
-+			"Dma slave config failed, err = %d\n", ret);
-+		goto scrub;
-+	}
-+
-+	if (dma_to_memory) {
-+		tup->rx_dma_chan = dma_chan;
-+		tup->rx_dma_buf_virt = dma_buf;
-+		tup->rx_dma_buf_phys = dma_phys;
-+	} else {
-+		tup->tx_dma_chan = dma_chan;
-+		tup->tx_dma_buf_virt = dma_buf;
-+		tup->tx_dma_buf_phys = dma_phys;
-+	}
-+	return 0;
-+
-+scrub:
-+	dma_release_channel(dma_chan);
-+	return ret;
-+}
-+
-+static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
-+		bool dma_to_memory)
-+{
-+	struct dma_chan *dma_chan;
-+
-+	if (dma_to_memory) {
-+		dma_free_coherent(tup->uport.dev, TEGRA_UART_RX_DMA_BUFFER_SIZE,
-+				tup->rx_dma_buf_virt, tup->rx_dma_buf_phys);
-+		dma_chan = tup->rx_dma_chan;
-+		tup->rx_dma_chan = NULL;
-+		tup->rx_dma_buf_phys = 0;
-+		tup->rx_dma_buf_virt = NULL;
-+	} else {
-+		dma_unmap_single(tup->uport.dev, tup->tx_dma_buf_phys,
-+			UART_XMIT_SIZE, DMA_TO_DEVICE);
-+		dma_chan = tup->tx_dma_chan;
-+		tup->tx_dma_chan = NULL;
-+		tup->tx_dma_buf_phys = 0;
-+		tup->tx_dma_buf_virt = NULL;
-+	}
-+	dma_release_channel(dma_chan);
-+}
-+
-+static int tegra_uart_startup(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	int ret;
-+
-+	ret = tegra_uart_dma_channel_allocate(tup, false);
-+	if (ret < 0) {
-+		dev_err(u->dev, "Tx Dma allocation failed, err = %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = tegra_uart_dma_channel_allocate(tup, true);
-+	if (ret < 0) {
-+		dev_err(u->dev, "Rx Dma allocation failed, err = %d\n", ret);
-+		goto fail_rx_dma;
-+	}
-+
-+	ret = tegra_uart_hw_init(tup);
-+	if (ret < 0) {
-+		dev_err(u->dev, "Uart HW init failed, err = %d\n", ret);
-+		goto fail_hw_init;
-+	}
-+
-+	ret = request_irq(u->irq, tegra_uart_isr, IRQF_DISABLED,
-+				dev_name(u->dev), tup);
-+	if (ret < 0) {
-+		dev_err(u->dev, "Failed to register ISR for IRQ %d\n", u->irq);
-+		goto fail_hw_init;
-+	}
-+	return 0;
-+
-+fail_hw_init:
-+	tegra_uart_dma_channel_free(tup, true);
-+fail_rx_dma:
-+	tegra_uart_dma_channel_free(tup, false);
-+	return ret;
-+}
-+
-+static void tegra_uart_shutdown(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+
-+	tegra_uart_hw_deinit(tup);
-+
-+	tup->rx_in_progress = 0;
-+	tup->tx_in_progress = 0;
-+
-+	tegra_uart_dma_channel_free(tup, true);
-+	tegra_uart_dma_channel_free(tup, false);
-+	free_irq(u->irq, tup);
-+}
-+
-+static void tegra_uart_enable_ms(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+
-+	if (tup->enable_modem_interrupt) {
-+		tup->ier_shadow |= UART_IER_MSI;
-+		tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-+	}
-+}
-+
-+static void tegra_uart_set_termios(struct uart_port *u,
-+		struct ktermios *termios, struct ktermios *oldtermios)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+	unsigned int baud;
-+	unsigned long flags;
-+	unsigned int lcr;
-+	int symb_bit = 1;
-+	struct clk *parent_clk = clk_get_parent(tup->uart_clk);
-+	unsigned long parent_clk_rate = clk_get_rate(parent_clk);
-+	int max_divider = (tup->cdata->support_clk_src_div) ? 0x7FFF : 0xFFFF;
-+
-+	max_divider *= 16;
-+	spin_lock_irqsave(&u->lock, flags);
-+
-+	/* Changing configuration, it is safe to stop any rx now */
-+	if (tup->rts_active)
-+		set_rts(tup, false);
-+
-+	/* Clear all interrupts as configuration is going to be change */
-+	tegra_uart_write(tup, tup->ier_shadow | UART_IER_RDI, UART_IER);
-+	tegra_uart_read(tup, UART_IER);
-+	tegra_uart_write(tup, 0, UART_IER);
-+	tegra_uart_read(tup, UART_IER);
-+
-+	/* Parity */
-+	lcr = tup->lcr_shadow;
-+	lcr &= ~UART_LCR_PARITY;
-+
-+	/* CMSPAR isn't supported by this driver */
-+	termios->c_cflag &= ~CMSPAR;
-+
-+	if ((termios->c_cflag & PARENB) == PARENB) {
-+		symb_bit++;
-+		if (termios->c_cflag & PARODD) {
-+			lcr |= UART_LCR_PARITY;
-+			lcr &= ~UART_LCR_EPAR;
-+			lcr &= ~UART_LCR_SPAR;
-+		} else {
-+			lcr |= UART_LCR_PARITY;
-+			lcr |= UART_LCR_EPAR;
-+			lcr &= ~UART_LCR_SPAR;
-+		}
-+	}
-+
-+	lcr &= ~UART_LCR_WLEN8;
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS5:
-+		lcr |= UART_LCR_WLEN5;
-+		symb_bit += 5;
-+		break;
-+	case CS6:
-+		lcr |= UART_LCR_WLEN6;
-+		symb_bit += 6;
-+		break;
-+	case CS7:
-+		lcr |= UART_LCR_WLEN7;
-+		symb_bit += 7;
-+		break;
-+	default:
-+		lcr |= UART_LCR_WLEN8;
-+		symb_bit += 8;
-+		break;
-+	}
-+
-+	/* Stop bits */
-+	if (termios->c_cflag & CSTOPB) {
-+		lcr |= UART_LCR_STOP;
-+		symb_bit += 2;
-+	} else {
-+		lcr &= ~UART_LCR_STOP;
-+		symb_bit++;
-+	}
-+
-+	tegra_uart_write(tup, lcr, UART_LCR);
-+	tup->lcr_shadow = lcr;
-+	tup->symb_bit = symb_bit;
-+
-+	/* Baud rate. */
-+	baud = uart_get_baud_rate(u, termios, oldtermios,
-+			parent_clk_rate/max_divider,
-+			parent_clk_rate/16);
-+	spin_unlock_irqrestore(&u->lock, flags);
-+	tegra_set_baudrate(tup, baud);
-+	if (tty_termios_baud_rate(termios))
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+	spin_lock_irqsave(&u->lock, flags);
-+
-+	/* Flow control */
-+	if (termios->c_cflag & CRTSCTS)	{
-+		tup->mcr_shadow |= TEGRA_UART_MCR_CTS_EN;
-+		tup->mcr_shadow &= ~TEGRA_UART_MCR_RTS_EN;
-+		tegra_uart_write(tup, tup->mcr_shadow, UART_MCR);
-+		/* if top layer has asked to set rts active then do so here */
-+		if (tup->rts_active)
-+			set_rts(tup, true);
-+	} else {
-+		tup->mcr_shadow &= ~TEGRA_UART_MCR_CTS_EN;
-+		tup->mcr_shadow &= ~TEGRA_UART_MCR_RTS_EN;
-+		tegra_uart_write(tup, tup->mcr_shadow, UART_MCR);
-+	}
-+
-+	/* update the port timeout based on new settings */
-+	uart_update_timeout(u, termios->c_cflag, baud);
-+
-+	/* Make sure all write has completed */
-+	tegra_uart_read(tup, UART_IER);
-+
-+	/* Reenable interrupt */
-+	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-+	tegra_uart_read(tup, UART_IER);
-+
-+	spin_unlock_irqrestore(&u->lock, flags);
-+	return;
-+}
-+
-+/*
-+ * Flush any TX data submitted for DMA and PIO. Called when the
-+ * TX circular buffer is reset.
-+ */
-+static void tegra_uart_flush_buffer(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+
-+	tup->tx_bytes = 0;
-+	if (tup->tx_dma_chan)
-+		dmaengine_terminate_all(tup->tx_dma_chan);
-+	return;
-+}
-+
-+static const char *tegra_uart_type(struct uart_port *u)
-+{
-+	return TEGRA_UART_TYPE;
-+}
-+
-+static struct uart_ops tegra_uart_ops = {
-+	.tx_empty	= tegra_uart_tx_empty,
-+	.set_mctrl	= tegra_uart_set_mctrl,
-+	.get_mctrl	= tegra_uart_get_mctrl,
-+	.stop_tx	= tegra_uart_stop_tx,
-+	.start_tx	= tegra_uart_start_tx,
-+	.stop_rx	= tegra_uart_stop_rx,
-+	.flush_buffer	= tegra_uart_flush_buffer,
-+	.enable_ms	= tegra_uart_enable_ms,
-+	.break_ctl	= tegra_uart_break_ctl,
-+	.startup	= tegra_uart_startup,
-+	.shutdown	= tegra_uart_shutdown,
-+	.set_termios	= tegra_uart_set_termios,
-+	.type		= tegra_uart_type,
-+	.request_port	= tegra_uart_request_port,
-+	.release_port	= tegra_uart_release_port,
-+};
-+
-+static struct uart_driver tegra_uart_driver = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= "tegra_hsuart",
-+	.dev_name	= "ttyTHS",
-+	.cons		= 0,
-+	.nr		= TEGRA_UART_MAXIMUM,
-+};
-+
-+static int tegra_uart_parse_dt(struct platform_device *pdev,
-+	struct tegra_uart_port *tup)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	u32 of_dma[2];
-+	int port;
-+
-+	if (of_property_read_u32_array(np, "nvidia,dma-request-selector",
-+				of_dma, 2) >= 0) {
-+		tup->dma_req_sel = of_dma[1];
-+	} else {
-+		dev_err(&pdev->dev, "missing dma requestor in device tree\n");
-+		return -EINVAL;
-+	}
-+
-+	port = of_alias_get_id(np, "serial");
-+	if (port < 0) {
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", port);
-+		return port;
-+	}
-+	tup->uport.line = port;
-+
-+	tup->enable_modem_interrupt = of_property_read_bool(np,
-+					"nvidia,enable-modem-interrupt");
-+	return 0;
-+}
-+
-+struct tegra_uart_chip_data tegra20_uart_chip_data = {
-+	.tx_fifo_full_status		= false,
-+	.allow_txfifo_reset_fifo_mode	= true,
-+	.support_clk_src_div		= false,
-+};
-+
-+struct tegra_uart_chip_data tegra30_uart_chip_data = {
-+	.tx_fifo_full_status		= true,
-+	.allow_txfifo_reset_fifo_mode	= false,
-+	.support_clk_src_div		= true,
-+};
-+
-+static struct of_device_id tegra_uart_of_match[] = {
-+	{
-+		.compatible	= "nvidia,tegra30-hsuart",
-+		.data		= &tegra30_uart_chip_data,
-+	}, {
-+		.compatible	= "nvidia,tegra20-hsuart",
-+		.data		= &tegra20_uart_chip_data,
-+	}, {
-+	},
-+};
-+MODULE_DEVICE_TABLE(of, tegra_uart_of_match);
-+
-+static int tegra_uart_probe(struct platform_device *pdev)
-+{
-+	struct tegra_uart_port *tup;
-+	struct uart_port *u;
-+	struct resource *resource;
-+	int ret;
-+	const struct tegra_uart_chip_data *cdata;
-+	const struct of_device_id *match;
-+
-+	match = of_match_device(of_match_ptr(tegra_uart_of_match),
-+				&pdev->dev);
-+	if (!match) {
-+		dev_err(&pdev->dev, "Error: No device match found\n");
-+		return -ENODEV;
-+	}
-+	cdata = match->data;
-+
-+	tup = devm_kzalloc(&pdev->dev, sizeof(*tup), GFP_KERNEL);
-+	if (!tup) {
-+		dev_err(&pdev->dev, "Failed to allocate memory for tup\n");
-+		return -ENOMEM;
-+	}
-+
-+	ret = tegra_uart_parse_dt(pdev, tup);
-+	if (ret < 0)
-+		return ret;
-+
-+	u = &tup->uport;
-+	u->dev = &pdev->dev;
-+	u->ops = &tegra_uart_ops;
-+	u->type = PORT_TEGRA;
-+	u->fifosize = 32;
-+	tup->cdata = cdata;
-+
-+	platform_set_drvdata(pdev, tup);
-+	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!resource) {
-+		dev_err(&pdev->dev, "No IO memory resource\n");
-+		return -ENODEV;
-+	}
-+
-+	u->mapbase = resource->start;
-+	u->membase = devm_request_and_ioremap(&pdev->dev, resource);
-+	if (!u->membase) {
-+		dev_err(&pdev->dev, "memregion/iomap address req failed\n");
-+		return -EADDRNOTAVAIL;
-+	}
-+
-+	tup->uart_clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(tup->uart_clk)) {
-+		dev_err(&pdev->dev, "Couldn't get the clock\n");
-+		return PTR_ERR(tup->uart_clk);
-+	}
-+
-+	u->iotype = UPIO_MEM32;
-+	u->irq = platform_get_irq(pdev, 0);
-+	u->regshift = 2;
-+	ret = uart_add_one_port(&tegra_uart_driver, u);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to add uart port, err %d\n", ret);
-+		return ret;
-+	}
-+	return ret;
-+}
-+
-+static int tegra_uart_remove(struct platform_device *pdev)
-+{
-+	struct tegra_uart_port *tup = platform_get_drvdata(pdev);
-+	struct uart_port *u = &tup->uport;
-+
-+	uart_remove_one_port(&tegra_uart_driver, u);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int tegra_uart_suspend(struct device *dev)
-+{
-+	struct tegra_uart_port *tup = dev_get_drvdata(dev);
-+	struct uart_port *u = &tup->uport;
-+
-+	return uart_suspend_port(&tegra_uart_driver, u);
-+}
-+
-+static int tegra_uart_resume(struct device *dev)
-+{
-+	struct tegra_uart_port *tup = dev_get_drvdata(dev);
-+	struct uart_port *u = &tup->uport;
-+
-+	return uart_resume_port(&tegra_uart_driver, u);
-+}
-+#endif
-+
-+static const struct dev_pm_ops tegra_uart_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(tegra_uart_suspend, tegra_uart_resume)
-+};
-+
-+static struct platform_driver tegra_uart_platform_driver = {
-+	.probe		= tegra_uart_probe,
-+	.remove		= tegra_uart_remove,
-+	.driver		= {
-+		.name	= "serial-tegra",
-+		.of_match_table = of_match_ptr(tegra_uart_of_match),
-+		.pm	= &tegra_uart_pm_ops,
-+	},
-+};
-+
-+static int __init tegra_uart_init(void)
-+{
-+	int ret;
-+
-+	ret = uart_register_driver(&tegra_uart_driver);
-+	if (ret < 0) {
-+		pr_err("Could not register %s driver\n",
-+			tegra_uart_driver.driver_name);
-+		return ret;
-+	}
-+
-+	ret = platform_driver_register(&tegra_uart_platform_driver);
-+	if (ret < 0) {
-+		pr_err("Uart platfrom driver register failed, e = %d\n", ret);
-+		uart_unregister_driver(&tegra_uart_driver);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static void __exit tegra_uart_exit(void)
-+{
-+	pr_info("Unloading tegra uart driver\n");
-+	platform_driver_unregister(&tegra_uart_platform_driver);
-+	uart_unregister_driver(&tegra_uart_driver);
-+}
-+
-+module_init(tegra_uart_init);
-+module_exit(tegra_uart_exit);
-+
-+MODULE_ALIAS("platform:serial-tegra");
-+MODULE_DESCRIPTION("High speed UART driver for tegra chipset");
-+MODULE_AUTHOR("Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>");
-+MODULE_LICENSE("GPL v2");
+ config OMAP_MBOX_KFIFO_SIZE
+-	int "Mailbox kfifo default buffer size (bytes)"
++	int "Mailbox kfifo default buffer size (bytes, should be power of 2. If not, will roundup to power of 2"
+ 	depends on OMAP_MBOX_FWK
+ 	default 256
+ 	help
+diff --git a/arch/arm/plat-omap/mailbox.c b/arch/arm/plat-omap/mailbox.c
+index 42377ef..848fa0b 100644
+--- a/arch/arm/plat-omap/mailbox.c
++++ b/arch/arm/plat-omap/mailbox.c
+@@ -30,6 +30,7 @@
+ #include <linux/err.h>
+ #include <linux/notifier.h>
+ #include <linux/module.h>
++#include <linux/log2.h>
+ 
+ #include <plat/mailbox.h>
+ 
+@@ -40,7 +41,7 @@ static DEFINE_MUTEX(mbox_configured_lock);
+ 
+ static unsigned int mbox_kfifo_size = CONFIG_OMAP_MBOX_KFIFO_SIZE;
+ module_param(mbox_kfifo_size, uint, S_IRUGO);
+-MODULE_PARM_DESC(mbox_kfifo_size, "Size of omap's mailbox kfifo (bytes)");
++MODULE_PARM_DESC(mbox_kfifo_size, "Size of omap's mailbox kfifo (bytes, should be power of 2. If not, will roundup to power of 2)");
+ 
+ /* Mailbox FIFO handle functions */
+ static inline mbox_msg_t mbox_fifo_read(struct omap_mbox *mbox)
+@@ -218,6 +219,7 @@ static struct omap_mbox_queue *mbox_queue_alloc(struct omap_mbox *mbox,
+ 					void (*tasklet)(unsigned long))
+ {
+ 	struct omap_mbox_queue *mq;
++	int mbox_kfifo_size_order = order_base_2(mbox_kfifo_size);
+ 
+ 	mq = kzalloc(sizeof(struct omap_mbox_queue), GFP_KERNEL);
+ 	if (!mq)
+@@ -225,7 +227,7 @@ static struct omap_mbox_queue *mbox_queue_alloc(struct omap_mbox *mbox,
+ 
+ 	spin_lock_init(&mq->lock);
+ 
+-	if (kfifo_alloc(&mq->fifo, mbox_kfifo_size, GFP_KERNEL))
++	if (kfifo_alloc(&mq->fifo, mbox_kfifo_size_order, GFP_KERNEL))
+ 		goto error;
+ 
+ 	if (work)
+diff --git a/arch/powerpc/sysdev/fsl_rmu.c b/arch/powerpc/sysdev/fsl_rmu.c
+index 14bd522..84d2b8c 100644
+--- a/arch/powerpc/sysdev/fsl_rmu.c
++++ b/arch/powerpc/sysdev/fsl_rmu.c
+@@ -587,7 +587,7 @@ int fsl_rio_port_write_init(struct fsl_rio_pw *pw)
+ 
+ 	INIT_WORK(&pw->pw_work, fsl_pw_dpc);
+ 	spin_lock_init(&pw->pw_fifo_lock);
+-	if (kfifo_alloc(&pw->pw_fifo, RIO_PW_MSG_SIZE * 32, GFP_KERNEL)) {
++	if (kfifo_alloc(&pw->pw_fifo, RIO_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		pr_err("FIFO allocation failed\n");
+ 		rc = -ENOMEM;
+ 		goto err_out_irq;
+diff --git a/drivers/char/sonypi.c b/drivers/char/sonypi.c
+index d780295..39d8dd7 100644
+--- a/drivers/char/sonypi.c
++++ b/drivers/char/sonypi.c
+@@ -429,7 +429,7 @@ static struct sonypi_eventtypes {
+ 	{ 0 }
+ };
+ 
+-#define SONYPI_BUF_SIZE	128
++#define SONYPI_KFIFO_SIZE_ORDER		7
+ 
+ /* Correspondance table between sonypi events and input layer events */
+ static struct {
+@@ -1316,7 +1316,8 @@ static int sonypi_probe(struct platform_device *dev)
+ 			"http://www.linux.it/~malattia/wiki/index.php/Sony_drivers\n");
+ 
+ 	spin_lock_init(&sonypi_device.fifo_lock);
+-	error = kfifo_alloc(&sonypi_device.fifo, SONYPI_BUF_SIZE, GFP_KERNEL);
++	error = kfifo_alloc(&sonypi_device.fifo, SONYPI_KFIFO_SIZE_ORDER,
++			GFP_KERNEL);
+ 	if (error) {
+ 		printk(KERN_ERR "sonypi: kfifo_alloc failed\n");
+ 		return error;
+@@ -1395,8 +1396,8 @@ static int sonypi_probe(struct platform_device *dev)
+ 		}
+ 
+ 		spin_lock_init(&sonypi_device.input_fifo_lock);
+-		error = kfifo_alloc(&sonypi_device.input_fifo, SONYPI_BUF_SIZE,
+-				GFP_KERNEL);
++		error = kfifo_alloc(&sonypi_device.input_fifo,
++				SONYPI_KFIFO_SIZE_ORDER, GFP_KERNEL);
+ 		if (error) {
+ 			printk(KERN_ERR "sonypi: kfifo_alloc failed\n");
+ 			goto err_inpdev_unregister;
+diff --git a/drivers/hid/hid-logitech-dj.c b/drivers/hid/hid-logitech-dj.c
+index 9500f2f..031be77 100644
+--- a/drivers/hid/hid-logitech-dj.c
++++ b/drivers/hid/hid-logitech-dj.c
+@@ -26,6 +26,7 @@
+ #include <linux/hid.h>
+ #include <linux/module.h>
+ #include <linux/usb.h>
++#include <linux/log2.h>
+ #include <asm/unaligned.h>
+ #include "usbhid/usbhid.h"
+ #include "hid-ids.h"
+@@ -730,6 +731,8 @@ static int logi_dj_probe(struct hid_device *hdev,
+ 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
+ 	struct dj_receiver_dev *djrcv_dev;
+ 	int retval;
++	int kfifo_size_order = order_base_2(DJ_MAX_NUMBER_NOTIFICATIONS *
++					    sizeof(struct dj_report));
+ 
+ 	if (is_dj_device((struct dj_device *)hdev->driver_data))
+ 		return -ENODEV;
+@@ -757,9 +760,7 @@ static int logi_dj_probe(struct hid_device *hdev,
+ 	djrcv_dev->hdev = hdev;
+ 	INIT_WORK(&djrcv_dev->work, delayedwork_callback);
+ 	spin_lock_init(&djrcv_dev->lock);
+-	if (kfifo_alloc(&djrcv_dev->notif_fifo,
+-			DJ_MAX_NUMBER_NOTIFICATIONS * sizeof(struct dj_report),
+-			GFP_KERNEL)) {
++	if (kfifo_alloc(&djrcv_dev->notif_fifo, kfifo_size_order, GFP_KERNEL)) {
+ 		dev_err(&hdev->dev,
+ 			"%s:failed allocating notif_fifo\n", __func__);
+ 		kfree(djrcv_dev);
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 261cae0..9b73680 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -35,7 +35,7 @@
+  */
+ struct iio_event_interface {
+ 	wait_queue_head_t	wait;
+-	DECLARE_KFIFO(det_events, struct iio_event_data, 16);
++	DECLARE_KFIFO(det_events, struct iio_event_data, 4);
+ 
+ 	struct list_head	dev_attr_list;
+ 	unsigned long		flags;
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index 5bc5c86..d8ba52ff 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -7,6 +7,7 @@
+ #include <linux/mutex.h>
+ #include <linux/iio/kfifo_buf.h>
+ #include <linux/sched.h>
++#include <linux/log2.h>
+ 
+ struct iio_kfifo {
+ 	struct iio_buffer buffer;
+@@ -23,7 +24,7 @@ static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
+ 		return -EINVAL;
+ 
+ 	__iio_update_buffer(&buf->buffer, bytes_per_datum, length);
+-	return __kfifo_alloc((struct __kfifo *)&buf->kf, length,
++	return __kfifo_alloc((struct __kfifo *)&buf->kf, order_base_2(length),
+ 			     bytes_per_datum, GFP_KERNEL);
+ }
+ 
+diff --git a/drivers/infiniband/hw/cxgb3/cxio_resource.c b/drivers/infiniband/hw/cxgb3/cxio_resource.c
+index 31f9201..186d05e 100644
+--- a/drivers/infiniband/hw/cxgb3/cxio_resource.c
++++ b/drivers/infiniband/hw/cxgb3/cxio_resource.c
+@@ -36,6 +36,7 @@
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/errno.h>
++#include <linux/log2.h>
+ #include "cxio_resource.h"
+ #include "cxio_hal.h"
+ 
+@@ -54,8 +55,9 @@ static int __cxio_init_resource_fifo(struct kfifo *fifo,
+ 	u32 random_bytes;
+ 	u32 rarray[16];
+ 	spin_lock_init(fifo_lock);
++	int kfifo_size_order = order_base_2(nr * sizeof(u32));
+ 
+-	if (kfifo_alloc(fifo, nr * sizeof(u32), GFP_KERNEL))
++	if (kfifo_alloc(fifo, kfifo_size_order, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < skip_low + skip_high; i++)
+@@ -111,11 +113,11 @@ static int cxio_init_resource_fifo_random(struct kfifo *fifo,
+ static int cxio_init_qpid_fifo(struct cxio_rdev *rdev_p)
+ {
+ 	u32 i;
++	int kfifo_size_order = order_base_2(T3_MAX_NUM_QP * sizeof(u32));
+ 
+ 	spin_lock_init(&rdev_p->rscp->qpid_fifo_lock);
+ 
+-	if (kfifo_alloc(&rdev_p->rscp->qpid_fifo, T3_MAX_NUM_QP * sizeof(u32),
+-					      GFP_KERNEL))
++	if (kfifo_alloc(&rdev_p->rscp->qpid_fifo, kfifo_size_order, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	for (i = 16; i < T3_MAX_NUM_QP; i++)
+diff --git a/drivers/media/i2c/cx25840/cx25840-ir.c b/drivers/media/i2c/cx25840/cx25840-ir.c
+index 38ce76e..1da0b6c 100644
+--- a/drivers/media/i2c/cx25840/cx25840-ir.c
++++ b/drivers/media/i2c/cx25840/cx25840-ir.c
+@@ -24,6 +24,7 @@
+ #include <linux/slab.h>
+ #include <linux/kfifo.h>
+ #include <linux/module.h>
++#include <linux/log2.h>
+ #include <media/cx25840.h>
+ #include <media/rc-core.h>
+ 
+@@ -106,8 +107,10 @@ union cx25840_ir_fifo_rec {
+ 	struct ir_raw_event ir_core_data;
+ };
+ 
+-#define CX25840_IR_RX_KFIFO_SIZE    (256 * sizeof(union cx25840_ir_fifo_rec))
+-#define CX25840_IR_TX_KFIFO_SIZE    (256 * sizeof(union cx25840_ir_fifo_rec))
++#define CX25840_IR_RX_KFIFO_SIZE_ORDER	(order_base_2(256 * sizeof(union cx25840_ir_fifo_rec)))
++#define CX25840_IR_RX_KFIFO_SIZE    	(1<<CX25840_IR_RX_KFIFO_SIZE_ORDER)
++#define CX25840_IR_TX_KFIFO_SIZE_ORDER	(order_base_2(256 * sizeof(union cx25840_ir_fifo_rec)))
++#define CX25840_IR_TX_KFIFO_SIZE    	(CX25840_IR_TX_KFIFO_SIZE_ORDER)
+ 
+ struct cx25840_ir_state {
+ 	struct i2c_client *c;
+@@ -1236,7 +1239,7 @@ int cx25840_ir_probe(struct v4l2_subdev *sd)
+ 
+ 	spin_lock_init(&ir_state->rx_kfifo_lock);
+ 	if (kfifo_alloc(&ir_state->rx_kfifo,
+-			CX25840_IR_RX_KFIFO_SIZE, GFP_KERNEL)) {
++			CX25840_IR_RX_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		kfree(ir_state);
+ 		return -ENOMEM;
+ 	}
+diff --git a/drivers/media/pci/cx23885/cx23888-ir.c b/drivers/media/pci/cx23885/cx23888-ir.c
+index c4bd1e9..4c6e24b 100644
+--- a/drivers/media/pci/cx23885/cx23888-ir.c
++++ b/drivers/media/pci/cx23885/cx23888-ir.c
+@@ -23,6 +23,7 @@
+ 
+ #include <linux/kfifo.h>
+ #include <linux/slab.h>
++#include <linux/log2.h>
+ 
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-chip-ident.h>
+@@ -125,8 +126,10 @@ union cx23888_ir_fifo_rec {
+ 	struct ir_raw_event ir_core_data;
+ };
+ 
+-#define CX23888_IR_RX_KFIFO_SIZE    (256 * sizeof(union cx23888_ir_fifo_rec))
+-#define CX23888_IR_TX_KFIFO_SIZE    (256 * sizeof(union cx23888_ir_fifo_rec))
++#define CX23888_IR_RX_KFIFO_SIZE_ORDER	(order_base_2(256 * sizeof(union cx23888_ir_fifo_rec)))
++#define CX23888_IR_RX_KFIFO_SIZE    	(1<<CX23888_IR_RX_KFIFO_SIZE_ORDER)
++#define CX23888_IR_TX_KFIFO_SIZE_ORDER	(order_base_2(256 * sizeof(union cx23888_ir_fifo_rec)))
++#define CX23888_IR_TX_KFIFO_SIZE    	(1<<CX23888_IR_TX_KFIFO_SIZE_ORDER)
+ 
+ struct cx23888_ir_state {
+ 	struct v4l2_subdev sd;
+@@ -1213,7 +1216,7 @@ int cx23888_ir_probe(struct cx23885_dev *dev)
+ 		return -ENOMEM;
+ 
+ 	spin_lock_init(&state->rx_kfifo_lock);
+-	if (kfifo_alloc(&state->rx_kfifo, CX23888_IR_RX_KFIFO_SIZE, GFP_KERNEL))
++	if (kfifo_alloc(&state->rx_kfifo, CX23888_IR_RX_KFIFO_SIZE_ORDER, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	state->dev = dev;
+diff --git a/drivers/media/pci/meye/meye.c b/drivers/media/pci/meye/meye.c
+index 049e186..3bcde0c 100644
+--- a/drivers/media/pci/meye/meye.c
++++ b/drivers/media/pci/meye/meye.c
+@@ -1759,14 +1759,12 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 	}
+ 
+ 	spin_lock_init(&meye.grabq_lock);
+-	if (kfifo_alloc(&meye.grabq, sizeof(int) * MEYE_MAX_BUFNBRS,
+-				GFP_KERNEL)) {
++	if (kfifo_alloc(&meye.grabq, MEYE_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		v4l2_err(v4l2_dev, "fifo allocation failed\n");
+ 		goto outkfifoalloc1;
+ 	}
+ 	spin_lock_init(&meye.doneq_lock);
+-	if (kfifo_alloc(&meye.doneq, sizeof(int) * MEYE_MAX_BUFNBRS,
+-				GFP_KERNEL)) {
++	if (kfifo_alloc(&meye.doneq, MEYE_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		v4l2_err(v4l2_dev, "fifo allocation failed\n");
+ 		goto outkfifoalloc2;
+ 	}
+diff --git a/drivers/media/pci/meye/meye.h b/drivers/media/pci/meye/meye.h
+index 4bdeb03..5d3ab4f 100644
+--- a/drivers/media/pci/meye/meye.h
++++ b/drivers/media/pci/meye/meye.h
+@@ -260,6 +260,7 @@
+ /* private API definitions */
+ #include <linux/meye.h>
+ #include <linux/mutex.h>
++#include <linux/log2.h>
+ 
+ 
+ /* Enable jpg software correction */
+@@ -270,6 +271,7 @@
+ 
+ /* Maximum number of buffers */
+ #define MEYE_MAX_BUFNBRS	32
++#define MEYE_KFIFO_SIZE_ORDER	(order_base_2(MEYE_MAX_BUFNBRS * sizeof(int)))
+ 
+ /* State of a buffer */
+ #define MEYE_BUF_UNUSED	0	/* not used */
+diff --git a/drivers/media/rc/ir-raw.c b/drivers/media/rc/ir-raw.c
+index 97dc8d1..e4d1ec8 100644
+--- a/drivers/media/rc/ir-raw.c
++++ b/drivers/media/rc/ir-raw.c
+@@ -18,6 +18,7 @@
+ #include <linux/kmod.h>
+ #include <linux/sched.h>
+ #include <linux/freezer.h>
++#include <linux/log2.h>
+ #include "rc-core-priv.h"
+ 
+ /* Define the max number of pulse/space transitions to buffer */
+@@ -252,6 +253,8 @@ int ir_raw_event_register(struct rc_dev *dev)
+ {
+ 	int rc;
+ 	struct ir_raw_handler *handler;
++	int kfifo_size_order = order_base_2(sizeof(struct ir_raw_event) *
++					    MAX_IR_EVENT_SIZE);
+ 
+ 	if (!dev)
+ 		return -EINVAL;
+@@ -262,9 +265,7 @@ int ir_raw_event_register(struct rc_dev *dev)
+ 
+ 	dev->raw->dev = dev;
+ 	dev->raw->enabled_protocols = ~0;
+-	rc = kfifo_alloc(&dev->raw->kfifo,
+-			 sizeof(struct ir_raw_event) * MAX_IR_EVENT_SIZE,
+-			 GFP_KERNEL);
++	rc = kfifo_alloc(&dev->raw->kfifo, kfifo_size_order, GFP_KERNEL);
+ 	if (rc < 0)
+ 		goto out;
+ 
+diff --git a/drivers/memstick/host/r592.h b/drivers/memstick/host/r592.h
+index c5726c1..6fc19f4 100644
+--- a/drivers/memstick/host/r592.h
++++ b/drivers/memstick/host/r592.h
+@@ -143,7 +143,7 @@ struct r592_device {
+ 	struct task_struct *io_thread;
+ 	bool parallel_mode;
+ 
+-	DECLARE_KFIFO(pio_fifo, u8, sizeof(u32));
++	DECLARE_KFIFO(pio_fifo, u8, 2);
+ 
+ 	/* DMA area */
+ 	int dma_capable;
+diff --git a/drivers/mmc/card/sdio_uart.c b/drivers/mmc/card/sdio_uart.c
+index bd57a11..c54a7c5 100644
+--- a/drivers/mmc/card/sdio_uart.c
++++ b/drivers/mmc/card/sdio_uart.c
+@@ -43,12 +43,14 @@
+ #include <linux/mmc/card.h>
+ #include <linux/mmc/sdio_func.h>
+ #include <linux/mmc/sdio_ids.h>
++#include <linux/log2.h>
+ 
+ 
+ #define UART_NR		8	/* Number of UARTs this driver can handle */
+ 
+ 
+ #define FIFO_SIZE	PAGE_SIZE
++#define FIFO_SIZE_ORDER	PAGE_SHIFT
+ #define WAKEUP_CHARS	256
+ 
+ struct uart_icount {
+@@ -93,7 +95,7 @@ static int sdio_uart_add_port(struct sdio_uart_port *port)
+ 
+ 	mutex_init(&port->func_lock);
+ 	spin_lock_init(&port->write_lock);
+-	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE, GFP_KERNEL))
++	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE_ORDER, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	spin_lock(&sdio_uart_table_lock);
+diff --git a/drivers/mtd/sm_ftl.c b/drivers/mtd/sm_ftl.c
+index 8dd6ba5..672ef47 100644
+--- a/drivers/mtd/sm_ftl.c
++++ b/drivers/mtd/sm_ftl.c
+@@ -17,6 +17,7 @@
+ #include <linux/bitops.h>
+ #include <linux/slab.h>
+ #include <linux/mtd/nand_ecc.h>
++#include <linux/log2.h>
+ #include "nand/sm_common.h"
+ #include "sm_ftl.h"
+ 
+@@ -766,6 +767,7 @@ static int sm_init_zone(struct sm_ftl *ftl, int zone_num)
+ 	int lba;
+ 	int i = 0;
+ 	int len;
++	int kfifo_size_order;
+ 
+ 	dbg("initializing zone %d", zone_num);
+ 
+@@ -778,7 +780,8 @@ static int sm_init_zone(struct sm_ftl *ftl, int zone_num)
+ 
+ 
+ 	/* Allocate memory for free sectors FIFO */
+-	if (kfifo_alloc(&zone->free_sectors, ftl->zone_size * 2, GFP_KERNEL)) {
++	kfifo_size_order = order_base_2(ftl->zone_size * 2);
++	if (kfifo_alloc(&zone->free_sectors, kfifo_size_order, GFP_KERNEL)) {
+ 		kfree(zone->lba_to_phys_table);
+ 		return -ENOMEM;
+ 	}
+diff --git a/drivers/net/wireless/libertas/main.c b/drivers/net/wireless/libertas/main.c
+index 0c02f04..ea5ddf4 100644
+--- a/drivers/net/wireless/libertas/main.c
++++ b/drivers/net/wireless/libertas/main.c
+@@ -25,6 +25,8 @@
+ #include "cmd.h"
+ #include "mesh.h"
+ 
++#define KFIFO_SIZE_ORDER	6
++
+ #define DRIVER_RELEASE_VERSION "323.p0"
+ const char lbs_driver_version[] = "COMM-USB8388-" DRIVER_RELEASE_VERSION
+ #ifdef  DEBUG
+@@ -914,7 +916,7 @@ static int lbs_init_adapter(struct lbs_private *priv)
+ 	priv->resp_len[0] = priv->resp_len[1] = 0;
+ 
+ 	/* Create the event FIFO */
+-	ret = kfifo_alloc(&priv->event_fifo, sizeof(u32) * 16, GFP_KERNEL);
++	ret = kfifo_alloc(&priv->event_fifo, KFIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (ret) {
+ 		pr_err("Out of memory allocating event FIFO buffer\n");
+ 		goto out;
+diff --git a/drivers/net/wireless/rt2x00/rt2x00dev.c b/drivers/net/wireless/rt2x00/rt2x00dev.c
+index 44f8b3f..c8f68485 100644
+--- a/drivers/net/wireless/rt2x00/rt2x00dev.c
++++ b/drivers/net/wireless/rt2x00/rt2x00dev.c
+@@ -979,12 +979,11 @@ static int rt2x00lib_probe_hw(struct rt2x00_dev *rt2x00dev)
+ 		 * tx_queues * entry_num and round up to the nearest
+ 		 * power of 2.
+ 		 */
+-		int kfifo_size =
+-			roundup_pow_of_two(rt2x00dev->ops->tx_queues *
++		int kfifo_size_order = order_base_2(rt2x00dev->ops->tx_queues *
+ 					   rt2x00dev->ops->tx->entry_num *
+ 					   sizeof(u32));
+ 
+-		status = kfifo_alloc(&rt2x00dev->txstatus_fifo, kfifo_size,
++		status = kfifo_alloc(&rt2x00dev->txstatus_fifo, kfifo_size_order,
+ 				     GFP_KERNEL);
+ 		if (status)
+ 			return status;
+diff --git a/drivers/pci/pcie/aer/aerdrv_core.c b/drivers/pci/pcie/aer/aerdrv_core.c
+index 421bbc5..ec9284a 100644
+--- a/drivers/pci/pcie/aer/aerdrv_core.c
++++ b/drivers/pci/pcie/aer/aerdrv_core.c
+@@ -574,7 +574,6 @@ static void handle_error_source(struct pcie_device *aerdev,
+ static void aer_recover_work_func(struct work_struct *work);
+ 
+ #define AER_RECOVER_RING_ORDER		4
+-#define AER_RECOVER_RING_SIZE		(1 << AER_RECOVER_RING_ORDER)
+ 
+ struct aer_recover_entry
+ {
+@@ -585,7 +584,7 @@ struct aer_recover_entry
+ };
+ 
+ static DEFINE_KFIFO(aer_recover_ring, struct aer_recover_entry,
+-		    AER_RECOVER_RING_SIZE);
++		    AER_RECOVER_RING_ORDER);
+ /*
+  * Mutual exclusion for writers of aer_recover_ring, reader side don't
+  * need lock, because there is only one reader and lock is not needed
+diff --git a/drivers/platform/x86/fujitsu-laptop.c b/drivers/platform/x86/fujitsu-laptop.c
+index c4c1a54..185bd55 100644
+--- a/drivers/platform/x86/fujitsu-laptop.c
++++ b/drivers/platform/x86/fujitsu-laptop.c
+@@ -66,6 +66,7 @@
+ #include <linux/backlight.h>
+ #include <linux/input.h>
+ #include <linux/kfifo.h>
++#include <linux/log2.h>
+ #include <linux/video_output.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+@@ -116,6 +117,7 @@
+ 
+ #define MAX_HOTKEY_RINGBUFFER_SIZE 100
+ #define RINGBUFFERSIZE 40
++#define KFIFO_SIZE_ORDER	(order_base_2(RINGBUFFERSIZE * sizeof(int)))
+ 
+ /* Debugging */
+ #define FUJLAPTOP_LOG	   ACPI_FUJITSU_HID ": "
+@@ -825,8 +827,7 @@ static int acpi_fujitsu_hotkey_add(struct acpi_device *device)
+ 
+ 	/* kfifo */
+ 	spin_lock_init(&fujitsu_hotkey->fifo_lock);
+-	error = kfifo_alloc(&fujitsu_hotkey->fifo, RINGBUFFERSIZE * sizeof(int),
+-			GFP_KERNEL);
++	error = kfifo_alloc(&fujitsu_hotkey->fifo, KFIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (error) {
+ 		pr_err("kfifo_alloc failed\n");
+ 		goto err_stop;
+diff --git a/drivers/platform/x86/sony-laptop.c b/drivers/platform/x86/sony-laptop.c
+index daaddec..ee57eac 100644
+--- a/drivers/platform/x86/sony-laptop.c
++++ b/drivers/platform/x86/sony-laptop.c
+@@ -183,7 +183,7 @@ static void sony_nc_rfkill_update(void);
+ 
+ /*********** Input Devices ***********/
+ 
+-#define SONY_LAPTOP_BUF_SIZE	128
++#define SONY_LAPTOP_KFIFO_SIZE_ORDER	7
+ struct sony_laptop_input_s {
+ 	atomic_t		users;
+ 	struct input_dev	*jog_dev;
+@@ -447,7 +447,7 @@ static int sony_laptop_setup_input(struct acpi_device *acpi_device)
+ 	/* kfifo */
+ 	spin_lock_init(&sony_laptop_input.fifo_lock);
+ 	error = kfifo_alloc(&sony_laptop_input.fifo,
+-			    SONY_LAPTOP_BUF_SIZE, GFP_KERNEL);
++			    SONY_LAPTOP_KFIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (error) {
+ 		pr_err("kfifo_alloc failed\n");
+ 		goto err_dec_users;
+@@ -3752,7 +3752,7 @@ static int sonypi_compat_init(void)
+ 
+ 	spin_lock_init(&sonypi_compat.fifo_lock);
+ 	error =
+-	 kfifo_alloc(&sonypi_compat.fifo, SONY_LAPTOP_BUF_SIZE, GFP_KERNEL);
++	 kfifo_alloc(&sonypi_compat.fifo, SONY_LAPTOP_KFIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (error) {
+ 		pr_err("kfifo_alloc failed\n");
+ 		return error;
+diff --git a/drivers/rapidio/devices/tsi721.c b/drivers/rapidio/devices/tsi721.c
+index 6faba40..a731e87 100644
+--- a/drivers/rapidio/devices/tsi721.c
++++ b/drivers/rapidio/devices/tsi721.c
+@@ -32,6 +32,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/interrupt.h>
+ #include <linux/kfifo.h>
++#include <linux/log2.h>
+ #include <linux/delay.h>
+ 
+ #include "tsi721.h"
+@@ -970,11 +971,11 @@ static void tsi721_init_sr2pc_mapping(struct tsi721_device *priv)
+  */
+ static int tsi721_port_write_init(struct tsi721_device *priv)
+ {
++	int kfifo_size_order = order_base_2(TSI721_RIO_PW_MSG_SIZE * 32);
+ 	priv->pw_discard_count = 0;
+ 	INIT_WORK(&priv->pw_work, tsi721_pw_dpc);
+ 	spin_lock_init(&priv->pw_fifo_lock);
+-	if (kfifo_alloc(&priv->pw_fifo,
+-			TSI721_RIO_PW_MSG_SIZE * 32, GFP_KERNEL)) {
++	if (kfifo_alloc(&priv->pw_fifo, kfifo_size_order, GFP_KERNEL)) {
+ 		dev_err(&priv->pdev->dev, "PW FIFO allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+diff --git a/drivers/scsi/libiscsi_tcp.c b/drivers/scsi/libiscsi_tcp.c
+index 552e8a2..bdb09bf 100644
+--- a/drivers/scsi/libiscsi_tcp.c
++++ b/drivers/scsi/libiscsi_tcp.c
+@@ -35,6 +35,7 @@
+ #include <linux/crypto.h>
+ #include <linux/delay.h>
+ #include <linux/kfifo.h>
++#include <linux/log2.h>
+ #include <linux/scatterlist.h>
+ #include <linux/module.h>
+ #include <net/tcp.h>
+@@ -1113,6 +1114,7 @@ int iscsi_tcp_r2tpool_alloc(struct iscsi_session *session)
+ {
+ 	int i;
+ 	int cmd_i;
++	int kfifo_size_order;
+ 
+ 	/*
+ 	 * initialize per-task: R2T pool and xmit queue
+@@ -1135,8 +1137,8 @@ int iscsi_tcp_r2tpool_alloc(struct iscsi_session *session)
+ 		}
+ 
+ 		/* R2T xmit queue */
+-		if (kfifo_alloc(&tcp_task->r2tqueue,
+-		      session->max_r2t * 4 * sizeof(void*), GFP_KERNEL)) {
++		kfifo_size_order = order_base_2(session->max_r2t * 4 * sizeof(void *));
++		if (kfifo_alloc(&tcp_task->r2tqueue, kfifo_size_order, GFP_KERNEL)) {
+ 			iscsi_pool_free(&tcp_task->r2tpool);
+ 			goto r2t_alloc_fail;
+ 		}
+diff --git a/drivers/staging/omapdrm/omap_plane.c b/drivers/staging/omapdrm/omap_plane.c
+index 2a8e5ba..40f057f 100644
+--- a/drivers/staging/omapdrm/omap_plane.c
++++ b/drivers/staging/omapdrm/omap_plane.c
+@@ -28,6 +28,8 @@
+  */
+ #define omap_plane _omap_plane
+ 
++#define OMAP_KFIFO_SIZE_ORDER	4
++
+ /*
+  * plane funcs
+  */
+@@ -508,7 +510,8 @@ struct drm_plane *omap_plane_init(struct drm_device *dev,
+ 
+ 	mutex_init(&omap_plane->unpin_mutex);
+ 
+-	ret = kfifo_alloc(&omap_plane->unpin_fifo, 16, GFP_KERNEL);
++	ret = kfifo_alloc(&omap_plane->unpin_fifo, OMAP_KFIFO_SIZE_ORDER,
++			  GFP_KERNEL);
+ 	if (ret) {
+ 		dev_err(dev->dev, "could not allocate unpin FIFO\n");
+ 		goto fail;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index dcc0430..b3b1b1c 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -66,6 +66,8 @@
+ static int debug;
+ module_param(debug, int, 0600);
+ 
++#define KFIFO_SIZE_ORDER	12
++
+ /* Defaults: these are from the specification */
+ 
+ #define T1	10		/* 100mS */
+@@ -1636,7 +1638,7 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
+ 	spin_lock_init(&dlci->lock);
+ 	mutex_init(&dlci->mutex);
+ 	dlci->fifo = &dlci->_fifo;
+-	if (kfifo_alloc(&dlci->_fifo, 4096, GFP_KERNEL) < 0) {
++	if (kfifo_alloc(&dlci->_fifo, KFIFO_SIZE_ORDER, GFP_KERNEL) < 0) {
+ 		kfree(dlci);
+ 		return NULL;
+ 	}
+diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
+index a0c69ab..8b54da3 100644
+--- a/drivers/tty/nozomi.c
++++ b/drivers/tty/nozomi.c
+@@ -128,8 +128,7 @@ static int debug;
+ #define NTTY_TTY_MAXMINORS	256
+ #define NTTY_FIFO_BUFFER_SIZE	8192
+ 
+-/* Must be power of 2 */
+-#define FIFO_BUFFER_SIZE_UL	8192
++#define FIFO_BUFFER_SIZE_ORDER	13
+ 
+ /* Size of tmp send buffer to card */
+ #define SEND_BUF_MAX		1024
+@@ -1428,7 +1427,7 @@ static int nozomi_card_init(struct pci_dev *pdev,
+ 	}
+ 
+ 	for (i = PORT_MDM; i < MAX_PORT; i++) {
+-		if (kfifo_alloc(&dc->port[i].fifo_ul, FIFO_BUFFER_SIZE_UL,
++		if (kfifo_alloc(&dc->port[i].fifo_ul, FIFO_BUFFER_SIZE_ORDER,
+ 					GFP_KERNEL)) {
+ 			dev_err(&pdev->dev,
+ 					"Could not allocate kfifo buffer\n");
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 675d94a..f80dc2c 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -880,7 +880,7 @@ static int ifx_spi_create_port(struct ifx_spi_device *ifx_dev)
+ 	lockdep_set_class_and_subclass(&ifx_dev->fifo_lock,
+ 		&ifx_spi_key, 0);
+ 
+-	if (kfifo_alloc(&ifx_dev->tx_fifo, IFX_SPI_FIFO_SIZE, GFP_KERNEL)) {
++	if (kfifo_alloc(&ifx_dev->tx_fifo, IFX_SPI_FIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
+index 4fbddc2..da4fd1c 100644
+--- a/drivers/tty/serial/ifx6x60.h
++++ b/drivers/tty/serial/ifx6x60.h
+@@ -31,7 +31,8 @@
+ 
+ #define IFX_SPI_MAX_MINORS		1
+ #define IFX_SPI_TRANSFER_SIZE		2048
+-#define IFX_SPI_FIFO_SIZE		4096
++#define IFX_SPI_FIFO_SIZE_ORDER		12
++#define IFX_SPI_FIFO_SIZE		(1 << IFX_SPI_FIFO_SIZE_ORDER)
+ 
+ #define IFX_SPI_HEADER_OVERHEAD		4
+ #define IFX_RESET_TIMEOUT		msecs_to_jiffies(50)
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+index 6ac2b79..947dd72 100644
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ b/drivers/tty/serial/kgdb_nmi.c
+@@ -26,6 +26,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/hrtimer.h>
+ #include <linux/tick.h>
++#include <linux/log2.h>
+ #include <linux/kfifo.h>
+ #include <linux/kgdb.h>
+ #include <linux/kdb.h>
+@@ -75,13 +76,13 @@ static struct console kgdb_nmi_console = {
+  * This is usually the maximum rate on debug ports. We make fifo large enough
+  * to make copy-pasting to the terminal usable.
+  */
+-#define KGDB_NMI_BAUD		115200
+-#define KGDB_NMI_FIFO_SIZE	roundup_pow_of_two(KGDB_NMI_BAUD / 8 / HZ)
++#define KGDB_NMI_BAUD			115200
++#define KGDB_NMI_FIFO_SIZE_ORDER	order_base_2(KGDB_NMI_BAUD / 8 / HZ)
+ 
+ struct kgdb_nmi_tty_priv {
+ 	struct tty_port port;
+ 	struct tasklet_struct tlet;
+-	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
++	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE_ORDER) fifo;
+ };
+ 
+ static struct kgdb_nmi_tty_priv *kgdb_nmi_port_to_priv(struct tty_port *port)
+diff --git a/drivers/usb/host/fhci.h b/drivers/usb/host/fhci.h
+index 7cc1c32..e4a0ac6 100644
+--- a/drivers/usb/host/fhci.h
++++ b/drivers/usb/host/fhci.h
+@@ -24,6 +24,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/interrupt.h>
+ #include <linux/kfifo.h>
++#include <linux/log2.h>
+ #include <linux/io.h>
+ #include <linux/usb.h>
+ #include <linux/usb/hcd.h>
+@@ -478,7 +479,8 @@ static inline struct usb_hcd *fhci_to_hcd(struct fhci_hcd *fhci)
+ /* fifo of pointers */
+ static inline int cq_new(struct kfifo *fifo, int size)
+ {
+-	return kfifo_alloc(fifo, size * sizeof(void *), GFP_KERNEL);
++	int kfifo_size_order = order_base_2(size * sizeof(void *));
++	return kfifo_alloc(fifo, kfifo_size_order, GFP_KERNEL);
+ }
+ 
+ static inline void cq_delete(struct kfifo *kfifo)
+diff --git a/drivers/usb/serial/cypress_m8.c b/drivers/usb/serial/cypress_m8.c
+index fd8c35f..a4d7cd1 100644
+--- a/drivers/usb/serial/cypress_m8.c
++++ b/drivers/usb/serial/cypress_m8.c
+@@ -54,7 +54,7 @@ static bool unstable_bauds;
+ #define DRIVER_DESC "Cypress USB to Serial Driver"
+ 
+ /* write buffer size defines */
+-#define CYPRESS_BUF_SIZE	1024
++#define CYPRESS_KFIFO_SIZE_ORDER	10
+ 
+ static const struct usb_device_id id_table_earthmate[] = {
+ 	{ USB_DEVICE(VENDOR_ID_DELORME, PRODUCT_ID_EARTHMATEUSB) },
+@@ -445,7 +445,7 @@ static int cypress_generic_port_probe(struct usb_serial_port *port)
+ 
+ 	priv->comm_is_ok = !0;
+ 	spin_lock_init(&priv->lock);
+-	if (kfifo_alloc(&priv->write_fifo, CYPRESS_BUF_SIZE, GFP_KERNEL)) {
++	if (kfifo_alloc(&priv->write_fifo, CYPRESS_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		kfree(priv);
+ 		return -ENOMEM;
+ 	}
+diff --git a/drivers/usb/serial/io_ti.c b/drivers/usb/serial/io_ti.c
+index 58184f3..a19018b 100644
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -64,7 +64,7 @@
+ 
+ #define EDGE_CLOSING_WAIT	4000	/* in .01 sec */
+ 
+-#define EDGE_OUT_BUF_SIZE	1024
++#define EDGE_KFIFO_SIZE_ORDER	10
+ 
+ 
+ /* Product information read from the Edgeport */
+@@ -2567,7 +2567,7 @@ static int edge_port_probe(struct usb_serial_port *port)
+ 	if (!edge_port)
+ 		return -ENOMEM;
+ 
+-	ret = kfifo_alloc(&edge_port->write_fifo, EDGE_OUT_BUF_SIZE,
++	ret = kfifo_alloc(&edge_port->write_fifo, EDGE_KFIFO_SIZE_ORDER,
+ 								GFP_KERNEL);
+ 	if (ret) {
+ 		kfree(edge_port);
+diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
+index f2530d2..777e90a 100644
+--- a/drivers/usb/serial/ti_usb_3410_5052.c
++++ b/drivers/usb/serial/ti_usb_3410_5052.c
+@@ -45,7 +45,8 @@
+ 
+ #define TI_FIRMWARE_BUF_SIZE	16284
+ 
+-#define TI_WRITE_BUF_SIZE	1024
++#define TI_KFIFO_SIZE_ORDER	10
++#define TI_KFIFO_SIZE		(1 << TI_KFIFO_SIZE_ORDER)
+ 
+ #define TI_TRANSFER_TIMEOUT	2
+ 
+@@ -434,7 +435,7 @@ static int ti_port_probe(struct usb_serial_port *port)
+ 	tport->tp_closing_wait = closing_wait;
+ 	init_waitqueue_head(&tport->tp_msr_wait);
+ 	init_waitqueue_head(&tport->tp_write_wait);
+-	if (kfifo_alloc(&tport->write_fifo, TI_WRITE_BUF_SIZE, GFP_KERNEL)) {
++	if (kfifo_alloc(&tport->write_fifo, TI_KFIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		kfree(tport);
+ 		return -ENOMEM;
+ 	}
+@@ -1355,7 +1356,7 @@ static int ti_get_serial_info(struct ti_port *tport,
+ 	ret_serial.line = port->serial->minor;
+ 	ret_serial.port = port->number - port->serial->minor;
+ 	ret_serial.flags = tport->tp_flags;
+-	ret_serial.xmit_fifo_size = TI_WRITE_BUF_SIZE;
++	ret_serial.xmit_fifo_size = TI_KFIFO_SIZE;
+ 	ret_serial.baud_base = tport->tp_tdev->td_is_3410 ? 921600 : 460800;
+ 	ret_serial.closing_wait = tport->tp_closing_wait;
+ 
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 64bda13..11ca271 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -934,7 +934,7 @@ static int usb_serial_probe(struct usb_interface *interface,
+ 	for (i = 0; i < num_bulk_out; ++i) {
+ 		endpoint = bulk_out_endpoint[i];
+ 		port = serial->port[i];
+-		if (kfifo_alloc(&port->write_fifo, PAGE_SIZE, GFP_KERNEL))
++		if (kfifo_alloc(&port->write_fifo, PAGE_SHIFT, GFP_KERNEL))
+ 			goto probe_error;
+ 		buffer_size = serial->type->bulk_out_size;
+ 		if (!buffer_size)
+diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
+index 4bf984e..28dfe98 100644
+--- a/include/linux/kfifo.h
++++ b/include/linux/kfifo.h
+@@ -76,8 +76,8 @@ struct __kfifo {
+ 	type		buf[((size < 2) || (size & (size - 1))) ? -1 : size]; \
+ }
+ 
+-#define STRUCT_KFIFO(type, size) \
+-	struct __STRUCT_KFIFO(type, size, 0)
++#define STRUCT_KFIFO(type, size_order) \
++	struct __STRUCT_KFIFO(type, (1<<(size_order)), 0)
+ 
+ #define __STRUCT_KFIFO_PTR(type, recsize) \
+ { \
+@@ -93,11 +93,11 @@ struct __kfifo {
+  */
+ struct kfifo __STRUCT_KFIFO_PTR(unsigned char, 0);
+ 
+-#define STRUCT_KFIFO_REC_1(size) \
+-	struct __STRUCT_KFIFO(unsigned char, size, 1)
++#define STRUCT_KFIFO_REC_1(size_order) \
++	struct __STRUCT_KFIFO(unsigned char, (1<<(size_order)), 1)
+ 
+-#define STRUCT_KFIFO_REC_2(size) \
+-	struct __STRUCT_KFIFO(unsigned char, size, 2)
++#define STRUCT_KFIFO_REC_2(size_order) \
++	struct __STRUCT_KFIFO(unsigned char, (1<<(size_order)), 2)
+ 
+ /*
+  * define kfifo_rec types
+@@ -123,9 +123,9 @@ struct kfifo_rec_ptr_2 __STRUCT_KFIFO_PTR(unsigned char, 2);
+  * DECLARE_KFIFO - macro to declare a fifo object
+  * @fifo: name of the declared fifo
+  * @type: type of the fifo elements
+- * @size: the number of elements in the fifo, this must be a power of 2
++ * @size_order: request 2^size_order fifo elements
+  */
+-#define DECLARE_KFIFO(fifo, type, size)	STRUCT_KFIFO(type, size) fifo
++#define DECLARE_KFIFO(fifo, type, size_order)	STRUCT_KFIFO(type, size_order) fifo
+ 
+ /**
+  * INIT_KFIFO - Initialize a fifo declared by DECLARE_KFIFO
+@@ -146,12 +146,12 @@ struct kfifo_rec_ptr_2 __STRUCT_KFIFO_PTR(unsigned char, 2);
+  * DEFINE_KFIFO - macro to define and initialize a fifo
+  * @fifo: name of the declared fifo datatype
+  * @type: type of the fifo elements
+- * @size: the number of elements in the fifo, this must be a power of 2
++ * @size_order: request 2^size_order fifo elements
+  *
+  * Note: the macro can be used for global and local fifo data type variables.
+  */
+-#define DEFINE_KFIFO(fifo, type, size) \
+-	DECLARE_KFIFO(fifo, type, size) = \
++#define DEFINE_KFIFO(fifo, type, size_order) \
++	DECLARE_KFIFO(fifo, type, size_order) = \
+ 	(typeof(fifo)) { \
+ 		{ \
+ 			{ \
+@@ -317,22 +317,21 @@ __kfifo_uint_must_check_helper( \
+ /**
+  * kfifo_alloc - dynamically allocates a new fifo buffer
+  * @fifo: pointer to the fifo
+- * @size: the number of elements in the fifo, this must be a power of 2
++ * @size_order: request 2^size_order fifo elements
+  * @gfp_mask: get_free_pages mask, passed to kmalloc()
+  *
+  * This macro dynamically allocates a new fifo buffer.
+  *
+- * The numer of elements will be rounded-up to a power of 2.
+  * The fifo will be release with kfifo_free().
+  * Return 0 if no error, otherwise an error code.
+  */
+-#define kfifo_alloc(fifo, size, gfp_mask) \
++#define kfifo_alloc(fifo, size_order, gfp_mask) \
+ __kfifo_int_must_check_helper( \
+ ({ \
+ 	typeof((fifo) + 1) __tmp = (fifo); \
+ 	struct __kfifo *__kfifo = &__tmp->kfifo; \
+ 	__is_kfifo_ptr(__tmp) ? \
+-	__kfifo_alloc(__kfifo, size, sizeof(*__tmp->type), gfp_mask) : \
++	__kfifo_alloc(__kfifo, size_order, sizeof(*__tmp->type), gfp_mask) : \
+ 	-EINVAL; \
+ }) \
+ )
+@@ -745,7 +744,7 @@ __kfifo_uint_must_check_helper( \
+ }) \
+ )
+ 
+-extern int __kfifo_alloc(struct __kfifo *fifo, unsigned int size,
++extern int __kfifo_alloc(struct __kfifo *fifo, int size_order,
+ 	size_t esize, gfp_t gfp_mask);
+ 
+ extern void __kfifo_free(struct __kfifo *fifo);
+diff --git a/include/linux/rio.h b/include/linux/rio.h
+index a3e7842..05ff6bb 100644
+--- a/include/linux/rio.h
++++ b/include/linux/rio.h
+@@ -70,6 +70,7 @@
+ #define RIO_OUTB_MBOX_RESOURCE	2
+ 
+ #define RIO_PW_MSG_SIZE		64
++#define RIO_KFIFO_SIZE_ORDER	11	/* 64 * 32 */
+ 
+ /*
+  * A component tag value (stored in the component tag CSR) is used as device's
+diff --git a/include/media/lirc_dev.h b/include/media/lirc_dev.h
+index 168dd0b..7816d39 100644
+--- a/include/media/lirc_dev.h
++++ b/include/media/lirc_dev.h
+@@ -19,6 +19,7 @@
+ #include <linux/ioctl.h>
+ #include <linux/poll.h>
+ #include <linux/kfifo.h>
++#include <linux/log2.h>
+ #include <media/lirc.h>
+ 
+ struct lirc_buffer {
+@@ -50,12 +51,13 @@ static inline int lirc_buffer_init(struct lirc_buffer *buf,
+ 				    unsigned int size)
+ {
+ 	int ret;
++	int kfifo_size_order = order_base_2(size * chunk_size);
+ 
+ 	init_waitqueue_head(&buf->wait_poll);
+ 	spin_lock_init(&buf->fifo_lock);
+ 	buf->chunk_size = chunk_size;
+ 	buf->size = size;
+-	ret = kfifo_alloc(&buf->fifo, size * chunk_size, GFP_KERNEL);
++	ret = kfifo_alloc(&buf->fifo, kfifo_size_order, GFP_KERNEL);
+ 	if (ret == 0)
+ 		buf->fifo_initialized = 1;
+ 
+diff --git a/kernel/kfifo.c b/kernel/kfifo.c
+index d07f480..be1c2a0 100644
+--- a/kernel/kfifo.c
++++ b/kernel/kfifo.c
+@@ -35,15 +35,10 @@ static inline unsigned int kfifo_unused(struct __kfifo *fifo)
+ 	return (fifo->mask + 1) - (fifo->in - fifo->out);
+ }
+ 
+-int __kfifo_alloc(struct __kfifo *fifo, unsigned int size,
++int __kfifo_alloc(struct __kfifo *fifo, int size_order,
+ 		size_t esize, gfp_t gfp_mask)
+ {
+-	/*
+-	 * round down to the next power of 2, since our 'let the indices
+-	 * wrap' technique works only in this case.
+-	 */
+-	if (!is_power_of_2(size))
+-		size = rounddown_pow_of_two(size);
++	unsigned int size = 1 << size_order;
+ 
+ 	fifo->in = 0;
+ 	fifo->out = 0;
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index c6e4dd3..827bbf3 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1189,7 +1189,6 @@ out:
+ EXPORT_SYMBOL_GPL(memory_failure);
+ 
+ #define MEMORY_FAILURE_FIFO_ORDER	4
+-#define MEMORY_FAILURE_FIFO_SIZE	(1 << MEMORY_FAILURE_FIFO_ORDER)
+ 
+ struct memory_failure_entry {
+ 	unsigned long pfn;
+@@ -1199,7 +1198,7 @@ struct memory_failure_entry {
+ 
+ struct memory_failure_cpu {
+ 	DECLARE_KFIFO(fifo, struct memory_failure_entry,
+-		      MEMORY_FAILURE_FIFO_SIZE);
++		      MEMORY_FAILURE_FIFO_ORDER);
+ 	spinlock_t lock;
+ 	struct work_struct work;
+ };
+diff --git a/net/dccp/probe.c b/net/dccp/probe.c
+index 0a8d6eb..0a12fd5 100644
+--- a/net/dccp/probe.c
++++ b/net/dccp/probe.c
+@@ -31,6 +31,7 @@
+ #include <linux/kfifo.h>
+ #include <linux/vmalloc.h>
+ #include <linux/gfp.h>
++#include <linux/log2.h>
+ #include <net/net_namespace.h>
+ 
+ #include "dccp.h"
+@@ -166,10 +167,11 @@ static __init int setup_jprobe(void)
+ static __init int dccpprobe_init(void)
+ {
+ 	int ret = -ENOMEM;
++	int kfifo_size_order = order_base_2(bufsize);
+ 
+ 	init_waitqueue_head(&dccpw.wait);
+ 	spin_lock_init(&dccpw.lock);
+-	if (kfifo_alloc(&dccpw.fifo, bufsize, GFP_KERNEL))
++	if (kfifo_alloc(&dccpw.fifo, kfifo_size_order, GFP_KERNEL))
+ 		return ret;
+ 	if (!proc_net_fops_create(&init_net, procname, S_IRUSR, &dccpprobe_fops))
+ 		goto err0;
+@@ -200,7 +202,7 @@ module_exit(dccpprobe_exit);
+ MODULE_PARM_DESC(port, "Port to match (0=all)");
+ module_param(port, int, 0);
+ 
+-MODULE_PARM_DESC(bufsize, "Log buffer size (default 64k)");
++MODULE_PARM_DESC(bufsize, "Log buffer size (default 64k , should be power of 2. If not, will roundup to power of 2)");
+ module_param(bufsize, int, 0);
+ 
+ MODULE_AUTHOR("Ian McDonald <ian.mcdonald-WpNOhQBWTy6lP80pJB477g@public.gmane.org>");
+diff --git a/net/sctp/probe.c b/net/sctp/probe.c
+index 5f7518d..1736ef4 100644
+--- a/net/sctp/probe.c
++++ b/net/sctp/probe.c
+@@ -33,6 +33,7 @@
+ #include <linux/module.h>
+ #include <linux/kfifo.h>
+ #include <linux/time.h>
++#include <linux/log2.h>
+ #include <net/net_namespace.h>
+ 
+ #include <net/sctp/sctp.h>
+@@ -47,7 +48,7 @@ MODULE_PARM_DESC(port, "Port to match (0=all)");
+ module_param(port, int, 0);
+ 
+ static int bufsize __read_mostly = 64 * 1024;
+-MODULE_PARM_DESC(bufsize, "Log buffer size (default 64k)");
++MODULE_PARM_DESC(bufsize, "Log buffer size (default 64k, should be power of 2. If not, will roundup to power of 2)");
+ module_param(bufsize, int, 0);
+ 
+ static int full __read_mostly = 1;
+@@ -182,10 +183,11 @@ static struct jprobe sctp_recv_probe = {
+ static __init int sctpprobe_init(void)
+ {
+ 	int ret = -ENOMEM;
++	int kfifo_size_order = order_base_2(bufsize);
+ 
+ 	init_waitqueue_head(&sctpw.wait);
+ 	spin_lock_init(&sctpw.lock);
+-	if (kfifo_alloc(&sctpw.fifo, bufsize, GFP_KERNEL))
++	if (kfifo_alloc(&sctpw.fifo, kfifo_size_order, GFP_KERNEL))
+ 		return ret;
+ 
+ 	if (!proc_net_fops_create(&init_net, procname, S_IRUSR,
+diff --git a/samples/kfifo/bytestream-example.c b/samples/kfifo/bytestream-example.c
+index cfe40ad..eb3a46e 100644
+--- a/samples/kfifo/bytestream-example.c
++++ b/samples/kfifo/bytestream-example.c
+@@ -18,7 +18,7 @@
+  */
+ 
+ /* fifo size in elements (bytes) */
+-#define FIFO_SIZE	32
++#define FIFO_SIZE_ORDER	5
+ 
+ /* name of the proc entry */
+ #define	PROC_FIFO	"bytestream-fifo"
+@@ -41,10 +41,10 @@ static DEFINE_MUTEX(write_lock);
+ #ifdef DYNAMIC
+ static struct kfifo test;
+ #else
+-static DECLARE_KFIFO(test, unsigned char, FIFO_SIZE);
++static DECLARE_KFIFO(test, unsigned char, FIFO_SIZE_ORDER);
+ #endif
+ 
+-static const unsigned char expected_result[FIFO_SIZE] = {
++static const unsigned char expected_result[1<<FIFO_SIZE_ORDER] = {
+ 	 3,  4,  5,  6,  7,  8,  9,  0,
+ 	 1, 20, 21, 22, 23, 24, 25, 26,
+ 	27, 28, 29, 30, 31, 32, 33, 34,
+@@ -156,7 +156,7 @@ static int __init example_init(void)
+ #ifdef DYNAMIC
+ 	int ret;
+ 
+-	ret = kfifo_alloc(&test, FIFO_SIZE, GFP_KERNEL);
++	ret = kfifo_alloc(&test, FIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (ret) {
+ 		printk(KERN_ERR "error kfifo_alloc\n");
+ 		return ret;
+diff --git a/samples/kfifo/dma-example.c b/samples/kfifo/dma-example.c
+index 0647379..bbc0787 100644
+--- a/samples/kfifo/dma-example.c
++++ b/samples/kfifo/dma-example.c
+@@ -16,7 +16,8 @@
+  */
+ 
+ /* fifo size in elements (bytes) */
+-#define FIFO_SIZE	32
++#define FIFO_SIZE_ORDER	5
++#define FIFO_SIZE	(1<< FIFO_SIZE_ORDER)
+ 
+ static struct kfifo fifo;
+ 
+@@ -29,7 +30,7 @@ static int __init example_init(void)
+ 
+ 	printk(KERN_INFO "DMA fifo test start\n");
+ 
+-	if (kfifo_alloc(&fifo, FIFO_SIZE, GFP_KERNEL)) {
++	if (kfifo_alloc(&fifo, FIFO_SIZE_ORDER, GFP_KERNEL)) {
+ 		printk(KERN_WARNING "error kfifo_alloc\n");
+ 		return -ENOMEM;
+ 	}
+diff --git a/samples/kfifo/inttype-example.c b/samples/kfifo/inttype-example.c
+index 6f8e79e..bed3229 100644
+--- a/samples/kfifo/inttype-example.c
++++ b/samples/kfifo/inttype-example.c
+@@ -18,7 +18,8 @@
+  */
+ 
+ /* fifo size in elements (ints) */
+-#define FIFO_SIZE	32
++#define FIFO_SIZE_ORDER	5
++#define FIFO_SIZE	(1<< FIFO_SIZE_ORDER)
+ 
+ /* name of the proc entry */
+ #define	PROC_FIFO	"int-fifo"
+@@ -41,7 +42,7 @@ static DEFINE_MUTEX(write_lock);
+ #ifdef DYNAMIC
+ static DECLARE_KFIFO_PTR(test, int);
+ #else
+-static DEFINE_KFIFO(test, int, FIFO_SIZE);
++static DEFINE_KFIFO(test, int, FIFO_SIZE_ORDER);
+ #endif
+ 
+ static const int expected_result[FIFO_SIZE] = {
+@@ -149,7 +150,7 @@ static int __init example_init(void)
+ #ifdef DYNAMIC
+ 	int ret;
+ 
+-	ret = kfifo_alloc(&test, FIFO_SIZE, GFP_KERNEL);
++	ret = kfifo_alloc(&test, FIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (ret) {
+ 		printk(KERN_ERR "error kfifo_alloc\n");
+ 		return ret;
+diff --git a/samples/kfifo/record-example.c b/samples/kfifo/record-example.c
+index 2d7529e..2902eae 100644
+--- a/samples/kfifo/record-example.c
++++ b/samples/kfifo/record-example.c
+@@ -18,7 +18,7 @@
+  */
+ 
+ /* fifo size in elements (bytes) */
+-#define FIFO_SIZE	128
++#define FIFO_SIZE_ORDER	7
+ 
+ /* name of the proc entry */
+ #define	PROC_FIFO	"record-fifo"
+@@ -50,7 +50,7 @@ static DEFINE_MUTEX(write_lock);
+ struct kfifo_rec_ptr_1 test;
+ 
+ #else
+-typedef STRUCT_KFIFO_REC_1(FIFO_SIZE) mytest;
++typedef STRUCT_KFIFO_REC_1(FIFO_SIZE_ORDER) mytest;
+ 
+ static mytest test;
+ #endif
+@@ -163,7 +163,7 @@ static int __init example_init(void)
+ #ifdef DYNAMIC
+ 	int ret;
+ 
+-	ret = kfifo_alloc(&test, FIFO_SIZE, GFP_KERNEL);
++	ret = kfifo_alloc(&test, FIFO_SIZE_ORDER, GFP_KERNEL);
+ 	if (ret) {
+ 		printk(KERN_ERR "error kfifo_alloc\n");
+ 		return ret;
 -- 
-1.7.1.1
+1.7.7.6
+
+-- 
+You received this message because you are subscribed to the Google Groups "open-iscsi" group.
+To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+To unsubscribe from this group, send email to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit this group at http://groups.google.com/group/open-iscsi?hl=en.
