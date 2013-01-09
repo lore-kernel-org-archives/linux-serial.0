@@ -1,19 +1,15 @@
 From: Lv Zheng <lv.zheng@intel.com>
 Subject: [RFC PATCH v4 0/3] ACPI/UART: Add ACPI 5.0 enueration support for UART.
-Date: Wed, 9 Jan 2013 09:17:52 +0000 (UTC)
-Message-ID: <cover.1357837482.git.lv.zheng@intel.com>
+Date: Wed, 9 Jan 2013 09:17:53 +0000 (UTC)
+Message-ID: <cover.1357837482.git.lv.zheng__8018.59776624969$1357723091$gmane$org@intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:16319 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757391Ab3AIJRu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jan 2013 04:17:50 -0500
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Date: Fri, 11 Jan 2013 01:16:55 +0800
 In-Reply-To: <cover.1354505471.git.lv.zheng@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-acpi-owner@vger.kernel.org
 To: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
+List-Id: linux-serial@vger.kernel.org
 
 ACPI 5.0 specification introduces enumeration support for SPB buses. This
 patch set adds the UART serial bus enumeration support to Linux using such
