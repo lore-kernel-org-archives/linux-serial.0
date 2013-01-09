@@ -1,19 +1,15 @@
 From: Lv Zheng <lv.zheng@intel.com>
 Subject: [RFC PATCH v4 1/3] TTY: Add TTY slave enumeration support.
-Date: Wed, 9 Jan 2013 09:17:19 +0000 (UTC)
-Message-ID: <55c554b9f589209465f4fff0d0bc8f4fe1f8eb9a.1357837482.git.lv.zheng@intel.com>
+Date: Wed, 9 Jan 2013 09:17:29 +0000 (UTC)
+Message-ID: <55c554b9f589209465f4fff0d0bc8f4fe1f8eb9a.1357837482.git.lv.zheng__12307.4207608171$1357723067$gmane$org@intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com> <cover.1357837482.git.lv.zheng@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:29096 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757391Ab3AIJRN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jan 2013 04:17:13 -0500
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Date: Fri, 11 Jan 2013 01:17:05 +0800
 In-Reply-To: <cover.1357837482.git.lv.zheng@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-acpi-owner@vger.kernel.org
 To: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
+List-Id: linux-serial@vger.kernel.org
 
 In the recent ACPI 5.0 specification updates, firmwares are provided the
 possibilities to enumerate the UART slave devices known to the platform
