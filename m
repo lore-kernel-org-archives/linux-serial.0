@@ -1,19 +1,15 @@
 From: Lv Zheng <lv.zheng@intel.com>
 Subject: [RFC PATCH v4 3/3] UART: Add dummy devices to test the enumeration.
-Date: Wed, 9 Jan 2013 09:18:40 +0000 (UTC)
-Message-ID: <a4634f6befdfd9c42bca685ef0d09ec5bb339547.1357837482.git.lv.zheng@intel.com>
+Date: Wed, 9 Jan 2013 09:18:42 +0000 (UTC)
+Message-ID: <a4634f6befdfd9c42bca685ef0d09ec5bb339547.1357837482.git.lv.zheng__7192.50322222269$1357723140$gmane$org@intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com> <cover.1357837482.git.lv.zheng@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:62689 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757458Ab3AIJSZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jan 2013 04:18:25 -0500
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Date: Fri, 11 Jan 2013 01:17:24 +0800
 In-Reply-To: <cover.1357837482.git.lv.zheng@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-acpi-owner@vger.kernel.org
 To: Len Brown <len.brown@intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
+List-Id: linux-serial@vger.kernel.org
 
 This is a test patch that should not be merged into any of the published
 Linux source tree.
