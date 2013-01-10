@@ -1,7 +1,7 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCHv3 2/8] serial: 8250_dw: Don't use UPF_FIXED_TYPE
-Date: Thu, 10 Jan 2013 11:25:06 +0200
-Message-ID: <1357809912-25790-3-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCHv3 8/8] serial: 8250_dw: Enable DMA support with ACPI
+Date: Thu, 10 Jan 2013 11:25:12 +0200
+Message-ID: <1357809912-25790-9-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1357809912-25790-1-git-send-email-heikki.krogerus@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1357809912-25790-1-git-send-email-heikki.krogerus@linux.intel.com>
@@ -10,29 +10,106 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Allow 8250.c to determine the port type for us. This allows
-the driver take advantage of FIFO on Designware UARTs that
-have it.
+With ACPI 5.0 we can use the FixedDMA Resource Descriptor to
+extract the needed information for DMA support.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Jamie Iles <jamie@jamieiles.com>
-Acked-by: Alan Cox <alan@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dw.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c |   65 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 1d0dba2..ff83ea5 100644
+index f6eeff0..ceacf5e 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -112,7 +112,7 @@ static int dw8250_probe(struct platform_device *pdev)
- 	uart.port.handle_irq = dw8250_handle_irq;
- 	uart.port.type = PORT_8250;
- 	uart.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP |
--		UPF_FIXED_PORT | UPF_FIXED_TYPE;
-+		UPF_FIXED_PORT;
- 	uart.port.dev = &pdev->dev;
+@@ -27,6 +27,8 @@
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
  
- 	uart.port.iotype = UPIO_MEM;
++#include "8250.h"
++
+ /* Offsets for the DesignWare specific registers */
+ #define DW_UART_USR	0x1f /* UART Status Register */
+ #define DW_UART_CPR	0xf4 /* Component Parameter Register */
+@@ -143,9 +145,64 @@ static int dw8250_probe_of(struct uart_port *p)
+ 	return 0;
+ }
+ 
++static bool dw8250_acpi_dma_filter(struct dma_chan *chan, void *parm)
++{
++	return chan->chan_id == *(int *)parm;
++}
++
++static acpi_status
++dw8250_acpi_walk_resource(struct acpi_resource *res, void *data)
++{
++	struct uart_port		*p = data;
++	struct uart_8250_port		*port;
++	struct uart_8250_dma		*dma;
++	struct acpi_resource_fixed_dma	*fixed_dma;
++	struct dma_slave_config		*slave;
++
++	port = container_of(p, struct uart_8250_port, port);
++
++	switch (res->type) {
++	case ACPI_RESOURCE_TYPE_FIXED_DMA:
++		fixed_dma = &res->data.fixed_dma;
++
++		/* TX comes first */
++		if (!port->dma) {
++			dma = devm_kzalloc(p->dev, sizeof(*dma), GFP_KERNEL);
++			if (!dma)
++				return AE_NO_MEMORY;
++
++			port->dma = dma;
++			slave = &dma->txconf;
++
++			slave->direction	= DMA_MEM_TO_DEV;
++			slave->dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
++			slave->slave_id		= fixed_dma->request_lines;
++
++			dma->tx_chan_id		= fixed_dma->channels;
++			dma->tx_param		= &dma->tx_chan_id;
++			dma->fn			= dw8250_acpi_dma_filter;
++		} else {
++			dma = port->dma;
++			slave = &dma->rxconf;
++
++			slave->direction	= DMA_DEV_TO_MEM;
++			slave->src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
++			slave->slave_id		= fixed_dma->request_lines;
++
++			dma->rx_chan_id		= fixed_dma->channels;
++			dma->rx_param		= &dma->rx_chan_id;
++		}
++
++		break;
++	}
++
++	return AE_OK;
++}
++
+ static int dw8250_probe_acpi(struct uart_port *p)
+ {
+ 	const struct acpi_device_id *id;
++	acpi_status status;
+ 	u32 reg;
+ 
+ 	id = acpi_match_device(p->dev->driver->acpi_match_table, p->dev);
+@@ -158,6 +215,14 @@ static int dw8250_probe_acpi(struct uart_port *p)
+ 	p->regshift = 2;
+ 	p->uartclk = (unsigned int)id->driver_data;
+ 
++	status = acpi_walk_resources(ACPI_HANDLE(p->dev), METHOD_NAME__CRS,
++				     dw8250_acpi_walk_resource, p);
++	if (ACPI_FAILURE(status)) {
++		dev_err_ratelimited(p->dev, "%s failed \"%s\"\n", __func__,
++				    acpi_format_exception(status));
++		return -ENODEV;
++	}
++
+ 	/* Fix Haswell issue where the clocks do not get enabled */
+ 	if (!strcmp(id->id, "INT33C4") || !strcmp(id->id, "INT33C5")) {
+ 		reg = readl(p->membase + LPSS_PRV_CLOCK_PARAMS);
 -- 
 1.7.10.4
