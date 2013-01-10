@@ -1,45 +1,69 @@
-From: channing <chao.bi@intel.com>
-Subject: [PATCH] serial:ifx6x60:Delete SPI timer when shut down port
-Date: Thu, 10 Jan 2013 13:06:42 +0800
-Message-ID: <1357794402.8296.9.camel@bichao>
+From: Chen Gang <gang.chen@asianux.com>
+Subject: Re: [PATCH] drivers/tty/serial: avoid double free after call ioc4_serial_remove_one
+Date: Thu, 10 Jan 2013 16:03:38 +0800
+Message-ID: <50EE75DA.6000505@asianux.com>
+References: <50DACC2F.5080302@asianux.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:11440 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758064Ab3AJEtL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jan 2013 23:49:11 -0500
+Received: from intranet.asianux.com ([58.214.24.6]:20200 "EHLO
+	intranet.asianux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932645Ab3AJICs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Jan 2013 03:02:48 -0500
+In-Reply-To: <50DACC2F.5080302@asianux.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: alan@linux.intel.com
-Cc: greg@kroah.com, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+
+Hello Alan Cox:
+
+  can you have time to give a glance for it ?
+
+  I send it according to the MAINTAINER file,
+  if I send to an incorrect member, please tell me.
+
+  thanks.
+
+gchen
+
+=D3=DA 2012=C4=EA12=D4=C226=C8=D5 18:06, Chen Gang =D0=B4=B5=C0:
+>=20
+>   before goto out5,  soft, control, serial are all assigned to idd
+>   after finish call ioc4_serial_remove_one, all resources are release=
+d
+>   we need return instead of go on, or double free
+>=20
+> Signed-off-by: Chen Gang <gang.chen@asianux.com>
+> ---
+>  drivers/tty/serial/ioc4_serial.c |    1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/io=
+c4_serial.c
+> index 3e7da10..c4e30b8 100644
+> --- a/drivers/tty/serial/ioc4_serial.c
+> +++ b/drivers/tty/serial/ioc4_serial.c
+> @@ -2883,6 +2883,7 @@ ioc4_serial_attach_one(struct ioc4_driver_data =
+*idd)
+>  	/* error exits that give back resources */
+>  out5:
+>  	ioc4_serial_remove_one(idd);
+> +	return ret;
+>  out4:
+>  	kfree(soft);
+>  out3:
+>=20
 
 
-When shut down SPI port, it's possible that MRDY has been asserted and a SPI
-timer was activated waiting for SRDY assert, in the case, it needs to delete
-this timer.
+--=20
+Chen Gang
 
-Signed-off-by: Chen Jun <jun.d.chen@intel.com>
-Signed-off-by: channing <chao.bi@intel.com>
----
- drivers/tty/serial/ifx6x60.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 675d94a..7eed323 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -637,6 +637,7 @@ static void ifx_port_shutdown(struct tty_port *port)
- 
- 	clear_bit(IFX_SPI_STATE_IO_AVAILABLE, &ifx_dev->flags);
- 	mrdy_set_low(ifx_dev);
-+	del_timer(&ifx_dev->spi_timer);
- 	clear_bit(IFX_SPI_STATE_TIMER_PENDING, &ifx_dev->flags);
- 	tasklet_kill(&ifx_dev->io_work_tasklet);
- }
--- 
-1.7.1
-
-
-
+Asianux Corporation
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
