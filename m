@@ -1,55 +1,50 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH 4/4] serial/arc-uart: switch to devicetree based probing
-Date: Fri, 11 Jan 2013 17:25:22 +0530
-Message-ID: <50EFFDAA.6060204@synopsys.com>
-References: <1357885223-19243-1-git-send-email-vgupta@synopsys.com> <1357885223-19243-5-git-send-email-vgupta@synopsys.com> <201301111133.43507.arnd@arndb.de>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Fri, 11 Jan 2013 16:18:28 +0000
+Message-ID: <20130111161828.GD23505@n2100.arm.linux.org.uk>
+References: <006c01cdefc2$c7e1cb90$57a562b0$@min@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from us01smtp3.synopsys.com ([198.182.44.81]:36458 "EHLO
-	hermes.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753699Ab3AKL5p (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:44869 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754921Ab3AKQTC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jan 2013 06:57:45 -0500
-In-Reply-To: <201301111133.43507.arnd@arndb.de>
+	Fri, 11 Jan 2013 11:19:02 -0500
+Content-Disposition: inline
+In-Reply-To: <006c01cdefc2$c7e1cb90$57a562b0$@min@lge.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>
+To: Chanho Min <chanho.min@lge.com>
+Cc: 'Alan Cox' <alan@linux.intel.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Linus Walleij' <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Friday 11 January 2013 05:03 PM, Arnd Bergmann wrote:
-> On Friday 11 January 2013, Vineet Gupta wrote:
->> * DT binding for arc-uart
->> * With alll the bits in place we can now use DT probing.
->>
->> Note that there's a bit of kludge right now because earlyprintk portion
->> of driver can't use the DT infrastrcuture to get resoures/plat_data.
->> This requires some infrastructre changes to of_flat_ framework
->>
->> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
->> Cc: Grant Likely <grant.likely@secretlab.ca>
->> Cc: Arnd Bergmann <arnd@arndb.de>
->> Cc: linux-serial@vger.kernel.org
->> Cc: Alan Cox <alan@linux.intel.com>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: devicetree-discuss@lists.ozlabs.org
->> Cc: Rob Herring <rob.herring@calxeda.com>
->> Cc: Rob Landley <rob@landley.net>
->> Cc: linux-serial@vger.kernel.org
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
->
-> Quick question about the name though: is this UART only used
-> on ARC, or is it something that synopsys licenses to other
-> parties as well? If the latter is true, we might want to 
-> add a more generic "compatible" value for those that use
-> it on another architecture.
+On Fri, Jan 11, 2013 at 03:13:31PM +0900, Chanho Min wrote:
+> In DMA support, Received data is not triggered until the DMA buffer is filled.
+> In order to actually use Rx DMA, We would like to suggest the use of the timer
+> for polling DMA buffer. It makes possible character-level trigger.
+> In our test, no data loss occurred at high-baudrate as compared with interrupt
+> driven (We tested with 3Mbps). We know it will be because of the increased Rx
+> buffer rather than DMA effect. but,It is very useful for high speed uart device.
+> We changes:
+> 
+> - CONFIG_SERIAL_AMBA_PL011_DMAPOLL is added to select this feature.
+> 
+> - add timer and last_residue for polling. Every polling, timer handler checks
+>   the residue in the dma buffer and transfer data to the tty. Also, last_residue
+>   is updated for the next polling.
+> 
+> - We use consistent DMA mappings instead of streaming DMA mappings to avoid from
+>   the frequent cache operation.
+> 
+> - pl011_dma_rx_chars is modified. the pending size is recalculated because data
+>   can be taken by polling.
+> 
+> - add module parameter for adjusting polling interval.
 
-It's not licensed as standalone IP - since its not a standard 8250. It is only
-(but actively) used on the internal FPGA flows from ARC days.
+Here's the question: what is the effect of having to poll every tick on
+the overall system?
 
-Thx,
-Vineet
-
-> 	Arnd
-
+What I'm getting at is: what is the cost of that polling with DMA enabled
+over not having DMA on the receive side at all?  What is the trade-off
+vs baud rate?  Should we scale the polling interval according to baud
+rate?
