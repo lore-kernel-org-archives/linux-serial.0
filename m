@@ -1,104 +1,49 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH 1/4] serial/arc-uart: Don't index with -ve platform_device->id
-Date: Fri, 11 Jan 2013 11:50:20 +0530
-Message-ID: <1357885223-19243-2-git-send-email-vgupta@synopsys.com>
-References: <1357885223-19243-1-git-send-email-vgupta@synopsys.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 4/4] serial/arc-uart: switch to devicetree based probing
+Date: Fri, 11 Jan 2013 11:33:43 +0000
+Message-ID: <201301111133.43507.arnd@arndb.de>
+References: <1357885223-19243-1-git-send-email-vgupta@synopsys.com> <1357885223-19243-5-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1357885223-19243-1-git-send-email-vgupta@synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.171]:55490 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752409Ab3AKLd4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 11 Jan 2013 06:33:56 -0500
+In-Reply-To: <1357885223-19243-5-git-send-email-vgupta@synopsys.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>
 
-probe routine could index into port[] with -ve index. The check in
-arc_uart_init_one() was too late.
+On Friday 11 January 2013, Vineet Gupta wrote:
+> * DT binding for arc-uart
+> * With alll the bits in place we can now use DT probing.
+> 
+> Note that there's a bit of kludge right now because earlyprintk portion
+> of driver can't use the DT infrastrcuture to get resoures/plat_data.
+> This requires some infrastructre changes to of_flat_ framework
+> 
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+> Cc: Grant Likely <grant.likely@secretlab.ca>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: linux-serial@vger.kernel.org
+> Cc: Alan Cox <alan@linux.intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: devicetree-discuss@lists.ozlabs.org
+> Cc: Rob Herring <rob.herring@calxeda.com>
+> Cc: Rob Landley <rob@landley.net>
+> Cc: linux-serial@vger.kernel.org
 
-This came to light when trying to port driver to CONFIG_OF, where
-bydefault of-core code sets -ve platform dev id and in absence of
-DT serial aliases, driver would use the -ve index.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/arc_uart.c |   29 +++++++++++++++--------------
- 1 files changed, 15 insertions(+), 14 deletions(-)
+Quick question about the name though: is this UART only used
+on ARC, or is it something that synopsys licenses to other
+parties as well? If the latter is true, we might want to 
+add a more generic "compatible" value for those that use
+it on another architecture.
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 3e0b3fa..8089dc3 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -526,15 +526,11 @@ static struct uart_ops arc_serial_pops = {
- };
- 
- static int
--arc_uart_init_one(struct platform_device *pdev, struct arc_uart_port *uart)
-+arc_uart_init_one(struct platform_device *pdev, int dev_id)
- {
- 	struct resource *res, *res2;
- 	unsigned long *plat_data;
--
--	if (pdev->id < 0 || pdev->id >= CONFIG_SERIAL_ARC_NR_PORTS) {
--		dev_err(&pdev->dev, "Wrong uart platform device id.\n");
--		return -ENOENT;
--	}
-+	struct arc_uart_port *uart = &arc_uart_ports[dev_id];
- 
- 	plat_data = ((unsigned long *)(pdev->dev.platform_data));
- 	uart->baud = plat_data[0];
-@@ -557,7 +553,7 @@ arc_uart_init_one(struct platform_device *pdev, struct arc_uart_port *uart)
- 	uart->port.dev = &pdev->dev;
- 	uart->port.iotype = UPIO_MEM;
- 	uart->port.flags = UPF_BOOT_AUTOCONF;
--	uart->port.line = pdev->id;
-+	uart->port.line = dev_id;
- 	uart->port.ops = &arc_serial_pops;
- 
- 	uart->port.uartclk = plat_data[1];
-@@ -657,9 +653,14 @@ static struct __initdata console arc_early_serial_console = {
- 
- static int arc_serial_probe_earlyprintk(struct platform_device *pdev)
- {
--	arc_early_serial_console.index = pdev->id;
-+	int dev_id = pdev->id < 0 ? 0 : pdev->id;
-+	int rc;
- 
--	arc_uart_init_one(pdev, &arc_uart_ports[pdev->id]);
-+	arc_early_serial_console.index = dev_id;
-+
-+	rc = arc_uart_init_one(pdev, dev_id);
-+	if (rc)
-+		panic("early console init failed\n");
- 
- 	arc_serial_console_setup(&arc_early_serial_console, NULL);
- 
-@@ -675,18 +676,18 @@ static int arc_serial_probe_earlyprintk(struct platform_device *pdev)
- 
- static int arc_serial_probe(struct platform_device *pdev)
- {
--	struct arc_uart_port *uart;
--	int rc;
-+	int rc, dev_id;
- 
- 	if (is_early_platform_device(pdev))
- 		return arc_serial_probe_earlyprintk(pdev);
- 
--	uart = &arc_uart_ports[pdev->id];
--	rc = arc_uart_init_one(pdev, uart);
-+	dev_id = pdev->id < 0 ? 0 : pdev->id;
-+	rc = arc_uart_init_one(pdev, dev_id);
- 	if (rc)
- 		return rc;
- 
--	return uart_add_one_port(&arc_uart_driver, &uart->port);
-+	rc = uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
-+	return rc;
- }
- 
- static int arc_serial_remove(struct platform_device *pdev)
--- 
-1.7.4.1
+	Arnd
