@@ -1,212 +1,142 @@
-From: Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>
-Subject: 3.8.0-rc3: possible circular locking dependency: &tty->legacy_mutex / &tty->hangup_work with serial/RFCOMM connection via USB bluetooth dongle
-Date: Sat, 12 Jan 2013 19:46:39 +0100
-Message-ID: <34560309.20130112194639@eikelenboom.it>
+From: Kevin Nguyen <afelion@gmail.com>
+Subject: [PATCH] RS485 serial communication on ColdFire
+Date: Mon, 14 Jan 2013 09:21:52 +1000
+Message-ID: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org
+Content-Type: multipart/mixed; boundary=14dae9399c9b9728e004d333cde5
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-oa0-f49.google.com ([209.85.219.49]:52035 "EHLO
+	mail-oa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754688Ab3AMXWd (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 13 Jan 2013 18:22:33 -0500
+Received: by mail-oa0-f49.google.com with SMTP id l10so3394894oag.8
+        for <linux-serial@vger.kernel.org>; Sun, 13 Jan 2013 15:22:33 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hi,
+--14dae9399c9b9728e004d333cde5
+Content-Type: text/plain; charset=ISO-8859-1
 
-Running a 3.8.0-rc3 kernel (latest commit b719f43059903820c31edb30f4663a2818836e7f) kernel (debian squeeze os), i'm running into this lockdep warning when:
+Hi
 
-- Running a perl script that uses rfcomm to communicatie via bluetooth with a bluetooth/TTL converter.
-- It can run ok for a few hours before this lockdep occurs and the perl script freezes.
-- The info related to bluetooth from syslog:
+I've attached the patch that adds support RS485 communication in
+ColdFire serial driver.
 
-Jan 12 10:24:08 serveerstertje kernel: [    7.919775] Bluetooth: Virtual HCI driver ver 1.3
-Jan 12 10:24:08 serveerstertje kernel: [    7.920314] Bluetooth: HCI UART driver ver 2.2
-Jan 12 10:24:08 serveerstertje kernel: [    7.920316] Bluetooth: HCI H4 protocol initialized
-Jan 12 10:24:08 serveerstertje kernel: [    7.920317] Bluetooth: HCI BCSP protocol initialized
-Jan 12 10:24:08 serveerstertje kernel: [    7.920318] Bluetooth: HCILL protocol initialized
-Jan 12 10:24:08 serveerstertje kernel: [    7.920318] Bluetooth: HCIATH3K protocol initialized
-Jan 12 10:24:08 serveerstertje kernel: [    7.920319] Bluetooth: HCI Three-wire UART (H5) protocol initialized
+As defined in Documentation/serial/serial-rs485.txt, switching between
+read or write mode can be done by toggling RTS signal that is
+supported by ColdFire chips.
 
-Jan 12 10:24:08 serveerstertje kernel: [    8.191897] Bluetooth: RFCOMM TTY layer initialized
-Jan 12 10:24:08 serveerstertje kernel: [    8.191930] Bluetooth: RFCOMM socket layer initialized
-Jan 12 10:24:08 serveerstertje kernel: [    8.191931] Bluetooth: RFCOMM ver 1.11
-Jan 12 10:24:08 serveerstertje kernel: [    8.191932] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
-Jan 12 10:24:08 serveerstertje kernel: [    8.191933] Bluetooth: BNEP filters: protocol multicast
-Jan 12 10:24:08 serveerstertje kernel: [    8.191944] Bluetooth: BNEP socket layer initialized
-Jan 12 10:24:08 serveerstertje kernel: [    8.191945] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
-Jan 12 10:24:08 serveerstertje kernel: [    8.191954] Bluetooth: HIDP socket layer initialized
+I actually wrote it more than a year ago (on Linux 3.2) but haven't
+seen any similar patch for ColdFire microcontrollers so that I think
+it would be useful for someone using this serial driver for RS485
+communication. It is tested on my MCF5271 board.
 
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Bluetooth deamon 4.66
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Starting SDP server
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Starting experimental netlink support
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Failed to find Bluetooth netlink family
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Failed to init netlink plugin
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: bridge pan0 created
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: HCI dev 0 registered
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Failed to open RFKILL control device
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: HCI dev 0 up
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Starting security manager 0
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Adapter /org/bluez/3912/hci0 has been enabled
-Jan 12 10:24:09 serveerstertje bluetoothd[3912]: Failed to access HAL
+Your comments are appreciated.
 
+Cheers
+--
+Quoc-Viet (Kevin) Nguyen
 
-- And the lockdep warning itself:
+--14dae9399c9b9728e004d333cde5
+Content-Type: application/octet-stream;
+	name="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
+Content-Disposition: attachment;
+	filename="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hbwt458f0
 
-[28678.458250]
-[28678.476588] ======================================================
-[28678.494887] [ INFO: possible circular locking dependency detected ]
-[28678.513013] 3.8.0-rc3-20130112-netpatched-rocketscience-radeon #1 Not tainted
-[28678.530909] -------------------------------------------------------
-[28678.548636] kworker/2:1/19513 is trying to acquire lock:
-[28678.566070]  (&tty->legacy_mutex){+.+.+.}, at: [<ffffffff819ba5ee>] tty_lock_nested+0x3e/0x80
-[28678.583577]
-[28678.583577] but task is already holding lock:
-[28678.617615]  ((&tty->hangup_work)){+.+...}, at: [<ffffffff81080bf8>] process_one_work+0x158/0x4b0
-[28678.634569]
-[28678.634569] which lock already depends on the new lock.
-[28678.634569]
-[28678.683868]
-[28678.683868] the existing dependency chain (in reverse order) is:
-[28678.715354]
-[28678.715354] -> #2 ((&tty->hangup_work)){+.+...}:
-[28678.745890]        [<ffffffff810b4d2e>] __lock_acquire+0x44e/0xdd0
-[28678.760975]        [<ffffffff810b576a>] lock_acquire+0xba/0x100
-[28678.775834]        [<ffffffff8108322a>] flush_work+0x3a/0x250
-[28678.790408]        [<ffffffff81451568>] tty_ldisc_flush_works+0x18/0x40
-[28678.804877]        [<ffffffff814517ae>] tty_ldisc_release+0x2e/0x90
-[28678.818952]        [<ffffffff8144b827>] tty_release+0x3c7/0x590
-[28678.832813]        [<ffffffff8114e009>] __fput+0xa9/0x2c0
-[28678.846411]        [<ffffffff8114e289>] ____fput+0x9/0x10
-[28678.859644]        [<ffffffff810854d5>] task_work_run+0x95/0xb0
-[28678.872661]        [<ffffffff8100dc4d>] do_notify_resume+0x6d/0x80
-[28678.885516]        [<ffffffff819bb5a2>] int_signal+0x12/0x17
-[28678.898047]
-[28678.898047] -> #1 (&tty->legacy_mutex/1){+.+...}:
-[28678.922334]        [<ffffffff810b4d2e>] __lock_acquire+0x44e/0xdd0
-[28678.934268]        [<ffffffff810b576a>] lock_acquire+0xba/0x100
-[28678.945916]        [<ffffffff819b754c>] mutex_lock_nested+0x4c/0x450
-[28678.957318]        [<ffffffff819ba5ee>] tty_lock_nested+0x3e/0x80
-[28678.968500]        [<ffffffff819ba6aa>] tty_lock_pair+0x6a/0x70
-[28678.979405]        [<ffffffff8144b5cb>] tty_release+0x16b/0x590
-[28678.990012]        [<ffffffff8114e009>] __fput+0xa9/0x2c0
-[28679.000367]        [<ffffffff8114e289>] ____fput+0x9/0x10
-[28679.009455] FW: BLOCKED low udp input: IN=eth0 OUT= MAC=40:61:86:f4:67:d9:00:08:ae:10:46:60:08:00 SRC=112.203.174.221 DST=88.159.69.252 LEN=131 TOS=0x00 PREC=0x00 TTL=38 ID=17898 PROTO=UDP SPT=27001 DPT=1024 LEN=111
-[28679.030869]        [<ffffffff810854d5>] task_work_run+0x95/0xb0
-[28679.040727]        [<ffffffff8100dc4d>] do_notify_resume+0x6d/0x80
-[28679.050419]        [<ffffffff819bb5a2>] int_signal+0x12/0x17
-[28679.059880]
-[28679.059880] -> #0 (&tty->legacy_mutex){+.+.+.}:
-[28679.077823]        [<ffffffff810b41d8>] validate_chain+0x1258/0x1300
-[28679.086583]        [<ffffffff810b4d2e>] __lock_acquire+0x44e/0xdd0
-[28679.095126]        [<ffffffff810b576a>] lock_acquire+0xba/0x100
-[28679.103399]        [<ffffffff819b754c>] mutex_lock_nested+0x4c/0x450
-[28679.111468]        [<ffffffff819ba5ee>] tty_lock_nested+0x3e/0x80
-[28679.119247]        [<ffffffff819ba63b>] tty_lock+0xb/0x10
-[28679.126712]        [<ffffffff814492b5>] __tty_hangup+0x65/0x3c0
-[28679.133940]        [<ffffffff81449620>] do_tty_hangup+0x10/0x20
-[28679.140970]        [<ffffffff81080c60>] process_one_work+0x1c0/0x4b0
-[28679.147755]        [<ffffffff8108134e>] worker_thread+0x11e/0x3d0
-[28679.154383]        [<ffffffff81088a36>] kthread+0xd6/0xe0
-[28679.160649]        [<ffffffff819bb1bc>] ret_from_fork+0x7c/0xb0
-[28679.166666]
-[28679.166666] other info that might help us debug this:
-[28679.166666]
-[28679.183748] Chain exists of:
-[28679.183748]   &tty->legacy_mutex --> &tty->legacy_mutex/1 --> (&tty->hangup_work)
-[28679.183748]
-[28679.200495]  Possible unsafe locking scenario:
-[28679.200495]
-[28679.211416]        CPU0                    CPU1
-[28679.216751]        ----                    ----
-[28679.222049]   lock((&tty->hangup_work));
-[28679.227206]                                lock(&tty->legacy_mutex/1);
-[28679.232380]                                lock((&tty->hangup_work));
-[28679.237532]   lock(&tty->legacy_mutex);
-[28679.242673]
-[28679.242673]  *** DEADLOCK ***
-[28679.242673]
-[28679.257840] 2 locks held by kworker/2:1/19513:
-[28679.262888]  #0:  (events){.+.+.+}, at: [<ffffffff81080bf8>] process_one_work+0x158/0x4b0
-[28679.268053]  #1:  ((&tty->hangup_work)){+.+...}, at: [<ffffffff81080bf8>] process_one_work+0x158/0x4b0
-[28679.273381]
-[28679.273381] stack backtrace:
-[28679.283820] Pid: 19513, comm: kworker/2:1 Not tainted 3.8.0-rc3-20130112-netpatched-rocketscience-radeon #1
-[28679.289347] Call Trace:
-[28679.294804]  [<ffffffff810b2c74>] print_circular_bug+0x204/0x300
-[28679.300384]  [<ffffffff810b41d8>] validate_chain+0x1258/0x1300
-[28679.305997]  [<ffffffff810b4d2e>] __lock_acquire+0x44e/0xdd0
-[28679.311599]  [<ffffffff810b4d4b>] ? __lock_acquire+0x46b/0xdd0
-[28679.317222]  [<ffffffff810b576a>] lock_acquire+0xba/0x100
-[28679.322889]  [<ffffffff819ba5ee>] ? tty_lock_nested+0x3e/0x80
-[28679.328481]  [<ffffffff819ba5ee>] ? tty_lock_nested+0x3e/0x80
-[28679.334023]  [<ffffffff819b754c>] mutex_lock_nested+0x4c/0x450
-[28679.339415]  [<ffffffff819ba5ee>] ? tty_lock_nested+0x3e/0x80
-[28679.344784]  [<ffffffff810b5788>] ? lock_acquire+0xd8/0x100
-[28679.350154]  [<ffffffff81449279>] ? __tty_hangup+0x29/0x3c0
-[28679.355506]  [<ffffffff819ba5ee>] tty_lock_nested+0x3e/0x80
-[28679.360939]  [<ffffffff819ba63b>] tty_lock+0xb/0x10
-[28679.366282]  [<ffffffff814492b5>] __tty_hangup+0x65/0x3c0
-[28679.371651]  [<ffffffff81080bf8>] ? process_one_work+0x158/0x4b0
-[28679.377032]  [<ffffffff810b1918>] ? trace_hardirqs_on_caller+0xf8/0x200
-[28679.382273]  [<ffffffff81449620>] do_tty_hangup+0x10/0x20
-[28679.387216]  [<ffffffff81080c60>] process_one_work+0x1c0/0x4b0
-[28679.392118]  [<ffffffff81080bf8>] ? process_one_work+0x158/0x4b0
-[28679.397039]  [<ffffffff81449610>] ? __tty_hangup+0x3c0/0x3c0
-[28679.401952]  [<ffffffff8108134e>] worker_thread+0x11e/0x3d0
-[28679.406859]  [<ffffffff810b1918>] ? trace_hardirqs_on_caller+0xf8/0x200
-[28679.411787]  [<ffffffff81081230>] ? manage_workers+0x2e0/0x2e0
-[28679.416683]  [<ffffffff81088a36>] kthread+0xd6/0xe0
-[28679.421538]  [<ffffffff81088960>] ? __init_kthread_worker+0x70/0x70
-[28679.426429]  [<ffffffff819bb1bc>] ret_from_fork+0x7c/0xb0
-[28679.431278]  [<ffffffff81088960>] ? __init_kthread_worker+0x70/0x70
-
-
-- This is followed by blocked task messages for the perl script:
-
-Jan 12 18:25:29 serveerstertje kernel: [28926.144229] INFO: task zabbix_slimmeme:26976 blocked for more than 120 seconds.
-Jan 12 18:25:29 serveerstertje kernel: [28926.162883] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-Jan 12 18:25:29 serveerstertje kernel: [28926.181312] zabbix_slimmeme D ffff88003851d230     0 26976  22112 0x00000000
-Jan 12 18:25:29 serveerstertje kernel: [28926.199596]  ffff88002d473818 0000000000000216 ffff880000000002 ffffffff8202be38
-Jan 12 18:25:29 serveerstertje kernel: [28926.217728]  ffff88003851d230 0000000000013040 ffff88002d473fd8 ffff88002d472010
-Jan 12 18:25:29 serveerstertje kernel: [28926.235627]  0000000000013040 0000000000013040 ffff88002d473fd8 0000000000013040
-Jan 12 18:25:29 serveerstertje kernel: [28926.253346] Call Trace:
-Jan 12 18:25:29 serveerstertje kernel: [28926.270648]  [<ffffffff810be1ed>] ? __module_text_address+0xd/0x60
-Jan 12 18:25:29 serveerstertje kernel: [28926.322462]  [<ffffffff810be1ed>] ? __module_text_address+0xd/0x60
-Jan 12 18:25:29 serveerstertje kernel: [28926.339617]  [<ffffffff810be44b>] ? is_module_text_address+0x2b/0x60
-Jan 12 18:25:29 serveerstertje kernel: [28926.356452]  [<ffffffff81085958>] ? __kernel_text_address+0x58/0x80
-Jan 12 18:25:29 serveerstertje kernel: [28926.373057]  [<ffffffff81140049>] ? sysfs_slab_add+0x149/0x200
-Jan 12 18:25:29 serveerstertje kernel: [28926.389435]  [<ffffffff81140067>] ? sysfs_slab_add+0x167/0x200
-Jan 12 18:25:29 serveerstertje kernel: [28926.405516]  [<ffffffff819b8d04>] schedule+0x24/0x70
-Jan 12 18:25:29 serveerstertje kernel: [28926.421242]  [<ffffffff819b5f6d>] schedule_timeout+0x1bd/0x220
-Jan 12 18:25:29 serveerstertje kernel: [28926.436793]  [<ffffffff810b5788>] ? lock_acquire+0xd8/0x100
-Jan 12 18:25:29 serveerstertje kernel: [28926.452138]  [<ffffffff819b8201>] ? wait_for_common+0x31/0x170
-Jan 12 18:25:29 serveerstertje kernel: [28926.467171]  [<ffffffff810b5c17>] ? lock_release+0x117/0x250
-Jan 12 18:25:29 serveerstertje kernel: [28926.481938]  [<ffffffff819b82d1>] wait_for_common+0x101/0x170
-Jan 12 18:25:29 serveerstertje kernel: [28926.496482]  [<ffffffff81098730>] ? try_to_wake_up+0x310/0x310
-Jan 12 18:25:29 serveerstertje kernel: [28926.510873]  [<ffffffff819b83e8>] wait_for_completion+0x18/0x20
-Jan 12 18:25:29 serveerstertje kernel: [28926.525014]  [<ffffffff81083385>] flush_work+0x195/0x250
-Jan 12 18:25:29 serveerstertje kernel: [28926.538855]  [<ffffffff810833a0>] ? flush_work+0x1b0/0x250
-Jan 12 18:25:29 serveerstertje kernel: [28926.552411]  [<ffffffff81080400>] ? cwq_dec_nr_in_flight+0xd0/0xd0
-Jan 12 18:25:29 serveerstertje kernel: [28926.565910]  [<ffffffff81451568>] tty_ldisc_flush_works+0x18/0x40
-Jan 12 18:25:29 serveerstertje kernel: [28926.579013]  [<ffffffff814517ae>] tty_ldisc_release+0x2e/0x90
-Jan 12 18:25:29 serveerstertje kernel: [28926.591876]  [<ffffffff8144b827>] tty_release+0x3c7/0x590
-Jan 12 18:25:29 serveerstertje kernel: [28926.604527]  [<ffffffff810b1a2d>] ? trace_hardirqs_on+0xd/0x10
-Jan 12 18:25:29 serveerstertje kernel: [28926.616853]  [<ffffffff819b63a9>] ? __mutex_unlock_slowpath+0x149/0x1d0
-Jan 12 18:25:29 serveerstertje kernel: [28926.628997]  [<ffffffff81098730>] ? try_to_wake_up+0x310/0x310
-Jan 12 18:25:29 serveerstertje kernel: [28926.640952]  [<ffffffff8144bdb4>] tty_open+0x3c4/0x5f0
-Jan 12 18:25:30 serveerstertje kernel: [28926.652584]  [<ffffffff81150a18>] chrdev_open+0x98/0x170
-Jan 12 18:25:30 serveerstertje kernel: [28926.663972]  [<ffffffff810912cd>] ? lg_local_unlock+0x3d/0x70
-Jan 12 18:25:30 serveerstertje kernel: [28926.675152]  [<ffffffff81150980>] ? cdev_put+0x30/0x30
-Jan 12 18:25:30 serveerstertje kernel: [28926.686173]  [<ffffffff8114b1fe>] do_dentry_open+0x25e/0x310
-Jan 12 18:25:30 serveerstertje kernel: [28926.696868]  [<ffffffff8114b3c0>] finish_open+0x30/0x50
-Jan 12 18:25:30 serveerstertje kernel: [28926.707267]  [<ffffffff8115a79e>] do_last+0x30e/0xe90
-Jan 12 18:25:30 serveerstertje kernel: [28926.717404]  [<ffffffff81157aba>] ? link_path_walk+0x9a/0x9f0
-Jan 12 18:25:30 serveerstertje kernel: [28926.727353]  [<ffffffff8115b3ce>] path_openat+0xae/0x4e0
-Jan 12 18:25:30 serveerstertje kernel: [28926.737008]  [<ffffffff810b5c17>] ? lock_release+0x117/0x250
-Jan 12 18:25:30 serveerstertje kernel: [28926.746482]  [<ffffffff81160264>] ? do_select+0x5f4/0x6d0
-Jan 12 18:25:30 serveerstertje kernel: [28926.755613]  [<ffffffff8115b934>] do_filp_open+0x44/0xa0
-Jan 12 18:25:30 serveerstertje kernel: [28926.764542]  [<ffffffff811691e3>] ? __alloc_fd+0xb3/0x150
-Jan 12 18:25:30 serveerstertje kernel: [28926.773224]  [<ffffffff8114ad13>] do_sys_open+0x103/0x1f0
-Jan 12 18:25:30 serveerstertje kernel: [28926.781585]  [<ffffffff8114ae3c>] sys_open+0x1c/0x20
-Jan 12 18:25:30 serveerstertje kernel: [28926.789685]  [<ffffffff819bb269>] system_call_fastpath+0x16/0x1b
-Jan 12 18:25:30 serveerstertje kernel: [28926.797570] INFO: lockdep is turned off.
+RnJvbSAwMDJmZTQ1MTZkMDFmYmY3OTQ0NTBmZDZiZjk1ZmY2NmU3OTVkNWZhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4K
+RGF0ZTogVHVlLCA4IEphbiAyMDEzIDE3OjU2OjM5ICsxMDAwClN1YmplY3Q6IFtQQVRDSF0gbWNm
+OiBBZGQgc3VwcG9ydCBSUzQ4NSBpbiBDb2xkRmlyZSBzZXJpYWwgZHJpdmVyCgpTaWduZWQtb2Zm
+LWJ5OiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4KLS0tCiBkcml2ZXJzL3R0
+eS9zZXJpYWwvS2NvbmZpZyB8ICAgIDYgKysrKwogZHJpdmVycy90dHkvc2VyaWFsL21jZi5jICAg
+fCAgIDgyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAyIGZp
+bGVzIGNoYW5nZWQsIDg4IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
+ZXJpYWwvS2NvbmZpZyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCmluZGV4IDkyNWExZTUu
+LjA5ZGE5NTMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCisrKyBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCkBAIC0xMDQyLDYgKzEwNDIsMTIgQEAgY29uZmlnIFNF
+UklBTF9NQ0ZfQ09OU09MRQogCWhlbHAKIAkgIEVuYWJsZSBhIENvbGRGaXJlIGludGVybmFsIHNl
+cmlhbCBwb3J0IHRvIGJlIHRoZSBzeXN0ZW0gY29uc29sZS4KIAorY29uZmlnIFNFUklBTF9NQ0Zf
+UlM0ODUKKwlib29sICJDb2xkRmlyZSBzZXJpYWwgUlM0ODUgc3VwcG9ydCIKKwlkZXBlbmRzIG9u
+IFNFUklBTF9NQ0YKKwloZWxwCisJICBBdXRvbWF0aWNhbGx5IHN3aXRjaGluZyByZWFkL3dyaXRl
+IG1vZGUgYnkgdG9nZ2xpbmcgL1JUUyBzaWduYWwuCisKIGNvbmZpZyBTRVJJQUxfUE1BQ1pJTE9H
+CiAJdHJpc3RhdGUgIk1hYyBvciBQb3dlck1hYyB6ODVjMzAgRVNDQyBzdXBwb3J0IgogCWRlcGVu
+ZHMgb24gKE02OEsgJiYgTUFDKSB8fCAoUFBDX09GICYmIFBQQ19QTUFDKQpkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy90dHkvc2VyaWFsL21jZi5jIGIvZHJpdmVycy90dHkvc2VyaWFsL21jZi5jCmluZGV4
+IDlhZmNhMDkuLmM0NjI3MDcgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tY2YuYwor
+KysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWNmLmMKQEAgLTI3LDYgKzI3LDcgQEAKICNpbmNsdWRl
+IDxhc20vbWNmc2ltLmg+CiAjaW5jbHVkZSA8YXNtL21jZnVhcnQuaD4KICNpbmNsdWRlIDxhc20v
+bmV0dGVsLmg+CisjaW5jbHVkZSA8YXNtL3VhY2Nlc3MuaD4KIAogLyoqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KiovCiAKQEAgLTU1LDYgKzU2LDkgQEAgc3RydWN0IG1jZl91YXJ0IHsKIAlzdHJ1Y3QgdWFydF9w
+b3J0CXBvcnQ7CiAJdW5zaWduZWQgaW50CQlzaWdzOwkJLyogTG9jYWwgY29weSBvZiBsaW5lIHNp
+Z3MgKi8KIAl1bnNpZ25lZCBjaGFyCQlpbXI7CQkvKiBMb2NhbCBJTVIgbWlycm9yICovCisjaWYg
+ZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwlzdHJ1Y3Qgc2VyaWFsX3JzNDg1CXJz
+NDg1OworI2VuZGlmCiB9OwogCiAvKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KQEAgLTEwMSw2ICsxMDUs
+MTQgQEAgc3RhdGljIHZvaWQgbWNmX3N0YXJ0X3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiB7
+CiAJc3RydWN0IG1jZl91YXJ0ICpwcCA9IGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgbWNmX3Vh
+cnQsIHBvcnQpOwogCisjaWYgZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwlpZiAo
+cHAtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKKwkJLyogRW5hYmxlIFRyYW5z
+bWl0dGVyICovCisJCXdyaXRlYihNQ0ZVQVJUX1VDUl9UWEVOQUJMRSwgcG9ydC0+bWVtYmFzZSAr
+IE1DRlVBUlRfVUNSKTsKKwkJLyogTWFudWFsbHkgYXNzZXJ0IFJUUyAqLworCQl3cml0ZWIoTUNG
+VUFSVF9VT1BfUlRTLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VT1AxKTsKKwl9CisjZW5kaWYK
+IAlwcC0+aW1yIHw9IE1DRlVBUlRfVUlSX1RYUkVBRFk7CiAJd3JpdGViKHBwLT5pbXIsIHBvcnQt
+Pm1lbWJhc2UgKyBNQ0ZVQVJUX1VJTVIpOwogfQpAQCAtMjQ4LDYgKzI2MCwxNSBAQCBzdGF0aWMg
+dm9pZCBtY2Zfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJt
+aW9zICp0ZXJtaW9zLAogCQltcjIgfD0gTUNGVUFSVF9NUjJfVFhDVFM7CiAJfQogCisjaWYgZGVm
+aW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwl7CisJCXN0cnVjdCBtY2ZfdWFydCAqcHAg
+PSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKKwkJaWYgKHBwLT5y
+czQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7CisJCQlwcmludGsoS0VSTl9ERUJVRyAi
+U2V0dGluZyBVQVJUIHRvIFJTNDg1XG4iKTsKKwkJCW1yMiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsK
+KwkJfQorCX0KKyNlbmRpZgogCXNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5sb2NrLCBmbGFncyk7
+CiAJdWFydF91cGRhdGVfdGltZW91dChwb3J0LCB0ZXJtaW9zLT5jX2NmbGFnLCBiYXVkKTsKIAl3
+cml0ZWIoTUNGVUFSVF9VQ1JfQ01EUkVTRVRSWCwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNS
+KTsKQEAgLTM0Miw2ICszNjMsMTEgQEAgc3RhdGljIHZvaWQgbWNmX3R4X2NoYXJzKHN0cnVjdCBt
+Y2ZfdWFydCAqcHApCiAJaWYgKHhtaXQtPmhlYWQgPT0geG1pdC0+dGFpbCkgewogCQlwcC0+aW1y
+ICY9IH5NQ0ZVQVJUX1VJUl9UWFJFQURZOwogCQl3cml0ZWIocHAtPmltciwgcG9ydC0+bWVtYmFz
+ZSArIE1DRlVBUlRfVUlNUik7CisjaWYgZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkK
+KwkJLyogZGlzYWJsZSBUcmFuc21pdHRlciB0byBuZWdhdGUgYXV0b21hdGljYWxseSBSVFMgKi8K
+KwkJaWYgKHBwLT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKQorCQkJd3JpdGViKE1D
+RlVBUlRfVUNSX1RYRElTQUJMRSwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNSKTsKKyNlbmRp
+ZgogCX0KIH0KIApAQCAtNDE4LDYgKzQ0NCw1OSBAQCBzdGF0aWMgaW50IG1jZl92ZXJpZnlfcG9y
+dChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBzdHJ1Y3Qgc2VyaWFsX3N0cnVjdCAqc2VyKQogCiAv
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKi8KIAorI2lmIGRlZmluZWQoQ09ORklHX1NFUklBTF9NQ0ZfUlM0
+ODUpCitzdGF0aWMgdm9pZCBtY2ZfY29uZmlnX3JzNDg1KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQs
+IHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJzNDg1KQoreworCXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBj
+b250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKKwl1bnNpZ25lZCBsb25n
+IGZsYWdzOworCXVuc2lnbmVkIGNoYXIgbXIxLCBtcjI7CisKKwlzcGluX2xvY2tfaXJxc2F2ZSgm
+cG9ydC0+bG9jaywgZmxhZ3MpOworCS8qIGdldCBtb2RlIHJlZ2lzdGVyICovCisJbXIxID0gcmVh
+ZGIocG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsKKwltcjIgPSByZWFkYihwb3J0LT5tZW1i
+YXNlICsgTUNGVUFSVF9VTVIpOworCWlmIChyczQ4NS0+ZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxF
+RCkgeworCQlwcmludGsoS0VSTl9ERUJVRyAiU2V0dGluZyBVQVJUIHRvIFJTNDg1XG4iKTsKKwkJ
+LyogQXV0b21hdGljYWxseSBuZWdhdGUgUlRTIGFmdGVyIFRYIGlzIGNvbXBsZXRlICovCisJCW1y
+MiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsKKwl9IGVsc2UgeworCQlwcmludGsoS0VSTl9ERUJVRyAi
+U2V0dGluZyBVQVJUIHRvIFJTMjMyXG4iKTsKKwkJbXIyICY9IH5NQ0ZVQVJUX01SMl9UWFJUUzsK
+Kwl9CisJd3JpdGViKG1yMSwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsKKwl3cml0ZWIo
+bXIyLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VTVIpOworCXBwLT5yczQ4NSA9ICpyczQ4NTsK
+KwlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZwb3J0LT5sb2NrLCBmbGFncyk7Cit9CisKK3N0YXRp
+YyBpbnQgbWNmX2lvY3RsKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHVuc2lnbmVkIGludCBjbWQs
+CisJCXVuc2lnbmVkIGxvbmcgYXJnKQoreworCXN3aXRjaCAoY21kKSB7CisJY2FzZSBUSU9DU1JT
+NDg1OiB7CisJCXN0cnVjdCBzZXJpYWxfcnM0ODUgcnM0ODU7CisJCWlmIChjb3B5X2Zyb21fdXNl
+cigmcnM0ODUsIChzdHJ1Y3Qgc2VyaWFsX3JzNDg1ICopYXJnLAorCQkJCXNpemVvZihzdHJ1Y3Qg
+c2VyaWFsX3JzNDg1KSkpCisJCQlyZXR1cm4gLUVGQVVMVDsKKwkJbWNmX2NvbmZpZ19yczQ4NShw
+b3J0LCAmcnM0ODUpOworCQlicmVhazsKKwl9CisJY2FzZSBUSU9DR1JTNDg1OiB7CisJCXN0cnVj
+dCBtY2ZfdWFydCAqcHAgPSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0
+KTsKKwkJaWYgKGNvcHlfdG9fdXNlcigoc3RydWN0IHNlcmlhbF9yczQ4NSAqKWFyZywgJnBwLT5y
+czQ4NSwKKwkJCQlzaXplb2Yoc3RydWN0IHNlcmlhbF9yczQ4NSkpKQorCQkJcmV0dXJuIC1FRkFV
+TFQ7CisJCWJyZWFrOworCX0KKwlkZWZhdWx0OgorCQlyZXR1cm4gLUVOT0lPQ1RMQ01EOworCX0K
+KwlyZXR1cm4gMDsKK30KKyNlbmRpZgorCisvKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KKwogLyoKICAq
+CURlZmluZSB0aGUgYmFzaWMgc2VyaWFsIGZ1bmN0aW9ucyB3ZSBzdXBwb3J0LgogICovCkBAIC00
+MzgsNiArNTE3LDkgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBtY2ZfdWFydF9vcHMg
+PSB7CiAJLnJlbGVhc2VfcG9ydAk9IG1jZl9yZWxlYXNlX3BvcnQsCiAJLmNvbmZpZ19wb3J0CT0g
+bWNmX2NvbmZpZ19wb3J0LAogCS52ZXJpZnlfcG9ydAk9IG1jZl92ZXJpZnlfcG9ydCwKKyNpZiBk
+ZWZpbmVkKENPTkZJR19TRVJJQUxfTUNGX1JTNDg1KQorCS5pb2N0bAkJPSBtY2ZfaW9jdGwsCisj
+ZW5kaWYKIH07CiAKIHN0YXRpYyBzdHJ1Y3QgbWNmX3VhcnQgbWNmX3BvcnRzWzRdOwotLSAKMS43
+LjEwLjQKCg==
+--14dae9399c9b9728e004d333cde5--
