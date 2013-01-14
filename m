@@ -1,152 +1,32 @@
-From: Kevin Nguyen <afelion@gmail.com>
-Subject: Re: [PATCH] RS485 serial communication on ColdFire
-Date: Mon, 14 Jan 2013 18:12:34 +1000
-Message-ID: <CAODWn4q=O6DrjxEpPU-eRrWRLRzFPzAe5XMJL1Oayeok79kyEA@mail.gmail.com>
-References: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
- <20130114033314.GB21784@kroah.com>
+From: Chanho Min <chanho.min@lge.com>
+Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Mon, 14 Jan 2013 17:41:45 +0900
+Message-ID: <CAOAMb1BS6gvezeSrUTNJ--gGxCRL17AO8PHJ_eLrxzjOex7w1g@mail.gmail.com>
+References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com>
+	<CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
+	<50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
+	<CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
+	<20130114002608.GV23505@n2100.arm.linux.org.uk>
+	<CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
+	<CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=f46d04479f118c283404d33b37ef
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f52.google.com ([209.85.219.52]:33036 "EHLO
-	mail-oa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755841Ab3ANINP (ORCPT
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:51912 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752333Ab3ANIrT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 03:13:15 -0500
-Received: by mail-oa0-f52.google.com with SMTP id o6so3639746oag.39
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 00:13:15 -0800 (PST)
-In-Reply-To: <20130114033314.GB21784@kroah.com>
+	Mon, 14 Jan 2013 03:47:19 -0500
+In-Reply-To: <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Chanho Min <chanho0207@gmail.com>
 
---f46d04479f118c283404d33b37ef
-Content-Type: text/plain; charset=ISO-8859-1
+>Looking back at the patch, do you know if we can get rid of
+>some of the #ifdefs and have this like a runtime switch set in
+>struct amba_pl011_data or Device Tree?
+Yes, I know. I'll come back with v2 soon.
 
-Hi Greg,
-
-The RS485 mode can be switched on/off from userspace by using the flag
-SER_RS485_ENABLED, therefore I've removed those #ifdefs in the patch.
-
-Regards
-
-On Mon, Jan 14, 2013 at 1:33 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Mon, Jan 14, 2013 at 09:21:52AM +1000, Kevin Nguyen wrote:
->> Hi
->>
->> I've attached the patch that adds support RS485 communication in
->> ColdFire serial driver.
->>
->> As defined in Documentation/serial/serial-rs485.txt, switching between
->> read or write mode can be done by toggling RTS signal that is
->> supported by ColdFire chips.
->>
->> I actually wrote it more than a year ago (on Linux 3.2) but haven't
->> seen any similar patch for ColdFire microcontrollers so that I think
->> it would be useful for someone using this serial driver for RS485
->> communication. It is tested on my MCF5271 board.
->>
->> Your comments are appreciated.
->
-> Is there any way to do this so that the option can be enabled at
-> runtime, instead of build time?  Also, getting rid of a lot of the
-> #ifdefs in the .c file would be great to accomplish.
->
-> thanks,
->
-> greg k-h
-
-
-
--- 
-Quoc-Viet (Kevin) Nguyen
-
---f46d04479f118c283404d33b37ef
-Content-Type: application/octet-stream;
-	name="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
-Content-Disposition: attachment;
-	filename="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_hbxc4tbd0
-
-RnJvbSA5OWEwODA2YWNjZDA5MGRiYjk3YmI2YmUyZmY5MmFmNjBhM2RiMDk5IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4K
-RGF0ZTogVHVlLCA4IEphbiAyMDEzIDE3OjU2OjM5ICsxMDAwClN1YmplY3Q6IFtQQVRDSF0gbWNm
-OiBBZGQgc3VwcG9ydCBSUzQ4NSBpbiBDb2xkRmlyZSBzZXJpYWwgZHJpdmVyCgpTaWduZWQtb2Zm
-LWJ5OiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4KLS0tCiBkcml2ZXJzL3R0
-eS9zZXJpYWwvbWNmLmMgfCAgIDY5ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA2OSBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy90dHkvc2VyaWFsL21jZi5jIGIvZHJpdmVycy90dHkvc2VyaWFsL21jZi5jCmlu
-ZGV4IDlhZmNhMDkuLmZiY2M0OTQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tY2Yu
-YworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWNmLmMKQEAgLTI3LDYgKzI3LDcgQEAKICNpbmNs
-dWRlIDxhc20vbWNmc2ltLmg+CiAjaW5jbHVkZSA8YXNtL21jZnVhcnQuaD4KICNpbmNsdWRlIDxh
-c20vbmV0dGVsLmg+CisjaW5jbHVkZSA8YXNtL3VhY2Nlc3MuaD4KIAogLyoqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKiovCiAKQEAgLTU1LDYgKzU2LDcgQEAgc3RydWN0IG1jZl91YXJ0IHsKIAlzdHJ1Y3QgdWFy
-dF9wb3J0CXBvcnQ7CiAJdW5zaWduZWQgaW50CQlzaWdzOwkJLyogTG9jYWwgY29weSBvZiBsaW5l
-IHNpZ3MgKi8KIAl1bnNpZ25lZCBjaGFyCQlpbXI7CQkvKiBMb2NhbCBJTVIgbWlycm9yICovCisJ
-c3RydWN0IHNlcmlhbF9yczQ4NQlyczQ4NTsKIH07CiAKIC8qKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLwpA
-QCAtMTAxLDYgKzEwMywxMiBAQCBzdGF0aWMgdm9pZCBtY2Zfc3RhcnRfdHgoc3RydWN0IHVhcnRf
-cG9ydCAqcG9ydCkKIHsKIAlzdHJ1Y3QgbWNmX3VhcnQgKnBwID0gY29udGFpbmVyX29mKHBvcnQs
-IHN0cnVjdCBtY2ZfdWFydCwgcG9ydCk7CiAKKwlpZiAocHAtPnJzNDg1LmZsYWdzICYgU0VSX1JT
-NDg1X0VOQUJMRUQpIHsKKwkJLyogRW5hYmxlIFRyYW5zbWl0dGVyICovCisJCXdyaXRlYihNQ0ZV
-QVJUX1VDUl9UWEVOQUJMRSwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNSKTsKKwkJLyogTWFu
-dWFsbHkgYXNzZXJ0IFJUUyAqLworCQl3cml0ZWIoTUNGVUFSVF9VT1BfUlRTLCBwb3J0LT5tZW1i
-YXNlICsgTUNGVUFSVF9VT1AxKTsKKwl9CiAJcHAtPmltciB8PSBNQ0ZVQVJUX1VJUl9UWFJFQURZ
-OwogCXdyaXRlYihwcC0+aW1yLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VSU1SKTsKIH0KQEAg
-LTE5Niw2ICsyMDQsNyBAQCBzdGF0aWMgdm9pZCBtY2Zfc2h1dGRvd24oc3RydWN0IHVhcnRfcG9y
-dCAqcG9ydCkKIHN0YXRpYyB2b2lkIG1jZl9zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9wb3J0ICpw
-b3J0LCBzdHJ1Y3Qga3Rlcm1pb3MgKnRlcm1pb3MsCiAJc3RydWN0IGt0ZXJtaW9zICpvbGQpCiB7
-CisJc3RydWN0IG1jZl91YXJ0ICpwcCA9IGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgbWNmX3Vh
-cnQsIHBvcnQpOwogCXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAJdW5zaWduZWQgaW50IGJhdWQsIGJh
-dWRjbGs7CiAjaWYgZGVmaW5lZChDT05GSUdfTTUyNzIpCkBAIC0yNDgsNiArMjU3LDExIEBAIHN0
-YXRpYyB2b2lkIG1jZl9zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBzdHJ1Y3Qg
-a3Rlcm1pb3MgKnRlcm1pb3MsCiAJCW1yMiB8PSBNQ0ZVQVJUX01SMl9UWENUUzsKIAl9CiAKKwlp
-ZiAocHAtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKKwkJcHJpbnRrKEtFUk5f
-REVCVUcgIlNldHRpbmcgVUFSVCB0byBSUzQ4NVxuIik7CisJCW1yMiB8PSBNQ0ZVQVJUX01SMl9U
-WFJUUzsKKwl9CisKIAlzcGluX2xvY2tfaXJxc2F2ZSgmcG9ydC0+bG9jaywgZmxhZ3MpOwogCXVh
-cnRfdXBkYXRlX3RpbWVvdXQocG9ydCwgdGVybWlvcy0+Y19jZmxhZywgYmF1ZCk7CiAJd3JpdGVi
-KE1DRlVBUlRfVUNSX0NNRFJFU0VUUlgsIHBvcnQtPm1lbWJhc2UgKyBNQ0ZVQVJUX1VDUik7CkBA
-IC0zNDIsNiArMzU2LDkgQEAgc3RhdGljIHZvaWQgbWNmX3R4X2NoYXJzKHN0cnVjdCBtY2ZfdWFy
-dCAqcHApCiAJaWYgKHhtaXQtPmhlYWQgPT0geG1pdC0+dGFpbCkgewogCQlwcC0+aW1yICY9IH5N
-Q0ZVQVJUX1VJUl9UWFJFQURZOwogCQl3cml0ZWIocHAtPmltciwgcG9ydC0+bWVtYmFzZSArIE1D
-RlVBUlRfVUlNUik7CisJCS8qIGRpc2FibGUgVHJhbnNtaXR0ZXIgdG8gbmVnYXRlIGF1dG9tYXRp
-Y2FsbHkgUlRTICovCisJCWlmIChwcC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxFRCkK
-KwkJCXdyaXRlYihNQ0ZVQVJUX1VDUl9UWERJU0FCTEUsIHBvcnQtPm1lbWJhc2UgKyBNQ0ZVQVJU
-X1VDUik7CiAJfQogfQogCkBAIC00MTgsNiArNDM1LDU3IEBAIHN0YXRpYyBpbnQgbWNmX3Zlcmlm
-eV9wb3J0KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBzZXJpYWxfc3RydWN0ICpzZXIp
-CiAKIC8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqLwogCitzdGF0aWMgdm9pZCBtY2ZfY29uZmlnX3JzNDg1
-KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJzNDg1KQorewor
-CXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0
-LCBwb3J0KTsKKwl1bnNpZ25lZCBsb25nIGZsYWdzOworCXVuc2lnbmVkIGNoYXIgbXIxLCBtcjI7
-CisKKwlzcGluX2xvY2tfaXJxc2F2ZSgmcG9ydC0+bG9jaywgZmxhZ3MpOworCS8qIGdldCBtb2Rl
-IHJlZ2lzdGVyICovCisJbXIxID0gcmVhZGIocG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsK
-KwltcjIgPSByZWFkYihwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VTVIpOworCWlmIChyczQ4NS0+
-ZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxFRCkgeworCQlwcmludGsoS0VSTl9ERUJVRyAiU2V0dGlu
-ZyBVQVJUIHRvIFJTNDg1XG4iKTsKKwkJLyogQXV0b21hdGljYWxseSBuZWdhdGUgUlRTIGFmdGVy
-IFRYIGlzIGNvbXBsZXRlICovCisJCW1yMiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsKKwl9IGVsc2Ug
-eworCQlwcmludGsoS0VSTl9ERUJVRyAiU2V0dGluZyBVQVJUIHRvIFJTMjMyXG4iKTsKKwkJbXIy
-ICY9IH5NQ0ZVQVJUX01SMl9UWFJUUzsKKwl9CisJd3JpdGViKG1yMSwgcG9ydC0+bWVtYmFzZSAr
-IE1DRlVBUlRfVU1SKTsKKwl3cml0ZWIobXIyLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VTVIp
-OworCXBwLT5yczQ4NSA9ICpyczQ4NTsKKwlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZwb3J0LT5s
-b2NrLCBmbGFncyk7Cit9CisKK3N0YXRpYyBpbnQgbWNmX2lvY3RsKHN0cnVjdCB1YXJ0X3BvcnQg
-KnBvcnQsIHVuc2lnbmVkIGludCBjbWQsCisJCXVuc2lnbmVkIGxvbmcgYXJnKQoreworCXN3aXRj
-aCAoY21kKSB7CisJY2FzZSBUSU9DU1JTNDg1OiB7CisJCXN0cnVjdCBzZXJpYWxfcnM0ODUgcnM0
-ODU7CisJCWlmIChjb3B5X2Zyb21fdXNlcigmcnM0ODUsIChzdHJ1Y3Qgc2VyaWFsX3JzNDg1ICop
-YXJnLAorCQkJCXNpemVvZihzdHJ1Y3Qgc2VyaWFsX3JzNDg1KSkpCisJCQlyZXR1cm4gLUVGQVVM
-VDsKKwkJbWNmX2NvbmZpZ19yczQ4NShwb3J0LCAmcnM0ODUpOworCQlicmVhazsKKwl9CisJY2Fz
-ZSBUSU9DR1JTNDg1OiB7CisJCXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBjb250YWluZXJfb2YocG9y
-dCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKKwkJaWYgKGNvcHlfdG9fdXNlcigoc3RydWN0IHNl
-cmlhbF9yczQ4NSAqKWFyZywgJnBwLT5yczQ4NSwKKwkJCQlzaXplb2Yoc3RydWN0IHNlcmlhbF9y
-czQ4NSkpKQorCQkJcmV0dXJuIC1FRkFVTFQ7CisJCWJyZWFrOworCX0KKwlkZWZhdWx0OgorCQly
-ZXR1cm4gLUVOT0lPQ1RMQ01EOworCX0KKwlyZXR1cm4gMDsKK30KKworLyoqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKiovCisKIC8qCiAgKglEZWZpbmUgdGhlIGJhc2ljIHNlcmlhbCBmdW5jdGlvbnMgd2Ugc3Vw
-cG9ydC4KICAqLwpAQCAtNDM4LDYgKzUwNiw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgdWFydF9v
-cHMgbWNmX3VhcnRfb3BzID0gewogCS5yZWxlYXNlX3BvcnQJPSBtY2ZfcmVsZWFzZV9wb3J0LAog
-CS5jb25maWdfcG9ydAk9IG1jZl9jb25maWdfcG9ydCwKIAkudmVyaWZ5X3BvcnQJPSBtY2ZfdmVy
-aWZ5X3BvcnQsCisJLmlvY3RsCQk9IG1jZl9pb2N0bCwKIH07CiAKIHN0YXRpYyBzdHJ1Y3QgbWNm
-X3VhcnQgbWNmX3BvcnRzWzRdOwotLSAKMS43LjEwLjQKCg==
---f46d04479f118c283404d33b37ef--
+Thanks,
+Chanho
