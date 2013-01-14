@@ -1,63 +1,46 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Mon, 14 Jan 2013 00:26:08 +0000
-Message-ID: <20130114002608.GV23505@n2100.arm.linux.org.uk>
-References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com> <CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com> <50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com> <CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] RS485 serial communication on ColdFire
+Date: Sun, 13 Jan 2013 19:33:14 -0800
+Message-ID: <20130114033314.GB21784@kroah.com>
+References: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:45750 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756038Ab3ANA01 (ORCPT
+Received: from mail-pb0-f42.google.com ([209.85.160.42]:45311 "EHLO
+	mail-pb0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754137Ab3ANDc0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Jan 2013 19:26:27 -0500
+	Sun, 13 Jan 2013 22:32:26 -0500
+Received: by mail-pb0-f42.google.com with SMTP id rp2so1921856pbb.1
+        for <linux-serial@vger.kernel.org>; Sun, 13 Jan 2013 19:32:25 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
+In-Reply-To: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Chanho Min <chanho.min@lge.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, chanho0207@gmail.com
+To: Kevin Nguyen <afelion@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-On Mon, Jan 14, 2013 at 01:04:58AM +0100, Linus Walleij wrote:
-> At some point we reasoned that we may actually be saved
-> by the reverse phenomena - if single request is *NOT*
-> connected, there will very often be some characters in the
-> FIFO, and that's enough to trigger the RTIM IRQ, and we get
-> a nice flow. So maybe the platforms that actually work, work
-> because they have bursts only.
+On Mon, Jan 14, 2013 at 09:21:52AM +1000, Kevin Nguyen wrote:
+> Hi
 > 
-> But that would pose a problem when an even burst of
-> characters arrive. Say 16 characters, this will be transferred
-> in two bursts and leave the FIFO empty, but no DMA TC
-> IRQ since the buffer is not full, and we'd get your
-> phenomena.
+> I've attached the patch that adds support RS485 communication in
+> ColdFire serial driver.
 > 
-> But I could never reproduce the latter theoretical problem,
-> so I think the hardware actually has a fix for this, around
-> the burst signal logic.
+> As defined in Documentation/serial/serial-rs485.txt, switching between
+> read or write mode can be done by toggling RTS signal that is
+> supported by ColdFire chips.
 > 
-> But it may very well be that the single request can not be
-> enabled for the PL011 for it to work properly.
+> I actually wrote it more than a year ago (on Linux 3.2) but haven't
+> seen any similar patch for ColdFire microcontrollers so that I think
+> it would be useful for someone using this serial driver for RS485
+> communication. It is tested on my MCF5271 board.
+> 
+> Your comments are appreciated.
 
-What you describe above is exactly the problem I see on the Versatile
-platform with it's PL080 and PL011.  I made the comment that this setup
-can't work properly as it stands.  And I don't think that setting a
-timer which fires every jiffy count is really a solution to the problem.
-That's an expensive way of having a per-jiffy callback for something
-that's probably going to remain idle most of the time.
+Is there any way to do this so that the option can be enabled at
+runtime, instead of build time?  Also, getting rid of a lot of the
+#ifdefs in the .c file would be great to accomplish.
 
-Not only that, but a 1 jiffy timeout even for slower baud rates is
-just utterly silly.
+thanks,
 
-The point of using DMA is to move the workload off the CPU onto hardware,
-so that the CPU can go off and do other stuff.  If it's having to poll
-it once every jiffy, then...
-
-> You may not be able to turn this off, and in that case this
-> kind of code is the only way forward indeed.
-
-Unless there's something inbetween the PL080 and PL011 to do that.
-The peripherals themselves don't have any means of controlling this.
-
-The solution I came up with on Versatile was to just not enable
-receive DMA - at all.
+greg k-h
