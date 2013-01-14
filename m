@@ -1,57 +1,30 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: Warning about not setting tty->port: what to set it to?
-Date: Mon, 14 Jan 2013 16:51:25 +0000 (UTC)
-Message-ID: <kd1d2d$dfs$1@ger.gmane.org>
-References: <kcpt0f$ott$1@ger.gmane.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:40381 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756521Ab3ANQvm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 11:51:42 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1TunGN-0003Ca-Cd
-	for linux-serial@vger.kernel.org; Mon, 14 Jan 2013 17:51:55 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 17:51:55 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 17:51:55 +0100
-Sender: linux-serial-owner@vger.kernel.org
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH] tty: 8250_dw: Fix inverted arguments to serial_out in IRQ handler
+Date: Mon, 14 Jan 2013 20:09:26 +0100
+Message-ID: <1358190567-6304-1-git-send-email-maxime.ripard@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On 2013-01-11, Grant Edwards <grant.b.edwards@gmail.com> wrote:
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ drivers/tty/serial/8250/8250_dw.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I maintain a serial card driver which, starting with kernel 3.7,
-> produces this warning when a port is opened:
->
->  tty_init_dev: ttyXYZ driver does not set tty->port. This will crash the kernel later. Fix the driver!
-
-I've been looking at 3.7.2 in-kernel tty drivers to try to figure out
-what to do about this, and I don't understand how the in-kernel
-drivers are avoiding the same problem I'm seeing.
-
-I've looked at three other tty drivers: amiserial.c, rocket.c,
-cyclades.c:
-
-Based on some examination/experimentation, it seems the check for
-tty->port is done during driver "installation" and occurs _before_ a
-tty driver's open() function is called().
-
-But, amiserial.c doesn't set tty->port until the open() function is
-called.  How does the amiserial driver avoid the warning and stack
-trace?
-
-AFAICT, the rocket.c and cyclades.c drivers don't set tty->port at
-all.
-
-What am I missing?
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 1d0dba2..096d2ef 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -79,7 +79,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+ 		/* Clear the USR and write the LCR again. */
+ 		(void)p->serial_in(p, UART_USR);
+-		p->serial_out(p, d->last_lcr, UART_LCR);
++		p->serial_out(p, UART_LCR, d->last_lcr);
+ 
+ 		return 1;
+ 	}
 -- 
-Grant Edwards               grant.b.edwards        Yow! When this load is
-                                  at               DONE I think I'll wash it
-                              gmail.com            AGAIN ...
-
+1.7.10.4
