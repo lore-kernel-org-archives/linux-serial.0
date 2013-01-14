@@ -1,39 +1,56 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] RS485 serial communication on ColdFire
-Date: Mon, 14 Jan 2013 06:28:15 -0800
-Message-ID: <20130114142815.GA20384@kroah.com>
-References: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
- <20130114033314.GB21784@kroah.com>
- <CAODWn4q=O6DrjxEpPU-eRrWRLRzFPzAe5XMJL1Oayeok79kyEA@mail.gmail.com>
+From: Matt Schulte <matts@commtech-fastcom.com>
+Subject: Re: [PATCH 1/2] Fix incorrect device ID for the Commtech 422/2-PCIe.
+Date: Mon, 14 Jan 2013 09:25:33 -0600
+Message-ID: <CAJp1Oe6TQTQoCdkivFDm0WpVsbRBhuLyij57pr33LMyG0QbQAw@mail.gmail.com>
+References: <1357593435-3566-1-git-send-email-matts@commtech-fastcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:38677 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756692Ab3ANO10 (ORCPT
+Received: from mail-vc0-f179.google.com ([209.85.220.179]:42239 "EHLO
+	mail-vc0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756297Ab3ANPbj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 09:27:26 -0500
-Received: by mail-pa0-f53.google.com with SMTP id hz1so2249139pad.40
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 06:27:26 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <CAODWn4q=O6DrjxEpPU-eRrWRLRzFPzAe5XMJL1Oayeok79kyEA@mail.gmail.com>
+	Mon, 14 Jan 2013 10:31:39 -0500
+Received: by mail-vc0-f179.google.com with SMTP id p1so3584467vcq.38
+        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 07:31:39 -0800 (PST)
+In-Reply-To: <1357593435-3566-1-git-send-email-matts@commtech-fastcom.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Nguyen <afelion@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: alan@linux.intel.com
+Cc: linux-serial@vger.kernel.org, Matt Schulte <matts@commtech-fastcom.com>
 
-On Mon, Jan 14, 2013 at 06:12:34PM +1000, Kevin Nguyen wrote:
-> Hi Greg,
-> 
-> The RS485 mode can be switched on/off from userspace by using the flag
-> SER_RS485_ENABLED, therefore I've removed those #ifdefs in the patch.
+Is there anything I need to do to get these commits accepted?
 
-Much better, thanks.
+Thanks
+Matt Schulte
+Commtech, Inc.
+Voice: 316-636-1131
+Fax: 316-636-1163
+http://www.commtech-fastcom.com
 
-Can you also remove the debugging printk() messages you added?  Or,
-convert them to dev_dbg() calls instead?  If you run your patch through
-the scripts/checkpatch.pl tool, it should tell you things like this.
 
-thanks,
-
-greg k-h
+On Mon, Jan 7, 2013 at 3:17 PM, Matt Schulte <matts@commtech-fastcom.com> wrote:
+>
+> Signed-off-by: Matt Schulte <matts@commtech-fastcom.com>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 26b9dc0..18f1d79 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1301,9 +1301,9 @@ pci_wch_ch353_setup(struct serial_private *priv,
+>  #define PCI_VENDOR_ID_AGESTAR          0x5372
+>  #define PCI_DEVICE_ID_AGESTAR_9375     0x6872
+>  #define PCI_VENDOR_ID_ASIX             0x9710
+> -#define PCI_DEVICE_ID_COMMTECH_4222PCIE 0x0019
+>  #define PCI_DEVICE_ID_COMMTECH_4224PCIE        0x0020
+>  #define PCI_DEVICE_ID_COMMTECH_4228PCIE        0x0021
+> +#define PCI_DEVICE_ID_COMMTECH_4222PCIE 0x0022
+>
+>
+>  /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+> --
+> 1.7.2.5
+>
