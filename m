@@ -1,30 +1,42 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH] tty: 8250_dw: Fix inverted arguments to serial_out in IRQ handler
-Date: Mon, 14 Jan 2013 20:09:26 +0100
-Message-ID: <1358190567-6304-1-git-send-email-maxime.ripard@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: Printf hangs when internal buffer of driver is temporarily full
+Date: Mon, 14 Jan 2013 19:36:45 +0000
+Message-ID: <20130114193645.63a2d12c@pyramind.ukuu.org.uk>
+References: <50F40403.9040000@septentrio.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50112 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755277Ab3ANT34 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jan 2013 14:29:56 -0500
+In-Reply-To: <50F40403.9040000@septentrio.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Philip Oberstaller <Philip.Oberstaller@septentrio.com>
+Cc: linux-serial@vger.kernel.org
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- drivers/tty/serial/8250/8250_dw.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> which happens when the driver's internal buffer is temporarily full.
+> I would have expected that the TTY layer or the libc implementation of
+> printf would requery write_room automatically and thus would notice
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 1d0dba2..096d2ef 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -79,7 +79,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
- 		/* Clear the USR and write the LCR again. */
- 		(void)p->serial_in(p, UART_USR);
--		p->serial_out(p, d->last_lcr, UART_LCR);
-+		p->serial_out(p, UART_LCR, d->last_lcr);
- 
- 		return 1;
- 	}
--- 
-1.7.10.4
+How is it going to magically notice ?
+
+> after a while that there is space again, but this doesn't seem to happen.
+> Eventually the printf function returns after a very long timeout but without
+> that the remaining characters have been printed.
+
+You need to wake it up and tell it there is room in your completion
+interrupts. It will then think about retrying.
+
+> I based my code mainly on the ifx6x60-driver and I looked at other similar
+> drivers as well, but I can't see that they are using a different strategy.
+> 
+> In a dated driver book it was suggested that write_room and write should
+> always return at least one.
+
+I would suggest recycling that book 8)
+
+Alan
