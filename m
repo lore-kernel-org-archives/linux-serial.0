@@ -1,32 +1,50 @@
-From: Chanho Min <chanho.min@lge.com>
-Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Mon, 14 Jan 2013 17:41:45 +0900
-Message-ID: <CAOAMb1BS6gvezeSrUTNJ--gGxCRL17AO8PHJ_eLrxzjOex7w1g@mail.gmail.com>
-References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com>
-	<CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
-	<50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
-	<CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
-	<20130114002608.GV23505@n2100.arm.linux.org.uk>
-	<CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
-	<CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
+From: Philip Oberstaller <Philip.Oberstaller@septentrio.com>
+Subject: Printf hangs when internal buffer of driver is temporarily full
+Date: Mon, 14 Jan 2013 14:11:31 +0100
+Message-ID: <50F40403.9040000@septentrio.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII;
+	format=flowed
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:51912 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752333Ab3ANIrT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 03:47:19 -0500
-In-Reply-To: <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
+Received: from server2.septentrio.com ([194.78.112.130]:41120 "HELO
+	barracuda.septentrio.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with SMTP id S1756151Ab3ANNYP convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jan 2013 08:24:15 -0500
+Received: from SRVWIN14.Septentrio.local ([192.168.50.85]) by barracuda.septentrio.com with ESMTP id iYTIIS8k8Jv5n2Rp for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 14:11:31 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Chanho Min <chanho0207@gmail.com>
+To: linux-serial@vger.kernel.org
 
->Looking back at the patch, do you know if we can get rid of
->some of the #ifdefs and have this like a runtime switch set in
->struct amba_pl011_data or Device Tree?
-Yes, I know. I'll come back with v2 soon.
+Hi,
+
+I'm writing a driver for the Exar's XR20M1280 SPI-based serial port
+using kernel version 3.4.17.
+
+If a string, which is considerably longer than the driver's internal buffer
+(512 bytes), is written with printf/fprintf to the dedicated port, then the
+function call hangs after the driver's write_room function returns zero,
+which happens when the driver's internal buffer is temporarily full.
+I would have expected that the TTY layer or the libc implementation of
+printf would requery write_room automatically and thus would notice
+after a while that there is space again, but this doesn't seem to happen.
+Eventually the printf function returns after a very long timeout but without
+that the remaining characters have been printed.
+
+I based my code mainly on the ifx6x60-driver and I looked at other similar
+drivers as well, but I can't see that they are using a different strategy.
+
+In a dated driver book it was suggested that write_room and write should
+always return at least one. I could use busy waiting in the write function
+until there is space for at least one character, but I hope that there is
+a better solution around?!
 
 Thanks,
-Chanho
+Philip
+
+[Please CC me, I'm not on the list]
+
+________________________________
+
+This e-mail communication contains information that is confidential and may also be privileged. It is intended for the exclusive use of the addressees. If you are not the person or organization to whom it is addressed, you must not copy, distribute or take any action in reliance upon it. If you received this communication in error, please notify Septentrio nv immediately [ telephone +32 [0] 16 300800 ]. Septentrio nv will not accept liability for contractual commitments made by individuals employed by this company outside the scope of our business.
