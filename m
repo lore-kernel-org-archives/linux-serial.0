@@ -1,65 +1,57 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Printf hangs when internal buffer of driver is temporarily full
-Date: Mon, 14 Jan 2013 08:19:42 -0800
-Message-ID: <20130114161942.GD14721@kroah.com>
-References: <50F40403.9040000@septentrio.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: Warning about not setting tty->port: what to set it to?
+Date: Mon, 14 Jan 2013 16:51:25 +0000 (UTC)
+Message-ID: <kd1d2d$dfs$1@ger.gmane.org>
+References: <kcpt0f$ott$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:39581 "EHLO mail.kernel.org"
+Received: from plane.gmane.org ([80.91.229.3]:40381 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756464Ab3ANQUC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 11:20:02 -0500
-Content-Disposition: inline
-In-Reply-To: <50F40403.9040000@septentrio.com>
+	id S1756521Ab3ANQvm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jan 2013 11:51:42 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TunGN-0003Ca-Cd
+	for linux-serial@vger.kernel.org; Mon, 14 Jan 2013 17:51:55 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 17:51:55 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 17:51:55 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Philip Oberstaller <Philip.Oberstaller@septentrio.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Mon, Jan 14, 2013 at 02:11:31PM +0100, Philip Oberstaller wrote:
-> Hi,
-> 
-> I'm writing a driver for the Exar's XR20M1280 SPI-based serial port
-> using kernel version 3.4.17.
+On 2013-01-11, Grant Edwards <grant.b.edwards@gmail.com> wrote:
 
-We can't take drivers for older kernel versions, why not write it for
-3.8 and then backport it when finished?
+> I maintain a serial card driver which, starting with kernel 3.7,
+> produces this warning when a port is opened:
+>
+>  tty_init_dev: ttyXYZ driver does not set tty->port. This will crash the kernel later. Fix the driver!
 
-> If a string, which is considerably longer than the driver's internal buffer
-> (512 bytes), is written with printf/fprintf to the dedicated port, then the
-> function call hangs after the driver's write_room function returns zero,
-> which happens when the driver's internal buffer is temporarily full.
-> I would have expected that the TTY layer or the libc implementation of
-> printf would requery write_room automatically and thus would notice
-> after a while that there is space again, but this doesn't seem to happen.
+I've been looking at 3.7.2 in-kernel tty drivers to try to figure out
+what to do about this, and I don't understand how the in-kernel
+drivers are avoiding the same problem I'm seeing.
 
-That's right, the printf call should return a "short" write, but really,
-you should use write() and friends for tty ports, not fprintf, if at all
-possible to handle this type of error better.
+I've looked at three other tty drivers: amiserial.c, rocket.c,
+cyclades.c:
 
-> Eventually the printf function returns after a very long timeout but without
-> that the remaining characters have been printed.
-> 
-> I based my code mainly on the ifx6x60-driver and I looked at other similar
-> drivers as well, but I can't see that they are using a different strategy.
-> 
-> In a dated driver book it was suggested that write_room and write should
-> always return at least one. I could use busy waiting in the write function
-> until there is space for at least one character, but I hope that there is
-> a better solution around?!
+Based on some examination/experimentation, it seems the check for
+tty->port is done during driver "installation" and occurs _before_ a
+tty driver's open() function is called().
 
-I don't think so, sorry.
+But, amiserial.c doesn't set tty->port until the open() function is
+called.  How does the amiserial driver avoid the warning and stack
+trace?
 
-> This e-mail communication contains information that is confidential
-> and may also be privileged.
+AFAICT, the rocket.c and cyclades.c drivers don't set tty->port at
+all.
 
-<snip>
+What am I missing?
 
-This type of footer really isn't good to have for public mailing list
-posts, it directly goes against the fact that you sent this to thousands
-of people in a public manner :)
+-- 
+Grant Edwards               grant.b.edwards        Yow! When this load is
+                                  at               DONE I think I'll wash it
+                              gmail.com            AGAIN ...
 
-thanks,
-
-greg k-h
