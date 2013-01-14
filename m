@@ -1,67 +1,34 @@
-From: Chanho Min <chanho.min@lge.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Mon, 14 Jan 2013 16:27:37 +0900
-Message-ID: <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
+Date: Mon, 14 Jan 2013 08:56:10 +0100
+Message-ID: <CACRpkdaH7sNwwbEBVOGGHbUzGJ1SC9wdx+ULfwAc3FzCO=E-zQ@mail.gmail.com>
 References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com>
 	<CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
 	<50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
 	<CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
 	<20130114002608.GV23505@n2100.arm.linux.org.uk>
 	<CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
+	<CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ea0-f172.google.com ([209.85.215.172]:58629 "EHLO
-	mail-ea0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751532Ab3ANH1i (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 02:27:38 -0500
-In-Reply-To: <CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Chanho Min <chanho.min@lge.com>
 Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>
+List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 14, 2013 at 3:46 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Mon, Jan 14, 2013 at 1:26 AM, Russell King - ARM Linux
->> What you describe above is exactly the problem I see on the Versatile
->> platform with it's PL080 and PL011.  I made the comment that this setup
->> can't work properly as it stands.  And I don't think that setting a
->> timer which fires every jiffy count is really a solution to the problem.
->> That's an expensive way of having a per-jiffy callback for something
->> that's probably going to remain idle most of the time.
->
-> OK then that's what we can expect from an unmodified PL011.
->
->> Not only that, but a 1 jiffy timeout even for slower baud rates is
->> just utterly silly.
->>
->> The point of using DMA is to move the workload off the CPU onto hardware,
->> so that the CPU can go off and do other stuff.  If it's having to poll
->> it once every jiffy, then...
->
-> Agreed.
+On Mon, Jan 14, 2013 at 8:27 AM, Chanho Min <chanho.min@lge.com> wrote:
 
-I agree also. So We hope to suggest a way to reduce such cost.
-Rx DMA is required for the fast baud only. PIO is sufficient for the
-slow baud rate.
-So this feature is optional for the specific port.
-1 jiffy timeout is experimental and adjustable. Even 100ms, It will be
-better than
-remain in the DMA buffer. Also, the polling interval can be adjusted
-according to
-baud rate as Russel mentioned.
+> We just want to use this HW function even if SW support is needed.
+> Anyway, It was very useful for megabyte rate chips.
 
-> Chanho, have you considered just leaving RX DMA undefined
-> and only use DMA for TX?
+So RX DMA will not be enabled for things like console, but
+accelerators etc. OK that's perfectly valid.
 
-No, We need RX DMA to reduce data loss rather than TX DMA.
+Looking back at the patch, do you know if we can get rid of
+some of the #ifdefs and have this like a runtime switch set in
+struct amba_pl011_data or Device Tree?
 
->> The solution I came up with on Versatile was to just not enable
->> receive DMA - at all.
-
-We just want to use this HW function even if SW support is needed.
-Anyway, It was very useful for megabyte rate chips.
-
-Thanks
-Chanho
+Yours,
+Linus Walleij
