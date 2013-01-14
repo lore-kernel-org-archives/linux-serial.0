@@ -1,142 +1,78 @@
-From: Kevin Nguyen <afelion@gmail.com>
-Subject: [PATCH] RS485 serial communication on ColdFire
-Date: Mon, 14 Jan 2013 09:21:52 +1000
-Message-ID: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Mon, 14 Jan 2013 01:04:58 +0100
+Message-ID: <CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
+References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com>
+	<CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
+	<50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=14dae9399c9b9728e004d333cde5
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f49.google.com ([209.85.219.49]:52035 "EHLO
-	mail-oa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754688Ab3AMXWd (ORCPT
+Received: from mail-ie0-f173.google.com ([209.85.223.173]:58510 "EHLO
+	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753615Ab3ANAE7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 13 Jan 2013 18:22:33 -0500
-Received: by mail-oa0-f49.google.com with SMTP id l10so3394894oag.8
-        for <linux-serial@vger.kernel.org>; Sun, 13 Jan 2013 15:22:33 -0800 (PST)
+	Sun, 13 Jan 2013 19:04:59 -0500
+Received: by mail-ie0-f173.google.com with SMTP id e13so4389489iej.18
+        for <linux-serial@vger.kernel.org>; Sun, 13 Jan 2013 16:04:59 -0800 (PST)
+In-Reply-To: <50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Chanho Min <chanho.min@lge.com>
+Cc: Alan Cox <alan@linux.intel.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, chanho0207@gmail.com
 
---14dae9399c9b9728e004d333cde5
-Content-Type: text/plain; charset=ISO-8859-1
+On Sat, Jan 12, 2013 at 7:50 AM, Chanho Min <chanho.min@lge.com> wrote:
 
-Hi
+> We tested as follows:
+> We set baud rate to 3Mbps and transfer 5000 bytes via /dev/tty at
+> a time. Then 4096 bytes is received by DMA irq. But, There is no way
+> to get remaining 904 bytes, unless another 3192 bytes are coming,
 
-I've attached the patch that adds support RS485 communication in
-ColdFire serial driver.
+OK clearly cut phenomena: IRQs seem to appear from the
+PL080 TC (transfer complete) IRQ only, not from any of the
+PL011 IRQs.
 
-As defined in Documentation/serial/serial-rs485.txt, switching between
-read or write mode can be done by toggling RTS signal that is
-supported by ColdFire chips.
+So there will be zero IRQs from the uart in /proc/interrupts
+but a few of them from the PL080, correct?
 
-I actually wrote it more than a year ago (on Linux 3.2) but haven't
-seen any similar patch for ColdFire microcontrollers so that I think
-it would be useful for someone using this serial driver for RS485
-communication. It is tested on my MCF5271 board.
+>>- What DMA controller are you using with the
+>>  PL011?
+>
+> PL080.
+> We don't add any customized configuration from the mainline.
 
-Your comments are appreciated.
+OK sorry I was thinking of the old times when we has
+.cctl configured from the platform.
 
-Cheers
---
-Quoc-Viet (Kevin) Nguyen
+>> - If they cannot be software-configured, how are
+>>   they then configured in hardware? Burst-only?
+>> Burst single
+>
+> As far as I know, single request is not disabled at PL080.
+> Could you explain what single request has to do with this?
 
---14dae9399c9b9728e004d333cde5
-Content-Type: application/octet-stream;
-	name="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
-Content-Disposition: attachment;
-	filename="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_hbwt458f0
+At some point we reasoned that we may actually be saved
+by the reverse phenomena - if single request is *NOT*
+connected, there will very often be some characters in the
+FIFO, and that's enough to trigger the RTIM IRQ, and we get
+a nice flow. So maybe the platforms that actually work, work
+because they have bursts only.
 
-RnJvbSAwMDJmZTQ1MTZkMDFmYmY3OTQ0NTBmZDZiZjk1ZmY2NmU3OTVkNWZhIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4K
-RGF0ZTogVHVlLCA4IEphbiAyMDEzIDE3OjU2OjM5ICsxMDAwClN1YmplY3Q6IFtQQVRDSF0gbWNm
-OiBBZGQgc3VwcG9ydCBSUzQ4NSBpbiBDb2xkRmlyZSBzZXJpYWwgZHJpdmVyCgpTaWduZWQtb2Zm
-LWJ5OiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4KLS0tCiBkcml2ZXJzL3R0
-eS9zZXJpYWwvS2NvbmZpZyB8ICAgIDYgKysrKwogZHJpdmVycy90dHkvc2VyaWFsL21jZi5jICAg
-fCAgIDgyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAyIGZp
-bGVzIGNoYW5nZWQsIDg4IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwvS2NvbmZpZyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCmluZGV4IDkyNWExZTUu
-LjA5ZGE5NTMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCisrKyBiL2Ry
-aXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCkBAIC0xMDQyLDYgKzEwNDIsMTIgQEAgY29uZmlnIFNF
-UklBTF9NQ0ZfQ09OU09MRQogCWhlbHAKIAkgIEVuYWJsZSBhIENvbGRGaXJlIGludGVybmFsIHNl
-cmlhbCBwb3J0IHRvIGJlIHRoZSBzeXN0ZW0gY29uc29sZS4KIAorY29uZmlnIFNFUklBTF9NQ0Zf
-UlM0ODUKKwlib29sICJDb2xkRmlyZSBzZXJpYWwgUlM0ODUgc3VwcG9ydCIKKwlkZXBlbmRzIG9u
-IFNFUklBTF9NQ0YKKwloZWxwCisJICBBdXRvbWF0aWNhbGx5IHN3aXRjaGluZyByZWFkL3dyaXRl
-IG1vZGUgYnkgdG9nZ2xpbmcgL1JUUyBzaWduYWwuCisKIGNvbmZpZyBTRVJJQUxfUE1BQ1pJTE9H
-CiAJdHJpc3RhdGUgIk1hYyBvciBQb3dlck1hYyB6ODVjMzAgRVNDQyBzdXBwb3J0IgogCWRlcGVu
-ZHMgb24gKE02OEsgJiYgTUFDKSB8fCAoUFBDX09GICYmIFBQQ19QTUFDKQpkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy90dHkvc2VyaWFsL21jZi5jIGIvZHJpdmVycy90dHkvc2VyaWFsL21jZi5jCmluZGV4
-IDlhZmNhMDkuLmM0NjI3MDcgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tY2YuYwor
-KysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWNmLmMKQEAgLTI3LDYgKzI3LDcgQEAKICNpbmNsdWRl
-IDxhc20vbWNmc2ltLmg+CiAjaW5jbHVkZSA8YXNtL21jZnVhcnQuaD4KICNpbmNsdWRlIDxhc20v
-bmV0dGVsLmg+CisjaW5jbHVkZSA8YXNtL3VhY2Nlc3MuaD4KIAogLyoqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KiovCiAKQEAgLTU1LDYgKzU2LDkgQEAgc3RydWN0IG1jZl91YXJ0IHsKIAlzdHJ1Y3QgdWFydF9w
-b3J0CXBvcnQ7CiAJdW5zaWduZWQgaW50CQlzaWdzOwkJLyogTG9jYWwgY29weSBvZiBsaW5lIHNp
-Z3MgKi8KIAl1bnNpZ25lZCBjaGFyCQlpbXI7CQkvKiBMb2NhbCBJTVIgbWlycm9yICovCisjaWYg
-ZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwlzdHJ1Y3Qgc2VyaWFsX3JzNDg1CXJz
-NDg1OworI2VuZGlmCiB9OwogCiAvKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KQEAgLTEwMSw2ICsxMDUs
-MTQgQEAgc3RhdGljIHZvaWQgbWNmX3N0YXJ0X3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiB7
-CiAJc3RydWN0IG1jZl91YXJ0ICpwcCA9IGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgbWNmX3Vh
-cnQsIHBvcnQpOwogCisjaWYgZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwlpZiAo
-cHAtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKKwkJLyogRW5hYmxlIFRyYW5z
-bWl0dGVyICovCisJCXdyaXRlYihNQ0ZVQVJUX1VDUl9UWEVOQUJMRSwgcG9ydC0+bWVtYmFzZSAr
-IE1DRlVBUlRfVUNSKTsKKwkJLyogTWFudWFsbHkgYXNzZXJ0IFJUUyAqLworCQl3cml0ZWIoTUNG
-VUFSVF9VT1BfUlRTLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VT1AxKTsKKwl9CisjZW5kaWYK
-IAlwcC0+aW1yIHw9IE1DRlVBUlRfVUlSX1RYUkVBRFk7CiAJd3JpdGViKHBwLT5pbXIsIHBvcnQt
-Pm1lbWJhc2UgKyBNQ0ZVQVJUX1VJTVIpOwogfQpAQCAtMjQ4LDYgKzI2MCwxNSBAQCBzdGF0aWMg
-dm9pZCBtY2Zfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJt
-aW9zICp0ZXJtaW9zLAogCQltcjIgfD0gTUNGVUFSVF9NUjJfVFhDVFM7CiAJfQogCisjaWYgZGVm
-aW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkKKwl7CisJCXN0cnVjdCBtY2ZfdWFydCAqcHAg
-PSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKKwkJaWYgKHBwLT5y
-czQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7CisJCQlwcmludGsoS0VSTl9ERUJVRyAi
-U2V0dGluZyBVQVJUIHRvIFJTNDg1XG4iKTsKKwkJCW1yMiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsK
-KwkJfQorCX0KKyNlbmRpZgogCXNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5sb2NrLCBmbGFncyk7
-CiAJdWFydF91cGRhdGVfdGltZW91dChwb3J0LCB0ZXJtaW9zLT5jX2NmbGFnLCBiYXVkKTsKIAl3
-cml0ZWIoTUNGVUFSVF9VQ1JfQ01EUkVTRVRSWCwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNS
-KTsKQEAgLTM0Miw2ICszNjMsMTEgQEAgc3RhdGljIHZvaWQgbWNmX3R4X2NoYXJzKHN0cnVjdCBt
-Y2ZfdWFydCAqcHApCiAJaWYgKHhtaXQtPmhlYWQgPT0geG1pdC0+dGFpbCkgewogCQlwcC0+aW1y
-ICY9IH5NQ0ZVQVJUX1VJUl9UWFJFQURZOwogCQl3cml0ZWIocHAtPmltciwgcG9ydC0+bWVtYmFz
-ZSArIE1DRlVBUlRfVUlNUik7CisjaWYgZGVmaW5lZChDT05GSUdfU0VSSUFMX01DRl9SUzQ4NSkK
-KwkJLyogZGlzYWJsZSBUcmFuc21pdHRlciB0byBuZWdhdGUgYXV0b21hdGljYWxseSBSVFMgKi8K
-KwkJaWYgKHBwLT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKQorCQkJd3JpdGViKE1D
-RlVBUlRfVUNSX1RYRElTQUJMRSwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNSKTsKKyNlbmRp
-ZgogCX0KIH0KIApAQCAtNDE4LDYgKzQ0NCw1OSBAQCBzdGF0aWMgaW50IG1jZl92ZXJpZnlfcG9y
-dChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBzdHJ1Y3Qgc2VyaWFsX3N0cnVjdCAqc2VyKQogCiAv
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKi8KIAorI2lmIGRlZmluZWQoQ09ORklHX1NFUklBTF9NQ0ZfUlM0
-ODUpCitzdGF0aWMgdm9pZCBtY2ZfY29uZmlnX3JzNDg1KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQs
-IHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJzNDg1KQoreworCXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBj
-b250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKKwl1bnNpZ25lZCBsb25n
-IGZsYWdzOworCXVuc2lnbmVkIGNoYXIgbXIxLCBtcjI7CisKKwlzcGluX2xvY2tfaXJxc2F2ZSgm
-cG9ydC0+bG9jaywgZmxhZ3MpOworCS8qIGdldCBtb2RlIHJlZ2lzdGVyICovCisJbXIxID0gcmVh
-ZGIocG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsKKwltcjIgPSByZWFkYihwb3J0LT5tZW1i
-YXNlICsgTUNGVUFSVF9VTVIpOworCWlmIChyczQ4NS0+ZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxF
-RCkgeworCQlwcmludGsoS0VSTl9ERUJVRyAiU2V0dGluZyBVQVJUIHRvIFJTNDg1XG4iKTsKKwkJ
-LyogQXV0b21hdGljYWxseSBuZWdhdGUgUlRTIGFmdGVyIFRYIGlzIGNvbXBsZXRlICovCisJCW1y
-MiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsKKwl9IGVsc2UgeworCQlwcmludGsoS0VSTl9ERUJVRyAi
-U2V0dGluZyBVQVJUIHRvIFJTMjMyXG4iKTsKKwkJbXIyICY9IH5NQ0ZVQVJUX01SMl9UWFJUUzsK
-Kwl9CisJd3JpdGViKG1yMSwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsKKwl3cml0ZWIo
-bXIyLCBwb3J0LT5tZW1iYXNlICsgTUNGVUFSVF9VTVIpOworCXBwLT5yczQ4NSA9ICpyczQ4NTsK
-KwlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZwb3J0LT5sb2NrLCBmbGFncyk7Cit9CisKK3N0YXRp
-YyBpbnQgbWNmX2lvY3RsKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHVuc2lnbmVkIGludCBjbWQs
-CisJCXVuc2lnbmVkIGxvbmcgYXJnKQoreworCXN3aXRjaCAoY21kKSB7CisJY2FzZSBUSU9DU1JT
-NDg1OiB7CisJCXN0cnVjdCBzZXJpYWxfcnM0ODUgcnM0ODU7CisJCWlmIChjb3B5X2Zyb21fdXNl
-cigmcnM0ODUsIChzdHJ1Y3Qgc2VyaWFsX3JzNDg1ICopYXJnLAorCQkJCXNpemVvZihzdHJ1Y3Qg
-c2VyaWFsX3JzNDg1KSkpCisJCQlyZXR1cm4gLUVGQVVMVDsKKwkJbWNmX2NvbmZpZ19yczQ4NShw
-b3J0LCAmcnM0ODUpOworCQlicmVhazsKKwl9CisJY2FzZSBUSU9DR1JTNDg1OiB7CisJCXN0cnVj
-dCBtY2ZfdWFydCAqcHAgPSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0
-KTsKKwkJaWYgKGNvcHlfdG9fdXNlcigoc3RydWN0IHNlcmlhbF9yczQ4NSAqKWFyZywgJnBwLT5y
-czQ4NSwKKwkJCQlzaXplb2Yoc3RydWN0IHNlcmlhbF9yczQ4NSkpKQorCQkJcmV0dXJuIC1FRkFV
-TFQ7CisJCWJyZWFrOworCX0KKwlkZWZhdWx0OgorCQlyZXR1cm4gLUVOT0lPQ1RMQ01EOworCX0K
-KwlyZXR1cm4gMDsKK30KKyNlbmRpZgorCisvKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KKwogLyoKICAq
-CURlZmluZSB0aGUgYmFzaWMgc2VyaWFsIGZ1bmN0aW9ucyB3ZSBzdXBwb3J0LgogICovCkBAIC00
-MzgsNiArNTE3LDkgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBtY2ZfdWFydF9vcHMg
-PSB7CiAJLnJlbGVhc2VfcG9ydAk9IG1jZl9yZWxlYXNlX3BvcnQsCiAJLmNvbmZpZ19wb3J0CT0g
-bWNmX2NvbmZpZ19wb3J0LAogCS52ZXJpZnlfcG9ydAk9IG1jZl92ZXJpZnlfcG9ydCwKKyNpZiBk
-ZWZpbmVkKENPTkZJR19TRVJJQUxfTUNGX1JTNDg1KQorCS5pb2N0bAkJPSBtY2ZfaW9jdGwsCisj
-ZW5kaWYKIH07CiAKIHN0YXRpYyBzdHJ1Y3QgbWNmX3VhcnQgbWNmX3BvcnRzWzRdOwotLSAKMS43
-LjEwLjQKCg==
---14dae9399c9b9728e004d333cde5--
+But that would pose a problem when an even burst of
+characters arrive. Say 16 characters, this will be transferred
+in two bursts and leave the FIFO empty, but no DMA TC
+IRQ since the buffer is not full, and we'd get your
+phenomena.
+
+But I could never reproduce the latter theoretical problem,
+so I think the hardware actually has a fix for this, around
+the burst signal logic.
+
+But it may very well be that the single request can not be
+enabled for the PL011 for it to work properly.
+
+You may not be able to turn this off, and in that case this
+kind of code is the only way forward indeed.
+
+Yours,
+Linus Walleij
