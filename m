@@ -1,49 +1,26 @@
-From: Philip Oberstaller <Philip.Oberstaller@septentrio.com>
-Subject: Re: Printf hangs when internal buffer of driver is temporarily full
-Date: Tue, 15 Jan 2013 15:23:58 +0100
-Message-ID: <50F5667E.8010303@septentrio.com>
-References: <50F40403.9040000@septentrio.com> <20130114193645.63a2d12c@pyramind.ukuu.org.uk>
+From: Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
+	queue is active
+Date: Tue, 15 Jan 2013 19:03:30 +0100
+Message-ID: <20130115180330.GA9321@redhat.com>
+References: <1355842130-15482-1-git-send-email-meltedpianoman@gmail.com> <50E3FDFA.4070203@suse.cz> <20130102114311.66215bf5@pyramind.ukuu.org.uk> <CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com> <50E4854E.8060801@suse.cz> <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com> <20130103183611.GA28225@redhat.com> <CAMSQXEGL-ZkHUMSWi_gP2YVSZhfPH7wdxHO8=QyvuNRvGBZ6=Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server2.septentrio.com ([194.78.112.130]:22735 "HELO
-	barracuda.septentrio.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with SMTP id S1756271Ab3AOOYD convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jan 2013 09:24:03 -0500
-In-Reply-To: <20130114193645.63a2d12c@pyramind.ukuu.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMSQXEGL-ZkHUMSWi_gP2YVSZhfPH7wdxHO8=QyvuNRvGBZ6=Q@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Preeti U Murthy <preeti@linux.vnet.ibm.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-serial@vger.kernel.org
 
-On 01/14/2013 08:36 PM, Alan Cox wrote:
->> which happens when the driver's internal buffer is temporarily full.
->> I would have expected that the TTY layer or the libc implementation of
->> printf would requery write_room automatically and thus would notice
+On 01/15, Ivo Sieben wrote:
 >
-> How is it going to magically notice ?
->
->> after a while that there is space again, but this doesn't seem to happen.
->> Eventually the printf function returns after a very long timeout but without
->> that the remaining characters have been printed.
->
-> You need to wake it up and tell it there is room in your completion
-> interrupts. It will then think about retrying.
+> It solves an issue for me, and I really would like this patch to be approved.
 
-Yeah, behind the magic there is most of the time some manual work. Thanks
-for the hint of the wakeup! That definitely makes it working. Don't ask
-me why I didn't see it before...
+Agreed.
 
-> I would suggest recycling that book 8)
+And even if we want a helper to hide the waitqueue_active(), we can add it
+later and convert more users, not just put_ldisc().
 
-Agreed, but as it's pretty cold these days, it might well be used for
-some other purpose...
-
-(Sorry for the disclaimer, but it cannot be circumvented when sending
-from this domain - at least I would not know how)
-
-________________________________
-
-This e-mail communication contains information that is confidential and may also be privileged. It is intended for the exclusive use of the addressees. If you are not the person or organization to whom it is addressed, you must not copy, distribute or take any action in reliance upon it. If you received this communication in error, please notify Septentrio nv immediately [ telephone +32 [0] 16 300800 ]. Septentrio nv will not accept liability for contractual commitments made by individuals employed by this company outside the scope of our business.
+Oleg.
