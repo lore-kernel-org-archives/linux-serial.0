@@ -1,42 +1,127 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: Printf hangs when internal buffer of driver is temporarily full
-Date: Mon, 14 Jan 2013 19:36:45 +0000
-Message-ID: <20130114193645.63a2d12c@pyramind.ukuu.org.uk>
-References: <50F40403.9040000@septentrio.com>
+From: Kevin Nguyen <afelion@gmail.com>
+Subject: Re: [PATCH] RS485 serial communication on ColdFire
+Date: Tue, 15 Jan 2013 12:09:28 +1000
+Message-ID: <CAODWn4ocfK7oxSNi-VNemuTGM1izZeCOPXD9rzN5aOMksZcrtA@mail.gmail.com>
+References: <CAODWn4qouGj+JGZzGrJD6b1Larc7v0rWE5t=_p5xW7SnVm3ErA@mail.gmail.com>
+ <20130114033314.GB21784@kroah.com> <CAODWn4q=O6DrjxEpPU-eRrWRLRzFPzAe5XMJL1Oayeok79kyEA@mail.gmail.com>
+ <20130114142815.GA20384@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary=f46d043bdf64c9858d04d34a42d4
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50112 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755277Ab3ANT34 (ORCPT
+Received: from mail-oa0-f44.google.com ([209.85.219.44]:56064 "EHLO
+	mail-oa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757234Ab3AOCKJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jan 2013 14:29:56 -0500
-In-Reply-To: <50F40403.9040000@septentrio.com>
+	Mon, 14 Jan 2013 21:10:09 -0500
+Received: by mail-oa0-f44.google.com with SMTP id n5so4741225oag.17
+        for <linux-serial@vger.kernel.org>; Mon, 14 Jan 2013 18:10:08 -0800 (PST)
+In-Reply-To: <20130114142815.GA20384@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Philip Oberstaller <Philip.Oberstaller@septentrio.com>
+To: Greg KH <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
 
-> which happens when the driver's internal buffer is temporarily full.
-> I would have expected that the TTY layer or the libc implementation of
-> printf would requery write_room automatically and thus would notice
+--f46d043bdf64c9858d04d34a42d4
+Content-Type: text/plain; charset=ISO-8859-1
 
-How is it going to magically notice ?
+On Tue, Jan 15, 2013 at 12:28 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> Can you also remove the debugging printk() messages you added?  Or,
+> convert them to dev_dbg() calls instead?  If you run your patch through
+> the scripts/checkpatch.pl tool, it should tell you things like this.
 
-> after a while that there is space again, but this doesn't seem to happen.
-> Eventually the printf function returns after a very long timeout but without
-> that the remaining characters have been printed.
+Those issues are fixed in the patch attached.
 
-You need to wake it up and tell it there is room in your completion
-interrupts. It will then think about retrying.
+Thanks
+--
+Quoc-Viet (Kevin) Nguyen
 
-> I based my code mainly on the ifx6x60-driver and I looked at other similar
-> drivers as well, but I can't see that they are using a different strategy.
-> 
-> In a dated driver book it was suggested that write_room and write should
-> always return at least one.
+--f46d043bdf64c9858d04d34a42d4
+Content-Type: application/octet-stream;
+	name="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
+Content-Disposition: attachment;
+	filename="0001-mcf-Add-support-RS485-in-ColdFire-serial-driver.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hbyep8u20
 
-I would suggest recycling that book 8)
-
-Alan
+RnJvbSA4NjMwYjBiODY1Njg4Yzk1ZmIxMGYyMDJlMzY1ZTRlYWNhM2JhM2JjIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBRdW9jLVZpZXQgTmd1eWVuIDxhZmVsaW9uQGdtYWlsLmNvbT4K
+RGF0ZTogVHVlLCAxNSBKYW4gMjAxMyAwOTozMjo1MyArMTAwMApTdWJqZWN0OiBbUEFUQ0hdIG1j
+ZjogQWRkIHN1cHBvcnQgUlM0ODUgaW4gQ29sZEZpcmUgc2VyaWFsIGRyaXZlcgoKU2lnbmVkLW9m
+Zi1ieTogUXVvYy1WaWV0IE5ndXllbiA8YWZlbGlvbkBnbWFpbC5jb20+Ci0tLQogZHJpdmVycy90
+dHkvc2VyaWFsL21jZi5jIHwgICA3MSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgNzEgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tY2YuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9tY2YuYwpp
+bmRleCA5YWZjYTA5Li43Zjc3MGRmIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvbWNm
+LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL21jZi5jCkBAIC0yMyw2ICsyMyw3IEBACiAjaW5j
+bHVkZSA8bGludXgvc2VyaWFsLmg+CiAjaW5jbHVkZSA8bGludXgvc2VyaWFsX2NvcmUuaD4KICNp
+bmNsdWRlIDxsaW51eC9pby5oPgorI2luY2x1ZGUgPGxpbnV4L3VhY2Nlc3MuaD4KICNpbmNsdWRl
+IDxhc20vY29sZGZpcmUuaD4KICNpbmNsdWRlIDxhc20vbWNmc2ltLmg+CiAjaW5jbHVkZSA8YXNt
+L21jZnVhcnQuaD4KQEAgLTU1LDYgKzU2LDcgQEAgc3RydWN0IG1jZl91YXJ0IHsKIAlzdHJ1Y3Qg
+dWFydF9wb3J0CXBvcnQ7CiAJdW5zaWduZWQgaW50CQlzaWdzOwkJLyogTG9jYWwgY29weSBvZiBs
+aW5lIHNpZ3MgKi8KIAl1bnNpZ25lZCBjaGFyCQlpbXI7CQkvKiBMb2NhbCBJTVIgbWlycm9yICov
+CisJc3RydWN0IHNlcmlhbF9yczQ4NQlyczQ4NTsJCS8qIFJTNDg1IHNldHRpbmdzICovCiB9Owog
+CiAvKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKi8KQEAgLTEwMSw2ICsxMDMsMTIgQEAgc3RhdGljIHZvaWQg
+bWNmX3N0YXJ0X3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiB7CiAJc3RydWN0IG1jZl91YXJ0
+ICpwcCA9IGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgbWNmX3VhcnQsIHBvcnQpOwogCisJaWYg
+KHBwLT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7CisJCS8qIEVuYWJsZSBUcmFu
+c21pdHRlciAqLworCQl3cml0ZWIoTUNGVUFSVF9VQ1JfVFhFTkFCTEUsIHBvcnQtPm1lbWJhc2Ug
+KyBNQ0ZVQVJUX1VDUik7CisJCS8qIE1hbnVhbGx5IGFzc2VydCBSVFMgKi8KKwkJd3JpdGViKE1D
+RlVBUlRfVU9QX1JUUywgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU9QMSk7CisJfQogCXBwLT5p
+bXIgfD0gTUNGVUFSVF9VSVJfVFhSRUFEWTsKIAl3cml0ZWIocHAtPmltciwgcG9ydC0+bWVtYmFz
+ZSArIE1DRlVBUlRfVUlNUik7CiB9CkBAIC0xOTYsNiArMjA0LDcgQEAgc3RhdGljIHZvaWQgbWNm
+X3NodXRkb3duKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiBzdGF0aWMgdm9pZCBtY2Zfc2V0X3Rl
+cm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zLAog
+CXN0cnVjdCBrdGVybWlvcyAqb2xkKQogeworCXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBjb250YWlu
+ZXJfb2YocG9ydCwgc3RydWN0IG1jZl91YXJ0LCBwb3J0KTsKIAl1bnNpZ25lZCBsb25nIGZsYWdz
+OwogCXVuc2lnbmVkIGludCBiYXVkLCBiYXVkY2xrOwogI2lmIGRlZmluZWQoQ09ORklHX001Mjcy
+KQpAQCAtMjQ4LDYgKzI1NywxMSBAQCBzdGF0aWMgdm9pZCBtY2Zfc2V0X3Rlcm1pb3Moc3RydWN0
+IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zLAogCQltcjIgfD0gTUNG
+VUFSVF9NUjJfVFhDVFM7CiAJfQogCisJaWYgKHBwLT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9F
+TkFCTEVEKSB7CisJCWRldl9kYmcocG9ydC0+ZGV2LCAiU2V0dGluZyBVQVJUIHRvIFJTNDg1XG4i
+KTsKKwkJbXIyIHw9IE1DRlVBUlRfTVIyX1RYUlRTOworCX0KKwogCXNwaW5fbG9ja19pcnFzYXZl
+KCZwb3J0LT5sb2NrLCBmbGFncyk7CiAJdWFydF91cGRhdGVfdGltZW91dChwb3J0LCB0ZXJtaW9z
+LT5jX2NmbGFnLCBiYXVkKTsKIAl3cml0ZWIoTUNGVUFSVF9VQ1JfQ01EUkVTRVRSWCwgcG9ydC0+
+bWVtYmFzZSArIE1DRlVBUlRfVUNSKTsKQEAgLTM0Miw2ICszNTYsMTAgQEAgc3RhdGljIHZvaWQg
+bWNmX3R4X2NoYXJzKHN0cnVjdCBtY2ZfdWFydCAqcHApCiAJaWYgKHhtaXQtPmhlYWQgPT0geG1p
+dC0+dGFpbCkgewogCQlwcC0+aW1yICY9IH5NQ0ZVQVJUX1VJUl9UWFJFQURZOwogCQl3cml0ZWIo
+cHAtPmltciwgcG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUlNUik7CisJCS8qIERpc2FibGUgVFgg
+dG8gbmVnYXRlIFJUUyBhdXRvbWF0aWNhbGx5ICovCisJCWlmIChwcC0+cnM0ODUuZmxhZ3MgJiBT
+RVJfUlM0ODVfRU5BQkxFRCkKKwkJCXdyaXRlYihNQ0ZVQVJUX1VDUl9UWERJU0FCTEUsCisJCQkJ
+cG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVUNSKTsKIAl9CiB9CiAKQEAgLTQxOCw2ICs0MzYsNTgg
+QEAgc3RhdGljIGludCBtY2ZfdmVyaWZ5X3BvcnQoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3Ry
+dWN0IHNlcmlhbF9zdHJ1Y3QgKnNlcikKIAogLyoqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiovCiAKKy8qIEVu
+YWJsZSBvciBkaXNhYmxlIHRoZSBSUzQ4NSBzdXBwb3J0ICovCitzdGF0aWMgdm9pZCBtY2ZfY29u
+ZmlnX3JzNDg1KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJz
+NDg1KQoreworCXN0cnVjdCBtY2ZfdWFydCAqcHAgPSBjb250YWluZXJfb2YocG9ydCwgc3RydWN0
+IG1jZl91YXJ0LCBwb3J0KTsKKwl1bnNpZ25lZCBsb25nIGZsYWdzOworCXVuc2lnbmVkIGNoYXIg
+bXIxLCBtcjI7CisKKwlzcGluX2xvY2tfaXJxc2F2ZSgmcG9ydC0+bG9jaywgZmxhZ3MpOworCS8q
+IEdldCBtb2RlIHJlZ2lzdGVycyAqLworCW1yMSA9IHJlYWRiKHBvcnQtPm1lbWJhc2UgKyBNQ0ZV
+QVJUX1VNUik7CisJbXIyID0gcmVhZGIocG9ydC0+bWVtYmFzZSArIE1DRlVBUlRfVU1SKTsKKwlp
+ZiAocnM0ODUtPmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKKwkJZGV2X2RiZyhwb3J0LT5k
+ZXYsICJTZXR0aW5nIFVBUlQgdG8gUlM0ODVcbiIpOworCQkvKiBBdXRvbWF0aWNhbGx5IG5lZ2F0
+ZSBSVFMgYWZ0ZXIgVFggY29tcGxldGVzICovCisJCW1yMiB8PSBNQ0ZVQVJUX01SMl9UWFJUUzsK
+Kwl9IGVsc2UgeworCQlkZXZfZGJnKHBvcnQtPmRldiwgIlNldHRpbmcgVUFSVCB0byBSUzIzMlxu
+Iik7CisJCW1yMiAmPSB+TUNGVUFSVF9NUjJfVFhSVFM7CisJfQorCXdyaXRlYihtcjEsIHBvcnQt
+Pm1lbWJhc2UgKyBNQ0ZVQVJUX1VNUik7CisJd3JpdGViKG1yMiwgcG9ydC0+bWVtYmFzZSArIE1D
+RlVBUlRfVU1SKTsKKwlwcC0+cnM0ODUgPSAqcnM0ODU7CisJc3Bpbl91bmxvY2tfaXJxcmVzdG9y
+ZSgmcG9ydC0+bG9jaywgZmxhZ3MpOworfQorCitzdGF0aWMgaW50IG1jZl9pb2N0bChzdHJ1Y3Qg
+dWFydF9wb3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgY21kLAorCQl1bnNpZ25lZCBsb25nIGFyZykK
+K3sKKwlzd2l0Y2ggKGNtZCkgeworCWNhc2UgVElPQ1NSUzQ4NTogeworCQlzdHJ1Y3Qgc2VyaWFs
+X3JzNDg1IHJzNDg1OworCQlpZiAoY29weV9mcm9tX3VzZXIoJnJzNDg1LCAoc3RydWN0IHNlcmlh
+bF9yczQ4NSAqKWFyZywKKwkJCQlzaXplb2Yoc3RydWN0IHNlcmlhbF9yczQ4NSkpKQorCQkJcmV0
+dXJuIC1FRkFVTFQ7CisJCW1jZl9jb25maWdfcnM0ODUocG9ydCwgJnJzNDg1KTsKKwkJYnJlYWs7
+CisJfQorCWNhc2UgVElPQ0dSUzQ4NTogeworCQlzdHJ1Y3QgbWNmX3VhcnQgKnBwID0gY29udGFp
+bmVyX29mKHBvcnQsIHN0cnVjdCBtY2ZfdWFydCwgcG9ydCk7CisJCWlmIChjb3B5X3RvX3VzZXIo
+KHN0cnVjdCBzZXJpYWxfcnM0ODUgKilhcmcsICZwcC0+cnM0ODUsCisJCQkJc2l6ZW9mKHN0cnVj
+dCBzZXJpYWxfcnM0ODUpKSkKKwkJCXJldHVybiAtRUZBVUxUOworCQlicmVhazsKKwl9CisJZGVm
+YXVsdDoKKwkJcmV0dXJuIC1FTk9JT0NUTENNRDsKKwl9CisJcmV0dXJuIDA7Cit9CisKKy8qKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqLworCiAvKgogICoJRGVmaW5lIHRoZSBiYXNpYyBzZXJpYWwgZnVuY3Rp
+b25zIHdlIHN1cHBvcnQuCiAgKi8KQEAgLTQzOCw2ICs1MDgsNyBAQCBzdGF0aWMgY29uc3Qgc3Ry
+dWN0IHVhcnRfb3BzIG1jZl91YXJ0X29wcyA9IHsKIAkucmVsZWFzZV9wb3J0CT0gbWNmX3JlbGVh
+c2VfcG9ydCwKIAkuY29uZmlnX3BvcnQJPSBtY2ZfY29uZmlnX3BvcnQsCiAJLnZlcmlmeV9wb3J0
+CT0gbWNmX3ZlcmlmeV9wb3J0LAorCS5pb2N0bAkJPSBtY2ZfaW9jdGwsCiB9OwogCiBzdGF0aWMg
+c3RydWN0IG1jZl91YXJ0IG1jZl9wb3J0c1s0XTsKLS0gCjEuNy4xMC40Cgo=
+--f46d043bdf64c9858d04d34a42d4--
