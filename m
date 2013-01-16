@@ -1,70 +1,64 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Are calls to open()/close() serialized by tty layer?
-Date: Wed, 16 Jan 2013 20:07:49 +0000 (UTC)
-Message-ID: <kd71al$c78$1@ger.gmane.org>
+From: "Stephen Hurd" <shurd@broadcom.com>
+Subject: RE: [PATCH] 8250/16?50: Add support for Broadcom TruManage
+ redirected serial port
+Date: Wed, 16 Jan 2013 21:49:36 +0000
+Message-ID: <156984479488CD49A184F5CAB4AF934606FF8308@IRVEXCHMB14.corp.ad.broadcom.com>
+References: <156984479488CD49A184F5CAB4AF934606FF55F8@IRVEXCHMB14.corp.ad.broadcom.com>
+ <20121212044522.GA7224@kroah.com>
+ <156984479488CD49A184F5CAB4AF934606FF5627@IRVEXCHMB14.corp.ad.broadcom.com>
+ <20130116065905.GA20170@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:35360 "EHLO plane.gmane.org"
+Received: from mms1.broadcom.com ([216.31.210.17]:4555 "EHLO mms1.broadcom.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752064Ab3APUIK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 15:08:10 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1TvZHc-0006nl-FV
-	for linux-serial@vger.kernel.org; Wed, 16 Jan 2013 21:08:24 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 16 Jan 2013 21:08:24 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 16 Jan 2013 21:08:24 +0100
+	id S1756323Ab3APVu2 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 16:50:28 -0500
+In-Reply-To: <20130116065905.GA20170@kroah.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Are calls to a tty driver's open()/close() methods serialized by the
-tty layer?  If so, has this always been the case?
+The patch was against 3.7, not 2.7, 2.7 was a typo.
 
-I'm working on converting an old tty driver over to using the "new"
-tty_port_* functions and the standard "struct tty_port" port data
-structure.
+I'll just pass it off to a Linux developer if I meet one.  Sorry for wasting your time.
 
-[I thought about converting it to a uart driver for serial_core, but
-AFAICT, that API doesn't provide any way to return errors for
-userspace open() and write() calls and would therefore break my
-user-land API.]
 
->From looking at example tty drivers in the 3.7.2 source tree, it
-appears that they assume calls to open()/close() are serialized.
+-- Stephen Hurd
 
-The old driver I'm working on had its own internal locking to protect
-race conditiions when incrementing and decrementing of a port's open
-count.  That counter is being prelaced by tty->port->count, and in
-existing in-kernel tty drivers it doesn't look like there is any
-locking when that count is incremented during an open().
+-----Original Message-----
+From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org] 
+Sent: Tuesday, January 15, 2013 10:59 PM
+To: Stephen Hurd
+Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] 8250/16?50: Add support for Broadcom TruManage redirected serial port
 
-For example, from rocket.c:
+On Wed, Dec 12, 2012 at 05:28:35AM +0000, Stephen Hurd wrote:
+> From: Stephen Hurd <shurd@broadcom.com>
+> 
+> Add support for the UART device present in Broadcom TruManage capable NetXtreme chips (ie: 5761m 5762, and 5725).
+> 
+> This implementation has a hidden transmit FIFO, so running in single-byte interrupt mode results in too many interrupts.  The UART_CAP_HFIFO capability was added to track this.  It continues to reload the THR as long as the THRE and TSRE bits are set in the LSR up to a specified limit (1024 is used here).
+> 
+> Signed-off-by: Stephen Hurd <shurd@broadcom.com>
+> 
+> ---
+> 
+> Patch against linux-2.7 from ftp.kernel.org downloaded Dec-11-2012.
 
-   891	static int rp_open(struct tty_struct *tty, struct file *filp)
-   892	{
-[...]   
-   924	        tty->driver_data = info;
-   925	        tty_port_tty_set(port, tty);
-   926	
-   927	        if (port->count++ == 0) {
-   928	                atomic_inc(&rp_num_ports_open);
-   929	
-   930	#ifdef ROCKET_DEBUG_OPEN
-   931	                printk(KERN_INFO "rocket mod++ = %d...\n",
-   932	                                atomic_read(&rp_num_ports_open));
-   933	#endif
-   934	        }
+2.7?
 
-If calls to open()/close() aren't serialized, then line 927 would
-cause a race condition...
+I need this against the linux-next release, can you please redo it, and
+not send it as an attachment, but put it all inline in the email
+properly like Documentation/email_clients.txt says?
 
--- 
-Grant Edwards               grant.b.edwards        Yow! Everybody gets free
-                                  at               BORSCHT!
-                              gmail.com            
+thanks,
+
+greg k-h
+
 
