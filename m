@@ -1,26 +1,52 @@
-From: Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
-	queue is active
-Date: Tue, 15 Jan 2013 19:03:30 +0100
-Message-ID: <20130115180330.GA9321@redhat.com>
-References: <1355842130-15482-1-git-send-email-meltedpianoman@gmail.com> <50E3FDFA.4070203@suse.cz> <20130102114311.66215bf5@pyramind.ukuu.org.uk> <CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com> <50E4854E.8060801@suse.cz> <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com> <20130103183611.GA28225@redhat.com> <CAMSQXEGL-ZkHUMSWi_gP2YVSZhfPH7wdxHO8=QyvuNRvGBZ6=Q@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial:ifx6x60:Keep word size accordance with SPI
+ controller
+Date: Tue, 15 Jan 2013 18:50:28 -0800
+Message-ID: <20130116025028.GA29056@kroah.com>
+References: <1355288826.30354.237.camel@bichao>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:59089 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756106Ab3APCt3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jan 2013 21:49:29 -0500
 Content-Disposition: inline
-In-Reply-To: <CAMSQXEGL-ZkHUMSWi_gP2YVSZhfPH7wdxHO8=QyvuNRvGBZ6=Q@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ivo Sieben <meltedpianoman@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Preeti U Murthy <preeti@linux.vnet.ibm.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+In-Reply-To: <1355288826.30354.237.camel@bichao>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: chao bi <chao.bi@intel.com>
+Cc: Alan Cox <alan@linux.intel.com>, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 01/15, Ivo Sieben wrote:
->
-> It solves an issue for me, and I really would like this patch to be approved.
+On Wed, Dec 12, 2012 at 01:07:06PM +0800, chao bi wrote:
+> 
+> As protocol driver, IFX SPI driver initiate to setup SPI master with default
+> SPI word size as 16 bit/word, however, SPI master may not adopt this default
+> value due to SPI controller's capability, it might choose an available value by
+> itself and set it to spi_device.bits_per_word. In order to keep align with
+> Controller, IFX driver should make use of this value during SPI transfer,
+> but the default one.
+> 
+> Signed-off-by: Chen Jun <jun.d.chen@intel.com>
+> Signed-off-by: channing <chao.bi@intel.com>
+> ---
+>  drivers/tty/serial/ifx6x60.c |    3 ++-
+>  1 files changed, 2 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+> index 675d94a..5919992 100644
+> --- a/drivers/tty/serial/ifx6x60.c
+> +++ b/drivers/tty/serial/ifx6x60.c
+> @@ -810,7 +810,8 @@ static void ifx_spi_io(unsigned long data)
+>  		ifx_dev->spi_xfer.cs_change = 0;
+>  		ifx_dev->spi_xfer.speed_hz = ifx_dev->spi_dev->max_speed_hz;
+>  		/* ifx_dev->spi_xfer.speed_hz = 390625; */
+> -		ifx_dev->spi_xfer.bits_per_word = spi_bpw;
+> +		ifx_dev->spi_xfer.bits_per_word =
+> +		ifx_dev->spi_dev->bits_per_word;
 
-Agreed.
+Please follow the proper coding style (hint, this isn't it.)
 
-And even if we want a helper to hide the waitqueue_active(), we can add it
-later and convert more users, not just put_ldisc().
+thanks,
 
-Oleg.
+greg k-h
