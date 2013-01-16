@@ -1,45 +1,52 @@
-From: Ivo Sieben <meltedpianoman@gmail.com>
-Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
- queue is active
-Date: Wed, 16 Jan 2013 13:02:51 +0100
-Message-ID: <CAMSQXEHjP5mzs9u5DUmuYgoEceM2OO=E8844-XQ7LPCSECoGRw@mail.gmail.com>
-References: <1355842130-15482-1-git-send-email-meltedpianoman@gmail.com>
-	<50E3FDFA.4070203@suse.cz>
-	<20130102114311.66215bf5@pyramind.ukuu.org.uk>
-	<CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com>
-	<50E4854E.8060801@suse.cz>
-	<CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com>
-	<50F66120.50704@linux.vnet.ibm.com>
-	<CAMSQXEE=Qp8kVcEp8nBhNDmOaDMUQUUou+5Z2f8-1znykqy6mQ@mail.gmail.com>
-	<50F683D9.1080908@linux.vnet.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <50F683D9.1080908@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Preeti U Murthy <preeti@linux.vnet.ibm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: [PATCH 3/4] serial: 8250_dw: Use ifdef with ACPI
+Date: Wed, 16 Jan 2013 14:08:15 +0200
+Message-ID: <1358338096-32081-4-git-send-email-heikki.krogerus@linux.intel.com>
+References: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:29833 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753859Ab3APMHU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 07:07:20 -0500
+In-Reply-To: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-2013/1/16 Preeti U Murthy <preeti@linux.vnet.ibm.com>:
->
-> Yes.Thank you very much for the explanation :) But I dont see how the
-> context switching goes away with your patch.With your patch, when the
-> higher priority thread comes in when the lower priority thread is
-> running in the critical section,it will see the wait queue empty and
-> "continue its execution" without now wanting to enter the critical
-> section.So this means it will preempt the lower priority thread because
-> it is not waiting on a lock anyway.There is a context switch here right?
-> I dont see any problem in scheduling due to this,but I do think your
-> patch is essential.
->
+There are no stubs for ACPI functions so the driver needs to
+have this ifdef or it will not compile without ACPI.
 
-I don't have a problem that there is a context switch to the high
-priority process: it has a higher priority, so it probably is more
-important.
-My problem is that even when the waitqueue is empty, the high priority
-thread has a risk to block on the spinlock needlessly (causing context
-switches to low priority task and back to the high priority task)
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dw.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Regards,
-Ivo Sieben
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index ceacf5e..bfdaf8b 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -145,6 +145,7 @@ static int dw8250_probe_of(struct uart_port *p)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_ACPI
+ static bool dw8250_acpi_dma_filter(struct dma_chan *chan, void *parm)
+ {
+ 	return chan->chan_id == *(int *)parm;
+@@ -231,6 +232,12 @@ static int dw8250_probe_acpi(struct uart_port *p)
+ 
+ 	return 0;
+ }
++#else
++static inline int dw8250_probe_acpi(struct uart_port *p)
++{
++	return -ENODEV;
++}
++#endif /* CONFIG_ACPI */
+ 
+ static void dw8250_setup_port(struct uart_8250_port *up)
+ {
+-- 
+1.7.10.4
+
