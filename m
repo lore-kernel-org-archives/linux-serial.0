@@ -1,43 +1,51 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 2/2] The correct device id for this card is 0x0022.
-Date: Tue, 15 Jan 2013 19:00:21 -0800
-Message-ID: <20130116030021.GA29114@kroah.com>
-References: <1354740983-4352-1-git-send-email-matts@commtech-fastcom.com>
- <1354740983-4352-2-git-send-email-matts@commtech-fastcom.com>
- <20121205213812.42c61b2e@pyramind.ukuu.org.uk>
- <CAGyNnbh=HLcfscSMjEX=zjzXPbETEmSkzLGAu7kxuEkG9eY0Ow@mail.gmail.com>
- <20130116025938.GB29056@kroah.com>
+From: channing <chao.bi@intel.com>
+Subject: [PATCH] serial:ifx6x60:Keep word size accordance with SPI
+ controller
+Date: Wed, 16 Jan 2013 13:14:20 +0800
+Message-ID: <1358313260.3729.5.camel@bichao>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:59390 "EHLO mail.kernel.org"
+Received: from mga09.intel.com ([134.134.136.24]:9500 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756664Ab3APC7X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jan 2013 21:59:23 -0500
-Content-Disposition: inline
-In-Reply-To: <20130116025938.GB29056@kroah.com>
+	id S1758392Ab3APE5H (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jan 2013 23:57:07 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Will Fagan <willf@commtech-fastcom.com>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Matt Schulte <matts_old@commtech-fastcom.com>, linux-serial@vger.kernel.org, Matt Schulte <matts@commtech-fastcom.com>
+To: alan@linux.intel.com
+Cc: greg@kroah.com, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Jan 15, 2013 at 06:59:38PM -0800, Greg KH wrote:
-> On Wed, Dec 05, 2012 at 04:20:56PM -0600, Will Fagan wrote:
-> > I just spoke with Matt. He isn't by his email and asked if he only
-> > needed to resend the patch with the reordering or both patches?
-> 
-> Both patches please.
-> 
-> Also, please let me know "what" card you are talking about here in the
-> subject and body of the patch.  Also the device type as well?
-> 
-> ideally the Subject would look like:
-> 	Subject: tty: serial: fix device id for the FOO device
-> 
-> Can you resend both of these after fixing that up so that I can apply
-> them?
 
-Oh nevermind, it looks like it was resent, my todo patch queue is looney
-right now, sorry for the noise.
+As protocol driver, IFX SPI driver initiate to setup SPI master with default
+SPI word size as 16 bit/word, however, SPI master may not adopt this default
+value due to SPI controller's capability, it might choose an available value by
+itself and set it to spi_device.bits_per_word. In order to keep align with
+Controller, IFX driver should make use of this value during SPI transfer,
+but the default one.
 
-greg k-h
+Signed-off-by: Chen Jun <jun.d.chen@intel.com>
+Signed-off-by: channing <chao.bi@intel.com>
+---
+ drivers/tty/serial/ifx6x60.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 675d94a..3e337b8 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -810,7 +810,8 @@ static void ifx_spi_io(unsigned long data)
+ 		ifx_dev->spi_xfer.cs_change = 0;
+ 		ifx_dev->spi_xfer.speed_hz = ifx_dev->spi_dev->max_speed_hz;
+ 		/* ifx_dev->spi_xfer.speed_hz = 390625; */
+-		ifx_dev->spi_xfer.bits_per_word = spi_bpw;
++		ifx_dev->spi_xfer.bits_per_word =
++			ifx_dev->spi_dev->bits_per_word;
+ 
+ 		ifx_dev->spi_xfer.tx_buf = ifx_dev->tx_buffer;
+ 		ifx_dev->spi_xfer.rx_buf = ifx_dev->rx_buffer;
+-- 
+1.7.1
+
+
+
