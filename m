@@ -1,113 +1,47 @@
-From: kbuild test robot <fengguang.wu@intel.com>
-Subject: [tty:tty-next 25/55] arch/mn10300/kernel/mn10300-serial.c:527:19: error: 'port' redeclared as different kind of symbol
-Date: Wed, 16 Jan 2013 15:45:54 +0800
-Message-ID: <50f65ab2.siZ9YAVjkofVwftt%fengguang.wu@intel.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: Re: [PATCH] tty: Fix ptmx open without closed slave.
+Date: Wed, 16 Jan 2013 11:48:38 +0400
+Message-ID: <50F65B56.8090001@ilyx.ru>
+References: <50D20EB5.30900@ilyx.ru> <20130116070402.GA2527@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:54572 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758182Ab3APHrX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 02:47:23 -0500
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:56325 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752652Ab3APHsl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 02:48:41 -0500
+In-Reply-To: <20130116070402.GA2527@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   852e4a8152b427c3f318bb0e1b5e938d64dcdc32
-commit: 227434f8986c3827a1faedd1feb437acd6285315 [25/55] TTY: switch tty_buffer_request_room to tty_port
-config: make ARCH=mn10300 asb2364_defconfig
 
-All error/warnings:
+> 
+> Ok, I have a ton of patches from you, lots of different threads, patches
+> with the same subject, and I don't know what one Alan agreed to.
+> 
+> So, can you please resend what Alan and you agree should be applied to
+> the tree?
+> 
 
-   arch/mn10300/kernel/mn10300-serial.c: In function 'mn10300_serial_receive_interrupt':
->> arch/mn10300/kernel/mn10300-serial.c:527:19: error: 'port' redeclared as different kind of symbol
-   arch/mn10300/kernel/mn10300-serial.c:524:74: note: previous definition of 'port' was here
->> arch/mn10300/kernel/mn10300-serial.c:527:31: error: 'struct tty_port' has no member named 'uart'
->> arch/mn10300/kernel/mn10300-serial.c:533:2: error: 'struct tty_port' has no member named 'name'
->> arch/mn10300/kernel/mn10300-serial.c:537:10: error: 'struct tty_port' has no member named 'rx_inp'
->> arch/mn10300/kernel/mn10300-serial.c:537:10: error: 'struct tty_port' has no member named 'rx_outp'
-   arch/mn10300/kernel/mn10300-serial.c:547:7: error: 'struct tty_port' has no member named 'rx_outp'
-   arch/mn10300/kernel/mn10300-serial.c:547:7: error: 'struct tty_port' has no member named 'rx_outp'
-   arch/mn10300/kernel/mn10300-serial.c:548:6: error: 'struct tty_port' has no member named 'rx_inp'
->> arch/mn10300/kernel/mn10300-serial.c:555:11: error: 'struct tty_port' has no member named 'rx_buffer'
-   arch/mn10300/kernel/mn10300-serial.c:556:11: error: 'struct tty_port' has no member named 'rx_buffer'
-   arch/mn10300/kernel/mn10300-serial.c:558:6: error: 'struct tty_port' has no member named 'rx_outp'
-   arch/mn10300/kernel/mn10300-serial.c:559:6: error: 'struct tty_port' has no member named 'uart'
->> arch/mn10300/kernel/mn10300-serial.c:571:14: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:578:8: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:585:8: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:588:31: error: 'struct tty_port' has no member named 'uart'
-   arch/mn10300/kernel/mn10300-serial.c:599:7: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:622:8: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:640:35: error: 'struct tty_port' has no member named 'uart'
-   arch/mn10300/kernel/mn10300-serial.c:647:11: error: 'struct tty_port' has no member named 'rx_brk'
-   arch/mn10300/kernel/mn10300-serial.c:656:16: error: 'struct tty_port' has no member named 'uart'
-   arch/mn10300/kernel/mn10300-serial.c:658:33: error: 'struct tty_port' has no member named 'uart'
-   arch/mn10300/kernel/mn10300-serial.c:691:6: error: 'struct tty_port' has no member named 'rx_brk'
 
-vim +/port +527 arch/mn10300/kernel/mn10300-serial.c
+I think only two important:
+[PATCH v4] tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
 
-   518	}
-   519	
-   520	/*
-   521	 * receive chars from the ring buffer for this serial port
-   522	 * - must do break detection here (not done in the UART)
-   523	 */
-   524	static void mn10300_serial_receive_interrupt(struct mn10300_serial_port *port)
-   525	{
-   526		struct uart_icount *icount = &port->uart.icount;
- > 527		struct tty_port *port = &port->uart.state->port;
-   528		struct tty_struct *tty = port->tty;
-   529		unsigned ix;
-   530		int count;
-   531		u8 st, ch, push, status, overrun;
-   532	
-   533		_enter("%s", port->name);
-   534	
-   535		push = 0;
-   536	
-   537		count = CIRC_CNT(port->rx_inp, port->rx_outp, MNSC_BUFFER_SIZE);
-   538		count = tty_buffer_request_room(port, count);
-   539		if (count == 0) {
-   540			if (!tty->low_latency)
-   541				tty_flip_buffer_push(tty);
-   542			return;
-   543		}
-   544	
-   545	try_again:
-   546		/* pull chars out of the hat */
-   547		ix = ACCESS_ONCE(port->rx_outp);
-   548		if (CIRC_CNT(port->rx_inp, ix, MNSC_BUFFER_SIZE) == 0) {
-   549			if (push && !tty->low_latency)
-   550				tty_flip_buffer_push(tty);
-   551			return;
-   552		}
-   553	
-   554		smp_read_barrier_depends();
-   555		ch = port->rx_buffer[ix++];
-   556		st = port->rx_buffer[ix++];
-   557		smp_mb();
-   558		port->rx_outp = ix & (MNSC_BUFFER_SIZE - 1);
-   559		port->uart.icount.rx++;
-   560	
-   561		st &= SC01STR_FEF | SC01STR_PEF | SC01STR_OEF;
-   562		status = 0;
-   563		overrun = 0;
-   564	
-   565		/* the UART doesn't detect BREAK, so we have to do that ourselves
-   566		 * - it starts as a framing error on a NUL character
-   567		 * - then we count another two NUL characters before issuing TTY_BREAK
-   568		 * - then we end on a normal char or one that has all the bottom bits
-   569		 *   zero and the top bits set
-   570		 */
-   571		switch (port->rx_brk) {
-   572		case 0:
-   573			/* not breaking at the moment */
-   574			break;
+[PATCH] tty: Correct tty buffer flush.
+With Alan's ACK from 04.12.2012 for kernel <= 3.7
 
----
-0-DAY kernel build testing backend              Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+But for kernel 3.8 I resent this 05.12.2012
+[PATCH -next 0/2] tty: Correct tty buffer flush.
+[PATCH -next 1/2] tty: Correct tty buffer flush.
+[PATCH -next 2/2] tty: Correct tty buffer flush.
+The last I resent with new description after Jiri's remark.
+
+If need I can resent.
+
+
+
+
