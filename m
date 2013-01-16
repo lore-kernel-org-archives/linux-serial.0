@@ -1,66 +1,51 @@
-From: "Bi, Chao" <chao.bi@intel.com>
-Subject: RE: [PATCH] serial:ifx6x60:Keep word size accordance with SPI
- controller
-Date: Wed, 16 Jan 2013 04:57:40 +0000
-Message-ID: <253F3AA5ECB4EC43A2CA0147545F67F2102CE29F@SHSMSX102.ccr.corp.intel.com>
-References: <1355288826.30354.237.camel@bichao>
- <20130116025028.GA29056@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/3] tty: rocket: Explicitly list supported PCI IDs
+Date: Tue, 15 Jan 2013 21:26:35 -0800
+Message-ID: <20130116052635.GA15131@kroah.com>
+References: <bd10fdeead3e321db2bb291c0b722203@localhost>
+ <8e99cbf1f2bdfacaeaf0a5ac99d99309@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:30227 "EHLO mga14.intel.com"
+Received: from mail.kernel.org ([198.145.19.201]:34216 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757526Ab3APE6L convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jan 2013 23:58:11 -0500
-In-Reply-To: <20130116025028.GA29056@kroah.com>
-Content-Language: en-US
+	id S1752748Ab3APFZg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 00:25:36 -0500
+Content-Disposition: inline
+In-Reply-To: <8e99cbf1f2bdfacaeaf0a5ac99d99309@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, "Gorby, Russ" <russ.gorby@intel.com>, "Chen, Jun D" <jun.d.chen@intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: alan@linux.intel.com, jslaby@suse.cz, linux-serial@vger.kernel.org, dwmw2@infradead.org, ben@decadent.org.uk
 
-Sorry for that, please check my resubmitted patch right now.
-
-Thanks,
-Chao
-
------Original Message-----
-From: Greg KH [mailto:gregkh@linuxfoundation.org] 
-Sent: Wednesday, January 16, 2013 10:50 AM
-To: Bi, Chao
-Cc: Alan Cox; Gorby, Russ; Chen, Jun D; linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial:ifx6x60:Keep word size accordance with SPI controller
-
-On Wed, Dec 12, 2012 at 01:07:06PM +0800, chao bi wrote:
+On Sat, Dec 29, 2012 at 11:23:23PM -0800, Kevin Cernekee wrote:
+> Matching PCI_ANY_ID causes conflicts with RocketPort 2 adapters, which
+> are supported by a different driver.
 > 
-> As protocol driver, IFX SPI driver initiate to setup SPI master with 
-> default SPI word size as 16 bit/word, however, SPI master may not 
-> adopt this default value due to SPI controller's capability, it might 
-> choose an available value by itself and set it to 
-> spi_device.bits_per_word. In order to keep align with Controller, IFX 
-> driver should make use of this value during SPI transfer, but the default one.
-> 
-> Signed-off-by: Chen Jun <jun.d.chen@intel.com>
-> Signed-off-by: channing <chao.bi@intel.com>
+> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 > ---
->  drivers/tty/serial/ifx6x60.c |    3 ++-
->  1 files changed, 2 insertions(+), 1 deletions(-)
+>  drivers/tty/rocket.c |   31 ++++++++++++++++++++++++++++---
+>  1 file changed, 28 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/ifx6x60.c 
-> b/drivers/tty/serial/ifx6x60.c index 675d94a..5919992 100644
-> --- a/drivers/tty/serial/ifx6x60.c
-> +++ b/drivers/tty/serial/ifx6x60.c
-> @@ -810,7 +810,8 @@ static void ifx_spi_io(unsigned long data)
->  		ifx_dev->spi_xfer.cs_change = 0;
->  		ifx_dev->spi_xfer.speed_hz = ifx_dev->spi_dev->max_speed_hz;
->  		/* ifx_dev->spi_xfer.speed_hz = 390625; */
-> -		ifx_dev->spi_xfer.bits_per_word = spi_bpw;
-> +		ifx_dev->spi_xfer.bits_per_word =
-> +		ifx_dev->spi_dev->bits_per_word;
+> diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
+> index e42009a..c73ca4e 100644
+> --- a/drivers/tty/rocket.c
+> +++ b/drivers/tty/rocket.c
+> @@ -1758,8 +1758,32 @@ static void rp_flush_buffer(struct tty_struct *tty)
+>  
+>  #ifdef CONFIG_PCI
+>  
+> -static struct pci_device_id __used rocket_pci_ids[] = {
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_RP, PCI_ANY_ID) },
+> +#define RP_PCI_DEVICE(id) \
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_RP, PCI_DEVICE_ID_##id) }
+> +
+> +static DEFINE_PCI_DEVICE_TABLE(rocket_pci_ids) = {
+> +	RP_PCI_DEVICE(RP4QUAD),
 
-Please follow the proper coding style (hint, this isn't it.)
+Ick, no, please just use the PCI_DEVICE() macro and don't define a new
+one that makes it hard to grep for things.  It's not that hard to just
+list them all properly.
 
 thanks,
 
