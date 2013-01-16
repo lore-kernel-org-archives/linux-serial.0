@@ -1,51 +1,39 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial:ifx6x60:Keep word size accordance with SPI
- controller
-Date: Tue, 15 Jan 2013 18:50:28 -0800
-Message-ID: <20130116025028.GA29056@kroah.com>
-References: <1355288826.30354.237.camel@bichao>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 2/2] The correct device id for this card is 0x0022.
+Date: Tue, 15 Jan 2013 18:59:38 -0800
+Message-ID: <20130116025938.GB29056@kroah.com>
+References: <1354740983-4352-1-git-send-email-matts@commtech-fastcom.com>
+ <1354740983-4352-2-git-send-email-matts@commtech-fastcom.com>
+ <20121205213812.42c61b2e@pyramind.ukuu.org.uk>
+ <CAGyNnbh=HLcfscSMjEX=zjzXPbETEmSkzLGAu7kxuEkG9eY0Ow@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:59089 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:59381 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756106Ab3APCt3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jan 2013 21:49:29 -0500
+	id S1756830Ab3APC6k (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jan 2013 21:58:40 -0500
 Content-Disposition: inline
-In-Reply-To: <1355288826.30354.237.camel@bichao>
+In-Reply-To: <CAGyNnbh=HLcfscSMjEX=zjzXPbETEmSkzLGAu7kxuEkG9eY0Ow@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: chao bi <chao.bi@intel.com>
-Cc: Alan Cox <alan@linux.intel.com>, richardx.r.gorby@intel.com, jun.d.chen@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Will Fagan <willf@commtech-fastcom.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Matt Schulte <matts_old@commtech-fastcom.com>, linux-serial@vger.kernel.org, Matt Schulte <matts@commtech-fastcom.com>
 
-On Wed, Dec 12, 2012 at 01:07:06PM +0800, chao bi wrote:
-> 
-> As protocol driver, IFX SPI driver initiate to setup SPI master with default
-> SPI word size as 16 bit/word, however, SPI master may not adopt this default
-> value due to SPI controller's capability, it might choose an available value by
-> itself and set it to spi_device.bits_per_word. In order to keep align with
-> Controller, IFX driver should make use of this value during SPI transfer,
-> but the default one.
-> 
-> Signed-off-by: Chen Jun <jun.d.chen@intel.com>
-> Signed-off-by: channing <chao.bi@intel.com>
-> ---
->  drivers/tty/serial/ifx6x60.c |    3 ++-
->  1 files changed, 2 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-> index 675d94a..5919992 100644
-> --- a/drivers/tty/serial/ifx6x60.c
-> +++ b/drivers/tty/serial/ifx6x60.c
-> @@ -810,7 +810,8 @@ static void ifx_spi_io(unsigned long data)
->  		ifx_dev->spi_xfer.cs_change = 0;
->  		ifx_dev->spi_xfer.speed_hz = ifx_dev->spi_dev->max_speed_hz;
->  		/* ifx_dev->spi_xfer.speed_hz = 390625; */
-> -		ifx_dev->spi_xfer.bits_per_word = spi_bpw;
-> +		ifx_dev->spi_xfer.bits_per_word =
-> +		ifx_dev->spi_dev->bits_per_word;
+On Wed, Dec 05, 2012 at 04:20:56PM -0600, Will Fagan wrote:
+> I just spoke with Matt. He isn't by his email and asked if he only
+> needed to resend the patch with the reordering or both patches?
 
-Please follow the proper coding style (hint, this isn't it.)
+Both patches please.
+
+Also, please let me know "what" card you are talking about here in the
+subject and body of the patch.  Also the device type as well?
+
+ideally the Subject would look like:
+	Subject: tty: serial: fix device id for the FOO device
+
+Can you resend both of these after fixing that up so that I can apply
+them?
 
 thanks,
 
