@@ -1,35 +1,31 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: Fix ptmx open without closed slave.
-Date: Tue, 15 Jan 2013 23:04:02 -0800
-Message-ID: <20130116070402.GA2527@kroah.com>
-References: <50D20EB5.30900@ilyx.ru>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] TTY: serial, add pm function
+Date: Tue, 15 Jan 2013 23:05:21 -0800
+Message-ID: <20130116070521.GB2527@kroah.com>
+References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:36695 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:36818 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751969Ab3APHDI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 02:03:08 -0500
+	id S1752251Ab3APHEd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 02:04:33 -0500
 Content-Disposition: inline
-In-Reply-To: <50D20EB5.30900@ilyx.ru>
+In-Reply-To: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ilya Zykov <ilya@ilyx.ru>
-Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Rickard Andersson <rickard.andersson@stericsson.com>
+Cc: linux-serial@vger.kernel.org, linus.walleij@stericsson.com, alan@linux.intel.com, daniel.lezcano@linaro.org
 
-On Wed, Dec 19, 2012 at 11:00:05PM +0400, Ilya Zykov wrote:
-> When we are opening ptmx, we have closed pts, by description.
-> Now only if we open and after close all pts' descriptions, pty_close() sets
-> this bit correctly
+On Wed, Dec 12, 2012 at 01:40:51PM +0100, Rickard Andersson wrote:
+> Add power management function to tty driver interface
+> and add implementation for serial core.
 > 
-> Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+> Signed-off-by: Rickard Andersson <rickard.andersson@stericsson.com>
+> ---
+> ChangeLog v1->v2
+> - add mutex handling
 
-Ok, I have a ton of patches from you, lots of different threads, patches
-with the same subject, and I don't know what one Alan agreed to.
-
-So, can you please resend what Alan and you agree should be applied to
-the tree?
-
-totally confused,
+As no one is using this, why add it?
 
 greg k-h
