@@ -1,67 +1,53 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 4/4] serial: 8250_dw: Set maxburst size
-Date: Wed, 16 Jan 2013 14:08:16 +0200
-Message-ID: <1358338096-32081-5-git-send-email-heikki.krogerus@linux.intel.com>
-References: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] TTY: serial, add pm function
+Date: Wed, 16 Jan 2013 07:24:40 -0800
+Message-ID: <20130116152440.GA1101@kroah.com>
+References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
+ <20130116070521.GB2527@kroah.com>
+ <50F65C5E.9090804@stericsson.com>
+ <20130116075813.GA30819@kroah.com>
+ <50F665C5.9020603@stericsson.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:29833 "EHLO mga09.intel.com"
+Received: from mail.kernel.org ([198.145.19.201]:50353 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753859Ab3APMHV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 07:07:21 -0500
-In-Reply-To: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
+	id S1752037Ab3APPXj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 10:23:39 -0500
+Content-Disposition: inline
+In-Reply-To: <50F665C5.9020603@stericsson.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+To: Rickard Andersson <rickard.andersson@stericsson.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 
-The default burst is often 1 byte which is not very optimal.
-The ideal burst size when using 16550A type port would be
-1/2 of fifosize, but this does not work with all Designware
-implementations. Setting it to 1/4 fifosize.
+On Wed, Jan 16, 2013 at 09:33:09AM +0100, Rickard Andersson wrote:
+> On 01/16/2013 08:58 AM, Greg KH wrote:
+> >On Wed, Jan 16, 2013 at 08:53:02AM +0100, Rickard Andersson wrote:
+> >>On 01/16/2013 08:05 AM, Greg KH wrote:
+> >>>On Wed, Dec 12, 2012 at 01:40:51PM +0100, Rickard Andersson wrote:
+> >>>>Add power management function to tty driver interface
+> >>>>and add implementation for serial core.
+> >>>>
+> >>>>Signed-off-by: Rickard Andersson<rickard.andersson@stericsson.com>
+> >>>>---
+> >>>>ChangeLog v1->v2
+> >>>>- add mutex handling
+> >>>As no one is using this, why add it?
+> >>>
+> >>>greg k-h
+> >>We want to use this pm function from our bluetooth driver to save
+> >>current when possible. So in our case when the bluetooth driver sees
+> >>that the serial communication to the bluetooth chip will not be used
+> >>it can tell the pl011 serial driver to turn off clocks.
+> >Is that driver in the tree already?
+> >
+> The bluetooth cg2900 driver is on its way towards "staging".
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Really?  I've never heard of it before, nor seen it, so how would I know
+this?  And we really never want to change core kernel code for staging
+drivers, it's one of the requirements of staging code.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index bfdaf8b..117bb8b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -178,6 +178,7 @@ dw8250_acpi_walk_resource(struct acpi_resource *res, void *data)
- 			slave->direction	= DMA_MEM_TO_DEV;
- 			slave->dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
- 			slave->slave_id		= fixed_dma->request_lines;
-+			slave->dst_maxburst	= port->tx_loadsz / 4;
- 
- 			dma->tx_chan_id		= fixed_dma->channels;
- 			dma->tx_param		= &dma->tx_chan_id;
-@@ -189,6 +190,7 @@ dw8250_acpi_walk_resource(struct acpi_resource *res, void *data)
- 			slave->direction	= DMA_DEV_TO_MEM;
- 			slave->src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
- 			slave->slave_id		= fixed_dma->request_lines;
-+			slave->src_maxburst	= p->fifosize / 4;
- 
- 			dma->rx_chan_id		= fixed_dma->channels;
- 			dma->rx_param		= &dma->rx_chan_id;
-@@ -296,6 +298,8 @@ static int dw8250_probe(struct platform_device *pdev)
- 	uart.port.serial_in = dw8250_serial_in;
- 	uart.port.serial_out = dw8250_serial_out;
- 
-+	dw8250_setup_port(&uart);
-+
- 	if (pdev->dev.of_node) {
- 		err = dw8250_probe_of(&uart.port);
- 		if (err)
-@@ -308,8 +312,6 @@ static int dw8250_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	dw8250_setup_port(&uart);
--
- 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
--- 
-1.7.10.4
+So I'll not take this for now, thanks.
 
+greg k-h
