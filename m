@@ -1,47 +1,67 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 2/4] serial: 8250_dma: TX optimisation
-Date: Wed, 16 Jan 2013 14:08:14 +0200
-Message-ID: <1358338096-32081-3-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCH 4/4] serial: 8250_dw: Set maxburst size
+Date: Wed, 16 Jan 2013 14:08:16 +0200
+Message-ID: <1358338096-32081-5-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:39700 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:29833 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753803Ab3APMHS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 07:07:18 -0500
+	id S1753859Ab3APMHV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 07:07:21 -0500
 In-Reply-To: <1358338096-32081-1-git-send-email-heikki.krogerus@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
 
-Remove one useless wakeup, and do not use DMA with zero byte
-transfers.
+The default burst is often 1 byte which is not very optimal.
+The ideal burst size when using 16550A type port would be
+1/2 of fifosize, but this does not work with all Designware
+implementations. Setting it to 1/4 fifosize.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 02333fc..b9f7fd2 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -67,12 +67,12 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 	struct circ_buf			*xmit = &p->port.state->xmit;
- 	struct dma_async_tx_descriptor	*desc;
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index bfdaf8b..117bb8b 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -178,6 +178,7 @@ dw8250_acpi_walk_resource(struct acpi_resource *res, void *data)
+ 			slave->direction	= DMA_MEM_TO_DEV;
+ 			slave->dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 			slave->slave_id		= fixed_dma->request_lines;
++			slave->dst_maxburst	= port->tx_loadsz / 4;
  
--	if (dma->tx_running) {
--		uart_write_wakeup(&p->port);
-+	if (dma->tx_running)
- 		return -EBUSY;
--	}
+ 			dma->tx_chan_id		= fixed_dma->channels;
+ 			dma->tx_param		= &dma->tx_chan_id;
+@@ -189,6 +190,7 @@ dw8250_acpi_walk_resource(struct acpi_resource *res, void *data)
+ 			slave->direction	= DMA_DEV_TO_MEM;
+ 			slave->src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 			slave->slave_id		= fixed_dma->request_lines;
++			slave->src_maxburst	= p->fifosize / 4;
  
- 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-+	if (!dma->tx_size)
-+		return -EINVAL;
+ 			dma->rx_chan_id		= fixed_dma->channels;
+ 			dma->rx_param		= &dma->rx_chan_id;
+@@ -296,6 +298,8 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	uart.port.serial_in = dw8250_serial_in;
+ 	uart.port.serial_out = dw8250_serial_out;
  
- 	desc = dmaengine_prep_slave_single(dma->txchan,
- 					   dma->tx_addr + xmit->tail,
++	dw8250_setup_port(&uart);
++
+ 	if (pdev->dev.of_node) {
+ 		err = dw8250_probe_of(&uart.port);
+ 		if (err)
+@@ -308,8 +312,6 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	dw8250_setup_port(&uart);
+-
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
 -- 
 1.7.10.4
 
