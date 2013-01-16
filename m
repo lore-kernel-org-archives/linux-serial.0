@@ -1,55 +1,35 @@
-From: kbuild test robot <fengguang.wu@intel.com>
-Subject: [tty:tty-next 29/36] drivers/staging/sb105x/sb_pci_mp.c:901:19:
- error: 'struct tty_struct' has no member named 'low_latency'
-Date: Wed, 16 Jan 2013 14:58:09 +0800
-Message-ID: <50f64f81.e/fa1mpz23Din6Vr%fengguang.wu@intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: Fix ptmx open without closed slave.
+Date: Tue, 15 Jan 2013 23:04:02 -0800
+Message-ID: <20130116070402.GA2527@kroah.com>
+References: <50D20EB5.30900@ilyx.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:45256 "EHLO mga14.intel.com"
+Received: from mail.kernel.org ([198.145.19.201]:36695 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751907Ab3APHBt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 02:01:49 -0500
+	id S1751969Ab3APHDI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 02:03:08 -0500
+Content-Disposition: inline
+In-Reply-To: <50D20EB5.30900@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   4e18585d51434c28269e625e56a06396d70d0ff2
-commit: d6c53c0e9bd0a83f9f9ddbc9fd80141a54d83896 [29/36] TTY: move low_latency to tty_port
-config: make ARCH=x86_64 allmodconfig
+On Wed, Dec 19, 2012 at 11:00:05PM +0400, Ilya Zykov wrote:
+> When we are opening ptmx, we have closed pts, by description.
+> Now only if we open and after close all pts' descriptions, pty_close() sets
+> this bit correctly
+> 
+> Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 
-All error/warnings:
+Ok, I have a ton of patches from you, lots of different threads, patches
+with the same subject, and I don't know what one Alan agreed to.
 
-   drivers/staging/sb105x/sb_pci_mp.c: In function 'mp_set_info':
->> drivers/staging/sb105x/sb_pci_mp.c:901:19: error: 'struct tty_struct' has no member named 'low_latency'
-   drivers/staging/sb105x/sb_pci_mp.c: In function 'mp_open':
-   drivers/staging/sb105x/sb_pci_mp.c:1574:5: error: 'struct tty_struct' has no member named 'low_latency'
-   drivers/staging/sb105x/sb_pci_mp.c: In function 'receive_chars':
-   drivers/staging/sb105x/sb_pci_mp.c:2118:4: warning: passing argument 1 of 'tty_insert_flip_char' from incompatible pointer type [enabled by default]
-   In file included from drivers/staging/sb105x/sb_pci_mp.h:4:0,
-                    from drivers/staging/sb105x/sb_pci_mp.c:1:
-   include/linux/tty_flip.h:15:19: note: expected 'struct tty_port *' but argument is of type 'struct tty_struct *'
-   drivers/staging/sb105x/sb_pci_mp.c:2123:4: warning: passing argument 1 of 'tty_insert_flip_char' from incompatible pointer type [enabled by default]
-   In file included from drivers/staging/sb105x/sb_pci_mp.h:4:0,
-                    from drivers/staging/sb105x/sb_pci_mp.c:1:
-   include/linux/tty_flip.h:15:19: note: expected 'struct tty_port *' but argument is of type 'struct tty_struct *'
+So, can you please resend what Alan and you agree should be applied to
+the tree?
 
-vim +901 drivers/staging/sb105x/sb_pci_mp.c
+totally confused,
 
-   895			(new_flags & UPF_CHANGE_MASK);
-   896		port->custom_divisor   = new_serial.custom_divisor;
-   897		state->close_delay     = new_serial.close_delay;
-   898		state->closing_wait    = closing_wait;
-   899		port->fifosize         = new_serial.xmit_fifo_size;
-   900		if (state->info->tty)
- > 901			state->info->tty->low_latency =
-   902				(port->flags & UPF_LOW_LATENCY) ? 1 : 0;
-   903	
-   904	check_and_exit:
-
----
-0-DAY kernel build testing backend              Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+greg k-h
