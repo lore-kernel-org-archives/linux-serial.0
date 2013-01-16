@@ -1,64 +1,47 @@
-From: "Stephen Hurd" <shurd@broadcom.com>
-Subject: RE: [PATCH] 8250/16?50: Add support for Broadcom TruManage
- redirected serial port
-Date: Wed, 16 Jan 2013 21:49:36 +0000
-Message-ID: <156984479488CD49A184F5CAB4AF934606FF8308@IRVEXCHMB14.corp.ad.broadcom.com>
-References: <156984479488CD49A184F5CAB4AF934606FF55F8@IRVEXCHMB14.corp.ad.broadcom.com>
- <20121212044522.GA7224@kroah.com>
- <156984479488CD49A184F5CAB4AF934606FF5627@IRVEXCHMB14.corp.ad.broadcom.com>
- <20130116065905.GA20170@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+From: Cong Ding <dinggnu@gmail.com>
+Subject: [PATCH] tty: serial/vt8500_serial.c: fix bug caused by missing "{}"
+Date: Wed, 16 Jan 2013 23:25:03 +0100
+Message-ID: <1358375103-11703-1-git-send-email-dinggnu@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mms1.broadcom.com ([216.31.210.17]:4555 "EHLO mms1.broadcom.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756323Ab3APVu2 convert rfc822-to-8bit (ORCPT
+Received: from mail-ea0-f176.google.com ([209.85.215.176]:55677 "EHLO
+	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756310Ab3APWbR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 16:50:28 -0500
-In-Reply-To: <20130116065905.GA20170@kroah.com>
-Content-Language: en-US
+	Wed, 16 Jan 2013 17:31:17 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Tony Prisk <linux@prisktech.co.nz>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Cong Ding <dinggnu@gmail.com>
 
-The patch was against 3.7, not 2.7, 2.7 was a typo.
+It is obviously here should be braced by "{}" in the "if" branch (more than 1
+line in the "if" branch), and by the
+coding style document of the kernel I also add "{}" to the else branch.
 
-I'll just pass it off to a Linux developer if I meet one.  Sorry for wasting your time.
+Signed-off-by: Cong Ding <dinggnu@gmail.com>
+---
+ drivers/tty/serial/vt8500_serial.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-
--- Stephen Hurd
-
------Original Message-----
-From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org] 
-Sent: Tuesday, January 15, 2013 10:59 PM
-To: Stephen Hurd
-Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] 8250/16?50: Add support for Broadcom TruManage redirected serial port
-
-On Wed, Dec 12, 2012 at 05:28:35AM +0000, Stephen Hurd wrote:
-> From: Stephen Hurd <shurd@broadcom.com>
-> 
-> Add support for the UART device present in Broadcom TruManage capable NetXtreme chips (ie: 5761m 5762, and 5725).
-> 
-> This implementation has a hidden transmit FIFO, so running in single-byte interrupt mode results in too many interrupts.  The UART_CAP_HFIFO capability was added to track this.  It continues to reload the THR as long as the THRE and TSRE bits are set in the LSR up to a specified limit (1024 is used here).
-> 
-> Signed-off-by: Stephen Hurd <shurd@broadcom.com>
-> 
-> ---
-> 
-> Patch against linux-2.7 from ftp.kernel.org downloaded Dec-11-2012.
-
-2.7?
-
-I need this against the linux-next release, can you please redo it, and
-not send it as an attachment, but put it all inline in the email
-properly like Documentation/email_clients.txt says?
-
-thanks,
-
-greg k-h
-
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index 8fd1814..ac46a6e 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -567,12 +567,13 @@ static int vt8500_serial_probe(struct platform_device *pdev)
+ 	if (!mmres || !irqres)
+ 		return -ENODEV;
+ 
+-	if (np)
++	if (np) {
+ 		port = of_alias_get_id(np, "serial");
+ 		if (port > VT8500_MAX_PORTS)
+ 			port = -1;
+-	else
++	} else {
+ 		port = -1;
++	}
+ 
+ 	if (port < 0) {
+ 		/* calculate the port id */
+-- 
+1.7.10.4
 
