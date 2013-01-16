@@ -1,44 +1,67 @@
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250/16?50: Add support for Broadcom TruManage
- redirected serial port
-Date: Tue, 15 Jan 2013 22:59:05 -0800
-Message-ID: <20130116065905.GA20170@kroah.com>
-References: <156984479488CD49A184F5CAB4AF934606FF55F8@IRVEXCHMB14.corp.ad.broadcom.com>
- <20121212044522.GA7224@kroah.com>
- <156984479488CD49A184F5CAB4AF934606FF5627@IRVEXCHMB14.corp.ad.broadcom.com>
+From: kbuild test robot <fengguang.wu@intel.com>
+Subject: [tty:tty-next 27/36] drivers/staging/sb105x/sb_pci_mp.c:2118:4:
+ warning: passing argument 1 of 'tty_insert_flip_char' from incompatible
+ pointer type
+Date: Wed, 16 Jan 2013 14:56:19 +0800
+Message-ID: <50f64f13.srdqRS36NV5bHEtJ%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:36568 "EHLO mail.kernel.org"
+Received: from mga01.intel.com ([192.55.52.88]:4308 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752652Ab3APG6L (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 01:58:11 -0500
-Content-Disposition: inline
-In-Reply-To: <156984479488CD49A184F5CAB4AF934606FF5627@IRVEXCHMB14.corp.ad.broadcom.com>
+	id S1753755Ab3APG7l (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 01:59:41 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Hurd <shurd@broadcom.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Wed, Dec 12, 2012 at 05:28:35AM +0000, Stephen Hurd wrote:
-> From: Stephen Hurd <shurd@broadcom.com>
-> 
-> Add support for the UART device present in Broadcom TruManage capable NetXtreme chips (ie: 5761m 5762, and 5725).
-> 
-> This implementation has a hidden transmit FIFO, so running in single-byte interrupt mode results in too many interrupts.  The UART_CAP_HFIFO capability was added to track this.  It continues to reload the THR as long as the THRE and TSRE bits are set in the LSR up to a specified limit (1024 is used here).
-> 
-> Signed-off-by: Stephen Hurd <shurd@broadcom.com>
-> 
-> ---
-> 
-> Patch against linux-2.7 from ftp.kernel.org downloaded Dec-11-2012.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   4e18585d51434c28269e625e56a06396d70d0ff2
+commit: 92a19f9cec9a80ad93c06e115822deb729e2c6ad [27/36] TTY: switch tty_insert_flip_char
+config: make ARCH=x86_64 allmodconfig
 
-2.7?
+All warnings:
 
-I need this against the linux-next release, can you please redo it, and
-not send it as an attachment, but put it all inline in the email
-properly like Documentation/email_clients.txt says?
+   drivers/staging/sb105x/sb_pci_mp.c: In function 'receive_chars':
+>> drivers/staging/sb105x/sb_pci_mp.c:2118:4: warning: passing argument 1 of 'tty_insert_flip_char' from incompatible pointer type [enabled by default]
+   In file included from drivers/staging/sb105x/sb_pci_mp.h:4:0,
+                    from drivers/staging/sb105x/sb_pci_mp.c:1:
+   include/linux/tty_flip.h:15:19: note: expected 'struct tty_port *' but argument is of type 'struct tty_struct *'
+   drivers/staging/sb105x/sb_pci_mp.c:2123:4: warning: passing argument 1 of 'tty_insert_flip_char' from incompatible pointer type [enabled by default]
+   In file included from drivers/staging/sb105x/sb_pci_mp.h:4:0,
+                    from drivers/staging/sb105x/sb_pci_mp.c:1:
+   include/linux/tty_flip.h:15:19: note: expected 'struct tty_port *' but argument is of type 'struct tty_struct *'
 
-thanks,
+vim +/tty_insert_flip_char +2118 drivers/staging/sb105x/sb_pci_mp.c
 
-greg k-h
+  2102				} 
+  2103				if (lsr & UART_LSR_PE)
+  2104				{
+  2105					mtpt->port.icount.parity++;
+  2106					flag = TTY_PARITY;
+  2107				}
+  2108				if (lsr & UART_LSR_FE)
+  2109				{
+  2110					mtpt->port.icount.frame++;
+  2111					flag = TTY_FRAME;
+  2112				}
+  2113				if (lsr & UART_LSR_OE)
+  2114				{
+  2115					mtpt->port.icount.overrun++;
+  2116					flag = TTY_OVERRUN;
+  2117				}
+> 2118				tty_insert_flip_char(tty, ch, flag);
+  2119			}
+  2120			else
+  2121			{
+  2122				ch = serial_inp(mtpt, UART_RX);
+  2123				tty_insert_flip_char(tty, ch, 0);
+  2124			}
+  2125	ignore_char:
+  2126			lsr = serial_inp(mtpt, UART_LSR);
+
+---
+0-DAY kernel build testing backend              Open Source Technology Center
+http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
