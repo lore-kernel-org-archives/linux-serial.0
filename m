@@ -1,47 +1,39 @@
 From: Cong Ding <dinggnu@gmail.com>
-Subject: [PATCH] tty: serial/vt8500_serial.c: fix bug caused by missing "{}"
-Date: Wed, 16 Jan 2013 23:25:03 +0100
-Message-ID: <1358375103-11703-1-git-send-email-dinggnu@gmail.com>
+Subject: [PATCH] tty: serial/68328serial.c: remove unnecessary null pointer check
+Date: Wed, 16 Jan 2013 23:30:43 +0100
+Message-ID: <1358375444-13026-1-git-send-email-dinggnu@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ea0-f176.google.com ([209.85.215.176]:55677 "EHLO
-	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756310Ab3APWbR (ORCPT
+Received: from mail-ee0-f54.google.com ([74.125.83.54]:64428 "EHLO
+	mail-ee0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757639Ab3APWgy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 17:31:17 -0500
+	Wed, 16 Jan 2013 17:36:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Prisk <linux@prisktech.co.nz>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Cong Ding <dinggnu@gmail.com>
 
-It is obviously here should be braced by "{}" in the "if" branch (more than 1
-line in the "if" branch), and by the
-coding style document of the kernel I also add "{}" to the else branch.
+The pointer info is dereferened in line 1009, so it is not necessary to check
+null again in line 1012.
 
 Signed-off-by: Cong Ding <dinggnu@gmail.com>
 ---
- drivers/tty/serial/vt8500_serial.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/68328serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 8fd1814..ac46a6e 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -567,12 +567,13 @@ static int vt8500_serial_probe(struct platform_device *pdev)
- 	if (!mmres || !irqres)
- 		return -ENODEV;
+diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
+index f99a845..4f7c0d2 100644
+--- a/drivers/tty/serial/68328serial.c
++++ b/drivers/tty/serial/68328serial.c
+@@ -1009,7 +1009,7 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
+ 	m68328_uart *uart = &uart_addr[info->line];
+ 	unsigned long flags;
  
--	if (np)
-+	if (np) {
- 		port = of_alias_get_id(np, "serial");
- 		if (port > VT8500_MAX_PORTS)
- 			port = -1;
--	else
-+	} else {
- 		port = -1;
-+	}
- 
- 	if (port < 0) {
- 		/* calculate the port id */
+-	if (!info || serial_paranoia_check(info, tty->name, "rs_close"))
++	if (serial_paranoia_check(info, tty->name, "rs_close"))
+ 		return;
+ 	
+ 	local_irq_save(flags);
 -- 
 1.7.10.4
 
