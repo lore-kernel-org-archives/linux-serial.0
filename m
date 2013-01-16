@@ -1,41 +1,89 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] TTY: serial, add pm function
-Date: Tue, 15 Jan 2013 23:58:13 -0800
-Message-ID: <20130116075813.GA30819@kroah.com>
-References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
- <20130116070521.GB2527@kroah.com>
- <50F65C5E.9090804@stericsson.com>
+From: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
+ queue is active
+Date: Wed, 16 Jan 2013 13:43:20 +0530
+Message-ID: <50F66120.50704@linux.vnet.ibm.com>
+References: <1355842130-15482-1-git-send-email-meltedpianoman@gmail.com> <50E3FDFA.4070203@suse.cz>	<20130102114311.66215bf5@pyramind.ukuu.org.uk> <CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com> <50E4854E.8060801@suse.cz> <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:38015 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752808Ab3APH5Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 02:57:16 -0500
-Content-Disposition: inline
-In-Reply-To: <50F65C5E.9090804@stericsson.com>
+Received: from e28smtp05.in.ibm.com ([122.248.162.5]:43990 "EHLO
+	e28smtp05.in.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753963Ab3APIOS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 03:14:18 -0500
+Received: from /spool/local
+	by e28smtp05.in.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <preeti@linux.vnet.ibm.com>;
+	Wed, 16 Jan 2013 13:43:07 +0530
+In-Reply-To: <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rickard Andersson <rickard.andersson@stericsson.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
+To: Ivo Sieben <meltedpianoman@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Oleg Nesterov <oleg@redhat.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
 
-On Wed, Jan 16, 2013 at 08:53:02AM +0100, Rickard Andersson wrote:
-> On 01/16/2013 08:05 AM, Greg KH wrote:
-> >On Wed, Dec 12, 2012 at 01:40:51PM +0100, Rickard Andersson wrote:
-> >>Add power management function to tty driver interface
-> >>and add implementation for serial core.
-> >>
-> >>Signed-off-by: Rickard Andersson<rickard.andersson@stericsson.com>
-> >>---
-> >>ChangeLog v1->v2
-> >>- add mutex handling
-> >As no one is using this, why add it?
-> >
-> >greg k-h
-> We want to use this pm function from our bluetooth driver to save
-> current when possible. So in our case when the bluetooth driver sees
-> that the serial communication to the bluetooth chip will not be used
-> it can tell the pl011 serial driver to turn off clocks.
+Hi Ivo,
+Can you explain how this problem could create a scheduler overhead?
+I am a little confused, because as far as i know,scheduler does not come
+in the picture of the wake up path right? select_task_rq() in
+try_to_wake_up() is where the scheduler comes in,and this is after the
+task wakes up.
 
-Is that driver in the tree already?
+On 01/03/2013 03:19 PM, Ivo Sieben wrote:
+> Oleg, Peter, Ingo, Andi & Preeti,
+> 
+> 2013/1/2 Jiri Slaby <jslaby@suse.cz>:
+>> On 01/02/2013 04:21 PM, Ivo Sieben wrote:
+>>> I don't understand your responses: do you suggest to implement this
+>>> "if active" behavior in:
+>>> * A new wake_up function called wake_up_if_active() that is part of
+>>> the waitqueue layer?
+>>
+>> Sounds good.
+>>
+>> --
+>> js
+>> suse labs
+> 
+> I want to ask you 'scheduler' people for your opinion:
+> 
+> Maybe you remember my previous patch where I suggested an extra
+> 'waitqueue empty' check before entering the critical section of the
+> wakeup() function (If you do not remember see
+> https://lkml.org/lkml/2012/10/25/159)
+> 
+> Finally Oleg responded that a lot of callers do
+> 
+> 	if (waitqueue_active(q))
+> 		wake_up(...);
+> 
+> what made my patch pointless and adds a memory barrier. I then decided
+> to also implement the 'waitqueue_active' approach for my problem.
+> 
+> But now I get a review comment by Jiri that he would like to hide this
+> 'if active behavior' in a wake_up_if_active() kind of function. I
+> think he is right that implementing this check in the wakeup function
+> would clean things up, right?
+> 
+> I would like to have your opinion on the following two suggestions:
+> - We still can do the original patch on the wake_up() that I
+> suggested. I then can do an additional code cleanup patch that removes
+> the double 'waitqueue_active' call (a quick grep found about 150 of
+> these waitqueue active calls) on several places in the code.
+
+I think this is a good move.
+
+> - Or - as an alternative - I could add extra _if_active() versions of
+> all wake_up() functions, that implement this extra test.
+
+Why add 'extra' if_active versions? Why not optimize this within the
+existing wake_up() functions?
+> 
+> Regards,
+> Ivo
+
+Regards
+Preeti U Murthy
+> 
 
