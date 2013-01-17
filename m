@@ -1,64 +1,62 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFt0dHk6dHR5LW5leHQgNDIvNjJdIGRyaXZlcnMvdHR5L3NlcmlhbC9z?=
- =?UTF-8?B?Y2NueHAuYzo4OTQgc2NjbnhwX3Byb2JlKCkgZXJyb3I6IHdlIHByZXZpb3Vz?=
- =?UTF-8?B?bHkgYXNzdW1lZCAncGRhdGEnIGNvdWxkIGJlIG51bGwgKHNlZSBsaW5lIDg4?=
- =?UTF-8?B?Nyk=?=
-Date: Thu, 17 Jan 2013 11:11:47 +0400
-Message-ID: <1358406707.198226027@f384.i.mail.ru>
-References: <20130117065938.GF16282@mwanda>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Rickard Andersson <rickard.andersson@stericsson.com>
+Subject: Re: [PATCH v2] TTY: serial, add pm function
+Date: Thu, 17 Jan 2013 11:10:54 +0100
+Message-ID: <50F7CE2E.1030000@stericsson.com>
+References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com> <20130116070521.GB2527@kroah.com> <50F65C5E.9090804@stericsson.com> <20130116075813.GA30819@kroah.com> <50F665C5.9020603@stericsson.com> <20130116152440.GA1101@kroah.com> <CACRpkdax3znJg_8W-B=1mHTiZwtbiqx1B6hMrxVk4UXEK2NpGw@mail.gmail.com> <20130117023214.GB20928@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback1.mail.ru ([94.100.176.18]:33398 "EHLO
-	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758866Ab3AQJa0 (ORCPT
+Received: from eu1sys200aog108.obsmtp.com ([207.126.144.125]:48624 "EHLO
+	eu1sys200aog108.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759486Ab3AQKLJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jan 2013 04:30:26 -0500
-Received: from f384.i.mail.ru (f384.i.mail.ru [185.5.136.55])
-	by fallback1.mail.ru (mPOP.Fallback_MX) with ESMTP id AB66CE3E90B
-	for <linux-serial@vger.kernel.org>; Thu, 17 Jan 2013 11:12:15 +0400 (MSK)
-In-Reply-To: <20130117065938.GF16282@mwanda>
+	Thu, 17 Jan 2013 05:11:09 -0500
+In-Reply-To: <20130117023214.GB20928@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?RGFuIENhcnBlbnRlcg==?= <dan.carpenter@oracle.com>
-Cc: linux-serial@vger.kernel.org, kbuild@01.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 
-PiBIaSBBbGV4YW5kZXIsCj4gCj4gRllJLCB0aGVyZSBhcmUgbmV3IHNtYXRjaCB3YXJuaW5ncyBz
-aG93IHVwIGluCj4gCj4gdHJlZTogICBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4
-L2tlcm5lbC9naXQvZ3JlZ2toL3R0eS5naXQgdHR5LW5leHQKPiBoZWFkOiAgIGUyN2E3ZDc5Nzdi
-MDdkNzAxYmEyNDdlMmRkYjk1NDY2ZDk1Yzg5OGYKPiBjb21taXQ6IGVjMDYzODk5YjdiMzA4MDE5
-YWZhOWY1ZWIzMmYwYTU4YTZjNmVlNTMgWzQyLzYyXSBzZXJpYWw6IHNjY254cDogSW1wbGVtZW50
-IHBvbGxpbmcgbW9kZQo+IAo+IE5ldyBzbWF0Y2ggd2FybmluZ3M6Cj4gZHJpdmVycy90dHkvc2Vy
-aWFsL3NjY254cC5jOjg5NCBzY2NueHBfcHJvYmUoKSBlcnJvcjogd2UgcHJldmlvdXNseSBhc3N1
-bWVkICdwZGF0YScgY291bGQgYmUgbnVsbCAoc2VlIGxpbmUgODg3KQo+IAo+IGdpdCByZW1vdGUg
-YWRkIHR0eSBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvZ3Jl
-Z2toL3R0eS5naXQKPiBnaXQgcmVtb3RlIHVwZGF0ZSB0dHkKPiBnaXQgY2hlY2tvdXQgZWMwNjM4
-OTliN2IzMDgwMTlhZmE5ZjVlYjMyZjBhNThhNmM2ZWU1Mwo+IHZpbSArL3BkYXRhICs4OTQgZHJp
-dmVycy90dHkvc2VyaWFsL3NjY254cC5jCj4gCj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlhbiAy
-MDEyLTA4LTI1ICA4ODEgIAlkZWZhdWx0Ogo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5YW4gMjAx
-Mi0wOC0yNSAgODgyICAJCWRldl9lcnIoJnBkZXYtPmRldiwgIlVuc3VwcG9ydGVkIGNoaXAgdHlw
-ZSAlaVxuIiwgY2hpcHR5cGUpOwo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5YW4gMjAxMi0wOC0y
-NSAgODgzICAJCXJldCA9IC1FTk9UU1VQUDsKPiAxZDY1YzBiMSBBbGV4YW5kZXIgU2hpeWFuIDIw
-MTItMDgtMjUgIDg4NCAgCQlnb3RvIGVycl9vdXQ7Cj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlh
-biAyMDEyLTA4LTI1ICA4ODUgIAl9Cj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlhbiAyMDEyLTA4
-LTI1ICA4ODYgIAo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5YW4gMjAxMi0wOC0yNSBAODg3ICAJ
-aWYgKCFwZGF0YSkgewo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5YW4gMjAxMi0wOC0yNSAgODg4
-ICAJCWRldl93YXJuKCZwZGV2LT5kZXYsCj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlhbiAyMDEy
-LTA4LTI1ICA4ODkgIAkJCSAiTm8gcGxhdGZvcm0gZGF0YSBzdXBwbGllZCwgdXNpbmcgZGVmYXVs
-dHNcbiIpOwo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5YW4gMjAxMi0wOC0yNSAgODkwICAJCXMt
-PnBkYXRhLmZyZXF1ZW5jeSA9IHMtPmZyZXFfc3RkOwo+IDFkNjVjMGIxIEFsZXhhbmRlciBTaGl5
-YW4gMjAxMi0wOC0yNSAgODkxICAJfSBlbHNlCj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlhbiAy
-MDEyLTA4LTI1ICA4OTIgIAkJbWVtY3B5KCZzLT5wZGF0YSwgcGRhdGEsIHNpemVvZihzdHJ1Y3Qg
-c2NjbnhwX3BkYXRhKSk7Cj4gMWQ2NWMwYjEgQWxleGFuZGVyIFNoaXlhbiAyMDEyLTA4LTI1ICA4
-OTMgIAo+IGVjMDYzODk5IEFsZXhhbmRlciBTaGl5YW4gMjAxMi0xMi0wMyBAODk0ICAJaWYgKHBk
-YXRhLT5wb2xsX3RpbWVfdXMpIHsKPiBlYzA2Mzg5OSBBbGV4YW5kZXIgU2hpeWFuIDIwMTItMTIt
-MDMgIDg5NSAgCQlkZXZfaW5mbygmcGRldi0+ZGV2LCAiVXNpbmcgcG9sbCBtb2RlLCByZXNvbHV0
-aW9uICV1IHVzZWNzXG4iLAo+IGVjMDYzODk5IEFsZXhhbmRlciBTaGl5YW4gMjAxMi0xMi0wMyAg
-ODk2ICAJCQkgcGRhdGEtPnBvbGxfdGltZV91cyk7Cj4gZWMwNjM4OTkgQWxleGFuZGVyIFNoaXlh
-biAyMDEyLTEyLTAzICA4OTcgIAkJcy0+cG9sbCA9IDE7CiAKSSBhZ3JlZS4gSW4gdGhpcyBjYXNl
-IChsaW5lIDg5NCksIHRoZXJlIHNob3VsZCBiZToKaWYgKHMtPnBkYXRhLnBvbGxfdGltZV91cykg
-ewoJCWRldl9pbmZvKCZwZGV2LT5kZXYsICJVc2luZyBwb2xsIG1vZGUsIHJlc29sdXRpb24gJXUg
-dXNlY3NcbiIsCgkJCSBzLT5wZGF0YS5wb2xsX3RpbWVfdXMpOwouLi4KClRvZGF5LCBwb3N0IHRo
-ZSBmaXguIFRoYW5rIHlvdS4KCi0tLQo=
+On 01/17/2013 03:32 AM, Greg KH wrote:
+> On Thu, Jan 17, 2013 at 01:36:48AM +0100, Linus Walleij wrote:
+>> On Wed, Jan 16, 2013 at 4:24 PM, Greg KH<gregkh@linuxfoundation.org>  wrote:
+>>> On Wed, Jan 16, 2013 at 09:33:09AM +0100, Rickard Andersson wrote:
+>>>> The bluetooth cg2900 driver is on its way towards "staging".
+>>> Really?  I've never heard of it before, nor seen it, so how would I know
+>>> this?
+>> It's been posted twice, here is the last time:
+>> http://marc.info/?l=linux-kernel&m=134873373526049&w=2
+>>
+>> You commented several times on it, but I know a lot of code
+>> pass by your console.
+> Heh, that's funny, I don't remember that at all, I think I now
+> officially have no long-term memory about patches I review :)
+>
+>>>   And we really never want to change core kernel code for staging
+>>> drivers, it's one of the requirements of staging code.
+>> Hm OK but it's a quite straight-forward thing for anything
+>> connected on a UART in an embedded system that is not just a
+>> serial cable or something and wants to save power.
+>>
+>> Maybe we can augment some other driver for something sitting
+>> on a uart as a proof-of-concept then.
+> You know we don't add infrastructure if there is no in-kernel user, and
+> some random patch that was sent months ago doesn't really count as a
+> "user" given that it's not even being submitted here, and it wasn't
+> referenced in the patch itself that added the api.
+>
+> Also, why does this driver need something that the hundreds of other
+> serial drivers we have in-kernel today do not?  What makes it special
+> over everything else?
+>
+> thanks,
+>
+> greg "I will not remember writing this email" k-h
+Previously we have used a hack where baud rate was set to 0 using 
+set_termios and when the baudrate was 0 clock was turned off to save 
+current by the amba-pl011 driver. Now I try to do it in a cleaner way. 
+An old discussion can be found here:
+
+http://lists.infradead.org/pipermail/linux-arm-kernel/2010-November/031111.html
+
