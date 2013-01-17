@@ -1,56 +1,45 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [tty:tty-next 42/62] drivers/tty/serial/sccnxp.c:894 sccnxp_probe()
- error: we previously assumed 'pdata' could be null (see line 887)
-Date: Thu, 17 Jan 2013 09:59:39 +0300
-Message-ID: <20130117065938.GF16282@mwanda>
+From: Haojun Bao <hjbao@marvell.com>
+Subject: [PATCH] Do not tweak clock in pxa serial write() function
+Date: Thu, 17 Jan 2013 00:01:51 -0800
+Message-ID: <87k3rc44sq.fsf@bj-lt7.marvell.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:25710 "EHLO
-	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932107Ab3AQG7Z (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jan 2013 01:59:25 -0500
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King - ARM Linux <linux@arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, kbuild@01.org
 
-Hi Alexander,
 
-FYI, there are new smatch warnings show up in
+The write() function could be used by printk(), which is atomic and
+tweaking clock there can cause "BUG: sleeping function called from
+invalid context".
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   e27a7d7977b07d701ba247e2ddb95466d95c898f
-commit: ec063899b7b308019afa9f5eb32f0a58a6c6ee53 [42/62] serial: sccnxp: Implement polling mode
-
-New smatch warnings:
-drivers/tty/serial/sccnxp.c:894 sccnxp_probe() error: we previously assumed 'pdata' could be null (see line 887)
-
-git remote add tty git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-git remote update tty
-git checkout ec063899b7b308019afa9f5eb32f0a58a6c6ee53
-vim +/pdata +894 drivers/tty/serial/sccnxp.c
-
-1d65c0b1 Alexander Shiyan 2012-08-25  881  	default:
-1d65c0b1 Alexander Shiyan 2012-08-25  882  		dev_err(&pdev->dev, "Unsupported chip type %i\n", chiptype);
-1d65c0b1 Alexander Shiyan 2012-08-25  883  		ret = -ENOTSUPP;
-1d65c0b1 Alexander Shiyan 2012-08-25  884  		goto err_out;
-1d65c0b1 Alexander Shiyan 2012-08-25  885  	}
-1d65c0b1 Alexander Shiyan 2012-08-25  886  
-1d65c0b1 Alexander Shiyan 2012-08-25 @887  	if (!pdata) {
-1d65c0b1 Alexander Shiyan 2012-08-25  888  		dev_warn(&pdev->dev,
-1d65c0b1 Alexander Shiyan 2012-08-25  889  			 "No platform data supplied, using defaults\n");
-1d65c0b1 Alexander Shiyan 2012-08-25  890  		s->pdata.frequency = s->freq_std;
-1d65c0b1 Alexander Shiyan 2012-08-25  891  	} else
-1d65c0b1 Alexander Shiyan 2012-08-25  892  		memcpy(&s->pdata, pdata, sizeof(struct sccnxp_pdata));
-1d65c0b1 Alexander Shiyan 2012-08-25  893  
-ec063899 Alexander Shiyan 2012-12-03 @894  	if (pdata->poll_time_us) {
-ec063899 Alexander Shiyan 2012-12-03  895  		dev_info(&pdev->dev, "Using poll mode, resolution %u usecs\n",
-ec063899 Alexander Shiyan 2012-12-03  896  			 pdata->poll_time_us);
-ec063899 Alexander Shiyan 2012-12-03  897  		s->poll = 1;
-
+Signed-off-by: Bao Haojun <hjbao@marvell.com>
 ---
-0-DAY kernel build testing backend              Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+ drivers/tty/serial/pxa.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 2764828..fa1d5ae 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -673,7 +673,6 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	unsigned long flags;
+ 	int locked = 1;
+ 
+-	clk_prepare_enable(up->clk);
+ 
+ 	local_irq_save(flags);
+ 	if (up->port.sysrq)
+@@ -702,7 +701,6 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 		spin_unlock(&up->port.lock);
+ 	local_irq_restore(flags);
+ 
+-	clk_disable_unprepare(up->clk);
+ }
+ 
+ #ifdef CONFIG_CONSOLE_POLL
+-- 
+1.7.10.4
