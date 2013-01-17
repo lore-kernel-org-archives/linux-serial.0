@@ -1,61 +1,52 @@
-From: Tony Prisk <linux@prisktech.co.nz>
-Subject: Re: [PATCH] tty: serial/vt8500_serial.c: fix bug caused by missing
- "{}"
-Date: Thu, 17 Jan 2013 12:19:10 +1300
-Message-ID: <1358378350.7405.2.camel@gitbox>
-References: <1358375103-11703-1-git-send-email-dinggnu@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2] TTY: serial, add pm function
+Date: Thu, 17 Jan 2013 01:36:48 +0100
+Message-ID: <CACRpkdax3znJg_8W-B=1mHTiZwtbiqx1B6hMrxVk4UXEK2NpGw@mail.gmail.com>
+References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
+	<20130116070521.GB2527@kroah.com>
+	<50F65C5E.9090804@stericsson.com>
+	<20130116075813.GA30819@kroah.com>
+	<50F665C5.9020603@stericsson.com>
+	<20130116152440.GA1101@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server.prisktech.co.nz ([115.188.14.127]:53731 "EHLO
-	server.prisktech.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755727Ab3APXSp (ORCPT
+Received: from mail-ie0-f176.google.com ([209.85.223.176]:60111 "EHLO
+	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757965Ab3AQAgt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 18:18:45 -0500
-In-Reply-To: <1358375103-11703-1-git-send-email-dinggnu@gmail.com>
+	Wed, 16 Jan 2013 19:36:49 -0500
+Received: by mail-ie0-f176.google.com with SMTP id 13so3808828iea.21
+        for <linux-serial@vger.kernel.org>; Wed, 16 Jan 2013 16:36:48 -0800 (PST)
+In-Reply-To: <20130116152440.GA1101@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Cong Ding <dinggnu@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Rickard Andersson <rickard.andersson@stericsson.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 
-On Wed, 2013-01-16 at 23:25 +0100, Cong Ding wrote:
-> It is obviously here should be braced by "{}" in the "if" branch (more than 1
-> line in the "if" branch), and by the
-> coding style document of the kernel I also add "{}" to the else branch.
-> 
-> Signed-off-by: Cong Ding <dinggnu@gmail.com>
-> ---
->  drivers/tty/serial/vt8500_serial.c |    5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-> index 8fd1814..ac46a6e 100644
-> --- a/drivers/tty/serial/vt8500_serial.c
-> +++ b/drivers/tty/serial/vt8500_serial.c
-> @@ -567,12 +567,13 @@ static int vt8500_serial_probe(struct platform_device *pdev)
->  	if (!mmres || !irqres)
->  		return -ENODEV;
->  
-> -	if (np)
-> +	if (np) {
->  		port = of_alias_get_id(np, "serial");
->  		if (port > VT8500_MAX_PORTS)
->  			port = -1;
-> -	else
-> +	} else {
->  		port = -1;
-> +	}
->  
->  	if (port < 0) {
->  		/* calculate the port id */
+On Wed, Jan 16, 2013 at 4:24 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Wed, Jan 16, 2013 at 09:33:09AM +0100, Rickard Andersson wrote:
 
-Correct. This patch is good but unnecessary now as the patch series I
-pushed out removes this code anyway.
+>> The bluetooth cg2900 driver is on its way towards "staging".
+>
+> Really?  I've never heard of it before, nor seen it, so how would I know
+> this?
 
-It should be applied if the series I sent out is not accepted in this
-merge windows.
+It's been posted twice, here is the last time:
+http://marc.info/?l=linux-kernel&m=134873373526049&w=2
 
-Regards
-Tony P
+You commented several times on it, but I know a lot of code
+pass by your console.
 
+>  And we really never want to change core kernel code for staging
+> drivers, it's one of the requirements of staging code.
+
+Hm OK but it's a quite straight-forward thing for anything
+connected on a UART in an embedded system that is not just a
+serial cable or something and wants to save power.
+
+Maybe we can augment some other driver for something sitting
+on a uart as a proof-of-concept then.
+
+Thanks,
+Linus Walleij
