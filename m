@@ -1,43 +1,115 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v2] TTY: serial, add pm function
-Date: Thu, 17 Jan 2013 13:16:14 +0000
-Message-ID: <20130117131614.30b9089e@bob.linux.org.uk>
-References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
-	<20130116070521.GB2527@kroah.com>
-	<50F65C5E.9090804@stericsson.com>
-	<20130116075813.GA30819@kroah.com>
-	<50F665C5.9020603@stericsson.com>
-	<20130116152440.GA1101@kroah.com>
-	<CACRpkdax3znJg_8W-B=1mHTiZwtbiqx1B6hMrxVk4UXEK2NpGw@mail.gmail.com>
-	<20130117023214.GB20928@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:2622 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752388Ab3AQM4L (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jan 2013 07:56:11 -0500
-In-Reply-To: <20130117023214.GB20928@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Subject: [PATCH] serial: tegra: Switch to using struct tty_port
+Date: Thu, 17 Jan 2013 14:31:45 +0100
+Message-ID: <1358429505-31746-1-git-send-email-thierry.reding@avionic-design.de>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Rickard Andersson <rickard.andersson@stericsson.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 
-> Also, why does this driver need something that the hundreds of other
-> serial drivers we have in-kernel today do not?  What makes it special
-> over everything else?
+Many of the tty functions were converted to use a struct tty_port
+instead of a struct tty_struct. Update the Tegra driver accordingly to
+avoid build breakage.
 
-We certainly will need power management hooks on the tty layer -
-probably they belong on the tty_port operations.
+Signed-off-by: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+---
+ drivers/tty/serial/serial-tegra.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-Several things have happened that make it more relevant
-
-- power levels have come down to the point that serial ports are no
-  longer off the radar
-
-- quite a few embedded and tablet devices have internal serial busses
-  where turning off ports and stuff behind them matters.
-
-
-Alan
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index cc4072f..30d6ff6 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -504,7 +504,7 @@ static void tegra_uart_handle_tx_pio(struct tegra_uart_port *tup)
+ }
+ 
+ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
+-		struct tty_struct *tty)
++		struct tty_port *tty)
+ {
+ 	do {
+ 		char flag = TTY_NORMAL;
+@@ -527,7 +527,7 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
+ }
+ 
+ static void tegra_uart_copy_rx_to_tty(struct tegra_uart_port *tup,
+-		struct tty_struct *tty, int count)
++		struct tty_port *tty, int count)
+ {
+ 	int copied;
+ 
+@@ -554,6 +554,7 @@ static void tegra_uart_rx_dma_complete(void *args)
+ 	struct uart_port *u = &tup->uport;
+ 	int count = tup->rx_bytes_requested;
+ 	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
++	struct tty_port *port = &u->state->port;
+ 	unsigned long flags;
+ 
+ 	async_tx_ack(tup->rx_dma_desc);
+@@ -565,11 +566,11 @@ static void tegra_uart_rx_dma_complete(void *args)
+ 
+ 	/* If we are here, DMA is stopped */
+ 	if (count)
+-		tegra_uart_copy_rx_to_tty(tup, tty, count);
++		tegra_uart_copy_rx_to_tty(tup, port, count);
+ 
+-	tegra_uart_handle_rx_pio(tup, tty);
++	tegra_uart_handle_rx_pio(tup, port);
+ 	if (tty) {
+-		tty_flip_buffer_push(tty);
++		tty_flip_buffer_push(port);
+ 		tty_kref_put(tty);
+ 	}
+ 	tegra_uart_start_rx_dma(tup);
+@@ -585,6 +586,7 @@ static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
+ {
+ 	struct dma_tx_state state;
+ 	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
++	struct tty_port *port = &tup->uport.state->port;
+ 	int count;
+ 
+ 	/* Deactivate flow control to stop sender */
+@@ -597,11 +599,11 @@ static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
+ 
+ 	/* If we are here, DMA is stopped */
+ 	if (count)
+-		tegra_uart_copy_rx_to_tty(tup, tty, count);
++		tegra_uart_copy_rx_to_tty(tup, port, count);
+ 
+-	tegra_uart_handle_rx_pio(tup, tty);
++	tegra_uart_handle_rx_pio(tup, port);
+ 	if (tty) {
+-		tty_flip_buffer_push(tty);
++		tty_flip_buffer_push(port);
+ 		tty_kref_put(tty);
+ 	}
+ 	tegra_uart_start_rx_dma(tup);
+@@ -724,6 +726,7 @@ static void tegra_uart_stop_rx(struct uart_port *u)
+ {
+ 	struct tegra_uart_port *tup = to_tegra_uport(u);
+ 	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
++	struct tty_port *port = &u->state->port;
+ 	struct dma_tx_state state;
+ 	unsigned long ier;
+ 	int count;
+@@ -747,13 +750,13 @@ static void tegra_uart_stop_rx(struct uart_port *u)
+ 		dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
+ 		async_tx_ack(tup->rx_dma_desc);
+ 		count = tup->rx_bytes_requested - state.residue;
+-		tegra_uart_copy_rx_to_tty(tup, tty, count);
+-		tegra_uart_handle_rx_pio(tup, tty);
++		tegra_uart_copy_rx_to_tty(tup, port, count);
++		tegra_uart_handle_rx_pio(tup, port);
+ 	} else {
+-		tegra_uart_handle_rx_pio(tup, tty);
++		tegra_uart_handle_rx_pio(tup, port);
+ 	}
+ 	if (tty) {
+-		tty_flip_buffer_push(tty);
++		tty_flip_buffer_push(port);
+ 		tty_kref_put(tty);
+ 	}
+ 	return;
+-- 
+1.8.1.1
