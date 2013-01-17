@@ -1,48 +1,28 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH] serial: sccnxp: Fix possible crash if no platform data supplied
-Date: Thu, 17 Jan 2013 18:34:45 +0400
-Message-ID: <1358433285-18790-1-git-send-email-shc_work@mail.ru>
-References: <20130117065938.GF16282@mwanda>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH] serial: tegra: Switch to using struct tty_port
+Date: Thu, 17 Jan 2013 10:07:51 -0700
+Message-ID: <50F82FE7.9090403@wwwdotorg.org>
+References: <1358429505-31746-1-git-send-email-thierry.reding@avionic-design.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback4.mail.ru ([94.100.176.42]:49336 "EHLO
-	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753691Ab3AQPCV (ORCPT
+Received: from avon.wwwdotorg.org ([70.85.31.133]:44970 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754667Ab3AQRHz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jan 2013 10:02:21 -0500
-Received: from smtp31.i.mail.ru (smtp31.i.mail.ru [94.100.177.91])
-	by fallback4.mail.ru (mPOP.Fallback_MX) with ESMTP id EB32914C2C8
-	for <linux-serial@vger.kernel.org>; Thu, 17 Jan 2013 18:35:24 +0400 (MSK)
-In-Reply-To: <20130117065938.GF16282@mwanda>
+	Thu, 17 Jan 2013 12:07:55 -0500
+In-Reply-To: <1358429505-31746-1-git-send-email-thierry.reding@avionic-design.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dan Carpenter <dan.carpenter@oracle.com>, Alexander Shiyan <shc_work@mail.ru>
+To: Thierry Reding <thierry.reding@avionic-design.de>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Warren <swarren@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This patch fix possible kernel crash if no platform data supplied.
-We should not use platform data in this case, instead we will use
-default values from private driver structure.
+On 01/17/2013 06:31 AM, Thierry Reding wrote:
+> Many of the tty functions were converted to use a struct tty_port
+> instead of a struct tty_struct. Update the Tegra driver accordingly to
+> avoid build breakage.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- drivers/tty/serial/sccnxp.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
-index 0c86a0b..3fd83e3 100644
---- a/drivers/tty/serial/sccnxp.c
-+++ b/drivers/tty/serial/sccnxp.c
-@@ -897,9 +897,9 @@ static int sccnxp_probe(struct platform_device *pdev)
- 	} else
- 		memcpy(&s->pdata, pdata, sizeof(struct sccnxp_pdata));
- 
--	if (pdata->poll_time_us) {
-+	if (s->pdata.poll_time_us) {
- 		dev_info(&pdev->dev, "Using poll mode, resolution %u usecs\n",
--			 pdata->poll_time_us);
-+			 s->pdata.poll_time_us);
- 		s->poll = 1;
- 	}
- 
--- 
-1.7.8.6
+I tested that this does indeed fix the build warnings. I didn't test the
+resultant driver.
 
