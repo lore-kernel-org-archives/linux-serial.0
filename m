@@ -1,52 +1,55 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] TTY: serial, add pm function
-Date: Thu, 17 Jan 2013 01:36:48 +0100
-Message-ID: <CACRpkdax3znJg_8W-B=1mHTiZwtbiqx1B6hMrxVk4UXEK2NpGw@mail.gmail.com>
-References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
-	<20130116070521.GB2527@kroah.com>
-	<50F65C5E.9090804@stericsson.com>
-	<20130116075813.GA30819@kroah.com>
-	<50F665C5.9020603@stericsson.com>
-	<20130116152440.GA1101@kroah.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
+Subject: [tty:tty-next 42/62] drivers/tty/serial/sccnxp.c:894 sccnxp_probe()
+ error: we previously assumed 'pdata' could be null (see line 887)
+Date: Thu, 17 Jan 2013 09:22:42 +0800
+Message-ID: <20130117012242.GC7017@localhost>
+References: <50f6ed06.V0pPrMkDV2E8vACU%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f176.google.com ([209.85.223.176]:60111 "EHLO
-	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757965Ab3AQAgt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jan 2013 19:36:49 -0500
-Received: by mail-ie0-f176.google.com with SMTP id 13so3808828iea.21
-        for <linux-serial@vger.kernel.org>; Wed, 16 Jan 2013 16:36:48 -0800 (PST)
-In-Reply-To: <20130116152440.GA1101@kroah.com>
+Received: from mga01.intel.com ([192.55.52.88]:33041 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755150Ab3AQBWr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jan 2013 20:22:47 -0500
+Content-Disposition: inline
+In-Reply-To: <50f6ed06.V0pPrMkDV2E8vACU%fengguang.wu@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Rickard Andersson <rickard.andersson@stericsson.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Wed, Jan 16, 2013 at 4:24 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Wed, Jan 16, 2013 at 09:33:09AM +0100, Rickard Andersson wrote:
 
->> The bluetooth cg2900 driver is on its way towards "staging".
->
-> Really?  I've never heard of it before, nor seen it, so how would I know
-> this?
+Hi Alexander,
 
-It's been posted twice, here is the last time:
-http://marc.info/?l=linux-kernel&m=134873373526049&w=2
+FYI, there are new smatch warnings show up in
 
-You commented several times on it, but I know a lot of code
-pass by your console.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   e27a7d7977b07d701ba247e2ddb95466d95c898f
+commit: ec063899b7b308019afa9f5eb32f0a58a6c6ee53 [42/62] serial: sccnxp: Implement polling mode
 
->  And we really never want to change core kernel code for staging
-> drivers, it's one of the requirements of staging code.
+New smatch warnings:
+drivers/tty/serial/sccnxp.c:894 sccnxp_probe() error: we previously assumed 'pdata' could be null (see line 887)
 
-Hm OK but it's a quite straight-forward thing for anything
-connected on a UART in an embedded system that is not just a
-serial cable or something and wants to save power.
+vim +/pdata +894 drivers/tty/serial/sccnxp.c
 
-Maybe we can augment some other driver for something sitting
-on a uart as a proof-of-concept then.
+1d65c0b1 Alexander Shiyan 2012-08-25  881  	default:
+1d65c0b1 Alexander Shiyan 2012-08-25  882  		dev_err(&pdev->dev, "Unsupported chip type %i\n", chiptype);
+1d65c0b1 Alexander Shiyan 2012-08-25  883  		ret = -ENOTSUPP;
+1d65c0b1 Alexander Shiyan 2012-08-25  884  		goto err_out;
+1d65c0b1 Alexander Shiyan 2012-08-25  885  	}
+1d65c0b1 Alexander Shiyan 2012-08-25  886  
+1d65c0b1 Alexander Shiyan 2012-08-25 @887  	if (!pdata) {
+1d65c0b1 Alexander Shiyan 2012-08-25  888  		dev_warn(&pdev->dev,
+1d65c0b1 Alexander Shiyan 2012-08-25  889  			 "No platform data supplied, using defaults\n");
+1d65c0b1 Alexander Shiyan 2012-08-25  890  		s->pdata.frequency = s->freq_std;
+1d65c0b1 Alexander Shiyan 2012-08-25  891  	} else
+1d65c0b1 Alexander Shiyan 2012-08-25  892  		memcpy(&s->pdata, pdata, sizeof(struct sccnxp_pdata));
+1d65c0b1 Alexander Shiyan 2012-08-25  893  
+ec063899 Alexander Shiyan 2012-12-03 @894  	if (pdata->poll_time_us) {
+ec063899 Alexander Shiyan 2012-12-03  895  		dev_info(&pdev->dev, "Using poll mode, resolution %u usecs\n",
+ec063899 Alexander Shiyan 2012-12-03  896  			 pdata->poll_time_us);
+ec063899 Alexander Shiyan 2012-12-03  897  		s->poll = 1;
 
-Thanks,
-Linus Walleij
+---
+0-DAY kernel build testing backend              Open Source Technology Center
+http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
