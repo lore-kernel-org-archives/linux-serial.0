@@ -1,72 +1,66 @@
-From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: [PATCH] serial: tegra: Switch to using struct tty_port
-Date: Fri, 18 Jan 2013 09:37:56 +0100
-Message-ID: <20130118083756.GA3303@avionic-0098.adnet.avionic-design.de>
-References: <1358429505-31746-1-git-send-email-thierry.reding@avionic-design.de>
- <50F82FE7.9090403@wwwdotorg.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2] TTY: serial, add pm function
+Date: Fri, 18 Jan 2013 13:43:04 +0100
+Message-ID: <CACRpkdYzG3AWn5L-06_uyfK6qCKnX1CZuG_on3hqF1qzamGScQ@mail.gmail.com>
+References: <1355316051-2425-1-git-send-email-rickard.andersson@stericsson.com>
+	<20130116070521.GB2527@kroah.com>
+	<50F65C5E.9090804@stericsson.com>
+	<20130116075813.GA30819@kroah.com>
+	<50F665C5.9020603@stericsson.com>
+	<20130116152440.GA1101@kroah.com>
+	<CACRpkdax3znJg_8W-B=1mHTiZwtbiqx1B6hMrxVk4UXEK2NpGw@mail.gmail.com>
+	<20130117023214.GB20928@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <50F82FE7.9090403-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ie0-f178.google.com ([209.85.223.178]:48210 "EHLO
+	mail-ie0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751137Ab3ARMsz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Jan 2013 07:48:55 -0500
+Received: by mail-ie0-f178.google.com with SMTP id c12so6092170ieb.23
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 04:48:55 -0800 (PST)
+In-Reply-To: <20130117023214.GB20928@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Rickard Andersson <rickard.andersson@stericsson.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus WALLEIJ <linus.walleij@stericsson.com>, "alan@linux.intel.com" <alan@linux.intel.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 
+On Thu, Jan 17, 2013 at 3:32 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Also, why does this driver need something that the hundreds of other
+> serial drivers we have in-kernel today do not?  What makes it special
+> over everything else?
 
-On Thu, Jan 17, 2013 at 10:07:51AM -0700, Stephen Warren wrote:
-> On 01/17/2013 06:31 AM, Thierry Reding wrote:
-> > Many of the tty functions were converted to use a struct tty_port
-> > instead of a struct tty_struct. Update the Tegra driver accordingly to
-> > avoid build breakage.
->=20
-> I tested that this does indeed fix the build warnings. I didn't test the
-> resultant driver.
+So (and I think Alan just seconded this) I think several vendors
+already have different ugly out-of-tree hacks to solve exactly this.
 
-I wonder if this would have been caught earlier if it had errored out
-instead of outputting lots of warnings. Looking at the gcc documentation
-there doesn't seem to be a way to turn this kind of warning into an
-error. That would leave -Werror as the only option to have the compiler
-abort on this kind of warning.
+The reason you haven't seen it before is that there is no AT
+command to power save a US Robotics 33k8 modem.
+And these are handled from userspace.
 
-Globally enabling -Werror might not be a good idea and I'm sure it must
-have been discussed in the past (even though Google doesn't show any
-references). In this particular case the warnings are actually severe
-errors and are very likely to cause buggy behaviour so it would be good
-to catch them at compile time. Warnings are unfortunately quite easy to
-ignore.
+The embedded systems have:
 
-I know I can always use EXTRA_CFLAGS to change this for local builds,
-but maybe getting more people to do this would be worthwhile.
+- In-kernel driver using the TTY
 
-Thierry
+- Control over both ends of the link (we have the equivalent
+  of an AT command setting the 33k8 into retention).
 
---fUYQa+Pmc3FrFX/N
-Content-Type: application/pgp-signature
+- Critical (as in really critical) power requirements.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
+Blueetooth chips on megabit serial links seem to be pretty
+common actually. Maybe people even have modems on these.
 
-iQIcBAEBAgAGBQJQ+QnkAAoJEN0jrNd/PrOhHY4QALU+sRVVUzalMJ/fULEV+qor
-Y6fDFwcgfRReLoUs5mM5SNgFApJc3rS39O9gtZRYuJLeUmmT7VmPw4QZpeB4UNqM
-9wLtWzKUOZydDYy/pbg3FNBFCLMvBP3QeX9SrqnsUKtSfjaQk+GlOFWXU2hKZVxt
-iG3QgJYciKfHV/c6XWGe8d+VJID7aZdie60TDfm+VkfPkfipMtJYRLt3cx/nbMHX
-22cvToW50dgJ8QCR/a3R4um8asTTyN1jOrwTB08OQ2tB1VI+EGZwgenZewVkm/cf
-EyJnilA7y3F27W1jiZ6LGbtJxaQA3cPi9oqJqLGM5KwcKmjfumXIVDya5sJ19cX8
-B8toKCHVpEDls/HEuq6783CbJ+iHRY2wHxCkPrePOVwv52F4pgLAps4RQy4Zt3Wh
-6j/SDvp1id0vjwWXkhNHITgWeIyG+fPljo695qPzs7vfQF4GEfvtMxhSD3XX3te5
-9ZfNSDeB+MY1kLM2h7g2tfzkzAygcK1d2bpvE493hTOV84XooDqL/42jZRdcOm5v
-LsF/g2CuWl6LO57bVq+LXrEiOVkUIccWQ6RRQ7zaTdeHecm+DXW53bGdOt+enQgt
-Pt9od/TDywBTE8HzPKlfhYgQD255r+UcnWb4J7tAfsPq1YrEPWV018qcI0+M2/yO
-mkdU9ouMKHY6AUfCV0be
-=BSNT
------END PGP SIGNATURE-----
+I think the reason you haven't seen it before is that either
+people are scared of the TTY layer (whyyyy would they be that)
+or that they are in the out-of-tree business. We're trying to be
+in the in-tree business, so to be there we need to put the
+infrastructure in place to be able to be there.
 
---fUYQa+Pmc3FrFX/N--
+But I'm looking around for a *simple* UART-connected device
+with a low-power/retention state to use as example in
+question, so we don't have to conflate the CG2900 upstreaming
+issue with the TTY/UART PM issue. Anyone have hints
+on a suitable device?
+
+Linus Walleij
