@@ -1,66 +1,53 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: tty_reopen() returning -EIO because port is closing
-Date: Fri, 18 Jan 2013 21:23:10 +0000 (UTC)
-Message-ID: <kdcefu$dbc$1@ger.gmane.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:34853 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753930Ab3ARVX0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Jan 2013 16:23:26 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1TwJPY-0005k3-Ah
-	for linux-serial@vger.kernel.org; Fri, 18 Jan 2013 22:23:40 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 22:23:40 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 22:23:40 +0100
-Sender: linux-serial-owner@vger.kernel.org
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 6/7] tty: of_serial: Add pinctrl support
+Date: Fri, 18 Jan 2013 22:30:38 +0100
+Message-ID: <1358544639-14761-7-git-send-email-maxime.ripard@free-electrons.com>
+References: <1358544639-14761-1-git-send-email-maxime.ripard@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1358544639-14761-1-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Linus Walleij <linus.walleij@linaro.org>
+Cc: Stefan Roese <sr@denx.de>, Alejandro Mery <amery@geeks.cl>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-During testing of a tty driver that's just been updated to use the
-tty_port_ helper functions, I'm seeing a test failure in user-space
-when open() returns -EIO.
+Use pinctrl to configure the SoCs pins directly from the driver.
 
-The failure occurs sporadically (maybe 1 failure per 100 opens) when
-running a test that has multiple threads all opening and closing the
-same serial port (more or less at random).
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ drivers/tty/serial/of_serial.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-It's worth noting that my port activate and shutdown functions sleep.
-
-Typically, they sleep for a few ms [this is the case during the tests
-I've been running].  But, there are use cases where they could sleep
-for hundreds of ms.
-
-I've tracked the failure to tty_reopen() in tty_io.c [3.8-rc3]:
-
-  1331	static int tty_reopen(struct tty_struct *tty)
-  1332	{
-  1333	        struct tty_driver *driver = tty->driver;
-  1334	
-  1335	        if (test_bit(TTY_CLOSING, &tty->flags) ||
-  1336	                        test_bit(TTY_HUPPING, &tty->flags) ||
-  1337	                        test_bit(TTY_LDISC_CHANGING, &tty->flags))
-  1338	                return -EIO;
-
-Line 1338 is returning -EIO because test_bit(TTY_CLOSING, &tty->flags)
-is true.
-
-Can this be caused by a bug in my driver?
-
-If not, is it a bug in the tty layer?
-
-Does Posix say than an open() may fail if it's called while another
-process is calling close()?  IOW, is user-space code expected to retry
-an open() call that returns EIO?  [I've never seen user-space code
-that did that...]
-
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index e7cae1c..e9f3289 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/delay.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_reg.h>
+@@ -57,6 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 			struct of_serial_info *info)
+ {
+ 	struct resource resource;
++	struct pinctrl *pinctrl;
+ 	struct device_node *np = ofdev->dev.of_node;
+ 	u32 clk, spd, prop;
+ 	int ret;
+@@ -85,6 +87,11 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		goto out;
+ 	}
+ 
++	pinctrl = devm_pinctrl_get_select_default(&ofdev->dev);
++	if (IS_ERR(pinctrl))
++		dev_warn(&ofdev->dev,
++			"pins are not configured from the driver\n");
++
+ 	spin_lock_init(&port->lock);
+ 	port->mapbase = resource.start;
+ 
 -- 
-Grant Edwards               grant.b.edwards        Yow! I'm having a RELIGIOUS
-                                  at               EXPERIENCE ... and I don't
-                              gmail.com            take any DRUGS
-
+1.7.10.4
