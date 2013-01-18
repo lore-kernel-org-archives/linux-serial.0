@@ -1,84 +1,66 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.8-rc4
-Date: Fri, 18 Jan 2013 11:53:30 -0800
-Message-ID: <20130118195330.GA19006@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: tty_reopen() returning -EIO because port is closing
+Date: Fri, 18 Jan 2013 21:23:10 +0000 (UTC)
+Message-ID: <kdcefu$dbc$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f51.google.com ([209.85.210.51]:61557 "EHLO
-	mail-da0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751826Ab3ARTxf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Jan 2013 14:53:35 -0500
-Received: by mail-da0-f51.google.com with SMTP id i30so1757352dad.38
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 11:53:34 -0800 (PST)
-Content-Disposition: inline
+Received: from plane.gmane.org ([80.91.229.3]:34853 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753930Ab3ARVX0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Jan 2013 16:23:26 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TwJPY-0005k3-Ah
+	for linux-serial@vger.kernel.org; Fri, 18 Jan 2013 22:23:40 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 22:23:40 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 22:23:40 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The following changes since commit 9931faca02c604c22335f5a935a501bb2ace6e20:
+During testing of a tty driver that's just been updated to use the
+tty_port_ helper functions, I'm seeing a test failure in user-space
+when open() returns -EIO.
 
-  Linux 3.8-rc3 (2013-01-09 18:59:55 -0800)
+The failure occurs sporadically (maybe 1 failure per 100 opens) when
+running a test that has multiple threads all opening and closing the
+same serial port (more or less at random).
 
-are available in the git repository at:
+It's worth noting that my port activate and shutdown functions sleep.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.8-rc4
+Typically, they sleep for a few ms [this is the case during the tests
+I've been running].  But, there are use cases where they could sleep
+for hundreds of ms.
 
-for you to fetch changes up to ebebd49a8eab5e9aa1b1f8f1614ccc3c2120f886:
+I've tracked the failure to tty_reopen() in tty_io.c [3.8-rc3]:
 
-  8250/16?50: Add support for Broadcom TruManage redirected serial port (2013-01-17 14:02:55 -0800)
+  1331	static int tty_reopen(struct tty_struct *tty)
+  1332	{
+  1333	        struct tty_driver *driver = tty->driver;
+  1334	
+  1335	        if (test_bit(TTY_CLOSING, &tty->flags) ||
+  1336	                        test_bit(TTY_HUPPING, &tty->flags) ||
+  1337	                        test_bit(TTY_LDISC_CHANGING, &tty->flags))
+  1338	                return -EIO;
 
-----------------------------------------------------------------
-TTY/serial fixes for 3.8-rc4
+Line 1338 is returning -EIO because test_bit(TTY_CLOSING, &tty->flags)
+is true.
 
-Here are a few tty/serial driver fixes for 3.8-rc4 that resolve a number
-of problems that people have been having, including the ptys ioctl issue
-that is a regression fix.
+Can this be caused by a bug in my driver?
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If not, is it a bug in the tty layer?
 
-----------------------------------------------------------------
-Jiri Slaby (1):
-      pty: return EINVAL for TIOCGPTN for BSD ptys
+Does Posix say than an open() may fail if it's called while another
+process is calling close()?  IOW, is user-space code expected to retry
+an open() call that returns EIO?  [I've never seen user-space code
+that did that...]
 
-Matt Schulte (2):
-      tty/8250: pbn_b0_8_1152000_200 is supposed to be an 8 port definition
-      tty/8250: The correct device id for this card is 0x0022
+-- 
+Grant Edwards               grant.b.edwards        Yow! I'm having a RELIGIOUS
+                                  at               EXPERIENCE ... and I don't
+                              gmail.com            take any DRUGS
 
-Maxime Ripard (1):
-      tty: 8250_dw: Fix inverted arguments to serial_out in IRQ handler
-
-Steffen Trumtrar (1):
-      mxs: uart: fix setting RTS from software
-
-Stephen Hurd (1):
-      8250/16?50: Add support for Broadcom TruManage redirected serial port
-
-Thomas Abraham (1):
-      serial: samsung: remove redundant setting of line config during port reset
-
-Wei Yongjun (1):
-      tty: serial: vt8500: fix return value check in vt8500_serial_probe()
-
-channing (1):
-      serial:ifx6x60:Keep word size accordance with SPI controller
-
-chao bi (1):
-      serial:ifx6x60:Delete SPI timer when shut down port
-
-fabio.estevam@freescale.com (1):
-      serial: mxs-auart: Index is unsigned
-
- drivers/tty/pty.c                  |  2 ++
- drivers/tty/serial/8250/8250.c     | 11 +++++++++++
- drivers/tty/serial/8250/8250.h     |  1 +
- drivers/tty/serial/8250/8250_dw.c  |  2 +-
- drivers/tty/serial/8250/8250_pci.c | 42 ++++++++++++++++++++++++++++++++++++++++--
- drivers/tty/serial/ifx6x60.c       |  4 +++-
- drivers/tty/serial/mxs-auart.c     |  6 ++++--
- drivers/tty/serial/samsung.c       |  1 -
- drivers/tty/serial/vt8500_serial.c |  2 +-
- include/uapi/linux/serial_core.h   |  3 ++-
- 10 files changed, 65 insertions(+), 9 deletions(-)
