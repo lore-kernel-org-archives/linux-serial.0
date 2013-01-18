@@ -1,53 +1,38 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 6/7] tty: of_serial: Add pinctrl support
-Date: Fri, 18 Jan 2013 22:30:38 +0100
-Message-ID: <1358544639-14761-7-git-send-email-maxime.ripard@free-electrons.com>
-References: <1358544639-14761-1-git-send-email-maxime.ripard@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1358544639-14761-1-git-send-email-maxime.ripard@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Stefan Roese <sr@denx.de>, Alejandro Mery <amery@geeks.cl>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: tty_reopen() returning -EIO because port is closing
+Date: Fri, 18 Jan 2013 21:52:58 +0000
+Message-ID: <20130118215258.263e7c2a@pyramind.ukuu.org.uk>
+References: <kdcefu$dbc$1@ger.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:57776 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753381Ab3ARVqG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Jan 2013 16:46:06 -0500
+In-Reply-To: <kdcefu$dbc$1@ger.gmane.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Grant Edwards <grant.b.edwards@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-Use pinctrl to configure the SoCs pins directly from the driver.
+> If not, is it a bug in the tty layer?
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- drivers/tty/serial/of_serial.c |    7 +++++++
- 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index e7cae1c..e9f3289 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/delay.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/serial_core.h>
- #include <linux/serial_8250.h>
- #include <linux/serial_reg.h>
-@@ -57,6 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 			struct of_serial_info *info)
- {
- 	struct resource resource;
-+	struct pinctrl *pinctrl;
- 	struct device_node *np = ofdev->dev.of_node;
- 	u32 clk, spd, prop;
- 	int ret;
-@@ -85,6 +87,11 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		goto out;
- 	}
+Our tty layer has always done this.
  
-+	pinctrl = devm_pinctrl_get_select_default(&ofdev->dev);
-+	if (IS_ERR(pinctrl))
-+		dev_warn(&ofdev->dev,
-+			"pins are not configured from the driver\n");
-+
- 	spin_lock_init(&port->lock);
- 	port->mapbase = resource.start;
+> Does Posix say than an open() may fail if it's called while another
+> process is calling close()?  IOW, is user-space code expected to retry
+> an open() call that returns EIO?  [I've never seen user-space code
+> that did that...]
+
+Interesting question. I've never liked the fact we do it (its rude to
+the userspace) but it's not clear what the correct semantics are of an
+open as a port closes, given the close must complete first including any
+drains and control changes and the open may well not expect to block or
+hang for a long time.
+
+Alan
  
--- 
-1.7.10.4
