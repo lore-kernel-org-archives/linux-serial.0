@@ -1,57 +1,36 @@
-From: Josh Triplett <josh@joshtriplett.org>
-Subject: Re: [PATCHv4] tty: Added a CONFIG_TTY option to allow removal of TTY
-Date: Fri, 18 Jan 2013 09:17:05 -0800
-Message-ID: <20130118171704.GA6152@leaf>
-References: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Are calls to activate/shutdown a port serialized?
+Date: Fri, 18 Jan 2013 18:04:47 +0000 (UTC)
+Message-ID: <kdc2rv$m4g$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:53114 "EHLO
-	relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751898Ab3ARRRM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Jan 2013 12:17:12 -0500
-Content-Disposition: inline
-In-Reply-To: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
+Received: from plane.gmane.org ([80.91.229.3]:47657 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751572Ab3ARSFJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Jan 2013 13:05:09 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TwGJc-0003TM-Is
+	for linux-serial@vger.kernel.org; Fri, 18 Jan 2013 19:05:20 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 19:05:20 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 19:05:20 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Millenbach <jmillenbach@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jamey Sharp <jamey@minilop.net>
+To: linux-serial@vger.kernel.org
 
-On Thu, Jan 17, 2013 at 10:44:22PM -0800, Joe Millenbach wrote:
-> The option allows you to remove TTY and compile without errors. This
-> saves space on systems that won't support TTY interfaces anyway.
-> bloat-o-meter output is below.
-> 
-> The bulk of this patch consists of Kconfig changes adding "depends on
-> TTY" to various serial devices and similar drivers that require the TTY
-> layer.  Ideally, these dependencies would occur on a common intermediate
-> symbol such as SERIO, but most drivers "select SERIO" rather than
-> "depends on SERIO", and "select" does not respect dependencies.
-> 
-> bloat-o-meter output comparing our previous minimal to new minimal by
-> removing TTY.  The list is filtered to not show removed entries with awk
-> '$3 != "-"' as the list was very long.
-> 
-> add/remove: 0/226 grow/shrink: 2/14 up/down: 6/-35356 (-35350)
-> function                                     old     new   delta
-> chr_dev_init                                 166     170      +4
-> allow_signal                                  80      82      +2
-> static.__warned                              143     142      -1
-> disallow_signal                               63      62      -1
-> __set_special_pids                            95      94      -1
-> unregister_console                           126     121      -5
-> start_kernel                                 546     541      -5
-> register_console                             593     588      -5
-> copy_from_user                                45      40      -5
-> sys_setsid                                   128     120      -8
-> sys_vhangup                                   32      19     -13
-> do_exit                                     1543    1526     -17
-> bitmap_zero                                   60      40     -20
-> arch_local_irq_save                          137     117     -20
-> release_task                                 674     652     -22
-> static.spin_unlock_irqrestore                308     260     -48
-> 
-> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
-> Reviewed-by: Jamey Sharp <jamey@minilop.net>
-Reviewed-by: Josh Triplett <josh@joshtriplett.org>
+I ported an old tty driver to the new tty_port_ helper functions.  And
+I'm trying to track down a couple of bugs in the new version of the
+driver.
+
+Are calls to the port's activate/shutdown methods serialized (either
+globally or per-port)?
+    
+-- 
+Grant Edwards               grant.b.edwards        Yow! My Aunt MAUREEN was a
+                                  at               military advisor to IKE &
+                              gmail.com            TINA TURNER!!
+
