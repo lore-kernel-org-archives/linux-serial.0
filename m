@@ -1,41 +1,55 @@
-From: Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH] tty: Only wakeup the line discipline idle queue when
-	queue is active
-Date: Fri, 18 Jan 2013 16:45:04 +0100
-Message-ID: <20130118154504.GA28072@redhat.com>
-References: <50E3FDFA.4070203@suse.cz> <20130102114311.66215bf5@pyramind.ukuu.org.uk> <CAMSQXEHmDb5rUQnT1JNcMCzdaN+gAr+1hR=PyPiDMu7vK5ykxA@mail.gmail.com> <50E4854E.8060801@suse.cz> <CAMSQXEGU2WmhmMqP7XMK2x39GN9iDDWpg-Wa7_cAauHWx5OWbQ@mail.gmail.com> <50F66120.50704@linux.vnet.ibm.com> <CAMSQXEE=Qp8kVcEp8nBhNDmOaDMUQUUou+5Z2f8-1znykqy6mQ@mail.gmail.com> <50F683D9.1080908@linux.vnet.ibm.com> <CAMSQXEHjP5mzs9u5DUmuYgoEceM2OO=E8844-XQ7LPCSECoGRw@mail.gmail.com> <50F7D8C2.1030506@linux.vnet.ibm.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] serial: tegra: Switch to using struct tty_port
+Date: Fri, 18 Jan 2013 21:19:28 +0530
+Message-ID: <50F96F08.7090705@nvidia.com>
+References: <1358429505-31746-1-git-send-email-thierry.reding@avionic-design.de> <50F82FE7.9090403@wwwdotorg.org> <20130118083756.GA3303@avionic-0098.adnet.avionic-design.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <50F7D8C2.1030506@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Preeti U Murthy <preeti@linux.vnet.ibm.com>
-Cc: Ivo Sieben <meltedpianoman@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, Andi Kleen <andi@firstfloor.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130118083756.GA3303-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/17, Preeti U Murthy wrote:
+On Friday 18 January 2013 02:07 PM, Thierry Reding wrote:
+> * PGP Signed by an unknown key
 >
-> On 01/16/2013 05:32 PM, Ivo Sieben wrote:
-> >
-> > I don't have a problem that there is a context switch to the high
-> > priority process: it has a higher priority, so it probably is more
-> > important.
-> > My problem is that even when the waitqueue is empty, the high priority
-> > thread has a risk to block on the spinlock needlessly (causing context
-> > switches to low priority task and back to the high priority task)
-> >
-> Fair enough Ivo.I think you should go ahead with merging the
-> waitqueue_active()
->   wake_up()
-> logic into the wake_up() variants.
+> On Thu, Jan 17, 2013 at 10:07:51AM -0700, Stephen Warren wrote:
+>> On 01/17/2013 06:31 AM, Thierry Reding wrote:
+>>> Many of the tty functions were converted to use a struct tty_port
+>>> instead of a struct tty_struct. Update the Tegra driver accordingly to
+>>> avoid build breakage.
+>> I tested that this does indeed fix the build warnings. I didn't test the
+>> resultant driver.
+> I wonder if this would have been caught earlier if it had errored out
+> instead of outputting lots of warnings. Looking at the gcc documentation
+> there doesn't seem to be a way to turn this kind of warning into an
+> error. That would leave -Werror as the only option to have the compiler
+> abort on this kind of warning.
+>
+> Globally enabling -Werror might not be a good idea and I'm sure it must
+> have been discussed in the past (even though Google doesn't show any
+> references). In this particular case the warnings are actually severe
+> errors and are very likely to cause buggy behaviour so it would be good
+> to catch them at compile time. Warnings are unfortunately quite easy to
+> ignore.
+>
+> I know I can always use EXTRA_CFLAGS to change this for local builds,
+> but maybe getting more people to do this would be worthwhile.
+>
 
-This is not easy. We can't simply change wake_up*() helpers or modify
-__wake_up().
+There was no issue when patch created. The change happen in the api with 
+same time when patch created and so become out of sync.
 
-I can't understand why do you dislike Ivo's simple patch. There are
-a lot of "if (waitqueue_active) wake_up" examples. Even if we add the
-new helpers (personally I don't think this makes sense) , we can do
-this later. Why should we delay this fix?
+API changed with commit on 1/16. Serial driver also get added on 1/16.
 
-Oleg.
+Author: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>  2013-01-03 20:23:06
+Committer: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> 2013-01-16 
+12:00:15
+
+Follows: v3.8-rc3
+Precedes: next-20130117
+
+     TTY: switch tty_flip_buffer_push
