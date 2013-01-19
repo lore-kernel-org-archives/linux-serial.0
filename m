@@ -1,108 +1,226 @@
-From: Liang Li <liang.li@windriver.com>
-Subject: [PATCH 2/2] pch_uart: add sysrq support
-Date: Sat, 19 Jan 2013 17:52:11 +0800
-Message-ID: <1358589131-28187-3-git-send-email-liang.li@windriver.com>
-References: <1358589131-28187-1-git-send-email-liang.li@windriver.com>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: [PATCH] tty: Correct tty buffer flush.
+Date: Sat, 19 Jan 2013 18:16:20 +0400
+Message-ID: <50FAAAB4.9040408@ilyx.ru>
+References: <50BDF661.30303@ilyx.ru> <20121204141223.2ecb0f76@pyramind.ukuu.org.uk> <50F66AE4.2030408@ilyx.ru> <20130119000708.GA32591@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1358589131-28187-1-git-send-email-liang.li@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: liang.li@windriver.com, dvhart@linux.intel.com, bruce.ashfield@windriver.com, tomoya.rohm@gmail.com, feng.tang@intel.com, alan@linux.intel.com, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:57265 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751370Ab3ASOQb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 19 Jan 2013 09:16:31 -0500
+In-Reply-To: <20130119000708.GA32591@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sedat Dilek <sedat.dilek@gmail.com>
 
-When send break to the uart port, we always get 'frame error', but we
-can not just reset receive fifo in such case, otherwise the sysrq cmd
-will not be received correctly.
+  The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
+when another thread can use it. It can be cause of "NULL pointer dereference".
+  Main idea of the patch, this is never free last (struct tty_buffer) in the active buffer.
+Only flush the data for ldisc(buf->head->read = buf->head->commit).
+At that moment driver can collect(write) data in buffer without conflict.
+It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
 
-When we handle sysrq output via pch_console_write, the priv lock has
-already been taken so no need to take the lock in pch_console_write.
+Also revert:
+  commit c56a00a165712fd73081f40044b1e64407bb1875
+  tty: hold lock across tty buffer finding and buffer filling
+In order to delete the unneeded locks any more.
 
-Signed-off-by: Liang Li <liang.li@windriver.com>
+Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+
 ---
- drivers/tty/serial/pch_uart.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ drivers/tty/tty_buffer.c |   92 +++++++++++-----------------------------------
+ 1 files changed, 22 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 2e99f79..f2d67df 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -14,18 +14,21 @@
-  *along with this program; if not, write to the Free Software
-  *Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
-  */
-+#if defined(CONFIG_SERIAL_PCH_UART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#define SUPPORT_SYSRQ
-+#endif
- #include <linux/kernel.h>
- #include <linux/serial_reg.h>
- #include <linux/slab.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/console.h>
- #include <linux/serial_core.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/dmi.h>
--#include <linux/console.h>
- #include <linux/nmi.h>
- #include <linux/delay.h>
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index d6969f6..61ec4dd 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -119,11 +119,14 @@ static void __tty_buffer_flush(struct tty_port *port)
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *thead;
  
-@@ -552,12 +555,24 @@ static int pch_uart_hal_read(struct eg20t_port *priv, unsigned char *buf,
- {
- 	int i;
- 	u8 rbr, lsr;
-+	struct uart_port *port = &priv->port;
- 
- 	lsr = ioread8(priv->membase + UART_LSR);
- 	for (i = 0, lsr = ioread8(priv->membase + UART_LSR);
--	     i < rx_size && lsr & UART_LSR_DR;
-+	     i < rx_size && lsr & (UART_LSR_DR | UART_LSR_BI);
- 	     lsr = ioread8(priv->membase + UART_LSR)) {
- 		rbr = ioread8(priv->membase + PCH_UART_RBR);
-+
-+		if (lsr & UART_LSR_BI) {
-+			port->icount.brk++;
-+			if (uart_handle_break(port))
-+				continue;
-+		}
-+		if (port->sysrq) {
-+			if (uart_handle_sysrq_char(port, rbr))
-+				continue;
-+		}
-+
- 		buf[i++] = rbr;
+-	while ((thead = buf->head) != NULL) {
+-		buf->head = thead->next;
+-		tty_buffer_free(port, thead);
++	if (unlikely(buf->head == NULL))
++		return;
++	while ((thead = buf->head->next) != NULL) {
++		tty_buffer_free(port, buf->head);
++		buf->head = thead;
  	}
- 	return i;
-@@ -1033,16 +1048,11 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+-	buf->tail = NULL;
++	WARN_ON(buf->head != buf->tail);
++	buf->head->read = buf->head->commit;
+ }
  
- static void pch_uart_err_ir(struct eg20t_port *priv, unsigned int lsr)
+ /**
+@@ -194,19 +197,22 @@ static struct tty_buffer *tty_buffer_find(struct tty_port *port, size_t size)
+ 	   have queued and recycle that ? */
+ }
+ /**
+- *	__tty_buffer_request_room		-	grow tty buffer if needed
++ *	tty_buffer_request_room		-	grow tty buffer if needed
+  *	@tty: tty structure
+  *	@size: size desired
+  *
+  *	Make at least size bytes of linear space available for the tty
+  *	buffer. If we fail return the size we managed to find.
+- *      Locking: Caller must hold port->buf.lock
++ *
++ *	Locking: Takes port->buf.lock
+  */
+-static int __tty_buffer_request_room(struct tty_port *port, size_t size)
++int tty_buffer_request_room(struct tty_port *port, size_t size)
  {
--	u8 fcr = ioread8(priv->membase + UART_FCR);
- 	struct uart_port *port = &priv->port;
- 	struct tty_struct *tty = tty_port_tty_get(&port->state->port);
- 	char   *error_msg[5] = {};
- 	int    i = 0;
- 
--	/* Reset FIFO */
--	fcr |= UART_FCR_CLEAR_RCVR;
--	iowrite8(fcr, priv->membase + UART_FCR);
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *b, *n;
+ 	int left;
++	unsigned long flags;
++	spin_lock_irqsave(&buf->lock, flags);
+ 	/* OPTIMISATION: We could keep a per tty "zero" sized buffer to
+ 	   remove this conditional if its worth it. This would be invisible
+ 	   to the callers */
+@@ -228,31 +234,9 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size)
+ 		} else
+ 			size = left;
+ 	}
 -
- 	if (lsr & PCH_UART_LSR_ERR)
- 		error_msg[i++] = "Error data in FIFO\n";
++	spin_unlock_irqrestore(&buf->lock, flags);
+ 	return size;
+ }
+-
+-
+-/**
+- *	tty_buffer_request_room		-	grow tty buffer if needed
+- *	@port: tty port structure
+- *	@size: size desired
+- *
+- *	Make at least size bytes of linear space available for the tty
+- *	buffer. If we fail return the size we managed to find.
+- *
+- *	Locking: Takes port->buf.lock
+- */
+-int tty_buffer_request_room(struct tty_port *port, size_t size)
+-{
+-	unsigned long flags;
+-	int length;
+-
+-	spin_lock_irqsave(&port->buf.lock, flags);
+-	length = __tty_buffer_request_room(port, size);
+-	spin_unlock_irqrestore(&port->buf.lock, flags);
+-	return length;
+-}
+ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
  
-@@ -1568,7 +1578,8 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
- 
- 	local_irq_save(flags);
- 	if (priv->port.sysrq) {
--		spin_lock(&priv->lock);
-+		/* call to uart_handle_sysrq_char already took the priv lock */
-+		priv_locked = 0;
- 		/* serial8250_handle_port() already took the port lock */
- 		port_locked = 0;
- 	} else if (oops_in_progress) {
--- 
-1.7.11.4
+ /**
+@@ -271,26 +255,18 @@ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
+ int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+ 		const unsigned char *chars, char flag, size_t size)
+ {
+-	struct tty_bufhead *buf = &port->buf;
+ 	int copied = 0;
+ 	do {
+ 		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
+-		int space;
+-		unsigned long flags;
+-		struct tty_buffer *tb;
+-
+-		spin_lock_irqsave(&buf->lock, flags);
+-		space = __tty_buffer_request_room(port, goal);
+-		tb = buf->tail;
++		int space = tty_buffer_request_room(port, goal);
++		struct tty_buffer *tb = port->buf.tail;
+ 		/* If there is no space then tb may be NULL */
+ 		if (unlikely(space == 0)) {
+-			spin_unlock_irqrestore(&buf->lock, flags);
+ 			break;
+ 		}
+ 		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+ 		memset(tb->flag_buf_ptr + tb->used, flag, space);
+ 		tb->used += space;
+-		spin_unlock_irqrestore(&buf->lock, flags);
+ 		copied += space;
+ 		chars += space;
+ 		/* There is a small chance that we need to split the data over
+@@ -317,26 +293,18 @@ EXPORT_SYMBOL(tty_insert_flip_string_fixed_flag);
+ int tty_insert_flip_string_flags(struct tty_port *port,
+ 		const unsigned char *chars, const char *flags, size_t size)
+ {
+-	struct tty_bufhead *buf = &port->buf;
+ 	int copied = 0;
+ 	do {
+ 		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
+-		int space;
+-		unsigned long __flags;
+-		struct tty_buffer *tb;
+-
+-		spin_lock_irqsave(&buf->lock, __flags);
+-		space = __tty_buffer_request_room(port, goal);
+-		tb = buf->tail;
++		int space = tty_buffer_request_room(port, goal);
++		struct tty_buffer *tb = port->buf.tail;
+ 		/* If there is no space then tb may be NULL */
+ 		if (unlikely(space == 0)) {
+-			spin_unlock_irqrestore(&buf->lock, __flags);
+ 			break;
+ 		}
+ 		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+ 		memcpy(tb->flag_buf_ptr + tb->used, flags, space);
+ 		tb->used += space;
+-		spin_unlock_irqrestore(&buf->lock, __flags);
+ 		copied += space;
+ 		chars += space;
+ 		flags += space;
+@@ -392,21 +360,13 @@ EXPORT_SYMBOL(tty_schedule_flip);
+ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
+ 		size_t size)
+ {
+-	struct tty_bufhead *buf = &port->buf;
+-	int space;
+-	unsigned long flags;
+-	struct tty_buffer *tb;
+-
+-	spin_lock_irqsave(&buf->lock, flags);
+-	space = __tty_buffer_request_room(port, size);
+-
+-	tb = buf->tail;
++	int space = tty_buffer_request_room(port, size);
+ 	if (likely(space)) {
++		struct tty_buffer *tb = port->buf.tail;
+ 		*chars = tb->char_buf_ptr + tb->used;
+ 		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
+ 		tb->used += space;
+ 	}
+-	spin_unlock_irqrestore(&buf->lock, flags);
+ 	return space;
+ }
+ EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
+@@ -430,21 +390,13 @@ EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
+ int tty_prepare_flip_string_flags(struct tty_port *port,
+ 			unsigned char **chars, char **flags, size_t size)
+ {
+-	struct tty_bufhead *buf = &port->buf;
+-	int space;
+-	unsigned long __flags;
+-	struct tty_buffer *tb;
+-
+-	spin_lock_irqsave(&buf->lock, __flags);
+-	space = __tty_buffer_request_room(port, size);
+-
+-	tb = buf->tail;
++	int space = tty_buffer_request_room(port, size);
+ 	if (likely(space)) {
++		struct tty_buffer *tb = port->buf.tail;
+ 		*chars = tb->char_buf_ptr + tb->used;
+ 		*flags = tb->flag_buf_ptr + tb->used;
+ 		tb->used += space;
+ 	}
+-	spin_unlock_irqrestore(&buf->lock, __flags);
+ 	return space;
+ }
+ EXPORT_SYMBOL_GPL(tty_prepare_flip_string_flags);
