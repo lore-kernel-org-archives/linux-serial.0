@@ -1,55 +1,58 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCHv4] tty: Added a CONFIG_TTY option to allow removal of TTY
-Date: Fri, 18 Jan 2013 16:22:09 -0800
-Message-ID: <20130119002209.GA30107@kroah.com>
-References: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
+From: Yi Qingliang <niqingliang2003@gmail.com>
+Subject: sysvinit freeze 30seconds on close /dev/console
+Date: Sat, 19 Jan 2013 10:16:46 +0800
+Message-ID: <1978342.XoIOWg0br0@ll-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joe Millenbach <jmillenbach@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, Jamey Sharp <jamey@minilop.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-da0-f44.google.com ([209.85.210.44]:60199 "EHLO
+	mail-da0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751070Ab3ASCQ6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Jan 2013 21:16:58 -0500
+Received: by mail-da0-f44.google.com with SMTP id z20so1873804dae.31
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jan 2013 18:16:57 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Thu, Jan 17, 2013 at 10:44:22PM -0800, Joe Millenbach wrote:
-> The option allows you to remove TTY and compile without errors. This
-> saves space on systems that won't support TTY interfaces anyway.
-> bloat-o-meter output is below.
-> 
-> The bulk of this patch consists of Kconfig changes adding "depends on
-> TTY" to various serial devices and similar drivers that require the TTY
-> layer.  Ideally, these dependencies would occur on a common intermediate
-> symbol such as SERIO, but most drivers "select SERIO" rather than
-> "depends on SERIO", and "select" does not respect dependencies.
-> 
-> bloat-o-meter output comparing our previous minimal to new minimal by
-> removing TTY.  The list is filtered to not show removed entries with awk
-> '$3 != "-"' as the list was very long.
-> 
-> add/remove: 0/226 grow/shrink: 2/14 up/down: 6/-35356 (-35350)
-> function                                     old     new   delta
-> chr_dev_init                                 166     170      +4
-> allow_signal                                  80      82      +2
-> static.__warned                              143     142      -1
-> disallow_signal                               63      62      -1
-> __set_special_pids                            95      94      -1
-> unregister_console                           126     121      -5
-> start_kernel                                 546     541      -5
-> register_console                             593     588      -5
-> copy_from_user                                45      40      -5
-> sys_setsid                                   128     120      -8
-> sys_vhangup                                   32      19     -13
-> do_exit                                     1543    1526     -17
-> bitmap_zero                                   60      40     -20
-> arch_local_irq_save                          137     117     -20
-> release_task                                 674     652     -22
-> static.spin_unlock_irqrestore                308     260     -48
-> 
-> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
-> Reviewed-by: Jamey Sharp <jamey@minilop.net>
+I'm running 3.6.9 kernel on my s3c2442 board.
+the sysvinit freeze 30seconds after print out "INIT:",
+and then freeze 30seconds after print out "version 2.88 booting".
+I checked it's code, the 'close(fd)' should be responsible for the 30 seconds.
 
-Very nice, I've applied this to my tree now, thanks for doing this.
+same binary running well on mini2440(s3c2440 board).
+Through several days hard work, I got the root cause.
+the close called wait_until_sent with timeout(30seconds).
+the uart clock source selection is different.
+although both of the two boards selected 'pclk',
+related register: UCON0[11:10] 0x50000004
+s3c2440 use '10', s3c2442 use '00'.
 
-greg k-h
+on s3c2440, the '10' is selected in initialalize stage.
+on s3c2442, it can't find propriate clock, so use default value '00'.
+
+in initialize stage, it will found 'clk_uart_baud2", but not on s3c2442.
+I checked 'arch/arm/mach-s3c24xx/clock-s3c2440.c', it is only registered for 
+s3c2440_subsys, but not for s3c2442_sys.
+after registered 's3c2440_clk_lookup' for s3c2442_subsys, everything OK.
+
+problem:
+1. I don't know the different between 00 and 10 of pck in register 
+UCON0[11:10].
+2. why kernel code have not registered s3c2440_clk_lookup for s3c2442? and 
+also dma-s3c2440.c.
+
+I checked 'arch/arm/mach-s3c24xx/s3c2442.c', it is for the s3c2442's clock, 
+but why the file name is not 'clock-s3c2442.c'? an it only contain cam related 
+clock, no uart related clock.
+
+Yi Qingliang
+Nanjing Jilong
+niqingliang2003@gmai.com
+
+
+
+
+
