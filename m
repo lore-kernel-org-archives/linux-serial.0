@@ -1,36 +1,55 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: Correct tty buffer flush.
-Date: Fri, 18 Jan 2013 16:07:08 -0800
-Message-ID: <20130119000708.GA32591@kroah.com>
-References: <50BDF661.30303@ilyx.ru>
- <20121204141223.2ecb0f76@pyramind.ukuu.org.uk>
- <50F66AE4.2030408@ilyx.ru>
+Subject: Re: [PATCHv4] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Fri, 18 Jan 2013 16:22:09 -0800
+Message-ID: <20130119002209.GA30107@kroah.com>
+References: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <50F66AE4.2030408@ilyx.ru>
+In-Reply-To: <1358491462-16562-1-git-send-email-jmillenbach@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ilya Zykov <ilya@ilyx.ru>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Joe Millenbach <jmillenbach@gmail.com>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, Jamey Sharp <jamey@minilop.net>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 16, 2013 at 12:55:00PM +0400, Ilya Zykov wrote:
->   The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
-> when another thread can use it. It can be cause of "NULL pointer dereference".
->   Main idea of the patch, this is never free last (struct tty_buffer) in the active buffer.
-> Only flush the data for ldisc(buf->head->read = buf->head->commit).
-> At that moment driver can collect(write) data in buffer without conflict.
-> It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
+On Thu, Jan 17, 2013 at 10:44:22PM -0800, Joe Millenbach wrote:
+> The option allows you to remove TTY and compile without errors. This
+> saves space on systems that won't support TTY interfaces anyway.
+> bloat-o-meter output is below.
 > 
-> Also revert:
->   commit c56a00a165712fd73081f40044b1e64407bb1875
->   tty: hold lock across tty buffer finding and buffer filling
-> In order to delete the unneeded locks any more.
+> The bulk of this patch consists of Kconfig changes adding "depends on
+> TTY" to various serial devices and similar drivers that require the TTY
+> layer.  Ideally, these dependencies would occur on a common intermediate
+> symbol such as SERIO, but most drivers "select SERIO" rather than
+> "depends on SERIO", and "select" does not respect dependencies.
+> 
+> bloat-o-meter output comparing our previous minimal to new minimal by
+> removing TTY.  The list is filtered to not show removed entries with awk
+> '$3 != "-"' as the list was very long.
+> 
+> add/remove: 0/226 grow/shrink: 2/14 up/down: 6/-35356 (-35350)
+> function                                     old     new   delta
+> chr_dev_init                                 166     170      +4
+> allow_signal                                  80      82      +2
+> static.__warned                              143     142      -1
+> disallow_signal                               63      62      -1
+> __set_special_pids                            95      94      -1
+> unregister_console                           126     121      -5
+> start_kernel                                 546     541      -5
+> register_console                             593     588      -5
+> copy_from_user                                45      40      -5
+> sys_setsid                                   128     120      -8
+> sys_vhangup                                   32      19     -13
+> do_exit                                     1543    1526     -17
+> bitmap_zero                                   60      40     -20
+> arch_local_irq_save                          137     117     -20
+> release_task                                 674     652     -22
+> static.spin_unlock_irqrestore                308     260     -48
+> 
+> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
+> Reviewed-by: Jamey Sharp <jamey@minilop.net>
 
-This patch doesn't apply to my tty-next branch, can you redo it against
-linux-next so that I can apply it?
-
-thanks,
+Very nice, I've applied this to my tree now, thanks for doing this.
 
 greg k-h
