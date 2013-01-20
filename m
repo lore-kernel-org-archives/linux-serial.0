@@ -1,48 +1,52 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] serial: lpc32xx: Fix fallout from tty_port conversion
-Date: Sun, 20 Jan 2013 11:19:25 +0100
-Message-ID: <50FBC4AD.4020008@suse.cz>
-References: <1358493951-5349-1-git-send-email-thierry.reding@avionic-design.de>
+From: Yi Qingliang <niqingliang2003@gmail.com>
+Subject: close /dev/console casue 30seconds' hang
+Date: Sun, 20 Jan 2013 19:28:42 +0800
+Message-ID: <5857088.8tFJrCsqj8@ll-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ea0-f181.google.com ([209.85.215.181]:62756 "EHLO
-	mail-ea0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751249Ab3ATKTX (ORCPT
+Received: from mail-pb0-f53.google.com ([209.85.160.53]:63900 "EHLO
+	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751672Ab3ATL2s (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Jan 2013 05:19:23 -0500
-In-Reply-To: <1358493951-5349-1-git-send-email-thierry.reding@avionic-design.de>
+	Sun, 20 Jan 2013 06:28:48 -0500
+Received: by mail-pb0-f53.google.com with SMTP id un1so2154465pbc.12
+        for <linux-serial@vger.kernel.org>; Sun, 20 Jan 2013 03:28:47 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thierry Reding <thierry.reding@avionic-design.de>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 01/18/2013 08:25 AM, Thierry Reding wrote:
-> A duplicate definition of the port variable was introduced in the
-> interrupt handler, which causes the build to break. The fix is to
-> rename the variable to tport, which is already properly used in
-> subsequent code.
-> 
-> Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
-> ---
->  drivers/tty/serial/lpc32xx_hs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-> index c01b58f..dffea6b 100644
-> --- a/drivers/tty/serial/lpc32xx_hs.c
-> +++ b/drivers/tty/serial/lpc32xx_hs.c
-> @@ -322,7 +322,7 @@ exit_tx:
->  static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
->  {
->  	struct uart_port *port = dev_id;
-> -	struct tty_port *port = &port->state->port;
-> +	struct tty_port *tport = &port->state->port;
+I'm running 3.6.9 kernel on my s3c2442 board.
+the sysvinit freeze 30seconds after print out "INIT:",
+and then freeze 30seconds after print out "version 2.88 booting".
+I checked it's code, the 'close(fd)' should be responsible for that.
 
-Oh, yeah, these arch-dependent drivers... This one is arm, tty-build
-script has been updated here. Thanks for spotting and fixing.
+same binary running well on mini2440(s3c2440 board).
+Through several days hard work, I got the root cause.
+the close called wait_until_sent with timeout(30seconds).
+the uart clock source selection is different.
+although both of the two boards selected 'pclk',
+related register: UCON0[11:10] 0x50000004
+s3c2440 use '10', s3c2442 use '00'.
 
--- 
-js
-suse labs
+on s3c2440, the '10' is selected in initialalize stage. on s3c2442, it
+can't find propriate clock, so use default value '00'.
+
+in initialize stage, it will found 'clk_uart_baud2", but not on s3c2442. I
+checked 'arch/arm/mach-s3c24xx/clock-s3c2440.c', it is only registered
+for s3c2440_subsys,
+but not for s3c2442_sys. after registered 's3c2440_clk_lookup' for
+s3c2442_subsys, everything OK.
+
+problem:
+1. I don't know the different between 00 and 10 of pck in register
+UCON0[11:10].
+2. why kernel code have not registered s3c2440_clk_lookup for s3c2442? and 
+also
+dma-s3c2440.c.
+
+I checked 'arch/arm/mach-s3c24xx/s3c2442.c', it is for the s3c2442's clock,
+but why the file name is not 'clock-s3c2442.c'? an it only contain cam
+related
+clock, no uart related clock.
