@@ -1,32 +1,32 @@
-From: Denis 'GNUtoo' Carikli <GNUtoo@no-log.org>
-Subject: Re: close /dev/console casue 30seconds' hang
-Date: Sun, 20 Jan 2013 16:27:43 +0100
-Message-ID: <20130120162743.6878e534@x60.lan>
-References: <5857088.8tFJrCsqj8@ll-pc>
-	<20130120130025.7bba6cdf@x60.lan>
-	<2980278.ep0FE3e3FY@ll-pc>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: tty_reopen() returning -EIO because port is closing
+Date: Sun, 20 Jan 2013 16:52:16 +0000
+Message-ID: <20130120165216.261809b5@pyramind.ukuu.org.uk>
+References: <kdcefu$dbc$1@ger.gmane.org>
+	<20130118215258.263e7c2a@pyramind.ukuu.org.uk>
+	<kdch1t$4p0$1@ger.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 12.mo3.mail-out.ovh.net ([188.165.41.191]:51482 "EHLO
-	mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752334Ab3ATQXR (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59334 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752309Ab3ATQp3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Jan 2013 11:23:17 -0500
-Received: from mail417.ha.ovh.net (b7.ovh.net [213.186.33.57])
-	by mo3.mail-out.ovh.net (Postfix) with SMTP id 0C6C8FF89D3
-	for <linux-serial@vger.kernel.org>; Sun, 20 Jan 2013 16:41:26 +0100 (CET)
-In-Reply-To: <2980278.ep0FE3e3FY@ll-pc>
+	Sun, 20 Jan 2013 11:45:29 -0500
+In-Reply-To: <kdch1t$4p0$1@ger.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Yi Qingliang <niqingliang2003@gmail.com>
+To: Grant Edwards <grant.b.edwards@gmail.com>
 Cc: linux-serial@vger.kernel.org
 
-On Sun, 20 Jan 2013 20:57:16 +0800
-Yi Qingliang <niqingliang2003@gmail.com> wrote:
+> If my driver now behaves the same as the "standard" driver where it
+> didn't used to, I'm going to claim it's an improvement.
 
-> o you mean there is no problem for early version kernel?
-yes, but for really old versions such as 3.2 and earlier.
+And given any fix for that behaviour in future would be in the generic
+shared code it also means you'll automatically pick it up. That's one of
+the big reasons for the tty_port code - to kill the hundreds of
+replicated differently buggy open implementations we had in drivers
 
-Denis.
+Alan
+ 
