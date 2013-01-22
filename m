@@ -1,48 +1,44 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Curious about tty_port_operations drop() callback.
-Date: Tue, 22 Jan 2013 16:38:54 +0000 (UTC)
-Message-ID: <kdmfat$dt9$1@ger.gmane.org>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH] serial: pxa: fix clk_prepare/unprepare misuse
+Date: Tue, 22 Jan 2013 09:28:02 -0800
+Message-ID: <20130122172802.GA13230@kroah.com>
+References: <1358825090-17577-1-git-send-email-yizhang@marvell.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:38528 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754319Ab3AVQjJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Jan 2013 11:39:09 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1Txgsd-0007JA-Tu
-	for linux-serial@vger.kernel.org; Tue, 22 Jan 2013 17:39:23 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 22 Jan 2013 17:39:23 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 22 Jan 2013 17:39:23 +0100
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:41255 "EHLO
+	out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752750Ab3AVR2F (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Jan 2013 12:28:05 -0500
+Content-Disposition: inline
+In-Reply-To: <1358825090-17577-1-git-send-email-yizhang@marvell.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Yi Zhang <yizhang@marvell.com>
+Cc: alan@linux.intel.com, yizhang.mrvl@gmail.com, linux-serial@vger.kernel.org
 
-While testing/debugging the tty driver I've changed to use the
-tty_port_* helper functions, I noticed there are two
-tty_port_operation fields that I'm not providing: destruct() and
-drop(). There's an example of destruct() usage in the hvc driver and a
-comment in tty.h explaining when it's called, so that's fairly
-obvious.
+On Tue, Jan 22, 2013 at 11:24:50AM +0800, Yi Zhang wrote:
+> 1) serial_pxa_console_write() can be used in atomic context,
+>    so change clk_prepare_clk to clk_enable
+> 2) add clk_prepare() to follow common clock driver
+> 
+> Signed-off-by: Yi Zhang <yizhang@marvell.com>
+> ---
+>  drivers/tty/serial/pxa.c |   13 +++++++++++--
+>  1 files changed, 11 insertions(+), 2 deletions(-)
 
-I haven't been able to figure out the purpose of the drop() callback.
-It's not used anywhere and there is no comment in tty.h hinting at its
-purpose.
+This patch fails to apply to my tree:
+patching file drivers/tty/serial/pxa.c
+Hunk #1 FAILED at 673.
+Hunk #2 FAILED at 702.
+Hunk #3 succeeded at 896 (offset -3 lines).
+Hunk #4 succeeded at 933 (offset -3 lines).
+Hunk #5 succeeded at 947 (offset -3 lines).
+2 out of 5 hunks FAILED -- saving rejects to file drivers/tty/serial/pxa.c.rej
 
-Looking at tty_port_close() shows that drop() is called during close()
-of port with a reference count > 1.  IOW, close() calls drop() in the
-cases where it isn't going to call shutdown().
+Please redo it against the tty-next git tree and resend.
 
-There doesn't seem to be a corresponding "raise" callback during
-open() when activate() isn't going to be called, and I can't think of
-any use for either drop or raise...
+thanks,
 
--- 
-Grant Edwards               grant.b.edwards        Yow! My mind is a potato
-                                  at               field ...
-                              gmail.com            
-
+greg k-h
