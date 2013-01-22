@@ -1,66 +1,48 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Tue, 22 Jan 2013 14:18:27 +0100
-Message-ID: <CACRpkdYt8CoF0_yrMkNE20fhKnRuG-=yxr2XsQKPgMWD=ehUNA@mail.gmail.com>
-References: <50efad8d.84fc440a.589e.ffff9546SMTPIN_ADDED_BROKEN@mx.google.com>
-	<CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
-	<50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
-	<CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
-	<20130114002608.GV23505@n2100.arm.linux.org.uk>
-	<CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
-	<CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
-	<CAOAMb1BS6gvezeSrUTNJ--gGxCRL17AO8PHJ_eLrxzjOex7w1g@mail.gmail.com>
-	<CAOAMb1C=b2fXqKJKx1ZR7UD7n=c7qQoLnMgMmy2FXEubyP=dtw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Curious about tty_port_operations drop() callback.
+Date: Tue, 22 Jan 2013 16:38:54 +0000 (UTC)
+Message-ID: <kdmfat$dt9$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f180.google.com ([209.85.223.180]:45424 "EHLO
-	mail-ie0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750955Ab3AVNS1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Jan 2013 08:18:27 -0500
-Received: by mail-ie0-f180.google.com with SMTP id c10so11425976ieb.25
-        for <linux-serial@vger.kernel.org>; Tue, 22 Jan 2013 05:18:27 -0800 (PST)
-In-Reply-To: <CAOAMb1C=b2fXqKJKx1ZR7UD7n=c7qQoLnMgMmy2FXEubyP=dtw@mail.gmail.com>
+Received: from plane.gmane.org ([80.91.229.3]:38528 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754319Ab3AVQjJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Jan 2013 11:39:09 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1Txgsd-0007JA-Tu
+	for linux-serial@vger.kernel.org; Tue, 22 Jan 2013 17:39:23 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 22 Jan 2013 17:39:23 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 22 Jan 2013 17:39:23 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chanho Min <chanho.min@lge.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Chanho Min <chanho0207@gmail.com>
+To: linux-serial@vger.kernel.org
 
-On Tue, Jan 22, 2013 at 1:45 PM, Chanho Min <chanho.min@lge.com> wrote:
+While testing/debugging the tty driver I've changed to use the
+tty_port_* helper functions, I noticed there are two
+tty_port_operation fields that I'm not providing: destruct() and
+drop(). There's an example of destruct() usage in the hvc driver and a
+comment in tty.h explaining when it's called, so that's fairly
+obvious.
 
-> In DMA support, The received data is not pushed to tty until the DMA buffer
-> is filled. But some megabyte rate chips such as BT expect fast response and
-> data should be pushed immediately. In order to fix this issue, We suggest
-> the use of the timer for polling DMA buffer.
-> In our test, no data loss occurred at high-baudrate as compared with interrupt-
-> driven (We tested with 3Mbps).
+I haven't been able to figure out the purpose of the drop() callback.
+It's not used anywhere and there is no comment in tty.h hinting at its
+purpose.
 
-So to enable this you put a poll rate > 0 into the new variable,
-OK seems like it could work...
+Looking at tty_port_close() shows that drop() is called during close()
+of port with a reference count > 1.  IOW, close() calls drop() in the
+cases where it isn't going to call shutdown().
 
-> - If poll timer is activated, We use consistent DMA mappings to avoid from
->   the frequent cache operation of the timer function. sg->coherency is used
->   to check if buffer is coherent.
+There doesn't seem to be a corresponding "raise" callback during
+open() when activate() isn't going to be called, and I can't think of
+any use for either drop or raise...
 
-Hm. We can begin like this but maybe we should later patch it to
-make this the default unless it has performance impacts on our
-systems.
+-- 
+Grant Edwards               grant.b.edwards        Yow! My mind is a potato
+                                  at               field ...
+                              gmail.com            
 
-> +++ b/include/linux/amba/serial.h
-> @@ -203,6 +203,8 @@ struct amba_pl011_data {
->         bool (*dma_filter)(struct dma_chan *chan, void *filter_param);
->         void *dma_rx_param;
->         void *dma_tx_param;
-> +       unsigned int dma_rx_poll_rate;
-> +       unsigned int dma_rx_poll_timeout;
->          void (*init) (void);
->         void (*exit) (void);
->  };
-
-Maybe this is a good opportunity to add some kerneldoc above
-this struct so as to help platform implementers. It will invariably
-be reused by Device Tree binding authors later on...
-
-Yours,
-Linus Walleij
