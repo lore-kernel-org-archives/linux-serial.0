@@ -1,35 +1,47 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: linux-next: Tree for Jan 23 (pch_uart.c)
-Date: Wed, 23 Jan 2013 15:28:38 -0800
-Message-ID: <51007226.1040604@infradead.org>
-References: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] more TTY/Serial fixes for 3.8-rc4
+Date: Wed, 23 Jan 2013 15:55:20 -0800
+Message-ID: <20130123235520.GA11415@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au>
-Sender: linux-next-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:33665 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752211Ab3AWXz0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Jan 2013 18:55:26 -0500
+Received: by mail-pb0-f46.google.com with SMTP id wy7so5004806pbc.33
+        for <linux-serial@vger.kernel.org>; Wed, 23 Jan 2013 15:55:25 -0800 (PST)
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 01/22/13 22:43, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20130122:
-> 
+The following changes since commit 248152b60209874b1707a23d336b137486756a29:
 
+  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k (2013-01-23 13:31:15 -0800)
 
-on i386:
-
-  CC [M]  drivers/tty/serial/pch_uart.o
-drivers/tty/serial/pch_uart.c: In function 'pch_uart_hal_read':
-drivers/tty/serial/pch_uart.c:572:11: error: 'struct uart_port' has no member named 'sysrq'
-make[4]: *** [drivers/tty/serial/pch_uart.o] Error 1
+are available in the git repository at:
 
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.8-rc4
 
-when SERIAL_PCH_UART_CONSOLE is not enabled.
+for you to fetch changes up to 5e30bbb723415fb94a098e314d1908a39a7e50a2:
 
--- 
-~Randy
+  MAINTAINERS: Someone needs to watch over the serial drivers (2013-01-23 15:45:23 -0800)
+
+----------------------------------------------------------------
+TTY patches for 3.8-rc4
+
+Just a MAINTAINERS update, now that Alan has left for a bit, I'll
+continue to watch over the serial drivers.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Greg Kroah-Hartman (1):
+      MAINTAINERS: Someone needs to watch over the serial drivers
+
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
