@@ -1,50 +1,71 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
-Date: Thu, 24 Jan 2013 00:10:02 +0000 (UTC)
-Message-ID: <kdpu4q$m7l$1@ger.gmane.org>
-References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: linux-next: Tree for Jan 23 (pch_uart.c)
+Date: Thu, 24 Jan 2013 13:06:16 +1100
+Message-ID: <20130124130616.ee95e032326b1afee6716419@canb.auug.org.au>
+References: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au>
+	<51007226.1040604@infradead.org>
+Mime-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg="PGP-SHA256";
+ boundary="Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:52614 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751465Ab3AXAKW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jan 2013 19:10:22 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1TyAOq-0007ao-ET
-	for linux-serial@vger.kernel.org; Thu, 24 Jan 2013 01:10:36 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 24 Jan 2013 01:10:36 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 24 Jan 2013 01:10:36 +0100
+Received: from haggis.pcug.org.au ([203.10.76.10]:35993 "EHLO
+	members.tip.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752591Ab3AXCGZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Jan 2013 21:06:25 -0500
+In-Reply-To: <51007226.1040604@infradead.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>, Liang Li <liang.li@windriver.com>
 
-On 2013-01-23, Guido Classen <clagix@gmail.com> wrote:
+--Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf
+Content-Type: text/plain; charset=US-ASCII
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I this cases you need a way to assert RTS some milliseconds before the
-> first character of a frame is transmitted and leave it on some
-> milliseconds after the end of the frame. In my opinion that is what
-> delay_rts_before/after_send should be for. (In other equipment this
-> feature is also called turn on / turn off delay)
+On Wed, 23 Jan 2013 15:28:38 -0800 Randy Dunlap <rdunlap@infradead.org> wro=
+te:
+>
+> on i386:
+>=20
+>   CC [M]  drivers/tty/serial/pch_uart.o
+> drivers/tty/serial/pch_uart.c: In function 'pch_uart_hal_read':
+> drivers/tty/serial/pch_uart.c:572:11: error: 'struct uart_port' has no me=
+mber named 'sysrq'
+> make[4]: *** [drivers/tty/serial/pch_uart.o] Error 1
+>=20
+>=20
+>=20
+> when SERIAL_PCH_UART_CONSOLE is not enabled.
 
-In applications like links using half-duplex modems, you may have to
-assert RTS for many hundreds of millisconds to allow the modulator to
-key up and stabilze and the demodulator to lock onto the signal before
-you can send data.  Some modems will let you know when they're ready
-by asserting CTS, and for others you just have to have a fixed delay.
-In those cases, you also typically hold RTS for some time after the
-end of the data for a time ranging up to several byte times.
+Caused by commit 1f9db0921f21 ("pch_uart: add sysrq support") from the
+tty tree. (added cc's)
 
-In our non-Linux based products, we implement pre/pose data RTS "hold"
-times as you describe in our device driver.  Our Linux-based products
-can't handle those applications.
+--=20
+Cheers,
+Stephen Rothwell                    sfr@canb.auug.org.au
 
--- 
-Grant Edwards               grant.b.edwards        Yow! Are we laid back yet?
-                                  at               
-                              gmail.com            
+--Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf
+Content-Type: application/pgp-signature
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBCAAGBQJRAJcYAAoJEECxmPOUX5FEWPsP/jV0tMxWMa1LO2QHtGHK9wks
+N4IN5FCljAJrVlUN5lkxxjJP0mcGm9mMJiDm3ZK/uIgw1wNhVhefkv+U4cm1kAc8
+K16QU/hd60hWU+j/P705tPJvfGMQq2vhrlGWgV8AndgsKGjML3ZzkotHlvuNSEFZ
+JbBtRQ2aVS0CtonHisBPvaW5pqsGHbb+spYrSeg7Cp+Y9TSe36Rgl070YHlcOsiA
+FklLW87MOEvrPe5bVGtttNu3x0tKtHKRN83eGC3GdvKqwffG2VVYZaY4sV+ZSHXE
+bOhm0hLuHAFus9Dq3vRZUcykugZ8/klIDkld38i2PuGCNKQ+/LCHfxbXVmgXmoY9
+IPq+ZsHqs458ml3s8Ky59blF/T2cXd5L24SBwPfCFTtm1byIhS0qenzOLrIlBgsa
+X7Jpyf+BcY5pWdBZBXJZSVz2ASy7hIsj/OpmalDmbOToGWQTgW4jJHx5EQP84An4
+fxaBRUvfjFRjdssp6chKohsrIsygcDoEMM5BGSD+mPdTK707Qm74QtNTNEl7+Hle
+rvji/nmOnSvhTXWS/d9G/XI4K8Bd7LdWhIT+nR1aaRdAe+Mi+gzkO5L7oCYIIUQG
++zxMqn6RY+xvDM/VI81qFwAQKOq52VjHN4RVl2u/CM4y7Xx86f0SMUprHlZUkQNE
+IiwWZPV39dNTJBqATko1
+=x012
+-----END PGP SIGNATURE-----
+
+--Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf--
