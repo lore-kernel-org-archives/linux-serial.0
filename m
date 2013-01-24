@@ -1,71 +1,71 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: linux-next: Tree for Jan 23 (pch_uart.c)
-Date: Thu, 24 Jan 2013 13:06:16 +1100
-Message-ID: <20130124130616.ee95e032326b1afee6716419@canb.auug.org.au>
-References: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au>
-	<51007226.1040604@infradead.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pgp-signature";
- micalg="PGP-SHA256";
- boundary="Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf"
+From: Lv Zheng <lv.zheng@intel.com>
+Subject: [PATCH v5 0/2] ACPI/UART: Add ACPI 5.0 enumeration support for UART
+Date: Thu, 24 Jan 2013 18:30:11 +0800
+Message-ID: <cover.1359022955.git.lv.zheng@intel.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from haggis.pcug.org.au ([203.10.76.10]:35993 "EHLO
-	members.tip.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752591Ab3AXCGZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jan 2013 21:06:25 -0500
-In-Reply-To: <51007226.1040604@infradead.org>
+Received: from mga09.intel.com ([134.134.136.24]:51886 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752591Ab3AXCaR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Jan 2013 21:30:17 -0500
+In-Reply-To: <cover.1354505471.git.lv.zheng@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>, Liang Li <liang.li@windriver.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Len Brown <len.brown@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
 
---Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf
-Content-Type: text/plain; charset=US-ASCII
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ACPI 5.0 specification introduces enumeration support for SPB buses. This
+patch set adds the UART serial bus enumeration support to Linux using such
+mechanism.
+This patch set is based on the tty tree/tty-next branch.
 
-On Wed, 23 Jan 2013 15:28:38 -0800 Randy Dunlap <rdunlap@infradead.org> wro=
-te:
->
-> on i386:
->=20
->   CC [M]  drivers/tty/serial/pch_uart.o
-> drivers/tty/serial/pch_uart.c: In function 'pch_uart_hal_read':
-> drivers/tty/serial/pch_uart.c:572:11: error: 'struct uart_port' has no me=
-mber named 'sysrq'
-> make[4]: *** [drivers/tty/serial/pch_uart.o] Error 1
->=20
->=20
->=20
-> when SERIAL_PCH_UART_CONSOLE is not enabled.
+History:
+v1:
+  1. Add "uart" bus subsystem.
+  2. Add physical UART target device and description
+     (uart_device/uart_board_info).
+  3. Add logical UART host adapter (klist).
+  4. Add UART target device attributes (tty_dev/tty_attrs/modem_lines).
+  5. Create tty_device<->uart_device links (host_node/target_node).
+v2.
+  1. Change UART layer related stuff to non-UART related.
+  2. Modify the order of the function parameters.
+v3:
+  1. Add comments for the uart_board_info and the uart_device.
+  2. Add platform_data/archdata support.
+  3. Add ACPI binding and test the binding (in seperate patch).
+  4. Add SERIAL_BUS kconfig item.
+v4
+  1. Convert "uart" bus into "tty_enum" bus.
+  2. Convert uart_target_device into tty_slave_device.
+  3. Convert uart_board_info into tty_board_info.
+  3. Convert kconfig item SERIAL_BUS into TTY_ENUM.
+  4. Add automatic device unregister support for slave devices.
+     The new tty_port_unregister_device is for this purpose.
+  5. Add HID/CID list support.
+  6. Convert TTY slave device name into ACPI node name.
+v5
+  1. Add missing static reported by recent kernel build test.
 
-Caused by commit 1f9db0921f21 ("pch_uart: add sysrq support") from the
-tty tree. (added cc's)
+Lv Zheng (2):
+  TTY: Add TTY slave enumeration support
+  ACPI / UART: Add ACPI enumeration support for UART
 
---=20
-Cheers,
-Stephen Rothwell                    sfr@canb.auug.org.au
+ drivers/acpi/Kconfig             |    6 +
+ drivers/acpi/Makefile            |    1 +
+ drivers/acpi/acpi_uart.c         |  215 +++++++++++++++++++++++
+ drivers/tty/Kconfig              |    3 +
+ drivers/tty/Makefile             |    1 +
+ drivers/tty/serial/Kconfig       |    1 +
+ drivers/tty/serial/serial_core.c |    2 +-
+ drivers/tty/tty_enum.c           |  357 ++++++++++++++++++++++++++++++++++++++
+ drivers/tty/tty_port.c           |   42 ++++-
+ include/linux/mod_devicetable.h  |    6 +
+ include/linux/tty.h              |  112 ++++++++++++
+ 11 files changed, 742 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/acpi/acpi_uart.c
+ create mode 100644 drivers/tty/tty_enum.c
 
---Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf
-Content-Type: application/pgp-signature
+-- 
+1.7.10
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBCAAGBQJRAJcYAAoJEECxmPOUX5FEWPsP/jV0tMxWMa1LO2QHtGHK9wks
-N4IN5FCljAJrVlUN5lkxxjJP0mcGm9mMJiDm3ZK/uIgw1wNhVhefkv+U4cm1kAc8
-K16QU/hd60hWU+j/P705tPJvfGMQq2vhrlGWgV8AndgsKGjML3ZzkotHlvuNSEFZ
-JbBtRQ2aVS0CtonHisBPvaW5pqsGHbb+spYrSeg7Cp+Y9TSe36Rgl070YHlcOsiA
-FklLW87MOEvrPe5bVGtttNu3x0tKtHKRN83eGC3GdvKqwffG2VVYZaY4sV+ZSHXE
-bOhm0hLuHAFus9Dq3vRZUcykugZ8/klIDkld38i2PuGCNKQ+/LCHfxbXVmgXmoY9
-IPq+ZsHqs458ml3s8Ky59blF/T2cXd5L24SBwPfCFTtm1byIhS0qenzOLrIlBgsa
-X7Jpyf+BcY5pWdBZBXJZSVz2ASy7hIsj/OpmalDmbOToGWQTgW4jJHx5EQP84An4
-fxaBRUvfjFRjdssp6chKohsrIsygcDoEMM5BGSD+mPdTK707Qm74QtNTNEl7+Hle
-rvji/nmOnSvhTXWS/d9G/XI4K8Bd7LdWhIT+nR1aaRdAe+Mi+gzkO5L7oCYIIUQG
-+zxMqn6RY+xvDM/VI81qFwAQKOq52VjHN4RVl2u/CM4y7Xx86f0SMUprHlZUkQNE
-IiwWZPV39dNTJBqATko1
-=x012
------END PGP SIGNATURE-----
-
---Signature=_Thu__24_Jan_2013_13_06_16_+1100_lzefWPhmnFZe8ttf--
