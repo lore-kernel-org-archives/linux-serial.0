@@ -1,47 +1,50 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] more TTY/Serial fixes for 3.8-rc4
-Date: Wed, 23 Jan 2013 15:55:20 -0800
-Message-ID: <20130123235520.GA11415@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
+Date: Thu, 24 Jan 2013 00:10:02 +0000 (UTC)
+Message-ID: <kdpu4q$m7l$1@ger.gmane.org>
+References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:33665 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752211Ab3AWXz0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jan 2013 18:55:26 -0500
-Received: by mail-pb0-f46.google.com with SMTP id wy7so5004806pbc.33
-        for <linux-serial@vger.kernel.org>; Wed, 23 Jan 2013 15:55:25 -0800 (PST)
-Content-Disposition: inline
+Received: from plane.gmane.org ([80.91.229.3]:52614 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751465Ab3AXAKW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Jan 2013 19:10:22 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TyAOq-0007ao-ET
+	for linux-serial@vger.kernel.org; Thu, 24 Jan 2013 01:10:36 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 24 Jan 2013 01:10:36 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 24 Jan 2013 01:10:36 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The following changes since commit 248152b60209874b1707a23d336b137486756a29:
+On 2013-01-23, Guido Classen <clagix@gmail.com> wrote:
 
-  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k (2013-01-23 13:31:15 -0800)
+> I this cases you need a way to assert RTS some milliseconds before the
+> first character of a frame is transmitted and leave it on some
+> milliseconds after the end of the frame. In my opinion that is what
+> delay_rts_before/after_send should be for. (In other equipment this
+> feature is also called turn on / turn off delay)
 
-are available in the git repository at:
+In applications like links using half-duplex modems, you may have to
+assert RTS for many hundreds of millisconds to allow the modulator to
+key up and stabilze and the demodulator to lock onto the signal before
+you can send data.  Some modems will let you know when they're ready
+by asserting CTS, and for others you just have to have a fixed delay.
+In those cases, you also typically hold RTS for some time after the
+end of the data for a time ranging up to several byte times.
 
+In our non-Linux based products, we implement pre/pose data RTS "hold"
+times as you describe in our device driver.  Our Linux-based products
+can't handle those applications.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.8-rc4
+-- 
+Grant Edwards               grant.b.edwards        Yow! Are we laid back yet?
+                                  at               
+                              gmail.com            
 
-for you to fetch changes up to 5e30bbb723415fb94a098e314d1908a39a7e50a2:
-
-  MAINTAINERS: Someone needs to watch over the serial drivers (2013-01-23 15:45:23 -0800)
-
-----------------------------------------------------------------
-TTY patches for 3.8-rc4
-
-Just a MAINTAINERS update, now that Alan has left for a bit, I'll
-continue to watch over the serial drivers.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Greg Kroah-Hartman (1):
-      MAINTAINERS: Someone needs to watch over the serial drivers
-
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
