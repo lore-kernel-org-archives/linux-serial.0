@@ -1,43 +1,87 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V2 1/2] serial: ralink: adds support for the serial core
- found on ralink wisoc
-Date: Fri, 25 Jan 2013 08:58:06 -0800
-Message-ID: <20130125165806.GA16911@kroah.com>
-References: <1359121440-14266-1-git-send-email-blogic@openwrt.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH V3 1/2] serial: ralink: adds support for the serial core found on ralink wisoc
+Date: Fri, 25 Jan 2013 19:39:51 +0100
+Message-ID: <1359139191-6463-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:39761 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756725Ab3AYQ6I (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jan 2013 11:58:08 -0500
-Received: by mail-pa0-f42.google.com with SMTP id rl6so366517pac.29
-        for <linux-serial@vger.kernel.org>; Fri, 25 Jan 2013 08:58:08 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <1359121440-14266-1-git-send-email-blogic@openwrt.org>
+Received: from nbd.name ([46.4.11.11]:32911 "EHLO nbd.name"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753636Ab3AYSma (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jan 2013 13:42:30 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: John Crispin <blogic@openwrt.org>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, John Crispin <blogic@openwrt.org>
 
-On Fri, Jan 25, 2013 at 02:44:00PM +0100, John Crispin wrote:
-> The MIPS based Ralink WiSoC platform has 1 or more 8250 compatible serial cores.
-> To make them work we require the same quirks that are used by AU1x00.
-> 
-> Signed-off-by: John Crispin <blogic@openwrt.org>
-> ---
-> Changes in V2
-> * adds missing "/" in source code comment
-> 
->  drivers/tty/serial/8250/8250.c  |    6 +++---
->  drivers/tty/serial/8250/Kconfig |    8 ++++++++
->  include/linux/serial_core.h     |    2 +-
->  3 files changed, 12 insertions(+), 4 deletions(-)
+The MIPS based Ralink WiSoC platform has 1 or more 8250 compatible serial cores.
+To make them work we require the same quirks that are used by AU1x00.
 
-What tree did you make this against?  I can't apply it to my tty-next
-one, so I can't take this series.  Care to refresh it and resend it?
+Signed-off-by: John Crispin <blogic@openwrt.org>
+---
+Changes in V2
+* adds missing "/" in source code comment
 
-thanks,
+Changes in V3
+* rebase on tty-next
 
-greg k-h
+ drivers/tty/serial/8250/8250.c  |    6 +++---
+ drivers/tty/serial/8250/Kconfig |    8 ++++++++
+ include/linux/serial_core.h     |    2 +-
+ 3 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index cb7db5a..33aa86a 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -311,9 +311,9 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
+ 	serial_out(up, UART_DLM, value >> 8 & 0xff);
+ }
+ 
+-#ifdef CONFIG_MIPS_ALCHEMY
++#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
+ 
+-/* Au1x00 UART hardware has a weird register layout */
++/* Au1x00/RT288x UART hardware has a weird register layout */
+ static const u8 au_io_in_map[] = {
+ 	[UART_RX]  = 0,
+ 	[UART_IER] = 2,
+@@ -434,7 +434,7 @@ static void set_io_from_upio(struct uart_port *p)
+ 		p->serial_out = mem32_serial_out;
+ 		break;
+ 
+-#ifdef CONFIG_MIPS_ALCHEMY
++#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
+ 	case UPIO_AU:
+ 		p->serial_in = au_serial_in;
+ 		p->serial_out = au_serial_out;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index d31f4c6..2ef9537 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -276,3 +276,11 @@ config SERIAL_8250_EM
+ 	  Selecting this option will add support for the integrated serial
+ 	  port hardware found on the Emma Mobile line of processors.
+ 	  If unsure, say N.
++
++config SERIAL_8250_RT288X
++	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
++	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883)
++	help
++	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
++	  serial port, say Y to this option. The driver can handle up to 2 serial
++	  ports. If unsure, say N.
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 82aebc8..d971421 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -134,7 +134,7 @@ struct uart_port {
+ #define UPIO_HUB6		(1)
+ #define UPIO_MEM		(2)
+ #define UPIO_MEM32		(3)
+-#define UPIO_AU			(4)			/* Au1x00 type IO */
++#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
+ #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
+ 
+ 	unsigned int		read_status_mask;	/* driver specific */
+-- 
+1.7.10.4
+
