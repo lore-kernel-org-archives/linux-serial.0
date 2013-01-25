@@ -1,87 +1,83 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: [PATCH V2 1/2] serial: ralink: adds support for the serial core found on ralink wisoc
-Date: Fri, 25 Jan 2013 14:44:00 +0100
-Message-ID: <1359121440-14266-1-git-send-email-blogic@openwrt.org>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
+Date: Fri, 25 Jan 2013 15:39:08 +0000 (UTC)
+Message-ID: <kdu8ur$kav$1@ger.gmane.org>
+References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
+ <CAJa4H3eWaZH0p8+48Kq4RPEyDiAZfsiX801CBqJ7_CrTw688yw@mail.gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:52201 "EHLO nbd.name"
+Received: from plane.gmane.org ([80.91.229.3]:34874 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932112Ab3AYNqq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jan 2013 08:46:46 -0500
+	id S1754620Ab3AYPjV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jan 2013 10:39:21 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1TylNR-0000Pu-B1
+	for linux-serial@vger.kernel.org; Fri, 25 Jan 2013 16:39:37 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 25 Jan 2013 16:39:37 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 25 Jan 2013 16:39:37 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>
+To: linux-serial@vger.kernel.org
 
-The MIPS based Ralink WiSoC platform has 1 or more 8250 compatible serial cores.
-To make them work we require the same quirks that are used by AU1x00.
+On 2013-01-25, Guido Classen <clagix@gmail.com> wrote:
+> On 2014-01-23, Grant Edwards wrote:
+>
+>> In applications like links using half-duplex modems, you may have to
+>> assert RTS for many hundreds of millisconds to allow the modulator to
+>> key up and stabilze and the demodulator to lock onto the signal before
+>> you can send data.  Some modems will let you know when they're ready
+>> by asserting CTS, and for others you just have to have a fixed delay.
+>> In those cases, you also typically hold RTS for some time after the
+>> end of the data for a time ranging up to several byte times.
+>
+>> In our non-Linux based products, we implement pre/pose data RTS "hold"
+>> times as you describe in our device driver.  Our Linux-based products
+>> can't handle those applications.
 
-Signed-off-by: John Crispin <blogic@openwrt.org>
----
-Changes in V2
-* adds missing "/" in source code comment
+> I am glad to hear that there is at lease someone else out there who
+> is using such old technology. We still use a kind of V.23 modems
+> which work as you described in some projects in road traffic
+> applications. Why haven't you tried to implement that applications on
+> Linux?
 
- drivers/tty/serial/8250/8250.c  |    6 +++---
- drivers/tty/serial/8250/Kconfig |    8 ++++++++
- include/linux/serial_core.h     |    2 +-
- 3 files changed, 12 insertions(+), 4 deletions(-)
+Our Linux tty/serial drivers do support "plain" a RS-485 mode without
+pre/post RTS hold times (the plain RS-485 mode is supported by the
+UART itself).  The pre/post RTS hold times feature can be used from
+Linux applications, but to take advantage of those sort of features we
+don't use Linux tty/serial device drivers.  For many industrial I/O
+applications we've found it much simpler to avoid the termios/tty
+stuff and connect to the serial hardware via Ethernet and TCP/IP
+instead.
 
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index f932043..f72eb7d 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -324,9 +324,9 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
- 	serial_out(up, UART_DLM, value >> 8 & 0xff);
- }
- 
--#ifdef CONFIG_MIPS_ALCHEMY
-+#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
- 
--/* Au1x00 UART hardware has a weird register layout */
-+/* Au1x00/RT288x UART hardware has a weird register layout */
- static const u8 au_io_in_map[] = {
- 	[UART_RX]  = 0,
- 	[UART_IER] = 2,
-@@ -506,7 +506,7 @@ static void set_io_from_upio(struct uart_port *p)
- 		break;
- #endif
- 
--#ifdef CONFIG_MIPS_ALCHEMY
-+#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
- 	case UPIO_AU:
- 		p->serial_in = au_serial_in;
- 		p->serial_out = au_serial_out;
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index c31133a..c583799 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -249,6 +249,14 @@ config SERIAL_8250_ACORN
- 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
- 	  cards.  If unsure, say N.
- 
-+config SERIAL_8250_RT288X
-+	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
-+	depends on SERIAL_8250 != n && (SOC_RT288X || SOC_RT305X || SOC_RT3883)
-+	help
-+	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
-+	  serial port, say Y to this option. The driver can handle up to 2 serial
-+	  ports. If unsure, say N.
-+
- config SERIAL_8250_RM9K
- 	bool "Support for MIPS RM9xxx integrated serial port"
- 	depends on SERIAL_8250 != n && SERIAL_RM9000
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index c6690a2..0b428d6 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -134,7 +134,7 @@ struct uart_port {
- #define UPIO_HUB6		(1)
- #define UPIO_MEM		(2)
- #define UPIO_MEM32		(3)
--#define UPIO_AU			(4)			/* Au1x00 type IO */
-+#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
- #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
- #define UPIO_RM9000		(6)			/* RM9000 type IO */
- 
+Over the years we've found that the Unix "tty" API is rather
+ill-suited for doing things other than talking to terminals.  In other
+news, we've found that a screwdriver is ill-suited for doing things
+other than driving screws. :)
+
+For example, our serial interfaces are used quite a bit in traffic and
+parking applications, but in those cases the long-haul connections are
+TCP/IP over fiber, and the serial ports are only used to communicate
+locally within a roadside cabinet.  To the user application, each of
+the serial devices (camera controller, inductive loop sensor, ramp
+light controller, card reader, gate arm, etc.) is just another network
+device addressed via an <ipaddr,ipport> tuple.
+
+Programmers seem to get themselves into much less trouble with the TCP
+socket API than they do with the tty API
+
+> On slow baud-rates even an user-mode implementation should be
+> possible in most cases?
+
+Yes, it should be possible, but customers seem quite happy using the
+TCP socket API rather than a tty API, so we've never attempted it.
+
 -- 
-1.7.10.4
+Grant Edwards               grant.b.edwards        Yow! Maybe we could paint
+                                  at               GOLDIE HAWN a rich PRUSSIAN
+                              gmail.com            BLUE --
 
