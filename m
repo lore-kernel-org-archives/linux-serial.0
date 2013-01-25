@@ -1,54 +1,67 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Fri, 25 Jan 2013 21:26:13 +0000
-Message-ID: <20130125212613.GZ23505@n2100.arm.linux.org.uk>
-References: <50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com> <CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com> <20130114002608.GV23505@n2100.arm.linux.org.uk> <CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com> <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com> <CAOAMb1BS6gvezeSrUTNJ--gGxCRL17AO8PHJ_eLrxzjOex7w1g@mail.gmail.com> <CAOAMb1C=b2fXqKJKx1ZR7UD7n=c7qQoLnMgMmy2FXEubyP=dtw@mail.gmail.com> <CACRpkdYt8CoF0_yrMkNE20fhKnRuG-=yxr2XsQKPgMWD=ehUNA@mail.gmail.com> <CAOAMb1ACPx6iXWDYz7LnrbRLkLmK9HU7Lro7H5gqpSKr24ooVA@mail.gmail.com> <20130125202507.GB5470@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v5 1/2] TTY: Add TTY slave enumeration support
+Date: Fri, 25 Jan 2013 13:41:21 -0800
+Message-ID: <20130125214121.GA30924@kroah.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
+ <cover.1359022955.git.lv.zheng@intel.com>
+ <12848b50e1096dc11a193694ee248d51d45ce093.1359022955.git.lv.zheng@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:55511 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752987Ab3AYV0u (ORCPT
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:38226 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750887Ab3AYVl0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jan 2013 16:26:50 -0500
+	Fri, 25 Jan 2013 16:41:26 -0500
+Received: by mail-pa0-f42.google.com with SMTP id rl6so497702pac.1
+        for <linux-serial@vger.kernel.org>; Fri, 25 Jan 2013 13:41:26 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <20130125202507.GB5470@kroah.com>
+In-Reply-To: <12848b50e1096dc11a193694ee248d51d45ce093.1359022955.git.lv.zheng@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Chanho Min <chanho.min@lge.com>, Linus Walleij <linus.walleij@linaro.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>
+To: Lv Zheng <lv.zheng@intel.com>
+Cc: Alan Cox <alan@linux.intel.com>, Rafael J Wysocki <rafael.j.wysocki@intel.com>, Len Brown <len.brown@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, Jan 25, 2013 at 12:25:07PM -0800, Greg Kroah-Hartman wrote:
-> On Wed, Jan 23, 2013 at 02:07:57PM +0900, Chanho Min wrote:
-> > On Tue, Jan 22, 2013 at 10:18 PM, Linus Walleij
-> > <linus.walleij@linaro.org> wrote:
-> > >> - If poll timer is activated, We use consistent DMA mappings to avoid from
-> > >>   the frequent cache operation of the timer function. sg->coherency is used
-> > >>   to check if buffer is coherent.
-> > >
-> > > Hm. We can begin like this but maybe we should later patch it to
-> > > make this the default unless it has performance impacts on our
-> > > systems.
-> > Good, I really hope to make this the default.
-> > We expect it has no impact to system even if no polling use.
-> > 
-> > > Maybe this is a good opportunity to add some kerneldoc above
-> > > this struct so as to help platform implementers. It will invariably
-> > > be reused by Device Tree binding authors later on...
-> > Agree, but, frankly I need help about what I didn't modify.
-> > So We will leave this work for the next submit.
-> 
-> So, should this patch be applied?  Can I get an ack from someone who
-> knows this driver/platform please?
+On Thu, Jan 24, 2013 at 06:30:21PM +0800, Lv Zheng wrote:
+> In the recent ACPI 5.0 specification updates, firmwares are provided the
+> possibilities to enumerate the UART slave devices known to the platform
+> vendors.
+> There are the needs in Linux to utilize the benefits:
+> 1. hotplug uevent
+> 2. serial configuration
+> Currently, only serial cards on the specific bus (ex. PCMCIA) can be
+> enumerated and userspace can obtain the hotplug event of the UART target
+> devices. Linux kernel is lack of an overall enumeration mechanism for
+> UART slave devices.
 
-Well, I thought I had explained that I'd prefer to see the poll rate
-adjusted with the baud rate, but maybe I wasn't explicit enough.
-Instead, what we seem to have ended up with are two new entries in
-platform data (which we're trying to get away from with DT):
+Huh?  That's flat out not true, otherwise how would userspace be
+creating the proper /dev/tty* nodes for all tty devices?
 
-+       unsigned int dma_rx_poll_rate;                                        
-+       unsigned int dma_rx_poll_timeout;                                     
+> In order to send uevent, a device need to be a class device or a bus
+> device. This patch introduces a tty_enum bus since the enumerated slave
+> devices are expected to be physical devices.
 
-If this were to be done, then receive DMA could be used on the Versatile
-PB platforms without having it suck CPU usage unnecessarily at slower
-baud rates.
+Again, tty devices are already class devices, and they send out uevents.
+You can see this today by watching the uevent stream using a tool like
+'udevadmin monitor'.
+
+> When the UART slave devices are created, userspace uevent rules can
+> pass the creation details to the userspace driver managers
+> (ex. hciattach), then the device managers can read hardware IDs and the
+> serial configurations from the exported device attributes to match and
+> configure a userspace TTY device driver.
+
+What?  We do that today, no kernel changes needed.
+
+> The created slave devices will be automatically unregistered when the
+> associated TTY ports are destructed.
+
+Again, this happens today.
+
+Or am I missing something big and major here?  How have people been
+seeing and configuring their tty devices for the last 8+ years or so
+since the 2.6.0 kernel was released with uevent support for tty devices?
+
+lost,
+
+greg k-h
