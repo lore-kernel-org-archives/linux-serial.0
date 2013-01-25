@@ -1,36 +1,87 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 2/2] serial: of: allow au1x00 and rt288x to load from OF
-Date: Fri, 25 Jan 2013 04:40:30 -0800
-Message-ID: <20130125124030.GA14952@kroah.com>
-References: <1359111008-9998-1-git-send-email-blogic@openwrt.org>
- <1359111008-9998-2-git-send-email-blogic@openwrt.org>
- <51027021.8010802@mvista.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH V2 1/2] serial: ralink: adds support for the serial core found on ralink wisoc
+Date: Fri, 25 Jan 2013 14:44:00 +0100
+Message-ID: <1359121440-14266-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:36765 "EHLO mail.kernel.org"
+Received: from nbd.name ([46.4.11.11]:52201 "EHLO nbd.name"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755485Ab3AYMi6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jan 2013 07:38:58 -0500
-Content-Disposition: inline
-In-Reply-To: <51027021.8010802@mvista.com>
+	id S932112Ab3AYNqq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jan 2013 08:46:46 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sergei Shtylyov <sshtylyov@mvista.com>
-Cc: John Crispin <blogic@openwrt.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>
 
-On Fri, Jan 25, 2013 at 03:44:33PM +0400, Sergei Shtylyov wrote:
-> Hello.
-> 
-> On 25-01-2013 14:50, John Crispin wrote:
-> 
-> >In order to make serial_8250 loadable via OF on Au1x00 and Ralink WiSoC we need
-> >to default the iotype to UPIO_AU.
-> 
->    Alan Cox no longer works on Linux, Greg KH looks after the serial
-> drivers snow.
+The MIPS based Ralink WiSoC platform has 1 or more 8250 compatible serial cores.
+To make them work we require the same quirks that are used by AU1x00.
 
-It's ok, I'm on the mailing list and pick this stuff up, no need to
-resend.
+Signed-off-by: John Crispin <blogic@openwrt.org>
+---
+Changes in V2
+* adds missing "/" in source code comment
 
-greg k-h
+ drivers/tty/serial/8250/8250.c  |    6 +++---
+ drivers/tty/serial/8250/Kconfig |    8 ++++++++
+ include/linux/serial_core.h     |    2 +-
+ 3 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index f932043..f72eb7d 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -324,9 +324,9 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
+ 	serial_out(up, UART_DLM, value >> 8 & 0xff);
+ }
+ 
+-#ifdef CONFIG_MIPS_ALCHEMY
++#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
+ 
+-/* Au1x00 UART hardware has a weird register layout */
++/* Au1x00/RT288x UART hardware has a weird register layout */
+ static const u8 au_io_in_map[] = {
+ 	[UART_RX]  = 0,
+ 	[UART_IER] = 2,
+@@ -506,7 +506,7 @@ static void set_io_from_upio(struct uart_port *p)
+ 		break;
+ #endif
+ 
+-#ifdef CONFIG_MIPS_ALCHEMY
++#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
+ 	case UPIO_AU:
+ 		p->serial_in = au_serial_in;
+ 		p->serial_out = au_serial_out;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index c31133a..c583799 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -249,6 +249,14 @@ config SERIAL_8250_ACORN
+ 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
+ 	  cards.  If unsure, say N.
+ 
++config SERIAL_8250_RT288X
++	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
++	depends on SERIAL_8250 != n && (SOC_RT288X || SOC_RT305X || SOC_RT3883)
++	help
++	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
++	  serial port, say Y to this option. The driver can handle up to 2 serial
++	  ports. If unsure, say N.
++
+ config SERIAL_8250_RM9K
+ 	bool "Support for MIPS RM9xxx integrated serial port"
+ 	depends on SERIAL_8250 != n && SERIAL_RM9000
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c6690a2..0b428d6 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -134,7 +134,7 @@ struct uart_port {
+ #define UPIO_HUB6		(1)
+ #define UPIO_MEM		(2)
+ #define UPIO_MEM32		(3)
+-#define UPIO_AU			(4)			/* Au1x00 type IO */
++#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
+ #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
+ #define UPIO_RM9000		(6)			/* RM9000 type IO */
+ 
+-- 
+1.7.10.4
+
