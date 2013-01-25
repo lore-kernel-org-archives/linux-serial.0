@@ -1,87 +1,56 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: [PATCH V3 1/2] serial: ralink: adds support for the serial core found on ralink wisoc
-Date: Fri, 25 Jan 2013 19:39:51 +0100
-Message-ID: <1359139191-6463-1-git-send-email-blogic@openwrt.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Fri, 25 Jan 2013 12:25:07 -0800
+Message-ID: <20130125202507.GB5470@kroah.com>
+References: <CACRpkdYSaFsastx-WWC7sBu8NteAc2hCDZMz4-yMc8+=2dyBVw@mail.gmail.com>
+ <50f107aa.894e420a.596a.ffffe3f6SMTPIN_ADDED_BROKEN@mx.google.com>
+ <CACRpkdaJd48WOzP_iURATb=c+V6==2-AB2Y9oFyh=E3oe1eT0Q@mail.gmail.com>
+ <20130114002608.GV23505@n2100.arm.linux.org.uk>
+ <CACRpkdbVPeva08nL_FP7qw0MeKLz6h40kPHAz_W95ZBGraOnpg@mail.gmail.com>
+ <CAOAMb1BgcvBb6KHaZbwbh0rq8r1WfAtdCeZJexfaYoOwGfU7Sg@mail.gmail.com>
+ <CAOAMb1BS6gvezeSrUTNJ--gGxCRL17AO8PHJ_eLrxzjOex7w1g@mail.gmail.com>
+ <CAOAMb1C=b2fXqKJKx1ZR7UD7n=c7qQoLnMgMmy2FXEubyP=dtw@mail.gmail.com>
+ <CACRpkdYt8CoF0_yrMkNE20fhKnRuG-=yxr2XsQKPgMWD=ehUNA@mail.gmail.com>
+ <CAOAMb1ACPx6iXWDYz7LnrbRLkLmK9HU7Lro7H5gqpSKr24ooVA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:32911 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753636Ab3AYSma (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jan 2013 13:42:30 -0500
+Received: from mail-pb0-f50.google.com ([209.85.160.50]:43182 "EHLO
+	mail-pb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751108Ab3AYUZK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jan 2013 15:25:10 -0500
+Received: by mail-pb0-f50.google.com with SMTP id wz7so416310pbc.9
+        for <linux-serial@vger.kernel.org>; Fri, 25 Jan 2013 12:25:09 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <CAOAMb1ACPx6iXWDYz7LnrbRLkLmK9HU7Lro7H5gqpSKr24ooVA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, John Crispin <blogic@openwrt.org>
+To: Chanho Min <chanho.min@lge.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>
 
-The MIPS based Ralink WiSoC platform has 1 or more 8250 compatible serial cores.
-To make them work we require the same quirks that are used by AU1x00.
+On Wed, Jan 23, 2013 at 02:07:57PM +0900, Chanho Min wrote:
+> On Tue, Jan 22, 2013 at 10:18 PM, Linus Walleij
+> <linus.walleij@linaro.org> wrote:
+> >> - If poll timer is activated, We use consistent DMA mappings to avoid from
+> >>   the frequent cache operation of the timer function. sg->coherency is used
+> >>   to check if buffer is coherent.
+> >
+> > Hm. We can begin like this but maybe we should later patch it to
+> > make this the default unless it has performance impacts on our
+> > systems.
+> Good, I really hope to make this the default.
+> We expect it has no impact to system even if no polling use.
+> 
+> > Maybe this is a good opportunity to add some kerneldoc above
+> > this struct so as to help platform implementers. It will invariably
+> > be reused by Device Tree binding authors later on...
+> Agree, but, frankly I need help about what I didn't modify.
+> So We will leave this work for the next submit.
 
-Signed-off-by: John Crispin <blogic@openwrt.org>
----
-Changes in V2
-* adds missing "/" in source code comment
+So, should this patch be applied?  Can I get an ack from someone who
+knows this driver/platform please?
 
-Changes in V3
-* rebase on tty-next
+thanks,
 
- drivers/tty/serial/8250/8250.c  |    6 +++---
- drivers/tty/serial/8250/Kconfig |    8 ++++++++
- include/linux/serial_core.h     |    2 +-
- 3 files changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index cb7db5a..33aa86a 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -311,9 +311,9 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
- 	serial_out(up, UART_DLM, value >> 8 & 0xff);
- }
- 
--#ifdef CONFIG_MIPS_ALCHEMY
-+#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
- 
--/* Au1x00 UART hardware has a weird register layout */
-+/* Au1x00/RT288x UART hardware has a weird register layout */
- static const u8 au_io_in_map[] = {
- 	[UART_RX]  = 0,
- 	[UART_IER] = 2,
-@@ -434,7 +434,7 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = mem32_serial_out;
- 		break;
- 
--#ifdef CONFIG_MIPS_ALCHEMY
-+#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
- 	case UPIO_AU:
- 		p->serial_in = au_serial_in;
- 		p->serial_out = au_serial_out;
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index d31f4c6..2ef9537 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -276,3 +276,11 @@ config SERIAL_8250_EM
- 	  Selecting this option will add support for the integrated serial
- 	  port hardware found on the Emma Mobile line of processors.
- 	  If unsure, say N.
-+
-+config SERIAL_8250_RT288X
-+	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
-+	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883)
-+	help
-+	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
-+	  serial port, say Y to this option. The driver can handle up to 2 serial
-+	  ports. If unsure, say N.
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 82aebc8..d971421 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -134,7 +134,7 @@ struct uart_port {
- #define UPIO_HUB6		(1)
- #define UPIO_MEM		(2)
- #define UPIO_MEM32		(3)
--#define UPIO_AU			(4)			/* Au1x00 type IO */
-+#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
- #define UPIO_TSI		(5)			/* Tsi108/109 type IO */
- 
- 	unsigned int		read_status_mask;	/* driver specific */
--- 
-1.7.10.4
-
+greg k-h
