@@ -1,50 +1,48 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Mon, 28 Jan 2013 09:28:42 +0100
-Message-ID: <CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
-References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
+From: Ivo Sieben <meltedpianoman@gmail.com>
+Subject: Re: [PATCH-v2] tty: Use raw spin lock to protect the TTY read section
+Date: Mon, 28 Jan 2013 13:15:26 +0100
+Message-ID: <CAMSQXEFFYqEZcJr5ig7fHgNd6Vfqh6GFZ_Md5OG=iRpDPWpTUw@mail.gmail.com>
+References: <1348150166-4868-1-git-send-email-meltedpianoman@gmail.com>
+	<1359023699-27050-1-git-send-email-meltedpianoman@gmail.com>
+	<20130125161351.GA9929@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ia0-f177.google.com ([209.85.210.177]:43372 "EHLO
-	mail-ia0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754144Ab3A1I2n (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Jan 2013 03:28:43 -0500
-Received: by mail-ia0-f177.google.com with SMTP id h8so3826087iaa.22
-        for <linux-serial@vger.kernel.org>; Mon, 28 Jan 2013 00:28:43 -0800 (PST)
-In-Reply-To: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <20130125161351.GA9929@kroah.com>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, RT <linux-rt-users@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Chanho Min <chanho.min@lge.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
 
-On Mon, Jan 28, 2013 at 9:15 AM, Chanho Min <chanho.min@lge.com> wrote:
-> [Russell]
->>Well, I thought I had explained that I'd prefer to see the poll rate
->>adjusted with the baud rate, but maybe I wasn't explicit enough.
->>Instead, what we seem to have ended up with are two new entries in
->>platform data (which we're trying to get away from with DT):
+Hi,
+
+2013/1/25 Greg KH <gregkh@linuxfoundation.org>:
+> On Thu, Jan 24, 2013 at 11:34:59AM +0100, Ivo Sieben wrote:
 >>
->>+       unsigned int dma_rx_poll_rate;
->>+       unsigned int dma_rx_poll_timeout;
->>
->>If this were to be done, then receive DMA could be used on the Versatile
->>PB platforms without having it suck CPU usage unnecessarily at slower
->>baud rates.
-> This patch is working well on our pl011+ pl080 platform.
-> If no data is received during time-out, no tick timer works.
-> Do you want to adjust the poll rate with the baud rate additionally?
-
-I'm not following, you wrote earlier in the thread:
-
->>Should we scale the polling interval according to baud
->>rate?
+>> On a 240 MHz AT91SAM9261 processor setup this fixes about 100us of scheduling
+>> overhead on the TTY read call.
 >
-> It is also our concern, I will suggest the proper way.
+> Out of how many us total?
+>
 
-We are waiting for you suggestion, i.e. a new patch iteration
-taking this into account.
+I tested with a TTY read call that before all optimizations had an
+average 76 us and a maximum of 305 us.
+After the optimizations the average dropped to 59 us and the maximum
+dropped to 135 us.
+Of course that gain of 170us is not completely due to this patch, also
+the other TTY patches that I've posted have contributed to this.
 
-Yours,
-Linus Walleij
+I will remove this remark on the exact numbers from the commit
+message... it prevents unnecessary scheduling overhead, which is I
+think sufficient to describe what this patch does.
+
+> And this really makes a difference?  I'd like to hear the rt developers
+> opinoin of this.
+>
+> greg k-h
+
+I will repost this patch and ask Thomas Gleixner and Steven Rostedt to
+take a look at it.
+
+Regards,
+Ivo Sieben
