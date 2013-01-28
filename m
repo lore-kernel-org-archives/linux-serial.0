@@ -1,48 +1,31 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [PATCH v5 1/2] TTY: Add TTY slave enumeration support
-Date: Mon, 28 Jan 2013 03:02:42 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88BF46ED@SHSMSX101.ccr.corp.intel.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
- <cover.1359022955.git.lv.zheng@intel.com>
- <12848b50e1096dc11a193694ee248d51d45ce093.1359022955.git.lv.zheng@intel.com>
- <20130125214544.GB30924@kroah.com>
- <1AE640813FDE7649BE1B193DEA596E88BF41DF@SHSMSX101.ccr.corp.intel.com>
- <20130126034418.GC5066@kroah.com>
+From: Chanho Min <chanho.min@lge.com>
+Subject: RE: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Mon, 28 Jan 2013 17:15:23 +0900
+Message-ID: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20130126034418.GC5066@kroah.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Jiri Slaby (jslaby@suse.cz)" <jslaby@suse.cz>, "Heikki Krogerus (heikki.krogerus@linux.intel.com)" <heikki.krogerus@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f42.google.com ([74.125.83.42]:44043 "EHLO
+	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754062Ab3A1IP0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Jan 2013 03:15:26 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
 
-Hi,
-
-> > It's actually my fault.
-> > I'm lack of release testability then.
-> > Now I can do this exactly.
-> > According to internal reviewers' comments, it should be RFC patch to
-> > see if any objections there in the community.
-> 
-> Don't put code like this in RFC code either, that shows you didn't even test it
-> out, and want to waste other people's time.
-> 
-> And note, I almost _never_ read RFC patches, so you aren't going to get a
-> review from me for it, sorry, I have too many other things to do.
-
-It's my great pleasure to have you taking a look at my patches.
-
-> > I'll complete the test and refresh the patches if you think the
-> > functionality is interesting and useful.  Please be noted the device
-> > tree guys can also get benefit from such tty target enumeration
-> > mechanism.
-> 
-> No, they can use what we have today, don't reinvent the wheel.
-
-According to my previous reply, I'm not trying to reinvent the wheel but trying to fix some gaps in UART slave device enumeration which is introduced in the recent ACPI 5.0 spec updates.
-
-Thanks and best regards
--Lv
+>Well, I thought I had explained that I'd prefer to see the poll rate
+>adjusted with the baud rate, but maybe I wasn't explicit enough.
+>Instead, what we seem to have ended up with are two new entries in
+>platform data (which we're trying to get away from with DT):
+>
+>+       unsigned int dma_rx_poll_rate;
+>+       unsigned int dma_rx_poll_timeout;
+>
+>If this were to be done, then receive DMA could be used on the Versatile
+>PB platforms without having it suck CPU usage unnecessarily at slower
+>baud rates.
+This patch is working well on our pl011+ pl080 platform.
+If no data is received during time-out, no tick timer works.
+Do you want to adjust the poll rate with the baud rate additionally?
