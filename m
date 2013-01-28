@@ -1,23 +1,24 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Ilya Zykov <ilya@ilyx.ru>
 Subject: Re: [PATCH] n_tty: Unthrottle tty when flushing read buffer
-Date: Mon, 28 Jan 2013 16:38:58 -0500
-Message-ID: <1359409138.3301.6.camel@thor.lan>
+Date: Tue, 29 Jan 2013 02:17:26 +0400
+Message-ID: <5106F8F6.80101@ilyx.ru>
 References: <1358980578-8811-1-git-send-email-Karthik.Manamcheri@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:59512 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754331Ab3A1WRp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Jan 2013 17:17:45 -0500
 In-Reply-To: <1358980578-8811-1-git-send-email-Karthik.Manamcheri@ni.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Karthik Manamcheri <Karthik.Manamcheri@ni.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Karthik Manamcheri <Karthik.Manamcheri@ni.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>
 
-[cc'ing Ilya Zykov]
-
-Hi Karthik,
-
-On Wed, 2013-01-23 at 16:36 -0600, Karthik Manamcheri wrote:
+On 24.01.2013 2:36, Karthik Manamcheri wrote:
 > When the tty input buffer is full and thereby throttled,
 > flushing/resetting the read buffer should unthrottle to allow more
 > data to be received.
@@ -40,15 +41,18 @@ On Wed, 2013-01-23 at 16:36 -0600, Karthik Manamcheri wrote:
 >  }
 >  
 >  /**
+> 
 
-Although it's not really my place to NAK, the maintainership was
-recently transitioned, so NAK.  See this kernel thread
-http://www.gossamer-threads.com/lists/linux/kernel/1636154?do=post_view_threaded#1636154
-for why.
+It's revert - tty: fix "IRQ45: nobody cared".
+commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
 
-See if this patch
-http://www.gossamer-threads.com/lists/linux/kernel/1660788
-works for you instead.
+Please, read these for this subject:
+https://lkml.org/lkml/2012/11/27/440
+https://lkml.org/lkml/2012/11/21/568
 
-Regards,
-Peter Hurley
+https://lkml.org/lkml/2012/11/22/686
+
+It's already fixed in the:
+commit a1bf9584429d61b7096f93ae09325e1ba538e9e8
+tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
+
