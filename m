@@ -1,74 +1,64 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Tue, 29 Jan 2013 11:57:35 +0100
-Message-ID: <CACRpkdZw_Bvz86PeNyoSjFR=O0_KkM6uJBYZ-ZhVy_g0SKun7w@mail.gmail.com>
-References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
-	<CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
-	<CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chanho Min <chanho.min@lge.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: [PATCH V4 2/2] serial: rp2: New driver for Comtrol RocketPort 2
+ cards
+Date: Tue, 29 Jan 2013 16:14:54 +0000 (UTC)
+Message-ID: <ke8shu$7on$1@ger.gmane.org>
+References: <1ee681e19fb4ce83f2a133c35fe635ae@localhost>
+ <cddfa2c3b23f14c35109a07544c6a2bf@localhost>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:44484 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752086Ab3A2QPM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Jan 2013 11:15:12 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1U0DqJ-0000ks-4V
+	for linux-serial@vger.kernel.org; Tue, 29 Jan 2013 17:15:27 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 29 Jan 2013 17:15:27 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 29 Jan 2013 17:15:27 +0100
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Tue, Jan 29, 2013 at 3:41 AM, Chanho Min <chanho.min@lge.com> wrote:
-> On Mon, Jan 28, 2013 at 5:28 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
->> On Mon, Jan 28, 2013 at 9:15 AM, Chanho Min <chanho.min@lge.com> wrote:
->>> [Russell]
->>>>Well, I thought I had explained that I'd prefer to see the poll rate
->>>>adjusted with the baud rate, but maybe I wasn't explicit enough.
->>>>Instead, what we seem to have ended up with are two new entries in
->>>>platform data (which we're trying to get away from with DT):
->>>>
->>>>+       unsigned int dma_rx_poll_rate;
->>>>+       unsigned int dma_rx_poll_timeout;
->
->>>>Should we scale the polling interval according to baud
->>>>rate?
->>>
->>> It is also our concern, I will suggest the proper way.
->
-> It was thought a way to reduce unnecessary cpu usage,
-> but, now we add dma_rx_poll_timeout to stop polling during idle.
+On 2013-01-17, Kevin Cernekee <cernekee@gmail.com> wrote:
 
-During idle I guess any system want to set the UART into
-IRQ mode? So it will wake up on some event on the
-UART, whatever it may be.
+> This driver supports the RocketPort EXPRESS and RocketPort INFINITY
+> families of PCI/PCIe multiport serial adapters.  These adapters use a
+> "RocketPort 2" ASIC that is not compatible with the original RocketPort
+> driver (CONFIG_ROCKETPORT).
 
-Then it can use DMA polling post-wakeup?
+RTS/CTS receive flow control doesn't work: RTS is never de-asserted
+when receive buffers fill up, and receive data is lost.
 
-> I thought it is preferred  the poll rate is decided by it's user than
-> auto scale.
+In order for receive flow control logic in the UART to kick in, you
+have to stop reading data from the rx FIFO when you've got nowhere to
+put it.  When the rx FIFO fills to 7/8, the UART will (if so
+configured) de-assert RTS and/or send Xoff.  Fix is shown below:
 
-What do you mean by "user" here? Userspace? Or
-"platform data parameter"?
+> +static void rp2_rx_chars(struct rp2_uart_port *up)
+> +{
+> +	u16 bytes = readw(up->base + RP2_RX_FIFO_COUNT);
+> +	struct tty_port *port = &up->port.state->port;
 
-I can se three usecases:
+        if (bytes > port->tty->receive_room)
+                bytes = port->tty->receive_room;
 
-- Console or serial TTY
-- Modem (as in 33k8 modem, needing RTS/CTS HW handshaking)
-- Peripheral (like high-speed bluetooth chips) needing low-latency
+> +	for (; bytes != 0; bytes--) {
+> +		u32 byte = readw(up->base + RP2_DATA_BYTE) | RP2_DUMMY_READ;
+> +		char ch = byte & 0xff;
 
-The kernel already knows if the port is a console or TTY.
+   [...]
 
-What you need to know is if it is one of the other two usecases.
+This will allow both RTS and Xon/Xoff receive flow control to be
+handled by the UART itself.
 
-> because The required response to tty can be differ from platform to platform.
-> Some platform need fast response even if more cpu usage is needed,
-> but other platform will be enough to handle  with slow response.
+-- 
+Grant Edwards               grant.b.edwards        Yow! YOU PICKED KARL
+                                  at               MALDEN'S NOSE!!
+                              gmail.com            
 
-Not platform I think. Per usecase.
-
-Are you not actually thinking about things like the above?
-These are usecase requirements, not platform requirements.
-
-For example I thing it is magnitude better idea to encode
-something like an enum for these usecases that some
-bool is_platform_foo_bt_uart or whatever the alternative
-would be.
-
-Yours,
-Linus Walleij
