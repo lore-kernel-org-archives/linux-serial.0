@@ -1,81 +1,91 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: set_termios() function not getting called
-Date: Tue, 29 Jan 2013 21:43:03 +0000 (UTC)
-Message-ID: <ke9fp7$2lh$1@ger.gmane.org>
+From: Guido Classen <clagix@gmail.com>
+Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
+Date: Tue, 29 Jan 2013 22:56:48 +0100
+Message-ID: <CAJa4H3cCwpsJr8urNPH0XWO9YruDpxs3a5sgRBS_hEteN5SEEw@mail.gmail.com>
+References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
+	<CAJa4H3eWaZH0p8+48Kq4RPEyDiAZfsiX801CBqJ7_CrTw688yw@mail.gmail.com>
+	<kdu8ur$kav$1@ger.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:44610 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751155Ab3A2VnX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jan 2013 16:43:23 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1U0Ixt-0005rG-L9
-	for linux-serial@vger.kernel.org; Tue, 29 Jan 2013 22:43:37 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 29 Jan 2013 22:43:37 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 29 Jan 2013 22:43:37 +0100
+Received: from mail-pb0-f52.google.com ([209.85.160.52]:57629 "EHLO
+	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751067Ab3A2V4t (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Jan 2013 16:56:49 -0500
+Received: by mail-pb0-f52.google.com with SMTP id uo5so534969pbc.11
+        for <linux-serial@vger.kernel.org>; Tue, 29 Jan 2013 13:56:49 -0800 (PST)
+In-Reply-To: <kdu8ur$kav$1@ger.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
-I'm having problems getting xon/xoff flow control in the new rp2.c
-driver working.  
+> Our Linux tty/serial drivers do support "plain" a RS-485 mode without
+> pre/post RTS hold times (the plain RS-485 mode is supported by the
+> UART itself).  The pre/post RTS hold times feature can be used from
+> Linux applications, but to take advantage of those sort of features we
+> don't use Linux tty/serial device drivers.  For many industrial I/O
+> applications we've found it much simpler to avoid the termios/tty
+> stuff and connect to the serial hardware via Ethernet and TCP/IP
+> instead.
+>
+> Over the years we've found that the Unix "tty" API is rather
+> ill-suited for doing things other than talking to terminals.  In other
+> news, we've found that a screwdriver is ill-suited for doing things
+> other than driving screws. :)
 
-The problem is that the driver's set_termios() function is not getting
-called when the user-space application calls tcsetattr() to change
-IXON, IXOFF, IXANY, c_cc[VSTOP], or c_cc[VSTART].
+You are absolutely right, the "TTY" API is ill-suited for fieldbus style
+half-duplex communication. But in my opinion this form of communication is
+still very common and even today not every device has an ethernet connector.
+So what are the consequences?
 
-According to Documentation/serial/driver:
+1. Don't use Linux at all for this purpose. For PCs and Server it may
+be indeed the better solution to use TCP/IP instead. But for embedded
+Linux the situation is different. One important application here is to
+implement exactly these Ethernet/TCP/IP to "some lowlevel stuff"
+boxes!
 
-  set_termios(port,termios,oldtermios)
-        Change the port parameters, including word length, parity, stop
-        bits. 
-       
-        [...]
+2. Sole Userspace software using Posix TTY API. This will work (more
+or less) if the speed (baudrate) is relatively low and the time
+between sending and receiving is long enough. You also can not benefit
+from serial hardware which have special support for fieldbus style
+communication like the Atmel AT91 USARTS.
 
-        Other flags may be used (eg, xon/xoff characters) if your
-        hardware supports hardware "soft" flow control.
+3. Use some board specific drivers or modifications to the drivers and
+Linux TTY stack (E.G. additional ioctls). I think this way is mostly
+used in practically embedded Linux. Drawbacks are, that userspace
+software must include support for each specific board it is intend to
+run on.
 
-My hardware supports xon/xoff flow control, so how do I use other
-flags?
+4. The TIOCSRS485 ioctl may open new doors, but as I see there are
+only few drivers implementing it.
 
-It looks like serial_core.c is hiding some termios changes from
-low-level drivers:
 
-  1193  static void uart_set_termios(struct tty_struct *tty,
-  1194                                                  struct ktermios *old_termios)
-  1195  {
-  1196          struct uart_state *state = tty->driver_data;
-  1197          unsigned long flags;
-  1198          unsigned int cflag = tty->termios->c_cflag;
-  1199  
-  1200  
-  1201          /*
-  1202           * These are the bits that are used to setup various
-  1203           * flags in the low level driver. We can ignore the Bfoo
-  1204           * bits in c_cflag; c_[io]speed will always be set
-  1205           * appropriately by set_termios() in tty_ioctl.c
-  1206           */
-  1207  #define RELEVANT_IFLAG(iflag)   ((iflag) & (IGNBRK|BRKINT|IGNPAR|PARMRK|INPCK))
-  1208          if ((cflag ^ old_termios->c_cflag) == 0 &&
-  1209              tty->termios->c_ospeed == old_termios->c_ospeed &&
-  1210              tty->termios->c_ispeed == old_termios->c_ispeed &&
-  1211              RELEVANT_IFLAG(tty->termios->c_iflag ^ old_termios->c_iflag) == 0) {
-  1212                  return;
-  1213          }
-  
-When I look at omap-serial.c, it looks like it's trying to handle
-IXANY, IXON and IXOFF the same way I am -- but I don't get notified
-when they change.
+Maybe someone else on this list will share his thoughts about this issues
 
-I don't understand...
 
--- 
-Grant Edwards               grant.b.edwards        Yow! If I am elected no one
-                                  at               will ever have to do their
-                              gmail.com            laundry again!
+>
+> For example, our serial interfaces are used quite a bit in traffic and
+> parking applications, but in those cases the long-haul connections are
+> TCP/IP over fiber, and the serial ports are only used to communicate
+> locally within a roadside cabinet.  To the user application, each of
+> the serial devices (camera controller, inductive loop sensor, ramp
+> light controller, card reader, gate arm, etc.) is just another network
+> device addressed via an <ipaddr,ipport> tuple.
+>
+> Programmers seem to get themselves into much less trouble with the TCP
+> socket API than they do with the tty API
 
+That's crazy, It seems we are working almost with the same things. I am
+a software developer and so I also prefer TCP. It's much simpler to
+use and has a clean, portable API. In new installations, TCP is quite
+common. We also have fiber optics and copper rings for long-haul
+connections. But there also very old copper wires which are to long to
+be used with SHDSL. Sensors and actors are mostly connected serial. At least
+in Germany for road traffic equipments protocols are often specified by
+national standards. There also old installations which should be extended or
+modified. So at the end we don't get rid of serial and we must be able to
+support it in parallel to the TCP/IP infrastructure!
+
+Regards,
+  Guido Classen
