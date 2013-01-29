@@ -1,58 +1,43 @@
-From: Ilya Zykov <ilya@ilyx.ru>
-Subject: Re: [PATCH] n_tty: Unthrottle tty when flushing read buffer
-Date: Tue, 29 Jan 2013 02:17:26 +0400
-Message-ID: <5106F8F6.80101@ilyx.ru>
-References: <1358980578-8811-1-git-send-email-Karthik.Manamcheri@ni.com>
+From: Chanho Min <chanho.min@lge.com>
+Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Tue, 29 Jan 2013 11:41:07 +0900
+Message-ID: <CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
+References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
+	<CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:59512 "EHLO
-	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754331Ab3A1WRp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Jan 2013 17:17:45 -0500
-In-Reply-To: <1358980578-8811-1-git-send-email-Karthik.Manamcheri@ni.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Karthik Manamcheri <Karthik.Manamcheri@ni.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>
 
-On 24.01.2013 2:36, Karthik Manamcheri wrote:
-> When the tty input buffer is full and thereby throttled,
-> flushing/resetting the read buffer should unthrottle to allow more
-> data to be received.
-> 
-> Signed-off-by: Karthik Manamcheri <Karthik.Manamcheri@ni.com>
-> ---
->  drivers/tty/n_tty.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index 19083efa2314660b25e0fb5bc793af6fb7e9af57..d5cea3bb01eaeec61b577de6c58a8000412c0c37 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -229,6 +229,8 @@ static void reset_buffer_flags(struct tty_struct *tty)
->  	ldata->canon_head = ldata->canon_data = ldata->erasing = 0;
->  	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
->  	n_tty_set_room(tty);
-> +
-> +	check_unthrottle(tty);
->  }
->  
->  /**
-> 
+On Mon, Jan 28, 2013 at 5:28 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Mon, Jan 28, 2013 at 9:15 AM, Chanho Min <chanho.min@lge.com> wrote:
+>> [Russell]
+>>>Well, I thought I had explained that I'd prefer to see the poll rate
+>>>adjusted with the baud rate, but maybe I wasn't explicit enough.
+>>>Instead, what we seem to have ended up with are two new entries in
+>>>platform data (which we're trying to get away from with DT):
+>>>
+>>>+       unsigned int dma_rx_poll_rate;
+>>>+       unsigned int dma_rx_poll_timeout;
 
-It's revert - tty: fix "IRQ45: nobody cared".
-commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
+>>>Should we scale the polling interval according to baud
+>>>rate?
+>>
+>> It is also our concern, I will suggest the proper way.
 
-Please, read these for this subject:
-https://lkml.org/lkml/2012/11/27/440
-https://lkml.org/lkml/2012/11/21/568
+It was thought a way to reduce unnecessary cpu usage,
+but, now we add dma_rx_poll_timeout to stop polling during idle.
+I thought it is preferred  the poll rate is decided by it's user than
+auto scale.
+because The required response to tty can be differ from platform to platform.
+Some platform need fast response even if more cpu usage is needed,
+but other platform will be enough to handle  with slow response.
 
-https://lkml.org/lkml/2012/11/22/686
+Any opinion will be appreciated.
 
-It's already fixed in the:
-commit a1bf9584429d61b7096f93ae09325e1ba538e9e8
-tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
-
+Thanks
+Chanho
