@@ -1,44 +1,40 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 4/4] pty: Ignore slave open count for master pty open
-Date: Wed, 30 Jan 2013 12:43:52 -0500
-Message-ID: <1359567832-25318-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 3/4] tty: Document required behavior of tty driver close()
+Date: Wed, 30 Jan 2013 12:43:51 -0500
+Message-ID: <1359567832-25318-4-git-send-email-peter@hurleysoftware.com>
 References: <1359567832-25318-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:37335 "EHLO
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:33595 "EHLO
 	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756327Ab3A3RqZ (ORCPT
+	with ESMTP id S1756075Ab3A3RqX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jan 2013 12:46:25 -0500
+	Wed, 30 Jan 2013 12:46:23 -0500
 In-Reply-To: <1359567832-25318-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Ilya Zykov <ilya@ilyx.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-Multiple slave pty opens may be performed in parallel with the
-master open. Of course, all the slave opens will fail because the
-master pty is still locked but during this time the slave pty
-count will be artificially greater than 1. This is should not
-cause the master pty open to fail.
+If the tty driver open() fails, the tty driver close() is still
+called during the resultant tty release.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/pty.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/tty_driver.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 6eb3e80..7a18600 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -256,7 +256,7 @@ static int pty_open(struct tty_struct *tty, struct file *filp)
- 		goto out;
- 	if (test_bit(TTY_PTY_LOCK, &tty->link->flags))
- 		goto out;
--	if (tty->link->count != 1)
-+	if (tty->driver->subtype == PTY_TYPE_SLAVE && tty->link->count != 1)
- 		goto out;
- 
- 	clear_bit(TTY_IO_ERROR, &tty->flags);
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index dd976cf..756a609 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -40,6 +40,7 @@
+  * void (*close)(struct tty_struct * tty, struct file * filp);
+  *
+  * 	This routine is called when a particular tty device is closed.
++ *	Note: called even if the corresponding open() failed.
+  *
+  *	Required method.
+  *
 -- 
 1.8.1.1
 
