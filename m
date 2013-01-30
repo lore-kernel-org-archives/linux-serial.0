@@ -1,95 +1,69 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
-Date: Wed, 30 Jan 2013 17:57:40 +0000 (UTC)
-Message-ID: <kebmuj$64o$1@ger.gmane.org>
+From: "Jean-Pierre Tosoni" <jp.tosoni@acksys.fr>
+Subject: RE: RS485 implementation questions (primarly in atmel_serial.c)
+Date: Wed, 30 Jan 2013 15:35:29 +0100
+Message-ID: <000401cdfef7$0d4a9020$27dfb060$@acksys.fr>
 References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
- <CAJa4H3eWaZH0p8+48Kq4RPEyDiAZfsiX801CBqJ7_CrTw688yw@mail.gmail.com>
- <kdu8ur$kav$1@ger.gmane.org>
- <CAJa4H3cCwpsJr8urNPH0XWO9YruDpxs3a5sgRBS_hEteN5SEEw@mail.gmail.com>
- <ke9ifp$sp$1@ger.gmane.org>
- <CAJa4H3ebkp=J6+==nW0JpTTO8pkM_8J7EEfxTytwe-p+zweqog@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:38066 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756578Ab3A3R57 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jan 2013 12:57:59 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1U0bvI-0006ej-Do
-	for linux-serial@vger.kernel.org; Wed, 30 Jan 2013 18:58:12 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 30 Jan 2013 18:58:12 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 30 Jan 2013 18:58:12 +0100
+Received: from smtp-out06.msg.oleane.net ([62.161.7.4]:58359 "EHLO
+	smtp-out06.msg.oleane.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753648Ab3A3Vf7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Jan 2013 16:35:59 -0500
+Received: from smtp26.msg.oleane.net (smtp26.mail.priv [172.17.20.148])
+	by smtp-out06.msg.oleane.net with ESMTP id r0UEuJGT029542
+	for <linux-serial@vger.kernel.org>; Wed, 30 Jan 2013 15:56:19 +0100
+In-Reply-To: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
+Content-Language: fr
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: 'Guido Classen' <clagix@gmail.com>, linux-serial@vger.kernel.org
 
-On 2013-01-30, Guido Classen <clagix@gmail.com> wrote:
->> What I'm thinking about doing is instead of using a tty driver,
->> writing a char driver.  That eliminates the whole tty/ldisc tangle and
->> allows you to implement read()/write() as packet operations rather
->> than bytestream operations.  You can still implement whatever subset
->> of the termios ioctl() calls make sense along with whatever new
->> ioctl() calls are needed to control/configure things like inter-byte
->> timeouts, 9th-bit addressing modes, frame-recognition state-machines,
->> etc.
->
-> If I understand this right, you suggest to introduce a new subsystem for
-> half-duplex field-bus style communication which is fully independent from
-> the existing POSIX tty subsystem. This subsystem will include own ioctls
-> for settings timeouts, addressing, turn on and turn off times and so on,
-> will support some temios ioctls which are applicable like setting baud-rates.
+Hi all,
+At Guido's request here are my thoughts:
 
-It wouldn't have to be half-duplex.
+> Units this parameters are given. The crisv10.c driver gets the
+> delay_before_send in milliseconds and atmel_serial
+> delay_rts_after_send in bit-times (means depending on baud rate).
 
-> There will be plugable frame-recognition state-machines. How will the
-> low-level side look like? Will it use the existing serial drivers
-> (over some kind of new interface?)
+RTS delays should be given in ms not in bit-times since they are not related
+to bit rate but to amplifiers and peer software response times.
 
-I haven't gotten that far.  Since the existing serial drivers assume
-the existance and use of the tty layer, they probably can't be used
-as-is.
+> But in the atmel_serial.c driver rthe Transmit Timeguard function of
+> the AT91 USART is used to implement this.  The purpose of the Transmit
+> Timeguard function is to throttle transmission in case the receiving
+> device is able to receive/process incoming characters at line
+> speed. This means the USART will insert a gap between EACH transmitted
+> byte and not only the last of a frame.  Atmel surely had its reasons
+> to implement such a function, but luckily nowadays such devices are
 
-> Or will it have it's own set of serial drivers which are designed for
-> frame based half duplex communication. This means duplicate drivers
-> for each kind of UART hardware (8250, atmel, ...)
+Sounds to me like a "quick and dirty" implementation of the RTS toggling, to
+avoid the burden of setting timers etc. The interbyte gap is not needed.
 
-Unfortunately, that's probably what it would take.
+> An other point I don't understand is why ATMEL_US_TXEMPTY interrupt is
+> used when in RS485 mode insted of the normal ATMEL_US_TXRDY or
+> ATEM_US_ENDTX interrupts. In the RS485 mode the AT91 USART will
+> connect the RTS pin to the internal TXEMPTY signal to drive the RTS
+> until the last bit is shifted out. But this should not have any affect
+> on ow the drive will pump out the bytes to the USART's transmit hold
+> register?
 
-> I am not sure if this is a good design, but on other hand there are
-> already duplicate drivers for 16550 style UARTs in the kernel for
-> special purposes like bluetooth, irda and MIDI-interfaces.
->
-> From userspace view this will make thinks much easier, so I
-> personally will support this approach. But we have to be aware that
-> this will introduce a new API which is not standardized and portable
-> to other OSs.
+Well, you need to ascertain that the previous frame is all out AND the RTS
+has dropped before sending a new frame. Else the receiver might think it is
+the same long frame.
+Using TXEMPTY interrupt avoids setting an extra timer.
+However in the real life you are half-duplex and never send two frames in a
+row without waiting for an answer.
+Other than that I agree with your remark.
 
-That's a very real issue.  The applications I'm initially interested
-in porting aren't Unix/Linux apps anyway, so for my particular project
-the applications have to be ported to something, and the existing tty
-API just doesn't provide the required features.
+> rare.  But this function is not especially related to RS485. It is
+> also applicable in RS232 mode.  So in my view it is not the
 
-> Furthermore there must be some way to have access to the same
-> hardware either over this API or over the TTY API.
+True, it applies to some half-duplex RS232 radio modems too AFAIK.
 
-That's not one of my requirements.  My plan is that you either enable
-the serial_core driver or my "low-level char/frame" driver -- you
-can't use both.  You could, of course, build them both as modules and
-switch back and forth without rebooting.
-
-There's no reason that the driver I'm thinking about can't be
-partially API compatible so that you can use the same libc calls to do
-common things like set baud rate/parity, get/set modem status/control
-lines, and so on.
-
--- 
-Grant Edwards               grant.b.edwards        Yow! I can't decide which
-                                  at               WRONG TURN to make first!!
-                              gmail.com            I wonder if BOB GUCCIONE
-                                                   has these problems!
+French regards,
+Jean-Pierre Tosoni
 
