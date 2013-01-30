@@ -1,87 +1,164 @@
-From: Guido Classen <clagix@gmail.com>
-Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
-Date: Wed, 30 Jan 2013 16:24:35 +0100
-Message-ID: <CAJa4H3ebkp=J6+==nW0JpTTO8pkM_8J7EEfxTytwe-p+zweqog@mail.gmail.com>
-References: <CAJa4H3fhgEyGCO4wZjww0-rrNnRzAfpJq0cF4QoG3F+QgDqR4w@mail.gmail.com>
-	<CAJa4H3eWaZH0p8+48Kq4RPEyDiAZfsiX801CBqJ7_CrTw688yw@mail.gmail.com>
-	<kdu8ur$kav$1@ger.gmane.org>
-	<CAJa4H3cCwpsJr8urNPH0XWO9YruDpxs3a5sgRBS_hEteN5SEEw@mail.gmail.com>
-	<ke9ifp$sp$1@ger.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/4] Fix parallel master and slave pty opens
+Date: Wed, 30 Jan 2013 12:43:48 -0500
+Message-ID: <1359567832-25318-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f45.google.com ([209.85.210.45]:45425 "EHLO
-	mail-da0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751722Ab3A3PYh (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:34661 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754841Ab3A3RqV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jan 2013 10:24:37 -0500
-Received: by mail-da0-f45.google.com with SMTP id w4so814690dam.4
-        for <linux-serial@vger.kernel.org>; Wed, 30 Jan 2013 07:24:37 -0800 (PST)
-In-Reply-To: <ke9ifp$sp$1@ger.gmane.org>
+	Wed, 30 Jan 2013 12:46:21 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: Ilya Zykov <ilya@ilyx.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-> What I'm thinking about doing is instead of using a tty driver,
-> writing a char driver.  That eliminates the whole tty/ldisc tangle and
-> allows you to implement read()/write() as packet operations rather
-> than bytestream operations.  You can still implement whatever subset
-> of the termios ioctl() calls make sense along with whatever new
-> ioctl() calls are needed to control/configure things like inter-byte
-> timeouts, 9th-bit addressing modes, frame-recognition state-machines,
-> etc.
+This series fixes 2 BUGs and 2 causes of master pty open failure.
 
-If I understand this right, you suggest to introduce a new subsystem for
-half-duplex field-bus style communication which is fully independent from
-the existing POSIX tty subsystem. This subsystem will include own ioctls
-for settings timeouts, addressing, turn on and turn off times and so on,
-will support some temios ioctls which are applicable like setting baud-rates.
-There will be plugable frame-recognition state-machines. How will the
-low-level side look like? Will it use the existing serial drivers (over some
-kind of new interface?) Or will it have it's own set of serial drivers which
-are designed for frame based half duplex communication.
-This means duplicate drivers for each kind of UART hardware (8250,
-atmel, ...) I am not sure if this is a good design, but on other hand there
-are already duplicate drivers for 16550 style UARTs in the kernel for
-special purposes like bluetooth, irda and MIDI-interfaces.
+Much of this could have been avoided by not calling the tty driver
+close() routine if the open() was unsuccessful. Unfortunately, that
+choice appears cast in stone, as many drivers depend on this behavior
+for cleanup.
 
->From userspace view this will make thinks much easier, so I personally
-will support this approach. But we have to be aware that this will
-introduce a new API which is not standardized and portable to other
-OSs.  Furthermore there must be some way to have access to the same
-hardware either over this API or over the TTY API.
+Ilya Zykov's latest test jig "stress_test_tty" (included below) passes
+the parallel open test after applying these patches.
+  peter@kvm:~/src/test$ ./stress_test_tty
+  Thread open has been created.
+  Parent normal exit
+   Normal parent exit 0.
 
->
->> 4. The TIOCSRS485 ioctl may open new doors, but as I see there are
->> only few drivers implementing it.
->
-> Too bad about the name.
->
-> It doesn't actually select RS485 mode (I work with board that _do_
-> have software-selectable electrical interfaces and can be set to
-> RS2323, RS485, RS422 modes).  What's called "RS485" moide controls
-> enabling the use of RTS for half-duplex operation. RS485 is _one_
-> electrical interface that uses RTS like that, but there are lots of
-> others (RS232 and half-duplex modems is one).  And not all use-cases
-> for RS485 use RTS for half-duplex communications either.
->
-Your fully right. RS232 on the one side and RS485/RS422 on the other are
-different physical layers. RS485 is always half-duplex. All RS232 and RS485
-can be full or half-duplex. As you said there are RS232 half-duplex modems and
-there are also external RS232 to RS485 converters which can be used on all
-systems with a RS232 port.
+(NB: I did add a minor diagnostic to the test jig in pty_exit() so
+it would print errno on error exit).
 
-So you have to differ about the hardware design of a port:
-  - fixed wired RS232 / RS485 / RS422 transceiver
-    operation mode can be hard coded in board code
-  - RS232 / RS485 / RS422 configurable by hardware (jumper or piggybacks)
-    operation mode must be configurable and must be set by the user
-    according the actual hardware configuration
-  - RS232 / RS485 / RS422 configurable from software
-    operation mode of the driver and configuration of the hardware
-must be changed
+Peter Hurley (4):
+  pty: Fix BUG()s when ptmx_open() errors out
+  pty: Ignore slave pty close() if never successfully opened
+  tty: Document required behavior of tty driver close()
+  pty: Ignore slave open count for master pty open
 
-An on other hand you have the kind of communication (full-duplex or
-half-duplex).
-which is as said not necessary bound  to the physical variant of the port.
+ drivers/tty/pty.c          | 15 +++++++++++----
+ include/linux/tty_driver.h |  1 +
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+/*
+ *  stress_test_tty.c
+ *
+ *  Created on: Dec, 2012
+ *  Copyright (C) 2012  Ilya Zykov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <signal.h>
+#include <errno.h>
+
+#define BUF_SIZE 2
+#define ERROR_EXIT_CODE 1
+#define parent child_id
+
+static int
+mfd=-1, sfd=-1, parent=1;
+
+static pthread_t
+pth_id;
+
+static char
+pty_name[24], buf[]={ '1', '\n' };
+
+
+static void
+pty_exit(int ret, char * exit_message){
+	int err = errno;
+        if (sfd >= 0) close(sfd);
+        if (mfd >= 0) close(mfd);
+        printf("%s %s %s exit %d. \n",exit_message?exit_message:"",
+                ret?"Error":"Normal", parent?"parent":"child", ret?err:ret);
+        exit(ret);
+}
+
+static void
+pty_init(void){
+        int ptn;
+        if( (mfd=open("/dev/ptmx", O_RDWR )) < 0 )
+                pty_exit(ERROR_EXIT_CODE,"Couldn't open /dev/ptmx. \n");
+        if (ioctl(mfd, TIOCGPTN, &ptn) < 0 )
+                pty_exit(ERROR_EXIT_CODE,"Couldn't get pty number. \n");
+        snprintf(pty_name, sizeof(pty_name), "/dev/pts/%d", ptn);
+        //printf("Slave pty name = %s.\n",pty_name);
+        ptn=0;
+        if (ioctl(mfd, TIOCSPTLCK, &ptn) < 0 )
+                pty_exit(ERROR_EXIT_CODE,"Couldn't unlock pty slave. \n");
+        if ( (sfd=open(pty_name, O_RDWR )) < 0 )
+                pty_exit(ERROR_EXIT_CODE, "Couldn't open pty slave. \n");
+}
+
+static void *
+pty_thread_open(void * arg) {
+        static char ret[]="Thread open has been created.\n";
+        printf(ret);
+        do {
+                close(open(pty_name, O_RDWR ));
+        } while(1);
+        return ret;
+}
+
+static void *
+pty_thread_read(void * arg) {
+        static char ret[]="Thread read has been created.\n";
+        printf(ret);
+        do {
+                read(sfd, buf, BUF_SIZE);
+        } while(1);
+        return ret;
+}
+
+static void *
+pty_thread_write(void * arg) {
+        static char ret[]="Thread write has been created.\n";
+        printf(ret);
+        do {
+                write(mfd, buf, BUF_SIZE);
+        } while(1);
+        return ret;
+}
+int main(int argc,char *argv[]) {
+        pty_init();
+        child_id=fork();
+        if(parent) {
+                sleep(100);
+                kill(child_id, SIGINT);
+                pty_exit(0,"Parent normal exit\n");
+        }
+        pthread_create(&pth_id, NULL, &pty_thread_open, 0);
+/*	For WARNINGS.
+        pthread_create(&pth_id, NULL, &pty_thread_write, 0);
+        pthread_create(&pth_id, NULL, &pty_thread_read, 0);
+*/
+        do {
+                close(sfd);
+                close(mfd);
+                pty_init();
+        } while(1);
+        return 0;
+}
+
+-- 
+1.8.1.1
+
