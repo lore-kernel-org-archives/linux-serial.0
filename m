@@ -1,29 +1,58 @@
-From: Chanho Min <chanho.min@lge.com>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Wed, 30 Jan 2013 11:53:01 +0900
-Message-ID: <CAOAMb1DTTH21N9sVA6FNt3TJ_n0_CXmC81UdW4YwO+zx+XdAKg@mail.gmail.com>
-References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
-	<CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
-	<CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
-	<CACRpkdZw_Bvz86PeNyoSjFR=O0_KkM6uJBYZ-ZhVy_g0SKun7w@mail.gmail.com>
-	<CAOAMb1Bf-kB1=HkgMd_w-5v6Wh0XVX4knotiOu5CLKqQg+3X9g@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] n_tty: Unthrottle tty when flushing read buffer
+Date: Tue, 29 Jan 2013 23:36:54 -0500
+Message-ID: <20130130043654.GA30002@kroah.com>
+References: <1358980578-8811-1-git-send-email-Karthik.Manamcheri@ni.com>
+ <5106F8F6.80101@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f54.google.com ([74.125.83.54]:36889 "EHLO
-	mail-ee0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751326Ab3A3CxE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jan 2013 21:53:04 -0500
-In-Reply-To: <CAOAMb1Bf-kB1=HkgMd_w-5v6Wh0XVX4knotiOu5CLKqQg+3X9g@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5106F8F6.80101@ilyx.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: Karthik Manamcheri <Karthik.Manamcheri@ni.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andrew McGregor <andrew.mcgregor@alliedtelesis.co.nz>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org
 
-> Anyway I just want to know we still need auto scale of poll rate.
-I correct the mistake in this sentence.
-Anyway I just want to know whether we still need auto scale of poll rate or not.
+On Tue, Jan 29, 2013 at 02:17:26AM +0400, Ilya Zykov wrote:
+> On 24.01.2013 2:36, Karthik Manamcheri wrote:
+> > When the tty input buffer is full and thereby throttled,
+> > flushing/resetting the read buffer should unthrottle to allow more
+> > data to be received.
+> > 
+> > Signed-off-by: Karthik Manamcheri <Karthik.Manamcheri@ni.com>
+> > ---
+> >  drivers/tty/n_tty.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> > index 19083efa2314660b25e0fb5bc793af6fb7e9af57..d5cea3bb01eaeec61b577de6c58a8000412c0c37 100644
+> > --- a/drivers/tty/n_tty.c
+> > +++ b/drivers/tty/n_tty.c
+> > @@ -229,6 +229,8 @@ static void reset_buffer_flags(struct tty_struct *tty)
+> >  	ldata->canon_head = ldata->canon_data = ldata->erasing = 0;
+> >  	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+> >  	n_tty_set_room(tty);
+> > +
+> > +	check_unthrottle(tty);
+> >  }
+> >  
+> >  /**
+> > 
+> 
+> It's revert - tty: fix "IRQ45: nobody cared".
+> commit 7b292b4bf9a9d6098440d85616d6ca4c608b8304
+> 
+> Please, read these for this subject:
+> https://lkml.org/lkml/2012/11/27/440
+> https://lkml.org/lkml/2012/11/21/568
+> 
+> https://lkml.org/lkml/2012/11/22/686
+> 
+> It's already fixed in the:
+> commit a1bf9584429d61b7096f93ae09325e1ba538e9e8
+> tty: Add driver unthrottle in ioctl(...,TCFLSH,..).
 
-Thanks
-Chanho
+Sorry about that, I'll go revert this now, my fault.
+
+greg k-h
