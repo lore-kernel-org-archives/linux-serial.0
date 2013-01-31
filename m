@@ -1,26 +1,34 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 3/3] serial: tegra: Convert to devm_ioremap_resource()
-Date: Thu, 31 Jan 2013 10:00:08 -0700
-Message-ID: <510AA318.5060208@wwwdotorg.org>
-References: <1359627939-2685-1-git-send-email-sachin.kamat@linaro.org> <1359627939-2685-3-git-send-email-sachin.kamat@linaro.org>
+From: Joe Millenbach <jmillenbach@gmail.com>
+Subject: Re: [PATCHv5] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Thu, 31 Jan 2013 09:35:49 -0800
+Message-ID: <CADwDc1D5hCZdmsZvMx9NaQ_6BVioM7UtAFvniNBBRbo0OuEuUw@mail.gmail.com>
+References: <1359594919-2819-1-git-send-email-jmillenbach@gmail.com>
+	<20130131051728.GA2961@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:50596 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752485Ab3AaRAM (ORCPT
+Received: from mail-lb0-f174.google.com ([209.85.217.174]:58933 "EHLO
+	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752193Ab3AaRfw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jan 2013 12:00:12 -0500
-In-Reply-To: <1359627939-2685-3-git-send-email-sachin.kamat@linaro.org>
+	Thu, 31 Jan 2013 12:35:52 -0500
+In-Reply-To: <20130131051728.GA2961@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-kernel@vger.kernel.org, thierry.reding@avionic-design.de, gregkh@linuxfoundation.org, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, Jamey Sharp <jamey@minilop.net>
 
-On 01/31/2013 03:25 AM, Sachin Kamat wrote:
-> Use the newly introduced devm_ioremap_resource() instead of
-> devm_request_and_ioremap() which provides more consistent error handling.
+On Wed, Jan 30, 2013 at 9:17 PM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> This isn't going to work because I've already applied this to my tree.
+> Can you just make a tiny patch against the tty-next git tree to fix up
+> the differences here for the Input drivers and I can apply that?
+>
+> thanks,
+>
+> greg k-h
 
-Presumably though that function isn't yet available in the tree that
-this new serial driver was merged through is it?
+Oh, I misunderstood and thought you were backing out the whole commit.
+ I'll get started tonight after work.
+
+- Joe
