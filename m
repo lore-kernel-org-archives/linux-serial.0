@@ -1,73 +1,43 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: [PATCH] tty: of_serial: unexport tegra_serial_handle_break
-Date: Thu, 31 Jan 2013 12:01:53 -0700
-Message-ID: <1359658913-9828-1-git-send-email-swarren@wwwdotorg.org>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
+Date: Thu, 31 Jan 2013 21:33:17 +0100
+Message-ID: <CACRpkdb8ZqS6o0NYq6Fy_GN_AUeAFs--yq4M6AvvsErVAH=-oQ@mail.gmail.com>
+References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
+	<CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
+	<CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
+	<CACRpkdZw_Bvz86PeNyoSjFR=O0_KkM6uJBYZ-ZhVy_g0SKun7w@mail.gmail.com>
+	<CAOAMb1Bf-kB1=HkgMd_w-5v6Wh0XVX4knotiOu5CLKqQg+3X9g@mail.gmail.com>
+	<CAOAMb1DTTH21N9sVA6FNt3TJ_n0_CXmC81UdW4YwO+zx+XdAKg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ia0-f170.google.com ([209.85.210.170]:45282 "EHLO
+	mail-ia0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751851Ab3AaUdS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jan 2013 15:33:18 -0500
+Received: by mail-ia0-f170.google.com with SMTP id k20so4444361iak.15
+        for <linux-serial@vger.kernel.org>; Thu, 31 Jan 2013 12:33:17 -0800 (PST)
+In-Reply-To: <CAOAMb1DTTH21N9sVA6FNt3TJ_n0_CXmC81UdW4YwO+zx+XdAKg@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chanho Min <chanho.min@lge.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org
 
-From: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+On Wed, Jan 30, 2013 at 3:53 AM, Chanho Min <chanho.min@lge.com> wrote:
+>> Anyway I just want to know we still need auto scale of poll rate.
 
-Tegra is only booted through device-tree now; there are no board files
-left that use this function. Hence, don't export it. Move the static
-inline definition into of_serial.c, so we can delete of_serial.h too.
+> I correct the mistake in this sentence.
+> Anyway I just want to know whether we still need auto scale of poll rate or not.
 
-Signed-off-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/tty/serial/of_serial.c |    7 ++++---
- include/linux/of_serial.h      |   17 -----------------
- 2 files changed, 4 insertions(+), 20 deletions(-)
- delete mode 100644 include/linux/of_serial.h
+For the console/TTY and modem usecase I think it's pretty much
+necessary don't you think?
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index e7cae1c..d587460 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -18,7 +18,6 @@
- #include <linux/serial_reg.h>
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
--#include <linux/of_serial.h>
- #include <linux/of_platform.h>
- #include <linux/nwpserial.h>
- #include <linux/clk.h>
-@@ -45,8 +44,10 @@ void tegra_serial_handle_break(struct uart_port *p)
- 		udelay(1);
- 	} while (1);
- }
--/* FIXME remove this export when tegra finishes conversion to open firmware */
--EXPORT_SYMBOL_GPL(tegra_serial_handle_break);
-+#else
-+static inline void tegra_serial_handle_break(struct uart_port *port)
-+{
-+}
- #endif
- 
- /*
-diff --git a/include/linux/of_serial.h b/include/linux/of_serial.h
-deleted file mode 100644
-index 4a73ed8..0000000
---- a/include/linux/of_serial.h
-+++ /dev/null
-@@ -1,17 +0,0 @@
--#ifndef __LINUX_OF_SERIAL_H
--#define __LINUX_OF_SERIAL_H
--
--/*
-- * FIXME remove this file when tegra finishes conversion to open firmware,
-- * expectation is that all quirks will then be self-contained in
-- * drivers/tty/serial/of_serial.c.
-- */
--#ifdef CONFIG_ARCH_TEGRA
--extern void tegra_serial_handle_break(struct uart_port *port);
--#else
--static inline void tegra_serial_handle_break(struct uart_port *port)
--{
--}
--#endif
--
--#endif /* __LINUX_OF_SERIAL */
--- 
-1.7.10.4
+Else these users (which is by far the most widespread of the
+kernel users) will be punished by too many wakeups if they
+use DMA. And they should be able to do that, right? This is
+a perfect fit for the Versatile and PB11MPcore ARM reference
+designs.
+
+Yours,
+Linus Walleij
