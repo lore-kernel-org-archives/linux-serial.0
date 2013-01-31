@@ -1,64 +1,60 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCHv5] tty: Added a CONFIG_TTY option to allow removal of TTY
-Date: Thu, 31 Jan 2013 06:17:28 +0100
-Message-ID: <20130131051728.GA2961@kroah.com>
-References: <1359594919-2819-1-git-send-email-jmillenbach@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH 3/3] serial: tegra: Convert to devm_ioremap_resource()
+Date: Thu, 31 Jan 2013 15:55:39 +0530
+Message-ID: <1359627939-2685-3-git-send-email-sachin.kamat@linaro.org>
+References: <1359627939-2685-1-git-send-email-sachin.kamat@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:50342 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751843Ab3AaFPd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jan 2013 00:15:33 -0500
-Content-Disposition: inline
-In-Reply-To: <1359594919-2819-1-git-send-email-jmillenbach@gmail.com>
+Received: from mail-pb0-f48.google.com ([209.85.160.48]:48697 "EHLO
+	mail-pb0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753628Ab3AaKe7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jan 2013 05:34:59 -0500
+Received: by mail-pb0-f48.google.com with SMTP id wy12so1550835pbc.35
+        for <linux-serial@vger.kernel.org>; Thu, 31 Jan 2013 02:34:59 -0800 (PST)
+In-Reply-To: <1359627939-2685-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Millenbach <jmillenbach@gmail.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, Jamey Sharp <jamey@minilop.net>
+To: linux-kernel@vger.kernel.org
+Cc: thierry.reding@avionic-design.de, gregkh@linuxfoundation.org, sachin.kamat@linaro.org, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org
 
-On Wed, Jan 30, 2013 at 05:15:19PM -0800, Joe Millenbach wrote:
-> The option allows you to remove TTY and compile without errors. This
-> saves space on systems that won't support TTY interfaces anyway.
-> bloat-o-meter output is below.
-> 
-> The bulk of this patch consists of Kconfig changes adding "depends on
-> TTY" to various serial devices and similar drivers that require the TTY
-> layer.  Ideally, these dependencies would occur on a common intermediate
-> symbol, but many drivers select rather than depend on features, and
-> "select" does not respect dependencies.
-> 
-> bloat-o-meter output filtered to not show removed entries to save space
-> 
-> $ scripts/bloat-o-meter min min-no-tty | awk '$3 != "-"'
-> add/remove: 0/225 grow/shrink: 2/12 up/down: 8/-29628 (-29620)
-> function                                     old     new   delta
-> chr_dev_init                                 138     145      +7
-> linux_banner                                 123     124      +1
-> static.__warned                              132     131      -1
-> unregister_console                           106     101      -5
-> start_kernel                                 467     462      -5
-> register_console                             545     540      -5
-> copy_from_user                                40      35      -5
-> sys_setsid                                   105      98      -7
-> sys_vhangup                                   27      15     -12
-> do_exit                                     1363    1346     -17
-> arch_local_irq_save                          136     116     -20
-> bitmap_zero                                   44      22     -22
-> release_task                                 587     562     -25
-> static.spin_unlock_irqrestore                223     187     -36
-> 
-> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
-> Reviewed-by: Josh Triplett <josh@joshtriplett.org>
-> Reviewed-by: Jamey Sharp <jamey@minilop.net>
-> ---
-> v5: Rebasing to 3.8 rc5 and minimized driver/input changes based on input
->     from Dmitry Torokhov.
+Use the newly introduced devm_ioremap_resource() instead of
+devm_request_and_ioremap() which provides more consistent error handling.
 
-This isn't going to work because I've already applied this to my tree.
-Can you just make a tiny patch against the tty-next git tree to fix up
-the differences here for the Input drivers and I can apply that?
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: linux-serial@vger.kernel.org
+---
+Compile tested with linux-next (20130128).
+---
+ drivers/tty/serial/serial-tegra.c |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 4f5e629..80dfec1 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -26,6 +26,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmapool.h>
++#include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/irq.h>
+ #include <linux/module.h>
+@@ -1302,10 +1303,10 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	u->mapbase = resource->start;
+-	u->membase = devm_request_and_ioremap(&pdev->dev, resource);
+-	if (!u->membase) {
++	u->membase = devm_ioremap_resource(&pdev->dev, resource);
++	if (IS_ERR(u->membase)) {
+ 		dev_err(&pdev->dev, "memregion/iomap address req failed\n");
+-		return -EADDRNOTAVAIL;
++		return PTR_ERR(u->membase);
+ 	}
+ 
+ 	tup->uart_clk = devm_clk_get(&pdev->dev, NULL);
+-- 
+1.7.4.1
 
-greg k-h
