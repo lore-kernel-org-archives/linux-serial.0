@@ -1,68 +1,64 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: Fix ptmx open without closed slave.
-Date: Wed, 30 Jan 2013 22:50:20 -0500
-Message-ID: <1359604220.3325.55.camel@thor.lan>
-References: <50D20EB5.30900@ilyx.ru>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCHv5] tty: Added a CONFIG_TTY option to allow removal of TTY
+Date: Thu, 31 Jan 2013 06:17:28 +0100
+Message-ID: <20130131051728.GA2961@kroah.com>
+References: <1359594919-2819-1-git-send-email-jmillenbach@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:55676 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756869Ab3AaDwb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jan 2013 22:52:31 -0500
-In-Reply-To: <50D20EB5.30900@ilyx.ru>
+Received: from mail.kernel.org ([198.145.19.201]:50342 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751843Ab3AaFPd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jan 2013 00:15:33 -0500
+Content-Disposition: inline
+In-Reply-To: <1359594919-2819-1-git-send-email-jmillenbach@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ilya Zykov <ilya@ilyx.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Joe Millenbach <jmillenbach@gmail.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jirislaby@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>, Jamey Sharp <jamey@minilop.net>
 
-Hi Ilya,
-
-On Wed, 2012-12-19 at 23:00 +0400, Ilya Zykov wrote:
-> When we are opening ptmx, we have closed pts, by description.
-> Now only if we open and after close all pts' descriptions, pty_close() sets
-> this bit correctly
+On Wed, Jan 30, 2013 at 05:15:19PM -0800, Joe Millenbach wrote:
+> The option allows you to remove TTY and compile without errors. This
+> saves space on systems that won't support TTY interfaces anyway.
+> bloat-o-meter output is below.
 > 
-> Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+> The bulk of this patch consists of Kconfig changes adding "depends on
+> TTY" to various serial devices and similar drivers that require the TTY
+> layer.  Ideally, these dependencies would occur on a common intermediate
+> symbol, but many drivers select rather than depend on features, and
+> "select" does not respect dependencies.
+> 
+> bloat-o-meter output filtered to not show removed entries to save space
+> 
+> $ scripts/bloat-o-meter min min-no-tty | awk '$3 != "-"'
+> add/remove: 0/225 grow/shrink: 2/12 up/down: 8/-29628 (-29620)
+> function                                     old     new   delta
+> chr_dev_init                                 138     145      +7
+> linux_banner                                 123     124      +1
+> static.__warned                              132     131      -1
+> unregister_console                           106     101      -5
+> start_kernel                                 467     462      -5
+> register_console                             545     540      -5
+> copy_from_user                                40      35      -5
+> sys_setsid                                   105      98      -7
+> sys_vhangup                                   27      15     -12
+> do_exit                                     1363    1346     -17
+> arch_local_irq_save                          136     116     -20
+> bitmap_zero                                   44      22     -22
+> release_task                                 587     562     -25
+> static.spin_unlock_irqrestore                223     187     -36
+> 
+> Signed-off-by: Joe Millenbach <jmillenbach@gmail.com>
+> Reviewed-by: Josh Triplett <josh@joshtriplett.org>
+> Reviewed-by: Jamey Sharp <jamey@minilop.net>
 > ---
->  drivers/tty/pty.c |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-> index 1ce1362..7b69307 100644
-> --- a/drivers/tty/pty.c
-> +++ b/drivers/tty/pty.c
-> @@ -659,6 +659,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
->  	retval = ptm_driver->ops->open(tty, filp);
->  	if (retval)
->  		goto err_release;
-> +	set_bit(TTY_OTHER_CLOSED, &tty->flags); /* THE SLAVE STILL CLOSED */
+> v5: Rebasing to 3.8 rc5 and minimized driver/input changes based on input
+>     from Dmitry Torokhov.
 
-I'm not sure this is a good idea.
+This isn't going to work because I've already applied this to my tree.
+Can you just make a tiny patch against the tty-next git tree to fix up
+the differences here for the Input drivers and I can apply that?
 
-Ideally, if you were only trying to make the logic "more correct", this
-change would be here, instead:
-	mutex_unlock(&tty_mutex);
+thanks,
 
-	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
-+	set_bit(TTY_OTHER_CLOSED, &tty->flags); /* THE SLAVE STILL CLOSED */
-	tty->driver_data = inode;
-
-	tty_add_file(tty, filp);
-
-Of course, that would be a bad idea because then the master pty_open()
-would fail because of the test in pty_open().
-
-Setting TTY_OTHER_CLOSED after the open() -- as you've done -- appears
-to leave a race open when this bit is not set but while a slave open()
-may still be attempted.
-
-But as far as I can tell, this change doesn't actually affect any code
-branches -- that is, doesn't actually do anything -- so no such race
-exists. Is that correct?
-
-Regards,
-Peter Hurley
-
+greg k-h
