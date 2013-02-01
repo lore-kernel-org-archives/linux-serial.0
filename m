@@ -1,43 +1,40 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2] ARM: PL011: Add support for Rx DMA buffer polling
-Date: Thu, 31 Jan 2013 21:33:17 +0100
-Message-ID: <CACRpkdb8ZqS6o0NYq6Fy_GN_AUeAFs--yq4M6AvvsErVAH=-oQ@mail.gmail.com>
-References: <CAOAMb1AsetjcNa_K6g=6K_s=0+tTH1aGLuX8emYrfgJOcx54cw@mail.gmail.com>
-	<CACRpkdaECZ5qtUVS=28eDyzLWvxx=mP6dWML5mYs9kwqnhEoJQ@mail.gmail.com>
-	<CAOAMb1CCoOWgab7NYYYRVjoQBoBx4XDeeLOBjJ4RzsBwRpXv6Q@mail.gmail.com>
-	<CACRpkdZw_Bvz86PeNyoSjFR=O0_KkM6uJBYZ-ZhVy_g0SKun7w@mail.gmail.com>
-	<CAOAMb1Bf-kB1=HkgMd_w-5v6Wh0XVX4knotiOu5CLKqQg+3X9g@mail.gmail.com>
-	<CAOAMb1DTTH21N9sVA6FNt3TJ_n0_CXmC81UdW4YwO+zx+XdAKg@mail.gmail.com>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: Re: [PATCH 3/3] serial: tegra: Convert to devm_ioremap_resource()
+Date: Fri, 1 Feb 2013 09:50:45 +0530
+Message-ID: <CAK9yfHzSq8SpKXQYtFd1Ds+N-AoH+H+BdWrPsPT=OwSPdst1WA@mail.gmail.com>
+References: <1359627939-2685-1-git-send-email-sachin.kamat@linaro.org>
+	<1359627939-2685-3-git-send-email-sachin.kamat@linaro.org>
+	<510AA318.5060208@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ia0-f170.google.com ([209.85.210.170]:45282 "EHLO
-	mail-ia0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751851Ab3AaUdS (ORCPT
+Received: from mail-oa0-f51.google.com ([209.85.219.51]:47564 "EHLO
+	mail-oa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751582Ab3BAEUp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jan 2013 15:33:18 -0500
-Received: by mail-ia0-f170.google.com with SMTP id k20so4444361iak.15
-        for <linux-serial@vger.kernel.org>; Thu, 31 Jan 2013 12:33:17 -0800 (PST)
-In-Reply-To: <CAOAMb1DTTH21N9sVA6FNt3TJ_n0_CXmC81UdW4YwO+zx+XdAKg@mail.gmail.com>
+	Thu, 31 Jan 2013 23:20:45 -0500
+Received: by mail-oa0-f51.google.com with SMTP id h2so1700132oag.10
+        for <linux-serial@vger.kernel.org>; Thu, 31 Jan 2013 20:20:45 -0800 (PST)
+In-Reply-To: <510AA318.5060208@wwwdotorg.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chanho Min <chanho.min@lge.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, linux-serial@vger.kernel.org
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: linux-kernel@vger.kernel.org, thierry.reding@avionic-design.de, gregkh@linuxfoundation.org, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org
 
-On Wed, Jan 30, 2013 at 3:53 AM, Chanho Min <chanho.min@lge.com> wrote:
->> Anyway I just want to know we still need auto scale of poll rate.
+On 31 January 2013 22:30, Stephen Warren <swarren@wwwdotorg.org> wrote:
+> On 01/31/2013 03:25 AM, Sachin Kamat wrote:
+>> Use the newly introduced devm_ioremap_resource() instead of
+>> devm_request_and_ioremap() which provides more consistent error handling.
+>
+> Presumably though that function isn't yet available in the tree that
+> this new serial driver was merged through is it?
 
-> I correct the mistake in this sentence.
-> Anyway I just want to know whether we still need auto scale of poll rate or not.
+The entire series is merged in Greg's driver-core tree [1] and I
+presume all other associated patches would also be picked up by him.
+Isn't it Greg?
 
-For the console/TTY and modem usecase I think it's pretty much
-necessary don't you think?
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
 
-Else these users (which is by far the most widespread of the
-kernel users) will be punished by too many wakeups if they
-use DMA. And they should be able to do that, right? This is
-a perfect fit for the Versatile and PB11MPcore ARM reference
-designs.
-
-Yours,
-Linus Walleij
+-- 
+With warm regards,
+Sachin
