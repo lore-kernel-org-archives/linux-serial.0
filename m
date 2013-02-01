@@ -1,43 +1,59 @@
 From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: Re: [PATCH 3/3] serial: tegra: Convert to devm_ioremap_resource()
-Date: Fri, 1 Feb 2013 15:19:32 +0530
-Message-ID: <CAK9yfHzJvOC_wvsxvapi7rATq97QX-6exOyqjNTSguhh3RLVvQ@mail.gmail.com>
-References: <1359627939-2685-1-git-send-email-sachin.kamat@linaro.org>
-	<1359627939-2685-3-git-send-email-sachin.kamat@linaro.org>
-	<510AA318.5060208@wwwdotorg.org>
-	<CAK9yfHzSq8SpKXQYtFd1Ds+N-AoH+H+BdWrPsPT=OwSPdst1WA@mail.gmail.com>
-	<510B436A.20808@wwwdotorg.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f171.google.com ([209.85.214.171]:61052 "EHLO
-	mail-ob0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756098Ab3BAJtd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Feb 2013 04:49:33 -0500
-Received: by mail-ob0-f171.google.com with SMTP id lz20so3863507obb.2
-        for <linux-serial@vger.kernel.org>; Fri, 01 Feb 2013 01:49:33 -0800 (PST)
-In-Reply-To: <510B436A.20808@wwwdotorg.org>
-Sender: linux-serial-owner@vger.kernel.org
+Subject: [PATCH v2 2/2] serial: tegra: Convert to devm_ioremap_resource()
+Date: Fri,  1 Feb 2013 15:37:57 +0530
+Message-ID: <1359713277-14228-2-git-send-email-sachin.kamat@linaro.org>
+References: <1359713277-14228-1-git-send-email-sachin.kamat@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1359713277-14228-1-git-send-email-sachin.kamat@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, thierry.reding@avionic-design.de, sachin.kamat@linaro.org, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: linux-kernel@vger.kernel.org, thierry.reding@avionic-design.de, gregkh@linuxfoundation.org, Laxman Dewangan <ldewangan@nvidia.com>, linux-serial@vger.kernel.org
 
-On 1 February 2013 09:54, Stephen Warren <swarren@wwwdotorg.org> wrote:
->>
->> The entire series is merged in Greg's driver-core tree [1] and I
->> presume all other associated patches would also be picked up by him.
->> Isn't it Greg?
->>
->> [1] git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
->
-> The Tegra serial driver went through Greg's TTY tree. I assume that goes
-> direct to Linus not through driver-core.git first.
+Use the newly introduced devm_ioremap_resource() instead of
+devm_request_and_ioremap() which provides more consistent error handling.
 
-Right. But AFAIK for this specific change he has carried the patches
-in the device-core tree irrespective of the subsystem.
+devm_ioremap_resource() provides its own error messages; so all explicit
+error messages can be removed from the failure code paths.
 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: linux-serial@vger.kernel.org
+---
+Patch based & compile tested on linux-next tree (20130128).
+Changes since v1:
+* Dropped the error message as it is now handled by devm_ioremap_resource()
+itself.
+---
+ drivers/tty/serial/serial-tegra.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 4f5e629..24ced23 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -26,6 +26,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmapool.h>
++#include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/irq.h>
+ #include <linux/module.h>
+@@ -1302,11 +1303,9 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	u->mapbase = resource->start;
+-	u->membase = devm_request_and_ioremap(&pdev->dev, resource);
+-	if (!u->membase) {
+-		dev_err(&pdev->dev, "memregion/iomap address req failed\n");
+-		return -EADDRNOTAVAIL;
+-	}
++	u->membase = devm_ioremap_resource(&pdev->dev, resource);
++	if (IS_ERR(u->membase))
++		return PTR_ERR(u->membase);
+ 
+ 	tup->uart_clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(tup->uart_clk)) {
 -- 
-With warm regards,
-Sachin
+1.7.4.1
