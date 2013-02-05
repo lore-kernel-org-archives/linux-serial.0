@@ -1,36 +1,83 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 20/23] tty: Remove stale comment re: locking in tty_ldisc_release()
-Date: Tue,  5 Feb 2013 15:20:35 -0500
-Message-ID: <1360095638-6624-21-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 16/23] tty: Make core responsible for synchronizing
+ its work
+Date: Tue, 05 Feb 2013 16:04:20 -0500
+Message-ID: <1360098260.3298.27.camel@thor.lan>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
- <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
+	 <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+	 <1360095638-6624-17-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:54191 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755778Ab3BEVE3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Feb 2013 16:04:29 -0500
+In-Reply-To: <1360095638-6624-17-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
 
-This comment pre-dates the obvious locking used in the function;
-delete it.
+On Tue, 2013-02-05 at 15:20 -0500, Peter Hurley wrote:
+> The tty core relies on the ldisc layer for synchronizing destruction
+> of the tty. Instead, the final tty release must wait for any pending tty
+> work to complete prior to tty destruction.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/tty_io.c    | 17 +++++++++++++++++
+>  drivers/tty/tty_ldisc.c | 24 ++++--------------------
+>  2 files changed, 21 insertions(+), 20 deletions(-)
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_ldisc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index d7ebe79..92629c1 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -968,7 +968,7 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 	tty_ldisc_halt(tty, o_tty, NULL, NULL, MAX_SCHEDULE_TIMEOUT);
- 
- 	tty_lock_pair(tty, o_tty);
--	/* This will need doing differently if we need to lock */
-+
- 	tty_ldisc_kill(tty);
- 	if (o_tty)
- 		tty_ldisc_kill(o_tty);
--- 
-1.8.1.2
+> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+> index e0fdfec..c2837b2 100644
+> --- a/drivers/tty/tty_ldisc.c
+> +++ b/drivers/tty/tty_ldisc.c
+> @@ -499,18 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+>  }
+>  
+>  /**
+> - *	tty_ldisc_flush_works	-	flush all works of a tty
+> - *	@tty: tty device to flush works for
+> - *
+> - *	Sync flush all works belonging to @tty.
+> - */
+> -static void tty_ldisc_flush_works(struct tty_struct *tty)
+> -{
+> -	flush_work(&tty->SAK_work);
+> -	flush_work(&tty->hangup_work);
+> -}
+> -
+> -/**
+>   *	tty_ldisc_wait_idle	-	wait for the ldisc to become idle
+>   *	@tty: tty to wait for
+>   *	@timeout: for how long to wait at most
+> @@ -726,13 +714,13 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+>  	retval = tty_ldisc_halt(tty, o_tty, &work, &o_work, 5 * HZ);
+>  
+>  	/*
+> -	 * Wait for ->hangup_work to terminate.
+> +	 * Wait for hangup to complete, if pending.
+>  	 * We must drop the mutex here in case a hangup is also in process.
+>  	 */
+>  
+>  	mutex_unlock(&tty->ldisc_mutex);
+>  
+> -	tty_ldisc_flush_works(tty);
+> +	flush_work(&tty->hangup_work);
+
+Careful review will note that I dropped waiting for SAK. That's because
+it makes no sense to wait for SAK_work here -- ie., while setting a new
+ldisc. The SAK work can just as easily run at the completion of
+tty_set_ldisc() at tty_unlock().
+
+I believe this is an artifact of the formerly shared code.
+
+But maybe I should note that in the commit message?
+
+
