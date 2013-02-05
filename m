@@ -1,83 +1,46 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 16/23] tty: Make core responsible for synchronizing
- its work
-Date: Tue, 05 Feb 2013 16:04:20 -0500
-Message-ID: <1360098260.3298.27.camel@thor.lan>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
-	 <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-	 <1360095638-6624-17-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH] pty: Remove redundant itty reset
+Date: Tue,  5 Feb 2013 16:08:50 -0500
+Message-ID: <1360098530-7018-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:54191 "EHLO
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:42208 "EHLO
 	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755778Ab3BEVE3 (ORCPT
+	with ESMTP id S1756073Ab3BEVKL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Feb 2013 16:04:29 -0500
-In-Reply-To: <1360095638-6624-17-git-send-email-peter@hurleysoftware.com>
+	Tue, 5 Feb 2013 16:10:11 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On Tue, 2013-02-05 at 15:20 -0500, Peter Hurley wrote:
-> The tty core relies on the ldisc layer for synchronizing destruction
-> of the tty. Instead, the final tty release must wait for any pending tty
-> work to complete prior to tty destruction.
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/tty_io.c    | 17 +++++++++++++++++
->  drivers/tty/tty_ldisc.c | 24 ++++--------------------
->  2 files changed, 21 insertions(+), 20 deletions(-)
+port->itty has already been reset by release_tty() before
+pty_cleanup() is called.
 
-...
+Call stack:
+release_tty()
+  tty_kref_put()
+    queue_release_one_tty()
+      release_one_tty() : workqueue
+        tty->ops->cleanup()
+          pty_cleanup()
 
-> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-> index e0fdfec..c2837b2 100644
-> --- a/drivers/tty/tty_ldisc.c
-> +++ b/drivers/tty/tty_ldisc.c
-> @@ -499,18 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
->  }
->  
->  /**
-> - *	tty_ldisc_flush_works	-	flush all works of a tty
-> - *	@tty: tty device to flush works for
-> - *
-> - *	Sync flush all works belonging to @tty.
-> - */
-> -static void tty_ldisc_flush_works(struct tty_struct *tty)
-> -{
-> -	flush_work(&tty->SAK_work);
-> -	flush_work(&tty->hangup_work);
-> -}
-> -
-> -/**
->   *	tty_ldisc_wait_idle	-	wait for the ldisc to become idle
->   *	@tty: tty to wait for
->   *	@timeout: for how long to wait at most
-> @@ -726,13 +714,13 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
->  	retval = tty_ldisc_halt(tty, o_tty, &work, &o_work, 5 * HZ);
->  
->  	/*
-> -	 * Wait for ->hangup_work to terminate.
-> +	 * Wait for hangup to complete, if pending.
->  	 * We must drop the mutex here in case a hangup is also in process.
->  	 */
->  
->  	mutex_unlock(&tty->ldisc_mutex);
->  
-> -	tty_ldisc_flush_works(tty);
-> +	flush_work(&tty->hangup_work);
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/pty.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Careful review will note that I dropped waiting for SAK. That's because
-it makes no sense to wait for SAK_work here -- ie., while setting a new
-ldisc. The SAK work can just as easily run at the completion of
-tty_set_ldisc() at tty_unlock().
-
-I believe this is an artifact of the formerly shared code.
-
-But maybe I should note that in the commit message?
-
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index c24b4db..71e456a 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -413,7 +413,6 @@ static void pty_unix98_shutdown(struct tty_struct *tty)
+ 
+ static void pty_cleanup(struct tty_struct *tty)
+ {
+-	tty->port->itty = NULL;
+ 	tty_port_put(tty->port);
+ }
+ 
+-- 
+1.8.1.2
 
