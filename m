@@ -1,93 +1,58 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 23/23] tty: Add ldisc hangup debug messages
-Date: Tue,  5 Feb 2013 15:20:38 -0500
-Message-ID: <1360095638-6624-24-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 15/23] tty: Don't restart ldisc on hangup if racing ldisc kill
+Date: Tue,  5 Feb 2013 15:20:30 -0500
+Message-ID: <1360095638-6624-16-git-send-email-peter@hurleysoftware.com>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:33556 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756363Ab3BEUnq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Feb 2013 15:43:46 -0500
 In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Expected typical debug log:
-[  582.721965] tty_open: opening pts3...
-[  582.721970] tty_open: opening pts3...
-[  582.721977] tty_release: pts3 (tty count=3)...
-[  582.721980] tty_release: ptm3 (tty count=1)...
-[  582.722015] pts3 vhangup...
-[  582.722020] tty_ldisc_hangup: pts3: closing ldisc: ffff88007a920540
-[  582.724128] tty_release: pts3 (tty count=2)...
-[  582.724217] tty_ldisc_hangup: pts3: re-opened ldisc: ffff88007a920580
-[  582.724221] tty_release: ptm3: final close
-[  582.724234] tty_ldisc_release: ptm3: closing ldisc: ffff88007a920a80
-[  582.724238] tty_ldisc_release: ptm3: ldisc closed
-[  582.724241] tty_release: ptm3: freeing structure...
-[  582.724741] tty_open: opening pts3...
+Asynchronous hangups (such as from carrier loss) can race with the
+final tty release. Because there is no mechanism to prevent an async
+hangup from being scheduled, waiting for the hangup to complete is
+insufficient to prevent racing between ldisc hangup and ldisc kill.
+Eg., immediately after flush_work() returns, an async hangup
+could be scheduled, thus restarting a new ldisc.
+
+Instead, prevent hangup from restarting a new ldisc when the tty is
+being destroyed.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/tty/tty_ldisc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 49e4825..7d3cab7 100644
+index 8a86a72..e0fdfec 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -20,6 +20,17 @@
- #include <linux/uaccess.h>
- #include <linux/ratelimit.h>
- 
-+#undef LDISC_DEBUG_HANGUP
-+
-+#ifdef LDISC_DEBUG_HANGUP
-+#define tty_ldisc_debug(tty, f, args...) ({				       \
-+	char __b[64];							       \
-+	printk(KERN_DEBUG "%s: %s: " f, __func__, tty_name(tty, __b), ##args); \
-+})
-+#else
-+#define tty_ldisc_debug(tty, f, args...)
-+#endif
-+
- /*
-  *	This guards the refcounted line discipline lists. The lock
-  *	must be taken with irqs off because there are hangup path
-@@ -853,6 +864,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	int reset = tty->driver->flags & TTY_DRIVER_RESET_TERMIOS;
- 	int err = 0;
- 
-+	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
-+
- 	/*
- 	 * FIXME! What are the locking issues here? This may me overdoing
- 	 * things... This question is especially important now that we've
-@@ -903,6 +916,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	mutex_unlock(&tty->ldisc_mutex);
- 	if (reset)
- 		tty_reset_termios(tty);
-+
-+	tty_ldisc_debug(tty, "re-opened ldisc: %p\n", tty->ldisc);
- }
- 
- /**
-@@ -969,6 +984,8 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 	 * it does not race with the set_ldisc code path.
+@@ -884,7 +884,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	 * Shutdown the current line discipline, and reset it to
+ 	 * N_TTY if need be.
+ 	 *
+-	 * Avoid racing set_ldisc or tty_ldisc_release
++	 * Avoid racing set_ldisc or tty_ldisc_kill
  	 */
+ 	mutex_lock(&tty->ldisc_mutex);
  
-+	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
-+
- 	tty_ldisc_halt(tty, o_tty, NULL, NULL, MAX_SCHEDULE_TIMEOUT);
+@@ -892,7 +892,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	   reopen it. We could defer this to the next open but
+ 	   it means auditing a lot of other paths so this is
+ 	   a FIXME */
+-	if (tty_ldisc_hangup_halt(tty)) {
++	if (tty_ldisc_hangup_halt(tty) && !test_bit(TTY_CLOSING, &tty->flags)) {
+ 		if (reset == 0) {
  
- 	tty_lock_pair(tty, o_tty);
-@@ -980,6 +997,8 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 	tty_unlock_pair(tty, o_tty);
- 	/* And the memory resources remaining (buffers, termios) will be
- 	   disposed of when the kref hits zero */
-+
-+	tty_ldisc_debug(tty, "ldisc closed\n");
- }
- 
- /**
+ 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
 -- 
 1.8.1.2
+
