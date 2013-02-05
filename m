@@ -1,25 +1,25 @@
 From: "From Mrs. Doris Kula" <mrsdoriskula@gmail.com>
 Subject: From Mrs. Doris Kula
-Date: Mon, 4 Feb 2013 22:55:36 -0800 (PST)
-Message-ID: <1360047336.65576.YahooMailClassic__7254.86581582135$1360047365$gmane$org@web5715.biz.mail.ne1.yahoo.com>
+Date: Tue, 5 Feb 2013 05:37:18 -0800 (PST)
+Message-ID: <1360071438.8757.YahooMailClassic__18568.5403332629$1360071487$gmane$org@web5704.biz.mail.ne1.yahoo.com>
 Reply-To: mrsdoriskula@gmail.com
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="1178294230-1495668114-1360047336=:65576"
+Content-Type: multipart/mixed; boundary="-1717290100-1663095348-1360071438=:8757"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm4-vm1.access.bullet.mail.sp2.yahoo.com ([98.139.44.111]:38002
-	"EHLO nm4-vm1.access.bullet.mail.sp2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751025Ab3BEGzi (ORCPT
+Received: from nm23-vm1.access.bullet.mail.sp2.yahoo.com ([98.139.44.181]:34801
+	"EHLO nm23-vm1.access.bullet.mail.sp2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755376Ab3BENhV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Feb 2013 01:55:38 -0500
+	Tue, 5 Feb 2013 08:37:21 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
---1178294230-1495668114-1360047336=:65576
+---1717290100-1663095348-1360071438=:8757
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
 PLEASE OPEN ATTACHMENT FOR MY LETTER TO YOU
---1178294230-1495668114-1360047336=:65576
+---1717290100-1663095348-1360071438=:8757
 Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document; name=From
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="From DORIS KULA.docx"
@@ -310,4 +310,4 @@ AABZJAAAZG9jUHJvcHMvY29yZS54bWxQSwECLQAUAAYACAAAACEAUwz3t/YH
 AADiPQAADwAAAAAAAAAAAAAAAAACJwAAd29yZC9zdHlsZXMueG1sUEsFBgAA
 AAALAAsAwQIAACUvAAAAAA==
 
---1178294230-1495668114-1360047336=:65576--
+---1717290100-1663095348-1360071438=:8757--
