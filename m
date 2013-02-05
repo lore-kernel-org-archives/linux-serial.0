@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 22/23] tty: Bracket ldisc release with TTY_DEBUG_HANGUP messages
-Date: Tue,  5 Feb 2013 15:20:37 -0500
-Message-ID: <1360095638-6624-23-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 19/23] tty: Fix 'deferred reopen' ldisc comment
+Date: Tue,  5 Feb 2013 15:20:34 -0500
+Message-ID: <1360095638-6624-20-git-send-email-peter@hurleysoftware.com>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,46 +11,34 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Expected typical log output:
-[    2.437211] tty_open: opening pts1...
-[    2.443376] tty_open: opening pts5...
-[    2.447830] tty_release: ptm0 (tty count=1)...
-[    2.447849] pts0 vhangup...
-[    2.447865] tty_release: ptm0: final close
-[    2.447876] tty_release: ptm0: freeing structure...
-[    2.451634] tty_release: tty1 (tty count=1)...
-[    2.451638] tty_release: tty1: final close
-[    2.451654] tty_release: tty1: freeing structure...
-[    2.452505] tty_release: pts5 (tty count=2)...
-[    2.453029] tty_open: opening pts0...
+This comment is a victim of code migration from
+"tty: Fix the ldisc hangup race"; re-parent it.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/tty/tty_ldisc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 25494fd..f96bf54 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1793,7 +1793,7 @@ int tty_release(struct inode *inode, struct file *filp)
- 		return 0;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index f3cbfb3..d7ebe79 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -875,11 +875,12 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	 */
+ 	mutex_lock(&tty->ldisc_mutex);
  
- #ifdef TTY_DEBUG_HANGUP
--	printk(KERN_DEBUG "%s: freeing tty structure...\n", __func__);
-+	printk(KERN_DEBUG "%s: %s: final close\n", __func__, tty_name(tty, buf));
- #endif
- 	/*
- 	 * Ask the line discipline code to release its structures
-@@ -1805,6 +1805,9 @@ int tty_release(struct inode *inode, struct file *filp)
- 	if (o_tty)
- 		tty_flush_works(o_tty);
+-	/* At this point we have a closed ldisc and we want to
+-	   reopen it. We could defer this to the next open but
+-	   it means auditing a lot of other paths so this is
+-	   a FIXME */
+ 	if (tty_ldisc_hangup_halt(tty) && !test_bit(TTY_CLOSING, &tty->flags)) {
++
++		/* At this point we have a halted ldisc; we want to close it and
++		   reopen a new ldisc. We could defer the reopen to the next
++		   open but it means auditing a lot of other paths so this is
++		   a FIXME */
+ 		if (reset == 0) {
  
-+#ifdef TTY_DEBUG_HANGUP
-+	printk(KERN_DEBUG "%s: %s: freeing structure...\n", __func__, tty_name(tty, buf));
-+#endif
- 	/*
- 	 * The release_tty function takes care of the details of clearing
- 	 * the slots and preserving the termios structure. The tty_unlock_pair
+ 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
 -- 
 1.8.1.2
