@@ -1,74 +1,57 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 02/23] n_tty: Factor packet mode status change for reuse
-Date: Tue,  5 Feb 2013 15:20:17 -0500
-Message-ID: <1360095638-6624-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 12/23] tty: Kick waiters _after_ the ldisc is locked
+Date: Tue,  5 Feb 2013 15:20:27 -0500
+Message-ID: <1360095638-6624-13-git-send-email-peter@hurleysoftware.com>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:60381 "EHLO
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:36229 "EHLO
 	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756655Ab3BEUW3 (ORCPT
+	with ESMTP id S1755340Ab3BEUnI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Feb 2013 15:22:29 -0500
+	Tue, 5 Feb 2013 15:43:08 -0500
 In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
 
-Factor the packet mode status change from n_tty_flush_buffer
-for use by follow-on patch.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+ drivers/tty/tty_ldisc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index bf6958b..7194a33 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -237,6 +237,18 @@ static void reset_buffer_flags(struct tty_struct *tty)
- 	n_tty_set_room(tty);
- }
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index c903778..8a86a72 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -604,6 +604,12 @@ static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
  
-+static void packet_mode_flush(struct tty_struct *tty)
-+{
-+	unsigned long flags;
+ 	clear_bit(TTY_LDISC, &tty->flags);
+ 
++	/* Wakeup waiters so they can discover the tty is hupping, abort
++	 * their i/o loops, and release their ldisc references
++	 */
++	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
++	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
 +
-+	spin_lock_irqsave(&tty->ctrl_lock, flags);
-+	if (tty->link->packet) {
-+		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
-+		wake_up_interruptible(&tty->link->read_wait);
-+	}
-+	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+}
-+
- /**
-  *	n_tty_flush_buffer	-	clean input queue
-  *	@tty:	terminal device
-@@ -251,19 +263,11 @@ static void reset_buffer_flags(struct tty_struct *tty)
+ 	if (tty->ldisc) {	/* Not yet closed */
+ 		tty_unlock(tty);
  
- static void n_tty_flush_buffer(struct tty_struct *tty)
- {
--	unsigned long flags;
- 	/* clear everything and unthrottle the driver */
- 	reset_buffer_flags(tty);
- 
--	if (!tty->link)
--		return;
--
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
--	if (tty->link->packet) {
--		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
--		wake_up_interruptible(&tty->link->read_wait);
--	}
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+	if (tty->link)
-+		packet_mode_flush(tty);
- }
- 
- /**
+@@ -875,12 +881,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 		tty_ldisc_deref(ld);
+ 	}
+ 	/*
+-	 * FIXME: Once we trust the LDISC code better we can wait here for
+-	 * ldisc completion and fix the driver call race
+-	 */
+-	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
+-	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
+-	/*
+ 	 * Shutdown the current line discipline, and reset it to
+ 	 * N_TTY if need be.
+ 	 *
 -- 
 1.8.1.2
 
