@@ -1,57 +1,117 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 12/23] tty: Kick waiters _after_ the ldisc is locked
-Date: Tue,  5 Feb 2013 15:20:27 -0500
-Message-ID: <1360095638-6624-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 16/23] tty: Make core responsible for synchronizing its work
+Date: Tue,  5 Feb 2013 15:20:31 -0500
+Message-ID: <1360095638-6624-17-git-send-email-peter@hurleysoftware.com>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:36229 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755340Ab3BEUnI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Feb 2013 15:43:08 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
+The tty core relies on the ldisc layer for synchronizing destruction
+of the tty. Instead, the final tty release must wait for any pending tty
+work to complete prior to tty destruction.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/tty/tty_io.c    | 17 +++++++++++++++++
+ drivers/tty/tty_ldisc.c | 24 ++++--------------------
+ 2 files changed, 21 insertions(+), 20 deletions(-)
 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 246a9b2..25494fd 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1468,6 +1468,17 @@ void tty_free_termios(struct tty_struct *tty)
+ }
+ EXPORT_SYMBOL(tty_free_termios);
+ 
++/**
++ *	tty_flush_works		-	flush all works of a tty
++ *	@tty: tty device to flush works for
++ *
++ *	Sync flush all works belonging to @tty.
++ */
++static void tty_flush_works(struct tty_struct *tty)
++{
++	flush_work(&tty->SAK_work);
++	flush_work(&tty->hangup_work);
++}
+ 
+ /**
+  *	release_one_tty		-	release tty structure memory
+@@ -1788,6 +1799,12 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	 * Ask the line discipline code to release its structures
+ 	 */
+ 	tty_ldisc_release(tty, o_tty);
++
++	/* Wait for pending work before tty destruction commmences */
++	tty_flush_works(tty);
++	if (o_tty)
++		tty_flush_works(o_tty);
++
+ 	/*
+ 	 * The release_tty function takes care of the details of clearing
+ 	 * the slots and preserving the termios structure. The tty_unlock_pair
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index c903778..8a86a72 100644
+index e0fdfec..c2837b2 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -604,6 +604,12 @@ static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
+@@ -499,18 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ }
  
- 	clear_bit(TTY_LDISC, &tty->flags);
+ /**
+- *	tty_ldisc_flush_works	-	flush all works of a tty
+- *	@tty: tty device to flush works for
+- *
+- *	Sync flush all works belonging to @tty.
+- */
+-static void tty_ldisc_flush_works(struct tty_struct *tty)
+-{
+-	flush_work(&tty->SAK_work);
+-	flush_work(&tty->hangup_work);
+-}
+-
+-/**
+  *	tty_ldisc_wait_idle	-	wait for the ldisc to become idle
+  *	@tty: tty to wait for
+  *	@timeout: for how long to wait at most
+@@ -726,13 +714,13 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	retval = tty_ldisc_halt(tty, o_tty, &work, &o_work, 5 * HZ);
  
-+	/* Wakeup waiters so they can discover the tty is hupping, abort
-+	 * their i/o loops, and release their ldisc references
-+	 */
-+	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
-+	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
-+
- 	if (tty->ldisc) {	/* Not yet closed */
- 		tty_unlock(tty);
- 
-@@ -875,12 +881,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 		tty_ldisc_deref(ld);
- 	}
  	/*
--	 * FIXME: Once we trust the LDISC code better we can wait here for
--	 * ldisc completion and fix the driver call race
--	 */
--	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
--	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
--	/*
- 	 * Shutdown the current line discipline, and reset it to
- 	 * N_TTY if need be.
- 	 *
+-	 * Wait for ->hangup_work to terminate.
++	 * Wait for hangup to complete, if pending.
+ 	 * We must drop the mutex here in case a hangup is also in process.
+ 	 */
+ 
+ 	mutex_unlock(&tty->ldisc_mutex);
+ 
+-	tty_ldisc_flush_works(tty);
++	flush_work(&tty->hangup_work);
+ 
+ 	tty_lock(tty);
+ 	mutex_lock(&tty->ldisc_mutex);
+@@ -973,15 +961,11 @@ static void tty_ldisc_kill(struct tty_struct *tty)
+ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
+ {
+ 	/*
+-	 * Prevent flush_to_ldisc() from rescheduling the work for later.  Then
+-	 * kill any delayed work. As this is the final close it does not
+-	 * race with the set_ldisc code path.
++	 * Shutdown this line discipline. As this is the final close,
++	 * it does not race with the set_ldisc code path.
+ 	 */
+ 
+ 	tty_ldisc_halt(tty, o_tty, NULL, NULL, MAX_SCHEDULE_TIMEOUT);
+-	tty_ldisc_flush_works(tty);
+-	if (o_tty)
+-		tty_ldisc_flush_works(o_tty);
+ 
+ 	tty_lock_pair(tty, o_tty);
+ 	/* This will need doing differently if we need to lock */
 -- 
 1.8.1.2
-
