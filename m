@@ -1,58 +1,60 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 15/23] tty: Don't restart ldisc on hangup if racing ldisc kill
-Date: Tue,  5 Feb 2013 15:20:30 -0500
-Message-ID: <1360095638-6624-16-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 21/23] tty: Re-parent orphaned tty_set_ldisc() comments
+Date: Tue,  5 Feb 2013 15:20:36 -0500
+Message-ID: <1360095638-6624-22-git-send-email-peter@hurleysoftware.com>
 References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:33556 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756363Ab3BEUnq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Feb 2013 15:43:46 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Asynchronous hangups (such as from carrier loss) can race with the
-final tty release. Because there is no mechanism to prevent an async
-hangup from being scheduled, waiting for the hangup to complete is
-insufficient to prevent racing between ldisc hangup and ldisc kill.
-Eg., immediately after flush_work() returns, an async hangup
-could be scheduled, thus restarting a new ldisc.
-
-Instead, prevent hangup from restarting a new ldisc when the tty is
-being destroyed.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/tty_ldisc.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 8a86a72..e0fdfec 100644
+index 92629c1..49e4825 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -884,7 +884,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	 * Shutdown the current line discipline, and reset it to
- 	 * N_TTY if need be.
- 	 *
--	 * Avoid racing set_ldisc or tty_ldisc_release
-+	 * Avoid racing set_ldisc or tty_ldisc_kill
+@@ -545,10 +545,18 @@ static int tty_ldisc_halt(struct tty_struct *tty, struct tty_struct *o_tty,
+ {
+ 	int scheduled, o_scheduled, retval;
+ 
++	/*
++	 *	The TTY_LDISC bit prevents anyone taking an ldisc
++	 *	reference once it is clear.
++	 */
+ 	clear_bit(TTY_LDISC, &tty->flags);
+ 	if (o_tty)
+ 		clear_bit(TTY_LDISC, &o_tty->flags);
+ 
++	/*
++	 *	Make sure we don't change while someone holds a
++	 *	reference to the line discipline.
++	 */
+ 	retval = tty_ldisc_wait_idle(tty, timeout);
+ 	if (!retval && o_tty)
+ 		retval = tty_ldisc_wait_idle(o_tty, timeout);
+@@ -702,13 +710,9 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	o_ldisc = tty->ldisc;
+ 
+ 	tty_unlock(tty);
++
+ 	/*
+-	 *	Make sure we don't change while someone holds a
+-	 *	reference to the line discipline. The TTY_LDISC bit
+-	 *	prevents anyone taking a reference once it is clear.
+-	 *	We need the lock to avoid racing reference takers.
+-	 *
+-	 *	We must clear the TTY_LDISC bit here to avoid a livelock
++	 *	We must halt the line discipline here to avoid a livelock
+ 	 *	with a userspace app continually trying to use the tty in
+ 	 *	parallel to the change and re-referencing the tty.
  	 */
- 	mutex_lock(&tty->ldisc_mutex);
- 
-@@ -892,7 +892,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	   reopen it. We could defer this to the next open but
- 	   it means auditing a lot of other paths so this is
- 	   a FIXME */
--	if (tty_ldisc_hangup_halt(tty)) {
-+	if (tty_ldisc_hangup_halt(tty) && !test_bit(TTY_CLOSING, &tty->flags)) {
- 		if (reset == 0) {
- 
- 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
 -- 
 1.8.1.2
-
