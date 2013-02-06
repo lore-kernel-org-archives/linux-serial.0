@@ -1,58 +1,33 @@
-From: Haojian Zhuang <haojian.zhuang@linaro.org>
-Subject: [PATCH 2/2] tty: serial: use module_init on pl011_init
-Date: Wed,  6 Feb 2013 19:47:15 +0800
-Message-ID: <1360151235-11980-2-git-send-email-haojian.zhuang@linaro.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
+Date: Wed, 6 Feb 2013 11:52:19 +0000
+Message-ID: <20130206115219.GE17833@n2100.arm.linux.org.uk>
 References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f41.google.com ([209.85.210.41]:53132 "EHLO
-	mail-da0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751075Ab3BFLsf (ORCPT
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:36553 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751496Ab3BFL6Q (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 06:48:35 -0500
-Received: by mail-da0-f41.google.com with SMTP id e20so618288dak.28
-        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 03:48:34 -0800 (PST)
+	Wed, 6 Feb 2013 06:58:16 -0500
+Content-Disposition: inline
 In-Reply-To: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: jslaby@suse.cz, linus.walleij@linaro.org, anton.vorontsov@linaro.org, linux-arm-kernel@lists.infradead.org
-Cc: patches@linaro.org, Haojian Zhuang <haojian.zhuang@linaro.org>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Haojian Zhuang <haojian.zhuang@linaro.org>
+Cc: jslaby@suse.cz, linus.walleij@linaro.org, anton.vorontsov@linaro.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, patches@linaro.org
 
-If amba serial driver is probed defer, amba serial driver may be
-probed after init process. So the error log shows in below.
+On Wed, Feb 06, 2013 at 07:47:14PM +0800, Haojian Zhuang wrote:
+> If uart driver is probed defer, console_setup will be called later
+> after __init && __initdata sections destroyed. And amba_console isn't
+> defined in __init or __initdata section. So we needn't define
+> pl011_console_setup() && pl011_console_get_options() in __init section.
 
-[    0.389403] Warning: unable to open an initial console.
-[    0.390107] Freeing init memory: 2328K
+It sounds like there's a deeper problem here - if this driver being
+deferred, why isn't it being retried after the pinctrl stuff gets
+its driver registered?
 
-It results in serial console not enabled. So replace arch_initcall
-by module_init on pl011_init(). The boot sequence is changed in below.
-
-  pinctrl driver --> amba serial driver --> init process
-
-Signed-off-by: Haojian Zhuang <haojian.zhuang@linaro.org>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/amba-pl011.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d43d530..8b7dacb 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2129,11 +2129,7 @@ static void __exit pl011_exit(void)
- 	uart_unregister_driver(&amba_reg);
- }
- 
--/*
-- * While this can be a module, if builtin it's most likely the console
-- * So let's leave module_exit but move module_init to an earlier place
-- */
--arch_initcall(pl011_init);
-+module_init(pl011_init);
- module_exit(pl011_exit);
- 
- MODULE_AUTHOR("ARM Ltd/Deep Blue Solutions Ltd");
--- 
-1.7.10.4
-
+We've had bugs in this deferred probing before, I wouldn't be surprised
+if there's more... and we should not be "fixing" drivers because of bugs
+elsewhere.
