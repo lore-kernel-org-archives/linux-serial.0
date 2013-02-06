@@ -1,68 +1,35 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: 3.8-rc regression with pps-ldisc due to 70ece7a731
-Date: Wed, 06 Feb 2013 10:53:40 -0500
-Message-ID: <1360166020.3298.42.camel@thor.lan>
+Subject: [PATCH 0/4] tty, pps: decouple pps
+Date: Wed,  6 Feb 2013 10:55:12 -0500
+Message-ID: <1360166116-30797-1-git-send-email-peter@hurleysoftware.com>
 References: <20130204010303.24971.qmail@science.horizon.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:34006 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756394Ab3BFPxv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 10:53:51 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20130204010303.24971.qmail@science.horizon.com>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: George Spelvin <linux@horizon.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rodolfo Giometti <giometti@enneenne.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
-To: George Spelvin <linux@horizon.com>
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi George,
+The recent breakage of the N_PPS line discipline is due to the tight coupling
+pps has created in the tty subsystem. Since the extension of the line discipline
+api to accomodate the needs of pps, this level of coupling is unnecessary and
+undesirable.
 
-On Sun, 2013-02-03 at 20:03 -0500, George Spelvin wrote:
-> "TTY: n_tty, add ldisc data to n_tty"
-> 
-> The PPS line discipline has incestuous relations with the n_tty line
-> discipline, using some hooks to call internal routines.
-> 
-> However, I started noticing violent kernel explosions when testing 3.8-rc,
-> and after a bit of digging, I think it's due to the fact that the PPS code
-> assumes that the ->ldisc pointer is available to hold a pointer to a "pps"
-> structure, but this commit started using it in the core n_tty discipline.
-> 
-> If you look at pps_tty_open in drivers/pps/clients/pps-ldisc.c, you can
-> see it does:
-> 
-> 	pps = pps_register_source(&info, PPS_CAPTUREBOTH | \
-> 				PPS_OFFSETASSERT | PPS_OFFSETCLEAR);
-> 	if (pps == NULL) {
-> 		pr_err("cannot register PPS source \"%s\"\n", info.path);
-> 		return -ENOMEM;
-> 	}
-> 	tty->disc_data = pps;
-> 
->         /* Should open N_TTY ldisc too */
->         ret = alias_n_tty_open(tty);
-> 
-> Where "alias_n_tty_open" is filled in by n_tty_inherit_ops() to be
-> n_tty_open().  However, in this commit, n_tty_open() now allocates
-> its own structure and overwrites the disc_data pointer, leading to an
-> earth-shattering kaboom as NULL pointers are dereferenced in interrupt
-> handlers.
+Peter Hurley (4):
+  pps: Decouple N_PPS from N_TTY
+  pps: Don't crash the machine when exiting will do
+  pps: Use lookup list to reduce ldisc coupling
+  tty: Remove ancient hardpps()
 
-Yuck. Little wonder it broke.
+ drivers/pps/clients/pps-ldisc.c     | 76 ++++++++++++++++++++++++++++++++-----
+ drivers/staging/speakup/selection.c |  1 +
+ drivers/tty/amiserial.c             |  5 ---
+ drivers/tty/n_tty.c                 |  3 +-
+ drivers/tty/serial/serial_core.c    | 23 ++++-------
+ drivers/tty/tty_buffer.c            |  1 +
+ include/linux/serial_core.h         |  1 -
+ include/linux/tty_ldisc.h           | 11 ++----
+ 8 files changed, 83 insertions(+), 38 deletions(-)
 
-> My first thought is to reserve a pointer in n_tty_data for the
-> pps structure and update the pps code to chase pointers one more
-> level.  But I wanted to solicit opinions.
-
-Tight coupling is what caused this to break in the first place -- I
-don't think tighter coupling is the right answer.
-
-Alternate coming...
-
-Regards,
-Peter Hurley
-
-
+-- 
+1.8.1.2
