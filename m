@@ -1,55 +1,58 @@
 From: Haojian Zhuang <haojian.zhuang@linaro.org>
-Subject: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
-Date: Wed,  6 Feb 2013 19:47:14 +0800
-Message-ID: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
+Subject: [PATCH 2/2] tty: serial: use module_init on pl011_init
+Date: Wed,  6 Feb 2013 19:47:15 +0800
+Message-ID: <1360151235-11980-2-git-send-email-haojian.zhuang@linaro.org>
+References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f51.google.com ([209.85.220.51]:41827 "EHLO
-	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751075Ab3BFLsa (ORCPT
+Received: from mail-da0-f41.google.com ([209.85.210.41]:53132 "EHLO
+	mail-da0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751075Ab3BFLsf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 06:48:30 -0500
-Received: by mail-pa0-f51.google.com with SMTP id hz1so753097pad.38
-        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 03:48:29 -0800 (PST)
+	Wed, 6 Feb 2013 06:48:35 -0500
+Received: by mail-da0-f41.google.com with SMTP id e20so618288dak.28
+        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 03:48:34 -0800 (PST)
+In-Reply-To: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: jslaby@suse.cz, linus.walleij@linaro.org, anton.vorontsov@linaro.org, linux-arm-kernel@lists.infradead.org
 Cc: patches@linaro.org, Haojian Zhuang <haojian.zhuang@linaro.org>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-If uart driver is probed defer, console_setup will be called later
-after __init && __initdata sections destroyed. And amba_console isn't
-defined in __init or __initdata section. So we needn't define
-pl011_console_setup() && pl011_console_get_options() in __init section.
+If amba serial driver is probed defer, amba serial driver may be
+probed after init process. So the error log shows in below.
+
+[    0.389403] Warning: unable to open an initial console.
+[    0.390107] Freeing init memory: 2328K
+
+It results in serial console not enabled. So replace arch_initcall
+by module_init on pl011_init(). The boot sequence is changed in below.
+
+  pinctrl driver --> amba serial driver --> init process
 
 Signed-off-by: Haojian Zhuang <haojian.zhuang@linaro.org>
 Cc: Alan Cox <alan@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/amba-pl011.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 3ea5408..d43d530 100644
+index d43d530..8b7dacb 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1810,7 +1810,7 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
- 	clk_disable(uap->clk);
+@@ -2129,11 +2129,7 @@ static void __exit pl011_exit(void)
+ 	uart_unregister_driver(&amba_reg);
  }
  
--static void __init
-+static void
- pl011_console_get_options(struct uart_amba_port *uap, int *baud,
- 			     int *parity, int *bits)
- {
-@@ -1845,7 +1845,7 @@ pl011_console_get_options(struct uart_amba_port *uap, int *baud,
- 	}
- }
+-/*
+- * While this can be a module, if builtin it's most likely the console
+- * So let's leave module_exit but move module_init to an earlier place
+- */
+-arch_initcall(pl011_init);
++module_init(pl011_init);
+ module_exit(pl011_exit);
  
--static int __init pl011_console_setup(struct console *co, char *options)
-+static int pl011_console_setup(struct console *co, char *options)
- {
- 	struct uart_amba_port *uap;
- 	int baud = 38400;
+ MODULE_AUTHOR("ARM Ltd/Deep Blue Solutions Ltd");
 -- 
 1.7.10.4
 
