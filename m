@@ -1,53 +1,68 @@
-From: Haojian Zhuang <haojian.zhuang@linaro.org>
-Subject: Re: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
-Date: Wed, 6 Feb 2013 20:31:34 +0800
-Message-ID: <CAD6h2NSpo74UXUgH2OJniW=wzkxGeshta05AGgCpn26SCUSjYg@mail.gmail.com>
-References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
-	<20130206115219.GE17833@n2100.arm.linux.org.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: 3.8-rc regression with pps-ldisc due to 70ece7a731
+Date: Wed, 06 Feb 2013 10:53:40 -0500
+Message-ID: <1360166020.3298.42.camel@thor.lan>
+References: <20130204010303.24971.qmail@science.horizon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f52.google.com ([74.125.82.52]:54305 "EHLO
-	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750951Ab3BFMbg (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:34006 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756394Ab3BFPxv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 07:31:36 -0500
-Received: by mail-wg0-f52.google.com with SMTP id 12so1023791wgh.31
-        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 04:31:34 -0800 (PST)
-In-Reply-To: <20130206115219.GE17833@n2100.arm.linux.org.uk>
+	Wed, 6 Feb 2013 10:53:51 -0500
+In-Reply-To: <20130204010303.24971.qmail@science.horizon.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: jslaby@suse.cz, Linus Walleij <linus.walleij@linaro.org>, anton.vorontsov@linaro.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Patch Tracking <patches@linaro.org>
+To: George Spelvin <linux@horizon.com>
+Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 6 February 2013 19:52, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Wed, Feb 06, 2013 at 07:47:14PM +0800, Haojian Zhuang wrote:
->> If uart driver is probed defer, console_setup will be called later
->> after __init && __initdata sections destroyed. And amba_console isn't
->> defined in __init or __initdata section. So we needn't define
->> pl011_console_setup() && pl011_console_get_options() in __init section.
->
-> It sounds like there's a deeper problem here - if this driver being
-> deferred, why isn't it being retried after the pinctrl stuff gets
-> its driver registered?
->
-> We've had bugs in this deferred probing before, I wouldn't be surprised
-> if there's more... and we should not be "fixing" drivers because of bugs
-> elsewhere.
+Hi George,
 
-It retried if driver is being deferred. But those console setup
-functions are released
-since they're declared in __init section.
+On Sun, 2013-02-03 at 20:03 -0500, George Spelvin wrote:
+> "TTY: n_tty, add ldisc data to n_tty"
+> 
+> The PPS line discipline has incestuous relations with the n_tty line
+> discipline, using some hooks to call internal routines.
+> 
+> However, I started noticing violent kernel explosions when testing 3.8-rc,
+> and after a bit of digging, I think it's due to the fact that the PPS code
+> assumes that the ->ldisc pointer is available to hold a pointer to a "pps"
+> structure, but this commit started using it in the core n_tty discipline.
+> 
+> If you look at pps_tty_open in drivers/pps/clients/pps-ldisc.c, you can
+> see it does:
+> 
+> 	pps = pps_register_source(&info, PPS_CAPTUREBOTH | \
+> 				PPS_OFFSETASSERT | PPS_OFFSETCLEAR);
+> 	if (pps == NULL) {
+> 		pr_err("cannot register PPS source \"%s\"\n", info.path);
+> 		return -ENOMEM;
+> 	}
+> 	tty->disc_data = pps;
+> 
+>         /* Should open N_TTY ldisc too */
+>         ret = alias_n_tty_open(tty);
+> 
+> Where "alias_n_tty_open" is filled in by n_tty_inherit_ops() to be
+> n_tty_open().  However, in this commit, n_tty_open() now allocates
+> its own structure and overwrites the disc_data pointer, leading to an
+> earth-shattering kaboom as NULL pointers are dereferenced in interrupt
+> handlers.
 
-rest_init()
-   --> creates kernel_init thread that could free __init section memory
+Yuck. Little wonder it broke.
 
-deferred_probe_initicall() creates a workqueue that is used to retry
-deferred probe
-function.
+> My first thought is to reserve a pointer in n_tty_data for the
+> pps structure and update the pps code to chase pointers one more
+> level.  But I wanted to solicit opinions.
 
-I think that these two threads are competing.
+Tight coupling is what caused this to break in the first place -- I
+don't think tighter coupling is the right answer.
 
-Best Regards
-Haojian
+Alternate coming...
+
+Regards,
+Peter Hurley
+
+
