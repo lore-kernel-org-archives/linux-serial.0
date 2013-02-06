@@ -1,148 +1,65 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 3/4] pps: Use lookup list to reduce ldisc coupling
-Date: Wed,  6 Feb 2013 10:55:15 -0500
-Message-ID: <1360166116-30797-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 4/4] tty: Remove ancient hardpps()
+Date: Wed,  6 Feb 2013 10:55:16 -0500
+Message-ID: <1360166116-30797-5-git-send-email-peter@hurleysoftware.com>
 References: <20130204010303.24971.qmail@science.horizon.com>
  <1360166116-30797-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:42219 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757517Ab3BFP5F (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Feb 2013 10:57:05 -0500
 In-Reply-To: <1360166116-30797-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: George Spelvin <linux@horizon.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rodolfo Giometti <giometti@enneenne.com>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Now that N_TTY uses tty->disc_data for its private data,
-'subclass' ldiscs cannot use ->disc_data for their own private data.
-
-Use a lookup list to associate the tty with the pps source.
+hardpps() functionality is provided through the N_PPS line
+discipline now. The new function signature was added in commit
+025b40ab (2011-01-12). There was no previous macro or
+function hardpps(), at least since before the initial commit of
+v2.6.12 in 2005. It's unlikely this code has been compiled since.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/pps/clients/pps-ldisc.c | 64 +++++++++++++++++++++++++++++++++++++----
- 1 file changed, 59 insertions(+), 5 deletions(-)
+ drivers/tty/amiserial.c          | 5 -----
+ drivers/tty/serial/serial_core.c | 5 -----
+ 2 files changed, 10 deletions(-)
 
-diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
-index 0b91d91..a36d42b 100644
---- a/drivers/pps/clients/pps-ldisc.c
-+++ b/drivers/pps/clients/pps-ldisc.c
-@@ -25,17 +25,47 @@
- #include <linux/serial_core.h>
- #include <linux/tty.h>
- #include <linux/pps_kernel.h>
-+#include <linux/list.h>
-+#include <linux/spinlock.h>
-+#include <linux/slab.h>
- #include <linux/bug.h>
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 4c7d701..fc70034 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -393,11 +393,6 @@ static void check_modem_status(struct serial_state *info)
+ 			icount->dsr++;
+ 		if (dstatus & SER_DCD) {
+ 			icount->dcd++;
+-#ifdef CONFIG_HARD_PPS
+-			if ((port->flags & ASYNC_HARDPPS_CD) &&
+-			    !(status & SER_DCD))
+-				hardpps();
+-#endif
+ 		}
+ 		if (dstatus & SER_CTS)
+ 			icount->cts++;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 457f1a6..b96b1f7 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2730,11 +2730,6 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
  
- #define PPS_TTY_MAGIC		0x0001
+ 	uport->icount.dcd++;
  
-+struct pps_data {
-+	struct pps_device *pps;
-+	struct tty_struct *tty;
-+	struct list_head link;
-+};
-+
-+DEFINE_SPINLOCK(pps_lock);
-+static LIST_HEAD(pps_list);
-+
-+static struct pps_device *lookup_pps_by_tty(struct tty_struct *tty,
-+					    struct pps_data **p)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&pps_lock, flags);
-+	list_for_each_entry((*p), &pps_list, link) {
-+		if ((*p)->tty == tty) {
-+			spin_unlock_irqrestore(&pps_lock, flags);
-+			return (*p)->pps;
-+		}
-+	}
-+	spin_unlock_irqrestore(&pps_lock, flags);
-+	return NULL;
-+}
-+
- static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status)
- {
- 	struct pps_event_time ts;
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps;
-+	struct pps_data *data;
- 
- 	pps_get_ts(&ts);
- 
-+	pps = lookup_pps_by_tty(tty, &data);
- 	if (WARN_ON_ONCE(pps == NULL))
- 		return;
- 
-@@ -55,6 +85,8 @@ static int pps_tty_open(struct tty_struct *tty)
- 	struct tty_driver *drv = tty->driver;
- 	int index = tty->index + drv->name_base;
- 	struct pps_device *pps;
-+	struct pps_data *data;
-+	unsigned long flags;
- 	int ret;
- 
- 	info.owner = THIS_MODULE;
-@@ -71,7 +103,12 @@ static int pps_tty_open(struct tty_struct *tty)
- 		pr_err("cannot register PPS source \"%s\"\n", info.path);
- 		return -ENOMEM;
- 	}
--	tty->disc_data = pps;
-+
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data) {
-+		ret = -ENOMEM;
-+		goto err_unregister;
-+	}
- 
- 	/* Should open N_TTY ldisc too */
- 	ret = alias_n_tty_open(tty);
-@@ -80,12 +117,19 @@ static int pps_tty_open(struct tty_struct *tty)
- 		goto err_unregister;
- 	}
- 
-+	data->pps = pps;
-+	data->tty = tty;
-+	INIT_LIST_HEAD(&data->link);
-+	spin_lock_irqsave(&pps_lock, flags);
-+	list_add(&data->link, &pps_list);
-+	spin_unlock_irqrestore(&pps_lock, flags);
-+
- 	dev_info(pps->dev, "source \"%s\" added\n", info.path);
- 
- 	return 0;
- 
- err_unregister:
--	tty->disc_data = NULL;
-+	kfree(data);
- 	pps_unregister_source(pps);
- 	return ret;
- }
-@@ -94,13 +138,23 @@ static void (*alias_n_tty_close)(struct tty_struct *tty);
- 
- static void pps_tty_close(struct tty_struct *tty)
- {
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps;
-+	struct pps_data *data;
-+	unsigned long flags;
- 
- 	alias_n_tty_close(tty);
- 
--	tty->disc_data = NULL;
-+	pps = lookup_pps_by_tty(tty, &data);
-+	if (!pps)
-+		return;
-+
- 	dev_info(pps->dev, "removed\n");
- 	pps_unregister_source(pps);
-+
-+	spin_lock_irqsave(&pps_lock, flags);
-+	list_del(&data->link);
-+	spin_unlock_irqrestore(&pps_lock, flags);
-+	kfree(data);
- }
- 
- static struct tty_ldisc_ops pps_ldisc_ops;
+-#ifdef CONFIG_HARD_PPS
+-	if ((uport->flags & UPF_HARDPPS_CD) && status)
+-		hardpps();
+-#endif
+-
+ 	if (tty) {
+ 		ld = tty_ldisc_ref(tty);
+ 		if (ld && ld->ops->dcd_change)
 -- 
 1.8.1.2
+
