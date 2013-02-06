@@ -1,62 +1,72 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
-Date: Wed, 6 Feb 2013 17:46:50 +0100
-Message-ID: <CACRpkdZDks681kDBrNcztWw_vr-5azWxsuDQaDa36Ze=0+B2Kg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] tty: serial: use module_init on pl011_init
+Date: Wed, 6 Feb 2013 18:17:27 +0100
+Message-ID: <CACRpkdZ8L88pBvshavWM3gVjG=pka+R9iX+k6mfnCNNUGpXJ3A@mail.gmail.com>
 References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
-	<20130206115219.GE17833@n2100.arm.linux.org.uk>
-	<CAD6h2NSpo74UXUgH2OJniW=wzkxGeshta05AGgCpn26SCUSjYg@mail.gmail.com>
-	<CACRpkdZX-YF+jzg453Vmfxo_2LLuASvZyQqLommaM4Xd3LpwfQ@mail.gmail.com>
-	<20130206163811.GI17833@n2100.arm.linux.org.uk>
+	<1360151235-11980-2-git-send-email-haojian.zhuang@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ia0-f179.google.com ([209.85.210.179]:59015 "EHLO
-	mail-ia0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756532Ab3BFQqv (ORCPT
+Received: from mail-ie0-f170.google.com ([209.85.223.170]:57736 "EHLO
+	mail-ie0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752024Ab3BFRR2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 11:46:51 -0500
-Received: by mail-ia0-f179.google.com with SMTP id x24so1778201iak.38
-        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 08:46:51 -0800 (PST)
-In-Reply-To: <20130206163811.GI17833@n2100.arm.linux.org.uk>
+	Wed, 6 Feb 2013 12:17:28 -0500
+Received: by mail-ie0-f170.google.com with SMTP id c11so2274144ieb.29
+        for <linux-serial@vger.kernel.org>; Wed, 06 Feb 2013 09:17:28 -0800 (PST)
+In-Reply-To: <1360151235-11980-2-git-send-email-haojian.zhuang@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Haojian Zhuang <haojian.zhuang@linaro.org>, Grant Likely <grant.likely@secretlab.ca>, jslaby@suse.cz, anton.vorontsov@linaro.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, Patch Tracking <patches@linaro.org>
+To: Haojian Zhuang <haojian.zhuang@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Alessandro Rubini <rubini@unipv.it>
+Cc: jslaby@suse.cz, anton.vorontsov@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Wed, Feb 6, 2013 at 5:38 PM, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
+Please include Russell on patches to this driver.
 
-> However, I'm just wondering if this shows that we _do_ need to get rid
-> of a pile of __init marked functions as well as fixing this, thanks to
-> the deferred probing we now have (maybe the whole __init thing becomes
-> useless with deferred probing?)
+On Wed, Feb 6, 2013 at 12:47 PM, Haojian Zhuang
+<haojian.zhuang@linaro.org> wrote:
+> If amba serial driver is probed defer, amba serial driver may be
+> probed after init process. So the error log shows in below.
+>
+> [    0.389403] Warning: unable to open an initial console.
+> [    0.390107] Freeing init memory: 2328K
+>
+> It results in serial console not enabled. So replace arch_initcall
+> by module_init on pl011_init(). The boot sequence is changed in below.
+>
+>   pinctrl driver --> amba serial driver --> init process
 
-And all __initdata and __initconst as well.
+ONLY on systems using pinctrl, nota bene.
 
-> There's nothing really to guarantee
-> that the pinctrl stuff will be available by the time the init sections
-> are discarded (it could be in a loadable module?) or indeed any other
-> resources that might be necessary.
+> Signed-off-by: Haojian Zhuang <haojian.zhuang@linaro.org>
+> Cc: Alan Cox <alan@linux.intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/amba-pl011.c |    6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index d43d530..8b7dacb 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2129,11 +2129,7 @@ static void __exit pl011_exit(void)
+>         uart_unregister_driver(&amba_reg);
+>  }
+>
+> -/*
+> - * While this can be a module, if builtin it's most likely the console
+> - * So let's leave module_exit but move module_init to an earlier place
+> - */
+> -arch_initcall(pl011_init);
+> +module_init(pl011_init);
 
-I don't dare to guess how deferred probing is supposed to work
-with loadable modules. When I start to think of it my mind
-boggles. But I think maybe all drivers that support module loading
-are tagging things wrong. Shouldn't they all be using
-__init_or_module, __initdata_or_module, __initconst_or_module
-so they only get discarded unless compiled as modules?
+Hm. PL011 is actually the only serial driver that gets called as
+arch_initcall().
 
-As far as I can tell from <linux/init.h> that is the intention.
+Alessandro Rubini changed this in 2009.
 
-Talk about can of worms :-(
-
-> I think in this regard, deferred probing has opened a similar can of
-> worms which hotplug devices created (which eventually ended up with
-> killing the __dev* marking).
-
-I'm afraid you're right.
-
-Pinctrl core grabbing of pins seems to trigger the problem more
-often on platforms that are using it.
+Alessandro, can you explain? Is the sole purpose to get the
+console up early?
 
 Yours,
 Linus Walleij
