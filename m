@@ -1,52 +1,40 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: 3.8-rc regression with pps-ldisc due to 70ece7a731
-Date: Wed, 06 Feb 2013 11:15:43 -0500
-Message-ID: <1360167343.3298.56.camel@thor.lan>
-References: <20130204070805.28980.qmail@science.horizon.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 3/4] pps: Use lookup list to reduce ldisc coupling
+Date: Wed, 06 Feb 2013 17:20:33 +0100
+Message-ID: <511282D1.7030200@suse.cz>
+References: <20130204010303.24971.qmail@science.horizon.com> <1360166116-30797-1-git-send-email-peter@hurleysoftware.com> <1360166116-30797-4-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:34429 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756482Ab3BFQP7 (ORCPT
+Received: from mail-ee0-f51.google.com ([74.125.83.51]:38501 "EHLO
+	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757670Ab3BFQUj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Feb 2013 11:15:59 -0500
-In-Reply-To: <20130204070805.28980.qmail@science.horizon.com>
+	Wed, 6 Feb 2013 11:20:39 -0500
+In-Reply-To: <1360166116-30797-4-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: George Spelvin <linux@horizon.com>
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, giometti@linux.it, lasaine@lvk.cs.msu.su, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: George Spelvin <linux@horizon.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rodolfo Giometti <giometti@enneenne.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, 2013-02-04 at 02:08 -0500, George Spelvin wrote:
-> Just a quick update: the previously posted patch *does* work;
-> the crash I was experiencing was pilot error.
-> 
-> My NTP server is running a 3.8.0-rc6-dirty kernel right now.
-> 
-> I'll research whether that race I talk about in pps_tty_dcd_change
-> is actually possible or not (can interrupts start arriving before the
-> ->open() method returns?) and work out a finished minimal bugfix patch
-> if nobody else finds a better solution.
+On 02/06/2013 04:55 PM, Peter Hurley wrote:
+> --- a/drivers/pps/clients/pps-ldisc.c
+> +++ b/drivers/pps/clients/pps-ldisc.c
+> @@ -25,17 +25,47 @@
+...
+> +struct pps_data {
+> +	struct pps_device *pps;
+> +	struct tty_struct *tty;
+> +	struct list_head link;
+> +};
+> +
+> +DEFINE_SPINLOCK(pps_lock);
+> +static LIST_HEAD(pps_list);
 
-You are not supposed to receive ldisc->dcd_change() calls outside
-the open()/close() pair.
+All 4 look fine, nice cleanup. Except the lock above should be static too.
 
-The ldisc is separately enabled/halted which is supposed to prevent
-ldisc usage if a ldisc reference cannot be acquired (because it's
-halted). The reference is acquired prior to calling the ->dcd_change()
-routine.
-
-In the patch series I sent, I changed the BUG_ON() to WARN_ON_ONCE().
-Please reply to that patch with the snipped kernel log output if it
-warns in your testing and we'll go from there.
-
-> (Have I mentioned how ANNOYING it is when the kernel dumps more than
-> 50 lines of crash message to the console screen and then locks
-> the keyboard so I can't scroll back?)
-
-netconsole on 2nd machine (see Documentation/networking/netconsole.txt)
-
-Regards,
-Peter Hurley
-
+thanks,
+-- 
+js
+suse labs
