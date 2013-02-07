@@ -1,89 +1,48 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH v3 01/23] tty: Add diagnostic for halted line discipline
-Date: Thu, 07 Feb 2013 15:50:35 +0100
-Message-ID: <5113BF3B.3060307@suse.cz>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-2-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 03/23] n_tty: Don't flush buffer when closing ldisc
+Date: Thu, 07 Feb 2013 15:57:28 +0100
+Message-ID: <5113C0D8.60107@suse.cz>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-4-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f48.google.com ([74.125.83.48]:37741 "EHLO
-	mail-ee0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754832Ab3BGOuk (ORCPT
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:40576 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754000Ab3BGO5c (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Feb 2013 09:50:40 -0500
-In-Reply-To: <1360095638-6624-2-git-send-email-peter@hurleysoftware.com>
+	Thu, 7 Feb 2013 09:57:32 -0500
+In-Reply-To: <1360095638-6624-4-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
 
 On 02/05/2013 09:20 PM, Peter Hurley wrote:
-> --- a/drivers/tty/tty_ldisc.c
-> +++ b/drivers/tty/tty_ldisc.c
-> @@ -375,6 +375,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
->  
->  void tty_ldisc_enable(struct tty_struct *tty)
->  {
-> +	clear_bit(TTY_LDISC_HALTED, &tty->flags);
->  	set_bit(TTY_LDISC, &tty->flags);
->  	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
->  	wake_up(&tty_ldisc_wait);
-> @@ -498,26 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
->  }
->  
->  /**
-> - *	tty_ldisc_halt		-	shut down the line discipline
-> - *	@tty: tty device
-> - *
-> - *	Shut down the line discipline and work queue for this tty device.
-> - *	The TTY_LDISC flag being cleared ensures no further references can
-> - *	be obtained while the delayed work queue halt ensures that no more
-> - *	data is fed to the ldisc.
-> - *
-> - *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
-> - *	in order to make sure any currently executing ldisc work is also
-> - *	flushed.
-> - */
-> -
-> -static int tty_ldisc_halt(struct tty_struct *tty)
-> -{
-> -	clear_bit(TTY_LDISC, &tty->flags);
-> -	return cancel_work_sync(&tty->port->buf.work);
-> -}
-> -
-> -/**
->   *	tty_ldisc_flush_works	-	flush all works of a tty
->   *	@tty: tty device to flush works for
->   *
-> @@ -547,6 +528,29 @@ static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
->  }
->  
->  /**
-> + *	tty_ldisc_halt		-	shut down the line discipline
-> + *	@tty: tty device
-> + *
-> + *	Shut down the line discipline and work queue for this tty device.
-> + *	The TTY_LDISC flag being cleared ensures no further references can
-> + *	be obtained while the delayed work queue halt ensures that no more
-> + *	data is fed to the ldisc.
-> + *
-> + *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
-> + *	in order to make sure any currently executing ldisc work is also
-> + *	flushed.
-> + */
-> +
-> +static int tty_ldisc_halt(struct tty_struct *tty)
-> +{
-> +	int scheduled;
-> +	clear_bit(TTY_LDISC, &tty->flags);
-> +	scheduled = cancel_work_sync(&tty->port->buf.work);
-> +	set_bit(TTY_LDISC_HALTED, &tty->flags);
-> +	return scheduled;
-> +}
+> A buffer flush is both undesirable and unnecessary when the ldisc
+> is closing. A buffer flush performs the following:
+>  1. resets ldisc data fields to their initial state
+>  2. resets tty->receive_room to indicate more data can be sent
+>  3. schedules buffer work to receive more data
+>  4. signals a buffer flush has happened to linked pty in packet mode
+> 
+> Since the ldisc has been halted and the tty may soon be destructed,
+> buffer work must not be scheduled as that work might access
+> an invalid tty and ldisc state. Also, the ldisc read buffer is about
+> to be freed, so that's pointless.
+> 
+> Resetting the ldisc data fields is pointless as well since that
+> structure is about to be freed.
+> 
+> Resetting tty->receive_room is unnecessary, as it will be properly
+> reset if a new ldisc is reopened. Besides, resetting the original
+> receive_room value would be wrong since the read buffer will be
+> gone.
+> 
+> Since the packet mode flush is observable from userspace, this
+> behavior has been preserved.
 
-Why did you move with that function? It makes the patch unnecessarily
-bigger (and harder for a review).
+This one looks good to me.
 
 -- 
 js
