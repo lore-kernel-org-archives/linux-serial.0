@@ -1,46 +1,95 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH v3 02/23] n_tty: Factor packet mode status change for
- reuse
-Date: Thu, 07 Feb 2013 15:51:40 +0100
-Message-ID: <5113BF7C.5060201@suse.cz>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-3-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 04/23] tty: Refactor wait for ldisc refs out of tty_ldisc_hangup()
+Date: Thu, 07 Feb 2013 16:11:52 +0100
+Message-ID: <5113C438.1000709@suse.cz>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-5-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ea0-f173.google.com ([209.85.215.173]:62017 "EHLO
-	mail-ea0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755589Ab3BGO6b (ORCPT
+Received: from mail-ea0-f169.google.com ([209.85.215.169]:37695 "EHLO
+	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757088Ab3BGPL4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Feb 2013 09:58:31 -0500
-In-Reply-To: <1360095638-6624-3-git-send-email-peter@hurleysoftware.com>
+	Thu, 7 Feb 2013 10:11:56 -0500
+In-Reply-To: <1360095638-6624-5-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
 
 On 02/05/2013 09:20 PM, Peter Hurley wrote:
-> Factor the packet mode status change from n_tty_flush_buffer
-> for use by follow-on patch.
+> Refactor tty_ldisc_hangup() to extract standalone function,
+> tty_ldisc_hangup_wait_idle(), to wait for ldisc references
+> to be released.
 > 
 > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 > ---
->  drivers/tty/n_tty.c | 24 ++++++++++++++----------
->  1 file changed, 14 insertions(+), 10 deletions(-)
+>  drivers/tty/tty_ldisc.c | 54 ++++++++++++++++++++++++++++++++-----------------
+>  1 file changed, 36 insertions(+), 18 deletions(-)
 > 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index bf6958b..7194a33 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -237,6 +237,18 @@ static void reset_buffer_flags(struct tty_struct *tty)
->  	n_tty_set_room(tty);
+> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+> index 904bf75..70d2b86 100644
+> --- a/drivers/tty/tty_ldisc.c
+> +++ b/drivers/tty/tty_ldisc.c
+> @@ -551,6 +551,41 @@ static int tty_ldisc_halt(struct tty_struct *tty)
 >  }
 >  
-> +static void packet_mode_flush(struct tty_struct *tty)
+>  /**
+> + *	tty_ldisc_hangup_wait_idle - wait for the ldisc to become idle
+> + *	@tty: tty to wait for
+> + *
+> + *	Wait for the line discipline to become idle. The discipline must
+> + *	have been halted for this to guarantee it remains idle.
+> + *
+> + *	Caller must hold legacy and ->ldisc_mutex.
+> + */
+> +static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
+> +{
+> +	while (tty->ldisc) {	/* Not yet closed */
+> +		if (atomic_read(&tty->ldisc->users) != 1) {
+> +			char cur_n[TASK_COMM_LEN], tty_n[64];
+> +			long timeout = 3 * HZ;
+> +			tty_unlock(tty);
+> +
+> +			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
+> +				timeout = MAX_SCHEDULE_TIMEOUT;
+> +				printk_ratelimited(KERN_WARNING
+> +					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
+> +					__func__, get_task_comm(cur_n, current),
+> +					tty_name(tty, tty_n));
+> +			}
+> +			/* must reacquire both locks and preserve lock order */
+> +			mutex_unlock(&tty->ldisc_mutex);
+> +			tty_lock(tty);
+> +			mutex_lock(&tty->ldisc_mutex);
+> +			continue;
+> +		}
+> +		break;
 
-I prefer naming functions according the name space they live in. In this
-case n_tty_flush_packet_mode would be much better. Other than that this
-one looks good.
+That continue and break at the end of the loop look weird.
+
+What about:
+while (tty->ldisc) {
+  if (atomic_read(&tty->ldisc->users) == 1)
+     break;
+  THE_REST_OF_THE_BODY_WITHOUT_CONTINUE
+}
+
+Or even:
+while (tty->ldisc && atomic_read(&tty->ldisc->users) != 1) {
+  THE_REST_OF_THE_BODY_WITHOUT_CONTINUE
+}
+
+For me, this does not look so hard to understand as it is w/ cont+brk now.
+
+And now, when we have a separate function, the declarations would look
+nicer to be at the beginning of the function.
+
+> +	}
+> +	return !!(tty->ldisc);
+
+Just a nit, the parenthesis are not needed.
 
 -- 
 js
