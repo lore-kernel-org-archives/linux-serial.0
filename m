@@ -1,38 +1,90 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [RFC PATCH] ACPI / serial: Add UART change_pm support with ACPI
- power domain
-Date: Thu, 7 Feb 2013 00:38:55 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88BF7086@SHSMSX101.ccr.corp.intel.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
- <69483f548e2d5476b8e1ce530e6910bfbf770d3d.1360131884.git.lv.zheng@intel.com>
- <20130206190728.GA32275@kroah.com> <14333377.SHpFl2uDhh@vostro.rjw.lan>
- <20130206213839.GB31339@kroah.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH v3 01/23] tty: Add diagnostic for halted line discipline
+Date: Thu, 07 Feb 2013 15:50:35 +0100
+Message-ID: <5113BF3B.3060307@suse.cz>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-1-git-send-email-peter@hurleysoftware.com> <1360095638-6624-2-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20130206213839.GB31339@kroah.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@sisk.pl>
-Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, "Brown, Len" <len.brown@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, "Krogerus, Heikki" <heikki.krogerus@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f48.google.com ([74.125.83.48]:37741 "EHLO
+	mail-ee0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754832Ab3BGOuk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Feb 2013 09:50:40 -0500
+In-Reply-To: <1360095638-6624-2-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
 
-> > > So you are going to be sticking acpi_* calls into common core places
-> > > all over the kernel for stuff like this?
-> > >
-> > > What's wrong with using the existing pm callbacks that are there for
-> > > all platforms to use?
-> >
-> > I think that this just hasn't been thought through sufficiently (again).
-> 
-> Ugh.  Ok, I now am going to just quietly drop all intel.com patches to the
-> tty/serial layer unless they have at least 2 signed-off-by: lines, one of which is
-> by someone who is "well known" to me as being sane.
+On 02/05/2013 09:20 PM, Peter Hurley wrote:
+> --- a/drivers/tty/tty_ldisc.c
+> +++ b/drivers/tty/tty_ldisc.c
+> @@ -375,6 +375,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
+>  
+>  void tty_ldisc_enable(struct tty_struct *tty)
+>  {
+> +	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+>  	set_bit(TTY_LDISC, &tty->flags);
+>  	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
+>  	wake_up(&tty_ldisc_wait);
+> @@ -498,26 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+>  }
+>  
+>  /**
+> - *	tty_ldisc_halt		-	shut down the line discipline
+> - *	@tty: tty device
+> - *
+> - *	Shut down the line discipline and work queue for this tty device.
+> - *	The TTY_LDISC flag being cleared ensures no further references can
+> - *	be obtained while the delayed work queue halt ensures that no more
+> - *	data is fed to the ldisc.
+> - *
+> - *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
+> - *	in order to make sure any currently executing ldisc work is also
+> - *	flushed.
+> - */
+> -
+> -static int tty_ldisc_halt(struct tty_struct *tty)
+> -{
+> -	clear_bit(TTY_LDISC, &tty->flags);
+> -	return cancel_work_sync(&tty->port->buf.work);
+> -}
+> -
+> -/**
+>   *	tty_ldisc_flush_works	-	flush all works of a tty
+>   *	@tty: tty device to flush works for
+>   *
+> @@ -547,6 +528,29 @@ static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
+>  }
+>  
+>  /**
+> + *	tty_ldisc_halt		-	shut down the line discipline
+> + *	@tty: tty device
+> + *
+> + *	Shut down the line discipline and work queue for this tty device.
+> + *	The TTY_LDISC flag being cleared ensures no further references can
+> + *	be obtained while the delayed work queue halt ensures that no more
+> + *	data is fed to the ldisc.
+> + *
+> + *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
+> + *	in order to make sure any currently executing ldisc work is also
+> + *	flushed.
+> + */
+> +
+> +static int tty_ldisc_halt(struct tty_struct *tty)
+> +{
+> +	int scheduled;
+> +	clear_bit(TTY_LDISC, &tty->flags);
+> +	scheduled = cancel_work_sync(&tty->port->buf.work);
+> +	set_bit(TTY_LDISC_HALTED, &tty->flags);
+> +	return scheduled;
+> +}
 
-Sorry for the noise. Please ignore.
-It's sent by wrong typing "gitsendemail acpi-uart" instead of "gitsendemail intel-uart" where gitsendemail is my patch sending script.
-It should be reviewed internally prior to be sent to the public, collecting advices about where should be the better place to implement an open/close based PM.
+Why did you move with that function? It makes the patch unnecessarily
+bigger (and harder for a review).
 
-Thanks
--Lv
+-- 
+js
+suse labs
