@@ -1,7 +1,8 @@
 From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 6/9] pps: Additional cleanups in uart_handle_dcd_change
-Date: Sun, 10 Feb 2013 04:44:30 -0500
-Message-ID: <a2516ce36544efd71cffb109effc6ce0e4c0c1d2.1360677367.git.linux@horizon.com>
+Subject: [PATCH v2 9/9] tty/tty_ldisc.c: use test_and_clear_bit in
+ tty_ldisc_close
+Date: Fri, 8 Feb 2013 01:50:18 -0500
+Message-ID: <ba7ad5b9cd57cae807823676f5a386ca57e997fe.1360677367.git.linux@horizon.com>
 References: <cover.1360677367.git.linux@horizon.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1360677367.git.linux@horizon.com>
@@ -10,50 +11,26 @@ To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundati
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
 List-Id: linux-serial@vger.kernel.org
 
-An extension of the previous commit, there is no semantic change
-here, just fewer lines of source code.
+We have a function to test and clear a bit in one step, so use it.
 
 Signed-off-by: George Spelvin <linux@horizon.com>
 ---
- drivers/tty/serial/serial_core.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/tty/tty_ldisc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 23fc494..b3a204b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2715,15 +2715,15 @@ EXPORT_SYMBOL(uart_match_port);
-  */
- void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index c578229..4606ab9 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -453,8 +453,7 @@ static int tty_ldisc_open(struct tty_struct *tty, struct tty_ldisc *ld)
+ 
+ static void tty_ldisc_close(struct tty_struct *tty, struct tty_ldisc *ld)
  {
--	struct uart_state *state = uport->state;
--	struct tty_port *port = &state->port;
--	struct tty_ldisc *ld = NULL;
-+	struct tty_port *port = &uport->state->port;
- 	struct tty_struct *tty = port->tty;
-+	struct tty_ldisc *ld = tty ? tty_ldisc_ref(tty) : NULL;
- 
--	if (tty)
--	        ld = tty_ldisc_ref(tty);
--	if (ld && ld->ops->dcd_change)
--		ld->ops->dcd_change(tty, status);
-+	if (ld) {
-+		if (ld->ops->dcd_change)
-+			ld->ops->dcd_change(tty, status);
-+		tty_ldisc_deref(ld);
-+	}
- 
- 	uport->icount.dcd++;
- #ifdef CONFIG_HARD_PPS
-@@ -2737,9 +2737,6 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
- 		else if (tty)
- 			tty_hangup(tty);
- 	}
--
--	if (ld)
--		tty_ldisc_deref(ld);
+-	WARN_ON(!test_bit(TTY_LDISC_OPEN, &tty->flags));
+-	clear_bit(TTY_LDISC_OPEN, &tty->flags);
++	WARN_ON(!test_and_clear_bit(TTY_LDISC_OPEN, &tty->flags));
+ 	if (ld->ops->close)
+ 		ld->ops->close(tty);
  }
- EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
- 
 -- 
 1.8.1.3
