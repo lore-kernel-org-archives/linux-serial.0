@@ -1,88 +1,139 @@
-From: George Spelvin <linux@horizon.com>
-Subject: [PATCH 6/7] pps: Use pps_lookup_dev to reduce ldisc coupling
-Date: Fri, 8 Feb 2013 01:48:37 -0500
-Message-ID: <81becf8131bcc289f2142d3419c13030906ffe6d.1360307140.git.linux@horizon.com>
-References: <cover.1360307140.git.linux@horizon.com>
+From: Guido Classen <clagix@gmail.com>
+Subject: Re: RS485 implementation questions (primarly in atmel_serial.c)
+Date: Fri, 8 Feb 2013 13:12:13 +0100
+Message-ID: <CAJa4H3fQ_khDVNcSu+39C+oZyc268YUgq9ahzt2ugk1_6eqYfw@mail.gmail.com>
+References: <CAJa4H3cYT6QOaacWEy2yZjb0hM3m4p+0L2_fXBYv8tWajYkmGw@mail.gmail.com>
+	<5108F641.40007@evidence.eu.com>
+	<510A3740.6060809@evidence.eu.com>
+	<CAJa4H3dG4V6viRbVQBgHQKtJr4Sz26mkhj8-kT7RFaLGRFXW1g@mail.gmail.com>
+	<51125488.7090408@evidence.eu.com>
+	<CAJa4H3eNAS7B+aGnN0D3WJMPVtE=sxp5HhRMutq-TrBOmXb7dw@mail.gmail.com>
+	<5114B500.7050007@evidence.eu.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=f46d04016c3536861704d5357868
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from science.horizon.com ([71.41.210.146]:36263 "HELO
-	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1946112Ab3BHJQh (ORCPT
+Received: from mail-lb0-f179.google.com ([209.85.217.179]:53061 "EHLO
+	mail-lb0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1946332Ab3BHMMP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Feb 2013 04:16:37 -0500
-In-Reply-To: <cover.1360307140.git.linux@horizon.com>
+	Fri, 8 Feb 2013 07:12:15 -0500
+Received: by mail-lb0-f179.google.com with SMTP id j14so2865714lbo.24
+        for <linux-serial@vger.kernel.org>; Fri, 08 Feb 2013 04:12:13 -0800 (PST)
+In-Reply-To: <5114B500.7050007@evidence.eu.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, peter@hurleysoftware.com
-Cc: linux@horizon.com, linux-kernel@vger.kernel.org, giometti@linux.it
+To: Claudio Scordino <claudio@evidence.eu.com>, linux-serial@vger.kernel.org
 
-Now that N_TTY uses tty->disc_data for its private data,
-'subclass' ldiscs cannot use ->disc_data for their own private data.
-(This is a regression is v3.8-rc1)
+--f46d04016c3536861704d5357868
+Content-Type: text/plain; charset=ISO-8859-1
 
-Use pps_lookup_dev to associate the tty with the pps source instead.
+On Fri, Feb 8, 2013 at 9:19 AM, Claudio Scordino
+<claudio@evidence.eu.com> wrote:
+>> The sysfs entry ttgr is there, but I couldn't manage to assign a
+>> value. It is always read back as zero and seams to have no effect on
+>> the gap between sent chars. I am not so familiar with sysfs, but I
+>> could imagine that something white the deduction of the port pointer
+>> may be wrong.
+>
+>
+> Quite strange.
+>
+I found my mistake, the sysfs entries are lying under
+/sys/devices/platform/atmel_usart.*
+as expected, but they are numbered different to the /dev/ttyAT*
+devices. So I used the entry of the DBGU. The DBGU lacks some features
+the normal USARTs have include the TTGR. I wonder why the atmel_serial
+driver not checks if the device is the DBGU or a USART and in case
+DBGU don't allow to set features (example character length) not
+supported?
 
-Signed-off-by: George Spelvin <linux@horizon.com>
----
- drivers/pps/clients/pps-ldisc.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+I have split you patch in two parts. I think the TTGR sysfs entries
+are a different concern than the RS485 timing issues. Please find
+attached the TTGR patch with some modifications I made:
 
-diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
-index e5a702a..5c22c5f 100644
---- a/drivers/pps/clients/pps-ldisc.c
-+++ b/drivers/pps/clients/pps-ldisc.c
-@@ -32,10 +32,12 @@
- static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status)
- {
- 	struct pps_event_time ts;
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps;
- 
- 	pps_get_ts(&ts);
- 
-+	pps = pps_lookup_dev(tty);
-+
- 	/*
- 	 * This should never fail, but the ldisc locking is very
- 	 * convoluted, so don't crash just in case.
-@@ -75,9 +77,9 @@ static int pps_tty_open(struct tty_struct *tty)
- 		pr_err("cannot register PPS source \"%s\"\n", info.path);
- 		return -ENOMEM;
- 	}
--	tty->disc_data = pps;
-+	pps->lookup_cookie = tty;
- 
--	/* Should open N_TTY ldisc too */
-+	/* Now open the base class N_TTY ldisc */
- 	ret = alias_n_tty_open(tty);
- 	if (ret < 0) {
- 		pr_err("cannot open tty ldisc \"%s\"\n", info.path);
-@@ -89,7 +91,7 @@ static int pps_tty_open(struct tty_struct *tty)
- 	return 0;
- 
- err_unregister:
--	tty->disc_data = NULL;
-+	pps->lookup_cookie = NULL;
- 	pps_unregister_source(pps);
- 	return ret;
- }
-@@ -98,12 +100,15 @@ static void (*alias_n_tty_close)(struct tty_struct *tty);
- 
- static void pps_tty_close(struct tty_struct *tty)
- {
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps = pps_lookup_dev(tty);
- 
- 	alias_n_tty_close(tty);
- 
--	tty->disc_data = NULL;
-+	if (WARN_ON(!pps))
-+		return;
-+
- 	dev_info(pps->dev, "removed\n");
-+	pps->lookup_cookie = NULL;
- 	pps_unregister_source(pps);
- }
- 
--- 
-1.8.1.2
+  - simplify obtaining the uart_port pointer using dev_get_drvdata()
+  - present ttgr sysfs entry only when port is not the DBGU
+    The function is_uart_port_dbgu() is a kind of hack, I found no
+better way to determinate the
+    type of the port. Perhaps we should add a is_dbgu field to the
+atmel_uart_data structure which
+    is set by the CPU specific initialization.
 
+Next I will have a look on the RS485 timing.
+
+Regards,
+  Guido
+
+--f46d04016c3536861704d5357868
+Content-Type: application/octet-stream;
+	name="0001-add-generic-atmel-serial-TTGR-support.patch"
+Content-Disposition: attachment;
+	filename="0001-add-generic-atmel-serial-TTGR-support.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hcxaokit0
+
+RnJvbSA2MDE0OWYwZWI5NTQ1YTAxZmQ2Y2UyOWJlZDEzNzE3Y2U1OTI2ZGY3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBHdWlkbyBDbGFzc2VuIDxjbGFnaXhAZ21haWwuY29tPgpEYXRl
+OiBGcmksIDggRmViIDIwMTMgMTI6NDg6NDAgKzAxMDAKU3ViamVjdDogW1BBVENIXSBhZGQgZ2Vu
+ZXJpYyBhdG1lbCBzZXJpYWwgVFRHUiBzdXBwb3J0CgpUaGlzIHBhdGNoIGFkZHMgYW4gZW50cnkg
+aW4gc3lzLyB0byBnZXQvc2V0IHRoZSBUVEdSIHJlZ2lzdGVyIGZvciB0aGlzCnNwZWNpZmljIGRy
+aXZlci4gV2hlbiBzZXQgZ3JlYXRlciB0aGFuIHplcm8gdGhlIGRyaXZlciB3aWxsIGluc2VydCBn
+YXBzCmJldHdlZW4gdGhlIHNlbnQgY2hhcmFjdGVycy4gVGhlIGxlbmd0aCBvZiB0aGUgZ2FwcyB3
+aWxsIGJlIHNwZWNpZmllZCBpbgpiaXQgdGltZXMuIFRoZSBmZWF0dXJlIGNhbiBiZSB1c2VkIGVp
+dGhlciBpbiBSUzIzMiBhbmQgUlM0ODUgbW9kZSB0bwpzbG93IGRvd24gdHJhbnNtaXNzaW9uIGlm
+IHRoZSByZWNlaXZpbmcgZGV2aWNlIGlzIG5vdCBjYXBhYmxlIHRvIHByb2Nlc3MKaW5jb21pbmcg
+Y2hhcmFjdGVycyBhdCBsaW5lIHNwZWVkLgoKU2lnbmVkLW9mZi1ieTogQ2xhdWRpbyBTY29yZGlu
+byA8Y2xhdWRpb0BldmlkZW5jZS5ldS5jb20+ClNpZ25lZC1vZmYtYnk6IEd1aWRvIENsYXNzZW4g
+PGNsYWdpeEBnbWFpbC5jb20+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5j
+IHwgICA0NiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAxIGZpbGUgY2hh
+bmdlZCwgNDYgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9h
+dG1lbF9zZXJpYWwuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwppbmRleCA4
+Y2MxZTg0Li5hZWNhOWQ1IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2Vy
+aWFsLmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCkBAIC01OSw2ICs1
+OSw5IEBACiAjZGVmaW5lIFNVUFBPUlRfU1lTUlEKICNlbmRpZgogCisvKiBNYXhpbXVtIHZhbHVl
+IG9mIFRUR1IgYWNjb3JkaW5nIHRvIEF0bWVsIGRhdGFzaGVldCAqLworI2RlZmluZSBNQVhfVFRH
+Ul9WQUxVRQkJMjU1CisKICNpbmNsdWRlIDxsaW51eC9zZXJpYWxfY29yZS5oPgogCiBzdGF0aWMg
+dm9pZCBhdG1lbF9zdGFydF9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KTsKQEAgLTk5LDYgKzEw
+Miw3IEBAIHN0YXRpYyB2b2lkIGF0bWVsX3N0b3Bfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCk7
+CiAjZGVmaW5lIFVBUlRfUFVUX0JSR1IocG9ydCx2KQlfX3Jhd193cml0ZWwodiwgKHBvcnQpLT5t
+ZW1iYXNlICsgQVRNRUxfVVNfQlJHUikKICNkZWZpbmUgVUFSVF9QVVRfUlRPUihwb3J0LHYpCV9f
+cmF3X3dyaXRlbCh2LCAocG9ydCktPm1lbWJhc2UgKyBBVE1FTF9VU19SVE9SKQogI2RlZmluZSBV
+QVJUX1BVVF9UVEdSKHBvcnQsIHYpCV9fcmF3X3dyaXRlbCh2LCAocG9ydCktPm1lbWJhc2UgKyBB
+VE1FTF9VU19UVEdSKQorI2RlZmluZSBVQVJUX0dFVF9UVEdSKHBvcnQpCV9fcmF3X3JlYWRsKChw
+b3J0KS0+bWVtYmFzZSArIEFUTUVMX1VTX1RUR1IpCiAKICAvKiBQREMgcmVnaXN0ZXJzICovCiAj
+ZGVmaW5lIFVBUlRfUFVUX1BUQ1IocG9ydCx2KQlfX3Jhd193cml0ZWwodiwgKHBvcnQpLT5tZW1i
+YXNlICsgQVRNRUxfUERDX1BUQ1IpCkBAIC0xODEsNiArMTg1LDE1IEBAIHRvX2F0bWVsX3VhcnRf
+cG9ydChzdHJ1Y3QgdWFydF9wb3J0ICp1YXJ0KQogCXJldHVybiBjb250YWluZXJfb2YodWFydCwg
+c3RydWN0IGF0bWVsX3VhcnRfcG9ydCwgdWFydCk7CiB9CiAKK3N0YXRpYyBpbmxpbmUgYm9vbAor
+aXNfdWFydF9wb3J0X2RiZ3Uoc3RydWN0IHVhcnRfcG9ydCAqdWFydCkKK3sKKwlzdHJ1Y3QgYXRt
+ZWxfdWFydF9kYXRhICphdG1lbF91YXJ0X2RhdGEgPQorCQl0b19wbGF0Zm9ybV9kZXZpY2UoKHVh
+cnQpLT5kZXYpLT5kZXYucGxhdGZvcm1fZGF0YTsKKwlyZXR1cm4gYXRtZWxfdWFydF9kYXRhLT51
+c2VfZG1hX3R4ID09IDAKKwkJJiYgYXRtZWxfdWFydF9kYXRhLT51c2VfZG1hX3J4ID09IDA7Cit9
+CisKICNpZmRlZiBDT05GSUdfU0VSSUFMX0FUTUVMX1BEQwogc3RhdGljIGJvb2wgYXRtZWxfdXNl
+X2RtYV9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQogewpAQCAtMTQyMyw2ICsxNDM2LDMzIEBA
+IHN0YXRpYyBzdHJ1Y3QgdWFydF9vcHMgYXRtZWxfcG9wcyA9IHsKICNlbmRpZgogfTsKIAorLyog
+RW50cnkgaW4gc3lzLyB0byBnZXQvc2V0IFRUR1IgcmVnaXN0ZXIgKi8KKworc3RhdGljIHNzaXpl
+X3Qgc2V0X3R0Z3Ioc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAq
+YXR0ciwKKwkJCWNvbnN0IGNoYXIgKmJ1Ziwgc2l6ZV90IGxlbikKK3sKKwlzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0ID0gZGV2X2dldF9kcnZkYXRhKGRldik7CisJdW5zaWduZWQgaW50IHZhbHVlOwor
+CWlmIChrc3RydG91aW50KGJ1ZiwgMTAsICZ2YWx1ZSkpCisJCXJldHVybiAwOworCWlmICh2YWx1
+ZSA+IE1BWF9UVEdSX1ZBTFVFKQorCQl2YWx1ZSA9IE1BWF9UVEdSX1ZBTFVFOworCVVBUlRfUFVU
+X1RUR1IocG9ydCwgdmFsdWUpOworCXJldHVybiBzdHJubGVuKGJ1ZiwgUEFHRV9TSVpFKTsKK30K
+Kworc3RhdGljIHNzaXplX3QgZ2V0X3R0Z3Ioc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2
+aWNlX2F0dHJpYnV0ZSAqYXR0ciwKKwkJCWNoYXIgKmJ1ZikKK3sKKwlzdHJ1Y3QgdWFydF9wb3J0
+ICpwb3J0ID0gZGV2X2dldF9kcnZkYXRhKGRldik7CisJdW5zaWduZWQgaW50IHZhbHVlOworCXZh
+bHVlID0gVUFSVF9HRVRfVFRHUihwb3J0KTsKKwlyZXR1cm4gc25wcmludGYoYnVmLCBQQUdFX1NJ
+WkUsICIldVxuIiwgdmFsdWUpOworfQorCitzdGF0aWMgREVWSUNFX0FUVFIodHRnciwgMDY0NCwg
+Z2V0X3R0Z3IsIHNldF90dGdyKTsKKworCiBzdGF0aWMgdm9pZCBfX2RldmluaXQgYXRtZWxfb2Zf
+aW5pdF9wb3J0KHN0cnVjdCBhdG1lbF91YXJ0X3BvcnQgKmF0bWVsX3BvcnQsCiAJCQkJCSBzdHJ1
+Y3QgZGV2aWNlX25vZGUgKm5wKQogewpAQCAtMTgzOSw2ICsxODc5LDkgQEAgc3RhdGljIGludCBf
+X2RldmluaXQgYXRtZWxfc2VyaWFsX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
+CiAJCVVBUlRfUFVUX0NSKCZwb3J0LT51YXJ0LCBBVE1FTF9VU19SVFNFTik7CiAJfQogCisJaWYg
+KCFpc191YXJ0X3BvcnRfZGJndSgmcG9ydC0+dWFydCkpCisJCWRldmljZV9jcmVhdGVfZmlsZSgm
+KHBkZXYtPmRldiksICZkZXZfYXR0cl90dGdyKTsKKwogCXJldHVybiAwOwogCiBlcnJfYWRkX3Bv
+cnQ6CkBAIC0xODczLDYgKzE5MTYsOSBAQCBzdGF0aWMgaW50IF9fZGV2ZXhpdCBhdG1lbF9zZXJp
+YWxfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAKIAljbGtfcHV0KGF0bWVs
+X3BvcnQtPmNsayk7CiAKKwlpZiAoIWlzX3VhcnRfcG9ydF9kYmd1KHBvcnQpKQorCQlkZXZpY2Vf
+cmVtb3ZlX2ZpbGUoJihwZGV2LT5kZXYpLCAmZGV2X2F0dHJfdHRncik7CisKIAlyZXR1cm4gcmV0
+OwogfQogCi0tIAoxLjcuMTAuNAoK
+--f46d04016c3536861704d5357868--
