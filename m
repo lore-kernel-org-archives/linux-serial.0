@@ -1,102 +1,53 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 12/23] tty: Kick waiters _after_ the ldisc is locked
-Date: Thu, 07 Feb 2013 22:16:58 -0500
-Message-ID: <1360293418.3544.83.camel@thor.lan>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
-	 <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-	 <1360095638-6624-13-git-send-email-peter@hurleysoftware.com>
-	 <5113CCAF.8030600@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: George Spelvin <linux@horizon.com>
+Subject: [PATCH 0/7] 3.8-rc regression with pps-ldisc due to 70ece7a731
+Date: Fri, 8 Feb 2013 02:05:40 -0500
+Message-ID: <cover.1360307140.git.linux@horizon.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:55074 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1759602Ab3BHDRL (ORCPT
+Received: from science.horizon.com ([71.41.210.146]:36256 "HELO
+	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1946082Ab3BHJQg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Feb 2013 22:17:11 -0500
-In-Reply-To: <5113CCAF.8030600@suse.cz>
+	Fri, 8 Feb 2013 04:16:36 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
+To: linux-serial@vger.kernel.org, peter@hurleysoftware.com
+Cc: linux@horizon.com, linux-kernel@vger.kernel.org, giometti@linux.it
 
-On Thu, 2013-02-07 at 16:47 +0100, Jiri Slaby wrote:
-> On 02/05/2013 09:20 PM, Peter Hurley wrote:
-> 
-> The question is obvious: why?
-> 
-> The waiters usually don't care about ldisc.
+The standard N_TTY line discipline used to not use the tty->disc_data
+field, so N_PPS felt free to use it.  That has now changed, requiring
+that N_PPS use a different method to find its private data.
 
-This patch really needed a decent commit message, but this isn't a fix,
-per se.
+(In the current, buggy, state, N_PPS follows a wild pointer and explodes
+in an interrupt hander as soon as a pulse actually arrives.)
 
-While I was auditing the ldisc hangup, I realized that when a reader is
-woken from sleeping in n_tty_read() and loops back around because there
-is more room in the reader's buffer (nr > 0), input_available_p() will
-schedule buffer work and wait for it to complete before testing if the
-tty is hung up.
+Strictly speaking, only patches 5 and 6 are the bugfix proper; the
+rest are various cleanups enabled by the looser coupling of the
+line disciplines.
 
-This change ensures that flush_to_ldisc() sees a halted ldisc and
-promptly returns.  A blocking reader whose read_buf is empty is the most
-likely state when a hangup occurs.
+George Spelvin (4):
+  pps: Additional cleanups in uart_handle_dcd_change
+  pps: Add pps_lookup_dev() function
+  pps: Use pps_lookup_dev to reduce ldisc coupling
+  tty/tty_ldisc.c: use test_and_clear_bit in tty_ldisc_close
 
-I didn't include it tty_ldisc_halt(), because tty_set_ldisc() can't kick
-readers out of their i/o loops and tty_ldisc_release() has no waiters.
+Peter Hurley (3):
+  pps: Decouple N_PPS from N_TTY
+  pps: Don't crash the machine when exiting will do
+  tty: Remove ancient hardpps()
 
-Even if the change is nixed, the comments should be changed; the FIXME
-is from before waiting for readers to exit their i/o loops.
+ drivers/pps/clients/pps-ldisc.c     | 33 +++++++++++++++++++++++----------
+ drivers/pps/pps.c                   | 35 +++++++++++++++++++++++++++++++++++
+ drivers/staging/speakup/selection.c |  1 +
+ drivers/tty/amiserial.c             |  5 -----
+ drivers/tty/n_tty.c                 |  3 ++-
+ drivers/tty/serial/serial_core.c    | 24 +++++++-----------------
+ drivers/tty/tty_buffer.c            |  1 +
+ drivers/tty/tty_ldisc.c             |  3 +--
+ include/linux/pps_kernel.h          | 17 ++++++++++++++---
+ include/linux/serial_core.h         |  1 -
+ include/linux/tty_ldisc.h           | 11 ++++-------
+ 11 files changed, 88 insertions(+), 46 deletions(-)
 
----- separate but related discussion ----
-
-Another thing to note is this really does nothing to address the problem
-of a slave pty being unable to read all the data written by the master,
-if the master is closed with a lot of data in the tty buffer. In this
-case, when the slave is hungup as a result of the master closing, it's
-ldisc will be halted, preventing the tty_buffer from pushing more data. 
-
-In my opinion, this is an important fixme.  Almost as important as
-replacing the TTY_LDISC flag + reference count with a rwsem to get
-lockdep support...
-
-
-> > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> > ---
-> >  drivers/tty/tty_ldisc.c | 12 ++++++------
-> >  1 file changed, 6 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-> > index c903778..8a86a72 100644
-> > --- a/drivers/tty/tty_ldisc.c
-> > +++ b/drivers/tty/tty_ldisc.c
-> > @@ -604,6 +604,12 @@ static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
-> >  
-> >  	clear_bit(TTY_LDISC, &tty->flags);
-> >  
-> > +	/* Wakeup waiters so they can discover the tty is hupping, abort
-> > +	 * their i/o loops, and release their ldisc references
-> > +	 */
-> > +	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
-> > +	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
-> > +
-> >  	if (tty->ldisc) {	/* Not yet closed */
-> >  		tty_unlock(tty);
-> >  
-> > @@ -875,12 +881,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
-> >  		tty_ldisc_deref(ld);
-> >  	}
-> >  	/*
-> > -	 * FIXME: Once we trust the LDISC code better we can wait here for
-> > -	 * ldisc completion and fix the driver call race
-> > -	 */
-> > -	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
-> > -	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
-> > -	/*
-> >  	 * Shutdown the current line discipline, and reset it to
-> >  	 * N_TTY if need be.
-> >  	 *
-> > 
-> 
-> 
-
+-- 
+1.8.1.2
 
