@@ -1,31 +1,26 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: TTY/serial tree now closed for 3.9
-Date: Fri, 8 Feb 2013 16:04:08 -0800
-Message-ID: <20130209000408.GB29346@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+From: "George Spelvin" <linux@horizon.com>
+Subject: Re: [PATCH 0/7] 3.8-rc regression with pps-ldisc due to 70ece7a731
+Date: 8 Feb 2013 19:22:58 -0500
+Message-ID: <20130209002258.15821.qmail@science.horizon.com>
+References: <20130208233656.GA7700@kroah.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from science.horizon.com ([71.41.210.146]:21083 "HELO
+	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1760395Ab3BIAXA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 8 Feb 2013 19:23:00 -0500
+In-Reply-To: <20130208233656.GA7700@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux@horizon.com
+Cc: giometti@linux.it, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter@hurleysoftware.com
 
-Hi all,
+> As this is a breakage in 3.8-rc1, is there any way to pull out patches 5
+> and 6 in a format that I can apply them now, or in a way that I can get
+> I can't apply all of these to 3.8-final now, as it's way too late.
 
-With the release of the 3.8-rc7 kernel, I think it's time to close the
-TTY/serial tree for new features / cleanups for 3.9.  So I'm closing my
-tree, and will only be applying obvious bugfixes or regressions to it
-until 3.9-rc1 comes out.
+I'll reorder them for you.  But Philipp will be bitterly disappointed. :-)
 
-You can keep sending me patches for the tree that don't fit the "bugfix"
-category, but note that I'll be storing them away to wait for 3.9-rc1
-comes out, which might be a few weeks, so please be patient.
-
-The TTY tree right now contains 120 patches, and the diffstat
-summary is:
-	 254 files changed, 6720 insertions(+), 2528 deletions(-)
-
-thanks,
-
-greg k-h
+The other cleanups are far smaller and lower risk than the infrastructure
+added in #5; I was just being OCD about committing the "least patchable
+unit".
