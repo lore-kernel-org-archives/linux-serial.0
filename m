@@ -1,7 +1,7 @@
 From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 1/9] pps: Add pps_lookup_dev() function
-Date: Sun, 10 Feb 2013 04:08:32 -0500
-Message-ID: <4b684002d80ec5d05df2c4d34c164330143e82d5.1360677367.git.linux@horizon.com>
+Subject: [PATCH v2 6/9] pps: Additional cleanups in uart_handle_dcd_change
+Date: Sun, 10 Feb 2013 04:44:30 -0500
+Message-ID: <a2516ce36544efd71cffb109effc6ce0e4c0c1d2.1360677367.git.linux@horizon.com>
 References: <cover.1360677367.git.linux@horizon.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1360677367.git.linux@horizon.com>
@@ -10,122 +10,50 @@ To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundati
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
 List-Id: linux-serial@vger.kernel.org
 
-The PPS serial line discipline wants to attach a PPS device to a tty
-without changing the tty code to add a struct pps_device * pointer.
-
-Since the number of PPS devices in a typical system is generally very low
-(n=1 is by far the most common), it's practical to search the entire list
-of allocated pps devices.  (We capture the timestamp before the lookup,
-so the timing isn't affected.)
-
-It is a bit ugly that this function, which is part of the in-kernel
-PPS API, has to be in pps.c as opposed to kapi,c, but that's not
-something that affects users.
+An extension of the previous commit, there is no semantic change
+here, just fewer lines of source code.
 
 Signed-off-by: George Spelvin <linux@horizon.com>
 ---
- drivers/pps/pps.c          | 33 +++++++++++++++++++++++++++++++++
- include/linux/pps_kernel.h | 17 ++++++++++++++---
- 2 files changed, 47 insertions(+), 3 deletions(-)
+ drivers/tty/serial/serial_core.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pps/pps.c b/drivers/pps/pps.c
-index 2420d5a..a70e384 100644
---- a/drivers/pps/pps.c
-+++ b/drivers/pps/pps.c
-@@ -352,11 +352,44 @@ free_idr:
- 
- void pps_unregister_cdev(struct pps_device *pps)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 23fc494..b3a204b 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2715,15 +2715,15 @@ EXPORT_SYMBOL(uart_match_port);
+  */
+ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
  {
-+	pps->lookup_cookie = NULL;
- 	device_destroy(pps_class, pps->dev->devt);
- 	cdev_del(&pps->cdev);
+-	struct uart_state *state = uport->state;
+-	struct tty_port *port = &state->port;
+-	struct tty_ldisc *ld = NULL;
++	struct tty_port *port = &uport->state->port;
+ 	struct tty_struct *tty = port->tty;
++	struct tty_ldisc *ld = tty ? tty_ldisc_ref(tty) : NULL;
+ 
+-	if (tty)
+-	        ld = tty_ldisc_ref(tty);
+-	if (ld && ld->ops->dcd_change)
+-		ld->ops->dcd_change(tty, status);
++	if (ld) {
++		if (ld->ops->dcd_change)
++			ld->ops->dcd_change(tty, status);
++		tty_ldisc_deref(ld);
++	}
+ 
+ 	uport->icount.dcd++;
+ #ifdef CONFIG_HARD_PPS
+@@ -2737,9 +2737,6 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+ 		else if (tty)
+ 			tty_hangup(tty);
+ 	}
+-
+-	if (ld)
+-		tty_ldisc_deref(ld);
  }
+ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
  
- /*
-+ * Look up a pps device by magic cookie.
-+ * The cookie is usually a pointer to some enclosing device, but this
-+ * code doesn't care; you should never be dereferencing it.
-+ *
-+ * This is a bit of a kludge that is currently used only by the PPS
-+ * serial line discipline.  It may need to be tweaked when a second user
-+ * is found.
-+ *
-+ * There is no function interface for setting the lookup_cookie field.
-+ * It's initialized to NULL when the pps device is created, and if a
-+ * client wants to use it, just fill it in afterward.
-+ *
-+ * The cookie is automatically set to NULL in pps_unregister_source()
-+ * so that it will not be used again, even if the pps device cannot
-+ * be removed from the idr due to pending references holding the minor
-+ * number in use.
-+ */
-+struct pps_device *pps_lookup_dev(void const *cookie)
-+{
-+	struct pps_device *pps;
-+	unsigned id;
-+
-+	rcu_read_lock();
-+	idr_for_each_entry(&pps_idr, pps, id)
-+		if (cookie == pps->lookup_cookie)
-+			break;
-+	rcu_read_unlock();
-+	return pps;
-+}
-+EXPORT_SYMBOL(pps_lookup_dev);
-+
-+/*
-  * Module stuff
-  */
- 
-diff --git a/include/linux/pps_kernel.h b/include/linux/pps_kernel.h
-index 0cc45ae..7db3eb9 100644
---- a/include/linux/pps_kernel.h
-+++ b/include/linux/pps_kernel.h
-@@ -43,7 +43,7 @@ struct pps_source_info {
- 			int event, void *data);	/* PPS echo function */
- 
- 	struct module *owner;
--	struct device *dev;
-+	struct device *dev;		/* Parent device for device_create */
- };
- 
- struct pps_event_time {
-@@ -69,6 +69,7 @@ struct pps_device {
- 	wait_queue_head_t queue;		/* PPS event queue */
- 
- 	unsigned int id;			/* PPS source unique ID */
-+	void const *lookup_cookie;		/* pps_lookup_dev only */
- 	struct cdev cdev;
- 	struct device *dev;
- 	struct fasync_struct *async_queue;	/* fasync method */
-@@ -82,16 +83,26 @@ struct pps_device {
- extern struct device_attribute pps_attrs[];
- 
- /*
-+ * Internal functions.
-+ *
-+ * These are not actually part of the exported API, but this is a
-+ * convenient header file to put them in.
-+ */
-+
-+extern int pps_register_cdev(struct pps_device *pps);
-+extern void pps_unregister_cdev(struct pps_device *pps);
-+
-+/*
-  * Exported functions
-  */
- 
- extern struct pps_device *pps_register_source(
- 		struct pps_source_info *info, int default_params);
- extern void pps_unregister_source(struct pps_device *pps);
--extern int pps_register_cdev(struct pps_device *pps);
--extern void pps_unregister_cdev(struct pps_device *pps);
- extern void pps_event(struct pps_device *pps,
- 		struct pps_event_time *ts, int event, void *data);
-+/* Look up a pps device by magic cookie */
-+struct pps_device *pps_lookup_dev(void const *cookie);
- 
- static inline void timespec_to_pps_ktime(struct pps_ktime *kt,
- 		struct timespec ts)
 -- 
 1.8.1.3
