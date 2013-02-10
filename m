@@ -1,78 +1,131 @@
 From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 0/9] 3.8-rc regression with pps-ldisc due to 70ece7a731
-Date: Tue, 12 Feb 2013 08:56:07 -0500
-Message-ID: <cover.1360677367.git.linux@horizon.com>
+Subject: [PATCH v2 1/9] pps: Add pps_lookup_dev() function
+Date: Sun, 10 Feb 2013 04:08:32 -0500
+Message-ID: <4b684002d80ec5d05df2c4d34c164330143e82d5.1360677367.git.linux@horizon.com>
+References: <cover.1360677367.git.linux@horizon.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1360677367.git.linux@horizon.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
 List-Id: linux-serial@vger.kernel.org
 
-The standard N_TTY line discipline used to not use the tty->disc_data
-field, so N_PPS felt free to use it.  That has now changed, requiring
-that N_PPS use a different method to find its private data.
+The PPS serial line discipline wants to attach a PPS device to a tty
+without changing the tty code to add a struct pps_device * pointer.
 
-(In the current, buggy, state, N_PPS follows a wild pointer and explodes
-in an interrupt hander as soon as a pulse actually arrives.)
+Since the number of PPS devices in a typical system is generally very low
+(n=1 is by far the most common), it's practical to search the entire list
+of allocated pps devices.  (We capture the timestamp before the lookup,
+so the timing isn't affected.)
 
-Compared to v1, this has been rearranges to the first three patches are
-the minimial bugfixes:
+It is a bit ugly that this function, which is part of the in-kernel
+PPS API, has to be in pps.c as opposed to kapi,c, but that's not
+something that affects users.
 
-* 1/9 "Add pps_lookup_dev() function"
-  This adds the infrastructure necessary to bypass disc_data use.
+Signed-off-by: George Spelvin <linux@horizon.com>
+---
+ drivers/pps/pps.c          | 33 +++++++++++++++++++++++++++++++++
+ include/linux/pps_kernel.h | 17 ++++++++++++++---
+ 2 files changed, 47 insertions(+), 3 deletions(-)
 
-* 2/9 "Use pps_lookup_dev to reduce ldisc coupling"
-  This actually fixes the bug.
-
-* 3/9 "Fix a use-after free bug when unregistering a source."
-  This is actually an old bug, present before 3.7.  I'd like to solicit
-  feedback from folks who know device drivers better to ask if I did
-  things right.  I'd also appreciate a look at patch 8/9 which is a more
-  aggressive cleanup of the same bug.
-
-The remaining ones are various cleanups enabled or inspired by the
-above.
-
-* 4/9 "Don't crash the machine when exiting will do"
-  This downgrades some BUG() checks do future bugs will be less deadly.
-* 5/9 "Move timestamp read into PPS code proper"
-  This changes the internal kernel DCD change interface to capture the
-  timestamp inside the called function, cleaning up the generic tty code.
-* 6/9 "Additional cleanups in uart_handle_dcd_change"
-  Just a slight code reorganization to shrink the source.
-* 7/9 "Remove ancient hardpps()"
-  Eliminate dead code.
-* 8/9 "Use a single cdev"
-  This is a more ambitious overhaul of the cdev business that patch
-  #3 fixes.
-* 9/9 "use test_and_clear_bit in tty_ldisc_close"
-  Just a two-liner I noticed while working on the above.
-
-George Spelvin (8):
-  pps: Add pps_lookup_dev() function
-  pps: Use pps_lookup_dev to reduce ldisc coupling
-  pps: Fix a use-after free bug when unregistering a source.
-  pps: Additional cleanups in uart_handle_dcd_change
-  pps: Use a single cdev
-  tty/tty_ldisc.c: use test_and_clear_bit in tty_ldisc_close
-
-Peter Hurley (1):
-  pps: Move timestamp read into PPS code proper
-  pps: Don't crash the machine when exiting will do
-  tty: Remove ancient hardpps()
-
- drivers/pps/clients/pps-ldisc.c     |  30 +++++++----
- drivers/pps/pps.c                   | 103 +++++++++++++++++++++++++-----------
- drivers/staging/speakup/selection.c |   1 +
- drivers/tty/amiserial.c             |   5 --
- drivers/tty/n_tty.c                 |   3 +-
- drivers/tty/serial/serial_core.c    |  24 +++------
- drivers/tty/tty_buffer.c            |   1 +
- drivers/tty/tty_ldisc.c             |   3 +-
- include/linux/pps_kernel.h          |  18 +++++--
- include/linux/serial_core.h         |   1 -
- include/linux/tty_ldisc.h           |  11 ++--
- 11 files changed, 122 insertions(+), 78 deletions(-)
-
+diff --git a/drivers/pps/pps.c b/drivers/pps/pps.c
+index 2420d5a..a70e384 100644
+--- a/drivers/pps/pps.c
++++ b/drivers/pps/pps.c
+@@ -352,11 +352,44 @@ free_idr:
+ 
+ void pps_unregister_cdev(struct pps_device *pps)
+ {
++	pps->lookup_cookie = NULL;
+ 	device_destroy(pps_class, pps->dev->devt);
+ 	cdev_del(&pps->cdev);
+ }
+ 
+ /*
++ * Look up a pps device by magic cookie.
++ * The cookie is usually a pointer to some enclosing device, but this
++ * code doesn't care; you should never be dereferencing it.
++ *
++ * This is a bit of a kludge that is currently used only by the PPS
++ * serial line discipline.  It may need to be tweaked when a second user
++ * is found.
++ *
++ * There is no function interface for setting the lookup_cookie field.
++ * It's initialized to NULL when the pps device is created, and if a
++ * client wants to use it, just fill it in afterward.
++ *
++ * The cookie is automatically set to NULL in pps_unregister_source()
++ * so that it will not be used again, even if the pps device cannot
++ * be removed from the idr due to pending references holding the minor
++ * number in use.
++ */
++struct pps_device *pps_lookup_dev(void const *cookie)
++{
++	struct pps_device *pps;
++	unsigned id;
++
++	rcu_read_lock();
++	idr_for_each_entry(&pps_idr, pps, id)
++		if (cookie == pps->lookup_cookie)
++			break;
++	rcu_read_unlock();
++	return pps;
++}
++EXPORT_SYMBOL(pps_lookup_dev);
++
++/*
+  * Module stuff
+  */
+ 
+diff --git a/include/linux/pps_kernel.h b/include/linux/pps_kernel.h
+index 0cc45ae..7db3eb9 100644
+--- a/include/linux/pps_kernel.h
++++ b/include/linux/pps_kernel.h
+@@ -43,7 +43,7 @@ struct pps_source_info {
+ 			int event, void *data);	/* PPS echo function */
+ 
+ 	struct module *owner;
+-	struct device *dev;
++	struct device *dev;		/* Parent device for device_create */
+ };
+ 
+ struct pps_event_time {
+@@ -69,6 +69,7 @@ struct pps_device {
+ 	wait_queue_head_t queue;		/* PPS event queue */
+ 
+ 	unsigned int id;			/* PPS source unique ID */
++	void const *lookup_cookie;		/* pps_lookup_dev only */
+ 	struct cdev cdev;
+ 	struct device *dev;
+ 	struct fasync_struct *async_queue;	/* fasync method */
+@@ -82,16 +83,26 @@ struct pps_device {
+ extern struct device_attribute pps_attrs[];
+ 
+ /*
++ * Internal functions.
++ *
++ * These are not actually part of the exported API, but this is a
++ * convenient header file to put them in.
++ */
++
++extern int pps_register_cdev(struct pps_device *pps);
++extern void pps_unregister_cdev(struct pps_device *pps);
++
++/*
+  * Exported functions
+  */
+ 
+ extern struct pps_device *pps_register_source(
+ 		struct pps_source_info *info, int default_params);
+ extern void pps_unregister_source(struct pps_device *pps);
+-extern int pps_register_cdev(struct pps_device *pps);
+-extern void pps_unregister_cdev(struct pps_device *pps);
+ extern void pps_event(struct pps_device *pps,
+ 		struct pps_event_time *ts, int event, void *data);
++/* Look up a pps device by magic cookie */
++struct pps_device *pps_lookup_dev(void const *cookie);
+ 
+ static inline void timespec_to_pps_ktime(struct pps_ktime *kt,
+ 		struct timespec ts)
 -- 
 1.8.1.3
