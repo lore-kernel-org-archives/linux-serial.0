@@ -1,58 +1,79 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 7/9] tty: Remove ancient hardpps()
-Date: Wed, 6 Feb 2013 10:55:16 -0500
-Message-ID: <b9889003af0a5f4cc4986a63b3a4f3191a6cb503.1360677367.git.linux@horizon.com>
+From: George Spelvin <linux@horizon.com>
+Subject: [PATCH v2 2/9] pps: Use pps_lookup_dev to reduce ldisc coupling
+Date: Sun, 10 Feb 2013 04:41:56 -0500
+Message-ID: <1b30b13f9e3e15909a88b242c0146218c5548a41.1360677367.git.linux@horizon.com>
 References: <cover.1360677367.git.linux@horizon.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from science.horizon.com ([71.41.210.146]:57513 "HELO
+	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1761258Ab3BLOxh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 Feb 2013 09:53:37 -0500
 In-Reply-To: <cover.1360677367.git.linux@horizon.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
-List-Id: linux-serial@vger.kernel.org
 
-hardpps() functionality is provided through the N_PPS line
-discipline now. The new function signature was added in commit
-025b40ab (2011-01-12). There was no previous macro or
-function hardpps(), at least since before the initial commit of
-v2.6.12 in 2005. It's unlikely this code has been compiled since.
+Now that N_TTY uses tty->disc_data for its private data,
+'subclass' ldiscs cannot use ->disc_data for their own private data.
+(This is a regression is v3.8-rc1)
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Use pps_lookup_dev to associate the tty with the pps source instead.
+
+This fixes a crashing regression in 3.8-rc1.
+
 Signed-off-by: George Spelvin <linux@horizon.com>
 ---
- drivers/tty/amiserial.c          | 5 -----
- drivers/tty/serial/serial_core.c | 4 ----
- 2 files changed, 9 deletions(-)
+ drivers/pps/clients/pps-ldisc.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 9d7d00c..ba2e09e 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -394,11 +394,6 @@ static void check_modem_status(struct serial_state *info)
- 			icount->dsr++;
- 		if (dstatus & SER_DCD) {
- 			icount->dcd++;
--#ifdef CONFIG_HARD_PPS
--			if ((port->flags & ASYNC_HARDPPS_CD) &&
--			    !(status & SER_DCD))
--				hardpps();
--#endif
- 		}
- 		if (dstatus & SER_CTS)
- 			icount->cts++;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b3a204b..02be179 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2726,10 +2726,6 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
+index 79451f2..60cee9e 100644
+--- a/drivers/pps/clients/pps-ldisc.c
++++ b/drivers/pps/clients/pps-ldisc.c
+@@ -31,7 +31,7 @@
+ static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
+ 				struct pps_event_time *ts)
+ {
+-	struct pps_device *pps = (struct pps_device *)tty->disc_data;
++	struct pps_device *pps = pps_lookup_dev(tty);
+ 
+ 	BUG_ON(pps == NULL);
+ 
+@@ -67,9 +67,9 @@ static int pps_tty_open(struct tty_struct *tty)
+ 		pr_err("cannot register PPS source \"%s\"\n", info.path);
+ 		return -ENOMEM;
  	}
+-	tty->disc_data = pps;
++	pps->lookup_cookie = tty;
  
- 	uport->icount.dcd++;
--#ifdef CONFIG_HARD_PPS
--	if ((uport->flags & UPF_HARDPPS_CD) && status)
--		hardpps();
--#endif
+-	/* Should open N_TTY ldisc too */
++	/* Now open the base class N_TTY ldisc */
+ 	ret = alias_n_tty_open(tty);
+ 	if (ret < 0) {
+ 		pr_err("cannot open tty ldisc \"%s\"\n", info.path);
+@@ -81,7 +81,6 @@ static int pps_tty_open(struct tty_struct *tty)
+ 	return 0;
  
- 	if (port->flags & ASYNC_CHECK_CD) {
- 		if (status)
+ err_unregister:
+-	tty->disc_data = NULL;
+ 	pps_unregister_source(pps);
+ 	return ret;
+ }
+@@ -90,11 +89,10 @@ static void (*alias_n_tty_close)(struct tty_struct *tty);
+ 
+ static void pps_tty_close(struct tty_struct *tty)
+ {
+-	struct pps_device *pps = (struct pps_device *)tty->disc_data;
++	struct pps_device *pps = pps_lookup_dev(tty);
+ 
+ 	alias_n_tty_close(tty);
+ 
+-	tty->disc_data = NULL;
+ 	dev_info(pps->dev, "removed\n");
+ 	pps_unregister_source(pps);
+ }
 -- 
 1.8.1.3
+
