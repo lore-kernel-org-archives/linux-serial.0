@@ -1,128 +1,90 @@
-From: Haojian Zhuang <haojian.zhuang@linaro.org>
-Subject: Re: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
-Date: Sun, 10 Feb 2013 11:31:53 +0800
-Message-ID: <CAD6h2NQbpH4KrDA7_-WYx+gzrA60fRHCk8D=-Je2fsEC-+z79Q@mail.gmail.com>
-References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org>
-	<20130206115219.GE17833@n2100.arm.linux.org.uk>
-	<CAD6h2NSpo74UXUgH2OJniW=wzkxGeshta05AGgCpn26SCUSjYg@mail.gmail.com>
-	<CACRpkdZX-YF+jzg453Vmfxo_2LLuASvZyQqLommaM4Xd3LpwfQ@mail.gmail.com>
-	<20130206163811.GI17833@n2100.arm.linux.org.uk>
-	<CAD6h2NS6bJS1KZfZ-3SGy6AR68Vn4fkR=TgwTEu50G_edfCP1w@mail.gmail.com>
-	<CACxGe6t94S=kkfCkasO+ze35M-H06+WCA-J93BZaJfCzhWfoEQ@mail.gmail.com>
-	<20130209224138.GI17833@n2100.arm.linux.org.uk>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH] serial/arc-uart: Miscll DT related updates (Grant's review comments)
+Date: Mon, 11 Feb 2013 14:11:41 +0530
+Message-ID: <1360572101-12744-2-git-send-email-vgupta@synopsys.com>
+References: <201302090928.43929.arnd@arndb.de>
+ <1360572101-12744-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f170.google.com ([209.85.216.170]:47940 "EHLO
-	mail-qc0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756944Ab3BJDby (ORCPT
+Received: from us01smtp3.synopsys.com ([198.182.44.81]:57869 "EHLO
+	hermes.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750915Ab3BKIms (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 9 Feb 2013 22:31:54 -0500
-Received: by mail-qc0-f170.google.com with SMTP id d42so1890265qca.29
-        for <linux-serial@vger.kernel.org>; Sat, 09 Feb 2013 19:31:53 -0800 (PST)
-In-Reply-To: <20130209224138.GI17833@n2100.arm.linux.org.uk>
+	Mon, 11 Feb 2013 03:42:48 -0500
+In-Reply-To: <1360572101-12744-1-git-send-email-vgupta@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Linus Walleij <linus.walleij@linaro.org>, jslaby@suse.cz, Anton Vorontsov <anton.vorontsov@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Patch Tracking <patches@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, linux-kernel@vger.kernel.org
 
-On 10 February 2013 06:41, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Sat, Feb 09, 2013 at 10:31:05PM +0000, Grant Likely wrote:
->> If it is a probe function, then yes the __init annotations need to be
->> removed or the driver needs to use platform_driver_probe(). This has
->> been the model as long as I can remember. As long as a driver has a
->> .probe hook, the driver core can call it at any time. Deferred probe
->> has only exposed the issue.
->>
->> If you want to discard the .probe() hook, then the probe() pointer
->> needs to be cleared from the driver structure before discarding the
->> sections. Otherwise the driver core can still call it which is what
->> happens in deferred probe and can happen if a device gets unbound from
->> a driver and then re-attached.
->
-> You're talking about something completely different on the assumption
-> that what is being talked about is the probe hook.  It isn't.  It's
-> a path for the console initialization which has _always_ been __init
-> marked since the dawn of time, because modules are not supposed to
-> be calling that path.
->
-> What has been exposed is that console drivers which have resources
-> which are not immediately available no longer have the same guarantees
-> that they used to have (that is, they will be called before the __init
-> section is given away.)
->
-> Remember: console drivers used not to support removal of themselves.
-> Many still do not support that - in fact, these do not on the basis
-> that they call register_console() but not unregister_console():
->
-> drivers/net/ethernet/sgi/ioc3-eth.c
-> drivers/s390/char/con3215.c
-> drivers/s390/char/con3270.c
-> drivers/s390/char/sclp_con.c
-> drivers/s390/char/sclp_vt220.c
-> drivers/tty/amiserial.c
-> drivers/tty/bfin_jtag_comm.c
-> drivers/tty/ehv_bytechan.c
-> drivers/tty/hvc/hvsi.c
-> drivers/tty/serial/21285.c
-> drivers/tty/serial/68328serial.c
-> drivers/tty/serial/8250/8250.c
-> drivers/tty/serial/8250/8250_early.c
-> drivers/tty/serial/altera_jtaguart.c
-> drivers/tty/serial/altera_uart.c
-> drivers/tty/serial/apbuart.c
-> drivers/tty/serial/arc_uart.c
-> drivers/tty/serial/atmel_serial.c
-> drivers/tty/serial/bcm63xx_uart.c
-> drivers/tty/serial/bfin_sport_uart.c
-> drivers/tty/serial/bfin_uart.c
-> drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> drivers/tty/serial/dz.c
-> drivers/tty/serial/lantiq.c
-> drivers/tty/serial/lpc32xx_hs.c
-> drivers/tty/serial/m32r_sio.c
-> drivers/tty/serial/mcf.c
-> drivers/tty/serial/mpc52xx_uart.c
-> drivers/tty/serial/mpsc.c
-> drivers/tty/serial/netx-serial.c
-> drivers/tty/serial/nwpserial.c
-> drivers/tty/serial/pmac_zilog.c
-> drivers/tty/serial/pnx8xxx_uart.c
-> drivers/tty/serial/sa1100.c
-> drivers/tty/serial/samsung.c
-> drivers/tty/serial/sb1250-duart.c
-> drivers/tty/serial/serial_core.c
-> drivers/tty/serial/serial_ks8695.c
-> drivers/tty/serial/serial_txx9.c
-> drivers/tty/serial/sh-sci.c
-> drivers/tty/serial/sirfsoc_uart.c
-> drivers/tty/serial/uartlite.c
-> drivers/tty/serial/vr41xx_siu.c
-> drivers/tty/serial/xilinx_uartps.c
-> drivers/tty/serial/zs.c
-> drivers/tty/vt/vt.c
+-replace "baud" with "current-speed"
+-if uart alias doesn't exist in DT, don't abort, pick 0
 
-I agree on Russell. And console isn't the only one device.
-In kernel_init_freeable(), we can find that we have an
-assumption that all initial calls are already finished, and
-we need to discard them & start the user-mode stuff.
-But at that time, deferred probe may still not run since
-they're in another kernel thread. It's very dangerous that
-user mode stuff start running but device driver isn't ready
-yet.
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Grant Likely <grant.likely@secretlab.ca>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: devicetree-discuss@lists.ozlabs.org
+Cc: Rob Herring <rob.herring@calxeda.com>
+Cc: Rob Landley <rob@landley.net>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ .../devicetree/bindings/tty/serial/arc-uart.txt    |    4 ++--
+ drivers/tty/serial/arc_uart.c                      |   10 ++++------
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
-Then let's move to my error case. Serial driver fails to
-bind pinctrl, and it's moved into deferred probe list. And
-kernel_init_freeable() in kernel_init thread keeps working
-on CPU, the deferred probe doesn't have chances to be
-scheduled yet. So two issues happen.
-1. /dev/console is accessed before serial driver is ready.
-Since it fails, user can't input anything on console any
-more.
-2. __init memory section is released before serial driver
-is ready. It results in system hang while deferred probe
-runs.
+diff --git a/Documentation/devicetree/bindings/tty/serial/arc-uart.txt b/Documentation/devicetree/bindings/tty/serial/arc-uart.txt
+index c3bd8f9..5cae2eb 100644
+--- a/Documentation/devicetree/bindings/tty/serial/arc-uart.txt
++++ b/Documentation/devicetree/bindings/tty/serial/arc-uart.txt
+@@ -5,7 +5,7 @@ Required properties:
+ - reg			: offset and length of the register set for the device.
+ - interrupts		: device interrupt
+ - clock-frequency	: the input clock frequency for the UART
+-- baud			: baud rate for UART
++- current-speed		: baud rate for UART
+ 
+ e.g.
+ 
+@@ -14,7 +14,7 @@ arcuart0: serial@c0fc1000 {
+ 	reg = <0xc0fc1000 0x100>;
+ 	interrupts = <5>;
+ 	clock-frequency = <80000000>;
+-	baud = <115200>;
++	current-speed = <115200>;
+ 	status = "okay";
+ };
+ 
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 6f7eadc..d97e194 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -547,8 +547,8 @@ arc_uart_init_one(struct platform_device *pdev, int dev_id)
+ 		}
+ 		uart->port.uartclk = val;
+ 
+-		if (of_property_read_u32(np, "baud", &val)) {
+-			dev_err(&pdev->dev, "baud property NOT set\n");
++		if (of_property_read_u32(np, "current-speed", &val)) {
++			dev_err(&pdev->dev, "current-speed property NOT set\n");
+ 			return -EINVAL;
+ 		}
+ 		uart->baud = val;
+@@ -694,10 +694,8 @@ static int arc_serial_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	dev_id = of_alias_get_id(np, "serial");
+-	if (dev_id < 0) {
+-		dev_err(&pdev->dev, "failed to get alias id: %d\n", dev_id);
+-		return dev_id;
+-	}
++	if (dev_id < 0)
++		dev_id = 0;
+ 
+ 	rc = arc_uart_init_one(pdev, dev_id);
+ 	if (rc)
+-- 
+1.7.4.1
 
-Regards
-Haojian
