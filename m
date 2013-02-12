@@ -1,92 +1,195 @@
 From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 3/9] pps: Fix a use-after free bug when unregistering a
- source.
-Date: Tue, 12 Feb 2013 02:27:20 -0500
-Message-ID: <9a0942515d100e71c19c3471d50bead14e722421.1360677367.git.linux@horizon.com>
+Subject: [PATCH v2 5/9] pps: Move timestamp read into PPS code proper
+Date: Tue, 12 Feb 2013 02:00:43 -0500
+Message-ID: <31e24f360b1715c262c05d6708353e292640b3a8.1360677367.git.linux@horizon.com>
 References: <cover.1360677367.git.linux@horizon.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from science.horizon.com ([71.41.210.146]:57521 "HELO
-	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1761260Ab3BLOxi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Feb 2013 09:53:38 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1360677367.git.linux@horizon.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
+List-Id: linux-serial@vger.kernel.org
 
-Remove the cdev from the system (with cdev_del) *before* deallocating it
-(in pps_device_destruct, called via kobject_put from device_destroy).
+The PPS (Pulse-Per-Second) line discipline has developed a number of
+unhealthy attachments to core tty data and functions, ultimately leading
+to its breakage.
 
-Also prevent deallocating a device with open file handles.
+The previous patches fixed the crashing.  This one reduces coupling further
+by eliminating the timestamp parameter from the dcd_change ldisc method.
+This reduces header file linkage and makes the extension more generic,
+and the timestamp read is delayed only slightly, from just before the
+ldisc->ops->dcd_change method call to just after.
 
-A better long-term fix is probably to remove the cdev from the pps_device
-entirely, and instead have all devices reference one global cdev.  Then
-the deallocation ordering becomes simpler.
+Fix attendant build breakage in
+    drivers/tty/n_tty.c
+    drivers/tty/tty_buffer.c
+    drivers/staging/speakup/selection.c
 
-But that's more complex and invasive change, so we leave that
-for later.
-
+Cc: William Hubbs <w.d.hubbs@gmail.com>
+Cc: Chris Brannon <chris@the-brannons.com>
+Cc: Kirk Reiser <kirk@braille.uwo.ca>
+Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: George Spelvin <linux@horizon.com>
-Cc: stable@kernel.org
 ---
- drivers/pps/pps.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/pps/clients/pps-ldisc.c     | 11 +++++++----
+ drivers/staging/speakup/selection.c |  1 +
+ drivers/tty/n_tty.c                 |  3 ++-
+ drivers/tty/serial/serial_core.c    |  5 +----
+ drivers/tty/tty_buffer.c            |  1 +
+ include/linux/serial_core.h         |  1 -
+ include/linux/tty_ldisc.h           | 11 ++++-------
+ 7 files changed, 16 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/pps/pps.c b/drivers/pps/pps.c
-index a70e384..6437703 100644
---- a/drivers/pps/pps.c
-+++ b/drivers/pps/pps.c
-@@ -247,12 +247,15 @@ static int pps_cdev_open(struct inode *inode, struct file *file)
- 	struct pps_device *pps = container_of(inode->i_cdev,
- 						struct pps_device, cdev);
- 	file->private_data = pps;
--
-+	kobject_get(&pps->dev->kobj);
- 	return 0;
- }
+diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
+index a94f73e..73bd3bb 100644
+--- a/drivers/pps/clients/pps-ldisc.c
++++ b/drivers/pps/clients/pps-ldisc.c
+@@ -29,11 +29,14 @@
  
- static int pps_cdev_release(struct inode *inode, struct file *file)
+ #define PPS_TTY_MAGIC		0x0001
+ 
+-static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
+-				struct pps_event_time *ts)
++static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status)
  {
-+	struct pps_device *pps = container_of(inode->i_cdev,
-+						struct pps_device, cdev);
-+	kobject_put(&pps->dev->kobj);
- 	return 0;
- }
- 
-@@ -274,8 +277,10 @@ static void pps_device_destruct(struct device *dev)
- {
- 	struct pps_device *pps = dev_get_drvdata(dev);
- 
--	/* release id here to protect others from using it while it's
--	 * still in use */
-+	cdev_del(&pps->cdev);
+-	struct pps_device *pps = pps_lookup_dev(tty);
++	struct pps_device *pps;
++	struct pps_event_time ts;
 +
-+	/* Now we can release the ID for re-use */
-+	pr_debug("deallocating pps%d\n", pps->id);
- 	mutex_lock(&pps_idr_lock);
- 	idr_remove(&pps_idr, pps->id);
- 	mutex_unlock(&pps_idr_lock);
-@@ -332,6 +337,7 @@ int pps_register_cdev(struct pps_device *pps)
- 		goto del_cdev;
++	pps_get_ts(&ts);
+ 
++	pps = pps_lookup_dev(tty);
+ 	/*
+ 	 * This should never fail, but the ldisc locking is very
+ 	 * convoluted, so don't crash just in case.
+@@ -42,7 +45,7 @@ static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
+ 		return;
+ 
+ 	/* Now do the PPS event report */
+-	pps_event(pps, ts, status ? PPS_CAPTUREASSERT :
++	pps_event(pps, &ts, status ? PPS_CAPTUREASSERT :
+ 			PPS_CAPTURECLEAR, NULL);
+ 
+ 	dev_dbg(pps->dev, "PPS %s at %lu\n",
+diff --git a/drivers/staging/speakup/selection.c b/drivers/staging/speakup/selection.c
+index 0612df0..2aa2237 100644
+--- a/drivers/staging/speakup/selection.c
++++ b/drivers/staging/speakup/selection.c
+@@ -2,6 +2,7 @@
+ #include <linux/consolemap.h>
+ #include <linux/interrupt.h>
+ #include <linux/sched.h>
++#include <linux/device.h> /* for dev_warn */
+ #include <linux/selection.h>
+ 
+ #include "speakup.h"
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 19083ef..ed66b20 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -49,6 +49,7 @@
+ #include <linux/file.h>
+ #include <linux/uaccess.h>
+ #include <linux/module.h>
++#include <linux/ratelimit.h>
+ 
+ 
+ /* number of characters left in xmit buffer before select has we have room */
+@@ -2188,7 +2189,7 @@ struct tty_ldisc_ops tty_ldisc_N_TTY = {
+  *	n_tty_inherit_ops	-	inherit N_TTY methods
+  *	@ops: struct tty_ldisc_ops where to save N_TTY methods
+  *
+- *	Used by a generic struct tty_ldisc_ops to easily inherit N_TTY
++ *	Enables a 'subclass' line discipline to 'inherit' N_TTY
+  *	methods.
+  */
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2c7230a..23fc494 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2718,13 +2718,12 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+ 	struct uart_state *state = uport->state;
+ 	struct tty_port *port = &state->port;
+ 	struct tty_ldisc *ld = NULL;
+-	struct pps_event_time ts;
+ 	struct tty_struct *tty = port->tty;
+ 
+ 	if (tty)
+ 	        ld = tty_ldisc_ref(tty);
+ 	if (ld && ld->ops->dcd_change)
+-		pps_get_ts(&ts);
++		ld->ops->dcd_change(tty, status);
+ 
+ 	uport->icount.dcd++;
+ #ifdef CONFIG_HARD_PPS
+@@ -2739,8 +2738,6 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+ 			tty_hangup(tty);
  	}
  
-+	/* Override the release function with our own */
- 	pps->dev->release = pps_device_destruct;
- 
- 	pr_debug("source %s got cdev (%d:%d)\n", pps->info.name,
-@@ -352,9 +358,9 @@ free_idr:
- 
- void pps_unregister_cdev(struct pps_device *pps)
- {
-+	pr_debug("unregistering pps%d\n", pps->id);
- 	pps->lookup_cookie = NULL;
- 	device_destroy(pps_class, pps->dev->devt);
--	cdev_del(&pps->cdev);
+-	if (ld && ld->ops->dcd_change)
+-		ld->ops->dcd_change(tty, status, &ts);
+ 	if (ld)
+ 		tty_ldisc_deref(ld);
  }
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 45d9161..1bdd896 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -16,6 +16,7 @@
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
++#include <linux/ratelimit.h>
  
- /*
+ /**
+  *	tty_buffer_free_all		-	free buffers used by a tty
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c6690a2..a5f1da9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -29,7 +29,6 @@
+ #include <linux/tty.h>
+ #include <linux/mutex.h>
+ #include <linux/sysrq.h>
+-#include <linux/pps_kernel.h>
+ #include <uapi/linux/serial_core.h>
+ 
+ struct uart_port;
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index fb79dd8d..455a0d7 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -100,16 +100,14 @@
+  *	seek to perform this action quickly but should wait until
+  *	any pending driver I/O is completed.
+  *
+- * void (*dcd_change)(struct tty_struct *tty, unsigned int status,
+- *			struct pps_event_time *ts)
++ * void (*dcd_change)(struct tty_struct *tty, unsigned int status)
+  *
+- *	Tells the discipline that the DCD pin has changed its status and
+- *	the relative timestamp. Pointer ts cannot be NULL.
++ *	Tells the discipline that the DCD pin has changed its status.
++ *	Used exclusively by the N_PPS (Pulse-Per-Second) line discipline.
+  */
+ 
+ #include <linux/fs.h>
+ #include <linux/wait.h>
+-#include <linux/pps_kernel.h>
+ #include <linux/wait.h>
+ 
+ struct tty_ldisc_ops {
+@@ -144,8 +142,7 @@ struct tty_ldisc_ops {
+ 	void	(*receive_buf)(struct tty_struct *, const unsigned char *cp,
+ 			       char *fp, int count);
+ 	void	(*write_wakeup)(struct tty_struct *);
+-	void	(*dcd_change)(struct tty_struct *, unsigned int,
+-				struct pps_event_time *);
++	void	(*dcd_change)(struct tty_struct *, unsigned int);
+ 
+ 	struct  module *owner;
+ 	
 -- 
 1.8.1.3
-
