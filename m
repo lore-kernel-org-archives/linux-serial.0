@@ -1,79 +1,92 @@
 From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 2/9] pps: Use pps_lookup_dev to reduce ldisc coupling
-Date: Sun, 10 Feb 2013 04:41:56 -0500
-Message-ID: <1b30b13f9e3e15909a88b242c0146218c5548a41.1360677367.git.linux@horizon.com>
+Subject: [PATCH v2 3/9] pps: Fix a use-after free bug when unregistering a
+ source.
+Date: Tue, 12 Feb 2013 02:27:20 -0500
+Message-ID: <9a0942515d100e71c19c3471d50bead14e722421.1360677367.git.linux@horizon.com>
 References: <cover.1360677367.git.linux@horizon.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from science.horizon.com ([71.41.210.146]:57513 "HELO
+Received: from science.horizon.com ([71.41.210.146]:57521 "HELO
 	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1761258Ab3BLOxh (ORCPT
+	with SMTP id S1761260Ab3BLOxi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Feb 2013 09:53:37 -0500
+	Tue, 12 Feb 2013 09:53:38 -0500
 In-Reply-To: <cover.1360677367.git.linux@horizon.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
 Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
 
-Now that N_TTY uses tty->disc_data for its private data,
-'subclass' ldiscs cannot use ->disc_data for their own private data.
-(This is a regression is v3.8-rc1)
+Remove the cdev from the system (with cdev_del) *before* deallocating it
+(in pps_device_destruct, called via kobject_put from device_destroy).
 
-Use pps_lookup_dev to associate the tty with the pps source instead.
+Also prevent deallocating a device with open file handles.
 
-This fixes a crashing regression in 3.8-rc1.
+A better long-term fix is probably to remove the cdev from the pps_device
+entirely, and instead have all devices reference one global cdev.  Then
+the deallocation ordering becomes simpler.
+
+But that's more complex and invasive change, so we leave that
+for later.
 
 Signed-off-by: George Spelvin <linux@horizon.com>
+Cc: stable@kernel.org
 ---
- drivers/pps/clients/pps-ldisc.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/pps/pps.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
-index 79451f2..60cee9e 100644
---- a/drivers/pps/clients/pps-ldisc.c
-+++ b/drivers/pps/clients/pps-ldisc.c
-@@ -31,7 +31,7 @@
- static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
- 				struct pps_event_time *ts)
- {
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps = pps_lookup_dev(tty);
- 
- 	BUG_ON(pps == NULL);
- 
-@@ -67,9 +67,9 @@ static int pps_tty_open(struct tty_struct *tty)
- 		pr_err("cannot register PPS source \"%s\"\n", info.path);
- 		return -ENOMEM;
- 	}
--	tty->disc_data = pps;
-+	pps->lookup_cookie = tty;
- 
--	/* Should open N_TTY ldisc too */
-+	/* Now open the base class N_TTY ldisc */
- 	ret = alias_n_tty_open(tty);
- 	if (ret < 0) {
- 		pr_err("cannot open tty ldisc \"%s\"\n", info.path);
-@@ -81,7 +81,6 @@ static int pps_tty_open(struct tty_struct *tty)
+diff --git a/drivers/pps/pps.c b/drivers/pps/pps.c
+index a70e384..6437703 100644
+--- a/drivers/pps/pps.c
++++ b/drivers/pps/pps.c
+@@ -247,12 +247,15 @@ static int pps_cdev_open(struct inode *inode, struct file *file)
+ 	struct pps_device *pps = container_of(inode->i_cdev,
+ 						struct pps_device, cdev);
+ 	file->private_data = pps;
+-
++	kobject_get(&pps->dev->kobj);
  	return 0;
- 
- err_unregister:
--	tty->disc_data = NULL;
- 	pps_unregister_source(pps);
- 	return ret;
  }
-@@ -90,11 +89,10 @@ static void (*alias_n_tty_close)(struct tty_struct *tty);
  
- static void pps_tty_close(struct tty_struct *tty)
+ static int pps_cdev_release(struct inode *inode, struct file *file)
  {
--	struct pps_device *pps = (struct pps_device *)tty->disc_data;
-+	struct pps_device *pps = pps_lookup_dev(tty);
- 
- 	alias_n_tty_close(tty);
- 
--	tty->disc_data = NULL;
- 	dev_info(pps->dev, "removed\n");
- 	pps_unregister_source(pps);
++	struct pps_device *pps = container_of(inode->i_cdev,
++						struct pps_device, cdev);
++	kobject_put(&pps->dev->kobj);
+ 	return 0;
  }
+ 
+@@ -274,8 +277,10 @@ static void pps_device_destruct(struct device *dev)
+ {
+ 	struct pps_device *pps = dev_get_drvdata(dev);
+ 
+-	/* release id here to protect others from using it while it's
+-	 * still in use */
++	cdev_del(&pps->cdev);
++
++	/* Now we can release the ID for re-use */
++	pr_debug("deallocating pps%d\n", pps->id);
+ 	mutex_lock(&pps_idr_lock);
+ 	idr_remove(&pps_idr, pps->id);
+ 	mutex_unlock(&pps_idr_lock);
+@@ -332,6 +337,7 @@ int pps_register_cdev(struct pps_device *pps)
+ 		goto del_cdev;
+ 	}
+ 
++	/* Override the release function with our own */
+ 	pps->dev->release = pps_device_destruct;
+ 
+ 	pr_debug("source %s got cdev (%d:%d)\n", pps->info.name,
+@@ -352,9 +358,9 @@ free_idr:
+ 
+ void pps_unregister_cdev(struct pps_device *pps)
+ {
++	pr_debug("unregistering pps%d\n", pps->id);
+ 	pps->lookup_cookie = NULL;
+ 	device_destroy(pps_class, pps->dev->devt);
+-	cdev_del(&pps->cdev);
+ }
+ 
+ /*
 -- 
 1.8.1.3
 
