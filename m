@@ -1,65 +1,76 @@
-From: George Spelvin <linux@horizon.com>
-Subject: [PATCH v2 4/9] pps: Don't crash the machine when exiting will do
-Date: Sun, 10 Feb 2013 04:43:41 -0500
-Message-ID: <a4f07ac1d45cc5d85159722d059585c4e829ec42.1360677367.git.linux@horizon.com>
-References: <cover.1360677367.git.linux@horizon.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH] serial: samsung: remove the use of statically remapped
+ controller address
+Date: Tue, 12 Feb 2013 10:23:14 -0800
+Message-ID: <1d6d01ce094e$06f1ebe0$14d5c3a0$@samsung.com>
+References: <1357028515-17794-1-git-send-email-thomas.abraham@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from science.horizon.com ([71.41.210.146]:57530 "HELO
-	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1761263Ab3BLOxi (ORCPT
+Received: from mailout4.samsung.com ([203.254.224.34]:46301 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933484Ab3BLSXg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Feb 2013 09:53:38 -0500
-In-Reply-To: <cover.1360677367.git.linux@horizon.com>
+	Tue, 12 Feb 2013 13:23:36 -0500
+In-reply-to: <1357028515-17794-1-git-send-email-thomas.abraham@linaro.org>
+Content-language: en-us
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, giometti@linux.it, linux@horizon.com
+To: 'Thomas Abraham' <thomas.abraham@linaro.org>, linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, alan@linux.intel.com, linux-samsung-soc@vger.kernel.org
 
-PPS is not really the must-have subsystem that warrants crashing
-the machine if the ldisc interface is broken.
+Thomas Abraham wrote:
+> 
+> The address S3C_VA_UART is a statically ioremapped address. The driver
+> should not be using this. Instead, the driver should setup a mapping
+> during probe.
+> 
+> Cc: Kukjin Kim <kgene.kim@samsung.com>
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-Signed-off-by: George Spelvin <linux@horizon.com>
----
- drivers/pps/clients/pps-ldisc.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Looks good to me:
+Acked-by: Kukjin Kim <kgene.kim@samsung.com>
 
-diff --git a/drivers/pps/clients/pps-ldisc.c b/drivers/pps/clients/pps-ldisc.c
-index 60cee9e..a94f73e 100644
---- a/drivers/pps/clients/pps-ldisc.c
-+++ b/drivers/pps/clients/pps-ldisc.c
-@@ -25,6 +25,7 @@
- #include <linux/serial_core.h>
- #include <linux/tty.h>
- #include <linux/pps_kernel.h>
-+#include <linux/bug.h>
- 
- #define PPS_TTY_MAGIC		0x0001
- 
-@@ -33,7 +34,12 @@ static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
- {
- 	struct pps_device *pps = pps_lookup_dev(tty);
- 
--	BUG_ON(pps == NULL);
-+	/*
-+	 * This should never fail, but the ldisc locking is very
-+	 * convoluted, so don't crash just in case.
-+	 */
-+	if (WARN_ON_ONCE(pps == NULL))
-+		return;
- 
- 	/* Now do the PPS event report */
- 	pps_event(pps, ts, status ? PPS_CAPTUREASSERT :
-@@ -93,6 +99,9 @@ static void pps_tty_close(struct tty_struct *tty)
- 
- 	alias_n_tty_close(tty);
- 
-+	if (WARN_ON(!pps))
-+		return;
-+
- 	dev_info(pps->dev, "removed\n");
- 	pps_unregister_source(pps);
- }
--- 
-1.8.1.3
+Greg, if you're ok on this, please pick this up in your tree :-)
+
+Thanks.
+
+- Kukjin
+
+> Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
+> ---
+>  drivers/tty/serial/samsung.c |    8 ++++++--
+>  1 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index e514b3a..d6c4f659 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -47,7 +47,6 @@
+>  #include <asm/irq.h>
+> 
+>  #include <mach/hardware.h>
+> -#include <mach/map.h>
+> 
+>  #include <plat/regs-serial.h>
+>  #include <plat/clock.h>
+> @@ -1143,8 +1142,13 @@ static int s3c24xx_serial_init_port(struct
+> s3c24xx_uart_port *ourport,
+> 
+>  	dbg("resource %p (%lx..%lx)\n", res, res->start, res->end);
+> 
+> +	port->membase = devm_ioremap(port->dev, res->start,
+> resource_size(res));
+> +	if (!port->membase) {
+> +		dev_err(port->dev, "failed to remap controller address\n");
+> +		return -EBUSY;
+> +	}
+> +
+>  	port->mapbase = res->start;
+> -	port->membase = S3C_VA_UART + (res->start & 0xfffff);
+>  	ret = platform_get_irq(platdev, 0);
+>  	if (ret < 0)
+>  		port->irq = 0;
+> --
+> 1.7.5.4
 
