@@ -1,47 +1,48 @@
-From: Rodolfo Giometti <giometti@enneenne.com>
-Subject: Re: [PATCH v2 0/9] 3.8-rc regression with pps-ldisc due to 70ece7a731
-Date: Wed, 13 Feb 2013 18:11:05 +0100
-Message-ID: <20130213171105.GO26960@enneenne.com>
-References: <cover.1360677367.git.linux@horizon.com>
- <20130213164547.GA8520@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Johan Hovold <jhovold@gmail.com>
+Subject: [RFC 1/4] tty: clean up port shutdown
+Date: Wed, 13 Feb 2013 18:27:23 +0100
+Message-ID: <1360776446-31371-2-git-send-email-jhovold@gmail.com>
+References: <20130213142513.GA21078@localhost>
+ <1360776446-31371-1-git-send-email-jhovold@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ip-196-116.sn1.eutelia.it ([62.94.196.116]:16310 "EHLO
-	goldrake.enneenne.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S934405Ab3BMR2G (ORCPT
+Received: from mail-lb0-f176.google.com ([209.85.217.176]:52650 "EHLO
+	mail-lb0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760144Ab3BMR3I (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 12:28:06 -0500
-Content-Disposition: inline
-In-Reply-To: <20130213164547.GA8520@kroah.com>
+	Wed, 13 Feb 2013 12:29:08 -0500
+In-Reply-To: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: George Spelvin <linux@horizon.com>, linux-serial@vger.kernel.org, peter@hurleysoftware.com, linux-kernel@vger.kernel.org
+Cc: Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Johan Hovold <jhovold@gmail.com>
 
-On Wed, Feb 13, 2013 at 08:45:47AM -0800, Greg KH wrote:
->=20
-> I can take these through my tty tree, but it would be very good if I
-> actually had the ack from the PPS maintainer...
->=20
-> Rodolfo, any objection for me taking these?
+Untangle port-shutdown logic and make sure the initialised flag is
+always cleared for non-console ports.
+---
+ drivers/tty/tty_port.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-No. It's ok for me. If you wish you can add my =ABAcked-by=BB sign.
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index b7ff59d..57a061e 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -199,9 +199,14 @@ EXPORT_SYMBOL(tty_port_tty_set);
+ static void tty_port_shutdown(struct tty_port *port)
+ {
+ 	mutex_lock(&port->mutex);
+-	if (port->ops->shutdown && !port->console &&
+-		test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags))
++	if (port->console)
++		goto out;
++
++	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
++		if (port->ops->shutdown)
+ 			port->ops->shutdown(port);
++	}
++out:
+ 	mutex_unlock(&port->mutex);
+ }
+ 
+-- 
+1.8.1.1
 
-Ciao,
-
-Rodolfo
-
---=20
-
-GNU/Linux Solutions                  e-mail: giometti@enneenne.com
-Linux Device Driver                          giometti@linux.it
-Embedded Systems                     phone:  +39 349 2432127
-UNIX programming                     skype:  rodolfo.giometti
-=46reelance ICT Italia - Consulente ICT Italia - www.consulenti-ict.it
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
