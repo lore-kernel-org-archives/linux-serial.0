@@ -1,44 +1,34 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: Re: [PATCH] USB: serial: fix null-pointer dereferences on disconnect
-Date: Wed, 13 Feb 2013 15:48:56 +0100
-Message-ID: <20130213144856.GB21078@localhost>
-References: <20130213142513.GA21078@localhost>
- <1360765731-23164-1-git-send-email-jhovold@gmail.com>
- <20130213143436.GE4819@arwen.pp.htv.fi>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: What to set uart_port->irq to for polled driver?
+Date: Wed, 13 Feb 2013 15:24:26 +0000 (UTC)
+Message-ID: <kfgb7a$gl2$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f179.google.com ([209.85.217.179]:44668 "EHLO
-	mail-lb0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759024Ab3BMOuT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 09:50:19 -0500
-Content-Disposition: inline
-In-Reply-To: <20130213143436.GE4819@arwen.pp.htv.fi>
+Received: from plane.gmane.org ([80.91.229.3]:47535 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934098Ab3BMPYn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Feb 2013 10:24:43 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1U5eCh-0001xm-Je
+	for linux-serial@vger.kernel.org; Wed, 13 Feb 2013 16:24:59 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 16:24:59 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 16:24:59 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Johan Hovold <jhovold@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On Wed, Feb 13, 2013 at 04:34:36PM +0200, Felipe Balbi wrote:
-> On Wed, Feb 13, 2013 at 03:28:51PM +0100, Johan Hovold wrote:
-> > Make sure serial-driver dtr_rts is called with disc_mutex held after
-> > checking the disconnected flag.
-> > 
-> > Due to a bug in the tty layer, dtr_rts may get called after a device has
-> 
-> why don't you fix the bug in the tty layer instead ?
+For a polled serial driver that doesn't use interrupts, to what should
+the "irq" field in the uart_port structure be set?  Should it be 0?
+Should it be the unused IRQ associated with the PCI card slot in which
+the board is found?
 
-I'm workin on it. ;)
+-- 
+Grant Edwards               grant.b.edwards        Yow! MERYL STREEP is my
+                                  at               obstetrician!
+                              gmail.com            
 
-As I mentioned earlier I'll send a follow up mail with some more details
-on the tty issue and some RFC patches which would actually fix the
-immediate issue as well.
-
-There is nothing wrong with checking the disconnected flag either way.
-In fact, it could be considered an optimisation as it will be set once
-the physical device is gone which is some time before the hangup is
-complete and the tty device unregistered. We already use the flag to
-prevent further opens after a disconnect.
-
-/Johan
