@@ -1,39 +1,35 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 5/9] pps: Move timestamp read into PPS code proper
-Date: Wed, 13 Feb 2013 10:16:28 -0800
-Message-ID: <20130213181628.GA17367@kroah.com>
+Subject: Re: [PATCH v2 8/9] pps: Use a single cdev
+Date: Wed, 13 Feb 2013 10:20:26 -0800
+Message-ID: <20130213182026.GA3996@kroah.com>
 References: <cover.1360677367.git.linux@horizon.com>
- <31e24f360b1715c262c05d6708353e292640b3a8.1360677367.git.linux@horizon.com>
+ <e2550575ba1568393ddd435180bc4d0341d8cae3.1360677367.git.linux@horizon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <31e24f360b1715c262c05d6708353e292640b3a8.1360677367.git.linux@horizon.com>
+In-Reply-To: <e2550575ba1568393ddd435180bc4d0341d8cae3.1360677367.git.linux@horizon.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: George Spelvin <linux@horizon.com>
 Cc: linux-serial@vger.kernel.org, peter@hurleysoftware.com, linux-kernel@vger.kernel.org, giometti@linux.it
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 12, 2013 at 02:00:43AM -0500, George Spelvin wrote:
-> The PPS (Pulse-Per-Second) line discipline has developed a number of
-> unhealthy attachments to core tty data and functions, ultimately leading
-> to its breakage.
+On Tue, Feb 12, 2013 at 02:02:42AM -0500, George Spelvin wrote:
+> One per device just seems wasteful, when we already manintain a
+> data structure to map minor numbers to devices, and we already have
+> a PPS_MAX_SOURCES #define.
 > 
-> The previous patches fixed the crashing.  This one reduces coupling further
-> by eliminating the timestamp parameter from the dcd_change ldisc method.
-> This reduces header file linkage and makes the extension more generic,
-> and the timestamp read is delayed only slightly, from just before the
-> ldisc->ops->dcd_change method call to just after.
-> 
-> Fix attendant build breakage in
->     drivers/tty/n_tty.c
->     drivers/tty/tty_buffer.c
->     drivers/staging/speakup/selection.c
+> This is also a more comprehensive fix to the use-after-free bug
+> that has already received a minimal patch.
+> ---
+>  drivers/pps/pps.c          | 66 ++++++++++++++++++++++++----------------------
+>  include/linux/pps_kernel.h |  1 -
+>  2 files changed, 34 insertions(+), 33 deletions(-)
 
-I also had to fix up:
-	drivers/staging/dgrp/dgrp_*.c
+You forgot a Signed-off-by: line for this patch, so I can't apply it, or
+the 9/9 patch :(
 
-to get things to build properly.
+Care to resend just these two after fixing this up?
 
 thanks,
 
