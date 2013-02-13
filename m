@@ -1,36 +1,37 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: "George Spelvin" <linux@horizon.com>
 Subject: Re: [PATCH v2 8/9] pps: Use a single cdev
-Date: Wed, 13 Feb 2013 10:20:26 -0800
-Message-ID: <20130213182026.GA3996@kroah.com>
-References: <cover.1360677367.git.linux@horizon.com>
- <e2550575ba1568393ddd435180bc4d0341d8cae3.1360677367.git.linux@horizon.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e2550575ba1568393ddd435180bc4d0341d8cae3.1360677367.git.linux@horizon.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: George Spelvin <linux@horizon.com>
-Cc: linux-serial@vger.kernel.org, peter@hurleysoftware.com, linux-kernel@vger.kernel.org, giometti@linux.it
+Date: 13 Feb 2013 13:35:29 -0500
+Message-ID: <20130213183529.27043.qmail@science.horizon.com>
+References: <20130213182026.GA3996@kroah.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from science.horizon.com ([71.41.210.146]:41633 "HELO
+	science.horizon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752619Ab3BMSfb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Feb 2013 13:35:31 -0500
+In-Reply-To: <20130213182026.GA3996@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux@horizon.com
+Cc: giometti@linux.it, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter@hurleysoftware.com
 
-On Tue, Feb 12, 2013 at 02:02:42AM -0500, George Spelvin wrote:
-> One per device just seems wasteful, when we already manintain a
-> data structure to map minor numbers to devices, and we already have
-> a PPS_MAX_SOURCES #define.
-> 
-> This is also a more comprehensive fix to the use-after-free bug
-> that has already received a minimal patch.
-> ---
->  drivers/pps/pps.c          | 66 ++++++++++++++++++++++++----------------------
->  include/linux/pps_kernel.h |  1 -
->  2 files changed, 34 insertions(+), 33 deletions(-)
+> You forgot a Signed-off-by: line for this patch, so I can't apply it, or
+> the 9/9 patch :(
 
-You forgot a Signed-off-by: line for this patch, so I can't apply it, or
-the 9/9 patch :(
+Oops, fixed.  I don't see why the 9/9 patch depends on it,
+though.  They're not related or interdependent in any way.
 
-Care to resend just these two after fixing this up?
+If you want to check the logic, I'd appreciate it.  I'm not
+really sure about the RCU stuff.  My understanding is that:
+- the idr code does the appropriate write locking when
+  modifying itself, so I don't need to do any.
+- The pps_device returned from idr_find is itself refcounted,
+  so it can't go away, and the accesses don't have bo be
+  inside the RCU read "lock".  It's only the IDR's internal
+  index nodes that might get reallocated by modificaitons of
+  a different part of the tree.
 
-thanks,
+> Care to resend just these two after fixing this up?
 
-greg k-h
+I can, but if you think you need 9/9 resent (which *did* have a S-o-b),
+I'm confused and wonder why...
