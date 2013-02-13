@@ -1,54 +1,46 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial/arc-uart: Urgent DT related update
-Date: Wed, 13 Feb 2013 08:38:33 -0800
-Message-ID: <20130213163833.GA3465@kroah.com>
-References: <201302090928.43929.arnd@arndb.de>
- <1360572101-12744-1-git-send-email-vgupta@synopsys.com>
- <511B88F8.6010907@synopsys.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] USB: serial: fix null-pointer dereferences on disconnect
+Date: Wed, 13 Feb 2013 08:41:30 -0800
+Message-ID: <20130213164130.GA8371@kroah.com>
+References: <20130213142513.GA21078@localhost>
+ <1360765731-23164-1-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:63956 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759377Ab3BMQig (ORCPT
+Received: from mail-da0-f50.google.com ([209.85.210.50]:50623 "EHLO
+	mail-da0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964783Ab3BMQld (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 11:38:36 -0500
-Received: by mail-pa0-f46.google.com with SMTP id kp14so813640pab.33
-        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 08:38:35 -0800 (PST)
+	Wed, 13 Feb 2013 11:41:33 -0500
+Received: by mail-da0-f50.google.com with SMTP id h15so653644dan.9
+        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 08:41:32 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <511B88F8.6010907@synopsys.com>
+In-Reply-To: <1360765731-23164-1-git-send-email-jhovold@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
 
-On Wed, Feb 13, 2013 at 06:07:12PM +0530, Vineet Gupta wrote:
-> On Monday 11 February 2013 02:11 PM, Vineet Gupta wrote:
-> > Hi Greg,
-> >
-> > Here's an update to arc-uart driver given Grant's recent review comments.
-> > As discussed in the thread, can you consider this a bug fix and apply to
-> > tty-next for 3.9. If you don't, please let me know as the corresponding DT file
-> > change would have to be to be seperately applied to arch/arc/boot/*.
-> >
-> > Patch is Based off linux-next of today.
-> >
-> > Thx,
-> > -Vineet
-> >
-> > Vineet Gupta (1):
-> >   serial/arc-uart: Miscll DT related updates (Grant's review comments)
-> >
-> >  .../devicetree/bindings/tty/serial/arc-uart.txt    |    4 ++--
-> >  drivers/tty/serial/arc_uart.c                      |   10 ++++------
-> >  2 files changed, 6 insertions(+), 8 deletions(-)
-> >
+On Wed, Feb 13, 2013 at 03:28:51PM +0100, Johan Hovold wrote:
+> Make sure serial-driver dtr_rts is called with disc_mutex held after
+> checking the disconnected flag.
 > 
-> Greg, I'm assuming this won't make into tty until 3.9-rc1 and hence I need to drop
-> the platform patch from arc-next.
+> Due to a bug in the tty layer, dtr_rts may get called after a device has
+> been disconnected and the tty-device unregistered. Some drivers have had
+> individual checks for disconnect to make sure the disconnected interface
+> was not accessed, but this should really be handled in usb-serial core
+> (at least until the long-standing tty-bug has been fixed).
+> 
+> Note that the problem has been made more acute with commit 0998d0631001
+> ("device-core: Ensure drvdata = NULL when no driver is bound") as the
+> port data is now also NULL when dtr_rts is called resulting in further
+> oopses.
+> 
+> Reported-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+> Cc: stable@vger.kernel.org
+> ---
 
-I've taken this now, it will be sent to Linus for 3.9-rc1.
+Any reason you didn't sign-off on this patch?
 
-thanks,
+I can't really apply it without that :(
 
-greg k-h
