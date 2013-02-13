@@ -1,59 +1,60 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC 2/4] tty: fix DTR/RTS not being dropped on hang up
-Date: Wed, 13 Feb 2013 14:32:53 -0500
-Message-ID: <1360783973.8499.48.camel@thor.lan>
-References: <20130213142513.GA21078@localhost>
-	 <1360776446-31371-1-git-send-email-jhovold@gmail.com>
-	 <1360776446-31371-3-git-send-email-jhovold@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1360776446-31371-3-git-send-email-jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Chris Ruehl <chris.ruehl-CR359r9tUDPXPF5Rlphj1Q@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] pps: Fix build breakage from decoupling pps from tty
+Date: Wed, 13 Feb 2013 14:54:30 -0500
+Message-ID: <1360785270-18264-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:43361 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756382Ab3BMTzt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Feb 2013 14:55:49 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, George Spelvin <linux@horizon.com>
 
-On Wed, 2013-02-13 at 18:27 +0100, Johan Hovold wrote:
-> Move HUPCL handling to port shutdown so that DTR/RTS is dropped also on
-> hang up.
-> 
-> Currently a hung up port will return immediately from
-> tty_port_close_start leaving DTR/RTS unchanged.
-> ---
->  drivers/tty/tty_port.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-> index 57a061e..ffe3689 100644
-> --- a/drivers/tty/tty_port.c
-> +++ b/drivers/tty/tty_port.c
-> @@ -198,11 +198,20 @@ EXPORT_SYMBOL(tty_port_tty_set);
->  
->  static void tty_port_shutdown(struct tty_port *port)
->  {
-> +	struct tty_struct *tty = port->tty;
-> +
->  	mutex_lock(&port->mutex);
->  	if (port->console)
->  		goto out;
->  
->  	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
-> +		/*
-> +		 * Drop DTR/RTS if HUPCL is set. This causes any attached
-> +		 * modem to hang up the line.
-> +		 */
-> +		if (!tty || tty->termios.c_cflag & HUPCL)
-> +			tty_port_lower_dtr_rts(port);
-> +
+Fixes:
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   bc80fbe46be7430487a45ad92841932bb2eaa3e6
+commit: 593fb1ae457aab28b392ac114f6e3358788da985 pps: Move timestamp read into PPS code proper
+date:   78 minutes ago
+config: make ARCH=sparc defconfig
 
-port->ops->shutdown() requires the hardware to reset anyway, including
-the DTR/RTS state.
+All error/warnings:
 
+   In file included from drivers/tty/serial/suncore.c:20:0:
+>> include/linux/sunserialcore.h:29:15: warning: 'struct device_node' declared inside parameter list [enabled by default]
+>> include/linux/sunserialcore.h:29:15: warning: its scope is only this definition or declaration, which is probably not what you want [enabled by default]
+>> include/linux/sunserialcore.h:31:18: warning: 'struct device_node' declared inside parameter list [enabled by default]
+>> drivers/tty/serial/suncore.c:55:5: error: conflicting types for 'sunserial_console_match'
+   include/linux/sunserialcore.h:28:12: note: previous declaration of 'sunserial_console_match' was here
+>> drivers/tty/serial/suncore.c:83:1: error: conflicting types for 'sunserial_console_match'
+   include/linux/sunserialcore.h:28:12: note: previous declaration of 'sunserial_console_match' was here
+>> drivers/tty/serial/suncore.c:85:6: error: conflicting types for 'sunserial_console_termios'
+   include/linux/sunserialcore.h:30:13: note: previous declaration of 'sunserial_console_termios' was here
 
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Cc: George Spelvin <linux@horizon.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ include/linux/sunserialcore.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/include/linux/sunserialcore.h b/include/linux/sunserialcore.h
+index 68e7430..dbe4d7f 100644
+--- a/include/linux/sunserialcore.h
++++ b/include/linux/sunserialcore.h
+@@ -13,6 +13,10 @@
+ #ifndef _SERIAL_SUN_H
+ #define _SERIAL_SUN_H
+ 
++#include <linux/device.h>
++#include <linux/serial_core.h>
++#include <linux/console.h>
++
+ /* Serial keyboard defines for L1-A processing... */
+ #define SUNKBD_RESET		0xff
+ #define SUNKBD_L1		0x01
+-- 
+1.8.1.2
+
