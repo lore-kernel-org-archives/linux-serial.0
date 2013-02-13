@@ -1,30 +1,33 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [RFC 0/4] tty: port hangup and close issues
-Date: Wed, 13 Feb 2013 17:36:30 +0000
-Message-ID: <20130213173630.63e29b47@www.etchedpixels.co.uk>
+Date: Wed, 13 Feb 2013 19:05:32 +0100
+Message-ID: <20130213180532.GA725@localhost>
 References: <20130213142513.GA21078@localhost>
-	<1360776446-31371-1-git-send-email-jhovold@gmail.com>
+ <1360776446-31371-1-git-send-email-jhovold@gmail.com>
+ <20130213173630.63e29b47@www.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52402 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759980Ab3BMRhG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 12:37:06 -0500
-In-Reply-To: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130213173630.63e29b47-+KEw/ACL1GZE/aiTQr5FLb0Ud+EcFu5g@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Chris Ruehl <chris.ruehl-CR359r9tUDPXPF5Rlphj1Q@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-> [ Note that this closing of an uninitialised port seems to be a bug in
->   itself, which these patches aim to fix. ]
+On Wed, Feb 13, 2013 at 05:36:30PM +0000, Alan Cox wrote:
+> > [ Note that this closing of an uninitialised port seems to be a bug in
+> >   itself, which these patches aim to fix. ]
+> 
+> You don't want to be cc'ing me on these - not my problem any more.
+> 
+> (but you might want to fix the fact you reference port->tty without the
+> lock or refcounts 8))
 
-You don't want to be cc'ing me on these - not my problem any more.
+Thanks. :) Removing you from Cc.
 
-(but you might want to fix the fact you reference port->tty without the
-lock or refcounts 8))
-
-Alan
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
