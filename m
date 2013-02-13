@@ -1,85 +1,55 @@
 From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH 4/4] serial/arc-uart: switch to devicetree based probing
-Date: Wed, 13 Feb 2013 20:47:07 +0000
-Message-ID: <20130213204707.1AC143E3557@localhost>
-References: <1357885223-19243-1-git-send-email-vgupta@synopsys.com> <1357885223-19243-5-git-send-email-vgupta@synopsys.com> <20130208230127.5F3063E2C27@localhost> <5115F076.5000909@synopsys.com>
+Subject: Re: [PATCH 1/2] tty: serial: remove __init on pl011 console ops
+Date: Wed, 13 Feb 2013 21:04:59 +0000
+Message-ID: <20130213210459.D8F693E3557@localhost>
+References: <1360151235-11980-1-git-send-email-haojian.zhuang@linaro.org> <20130206115219.GE17833@n2100.arm.linux.org.uk> <CAD6h2NSpo74UXUgH2OJniW=wzkxGeshta05AGgCpn26SCUSjYg@mail.gmail.com> <CACRpkdZX-YF+jzg453Vmfxo_2LLuASvZyQqLommaM4Xd3LpwfQ@mail.gmail.com> <20130206163811.GI17833@n2100.arm.linux.org.uk> <CAD6h2NS6bJS1KZfZ-3SGy6AR68Vn4fkR=TgwTEu50G_edfCP1w@mail.gmail.com> <CACxGe6t94S=kkfCkasO+ze35M-H06+WCA-J93BZaJfCzhWfoEQ@mail.gmail.com> <20130209224138.GI17833@n2100.arm.linux.org.uk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:48262 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751156Ab3BMUrL (ORCPT
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:38770 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760566Ab3BMVFD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 15:47:11 -0500
-Received: by mail-wg0-f45.google.com with SMTP id dq12so1304354wgb.0
-        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 12:47:10 -0800 (PST)
-In-Reply-To: <5115F076.5000909@synopsys.com>
+	Wed, 13 Feb 2013 16:05:03 -0500
+Received: by mail-wi0-f175.google.com with SMTP id l13so6268505wie.14
+        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 13:05:02 -0800 (PST)
+In-Reply-To: <20130209224138.GI17833@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Haojian Zhuang <haojian.zhuang@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, jslaby@suse.cz, Anton Vorontsov <anton.vorontsov@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Patch Tracking <patches@linaro.org>
 
-On Sat, 9 Feb 2013 12:15:10 +0530, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
-> On Saturday 09 February 2013 04:31 AM, Grant Likely wrote:
-> > On Fri, 11 Jan 2013 11:50:23 +0530, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
-> >> +- clock-frequency	: the input clock frequency for the UART
-> >> +- baud			: baud rate for UART
-> > change 'baud' to 'current-speed'. There is already precedence for this
-> > with other serial devices.
+On Sat, 9 Feb 2013 22:41:38 +0000, Russell King - ARM Linux <linux@arm.linux.org.uk> wrote:
+> On Sat, Feb 09, 2013 at 10:31:05PM +0000, Grant Likely wrote:
+> > If it is a probe function, then yes the __init annotations need to be
+> > removed or the driver needs to use platform_driver_probe(). This has
+> > been the model as long as I can remember. As long as a driver has a
+> > .probe hook, the driver core can call it at any time. Deferred probe
+> > has only exposed the issue.
+> > 
+> > If you want to discard the .probe() hook, then the probe() pointer
+> > needs to be cleared from the driver structure before discarding the
+> > sections. Otherwise the driver core can still call it which is what
+> > happens in deferred probe and can happen if a device gets unbound from
+> > a driver and then re-attached.
 > 
-> While I'm OK with this - I can only see of_serial.c following the rule :-)
-> More importantly I'm not clear about the logistics of this fix. Obviously this has
-> a bearing on DT files in arch/arc/boot/*. So are such changes (platform + driver)
-> routed thru the subsystem tree or the arch tree or bits from both with
-> bisectability not considered - which feels wrong. We have to also consider the
-> fact that Greg has closed the tty/serial for 3.9. So while I have no objection to
-> your comment, it seems that the it needs to wait till 3.9-rc1 - or is there an
-> alternate way.
+> You're talking about something completely different on the assumption
+> that what is being talked about is the probe hook.  It isn't.  It's
+> a path for the console initialization which has _always_ been __init
+> marked since the dawn of time, because modules are not supposed to
+> be calling that path.
 
-I would consider it a bug fix. The binding isn't what it should be and
-it needs to be addressed before appearing in a released kernel. If this
-patch has already been merged, then write and post a fixup patch.
+Sorry, you're right. Hitting reply too quickly I guess.
 
-> >
-> >> @@ -673,8 +693,18 @@ static int __init arc_serial_probe_earlyprintk(struct platform_device *pdev)
-> >>  static int arc_serial_probe(struct platform_device *pdev)
-> >>  {
-> >>  	int rc, dev_id;
-> >> +	struct device_node *np = pdev->dev.of_node;
-> >> +
-> >> +	/* no device tree device */
-> >> +	if (!np)
-> >> +		return -ENODEV;
-> > This breaks non-DT users. Is this what you intend? It creates a flag day
-> > where users have to switch from non-DT to DT cold-turkey.
-> 
-> Not supporting non-DT user was not the idea - it just simplifies the code a bit
-> given that it would only even be runtime used in a ARC Linux port based platform -
-> which unconditionally enables OF.  Further - the ARC port itself is not yet
-> upstream so there are no "official" user of this in tree driver.
-> FWIW, ARC Linux port was recently reviewed on lkml/arch mailing lists and is now
-> in linux-next for a possible 3.9 merge.
+However, the point still stands that anything that can be called from
+a .probe() path cannot be in an __init section with the current driver
+model. A driver can even be unbound from a device and reattached at
+runtime. That would also cause problems.
 
-If there are no users, then nobody is broken. If this driver only
-supports DT platforms then my comment can be ignored.
+> What has been exposed is that console drivers which have resources
+> which are not immediately available no longer have the same guarantees
+> that they used to have (that is, they will be called before the __init
+> section is given away.)
 
-> >> +	dev_id = of_alias_get_id(np, "serial");
-> >> +	if (dev_id < 0) {
-> >> +		dev_err(&pdev->dev, "failed to get alias id: %d\n", dev_id);
-> >> +		return dev_id;
-> >> +	}
-> > Don't fail on this. If you can't get an id then choose one dynamically.
-> 
-> You mean just assume 0.
-
-No, I mean dynamically assign an ID from ids that are available. Say you
-had two of these devices in a system, and neither had an alias; they
-couldn't both be '0'.  :-)
+Okay, I'll reply to Haojian's proposed solution patch on this point.
 
 g.
 
-> 
-> Thanks for reviewing.
-> -Vineet
-
--- 
-Grant Likely, B.Sc, P.Eng.
-Secret Lab Technologies, Ltd.
