@@ -1,46 +1,46 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] USB: serial: fix null-pointer dereferences on disconnect
-Date: Wed, 13 Feb 2013 08:41:30 -0800
-Message-ID: <20130213164130.GA8371@kroah.com>
-References: <20130213142513.GA21078@localhost>
- <1360765731-23164-1-git-send-email-jhovold@gmail.com>
+Subject: Re: [PATCH v2 0/9] 3.8-rc regression with pps-ldisc due to 70ece7a731
+Date: Wed, 13 Feb 2013 08:45:47 -0800
+Message-ID: <20130213164547.GA8520@kroah.com>
+References: <cover.1360677367.git.linux@horizon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f50.google.com ([209.85.210.50]:50623 "EHLO
-	mail-da0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964783Ab3BMQld (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 11:41:33 -0500
-Received: by mail-da0-f50.google.com with SMTP id h15so653644dan.9
-        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 08:41:32 -0800 (PST)
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1360765731-23164-1-git-send-email-jhovold@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <cover.1360677367.git.linux@horizon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: George Spelvin <linux@horizon.com>, Rodolfo Giometti <giometti@enneenne.com>
+Cc: linux-serial@vger.kernel.org, peter@hurleysoftware.com, linux-kernel@vger.kernel.org, giometti@linux.it
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
 
-On Wed, Feb 13, 2013 at 03:28:51PM +0100, Johan Hovold wrote:
-> Make sure serial-driver dtr_rts is called with disc_mutex held after
-> checking the disconnected flag.
+On Tue, Feb 12, 2013 at 08:56:07AM -0500, George Spelvin wrote:
+> The standard N_TTY line discipline used to not use the tty->disc_data
+> field, so N_PPS felt free to use it.  That has now changed, requiring
+> that N_PPS use a different method to find its private data.
 > 
-> Due to a bug in the tty layer, dtr_rts may get called after a device has
-> been disconnected and the tty-device unregistered. Some drivers have had
-> individual checks for disconnect to make sure the disconnected interface
-> was not accessed, but this should really be handled in usb-serial core
-> (at least until the long-standing tty-bug has been fixed).
+> (In the current, buggy, state, N_PPS follows a wild pointer and explodes
+> in an interrupt hander as soon as a pulse actually arrives.)
 > 
-> Note that the problem has been made more acute with commit 0998d0631001
-> ("device-core: Ensure drvdata = NULL when no driver is bound") as the
-> port data is now also NULL when dtr_rts is called resulting in further
-> oopses.
+> Compared to v1, this has been rearranges to the first three patches are
+> the minimial bugfixes:
 > 
-> Reported-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-> Cc: stable@vger.kernel.org
-> ---
+> * 1/9 "Add pps_lookup_dev() function"
+>   This adds the infrastructure necessary to bypass disc_data use.
+> 
+> * 2/9 "Use pps_lookup_dev to reduce ldisc coupling"
+>   This actually fixes the bug.
+> 
+> * 3/9 "Fix a use-after free bug when unregistering a source."
+>   This is actually an old bug, present before 3.7.  I'd like to solicit
+>   feedback from folks who know device drivers better to ask if I did
+>   things right.  I'd also appreciate a look at patch 8/9 which is a more
+>   aggressive cleanup of the same bug.
 
-Any reason you didn't sign-off on this patch?
+I can take these through my tty tree, but it would be very good if I
+actually had the ack from the PPS maintainer...
 
-I can't really apply it without that :(
+Rodolfo, any objection for me taking these?
 
+thanks,
+
+greg k-h
