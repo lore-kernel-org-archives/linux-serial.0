@@ -1,60 +1,85 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] pps: Fix build breakage from decoupling pps from tty
-Date: Wed, 13 Feb 2013 14:54:30 -0500
-Message-ID: <1360785270-18264-1-git-send-email-peter@hurleysoftware.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH 4/4] serial/arc-uart: switch to devicetree based probing
+Date: Wed, 13 Feb 2013 20:47:07 +0000
+Message-ID: <20130213204707.1AC143E3557@localhost>
+References: <1357885223-19243-1-git-send-email-vgupta@synopsys.com> <1357885223-19243-5-git-send-email-vgupta@synopsys.com> <20130208230127.5F3063E2C27@localhost> <5115F076.5000909@synopsys.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:43361 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756382Ab3BMTzt (ORCPT
+Received: from mail-wg0-f45.google.com ([74.125.82.45]:48262 "EHLO
+	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751156Ab3BMUrL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Feb 2013 14:55:49 -0500
+	Wed, 13 Feb 2013 15:47:11 -0500
+Received: by mail-wg0-f45.google.com with SMTP id dq12so1304354wgb.0
+        for <linux-serial@vger.kernel.org>; Wed, 13 Feb 2013 12:47:10 -0800 (PST)
+In-Reply-To: <5115F076.5000909@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, George Spelvin <linux@horizon.com>
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>
 
-Fixes:
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   bc80fbe46be7430487a45ad92841932bb2eaa3e6
-commit: 593fb1ae457aab28b392ac114f6e3358788da985 pps: Move timestamp read into PPS code proper
-date:   78 minutes ago
-config: make ARCH=sparc defconfig
+On Sat, 9 Feb 2013 12:15:10 +0530, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
+> On Saturday 09 February 2013 04:31 AM, Grant Likely wrote:
+> > On Fri, 11 Jan 2013 11:50:23 +0530, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
+> >> +- clock-frequency	: the input clock frequency for the UART
+> >> +- baud			: baud rate for UART
+> > change 'baud' to 'current-speed'. There is already precedence for this
+> > with other serial devices.
+> 
+> While I'm OK with this - I can only see of_serial.c following the rule :-)
+> More importantly I'm not clear about the logistics of this fix. Obviously this has
+> a bearing on DT files in arch/arc/boot/*. So are such changes (platform + driver)
+> routed thru the subsystem tree or the arch tree or bits from both with
+> bisectability not considered - which feels wrong. We have to also consider the
+> fact that Greg has closed the tty/serial for 3.9. So while I have no objection to
+> your comment, it seems that the it needs to wait till 3.9-rc1 - or is there an
+> alternate way.
 
-All error/warnings:
+I would consider it a bug fix. The binding isn't what it should be and
+it needs to be addressed before appearing in a released kernel. If this
+patch has already been merged, then write and post a fixup patch.
 
-   In file included from drivers/tty/serial/suncore.c:20:0:
->> include/linux/sunserialcore.h:29:15: warning: 'struct device_node' declared inside parameter list [enabled by default]
->> include/linux/sunserialcore.h:29:15: warning: its scope is only this definition or declaration, which is probably not what you want [enabled by default]
->> include/linux/sunserialcore.h:31:18: warning: 'struct device_node' declared inside parameter list [enabled by default]
->> drivers/tty/serial/suncore.c:55:5: error: conflicting types for 'sunserial_console_match'
-   include/linux/sunserialcore.h:28:12: note: previous declaration of 'sunserial_console_match' was here
->> drivers/tty/serial/suncore.c:83:1: error: conflicting types for 'sunserial_console_match'
-   include/linux/sunserialcore.h:28:12: note: previous declaration of 'sunserial_console_match' was here
->> drivers/tty/serial/suncore.c:85:6: error: conflicting types for 'sunserial_console_termios'
-   include/linux/sunserialcore.h:30:13: note: previous declaration of 'sunserial_console_termios' was here
+> >
+> >> @@ -673,8 +693,18 @@ static int __init arc_serial_probe_earlyprintk(struct platform_device *pdev)
+> >>  static int arc_serial_probe(struct platform_device *pdev)
+> >>  {
+> >>  	int rc, dev_id;
+> >> +	struct device_node *np = pdev->dev.of_node;
+> >> +
+> >> +	/* no device tree device */
+> >> +	if (!np)
+> >> +		return -ENODEV;
+> > This breaks non-DT users. Is this what you intend? It creates a flag day
+> > where users have to switch from non-DT to DT cold-turkey.
+> 
+> Not supporting non-DT user was not the idea - it just simplifies the code a bit
+> given that it would only even be runtime used in a ARC Linux port based platform -
+> which unconditionally enables OF.  Further - the ARC port itself is not yet
+> upstream so there are no "official" user of this in tree driver.
+> FWIW, ARC Linux port was recently reviewed on lkml/arch mailing lists and is now
+> in linux-next for a possible 3.9 merge.
 
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Cc: George Spelvin <linux@horizon.com>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- include/linux/sunserialcore.h | 4 ++++
- 1 file changed, 4 insertions(+)
+If there are no users, then nobody is broken. If this driver only
+supports DT platforms then my comment can be ignored.
 
-diff --git a/include/linux/sunserialcore.h b/include/linux/sunserialcore.h
-index 68e7430..dbe4d7f 100644
---- a/include/linux/sunserialcore.h
-+++ b/include/linux/sunserialcore.h
-@@ -13,6 +13,10 @@
- #ifndef _SERIAL_SUN_H
- #define _SERIAL_SUN_H
- 
-+#include <linux/device.h>
-+#include <linux/serial_core.h>
-+#include <linux/console.h>
-+
- /* Serial keyboard defines for L1-A processing... */
- #define SUNKBD_RESET		0xff
- #define SUNKBD_L1		0x01
+> >> +	dev_id = of_alias_get_id(np, "serial");
+> >> +	if (dev_id < 0) {
+> >> +		dev_err(&pdev->dev, "failed to get alias id: %d\n", dev_id);
+> >> +		return dev_id;
+> >> +	}
+> > Don't fail on this. If you can't get an id then choose one dynamically.
+> 
+> You mean just assume 0.
+
+No, I mean dynamically assign an ID from ids that are available. Say you
+had two of these devices in a system, and neither had an alias; they
+couldn't both be '0'.  :-)
+
+g.
+
+> 
+> Thanks for reviewing.
+> -Vineet
+
 -- 
-1.8.1.2
-
+Grant Likely, B.Sc, P.Eng.
+Secret Lab Technologies, Ltd.
