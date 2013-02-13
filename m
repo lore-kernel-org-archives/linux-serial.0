@@ -1,61 +1,44 @@
-From: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+From: Johan Hovold <jhovold@gmail.com>
 Subject: Re: [PATCH] USB: serial: fix null-pointer dereferences on disconnect
-Date: Wed, 13 Feb 2013 16:34:36 +0200
-Message-ID: <20130213143436.GE4819@arwen.pp.htv.fi>
+Date: Wed, 13 Feb 2013 15:48:56 +0100
+Message-ID: <20130213144856.GB21078@localhost>
 References: <20130213142513.GA21078@localhost>
  <1360765731-23164-1-git-send-email-jhovold@gmail.com>
-Reply-To: <balbi-l0cyMroinI0@public.gmane.org>
+ <20130213143436.GE4819@arwen.pp.htv.fi>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/QKKmeG/X/bPShih"
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1360765731-23164-1-git-send-email-jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Chris Ruehl <chris.ruehl-CR359r9tUDPXPF5Rlphj1Q@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-List-Id: linux-serial@vger.kernel.org
-
---/QKKmeG/X/bPShih
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f179.google.com ([209.85.217.179]:44668 "EHLO
+	mail-lb0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759024Ab3BMOuT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Feb 2013 09:50:19 -0500
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20130213143436.GE4819@arwen.pp.htv.fi>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: Johan Hovold <jhovold@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Chris Ruehl <chris.ruehl@gtsys.com.hk>, Alan Stern <stern@rowland.harvard.edu>, Alan Cox <alan@lxorguk.ukuu.org.uk>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
 
-On Wed, Feb 13, 2013 at 03:28:51PM +0100, Johan Hovold wrote:
-> Make sure serial-driver dtr_rts is called with disc_mutex held after
-> checking the disconnected flag.
->=20
-> Due to a bug in the tty layer, dtr_rts may get called after a device has
+On Wed, Feb 13, 2013 at 04:34:36PM +0200, Felipe Balbi wrote:
+> On Wed, Feb 13, 2013 at 03:28:51PM +0100, Johan Hovold wrote:
+> > Make sure serial-driver dtr_rts is called with disc_mutex held after
+> > checking the disconnected flag.
+> > 
+> > Due to a bug in the tty layer, dtr_rts may get called after a device has
+> 
+> why don't you fix the bug in the tty layer instead ?
 
-why don't you fix the bug in the tty layer instead ?
+I'm workin on it. ;)
 
---=20
-balbi
+As I mentioned earlier I'll send a follow up mail with some more details
+on the tty issue and some RFC patches which would actually fix the
+immediate issue as well.
 
---/QKKmeG/X/bPShih
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+There is nothing wrong with checking the disconnected flag either way.
+In fact, it could be considered an optimisation as it will be set once
+the physical device is gone which is some time before the hangup is
+complete and the tty device unregistered. We already use the flag to
+prevent further opens after a disconnect.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRG6R8AAoJEIaOsuA1yqRExfsP/jPKWASGqVavV9FYevQaeQtq
-wWRPrZD20uFgqpOSX+9DLiPPZSc2FNmocOvrCJ+swaAZ9bCB0VZxc/hoFJn6hJpd
-GbzSeFixiieILneTFv/RKAc6c84gdoxk55koZZ7Zm4eapv+Znomhcj2bEM7qr7ky
-NJ5xfPUY0U9SezAA5z/TsZ7+BjQ0ZaStQuID2n75D1U0J3dfWKyin+g0/++dVb2A
-7O5dIFDTx7FMA0DM9nOZtqO9Gnahd+88uoYlD6JSAbEjvRsoq5CgWcE+HHZZ9x4P
-ERcsCIm/720k+XIHtMPz0+BShLOAChRI4Msv6ehmxymisBSDf/pKpHJTHejrtz+4
-0phidaHauFBQ0FsmF1E37FzBJrfDBF/rugMe2nlCW3smQsF4Co1jM48FDYDwJFn2
-0TM24boyVDn/4acYkb6wDI+7kUpICodlfEYY/CSzFEFKoZVaD0BtyYVQljJ21J5+
-Turbrms3LnnAqz01RL3o2nZMSWGwlWaKlh1YEqKf6u9X+RGqU0FZctHRxPRo/XXi
-K0GKZkFBNPzOXf2iuaSVmPLuiukvEIIGfhuHNFrI1tuT5R9ZBP6ozPZcNYcOaUYn
-gvZ3MwybJpvxLKv8kM3pSs/290PPjrNd7E9B3gu+g20U0LdbjCAypa3Kao/JQs6L
-L7vWCJe2P4jsqecWFQAj
-=GO66
------END PGP SIGNATURE-----
-
---/QKKmeG/X/bPShih--
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+/Johan
