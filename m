@@ -1,78 +1,132 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH] serial/arc-uart: Urgent DT related update
-Date: Thu, 14 Feb 2013 11:25:04 +0530
-Message-ID: <511C7C38.7030009@synopsys.com>
-References: <201302090928.43929.arnd@arndb.de> <1360572101-12744-1-git-send-email-vgupta@synopsys.com> <511B88F8.6010907@synopsys.com> <20130213163833.GA3465@kroah.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC 2/4] tty: fix DTR/RTS not being dropped on hang up
+Date: Thu, 14 Feb 2013 10:04:21 +0100
+Message-ID: <20130214090421.GA2130@localhost>
+References: <20130213142513.GA21078@localhost>
+ <1360776446-31371-1-git-send-email-jhovold@gmail.com>
+ <1360776446-31371-3-git-send-email-jhovold@gmail.com>
+ <1360783973.8499.48.camel@thor.lan>
+ <1360804273.3385.23.camel@thor.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from us02smtp1.synopsys.com ([198.182.60.75]:49604 "EHLO
-	vaxjo.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750990Ab3BNFzS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 14 Feb 2013 00:55:18 -0500
-In-Reply-To: <20130213163833.GA3465@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1360804273.3385.23.camel-AsKIXgLx6sE@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Chris Ruehl <chris.ruehl-CR359r9tUDPXPF5Rlphj1Q@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Grant Likely <grant.likely@secretlab.ca>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org
 
-On Wednesday 13 February 2013 10:08 PM, Greg Kroah-Hartman wrote:
-> On Wed, Feb 13, 2013 at 06:07:12PM +0530, Vineet Gupta wrote:
->> On Monday 11 February 2013 02:11 PM, Vineet Gupta wrote:
->>> Hi Greg,
->>>
->>> Here's an update to arc-uart driver given Grant's recent review comments.
->>> As discussed in the thread, can you consider this a bug fix and apply to
->>> tty-next for 3.9. If you don't, please let me know as the corresponding DT file
->>> change would have to be to be seperately applied to arch/arc/boot/*.
->>>
->>> Patch is Based off linux-next of today.
->>>
->>> Thx,
->>> -Vineet
->>>
->>> Vineet Gupta (1):
->>>   serial/arc-uart: Miscll DT related updates (Grant's review comments)
->>>
->>>  .../devicetree/bindings/tty/serial/arc-uart.txt    |    4 ++--
->>>  drivers/tty/serial/arc_uart.c                      |   10 ++++------
->>>  2 files changed, 6 insertions(+), 8 deletions(-)
->>>
->> Greg, I'm assuming this won't make into tty until 3.9-rc1 and hence I need to drop
->> the platform patch from arc-next.
-> I've taken this now, it will be sent to Linus for 3.9-rc1.
+On Wed, Feb 13, 2013 at 08:11:13PM -0500, Peter Hurley wrote:
+> On Wed, 2013-02-13 at 14:32 -0500, Peter Hurley wrote:
+> > On Wed, 2013-02-13 at 18:27 +0100, Johan Hovold wrote:
+> > > Move HUPCL handling to port shutdown so that DTR/RTS is dropped also on
+> > > hang up.
+> > > 
+> > > Currently a hung up port will return immediately from
+> > > tty_port_close_start leaving DTR/RTS unchanged.
+> > > ---
+> > >  drivers/tty/tty_port.c | 22 ++++++++++++----------
+> > >  1 file changed, 12 insertions(+), 10 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> > > index 57a061e..ffe3689 100644
+> > > --- a/drivers/tty/tty_port.c
+> > > +++ b/drivers/tty/tty_port.c
+> > > @@ -198,11 +198,20 @@ EXPORT_SYMBOL(tty_port_tty_set);
+> > >  
+> > >  static void tty_port_shutdown(struct tty_port *port)
+> > >  {
+> > > +	struct tty_struct *tty = port->tty;
+> > > +
+> > >  	mutex_lock(&port->mutex);
+> > >  	if (port->console)
+> > >  		goto out;
+> > >  
+> > >  	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
+> > > +		/*
+> > > +		 * Drop DTR/RTS if HUPCL is set. This causes any attached
+> > > +		 * modem to hang up the line.
+> > > +		 */
+> > > +		if (!tty || tty->termios.c_cflag & HUPCL)
+> > > +			tty_port_lower_dtr_rts(port);
+> > > +
+> > 
+> > port->ops->shutdown() requires the hardware to reset anyway, including
+> > the DTR/RTS state.
+> 
+> Ok, after reviewing this further, I like this more.
+> 
+> For one, there is more flexibility for tty drivers that have a custom
+> close() routine (ie, one that doesn't call tty_port_close()). At the
+> same time, every call site of tty_port_close_start() needs to be checked
+> to ensure it does not assume (or does not require) DTR to be dropped:
+> 
+> char/pcmcia/synclink_cs.c:	if (tty_port_close_start(port, tty, filp) == 0)
+> tty/synclinkmp.c:	if (tty_port_close_start(&info->port, tty, filp) == 0)
+> tty/rocket.c:	if (tty_port_close_start(port, tty, filp) == 0)
+> tty/amiserial.c:	if (tty_port_close_start(port, tty, filp) == 0)
+> tty/n_gsm.c:	if (tty_port_close_start(&dlci->port, tty, filp) == 0)
+> tty/mxser.c:	if (tty_port_close_start(port, tty, filp) == 0)
+> tty/synclink_gt.c:	if (tty_port_close_start(&info->port, tty, filp) == 0)
+> tty/serial/serial_core.c:	if (tty_port_close_start(port, tty, filp) == 0)
+> tty/synclink.c:	if (tty_port_close_start(&info->port, tty, filp) == 0)			 
+> 
+> In the case of the serial core, this actually fixes the code excerpt
+> below where tty_port_close_start() prematurely drops DTR before the uart
+> can stop_rx() or wait_until_sent().
 
-Thanks greg. I understand the tree closing rules' purpose, to let things stabilize
-ahead of merge window - both from mechanical conflicts perspective as well as
-runtime conflicts. However I'm slightly confused here about the process, specially
-as a n00b maintainer and was hoping you could clarify it.
+Yeah, I mentioned both of these points in the cover letter of the
+series. From a quick browse it seemed that I would have to fix n_gsm.c
+and mxser.c, but I'll have a closer look at this later.
 
-Your announcement of Feb 9th said
+Thanks,
+Johan
 
->With the release of the 3.8-rc7 kernel, I think it's time to close the
->TTY/serial tree for new features / cleanups for 3.9.  So I'm closing my
->tree, and will only be applying obvious bugfixes or regressions to it
->until 3.9-rc1 comes out.
-
-So a bug fix sent on say Feb 11th would have been be applied to your tree to end
-up in 3.9 merge-window pull to Linus- correct or no ? So in that sense, since
-Arnd/Grant are deeming this patch as bug fix, shouldn't it make into 3.9
-merge-window merge. So maybe, it's the criticality of the bug which warrants
-that.  Please note that I'm just trying to understand the process here and not
-arguing about patch itself.
-
->You can keep sending me patches for the tree that don't fit the "bugfix"
->category, but note that I'll be storing them away to wait for 3.9-rc1
->comes out, which might be a few weeks, so please be patient.
-
-And once 3.9-rc1 hits, everything becomes 3.10 merge material anyways except for
-bug fixes.
-
-TIA,
--Vineet
-
-
-
-
+> static void uart_close(struct tty_struct *tty, struct file *filp)
+> {
+> 	struct uart_state *state = tty->driver_data;
+> 	struct tty_port *port;
+> 	struct uart_port *uport;
+> 	unsigned long flags;
+> 
+> 	if (!state)
+> 		return;
+> 
+> 	uport = state->uart_port;
+> 	port = &state->port;
+> 
+> 	pr_debug("uart_close(%d) called\n", uport->line);
+> 
+> 	if (tty_port_close_start(port, tty, filp) == 0)
+> 		return;
+> 
+> 	/*
+> 	 * At this point, we stop accepting input.  To do this, we
+> 	 * disable the receive line status interrupts.
+> 	 */
+> 	if (port->flags & ASYNC_INITIALIZED) {
+> 		unsigned long flags;
+> 		spin_lock_irqsave(&uport->lock, flags);
+> 		uport->ops->stop_rx(uport);
+> 		spin_unlock_irqrestore(&uport->lock, flags);
+> 		/*
+> 		 * Before we drop DTR, make sure the UART transmitter
+> 		 * has completely drained; this is especially
+> 		 * important if there is a transmit FIFO!
+> 		 */
+> 		uart_wait_until_sent(tty, uport->timeout);
+> 	}
+> 
+> 	mutex_lock(&port->mutex);
+> 	uart_shutdown(tty, state);
+> 	uart_flush_buffer(tty);
+> 
+> 
+> Regards,
+> Peter Hurley
+> 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
