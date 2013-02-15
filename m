@@ -1,55 +1,51 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: imx: Fix recursive locking bug
-Date: Fri, 15 Feb 2013 09:30:16 -0800
-Message-ID: <20130215173016.GA27514@kroah.com>
-References: <alpine.LFD.2.02.1302142006050.22263@ionos>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.02.1302142006050.22263@ionos>
-Sender: stable-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Xinyu Chen <xinyu.chen@freescale.com>, Dirk Behme <dirk.behme@de.bosch.com>, Shawn Guo <shawn.guo@linaro.org>, Tim Sander <tim@krieglstein.org>, Sascha Hauer <s.hauer@pengutronix.de>, stable@vger.kernel.org, linux-serial@vger.kernel.org
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: [PATCH] serial: tegra: assume CONFIG_OF
+Date: Fri, 15 Feb 2013 15:04:45 -0700
+Message-ID: <1360965885-19842-1-git-send-email-swarren@wwwdotorg.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:43411 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751837Ab3BOWEv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 15 Feb 2013 17:04:51 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Stephen Warren <swarren@nvidia.com>
 
-On Thu, Feb 14, 2013 at 09:01:06PM +0100, Thomas Gleixner wrote:
-> commit 9ec1882df2 (tty: serial: imx: console write routing is unsafe
-> on SMP) introduced a recursive locking bug in imx_console_write().
-> 
-> The callchain is:
-> 
-> imx_rxint()
->   spin_lock_irqsave(&sport->port.lock,flags);
->   ...
->   uart_handle_sysrq_char();
->     sysrq_function();
->       printk();
->         imx_console_write();
->           spin_lock_irqsave(&sport->port.lock,flags); <--- DEAD
-> 
-> The bad news is that the kernel debugging facilities can dectect the
-> problem, but the printks never surface on the serial console for
-> obvious reasons.
-> 
-> There is a similar issue with oops_in_progress. If the kernel crashes
-> we really don't want to be stuck on the lock and unable to tell what
-> happened.
-> 
-> In general most UP originated drivers miss these checks and nobody
-> ever notices because CONFIG_PROVE_LOCKING seems to be still ignored by
-> a large number of developers.
-> 
-> The solution is to avoid locking in the sysrq case and trylock in the
-> oops_in_progress case.
-> 
-> This scheme is used in other drivers as well and it would be nice if
-> we could move this to a common place, so the usual copy/paste/modify
-> bugs can be avoided.
+From: Stephen Warren <swarren@nvidia.com>
 
-I agree, making this easier to handle would be nice, patches are always
-accepted :)
+Tegra only supports, and always enables, device tree. Remove all ifdefs
+for DT support from the driver.
 
-thanks,
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
+---
+ drivers/tty/serial/serial-tegra.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 4f5e629..372de8a 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -1269,8 +1269,7 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 	const struct tegra_uart_chip_data *cdata;
+ 	const struct of_device_id *match;
+ 
+-	match = of_match_device(of_match_ptr(tegra_uart_of_match),
+-				&pdev->dev);
++	match = of_match_device(tegra_uart_of_match, &pdev->dev);
+ 	if (!match) {
+ 		dev_err(&pdev->dev, "Error: No device match found\n");
+ 		return -ENODEV;
+@@ -1361,7 +1360,7 @@ static struct platform_driver tegra_uart_platform_driver = {
+ 	.remove		= tegra_uart_remove,
+ 	.driver		= {
+ 		.name	= "serial-tegra",
+-		.of_match_table = of_match_ptr(tegra_uart_of_match),
++		.of_match_table = tegra_uart_of_match,
+ 		.pm	= &tegra_uart_pm_ops,
+ 	},
+ };
+-- 
+1.7.10.4
+
