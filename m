@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 20/32] tty: Separate release semantics of ldisc reference
-Date: Wed, 20 Feb 2013 15:03:07 -0500
-Message-ID: <1361390599-15195-21-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 21/32] tty: Document unsafe ldisc reference acquire
+Date: Wed, 20 Feb 2013 15:03:08 -0500
+Message-ID: <1361390599-15195-22-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
@@ -12,119 +12,63 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-tty_ldisc_ref()/tty_ldisc_unref() have usage semantics
-equivalent to down_read_trylock()/up_read(). Only
-callers of tty_ldisc_put() are performing the additional
-operations necessary for proper ldisc teardown, and then only
-after ensuring no outstanding 'read lock' remains.
+Merge get_ldisc() into its only call site.
+Note how, after merging, the unsafe acquire of an ldisc reference
+is obvious.
 
-Thus, tty_ldisc_unref() should never be the last reference;
-WARN if it is. Conversely, tty_ldisc_put() should never be
-destructing if the use count != 1.
+   CPU 0 in tty_ldisc_try()         |  CPU 1 in tty_ldisc_halt()
+                                    |
+test_bit(TTY_LDISC, &tty_flags)     |
+if (true)                           |  clear_bit(TTY_LDISC, &tty_flags)
+  tty->ldisc != 0?                  |  atomic_read(&tty->ldisc->users)
+  if (true)                         |  ret_val == 1?
+    atomic_inc(&tty->ldisc->users)  |  if (false)
+                                    |    wait
+                                    |
+<goes on assuming safe ldisc use>   |  <doesn't wait - proceeds w/ close>
+                                    |
+
+The spin lock in tty_ldisc_try() does nothing wrt synchronizing
+the ldisc halt since it's not acquired as part of halting.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 69 +++++++++++++++++++++++++------------------------
- 1 file changed, 35 insertions(+), 34 deletions(-)
+ drivers/tty/tty_ldisc.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 328ff5b..9362a10 100644
+index 9362a10..5ee0b2b 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -49,37 +49,6 @@ static inline struct tty_ldisc *get_ldisc(struct tty_ldisc *ld)
- 	return ld;
- }
+@@ -42,13 +42,6 @@ static DECLARE_WAIT_QUEUE_HEAD(tty_ldisc_wait);
+ /* Line disc dispatch table */
+ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
  
--static void put_ldisc(struct tty_ldisc *ld)
+-static inline struct tty_ldisc *get_ldisc(struct tty_ldisc *ld)
 -{
--	unsigned long flags;
--
--	if (WARN_ON_ONCE(!ld))
--		return;
--
--	/*
--	 * If this is the last user, free the ldisc, and
--	 * release the ldisc ops.
--	 *
--	 * We really want an "atomic_dec_and_raw_lock_irqsave()",
--	 * but we don't have it, so this does it by hand.
--	 */
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
--	if (atomic_dec_and_test(&ld->users)) {
--		struct tty_ldisc_ops *ldo = ld->ops;
--
--		ldo->refcount--;
--		module_put(ldo->owner);
--		raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
--
--		kfree(ld);
--		return;
--	}
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
--
--	if (waitqueue_active(&ld->wq_idle))
--		wake_up(&ld->wq_idle);
+-	if (ld)
+-		atomic_inc(&ld->users);
+-	return ld;
 -}
 -
  /**
   *	tty_register_ldisc	-	install a line discipline
   *	@disc: ldisc number
-@@ -363,13 +332,45 @@ EXPORT_SYMBOL_GPL(tty_ldisc_ref);
+@@ -269,10 +262,13 @@ static struct tty_ldisc *tty_ldisc_try(struct tty_struct *tty)
+ 	unsigned long flags;
+ 	struct tty_ldisc *ld;
  
- void tty_ldisc_deref(struct tty_ldisc *ld)
- {
--	put_ldisc(ld);
-+	unsigned long flags;
-+
-+	if (WARN_ON_ONCE(!ld))
-+		return;
-+
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	/*
-+	 * WARNs if one-too-many reader references were released
-+	 * - the last reference must be released with tty_ldisc_put
-+	 */
-+	WARN_ON(atomic_dec_and_test(&ld->users));
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+
-+	if (waitqueue_active(&ld->wq_idle))
-+		wake_up(&ld->wq_idle);
++	/* FIXME: this allows reference acquire after TTY_LDISC is cleared */
+ 	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
+ 	ld = NULL;
+-	if (test_bit(TTY_LDISC, &tty->flags))
+-		ld = get_ldisc(tty->ldisc);
++	if (test_bit(TTY_LDISC, &tty->flags) && tty->ldisc) {
++		ld = tty->ldisc;
++		atomic_inc(&ld->users);
++	}
+ 	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
+ 	return ld;
  }
- EXPORT_SYMBOL_GPL(tty_ldisc_deref);
- 
-+/**
-+ *	tty_ldisc_put		-	release the ldisc
-+ *
-+ *	Complement of tty_ldisc_get().
-+ */
- static inline void tty_ldisc_put(struct tty_ldisc *ld)
- {
--	put_ldisc(ld);
-+	unsigned long flags;
-+
-+	if (WARN_ON_ONCE(!ld))
-+		return;
-+
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+
-+	/* unreleased reader reference(s) will cause this WARN */
-+	WARN_ON(!atomic_dec_and_test(&ld->users));
-+
-+	ld->ops->refcount--;
-+	module_put(ld->ops->owner);
-+	kfree(ld);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- }
- 
- /**
-@@ -1001,7 +1002,7 @@ void tty_ldisc_init(struct tty_struct *tty)
-  */
- void tty_ldisc_deinit(struct tty_struct *tty)
- {
--	put_ldisc(tty->ldisc);
-+	tty_ldisc_put(tty->ldisc);
- 	tty_ldisc_assign(tty, NULL);
- }
- 
 -- 
 1.8.1.2
