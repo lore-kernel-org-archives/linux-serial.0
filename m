@@ -1,132 +1,69 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH 2/4] TTY: fix DTR not being dropped on hang up
-Date: Wed, 20 Feb 2013 17:02:50 +0100
-Message-ID: <1361376172-31860-3-git-send-email-jhovold@gmail.com>
-References: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
- <1361376172-31860-1-git-send-email-jhovold@gmail.com>
+From: Pawel Wieczorkiewicz <wpawel@gmail.com>
+Subject: [PATCH 1/1] tty: atmel_serial_probe(): index of atmel_ports[] fix
+Date: Wed, 20 Feb 2013 17:26:20 +0100
+Message-ID: <1361377580-10437-1-git-send-email-wpawel@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f53.google.com ([209.85.215.53]:53146 "EHLO
-	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S935727Ab3BTQDt (ORCPT
+Received: from mail-bk0-f47.google.com ([209.85.214.47]:44604 "EHLO
+	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964898Ab3BTQ1D (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Feb 2013 11:03:49 -0500
-In-Reply-To: <1361376172-31860-1-git-send-email-jhovold@gmail.com>
+	Wed, 20 Feb 2013 11:27:03 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Johan Hovold <jhovold@gmail.com>
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pawel Wieczorkiewicz <wpawel@gmail.com>
 
-Move HUPCL handling to port shutdown so that DTR is dropped also on hang
-up (tty_port_close is a noop for hung-up ports).
+From: Pawel Wieczorkiewicz <wpawel@gmail.com>
 
-Also do not try to drop DTR for uninitialised ports where it has never
-been raised (e.g. after a failed open).
+Index of atmel_ports[ATMEL_MAX_UART] should be smaller
+than ATMEL_MAX_UART.
 
-Nine drivers currently call tty_port_close_start directly (rather than
-through tty_port_close) and seven of them lower DTR as part of their
-close (if the port has been initialised). Fixup the remaining two
-drivers so that it continues to be lowered also on normal (non-HUP)
-close. [ Note that most of those other seven drivers did not expect DTR
-to have been dropped by tty_port_close_start in the first place. ]
-
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
+Signed-off-by: Pawel Wieczorkiewicz <wpawel@gmail.com>
 ---
- drivers/tty/mxser.c    |  4 ++++
- drivers/tty/n_gsm.c    |  4 ++++
- drivers/tty/tty_port.c | 23 +++++++++++++----------
- 3 files changed, 21 insertions(+), 10 deletions(-)
+ drivers/tty/serial/atmel_serial.c |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 484b6a3..c547887 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1084,6 +1084,10 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
- 	mutex_lock(&port->mutex);
- 	mxser_close_port(port);
- 	mxser_flush_buffer(tty);
-+	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
-+		if (tty->termios.c_cflag & HUPCL)
-+			tty_port_lower_dtr_rts(port);
-+	}
- 	mxser_shutdown_port(port);
- 	clear_bit(ASYNCB_INITIALIZED, &port->flags);
- 	mutex_unlock(&port->mutex);
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 4a43ef5d7..049013e 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2968,6 +2968,10 @@ static void gsmtty_close(struct tty_struct *tty, struct file *filp)
- 	if (tty_port_close_start(&dlci->port, tty, filp) == 0)
- 		goto out;
- 	gsm_dlci_begin_close(dlci);
-+	if (test_bit(ASYNCB_INITIALIZED, &dlci->port.flags)) {
-+		if (tty->termios.c_cflag & HUPCL)
-+			tty_port_lower_dtr_rts(&dlci->port);
-+	}
- 	tty_port_close_end(&dlci->port, tty);
- 	tty_port_tty_set(&dlci->port, NULL);
- out:
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 57a061e..506f579 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -198,15 +198,25 @@ EXPORT_SYMBOL(tty_port_tty_set);
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index d4a7c24..3467462 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -158,7 +158,7 @@ struct atmel_uart_port {
+ };
  
- static void tty_port_shutdown(struct tty_port *port)
- {
-+	struct tty_struct *tty = tty_port_tty_get(port);
-+
- 	mutex_lock(&port->mutex);
- 	if (port->console)
- 		goto out;
+ static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
+-static unsigned long atmel_ports_in_use;
++static DECLARE_BITMAP(atmel_ports_in_use, ATMEL_MAX_UART);
  
- 	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
-+		/*
-+		 * Drop DTR/RTS if HUPCL is set. This causes any attached
-+		 * modem to hang up the line.
-+		 */
-+		if (!tty || tty->termios.c_cflag & HUPCL)
-+			tty_port_lower_dtr_rts(port);
-+
- 		if (port->ops->shutdown)
- 			port->ops->shutdown(port);
+ #ifdef SUPPORT_SYSRQ
+ static struct console atmel_console;
+@@ -1769,15 +1769,14 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		/* port id not found in platform data nor device-tree aliases:
+ 		 * auto-enumerate it */
+-		ret = find_first_zero_bit(&atmel_ports_in_use,
+-				sizeof(atmel_ports_in_use));
++		ret = find_first_zero_bit(atmel_ports_in_use, ATMEL_MAX_UART);
+ 
+-	if (ret > ATMEL_MAX_UART) {
++	if (ret >= ATMEL_MAX_UART) {
+ 		ret = -ENODEV;
+ 		goto err;
  	}
- out:
-+	tty_kref_put(tty);
- 	mutex_unlock(&port->mutex);
- }
  
-@@ -225,15 +235,13 @@ void tty_port_hangup(struct tty_port *port)
- 	spin_lock_irqsave(&port->lock, flags);
- 	port->count = 0;
- 	port->flags &= ~ASYNC_NORMAL_ACTIVE;
--	if (port->tty) {
-+	if (port->tty)
- 		set_bit(TTY_IO_ERROR, &port->tty->flags);
--		tty_kref_put(port->tty);
--	}
--	port->tty = NULL;
- 	spin_unlock_irqrestore(&port->lock, flags);
-+	tty_port_shutdown(port);
-+	tty_port_tty_set(port, NULL);
- 	wake_up_interruptible(&port->open_wait);
- 	wake_up_interruptible(&port->delta_msr_wait);
--	tty_port_shutdown(port);
- }
- EXPORT_SYMBOL(tty_port_hangup);
+-	if (test_and_set_bit(ret, &atmel_ports_in_use)) {
++	if (test_and_set_bit(ret, atmel_ports_in_use)) {
+ 		/* port already in use */
+ 		ret = -EBUSY;
+ 		goto err;
+@@ -1857,7 +1856,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
  
-@@ -452,11 +460,6 @@ int tty_port_close_start(struct tty_port *port,
- 	/* Flush the ldisc buffering */
- 	tty_ldisc_flush(tty);
+ 	/* "port" is allocated statically, so we shouldn't free it */
  
--	/* Drop DTR/RTS if HUPCL is set. This causes any attached modem to
--	   hang up the line */
--	if (tty->termios.c_cflag & HUPCL)
--		tty_port_lower_dtr_rts(port);
--
- 	/* Don't call port->drop for the last reference. Callers will want
- 	   to drop the last active reference in ->shutdown() or the tty
- 	   shutdown path */
+-	clear_bit(port->line, &atmel_ports_in_use);
++	clear_bit(port->line, atmel_ports_in_use);
+ 
+ 	clk_put(atmel_port->clk);
+ 
 -- 
-1.8.1.1
+1.7.9.5
 
