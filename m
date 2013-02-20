@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 23/32] tty: Locate get/put ldisc functions together
-Date: Wed, 20 Feb 2013 15:03:10 -0500
-Message-ID: <1361390599-15195-24-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 11/32] n_tty: Correct unthrottle-with-buffer-flush comments
+Date: Wed, 20 Feb 2013 15:02:58 -0500
+Message-ID: <1361390599-15195-12-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
@@ -12,75 +12,50 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
+The driver is no longer unthrottled on buffer reset, so remove
+comments that claim it is.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 46 +++++++++++++++++++++++-----------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+ drivers/tty/n_tty.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index f26ef1a..4e46c17 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -179,6 +179,29 @@ static struct tty_ldisc *tty_ldisc_get(int disc)
- 	return ld;
- }
- 
-+/**
-+ *	tty_ldisc_put		-	release the ldisc
-+ *
-+ *	Complement of tty_ldisc_get().
-+ */
-+static inline void tty_ldisc_put(struct tty_ldisc *ld)
-+{
-+	unsigned long flags;
-+
-+	if (WARN_ON_ONCE(!ld))
-+		return;
-+
-+	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+
-+	/* unreleased reader reference(s) will cause this WARN */
-+	WARN_ON(!atomic_dec_and_test(&ld->users));
-+
-+	ld->ops->refcount--;
-+	module_put(ld->ops->owner);
-+	kfree(ld);
-+	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+}
-+
- static void *tty_ldiscs_seq_start(struct seq_file *m, loff_t *pos)
- {
- 	return (*pos < NR_LDISCS) ? pos : NULL;
-@@ -329,29 +352,6 @@ void tty_ldisc_deref(struct tty_ldisc *ld)
- EXPORT_SYMBOL_GPL(tty_ldisc_deref);
- 
- /**
-- *	tty_ldisc_put		-	release the ldisc
-- *
-- *	Complement of tty_ldisc_get().
-- */
--static inline void tty_ldisc_put(struct tty_ldisc *ld)
--{
--	unsigned long flags;
--
--	if (WARN_ON_ONCE(!ld))
--		return;
--
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
--
--	/* unreleased reader reference(s) will cause this WARN */
--	WARN_ON(!atomic_dec_and_test(&ld->users));
--
--	ld->ops->refcount--;
--	module_put(ld->ops->owner);
--	kfree(ld);
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
--}
--
--/**
-  *	tty_ldisc_enable	-	allow ldisc use
-  *	@tty: terminal to activate ldisc on
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 0b85693..a786f4e 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -213,9 +213,8 @@ static void check_unthrottle(struct tty_struct *tty)
+  *	reset_buffer_flags	-	reset buffer state
+  *	@tty: terminal to reset
   *
+- *	Reset the read buffer counters, clear the flags,
+- *	and make sure the driver is unthrottled. Called
+- *	from n_tty_open() and n_tty_flush_buffer().
++ *	Reset the read buffer counters and clear the flags.
++ *	Called from n_tty_open() and n_tty_flush_buffer().
+  *
+  *	Locking: tty_read_lock for read fields.
+  */
+@@ -254,17 +253,15 @@ static void n_tty_packet_mode_flush(struct tty_struct *tty)
+  *	n_tty_flush_buffer	-	clean input queue
+  *	@tty:	terminal device
+  *
+- *	Flush the input buffer. Called when the line discipline is
+- *	being closed, when the tty layer wants the buffer flushed (eg
+- *	at hangup) or when the N_TTY line discipline internally has to
+- *	clean the pending queue (for example some signals).
++ *	Flush the input buffer. Called when the tty layer wants the
++ *	buffer flushed (eg at hangup) or when the N_TTY line discipline
++ *	internally has to clean the pending queue (for example some signals).
+  *
+  *	Locking: ctrl_lock, read_lock.
+  */
+ 
+ static void n_tty_flush_buffer(struct tty_struct *tty)
+ {
+-	/* clear everything and unthrottle the driver */
+ 	reset_buffer_flags(tty);
+ 
+ 	if (tty->link)
 -- 
 1.8.1.2
