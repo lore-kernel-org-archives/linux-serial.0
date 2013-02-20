@@ -1,73 +1,57 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH 3/4] TTY: clean up port drain-delay handling
-Date: Wed, 20 Feb 2013 17:02:51 +0100
-Message-ID: <1361376172-31860-4-git-send-email-jhovold@gmail.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 0/4] TTY: port hangup and close fixes
+Date: Wed, 20 Feb 2013 17:02:48 +0100
+Message-ID: <1361376172-31860-1-git-send-email-jhovold@gmail.com>
 References: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
- <1361376172-31860-1-git-send-email-jhovold@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f46.google.com ([209.85.215.46]:59247 "EHLO
-	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S935724Ab3BTQDs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Feb 2013 11:03:48 -0500
-In-Reply-To: <1361376172-31860-1-git-send-email-jhovold@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1360776446-31371-1-git-send-email-jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Johan Hovold <jhovold@gmail.com>
 
-Move port drain-delay handling to a separate function.
+These patches against tty-next fix a few issues with tty-port hangup and
+close.
 
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
----
- drivers/tty/tty_port.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+The first and third patch are essentially clean ups.
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 506f579..fcb4ccb 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -408,6 +408,20 @@ int tty_port_block_til_ready(struct tty_port *port,
- }
- EXPORT_SYMBOL(tty_port_block_til_ready);
- 
-+static void tty_port_drain_delay(struct tty_port *port, struct tty_struct *tty)
-+{
-+	unsigned int bps = tty_get_baud_rate(tty);
-+	long timeout;
-+
-+	if (bps > 1200) {
-+		timeout = (HZ * 10 * port->drain_delay) / bps;
-+		timeout = max_t(long, timeout, HZ / 10);
-+	} else {
-+		timeout = 2 * HZ;
-+	}
-+	schedule_timeout_interruptible(timeout);
-+}
-+
- int tty_port_close_start(struct tty_port *port,
- 				struct tty_struct *tty, struct file *filp)
- {
-@@ -446,17 +460,8 @@ int tty_port_close_start(struct tty_port *port,
- 	if (test_bit(ASYNCB_INITIALIZED, &port->flags) &&
- 			port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
- 		tty_wait_until_sent_from_close(tty, port->closing_wait);
--	if (port->drain_delay) {
--		unsigned int bps = tty_get_baud_rate(tty);
--		long timeout;
--
--		if (bps > 1200)
--			timeout = max_t(long,
--				(HZ * 10 * port->drain_delay) / bps, HZ / 10);
--		else
--			timeout = 2 * HZ;
--		schedule_timeout_interruptible(timeout);
--	}
-+	if (port->drain_delay)
-+		tty_port_drain_delay(port, tty);
- 	/* Flush the ldisc buffering */
- 	tty_ldisc_flush(tty);
- 
+The second patch makes sure DTR is dropped also on hangup and that DTR
+is only dropped for initialised ports (where is could have been raised
+in the first place).
+
+The fourth and final patch, make sure no tty callbacks are made from
+tty_port_close_start when the port has not been initialised (successfully
+opened). This was previously only done for wait_until_sent but there's
+no reason to call flush_buffer or to honour port drain delay either.
+The latter could cause a failed open to stall for up to two seconds.
+
+As a side-effect, this patches also fix an issue in USB-serial where we
+could get tty-port callbacks on an uninitialised port after having hung
+up and unregistered a device after disconnect.
+
+Johan
+
+
+Changes since RFC-series:
+ - fix up the two driver relying on tty_port_close_start directly but
+   that did not manage DTR themselves
+
+
+Johan Hovold (4):
+  TTY: clean up port shutdown
+  TTY: fix DTR not being dropped on hang up
+  TTY: clean up port drain-delay handling
+  TTY: fix close of uninitialised ports
+
+ drivers/tty/mxser.c    |  4 +++
+ drivers/tty/n_gsm.c    |  4 +++
+ drivers/tty/tty_port.c | 71 ++++++++++++++++++++++++++++++--------------------
+ 3 files changed, 51 insertions(+), 28 deletions(-)
+
 -- 
 1.8.1.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
