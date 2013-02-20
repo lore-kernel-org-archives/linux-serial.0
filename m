@@ -1,69 +1,105 @@
-From: Pawel Wieczorkiewicz <wpawel@gmail.com>
-Subject: [PATCH 1/1] tty: atmel_serial_probe(): index of atmel_ports[] fix
-Date: Wed, 20 Feb 2013 17:26:20 +0100
-Message-ID: <1361377580-10437-1-git-send-email-wpawel@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v4 01/32] tty: Add diagnostic for halted line discipline
+Date: Wed, 20 Feb 2013 15:02:48 -0500
+Message-ID: <1361390599-15195-2-git-send-email-peter@hurleysoftware.com>
+References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f47.google.com ([209.85.214.47]:44604 "EHLO
-	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964898Ab3BTQ1D (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:53920 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S935190Ab3BTUEn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Feb 2013 11:27:03 -0500
+	Wed, 20 Feb 2013 15:04:43 -0500
+In-Reply-To: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pawel Wieczorkiewicz <wpawel@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
 
-From: Pawel Wieczorkiewicz <wpawel@gmail.com>
+Flip buffer work must not be scheduled by the line discipline
+after the line discipline has been halted; issue warning.
 
-Index of atmel_ports[ATMEL_MAX_UART] should be smaller
-than ATMEL_MAX_UART.
+Note: drivers can still schedule flip buffer work.
 
-Signed-off-by: Pawel Wieczorkiewicz <wpawel@gmail.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/atmel_serial.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/tty/n_tty.c     | 8 ++++++++
+ drivers/tty/tty_ldisc.c | 7 ++++++-
+ include/linux/tty.h     | 1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index d4a7c24..3467462 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -158,7 +158,7 @@ struct atmel_uart_port {
- };
- 
- static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
--static unsigned long atmel_ports_in_use;
-+static DECLARE_BITMAP(atmel_ports_in_use, ATMEL_MAX_UART);
- 
- #ifdef SUPPORT_SYSRQ
- static struct console atmel_console;
-@@ -1769,15 +1769,14 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		/* port id not found in platform data nor device-tree aliases:
- 		 * auto-enumerate it */
--		ret = find_first_zero_bit(&atmel_ports_in_use,
--				sizeof(atmel_ports_in_use));
-+		ret = find_first_zero_bit(atmel_ports_in_use, ATMEL_MAX_UART);
- 
--	if (ret > ATMEL_MAX_UART) {
-+	if (ret >= ATMEL_MAX_UART) {
- 		ret = -ENODEV;
- 		goto err;
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 05e72be..9c18e37 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -153,6 +153,12 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	if (left && !old_left) {
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
++		/* see if ldisc has been killed - if so, this means that
++		 * even though the ldisc has been halted and ->buf.work
++		 * cancelled, ->buf.work is about to be rescheduled
++		 */
++		WARN_RATELIMIT(test_bit(TTY_LDISC_HALTED, &tty->flags),
++			       "scheduling buffer work for halted ldisc\n");
+ 		schedule_work(&tty->port->buf.work);
  	}
+ }
+@@ -1645,6 +1651,8 @@ static int n_tty_open(struct tty_struct *tty)
+ 		goto err_free_bufs;
  
--	if (test_and_set_bit(ret, &atmel_ports_in_use)) {
-+	if (test_and_set_bit(ret, atmel_ports_in_use)) {
- 		/* port already in use */
- 		ret = -EBUSY;
- 		goto err;
-@@ -1857,7 +1856,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
+ 	tty->disc_data = ldata;
++	/* indicate buffer work may resume */
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	reset_buffer_flags(tty);
+ 	tty_unthrottle(tty);
+ 	ldata->column = 0;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index d794087..c641321 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -375,6 +375,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
  
- 	/* "port" is allocated statically, so we shouldn't free it */
+ void tty_ldisc_enable(struct tty_struct *tty)
+ {
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	set_bit(TTY_LDISC, &tty->flags);
+ 	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
+ 	wake_up(&tty_ldisc_wait);
+@@ -513,8 +514,11 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
  
--	clear_bit(port->line, &atmel_ports_in_use);
-+	clear_bit(port->line, atmel_ports_in_use);
+ static int tty_ldisc_halt(struct tty_struct *tty)
+ {
++	int scheduled;
+ 	clear_bit(TTY_LDISC, &tty->flags);
+-	return cancel_work_sync(&tty->port->buf.work);
++	scheduled = cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
++	return scheduled;
+ }
  
- 	clk_put(atmel_port->clk);
+ /**
+@@ -820,6 +824,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	clear_bit(TTY_LDISC, &tty->flags);
+ 	tty_unlock(tty);
+ 	cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	mutex_unlock(&tty->ldisc_mutex);
+ retry:
+ 	tty_lock(tty);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index c75d886..7aa4be6 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -315,6 +315,7 @@ struct tty_file_private {
+ #define TTY_NO_WRITE_SPLIT 	17	/* Preserve write boundaries to driver */
+ #define TTY_HUPPED 		18	/* Post driver->hangup() */
+ #define TTY_HUPPING 		21	/* ->hangup() in progress */
++#define TTY_LDISC_HALTED	22	/* Line discipline is halted */
+ 
+ #define TTY_WRITE_FLUSH(tty) tty_write_flush((tty))
  
 -- 
-1.7.9.5
+1.8.1.2
 
