@@ -1,56 +1,65 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 1/1] tty: atmel_serial_probe(): index of atmel_ports[]
- fix
-Date: Wed, 20 Feb 2013 16:00:48 +0100
-Message-ID: <5124E520.709@suse.cz>
-References: <1360711049-5557-1-git-send-email-wpawel@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f51.google.com ([74.125.83.51]:43866 "EHLO
-	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757742Ab3BTPAy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Feb 2013 10:00:54 -0500
-In-Reply-To: <1360711049-5557-1-git-send-email-wpawel@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 4/4] TTY: fix close of uninitialised ports
+Date: Wed, 20 Feb 2013 17:02:52 +0100
+Message-ID: <1361376172-31860-5-git-send-email-jhovold@gmail.com>
+References: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
+ <1361376172-31860-1-git-send-email-jhovold@gmail.com>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1361376172-31860-1-git-send-email-jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Pawel Wieczorkiewicz <wpawel@gmail.com>, nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, grant.likely@secretlab.ca
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 02/13/2013 12:17 AM, Pawel Wieczorkiewicz wrote:
-> From: Pawel Wieczorkiewicz <wpawel@gmail.com>
-> 
-> Index of atmel_ports[ATMEL_MAX_UART] should be smaller
-> than ATMEL_MAX_UART.
-> 
-> Signed-off-by: Pawel Wieczorkiewicz <wpawel@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index d4a7c24..3f7586a 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1772,7 +1772,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
->  		ret = find_first_zero_bit(&atmel_ports_in_use,
->  				sizeof(atmel_ports_in_use));
->  
-> -	if (ret > ATMEL_MAX_UART) {
-> +	if (!(ret < ATMEL_MAX_UART)) {
+Make sure we do not make tty-driver callbacks or wait for port to drain
+on uninitialised ports (e.g. when open failed) in
+tty_port_close_start().
 
-Good catch, but the result looks weird. Could you just make it ">="?
+No callback, such as flush_buffer or wait_until_sent, needs to be made
+on a port that has never been opened. Neither does it make much sense to
+add drain delay for an uninitialised port.
 
-And find_first_zero_bit + sizeof above is bogus too. The sizeof returns
-4 on 32-bit (the driver is run on 32bit machines exlusively AFAICS). So
-the highest possible ret in there is 5. Instead atmel_ports_in_use
-should be declared using DECLARE_BITMAP(atmel_ports_in_use,
-ATMEL_MAX_UART) and the second parameter here then ATMEL_MAX_UART.
+Currently a drain delay of up to two seconds could be added when a tty
+fails to open.
 
-Could you fix that too?
+Signed-off-by: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/tty/tty_port.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index fcb4ccb..2ff454c 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -454,14 +454,16 @@ int tty_port_close_start(struct tty_port *port,
+ 	set_bit(ASYNCB_CLOSING, &port->flags);
+ 	tty->closing = 1;
+ 	spin_unlock_irqrestore(&port->lock, flags);
+-	/* Don't block on a stalled port, just pull the chain */
+-	if (tty->flow_stopped)
+-		tty_driver_flush_buffer(tty);
+-	if (test_bit(ASYNCB_INITIALIZED, &port->flags) &&
+-			port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
+-		tty_wait_until_sent_from_close(tty, port->closing_wait);
+-	if (port->drain_delay)
+-		tty_port_drain_delay(port, tty);
++
++	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
++		/* Don't block on a stalled port, just pull the chain */
++		if (tty->flow_stopped)
++			tty_driver_flush_buffer(tty);
++		if (port->closing_wait != ASYNC_CLOSING_WAIT_NONE)
++			tty_wait_until_sent_from_close(tty, port->closing_wait);
++		if (port->drain_delay)
++			tty_port_drain_delay(port, tty);
++	}
+ 	/* Flush the ldisc buffering */
+ 	tty_ldisc_flush(tty);
+ 
 -- 
-js
-suse labs
+1.8.1.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
