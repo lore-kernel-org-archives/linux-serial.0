@@ -1,74 +1,63 @@
-From: Alan Stern <stern@rowland.harvard.edu>
-Subject: Re: USB: serial: port lifetimes (was: Re: USB Ooops PL2303 when
- unplug while use (linux v3.7.3))
-Date: Fri, 22 Feb 2013 10:17:51 -0500 (EST)
-Message-ID: <Pine.LNX.4.44L0.1302221009370.1606-100000@iolanthe.rowland.org>
-References: <20130222100339.GB6640@localhost>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from iolanthe.rowland.org ([192.131.102.54]:51847 "HELO
-	iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1756743Ab3BVPRw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Feb 2013 10:17:52 -0500
-In-Reply-To: <20130222100339.GB6640@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sean Young <sean@mess.org>
+Subject: [PATCH] tty/8250_pnp: serial port detection regression since v3.7
+Date: Fri, 22 Feb 2013 16:27:19 +0000
+Message-ID: <1361550439-23504-1-git-send-email-sean@mess.org>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Vincent Deffontaines <vincent@gryzor.com>, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, 22 Feb 2013, Johan Hovold wrote:
+The InsydeH2O BIOS (version dated 09/12/2011) has the following in
+its pnp resouces for its serial ports:
 
-> We keep the usb-serial-port structure around until the last tty
-> reference is dropped, but the port private data is freed as part of
-> unregistering from the bus in disconnect. [ The subdrivers aren't
-> supposed to access the ports after port_remove is called as part of
-> unregistration. ]
-> 
-> This wasn't always the case, but unregistering in serial_cleanup (when
-> the last tty reference is dropped) had other issues. In particular, we
-> would end up unregistering the parent device before its child (the
-> interface and usb device are unregistered when disconnect returns)
-> resulting in broken uevent devpaths:
-> 
-> KERNEL[794.849051] remove   /devices/pci0000:00/0000:00:1a.7/usb1/1-4/1-4.1/1-4.1:1.0 (usb)
-> KERNEL[794.851649] remove   /devices/pci0000:00/0000:00:1a.7/usb1/1-4/1-4.1 (usb)
-> KERNEL[795.115623] remove   /1-4.1:1.0/ttyUSB0/tty/ttyUSB0 (tty)
-> KERNEL[795.117429] remove   /1-4.1:1.0/ttyUSB0 (usb-serial)
-> 
-> This was reported here
-> 
-> 	https://bugs.freedesktop.org/show_bug.cgi?id=20703
-> 
-> and fixed by Alan Stern in 2d93148ab6 (USB: serial: fix lifetime and
-> locking problems) by moving unregistration to disconnect.
-> 
-> So we end up with an unregistered device still possibly referenced by
-> tty instead, and I suspect we can't do much else than deal with any
-> post-disconnect callbacks. [ These should be few, especially with my
-> latest TTY-patches applied. ]
-> 
-> Alan, do you see any way around this? It's not possible (or desirable)
-> to pin the parent device (interface) until the last reference is
-> dropped, is it?
+$ cat /sys/bus/pnp/devices/00:0b/resources
+state = active
+io disabled
+irq disabled
 
-On the contrary, it is customary to pin data structures until the last 
-reference to them is gone.  That's what krefs are for.
+We do not check if the resources are disabled, and create a bogus
+ttyS* device. Since commit 835d844d1a28e (8250_pnp: do pnp probe
+before legacy probe) we get a bogus ttyS0, which prevents the legacy
+probe from detecting it.
 
-On the other hand, the port private data was owned entirely by the
-serial sub-driver.  Neither the serial core nor the tty layer is able
-to use it meaningfully -- they don't even know what type of structure
-it is.
+Reported-by: Vincent Deffontaines <vincent@gryzor.com>
+Tested-by: Vincent Deffontaines <vincent@gryzor.com>
+Signed-off-by: Sean Young <sean@mess.org>
+Cc: stable@vger.kernel.org
+---
+ drivers/tty/serial/8250/8250_pnp.c |   12 +++++++-----
+ 1 files changed, 7 insertions(+), 5 deletions(-)
 
-Therefore freeing the structure when the port is removed should be 
-harmless -- unless the subdriver is called after the structure is 
-deallocated.
-
-This means there still is one bug remaining.  In
-usb_serial_device_remove(), the call to tty_unregister_device() should
-occur _before_ the call to driver->port_remove(), not _after_.  Do you
-think changing the order cause any new problems?
-
-Alan Stern
-
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index 35d9ab9..b3455a9 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -429,6 +429,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ {
+ 	struct uart_8250_port uart;
+ 	int ret, line, flags = dev_id->driver_data;
++	struct resource *res = NULL;
+ 
+ 	if (flags & UNKNOWN_DEV) {
+ 		ret = serial_pnp_guess_board(dev);
+@@ -439,11 +440,12 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	memset(&uart, 0, sizeof(uart));
+ 	if (pnp_irq_valid(dev, 0))
+ 		uart.port.irq = pnp_irq(dev, 0);
+-	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
+-		uart.port.iobase = pnp_port_start(dev, 2);
+-		uart.port.iotype = UPIO_PORT;
+-	} else if (pnp_port_valid(dev, 0)) {
+-		uart.port.iobase = pnp_port_start(dev, 0);
++	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2))
++		res = pnp_get_resource(dev, IORESOURCE_IO, 2);
++	else if (pnp_port_valid(dev, 0))
++		res = pnp_get_resource(dev, IORESOURCE_IO, 0);
++	if (pnp_resource_enabled(res)) {
++		uart.port.iobase = res->start;
+ 		uart.port.iotype = UPIO_PORT;
+ 	} else if (pnp_mem_valid(dev, 0)) {
+ 		uart.port.mapbase = pnp_mem_start(dev, 0);
+-- 
+1.7.2.5
