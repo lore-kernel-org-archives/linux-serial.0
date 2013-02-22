@@ -1,140 +1,119 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: USB: serial: port lifetimes (was: Re: USB Ooops PL2303 when
- unplug while use (linux v3.7.3))
-Date: Fri, 22 Feb 2013 13:21:24 -0500
-Message-ID: <1361557284.5752.25.camel@thor.lan>
-References: <Pine.LNX.4.44L0.1302221218270.1365-100000@iolanthe.rowland.org>
+Subject: Re: [PATCH v4 00/32] ldisc patchset
+Date: Fri, 22 Feb 2013 13:37:30 -0500
+Message-ID: <1361558250.14402.6.camel@thor.lan>
+References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+	 <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+	 <51261E30.9040907@gmail.com> <1361453910.10685.7.camel@thor.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:43328 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758359Ab3BVSVg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Feb 2013 13:21:36 -0500
-In-Reply-To: <Pine.LNX.4.44L0.1302221218270.1365-100000@iolanthe.rowland.org>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1361453910.10685.7.camel@thor.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sasha Levin <levinsasha928@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alan Stern <stern@rowland.harvard.edu>
-Cc: Johan Hovold <jhovold@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, 2013-02-22 at 12:35 -0500, Alan Stern wrote:
-> On Fri, 22 Feb 2013, Johan Hovold wrote:
-> 
-> > > > So we end up with an unregistered device still possibly referenced by
-> > > > tty instead, and I suspect we can't do much else than deal with any
-> > > > post-disconnect callbacks. [ These should be few, especially with my
-> > > > latest TTY-patches applied. ]
-> > > > 
-> > > > Alan, do you see any way around this? It's not possible (or desirable)
-> > > > to pin the parent device (interface) until the last reference is
-> > > > dropped, is it?
-> > > 
-> > > On the contrary, it is customary to pin data structures until the last 
-> > > reference to them is gone.  That's what krefs are for.
+On Thu, 2013-02-21 at 08:38 -0500, Peter Hurley wrote:
+> On Thu, 2013-02-21 at 08:16 -0500, Sasha Levin wrote:
+> > On 02/20/2013 03:02 PM, Peter Hurley wrote:
+> > > Sasha and Dave, my trinity testbeds die in other areas right now;
+> > > I would really appreciate if you would please re-test this series.
 > > 
-> > I was referring to the usb device in the device hierarchy, which
-> > apparently is not pinned despite the outstanding reference we have in
-> > struct usb_serial.
-> 
-> Are you talking about the usb_device or the usb_interface?  The
-> usb_serial structure _does_ pin the usb_device structure.  But it
-> doesn't pin the usb_interface.  I don't know why things were done this
-> way; maybe it's a mistake.
-> 
-> Anyway, keeping a pointer to a non-pinned data structure after
-> unregistration is okay, provided you know you will never dereference
-> the pointer.  If you don't know this in the case of the usb_interface,
-> pinning is acceptable -- depending on _how_ the usb_interface is
-> accessed.  For example, no URBs should be submitted for any of the
-> interface's endpoints.
-> 
-> > There is an unconditional call to device_del in usb_disconnect which
-> > unlinks the parent usb device from the device hierarchy resulting in the
-> > broken devpaths above if we do not unregister the usb-serial port (and
-> > tty device) in disconnect.
-> 
-> Sure.  But unregistering is different from deallocation.  It's not
-> clear what your point is.
-> 
-> > > On the other hand, the port private data was owned entirely by the
-> > > serial sub-driver.  Neither the serial core nor the tty layer is able
-> > > to use it meaningfully -- they don't even know what type of structure
-> > > it is.
-> > > 
-> > > Therefore freeing the structure when the port is removed should be 
-> > > harmless -- unless the subdriver is called after the structure is 
-> > > deallocated.
+> > Hi Peter,
 > > 
-> > Which could happen (and is happening), unless we defer port unregister
-> > until the last tty reference is dropped -- but then we get the broken
-> > uevents.
-> 
-> Unregistration should not be deferred.  We mustn't have those broken 
-> devpaths.
-> 
-> > > This means there still is one bug remaining.  In
-> > > usb_serial_device_remove(), the call to tty_unregister_device() should
-> > > occur _before_ the call to driver->port_remove(), not _after_.  Do you
-> > > think changing the order cause any new problems?
+> > I saw this twice in overnight fuzzing:
 > > 
-> > Yes, Peter noticed that one too. Changing the order shouldn't cause any
-> > new issues as far as I can see. I'll cook up a patch for this one as
-> > well, but just to be clear: this is not directly related to the problem
-> > discussed above as there may be outstanding tty references long after
-> > both functions return (not that anyone has claimed anything else).
+> > [ 1473.912280] =================================
+> > [ 1473.913180] [ BUG: bad contention detected! ]
+> > [ 1473.914071] 3.8.0-next-20130220-sasha-00038-g1ad55df-dirty #8 Tainted: G        W
+> > [ 1473.915684] ---------------------------------
+> > [ 1473.916549] kworker/1:1/361 is trying to contend lock (&tty->ldisc_sem) at:
+> > [ 1473.918031] [<ffffffff81c493df>] tty_ldisc_ref+0x1f/0x60
+> > [ 1473.919060] but there are no locks held!
 > 
-> This is related to the problem of the port's private data being
-> accessed after it is deallocated.  The only way that can happen is if
-> the tty layer calls the subdriver after the private data structure is
-> freed -- and you said above that this does happen.
+> Ahh, of course. That explains why the rwsem trylock doesn't track lock
+> stats -- because by the time lock_contended() is called, up_write()
+> could have just called lockdep_release(), so that it appears as if the
+> lock has been released when in fact it has not but is about to.
 > 
-> But if change things so that the structure isn't freed until after the
-> port is unregistered from the tty layer, this would mean that the tty
-> layer is trying to do stuff to an unregistered port.  That would be a
-> bug in the tty layer.
-> 
-> I'm not saying such bugs don't exist.  However, if they do exist then 
-> the tty layer needs to be fixed, not the usb-serial layer.
+> I'll just remove the lock contention test from the trylocks.
 
-ISTM the usb_serial_port private data should not be freed until
-port_release().
+Hi Sasha,
 
-If usb traffic isn't halted until port_release() ...
+Sorry for the delay. I was actually looking into if I could tickle
+lockdep into just recording the lock contention without testing, but
+unfortunately, changes to where lockdep stores the contention now
+requires the lockdep state to have an existing owner.
 
-static void port_release(struct device *dev)
-{
-	struct usb_serial_port *port = to_usb_serial_port(dev);
-	int i;
+So here's the trivial patch:
 
-	dev_dbg(dev, "%s\n", __func__);
+--- >% ---
+Subject: [PATCH] tty: Drop lock contention stat from ldsem trylocks
 
-	/*
-	 * Stop all the traffic before cancelling the work, so that
-	 * nobody will restart it by calling usb_serial_port_softint.
-	 */
-====>	kill_traffic(port);
-	cancel_work_sync(&port->work);
+When lockdep is notified of lock contention, lockdep expects its
+internal state to indicate the lock is held. Since trylocks cannot
+reflect this state unless the lock is actually acquired, contention
+stats cannot be collected for trylocks.
 
-then what happens here if ->port_remove() has already been called?
+Fixes:
+[ 1473.912280] =================================
+[ 1473.913180] [ BUG: bad contention detected! ]
+[ 1473.914071] 3.8.0-next-20130220-sasha-00038-g1ad55df-dirty #8 Tainted: G        W
+[ 1473.915684] ---------------------------------
+[ 1473.916549] kworker/1:1/361 is trying to contend lock (&tty->ldisc_sem) at:
+[ 1473.918031] [<ffffffff81c493df>] tty_ldisc_ref+0x1f/0x60
+[ 1473.919060] but there are no locks held!
+[ 1473.919813]
+[ 1473.919813] other info that might help us debug this:
+[ 1473.920044] 2 locks held by kworker/1:1/361:
+[ 1473.920044]  #0:  (events){.+.+.+}, at: [<ffffffff811328a8>] process_one_work+0x228/0x6a0
+[ 1473.920044]  #1:  ((&buf->work)){+.+...}, at: [<ffffffff811328a8>] process_one_work+0x228/0x6a0
+[ 1473.920044]
+[ 1473.920044] stack backtrace:
+[ 1473.920044] Pid: 361, comm: kworker/1:1 Tainted: G        W    3.8.0-next-20130220-sasha-00038-g1ad55df-dirty #8
+[ 1473.920044] Call Trace:
+[ 1473.920044]  [<ffffffff81c493df>] ? tty_ldisc_ref+0x1f/0x60
+[ 1473.920044]  [<ffffffff81182026>] print_lock_contention_bug+0xf6/0x110
+[ 1473.920044]  [<ffffffff81184973>] lock_contended+0x213/0x4e0
+[ 1473.920044]  [<ffffffff81c4bb41>] ldsem_down_read_trylock+0xb1/0xc0
+[ 1473.920044]  [<ffffffff81c493df>] tty_ldisc_ref+0x1f/0x60
+[ 1473.920044]  [<ffffffff81c4a687>] flush_to_ldisc+0x37/0x1a0
+[ 1473.920044]  [<ffffffff811329e6>] process_one_work+0x366/0x6a0
+[ 1473.920044]  [<ffffffff811328a8>] ? process_one_work+0x228/0x6a0
+[ 1473.920044]  [<ffffffff811332a8>] worker_thread+0x238/0x370
+[ 1473.920044]  [<ffffffff81133070>] ? rescuer_thread+0x310/0x310
+[ 1473.920044]  [<ffffffff8113d873>] kthread+0xe3/0xf0
+[ 1473.920044]  [<ffffffff8113d790>] ? flush_kthread_work+0x1f0/0x1f0
+[ 1473.920044]  [<ffffffff83dab4fc>] ret_from_fork+0x7c/0xb0
+[ 1473.920044]  [<ffffffff8113d790>] ? flush_kthread_work+0x1f0/0x1f0
 
-static void garmin_write_bulk_callback(struct urb *urb)
-{
-	struct usb_serial_port *port = urb->context;
+Reported-by: Sasha Levin <levinsasha928@gmail.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_ldsem.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-	if (port) {
-		struct garmin_data *garmin_data_p =
-					usb_get_serial_port_data(port);
-
-		if (GARMIN_LAYERID_APPL == getLayerId(urb->transfer_buffer)) {
-
-====>			if (garmin_data_p->mode == MODE_GARMIN_SERIAL) {
-				gsp_send_ack(garmin_data_p,
-					((__u8 *)urb->transfer_buffer)[4]);
-			}
-
-
-
-
-
+diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
+index 0ab5b09..ce26fc0 100644
+--- a/drivers/tty/tty_ldsem.c
++++ b/drivers/tty/tty_ldsem.c
+@@ -419,7 +419,6 @@ int ldsem_down_read_trylock(struct ld_semaphore *sem)
+ 			return 1;
+ 		}
+ 	}
+-	lock_stat(sem, contended);
+ 	return 0;
+ }
+ 
+@@ -455,7 +454,6 @@ int ldsem_down_write_trylock(struct ld_semaphore *sem)
+ 	}
+ 
+ 	raw_spin_unlock_irq(&sem->wait_lock);
+-	lock_stat(sem, contended);
+ 	return 0;
+ }
+ 
+-- 
+1.8.1.2
