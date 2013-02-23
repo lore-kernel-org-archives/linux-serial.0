@@ -1,76 +1,149 @@
-From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
-Subject: Re: USB: serial: port lifetimes (was: Re: USB Ooops PL2303 when
- unplug while use (linux v3.7.3))
-Date: Fri, 22 Feb 2013 13:57:44 -0500 (EST)
-Message-ID: <Pine.LNX.4.44L0.1302221348180.1220-100000@iolanthe.rowland.org>
-References: <1361557284.5752.25.camel@thor.lan>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 2/4] TTY: fix DTR not being dropped on hang up
+Date: Sat, 23 Feb 2013 09:18:02 -0500
+Message-ID: <1361629082.3407.7.camel@thor.lan>
+References: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
+	 <1361376172-31860-1-git-send-email-jhovold@gmail.com>
+	 <1361376172-31860-3-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1361557284.5752.25.camel-AsKIXgLx6sE@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:45610 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756717Ab3BWOSJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 23 Feb 2013 09:18:09 -0500
+In-Reply-To: <1361376172-31860-3-git-send-email-jhovold@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, 22 Feb 2013, Peter Hurley wrote:
-
-> ISTM the usb_serial_port private data should not be freed until
-> port_release().
-
-I don't think that's right.  In general, a driver doesn't know what's 
-going to happen to a device after the two are unbound from each other.  
-Another driver may get bound to that same device, and may overwrite the 
-old private-data pointer with its own new one.
-
-The same reasoning applies here.  The serial subdriver isn't involved 
-in the creation of the usb_serial_port structure, and therefore it 
-shouldn't be involved in that structure's destruction.
-
-> If usb traffic isn't halted until port_release() ...
+On Wed, 2013-02-20 at 17:02 +0100, Johan Hovold wrote:
+> Move HUPCL handling to port shutdown so that DTR is dropped also on hang
+> up (tty_port_close is a noop for hung-up ports).
 > 
-> static void port_release(struct device *dev)
-> {
-> 	struct usb_serial_port *port = to_usb_serial_port(dev);
-> 	int i;
+> Also do not try to drop DTR for uninitialised ports where it has never
+> been raised (e.g. after a failed open).
 > 
-> 	dev_dbg(dev, "%s\n", __func__);
+> Nine drivers currently call tty_port_close_start directly (rather than
+> through tty_port_close) and seven of them lower DTR as part of their
+> close (if the port has been initialised). Fixup the remaining two
+> drivers so that it continues to be lowered also on normal (non-HUP)
+> close. [ Note that most of those other seven drivers did not expect DTR
+> to have been dropped by tty_port_close_start in the first place. ]
 > 
-> 	/*
-> 	 * Stop all the traffic before cancelling the work, so that
-> 	 * nobody will restart it by calling usb_serial_port_softint.
-> 	 */
-> ====>	kill_traffic(port);
-> 	cancel_work_sync(&port->work);
+> Signed-off-by: Johan Hovold <jhovold@gmail.com>
+> ---
+>  drivers/tty/mxser.c    |  4 ++++
+>  drivers/tty/n_gsm.c    |  4 ++++
+>  drivers/tty/tty_port.c | 23 +++++++++++++----------
+>  3 files changed, 21 insertions(+), 10 deletions(-)
 > 
-> then what happens here if ->port_remove() has already been called?
-> 
-> static void garmin_write_bulk_callback(struct urb *urb)
-> {
-> 	struct usb_serial_port *port = urb->context;
-> 
-> 	if (port) {
-> 		struct garmin_data *garmin_data_p =
-> 					usb_get_serial_port_data(port);
-> 
-> 		if (GARMIN_LAYERID_APPL == getLayerId(urb->transfer_buffer)) {
-> 
-> ====>			if (garmin_data_p->mode == MODE_GARMIN_SERIAL) {
-> 				gsp_send_ack(garmin_data_p,
-> 					((__u8 *)urb->transfer_buffer)[4]);
-> 			}
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index 484b6a3..c547887 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -1084,6 +1084,10 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
+>  	mutex_lock(&port->mutex);
+>  	mxser_close_port(port);
+>  	mxser_flush_buffer(tty);
+> +	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
+> +		if (tty->termios.c_cflag & HUPCL)
+> +			tty_port_lower_dtr_rts(port);
+> +	}
+>  	mxser_shutdown_port(port);
+>  	clear_bit(ASYNCB_INITIALIZED, &port->flags);
+>  	mutex_unlock(&port->mutex);
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 4a43ef5d7..049013e 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2968,6 +2968,10 @@ static void gsmtty_close(struct tty_struct *tty, struct file *filp)
+>  	if (tty_port_close_start(&dlci->port, tty, filp) == 0)
+>  		goto out;
+>  	gsm_dlci_begin_close(dlci);
+> +	if (test_bit(ASYNCB_INITIALIZED, &dlci->port.flags)) {
+> +		if (tty->termios.c_cflag & HUPCL)
+> +			tty_port_lower_dtr_rts(&dlci->port);
+> +	}
+>  	tty_port_close_end(&dlci->port, tty);
+>  	tty_port_tty_set(&dlci->port, NULL);
+>  out:
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 57a061e..506f579 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -198,15 +198,25 @@ EXPORT_SYMBOL(tty_port_tty_set);
+>  
+>  static void tty_port_shutdown(struct tty_port *port)
+>  {
+> +	struct tty_struct *tty = tty_port_tty_get(port);
+> +
 
-Clearly this is a mistake.  Probably it is the result of historical
-confusion between the overall USB device and the multiple serial ports
-embodied within it.  At any rate, it is clear that all port-related USB
-activity should be stopped when the port is unregistered.
+I know I said this was done, but if this hasn't been pushed into
+tty-next yet, I'd rather this was:
 
-Whether this can be carried out by the usb-serial core or needs help 
-from the subdriver, I leave up to you guys.
+static void tty_port_shutdown(struct tty_port *port,
+			      struct tty_struct *tty)
 
-Alan Stern
+and not get the port reference. Both call sites already ensure that
+there is a kref on the tty or tty is NULL.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+(I ended up re-looking at this patch to double-check that it won't drop
+DTR for the console, which it doesn't so that is good).
+
+>  	mutex_lock(&port->mutex);
+>  	if (port->console)
+>  		goto out;
+>  
+>  	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
+> +		/*
+> +		 * Drop DTR/RTS if HUPCL is set. This causes any attached
+> +		 * modem to hang up the line.
+> +		 */
+> +		if (!tty || tty->termios.c_cflag & HUPCL)
+> +			tty_port_lower_dtr_rts(port);
+> +
+>  		if (port->ops->shutdown)
+>  			port->ops->shutdown(port);
+>  	}
+>  out:
+> +	tty_kref_put(tty);
+>  	mutex_unlock(&port->mutex);
+>  }
+>  
+> @@ -225,15 +235,13 @@ void tty_port_hangup(struct tty_port *port)
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	port->count = 0;
+>  	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+> -	if (port->tty) {
+> +	if (port->tty)
+>  		set_bit(TTY_IO_ERROR, &port->tty->flags);
+> -		tty_kref_put(port->tty);
+> -	}
+> -	port->tty = NULL;
+>  	spin_unlock_irqrestore(&port->lock, flags);
+> +	tty_port_shutdown(port);
+> +	tty_port_tty_set(port, NULL);
+>  	wake_up_interruptible(&port->open_wait);
+>  	wake_up_interruptible(&port->delta_msr_wait);
+> -	tty_port_shutdown(port);
+>  }
+>  EXPORT_SYMBOL(tty_port_hangup);
+>  
+> @@ -452,11 +460,6 @@ int tty_port_close_start(struct tty_port *port,
+>  	/* Flush the ldisc buffering */
+>  	tty_ldisc_flush(tty);
+>  
+> -	/* Drop DTR/RTS if HUPCL is set. This causes any attached modem to
+> -	   hang up the line */
+> -	if (tty->termios.c_cflag & HUPCL)
+> -		tty_port_lower_dtr_rts(port);
+> -
+>  	/* Don't call port->drop for the last reference. Callers will want
+>  	   to drop the last active reference in ->shutdown() or the tty
+>  	   shutdown path */
+
+
