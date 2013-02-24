@@ -1,54 +1,65 @@
-From: Alan Stern <stern@rowland.harvard.edu>
-Subject: Re: USB: serial: port lifetimes (was: Re: USB Ooops PL2303 when
- unplug while use (linux v3.7.3))
-Date: Sat, 23 Feb 2013 16:20:51 -0500 (EST)
-Message-ID: <Pine.LNX.4.44L0.1302231615140.8229-100000@netrider.rowland.org>
-References: <20130223181225.GE30855@localhost>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Jonas Gorski <jogo@openwrt.org>
+Subject: [PATCH] serial: bcm63xx_uart: fix compilation after "TTY: switch tty_insert_flip_char"
+Date: Sun, 24 Feb 2013 14:08:39 +0100
+Message-ID: <1361711319-15825-1-git-send-email-jogo@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from netrider.rowland.org ([192.131.102.5]:47196 "HELO
-	netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1758268Ab3BWVUw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Feb 2013 16:20:52 -0500
-In-Reply-To: <20130223181225.GE30855@localhost>
+Received: from arrakis.dune.hu ([78.24.191.176]:47905 "EHLO arrakis.dune.hu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755868Ab3BXNJT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 24 Feb 2013 08:09:19 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Maxime Bizon <mbizon@freebox.fr>, Florian Fainelli <florian@openwrt.org>, Kevin Cernekee <cernekee@gmail.com>
 
-On Sat, 23 Feb 2013, Johan Hovold wrote:
+92a19f9cec9a80ad93c06e115822deb729e2c6ad introduced a local variable
+with the same name as the argument to bcm_uart_do_rx, breaking
+compilation. Fix this by renaming the new variable and its uses where
+expected.
 
-> > Right.  More precisely, registration mustn't be deferred _and_ we
-> > mustn't have any broken devpaths.  Currently usb-serial gets one of
-> > these wrong and cdc-acm gets the other one wrong.
-> 
-> Maybe I misunderstand you, but it seems to me that ubs-serial gets both
-> right and cdc-acm both wrong, as non-deferred registration guarantees
-> non-broken uevent devpaths?
+Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+---
+Based on git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
 
-Sorry, yes, you are right.  I wasn't thinking clearly.
+ drivers/tty/serial/bcm63xx_uart.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> > No, unregistration cannot be deferred.  However the usb-serial core 
-> > could try to compensate for the problem by refusing to pass callbacks 
-> > through to the subdriver after the port has been unregistered.  I don't 
-> > know if that would work -- it wouldn't if some of the callback routines 
-> > are located in the subdriver itself as opposed to usb-serial.c.
-> 
-> It should be ok as all tty callbacks are made through usb serial core.
-> 
-> I have a pretty good overview over what callbacks we can be expecting
-> when, and those that we cannot prevent tty from making, we'll deal with
-> in usb-serial core.
-> 
-> My fix for the dtr_rts case is in 3.9-rc, and I try to reduce some of
-> the callbacks with my TTY patches (which would for example make the
-> dtr_rts fix unnecessary).
-
-So you could do it that way.  But IMO changing the tty layer would be
-preferable, if it can be done without too much difficulty.  That would
-allow both usb-serial and cdc-acm to be fixed fairly easily.
-
-Alan Stern
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 719594e..52a3ecd 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -235,7 +235,7 @@ static const char *bcm_uart_type(struct uart_port *port)
+  */
+ static void bcm_uart_do_rx(struct uart_port *port)
+ {
+-	struct tty_port *port = &port->state->port;
++	struct tty_port *tty_port = &port->state->port;
+ 	unsigned int max_count;
+ 
+ 	/* limit number of char read in interrupt, should not be
+@@ -260,7 +260,7 @@ static void bcm_uart_do_rx(struct uart_port *port)
+ 			bcm_uart_writel(port, val, UART_CTL_REG);
+ 
+ 			port->icount.overrun++;
+-			tty_insert_flip_char(port, 0, TTY_OVERRUN);
++			tty_insert_flip_char(tty_port, 0, TTY_OVERRUN);
+ 		}
+ 
+ 		if (!(iestat & UART_IR_STAT(UART_IR_RXNOTEMPTY)))
+@@ -299,11 +299,11 @@ static void bcm_uart_do_rx(struct uart_port *port)
+ 
+ 
+ 		if ((cstat & port->ignore_status_mask) == 0)
+-			tty_insert_flip_char(port, c, flag);
++			tty_insert_flip_char(tty_port, c, flag);
+ 
+ 	} while (--max_count);
+ 
+-	tty_flip_buffer_push(port);
++	tty_flip_buffer_push(tty_port);
+ }
+ 
+ /*
+-- 
+1.7.10.4
 
