@@ -1,82 +1,102 @@
-From: Paul Mundt <lethal@linux-sh.org>
-Subject: Re: [PATCH v2 1/3] serial: sh-sci: Add OF support
-Date: Tue, 26 Feb 2013 05:35:35 +0900
-Message-ID: <20130225203534.GB19670@linux-sh.org>
-References: <1361819215-4115-1-git-send-email-hechtb+renesas@gmail.com>
+From: Johan Hovold <jhovold@gmail.com>
+Subject: Re: [PATCH 2/4] TTY: fix DTR not being dropped on hang up
+Date: Tue, 26 Feb 2013 11:59:34 +0100
+Message-ID: <20130226105934.GI30855@localhost>
+References: <1360776446-31371-1-git-send-email-jhovold@gmail.com>
+ <1361376172-31860-1-git-send-email-jhovold@gmail.com>
+ <1361376172-31860-3-git-send-email-jhovold@gmail.com>
+ <1361629082.3407.7.camel@thor.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f174.google.com ([209.85.217.174]:62485 "EHLO
+	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753198Ab3BZLAY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Feb 2013 06:00:24 -0500
 Content-Disposition: inline
-In-Reply-To: <1361819215-4115-1-git-send-email-hechtb+renesas@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Bastian Hecht <hechtb@gmail.com>
-Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
+In-Reply-To: <1361629082.3407.7.camel@thor.lan>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Johan Hovold <jhovold@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Feb 25, 2013 at 01:06:53PM -0600, Bastian Hecht wrote:
-> We add the capabilty to probe Renesas SCI devices using Device Tree setup.
+On Sat, Feb 23, 2013 at 09:18:02AM -0500, Peter Hurley wrote:
+> On Wed, 2013-02-20 at 17:02 +0100, Johan Hovold wrote:
+> > Move HUPCL handling to port shutdown so that DTR is dropped also on hang
+> > up (tty_port_close is a noop for hung-up ports).
+> > 
+> > Also do not try to drop DTR for uninitialised ports where it has never
+> > been raised (e.g. after a failed open).
+> > 
+> > Nine drivers currently call tty_port_close_start directly (rather than
+> > through tty_port_close) and seven of them lower DTR as part of their
+> > close (if the port has been initialised). Fixup the remaining two
+> > drivers so that it continues to be lowered also on normal (non-HUP)
+> > close. [ Note that most of those other seven drivers did not expect DTR
+> > to have been dropped by tty_port_close_start in the first place. ]
+> > 
+> > Signed-off-by: Johan Hovold <jhovold@gmail.com>
+> > ---
+> >  drivers/tty/mxser.c    |  4 ++++
+> >  drivers/tty/n_gsm.c    |  4 ++++
+> >  drivers/tty/tty_port.c | 23 +++++++++++++----------
+> >  3 files changed, 21 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> > index 484b6a3..c547887 100644
+> > --- a/drivers/tty/mxser.c
+> > +++ b/drivers/tty/mxser.c
+> > @@ -1084,6 +1084,10 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
+> >  	mutex_lock(&port->mutex);
+> >  	mxser_close_port(port);
+> >  	mxser_flush_buffer(tty);
+> > +	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
+> > +		if (tty->termios.c_cflag & HUPCL)
+> > +			tty_port_lower_dtr_rts(port);
+> > +	}
+> >  	mxser_shutdown_port(port);
+> >  	clear_bit(ASYNCB_INITIALIZED, &port->flags);
+> >  	mutex_unlock(&port->mutex);
+> > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> > index 4a43ef5d7..049013e 100644
+> > --- a/drivers/tty/n_gsm.c
+> > +++ b/drivers/tty/n_gsm.c
+> > @@ -2968,6 +2968,10 @@ static void gsmtty_close(struct tty_struct *tty, struct file *filp)
+> >  	if (tty_port_close_start(&dlci->port, tty, filp) == 0)
+> >  		goto out;
+> >  	gsm_dlci_begin_close(dlci);
+> > +	if (test_bit(ASYNCB_INITIALIZED, &dlci->port.flags)) {
+> > +		if (tty->termios.c_cflag & HUPCL)
+> > +			tty_port_lower_dtr_rts(&dlci->port);
+> > +	}
+> >  	tty_port_close_end(&dlci->port, tty);
+> >  	tty_port_tty_set(&dlci->port, NULL);
+> >  out:
+> > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> > index 57a061e..506f579 100644
+> > --- a/drivers/tty/tty_port.c
+> > +++ b/drivers/tty/tty_port.c
+> > @@ -198,15 +198,25 @@ EXPORT_SYMBOL(tty_port_tty_set);
+> >  
+> >  static void tty_port_shutdown(struct tty_port *port)
+> >  {
+> > +	struct tty_struct *tty = tty_port_tty_get(port);
+> > +
 > 
-> Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
-> ---
-> Based on the topic/all+next branch from the 17th Feb. I couldn't rebase it on the current HEAD as the armadillo-reference code currently isn't in.
+> I know I said this was done, but if this hasn't been pushed into
+> tty-next yet, I'd rather this was:
 > 
-> changelog v2:
->  - Renamed title to "Add OF support"
->  - Removed fixed configurations from driver and added the following binding props:
-> 	- renesas,scscr
-> 	- renesas,scbrr-algo-id
-> 	- renesas,autoconf
-> 	- renesas,regtype
-> 	See patch for descriptions
+> static void tty_port_shutdown(struct tty_port *port,
+> 			      struct tty_struct *tty)
 > 
-This looks much better, only a few minor nits.
+> and not get the port reference. Both call sites already ensure that
+> there is a kref on the tty or tty is NULL.
+> 
+> (I ended up re-looking at this patch to double-check that it won't drop
+> DTR for the console, which it doesn't so that is good).
 
-> +Optional properties:
-> +- renesas,autoconf : Set if device is capable of auto configuration
-> +- renesas,regtype : Overwrite the register layout. Some legacy hardware versions
-> +  use a non-default register layout. Possible layouts are
-> +  0 = SCIx_SH2_SCIF_FIFODATA_REGTYPE
-> +  1 = SCIx_SH3_SCIF_REGTYPE
-> +  2 = SCIx_SH4_SCIF_REGTYPE
-> +  3 = SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE
-> +  4 = SCIx_SH4_SCIF_FIFODATA_REGTYPE
-> +  5 = SCIx_SH7705_SCIF_REGTYPE
-> +
-Here I would still opt to provide the full regtype set, even for the
-"standard" layouts, as it's quite possible that newer port-types will use
-older layouts.
+I'll send a v2.
 
-In this case you could keep 0 as the probe type (which would be the
-default anyways, so effectively a no-op), and then do the upper bounding
-via SCIx_NR_REGTYPES.
-
-> +/* This array belongs to the DT binding definition "renesas,regtype" */
-> +static const char sci_regtype_modes[] = {
-> +	SCIx_SH2_SCIF_FIFODATA_REGTYPE,
-> +	SCIx_SH3_SCIF_REGTYPE,
-> +	SCIx_SH4_SCIF_REGTYPE,
-> +	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-> +	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
-> +	SCIx_SH7705_SCIF_REGTYPE
-> +};
-> +
-At which point all of this can go away.
-
-> +static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
-> +								int *dev_id)
-> +{
-..
-> +	prop = of_get_property(np, "renesas,regtype", NULL);
-> +	if (prop) {
-> +		val = be32_to_cpup(prop);
-> +		if (val <= 0 || val >= ARRAY_SIZE(sci_regtype_modes)) {
-> +			dev_err(&pdev->dev, "invalid DT prop regtype\n");
-> +			return NULL;
-> +		}
-> +		p->regtype = sci_regtype_modes[be32_to_cpup(prop)];
-> +	}
-> +
-You can then compare against SCIx_PROBE_REGTYPE and SCIx_NR_REGTYPES, and
-assign p->regtype the be32_to_cpup() value directly. Which will also make
-it trivial to add new regtypes in the future, we would only need to
-update the binding documentation.
+Thanks, 
+Johan
