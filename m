@@ -1,44 +1,54 @@
-From: Paul Mundt <lethal@linux-sh.org>
-Subject: Re: [PATCH v3 1/3] serial: sh-sci: Add OF support
-Date: Wed, 27 Feb 2013 18:34:40 +0900
-Message-ID: <20130227093439.GE30395@linux-sh.org>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
- <20130227080742.GB21690@linux-sh.org>
- <CANqRtoSDqm1VMZxxuPgnpNScfSVsozeS=_m0-1t6Z1w0vny7FA@mail.gmail.com>
- <20130227081954.GA30395@linux-sh.org>
- <CANqRtoRXjiX227Mop2ysGDij0F0W-c-_xq4UMn7K-Hhmg-e=4Q@mail.gmail.com>
- <20130227090456.GA7936@verge.net.au>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] serial: ifx6x60: add missing variable initialization
+Date: Wed, 27 Feb 2013 10:53:09 +0100
+Message-ID: <512DD785.5050001@suse.cz>
+References: <008e01ce14a7$c1406580$43c13080$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20130227090456.GA7936@verge.net.au>
-Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:33622 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932146Ab3B0JxO (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Feb 2013 04:53:14 -0500
+Received: by mail-ee0-f50.google.com with SMTP id e51so292360eek.9
+        for <linux-serial@vger.kernel.org>; Wed, 27 Feb 2013 01:53:13 -0800 (PST)
+In-Reply-To: <008e01ce14a7$c1406580$43c13080$%han@samsung.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jingoo Han <jg1.han@samsung.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, 'Chen Jun' <jun.d.chen@intel.com>
 
-On Wed, Feb 27, 2013 at 06:04:57PM +0900, Simon Horman wrote:
-> On Wed, Feb 27, 2013 at 05:26:57PM +0900, Magnus Damm wrote:
-> > My personal preference would be that you (Paul) merge this patch by yourself:
-> > [PATCH v3 1/3] serial: sh-sci: Add OF support
-> > 
-> > I believe we can deal with the SoC bits easily afterwards. Simon may
-> > however prefer to deal with it differently.
-> > 
-> > Simon, how do you prefer to handle merge of DT support for the SCIF driver?
+On 02/27/2013 06:03 AM, Jingoo Han wrote:
+> Fixed build warning as below:
 > 
-> I am fairly ambivalent.
-> 
-> If Paul could merge this patch upstream in the v3.9-rc1~rc3 time frame
-> then I can queue up the SoC portions for v3.10.
-> 
-> Or alternatively I can queue up all three patches for v3.10.
-> Either way the outcome should be much the same.
+> drivers/tty/serial/ifx6x60.c:753:8: warning: 'more' may be used uninitialized in this function [-Wuninitialized]
 
-Waiting an entire kernel version to throw some arbitrary dts file updates
-in seems a bit absurd, but I'll let you handle it however you like. I
-haven't sent out my SH updates to Linus yet, but plan to do so by -rc2
-(there isn't really that much to begin with, most of it has gone through
-other trees), so in light of this I will throw the sh-sci OF patch in to
-my queue directly then.
+This needs some more investigation and explanation than that. Are you
+fixing a real compiler warning or hiding a bug here?
+
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> ---
+>  drivers/tty/serial/ifx6x60.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+> index 68d7ce9..3d78baf 100644
+> --- a/drivers/tty/serial/ifx6x60.c
+> +++ b/drivers/tty/serial/ifx6x60.c
+> @@ -687,7 +687,7 @@ static void ifx_spi_complete(void *ctx)
+>  	struct tty_ldisc *ldisc = NULL;
+>  	int length;
+>  	int actual_length;
+> -	unsigned char more;
+> +	unsigned char more = 0;
+>  	unsigned char cts;
+>  	int local_write_pending = 0;
+>  	int queue_length;
+> 
+
+
+-- 
+js
+suse labs
