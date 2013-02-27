@@ -1,51 +1,44 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] serial: ifx6x60: add missing variable initialization
-Date: Wed, 27 Feb 2013 14:03:16 +0900
-Message-ID: <008e01ce14a7$c1406580$43c13080$%han@samsung.com>
+From: Paul Mundt <lethal@linux-sh.org>
+Subject: Re: [PATCH v2 1/3] serial: sh-sci: Add OF support
+Date: Wed, 27 Feb 2013 17:04:14 +0900
+Message-ID: <20130227080413.GA21690@linux-sh.org>
+References: <1361819215-4115-1-git-send-email-hechtb+renesas@gmail.com>
+ <20130225203534.GB19670@linux-sh.org>
+ <CABYn4szH8QnPAj6dkv94wEVr6b=ezb2f7fxyiMnhF7AqOBOMpQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:46520 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751190Ab3B0FDT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Feb 2013 00:03:19 -0500
-Received: from epcpsbgr2.samsung.com
- (u142.gpu120.samsung.co.kr [203.254.230.142])
- by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MIV00EPQ4OEOJ80@mailout1.samsung.com> for
- linux-serial@vger.kernel.org; Wed, 27 Feb 2013 14:03:17 +0900 (KST)
-Content-language: ko
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CABYn4szH8QnPAj6dkv94wEVr6b=ezb2f7fxyiMnhF7AqOBOMpQ@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Bastian Hecht <hechtb@gmail.com>
+Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, 'Chen Jun' <jun.d.chen@intel.com>, 'Jingoo Han' <jg1.han@samsung.com>
 
-Fixed build warning as below:
+On Tue, Feb 26, 2013 at 09:09:52AM -0600, Bastian Hecht wrote:
+> 2013/2/25 Paul Mundt <lethal@linux-sh.org>:
+> > You can then compare against SCIx_PROBE_REGTYPE and SCIx_NR_REGTYPES, and
+> > assign p->regtype the be32_to_cpup() value directly. Which will also make
+> > it trivial to add new regtypes in the future, we would only need to
+> > update the binding documentation.
+> 
+> Ok, I slightly disliked that portion anyway in the code as we have the
+> full mapping from the SCBRR algo ID and only the partial mapping from
+> the register set. Additionally I wonder if I should add something like
+> 
+> enum {
+> +     SCBRR_ALGO_INVALID,
+>        SCBRR_ALGO_1,
+>        SCBRR_ALGO_2,
+>        SCBRR_ALGO_3,
+>        SCBRR_ALGO_4,
+>        SCBRR_ALGO_5,
+> };
+> ...
+> -p->scbrr_algo_id = be32_to_cpup(prop) - 1;
+> +p->scbrr_algo_id = be32_to_cpup(prop);
+> 
+> to have a straight mapping.
 
-drivers/tty/serial/ifx6x60.c:753:8: warning: 'more' may be used uninitialized in this function [-Wuninitialized]
-
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/tty/serial/ifx6x60.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 68d7ce9..3d78baf 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -687,7 +687,7 @@ static void ifx_spi_complete(void *ctx)
- 	struct tty_ldisc *ldisc = NULL;
- 	int length;
- 	int actual_length;
--	unsigned char more;
-+	unsigned char more = 0;
- 	unsigned char cts;
- 	int local_write_pending = 0;
- 	int queue_length;
--- 
-1.7.2.5
-
-
+Yes, that would be my preferred option as well. I was going to comment on
+the - 1 thing previously, but figured it was just some DT oddity.
