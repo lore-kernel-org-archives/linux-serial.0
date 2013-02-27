@@ -1,270 +1,100 @@
-From: Bastian Hecht <hechtb@gmail.com>
-Subject: [PATCH v3 1/3] serial: sh-sci: Add OF support
-Date: Tue, 26 Feb 2013 11:03:26 -0600
-Message-ID: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v4 00/32] ldisc patchset
+Date: Tue, 26 Feb 2013 22:08:52 -0500
+Message-ID: <1361934532.23781.54.camel@thor.lan>
+References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+	 <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+	 <51261E30.9040907@gmail.com> <1361453910.10685.7.camel@thor.lan>
+	 <1361558250.14402.6.camel@thor.lan> <5128DF40.7030003@gmail.com>
+	 <5128F16E.30804@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:54627 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753873Ab3B0DJM (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Feb 2013 22:09:12 -0500
+In-Reply-To: <5128F16E.30804@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sasha Levin <levinsasha928@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>
 
-We add the capabilty to probe Renesas SCI devices using Device Tree setup.
+On Sat, 2013-02-23 at 11:42 -0500, Sasha Levin wrote:
+> Hi Peter,
+>
+> I've also got this one for the first time:
+> [  484.450139] INFO: task init:1 blocked for more than 120 seconds.
+> [  484.451130] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  484.452013] init            D 00000000001d7180  2688     1      0 0x00000002
+> [  484.452883]  ffff8800b9acfba8 0000000000000002 00000000001d7180 ffff8800b9b10048
+> [  484.453816]  ffff8800b94cb000 ffff8800b9b10000 00000000001d7180 00000000001d7180
+> [  484.454529]  ffff8800b9b10000 ffff8800b9acffd8 00000000001d7180 00000000001d7180
+> [  484.455232] Call Trace:
+> [  484.455515]  [<ffffffff83db9909>] __schedule+0x2e9/0x3b0
+> [  484.456081]  [<ffffffff83db9b35>] schedule+0x55/0x60
+> [  484.456636]  [<ffffffff83db74ba>] schedule_timeout+0x3a/0x370
+> [  484.457263]  [<ffffffff81182349>] ? mark_held_locks+0xf9/0x130
+> [  484.457866]  [<ffffffff83dbab38>] ? down_failed+0x108/0x200
+> [  484.458539]  [<ffffffff83dbb7ab>] ? _raw_spin_unlock_irq+0x2b/0x80
+> [  484.459223]  [<ffffffff81182608>] ? trace_hardirqs_on_caller+0x128/0x160
+> [  484.459822]  [<ffffffff83dbab61>] down_failed+0x131/0x200
+> [  484.460512]  [<ffffffff83dbbfad>] ? tty_ldisc_lock_pair_timeout+0xcd/0x120
+> [  484.461376]  [<ffffffff83dbae03>] ldsem_down_write+0xd3/0x113
+> [  484.461895]  [<ffffffff83dbbfad>] ? tty_ldisc_lock_pair_timeout+0xcd/0x120
+> [  484.462824]  [<ffffffff8118264d>] ? trace_hardirqs_on+0xd/0x10
+> [  484.463504]  [<ffffffff83dbbfad>] tty_ldisc_lock_pair_timeout+0xcd/0x120
+> [  484.464258]  [<ffffffff81c3df60>] tty_ldisc_hangup+0xd0/0x220
+> [  484.464825]  [<ffffffff81c35bd7>] __tty_hangup+0x137/0x4f0
+> [  484.465684]  [<ffffffff81c37c7c>] disassociate_ctty+0x6c/0x230
+> [  484.466607]  [<ffffffff8111290c>] do_exit+0x41c/0x590
+> [  484.467419]  [<ffffffff8107ad34>] ? syscall_trace_enter+0x24/0x2e0
+> [  484.468413]  [<ffffffff81112b4a>] do_group_exit+0x8a/0xc0
+> [  484.469281]  [<ffffffff81112b92>] sys_exit_group+0x12/0x20
+> [  484.470159]  [<ffffffff83dc49d8>] tracesys+0xe1/0xe6
+> [  484.470951] 1 lock held by init/1:
+> [  484.471513]  #0:  (&tty->ldisc_sem){++++++}, at: [<ffffffff83dbbfad>] tty_ldisc_lock_pair_timeout+0xcd/0x120
 
-Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
----
-v3:
-- add remaining register layouts to bindings
-- remove register set mapping sci_regtype_modes[]
-- adapt renesas,regtype probing
+Hi Sasha,
 
-- add enums SCBRR_ALGO_INVALID and SCBRR_NR_ALGOS
-- check renesas,scbrr-algo-id boundaries using new enums
+What's your setup here? Are you booting directly to a shell?
 
- .../bindings/tty/serial/renesas,sci-serial.txt     |   53 ++++++++
- drivers/tty/serial/sh-sci.c                        |  126 +++++++++++++++++++-
- include/linux/serial_sci.h                         |    4 +
- 3 files changed, 179 insertions(+), 4 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+Because I'm wondering how init has a tty.
+Also, init is exiting here -- upstart only exits when commanded or on
+SIGSEGV or SIGABRT.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
-new file mode 100644
-index 0000000..6ad1adf
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
-@@ -0,0 +1,53 @@
-+* Renesas SH-Mobile Serial Communication Interface
-+
-+Required properties:
-+- compatible : Should be "renesas,sci-<port type>-uart", where <port type> may be
-+  SCI, SCIF, IRDA, SCIFA or SCIFB.
-+- reg : Address and length of the register set for the device
-+- interrupts : Should contain the following IRQs: ERI, RXI, TXI and BRI.
-+- cell-index : The device id.
-+- renesas,scscr : Should contain a bitfield used by the Serial Control Register.
-+  b7 = SCSCR_TIE
-+  b6 = SCSCR_RIE
-+  b5 = SCSCR_TE
-+  b4 = SCSCR_RE
-+  b3 = SCSCR_REIE
-+  b2 = SCSCR_TOIE
-+  b1 = SCSCR_CKE1
-+  b0 = SCSCR_CKE0
-+- renesas,scbrr-algo-id : Algorithm ID for the Bit Rate Register
-+  1 = SCBRR_ALGO_1 ((clk + 16 * bps) / (16 * bps) - 1)
-+  2 = SCBRR_ALGO_2 ((clk + 16 * bps) / (32 * bps) - 1)
-+  3 = SCBRR_ALGO_3 (((clk * 2) + 16 * bps) / (16 * bps) - 1)
-+  4 = SCBRR_ALGO_4 (((clk * 2) + 16 * bps) / (32 * bps) - 1)
-+  5 = SCBRR_ALGO_5 (((clk * 1000 / 32) / bps) - 1)
-+
-+Optional properties:
-+- renesas,autoconf : Set if device is capable of auto configuration
-+- renesas,regtype : Overwrite the register layout. In most cases you can rely
-+  on auto-probing (omit this property or set to 0) but some legacy devices
-+  use a non-default register layout. Possible layouts are
-+  0 = SCIx_PROBE_REGTYPE (default)
-+  1 = SCIx_SCI_REGTYPE
-+  2 = SCIx_IRDA_REGTYPE
-+  3 = SCIx_SCIFA_REGTYPE
-+  4 = SCIx_SCIFB_REGTYPE
-+  5 = SCIx_SH2_SCIF_FIFODATA_REGTYPE
-+  6 = SCIx_SH3_SCIF_REGTYPE
-+  7 = SCIx_SH4_SCIF_REGTYPE
-+  8 = SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE
-+  9 = SCIx_SH4_SCIF_FIFODATA_REGTYPE
-+ 10 = SCIx_SH7705_SCIF_REGTYPE
-+
-+
-+Example:
-+	sci@0xe6c50000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c50000 0x100>;
-+		interrupts = <0x0c20>, <0x0c20>, <0x0c20>, <0x0c20>;
-+		cell-index = <1>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 6147756..1976ef9 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2353,6 +2353,112 @@ static int sci_remove(struct platform_device *dev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id of_sci_match[] = {
-+	{ .compatible = "renesas,sci-SCI-uart",
-+		.data = (void *)PORT_SCI },
-+	{ .compatible = "renesas,sci-SCIF-uart",
-+		.data = (void *)PORT_SCIF },
-+	{ .compatible = "renesas,sci-IRDA-uart",
-+		.data = (void *)PORT_IRDA },
-+	{ .compatible = "renesas,sci-SCIFA-uart",
-+		.data = (void *)PORT_SCIFA },
-+	{ .compatible = "renesas,sci-SCIFB-uart",
-+		.data = (void *)PORT_SCIFB },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, of_sci_match);
-+
-+static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
-+								int *dev_id)
-+{
-+	struct plat_sci_port *p;
-+	struct device_node *np = pdev->dev.of_node;
-+	const struct of_device_id *match;
-+	struct resource *res;
-+	const __be32 *prop;
-+	int i, irq, val;
-+
-+	match = of_match_node(of_sci_match, pdev->dev.of_node);
-+	if (!match || !match->data) {
-+		dev_err(&pdev->dev, "OF match error\n");
-+		return NULL;
-+	}
-+
-+	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
-+	if (!p) {
-+		dev_err(&pdev->dev, "failed to allocate DT config data\n");
-+		return NULL;
-+	}
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(&pdev->dev, "failed to get I/O memory\n");
-+		return NULL;
-+	}
-+	p->mapbase = res->start;
-+
-+	for (i = 0; i < SCIx_NR_IRQS; i++) {
-+		irq = platform_get_irq(pdev, i);
-+		if (irq < 0) {
-+			dev_err(&pdev->dev, "failed to get irq data %d\n", i);
-+			return NULL;
-+		}
-+		p->irqs[i] = irq;
-+	}
-+
-+	prop = of_get_property(np, "cell-index", NULL);
-+	if (!prop) {
-+		dev_err(&pdev->dev, "required DT prop cell-index missing\n");
-+		return NULL;
-+	}
-+	*dev_id = be32_to_cpup(prop);
-+
-+	prop = of_get_property(np, "renesas,scscr", NULL);
-+	if (!prop) {
-+		dev_err(&pdev->dev, "required DT prop scscr missing\n");
-+		return NULL;
-+	}
-+	p->scscr = be32_to_cpup(prop);
-+
-+	prop = of_get_property(np, "renesas,scbrr-algo-id", NULL);
-+	if (!prop) {
-+		dev_err(&pdev->dev, "required DT prop scbrr-algo-id missing\n");
-+		return NULL;
-+	}
-+	val = be32_to_cpup(prop);
-+	if (val <= SCBRR_ALGO_INVALID || val >= SCBRR_NR_ALGOS) {
-+		dev_err(&pdev->dev, "DT prop scbrr-algo-id out of range\n");
-+		return NULL;
-+	}
-+	p->scbrr_algo_id = val;
-+
-+	p->flags = UPF_IOREMAP;
-+	if (of_get_property(np, "renesas,autoconf", NULL))
-+		p->flags |= UPF_BOOT_AUTOCONF;
-+
-+	prop = of_get_property(np, "renesas,regtype", NULL);
-+	if (prop) {
-+		val = be32_to_cpup(prop);
-+		if (val < SCIx_PROBE_REGTYPE || val >= SCIx_NR_REGTYPES) {
-+			dev_err(&pdev->dev, "DT prop regtype out of range\n");
-+			return NULL;
-+		}
-+		p->regtype = val;
-+	}
-+
-+	p->type = (unsigned int)match->data;
-+
-+	return p;
-+}
-+#else
-+static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
-+								int *dev_id)
-+{
-+	return NULL;
-+}
-+#endif /* CONFIG_OF */
-+
- static int sci_probe_single(struct platform_device *dev,
- 				      unsigned int index,
- 				      struct plat_sci_port *p,
-@@ -2385,9 +2491,9 @@ static int sci_probe_single(struct platform_device *dev,
- 
- static int sci_probe(struct platform_device *dev)
- {
--	struct plat_sci_port *p = dev->dev.platform_data;
--	struct sci_port *sp = &sci_ports[dev->id];
--	int ret;
-+	struct plat_sci_port *p;
-+	struct sci_port *sp;
-+	int ret, dev_id = dev->id;
- 
- 	/*
- 	 * If we've come here via earlyprintk initialization, head off to
-@@ -2397,9 +2503,20 @@ static int sci_probe(struct platform_device *dev)
- 	if (is_early_platform_device(dev))
- 		return sci_probe_earlyprintk(dev);
- 
-+	if (dev->dev.of_node)
-+		p = sci_parse_dt(dev, &dev_id);
-+	else
-+		p = dev->dev.platform_data;
-+
-+	if (!p) {
-+		dev_err(&dev->dev, "no setup data supplied\n");
-+		return -EINVAL;
-+	}
-+
-+	sp = &sci_ports[dev_id];
- 	platform_set_drvdata(dev, sp);
- 
--	ret = sci_probe_single(dev, dev->id, p, sp);
-+	ret = sci_probe_single(dev, dev_id, p, sp);
- 	if (ret)
- 		return ret;
- 
-@@ -2451,6 +2568,7 @@ static struct platform_driver sci_driver = {
- 		.name	= "sh-sci",
- 		.owner	= THIS_MODULE,
- 		.pm	= &sci_dev_pm_ops,
-+		.of_match_table = of_match_ptr(of_sci_match),
- 	},
- };
- 
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index eb763ad..857eec4 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -11,11 +11,15 @@
- #define SCIx_NOT_SUPPORTED	(-1)
- 
- enum {
-+	SCBRR_ALGO_INVALID,
-+
- 	SCBRR_ALGO_1,		/* ((clk + 16 * bps) / (16 * bps) - 1) */
- 	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
- 	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
- 	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
- 	SCBRR_ALGO_5,		/* (((clk * 1000 / 32) / bps) - 1) */
-+
-+	SCBRR_NR_ALGOS,
- };
- 
- #define SCSCR_TIE	(1 << 7)
--- 
-1.7.9.5
+What's going on here is:
+1. some process is in a blocking read from a console
+   (and has an ldisc lock)
+2. init is exiting
+3. init being the session leader hangs up the tty
+4. as part of tty hangup, waiting readers and writers are woken
+5. hangup waits for all readers and writers to exit their i/o loops
+   (and drop their ldisc locks)
+6. the process from step 1 wakes up and re-checks
+   a. input available?  no.
+   b. other pty closed? no, this isn't a pty pair.
+   c. file hung up? no, open consoles are not hung up.
+   d. signal pending? no.
+7. goes back to sleep
+
+This is only indirectly related to the patchset in that the patchset
+rightly ensures the ldisc will not be closed while in use.
+
+The actual problem is that disassociate_tty() tries to hang up the tty
+_before_ signalling processes in the (foreground) process group. This is
+why the blocking reader didn't exit -- it had not received a signal
+because the signal has not yet been sent.
+
+OTOH, why try to hangup the ldisc at all if consoles are using the tty?
+I'll have to think some more before I send a patch for this.
+
+In the meantime, if this (or the other thing) happen again, I'd really
+appreciate if you could get a sysrq-d for any of the ldisc/tty related
+reports.
+
+Thanks,
+Peter Hurley
 
