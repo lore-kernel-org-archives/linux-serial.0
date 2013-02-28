@@ -1,109 +1,61 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: Serial port initialization broken on Armada 370/XP due to "serial:
- 8250_dw: Don't use UPF_FIXED_TYPE"
-Date: Thu, 28 Feb 2013 12:42:06 +0100
-Message-ID: <512F428E.3080400@free-electrons.com>
-References: <512E1AD9.4090403@free-electrons.com> <512E2F64.2010706@free-electrons.com> <20130228092602.GA5688@xps8300>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: Serial port initialization broken on Armada 370/XP due to
+ "serial: 8250_dw: Don't use UPF_FIXED_TYPE"
+Date: Thu, 28 Feb 2013 14:34:21 +0200
+Message-ID: <20130228123421.GC5688@xps8300>
+References: <512E1AD9.4090403@free-electrons.com>
+ <512E2F64.2010706@free-electrons.com>
+ <20130228092602.GA5688@xps8300>
+ <512F428E.3080400@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:33053 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752546Ab3B1LmN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Feb 2013 06:42:13 -0500
-In-Reply-To: <20130228092602.GA5688@xps8300>
+Received: from mga03.intel.com ([143.182.124.21]:61048 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751937Ab3B1Me0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Feb 2013 07:34:26 -0500
+Content-Disposition: inline
+In-Reply-To: <512F428E.3080400@free-electrons.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Gregory CLEMENT <gregory.clement@free-electrons.com>
 Cc: Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-Hi Heikki,
+Hi,
 
-On 02/28/2013 10:26 AM, Heikki Krogerus wrote:
-> Hi Gregory.
+On Thu, Feb 28, 2013 at 12:42:06PM +0100, Gregory CLEMENT wrote:
+> >> Would you agree with this kind of patch to fix the issue?
+> >>
+> >> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> >> index e2ac25a..0b284c6 100644
+> >> --- a/drivers/tty/serial/8250/8250.c
+> >> +++ b/drivers/tty/serial/8250/8250.c
+> >> @@ -1119,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+> >>         serial_out(up, UART_LCR, 0);
+> >>
+> >>         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
+> >> -       scratch = serial_in(up, UART_IIR) >> 6;
+> >> +       scratch = (serial_in(up, UART_IIR) & 0xFF) >> 6;
+> >>
+> >>         switch (scratch) {
+> >>         case 0:
+> > 
+> > Instead, can you test if it's enough for you to set the reg-io-width
+> > to 1 instead of 4:
 > 
-> On Wed, Feb 27, 2013 at 05:08:04PM +0100, Gregory CLEMENT wrote:
->> I found the root of the problem in drivers/tty/serial/8250/8250.c
->>
->> in the autoconfig() function, when the IIR register is acceded, it is
->> done using serial_in(), this function return an int but is used as it
->> have returned a char. There is a lot of implicit cast to a char when
->> the returned value is put in a char variable, this seems to not be a
->> problem most of the time. The problematic line is the following:
->>
->> scratch = serial_in(up, UART_IIR) >> 6;
->>
->> the shift is done here before any cast or mask, and unfortunately my
->> hardware send 0xC1C1C1C1, that lead to get a '7' in the scratch
->> variable instead of a '3'.
+> Yes indeed it worked and it seems to be the correct description of my
+> hardware. So I will fix the dtsi file.
 > 
-> OK, this is interesting. Why does it return that? dw_apb_uart_db.pdf I
-> have says that bits 31:8 read as zero?
+> However isn't buggy to use a function as it returned a char whereas
+> it returns an int?
 
-The UART paragraphs on the Armada 370/XP datasheet also says the same
-thing.  Actually for all the register the bits 31:8 should be 0.I
-suspect an hardware issue (or let's call it an optimization), as the
-upper bits are not supposed to be used.
+Yes, the driver should probable be cleaned.
 
-> 
->> Would you agree with this kind of patch to fix the issue?
->>
->> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
->> index e2ac25a..0b284c6 100644
->> --- a/drivers/tty/serial/8250/8250.c
->> +++ b/drivers/tty/serial/8250/8250.c
->> @@ -1119,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
->>         serial_out(up, UART_LCR, 0);
->>
->>         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
->> -       scratch = serial_in(up, UART_IIR) >> 6;
->> +       scratch = (serial_in(up, UART_IIR) & 0xFF) >> 6;
->>
->>         switch (scratch) {
->>         case 0:
-> 
-> Instead, can you test if it's enough for you to set the reg-io-width
-> to 1 instead of 4:
+It seems to be happening in quite a few places in 8250.c.
+autoconfig_16550a() has pretty much identical code in it, where
+UART_IIR is read to unsigned char and shifted without a mask.
 
-Yes indeed it worked and it seems to be the correct description of my
-hardware. So I will fix the dtsi file.
-
-However isn't buggy to use a function as it returned a char whereas
-it returns an int?
-
-Regards,
-
-> 
-> diff --git a/arch/arm/boot/dts/armada-370-xp.dtsi b/arch/arm/boot/dts/armada-370-xp.dtsi
-> index 4c0abe8..3a87a0e 100644
-> --- a/arch/arm/boot/dts/armada-370-xp.dtsi
-> +++ b/arch/arm/boot/dts/armada-370-xp.dtsi
-> @@ -54,7 +54,7 @@
->                                 reg = <0xd0012000 0x100>;
->                                 reg-shift = <2>;
->                                 interrupts = <41>;
-> -                               reg-io-width = <4>;
-> +                               reg-io-width = <1>;
->                                 status = "disabled";
->                 };
->                 serial@d0012100 {
-> @@ -62,7 +62,7 @@
->                                 reg = <0xd0012100 0x100>;
->                                 reg-shift = <2>;
->                                 interrupts = <42>;
-> -                               reg-io-width = <4>;
-> +                               reg-io-width = <1>;
->                                 status = "disabled";
->                 };
->  
-> Thanks,
-> 
-
+Br,
 
 -- 
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+heikki
