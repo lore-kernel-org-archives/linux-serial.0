@@ -1,55 +1,53 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v3 1/3] serial: sh-sci: Add OF support
-Date: Fri, 1 Mar 2013 09:50:58 +0900
-Message-ID: <20130301005058.GM11434@verge.net.au>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
- <20130227080742.GB21690@linux-sh.org>
- <CANqRtoSDqm1VMZxxuPgnpNScfSVsozeS=_m0-1t6Z1w0vny7FA@mail.gmail.com>
- <20130227081954.GA30395@linux-sh.org>
- <CANqRtoRXjiX227Mop2ysGDij0F0W-c-_xq4UMn7K-Hhmg-e=4Q@mail.gmail.com>
- <20130227090456.GA7936@verge.net.au>
- <20130227093439.GE30395@linux-sh.org>
+From: Wang YanQing <udknight@gmail.com>
+Subject: [PATCH]serial: 8250_pci: add support for another kind of NetMos
+ Technology PCI 9835 Multi-I/O Controller
+Date: Fri, 1 Mar 2013 11:47:20 +0800
+Message-ID: <20130301034719.GA5728@udknight>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:44498 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753541Ab3CAAvD (ORCPT
+Received: from mail-da0-f41.google.com ([209.85.210.41]:48462 "EHLO
+	mail-da0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750696Ab3CADq1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Feb 2013 19:51:03 -0500
+	Thu, 28 Feb 2013 22:46:27 -0500
 Content-Disposition: inline
-In-Reply-To: <20130227093439.GE30395@linux-sh.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Mundt <lethal@linux-sh.org>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, alan@linux.intel.com
 
-On Wed, Feb 27, 2013 at 06:34:40PM +0900, Paul Mundt wrote:
-> On Wed, Feb 27, 2013 at 06:04:57PM +0900, Simon Horman wrote:
-> > On Wed, Feb 27, 2013 at 05:26:57PM +0900, Magnus Damm wrote:
-> > > My personal preference would be that you (Paul) merge this patch by yourself:
-> > > [PATCH v3 1/3] serial: sh-sci: Add OF support
-> > > 
-> > > I believe we can deal with the SoC bits easily afterwards. Simon may
-> > > however prefer to deal with it differently.
-> > > 
-> > > Simon, how do you prefer to handle merge of DT support for the SCIF driver?
-> > 
-> > I am fairly ambivalent.
-> > 
-> > If Paul could merge this patch upstream in the v3.9-rc1~rc3 time frame
-> > then I can queue up the SoC portions for v3.10.
-> > 
-> > Or alternatively I can queue up all three patches for v3.10.
-> > Either way the outcome should be much the same.
-> 
-> Waiting an entire kernel version to throw some arbitrary dts file updates
-> in seems a bit absurd, but I'll let you handle it however you like. I
-> haven't sent out my SH updates to Linus yet, but plan to do so by -rc2
-> (there isn't really that much to begin with, most of it has gone through
-> other trees), so in light of this I will throw the sh-sci OF patch in to
-> my queue directly then.
+01:08.0 Communication controller: NetMos Technology PCI 9835 Multi-I/O Controller (rev 01)
+	Subsystem: Device [1000:0012]
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Interrupt: pin A routed to IRQ 20
+	Region 0: I/O ports at e050 [size=8]
+	Region 1: I/O ports at e040 [size=8]
+	Region 2: I/O ports at e030 [size=8]
+	Region 3: I/O ports at e020 [size=8]
+	Region 4: I/O ports at e010 [size=8]
+	Region 5: I/O ports at e000 [size=16]
 
-Thanks, much appreciated.
+Signed-off-by: Wang YanQing <udknight@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I entirely agree that my tree has longer lead-times than are desirable.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 791c5a7..ebcc362 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -4791,6 +4791,10 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_VENDOR_ID_IBM, 0x0299,
+ 		0, 0, pbn_b0_bt_2_115200 },
+ 
++	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
++		0x1000, 0x0012,
++		0, 0, pbn_b0_bt_2_115200 },
++
+ 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9901,
+ 		0xA000, 0x1000,
+ 		0, 0, pbn_b0_1_115200 },
+-- 
+1.7.11.1.116.g8228a23
