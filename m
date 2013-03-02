@@ -1,52 +1,78 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
- devices using DT
-Date: Sat, 2 Mar 2013 10:31:48 +0900
-Message-ID: <20130302013147.GB3273@verge.net.au>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
- <1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
- <20130301094205.GG27938@verge.net.au>
- <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
+From: Wang YanQing <udknight@gmail.com>
+Subject: Re: [PATCH]serial: 8250: Fix detect XScale port wrong
+Date: Sat, 2 Mar 2013 16:54:57 +0800
+Message-ID: <20130302085457.GA3669@udknight>
+References: <20130301055610.GA31770@udknight>
+ <5130FEBC.7030806@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f54.google.com ([209.85.160.54]:46556 "EHLO
+	mail-pb0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751559Ab3CBIyY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 2 Mar 2013 03:54:24 -0500
 Content-Disposition: inline
-In-Reply-To: <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Bastian Hecht <hechtb@gmail.com>
-Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
+In-Reply-To: <5130FEBC.7030806@windriver.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: gregkh@linuxfoundation.org, swarren@wwwdotorg.org, jslaby@suse.cz, alan@linux.intel.com, arnd@arndb.de, damm@opensource.se, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
-> 2013/3/1 Simon Horman <horms@verge.net.au>:
-> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
-> >> We can now use the Device Tree for bringing up our serial devices. We
-> >> need to add an alternative early_devices list in setup-r8a7740 without
-> >> the serial devices and move them into the Armadillo-reference .dts config file.
-> >
-> > Hi Bastian,
-> >
-> > could you please refresh this patch on top of the current topic/intc-of.
-> > In particular, it conflicts with changes made by:
-> >
-> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
+On Fri, Mar 01, 2013 at 02:17:16PM -0500, Paul Gortmaker wrote:
+> On 13-03-01 12:56 AM, Wang YanQing wrote:
+> > Some UARTs add enhanced functions with unused bit in
+> > 16550 standard, like UART_IER_UUE bit, it cause XScale
 > 
-> Sure.
+> Which xscale platform?  It would be nice to know the specifics.
+The "XScale" mean the XScale port detect code in autoconfig_16550a,
+I meet the problem in a normal pc motherboard, I should rephrase
+the subject use "Fix detect 16550A ports as XScale ports wrong"
 > 
-> I've prepared the patch - but I start to wonder if the DT
-> specification for the SCIF devices should go into r8a7740.dtsi rather
-> than r8a7740-armadillo-reference.dts. So far it's included in
-> setup-r8a7740.c and not in the board code - that's a strong indication
-> for it, no?
+> > detect wrong. Now detect UART_IER_UUE and UART_IER_RTOIE
+> > to reduce the annoying wrong result which cause UARTs don't
+> > work.
+> 
+> You should ideally identify the original commit which caused
+> the regression.  Assuming you have fully understood the problem
+> you should be able to do this with "git blame" and not need to
+> do the full bisect.
+>
+No it is not a regression, it is caused just like you say
+there are many 8250/16550 variations, and I meet one, that is it.
 
-I forget exactly how the discussion went, but for the kzm9g the
-SDHI has ended up in the dts file for the board not the sh73a0 SoC.
+> 
+> > 
+> > Serial controller: Device 4348:3253(CH352 PCI based Multi-I/O Controller)
+> > is a example. It use UART_IER_UUE as the LOWPOWER function,
+> > you can get the datasheet from below urls:
+> > 
+> > http://wch-ic.com/download/list.asp?id=116
+> > CH352DS1.PDF
+> > 
+> > http://wch-ic.com/download/list.asp?id=117
+> > CH352DS2.PDF.
+> 
+> Rather than quote links that will expire and no longer be
+> valid in six months, it would be better if you described
+> exactly how and why these ports are different directly in
+> your commit long log.
 
-So I assume that r8a7740-armadillo-reference.dts is the correct place
-for SDHI on the armadillo.
+Device 4348:3253 use the UART_IER_UUE
+as the LOWPOWER function , so it is readable and writable,
+quote out the origin words in datasheet.
 
-Magnus, can you confirm that SDHI belongs to the board not the SoC?
+"
+LOWPOWER:When the bit is 1, close the internal benchmark clock
+of serial port to set into low-power status.
+"
 
-> I want to post a patchset for the CMT timer soon. There it's the same.
+That is  the convict cause our XScale detect code work wrong.
 
-Magnus, could you also let us know if CMT should go in the board or SoC dts?
+> What does your change do to Xscale that do not do UART_IER_RTOIE?
+Yes, you are right, I don't have experience with Xscale, so I will
+fix the problem in another way, set it fix type in 8250_pci code 
+maybe is good.
+
+Thanks.
+
