@@ -1,122 +1,52 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH]serial: 8250: Fix detect XScale port wrong
-Date: Fri, 1 Mar 2013 14:17:16 -0500
-Message-ID: <5130FEBC.7030806@windriver.com>
-References: <20130301055610.GA31770@udknight>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
+ devices using DT
+Date: Sat, 2 Mar 2013 10:31:48 +0900
+Message-ID: <20130302013147.GB3273@verge.net.au>
+References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
+ <1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
+ <20130301094205.GG27938@verge.net.au>
+ <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.windriver.com ([147.11.146.13]:34759 "EHLO
-	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750779Ab3CATSD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Mar 2013 14:18:03 -0500
-In-Reply-To: <20130301055610.GA31770@udknight>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Bastian Hecht <hechtb@gmail.com>
+Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wang YanQing <udknight@gmail.com>, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, jslaby@suse.cz, alan@linux.intel.com, arnd@arndb.de, damm@opensource.se, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 13-03-01 12:56 AM, Wang YanQing wrote:
-> Some UARTs add enhanced functions with unused bit in
-> 16550 standard, like UART_IER_UUE bit, it cause XScale
-
-Which xscale platform?  It would be nice to know the specifics.
-
-> detect wrong. Now detect UART_IER_UUE and UART_IER_RTOIE
-> to reduce the annoying wrong result which cause UARTs don't
-> work.
-
-You should ideally identify the original commit which caused
-the regression.  Assuming you have fully understood the problem
-you should be able to do this with "git blame" and not need to
-do the full bisect.
-
-In addition, you should also describe how they fail, since just
-saying "don't work" does not convey what the end user symptom
-looked like at all.
-
+On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
+> 2013/3/1 Simon Horman <horms@verge.net.au>:
+> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
+> >> We can now use the Device Tree for bringing up our serial devices. We
+> >> need to add an alternative early_devices list in setup-r8a7740 without
+> >> the serial devices and move them into the Armadillo-reference .dts config file.
+> >
+> > Hi Bastian,
+> >
+> > could you please refresh this patch on top of the current topic/intc-of.
+> > In particular, it conflicts with changes made by:
+> >
+> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
 > 
-> Serial controller: Device 4348:3253(CH352 PCI based Multi-I/O Controller)
-> is a example. It use UART_IER_UUE as the LOWPOWER function,
-> you can get the datasheet from below urls:
+> Sure.
 > 
-> http://wch-ic.com/download/list.asp?id=116
-> CH352DS1.PDF
-> 
-> http://wch-ic.com/download/list.asp?id=117
-> CH352DS2.PDF.
+> I've prepared the patch - but I start to wonder if the DT
+> specification for the SCIF devices should go into r8a7740.dtsi rather
+> than r8a7740-armadillo-reference.dts. So far it's included in
+> setup-r8a7740.c and not in the board code - that's a strong indication
+> for it, no?
 
-Rather than quote links that will expire and no longer be
-valid in six months, it would be better if you described
-exactly how and why these ports are different directly in
-your commit long log.
+I forget exactly how the discussion went, but for the kzm9g the
+SDHI has ended up in the dts file for the board not the sh73a0 SoC.
 
-> I choice UART_IER_RTOIE as another test bit, because
-> choice it is harmless for current code, we will set
-> UART_CAP_RTOIE if it is XScale port.
+So I assume that r8a7740-armadillo-reference.dts is the correct place
+for SDHI on the armadillo.
 
-There are a lot of 8250/16550 variations out there, and you
-really need to be careful when claiming that you can make
-"harmless" changes.  It might look harmless but at the same
-time break some 8250 clone in some SoC.
+Magnus, can you confirm that SDHI belongs to the board not the SoC?
 
-> 
-> Signed-off-by: Wang YanQing <udknight@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250.c | 18 ++++++++++++++----
->  1 file changed, 14 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> index 0efc815..2c1f9c9 100644
-> --- a/drivers/tty/serial/8250/8250.c
-> +++ b/drivers/tty/serial/8250/8250.c
-> @@ -841,6 +841,7 @@ static void autoconfig_16550a(struct uart_8250_port *up)
->  {
->  	unsigned char status1, status2;
->  	unsigned int iersave;
-> +	unsigned int iertest;
+> I want to post a patchset for the CMT timer soon. There it's the same.
 
-It looks to me like this is never written to, aside from the 1st
-assignment and hence could just as easily be a #define or similar.
-
->  
->  	up->port.type = PORT_16550A;
->  	up->capabilities |= UART_CAP_FIFO;
-> @@ -966,16 +967,25 @@ static void autoconfig_16550a(struct uart_8250_port *up)
->  	 * We're going to explicitly set the UUE bit to 0 before
->  	 * trying to write and read a 1 just to make sure it's not
->  	 * already a 1 and maybe locked there before we even start start.
-> +	 *
-> +	 * 01/03/2013
-> +	 * Some UARTs add enhanced functions with unused bit in
-> +	 * 16550 standard, like UART_IER_UUE bit, it cause XScale
-> +	 * detect wrong. Now detect UART_IER_UUE and UART_IER_RTOIE
-> +	 * to reduce the annoying wrong result which cause UART don't
-> +	 * work.
->  	 */
->  	iersave = serial_in(up, UART_IER);
-> -	serial_out(up, UART_IER, iersave & ~UART_IER_UUE);
-> -	if (!(serial_in(up, UART_IER) & UART_IER_UUE)) {
-> +	iertest = UART_IER_UUE | UART_IER_RTOIE;
-> +
-> +	serial_out(up, UART_IER, iersave & ~iertest);
-> +	if (!(serial_in(up, UART_IER) & iertest)) {
->  		/*
->  		 * OK it's in a known zero state, try writing and reading
->  		 * without disturbing the current state of the other bits.
->  		 */
-> -		serial_out(up, UART_IER, iersave | UART_IER_UUE);
-> -		if (serial_in(up, UART_IER) & UART_IER_UUE) {
-> +		serial_out(up, UART_IER, iersave | iertest);
-> +		if ((serial_in(up, UART_IER) & iertest) == iertest) {
->  			/*
->  			 * It's an Xscale.
->  			 * We'll leave the UART_IER_UUE bit set to 1 (enabled).
-
-What does your change do to Xscale that do not do UART_IER_RTOIE?
-
-Paul.
---
-
-> 
+Magnus, could you also let us know if CMT should go in the board or SoC dts?
