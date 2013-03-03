@@ -1,120 +1,104 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: Re: [ 019/150] serial_core: Fix type definition for
- PORT_BRCM_TRUMANAGE.
-Date: Sun, 03 Mar 2013 03:38:41 +0000
-Message-ID: <1362281921.3768.204.camel@deadeye.wl.decadent.org.uk>
-References: <20130226235523.930663721@linuxfoundation.org>
-	 <20130226235526.246172467@linuxfoundation.org>
-	 <1362009959.3768.85.camel@deadeye.wl.decadent.org.uk>
-	 <20130228003906.GA3754@kroah.com>
-	 <1362279084.3768.200.camel@deadeye.wl.decadent.org.uk>
+From: Scott Ashcroft <scott.ashcroft@talk21.com>
+Subject: [PATCH] Fix 4 port and add support for 8 port 'Unknown' PCI serial
+ port cards
+Date: Sun, 03 Mar 2013 21:35:06 +0000
+Message-ID: <1362346506.8802.16.camel@bart.intra.qzxyz.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-oPBdkcX1evdVMv3a5mbR"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:52280 "EHLO
-	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752589Ab3CCDi6 (ORCPT
+Received: from nm1-vm1.bt.bullet.mail.ir2.yahoo.com ([212.82.99.116]:31037
+	"EHLO nm1-vm1.bt.bullet.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753563Ab3CCVky (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 2 Mar 2013 22:38:58 -0500
-In-Reply-To: <1362279084.3768.200.camel@deadeye.wl.decadent.org.uk>
+	Sun, 3 Mar 2013 16:40:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Stephen Hurd <shurd@broadcom.com>, Michael Chan <mchan@broadcom.com>, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 
+I've managed to find an 8 port version of the card 4 port card which was discussed here:
 
---=-oPBdkcX1evdVMv3a5mbR
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+http://marc.info/?l=linux-serial&m=120760744205314&w=2
 
-I've queued up the following for 3.2.y.  Let me know if you see any
-issue with this or want to ack it.
+Looking back at that thread there were two issues in the original patch.
 
-Ben.
+1) The I/O ports for the UARTs are within BAR2 not BAR0. This can been seen in the original post.
+2) A serial quirk isn't needed as these cards have no memory in BAR0 which makes pci_plx9050_init just return.
 
----
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: 8250: use correct value for PORT_BRCM_TRUMANAGE
-Date: Sun, 03 Mar 2013 03:24:34 +0000
+This patch fixes the 4 port support to use BAR2, removes the bogus quirk and adds support for the 8 port card.
 
-When backporting commit ebebd49a8eab ('8250/16?50: Add support for
-Broadcom TruManage redirected serial port') I took the next
-available port type number for PORT_BRCM_TRUMANAGE (22).
+$ lspci -vvv -n -s 00:08.0
+00:08.0 0780: 10b5:9050 (rev 01)
+	Subsystem: 10b5:1588
+	Control: I/O+ Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Interrupt: pin A routed to IRQ 17
+	Region 1: I/O ports at ff00 [size=128]
+	Region 2: I/O ports at fe00 [size=64]
+	Region 3: I/O ports at fd00 [size=8]
+	Capabilities: <access denied>
+	Kernel driver in use: serial
 
-However, the 8250 port type numbers are exposed to userland through
-the TIOC{G,S}SERIAL ioctls and so must remain stable.  Redefine
-PORT_BRCM_TRUMANAGE as 25, matching mainline as of commit
-85f024401bf807.
+$ dmesg | grep 0000:00:08.0:
+[    0.083320] pci 0000:00:08.0: [10b5:9050] type 0 class 0x000780
+[    0.083355] pci 0000:00:08.0: reg 14: [io  0xff00-0xff7f]
+[    0.083369] pci 0000:00:08.0: reg 18: [io  0xfe00-0xfe3f]
+[    0.083382] pci 0000:00:08.0: reg 1c: [io  0xfd00-0xfd07]
+[    0.083460] pci 0000:00:08.0: PME# supported from D0 D3hot
+[    1.212867] 0000:00:08.0: ttyS4 at I/O 0xfe00 (irq = 17) is a 16550A
+[    1.233073] 0000:00:08.0: ttyS5 at I/O 0xfe08 (irq = 17) is a 16550A
+[    1.253270] 0000:00:08.0: ttyS6 at I/O 0xfe10 (irq = 17) is a 16550A
+[    1.273468] 0000:00:08.0: ttyS7 at I/O 0xfe18 (irq = 17) is a 16550A
+[    1.293666] 0000:00:08.0: ttyS8 at I/O 0xfe20 (irq = 17) is a 16550A
+[    1.313863] 0000:00:08.0: ttyS9 at I/O 0xfe28 (irq = 17) is a 16550A
+[    1.334061] 0000:00:08.0: ttyS10 at I/O 0xfe30 (irq = 17) is a 16550A
+[    1.354258] 0000:00:08.0: ttyS11 at I/O 0xfe38 (irq = 17) is a 16550A
 
-This leaves port types 22-24 within the valid range for 8250 but not
-implemented there.  Change serial8250_verify_port() to specifically
-reject these and change serial8250_type() to return "unknown" for them
-(though I'm not sure why it would ever see them).
+Signed-off-by: Scott Ashcroft <scott.ashcroft@talk21.com>
 
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
----
---- a/drivers/tty/serial/8250.c
-+++ b/drivers/tty/serial/8250.c
-@@ -2695,7 +2695,7 @@ serial8250_verify_port(struct uart_port
- 	if (ser->irq >=3D nr_irqs || ser->irq < 0 ||
- 	    ser->baud_base < 9600 || ser->type < PORT_UNKNOWN ||
- 	    ser->type >=3D ARRAY_SIZE(uart_config) || ser->type =3D=3D PORT_CIRRU=
-S ||
--	    ser->type =3D=3D PORT_STARTECH)
-+	    ser->type =3D=3D PORT_STARTECH || uart_config[ser->type].name =3D=3D =
-NULL)
- 		return -EINVAL;
- 	return 0;
- }
-@@ -2705,7 +2705,7 @@ serial8250_type(struct uart_port *port)
- {
- 	int type =3D port->type;
-=20
--	if (type >=3D ARRAY_SIZE(uart_config))
-+	if (type >=3D ARRAY_SIZE(uart_config) || uart_config[type].name =3D=3D NU=
-LL)
- 		type =3D 0;
- 	return uart_config[type].name;
- }
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -47,8 +47,8 @@
- #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
- #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
- #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
--#define PORT_BRCM_TRUMANAGE	22
--#define PORT_MAX_8250	22	/* max port ID */
-+#define PORT_BRCM_TRUMANAGE	25
-+#define PORT_MAX_8250	25	/* max port ID */
-=20
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 791c5a7..85c6bf9 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1571,6 +1571,7 @@ pci_wch_ch353_setup(struct serial_private *priv,
+ 
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
++#define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
+ 
  /*
-  * ARM specific type numbers.  These are not currently guaranteed
+  * Master list of serial port init/setup/exit quirks.
+@@ -1852,15 +1853,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 	},
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_PLX,
+-		.device		= PCI_DEVICE_ID_PLX_9050,
+-		.subvendor	= PCI_VENDOR_ID_PLX,
+-		.subdevice	= PCI_SUBDEVICE_ID_UNKNOWN_0x1584,
+-		.init		= pci_plx9050_init,
+-		.setup		= pci_default_setup,
+-		.exit		= pci_plx9050_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_PLX,
+ 		.device		= PCI_DEVICE_ID_PLX_ROMULUS,
+ 		.subvendor	= PCI_VENDOR_ID_PLX,
+ 		.subdevice	= PCI_DEVICE_ID_PLX_ROMULUS,
+@@ -3733,7 +3725,12 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
+ 		PCI_VENDOR_ID_PLX,
+ 		PCI_SUBDEVICE_ID_UNKNOWN_0x1584, 0, 0,
+-		pbn_b0_4_115200 },
++		pbn_b2_4_115200 },
++	/* Unknown card - subdevice 0x1588 */
++	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
++		PCI_VENDOR_ID_PLX,
++		PCI_SUBDEVICE_ID_UNKNOWN_0x1588, 0, 0,
++		pbn_b2_8_115200 },
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9050,
+ 		PCI_SUBVENDOR_ID_KEYSPAN,
+ 		PCI_SUBDEVICE_ID_KEYSPAN_SX2, 0, 0,
 
---=20
-Ben Hutchings
-Time is nature's way of making sure that everything doesn't happen at once.
 
---=-oPBdkcX1evdVMv3a5mbR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
 
-iQIVAwUAUTLFwee/yOyVhhEJAQozhA//QxyYCAWoDvuneWbrHUukjr1oeK+99HqP
-US7uNjBD1z8OeHmB3ujzRgozwAFpXL5Tswicq72RGsSnKr94tH7DLC0LElZ+Skhg
-xnGg25U/VN5XAnz5j0BtDPQLhXsDTrjoS0K+p3cin/5u73HUKkPPv52w09FYlwpY
-26luvDecs4h4LKAFucM3KLnHrV+zb8zL7+ftqqI/lHywTVJSSwK/8dW2El/mwrk1
-vyxdSsGqzukBxAeAnwTwfFNhiPT0aebTy2gM8n46oXTEusAWOmvRGptKBHvn4jfG
-FxssSOJBBCl/1sQ+8o4dxOvGqkSQI8RhIYaQ3KJsZaPeMelo8oHEOjgLzVi7gts8
-Ag1XJBUNUwTBWgG1Zj2Z+7vHJwZm3wbjlJT6E3hepOAOloGX14S7amk3jVupOC1b
-nODZUqR/v0i/XadfIWdsE0x//X8csJgpd3fQV2MgB6AaXkbxo5QSwmFRzPC2rWri
-sgeXEXvtvoSul2zsExbGV8yRz0XfJM0U9HgJ9wcL1skTiQ5WeIBrl/8APnfoSTel
-I8Oh3GkQVUjIUc2gC4C8JF3l2w4ZN+6PGZMTdXaJJ3CN5WN3/MxpH6AUbBf/oGPg
-f9NUhpIDUgP+adx+S4DA97Ng8tvKdHjqUm/VCWYYLDRXloT4VwHEZyu1JqcjwS5u
-jIqTwsDxRR0=
-=Db/w
------END PGP SIGNATURE-----
-
---=-oPBdkcX1evdVMv3a5mbR--
