@@ -1,146 +1,52 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: Re: [ 019/150] serial_core: Fix type definition for
- PORT_BRCM_TRUMANAGE.
-Date: Mon, 04 Mar 2013 03:35:34 +0000
-Message-ID: <1362368134.3768.289.camel@deadeye.wl.decadent.org.uk>
-References: <20130226235523.930663721@linuxfoundation.org>
-	 <20130226235526.246172467@linuxfoundation.org>
-	 <1362009959.3768.85.camel@deadeye.wl.decadent.org.uk>
-	 <20130228003906.GA3754@kroah.com>
-	 <1362279084.3768.200.camel@deadeye.wl.decadent.org.uk>
-	 <1362281921.3768.204.camel@deadeye.wl.decadent.org.uk>
-	 <20130304024116.GA9309@kroah.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-GfdpUqa9eTkdg68hADmG"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:60679 "EHLO
-	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752080Ab3CDDfu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Mar 2013 22:35:50 -0500
-In-Reply-To: <20130304024116.GA9309@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 1/1] serial: tegra: Convert to devm_ioremap_resource()
+Date: Mon,  4 Mar 2013 09:59:00 +0530
+Message-ID: <1362371340-22746-1-git-send-email-sachin.kamat@linaro.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Stephen Hurd <shurd@broadcom.com>, Michael Chan <mchan@broadcom.com>, linux-serial@vger.kernel.org
 
+Use the newly introduced devm_ioremap_resource() instead of
+devm_request_and_ioremap() which provides more consistent error handling.
 
---=-GfdpUqa9eTkdg68hADmG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+devm_ioremap_resource() provides its own error messages; so all explicit
+error messages can be removed from the failure code paths.
 
-On Mon, 2013-03-04 at 10:41 +0800, Greg Kroah-Hartman wrote:
-> On Sun, Mar 03, 2013 at 03:38:41AM +0000, Ben Hutchings wrote:
-> > I've queued up the following for 3.2.y.  Let me know if you see any
-> > issue with this or want to ack it.
-> >=20
-> > Ben.
-> >=20
-> > ---
-> > From: Ben Hutchings <ben@decadent.org.uk>
-> > Subject: 8250: use correct value for PORT_BRCM_TRUMANAGE
-> > Date: Sun, 03 Mar 2013 03:24:34 +0000
-> >=20
-> > When backporting commit ebebd49a8eab ('8250/16?50: Add support for
-> > Broadcom TruManage redirected serial port') I took the next
-> > available port type number for PORT_BRCM_TRUMANAGE (22).
-> >=20
-> > However, the 8250 port type numbers are exposed to userland through
-> > the TIOC{G,S}SERIAL ioctls and so must remain stable.  Redefine
-> > PORT_BRCM_TRUMANAGE as 25, matching mainline as of commit
-> > 85f024401bf807.
-> >=20
-> > This leaves port types 22-24 within the valid range for 8250 but not
-> > implemented there.  Change serial8250_verify_port() to specifically
-> > reject these and change serial8250_type() to return "unknown" for them
-> > (though I'm not sure why it would ever see them).
-> >=20
-> > Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-> > ---
-> > --- a/drivers/tty/serial/8250.c
-> > +++ b/drivers/tty/serial/8250.c
-> > @@ -2695,7 +2695,7 @@ serial8250_verify_port(struct uart_port
-> >  	if (ser->irq >=3D nr_irqs || ser->irq < 0 ||
-> >  	    ser->baud_base < 9600 || ser->type < PORT_UNKNOWN ||
-> >  	    ser->type >=3D ARRAY_SIZE(uart_config) || ser->type =3D=3D PORT_C=
-IRRUS ||
-> > -	    ser->type =3D=3D PORT_STARTECH)
-> > +	    ser->type =3D=3D PORT_STARTECH || uart_config[ser->type].name =3D=
-=3D NULL)
-> >  		return -EINVAL;
-> >  	return 0;
-> >  }
-> > @@ -2705,7 +2705,7 @@ serial8250_type(struct uart_port *port)
-> >  {
-> >  	int type =3D port->type;
-> > =20
-> > -	if (type >=3D ARRAY_SIZE(uart_config))
-> > +	if (type >=3D ARRAY_SIZE(uart_config) || uart_config[type].name =3D=
-=3D NULL)
->=20
-> I don't think these two changes are really needed, as you point out
-> above, no one should really see, or care, about this.  But if you do,
-> these changes should go upstream first, right?
+Signed-off-by: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Reviewed-by: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/tty/serial/serial-tegra.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
 
-The change in serial8250_verify_port() is needed in 3.2 but not mainline
-because types 22-24 won't be supported in 3.2.  I could alternately
-define the PORT_* macros for these types and explicitly reject each of
-those here.
-
-The change in serial8250_type() is done for the same reason.  It already
-has a check for out-of-range type which suggests there's some case where
-the type might not have been validated by serial8250_verify_port().
-Again, not needed upstream as all elements in uart_config have a
-non-null name.
-
-Ben.
-
-> >  		type =3D 0;
-> >  	return uart_config[type].name;
-> >  }
-> > --- a/include/linux/serial_core.h
-> > +++ b/include/linux/serial_core.h
-> > @@ -47,8 +47,8 @@
-> >  #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
-> >  #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
-> >  #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
-> > -#define PORT_BRCM_TRUMANAGE	22
-> > -#define PORT_MAX_8250	22	/* max port ID */
-> > +#define PORT_BRCM_TRUMANAGE	25
-> > +#define PORT_MAX_8250	25	/* max port ID */
->=20
-> This one is good to have though, I have no objection to this hunk going
-> into 3.2, for it, feel free to add:
-> 	Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->=20
->=20
-
---=20
-Ben Hutchings
-Always try to do things in chronological order;
-it's less confusing that way.
-
---=-GfdpUqa9eTkdg68hADmG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIVAwUAUTQWhue/yOyVhhEJAQqwvA//f3WrF06+fhCKck805gou7AOyWStYv2Pu
-DP7D/Rm7HO0p6tW762YoYHuVhrGl75PPXwl8m2zzSRvqo/M+3OLMCoAejCEPgq5W
-TTXyXBECH7Xy/zJoyg+JdpNfBhYRTkS0KtKNtcKRjY/4JhvZbnyoSZIQJzxY+ykf
-kxTDezS9bnV1OYAOtA1TZTkc/iA0c0ooe1AyuuikAQvivPfJGzxiniJ+ajP8p3c3
-wWPwN5bGa32TFHu/EthFonXyhdUltZittr+0c4Lu9kQI1bWp5agfyxSGB2uALNTO
-s//kwaYSyEgERdB3tHkc5SoubCqOUbG0JevsIED/SKT7t3DoT5cIAQfqdTWFdJjy
-NxiwiAmU1ktxJ7fVnwM9CqSwihqoFrak2myBH4HQv5IEwU3XuO3NIs1u5PaaC470
-PpoT1JLDeL4bLvTZmktSByALNrAkiSSmrRuwq8juudOMFCWF7CC4Ng/qGLLqUZB3
-ilrX4HuCo7DFdj6RDLxdK0kRB6+eXQnNYuk4WHCCbPwOgWqgs8yeTSBbMav+UMs7
-Z3Zb4B96giu3lJ5KBWYconpjn2gGnSLJmhIjjG7T2TzSD3BnhVWIojP/xmmZsZDl
-5DJv9tTw/gNF0jCOp2pQH1EIX4JpPCYAUZ3d2OmPadxJL1u30lYeRMSa5j3HIJ02
-EU0EfghX8sY=
-=sZMl
------END PGP SIGNATURE-----
-
---=-GfdpUqa9eTkdg68hADmG--
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 372de8a..9799d04 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -26,6 +26,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmapool.h>
++#include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/irq.h>
+ #include <linux/module.h>
+@@ -1301,11 +1302,9 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	u->mapbase = resource->start;
+-	u->membase = devm_request_and_ioremap(&pdev->dev, resource);
+-	if (!u->membase) {
+-		dev_err(&pdev->dev, "memregion/iomap address req failed\n");
+-		return -EADDRNOTAVAIL;
+-	}
++	u->membase = devm_ioremap_resource(&pdev->dev, resource);
++	if (IS_ERR(u->membase))
++		return PTR_ERR(u->membase);
+ 
+ 	tup->uart_clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(tup->uart_clk)) {
+-- 
+1.7.4.1
