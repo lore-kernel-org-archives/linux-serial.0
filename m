@@ -1,86 +1,181 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
- devices using DT
-Date: Mon, 4 Mar 2013 14:33:40 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1303041424310.14249@axis700.grange>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
- <1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
- <20130301094205.GG27938@verge.net.au> <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
- <20130302013147.GB3273@verge.net.au> <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
+From: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
+Subject: Re: [PATCH] serial/efm32: parse location property
+Date: Mon, 04 Mar 2013 22:38:54 +0800
+Message-ID: <20130304143854.395EF3E206B@localhost>
+References: <1358774576-13275-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:61998 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757357Ab3CDNdr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Mar 2013 08:33:47 -0500
-In-Reply-To: <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============1478199060444048331=="
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1358774576-13275-1-git-send-email-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
+Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: Simon Horman <horms@verge.net.au>, Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
 
-Hi
+--===============1478199060444048331==
+Content-Type: text/plain
 
-On Mon, 4 Mar 2013, Magnus Damm wrote:
-
-> Hi Simon,
+On Mon, 21 Jan 2013 14:22:56 +0100, Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
+> The non-dt probing allowed passing the location via platform data from
+> the beginning. So make up leeway for device tree probing.
 > 
-> [Added Guennadi to CC]
-> 
-> On Sat, Mar 2, 2013 at 10:31 AM, Simon Horman <horms@verge.net.au> wrote:
-> > On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
-> >> 2013/3/1 Simon Horman <horms@verge.net.au>:
-> >> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
-> >> >> We can now use the Device Tree for bringing up our serial devices. We
-> >> >> need to add an alternative early_devices list in setup-r8a7740 without
-> >> >> the serial devices and move them into the Armadillo-reference .dts config file.
-> >> >
-> >> > Hi Bastian,
-> >> >
-> >> > could you please refresh this patch on top of the current topic/intc-of.
-> >> > In particular, it conflicts with changes made by:
-> >> >
-> >> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
-> >>
-> >> Sure.
-> >>
-> >> I've prepared the patch - but I start to wonder if the DT
-> >> specification for the SCIF devices should go into r8a7740.dtsi rather
-> >> than r8a7740-armadillo-reference.dts. So far it's included in
-> >> setup-r8a7740.c and not in the board code - that's a strong indication
-> >> for it, no?
-> >
-> > I forget exactly how the discussion went, but for the kzm9g the
-> > SDHI has ended up in the dts file for the board not the sh73a0 SoC.
-> >
-> > So I assume that r8a7740-armadillo-reference.dts is the correct place
-> > for SDHI on the armadillo.
-> >
-> > Magnus, can you confirm that SDHI belongs to the board not the SoC?
-> 
-> What does the data sheet say?
-> 
-> The SDHI hardware block is included in the SoC. It may however need
-> some board specific configuration. I believe the correct way is to
-> define the common parts in the SoC-specific dtsi file and add
-> board-specific configuration in the board-specific dts file. Perhaps
-> you can consult Guennadi about this, he has been tasked with SDHI and
-> MMCIF.
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-That would be the best, I agree. However, we discussed this already on the 
-example of mmcif, you might remember. I asked what's the difference 
-between extending a DT node (from .dtsi) with additional properties (in a 
-board-specific .dts) using an "&phandle" syntax and a full path? Or are 
-they equivalent? There was no reply, so, for such nodes (MMC/SD) I so far 
-settled with complete nodes in .dts. We do use the "&phandle" syntax for 
-pinctrl function groups, for I2C devices. I used a complete path for 
-CPUFreq... Mostly because other platforms did that too.
+Linus, does this look like some thing that should be done using pinctrl?
 
-Thanks
-Guennadi
----
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+g.
+
+> ---
+> Hello,
+> 
+> I wonder if the location property should be mandatory. Do you have an
+> opinion? 
+> 
+> BTW, I was surprised that I had to use of_property_read_u32 but not
+> of_property_read_u8. I would have expected that the only difference
+> between those two is the returned type, but actually the format to
+> specify an u8 is different. Is this intended? (Probably it is. If so, is
+> it maybe sensible to accentuate the difference by using a different
+> function name for the u32 case?)
+> 
+> Best regards
+> Uwe
+> 
+>  .../devicetree/bindings/tty/serial/efm32-uart.txt  |    6 ++++
+>  drivers/tty/serial/efm32-uart.c                    |   31 +++++++++++++++-----
+>  2 files changed, 30 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
+> index 6588b69..8e080b8 100644
+> --- a/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
+> +++ b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
+> @@ -5,10 +5,16 @@ Required properties:
+>  - reg : Address and length of the register set
+>  - interrupts : Should contain uart interrupt
+>  
+> +Optional properties:
+> +- location : Decides the location of the USART I/O pins.
+> +  Allowed range : [0 .. 5]
+> +  Default: 0
+> +
+>  Example:
+>  
+>  uart@0x4000c400 {
+>  	compatible = "efm32,uart";
+>  	reg = <0x4000c400 0x400>;
+>  	interrupts = <15>;
+> +	location = <0>;
+>  };
+> diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32-uart.c
+> index a8cbb26..67ff23b 100644
+> --- a/drivers/tty/serial/efm32-uart.c
+> +++ b/drivers/tty/serial/efm32-uart.c
+> @@ -81,6 +81,7 @@ struct efm32_uart_port {
+>  	struct uart_port port;
+>  	unsigned int txirq;
+>  	struct clk *clk;
+> +	struct efm32_uart_pdata pdata;
+>  };
+>  #define to_efm_port(_port) container_of(_port, struct efm32_uart_port, port)
+>  #define efm_debug(efm_port, format, arg...)			\
+> @@ -300,13 +301,8 @@ static irqreturn_t efm32_uart_txirq(int irq, void *data)
+>  static int efm32_uart_startup(struct uart_port *port)
+>  {
+>  	struct efm32_uart_port *efm_port = to_efm_port(port);
+> -	u32 location = 0;
+> -	struct efm32_uart_pdata *pdata = dev_get_platdata(port->dev);
+>  	int ret;
+>  
+> -	if (pdata)
+> -		location = UARTn_ROUTE_LOCATION(pdata->location);
+> -
+>  	ret = clk_enable(efm_port->clk);
+>  	if (ret) {
+>  		efm_debug(efm_port, "failed to enable clk\n");
+> @@ -315,7 +311,9 @@ static int efm32_uart_startup(struct uart_port *port)
+>  	port->uartclk = clk_get_rate(efm_port->clk);
+>  
+>  	/* Enable pins at configured location */
+> -	efm32_uart_write32(efm_port, location | UARTn_ROUTE_RXPEN | UARTn_ROUTE_TXPEN,
+> +	efm32_uart_write32(efm_port,
+> +			UARTn_ROUTE_LOCATION(efm_port->pdata.location) |
+> +			UARTn_ROUTE_RXPEN | UARTn_ROUTE_TXPEN,
+>  			UARTn_ROUTE);
+>  
+>  	ret = request_irq(port->irq, efm32_uart_rxirq, 0,
+> @@ -674,11 +672,24 @@ static int efm32_uart_probe_dt(struct platform_device *pdev,
+>  		struct efm32_uart_port *efm_port)
+>  {
+>  	struct device_node *np = pdev->dev.of_node;
+> +	u32 location;
+>  	int ret;
+>  
+>  	if (!np)
+>  		return 1;
+>  
+> +	ret = of_property_read_u32(np, "location", &location);
+> +	if (!ret) {
+> +		if (location > 5) {
+> +			dev_err(&pdev->dev, "invalid location\n");
+> +			return -EINVAL;
+> +		}
+> +		efm_debug(efm_port, "using location %u\n", location);
+> +		efm_port->pdata.location = location;
+> +	} else {
+> +		efm_debug(efm_port, "fall back to location 0\n");
+> +	}
+> +
+>  	ret = of_alias_get_id(np, "serial");
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
+> @@ -738,10 +749,16 @@ static int efm32_uart_probe(struct platform_device *pdev)
+>  	efm_port->port.flags = UPF_BOOT_AUTOCONF;
+>  
+>  	ret = efm32_uart_probe_dt(pdev, efm_port);
+> -	if (ret > 0)
+> +	if (ret > 0) {
+>  		/* not created by device tree */
+> +		const struct efm32_uart_pdata *pdata = dev_get_platdata(&pdev->dev);
+> +
+>  		efm_port->port.line = pdev->id;
+>  
+> +		if (pdata)
+> +			efm_port->pdata = *pdata;
+> +	}
+> +
+>  	if (efm_port->port.line >= 0 &&
+>  			efm_port->port.line < ARRAY_SIZE(efm32_uart_ports))
+>  		efm32_uart_ports[efm_port->port.line] = efm_port;
+> -- 
+> 1.7.10.4
+> 
+> _______________________________________________
+> devicetree-discuss mailing list
+> devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> https://lists.ozlabs.org/listinfo/devicetree-discuss
+
+-- 
+Grant Likely, B.Sc, P.Eng.
+Secret Lab Technologies, Ltd.
+
+--===============1478199060444048331==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+devicetree-discuss mailing list
+devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+https://lists.ozlabs.org/listinfo/devicetree-discuss
+
+--===============1478199060444048331==--
