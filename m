@@ -1,44 +1,47 @@
-From: Wang YanQing <udknight@gmail.com>
-Subject: Re: [PATCH]8250_pci: Add additional WCH CH352 device
-Date: Mon, 4 Mar 2013 09:11:21 +0800
-Message-ID: <20130304011120.GA15022@udknight>
-References: <20130302094555.GA9572@udknight>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:42564 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754552Ab3CDBLU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Mar 2013 20:11:20 -0500
-Content-Disposition: inline
-In-Reply-To: <20130302094555.GA9572@udknight>
-Sender: linux-serial-owner@vger.kernel.org
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: [PATCH] tty/serial: Fix uninitialized variable warning
+Date: Mon,  4 Mar 2013 09:35:07 +0800
+Message-ID: <1362360907-4439-1-git-send-email-grant.likely@secretlab.ca>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Grant Likely <grant.likely@secretlab.ca>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, swarren@wwwdotorg.org, jslaby@suse.cz, alan@linux.intel.com, arnd@arndb.de, paul.gortmaker@windriver.com, damm@opensource.se, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sat, Mar 02, 2013 at 05:45:55PM +0800, Wang YanQing wrote:
-> This patch fix a problem XScale port
-> detect code in autoconfig_16550a treat
-> 16550A port as XScale port, caused by
-> CH352 device use the 6th bit(UART_IER_UUE)
-> in IER as a enhance function make this bit
-> w/r.
-> 
-> for the below device:
-> "
-> 01:08.0 Serial controller: Device 4348:3253 (rev 10) (prog-if 02 [16550])
-> 	Subsystem: Device 4348:3253
-> 	Control: I/O+ Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
-> 	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> 	Interrupt: pin A routed to IRQ 20
-> 	Region 0: I/O ports at e010 [size=8]
-> 	Region 1: I/O ports at e000 [size=8]
-> 	Kernel driver in use: serial
-> "
-> [Note: I haven't test this patch, because I can't
-> access the hardware now, but it should be right]
-> 
-I have tested it this morning, it works.
+drivers/tty/serial/8250/8250.c: In function 'serial_unlink_irq_chain':
+drivers/tty/serial/8250/8250.c:1676:19: warning: 'i' may be used uninitialized in this function
 
-Thanks.
+There isn't an actual bug here since the function tests the condition
+that would cause i to be uninitialized before dereferencing i. However,
+at least some versions of GCC complain as shown above. (in my case,
+powerpc gcc 2.5.2). Initializing i to NULL makes it clear to GCC and the
+casual code reviewer that i will not be dereferenced to a random
+address.
+
+Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+Greg, some may argue that this is a tool problem, not a kernel problem,
+but it is useful to me. If anyone objects I'm not going to spend any
+time championing for this patch.
+
+g.
+
+ drivers/tty/serial/8250/8250.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 0efc815..cbbedcf 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -1673,7 +1673,7 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 
+ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+ {
+-	struct irq_info *i;
++	struct irq_info *i = NULL;
+ 	struct hlist_node *n;
+ 	struct hlist_head *h;
+ 
+-- 
+1.7.10.4
