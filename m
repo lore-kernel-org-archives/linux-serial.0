@@ -1,87 +1,86 @@
-From: Sean Young <sean@mess.org>
-Subject: Re: [PATCH] tty/8250_pnp: serial port detection regression since
- v3.7
-Date: Mon, 4 Mar 2013 13:28:40 +0000
-Message-ID: <20130304132839.GA6965@pequod.mess.org>
-References: <1361550439-23504-1-git-send-email-sean@mess.org>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
+ devices using DT
+Date: Mon, 4 Mar 2013 14:33:40 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1303041424310.14249@axis700.grange>
+References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
+ <1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
+ <20130301094205.GG27938@verge.net.au> <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
+ <20130302013147.GB3273@verge.net.au> <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from pequod.mess.org ([46.65.169.142]:46762 "EHLO pequod.mess.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757129Ab3CDN2m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Mar 2013 08:28:42 -0500
-Content-Disposition: inline
-In-Reply-To: <1361550439-23504-1-git-send-email-sean@mess.org>
+Received: from moutng.kundenserver.de ([212.227.126.186]:61998 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757357Ab3CDNdr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Mar 2013 08:33:47 -0500
+In-Reply-To: <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Vincent Deffontaines <vincent@gryzor.com>, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: Simon Horman <horms@verge.net.au>, Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
 
-Greg,
+Hi
 
-On Fri, Feb 22, 2013 at 04:27:19PM +0000, Sean Young wrote:
-> The InsydeH2O BIOS (version dated 09/12/2011) has the following in
-> its pnp resouces for its serial ports:
+On Mon, 4 Mar 2013, Magnus Damm wrote:
+
+> Hi Simon,
 > 
-> $ cat /sys/bus/pnp/devices/00:0b/resources
-> state = active
-> io disabled
-> irq disabled
+> [Added Guennadi to CC]
 > 
-> We do not check if the resources are disabled, and create a bogus
-> ttyS* device. Since commit 835d844d1a28e (8250_pnp: do pnp probe
-> before legacy probe) we get a bogus ttyS0, which prevents the legacy
-> probe from detecting it.
-
-Would you mind accepting this patch please -- it fixes a regression I 
-introduced in 3.7.
-
-Thanks,
-Sean
-
-> Reported-by: Vincent Deffontaines <vincent@gryzor.com>
-> Tested-by: Vincent Deffontaines <vincent@gryzor.com>
-> Signed-off-by: Sean Young <sean@mess.org>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/tty/serial/8250/8250_pnp.c |   12 +++++++-----
->  1 files changed, 7 insertions(+), 5 deletions(-)
+> On Sat, Mar 2, 2013 at 10:31 AM, Simon Horman <horms@verge.net.au> wrote:
+> > On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
+> >> 2013/3/1 Simon Horman <horms@verge.net.au>:
+> >> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
+> >> >> We can now use the Device Tree for bringing up our serial devices. We
+> >> >> need to add an alternative early_devices list in setup-r8a7740 without
+> >> >> the serial devices and move them into the Armadillo-reference .dts config file.
+> >> >
+> >> > Hi Bastian,
+> >> >
+> >> > could you please refresh this patch on top of the current topic/intc-of.
+> >> > In particular, it conflicts with changes made by:
+> >> >
+> >> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
+> >>
+> >> Sure.
+> >>
+> >> I've prepared the patch - but I start to wonder if the DT
+> >> specification for the SCIF devices should go into r8a7740.dtsi rather
+> >> than r8a7740-armadillo-reference.dts. So far it's included in
+> >> setup-r8a7740.c and not in the board code - that's a strong indication
+> >> for it, no?
+> >
+> > I forget exactly how the discussion went, but for the kzm9g the
+> > SDHI has ended up in the dts file for the board not the sh73a0 SoC.
+> >
+> > So I assume that r8a7740-armadillo-reference.dts is the correct place
+> > for SDHI on the armadillo.
+> >
+> > Magnus, can you confirm that SDHI belongs to the board not the SoC?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-> index 35d9ab9..b3455a9 100644
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -429,6 +429,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  {
->  	struct uart_8250_port uart;
->  	int ret, line, flags = dev_id->driver_data;
-> +	struct resource *res = NULL;
->  
->  	if (flags & UNKNOWN_DEV) {
->  		ret = serial_pnp_guess_board(dev);
-> @@ -439,11 +440,12 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  	memset(&uart, 0, sizeof(uart));
->  	if (pnp_irq_valid(dev, 0))
->  		uart.port.irq = pnp_irq(dev, 0);
-> -	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
-> -		uart.port.iobase = pnp_port_start(dev, 2);
-> -		uart.port.iotype = UPIO_PORT;
-> -	} else if (pnp_port_valid(dev, 0)) {
-> -		uart.port.iobase = pnp_port_start(dev, 0);
-> +	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2))
-> +		res = pnp_get_resource(dev, IORESOURCE_IO, 2);
-> +	else if (pnp_port_valid(dev, 0))
-> +		res = pnp_get_resource(dev, IORESOURCE_IO, 0);
-> +	if (pnp_resource_enabled(res)) {
-> +		uart.port.iobase = res->start;
->  		uart.port.iotype = UPIO_PORT;
->  	} else if (pnp_mem_valid(dev, 0)) {
->  		uart.port.mapbase = pnp_mem_start(dev, 0);
-> -- 
-> 1.7.2.5
+> What does the data sheet say?
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> The SDHI hardware block is included in the SoC. It may however need
+> some board specific configuration. I believe the correct way is to
+> define the common parts in the SoC-specific dtsi file and add
+> board-specific configuration in the board-specific dts file. Perhaps
+> you can consult Guennadi about this, he has been tasked with SDHI and
+> MMCIF.
+
+That would be the best, I agree. However, we discussed this already on the 
+example of mmcif, you might remember. I asked what's the difference 
+between extending a DT node (from .dtsi) with additional properties (in a 
+board-specific .dts) using an "&phandle" syntax and a full path? Or are 
+they equivalent? There was no reply, so, for such nodes (MMC/SD) I so far 
+settled with complete nodes in .dts. We do use the "&phandle" syntax for 
+pinctrl function groups, for I2C devices. I used a complete path for 
+CPUFreq... Mostly because other platforms did that too.
+
+Thanks
+Guennadi
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
