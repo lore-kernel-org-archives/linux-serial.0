@@ -1,359 +1,100 @@
 From: Bastian Hecht <hechtb@gmail.com>
-Subject: [PATCH v4 3/3] ARM: mach-shmobile: r8a7740: Setup the serial devices
- using DT
-Date: Mon,  4 Mar 2013 17:20:54 +0100
-Message-ID: <1362414054-23092-3-git-send-email-hechtb+renesas@gmail.com>
-References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
+Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
+ devices using DT
+Date: Mon, 4 Mar 2013 16:44:30 +0100
+Message-ID: <CABYn4sxPpzKGc83WkRYzcAzJ1TeDgBPgpjvnyGkvgy4kT4Jt6w@mail.gmail.com>
+References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
+	<1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
+	<20130301094205.GG27938@verge.net.au>
+	<CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
+	<20130302013147.GB3273@verge.net.au>
+	<CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-sh@vger.kernel.org
-Cc: Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 List-Id: linux-serial@vger.kernel.org
 
-We can now use the Device Tree for bringing up our serial devices on
-the SoC r8a7740.
+Hi Simon!
 
-We remove the power domain association. We will move the info into the
-DT setup as soon as we have support for it. For now this is fine as we
-use the power domain governor "pm_domain_always_on_gov" for A3SP.
+2013/3/4 Magnus Damm <magnus.damm@gmail.com>:
+> Hi Simon,
+>
+> [Added Guennadi to CC]
+>
+> On Sat, Mar 2, 2013 at 10:31 AM, Simon Horman <horms@verge.net.au> wrote:
+>> On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
+>>> 2013/3/1 Simon Horman <horms@verge.net.au>:
+>>> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
+>>> >> We can now use the Device Tree for bringing up our serial devices. We
+>>> >> need to add an alternative early_devices list in setup-r8a7740 without
+>>> >> the serial devices and move them into the Armadillo-reference .dts config file.
+>>> >
+>>> > Hi Bastian,
+>>> >
+>>> > could you please refresh this patch on top of the current topic/intc-of.
+>>> > In particular, it conflicts with changes made by:
+>>> >
+>>> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
+>>>
+>>> Sure.
+>>>
+>>> I've prepared the patch - but I start to wonder if the DT
+>>> specification for the SCIF devices should go into r8a7740.dtsi rather
+>>> than r8a7740-armadillo-reference.dts. So far it's included in
+>>> setup-r8a7740.c and not in the board code - that's a strong indication
+>>> for it, no?
+>>
+>> I forget exactly how the discussion went, but for the kzm9g the
+>> SDHI has ended up in the dts file for the board not the sh73a0 SoC.
+>>
+>> So I assume that r8a7740-armadillo-reference.dts is the correct place
+>> for SDHI on the armadillo.
+>>
+>> Magnus, can you confirm that SDHI belongs to the board not the SoC?
+>
+> What does the data sheet say?
+>
+> The SDHI hardware block is included in the SoC. It may however need
+> some board specific configuration. I believe the correct way is to
+> define the common parts in the SoC-specific dtsi file and add
+> board-specific configuration in the board-specific dts file. Perhaps
+> you can consult Guennadi about this, he has been tasked with SDHI and
+> MMCIF.
+>
+>>> I want to post a patchset for the CMT timer soon. There it's the same.
+>>
+>> Magnus, could you also let us know if CMT should go in the board or SoC dts?
+>
+> In the SoC. As a general rule, if there is a platform device in
+> setup-nnnn.c then the device does not need any board specific
+> configuration. Such devices should be put in the SoC-specific dtsi
+> file.
 
-Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
----
-v4:
-We don't move the DT into the r8a7740-armadillo800eva-reference.dts, but
-r8a7740.dtsi as the serial device setups are not dependent on any board
-confguration.
+Ok I posted a v4 SCIF DT patchset putting the SCIF devices into r8a7740.dtsi.
 
-Renamed sci@0xe6c40000 to sci@e6c40000
+Simon, are you aware about this in topic/intc-of? It shows up booting
+the non-DT version.
 
- arch/arm/boot/dts/r8a7740.dtsi         |   99 ++++++++++++++++++
- arch/arm/mach-shmobile/setup-r8a7740.c |  180 --------------------------------
- 2 files changed, 99 insertions(+), 180 deletions(-)
+Unable to handle kernel NULL pointer dereference at virtual address 00000040
+pgd = c0004000
+[00000040] *pgd=00000000
+Internal error: Oops: 5 [#1] ARM
+CPU: 0    Not tainted  (3.8.0-rc3-00205-gfb2696a #298)
+PC is at __gpio_get_value+0x18/0x5c
+LR is at eva_init+0x190/0x544
 
-diff --git a/arch/arm/boot/dts/r8a7740.dtsi b/arch/arm/boot/dts/r8a7740.dtsi
-index 82faf52..ecbc237 100644
---- a/arch/arm/boot/dts/r8a7740.dtsi
-+++ b/arch/arm/boot/dts/r8a7740.dtsi
-@@ -767,4 +767,103 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
- 	};
-+
-+	sci@e6c40000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c40000 0x100>;
-+		interrupts = <0x0c00>, <0x0c00>, <0x0c00>, <0x0c00>;
-+		cell-index = <0>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6c50000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c50000 0x100>;
-+		interrupts = <0x0c20>, <0x0c20>, <0x0c20>, <0x0c20>;
-+		cell-index = <1>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6c60000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c60000 0x100>;
-+		interrupts = <0x0c40>, <0x0c40>, <0x0c40>, <0x0c40>;
-+		cell-index = <2>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6c70000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c70000 0x100>;
-+		interrupts = <0x0c60>, <0x0c60>, <0x0c60>, <0x0c60>;
-+		cell-index = <3>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6c80000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c80000 0x100>;
-+		interrupts = <0x0d20>, <0x0d20>, <0x0d20>, <0x0d20>;
-+		cell-index = <4>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6cb0000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6cb0000 0x100>;
-+		interrupts = <0x0d40>, <0x0d40>, <0x0d40>, <0x0d40>;
-+		cell-index = <5>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6cc0000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6cc0000 0x100>;
-+		interrupts = <0x04c0>, <0x04c0>, <0x04c0>, <0x04c0>;
-+		cell-index = <6>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@0xe6cd0000 {
-+		compatible = "renesas,sci-SCIFA-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6cd0000 0x100>;
-+		interrupts = <0x04e0>, <0x04e0>, <0x04e0>, <0x04e0>;
-+		cell-index = <7>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
-+
-+	sci@e6c30000 {
-+		compatible = "renesas,sci-SCIFB-uart";
-+		interrupt-parent = <&intca>;
-+		reg = <0xe6c30000 0x100>;
-+		interrupts = <0x0d60>, <0x0d60>, <0x0d60>, <0x0d60>;
-+		cell-index = <8>;
-+		renesas,scscr = <0x30>;
-+		renesas,scbrr-algo-id = <4>;
-+		renesas,autoconf;
-+	};
- };
-diff --git a/arch/arm/mach-shmobile/setup-r8a7740.c b/arch/arm/mach-shmobile/setup-r8a7740.c
-index f35e7c2..5a563cd 100644
---- a/arch/arm/mach-shmobile/setup-r8a7740.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7740.c
-@@ -93,168 +93,6 @@ void __init r8a7740_pinmux_init(void)
- 	platform_device_register(&r8a7740_pfc_device);
- }
- 
--/* SCIFA0 */
--static struct plat_sci_port scif0_platform_data = {
--	.mapbase	= 0xe6c40000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0c00)),
--};
--
--static struct platform_device scif0_device = {
--	.name		= "sh-sci",
--	.id		= 0,
--	.dev		= {
--		.platform_data	= &scif0_platform_data,
--	},
--};
--
--/* SCIFA1 */
--static struct plat_sci_port scif1_platform_data = {
--	.mapbase	= 0xe6c50000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0c20)),
--};
--
--static struct platform_device scif1_device = {
--	.name		= "sh-sci",
--	.id		= 1,
--	.dev		= {
--		.platform_data	= &scif1_platform_data,
--	},
--};
--
--/* SCIFA2 */
--static struct plat_sci_port scif2_platform_data = {
--	.mapbase	= 0xe6c60000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0c40)),
--};
--
--static struct platform_device scif2_device = {
--	.name		= "sh-sci",
--	.id		= 2,
--	.dev		= {
--		.platform_data	= &scif2_platform_data,
--	},
--};
--
--/* SCIFA3 */
--static struct plat_sci_port scif3_platform_data = {
--	.mapbase	= 0xe6c70000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0c60)),
--};
--
--static struct platform_device scif3_device = {
--	.name		= "sh-sci",
--	.id		= 3,
--	.dev		= {
--		.platform_data	= &scif3_platform_data,
--	},
--};
--
--/* SCIFA4 */
--static struct plat_sci_port scif4_platform_data = {
--	.mapbase	= 0xe6c80000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0d20)),
--};
--
--static struct platform_device scif4_device = {
--	.name		= "sh-sci",
--	.id		= 4,
--	.dev		= {
--		.platform_data	= &scif4_platform_data,
--	},
--};
--
--/* SCIFA5 */
--static struct plat_sci_port scif5_platform_data = {
--	.mapbase	= 0xe6cb0000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0d40)),
--};
--
--static struct platform_device scif5_device = {
--	.name		= "sh-sci",
--	.id		= 5,
--	.dev		= {
--		.platform_data	= &scif5_platform_data,
--	},
--};
--
--/* SCIFA6 */
--static struct plat_sci_port scif6_platform_data = {
--	.mapbase	= 0xe6cc0000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x04c0)),
--};
--
--static struct platform_device scif6_device = {
--	.name		= "sh-sci",
--	.id		= 6,
--	.dev		= {
--		.platform_data	= &scif6_platform_data,
--	},
--};
--
--/* SCIFA7 */
--static struct plat_sci_port scif7_platform_data = {
--	.mapbase	= 0xe6cd0000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFA,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x04e0)),
--};
--
--static struct platform_device scif7_device = {
--	.name		= "sh-sci",
--	.id		= 7,
--	.dev		= {
--		.platform_data	= &scif7_platform_data,
--	},
--};
--
--/* SCIFB */
--static struct plat_sci_port scifb_platform_data = {
--	.mapbase	= 0xe6c30000,
--	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_4,
--	.type		= PORT_SCIFB,
--	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x0d60)),
--};
--
--static struct platform_device scifb_device = {
--	.name		= "sh-sci",
--	.id		= 8,
--	.dev		= {
--		.platform_data	= &scifb_platform_data,
--	},
--};
--
- /* CMT */
- static struct sh_timer_config cmt10_platform_data = {
- 	.name = "CMT10",
-@@ -379,15 +217,6 @@ static struct platform_device tmu02_device = {
- };
- 
- static struct platform_device *r8a7740_devices_dt[] __initdata = {
--	&scif0_device,
--	&scif1_device,
--	&scif2_device,
--	&scif3_device,
--	&scif4_device,
--	&scif5_device,
--	&scif6_device,
--	&scif7_device,
--	&scifb_device,
- 	&cmt10_device,
- 	&tmu00_device,
- 	&tmu01_device,
-@@ -812,15 +641,6 @@ void __init r8a7740_add_standard_devices(void)
- 
- 	/* add devices to PM domain  */
- 
--	rmobile_add_device_to_domain("A3SP",	&scif0_device);
--	rmobile_add_device_to_domain("A3SP",	&scif1_device);
--	rmobile_add_device_to_domain("A3SP",	&scif2_device);
--	rmobile_add_device_to_domain("A3SP",	&scif3_device);
--	rmobile_add_device_to_domain("A3SP",	&scif4_device);
--	rmobile_add_device_to_domain("A3SP",	&scif5_device);
--	rmobile_add_device_to_domain("A3SP",	&scif6_device);
--	rmobile_add_device_to_domain("A3SP",	&scif7_device);
--	rmobile_add_device_to_domain("A3SP",	&scifb_device);
- 	rmobile_add_device_to_domain("A3SP",	&i2c1_device);
- }
- 
--- 
-1.7.9.5
+We should add standard bootargs in the r8a7740-armadillo800eva.dts as
+well. Shall I post a small patch?
+
+Thanks,
+
+ Bastian
+
+
+> Thanks,
+>
+> / magnus
