@@ -1,58 +1,67 @@
-From: Tony Prisk <linux@prisktech.co.nz>
-Subject: Re: [PATCH 1/1] serial: vt8500_serial: Convert to
- devm_ioremap_resource()
-Date: Tue, 05 Mar 2013 06:09:27 +1300
-Message-ID: <1362416967.24058.2.camel@gitbox>
-References: <1362387279-31829-1-git-send-email-sachin.kamat@linaro.org>
+From: Ilya Zykov <ilya@ilyx.ru>
+Subject: Re: [PATCH] tty: Correct tty buffer flush.
+Date: Mon, 04 Mar 2013 23:19:41 +0400
+Message-ID: <5134F3CD.3020805@ilyx.ru>
+References: <50BC76E9.2070703@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server.prisktech.co.nz ([115.188.14.127]:58059 "EHLO
-	server.prisktech.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757912Ab3CDRJQ (ORCPT
+Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:50876 "EHLO
+	95-31-19-74.broadband.corbina.ru" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758173Ab3CDTTn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Mar 2013 12:09:16 -0500
-In-Reply-To: <1362387279-31829-1-git-send-email-sachin.kamat@linaro.org>
+	Mon, 4 Mar 2013 14:19:43 -0500
+In-Reply-To: <50BC76E9.2070703@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, thierry.reding@avionic-design.de
+To: Ben Hutchings <ben@decadent.org.uk>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, 2013-03-04 at 14:24 +0530, Sachin Kamat wrote:
-> Use the newly introduced devm_ioremap_resource() instead of
-> devm_request_and_ioremap() which provides more consistent error handling.
+On 03.12.2012 13:54, Ilya Zykov wrote:
+>   The root of problem is carelessly zeroing pointer(in function __tty_buffer_flush()),
+> when another thread can use it. It can be cause of "NULL pointer dereference".
+>   Main idea of the patch, this is never release last (struct tty_buffer) in the active buffer.
+> Only flush data for ldisc(tty->buf.head->read = tty->buf.head->commit).
+> At that moment driver can collect(write) data in buffer without conflict.
+> It is repeat behavior of flush_to_ldisc(), only without feeding data to ldisc.
+> Test program and bug report you can see:
+> https://lkml.org/lkml/2012/11/29/368
 > 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
 > ---
->  drivers/tty/serial/vt8500_serial.c |    7 ++++---
->  1 files changed, 4 insertions(+), 3 deletions(-)
+> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> index 6c9b7cd..4f02f9c 100644
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -114,11 +114,14 @@ static void __tty_buffer_flush(struct tty_struct *tty)
+>  {
+>  	struct tty_buffer *thead;
+>  
+> -	while ((thead = tty->buf.head) != NULL) {
+> -		tty->buf.head = thead->next;
+> -		tty_buffer_free(tty, thead);
+> +	if (tty->buf.head == NULL)
+> +		return;
+> +	while ((thead = tty->buf.head->next) != NULL) {
+> +		tty_buffer_free(tty, tty->buf.head);
+> +		tty->buf.head = thead;
+>  	}
+> -	tty->buf.tail = NULL;
+> +	WARN_ON(tty->buf.head != tty->buf.tail);
+> +	tty->buf.head->read = tty->buf.head->commit;
+>  }
+>  
+>  /**
 > 
-> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-> index a3f9dd5..f15f53f 100644
-> --- a/drivers/tty/serial/vt8500_serial.c
-> +++ b/drivers/tty/serial/vt8500_serial.c
-> @@ -35,6 +35,7 @@
->  #include <linux/clk.h>
->  #include <linux/platform_device.h>
->  #include <linux/of.h>
-> +#include <linux/err.h>
->  
->  /*
->   * UART Register offsets
-> @@ -585,9 +586,9 @@ static int vt8500_serial_probe(struct platform_device *pdev)
->  	if (!vt8500_port)
->  		return -ENOMEM;
->  
-> -	vt8500_port->uart.membase = devm_request_and_ioremap(&pdev->dev, mmres);
-> -	if (!vt8500_port->uart.membase)
-> -		return -EADDRNOTAVAIL;
-> +	vt8500_port->uart.membase = devm_ioremap_resource(&pdev->dev, mmres);
-> +	if (IS_ERR(vt8500_port->uart.membase))
-> +		return PTR_ERR(vt8500_port->uart.membase);
->  
->  	vt8500_port->clk = of_clk_get(pdev->dev.of_node, 0);
->  	if (IS_ERR(vt8500_port->clk)) {
 
-Acked-by: Tony Prisk <linux@prisktech.co.nz>
+You can include this patch, in 3.2 series , for improve stability,
+it would be merged in upstream 3.9-rc1.
+
+Thank you.
+Ilya.
+
+
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/tty/tty_buffer.c?id=64325a3be08d364a62ee8f84b2cf86934bc2544a
 
