@@ -1,39 +1,58 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 3/3] ARM: mach-shmobile: r8a7740: Setup the serial devices using DT
-Date: Mon, 04 Mar 2013 17:22:49 +0100
-Message-ID: <2835497.S76YK1KMLM@wuerfel>
-References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com> <1362414054-23092-3-git-send-email-hechtb+renesas@gmail.com>
+From: Tony Prisk <linux@prisktech.co.nz>
+Subject: Re: [PATCH 1/1] serial: vt8500_serial: Convert to
+ devm_ioremap_resource()
+Date: Tue, 05 Mar 2013 06:09:27 +1300
+Message-ID: <1362416967.24058.2.camel@gitbox>
+References: <1362387279-31829-1-git-send-email-sachin.kamat@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:57034 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754493Ab3CDQWv (ORCPT
+Received: from server.prisktech.co.nz ([115.188.14.127]:58059 "EHLO
+	server.prisktech.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757912Ab3CDRJQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Mar 2013 11:22:51 -0500
-In-Reply-To: <1362414054-23092-3-git-send-email-hechtb+renesas@gmail.com>
+	Mon, 4 Mar 2013 12:09:16 -0500
+In-Reply-To: <1362387279-31829-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, thierry.reding@avionic-design.de
 
-On Monday 04 March 2013 17:20:54 Bastian Hecht wrote:
+On Mon, 2013-03-04 at 14:24 +0530, Sachin Kamat wrote:
+> Use the newly introduced devm_ioremap_resource() instead of
+> devm_request_and_ioremap() which provides more consistent error handling.
 > 
-> +       sci@e6c40000 {
-> +               compatible = "renesas,sci-SCIFA-uart";
-> +               interrupt-parent = <&intca>;
-> +               reg = <0xe6c40000 0x100>;
-> +               interrupts = <0x0c00>, <0x0c00>, <0x0c00>, <0x0c00>;
-> +               cell-index = <0>;
-> +               renesas,scscr = <0x30>;
-> +               renesas,scbrr-algo-id = <4>;
-> +               renesas,autoconf;
-> +       };
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  drivers/tty/serial/vt8500_serial.c |    7 ++++---
+>  1 files changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+> index a3f9dd5..f15f53f 100644
+> --- a/drivers/tty/serial/vt8500_serial.c
+> +++ b/drivers/tty/serial/vt8500_serial.c
+> @@ -35,6 +35,7 @@
+>  #include <linux/clk.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/of.h>
+> +#include <linux/err.h>
+>  
+>  /*
+>   * UART Register offsets
+> @@ -585,9 +586,9 @@ static int vt8500_serial_probe(struct platform_device *pdev)
+>  	if (!vt8500_port)
+>  		return -ENOMEM;
+>  
+> -	vt8500_port->uart.membase = devm_request_and_ioremap(&pdev->dev, mmres);
+> -	if (!vt8500_port->uart.membase)
+> -		return -EADDRNOTAVAIL;
+> +	vt8500_port->uart.membase = devm_ioremap_resource(&pdev->dev, mmres);
+> +	if (IS_ERR(vt8500_port->uart.membase))
+> +		return PTR_ERR(vt8500_port->uart.membase);
+>  
+>  	vt8500_port->clk = of_clk_get(pdev->dev.of_node, 0);
+>  	if (IS_ERR(vt8500_port->clk)) {
 
-The default name for a uart is "serial", I would recommend sticking to
-that by convention. You may also want to add an "aliases" node
-somewhere, to define which port should get which logical device number
-on a given board.
+Acked-by: Tony Prisk <linux@prisktech.co.nz>
 
-	Arnd
