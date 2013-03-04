@@ -1,71 +1,75 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty/serial: Fix uninitialized variable warning
-Date: Mon, 04 Mar 2013 10:41:07 +0100
-Message-ID: <51346C33.6080504@suse.cz>
-References: <1362360907-4439-1-git-send-email-grant.likely@secretlab.ca> <1362364613.3221.144.camel@thor.lan>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
+ devices using DT
+Date: Mon, 4 Mar 2013 21:48:28 +0900
+Message-ID: <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
+References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
+	<1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
+	<20130301094205.GG27938@verge.net.au>
+	<CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
+	<20130302013147.GB3273@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f41.google.com ([74.125.83.41]:60294 "EHLO
-	mail-ee0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755016Ab3CDJlL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 4 Mar 2013 04:41:11 -0500
-In-Reply-To: <1362364613.3221.144.camel@thor.lan>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20130302013147.GB3273@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Grant Likely <grant.likely@secretlab.ca>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On 03/04/2013 03:36 AM, Peter Hurley wrote:
-> On Mon, 2013-03-04 at 09:35 +0800, Grant Likely wrote:
->> drivers/tty/serial/8250/8250.c: In function 'serial_unlink_irq_chain':
->> drivers/tty/serial/8250/8250.c:1676:19: warning: 'i' may be used uninitialized in this function
->>
->> There isn't an actual bug here since the function tests the condition
->> that would cause i to be uninitialized before dereferencing i. However,
->> at least some versions of GCC complain as shown above. (in my case,
->> powerpc gcc 2.5.2). Initializing i to NULL makes it clear to GCC and the
->> casual code reviewer that i will not be dereferenced to a random
->> address.
->>
->> Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> ---
->> Greg, some may argue that this is a tool problem, not a kernel problem,
->> but it is useful to me. If anyone objects I'm not going to spend any
->> time championing for this patch.
->>
->> g.
->>
->>  drivers/tty/serial/8250/8250.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
->> index 0efc815..cbbedcf 100644
->> --- a/drivers/tty/serial/8250/8250.c
->> +++ b/drivers/tty/serial/8250/8250.c
->> @@ -1673,7 +1673,7 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
->>  
->>  static void serial_unlink_irq_chain(struct uart_8250_port *up)
->>  {
->> -	struct irq_info *i;
->> +	struct irq_info *i = NULL;
-> 
-> struct irq_info *uninitialized_var(i);
-> 
-> For gcc, the uninitialized_var() #define is in
-> include/linux/compiler-gcc.h
+Hi Simon,
 
-As far as I remember, we decided not to use that macro any more after a
-bug stemming out of its use.
+[Added Guennadi to CC]
 
-And Grant uses a very old toolchain as we can see in the commit log. I'm
-not sure whether it's worth to hide a potential bug in the future by
-this patch.
+On Sat, Mar 2, 2013 at 10:31 AM, Simon Horman <horms@verge.net.au> wrote:
+> On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
+>> 2013/3/1 Simon Horman <horms@verge.net.au>:
+>> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
+>> >> We can now use the Device Tree for bringing up our serial devices. We
+>> >> need to add an alternative early_devices list in setup-r8a7740 without
+>> >> the serial devices and move them into the Armadillo-reference .dts config file.
+>> >
+>> > Hi Bastian,
+>> >
+>> > could you please refresh this patch on top of the current topic/intc-of.
+>> > In particular, it conflicts with changes made by:
+>> >
+>> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
+>>
+>> Sure.
+>>
+>> I've prepared the patch - but I start to wonder if the DT
+>> specification for the SCIF devices should go into r8a7740.dtsi rather
+>> than r8a7740-armadillo-reference.dts. So far it's included in
+>> setup-r8a7740.c and not in the board code - that's a strong indication
+>> for it, no?
+>
+> I forget exactly how the discussion went, but for the kzm9g the
+> SDHI has ended up in the dts file for the board not the sh73a0 SoC.
+>
+> So I assume that r8a7740-armadillo-reference.dts is the correct place
+> for SDHI on the armadillo.
+>
+> Magnus, can you confirm that SDHI belongs to the board not the SoC?
 
-thanks,
--- 
-js
-suse labs
+What does the data sheet say?
+
+The SDHI hardware block is included in the SoC. It may however need
+some board specific configuration. I believe the correct way is to
+define the common parts in the SoC-specific dtsi file and add
+board-specific configuration in the board-specific dts file. Perhaps
+you can consult Guennadi about this, he has been tasked with SDHI and
+MMCIF.
+
+>> I want to post a patchset for the CMT timer soon. There it's the same.
+>
+> Magnus, could you also let us know if CMT should go in the board or SoC dts?
+
+In the SoC. As a general rule, if there is a platform device in
+setup-nnnn.c then the device does not need any board specific
+configuration. Such devices should be put in the SoC-specific dtsi
+file.
+
+Thanks,
+
+/ magnus
