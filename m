@@ -1,181 +1,278 @@
-From: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-Subject: Re: [PATCH] serial/efm32: parse location property
-Date: Mon, 04 Mar 2013 22:38:54 +0800
-Message-ID: <20130304143854.395EF3E206B@localhost>
-References: <1358774576-13275-1-git-send-email-u.kleine-koenig@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1478199060444048331=="
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1358774576-13275-1-git-send-email-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Bastian Hecht <hechtb@gmail.com>
+Subject: [PATCH v4 1/3] serial: sh-sci: Add OF support
+Date: Mon,  4 Mar 2013 17:20:52 +0100
+Message-ID: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:60014 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757041Ab3CDPX1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Mar 2013 10:23:27 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
---===============1478199060444048331==
-Content-Type: text/plain
+We add the capabilty to probe Renesas SCI devices using Device Tree setup.
 
-On Mon, 21 Jan 2013 14:22:56 +0100, Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
-> The non-dt probing allowed passing the location via platform data from
-> the beginning. So make up leeway for device tree probing.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
+---
+v4:
+Added missing OF header
 
-Linus, does this look like some thing that should be done using pinctrl?
+ .../bindings/tty/serial/renesas,sci-serial.txt     |   53 ++++++++
+ drivers/tty/serial/sh-sci.c                        |  127 +++++++++++++++++++-
+ include/linux/serial_sci.h                         |    4 +
+ 3 files changed, 180 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
 
-g.
-
-> ---
-> Hello,
-> 
-> I wonder if the location property should be mandatory. Do you have an
-> opinion? 
-> 
-> BTW, I was surprised that I had to use of_property_read_u32 but not
-> of_property_read_u8. I would have expected that the only difference
-> between those two is the returned type, but actually the format to
-> specify an u8 is different. Is this intended? (Probably it is. If so, is
-> it maybe sensible to accentuate the difference by using a different
-> function name for the u32 case?)
-> 
-> Best regards
-> Uwe
-> 
->  .../devicetree/bindings/tty/serial/efm32-uart.txt  |    6 ++++
->  drivers/tty/serial/efm32-uart.c                    |   31 +++++++++++++++-----
->  2 files changed, 30 insertions(+), 7 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
-> index 6588b69..8e080b8 100644
-> --- a/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
-> +++ b/Documentation/devicetree/bindings/tty/serial/efm32-uart.txt
-> @@ -5,10 +5,16 @@ Required properties:
->  - reg : Address and length of the register set
->  - interrupts : Should contain uart interrupt
->  
-> +Optional properties:
-> +- location : Decides the location of the USART I/O pins.
-> +  Allowed range : [0 .. 5]
-> +  Default: 0
-> +
->  Example:
->  
->  uart@0x4000c400 {
->  	compatible = "efm32,uart";
->  	reg = <0x4000c400 0x400>;
->  	interrupts = <15>;
-> +	location = <0>;
->  };
-> diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32-uart.c
-> index a8cbb26..67ff23b 100644
-> --- a/drivers/tty/serial/efm32-uart.c
-> +++ b/drivers/tty/serial/efm32-uart.c
-> @@ -81,6 +81,7 @@ struct efm32_uart_port {
->  	struct uart_port port;
->  	unsigned int txirq;
->  	struct clk *clk;
-> +	struct efm32_uart_pdata pdata;
->  };
->  #define to_efm_port(_port) container_of(_port, struct efm32_uart_port, port)
->  #define efm_debug(efm_port, format, arg...)			\
-> @@ -300,13 +301,8 @@ static irqreturn_t efm32_uart_txirq(int irq, void *data)
->  static int efm32_uart_startup(struct uart_port *port)
->  {
->  	struct efm32_uart_port *efm_port = to_efm_port(port);
-> -	u32 location = 0;
-> -	struct efm32_uart_pdata *pdata = dev_get_platdata(port->dev);
->  	int ret;
->  
-> -	if (pdata)
-> -		location = UARTn_ROUTE_LOCATION(pdata->location);
-> -
->  	ret = clk_enable(efm_port->clk);
->  	if (ret) {
->  		efm_debug(efm_port, "failed to enable clk\n");
-> @@ -315,7 +311,9 @@ static int efm32_uart_startup(struct uart_port *port)
->  	port->uartclk = clk_get_rate(efm_port->clk);
->  
->  	/* Enable pins at configured location */
-> -	efm32_uart_write32(efm_port, location | UARTn_ROUTE_RXPEN | UARTn_ROUTE_TXPEN,
-> +	efm32_uart_write32(efm_port,
-> +			UARTn_ROUTE_LOCATION(efm_port->pdata.location) |
-> +			UARTn_ROUTE_RXPEN | UARTn_ROUTE_TXPEN,
->  			UARTn_ROUTE);
->  
->  	ret = request_irq(port->irq, efm32_uart_rxirq, 0,
-> @@ -674,11 +672,24 @@ static int efm32_uart_probe_dt(struct platform_device *pdev,
->  		struct efm32_uart_port *efm_port)
->  {
->  	struct device_node *np = pdev->dev.of_node;
-> +	u32 location;
->  	int ret;
->  
->  	if (!np)
->  		return 1;
->  
-> +	ret = of_property_read_u32(np, "location", &location);
-> +	if (!ret) {
-> +		if (location > 5) {
-> +			dev_err(&pdev->dev, "invalid location\n");
-> +			return -EINVAL;
-> +		}
-> +		efm_debug(efm_port, "using location %u\n", location);
-> +		efm_port->pdata.location = location;
-> +	} else {
-> +		efm_debug(efm_port, "fall back to location 0\n");
-> +	}
-> +
->  	ret = of_alias_get_id(np, "serial");
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
-> @@ -738,10 +749,16 @@ static int efm32_uart_probe(struct platform_device *pdev)
->  	efm_port->port.flags = UPF_BOOT_AUTOCONF;
->  
->  	ret = efm32_uart_probe_dt(pdev, efm_port);
-> -	if (ret > 0)
-> +	if (ret > 0) {
->  		/* not created by device tree */
-> +		const struct efm32_uart_pdata *pdata = dev_get_platdata(&pdev->dev);
-> +
->  		efm_port->port.line = pdev->id;
->  
-> +		if (pdata)
-> +			efm_port->pdata = *pdata;
-> +	}
-> +
->  	if (efm_port->port.line >= 0 &&
->  			efm_port->port.line < ARRAY_SIZE(efm32_uart_ports))
->  		efm32_uart_ports[efm_port->port.line] = efm_port;
-> -- 
-> 1.7.10.4
-> 
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
-
+diff --git a/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+new file mode 100644
+index 0000000..6ad1adf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+@@ -0,0 +1,53 @@
++* Renesas SH-Mobile Serial Communication Interface
++
++Required properties:
++- compatible : Should be "renesas,sci-<port type>-uart", where <port type> may be
++  SCI, SCIF, IRDA, SCIFA or SCIFB.
++- reg : Address and length of the register set for the device
++- interrupts : Should contain the following IRQs: ERI, RXI, TXI and BRI.
++- cell-index : The device id.
++- renesas,scscr : Should contain a bitfield used by the Serial Control Register.
++  b7 = SCSCR_TIE
++  b6 = SCSCR_RIE
++  b5 = SCSCR_TE
++  b4 = SCSCR_RE
++  b3 = SCSCR_REIE
++  b2 = SCSCR_TOIE
++  b1 = SCSCR_CKE1
++  b0 = SCSCR_CKE0
++- renesas,scbrr-algo-id : Algorithm ID for the Bit Rate Register
++  1 = SCBRR_ALGO_1 ((clk + 16 * bps) / (16 * bps) - 1)
++  2 = SCBRR_ALGO_2 ((clk + 16 * bps) / (32 * bps) - 1)
++  3 = SCBRR_ALGO_3 (((clk * 2) + 16 * bps) / (16 * bps) - 1)
++  4 = SCBRR_ALGO_4 (((clk * 2) + 16 * bps) / (32 * bps) - 1)
++  5 = SCBRR_ALGO_5 (((clk * 1000 / 32) / bps) - 1)
++
++Optional properties:
++- renesas,autoconf : Set if device is capable of auto configuration
++- renesas,regtype : Overwrite the register layout. In most cases you can rely
++  on auto-probing (omit this property or set to 0) but some legacy devices
++  use a non-default register layout. Possible layouts are
++  0 = SCIx_PROBE_REGTYPE (default)
++  1 = SCIx_SCI_REGTYPE
++  2 = SCIx_IRDA_REGTYPE
++  3 = SCIx_SCIFA_REGTYPE
++  4 = SCIx_SCIFB_REGTYPE
++  5 = SCIx_SH2_SCIF_FIFODATA_REGTYPE
++  6 = SCIx_SH3_SCIF_REGTYPE
++  7 = SCIx_SH4_SCIF_REGTYPE
++  8 = SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE
++  9 = SCIx_SH4_SCIF_FIFODATA_REGTYPE
++ 10 = SCIx_SH7705_SCIF_REGTYPE
++
++
++Example:
++	sci@0xe6c50000 {
++		compatible = "renesas,sci-SCIFA-uart";
++		interrupt-parent = <&intca>;
++		reg = <0xe6c50000 0x100>;
++		interrupts = <0x0c20>, <0x0c20>, <0x0c20>, <0x0c20>;
++		cell-index = <1>;
++		renesas,scscr = <0x30>;
++		renesas,scbrr-algo-id = <4>;
++		renesas,autoconf;
++	};
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 6147756..cc1b69c 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -52,6 +52,7 @@
+ #include <linux/scatterlist.h>
+ #include <linux/slab.h>
+ #include <linux/gpio.h>
++#include <linux/of.h>
+ 
+ #ifdef CONFIG_SUPERH
+ #include <asm/sh_bios.h>
+@@ -2353,6 +2354,112 @@ static int sci_remove(struct platform_device *dev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id of_sci_match[] = {
++	{ .compatible = "renesas,sci-SCI-uart",
++		.data = (void *)PORT_SCI },
++	{ .compatible = "renesas,sci-SCIF-uart",
++		.data = (void *)PORT_SCIF },
++	{ .compatible = "renesas,sci-IRDA-uart",
++		.data = (void *)PORT_IRDA },
++	{ .compatible = "renesas,sci-SCIFA-uart",
++		.data = (void *)PORT_SCIFA },
++	{ .compatible = "renesas,sci-SCIFB-uart",
++		.data = (void *)PORT_SCIFB },
++	{},
++};
++MODULE_DEVICE_TABLE(of, of_sci_match);
++
++static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
++								int *dev_id)
++{
++	struct plat_sci_port *p;
++	struct device_node *np = pdev->dev.of_node;
++	const struct of_device_id *match;
++	struct resource *res;
++	const __be32 *prop;
++	int i, irq, val;
++
++	match = of_match_node(of_sci_match, pdev->dev.of_node);
++	if (!match || !match->data) {
++		dev_err(&pdev->dev, "OF match error\n");
++		return NULL;
++	}
++
++	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
++	if (!p) {
++		dev_err(&pdev->dev, "failed to allocate DT config data\n");
++		return NULL;
++	}
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res) {
++		dev_err(&pdev->dev, "failed to get I/O memory\n");
++		return NULL;
++	}
++	p->mapbase = res->start;
++
++	for (i = 0; i < SCIx_NR_IRQS; i++) {
++		irq = platform_get_irq(pdev, i);
++		if (irq < 0) {
++			dev_err(&pdev->dev, "failed to get irq data %d\n", i);
++			return NULL;
++		}
++		p->irqs[i] = irq;
++	}
++
++	prop = of_get_property(np, "cell-index", NULL);
++	if (!prop) {
++		dev_err(&pdev->dev, "required DT prop cell-index missing\n");
++		return NULL;
++	}
++	*dev_id = be32_to_cpup(prop);
++
++	prop = of_get_property(np, "renesas,scscr", NULL);
++	if (!prop) {
++		dev_err(&pdev->dev, "required DT prop scscr missing\n");
++		return NULL;
++	}
++	p->scscr = be32_to_cpup(prop);
++
++	prop = of_get_property(np, "renesas,scbrr-algo-id", NULL);
++	if (!prop) {
++		dev_err(&pdev->dev, "required DT prop scbrr-algo-id missing\n");
++		return NULL;
++	}
++	val = be32_to_cpup(prop);
++	if (val <= SCBRR_ALGO_INVALID || val >= SCBRR_NR_ALGOS) {
++		dev_err(&pdev->dev, "DT prop scbrr-algo-id out of range\n");
++		return NULL;
++	}
++	p->scbrr_algo_id = val;
++
++	p->flags = UPF_IOREMAP;
++	if (of_get_property(np, "renesas,autoconf", NULL))
++		p->flags |= UPF_BOOT_AUTOCONF;
++
++	prop = of_get_property(np, "renesas,regtype", NULL);
++	if (prop) {
++		val = be32_to_cpup(prop);
++		if (val < SCIx_PROBE_REGTYPE || val >= SCIx_NR_REGTYPES) {
++			dev_err(&pdev->dev, "DT prop regtype out of range\n");
++			return NULL;
++		}
++		p->regtype = val;
++	}
++
++	p->type = (unsigned int)match->data;
++
++	return p;
++}
++#else
++static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
++								int *dev_id)
++{
++	return NULL;
++}
++#endif /* CONFIG_OF */
++
+ static int sci_probe_single(struct platform_device *dev,
+ 				      unsigned int index,
+ 				      struct plat_sci_port *p,
+@@ -2385,9 +2492,9 @@ static int sci_probe_single(struct platform_device *dev,
+ 
+ static int sci_probe(struct platform_device *dev)
+ {
+-	struct plat_sci_port *p = dev->dev.platform_data;
+-	struct sci_port *sp = &sci_ports[dev->id];
+-	int ret;
++	struct plat_sci_port *p;
++	struct sci_port *sp;
++	int ret, dev_id = dev->id;
+ 
+ 	/*
+ 	 * If we've come here via earlyprintk initialization, head off to
+@@ -2397,9 +2504,20 @@ static int sci_probe(struct platform_device *dev)
+ 	if (is_early_platform_device(dev))
+ 		return sci_probe_earlyprintk(dev);
+ 
++	if (dev->dev.of_node)
++		p = sci_parse_dt(dev, &dev_id);
++	else
++		p = dev->dev.platform_data;
++
++	if (!p) {
++		dev_err(&dev->dev, "no setup data supplied\n");
++		return -EINVAL;
++	}
++
++	sp = &sci_ports[dev_id];
+ 	platform_set_drvdata(dev, sp);
+ 
+-	ret = sci_probe_single(dev, dev->id, p, sp);
++	ret = sci_probe_single(dev, dev_id, p, sp);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2451,6 +2569,7 @@ static struct platform_driver sci_driver = {
+ 		.name	= "sh-sci",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= &sci_dev_pm_ops,
++		.of_match_table = of_match_ptr(of_sci_match),
+ 	},
+ };
+ 
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index eb763ad..857eec4 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -11,11 +11,15 @@
+ #define SCIx_NOT_SUPPORTED	(-1)
+ 
+ enum {
++	SCBRR_ALGO_INVALID,
++
+ 	SCBRR_ALGO_1,		/* ((clk + 16 * bps) / (16 * bps) - 1) */
+ 	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
+ 	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
+ 	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
+ 	SCBRR_ALGO_5,		/* (((clk * 1000 / 32) / bps) - 1) */
++
++	SCBRR_NR_ALGOS,
+ };
+ 
+ #define SCSCR_TIE	(1 << 7)
 -- 
-Grant Likely, B.Sc, P.Eng.
-Secret Lab Technologies, Ltd.
+1.7.9.5
 
---===============1478199060444048331==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-devicetree-discuss mailing list
-devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-https://lists.ozlabs.org/listinfo/devicetree-discuss
-
---===============1478199060444048331==--
