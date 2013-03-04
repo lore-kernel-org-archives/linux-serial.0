@@ -1,100 +1,116 @@
-From: Bastian Hecht <hechtb@gmail.com>
-Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
- devices using DT
-Date: Mon, 4 Mar 2013 16:44:30 +0100
-Message-ID: <CABYn4sxPpzKGc83WkRYzcAzJ1TeDgBPgpjvnyGkvgy4kT4Jt6w@mail.gmail.com>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
-	<1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
-	<20130301094205.GG27938@verge.net.au>
-	<CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
-	<20130302013147.GB3273@verge.net.au>
-	<CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v4 1/3] serial: sh-sci: Add OF support
+Date: Mon, 04 Mar 2013 17:20:49 +0100
+Message-ID: <5345836.ZO7uU35cQD@wuerfel>
+References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
+In-Reply-To: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
 Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Simon!
+On Monday 04 March 2013 17:20:52 Bastian Hecht wrote:
+> diff --git a/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+> new file mode 100644
+> index 0000000..6ad1adf
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+> @@ -0,0 +1,53 @@
+> +* Renesas SH-Mobile Serial Communication Interface
+> +
+> +Required properties:
+> +- compatible : Should be "renesas,sci-<port type>-uart", where <port type> may be
+> +  SCI, SCIF, IRDA, SCIFA or SCIFB.
 
-2013/3/4 Magnus Damm <magnus.damm@gmail.com>:
-> Hi Simon,
->
-> [Added Guennadi to CC]
->
-> On Sat, Mar 2, 2013 at 10:31 AM, Simon Horman <horms@verge.net.au> wrote:
->> On Fri, Mar 01, 2013 at 10:21:27AM -0600, Bastian Hecht wrote:
->>> 2013/3/1 Simon Horman <horms@verge.net.au>:
->>> > On Tue, Feb 26, 2013 at 11:03:28AM -0600, Bastian Hecht wrote:
->>> >> We can now use the Device Tree for bringing up our serial devices. We
->>> >> need to add an alternative early_devices list in setup-r8a7740 without
->>> >> the serial devices and move them into the Armadillo-reference .dts config file.
->>> >
->>> > Hi Bastian,
->>> >
->>> > could you please refresh this patch on top of the current topic/intc-of.
->>> > In particular, it conflicts with changes made by:
->>> >
->>> > ARM: shmobile: r8a7740: Do not use early devices with DT reference
->>>
->>> Sure.
->>>
->>> I've prepared the patch - but I start to wonder if the DT
->>> specification for the SCIF devices should go into r8a7740.dtsi rather
->>> than r8a7740-armadillo-reference.dts. So far it's included in
->>> setup-r8a7740.c and not in the board code - that's a strong indication
->>> for it, no?
->>
->> I forget exactly how the discussion went, but for the kzm9g the
->> SDHI has ended up in the dts file for the board not the sh73a0 SoC.
->>
->> So I assume that r8a7740-armadillo-reference.dts is the correct place
->> for SDHI on the armadillo.
->>
->> Magnus, can you confirm that SDHI belongs to the board not the SoC?
->
-> What does the data sheet say?
->
-> The SDHI hardware block is included in the SoC. It may however need
-> some board specific configuration. I believe the correct way is to
-> define the common parts in the SoC-specific dtsi file and add
-> board-specific configuration in the board-specific dts file. Perhaps
-> you can consult Guennadi about this, he has been tasked with SDHI and
-> MMCIF.
->
->>> I want to post a patchset for the CMT timer soon. There it's the same.
->>
->> Magnus, could you also let us know if CMT should go in the board or SoC dts?
->
-> In the SoC. As a general rule, if there is a platform device in
-> setup-nnnn.c then the device does not need any board specific
-> configuration. Such devices should be put in the SoC-specific dtsi
-> file.
+Why capital letters here? Maybe just list
 
-Ok I posted a v4 SCIF DT patchset putting the SCIF devices into r8a7740.dtsi.
+	"renesas,sci-uart", "renesas,scif-uart", ...
 
-Simon, are you aware about this in topic/intc-of? It shows up booting
-the non-DT version.
+> +- reg : Address and length of the register set for the device
+> +- interrupts : Should contain the following IRQs: ERI, RXI, TXI and BRI.
 
-Unable to handle kernel NULL pointer dereference at virtual address 00000040
-pgd = c0004000
-[00000040] *pgd=00000000
-Internal error: Oops: 5 [#1] ARM
-CPU: 0    Not tainted  (3.8.0-rc3-00205-gfb2696a #298)
-PC is at __gpio_get_value+0x18/0x5c
-LR is at eva_init+0x190/0x544
+You probably want to require the "interrupt-names" property as well
+then.
 
-We should add standard bootargs in the r8a7740-armadillo800eva.dts as
-well. Shall I post a small patch?
+> +- cell-index : The device id.
+> +- renesas,scscr : Should contain a bitfield used by the Serial Control Register.
+> +  b7 = SCSCR_TIE
+> +  b6 = SCSCR_RIE
+> +  b5 = SCSCR_TE
+> +  b4 = SCSCR_RE
+> +  b3 = SCSCR_REIE
+> +  b2 = SCSCR_TOIE
+> +  b1 = SCSCR_CKE1
+> +  b0 = SCSCR_CKE0
+> +- renesas,scbrr-algo-id : Algorithm ID for the Bit Rate Register
+> +  1 = SCBRR_ALGO_1 ((clk + 16 * bps) / (16 * bps) - 1)
+> +  2 = SCBRR_ALGO_2 ((clk + 16 * bps) / (32 * bps) - 1)
+> +  3 = SCBRR_ALGO_3 (((clk * 2) + 16 * bps) / (16 * bps) - 1)
+> +  4 = SCBRR_ALGO_4 (((clk * 2) + 16 * bps) / (32 * bps) - 1)
+> +  5 = SCBRR_ALGO_5 (((clk * 1000 / 32) / bps) - 1)
 
-Thanks,
+Maybe replace this with a "clock-frequency" property? This may
+be what the registers contain, but it is not very readable.
 
- Bastian
+> +Optional properties:
+> +- renesas,autoconf : Set if device is capable of auto configuration
+> +- renesas,regtype : Overwrite the register layout. In most cases you can rely
+> +  on auto-probing (omit this property or set to 0) but some legacy devices
+> +  use a non-default register layout. Possible layouts are
+> +  0 = SCIx_PROBE_REGTYPE (default)
+> +  1 = SCIx_SCI_REGTYPE
+> +  2 = SCIx_IRDA_REGTYPE
+> +  3 = SCIx_SCIFA_REGTYPE
+> +  4 = SCIx_SCIFB_REGTYPE
+> +  5 = SCIx_SH2_SCIF_FIFODATA_REGTYPE
+> +  6 = SCIx_SH3_SCIF_REGTYPE
+> +  7 = SCIx_SH4_SCIF_REGTYPE
+> +  8 = SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE
+> +  9 = SCIx_SH4_SCIF_FIFODATA_REGTYPE
+> + 10 = SCIx_SH7705_SCIF_REGTYPE
 
+Why do you keep these separate from the "compatible" property?
+By definition, the register layout is already determined by
+"compatible".
 
-> Thanks,
->
-> / magnus
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id of_sci_match[] = {
+> +	{ .compatible = "renesas,sci-SCI-uart",
+> +		.data = (void *)PORT_SCI },
+> +	{ .compatible = "renesas,sci-SCIF-uart",
+> +		.data = (void *)PORT_SCIF },
+> +	{ .compatible = "renesas,sci-IRDA-uart",
+> +		.data = (void *)PORT_IRDA },
+> +	{ .compatible = "renesas,sci-SCIFA-uart",
+> +		.data = (void *)PORT_SCIFA },
+> +	{ .compatible = "renesas,sci-SCIFB-uart",
+> +		.data = (void *)PORT_SCIFB },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, of_sci_match);
+> +
+> +static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+> +								int *dev_id)
+> +{
+> +	struct plat_sci_port *p;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	const struct of_device_id *match;
+> +	struct resource *res;
+> +	const __be32 *prop;
+> +	int i, irq, val;
+> +
+
+You can remove the #ifdef by replacing it with 
+
+	if (!IS_ENABLED(CONFIG_OF) || !np)
+		return NULL;
+
+here. This gives better compile time coverage and more readable code.
+
+Otherwise looks very nice!
+
+	Arnd
