@@ -1,57 +1,111 @@
-From: Bastian Hecht <hechtb@gmail.com>
-Subject: Re: [PATCH v4 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
- devices using DT
-Date: Tue, 5 Mar 2013 14:47:17 +0100
-Message-ID: <CABYn4swottJ6knJXfHntJuWJ9rzrC7kA-47TaKJRG0mh+u+Pig@mail.gmail.com>
-References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
-	<1362414054-23092-3-git-send-email-hechtb+renesas@gmail.com>
-	<2835497.S76YK1KMLM@wuerfel>
-	<CABYn4sx=bC6JwicbVgRnmwdu=6DuW5GFgdG25a-Wow1Jn9M-bQ@mail.gmail.com>
-	<5135F647.8050002@cogentembedded.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH]8250_pci: Add additional WCH CH352 device
+Date: Tue, 5 Mar 2013 09:19:53 -0500
+Message-ID: <20130305141952.GA20799@windriver.com>
+References: <20130302094555.GA9572@udknight>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <5135F647.8050002@cogentembedded.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.windriver.com ([147.11.1.11]:35594 "EHLO
+	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753525Ab3CEOVC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Mar 2013 09:21:02 -0500
+Content-Disposition: inline
+In-Reply-To: <20130302094555.GA9572@udknight>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Wang YanQing <udknight@gmail.com>, gregkh@linuxfoundation.org, swarren@wwwdotorg.org, jslaby@suse.cz, alan@linux.intel.com, arnd@arndb.de, damm@opensource.se, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-2013/3/5 Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>:
-> Hello.
->
->
-> On 05-03-2013 17:00, Bastian Hecht wrote:
->
->>>> +       sci@e6c40000 {
->>>> +               compatible = "renesas,sci-SCIFA-uart";
->>>> +               interrupt-parent = <&intca>;
->>>> +               reg = <0xe6c40000 0x100>;
->>>> +               interrupts = <0x0c00>, <0x0c00>, <0x0c00>, <0x0c00>;
->>>> +               cell-index = <0>;
->>>> +               renesas,scscr = <0x30>;
->>>> +               renesas,scbrr-algo-id = <4>;
->>>> +               renesas,autoconf;
->>>> +       };
->>>
->>>
->>> The default name for a uart is "serial", I would recommend sticking to
->>> that by convention. You may also want to add an "aliases" node
->>> somewhere, to define which port should get which logical device number
->>> on a given board.
->
->
->> Switched to "...-serial".
->
->
->    I think he was talking about the node name, not "compatible" property.
+[[PATCH]8250_pci: Add additional WCH CH352 device] On 02/03/2013 (Sat 17:45) Wang YanQing wrote:
 
-Ah sure! I'll wait for responses to v5 and will change it around in v6.
+> This patch fix a problem XScale port
+> detect code in autoconfig_16550a treat
+> 16550A port as XScale port, caused by
+> CH352 device use the 6th bit(UART_IER_UUE)
+> in IER as a enhance function make this bit
+> w/r.
+> 
 
-Thanks,
+Maybe we should add a bit more data to the short log and long log,
+based on what you said in the other thread.  And also lets put the
+352 entry before the existing 353 entries, instead of after it,
+something like the below...
 
- Bastian
+Paul.
+--
 
+>From d92be6ffc95c5947cc7d22d5f0c1382bfb4f0a52 Mon Sep 17 00:00:00 2001
+From: Wang YanQing <udknight@gmail.com>
+Date: Sat, 2 Mar 2013 17:45:55 +0800
+Subject: [PATCH] 8250_pci: Add WCH CH352 quirk to avoid Xscale detection
 
-> WBR, Sergei
->
+The code in 8250.c for detecting ARM/XScale UARTs says:
+
+  * Try writing and reading the UART_IER_UUE bit (b6).
+  * If it works, this is probably one of the Xscale platform's
+  * internal UARTs.
+
+If the above passes, it then goes on to:
+
+     * It's an Xscale.
+     * We'll leave the UART_IER_UUE bit set to 1 (enabled).
+
+However, the CH352 uses the UART_IER_UUE as the LOWPOWER function,
+so it is readable and writable.  According to the datasheet:
+
+    "LOWPOWER:When the bit is 1, close the internal benchmark
+     clock of serial port to set into low-power status.
+
+So it essentially gets mis-detected as Xscale, and gets
+powered down in the process.  The device in question where
+this was seen is listed by lspci as:
+
+ Serial controller: Device 4348:3253 (rev 10) (prog-if 02 [16550])
+
+Re-using the 353 quirk which just sets flags to fixed and type
+to 16550 is suitable for fixing the 352 as well.
+
+Signed-off-by: Wang YanQing <udknight@gmail.com>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 791c5a7..5805f89 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1554,6 +1554,7 @@ pci_wch_ch353_setup(struct serial_private *priv,
+ #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
+ #define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
+ #define PCI_VENDOR_ID_WCH		0x4348
++#define PCI_DEVICE_ID_WCH_CH352_2S	0x3253
+ #define PCI_DEVICE_ID_WCH_CH353_4S	0x3453
+ #define PCI_DEVICE_ID_WCH_CH353_2S1PF	0x5046
+ #define PCI_DEVICE_ID_WCH_CH353_2S1P	0x7053
+@@ -2180,6 +2181,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch353_setup,
+ 	},
++	/* WCH CH352 2S card (16550 clone) */
++	{
++		.vendor		= PCI_VENDOR_ID_WCH,
++		.device		= PCI_DEVICE_ID_WCH_CH352_2S,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= pci_wch_ch353_setup,
++	},
+ 	/*
+ 	 * ASIX devices with FIFO bug
+ 	 */
+@@ -4869,6 +4878,10 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_b0_bt_2_115200 },
+ 
++	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH352_2S,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0, pbn_b0_bt_2_115200 },
++
+ 	/*
+ 	 * Commtech, Inc. Fastcom adapters
+ 	 */
+-- 
+1.8.1.2
