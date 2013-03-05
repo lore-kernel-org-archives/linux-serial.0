@@ -1,116 +1,91 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v3 3/3] ARM: mach-shmobile: r8a7740: Setup the serial
- devices using DT
-Date: Tue, 5 Mar 2013 16:04:39 +0900
-Message-ID: <20130305070439.GA15907@verge.net.au>
-References: <1361898208-6683-1-git-send-email-hechtb+renesas@gmail.com>
- <1361898208-6683-3-git-send-email-hechtb+renesas@gmail.com>
- <20130301094205.GG27938@verge.net.au>
- <CABYn4syZJjDzuj2YqT3wCvnEuyE0Ab-8x=g1+_Fr9gw43_w_rw@mail.gmail.com>
- <20130302013147.GB3273@verge.net.au>
- <CANqRtoTQ5mRCk1bRjkFOf9gj3w1N5ErO9i1HjBGbw=MA=Rh1aQ@mail.gmail.com>
- <Pine.LNX.4.64.1303041424310.14249@axis700.grange>
- <20130305032744.GO16128@verge.net.au>
- <Pine.LNX.4.64.1303050740330.24699@axis700.grange>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH v2 00/12] ARM: mxs: move to generic DMA device
+	tree binding
+Date: Tue, 5 Mar 2013 20:23:52 +0800
+Message-ID: <1362486244-24593-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:45153 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752488Ab3CEHEm (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 02:04:42 -0500
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.64.1303050740330.24699@axis700.grange>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Fabio Estevam <fabio.estevam@freescale.com>, alsa-devel@alsa-project.org, Chris Ball <cjb@laptop.org>, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Huang Shijie <b32955@freescale.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-mmc@vger.kernel.org, Artem Bityutskiy <dedekind1@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, Shawn Guo <shawn.guo@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Bastian Hecht <hechtb@gmail.com>, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org
 
-On Tue, Mar 05, 2013 at 07:52:21AM +0100, Guennadi Liakhovetski wrote:
-> Hi Simon
-> 
-> On Tue, 5 Mar 2013, Simon Horman wrote:
-> 
-> > On Mon, Mar 04, 2013 at 02:33:40PM +0100, Guennadi Liakhovetski wrote:
-> 
-> [snip]
-> 
-> > > That would be the best, I agree. However, we discussed this already on the 
-> > > example of mmcif, you might remember. I asked what's the difference 
-> > > between extending a DT node (from .dtsi) with additional properties (in a 
-> > > board-specific .dts) using an "&phandle" syntax and a full path? Or are 
-> > > they equivalent? There was no reply, so, for such nodes (MMC/SD) I so far 
-> > > settled with complete nodes in .dts. We do use the "&phandle" syntax for 
-> > > pinctrl function groups, for I2C devices. I used a complete path for 
-> > > CPUFreq... Mostly because other platforms did that too.
-> > 
-> > I am confused.
-> > 
-> > Using phandle syntax we can add a device to an soc's dtsi file and then add
-> > extra properties in the board file.  This seems to be match the HW well.
-> > 
-> > What is your alternate suggestion?
-> 
-> Let me give you examples. In sh73a0-reference.dtsi we define an I2C device 
-> #0:
-> 
-> 	i2c0: i2c@0xe6820000 {
-> 		#address-cells = <1>;
-> 		#size-cells = <0>;
-> 		compatible = "renesas,rmobile-iic";
-> 		reg = <0xe6820000 0x425>;
-> 		...
-> 	};
-> 
-> Then in sh73a0-kzm9g-reference.dts I can use the phandle syntax to put 
-> devices on that I2C bus:
-> 
-> &i2c0 {
-> 	as3711@40 {
-> 		compatible = "ams,as3711";
-> 		reg = <0x40>;
-> 		...
-> 	};
-> 	...
-> };
-> 
-> This is one possibility. In sh73a0.dtsi we've got
-> 
-> 	cpus {
-> 		#address-cells = <1>;
-> 		#size-cells = <0>;
-> 
-> 		cpu@0 {
-> 			device_type = "cpu";
-> 			compatible = "arm,cortex-a9";
-> 			reg = <0>;
-> 		};
-> 		...
-> 	};
-> 
-> Now, I can also extend this in sh73a0-kzm9g-reference.dts to add CPUFreq 
-> support to CPU0:
-> 
-> 	cpus {
-> 		cpu@0 {
-> 			cpu0-supply = <&vdd_dvfs>;
-> 			operating-points = <
-> 				/* kHz  uV */
-> 				1196000 1315000
-> 				 598000 1175000
-> 				 398667 1065000
-> 			>;
-> 			voltage-tolerance = <1>; /* 1% */
-> 		};
-> 	};
-> 
-> Which AFAICS does a similar thing (adds more properties to an existing DT 
-> node) but uses a different syntax. Maybe they are completely equivalent, 
-> the only difference being, that the former example uses a phandle and the 
-> latter a complete path, maybe there are differences, I don't know.
+The series converts mxs-dma and its clients to generic DMA device tree
+binding/helper.
 
-Interesting. Thanks for the example, I now understand.
+I published a branch below to ease people who is willing to help
+testing the series.
 
-To be honest I'm not sure what the answer is.
-But if they are both working then I'm not particularly fussed either way.
+ git://git.linaro.org/people/shawnguo/linux-2.6.git devel/mxs-dma-dt
+
+Changes since v1:
+ - Remove the use of of_dma_filter_info which should not be needed by
+   a customized xlate function
+ - Correct dma-names to have it mean the channel function in client
+   devices
+ - Add a new dmaengine_pcm API snd_dmaengine_generic_pcm_open() for
+   users that support generic DMA device tree binding
+ - Remove the old fsl,<module>-dma-channel properties from device tree
+
+Subsystem maintainers,
+
+I need your ACKs to have the series go via arm-soc as a whole if the
+patches look good to you.
+
+Thanks,
+Shawn
+
+Shawn Guo (12):
+  ARM: dts: add generic DMA device tree binding for mxs-dma
+  dma: mxs-dma: use devm_* managed functions
+  dma: mxs-dma: move to generic device tree binding
+  mmc: mxs-mmc: move to use generic DMA helper
+  spi: mxs-spi: move to use generic DMA helper
+  i2c: i2c-mxs: move to use generic DMA helper
+  mtd: gpmi: move to use generic DMA helper
+  serial: mxs-auart: move to use generic DMA helper
+  ASoC: dmaengine_pcm: add snd_dmaengine_generic_pcm_open()
+  ASoC: mxs: move to use generic DMA helper
+  dma: mxs-dma: remove code left from generic DMA binding conversion
+  ARM: dts: remove old DMA binding data from client nodes
+
+ .../devicetree/bindings/dma/fsl-mxs-dma.txt        |   49 +++++++-
+ Documentation/devicetree/bindings/i2c/i2c-mxs.txt  |   12 +-
+ Documentation/devicetree/bindings/mmc/mxs-mmc.txt  |   12 +-
+ .../devicetree/bindings/mtd/gpmi-nand.txt          |   17 +--
+ .../devicetree/bindings/sound/mxs-saif.txt         |   18 +--
+ Documentation/devicetree/bindings/spi/mxs-spi.txt  |   12 +-
+ .../bindings/tty/serial/fsl-mxs-auart.txt          |   16 ++-
+ arch/arm/boot/dts/imx23.dtsi                       |   57 +++++++--
+ arch/arm/boot/dts/imx28.dtsi                       |  104 +++++++++++-----
+ arch/arm/boot/dts/imx6qdl.dtsi                     |   12 +-
+ drivers/dma/mxs-dma.c                              |  128 +++++++++++---------
+ drivers/i2c/busses/i2c-mxs.c                       |   40 +-----
+ drivers/mmc/host/mxs-mmc.c                         |   48 +-------
+ drivers/mtd/nand/gpmi-nand/gpmi-nand.c             |   51 +-------
+ drivers/mtd/nand/gpmi-nand/gpmi-nand.h             |    3 +-
+ drivers/spi/spi-mxs.c                              |   60 ++-------
+ drivers/tty/serial/mxs-auart.c                     |   52 +-------
+ include/linux/fsl/mxs-dma.h                        |   20 ---
+ include/linux/spi/mxs-spi.h                        |    4 +-
+ include/sound/dmaengine_pcm.h                      |    2 +
+ sound/soc/mxs/mxs-pcm.c                            |   42 +------
+ sound/soc/mxs/mxs-pcm.h                            |    5 -
+ sound/soc/mxs/mxs-saif.c                           |   28 +----
+ sound/soc/mxs/mxs-saif.h                           |    1 -
+ sound/soc/soc-dmaengine-pcm.c                      |   39 ++++++
+ 25 files changed, 368 insertions(+), 464 deletions(-)
+ delete mode 100644 include/linux/fsl/mxs-dma.h
+
+-- 
+1.7.9.5
