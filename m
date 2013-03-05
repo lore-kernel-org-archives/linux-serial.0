@@ -1,68 +1,69 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 1/3] serial: sh-sci: Add OF support
-Date: Tue, 5 Mar 2013 19:26:25 +0000
-Message-ID: <201303051926.25655.arnd@arndb.de>
-References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com> <5345836.ZO7uU35cQD@wuerfel> <CABYn4sxYRbmEe27WKE-FbTZ3_SM+APaYqHJ1=Zrk8_a5czxZaQ@mail.gmail.com>
+Subject: Re: [PATCH v5] serial: sh-sci: Add OF support - incremental
+Date: Tue, 5 Mar 2013 19:28:50 +0000
+Message-ID: <201303051928.50331.arnd@arndb.de>
+References: <1362490239-17848-1-git-send-email-hechtb+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: Text/Plain;
-  charset="iso-8859-1"
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.8]:60715 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756143Ab3CET0f (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 14:26:35 -0500
-In-Reply-To: <CABYn4sxYRbmEe27WKE-FbTZ3_SM+APaYqHJ1=Zrk8_a5czxZaQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1362490239-17848-1-git-send-email-hechtb+renesas@gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
 To: Bastian Hecht <hechtb@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+List-Id: linux-serial@vger.kernel.org
 
 On Tuesday 05 March 2013, Bastian Hecht wrote:
-> 2013/3/4 Arnd Bergmann <arnd@arndb.de>:
-> > On Monday 04 March 2013 17:20:52 Bastian Hecht wrote:
-> >> +- reg : Address and length of the register set for the device
-> >> +- interrupts : Should contain the following IRQs: ERI, RXI, TXI and BRI.
-> >
-> > You probably want to require the "interrupt-names" property as well
-> > then.
+> This is an incremental patch to the "[PATCH v4 1/3] serial: sh-sci: Add
+> OF support" implementing suggestions from Arnd.
 > 
-> I added the interrupt-names property but still enforce the ordering in
-> the binding specs.
-
-Yes, that is the correct approach.
-
-> Don't know if we want the extra overhead to scan for strings or just
-> take a certain order for granted.
-> If we want to change it to parsing, it would be better to switch
-> completely to platform_get_irq_byname() and change all the current
-> platform code, else we will produce code overhead.
-
-Right, there is no need to change the code for that, but I think it
-makes sense to do the binding the way you describe, in case someone
-later wants to move to platform_get_irq_byname. A lot of people prefer
-that for some reason, although I think the traditional numbering is
-just as good.
-
-> >> +- renesas,scbrr-algo-id : Algorithm ID for the Bit Rate Register
-> >> +  1 = SCBRR_ALGO_1 ((clk + 16 * bps) / (16 * bps) - 1)
-> >> +  2 = SCBRR_ALGO_2 ((clk + 16 * bps) / (32 * bps) - 1)
-> >> +  3 = SCBRR_ALGO_3 (((clk * 2) + 16 * bps) / (16 * bps) - 1)
-> >> +  4 = SCBRR_ALGO_4 (((clk * 2) + 16 * bps) / (32 * bps) - 1)
-> >> +  5 = SCBRR_ALGO_5 (((clk * 1000 / 32) / bps) - 1)
-> >
-> > Maybe replace this with a "clock-frequency" property? This may
-> > be what the registers contain, but it is not very readable.
+> - The compatible pattern has been reworked to include devices with
+>   legacy register sets.
+> - DT property interrupt-names added
+> - Renamed renesas,scbrr-algo-id into renesas,clock-algorithm
+> - Replaced #ifdef CONFIG_OF with
+>   +       if (!IS_ENABLED(CONFIG_OF) || !np)
+>   +                               return NULL;
 > 
-> Hmm... do you want a frequency in absolute terms? And then calculate
-> the best SCBRR value for it?
-> I'm unsure about this, either you must exactly hit it or accept
-> tolerances? As something in between I renamed the property to
-> "renesas,clock-algorithm", but I don't know if this is what you want.
+> I opted to show the changes in an incremental patch as it may be easier
+> to follow the changes and as Paul has the v3 already in his repo.
 
-I meant the absolute frequency in HZ, since that is what we do
-for the 8250 uart and other devices, but only if that is sufficient
-for your device.
+Ok, makes sense.
 
-	Arnd
+> -	sci@0xe6c50000 {
+> -		compatible = "renesas,sci-SCIFA-uart";
+> +	sci@e6c50000 {
+> +		compatible = "renesas,sci-scifa-serial";
+
+As mentioned, I meant the name to be changed, not the compatible value.
+
+> +	{ .compatible = "renesas,sci-sci-serial",
+> +		.data = (void *)SCIx_SCI_REGTYPE },
+> +	{ .compatible = "renesas,sci-scif-serial",
+> +		.data = (void *)SCIx_SH4_SCIF_REGTYPE, },
+> +	{ .compatible = "renesas,sci-irda-serial",
+> +		.data = (void *)SCIx_IRDA_REGTYPE },
+> +	{ .compatible = "renesas,sci-scifa-serial",
+> +		.data = (void *)SCIx_SCIFA_REGTYPE },
+> +	{ .compatible = "renesas,sci-scifb-serial",
+> +		.data = (void *)SCIx_SCIFB_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh2_scif_fifodata-serial",
+> +		.data = (void *)SCIx_SH2_SCIF_FIFODATA_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh3_scif-serial",
+> +		.data = (void *)SCIx_SH3_SCIF_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh4_scif-serial",
+> +		.data = (void *)SCIx_SH4_SCIF_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh4_scif_no_scsptr-serial",
+> +		.data = (void *)SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh4_scif_fifodata-serial",
+> +		.data = (void *)SCIx_SH4_SCIF_FIFODATA_REGTYPE },
+> +	{ .compatible = "renesas,sci-sh7705_scif-serial",
+> +		.data = (void *)SCIx_SH7705_SCIF_REGTYPE },
+>  	{},
+
+Ah nice, it's not even more complex than before.
+
+Looks good,
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
