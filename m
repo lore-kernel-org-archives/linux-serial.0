@@ -1,99 +1,69 @@
 From: Wang YanQing <udknight@gmail.com>
-Subject: [PATCH v2]8250_pci: Add WCH CH352 quirk to avoid Xscale detection
-Date: Tue, 5 Mar 2013 23:16:48 +0800
-Message-ID: <20130305151648.GA7482@udknight>
+Subject: [PATCH v2]serial: 8250_pci: add device id for a kind of Multi-I/O
+ Controller based on NetMos Technology PCI 9835
+Date: Tue, 5 Mar 2013 23:44:48 +0800
+Message-ID: <20130305154448.GA7842@udknight>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f45.google.com ([209.85.160.45]:52036 "EHLO
-	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752371Ab3CEPQO (ORCPT
+Received: from mail-pb0-f51.google.com ([209.85.160.51]:59790 "EHLO
+	mail-pb0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755179Ab3CEPoC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 10:16:14 -0500
+	Tue, 5 Mar 2013 10:44:02 -0500
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: paul.gortmaker@windriver.com, swarren@wwwdotorg.org, jslaby@suse.cz, alan@linux.intel.com, arnd@arndb.de, damm@opensource.se, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The code in 8250.c for detecting ARM/XScale UARTs says:
+I get a Multi-I/O Controller below:
+01:08.0 Communication controller: NetMos Technology PCI 9835 Multi-I/O Controller (rev 01)
+        Subsystem: LSI Logic / Symbios Logic 1P2S
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Interrupt: pin A routed to IRQ 20
+	Region 0: I/O ports at e050 [size=8]
+	Region 1: I/O ports at e040 [size=8]
+	Region 2: I/O ports at e030 [size=8]
+	Region 3: I/O ports at e020 [size=8]
+	Region 4: I/O ports at e010 [size=8]
+	Region 5: I/O ports at e000 [size=16]
 
-  * Try writing and reading the UART_IER_UUE bit (b6).
-  * If it works, this is probably one of the Xscale platform's
-  * internal UARTs.
-
-If the above passes, it then goes on to:
-
-     * It's an Xscale.
-     * We'll leave the UART_IER_UUE bit set to 1 (enabled).
-
-However, the CH352 uses the UART_IER_UUE as the LOWPOWER function,
-so it is readable and writable.  According to the datasheet:
-
-    "LOWPOWER:When the bit is 1, close the internal benchmark
-     clock of serial port to set into low-power status.
-
-So it essentially gets mis-detected as Xscale, and gets
-powered down in the process.  The device in question where
-this was seen is listed by lspci as:
-
- Serial controller: Device 4348:3253 (rev 10) (prog-if 02 [16550])
-
-Re-using the 353 quirk which just sets flags to fixed and type
-to 16550 is suitable for fixing the 352 as well.
+I get below from pci.ids:
+9710  NetMos Technology
+        9835  PCI 9835 Multi-I/O Controller
+                1000 0002  2S (16C550 UART)
+                1000 0012  1P2S
+I have tested 8250_pci.c, it works well with it,
+so we just need add the device id to the deivce
+id table.
 
 Signed-off-by: Wang YanQing <udknight@gmail.com>
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 ---
- Changes
- V1-V2:
- 1: Use a better descriptive subject by Paul Gortmaker 
- 2: Add more detail log by Paul Gortmaker 
+Changes:
+V1-V2:
+1: use a better descriptive subject
+2: add more detail log
 
- I resend this version, because it will make merge job easy, and I 
- will not owe gregkh juice :)
-
- Thanks, Paul Gortmaker and all
- drivers/tty/serial/8250/8250_pci.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Thanks
+ drivers/tty/serial/8250/8250_pci.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 791c5a7..5805f89 100644
+index 5805f89..2120840 100644
 --- a/drivers/tty/serial/8250/8250_pci.c
 +++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1554,6 +1554,7 @@ pci_wch_ch353_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
- #define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
- #define PCI_VENDOR_ID_WCH		0x4348
-+#define PCI_DEVICE_ID_WCH_CH352_2S	0x3253
- #define PCI_DEVICE_ID_WCH_CH353_4S	0x3453
- #define PCI_DEVICE_ID_WCH_CH353_2S1PF	0x5046
- #define PCI_DEVICE_ID_WCH_CH353_2S1P	0x7053
-@@ -2180,6 +2181,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice      = PCI_ANY_ID,
- 		.setup          = pci_wch_ch353_setup,
- 	},
-+	/* WCH CH352 2S card (16550 clone) */
-+	{
-+		.vendor		= PCI_VENDOR_ID_WCH,
-+		.device		= PCI_DEVICE_ID_WCH_CH352_2S,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_wch_ch353_setup,
-+	},
- 	/*
- 	 * ASIX devices with FIFO bug
- 	 */
-@@ -4869,6 +4878,10 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_ANY_ID, PCI_ANY_ID,
+@@ -4800,6 +4800,10 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_VENDOR_ID_IBM, 0x0299,
  		0, 0, pbn_b0_bt_2_115200 },
  
-+	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH352_2S,
-+		PCI_ANY_ID, PCI_ANY_ID,
++	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
++		0x1000, 0x0012,
 +		0, 0, pbn_b0_bt_2_115200 },
 +
- 	/*
- 	 * Commtech, Inc. Fastcom adapters
- 	 */
+ 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9901,
+ 		0xA000, 0x1000,
+ 		0, 0, pbn_b0_1_115200 },
 -- 
 1.7.12.4.dirty
