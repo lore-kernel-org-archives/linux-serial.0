@@ -1,177 +1,153 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH v2 08/12] serial: mxs-auart: move to use generic DMA helper
-Date: Tue, 5 Mar 2013 20:24:00 +0800
-Message-ID: <1362486244-24593-9-git-send-email-shawn.guo@linaro.org>
-References: <1362486244-24593-1-git-send-email-shawn.guo@linaro.org>
+From: Bastian Hecht <hechtb@gmail.com>
+Subject: Re: [PATCH v4 1/3] serial: sh-sci: Add OF support
+Date: Tue, 5 Mar 2013 13:58:13 +0100
+Message-ID: <CABYn4sxYRbmEe27WKE-FbTZ3_SM+APaYqHJ1=Zrk8_a5czxZaQ@mail.gmail.com>
+References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com>
+	<5345836.ZO7uU35cQD@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [216.32.181.183] ([216.32.181.183]:12276 "EHLO
-	ch1outboundpool.messaging.microsoft.com" rhost-flags-FAIL-FAIL-OK-OK)
-	by vger.kernel.org with ESMTP id S1752544Ab3CEM0p (ORCPT
+Received: from mail-we0-f175.google.com ([74.125.82.175]:59028 "EHLO
+	mail-we0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752766Ab3CEM6O (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 07:26:45 -0500
-In-Reply-To: <1362486244-24593-1-git-send-email-shawn.guo@linaro.org>
+	Tue, 5 Mar 2013 07:58:14 -0500
+In-Reply-To: <5345836.ZO7uU35cQD@wuerfel>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Vinod Koul <vinod.koul@intel.com>, Arnd Bergmann <arnd@arndb.de>, Marek Vasut <marek.vasut@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>, Huang Shijie <b32955@freescale.com>, Shawn Guo <shawn.guo@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
 
-With the generic DMA device tree helper supported by mxs-dma driver,
-client devices only need to call dma_request_slave_channel() for
-requesting a DMA channel from dmaengine.
+Hi Arnd,
 
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
----
- .../bindings/tty/serial/fsl-mxs-auart.txt          |   16 +++---
- drivers/tty/serial/mxs-auart.c                     |   52 ++------------------
- 2 files changed, 11 insertions(+), 57 deletions(-)
+thanks for having a look at it.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-index 273a8d5..2c00ec6 100644
---- a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-+++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
-@@ -5,20 +5,18 @@ Required properties:
-   imx23 and imx28.
- - reg : Address and length of the register set for the device
- - interrupts : Should contain the auart interrupt numbers
--
--Optional properties:
--- fsl,auart-dma-channel : The DMA channels, the first is for RX, the other
--		is for TX. If you add this property, it also means that you
--		will enable the DMA support for the auart.
--		Note: due to the hardware bug in imx23(see errata : 2836),
--		only the imx28 can enable the DMA support for the auart.
-+- dmas: DMA specifier, consisting of a phandle to DMA controller node
-+  and AUART DMA channel ID.
-+  Refer to dma.txt and fsl-mxs-dma.txt for details.
-+- dma-names: "rx" for RX channel, "tx" for TX channel.
- 
- Example:
- auart0: serial@8006a000 {
- 	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
- 	reg = <0x8006a000 0x2000>;
--	interrupts = <112 70 71>;
--	fsl,auart-dma-channel = <8 9>;
-+	interrupts = <112>;
-+	dmas = <&dma_apbx 8>, <&dma_apbx 9>;
-+	dma-names = "rx", "tx";
- };
- 
- Note: Each auart port should have an alias correctly numbered in "aliases"
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index d549fe1..269a27c 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -35,7 +35,7 @@
- #include <linux/pinctrl/consumer.h>
- #include <linux/of_device.h>
- #include <linux/dma-mapping.h>
--#include <linux/fsl/mxs-dma.h>
-+#include <linux/dmaengine.h>
- 
- #include <asm/cacheflush.h>
- 
-@@ -148,11 +148,6 @@ struct mxs_auart_port {
- 	struct device *dev;
- 
- 	/* for DMA */
--	struct mxs_dma_data dma_data;
--	int dma_channel_rx, dma_channel_tx;
--	int dma_irq_rx, dma_irq_tx;
--	int dma_channel;
--
- 	struct scatterlist tx_sgl;
- 	struct dma_chan	*tx_dma_chan;
- 	void *tx_dma_buf;
-@@ -440,20 +435,6 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
- 	return mctrl;
- }
- 
--static bool mxs_auart_dma_filter(struct dma_chan *chan, void *param)
--{
--	struct mxs_auart_port *s = param;
--
--	if (!mxs_dma_is_apbx(chan))
--		return false;
--
--	if (s->dma_channel == chan->chan_id) {
--		chan->private = &s->dma_data;
--		return true;
--	}
--	return false;
--}
--
- static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
- static void dma_rx_callback(void *arg)
- {
-@@ -545,21 +526,11 @@ static void mxs_auart_dma_exit(struct mxs_auart_port *s)
- 
- static int mxs_auart_dma_init(struct mxs_auart_port *s)
- {
--	dma_cap_mask_t mask;
--
- 	if (auart_dma_enabled(s))
- 		return 0;
- 
--	/* We do not get the right DMA channels. */
--	if (s->dma_channel_rx == -1 || s->dma_channel_tx == -1)
--		return -EINVAL;
--
- 	/* init for RX */
--	dma_cap_zero(mask);
--	dma_cap_set(DMA_SLAVE, mask);
--	s->dma_channel = s->dma_channel_rx;
--	s->dma_data.chan_irq = s->dma_irq_rx;
--	s->rx_dma_chan = dma_request_channel(mask, mxs_auart_dma_filter, s);
-+	s->rx_dma_chan = dma_request_slave_channel(s->dev, "rx");
- 	if (!s->rx_dma_chan)
- 		goto err_out;
- 	s->rx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
-@@ -567,9 +538,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
- 		goto err_out;
- 
- 	/* init for TX */
--	s->dma_channel = s->dma_channel_tx;
--	s->dma_data.chan_irq = s->dma_irq_tx;
--	s->tx_dma_chan = dma_request_channel(mask, mxs_auart_dma_filter, s);
-+	s->tx_dma_chan = dma_request_slave_channel(s->dev, "tx");
- 	if (!s->tx_dma_chan)
- 		goto err_out;
- 	s->tx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
-@@ -1020,7 +989,6 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
- 		struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
--	u32 dma_channel[2];
- 	int ret;
- 
- 	if (!np)
-@@ -1034,20 +1002,8 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
- 	}
- 	s->port.line = ret;
- 
--	s->dma_irq_rx = platform_get_irq(pdev, 1);
--	s->dma_irq_tx = platform_get_irq(pdev, 2);
-+	s->flags |= MXS_AUART_DMA_CONFIG;
- 
--	ret = of_property_read_u32_array(np, "fsl,auart-dma-channel",
--					dma_channel, 2);
--	if (ret == 0) {
--		s->dma_channel_rx = dma_channel[0];
--		s->dma_channel_tx = dma_channel[1];
--
--		s->flags |= MXS_AUART_DMA_CONFIG;
--	} else {
--		s->dma_channel_rx = -1;
--		s->dma_channel_tx = -1;
--	}
- 	return 0;
- }
- 
--- 
-1.7.9.5
+2013/3/4 Arnd Bergmann <arnd@arndb.de>:
+> On Monday 04 March 2013 17:20:52 Bastian Hecht wrote:
+>> diff --git a/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+>> new file mode 100644
+>> index 0000000..6ad1adf
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/tty/serial/renesas,sci-serial.txt
+>> @@ -0,0 +1,53 @@
+>> +* Renesas SH-Mobile Serial Communication Interface
+>> +
+>> +Required properties:
+>> +- compatible : Should be "renesas,sci-<port type>-uart", where <port type> may be
+>> +  SCI, SCIF, IRDA, SCIFA or SCIFB.
+>
+> Why capital letters here? Maybe just list
+>
+>         "renesas,sci-uart", "renesas,scif-uart", ...
+
+Yes - changed.
+
+>> +- reg : Address and length of the register set for the device
+>> +- interrupts : Should contain the following IRQs: ERI, RXI, TXI and BRI.
+>
+> You probably want to require the "interrupt-names" property as well
+> then.
+
+I added the interrupt-names property but still enforce the ordering in
+the binding specs.
+Don't know if we want the extra overhead to scan for strings or just
+take a certain order for granted.
+If we want to change it to parsing, it would be better to switch
+completely to platform_get_irq_byname() and change all the current
+platform code, else we will produce code overhead.
+
+>> +- cell-index : The device id.
+>> +- renesas,scscr : Should contain a bitfield used by the Serial Control Register.
+>> +  b7 = SCSCR_TIE
+>> +  b6 = SCSCR_RIE
+>> +  b5 = SCSCR_TE
+>> +  b4 = SCSCR_RE
+>> +  b3 = SCSCR_REIE
+>> +  b2 = SCSCR_TOIE
+>> +  b1 = SCSCR_CKE1
+>> +  b0 = SCSCR_CKE0
+>> +- renesas,scbrr-algo-id : Algorithm ID for the Bit Rate Register
+>> +  1 = SCBRR_ALGO_1 ((clk + 16 * bps) / (16 * bps) - 1)
+>> +  2 = SCBRR_ALGO_2 ((clk + 16 * bps) / (32 * bps) - 1)
+>> +  3 = SCBRR_ALGO_3 (((clk * 2) + 16 * bps) / (16 * bps) - 1)
+>> +  4 = SCBRR_ALGO_4 (((clk * 2) + 16 * bps) / (32 * bps) - 1)
+>> +  5 = SCBRR_ALGO_5 (((clk * 1000 / 32) / bps) - 1)
+>
+> Maybe replace this with a "clock-frequency" property? This may
+> be what the registers contain, but it is not very readable.
+
+Hmm... do you want a frequency in absolute terms? And then calculate
+the best SCBRR value for it?
+I'm unsure about this, either you must exactly hit it or accept
+tolerances? As something in between I renamed the property to
+"renesas,clock-algorithm", but I don't know if this is what you want.
+
+>> +Optional properties:
+>> +- renesas,autoconf : Set if device is capable of auto configuration
+>> +- renesas,regtype : Overwrite the register layout. In most cases you can rely
+>> +  on auto-probing (omit this property or set to 0) but some legacy devices
+>> +  use a non-default register layout. Possible layouts are
+>> +  0 = SCIx_PROBE_REGTYPE (default)
+>> +  1 = SCIx_SCI_REGTYPE
+>> +  2 = SCIx_IRDA_REGTYPE
+>> +  3 = SCIx_SCIFA_REGTYPE
+>> +  4 = SCIx_SCIFB_REGTYPE
+>> +  5 = SCIx_SH2_SCIF_FIFODATA_REGTYPE
+>> +  6 = SCIx_SH3_SCIF_REGTYPE
+>> +  7 = SCIx_SH4_SCIF_REGTYPE
+>> +  8 = SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE
+>> +  9 = SCIx_SH4_SCIF_FIFODATA_REGTYPE
+>> + 10 = SCIx_SH7705_SCIF_REGTYPE
+>
+> Why do you keep these separate from the "compatible" property?
+> By definition, the register layout is already determined by
+> "compatible".
+
+Ok, I've melted the register type and port type (defined in
+include/uapi/linux/serial_core.h) definition into the compatible
+property. Looks good!
+
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id of_sci_match[] = {
+>> +     { .compatible = "renesas,sci-SCI-uart",
+>> +             .data = (void *)PORT_SCI },
+>> +     { .compatible = "renesas,sci-SCIF-uart",
+>> +             .data = (void *)PORT_SCIF },
+>> +     { .compatible = "renesas,sci-IRDA-uart",
+>> +             .data = (void *)PORT_IRDA },
+>> +     { .compatible = "renesas,sci-SCIFA-uart",
+>> +             .data = (void *)PORT_SCIFA },
+>> +     { .compatible = "renesas,sci-SCIFB-uart",
+>> +             .data = (void *)PORT_SCIFB },
+>> +     {},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, of_sci_match);
+>> +
+>> +static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+>> +                                                             int *dev_id)
+>> +{
+>> +     struct plat_sci_port *p;
+>> +     struct device_node *np = pdev->dev.of_node;
+>> +     const struct of_device_id *match;
+>> +     struct resource *res;
+>> +     const __be32 *prop;
+>> +     int i, irq, val;
+>> +
+>
+> You can remove the #ifdef by replacing it with
+>
+>         if (!IS_ENABLED(CONFIG_OF) || !np)
+>                 return NULL;
+>
+> here. This gives better compile time coverage and more readable code.
+
+Alright, done!
+
+> Otherwise looks very nice!
+
+Cheers!
+
+ Bastian
 
 
+>         Arnd
