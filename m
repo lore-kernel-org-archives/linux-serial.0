@@ -1,202 +1,81 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
-Date: Tue, 05 Mar 2013 12:06:10 -0500
-Message-ID: <1362503170.18799.33.camel@thor.lan>
-References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz>
+Subject: Re: [PATCH v4 00/32] ldisc patchset
+Date: Tue, 05 Mar 2013 12:39:53 -0500
+Message-ID: <1362505193.18799.57.camel@thor.lan>
+References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+	 <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+	 <51261E30.9040907@gmail.com> <1361453910.10685.7.camel@thor.lan>
+	 <1361558250.14402.6.camel@thor.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:48683 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:53176 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753708Ab3CERGc (ORCPT
+	with ESMTP id S1755697Ab3CERkM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 12:06:32 -0500
-In-Reply-To: <51361724.4050107@suse.cz>
+	Tue, 5 Mar 2013 12:40:12 -0500
+In-Reply-To: <1361558250.14402.6.camel@thor.lan>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: jhovold@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>
 
-On Tue, 2013-03-05 at 17:02 +0100, Jiri Slaby wrote:
-> On 02/28/2013 09:57 PM, Peter Hurley wrote:
-> > Hi Jiri,
+On Fri, 2013-02-22 at 13:37 -0500, Peter Hurley wrote:
+> On Thu, 2013-02-21 at 08:38 -0500, Peter Hurley wrote:
+> > On Thu, 2013-02-21 at 08:16 -0500, Sasha Levin wrote:
+> > > On 02/20/2013 03:02 PM, Peter Hurley wrote:
+> > > > Sasha and Dave, my trinity testbeds die in other areas right now;
+> > > > I would really appreciate if you would please re-test this series.
+> > > 
+> > > Hi Peter,
+> > > 
+> > > I saw this twice in overnight fuzzing:
+> > > 
+> > > [ 1473.912280] =================================
+> > > [ 1473.913180] [ BUG: bad contention detected! ]
+> > > [ 1473.914071] 3.8.0-next-20130220-sasha-00038-g1ad55df-dirty #8 Tainted: G        W
+> > > [ 1473.915684] ---------------------------------
+> > > [ 1473.916549] kworker/1:1/361 is trying to contend lock (&tty->ldisc_sem) at:
+> > > [ 1473.918031] [<ffffffff81c493df>] tty_ldisc_ref+0x1f/0x60
+> > > [ 1473.919060] but there are no locks held!
 > > 
-> > Just wanted to make sure you saw this series.
-> 
-> Hi, thanks for letting me know. Johan, care to CC Alan Cox and me (or at
-> least LKML) when you're changing the TTY core next time?
-
-Alan asked to be dropped.
-
-On Wed, 2013-02-13 at 17:36 +0000, Alan Cox wrote:
-> [ Note that this closing of an uninitialised port seems to be a bug in
-> >   itself, which these patches aim to fix. ]
-> 
-> You don't want to be cc'ing me on these - not my problem any more.
-
-> I have a couple of questions for 2/4:
-> 
-> > Move HUPCL handling to port shutdown so that DTR is dropped also on
-> > hang up (tty_port_close is a noop for hung-up ports).
-> 
-> It makes sense, but I'm not sure -- is this expected, i.e. does this
-> conform to standards and/or BSDs?
-
-This is the existing behavior of the serial core.
-
-uart_hangup() -> uart_shutdown()
-
-static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
-{
-	struct uart_port *uport = state->uart_port;
-	struct tty_port *port = &state->port;
-
-	/*
-	 * Set the TTY IO error marker
-	 */
-	if (tty)
-		set_bit(TTY_IO_ERROR, &tty->flags);
-
-	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
-		/*
-		 * Turn off DTR and RTS early.
-		 */
-		if (!tty || (tty->termios.c_cflag & HUPCL))
-====>			uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
-
-		uart_port_shutdown(port);
-	}
-
-
-> > @@ -196,13 +196,20 @@ void tty_port_tty_set(struct tty_port *port, struct
-> > tty_struct *tty)
-> >  }
-> >  EXPORT_SYMBOL(tty_port_tty_set);
-> 
-> -static void tty_port_shutdown(struct tty_port *port)
-> +static void tty_port_shutdown(struct tty_port *port, struct tty_struct
-> *tty)
->  {
->         mutex_lock(&port->mutex);
->         if (port->console)
->                 goto out;
-> 
->         if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
-> +               /*
-> +                * Drop DTR/RTS if HUPCL is set. This causes any attached
-> +                * modem to hang up the line.
-> +                */
-
-[See my comment below]
-
-====>              if (!tty || tty->termios.c_cflag & HUPCL)
-
-> > +                       tty_port_lower_dtr_rts(port);
-> > +
-> 
-> So you drop the line even thought the user didn't necessarily want to,
-> in case the tty is gone already?
-> 
-> > @@ -225,15 +232,13 @@ void tty_port_hangup(struct tty_port *port)
->         spin_lock_irqsave(&port->lock, flags);
->         port->count = 0;
->         port->flags &= ~ASYNC_NORMAL_ACTIVE;
-> -       if (port->tty) {
-> +       if (port->tty)
->                 set_bit(TTY_IO_ERROR, &port->tty->flags);
-> -               tty_kref_put(port->tty);
-> -       }
-> -       port->tty = NULL;
->         spin_unlock_irqrestore(&port->lock, flags);
-> > +       tty_port_shutdown(port, port->tty);
-> 
-> What prevents port->tty to be NULL here already?
-
-Nothing. That's why it's tested in tty_port_shutdown() above.
-
-> > +       tty_port_tty_set(port, NULL);
-> >         wake_up_interruptible(&port->open_wait);
-> >         wake_up_interruptible(&port->delta_msr_wait);
-> > -       tty_port_shutdown(port);
-> 
-> Did you investigate if the order matters here? I don't know, just curious...
-
-I did.
-
-It makes sense to wake blocked opens only _after_ the port has been
-shutdown. This way any blocked opens wake up, discover the port has been
-shutdown and exit their wait loops in xxxxxx_block_til_ready().
-
-Similarly for delta_msr_wait. Although I think the delta_msr_wait loop
-is already unsafe (or at least not robust).
-
-
-> > @@ -452,11 +457,6 @@ int tty_port_close_start(struct tty_port *port,
->         /* Flush the ldisc buffering */
->         tty_ldisc_flush(tty);
-> 
-> -       /* Drop DTR/RTS if HUPCL is set. This causes any attached modem to
-> -          hang up the line */
-> -       if (tty->termios.c_cflag & HUPCL)
-> -               tty_port_lower_dtr_rts(port);
-> -
->         /* Don't call port->drop for the last reference. Callers will want
->            to drop the last active reference in ->shutdown() or the tty
-> >            shutdown path */
-> 
-> > -------- Forwarded Message --------
-> > From: Johan Hovold <jhovold@gmail.com>
-> > To: Greg KH <gregkh@linuxfoundation.org>
-> > Cc: Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org,
-> > linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
-> > Johan Hovold <jhovold@gmail.com>
-> > Subject: [PATCH v2 0/4] TTY: port hangup and close fixes
-> > Date: Tue, 26 Feb 2013 12:14:28 +0100
+> > Ahh, of course. That explains why the rwsem trylock doesn't track lock
+> > stats -- because by the time lock_contended() is called, up_write()
+> > could have just called lockdep_release(), so that it appears as if the
+> > lock has been released when in fact it has not but is about to.
 > > 
-> > These patches against tty-next fix a few issues with tty-port hangup and
-> > close.
-> > 
-> > The first and third patch are essentially clean ups.
-> > 
-> > The second patch makes sure DTR is dropped also on hangup and that DTR
-> > is only dropped for initialised ports (where is could have been raised
-> > in the first place).
-> > 
-> > The fourth and final patch, make sure no tty callbacks are made from
-> > tty_port_close_start when the port has not been initialised (successfully
-> > opened). This was previously only done for wait_until_sent but there's
-> > no reason to call flush_buffer or to honour port drain delay either.
-> > The latter could cause a failed open to stall for up to two seconds.
-> > 
-> > As a side-effect, these patches also fix an issue in USB-serial where we could
-> > get tty-port callbacks on an uninitialised port after having hung up and
-> > unregistered a device after disconnect.
-> > 
-> > Johan
-> > 
-> > 
-> > v2:
-> >  - reuse tty reference from hangup and close in shutdown. Both call sites
-> >    guarantee tty is either NULL or has a kref.
-> > 
-> > Changes since RFC-series:
-> >  - fix up the two driver relying on tty_port_close_start directly but
-> >    that did not manage DTR themselves
-> > 
-> > 
-> > Johan Hovold (4):
-> >   TTY: clean up port shutdown
-> >   TTY: fix DTR not being dropped on hang up
-> >   TTY: clean up port drain-delay handling
-> >   TTY: fix close of uninitialised ports
-> > 
-> >  drivers/tty/mxser.c    |  4 +++
-> >  drivers/tty/n_gsm.c    |  4 +++
-> >  drivers/tty/tty_port.c | 72 +++++++++++++++++++++++++++++---------------------
-> >  3 files changed, 50 insertions(+), 30 deletions(-)
-> > 
-> 
-> thanks,
+> > I'll just remove the lock contention test from the trylocks.
+
+Hi Greg,
+
+I thought I'd recap the various reports so this patchset can move
+forward and you don't feel like you're wasting time reviewing it.
+
+1. The 'BUG: bad contention detected' is fixed by the inline patch I
+replied with.
+
+2. The various hung task reports specifically wrt. pmtx_open() and
+tty_open() actually pre-date this series and have been discovered to be
+due to the ircomm_tty driver sleeping holding the tty_lock(). Dave
+Miller has that patch and may or may not apply it.  [You were cc'd on
+that conversation.]
+
+3. The other hung task reports from Sasha involving hangup are only
+indirectly related to this patchset, in that the task signalling done by
+the session leader is in the wrong order wrt. the ldisc hangup. Sasha
+and I have been running an additional patchset on top of this which
+properly orders the foreground process group signalling and fixes that
+hung task.
+
+I've delayed rebasing this on tty-next (which will now be necessary
+because of the last-minute drop of the "tty is NULL" warning) until
+after this review is complete.
+
+Please let me know if you have concerns I haven't addressed here.
+
+Regards,
+Peter Hurley
+
 
 
