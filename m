@@ -1,31 +1,44 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v4 00/32] ldisc patchset
-Date: Tue, 5 Mar 2013 22:18:27 +0100
-Message-ID: <20130305211827.GB5771@linutronix.de>
-References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
- <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+From: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
+Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
+Date: Tue, 05 Mar 2013 22:56:57 +0100
+Message-ID: <51366A29.2060808@suse.cz>
+References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz> <1362503170.18799.33.camel@thor.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:39311 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756385Ab3CEVSd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 16:18:33 -0500
-Content-Disposition: inline
-In-Reply-To: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1362503170.18799.33.camel-AsKIXgLx6sE@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>
 
-* Peter Hurley | 2013-02-20 15:02:47 [-0500]:
+On 03/05/2013 06:06 PM, Peter Hurley wrote:
+>>> @@ -225,15 +232,13 @@ void tty_port_hangup(struct tty_port *port)
+>>         spin_lock_irqsave(&port->lock, flags);
+>>         port->count = 0;
+>>         port->flags &= ~ASYNC_NORMAL_ACTIVE;
+>> -       if (port->tty) {
+>> +       if (port->tty)
+>>                 set_bit(TTY_IO_ERROR, &port->tty->flags);
+>> -               tty_kref_put(port->tty);
+>> -       }
+>> -       port->tty = NULL;
+>>         spin_unlock_irqrestore(&port->lock, flags);
+>>> +       tty_port_shutdown(port, port->tty);
+>>
+>> What prevents port->tty to be NULL here already?
+> 
+> Nothing. That's why it's tested in tty_port_shutdown() above.
 
->Sebastian, please re-test your g_nokia+dummy_hcd testcase with
->this series.
+I know :). But the question is rather don't we want to pass the real
+refcounted port->tty (take a snapshot inside the lock) instead?
 
-I tested this on top ov v3.9-rc1. Without this series I see often a
-warning in drivers/tty/tty_buffer.c:428 / flush_to_ldisc(). With this
-things seem to work fine.
-
-Sebastian
+thanks,
+-- 
+js
+suse labs
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
