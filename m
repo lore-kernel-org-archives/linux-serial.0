@@ -1,69 +1,31 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v5] serial: sh-sci: Add OF support - incremental
-Date: Tue, 5 Mar 2013 19:28:50 +0000
-Message-ID: <201303051928.50331.arnd@arndb.de>
-References: <1362490239-17848-1-git-send-email-hechtb+renesas@gmail.com>
+Subject: Re: [PATCH v2 00/12] ARM: mxs: move to generic DMA device tree binding
+Date: Tue, 5 Mar 2013 19:39:00 +0000
+Message-ID: <201303051939.00808.arnd@arndb.de>
+References: <1362486244-24593-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
 Content-Type: Text/Plain;
   charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1362490239-17848-1-git-send-email-hechtb+renesas@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Bastian Hecht <hechtb@gmail.com>
-Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.171]:63822 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750755Ab3CETjP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Mar 2013 14:39:15 -0500
+In-Reply-To: <1362486244-24593-1-git-send-email-shawn.guo@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Marek Vasut <marek.vasut@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>, Huang Shijie <b32955@freescale.com>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Artem Bityutskiy <dedekind1@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Chris Ball <cjb@laptop.org>, alsa-devel@alsa-project.org, linux-serial@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org
 
-On Tuesday 05 March 2013, Bastian Hecht wrote:
-> This is an incremental patch to the "[PATCH v4 1/3] serial: sh-sci: Add
-> OF support" implementing suggestions from Arnd.
+On Tuesday 05 March 2013, Shawn Guo wrote:
+> The series converts mxs-dma and its clients to generic DMA device tree
+> binding/helper.
 > 
-> - The compatible pattern has been reworked to include devices with
->   legacy register sets.
-> - DT property interrupt-names added
-> - Renamed renesas,scbrr-algo-id into renesas,clock-algorithm
-> - Replaced #ifdef CONFIG_OF with
->   +       if (!IS_ENABLED(CONFIG_OF) || !np)
->   +                               return NULL;
-> 
-> I opted to show the changes in an incremental patch as it may be easier
-> to follow the changes and as Paul has the v3 already in his repo.
+> I published a branch below to ease people who is willing to help
+> testing the series.
 
-Ok, makes sense.
+Looks all good, aside from the bug I found in the first patch.
 
-> -	sci@0xe6c50000 {
-> -		compatible = "renesas,sci-SCIFA-uart";
-> +	sci@e6c50000 {
-> +		compatible = "renesas,sci-scifa-serial";
-
-As mentioned, I meant the name to be changed, not the compatible value.
-
-> +	{ .compatible = "renesas,sci-sci-serial",
-> +		.data = (void *)SCIx_SCI_REGTYPE },
-> +	{ .compatible = "renesas,sci-scif-serial",
-> +		.data = (void *)SCIx_SH4_SCIF_REGTYPE, },
-> +	{ .compatible = "renesas,sci-irda-serial",
-> +		.data = (void *)SCIx_IRDA_REGTYPE },
-> +	{ .compatible = "renesas,sci-scifa-serial",
-> +		.data = (void *)SCIx_SCIFA_REGTYPE },
-> +	{ .compatible = "renesas,sci-scifb-serial",
-> +		.data = (void *)SCIx_SCIFB_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh2_scif_fifodata-serial",
-> +		.data = (void *)SCIx_SH2_SCIF_FIFODATA_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh3_scif-serial",
-> +		.data = (void *)SCIx_SH3_SCIF_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh4_scif-serial",
-> +		.data = (void *)SCIx_SH4_SCIF_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh4_scif_no_scsptr-serial",
-> +		.data = (void *)SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh4_scif_fifodata-serial",
-> +		.data = (void *)SCIx_SH4_SCIF_FIFODATA_REGTYPE },
-> +	{ .compatible = "renesas,sci-sh7705_scif-serial",
-> +		.data = (void *)SCIx_SH7705_SCIF_REGTYPE },
->  	{},
-
-Ah nice, it's not even more complex than before.
-
-Looks good,
-
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
