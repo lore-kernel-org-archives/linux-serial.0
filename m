@@ -1,59 +1,77 @@
-From: Jiri Slaby <jslaby@suse.cz>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH v3 00/23] ldisc fixes
-Date: Tue, 05 Mar 2013 23:39:47 +0100
-Message-ID: <51367433.4060408@suse.cz>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>  <20130305205033.GA5771@linutronix.de> <1362522029.18799.145.camel@thor.lan>
+Date: Tue, 05 Mar 2013 18:14:32 -0500
+Message-ID: <1362525272.18799.165.camel@thor.lan>
+References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
+	  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
+	  <20130305205033.GA5771@linutronix.de>
+	 <1362522029.18799.145.camel@thor.lan> <51367433.4060408@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:55315 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754728Ab3CEWjw (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:57286 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751163Ab3CEXOt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 17:39:52 -0500
-In-Reply-To: <1362522029.18799.145.camel@thor.lan>
+	Tue, 5 Mar 2013 18:14:49 -0500
+In-Reply-To: <51367433.4060408@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: Felipe Balbi <balbi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 
-On 03/05/2013 11:20 PM, Peter Hurley wrote:
-> [--cc Alan Cox]
+[now this discussion has turned to usb gadget
++cc Felipe Balbi, linux-usb, -cc Dave Jones, Ilya Zykov]
+
+On Tue, 2013-03-05 at 23:39 +0100, Jiri Slaby wrote:
+> On 03/05/2013 11:20 PM, Peter Hurley wrote:
+> > [--cc Alan Cox]
+> > 
+> > On Tue, 2013-03-05 at 21:50 +0100, Sebastian Andrzej Siewior wrote:
+> >> * Peter Hurley | 2013-02-05 15:20:15 [-0500]:
+> >>
+> >>>  Please re-test with your dummy_hcd/g_nokia testcase, although
+> >>>  I'm not convinced that usb gadget is using tty_hangup() appropriately.
+> >>>  tty drivers use this for async carrier loss coming from an IRQ
+> >>>  which will be disabled if the tty has been shutdown. Does gserial
+> >>>  prevent async hangup to a dead tty in a similar fashion?
+> >>
+> >> Not sure I understood. tty_hangup() is only called from within
+> >> gserial_disconnect() which calls right after usb_ep_disable(). After
+> >> usb_ep_disable() no further serial packets can be received until the
+> >> endpoints are re-enabled. This happens in gserial_connect().
+> > 
+> > That's why I asked. There are two potential issues:
+> > 
+> > First, tty_hangup() is asynchronous -- ie., it returns immediately. It
+> > does not wait for the tty device to actually perform the hangup. So if
+> > the gadget layers start cleanup immediately after, expecting that they
+> > won't get a flurry of tty calls, that would be bad.
 > 
-> On Tue, 2013-03-05 at 21:50 +0100, Sebastian Andrzej Siewior wrote:
->> * Peter Hurley | 2013-02-05 15:20:15 [-0500]:
->>
->>>  Please re-test with your dummy_hcd/g_nokia testcase, although
->>>  I'm not convinced that usb gadget is using tty_hangup() appropriately.
->>>  tty drivers use this for async carrier loss coming from an IRQ
->>>  which will be disabled if the tty has been shutdown. Does gserial
->>>  prevent async hangup to a dead tty in a similar fashion?
->>
->> Not sure I understood. tty_hangup() is only called from within
->> gserial_disconnect() which calls right after usb_ep_disable(). After
->> usb_ep_disable() no further serial packets can be received until the
->> endpoints are re-enabled. This happens in gserial_connect().
+> Sorry, I missed what driver is this?
+
+g_serial.
+
+drivers/usb/gadget/u_serial.c
+
+> > tty_vhangup() is synchronous -- ie., you wait while it cleans up. This
+> > is what the usb serial core does on it's disconnect() method. But I
+> > didn't research further if the circumstances were the same.
 > 
-> That's why I asked. There are two potential issues:
-> 
-> First, tty_hangup() is asynchronous -- ie., it returns immediately. It
-> does not wait for the tty device to actually perform the hangup. So if
-> the gadget layers start cleanup immediately after, expecting that they
-> won't get a flurry of tty calls, that would be bad.
+> Even when tty_vhangup returns, it does not guarantee a closed tty. And
+> it also does not guarantee that any of tty->ops won't be called. The
+> latter is true only for devices that can be consoles. (For those,
+> file->ops are not redirected.) In that case one needs to wait for
+> port->count to become 0.
 
-Sorry, I missed what driver is this?
+Perhaps I was oversimplifying.
 
-> tty_vhangup() is synchronous -- ie., you wait while it cleans up. This
-> is what the usb serial core does on it's disconnect() method. But I
-> didn't research further if the circumstances were the same.
+But my point was I doubt usb gadget is conducting its teardown safely
+wrt tty.
 
-Even when tty_vhangup returns, it does not guarantee a closed tty. And
-it also does not guarantee that any of tty->ops won't be called. The
-latter is true only for devices that can be consoles. (For those,
-file->ops are not redirected.) In that case one needs to wait for
-port->count to become 0.
+Regards,
+Peter Hurley
 
--- 
-js
-suse labs
+
+
