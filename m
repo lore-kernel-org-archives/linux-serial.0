@@ -1,81 +1,49 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v4 00/32] ldisc patchset
-Date: Tue, 05 Mar 2013 12:39:53 -0500
-Message-ID: <1362505193.18799.57.camel@thor.lan>
-References: <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-	 <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-	 <51261E30.9040907@gmail.com> <1361453910.10685.7.camel@thor.lan>
-	 <1361558250.14402.6.camel@thor.lan>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v4 3/3] ARM: mach-shmobile: r8a7740: Setup the serial devices using DT
+Date: Tue, 5 Mar 2013 19:22:02 +0000
+Message-ID: <201303051922.02455.arnd@arndb.de>
+References: <1362414054-23092-1-git-send-email-hechtb+renesas@gmail.com> <2835497.S76YK1KMLM@wuerfel> <CABYn4sx=bC6JwicbVgRnmwdu=6DuW5GFgdG25a-Wow1Jn9M-bQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:53176 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755697Ab3CERkM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 12:40:12 -0500
-In-Reply-To: <1361558250.14402.6.camel@thor.lan>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CABYn4sx=bC6JwicbVgRnmwdu=6DuW5GFgdG25a-Wow1Jn9M-bQ@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Bastian Hecht <hechtb@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <levinsasha928@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ilya Zykov <ilya@ilyx.ru>, Dave Jones <davej@redhat.com>, Michael Ellerman <michael@ellerman.id.au>, Shawn Guo <shawn.guo@linaro.org>
 
-On Fri, 2013-02-22 at 13:37 -0500, Peter Hurley wrote:
-> On Thu, 2013-02-21 at 08:38 -0500, Peter Hurley wrote:
-> > On Thu, 2013-02-21 at 08:16 -0500, Sasha Levin wrote:
-> > > On 02/20/2013 03:02 PM, Peter Hurley wrote:
-> > > > Sasha and Dave, my trinity testbeds die in other areas right now;
-> > > > I would really appreciate if you would please re-test this series.
-> > > 
-> > > Hi Peter,
-> > > 
-> > > I saw this twice in overnight fuzzing:
-> > > 
-> > > [ 1473.912280] =================================
-> > > [ 1473.913180] [ BUG: bad contention detected! ]
-> > > [ 1473.914071] 3.8.0-next-20130220-sasha-00038-g1ad55df-dirty #8 Tainted: G        W
-> > > [ 1473.915684] ---------------------------------
-> > > [ 1473.916549] kworker/1:1/361 is trying to contend lock (&tty->ldisc_sem) at:
-> > > [ 1473.918031] [<ffffffff81c493df>] tty_ldisc_ref+0x1f/0x60
-> > > [ 1473.919060] but there are no locks held!
-> > 
-> > Ahh, of course. That explains why the rwsem trylock doesn't track lock
-> > stats -- because by the time lock_contended() is called, up_write()
-> > could have just called lockdep_release(), so that it appears as if the
-> > lock has been released when in fact it has not but is about to.
-> > 
-> > I'll just remove the lock contention test from the trylocks.
+On Tuesday 05 March 2013, Bastian Hecht wrote:
+> 2013/3/4 Arnd Bergmann <arnd@arndb.de>:
+> > On Monday 04 March 2013 17:20:54 Bastian Hecht wrote:
+> >>
+> >> +       sci@e6c40000 {
+> >> +               compatible = "renesas,sci-SCIFA-uart";
+> >> +               interrupt-parent = <&intca>;
+> >> +               reg = <0xe6c40000 0x100>;
+> >> +               interrupts = <0x0c00>, <0x0c00>, <0x0c00>, <0x0c00>;
+> >> +               cell-index = <0>;
+> >> +               renesas,scscr = <0x30>;
+> >> +               renesas,scbrr-algo-id = <4>;
+> >> +               renesas,autoconf;
+> >> +       };
+> >
+> > The default name for a uart is "serial", I would recommend sticking to
+> > that by convention. You may also want to add an "aliases" node
+> > somewhere, to define which port should get which logical device number
+> > on a given board.
+> 
+> Switched to "...-serial".
 
-Hi Greg,
+I actually meant the name, not the "compatible" value. For compatible, either
+version is fine with me. What I think you should change though is renaming
+"sci@e6c40000" to "serial@e6c40000".
 
-I thought I'd recap the various reports so this patchset can move
-forward and you don't feel like you're wasting time reviewing it.
+> About the aliases: Would I need to add that now, or can we postpone that?
+> 
 
-1. The 'BUG: bad contention detected' is fixed by the inline patch I
-replied with.
+No hurry for that. It's just a feature that comes in very handy, but not
+all platforms implement it.
 
-2. The various hung task reports specifically wrt. pmtx_open() and
-tty_open() actually pre-date this series and have been discovered to be
-due to the ircomm_tty driver sleeping holding the tty_lock(). Dave
-Miller has that patch and may or may not apply it.  [You were cc'd on
-that conversation.]
-
-3. The other hung task reports from Sasha involving hangup are only
-indirectly related to this patchset, in that the task signalling done by
-the session leader is in the wrong order wrt. the ldisc hangup. Sasha
-and I have been running an additional patchset on top of this which
-properly orders the foreground process group signalling and fixes that
-hung task.
-
-I've delayed rebasing this on tty-next (which will now be necessary
-because of the last-minute drop of the "tty is NULL" warning) until
-after this review is complete.
-
-Please let me know if you have concerns I haven't addressed here.
-
-Regards,
-Peter Hurley
-
-
-
+	Arnd
