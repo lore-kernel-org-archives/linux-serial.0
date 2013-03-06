@@ -1,85 +1,91 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: arc_uart: serial output truncated
-Date: Wed, 06 Mar 2013 13:58:14 -0500
-Message-ID: <1362596294.18799.185.camel@thor.lan>
-References: <513748EA.7050407@synopsys.com>
+Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
+Date: Wed, 06 Mar 2013 14:14:56 -0500
+Message-ID: <1362597296.18799.198.camel@thor.lan>
+References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz>
+	 <20130306165211.GA23635@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:38689 "EHLO
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:40054 "EHLO
 	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753882Ab3CFS6U (ORCPT
+	with ESMTP id S1752910Ab3CFTPk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 13:58:20 -0500
-In-Reply-To: <513748EA.7050407@synopsys.com>
+	Wed, 6 Mar 2013 14:15:40 -0500
+In-Reply-To: <20130306165211.GA23635@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>
 
-On Wed, 2013-03-06 at 19:17 +0530, Vineet Gupta wrote:
-> Hi,
+On Wed, 2013-03-06 at 17:52 +0100, Johan Hovold wrote:
+
+> > > @@ -225,15 +232,13 @@ void tty_port_hangup(struct tty_port *port)
+> >         spin_lock_irqsave(&port->lock, flags);
+> >         port->count = 0;
+> >         port->flags &= ~ASYNC_NORMAL_ACTIVE;
+> > -       if (port->tty) {
+> > +       if (port->tty)
+> >                 set_bit(TTY_IO_ERROR, &port->tty->flags);
+> > -               tty_kref_put(port->tty);
+> > -       }
+> > -       port->tty = NULL;
+> >         spin_unlock_irqrestore(&port->lock, flags);
+> > > +       tty_port_shutdown(port, port->tty);
+> > 
+> > What prevents port->tty to be NULL here already?
 > 
-> I'm seeing truncated serial console output, with 3.8 based arc_uart driver
-> (drivers/tty/serial/arc_uart.c)
+> Nothing, I'll get a new reference within the port lock section as you
+> just suggested elsewhere in this thread.
 
-<...snip...>
+Don't do that. Steal the tty and put the kref after like this:
 
-> However user app then immediately calls exit().
+void tty_port_hangup(struct tty_port *port)
+{
+	struct tty_struct *tty;
+	unsigned long flags;
+
+	spin_lock_irqsave(&port->lock, flags);
+	port->count = 0;
+	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+	tty = port->tty;
+	port->tty = NULL;
+	if (tty)
+		set_bit(TTY_IO_ERROR, &tty->flags);
+	spin_unlock_irqrestore(&port->lock, flags);
+	tty_port_shutdown(port, tty);
+	tty_kref_put(tty);
+	wake_up_interruptible(&port->open_wait);
+	wake_up_interruptible(&port->delta_msr_wait);
+}
+
+
+
+> Yes, I did. First, the order should not matter for blocked opens as they
+> will exit their wait loops based on tty_hung_up_p(filp) either way.
+
+Only if the open() was ever successful, otherwise the filp won't be in
+the tty->tty_files list. That's why the blocking opens also check
+ASYNC_INITIALIZED (or ASYNCB_INITIALIZED depending on which they use).
+
+Which is why I said it was actually better to shutdown() first, then
+wake up the blocked opens.
+
+> As for delta_msr_wait the changed order is actually preferred as it
+> allows the waiting process to return based on ASYNC_INITIALIZED. This is
+> also the order used by serial_core. Note however that the current
+> serial_core TIOCMIWAIT is broken in that it doesn't return on hangups at
+> all.
 > 
-> do_exit
->   tty_release
->     uart_close
->       tty_port_close_start --> returns 0 - because port->count == 4
-> ...
->   disassociate_ctty
->     tty_ldisk_hangup
->       tty_driver_flush_buffer
->          tty->ops->flush_buffer
->          uart_flush_buffer
->            uart_circ_clear  --> zeros the driver tx buffer head/tail
-> 
-> 
-> tty_port_close_start() has logic for port->drain_delay but in my case the
-> port->count is 4 (3 due to init task, 1 from this specific app) so that logic is
-> not hit.
-> 
-> Eventually, uart_flush_buffer is called, with unwritten data still present, but
-> the head/tail pointers are reset, causing that driver data to be effectively lost.
-> 
-> So maybe this is how it works (for a 1 deep FIFO uart) but I wanted to confirm
-> with the serial gurus. Is there any serial setting I can apply here to enable the
-> last remaining chars to be dumped out of uart tx buffer.
+> Perhaps I should separate this to a patch of its own, and send a fix
+> for serial_core TIOCMIWAIT as well.
 
-Hi Vineet,
+uart_wait_modem_status() is what I was referring to and should be fixed.
 
-You're correct in that this is not driver related, and that it's a
-problem in the tty core, specifically in __tty_hangup().
-
-The problem is actually worse with a really high speed tty (like over
-Firewire) and on the receive end can amount to 60+K of dropped data.
-
-The problem stems from the semantics of 'hangup': for one usage, it
-means 'this end is done transmitting' and in the other usage, it means
-'don't send me anymore data'. So for first meaning, receiving all the
-data is important. In the second meaning, the receiver doesn't want data
-anymore.
-
-Unfortunately, there is almost no distinction in the tty core; it
-implements the second meaning while providing interface for the first
-meaning.
-
-I'm meaning to address this eventually (because I'm working around this
-now in TTY-over-Firewire -- its on the receive end so wouldn't be any
-help in your situation), but don't have a plan on how to best fix this
-yet.
+Patches always welcome.
 
 Regards,
 Peter Hurley
-
-
-
-
 
 
