@@ -1,75 +1,53 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 7/7] n_tty: Buffer work should not reschedule itself
-Date: Wed,  6 Mar 2013 08:38:25 -0500
-Message-ID: <1362577105-19757-8-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 5/7] n_tty: Untangle read completion variables
+Date: Wed,  6 Mar 2013 08:38:23 -0500
+Message-ID: <1362577105-19757-6-git-send-email-peter@hurleysoftware.com>
 References: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:50390 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:50371 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755999Ab3CFNjG (ORCPT
+	with ESMTP id S1757939Ab3CFNjC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 08:39:06 -0500
+	Wed, 6 Mar 2013 08:39:02 -0500
 In-Reply-To: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Although the driver-side input path must update the available
-buffer space, it should not reschedule itself. If space is still
-available and the flip buffers are not empty, flush_to_ldisc()
-will loop again.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/tty/n_tty.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 61a55f4..6f9694d 100644
+index 3fd657b..b2f621f 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -118,14 +118,14 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
-  *	n_tty_set_room	-	receive space
-  *	@tty: terminal
-  *
-- *	Sets tty->receive_room to reflect the currently available space
-+ *	Updates tty->receive_room to reflect the currently available space
-  *	in the input buffer, and re-schedules the flip buffer work if space
-  *	just became available.
-  *
-  *	Locks: Concurrent update is protected with read_lock
-  */
- 
--static void n_tty_set_room(struct tty_struct *tty)
-+static int set_room(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	int left;
-@@ -155,8 +155,13 @@ static void n_tty_set_room(struct tty_struct *tty)
- 
- 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
- 
-+	return left && !old_left;
-+}
-+
-+static void n_tty_set_room(struct tty_struct *tty)
-+{
- 	/* Did this open up the receive buffer? We may need to flip */
--	if (left && !old_left) {
-+	if (set_room(tty)) {
- 		WARN_RATELIMIT(tty->port->itty == NULL,
- 				"scheduling with invalid itty\n");
- 		/* see if ldisc has been killed - if so, this means that
-@@ -1475,7 +1480,7 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 			tty->ops->flush_chars(tty);
+@@ -1814,20 +1814,16 @@ do_it_again:
+ 	minimum = time = 0;
+ 	timeout = MAX_SCHEDULE_TIMEOUT;
+ 	if (!ldata->icanon) {
+-		time = (HZ / 10) * TIME_CHAR(tty);
+ 		minimum = MIN_CHAR(tty);
+ 		if (minimum) {
++			time = (HZ / 10) * TIME_CHAR(tty);
+ 			if (time)
+ 				ldata->minimum_to_wake = 1;
+ 			else if (!waitqueue_active(&tty->read_wait) ||
+ 				 (ldata->minimum_to_wake > minimum))
+ 				ldata->minimum_to_wake = minimum;
+ 		} else {
+-			timeout = 0;
+-			if (time) {
+-				timeout = time;
+-				time = 0;
+-			}
++			timeout = (HZ / 10) * TIME_CHAR(tty);
+ 			ldata->minimum_to_wake = minimum = 1;
+ 		}
  	}
- 
--	n_tty_set_room(tty);
-+	set_room(tty);
- 
- 	if ((!ldata->icanon && (ldata->read_cnt >= ldata->minimum_to_wake)) ||
- 		L_EXTPROC(tty)) {
 -- 
 1.8.1.2
 
