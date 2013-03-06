@@ -1,62 +1,85 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 1/3] n_tty: Inline check_unthrottle() at lone call site
-Date: Wed,  6 Mar 2013 08:20:51 -0500
-Message-ID: <1362576053-1295-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 3/3] n_tty: Fix stuck throttled driver
+Date: Wed,  6 Mar 2013 08:20:53 -0500
+Message-ID: <1362576053-1295-3-git-send-email-peter@hurleysoftware.com>
+References: <1362576053-1295-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:48786 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:48797 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755304Ab3CFNVT (ORCPT
+	with ESMTP id S1755866Ab3CFNVZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 08:21:19 -0500
+	Wed, 6 Mar 2013 08:21:25 -0500
+In-Reply-To: <1362576053-1295-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vincent Pillet <vincentx.pillet@intel.com>, Peter Hurley <peter@hurleysoftware.com>
 
-2-line function check_unthrottle() is now only called from
-n_tty_read(); merge into caller.
+As noted in the following comment:
 
+  /* FIXME: there is a tiny race here if the receive room check runs
+     before the other work executes and empties the buffer (upping
+     the receiving room and unthrottling. We then throttle and get
+     stuck. This has been observed and traced down by Vincent Pillet/
+     We need to address this when we sort out out the rx path locking */
+
+Use new safe throttle/unthrottle functions to re-evaluate conditions
+if interrupted by the complement flow control function.
+
+Reported-by: Vincent Pillet <vincentx.pillet@intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+ drivers/tty/n_tty.c | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 66ce178..8f9f665 100644
+index 8f9f665..96d11ec 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -195,21 +195,6 @@ static void put_tty_queue(unsigned char c, struct n_tty_data *ldata)
+@@ -1474,14 +1474,14 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 	 * mode.  We don't want to throttle the driver if we're in
+ 	 * canonical mode and don't have a newline yet!
+ 	 */
+-	if (tty->receive_room < TTY_THRESHOLD_THROTTLE)
+-		tty_throttle(tty);
+-
+-        /* FIXME: there is a tiny race here if the receive room check runs
+-           before the other work executes and empties the buffer (upping
+-           the receiving room and unthrottling. We then throttle and get
+-           stuck. This has been observed and traced down by Vincent Pillet/
+-           We need to address this when we sort out out the rx path locking */
++	while (1) {
++		tty_set_flow_change(tty, TTY_THROTTLE_SAFE);
++		if (tty->receive_room >= TTY_THRESHOLD_THROTTLE)
++			break;
++		if (!tty_throttle_safe(tty))
++			break;
++	}
++	__tty_set_flow_change(tty, 0);
  }
  
- /**
-- *	check_unthrottle	-	allow new receive data
-- *	@tty; tty device
-- *
-- *	Check whether to call the driver unthrottle functions
-- *
-- *	Can sleep, may be called under the atomic_read_lock mutex but
-- *	this is not guaranteed.
-- */
--static void check_unthrottle(struct tty_struct *tty)
--{
--	if (tty->count)
--		tty_unthrottle(tty);
--}
--
--/**
-  *	reset_buffer_flags	-	reset buffer state
-  *	@tty: terminal to reset
-  *
-@@ -1971,7 +1956,8 @@ do_it_again:
+ int is_ignored(int sig)
+@@ -1954,11 +1954,17 @@ do_it_again:
+ 		 * longer than TTY_THRESHOLD_UNTHROTTLE in canonical mode,
+ 		 * we won't get any more characters.
  		 */
- 		if (n_tty_chars_in_buffer(tty) <= TTY_THRESHOLD_UNTHROTTLE) {
+-		if (n_tty_chars_in_buffer(tty) <= TTY_THRESHOLD_UNTHROTTLE) {
++		while (1) {
++			tty_set_flow_change(tty, TTY_UNTHROTTLE_SAFE);
++			if (n_tty_chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
++				break;
++			if (!tty->count)
++				break;
  			n_tty_set_room(tty);
--			check_unthrottle(tty);
-+			if (tty->count)
-+				tty_unthrottle(tty);
+-			if (tty->count)
+-				tty_unthrottle(tty);
++			if (!tty_unthrottle_safe(tty))
++				break;
  		}
++		__tty_set_flow_change(tty, 0);
  
  		if (b - buf >= minimum)
+ 			break;
 -- 
 1.8.1.2
 
