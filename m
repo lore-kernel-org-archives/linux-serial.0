@@ -1,82 +1,78 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: arc_uart: serial output truncated
-Date: Wed, 6 Mar 2013 19:17:22 +0530
-Message-ID: <513748EA.7050407@synopsys.com>
+From: Vincent Deffontaines <vincent@gryzor.com>
+Subject: Re: [PATCH] =?UTF-8?Q?tty/=38=32=35=30=5Fpnp=3A=20serial=20port?=
+ =?UTF-8?Q?=20detection=20regression=20since=20v=33=2E=37?=
+Date: Wed, 06 Mar 2013 15:42:29 +0100
+Message-ID: <5f8a2a7219eccbf1a848a774635d9ec2@raceme.org>
+References: <1361550439-23504-1-git-send-email-sean@mess.org>
+ <20130304132839.GA6965@pequod.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from us01smtp3.synopsys.com ([198.182.44.81]:48495 "EHLO
-	hermes.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756990Ab3CFNrf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 08:47:35 -0500
+Received: from ombos.raceme.org ([212.85.152.43]:41616 "EHLO idril.raceme.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758444Ab3CFOua (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Mar 2013 09:50:30 -0500
+Received: from localhost (localhost [127.0.0.1])
+	by idril.raceme.org (Postfix) with ESMTP id 65B0122F36
+	for <linux-serial@vger.kernel.org>; Wed,  6 Mar 2013 15:42:37 +0100 (CET)
+Received: from localhost ([127.0.0.1])
+	by localhost (ombos.raceme.org [127.0.0.1]) (amavisd-new, port 1024)
+	with SMTP id Mqt1TWQ6K7Si for <linux-serial@vger.kernel.org>;
+	Wed,  6 Mar 2013 15:42:37 +0100 (CET)
+In-Reply-To: <20130304132839.GA6965@pequod.mess.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>
+To: Sean Young <sean@mess.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>, stable@vger.kernel.org
 
-Hi,
-
-I'm seeing truncated serial console output, with 3.8 based arc_uart driver
-(drivers/tty/serial/arc_uart.c)
-
-It would seem funny that I'm the driver author and still bringing this up -
-because this seems like an interplay of tty-core/serial-core with a slow serial
-device, rather than a driver specific issue, which is causing this.
-
-The basic call flow is a write(2) to STDERR which lands in the tty layer. The
-routine n_tty_write() successfully copies the complete msg from tty layer's buffer
-to driver's tx buffer (tty->driver_state->xmit->buf). There are 3 arc-uart driver
-output calls in that codepath and with 1 deep Tx FIFO only 3 characters are output
-- as follows:
-
-n_tty_write
-  process_output_block
-     tty->ops->write --> full user buffer
-     uart_write
-        copy tty buffer into driver buffer
-        uart_start
-           port->ops->start_tx
-           arc_serial_tx_chars   ==> 1st char
-  process_output
-    tty->ops->write --> "\r\n"
-        uart_start
-           port->ops->start_tx
-           arc_serial_tx_chars   ==> 2nd char
-  tty_flush_chars
-    uart_start
-           port->ops->start_tx
-           arc_serial_tx_chars   ==> 3rd char
-
-Once interrupts are re-enabled (spin_unlock_irqrestore) a few more chars are
-output via the driver ISR path.
-
-However user app then immediately calls exit().
-
-do_exit
-  tty_release
-    uart_close
-      tty_port_close_start --> returns 0 - because port->count == 4
-...
-  disassociate_ctty
-    tty_ldisk_hangup
-      tty_driver_flush_buffer
-         tty->ops->flush_buffer
-         uart_flush_buffer
-           uart_circ_clear  --> zeros the driver tx buffer head/tail
+Le 2013-03-04 14:28, Sean Young a =C3=A9crit=C2=A0:
+> Greg,
+>
+> On Fri, Feb 22, 2013 at 04:27:19PM +0000, Sean Young wrote:
+>> The InsydeH2O BIOS (version dated 09/12/2011) has the following in
+>> its pnp resouces for its serial ports:
+>>
+>> $ cat /sys/bus/pnp/devices/00:0b/resources
+>> state =3D active
+>> io disabled
+>> irq disabled
+>>
+>> We do not check if the resources are disabled, and create a bogus
+>> ttyS* device. Since commit 835d844d1a28e (8250_pnp: do pnp probe
+>> before legacy probe) we get a bogus ttyS0, which prevents the legacy
+>> probe from detecting it.
+>
+> Would you mind accepting this patch please -- it fixes a regression I
+> introduced in 3.7.
 
 
-tty_port_close_start() has logic for port->drain_delay but in my case the
-port->count is 4 (3 due to init task, 1 from this specific app) so that logic is
-not hit.
+Hi Sean,
 
-Eventually, uart_flush_buffer is called, with unwritten data still present, but
-the head/tail pointers are reset, causing that driver data to be effectively lost.
+Thanks for the patch, and thanks for re-pushing it :)
+This is to inform you that the BIOS update referenced :
+Version: SC24 BIOS V1.01
+Release Date: 01/11/2013
 
-So maybe this is how it works (for a 1 deep FIFO uart) but I wanted to confirm
-with the serial gurus. Is there any serial setting I can apply here to enable the
-last remaining chars to be dumped out of uart tx buffer.
+Seems to fix "my" tty detection problem on 3.7 (tested on a 3.7.6=20
+=46edora kernel, with success).
+I don't think the patch will hurt anyway - I believe it still will=20
+prevent other users from a regression.
+I also confirm that the patched 3.8.0 detects its ttys fine on a=20
+BIOS-updated system.
 
-Thx,
--Vineet
+Regards,
+
+Vincent
+
+
+--
+Stop chasing shadows, just enjoy the ride
+Morcheeba
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
