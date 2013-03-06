@@ -1,18 +1,23 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 2/5] tty: Fix spinlock flavor in non-atomic __tty_hangup()
-Date: Wed,  6 Mar 2013 07:20:54 -0500
-Message-ID: <1362572457-29993-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 3/5] tty: Use spin_lock() inside existing critical region
+Date: Wed,  6 Mar 2013 07:20:55 -0500
+Message-ID: <1362572457-29993-4-git-send-email-peter@hurleysoftware.com>
 References: <1362572457-29993-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:43058 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758118Ab3CFMVk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 6 Mar 2013 07:21:40 -0500
 In-Reply-To: <1362572457-29993-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-__tty_hangup() and tty_vhangup() cannot be called from atomic context,
-so locks do not need to preserve the interrupt state (although,
-still disable interrupts).
+The interrupt state does not need to be saved, disabled and
+restored here; interrupts are already off because this lock
+is bracketed by spin_lock_irq/spin_unlock_irq.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
@@ -20,34 +25,30 @@ Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index e454f1a..f9d4acf 100644
+index f9d4acf..40d3a7a 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -605,7 +605,6 @@ static void __tty_hangup(struct tty_struct *tty)
- 	struct file *filp, *f = NULL;
- 	struct tty_file_private *priv;
- 	int    closecount = 0, n;
+@@ -545,7 +545,6 @@ EXPORT_SYMBOL_GPL(tty_wakeup);
+ static int tty_signal_session_leader(struct tty_struct *tty)
+ {
+ 	struct task_struct *p;
 -	unsigned long flags;
- 	int refs;
+ 	int refs = 0;
  
- 	if (!tty)
-@@ -654,7 +653,7 @@ static void __tty_hangup(struct tty_struct *tty)
- 	while (refs--)
- 		tty_kref_put(tty);
- 
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
-+	spin_lock_irq(&tty->ctrl_lock);
- 	clear_bit(TTY_THROTTLED, &tty->flags);
- 	clear_bit(TTY_PUSH, &tty->flags);
- 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-@@ -663,7 +662,7 @@ static void __tty_hangup(struct tty_struct *tty)
- 	tty->session = NULL;
- 	tty->pgrp = NULL;
- 	tty->ctrl_status = 0;
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+	spin_unlock_irq(&tty->ctrl_lock);
- 
- 	/*
- 	 * If one of the devices matches a console pointer, we
+ 	read_lock(&tasklist_lock);
+@@ -565,10 +564,10 @@ static int tty_signal_session_leader(struct tty_struct *tty)
+ 			__group_send_sig_info(SIGHUP, SEND_SIG_PRIV, p);
+ 			__group_send_sig_info(SIGCONT, SEND_SIG_PRIV, p);
+ 			put_pid(p->signal->tty_old_pgrp);  /* A noop */
+-			spin_lock_irqsave(&tty->ctrl_lock, flags);
++			spin_lock(&tty->ctrl_lock);
+ 			if (tty->pgrp)
+ 				p->signal->tty_old_pgrp = get_pid(tty->pgrp);
+-			spin_unlock_irqrestore(&tty->ctrl_lock, flags);
++			spin_unlock(&tty->ctrl_lock);
+ 			spin_unlock_irq(&p->sighand->siglock);
+ 		} while_each_pid_task(tty->session, PIDTYPE_SID, p);
+ 	}
 -- 
 1.8.1.2
+
