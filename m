@@ -1,77 +1,58 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 00/23] ldisc fixes
-Date: Tue, 05 Mar 2013 18:14:32 -0500
-Message-ID: <1362525272.18799.165.camel@thor.lan>
-References: <1355509370-5883-1-git-send-email-peter@hurleysoftware.com>
-	  <1360095638-6624-1-git-send-email-peter@hurleysoftware.com>
-	  <20130305205033.GA5771@linutronix.de>
-	 <1362522029.18799.145.camel@thor.lan> <51367433.4060408@suse.cz>
+From: Simon Glass <sjg@chromium.org>
+Subject: [PATCH v6 28/31] serial: ns16550: Remove unwanted cast
+Date: Tue,  5 Mar 2013 16:40:02 -0800
+Message-ID: <1362530405-10824-29-git-send-email-sjg@chromium.org>
+References: <1362530405-10824-1-git-send-email-sjg@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:57286 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751163Ab3CEXOt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Mar 2013 18:14:49 -0500
-In-Reply-To: <51367433.4060408@suse.cz>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <u-boot-bounces@lists.denx.de>
+In-Reply-To: <1362530405-10824-1-git-send-email-sjg@chromium.org>
+List-Unsubscribe: <http://lists.denx.de/mailman/options/u-boot>,
+	<mailto:u-boot-request@lists.denx.de?subject=unsubscribe>
+List-Archive: <http://lists.denx.de/pipermail/u-boot>
+List-Post: <mailto:u-boot@lists.denx.de>
+List-Help: <mailto:u-boot-request@lists.denx.de?subject=help>
+List-Subscribe: <http://lists.denx.de/mailman/listinfo/u-boot>,
+	<mailto:u-boot-request@lists.denx.de?subject=subscribe>
+Sender: u-boot-bounces@lists.denx.de
+Errors-To: u-boot-bounces@lists.denx.de
+To: U-Boot Mailing List <u-boot@lists.denx.de>
+Cc: Graeme Russ <graeme.russ@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>, linux-serial@vger.kernel.org, Tom Rini <trini@ti.com>, Vadim Bendebury <vbendeb@chromium.org>
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Felipe Balbi <balbi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <levinsasha928@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 
-[now this discussion has turned to usb gadget
-+cc Felipe Balbi, linux-usb, -cc Dave Jones, Ilya Zykov]
+This cast does not seem correct, since we should be writing to a pointer,
+not a ulong.
 
-On Tue, 2013-03-05 at 23:39 +0100, Jiri Slaby wrote:
-> On 03/05/2013 11:20 PM, Peter Hurley wrote:
-> > [--cc Alan Cox]
-> > 
-> > On Tue, 2013-03-05 at 21:50 +0100, Sebastian Andrzej Siewior wrote:
-> >> * Peter Hurley | 2013-02-05 15:20:15 [-0500]:
-> >>
-> >>>  Please re-test with your dummy_hcd/g_nokia testcase, although
-> >>>  I'm not convinced that usb gadget is using tty_hangup() appropriately.
-> >>>  tty drivers use this for async carrier loss coming from an IRQ
-> >>>  which will be disabled if the tty has been shutdown. Does gserial
-> >>>  prevent async hangup to a dead tty in a similar fashion?
-> >>
-> >> Not sure I understood. tty_hangup() is only called from within
-> >> gserial_disconnect() which calls right after usb_ep_disable(). After
-> >> usb_ep_disable() no further serial packets can be received until the
-> >> endpoints are re-enabled. This happens in gserial_connect().
-> > 
-> > That's why I asked. There are two potential issues:
-> > 
-> > First, tty_hangup() is asynchronous -- ie., it returns immediately. It
-> > does not wait for the tty device to actually perform the hangup. So if
-> > the gadget layers start cleanup immediately after, expecting that they
-> > won't get a flurry of tty calls, that would be bad.
-> 
-> Sorry, I missed what driver is this?
+This fixes the following warning on nds32:
 
-g_serial.
+-ns16550.c:49: warning: passing argument 2 of 'writeb' makes pointer from integer without a cast
 
-drivers/usb/gadget/u_serial.c
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+Changes in v6:
+- Add new patch to fix up ns16550 cast
 
-> > tty_vhangup() is synchronous -- ie., you wait while it cleans up. This
-> > is what the usb serial core does on it's disconnect() method. But I
-> > didn't research further if the circumstances were the same.
-> 
-> Even when tty_vhangup returns, it does not guarantee a closed tty. And
-> it also does not guarantee that any of tty->ops won't be called. The
-> latter is true only for devices that can be consoles. (For those,
-> file->ops are not redirected.) In that case one needs to wait for
-> port->count to become 0.
+Changes in v5: None
+Changes in v4: None
+Changes in v3: None
+Changes in v2: None
 
-Perhaps I was oversimplifying.
+ drivers/serial/ns16550.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But my point was I doubt usb gadget is conducting its teardown safely
-wrt tty.
-
-Regards,
-Peter Hurley
-
-
-
+diff --git a/drivers/serial/ns16550.c b/drivers/serial/ns16550.c
+index 87a0917..b2da8b3 100644
+--- a/drivers/serial/ns16550.c
++++ b/drivers/serial/ns16550.c
+@@ -46,7 +46,7 @@ void NS16550_init(NS16550_t com_port, int baud_divisor)
+ 					defined(CONFIG_AM33XX)
+ 	serial_out(0x7, &com_port->mdr1);	/* mode select reset TL16C750*/
+ #endif
+-	serial_out(UART_LCR_BKSE | UART_LCRVAL, (ulong)&com_port->lcr);
++	serial_out(UART_LCR_BKSE | UART_LCRVAL, &com_port->lcr);
+ 	serial_out(0, &com_port->dll);
+ 	serial_out(0, &com_port->dlm);
+ 	serial_out(UART_LCRVAL, &com_port->lcr);
+-- 
+1.8.1.3
