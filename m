@@ -1,91 +1,112 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
-Date: Wed, 06 Mar 2013 14:14:56 -0500
-Message-ID: <1362597296.18799.198.camel@thor.lan>
-References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz>
-	 <20130306165211.GA23635@localhost>
+From: Ley Foon Tan <lftan@altera.com>
+Subject: [PATCH] tty/serial: Add support for Altera serial port
+Date: Thu, 7 Mar 2013 10:28:37 +0800
+Message-ID: <1362623317-2988-1-git-send-email-lftan@altera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:40054 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752910Ab3CFTPk (ORCPT
+Received: from co9ehsobe004.messaging.microsoft.com ([207.46.163.27]:28214
+	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754114Ab3CGC3I (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 14:15:40 -0500
-In-Reply-To: <20130306165211.GA23635@localhost>
+	Wed, 6 Mar 2013 21:29:08 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Landley <rob@landley.net>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ley Foon Tan <lftan@altera.com>
 
-On Wed, 2013-03-06 at 17:52 +0100, Johan Hovold wrote:
+Add support for Altera 8250/16550 compatible serial port.
 
-> > > @@ -225,15 +232,13 @@ void tty_port_hangup(struct tty_port *port)
-> >         spin_lock_irqsave(&port->lock, flags);
-> >         port->count = 0;
-> >         port->flags &= ~ASYNC_NORMAL_ACTIVE;
-> > -       if (port->tty) {
-> > +       if (port->tty)
-> >                 set_bit(TTY_IO_ERROR, &port->tty->flags);
-> > -               tty_kref_put(port->tty);
-> > -       }
-> > -       port->tty = NULL;
-> >         spin_unlock_irqrestore(&port->lock, flags);
-> > > +       tty_port_shutdown(port, port->tty);
-> > 
-> > What prevents port->tty to be NULL here already?
-> 
-> Nothing, I'll get a new reference within the port lock section as you
-> just suggested elsewhere in this thread.
+Signed-off-by: Ley Foon Tan <lftan@altera.com>
+---
+ .../devicetree/bindings/tty/serial/of-serial.txt   |    3 ++
+ drivers/tty/serial/8250/8250.c                     |   23 +++++++++++++++++++-
+ drivers/tty/serial/of_serial.c                     |    6 +++++
+ include/uapi/linux/serial_core.h                   |    5 +++-
+ 4 files changed, 35 insertions(+), 2 deletions(-)
 
-Don't do that. Steal the tty and put the kref after like this:
-
-void tty_port_hangup(struct tty_port *port)
-{
-	struct tty_struct *tty;
-	unsigned long flags;
-
-	spin_lock_irqsave(&port->lock, flags);
-	port->count = 0;
-	port->flags &= ~ASYNC_NORMAL_ACTIVE;
-	tty = port->tty;
-	port->tty = NULL;
-	if (tty)
-		set_bit(TTY_IO_ERROR, &tty->flags);
-	spin_unlock_irqrestore(&port->lock, flags);
-	tty_port_shutdown(port, tty);
-	tty_kref_put(tty);
-	wake_up_interruptible(&port->open_wait);
-	wake_up_interruptible(&port->delta_msr_wait);
-}
-
-
-
-> Yes, I did. First, the order should not matter for blocked opens as they
-> will exit their wait loops based on tty_hung_up_p(filp) either way.
-
-Only if the open() was ever successful, otherwise the filp won't be in
-the tty->tty_files list. That's why the blocking opens also check
-ASYNC_INITIALIZED (or ASYNCB_INITIALIZED depending on which they use).
-
-Which is why I said it was actually better to shutdown() first, then
-wake up the blocked opens.
-
-> As for delta_msr_wait the changed order is actually preferred as it
-> allows the waiting process to return based on ASYNC_INITIALIZED. This is
-> also the order used by serial_core. Note however that the current
-> serial_core TIOCMIWAIT is broken in that it doesn't return on hangups at
-> all.
-> 
-> Perhaps I should separate this to a patch of its own, and send a fix
-> for serial_core TIOCMIWAIT as well.
-
-uart_wait_modem_status() is what I was referring to and should be fixed.
-
-Patches always welcome.
-
-Regards,
-Peter Hurley
+diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+index 1e1145c..8f01cb1 100644
+--- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
++++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -11,6 +11,9 @@ Required properties:
+ 	- "nvidia,tegra20-uart"
+ 	- "nxp,lpc3220-uart"
+ 	- "ibm,qpace-nwp-serial"
++	- "altr,16550-FIFO32"
++	- "altr,16550-FIFO64"
++	- "altr,16550-FIFO128"
+ 	- "serial" if the port type is unknown.
+ - reg : offset and length of the register set for the device.
+ - interrupts : should contain uart interrupt.
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index 0efc815..661096d 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -301,7 +301,28 @@ static const struct serial8250_config uart_config[] = {
+ 	},
+ 	[PORT_8250_CIR] = {
+ 		.name		= "CIR port"
+-	}
++	},
++	[PORT_ALTR_16550_F32] = {
++		.name		= "Altera 16550 FIFO32",
++		.fifo_size	= 32,
++		.tx_loadsz	= 32,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
++	[PORT_ALTR_16550_F64] = {
++		.name		= "Altera 16550 FIFO64",
++		.fifo_size	= 64,
++		.tx_loadsz	= 64,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
++	[PORT_ALTR_16550_F128] = {
++		.name		= "Altera 16550 FIFO128",
++		.fifo_size	= 128,
++		.tx_loadsz	= 128,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index d587460..b025d54 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -241,6 +241,12 @@ static struct of_device_id of_platform_serial_table[] = {
+ 	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
+ 	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
+ 	{ .compatible = "nxp,lpc3220-uart", .data = (void *)PORT_LPC3220, },
++	{ .compatible = "altr,16550-FIFO32",
++		.data = (void *)PORT_ALTR_16550_F32, },
++	{ .compatible = "altr,16550-FIFO64",
++		.data = (void *)PORT_ALTR_16550_F64, },
++	{ .compatible = "altr,16550-FIFO128",
++		.data = (void *)PORT_ALTR_16550_F128, },
+ #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
+ 	{ .compatible = "ibm,qpace-nwp-serial",
+ 		.data = (void *)PORT_NWPSERIAL, },
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index b6a23a4..74c2bf7 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -51,7 +51,10 @@
+ #define PORT_8250_CIR	23	/* CIR infrared port, has its own driver */
+ #define PORT_XR17V35X	24	/* Exar XR17V35x UARTs */
+ #define PORT_BRCM_TRUMANAGE	25
+-#define PORT_MAX_8250	25	/* max port ID */
++#define PORT_ALTR_16550_F32 26	/* Altera 16550 UART with 32 FIFOs */
++#define PORT_ALTR_16550_F64 27	/* Altera 16550 UART with 64 FIFOs */
++#define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
++#define PORT_MAX_8250	28	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
+-- 
+1.7.7.4
 
 
