@@ -1,49 +1,58 @@
-From: Josh Boyer <jwboyer@redhat.com>
-Subject: Re: 8250.nr_uarts broken in 3.7
-Date: Thu, 7 Mar 2013 16:14:27 -0500
-Message-ID: <20130307211426.GI13719@hansolo.jdub.homelinux.org>
-References: <20130307185642.GF13719@hansolo.jdub.homelinux.org>
- <5138E56B.6090308@suse.cz>
- <20130307191005.GH13719@hansolo.jdub.homelinux.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
+Date: Thu, 07 Mar 2013 16:52:23 -0500
+Message-ID: <1362693143.4219.1.camel@thor.lan>
+References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz>
+	 <20130306165211.GA23635@localhost> <1362597296.18799.198.camel@thor.lan>
+	 <20130307094320.GB23635@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:48792 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757176Ab3CGVPN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Mar 2013 16:15:13 -0500
-Content-Disposition: inline
-In-Reply-To: <20130307191005.GH13719@hansolo.jdub.homelinux.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20130307094320.GB23635@localhost>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Mar 07, 2013 at 02:10:05PM -0500, Josh Boyer wrote:
-> On Thu, Mar 07, 2013 at 08:07:23PM +0100, Jiri Slaby wrote:
-> > On 03/07/2013 07:56 PM, Josh Boyer wrote:
-> > > commit 835d844d1a28efba81d5aca7385e24c29d3a6db2
-> > > Author: Sean Young <sean@mess.org>
-> > > Date:   Fri Sep 7 19:06:23 2012 +0100
-> > > 
-> > >     8250_pnp: do pnp probe before legacy probe
-> > > 
-> > > but that is simply moving code around.
+On Thu, 2013-03-07 at 10:43 +0100, Johan Hovold wrote:
+> On Wed, Mar 06, 2013 at 02:14:56PM -0500, Peter Hurley wrote:
+> > On Wed, 2013-03-06 at 17:52 +0100, Johan Hovold wrote:
+> > > Yes, I did. First, the order should not matter for blocked opens as they
+> > > will exit their wait loops based on tty_hung_up_p(filp) either way.
 > > 
-> > Hi, not quite. Does it still happen when you revert that one on the top
-> > of 3.[789]*?
+> > Only if the open() was ever successful, otherwise the filp won't be in
+> > the tty->tty_files list. That's why the blocking opens also check
+> > ASYNC_INITIALIZED (or ASYNCB_INITIALIZED depending on which they use).
+> > Which is why I said it was actually better to shutdown() first, then
+> > wake up the blocked opens.
 > 
-> That was going to be my first attempt.  I'll let you know how it goes.
+> ASYNC_INITIALIZED have also been cleared when the blocked opens are
+> being woken up from tty_port_close_end.
+> 
+> And the filp is added to tty_files before open() is called:
+> 
+> ===>    tty_add_file(tty, filp);
+> 
+> 	check_tty_count(tty, __func__);
+> 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+> 	    tty->driver->subtype == PTY_TYPE_MASTER)
+> 		noctty = 1;
+> #ifdef TTY_DEBUG_HANGUP
+> 	printk(KERN_DEBUG "%s: opening %s...\n", __func__, tty->name);
+> #endif
+> 	if (tty->ops->open)
+> ===>		retval = tty->ops->open(tty, filp);
+> 
+> so a blocked open must have hung_up_tty_fops when woken up from hangup,
+> right?
 
-Yes, reverting just 835d844d1 on top of 3.7.0 fixes it.  I also see why
-now.  That commit changed the module name from 8250 to 8250_core in the
-makefile, so clearly 8250.nr_uarts = 16 isn't going to get parsed.
-Adding 8250_core.nr_uarts = 16 seems to work fine.  This wasn't
-immediately obvious because the whole thing is built-in and not a
-module.  Thankfully, looking in /sys/modules/ still works and that
-showed up pretty clearly.
+You're right, my mistake.
 
-So I guess this isn't really a break in functionality as much as it's a
-driver rename.  Not sure if it's worth fixing in some form or not.
+> Either way, postponing wake-up somewhat in tty_port_hangup should be
+> fine.
 
-josh
+Yep.
+
+Regards,
+Peter Hurley
