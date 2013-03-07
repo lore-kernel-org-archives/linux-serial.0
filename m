@@ -1,58 +1,130 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [Fwd: [PATCH v2 0/4] TTY: port hangup and close fixes]
-Date: Thu, 07 Mar 2013 16:52:23 -0500
-Message-ID: <1362693143.4219.1.camel@thor.lan>
-References: <1362085054.3337.20.camel@thor.lan> <51361724.4050107@suse.cz>
-	 <20130306165211.GA23635@localhost> <1362597296.18799.198.camel@thor.lan>
-	 <20130307094320.GB23635@localhost>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 1/6] serial: 8250_dw: add support for clocks property when using DeviceTree
+Date: Thu,  7 Mar 2013 23:14:15 +0100
+Message-ID: <1362694460-1919-2-git-send-email-maxime.ripard@free-electrons.com>
+References: <1362694460-1919-1-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130307094320.GB23635@localhost>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:33214 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759154Ab3CGWOx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Mar 2013 17:14:53 -0500
+In-Reply-To: <1362694460-1919-1-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, 2013-03-07 at 10:43 +0100, Johan Hovold wrote:
-> On Wed, Mar 06, 2013 at 02:14:56PM -0500, Peter Hurley wrote:
-> > On Wed, 2013-03-06 at 17:52 +0100, Johan Hovold wrote:
-> > > Yes, I did. First, the order should not matter for blocked opens as they
-> > > will exit their wait loops based on tty_hung_up_p(filp) either way.
-> > 
-> > Only if the open() was ever successful, otherwise the filp won't be in
-> > the tty->tty_files list. That's why the blocking opens also check
-> > ASYNC_INITIALIZED (or ASYNCB_INITIALIZED depending on which they use).
-> > Which is why I said it was actually better to shutdown() first, then
-> > wake up the blocked opens.
-> 
-> ASYNC_INITIALIZED have also been cleared when the blocked opens are
-> being woken up from tty_port_close_end.
-> 
-> And the filp is added to tty_files before open() is called:
-> 
-> ===>    tty_add_file(tty, filp);
-> 
-> 	check_tty_count(tty, __func__);
-> 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
-> 	    tty->driver->subtype == PTY_TYPE_MASTER)
-> 		noctty = 1;
-> #ifdef TTY_DEBUG_HANGUP
-> 	printk(KERN_DEBUG "%s: opening %s...\n", __func__, tty->name);
-> #endif
-> 	if (tty->ops->open)
-> ===>		retval = tty->ops->open(tty, filp);
-> 
-> so a blocked open must have hung_up_tty_fops when woken up from hangup,
-> right?
+=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
 
-You're right, my mistake.
+This commit implements support for using the "clocks" DT property, inst=
+ead
+of having to use clock-frequency.
 
-> Either way, postponing wake-up somewhat in tty_port_hangup should be
-> fine.
+Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+---
+ drivers/tty/serial/8250/8250_dw.c |   32 ++++++++++++++++++++++-------=
+---
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
-Yep.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
+0/8250_dw.c
+index db0e66f..8f03800 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
++#include <linux/clk.h>
+=20
+ #include "8250.h"
+=20
+@@ -55,8 +56,9 @@
+=20
+=20
+ struct dw8250_data {
+-	int	last_lcr;
+-	int	line;
++	int		last_lcr;
++	int		line;
++	struct clk	*clk;
+ };
+=20
+ static void dw8250_serial_out(struct uart_port *p, int offset, int val=
+ue)
+@@ -116,6 +118,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ static int dw8250_probe_of(struct uart_port *p)
+ {
+ 	struct device_node	*np =3D p->dev->of_node;
++	struct dw8250_data	*data =3D p->private_data;
+ 	u32			val;
+=20
+ 	if (!of_property_read_u32(np, "reg-io-width", &val)) {
+@@ -137,8 +140,15 @@ static int dw8250_probe_of(struct uart_port *p)
+ 		p->regshift =3D val;
+=20
+ 	if (of_property_read_u32(np, "clock-frequency", &val)) {
+-		dev_err(p->dev, "no clock-frequency property set\n");
+-		return -EINVAL;
++		/* Get clk rate through clk driver if present */
++		data->clk =3D clk_get(p->dev, NULL);
++		if (IS_ERR(data->clk)) {
++			dev_err(p->dev, "clk or clock-frequency not defined\n");
++			return -EINVAL;
++		}
++
++		clk_prepare_enable(data->clk);
++		val =3D clk_get_rate(data->clk);
+ 	}
+ 	p->uartclk =3D val;
+=20
+@@ -300,6 +310,12 @@ static int dw8250_probe(struct platform_device *pd=
+ev)
+=20
+ 	dw8250_setup_port(&uart);
+=20
++	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	uart.port.private_data =3D data;
++
+ 	if (pdev->dev.of_node) {
+ 		err =3D dw8250_probe_of(&uart.port);
+ 		if (err)
+@@ -312,12 +328,6 @@ static int dw8250_probe(struct platform_device *pd=
+ev)
+ 		return -ENODEV;
+ 	}
+=20
+-	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+-	if (!data)
+-		return -ENOMEM;
+-
+-	uart.port.private_data =3D data;
+-
+ 	data->line =3D serial8250_register_8250_port(&uart);
+ 	if (data->line < 0)
+ 		return data->line;
+@@ -333,6 +343,8 @@ static int dw8250_remove(struct platform_device *pd=
+ev)
+=20
+ 	serial8250_unregister_port(data->line);
+=20
++	clk_disable_unprepare(data->clk);
++
+ 	return 0;
+ }
+=20
+--=20
+1.7.10.4
 
-Regards,
-Peter Hurley
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
