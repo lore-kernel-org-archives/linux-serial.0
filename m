@@ -1,139 +1,74 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v3 4/6] TTY: fix DTR not being dropped on hang up
-Date: Thu,  7 Mar 2013 15:55:51 +0100
-Message-ID: <1362668153-10972-5-git-send-email-jhovold@gmail.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 0/6] TTY: port hangup and close fixes
+Date: Thu,  7 Mar 2013 15:55:47 +0100
+Message-ID: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
 References: <51361724.4050107@suse.cz>
- <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <jhovold@gmail.com>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <51361724.4050107-AlSwsSmVLrQ@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Move HUPCL handling to port shutdown so that DTR is dropped also on hang
-up (tty_port_close is a noop for hung-up ports).
+These patches against 3.9-rc1 fix a few issues with tty-port hangup and
+close.
 
-Also do not try to drop DTR for uninitialised ports where it has never
-been raised (e.g. after a failed open).
+The first and fifth patch are essentially clean ups.
 
-Note that this is also the current behaviour of serial-core.
+The second and third patch fix the fact that DTR could get raised
+(rather than dropped) at hangup if there are blocked opens. [ Note that
+the second patch has been separated into its own patch and that the
+third patch is new in v3 of this series. ]
 
-Nine drivers currently call tty_port_close_start directly (rather than
-through tty_port_close) and seven of them lower DTR as part of their
-close (if the port has been initialised). Fixup the remaining two
-drivers so that it continues to be lowered also on normal (non-HUP)
-close. [ Note that most of those other seven drivers did not expect DTR
-to have been dropped by tty_port_close_start in the first place. ]
+The fourth patch makes sure DTR is dropped also on hangup and that DTR
+is only dropped for initialised ports (where it could have been raised
+in the first place).
 
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
----
- drivers/tty/mxser.c    |  4 ++++
- drivers/tty/n_gsm.c    |  4 ++++
- drivers/tty/tty_port.c | 27 +++++++++++++++------------
- 3 files changed, 23 insertions(+), 12 deletions(-)
+The sixth and final patch, makes sure no tty callbacks are made from
+tty_port_close_start when the port has not been initialised (successfully
+opened). This was previously only done for wait_until_sent but there's
+no reason to call flush_buffer or to honour port drain delay either.
+The latter could cause a failed open to stall for up to two seconds.
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 484b6a3..d996038 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1084,6 +1084,10 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
- 	mutex_lock(&port->mutex);
- 	mxser_close_port(port);
- 	mxser_flush_buffer(tty);
-+	if (test_bit(ASYNCB_INITIALIZED, &port->flags)) {
-+		if (C_HUPCL(tty))
-+			tty_port_lower_dtr_rts(port);
-+	}
- 	mxser_shutdown_port(port);
- 	clear_bit(ASYNCB_INITIALIZED, &port->flags);
- 	mutex_unlock(&port->mutex);
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 4a43ef5d7..a43b01f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2968,6 +2968,10 @@ static void gsmtty_close(struct tty_struct *tty, struct file *filp)
- 	if (tty_port_close_start(&dlci->port, tty, filp) == 0)
- 		goto out;
- 	gsm_dlci_begin_close(dlci);
-+	if (test_bit(ASYNCB_INITIALIZED, &dlci->port.flags)) {
-+		if (C_HUPCL(tty))
-+			tty_port_lower_dtr_rts(&dlci->port);
-+	}
- 	tty_port_close_end(&dlci->port, tty);
- 	tty_port_tty_set(&dlci->port, NULL);
- out:
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 52f1066..cd65f7e 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -196,13 +196,20 @@ void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty)
- }
- EXPORT_SYMBOL(tty_port_tty_set);
- 
--static void tty_port_shutdown(struct tty_port *port)
-+static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
- {
- 	mutex_lock(&port->mutex);
- 	if (port->console)
- 		goto out;
- 
- 	if (test_and_clear_bit(ASYNCB_INITIALIZED, &port->flags)) {
-+		/*
-+		 * Drop DTR/RTS if HUPCL is set. This causes any attached
-+		 * modem to hang up the line.
-+		 */
-+		if (tty && C_HUPCL(tty))
-+			tty_port_lower_dtr_rts(port);
-+
- 		if (port->ops->shutdown)
- 			port->ops->shutdown(port);
- 	}
-@@ -220,18 +227,19 @@ out:
- 
- void tty_port_hangup(struct tty_port *port)
- {
-+	struct tty_struct *tty;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 	port->count = 0;
- 	port->flags &= ~ASYNC_NORMAL_ACTIVE;
--	if (port->tty) {
--		set_bit(TTY_IO_ERROR, &port->tty->flags);
--		tty_kref_put(port->tty);
--	}
-+	tty = port->tty;
-+	if (tty)
-+		set_bit(TTY_IO_ERROR, &tty->flags);
- 	port->tty = NULL;
- 	spin_unlock_irqrestore(&port->lock, flags);
--	tty_port_shutdown(port);
-+	tty_port_shutdown(port, tty);
-+	tty_kref_put(tty);
- 	wake_up_interruptible(&port->open_wait);
- 	wake_up_interruptible(&port->delta_msr_wait);
- }
-@@ -452,11 +460,6 @@ int tty_port_close_start(struct tty_port *port,
- 	/* Flush the ldisc buffering */
- 	tty_ldisc_flush(tty);
- 
--	/* Drop DTR/RTS if HUPCL is set. This causes any attached modem to
--	   hang up the line */
--	if (tty->termios.c_cflag & HUPCL)
--		tty_port_lower_dtr_rts(port);
--
- 	/* Don't call port->drop for the last reference. Callers will want
- 	   to drop the last active reference in ->shutdown() or the tty
- 	   shutdown path */
-@@ -491,7 +494,7 @@ void tty_port_close(struct tty_port *port, struct tty_struct *tty,
- {
- 	if (tty_port_close_start(port, tty, filp) == 0)
- 		return;
--	tty_port_shutdown(port);
-+	tty_port_shutdown(port, tty);
- 	set_bit(TTY_IO_ERROR, &tty->flags);
- 	tty_port_close_end(port, tty);
- 	tty_port_tty_set(port, NULL);
+As a side-effect, these patches also fix an issue in USB-serial where we
+could get tty-port callbacks on an uninitialised port after having hung
+up and unregistered a device after disconnect.
+
+Johan
+
+
+v3: 
+ - amend series with fix of DTR sometimes being raised on hang-up
+ - do not lower DTR on hangup if port tty is gone
+ - make sure tty in call to shutdown is refcounted
+ - use cflag-macros throughout
+
+v2:
+ - reuse tty reference from hangup and close in shutdown. Both call sites
+   guarantee tty is either NULL or has a kref.
+
+Changes since RFC-series:
+ - fix up the two driver relying on tty_port_close_start directly but
+   that did not manage DTR themselves
+
+
+Johan Hovold (6):
+  TTY: clean up port shutdown
+  TTY: wake up processes last at hangup
+  TTY: fix DTR being raised on hang up
+  TTY: fix DTR not being dropped on hang up
+  TTY: clean up port drain-delay handling
+  TTY: fix close of uninitialised ports
+
+ drivers/tty/mxser.c    |  4 +++
+ drivers/tty/n_gsm.c    |  4 +++
+ drivers/tty/tty_port.c | 77 ++++++++++++++++++++++++++++++--------------------
+ 3 files changed, 54 insertions(+), 31 deletions(-)
+
 -- 
 1.8.1.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
