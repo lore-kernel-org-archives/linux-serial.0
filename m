@@ -1,112 +1,69 @@
-From: Ley Foon Tan <lftan@altera.com>
-Subject: [PATCH] tty/serial: Add support for Altera serial port
-Date: Thu, 7 Mar 2013 10:28:37 +0800
-Message-ID: <1362623317-2988-1-git-send-email-lftan@altera.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] serial/efm32: parse location property
+Date: Thu, 7 Mar 2013 08:37:38 +0100
+Message-ID: <CACRpkdZuNOFco+GTe9YOD=qy+dgEaokoqvWaPA2mCxYHs9oxVA@mail.gmail.com>
+References: <1358774576-13275-1-git-send-email-u.kleine-koenig@pengutronix.de>
+	<20130304143854.395EF3E206B@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co9ehsobe004.messaging.microsoft.com ([207.46.163.27]:28214
-	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754114Ab3CGC3I (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Mar 2013 21:29:08 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20130304143854.395EF3E206B@localhost>
+Sender: linux-doc-owner@vger.kernel.org
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: =?ISO-8859-1?Q?Uwe_Kleine=2DK=F6nig?= <u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree-discuss@lists.ozlabs.org, kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Landley <rob@landley.net>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ley Foon Tan <lftan@altera.com>
 
-Add support for Altera 8250/16550 compatible serial port.
+On Mon, Mar 4, 2013 at 3:38 PM, Grant Likely <grant.likely@secretlab.ca=
+> wrote:
+> On Mon, 21 Jan 2013 14:22:56 +0100, Uwe Kleine-K=F6nig <u.kleine-koen=
+ig@pengutronix.de> wrote:
+>> The non-dt probing allowed passing the location via platform data fr=
+om
+>> the beginning. So make up leeway for device tree probing.
+>>
+>> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+>
+> Linus, does this look like some thing that should be done using pinct=
+rl?
 
-Signed-off-by: Ley Foon Tan <lftan@altera.com>
----
- .../devicetree/bindings/tty/serial/of-serial.txt   |    3 ++
- drivers/tty/serial/8250/8250.c                     |   23 +++++++++++++++++++-
- drivers/tty/serial/of_serial.c                     |    6 +++++
- include/uapi/linux/serial_core.h                   |    5 +++-
- 4 files changed, 35 insertions(+), 2 deletions(-)
+Hm it's a bit weird actually.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-index 1e1145c..8f01cb1 100644
---- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-+++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
-@@ -11,6 +11,9 @@ Required properties:
- 	- "nvidia,tegra20-uart"
- 	- "nxp,lpc3220-uart"
- 	- "ibm,qpace-nwp-serial"
-+	- "altr,16550-FIFO32"
-+	- "altr,16550-FIFO64"
-+	- "altr,16550-FIFO128"
- 	- "serial" if the port type is unknown.
- - reg : offset and length of the register set for the device.
- - interrupts : should contain uart interrupt.
-diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-index 0efc815..661096d 100644
---- a/drivers/tty/serial/8250/8250.c
-+++ b/drivers/tty/serial/8250/8250.c
-@@ -301,7 +301,28 @@ static const struct serial8250_config uart_config[] = {
- 	},
- 	[PORT_8250_CIR] = {
- 		.name		= "CIR port"
--	}
-+	},
-+	[PORT_ALTR_16550_F32] = {
-+		.name		= "Altera 16550 FIFO32",
-+		.fifo_size	= 32,
-+		.tx_loadsz	= 32,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+	},
-+	[PORT_ALTR_16550_F64] = {
-+		.name		= "Altera 16550 FIFO64",
-+		.fifo_size	= 64,
-+		.tx_loadsz	= 64,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+	},
-+	[PORT_ALTR_16550_F128] = {
-+		.name		= "Altera 16550 FIFO128",
-+		.fifo_size	= 128,
-+		.tx_loadsz	= 128,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+	},
- };
- 
- /* Uart divisor latch read */
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index d587460..b025d54 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -241,6 +241,12 @@ static struct of_device_id of_platform_serial_table[] = {
- 	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
- 	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
- 	{ .compatible = "nxp,lpc3220-uart", .data = (void *)PORT_LPC3220, },
-+	{ .compatible = "altr,16550-FIFO32",
-+		.data = (void *)PORT_ALTR_16550_F32, },
-+	{ .compatible = "altr,16550-FIFO64",
-+		.data = (void *)PORT_ALTR_16550_F64, },
-+	{ .compatible = "altr,16550-FIFO128",
-+		.data = (void *)PORT_ALTR_16550_F128, },
- #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
- 	{ .compatible = "ibm,qpace-nwp-serial",
- 		.data = (void *)PORT_NWPSERIAL, },
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index b6a23a4..74c2bf7 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -51,7 +51,10 @@
- #define PORT_8250_CIR	23	/* CIR infrared port, has its own driver */
- #define PORT_XR17V35X	24	/* Exar XR17V35x UARTs */
- #define PORT_BRCM_TRUMANAGE	25
--#define PORT_MAX_8250	25	/* max port ID */
-+#define PORT_ALTR_16550_F32 26	/* Altera 16550 UART with 32 FIFOs */
-+#define PORT_ALTR_16550_F64 27	/* Altera 16550 UART with 64 FIFOs */
-+#define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
-+#define PORT_MAX_8250	28	/* max port ID */
- 
- /*
-  * ARM specific type numbers.  These are not currently guaranteed
--- 
-1.7.7.4
+Most platforms will have some cetral entity dealing with pin multiplexi=
+ng,
+and often it is combined with either a system controller register range=
+,
+or it's combined with a GPIO controller (which is more common).
 
+This is a new oddity: it's like multiplexing is distributed out among t=
+he
+peripherals on the EFM32, or atleast for this UART, so there is a
+register on the peripheral itself selecting where to route it.
 
+If all peripherals on the system follows this pattern, like if there is
+some such "location" register on each and every peripheral, ideally
+that should be centralized into some file like drivers/pinctrl/pinctrl-=
+efm32.c
+but the thing is that then that driver needs to own a single register
+or even just part of a register in each peripheral device memory
+range.
+
+And that seems a bit complex to handle.
+
+But if the EFM32 is using device tree exclusively it's actually
+just an array of named  <&ampersand> references in the node for
+the pin controller, pointing to each peripheral with a mux register.
+So maybe that's not that bad after all.
+
+Still it might be a bit overzealous to request that each device
+ask a central entity to write one of its own registers. So it needs
+to buy you something - like for example if it is possible to
+completely screw up the muxing if different peripherals are
+muxed to the same pins.
+
+So it all depends, we need a birds-eye view of the system to
+determine this. I tried looking at the datasheet but couldn't figure
+it out. Uwe how does this work on EFM32?
+
+Yours,
+Linus Walleij
