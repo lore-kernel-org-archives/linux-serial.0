@@ -1,39 +1,47 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v3 3/6] TTY: fix DTR being raised on hang up
-Date: Thu,  7 Mar 2013 15:55:50 +0100
-Message-ID: <1362668153-10972-4-git-send-email-jhovold@gmail.com>
-References: <51361724.4050107@suse.cz>
- <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <jhovold@gmail.com>
+From: Josh Boyer <jwboyer@redhat.com>
+Subject: 8250.nr_uarts broken in 3.7
+Date: Thu, 7 Mar 2013 13:56:42 -0500
+Message-ID: <20130307185642.GF13719@hansolo.jdub.homelinux.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:55250 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755963Ab3CGS52 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Mar 2013 13:57:28 -0500
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Make sure to check ASYNC_INITIALISED before raising DTR when waking up
-from blocked open in tty_port_block_til_ready.
+Hi All,
 
-Currently DTR could get raised at hang up as a blocked process would
-raise DTR unconditionally before checking for hang up and returning.
+We've had a report [1] in Fedora that the nr_uarts parameter on the 8250
+serial driver is no longer working.  Our config hasn't changed in this
+area in quite a while, and dmesg clearly shows setting 8250.nr_uarts=16
+on the kernel command line results in:
 
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
----
- drivers/tty/tty_port.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[    0.345459] Serial: 8250/16550 driver, 16 ports, IRQ sharing enabled
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 3de5918..52f1066 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -355,7 +355,7 @@ int tty_port_block_til_ready(struct tty_port *port,
- 
- 	while (1) {
- 		/* Indicate we are open */
--		if (tty->termios.c_cflag & CBAUD)
-+		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
- 			tty_port_raise_dtr_rts(port);
- 
- 		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
--- 
-1.8.1.1
+whereas if you boot a 3.7 kernel with the same setting it prints out the
+default value of 4 for ports.  Fedora builds 8250 into the kernel and
+not as a module, but the option is still clearly parsed in that case for
+3.6.
+
+I've looked through the commits from 3.6..3.7 in the 8250 driver and the
+only one that seems relevant at all is
+
+commit 835d844d1a28efba81d5aca7385e24c29d3a6db2
+Author: Sean Young <sean@mess.org>
+Date:   Fri Sep 7 19:06:23 2012 +0100
+
+    8250_pnp: do pnp probe before legacy probe
+
+but that is simply moving code around.
+
+I ran the same test on a 3.9-rc1 kernel and it isn't being picked up
+there either.  Before I go off and do a bisect to track this down, has
+anyone else seen or heard of this no longer working?
+
+josh
