@@ -1,71 +1,57 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: 8250.nr_uarts broken in 3.7
-Date: Sat, 09 Mar 2013 10:14:14 +0100
-Message-ID: <513AFD66.3030404@suse.cz>
-References: <20130307231242.GC4280@kroah.com> <20130308010140.GJ13719@hansolo.jdub.homelinux.org> <20130308013923.GA12474@kroah.com> <20130308212722.GL13719@hansolo.jdub.homelinux.org> <513A6A65.9050706@suse.cz> <20130308224950.GM13719@hansolo.jdub.homelinux.org> <513A6D1F.5000202@suse.cz> <513A6FD4.7000506@suse.cz> <513A70CF.9010800@suse.cz> <20130308232809.GO13719@hansolo.jdub.homelinux.org> <20130308234404.GP13719@hansolo.jdub.homelinux.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130308234404.GP13719@hansolo.jdub.homelinux.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Josh Boyer <jwboyer@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Anatolij Gustschin <agust@denx.de>
+Subject: [PATCH] tty: serial: mpc5xxx: fix PSC clock name bug
+Date: Sat,  9 Mar 2013 12:43:54 +0100
+Message-ID: <1362829434-1274-1-git-send-email-agust@denx.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:50605 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756804Ab3CILnz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 9 Mar 2013 06:43:55 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Anatolij Gustschin <agust@denx.de>
 
-On 03/09/2013 12:44 AM, Josh Boyer wrote:
-> On Fri, Mar 08, 2013 at 06:28:09PM -0500, Josh Boyer wrote:
->> On Sat, Mar 09, 2013 at 12:14:23AM +0100, Jiri Slaby wrote:
->>> On 03/09/2013 12:10 AM, Jiri Slaby wrote:
->>>> On 03/08/2013 11:58 PM, Jiri Slaby wrote:
->>>>> On 03/08/2013 11:49 PM, Josh Boyer wrote:
->>>>>> On Fri, Mar 08, 2013 at 11:47:01PM +0100, Jiri Slaby wrote:
->>>>>>> Yeah, I agree this is ugly. Just re-definining MODULE_PARAM_PREFIX at
->>>>>>> the end of the file should do the trick (followed by
->>>>>>> "module_param(nr_uarts, uint, 0644)").
->>>>>>
->>>>>> For some reason, I thought I had tried that.  Maybe I didn't.  I'll look
->>>>>> into it again.
->>>>>
->>>>> I see. Because we would re-define some global variables. What if we put
->>>>> module_param into a function?
->>>>
->>>> Something like this?
->>>> #ifdef MODULE
->>
->> I don't think you want this surrounded in #ifdef MODULE, do you?  That
->> won't let people building the driver into the kernel continue to use
->> 8250.<whatever> on the kernel command line.
+mpc512x platform clock code names PSC clocks as "pscX_mclk" but
+the driver tries to get "pscX_clk" clock and this results in
+errors like:
 
-Yes, you're right. I sort of thought the prefix is not used for
-non-modules. But it is.
+  mpc52xx-psc-uart 80011700.psc: Failed to get PSC clock entry!
 
->>>> static void __unused splat(void) {
->>>
->>> I meant __used. It should make no difference though.
->>>
->>>> #       undef MODULE_PARAM_PREFIX
->>>> #       define MODULE_PARAM_PREFIX "8250."
->>>>         module_param_cb(nr_uarts, &param_ops_uint, &nr_uarts, 0644);
->>>>         ...
->>>> }
->>>> #endif
->>>>
->>>> Not nice, but should work. The other way is to have those in a separate
->>>> file linked to 8250 (to avoid re-definition errors).
->>
->> Ew.  I'll try the function first.
-> 
-> OK, the function (without the surrounding ifdef) seems to be working OK.
-> I'll do a bit more testing and send out a v2 in a bit.
-> 
-> Thanks for the tip.  It's still not pretty, but at least I don't feel
-> ashamed about it.
+The problem appears when opening ttyPSC devices other than the
+system's serial console. Since getting and enabling the PSC clock
+fails, uart port startup doesn't succeed and tty flag TTY_IO_ERROR
+remains set causing further errors in tty ioctls, i.e.
+'strace stty -F /dev/ttyPSC1' shows:
 
-I'm thinking about deprecating the 8250_core.* in some way. Better
-sooner than later. The view of having both of them with that hack in the
-kernel forever drives me bananas.
+open("/dev/ttyPSC1", O_RDONLY|O_NONBLOCK|O_LARGEFILE) = 3
+dup2(3, 0)                              = 0
+close(3)                                = 0
+fcntl64(0, F_GETFL)                     = 0x10800 (flags O_RDONLY|O_NONBLOCK|O_LARGEFILE)
+fcntl64(0, F_SETFL, O_RDONLY|O_LARGEFILE) = 0
+ioctl(0, TCGETS, 0xbff89038)            = -1 EIO (Input/output error)
 
+Only request PSC clock names that the platform actually provides.
+
+Signed-off-by: Anatolij Gustschin <agust@denx.de>
+---
+ drivers/tty/serial/mpc52xx_uart.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index c0e1fad..018bad9 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -550,7 +550,7 @@ static int mpc512x_psc_clock(struct uart_port *port, int enable)
+ 		return 0;
+ 
+ 	psc_num = (port->mapbase & 0xf00) >> 8;
+-	snprintf(clk_name, sizeof(clk_name), "psc%d_clk", psc_num);
++	snprintf(clk_name, sizeof(clk_name), "psc%d_mclk", psc_num);
+ 	psc_clk = clk_get(port->dev, clk_name);
+ 	if (IS_ERR(psc_clk)) {
+ 		dev_err(port->dev, "Failed to get PSC clock entry!\n");
 -- 
-js
-suse labs
+1.7.5.4
+
