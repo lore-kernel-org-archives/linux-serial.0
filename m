@@ -1,40 +1,47 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] tty: serial: fix typo "ARCH_S5P6450"
-Date: Sat, 09 Mar 2013 23:16:44 +0100
-Message-ID: <1362867404.3137.44.camel@x61.thuisdomein>
+From: Sean Young <sean@mess.org>
+Subject: Re: 8250.nr_uarts broken in 3.7
+Date: Sun, 10 Mar 2013 12:21:23 +0000
+Message-ID: <20130310122123.GA25551@pequod.mess.org>
+References: <513A6A65.9050706@suse.cz>
+ <20130308224950.GM13719@hansolo.jdub.homelinux.org>
+ <513A6D1F.5000202@suse.cz>
+ <513A6FD4.7000506@suse.cz>
+ <513A70CF.9010800@suse.cz>
+ <20130308232809.GO13719@hansolo.jdub.homelinux.org>
+ <20130308234404.GP13719@hansolo.jdub.homelinux.org>
+ <513AFD66.3030404@suse.cz>
+ <20130309133014.GQ13719@hansolo.jdub.homelinux.org>
+ <513B43BA.3000906@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Kukjin Kim <kgene.kim@samsung.com>, Ben Dooks <ben-linux@fluff.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from pequod.mess.org ([46.65.169.142]:50820 "EHLO pequod.mess.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752224Ab3CJMV0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 10 Mar 2013 08:21:26 -0400
+Content-Disposition: inline
+In-Reply-To: <513B43BA.3000906@suse.cz>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>
+Cc: Josh Boyer <jwboyer@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This could have been either ARCH_S5P64X0 or CPU_S5P6450. Looking at
-commit 2555e663b367b8d555e76023f4de3f6338c28d6c ("ARM: S5P64X0: Add UART
-serial support for S5P6450") - which added this typo - makes clear this
-should be CPU_S5P6450.
+On Sat, Mar 09, 2013 at 03:14:18PM +0100, Jiri Slaby wrote:
+> This is so disgusting that I will do the following:
+> * ack your patch after you change the above (if that works)
+> * rename 8250.c to 8250_core.c
+> * change 8250_core.ko back to 8250.ko (ie. bring back the old module name)
+> * thus switch MODULE_PARAM_PREFIX above to "8250_core."
+> * deprecate all the newly added 8250_core.* params somehow and schedule
+> for removal. IMO this warrants a kernel config option like
+> CONFIG_8250_DEPRECATED_MODULE_PARAMS.
+> 
+> We have a lesson learned.
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
----
-Bravely untested.
+Indeed. In the patch that broke things, I renamed the module rather than 
+the 8250.c source file in order to keep the patch small, but obviously 
+did not consider the consequences well enough. I'm sorry about the mess 
+I created.
 
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index cf9210d..40ddbe4 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -218,7 +218,7 @@ config SERIAL_SAMSUNG_UARTS_4
- config SERIAL_SAMSUNG_UARTS
- 	int
- 	depends on PLAT_SAMSUNG
--	default 6 if ARCH_S5P6450
-+	default 6 if CPU_S5P6450
- 	default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
- 	default 3
- 	help
--- 
-1.7.11.7
+Sean
