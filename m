@@ -1,74 +1,44 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 39/44] tty: Factor ldsem writer trylock
-Date: Mon, 11 Mar 2013 16:44:59 -0400
-Message-ID: <1363034704-28036-40-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 33/44] tty: Clarify multiple-references comment in TIOCSETD ioctl
+Date: Mon, 11 Mar 2013 16:44:53 -0400
+Message-ID: <1363034704-28036-34-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33556 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932101Ab3CKVPj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 17:15:39 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Michel Lespinasse <walken@google.com>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Prepare to simplify lock acquistion by waiting writer.
-
-Derived from Michel Lespinasse's write lock stealing work on rwsem.
-
-Cc: Michel Lespinasse <walken@google.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldsem.c | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ drivers/tty/tty_ldisc.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
-index d2f091a..48f1ce8 100644
---- a/drivers/tty/tty_ldsem.c
-+++ b/drivers/tty/tty_ldsem.c
-@@ -136,13 +136,8 @@ static void __ldsem_wake_readers(struct ld_semaphore *sem)
- 	sem->wait_readers = 0;
- }
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 84ba790..9725c94 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -567,13 +567,15 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 		tty_ldisc_restore(tty, old_ldisc);
+ 	}
  
--static void __ldsem_wake_writer(struct ld_semaphore *sem)
-+static inline int writer_trylock(struct ld_semaphore *sem)
- {
--	struct ldsem_waiter *waiter;
--	struct task_struct *tsk;
+-	/* At this point we hold a reference to the new ldisc and a
+-	   a reference to the old ldisc. If we ended up flipping back
+-	   to the existing ldisc we have two references to it */
 -
--	waiter = list_entry(sem->write_wait.next, struct ldsem_waiter, list);
--
- 	/* only wake this writer if the active part of the count can be
- 	 * transitioned from 0 -> 1
- 	 */
-@@ -159,9 +154,22 @@ static void __ldsem_wake_writer(struct ld_semaphore *sem)
- 		 */
- 		count = ldsem_atomic_update(-LDSEM_ACTIVE_BIAS, sem);
- 		if (count & LDSEM_ACTIVE_MASK)
--			return;
-+			return 0;
- 	} while (1);
+ 	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
+ 		tty->ops->set_ldisc(tty);
  
-+	return 1;
-+}
++	/* At this point we hold a reference to the new ldisc and a
++	   reference to the old ldisc, or we hold two references to
++	   the old ldisc (if it was restored as part of error cleanup
++	   above). In either case, releasing a single reference from
++	   the old ldisc is correct. */
 +
-+static void __ldsem_wake_writer(struct ld_semaphore *sem)
-+{
-+	struct ldsem_waiter *waiter;
-+	struct task_struct *tsk;
-+
-+	waiter = list_entry(sem->write_wait.next, struct ldsem_waiter, list);
-+
-+	if (!writer_trylock(sem))
-+		return;
-+
- 	/* We must be careful not to touch 'waiter' after we set ->task = NULL.
- 	 * It is an allocated on the waiter's stack and may become invalid at
- 	 * any time after that point (due to a wakeup from another source).
+ 	tty_ldisc_put(old_ldisc);
+ 
+ 	/*
 -- 
 1.8.1.2
-
