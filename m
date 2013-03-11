@@ -1,80 +1,64 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 43/44] tty: Early-out ldsem write lock stealing
-Date: Mon, 11 Mar 2013 16:45:03 -0400
-Message-ID: <1363034704-28036-44-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 13/44] tty: Don't reenable already enabled ldisc
+Date: Mon, 11 Mar 2013 16:44:33 -0400
+Message-ID: <1363034704-28036-14-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Michel Lespinasse <walken@google.com>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-If, when attempting to reverse the count bump, the writer discovers
-the lock is unclaimed, try to immediately steal the lock.
+tty_ldisc_hangup() guarantees the ldisc is enabled (or that there
+is no ldisc). Since __tty_hangup() was the only user, re-define
+tty_ldisc_enable() in file-scope.
 
-Derived from Michel Lespinasse's write lock stealing work on
-rwsem.
-
-Cc: Michel Lespinasse <walken@google.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldsem.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/tty/tty_io.c    | 1 -
+ drivers/tty/tty_ldisc.c | 2 +-
+ include/linux/tty.h     | 2 --
+ 3 files changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
-index e750ac3..84ea8a7 100644
---- a/drivers/tty/tty_ldsem.c
-+++ b/drivers/tty/tty_ldsem.c
-@@ -247,7 +247,7 @@ down_read_failed(struct ld_semaphore *sem, long timeout)
-  * wait for the write lock to be granted
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index fd47363..1ee318a 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -666,7 +666,6 @@ static void __tty_hangup(struct tty_struct *tty)
+ 	 */
+ 	set_bit(TTY_HUPPED, &tty->flags);
+ 	clear_bit(TTY_HUPPING, &tty->flags);
+-	tty_ldisc_enable(tty);
+ 
+ 	tty_unlock(tty);
+ 
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 37671fcc..9c727da 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -373,7 +373,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
+  *	Clearing directly is allowed.
   */
- static struct ld_semaphore __sched *
--down_write_failed(struct ld_semaphore *sem, long timeout)
-+down_write_failed(struct ld_semaphore *sem, long count, long timeout)
+ 
+-void tty_ldisc_enable(struct tty_struct *tty)
++static void tty_ldisc_enable(struct tty_struct *tty)
  {
- 	struct ldsem_waiter waiter;
- 	long adjust = -LDSEM_ACTIVE_BIAS;
-@@ -255,17 +255,24 @@ down_write_failed(struct ld_semaphore *sem, long timeout)
+ 	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	set_bit(TTY_LDISC, &tty->flags);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 7aa4be6..bfa6fca 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -527,8 +527,6 @@ extern void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty);
+ extern void tty_ldisc_init(struct tty_struct *tty);
+ extern void tty_ldisc_deinit(struct tty_struct *tty);
+ extern void tty_ldisc_begin(void);
+-/* This last one is just for the tty layer internals and shouldn't be used elsewhere */
+-extern void tty_ldisc_enable(struct tty_struct *tty);
  
- 	/* set up my own style of waitqueue */
- 	raw_spin_lock_irq(&sem->wait_lock);
-+
-+	/* Try to reverse the lock attempt but if the count has changed
-+	 * so that reversing fails, check if the lock is now owned,
-+	 * and early-out if so */
-+	do {
-+		if (ldsem_cmpxchg(&count, count + adjust, sem))
-+			break;
-+		if ((count & LDSEM_ACTIVE_MASK) == LDSEM_ACTIVE_BIAS) {
-+			raw_spin_unlock_irq(&sem->wait_lock);
-+			return sem;
-+		}
-+	} while (1);
-+
- 	list_add_tail(&waiter.list, &sem->write_wait);
  
- 	waiter.task = current;
- 	get_task_struct(current);
- 
--	/* change the lock attempt to a wait --
--	 * if there are no active locks, wake the new lock owner(s)
--	 */
--	if ((ldsem_atomic_update(adjust, sem) & LDSEM_ACTIVE_MASK) == 0)
--		__ldsem_wake(sem);
--
- 	set_current_state(TASK_UNINTERRUPTIBLE);
- 	for (;;) {
- 		if (!timeout)
-@@ -320,7 +327,7 @@ static inline int __ldsem_down_write_nested(struct ld_semaphore *sem,
- 	count = ldsem_atomic_update(LDSEM_WRITE_BIAS, sem);
- 	if ((count & LDSEM_ACTIVE_MASK) != LDSEM_ACTIVE_BIAS) {
- 		lock_stat(sem, contended);
--		if (!down_write_failed(sem, timeout)) {
-+		if (!down_write_failed(sem, count, timeout)) {
- 			lockdep_release(sem, 1, _RET_IP_);
- 			return 0;
- 		}
+ /* n_tty.c */
 -- 
 1.8.1.2
