@@ -1,58 +1,109 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzRdIHR0eTogbWF4MzEweDogVXNlIGRldl9wbV9vcHM=?=
-Date: Mon, 11 Mar 2013 22:10:31 +0400
-Message-ID: <1363025431.558252587@f43.mail.ru>
-References: <1363023892-15957-1-git-send-email-lars@metafoo.de> <1363023892-15957-2-git-send-email-lars@metafoo.de>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 2/4] tty: max310x: Use dev_pm_ops
+Date: Mon, 11 Mar 2013 19:35:06 +0100
+Message-ID: <513E23DA.90100@metafoo.de>
+References: <1363023892-15957-1-git-send-email-lars@metafoo.de> <1363023892-15957-2-git-send-email-lars@metafoo.de> <1363025431.558252587@f43.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1363023892-15957-2-git-send-email-lars@metafoo.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?B?TGFycy1QZXRlciBDbGF1c2Vu?= <lars@metafoo.de>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:60399 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751665Ab3CKScr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Mar 2013 14:32:47 -0400
+In-Reply-To: <1363025431.558252587@f43.mail.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-SGVsbG8uCgo+IFVzZSBkZXZfcG1fb3BzIGluc3RlYWQgb2YgdGhlIGRlcHJlY2F0ZWQgbGVnYWN5
-IHN1c3BlbmQvcmVzdW1lIGZvciB0aGUKPiBtYXgzMTB4IGRyaXZlci4KPiAKPiBDYzogQWxleGFu
-ZGVyIFNoaXlhbiA8c2hjX3dvcmtAbWFpbC5ydT4KPiBTaWduZWQtb2ZmLWJ5OiBMYXJzLVBldGVy
-IENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4KPiAtLS0KPiAgZHJpdmVycy90dHkvc2VyaWFsL21h
-eDMxMHguYyB8IDI0ICsrKysrKysrKysrKysrKystLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwg
-MTYgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy90dHkvc2VyaWFsL21heDMxMHguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9tYXgzMTB4LmMKPiBp
-bmRleCAwYzI0MjJjLi44OTQxZTY0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9t
-YXgzMTB4LmMKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWF4MzEweC5jCj4gQEAgLTg4MSwx
-MiArODgxLDE0IEBAIHN0YXRpYyBzdHJ1Y3QgdWFydF9vcHMgbWF4MzEweF9vcHMgPSB7Cj4gIAku
-dmVyaWZ5X3BvcnQJPSBtYXgzMTB4X3ZlcmlmeV9wb3J0LAo+ICB9Owo+ICAKPiAtc3RhdGljIGlu
-dCBtYXgzMTB4X3N1c3BlbmQoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSwgcG1fbWVzc2FnZV90IHN0
-YXRlKQo+ICsjaWZkZWYgQ09ORklHX1BNX1NMRUVQCj4gKwo+ICtzdGF0aWMgaW50IG1heDMxMHhf
-c3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIHsKPiAgCWludCByZXQ7Cj4gLQlzdHJ1Y3Qg
-bWF4MzEweF9wb3J0ICpzID0gZGV2X2dldF9kcnZkYXRhKCZzcGktPmRldik7Cj4gKwlzdHJ1Y3Qg
-bWF4MzEweF9wb3J0ICpzID0gZGV2X2dldF9kcnZkYXRhKGRldik7Cj4gIAo+IC0JZGV2X2RiZygm
-c3BpLT5kZXYsICJTdXNwZW5kXG4iKTsKPiArCWRldl9kYmcoZGV2LCAiU3VzcGVuZFxuIik7Cj4g
-IAo+ICAJcmV0ID0gdWFydF9zdXNwZW5kX3BvcnQoJnMtPnVhcnQsICZzLT5wb3J0KTsKPiAgCj4g
-QEAgLTkwNSwxMSArOTA3LDExIEBAIHN0YXRpYyBpbnQgbWF4MzEweF9zdXNwZW5kKHN0cnVjdCBz
-cGlfZGV2aWNlICpzcGksIHBtX21lc3NhZ2VfdCBzdGF0ZSkKPiAgCXJldHVybiByZXQ7Cj4gIH0K
-PiAgCj4gLXN0YXRpYyBpbnQgbWF4MzEweF9yZXN1bWUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkK
-PiArc3RhdGljIGludCBtYXgzMTB4X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIHsKPiAt
-CXN0cnVjdCBtYXgzMTB4X3BvcnQgKnMgPSBkZXZfZ2V0X2RydmRhdGEoJnNwaS0+ZGV2KTsKPiAr
-CXN0cnVjdCBtYXgzMTB4X3BvcnQgKnMgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsKPiAgCj4gLQlk
-ZXZfZGJnKCZzcGktPmRldiwgIlJlc3VtZVxuIik7Cj4gKwlkZXZfZGJnKGRldiwgIlJlc3VtZVxu
-Iik7Cj4gIAo+ICAJaWYgKHMtPnBkYXRhLT5zdXNwZW5kKQo+ICAJCXMtPnBkYXRhLT5zdXNwZW5k
-KDApOwo+IEBAIC05MjgsNiArOTMwLDEzIEBAIHN0YXRpYyBpbnQgbWF4MzEweF9yZXN1bWUoc3Ry
-dWN0IHNwaV9kZXZpY2UgKnNwaSkKPiAgCXJldHVybiB1YXJ0X3Jlc3VtZV9wb3J0KCZzLT51YXJ0
-LCAmcy0+cG9ydCk7Cj4gIH0KPiAgCj4gK3N0YXRpYyBTSU1QTEVfREVWX1BNX09QUyhtYXgzMTB4
-X3BtX29wcywgbWF4MzEweF9zdXNwZW5kLCBtYXgzMTB4X3Jlc3VtZSk7Cj4gKyNkZWZpbmUgTUFY
-MzEwWF9QTV9PUFMgKCZtYXgzMTB4X3BtX29wcykKPiArCj4gKyNlbHNlCj4gKyNkZWZpbmUgTUFY
-MzEwWF9QTV9PUFMgTlVMTAo+ICsjZW5kaWYKPiArCj4gICNpZmRlZiBDT05GSUdfR1BJT0xJQgo+
-ICBzdGF0aWMgaW50IG1heDMxMHhfZ3Bpb19nZXQoc3RydWN0IGdwaW9fY2hpcCAqY2hpcCwgdW5z
-aWduZWQgb2Zmc2V0KQo+ICB7Cj4gQEAgLTEyNDIsMTEgKzEyNTEsMTAgQEAgc3RhdGljIHN0cnVj
-dCBzcGlfZHJpdmVyIG1heDMxMHhfZHJpdmVyID0gewo+ICAJLmRyaXZlciA9IHsKPiAgCQkubmFt
-ZQk9ICJtYXgzMTB4IiwKPiAgCQkub3duZXIJPSBUSElTX01PRFVMRSwKPiArCQkucG0JPSBNQVgz
-MTBYX1BNX09QUywKCkNoZWNrIGZvciBDT05GSUdfUE1fU0xFRVAgbm90IG5lY2Vzc2FyeSBhdCBh
-bGwuCjxsaW51eC9wbS5oPiB3aWxsIGRvIGFsbCBmb3IgdXMuCgo+ICAJfSwKPiAgCS5wcm9iZQkJ
-PSBtYXgzMTB4X3Byb2JlLAo+ICAJLnJlbW92ZQkJPSBtYXgzMTB4X3JlbW92ZSwKPiAtCS5zdXNw
-ZW5kCT0gbWF4MzEweF9zdXNwZW5kLAo+IC0JLnJlc3VtZQkJPSBtYXgzMTB4X3Jlc3VtZSwKPiAg
-CS5pZF90YWJsZQk9IG1heDMxMHhfaWRfdGFibGUsCj4gIH07Cj4gIG1vZHVsZV9zcGlfZHJpdmVy
-KG1heDMxMHhfZHJpdmVyKTsKPiAtLSAKPiAxLjguMAoKLS0tCg==
+On 03/11/2013 07:10 PM, Alexander Shiyan wrote:
+> Hello.
+> 
+>> Use dev_pm_ops instead of the deprecated legacy suspend/resume for the
+>> max310x driver.
+>>
+>> Cc: Alexander Shiyan <shc_work@mail.ru>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>>  drivers/tty/serial/max310x.c | 24 ++++++++++++++++--------
+>>  1 file changed, 16 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+>> index 0c2422c..8941e64 100644
+>> --- a/drivers/tty/serial/max310x.c
+>> +++ b/drivers/tty/serial/max310x.c
+>> @@ -881,12 +881,14 @@ static struct uart_ops max310x_ops = {
+>>  	.verify_port	= max310x_verify_port,
+>>  };
+>>  
+>> -static int max310x_suspend(struct spi_device *spi, pm_message_t state)
+>> +#ifdef CONFIG_PM_SLEEP
+>> +
+>> +static int max310x_suspend(struct device *dev)
+>>  {
+>>  	int ret;
+>> -	struct max310x_port *s = dev_get_drvdata(&spi->dev);
+>> +	struct max310x_port *s = dev_get_drvdata(dev);
+>>  
+>> -	dev_dbg(&spi->dev, "Suspend\n");
+>> +	dev_dbg(dev, "Suspend\n");
+>>  
+>>  	ret = uart_suspend_port(&s->uart, &s->port);
+>>  
+>> @@ -905,11 +907,11 @@ static int max310x_suspend(struct spi_device *spi, pm_message_t state)
+>>  	return ret;
+>>  }
+>>  
+>> -static int max310x_resume(struct spi_device *spi)
+>> +static int max310x_resume(struct device *dev)
+>>  {
+>> -	struct max310x_port *s = dev_get_drvdata(&spi->dev);
+>> +	struct max310x_port *s = dev_get_drvdata(dev);
+>>  
+>> -	dev_dbg(&spi->dev, "Resume\n");
+>> +	dev_dbg(dev, "Resume\n");
+>>  
+>>  	if (s->pdata->suspend)
+>>  		s->pdata->suspend(0);
+>> @@ -928,6 +930,13 @@ static int max310x_resume(struct spi_device *spi)
+>>  	return uart_resume_port(&s->uart, &s->port);
+>>  }
+>>  
+>> +static SIMPLE_DEV_PM_OPS(max310x_pm_ops, max310x_suspend, max310x_resume);
+>> +#define MAX310X_PM_OPS (&max310x_pm_ops)
+>> +
+>> +#else
+>> +#define MAX310X_PM_OPS NULL
+>> +#endif
+>> +
+>>  #ifdef CONFIG_GPIOLIB
+>>  static int max310x_gpio_get(struct gpio_chip *chip, unsigned offset)
+>>  {
+>> @@ -1242,11 +1251,10 @@ static struct spi_driver max310x_driver = {
+>>  	.driver = {
+>>  		.name	= "max310x",
+>>  		.owner	= THIS_MODULE,
+>> +		.pm	= MAX310X_PM_OPS,
+> 
+> Check for CONFIG_PM_SLEEP not necessary at all.
+> <linux/pm.h> will do all for us.
+
+No it wont, you'll end up with a dev_pm_ops struct full of zeros and two
+warnings from your compiler about unused functions.
+
+> 
+>>  	},
+>>  	.probe		= max310x_probe,
+>>  	.remove		= max310x_remove,
+>> -	.suspend	= max310x_suspend,
+>> -	.resume		= max310x_resume,
+>>  	.id_table	= max310x_id_table,
+>>  };
+>>  module_spi_driver(max310x_driver);
+>> -- 
+>> 1.8.0
+> 
+> ---
+
