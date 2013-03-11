@@ -1,79 +1,83 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 37/44] tty: Drop ldsem wait type
-Date: Mon, 11 Mar 2013 16:44:57 -0400
-Message-ID: <1363034704-28036-38-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 31/44] tty: Clarify ldisc variable
+Date: Mon, 11 Mar 2013 16:44:51 -0400
+Message-ID: <1363034704-28036-32-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33475 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754900Ab3CKVPa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Mar 2013 17:15:30 -0400
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Now the lock failures are handled independently for reads and
-writes, the wait flags are no longer necessary.
+Rename o_ldisc to avoid confusion with the ldisc of the
+'other' tty.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldsem.c | 19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
+ drivers/tty/tty_ldisc.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
-index d849fb85..ddfbdfe 100644
---- a/drivers/tty/tty_ldsem.c
-+++ b/drivers/tty/tty_ldsem.c
-@@ -76,9 +76,6 @@
- struct ldsem_waiter {
- 	struct list_head list;
- 	struct task_struct *task;
--	unsigned int flags;
--#define LDSEM_READ_WAIT		0x00000001
--#define LDSEM_WRITE_WAIT	0x00000002
- };
- 
- /* Wake types for __ldsem_wake().  Note: RWSEM_WAKE_NO_CHECK implies
-@@ -226,19 +223,13 @@ static struct ld_semaphore __sched *
- down_read_failed(struct ld_semaphore *sem, long timeout)
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index a150f95..9ace119 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -516,7 +516,7 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
  {
- 	struct ldsem_waiter waiter;
--	long flags = LDSEM_READ_WAIT;
- 	long adjust = -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS;
+ 	int retval;
+-	struct tty_ldisc *o_ldisc, *new_ldisc;
++	struct tty_ldisc *old_ldisc, *new_ldisc;
+ 	struct tty_struct *o_tty = tty->link;
  
- 	/* set up my own style of waitqueue */
- 	raw_spin_lock_irq(&sem->wait_lock);
--
--	if (flags & LDSEM_READ_WAIT)
--		list_add_tail(&waiter.list, &sem->read_wait);
--	else
--		list_add_tail(&waiter.list, &sem->write_wait);
-+	list_add_tail(&waiter.list, &sem->read_wait);
+ 	new_ldisc = tty_ldisc_get(tty, ldisc);
+@@ -540,7 +540,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	/* FIXME: why 'shutoff' input if the ldisc is locked? */
+ 	tty->receive_room = 0;
  
- 	waiter.task = current;
--	waiter.flags = flags;
- 	get_task_struct(current);
+-	o_ldisc = tty->ldisc;
++	old_ldisc = tty->ldisc;
+ 	tty_lock(tty);
  
- 	/* change the lock attempt to a wait --
-@@ -287,19 +278,13 @@ static struct ld_semaphore __sched *
- down_write_failed(struct ld_semaphore *sem, long timeout)
- {
- 	struct ldsem_waiter waiter;
--	long flags = LDSEM_WRITE_WAIT;
- 	long adjust = -LDSEM_ACTIVE_BIAS;
+ 	/* FIXME: for testing only */
+@@ -555,8 +555,8 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 		return -EIO;
+ 	}
  
- 	/* set up my own style of waitqueue */
- 	raw_spin_lock_irq(&sem->wait_lock);
--
--	if (flags & LDSEM_READ_WAIT)
--		list_add_tail(&waiter.list, &sem->read_wait);
--	else
--		list_add_tail(&waiter.list, &sem->write_wait);
-+	list_add_tail(&waiter.list, &sem->write_wait);
+-	/* Shutdown the current discipline. */
+-	tty_ldisc_close(tty, o_ldisc);
++	/* Shutdown the old discipline. */
++	tty_ldisc_close(tty, old_ldisc);
  
- 	waiter.task = current;
--	waiter.flags = flags;
- 	get_task_struct(current);
+ 	/* Now set up the new line discipline. */
+ 	tty->ldisc = new_ldisc;
+@@ -566,17 +566,17 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	if (retval < 0) {
+ 		/* Back to the old one or N_TTY if we can't */
+ 		tty_ldisc_put(new_ldisc);
+-		tty_ldisc_restore(tty, o_ldisc);
++		tty_ldisc_restore(tty, old_ldisc);
+ 	}
  
- 	/* change the lock attempt to a wait --
+ 	/* At this point we hold a reference to the new ldisc and a
+ 	   a reference to the old ldisc. If we ended up flipping back
+ 	   to the existing ldisc we have two references to it */
+ 
+-	if (tty->ldisc->ops->num != o_ldisc->ops->num && tty->ops->set_ldisc)
++	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
+ 		tty->ops->set_ldisc(tty);
+ 
+-	tty_ldisc_put(o_ldisc);
++	tty_ldisc_put(old_ldisc);
+ 
+ 	/*
+ 	 *	Allow ldisc referencing to occur again
 -- 
 1.8.1.2
+
