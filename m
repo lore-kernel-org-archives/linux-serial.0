@@ -1,68 +1,88 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 02/44] n_tty: Factor packet mode status change for reuse
-Date: Mon, 11 Mar 2013 16:44:22 -0400
-Message-ID: <1363034704-28036-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 05/44] tty: Remove unnecessary re-test of ldisc ref count
+Date: Mon, 11 Mar 2013 16:44:25 -0400
+Message-ID: <1363034704-28036-6-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:59170 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754185Ab3CKUqA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Mar 2013 16:46:00 -0400
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Factor the packet mode status change from n_tty_flush_buffer
-for use by follow-on patch.
+Since the tty->ldisc is prevented from being changed by tty_set_ldisc()
+when a tty is being hung up, re-testing the ldisc user count is
+unnecessary -- ie, it cannot be a different ldisc and the user count
+cannot have increased (assuming the caller meets the precondition that
+TTY_LDISC flag is cleared)
+
+Removal of the 'early-out' locking optimization is necessary for
+the subsequent patch 'tty: Fix ldisc halt sequence on hangup'.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+ drivers/tty/tty_ldisc.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 9c18e37..4d3ab2c 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -238,6 +238,18 @@ static void reset_buffer_flags(struct tty_struct *tty)
- 	n_tty_set_room(tty);
- }
- 
-+static void n_tty_packet_mode_flush(struct tty_struct *tty)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&tty->ctrl_lock, flags);
-+	if (tty->link->packet) {
-+		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
-+		wake_up_interruptible(&tty->link->read_wait);
-+	}
-+	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+}
-+
- /**
-  *	n_tty_flush_buffer	-	clean input queue
-  *	@tty:	terminal device
-@@ -252,19 +264,11 @@ static void reset_buffer_flags(struct tty_struct *tty)
- 
- static void n_tty_flush_buffer(struct tty_struct *tty)
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index c5b848a..fa0170e 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -558,29 +558,29 @@ static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
+  *	have been halted for this to guarantee it remains idle.
+  *
+  *	Caller must hold legacy and ->ldisc_mutex.
++ *
++ *	NB: tty_set_ldisc() is prevented from changing the ldisc concurrently
++ *	with this function by checking the TTY_HUPPING flag.
+  */
+ static bool tty_ldisc_hangup_wait_idle(struct tty_struct *tty)
  {
--	unsigned long flags;
- 	/* clear everything and unthrottle the driver */
- 	reset_buffer_flags(tty);
- 
--	if (!tty->link)
--		return;
+-	while (tty->ldisc) {	/* Not yet closed */
+-		if (atomic_read(&tty->ldisc->users) != 1) {
+-			char cur_n[TASK_COMM_LEN], tty_n[64];
+-			long timeout = 3 * HZ;
+-			tty_unlock(tty);
 -
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
--	if (tty->link->packet) {
--		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
--		wake_up_interruptible(&tty->link->read_wait);
--	}
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+	if (tty->link)
-+		n_tty_packet_mode_flush(tty);
+-			while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
+-				timeout = MAX_SCHEDULE_TIMEOUT;
+-				printk_ratelimited(KERN_WARNING
+-					"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
+-					__func__, get_task_comm(cur_n, current),
+-					tty_name(tty, tty_n));
+-			}
+-			/* must reacquire both locks and preserve lock order */
+-			mutex_unlock(&tty->ldisc_mutex);
+-			tty_lock(tty);
+-			mutex_lock(&tty->ldisc_mutex);
+-			continue;
++	char cur_n[TASK_COMM_LEN], tty_n[64];
++	long timeout = 3 * HZ;
++
++	if (tty->ldisc) {	/* Not yet closed */
++		tty_unlock(tty);
++
++		while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
++			timeout = MAX_SCHEDULE_TIMEOUT;
++			printk_ratelimited(KERN_WARNING
++				"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
++				__func__, get_task_comm(cur_n, current),
++				tty_name(tty, tty_n));
+ 		}
+-		break;
++		/* must reacquire both locks and preserve lock order */
++		mutex_unlock(&tty->ldisc_mutex);
++		tty_lock(tty);
++		mutex_lock(&tty->ldisc_mutex);
+ 	}
+ 	return !!tty->ldisc;
  }
- 
- /**
 -- 
 1.8.1.2
+
