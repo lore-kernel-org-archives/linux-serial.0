@@ -1,160 +1,93 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 25/44] tty: Fix recursive deadlock in tty_perform_flush()
-Date: Mon, 11 Mar 2013 16:44:45 -0400
-Message-ID: <1363034704-28036-26-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 18/44] tty: Add ldisc hangup debug messages
+Date: Mon, 11 Mar 2013 16:44:38 -0400
+Message-ID: <1363034704-28036-19-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33405 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754768Ab3CKVPV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 17:15:21 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-tty_perform_flush() can deadlock when called while holding
-a line discipline reference. By definition, all ldisc drivers
-hold a ldisc reference, so calls originating from ldisc drivers
-must not block for a ldisc reference.
-
-The deadlock can occur when:
-  CPU 0                    |  CPU 1
-                           |
-tty_ldisc_ref(tty)         |
-....                       | <line discipline halted>
-tty_ldisc_ref_wait(tty)    |
-                           |
-
-CPU 0 cannot progess because it cannot obtain an ldisc reference
-with the line discipline has been halted (thus no new references
-are granted).
-CPU 1 cannot progress because an outstanding ldisc reference
-has not been released.
-
-An in-tree call-tree audit of tty_perform_flush() [1] shows 5
-ldisc drivers calling tty_perform_flush() indirectly via
-n_tty_ioctl_helper() and 2 ldisc drivers calling directly.
-A single tty driver safely uses the function.
-
-[1]
-Recursive usage:
-
-/* These functions are line discipline ioctls and thus
- * recursive wrt line discipline references */
-
-tty_perform_flush() - ./drivers/tty/tty_ioctl.c
-    n_tty_ioctl_helper()
-        hci_uart_tty_ioctl(default) - drivers/bluetooth/hci_ldisc.c (N_HCI)
-        n_hdlc_tty_ioctl(default) - drivers/tty/n_hdlc.c (N_HDLC)
-        gsmld_ioctl(default) - drivers/tty/n_gsm.c (N_GSM0710)
-        n_tty_ioctl(default) - drivers/tty/n_tty.c (N_TTY)
-        gigaset_tty_ioctl(default) - drivers/isdn/gigaset/ser-gigaset.c (N_GIGASET_M101)
-    ppp_synctty_ioctl(TCFLSH) - drivers/net/ppp/pps_synctty.c
-    ppp_asynctty_ioctl(TCFLSH) - drivers/net/ppp/ppp_async.c
-
-Non-recursive use:
-
-tty_perform_flush() - drivers/tty/tty_ioctl.c
-    ipw_ioctl(TCFLSH) - drivers/tty/ipwireless/tty.c
-       /* This function is a tty i/o ioctl method, which
-        * is invoked by tty_ioctl() */
+Expected typical debug log:
+[  582.721965] tty_open: opening pts3...
+[  582.721970] tty_open: opening pts3...
+[  582.721977] tty_release: pts3 (tty count=3)...
+[  582.721980] tty_release: ptm3 (tty count=1)...
+[  582.722015] pts3 vhangup...
+[  582.722020] tty_ldisc_hangup: pts3: closing ldisc: ffff88007a920540
+[  582.724128] tty_release: pts3 (tty count=2)...
+[  582.724217] tty_ldisc_hangup: pts3: re-opened ldisc: ffff88007a920580
+[  582.724221] tty_release: ptm3: final close
+[  582.724234] tty_ldisc_release: ptm3: closing ldisc: ffff88007a920a80
+[  582.724238] tty_ldisc_release: ptm3: ldisc closed
+[  582.724241] tty_release: ptm3: freeing structure...
+[  582.724741] tty_open: opening pts3...
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/net/ppp/ppp_async.c   |  2 +-
- drivers/net/ppp/ppp_synctty.c |  2 +-
- drivers/tty/tty_ioctl.c       | 28 +++++++++++++++++++---------
- 3 files changed, 21 insertions(+), 11 deletions(-)
+ drivers/tty/tty_ldisc.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
-index a031f6b..9c889e0 100644
---- a/drivers/net/ppp/ppp_async.c
-+++ b/drivers/net/ppp/ppp_async.c
-@@ -314,7 +314,7 @@ ppp_asynctty_ioctl(struct tty_struct *tty, struct file *file,
- 		/* flush our buffers and the serial port's buffer */
- 		if (arg == TCIOFLUSH || arg == TCOFLUSH)
- 			ppp_async_flush_output(ap);
--		err = tty_perform_flush(tty, arg);
-+		err = n_tty_ioctl_helper(tty, file, cmd, arg);
- 		break;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 0030d55..328ff5b 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -20,6 +20,17 @@
+ #include <linux/uaccess.h>
+ #include <linux/ratelimit.h>
  
- 	case FIONREAD:
-diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
-index 1a12033..bdf3b13 100644
---- a/drivers/net/ppp/ppp_synctty.c
-+++ b/drivers/net/ppp/ppp_synctty.c
-@@ -355,7 +355,7 @@ ppp_synctty_ioctl(struct tty_struct *tty, struct file *file,
- 		/* flush our buffers and the serial port's buffer */
- 		if (arg == TCIOFLUSH || arg == TCOFLUSH)
- 			ppp_sync_flush_output(ap);
--		err = tty_perform_flush(tty, arg);
-+		err = n_tty_ioctl_helper(tty, file, cmd, arg);
- 		break;
++#undef LDISC_DEBUG_HANGUP
++
++#ifdef LDISC_DEBUG_HANGUP
++#define tty_ldisc_debug(tty, f, args...) ({				       \
++	char __b[64];							       \
++	printk(KERN_DEBUG "%s: %s: " f, __func__, tty_name(tty, __b), ##args); \
++})
++#else
++#define tty_ldisc_debug(tty, f, args...)
++#endif
++
+ /*
+  *	This guards the refcounted line discipline lists. The lock
+  *	must be taken with irqs off because there are hangup path
+@@ -822,6 +833,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	int reset = tty->driver->flags & TTY_DRIVER_RESET_TERMIOS;
+ 	int err = 0;
  
- 	case FIONREAD:
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index d58b92c..935b032 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -1086,14 +1086,12 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
++	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
++
+ 	/*
+ 	 * FIXME! What are the locking issues here? This may me overdoing
+ 	 * things... This question is especially important now that we've
+@@ -878,6 +891,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	mutex_unlock(&tty->ldisc_mutex);
+ 	if (reset)
+ 		tty_reset_termios(tty);
++
++	tty_ldisc_debug(tty, "re-opened ldisc: %p\n", tty->ldisc);
  }
- EXPORT_SYMBOL_GPL(tty_mode_ioctl);
  
--int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
+ /**
+@@ -944,6 +959,8 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
+ 	 * it does not race with the set_ldisc code path.
+ 	 */
+ 
++	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
 +
-+/* Caller guarantees ldisc reference is held */
-+static int __tty_perform_flush(struct tty_struct *tty, unsigned long arg)
- {
--	struct tty_ldisc *ld;
--	int retval = tty_check_change(tty);
--	if (retval)
--		return retval;
-+	struct tty_ldisc *ld = tty->ldisc;
+ 	tty_ldisc_halt(tty, o_tty, MAX_SCHEDULE_TIMEOUT);
  
--	ld = tty_ldisc_ref_wait(tty);
- 	switch (arg) {
- 	case TCIFLUSH:
- 		if (ld && ld->ops->flush_buffer) {
-@@ -1111,12 +1109,24 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
- 		tty_driver_flush_buffer(tty);
- 		break;
- 	default:
--		tty_ldisc_deref(ld);
- 		return -EINVAL;
- 	}
--	tty_ldisc_deref(ld);
- 	return 0;
+ 	tty_lock_pair(tty, o_tty);
+@@ -955,6 +972,8 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
+ 	tty_unlock_pair(tty, o_tty);
+ 	/* And the memory resources remaining (buffers, termios) will be
+ 	   disposed of when the kref hits zero */
++
++	tty_ldisc_debug(tty, "ldisc closed\n");
  }
-+
-+int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
-+{
-+	struct tty_ldisc *ld;
-+	int retval = tty_check_change(tty);
-+	if (retval)
-+		return retval;
-+
-+	ld = tty_ldisc_ref_wait(tty);
-+	retval = __tty_perform_flush(tty, arg);
-+	if (ld)
-+		tty_ldisc_deref(ld);
-+	return retval;
-+}
- EXPORT_SYMBOL_GPL(tty_perform_flush);
  
- int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
-@@ -1155,7 +1165,7 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
- 		}
- 		return 0;
- 	case TCFLSH:
--		return tty_perform_flush(tty, arg);
-+		return __tty_perform_flush(tty, arg);
- 	default:
- 		/* Try the mode commands */
- 		return tty_mode_ioctl(tty, file, cmd, arg);
+ /**
 -- 
 1.8.1.2
-
