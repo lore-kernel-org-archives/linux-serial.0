@@ -1,62 +1,87 @@
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-Subject: [PATCH] serial: imx: Add Rx Fifo overrun error message
-Date: Mon, 11 Mar 2013 11:27:08 +0100
-Message-ID: <1362997628-20246-1-git-send-email-alexander.stein@systec-electronic.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from webbox1416.server-home.net ([77.236.96.61]:41458 "EHLO
-	webbox1416.server-home.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753330Ab3CKKhT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 06:37:19 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/4] tty: max310x: Use dev_pm_ops
+Date: Mon, 11 Mar 2013 18:44:50 +0100
+Message-ID: <1363023892-15957-2-git-send-email-lars@metafoo.de>
+References: <1363023892-15957-1-git-send-email-lars@metafoo.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1363023892-15957-1-git-send-email-lars@metafoo.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Alexander Shiyan <shc_work@mail.ru>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Stein <alexander.stein@systec-electronic.com>
 
-Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+Use dev_pm_ops instead of the deprecated legacy suspend/resume for the
+max310x driver.
+
+Cc: Alexander Shiyan <shc_work@mail.ru>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/tty/serial/imx.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/max310x.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 147c9e1..fe72099 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -449,6 +449,13 @@ static void imx_start_tx(struct uart_port *port)
- 		temp &= ~(UCR1_RRDYEN);
- 		writel(temp, sport->port.membase + UCR1);
- 	}
-+	/* Clear any pending ORE flag before enabling interrupt */
-+	temp = readl(sport->port.membase + USR2);
-+	writel(temp | USR2_ORE, sport->port.membase + USR2);
-+
-+	temp = readl(sport->port.membase + UCR4);
-+	temp |= UCR4_OREN;
-+	writel(temp, sport->port.membase + UCR4);
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 0c2422c..8941e64 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -881,12 +881,14 @@ static struct uart_ops max310x_ops = {
+ 	.verify_port	= max310x_verify_port,
+ };
  
- 	temp = readl(sport->port.membase + UCR1);
- 	writel(temp | UCR1_TXMPTYEN, sport->port.membase + UCR1);
-@@ -582,6 +589,7 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+-static int max310x_suspend(struct spi_device *spi, pm_message_t state)
++#ifdef CONFIG_PM_SLEEP
++
++static int max310x_suspend(struct device *dev)
  {
- 	struct imx_port *sport = dev_id;
- 	unsigned int sts;
-+	unsigned int sts2;
+ 	int ret;
+-	struct max310x_port *s = dev_get_drvdata(&spi->dev);
++	struct max310x_port *s = dev_get_drvdata(dev);
  
- 	sts = readl(sport->port.membase + USR1);
+-	dev_dbg(&spi->dev, "Suspend\n");
++	dev_dbg(dev, "Suspend\n");
  
-@@ -598,6 +606,12 @@ static irqreturn_t imx_int(int irq, void *dev_id)
- 	if (sts & USR1_AWAKE)
- 		writel(USR1_AWAKE, sport->port.membase + USR1);
+ 	ret = uart_suspend_port(&s->uart, &s->port);
  
-+	sts2 = readl(sport->port.membase + USR2);
-+	if (sts2 & USR2_ORE) {
-+		dev_err(sport->port.dev, "Rx FIFO overrun\n");
-+		writel(sts2 | USR2_ORE, sport->port.membase + USR2);
-+	}
-+
- 	return IRQ_HANDLED;
+@@ -905,11 +907,11 @@ static int max310x_suspend(struct spi_device *spi, pm_message_t state)
+ 	return ret;
  }
  
+-static int max310x_resume(struct spi_device *spi)
++static int max310x_resume(struct device *dev)
+ {
+-	struct max310x_port *s = dev_get_drvdata(&spi->dev);
++	struct max310x_port *s = dev_get_drvdata(dev);
+ 
+-	dev_dbg(&spi->dev, "Resume\n");
++	dev_dbg(dev, "Resume\n");
+ 
+ 	if (s->pdata->suspend)
+ 		s->pdata->suspend(0);
+@@ -928,6 +930,13 @@ static int max310x_resume(struct spi_device *spi)
+ 	return uart_resume_port(&s->uart, &s->port);
+ }
+ 
++static SIMPLE_DEV_PM_OPS(max310x_pm_ops, max310x_suspend, max310x_resume);
++#define MAX310X_PM_OPS (&max310x_pm_ops)
++
++#else
++#define MAX310X_PM_OPS NULL
++#endif
++
+ #ifdef CONFIG_GPIOLIB
+ static int max310x_gpio_get(struct gpio_chip *chip, unsigned offset)
+ {
+@@ -1242,11 +1251,10 @@ static struct spi_driver max310x_driver = {
+ 	.driver = {
+ 		.name	= "max310x",
+ 		.owner	= THIS_MODULE,
++		.pm	= MAX310X_PM_OPS,
+ 	},
+ 	.probe		= max310x_probe,
+ 	.remove		= max310x_remove,
+-	.suspend	= max310x_suspend,
+-	.resume		= max310x_resume,
+ 	.id_table	= max310x_id_table,
+ };
+ module_spi_driver(max310x_driver);
 -- 
-1.8.1.5
-
+1.8.0
