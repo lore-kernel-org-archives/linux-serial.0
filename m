@@ -1,123 +1,44 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 36/44] tty: Inline ldsem down_failed() into down_{read,write}_failed()
-Date: Mon, 11 Mar 2013 16:44:56 -0400
-Message-ID: <1363034704-28036-37-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 16/44] tty: Fix 'deferred reopen' ldisc comment
+Date: Mon, 11 Mar 2013 16:44:36 -0400
+Message-ID: <1363034704-28036-17-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Michel Lespinasse <walken@google.com>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Separate the read and write lock paths to simplify handling of
-initial acquire failure.
+This comment is a victim of code migration from
+"tty: Fix the ldisc hangup race"; re-parent it.
 
-Derived from Michel Lespinasse's write lock stealing work on rwsem.
-
-Cc: Michel Lespinasse <walken@google.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldsem.c | 70 ++++++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 57 insertions(+), 13 deletions(-)
+ drivers/tty/tty_ldisc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
-index a60d7e3..d849fb85 100644
---- a/drivers/tty/tty_ldsem.c
-+++ b/drivers/tty/tty_ldsem.c
-@@ -220,12 +220,14 @@ static void ldsem_wake(struct ld_semaphore *sem)
- }
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 7f7e1a3..0030d55 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -854,11 +854,12 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	 */
+ 	mutex_lock(&tty->ldisc_mutex);
  
- /*
-- * wait for a lock to be granted
-+ * wait for the read lock to be granted
-  */
- static struct ld_semaphore __sched *
--down_failed(struct ld_semaphore *sem, unsigned flags, long adjust, long timeout)
-+down_read_failed(struct ld_semaphore *sem, long timeout)
- {
- 	struct ldsem_waiter waiter;
-+	long flags = LDSEM_READ_WAIT;
-+	long adjust = -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS;
+-	/* At this point we have a closed ldisc and we want to
+-	   reopen it. We could defer this to the next open but
+-	   it means auditing a lot of other paths so this is
+-	   a FIXME */
+ 	if (tty_ldisc_hangup_halt(tty)) {
++
++		/* At this point we have a halted ldisc; we want to close it and
++		   reopen a new ldisc. We could defer the reopen to the next
++		   open but it means auditing a lot of other paths so this is
++		   a FIXME */
+ 		if (reset == 0) {
  
- 	/* set up my own style of waitqueue */
- 	raw_spin_lock_irq(&sem->wait_lock);
-@@ -279,22 +281,64 @@ down_failed(struct ld_semaphore *sem, unsigned flags, long adjust, long timeout)
- }
- 
- /*
-- * wait for the read lock to be granted
-- */
--static struct ld_semaphore __sched *
--down_read_failed(struct ld_semaphore *sem, long timeout)
--{
--	return down_failed(sem, LDSEM_READ_WAIT,
--			   -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS, timeout);
--}
--
--/*
-  * wait for the write lock to be granted
-  */
- static struct ld_semaphore __sched *
- down_write_failed(struct ld_semaphore *sem, long timeout)
- {
--	return down_failed(sem, LDSEM_WRITE_WAIT, -LDSEM_ACTIVE_BIAS, timeout);
-+	struct ldsem_waiter waiter;
-+	long flags = LDSEM_WRITE_WAIT;
-+	long adjust = -LDSEM_ACTIVE_BIAS;
-+
-+	/* set up my own style of waitqueue */
-+	raw_spin_lock_irq(&sem->wait_lock);
-+
-+	if (flags & LDSEM_READ_WAIT)
-+		list_add_tail(&waiter.list, &sem->read_wait);
-+	else
-+		list_add_tail(&waiter.list, &sem->write_wait);
-+
-+	waiter.task = current;
-+	waiter.flags = flags;
-+	get_task_struct(current);
-+
-+	/* change the lock attempt to a wait --
-+	 * if there are no active locks, wake the new lock owner(s)
-+	 */
-+	if ((ldsem_atomic_update(adjust, sem) & LDSEM_ACTIVE_MASK) == 0)
-+		__ldsem_wake(sem, LDSEM_WAKE_NO_CHECK);
-+
-+	raw_spin_unlock_irq(&sem->wait_lock);
-+
-+	/* wait to be given the lock */
-+	for (;;) {
-+		set_current_state(TASK_UNINTERRUPTIBLE);
-+
-+		if (!waiter.task)
-+			break;
-+		if (!timeout)
-+			break;
-+		timeout = schedule_timeout(timeout);
-+	}
-+
-+	__set_current_state(TASK_RUNNING);
-+
-+	if (!timeout) {
-+		/* lock timed out but check if this task was just
-+		 * granted lock ownership - if so, pretend there
-+		 * was no timeout; otherwise, cleanup lock wait */
-+		raw_spin_lock_irq(&sem->wait_lock);
-+		if (waiter.task) {
-+			ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
-+			list_del(&waiter.list);
-+			put_task_struct(waiter.task);
-+			raw_spin_unlock_irq(&sem->wait_lock);
-+			return NULL;
-+		}
-+		raw_spin_unlock_irq(&sem->wait_lock);
-+	}
-+
-+	return sem;
- }
- 
- 
+ 			if (!tty_ldisc_reinit(tty, tty->termios.c_line))
 -- 
 1.8.1.2
