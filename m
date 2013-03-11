@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 34/44] tty: Fix tty_ldisc_lock name collision
-Date: Mon, 11 Mar 2013 16:44:54 -0400
-Message-ID: <1363034704-28036-35-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 12/44] n_tty: Fully initialize ldisc before restarting buffer work
+Date: Mon, 11 Mar 2013 16:44:32 -0400
+Message-ID: <1363034704-28036-13-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,110 +11,103 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
+Buffer work may already be pending when the n_tty ldisc is re-opened,
+eg., when setting the ldisc (via TIOCSETD ioctl) and when hanging up
+the tty. Since n_tty_set_room() may restart buffer work, first ensure
+the ldisc is completely initialized.
+
+Factor n_tty_set_room() out of reset_buffer_flags() (only 2 callers)
+and reorganize n_tty_open() to set termios last; buffer work will
+be restarted there if necessary, after the char_map is properly
+initialized.
+
+Fixes this WARNING:
+
+[  549.561769] ------------[ cut here ]------------
+[  549.598755] WARNING: at drivers/tty/n_tty.c:160 n_tty_set_room+0xff/0x130()
+[  549.604058] scheduling buffer work for halted ldisc
+[  549.607741] Pid: 9417, comm: trinity-child28 Tainted: G      D W 3.7.0-next-20121217-sasha-00023-g8689ef9 #219
+[  549.652580] Call Trace:
+[  549.662754]  [<ffffffff81c432cf>] ? n_tty_set_room+0xff/0x130
+[  549.665458]  [<ffffffff8110cae7>] warn_slowpath_common+0x87/0xb0
+[  549.668257]  [<ffffffff8110cb71>] warn_slowpath_fmt+0x41/0x50
+[  549.671007]  [<ffffffff81c432cf>] n_tty_set_room+0xff/0x130
+[  549.673268]  [<ffffffff81c44597>] reset_buffer_flags+0x137/0x150
+[  549.675607]  [<ffffffff81c45b71>] n_tty_open+0x131/0x1c0
+[  549.677699]  [<ffffffff81c47824>] tty_ldisc_open.isra.5+0x54/0x70
+[  549.680147]  [<ffffffff81c482bf>] tty_ldisc_hangup+0x11f/0x1e0
+[  549.682409]  [<ffffffff81c3fa17>] __tty_hangup+0x137/0x440
+[  549.684634]  [<ffffffff81c3fd49>] tty_vhangup+0x9/0x10
+[  549.686443]  [<ffffffff81c4a42c>] pty_close+0x14c/0x160
+[  549.688446]  [<ffffffff81c41225>] tty_release+0xd5/0x490
+[  549.690460]  [<ffffffff8127d8a2>] __fput+0x122/0x250
+[  549.692577]  [<ffffffff8127d9d9>] ____fput+0x9/0x10
+[  549.694534]  [<ffffffff811348c2>] task_work_run+0xb2/0xf0
+[  549.696349]  [<ffffffff81113c6d>] do_exit+0x36d/0x580
+[  549.698286]  [<ffffffff8107d964>] ? syscall_trace_enter+0x24/0x2e0
+[  549.702729]  [<ffffffff81113f4a>] do_group_exit+0x8a/0xc0
+[  549.706775]  [<ffffffff81113f92>] sys_exit_group+0x12/0x20
+[  549.711088]  [<ffffffff83cfab18>] tracesys+0xe1/0xe6
+[  549.728001] ---[ end trace 73eb41728f11f87e ]---
+
+Reported-by: Sasha Levin <levinsasha928@gmail.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/n_tty.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 9725c94..ba49c0e 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -44,7 +44,7 @@ enum {
-  *	callers who will do ldisc lookups and cannot sleep.
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index a786f4e..66ce178 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -219,9 +219,8 @@ static void check_unthrottle(struct tty_struct *tty)
+  *	Locking: tty_read_lock for read fields.
   */
  
--static DEFINE_RAW_SPINLOCK(tty_ldisc_lock);
-+static DEFINE_RAW_SPINLOCK(tty_ldiscs_lock);
- /* Line disc dispatch table */
- static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
- 
-@@ -58,7 +58,7 @@ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
-  *	from this point onwards.
-  *
-  *	Locking:
-- *		takes tty_ldisc_lock to guard against ldisc races
-+ *		takes tty_ldiscs_lock to guard against ldisc races
-  */
- 
- int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc)
-@@ -69,11 +69,11 @@ int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc)
- 	if (disc < N_TTY || disc >= NR_LDISCS)
- 		return -EINVAL;
- 
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
- 	tty_ldiscs[disc] = new_ldisc;
- 	new_ldisc->num = disc;
- 	new_ldisc->refcount = 0;
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
- 
- 	return ret;
- }
-@@ -88,7 +88,7 @@ EXPORT_SYMBOL(tty_register_ldisc);
-  *	currently in use.
-  *
-  *	Locking:
-- *		takes tty_ldisc_lock to guard against ldisc races
-+ *		takes tty_ldiscs_lock to guard against ldisc races
-  */
- 
- int tty_unregister_ldisc(int disc)
-@@ -99,12 +99,12 @@ int tty_unregister_ldisc(int disc)
- 	if (disc < N_TTY || disc >= NR_LDISCS)
- 		return -EINVAL;
- 
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
- 	if (tty_ldiscs[disc]->refcount)
- 		ret = -EBUSY;
- 	else
- 		tty_ldiscs[disc] = NULL;
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
- 
- 	return ret;
- }
-@@ -115,7 +115,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
- 	unsigned long flags;
- 	struct tty_ldisc_ops *ldops, *ret;
- 
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
- 	ret = ERR_PTR(-EINVAL);
- 	ldops = tty_ldiscs[disc];
- 	if (ldops) {
-@@ -125,7 +125,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
- 			ret = ldops;
- 		}
- 	}
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
- 	return ret;
- }
- 
-@@ -133,10 +133,10 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
+-static void reset_buffer_flags(struct tty_struct *tty)
++static void reset_buffer_flags(struct n_tty_data *ldata)
  {
+-	struct n_tty_data *ldata = tty->disc_data;
  	unsigned long flags;
  
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
-+	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
- 	ldops->refcount--;
- 	module_put(ldops->owner);
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
-+	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
+ 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+@@ -234,7 +233,6 @@ static void reset_buffer_flags(struct tty_struct *tty)
+ 
+ 	ldata->canon_head = ldata->canon_data = ldata->erasing = 0;
+ 	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+-	n_tty_set_room(tty);
  }
  
- /**
-@@ -149,7 +149,7 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
-  *	available
-  *
-  *	Locking:
-- *		takes tty_ldisc_lock to guard against ldisc races
-+ *		takes tty_ldiscs_lock to guard against ldisc races
-  */
+ static void n_tty_packet_mode_flush(struct tty_struct *tty)
+@@ -262,7 +260,8 @@ static void n_tty_packet_mode_flush(struct tty_struct *tty)
  
- static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ static void n_tty_flush_buffer(struct tty_struct *tty)
+ {
+-	reset_buffer_flags(tty);
++	reset_buffer_flags(tty->disc_data);
++	n_tty_set_room(tty);
+ 
+ 	if (tty->link)
+ 		n_tty_packet_mode_flush(tty);
+@@ -1654,14 +1653,14 @@ static int n_tty_open(struct tty_struct *tty)
+ 		goto err_free_bufs;
+ 
+ 	tty->disc_data = ldata;
+-	/* indicate buffer work may resume */
+-	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+-	reset_buffer_flags(tty);
+-	tty_unthrottle(tty);
++	reset_buffer_flags(tty->disc_data);
+ 	ldata->column = 0;
+-	n_tty_set_termios(tty, NULL);
+ 	tty->minimum_to_wake = 1;
+ 	tty->closing = 0;
++	/* indicate buffer work may resume */
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
++	n_tty_set_termios(tty, NULL);
++	tty_unthrottle(tty);
+ 
+ 	return 0;
+ err_free_bufs:
 -- 
 1.8.1.2
