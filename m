@@ -1,70 +1,78 @@
 From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/4] tty: ifx6x60: Remove unused suspend/resume callbacks
-Date: Mon, 11 Mar 2013 18:44:52 +0100
-Message-ID: <1363023892-15957-4-git-send-email-lars@metafoo.de>
-References: <1363023892-15957-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 1/4] tty: max3100: Use dev_pm_ops
+Date: Mon, 11 Mar 2013 18:44:49 +0100
+Message-ID: <1363023892-15957-1-git-send-email-lars@metafoo.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1363023892-15957-1-git-send-email-lars@metafoo.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Bi Chao <chao.bi@intel.com>, Chen Jun <jun.d.chen@intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 List-Id: linux-serial@vger.kernel.org
 
-The ifx6x60 driver implements both legacy suspend/resume callbacks and
-dev_pm_ops. The SPI core is going to ignore legacy suspend/resume
-callbacks if a driver implements dev_pm_ops. Since the legacy suspend/resume
-callbacks are empty in this case it is safe to just remove them.
+Use dev_pm_ops instead of the deprecated legacy suspend/resume for the
+max3100 driver.
 
-Cc: Bi Chao <chao.bi@intel.com>
-Cc: Chen Jun <jun.d.chen@intel.com>
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/tty/serial/ifx6x60.c | 26 --------------------------
- 1 file changed, 26 deletions(-)
+ drivers/tty/serial/max3100.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 68d7ce9..ae63c14 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -1325,30 +1325,6 @@ static void ifx_spi_spi_shutdown(struct spi_device *spi)
-  */
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 32517d4..57da9bb 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -849,11 +849,11 @@ static int max3100_remove(struct spi_device *spi)
+ 	return 0;
+ }
  
- /**
-- *	ifx_spi_spi_suspend	-	suspend SPI on system suspend
-- *	@dev: device being suspended
-- *
-- *	Suspend the SPI side. No action needed on Intel MID platforms, may
-- *	need extending for other systems.
-- */
--static int ifx_spi_spi_suspend(struct spi_device *spi, pm_message_t msg)
--{
--	return 0;
--}
+-#ifdef CONFIG_PM
++#ifdef CONFIG_PM_SLEEP
+ 
+-static int max3100_suspend(struct spi_device *spi, pm_message_t state)
++static int max3100_suspend(struct device *dev)
+ {
+-	struct max3100_port *s = dev_get_drvdata(&spi->dev);
++	struct max3100_port *s = dev_get_drvdata(dev);
+ 
+ 	dev_dbg(&s->spi->dev, "%s\n", __func__);
+ 
+@@ -874,9 +874,9 @@ static int max3100_suspend(struct spi_device *spi, pm_message_t state)
+ 	return 0;
+ }
+ 
+-static int max3100_resume(struct spi_device *spi)
++static int max3100_resume(struct device *dev)
+ {
+-	struct max3100_port *s = dev_get_drvdata(&spi->dev);
++	struct max3100_port *s = dev_get_drvdata(dev);
+ 
+ 	dev_dbg(&s->spi->dev, "%s\n", __func__);
+ 
+@@ -894,21 +894,21 @@ static int max3100_resume(struct spi_device *spi)
+ 	return 0;
+ }
+ 
++static SIMPLE_DEV_PM_OPS(max3100_pm_ops, max3100_suspend, max3100_resume);
++#define MAX3100_PM_OPS (&max3100_pm_ops)
++
+ #else
+-#define max3100_suspend NULL
+-#define max3100_resume  NULL
++#define MAX3100_PM_OPS NULL
+ #endif
+ 
+ static struct spi_driver max3100_driver = {
+ 	.driver = {
+ 		.name		= "max3100",
+ 		.owner		= THIS_MODULE,
++		.pm		= MAX3100_PM_OPS,
+ 	},
 -
--/**
-- *	ifx_spi_spi_resume	-	resume SPI side on system resume
-- *	@dev: device being suspended
-- *
-- *	Suspend the SPI side. No action needed on Intel MID platforms, may
-- *	need extending for other systems.
-- */
--static int ifx_spi_spi_resume(struct spi_device *spi)
--{
--	return 0;
--}
--
--/**
-  *	ifx_spi_pm_suspend	-	suspend modem on system suspend
-  *	@dev: device being suspended
-  *
-@@ -1437,8 +1413,6 @@ static struct spi_driver ifx_spi_driver = {
- 	.probe = ifx_spi_spi_probe,
- 	.shutdown = ifx_spi_spi_shutdown,
- 	.remove = ifx_spi_spi_remove,
--	.suspend = ifx_spi_spi_suspend,
--	.resume = ifx_spi_spi_resume,
- 	.id_table = ifx_id_table
+ 	.probe		= max3100_probe,
+ 	.remove		= max3100_remove,
+-	.suspend	= max3100_suspend,
+-	.resume		= max3100_resume,
  };
  
+ module_spi_driver(max3100_driver);
 -- 
 1.8.0
