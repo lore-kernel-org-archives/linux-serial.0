@@ -1,83 +1,36 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 31/44] tty: Clarify ldisc variable
-Date: Mon, 11 Mar 2013 16:44:51 -0400
-Message-ID: <1363034704-28036-32-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 19/44] tty: Don't protect atomic operation with mutex
+Date: Mon, 11 Mar 2013 16:44:39 -0400
+Message-ID: <1363034704-28036-20-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33475 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754900Ab3CKVPa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 17:15:30 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Rename o_ldisc to avoid confusion with the ldisc of the
-'other' tty.
+test_bit() is already atomic; drop mutex lock/unlock.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/tty_io.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index a150f95..9ace119 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -516,7 +516,7 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
- int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- {
- 	int retval;
--	struct tty_ldisc *o_ldisc, *new_ldisc;
-+	struct tty_ldisc *old_ldisc, *new_ldisc;
- 	struct tty_struct *o_tty = tty->link;
- 
- 	new_ldisc = tty_ldisc_get(tty, ldisc);
-@@ -540,7 +540,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	/* FIXME: why 'shutoff' input if the ldisc is locked? */
- 	tty->receive_room = 0;
- 
--	o_ldisc = tty->ldisc;
-+	old_ldisc = tty->ldisc;
- 	tty_lock(tty);
- 
- 	/* FIXME: for testing only */
-@@ -555,8 +555,8 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 		return -EIO;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 2ac516d..bf33440 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1345,9 +1345,7 @@ static int tty_reopen(struct tty_struct *tty)
  	}
+ 	tty->count++;
  
--	/* Shutdown the current discipline. */
--	tty_ldisc_close(tty, o_ldisc);
-+	/* Shutdown the old discipline. */
-+	tty_ldisc_close(tty, old_ldisc);
+-	mutex_lock(&tty->ldisc_mutex);
+ 	WARN_ON(!test_bit(TTY_LDISC, &tty->flags));
+-	mutex_unlock(&tty->ldisc_mutex);
  
- 	/* Now set up the new line discipline. */
- 	tty->ldisc = new_ldisc;
-@@ -566,17 +566,17 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	if (retval < 0) {
- 		/* Back to the old one or N_TTY if we can't */
- 		tty_ldisc_put(new_ldisc);
--		tty_ldisc_restore(tty, o_ldisc);
-+		tty_ldisc_restore(tty, old_ldisc);
- 	}
- 
- 	/* At this point we hold a reference to the new ldisc and a
- 	   a reference to the old ldisc. If we ended up flipping back
- 	   to the existing ldisc we have two references to it */
- 
--	if (tty->ldisc->ops->num != o_ldisc->ops->num && tty->ops->set_ldisc)
-+	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
- 		tty->ops->set_ldisc(tty);
- 
--	tty_ldisc_put(o_ldisc);
-+	tty_ldisc_put(old_ldisc);
- 
- 	/*
- 	 *	Allow ldisc referencing to occur again
+ 	return 0;
+ }
 -- 
 1.8.1.2
-
