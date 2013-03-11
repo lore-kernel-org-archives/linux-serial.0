@@ -1,131 +1,104 @@
-From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 2/4] tty: max310x: Use dev_pm_ops
-Date: Mon, 11 Mar 2013 20:09:33 +0100
-Message-ID: <513E2BED.5070405@metafoo.de>
-References: <1363023892-15957-1-git-send-email-lars@metafoo.de> <1363027278.637327455@f338.mail.ru> <513E2756.2050300@metafoo.de> <1363028084.750587948@f282.mail.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v5 01/44] tty: Add diagnostic for halted line discipline
+Date: Mon, 11 Mar 2013 16:44:21 -0400
+Message-ID: <1363034704-28036-2-git-send-email-peter@hurleysoftware.com>
+References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+ <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:64098 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751247Ab3CKTHO (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:59122 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754367Ab3CKUpq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 15:07:14 -0400
-In-Reply-To: <1363028084.750587948@f282.mail.ru>
+	Mon, 11 Mar 2013 16:45:46 -0400
+In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On 03/11/2013 07:54 PM, Alexander Shiyan wrote:
->> On 03/11/2013 07:41 PM, Alexander Shiyan wrote:
->>>> On 03/11/2013 07:10 PM, Alexander Shiyan wrote:
->>>>> Hello.
->>>>>
->>>>>> Use dev_pm_ops instead of the deprecated legacy suspend/resume for the
->>>>>> max310x driver.
->>>>>>
->>>>>> Cc: Alexander Shiyan <shc_work@mail.ru>
->>>>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>>>>> ---
->>>>>>  drivers/tty/serial/max310x.c | 24 ++++++++++++++++--------
->>>>>>  1 file changed, 16 insertions(+), 8 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
->>>>>> index 0c2422c..8941e64 100644
->>>>>> --- a/drivers/tty/serial/max310x.c
->>>>>> +++ b/drivers/tty/serial/max310x.c
->>>>>> @@ -881,12 +881,14 @@ static struct uart_ops max310x_ops = {
->>>>>>  	.verify_port	= max310x_verify_port,
->>>>>>  };
->>>>>>  
->>>>>> -static int max310x_suspend(struct spi_device *spi, pm_message_t state)
->>>>>> +#ifdef CONFIG_PM_SLEEP
->>>>>> +
->>>>>> +static int max310x_suspend(struct device *dev)
->>>>>>  {
->>>>>>  	int ret;
->>>>>> -	struct max310x_port *s = dev_get_drvdata(&spi->dev);
->>>>>> +	struct max310x_port *s = dev_get_drvdata(dev);
->>>>>>  
->>>>>> -	dev_dbg(&spi->dev, "Suspend\n");
->>>>>> +	dev_dbg(dev, "Suspend\n");
->>>>>>  
->>>>>>  	ret = uart_suspend_port(&s->uart, &s->port);
->>>>>>  
->>>>>> @@ -905,11 +907,11 @@ static int max310x_suspend(struct spi_device *spi, pm_message_t state)
->>>>>>  	return ret;
->>>>>>  }
->>>>>>  
->>>>>> -static int max310x_resume(struct spi_device *spi)
->>>>>> +static int max310x_resume(struct device *dev)
->>>>>>  {
->>>>>> -	struct max310x_port *s = dev_get_drvdata(&spi->dev);
->>>>>> +	struct max310x_port *s = dev_get_drvdata(dev);
->>>>>>  
->>>>>> -	dev_dbg(&spi->dev, "Resume\n");
->>>>>> +	dev_dbg(dev, "Resume\n");
->>>>>>  
->>>>>>  	if (s->pdata->suspend)
->>>>>>  		s->pdata->suspend(0);
->>>>>> @@ -928,6 +930,13 @@ static int max310x_resume(struct spi_device *spi)
->>>>>>  	return uart_resume_port(&s->uart, &s->port);
->>>>>>  }
->>>>>>  
->>>>>> +static SIMPLE_DEV_PM_OPS(max310x_pm_ops, max310x_suspend, max310x_resume);
->>>>>> +#define MAX310X_PM_OPS (&max310x_pm_ops)
->>>>>> +
->>>>>> +#else
->>>>>> +#define MAX310X_PM_OPS NULL
->>>>>> +#endif
->>>>>> +
->>>>>>  #ifdef CONFIG_GPIOLIB
->>>>>>  static int max310x_gpio_get(struct gpio_chip *chip, unsigned offset)
->>>>>>  {
->>>>>> @@ -1242,11 +1251,10 @@ static struct spi_driver max310x_driver = {
->>>>>>  	.driver = {
->>>>>>  		.name	= "max310x",
->>>>>>  		.owner	= THIS_MODULE,
->>>>>> +		.pm	= MAX310X_PM_OPS,
->>>>>
->>>>> Check for CONFIG_PM_SLEEP not necessary at all.
->>>>> <linux/pm.h> will do all for us.
->>>>
->>>> No it wont, you'll end up with a dev_pm_ops struct full of zeros and two
->>> I.e. NULL, it is OK.
->>
->> But what's the point of keeping it around?
-> 
-> This allows you to keep checking the code at compile time,
-> as well as macro IS_ENABLED() inside the code.
-> #ifdef does not allow this.
+Flip buffer work must not be scheduled by the line discipline
+after the line discipline has been halted; issue warning.
 
-Hm, ok that actually makes sense. But one of the reasons why you'd want to
-disable suspend support is because you don't need it and want to save some
-memory. Quite often the dev_pm_ops struct is about the same order of size than
-the actually suspend/resume code. So even though you disable suspend support
-the memory is still used.
+Note: drivers can still schedule flip buffer work.
 
-> 
->>
->>>
->>>> warnings from your compiler about unused functions.
->>> I think attribute "__maybe_unused" can help here.
->>
->> Or a #ifdef
->>
->>>
->>>>>>  	},
->>>>>>  	.probe		= max310x_probe,
->>>>>>  	.remove		= max310x_remove,
->>>>>> -	.suspend	= max310x_suspend,
->>>>>> -	.resume		= max310x_resume,
->>>>>>  	.id_table	= max310x_id_table,
->>>>>>  };
->>>>>>  module_spi_driver(max310x_driver);
->>>>>> -- 
->>>>>> 1.8.0
-> 
-> ---
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c     | 8 ++++++++
+ drivers/tty/tty_ldisc.c | 7 ++++++-
+ include/linux/tty.h     | 1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 05e72be..9c18e37 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -153,6 +153,12 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	if (left && !old_left) {
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
++		/* see if ldisc has been killed - if so, this means that
++		 * even though the ldisc has been halted and ->buf.work
++		 * cancelled, ->buf.work is about to be rescheduled
++		 */
++		WARN_RATELIMIT(test_bit(TTY_LDISC_HALTED, &tty->flags),
++			       "scheduling buffer work for halted ldisc\n");
+ 		schedule_work(&tty->port->buf.work);
+ 	}
+ }
+@@ -1645,6 +1651,8 @@ static int n_tty_open(struct tty_struct *tty)
+ 		goto err_free_bufs;
+ 
+ 	tty->disc_data = ldata;
++	/* indicate buffer work may resume */
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	reset_buffer_flags(tty);
+ 	tty_unthrottle(tty);
+ 	ldata->column = 0;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index d794087..c641321 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -375,6 +375,7 @@ static inline void tty_ldisc_put(struct tty_ldisc *ld)
+ 
+ void tty_ldisc_enable(struct tty_struct *tty)
+ {
++	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	set_bit(TTY_LDISC, &tty->flags);
+ 	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
+ 	wake_up(&tty_ldisc_wait);
+@@ -513,8 +514,11 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ 
+ static int tty_ldisc_halt(struct tty_struct *tty)
+ {
++	int scheduled;
+ 	clear_bit(TTY_LDISC, &tty->flags);
+-	return cancel_work_sync(&tty->port->buf.work);
++	scheduled = cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
++	return scheduled;
+ }
+ 
+ /**
+@@ -820,6 +824,7 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	clear_bit(TTY_LDISC, &tty->flags);
+ 	tty_unlock(tty);
+ 	cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	mutex_unlock(&tty->ldisc_mutex);
+ retry:
+ 	tty_lock(tty);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index c75d886..7aa4be6 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -315,6 +315,7 @@ struct tty_file_private {
+ #define TTY_NO_WRITE_SPLIT 	17	/* Preserve write boundaries to driver */
+ #define TTY_HUPPED 		18	/* Post driver->hangup() */
+ #define TTY_HUPPING 		21	/* ->hangup() in progress */
++#define TTY_LDISC_HALTED	22	/* Line discipline is halted */
+ 
+ #define TTY_WRITE_FLUSH(tty) tty_write_flush((tty))
+ 
+-- 
+1.8.1.2
 
