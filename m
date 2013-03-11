@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 24/44] tty: Remove redundant tty_wait_until_sent()
-Date: Mon, 11 Mar 2013 16:44:44 -0400
-Message-ID: <1363034704-28036-25-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 17/44] tty: Bracket ldisc release with TTY_DEBUG_HANGUP messages
+Date: Mon, 11 Mar 2013 16:44:37 -0400
+Message-ID: <1363034704-28036-18-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,32 +11,46 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-tty_ioctl() already waits until sent.
+Expected typical log output:
+[    2.437211] tty_open: opening pts1...
+[    2.443376] tty_open: opening pts5...
+[    2.447830] tty_release: ptm0 (tty count=1)...
+[    2.447849] pts0 vhangup...
+[    2.447865] tty_release: ptm0: final close
+[    2.447876] tty_release: ptm0: freeing structure...
+[    2.451634] tty_release: tty1 (tty count=1)...
+[    2.451638] tty_release: tty1: final close
+[    2.451654] tty_release: tty1: freeing structure...
+[    2.452505] tty_release: pts5 (tty count=2)...
+[    2.453029] tty_open: opening pts0...
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/tty/tty_io.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 4e46c17..1afe192 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -625,15 +625,6 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 9e8ff84..2ac516d 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1790,7 +1790,7 @@ int tty_release(struct inode *inode, struct file *filp)
  		return 0;
- 	}
  
--	tty_unlock(tty);
--	/*
--	 *	Problem: What do we do if this blocks ?
--	 *	We could deadlock here
--	 */
--
--	tty_wait_until_sent(tty, 0);
--
--	tty_lock(tty);
- 	mutex_lock(&tty->ldisc_mutex);
- 
+ #ifdef TTY_DEBUG_HANGUP
+-	printk(KERN_DEBUG "%s: freeing tty structure...\n", __func__);
++	printk(KERN_DEBUG "%s: %s: final close\n", __func__, tty_name(tty, buf));
+ #endif
  	/*
+ 	 * Ask the line discipline code to release its structures
+@@ -1802,6 +1802,9 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	if (o_tty)
+ 		tty_flush_works(o_tty);
+ 
++#ifdef TTY_DEBUG_HANGUP
++	printk(KERN_DEBUG "%s: %s: freeing structure...\n", __func__, tty_name(tty, buf));
++#endif
+ 	/*
+ 	 * The release_tty function takes care of the details of clearing
+ 	 * the slots and preserving the termios structure. The tty_unlock_pair
 -- 
 1.8.1.2
