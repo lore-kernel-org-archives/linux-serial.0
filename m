@@ -1,80 +1,58 @@
-From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/4] tty: mrst_max3110: Use dev_pm_ops
-Date: Mon, 11 Mar 2013 18:44:51 +0100
-Message-ID: <1363023892-15957-3-git-send-email-lars@metafoo.de>
-References: <1363023892-15957-1-git-send-email-lars@metafoo.de>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzRdIHR0eTogbWF4MzEweDogVXNlIGRldl9wbV9vcHM=?=
+Date: Mon, 11 Mar 2013 22:10:31 +0400
+Message-ID: <1363025431.558252587@f43.mail.ru>
+References: <1363023892-15957-1-git-send-email-lars@metafoo.de> <1363023892-15957-2-git-send-email-lars@metafoo.de>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1363023892-15957-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1363023892-15957-2-git-send-email-lars@metafoo.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Alan Cox <alan@linux.intel.com>
+To: =?UTF-8?B?TGFycy1QZXRlciBDbGF1c2Vu?= <lars@metafoo.de>
+Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Use dev_pm_ops instead of the deprecated legacy suspend/resume for the
-mrst_max3110 driver.
-
-Cc: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/tty/serial/mrst_max3110.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index f641c23..9b6ef20 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -743,9 +743,10 @@ static struct uart_driver serial_m3110_reg = {
- 	.cons		= &serial_m3110_console,
- };
- 
--#ifdef CONFIG_PM
--static int serial_m3110_suspend(struct spi_device *spi, pm_message_t state)
-+#ifdef CONFIG_PM_SLEEP
-+static int serial_m3110_suspend(struct device *dev)
- {
-+	struct spi_device *spi = to_spi_device(dev);
- 	struct uart_max3110 *max = spi_get_drvdata(spi);
- 
- 	disable_irq(max->irq);
-@@ -754,8 +755,9 @@ static int serial_m3110_suspend(struct spi_device *spi, pm_message_t state)
- 	return 0;
- }
- 
--static int serial_m3110_resume(struct spi_device *spi)
-+static int serial_m3110_resume(struct device *dev)
- {
-+	struct spi_device *spi = to_spi_device(dev);
- 	struct uart_max3110 *max = spi_get_drvdata(spi);
- 
- 	max3110_out(max, max->cur_conf);
-@@ -763,9 +765,13 @@ static int serial_m3110_resume(struct spi_device *spi)
- 	enable_irq(max->irq);
- 	return 0;
- }
-+
-+static SIMPLE_DEV_PM_OPS(serial_m3110_pm_ops, serial_m3110_suspend,
-+			serial_m3110_resume);
-+#define SERIAL_M3110_PM_OPS (&serial_m3110_pm_ops)
-+
- #else
--#define serial_m3110_suspend	NULL
--#define serial_m3110_resume	NULL
-+#define SERIAL_M3110_PM_OPS NULL
- #endif
- 
- static int serial_m3110_probe(struct spi_device *spi)
-@@ -872,11 +878,10 @@ static struct spi_driver uart_max3110_driver = {
- 	.driver = {
- 			.name	= "spi_max3111",
- 			.owner	= THIS_MODULE,
-+			.pm	= SERIAL_M3110_PM_OPS,
- 	},
- 	.probe		= serial_m3110_probe,
- 	.remove		= serial_m3110_remove,
--	.suspend	= serial_m3110_suspend,
--	.resume		= serial_m3110_resume,
- };
- 
- static int __init serial_m3110_init(void)
--- 
-1.8.0
+SGVsbG8uCgo+IFVzZSBkZXZfcG1fb3BzIGluc3RlYWQgb2YgdGhlIGRlcHJlY2F0ZWQgbGVnYWN5
+IHN1c3BlbmQvcmVzdW1lIGZvciB0aGUKPiBtYXgzMTB4IGRyaXZlci4KPiAKPiBDYzogQWxleGFu
+ZGVyIFNoaXlhbiA8c2hjX3dvcmtAbWFpbC5ydT4KPiBTaWduZWQtb2ZmLWJ5OiBMYXJzLVBldGVy
+IENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4KPiAtLS0KPiAgZHJpdmVycy90dHkvc2VyaWFsL21h
+eDMxMHguYyB8IDI0ICsrKysrKysrKysrKysrKystLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwg
+MTYgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy90dHkvc2VyaWFsL21heDMxMHguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9tYXgzMTB4LmMKPiBp
+bmRleCAwYzI0MjJjLi44OTQxZTY0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9t
+YXgzMTB4LmMKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWF4MzEweC5jCj4gQEAgLTg4MSwx
+MiArODgxLDE0IEBAIHN0YXRpYyBzdHJ1Y3QgdWFydF9vcHMgbWF4MzEweF9vcHMgPSB7Cj4gIAku
+dmVyaWZ5X3BvcnQJPSBtYXgzMTB4X3ZlcmlmeV9wb3J0LAo+ICB9Owo+ICAKPiAtc3RhdGljIGlu
+dCBtYXgzMTB4X3N1c3BlbmQoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSwgcG1fbWVzc2FnZV90IHN0
+YXRlKQo+ICsjaWZkZWYgQ09ORklHX1BNX1NMRUVQCj4gKwo+ICtzdGF0aWMgaW50IG1heDMxMHhf
+c3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIHsKPiAgCWludCByZXQ7Cj4gLQlzdHJ1Y3Qg
+bWF4MzEweF9wb3J0ICpzID0gZGV2X2dldF9kcnZkYXRhKCZzcGktPmRldik7Cj4gKwlzdHJ1Y3Qg
+bWF4MzEweF9wb3J0ICpzID0gZGV2X2dldF9kcnZkYXRhKGRldik7Cj4gIAo+IC0JZGV2X2RiZygm
+c3BpLT5kZXYsICJTdXNwZW5kXG4iKTsKPiArCWRldl9kYmcoZGV2LCAiU3VzcGVuZFxuIik7Cj4g
+IAo+ICAJcmV0ID0gdWFydF9zdXNwZW5kX3BvcnQoJnMtPnVhcnQsICZzLT5wb3J0KTsKPiAgCj4g
+QEAgLTkwNSwxMSArOTA3LDExIEBAIHN0YXRpYyBpbnQgbWF4MzEweF9zdXNwZW5kKHN0cnVjdCBz
+cGlfZGV2aWNlICpzcGksIHBtX21lc3NhZ2VfdCBzdGF0ZSkKPiAgCXJldHVybiByZXQ7Cj4gIH0K
+PiAgCj4gLXN0YXRpYyBpbnQgbWF4MzEweF9yZXN1bWUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkK
+PiArc3RhdGljIGludCBtYXgzMTB4X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIHsKPiAt
+CXN0cnVjdCBtYXgzMTB4X3BvcnQgKnMgPSBkZXZfZ2V0X2RydmRhdGEoJnNwaS0+ZGV2KTsKPiAr
+CXN0cnVjdCBtYXgzMTB4X3BvcnQgKnMgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsKPiAgCj4gLQlk
+ZXZfZGJnKCZzcGktPmRldiwgIlJlc3VtZVxuIik7Cj4gKwlkZXZfZGJnKGRldiwgIlJlc3VtZVxu
+Iik7Cj4gIAo+ICAJaWYgKHMtPnBkYXRhLT5zdXNwZW5kKQo+ICAJCXMtPnBkYXRhLT5zdXNwZW5k
+KDApOwo+IEBAIC05MjgsNiArOTMwLDEzIEBAIHN0YXRpYyBpbnQgbWF4MzEweF9yZXN1bWUoc3Ry
+dWN0IHNwaV9kZXZpY2UgKnNwaSkKPiAgCXJldHVybiB1YXJ0X3Jlc3VtZV9wb3J0KCZzLT51YXJ0
+LCAmcy0+cG9ydCk7Cj4gIH0KPiAgCj4gK3N0YXRpYyBTSU1QTEVfREVWX1BNX09QUyhtYXgzMTB4
+X3BtX29wcywgbWF4MzEweF9zdXNwZW5kLCBtYXgzMTB4X3Jlc3VtZSk7Cj4gKyNkZWZpbmUgTUFY
+MzEwWF9QTV9PUFMgKCZtYXgzMTB4X3BtX29wcykKPiArCj4gKyNlbHNlCj4gKyNkZWZpbmUgTUFY
+MzEwWF9QTV9PUFMgTlVMTAo+ICsjZW5kaWYKPiArCj4gICNpZmRlZiBDT05GSUdfR1BJT0xJQgo+
+ICBzdGF0aWMgaW50IG1heDMxMHhfZ3Bpb19nZXQoc3RydWN0IGdwaW9fY2hpcCAqY2hpcCwgdW5z
+aWduZWQgb2Zmc2V0KQo+ICB7Cj4gQEAgLTEyNDIsMTEgKzEyNTEsMTAgQEAgc3RhdGljIHN0cnVj
+dCBzcGlfZHJpdmVyIG1heDMxMHhfZHJpdmVyID0gewo+ICAJLmRyaXZlciA9IHsKPiAgCQkubmFt
+ZQk9ICJtYXgzMTB4IiwKPiAgCQkub3duZXIJPSBUSElTX01PRFVMRSwKPiArCQkucG0JPSBNQVgz
+MTBYX1BNX09QUywKCkNoZWNrIGZvciBDT05GSUdfUE1fU0xFRVAgbm90IG5lY2Vzc2FyeSBhdCBh
+bGwuCjxsaW51eC9wbS5oPiB3aWxsIGRvIGFsbCBmb3IgdXMuCgo+ICAJfSwKPiAgCS5wcm9iZQkJ
+PSBtYXgzMTB4X3Byb2JlLAo+ICAJLnJlbW92ZQkJPSBtYXgzMTB4X3JlbW92ZSwKPiAtCS5zdXNw
+ZW5kCT0gbWF4MzEweF9zdXNwZW5kLAo+IC0JLnJlc3VtZQkJPSBtYXgzMTB4X3Jlc3VtZSwKPiAg
+CS5pZF90YWJsZQk9IG1heDMxMHhfaWRfdGFibGUsCj4gIH07Cj4gIG1vZHVsZV9zcGlfZHJpdmVy
+KG1heDMxMHhfZHJpdmVyKTsKPiAtLSAKPiAxLjguMAoKLS0tCg==
