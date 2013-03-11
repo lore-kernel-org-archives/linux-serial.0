@@ -1,43 +1,79 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 10/44] tty: Wait for SAK work before waiting for hangup work
-Date: Mon, 11 Mar 2013 16:44:30 -0400
-Message-ID: <1363034704-28036-11-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 37/44] tty: Drop ldsem wait type
+Date: Mon, 11 Mar 2013 16:44:57 -0400
+Message-ID: <1363034704-28036-38-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33323 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753530Ab3CKVPJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 17:15:09 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-SAK work may schedule hangup work (if TTY_SOFT_SAK is defined), thus
-SAK work must be flushed before hangup work.
+Now the lock failures are handled independently for reads and
+writes, the wait flags are no longer necessary.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/tty_ldsem.c | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 7712091..37671fcc 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -506,8 +506,8 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
-  */
- static void tty_ldisc_flush_works(struct tty_struct *tty)
- {
--	flush_work(&tty->hangup_work);
- 	flush_work(&tty->SAK_work);
-+	flush_work(&tty->hangup_work);
- 	flush_work(&tty->port->buf.work);
- }
+diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
+index d849fb85..ddfbdfe 100644
+--- a/drivers/tty/tty_ldsem.c
++++ b/drivers/tty/tty_ldsem.c
+@@ -76,9 +76,6 @@
+ struct ldsem_waiter {
+ 	struct list_head list;
+ 	struct task_struct *task;
+-	unsigned int flags;
+-#define LDSEM_READ_WAIT		0x00000001
+-#define LDSEM_WRITE_WAIT	0x00000002
+ };
  
+ /* Wake types for __ldsem_wake().  Note: RWSEM_WAKE_NO_CHECK implies
+@@ -226,19 +223,13 @@ static struct ld_semaphore __sched *
+ down_read_failed(struct ld_semaphore *sem, long timeout)
+ {
+ 	struct ldsem_waiter waiter;
+-	long flags = LDSEM_READ_WAIT;
+ 	long adjust = -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS;
+ 
+ 	/* set up my own style of waitqueue */
+ 	raw_spin_lock_irq(&sem->wait_lock);
+-
+-	if (flags & LDSEM_READ_WAIT)
+-		list_add_tail(&waiter.list, &sem->read_wait);
+-	else
+-		list_add_tail(&waiter.list, &sem->write_wait);
++	list_add_tail(&waiter.list, &sem->read_wait);
+ 
+ 	waiter.task = current;
+-	waiter.flags = flags;
+ 	get_task_struct(current);
+ 
+ 	/* change the lock attempt to a wait --
+@@ -287,19 +278,13 @@ static struct ld_semaphore __sched *
+ down_write_failed(struct ld_semaphore *sem, long timeout)
+ {
+ 	struct ldsem_waiter waiter;
+-	long flags = LDSEM_WRITE_WAIT;
+ 	long adjust = -LDSEM_ACTIVE_BIAS;
+ 
+ 	/* set up my own style of waitqueue */
+ 	raw_spin_lock_irq(&sem->wait_lock);
+-
+-	if (flags & LDSEM_READ_WAIT)
+-		list_add_tail(&waiter.list, &sem->read_wait);
+-	else
+-		list_add_tail(&waiter.list, &sem->write_wait);
++	list_add_tail(&waiter.list, &sem->write_wait);
+ 
+ 	waiter.task = current;
+-	waiter.flags = flags;
+ 	get_task_struct(current);
+ 
+ 	/* change the lock attempt to a wait --
 -- 
 1.8.1.2
-
