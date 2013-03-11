@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 03/44] n_tty: Don't flush buffer when closing ldisc
-Date: Mon, 11 Mar 2013 16:44:23 -0400
-Message-ID: <1363034704-28036-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 07/44] tty: Relocate tty_ldisc_halt() to avoid forward declaration
+Date: Mon, 11 Mar 2013 16:44:27 -0400
+Message-ID: <1363034704-28036-8-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,208 +11,77 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-A buffer flush is both undesirable and unnecessary when the ldisc
-is closing. A buffer flush performs the following:
- 1. resets ldisc data fields to their initial state
- 2. resets tty->receive_room to indicate more data can be sent
- 3. schedules buffer work to receive more data
- 4. signals a buffer flush has happened to linked pty in packet mode
+tty_ldisc_halt() will use the file-scoped function, tty_ldisc_wait_idle(),
+in the following patch.
 
-Since the ldisc has been halted and the tty may soon be destructed,
-buffer work must not be scheduled as that work might access
-an invalid tty and ldisc state. Also, the ldisc read buffer is about
-to be freed, so that's pointless.
-
-Resetting the ldisc data fields is pointless as well since that
-structure is about to be freed.
-
-Resetting tty->receive_room is unnecessary, as it will be properly
-reset if a new ldisc is reopened. Besides, resetting the original
-receive_room value would be wrong since the read buffer will be
-gone.
-
-Since the packet mode flush is observable from userspace, this
-behavior has been preserved.
-
-The test jig originally authored by Ilya Zykov <ilya@ilyx.ru> and
-signed off by him is included below. The test jig prompts the
-following warnings which this patch fixes.
-
-[   38.051111] ------------[ cut here ]------------
-[   38.052113] WARNING: at drivers/tty/n_tty.c:160 n_tty_set_room.part.6+0x8b/0xa0()
-[   38.053916] Hardware name: Bochs
-[   38.054819] Modules linked in: netconsole configfs bnep rfcomm bluetooth parport_pc ppdev snd_hda_intel snd_hda_codec
-snd_hwdep snd_pcm snd_seq_midi snd_rawmidi snd_seq_midi_event snd_seq psmouse snd_timer serio_raw mac_hid snd_seq_device
-snd microcode lp parport virtio_balloon soundcore i2c_piix4 snd_page_alloc floppy 8139too 8139cp
-[   38.059704] Pid: 1564, comm: pty_kill Tainted: G        W    3.7.0-next-20121130+ttydebug-xeon #20121130+ttydebug
-[   38.061578] Call Trace:
-[   38.062491]  [<ffffffff81058b4f>] warn_slowpath_common+0x7f/0xc0
-[   38.063448]  [<ffffffff81058baa>] warn_slowpath_null+0x1a/0x20
-[   38.064439]  [<ffffffff8142dc2b>] n_tty_set_room.part.6+0x8b/0xa0
-[   38.065381]  [<ffffffff8142dc82>] n_tty_set_room+0x42/0x80
-[   38.066323]  [<ffffffff8142e6f2>] reset_buffer_flags+0x102/0x160
-[   38.077508]  [<ffffffff8142e76d>] n_tty_flush_buffer+0x1d/0x90
-[   38.078782]  [<ffffffff81046569>] ? default_spin_lock_flags+0x9/0x10
-[   38.079734]  [<ffffffff8142e804>] n_tty_close+0x24/0x60
-[   38.080730]  [<ffffffff81431b61>] tty_ldisc_close.isra.2+0x41/0x60
-[   38.081680]  [<ffffffff81431bbb>] tty_ldisc_kill+0x3b/0x80
-[   38.082618]  [<ffffffff81432a07>] tty_ldisc_release+0x77/0xe0
-[   38.083549]  [<ffffffff8142b781>] tty_release+0x451/0x4d0
-[   38.084525]  [<ffffffff811950be>] __fput+0xae/0x230
-[   38.085472]  [<ffffffff8119524e>] ____fput+0xe/0x10
-[   38.086401]  [<ffffffff8107aa88>] task_work_run+0xc8/0xf0
-[   38.087334]  [<ffffffff8105ea56>] do_exit+0x196/0x4b0
-[   38.088304]  [<ffffffff8106c77b>] ? __dequeue_signal+0x6b/0xb0
-[   38.089240]  [<ffffffff8105ef34>] do_group_exit+0x44/0xa0
-[   38.090182]  [<ffffffff8106f43d>] get_signal_to_deliver+0x20d/0x4e0
-[   38.091125]  [<ffffffff81016979>] do_signal+0x29/0x130
-[   38.092096]  [<ffffffff81431a9e>] ? tty_ldisc_deref+0xe/0x10
-[   38.093030]  [<ffffffff8142a317>] ? tty_write+0xb7/0xf0
-[   38.093976]  [<ffffffff81193f53>] ? vfs_write+0xb3/0x180
-[   38.094904]  [<ffffffff81016b20>] do_notify_resume+0x80/0xc0
-[   38.095830]  [<ffffffff81700492>] int_signal+0x12/0x17
-[   38.096788] ---[ end trace 5f6f7a9651cd999b ]---
-
-[ 2730.570602] ------------[ cut here ]------------
-[ 2730.572130] WARNING: at drivers/tty/n_tty.c:160 n_tty_set_room+0x107/0x140()
-[ 2730.574904] scheduling buffer work for halted ldisc
-[ 2730.578303] Pid: 9691, comm: trinity-child15 Tainted: G        W 3.7.0-rc8-next-20121205-sasha-00023-g59f0d85 #207
-[ 2730.588694] Call Trace:
-[ 2730.590486]  [<ffffffff81c41d77>] ? n_tty_set_room+0x107/0x140
-[ 2730.592559]  [<ffffffff8110c827>] warn_slowpath_common+0x87/0xb0
-[ 2730.595317]  [<ffffffff8110c8b1>] warn_slowpath_fmt+0x41/0x50
-[ 2730.599186]  [<ffffffff81c41d77>] n_tty_set_room+0x107/0x140
-[ 2730.603141]  [<ffffffff81c42fe7>] reset_buffer_flags+0x137/0x150
-[ 2730.607166]  [<ffffffff81c43018>] n_tty_flush_buffer+0x18/0x90
-[ 2730.610123]  [<ffffffff81c430af>] n_tty_close+0x1f/0x60
-[ 2730.612068]  [<ffffffff81c461f2>] tty_ldisc_close.isra.4+0x52/0x60
-[ 2730.614078]  [<ffffffff81c462ab>] tty_ldisc_reinit+0x3b/0x70
-[ 2730.615891]  [<ffffffff81c46db2>] tty_ldisc_hangup+0x102/0x1e0
-[ 2730.617780]  [<ffffffff81c3e537>] __tty_hangup+0x137/0x440
-[ 2730.619547]  [<ffffffff81c3e869>] tty_vhangup+0x9/0x10
-[ 2730.621266]  [<ffffffff81c48f1c>] pty_close+0x14c/0x160
-[ 2730.622952]  [<ffffffff81c3fd45>] tty_release+0xd5/0x490
-[ 2730.624674]  [<ffffffff8127fbe2>] __fput+0x122/0x250
-[ 2730.626195]  [<ffffffff8127fd19>] ____fput+0x9/0x10
-[ 2730.627758]  [<ffffffff81134602>] task_work_run+0xb2/0xf0
-[ 2730.629491]  [<ffffffff811139ad>] do_exit+0x36d/0x580
-[ 2730.631159]  [<ffffffff81113c8a>] do_group_exit+0x8a/0xc0
-[ 2730.632819]  [<ffffffff81127351>] get_signal_to_deliver+0x501/0x5b0
-[ 2730.634758]  [<ffffffff8106de34>] do_signal+0x24/0x100
-[ 2730.636412]  [<ffffffff81204865>] ? user_exit+0xa5/0xd0
-[ 2730.638078]  [<ffffffff81183cd8>] ? trace_hardirqs_on_caller+0x118/0x140
-[ 2730.640279]  [<ffffffff81183d0d>] ? trace_hardirqs_on+0xd/0x10
-[ 2730.642164]  [<ffffffff8106df78>] do_notify_resume+0x48/0xa0
-[ 2730.643966]  [<ffffffff83cdff6a>] int_signal+0x12/0x17
-[ 2730.645672] ---[ end trace a40d53149c07fce0 ]---
-
-/*
- * pty_thrash.c
- *
- * Based on original test jig by Ilya Zykov <ilya@ilyx.ru>
- *
- * Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
- * Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
- */
-
-static int fd;
-
-static void error_exit(char *f, ...)
-{
-        va_list va;
-
-        va_start(va, f);
-        vprintf(f, va);
-        printf(": %s\n", strerror(errno));
-        va_end(va);
-
-        if (fd >= 0)
-                close(fd);
-
-        exit(EXIT_FAILURE);
-}
-
-int main(int argc, char *argv[]) {
-        int parent;
-        char pts_name[24];
-        int ptn, unlock;
-
-        while (1) {
-
-                fd = open("/dev/ptmx", O_RDWR);
-                if (fd < 0)
-                        error_exit("opening pty master");
-                unlock = 0;
-                if (ioctl(fd, TIOCSPTLCK, &unlock) < 0)
-                        error_exit("unlocking pty pair");
-                if (ioctl(fd, TIOCGPTN, &ptn) < 0)
-                        error_exit("getting pty #");
-                snprintf(pts_name, sizeof(pts_name), "/dev/pts/%d", ptn);
-
-                child_id = fork();
-                if (child_id == -1)
-                        error_exit("forking child");
-
-                if (parent) {
-                        int err, id, status;
-                        char buf[128];
-                        int n;
-
-                        n = read(fd, buf, sizeof(buf));
-                        if (n < 0)
-                                error_exit("master reading");
-                        printf("%.*s\n", n-1, buf);
-
-                        close(fd);
-
-                        err = kill(child_id, SIGKILL);
-                        if (err < 0)
-                                error_exit("killing child");
-                        id = waitpid(child_id, &status, 0);
-                        if (id < 0 || id != child_id)
-                                error_exit("waiting for child");
-
-                } else { /* Child */
-
-                        close(fd);
-                        printf("Test cycle on slave pty %s\n", pts_name);
-                        fd = open(pts_name, O_RDWR);
-                        if (fd < 0)
-                                error_exit("opening pty slave");
-
-                        while (1) {
-                                char pattern[] = "test\n";
-                                if (write(fd, pattern, strlen(pattern)) < 0)
-                                        error_exit("slave writing");
-                        }
-
-                }
-        }
-
-        /* never gets here */
-        return 0;
-}
-
-Reported-by: Sasha Levin <levinsasha928@gmail.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/tty_ldisc.c | 46 +++++++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 4d3ab2c..0b85693 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1617,7 +1617,9 @@ static void n_tty_close(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 15667c0..f691c76 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -499,29 +499,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ }
  
--	n_tty_flush_buffer(tty);
-+	if (tty->link)
-+		n_tty_packet_mode_flush(tty);
+ /**
+- *	tty_ldisc_halt		-	shut down the line discipline
+- *	@tty: tty device
+- *
+- *	Shut down the line discipline and work queue for this tty device.
+- *	The TTY_LDISC flag being cleared ensures no further references can
+- *	be obtained while the delayed work queue halt ensures that no more
+- *	data is fed to the ldisc.
+- *
+- *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
+- *	in order to make sure any currently executing ldisc work is also
+- *	flushed.
+- */
+-
+-static int tty_ldisc_halt(struct tty_struct *tty)
+-{
+-	int scheduled;
+-	clear_bit(TTY_LDISC, &tty->flags);
+-	scheduled = cancel_work_sync(&tty->port->buf.work);
+-	set_bit(TTY_LDISC_HALTED, &tty->flags);
+-	return scheduled;
+-}
+-
+-/**
+  *	tty_ldisc_flush_works	-	flush all works of a tty
+  *	@tty: tty device to flush works for
+  *
+@@ -551,6 +528,29 @@ static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
+ }
+ 
+ /**
++ *	tty_ldisc_halt		-	shut down the line discipline
++ *	@tty: tty device
++ *
++ *	Shut down the line discipline and work queue for this tty device.
++ *	The TTY_LDISC flag being cleared ensures no further references can
++ *	be obtained while the delayed work queue halt ensures that no more
++ *	data is fed to the ldisc.
++ *
++ *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
++ *	in order to make sure any currently executing ldisc work is also
++ *	flushed.
++ */
 +
- 	kfree(ldata->read_buf);
- 	kfree(ldata->echo_buf);
- 	kfree(ldata);
++static int tty_ldisc_halt(struct tty_struct *tty)
++{
++	int scheduled;
++	clear_bit(TTY_LDISC, &tty->flags);
++	scheduled = cancel_work_sync(&tty->port->buf.work);
++	set_bit(TTY_LDISC_HALTED, &tty->flags);
++	return scheduled;
++}
++
++/**
+  *	tty_ldisc_hangup_halt - halt the line discipline for hangup
+  *	@tty: tty being hung up
+  *
 -- 
 1.8.1.2
