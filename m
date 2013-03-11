@@ -1,111 +1,126 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 44/44] tty: Early-out tardy ldsem readers
-Date: Mon, 11 Mar 2013 16:45:04 -0400
-Message-ID: <1363034704-28036-45-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 40/44] tty: Simplify lock taking for waiting writers
+Date: Mon, 11 Mar 2013 16:45:00 -0400
+Message-ID: <1363034704-28036-41-git-send-email-peter@hurleysoftware.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
  <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33513 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754955Ab3CKVPe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Mar 2013 17:15:34 -0400
 In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Michel Lespinasse <walken@google.com>
 
-As long as there are no other waiters, read locks should early out.
-Otherwise, a reader can end up sleeping while readers are already
-running and there are no waiting writers.
-This can happen in the following scenario:
+Rather than granting the lock from the wakeup thread,
+have the woken thread claim the lock instead. This may
+delay the taking of the lock by the waiting writer
+(readers may have bumped the semaphore but can't reverse it
+because they need to acquire the wait_lock to put themselves
+on the read_wait list). However, this step is necessary to
+implement write lock stealing.
 
-  CPU 0                               |  CPU 1
-                                      |
-                                      | down_write()
+Derived from Michel Lespinasse's write lock stealing work on
+rwsem.
 
-... CPU 1 has the write lock for the semaphore.
-    Meanwhile, 1 or more down_read(s) are attempted and fail;
-    these are put on the wait list. Then ...
-
-down_read()                           | up_write()
-  local = atomic_update(+read_bias)   |
-  local <= 0?                         |   local = atomic_update(-write_bias)
-  if (true)                           |   local < 0?
-     down_read_failed()               |   if (true)
-                                      |      wake()
-                                      |         grab wait_lock
-        wait for wait_lock            |         wake all readers
-                                      |         release wait_lock
-
-... At this point, sem->count > 0 and the wait list is empty,
-    but down_read_failed() will sleep the reader.
-
-Instead, try to reverse the down_read() attempt, but if the count has
-changed so that reversing fails, check if there are no other waiters
-and early-out if not.
-
+Cc: Michel Lespinasse <walken@google.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldsem.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+ drivers/tty/tty_ldsem.c | 52 +++++++++++++++----------------------------------
+ 1 file changed, 16 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
-index 84ea8a7..2f35661 100644
+index 48f1ce8..372e897 100644
 --- a/drivers/tty/tty_ldsem.c
 +++ b/drivers/tty/tty_ldsem.c
-@@ -191,23 +191,34 @@ static void ldsem_wake(struct ld_semaphore *sem)
-  * wait for the read lock to be granted
-  */
- static struct ld_semaphore __sched *
--down_read_failed(struct ld_semaphore *sem, long timeout)
-+down_read_failed(struct ld_semaphore *sem, long count, long timeout)
+@@ -163,23 +163,9 @@ static inline int writer_trylock(struct ld_semaphore *sem)
+ static void __ldsem_wake_writer(struct ld_semaphore *sem)
+ {
+ 	struct ldsem_waiter *waiter;
+-	struct task_struct *tsk;
+ 
+ 	waiter = list_entry(sem->write_wait.next, struct ldsem_waiter, list);
+-
+-	if (!writer_trylock(sem))
+-		return;
+-
+-	/* We must be careful not to touch 'waiter' after we set ->task = NULL.
+-	 * It is an allocated on the waiter's stack and may become invalid at
+-	 * any time after that point (due to a wakeup from another source).
+-	 */
+-	list_del(&waiter->list);
+-	tsk = waiter->task;
+-	smp_mb();
+-	waiter->task = NULL;
+-	wake_up_process(tsk);
+-	put_task_struct(tsk);
++	wake_up_process(waiter->task);
+ }
+ 
+ /*
+@@ -271,6 +257,7 @@ down_write_failed(struct ld_semaphore *sem, long timeout)
  {
  	struct ldsem_waiter waiter;
- 	long adjust = -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS;
+ 	long adjust = -LDSEM_ACTIVE_BIAS;
++	int locked = 0;
  
  	/* set up my own style of waitqueue */
  	raw_spin_lock_irq(&sem->wait_lock);
-+
-+	/* Try to reverse the lock attempt but if the count has changed
-+	 * so that reversing fails, check if there are are no waiters,
-+	 * and early-out if not */
-+	do {
-+		if (ldsem_cmpxchg(&count, count + adjust, sem))
-+			break;
-+		if (count > 0) {
-+			raw_spin_unlock_irq(&sem->wait_lock);
-+			return sem;
-+		}
-+	} while (1);
-+
- 	list_add_tail(&waiter.list, &sem->read_wait);
- 	sem->wait_readers++;
- 
- 	waiter.task = current;
- 	get_task_struct(current);
- 
--	/* change the lock attempt to a wait --
--	 * if there are no active locks, wake the new lock owner(s)
--	 */
--	if ((ldsem_atomic_update(adjust, sem) & LDSEM_ACTIVE_MASK) == 0)
-+	/* if there are no active locks, wake the new lock owner(s) */
-+	if ((count & LDSEM_ACTIVE_MASK) == 0)
+@@ -285,36 +272,29 @@ down_write_failed(struct ld_semaphore *sem, long timeout)
+ 	if ((ldsem_atomic_update(adjust, sem) & LDSEM_ACTIVE_MASK) == 0)
  		__ldsem_wake(sem);
  
- 	raw_spin_unlock_irq(&sem->wait_lock);
-@@ -304,11 +315,14 @@ down_write_failed(struct ld_semaphore *sem, long count, long timeout)
- static inline int __ldsem_down_read_nested(struct ld_semaphore *sem,
- 					   int subclass, long timeout)
- {
-+	long count;
-+
- 	lockdep_acquire_read(sem, subclass, 0, _RET_IP_);
+-	raw_spin_unlock_irq(&sem->wait_lock);
+-
+-	/* wait to be given the lock */
++	set_current_state(TASK_UNINTERRUPTIBLE);
+ 	for (;;) {
+-		set_current_state(TASK_UNINTERRUPTIBLE);
+-
+-		if (!waiter.task)
+-			break;
+ 		if (!timeout)
+ 			break;
++		raw_spin_unlock_irq(&sem->wait_lock);
+ 		timeout = schedule_timeout(timeout);
++		raw_spin_lock_irq(&sem->wait_lock);
++		set_current_state(TASK_UNINTERRUPTIBLE);
++		if ((locked = writer_trylock(sem)))
++			break;
+ 	}
  
--	if (ldsem_atomic_update(LDSEM_READ_BIAS, sem) <= 0) {
-+	count = ldsem_atomic_update(LDSEM_READ_BIAS, sem);
-+	if (count <= 0) {
- 		lock_stat(sem, contended);
--		if (!down_read_failed(sem, timeout)) {
-+		if (!down_read_failed(sem, count, timeout)) {
- 			lockdep_release(sem, 1, _RET_IP_);
- 			return 0;
- 		}
++	list_del(&waiter.list);
++	raw_spin_unlock_irq(&sem->wait_lock);
++	put_task_struct(waiter.task);
++
+ 	__set_current_state(TASK_RUNNING);
+ 
+-	if (!timeout) {
+-		/* lock timed out but check if this task was just
+-		 * granted lock ownership - if so, pretend there
+-		 * was no timeout; otherwise, cleanup lock wait */
+-		raw_spin_lock_irq(&sem->wait_lock);
+-		if (waiter.task) {
+-			ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
+-			list_del(&waiter.list);
+-			put_task_struct(waiter.task);
+-			raw_spin_unlock_irq(&sem->wait_lock);
+-			return NULL;
+-		}
+-		raw_spin_unlock_irq(&sem->wait_lock);
++	/* lock wait may have timed out */
++	if (!locked) {
++		ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
++		return NULL;
+ 	}
+-
+ 	return sem;
+ }
+ 
 -- 
 1.8.1.2
+
