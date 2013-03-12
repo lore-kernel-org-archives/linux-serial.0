@@ -1,93 +1,48 @@
-From: Michel Lespinasse <walken@google.com>
-Subject: Re: [PATCH v5 00/44] ldisc patchset
-Date: Mon, 11 Mar 2013 19:28:36 -0700
-Message-ID: <CANN689HvZK3gHyxRBPZyXwz2cJfheiEoQMA23oRARMCp=7GUCQ@mail.gmail.com>
-References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-	<1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
+From: Zhang Yanfei <zhangyanfei@cn.fujitsu.com>
+Subject: [PATCH 13/18] driver: tty: serial: remove cast for kzalloc return
+ value
+Date: Tue, 12 Mar 2013 13:27:29 +0800
+Message-ID: <513EBCC1.80906@cn.fujitsu.com>
+References: <513EB23D.7020303@cn.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ia0-f169.google.com ([209.85.210.169]:35127 "EHLO
-	mail-ia0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754707Ab3CLC2h (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 11 Mar 2013 22:28:37 -0400
-Received: by mail-ia0-f169.google.com with SMTP id j5so4367632iaf.14
-        for <linux-serial@vger.kernel.org>; Mon, 11 Mar 2013 19:28:37 -0700 (PDT)
-In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
+Received: from cn.fujitsu.com ([222.73.24.84]:32301 "EHLO song.cn.fujitsu.com"
+	rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org with ESMTP
+	id S1753933Ab3CLF3D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 Mar 2013 01:29:03 -0400
+In-Reply-To: <513EB23D.7020303@cn.fujitsu.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Mon, Mar 11, 2013 at 1:44 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Greg,
-> This patchset includes
->   'tty: Drop lock contention stat from ldsem trylocks'
-> so no need to apply that on this series. Also, I noticed you
-> kept the 'tty is NULL' removal on a different branch so I left
-> my patch in this series that removes it.
->
-> This series applies cleanly to tty-next.
->
-> v5 changes:
->
-> After completing an audit of the recursive use of ldisc
-> references, I discovered the _blocking_ recursive acquisition
-> of ldisc references was limited to line disciplines misusing
-> the tty_perform_flush() function.
-> With that now resolved in,
->   'tty: Fix recursive deadlock in tty_perform_flush()'
-> the recursion design in ldsem has been removed.
->
-> The recursion removal is in its own patch,
->   'tty: Remove ldsem recursion support'
-> to ease review for those that have already reviewed the
-> ldsem implementation.
->
-> In addition, this patchset implements lock stealing derived
-> from the work of Michel Lespinasse <walken@google.com> on
-> writer lock stealing in rwsem.
->
-> Although the rwsem write lock stealing changes are motivated
-> by performance criteria, these changes are motivated by reduced
-> code line count and simplicity of design.
->
-> *** Edited below to remove recursion discussion ***
->
-> Back in early December I realized that a classic read/write semaphore
-> with writer priority was the ideal mechanism for handling the
-> line discipline referencing.
->
-> Line discipline references act as "readers"; closing or changing the
-> line discipline is prevented while these references are outstanding.
-> Conversely, line discipline references should not be granted while
-> the line discipline is closing or changing; these are the "writers".
->
-> Unfortunately, the existing rwsem uses a FIFO priority for
-> waiting threads and does not support timeouts.
->
-> So this implements just that: a writer-priority
-> read/write semaphore with timed waits.
+remove cast for kzalloc return value.
 
-Thanks for eliminating the recursion requirement. I think this really
-helps - I didn't like that multiple readers with a colliding current
-hash could basically starve out a writer forever.
+Signed-off-by: Zhang Yanfei <zhangyanfei@cn.fujitsu.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/icom.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-Not knowing anything about the tty layer, I am curious about the
-context for your other requirements. What are ldisc references taken
-for and for how long are they held ? I am surprised that the writers
-may hit a 5 second timeout (because I didn't expect the references to
-be held for very long).
-
-Also why the write-priority requirement rather than reader-writer
-fairness ? Is it to make it less likely to hit the writer timeouts ?
-
-In short: I am worried about the introduciton of a new lock type, and
-would be happier if rwsem could be made to fit. BTW, extending rwsem
-itself to add writer timeouts seems quite doable (but making it work
-as a write priority lock would seem like a bad idea).
-
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index bc9e6b0..18ed5ae 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1415,8 +1415,7 @@ static int icom_alloc_adapter(struct icom_adapter
+ 	struct icom_adapter *cur_adapter_entry;
+ 	struct list_head *tmp;
+ 
+-	icom_adapter = (struct icom_adapter *)
+-	    kzalloc(sizeof(struct icom_adapter), GFP_KERNEL);
++	icom_adapter = kzalloc(sizeof(struct icom_adapter), GFP_KERNEL);
+ 
+ 	if (!icom_adapter) {
+ 		return -ENOMEM;
 -- 
-Michel "Walken" Lespinasse
-A program is never fully debugged until the last user dies.
+1.7.1
+
