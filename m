@@ -1,54 +1,74 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] tty: serial: fix typo "SERIAL_S3C2412"
-Date: Tue, 12 Mar 2013 10:10:32 +0100
-Message-ID: <1363079432.3137.139.camel@x61.thuisdomein>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: imx: Add Rx Fifo overrun error message
+Date: Tue, 12 Mar 2013 08:46:23 -0700
+Message-ID: <20130312154623.GA18972@kroah.com>
+References: <1362997628-20246-1-git-send-email-alexander.stein@systec-electronic.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpsmtpb-ews08.kpnxchange.com ([213.75.39.13]:56758 "EHLO
-	cpsmtpb-ews08.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932122Ab3CLJKi (ORCPT
+Received: from mail-pb0-f50.google.com ([209.85.160.50]:53362 "EHLO
+	mail-pb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932356Ab3CLPpe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Mar 2013 05:10:38 -0400
+	Tue, 12 Mar 2013 11:45:34 -0400
+Received: by mail-pb0-f50.google.com with SMTP id up1so5085648pbc.9
+        for <linux-serial@vger.kernel.org>; Tue, 12 Mar 2013 08:45:34 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1362997628-20246-1-git-send-email-alexander.stein@systec-electronic.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Ben Dooks <ben-linux@fluff.org>, Thomas Abraham <thomas.abraham@linaro.org>, Kukjin Kim <kgene.kim@samsung.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alexander Stein <alexander.stein@systec-electronic.com>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-The Kconfig symbol SERIAL_S3C2412 got removed in commit
-da121506eb03ee5daea55404709110b798bd61d9 ("serial: samsung: merge
-probe() function from all SoC specific extensions"). But it also added a
-last reference to that symbol. The commit and the tree make clear that
-CPU_S3C2412 should have been used instead.
+On Mon, Mar 11, 2013 at 11:27:08AM +0100, Alexander Stein wrote:
+> Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
----
-0) The net effect of this is that the number of uarts of the S3C2412 CPU
-drops from 4 to 3. So this needs testing (by people with access to that
-hardware).
+No description of what you are doing in the changelog area?
 
-1) Related note: a few lines down there's the line
-    default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
+> ---
+>  drivers/tty/serial/imx.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 147c9e1..fe72099 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -449,6 +449,13 @@ static void imx_start_tx(struct uart_port *port)
+>  		temp &= ~(UCR1_RRDYEN);
+>  		writel(temp, sport->port.membase + UCR1);
+>  	}
+> +	/* Clear any pending ORE flag before enabling interrupt */
+> +	temp = readl(sport->port.membase + USR2);
+> +	writel(temp | USR2_ORE, sport->port.membase + USR2);
+> +
+> +	temp = readl(sport->port.membase + UCR4);
+> +	temp |= UCR4_OREN;
+> +	writel(temp, sport->port.membase + UCR4);
 
-The "|| CPU_S3C2416" part looks superfluous.
+This seems like a bugfix, right?  Different than what you put in the
+Subject line above.
 
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  
+>  	temp = readl(sport->port.membase + UCR1);
+>  	writel(temp | UCR1_TXMPTYEN, sport->port.membase + UCR1);
+> @@ -582,6 +589,7 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+>  {
+>  	struct imx_port *sport = dev_id;
+>  	unsigned int sts;
+> +	unsigned int sts2;
+>  
+>  	sts = readl(sport->port.membase + USR1);
+>  
+> @@ -598,6 +606,12 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+>  	if (sts & USR1_AWAKE)
+>  		writel(USR1_AWAKE, sport->port.membase + USR1);
+>  
+> +	sts2 = readl(sport->port.membase + USR2);
+> +	if (sts2 & USR2_ORE) {
+> +		dev_err(sport->port.dev, "Rx FIFO overrun\n");
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 40ddbe4..7e7006f 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -211,7 +211,7 @@ config SERIAL_SAMSUNG
- config SERIAL_SAMSUNG_UARTS_4
- 	bool
- 	depends on PLAT_SAMSUNG
--	default y if !(CPU_S3C2410 || SERIAL_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
-+	default y if !(CPU_S3C2410 || CPU_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
- 	help
- 	  Internal node for the common case of 4 Samsung compatible UARTs
- 
--- 
-1.7.11.7
+Why?  What can a user now do about this?  Will this flood the syslog?
 
+thanks,
+
+greg k-h
