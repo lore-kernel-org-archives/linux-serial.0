@@ -1,165 +1,93 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v5 25/44] tty: Fix recursive deadlock in
- tty_perform_flush()
-Date: Mon, 11 Mar 2013 17:36:53 -0400
-Message-ID: <1363037813.27803.12.camel@thor.lan>
+From: Michel Lespinasse <walken@google.com>
+Subject: Re: [PATCH v5 00/44] ldisc patchset
+Date: Mon, 11 Mar 2013 19:28:36 -0700
+Message-ID: <CANN689HvZK3gHyxRBPZyXwz2cJfheiEoQMA23oRARMCp=7GUCQ@mail.gmail.com>
 References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-	 <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-	 <1363034704-28036-26-git-send-email-peter@hurleysoftware.com>
+	<1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <1363034704-28036-26-git-send-email-peter@hurleysoftware.com>
-Sender: netdev-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ia0-f169.google.com ([209.85.210.169]:35127 "EHLO
+	mail-ia0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754707Ab3CLC2h (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 11 Mar 2013 22:28:37 -0400
+Received: by mail-ia0-f169.google.com with SMTP id j5so4367632iaf.14
+        for <linux-serial@vger.kernel.org>; Mon, 11 Mar 2013 19:28:37 -0700 (PDT)
+In-Reply-To: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-[ +cc Paul Mackerras, linux-ppp, netdev ]
+On Mon, Mar 11, 2013 at 1:44 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Greg,
+> This patchset includes
+>   'tty: Drop lock contention stat from ldsem trylocks'
+> so no need to apply that on this series. Also, I noticed you
+> kept the 'tty is NULL' removal on a different branch so I left
+> my patch in this series that removes it.
+>
+> This series applies cleanly to tty-next.
+>
+> v5 changes:
+>
+> After completing an audit of the recursive use of ldisc
+> references, I discovered the _blocking_ recursive acquisition
+> of ldisc references was limited to line disciplines misusing
+> the tty_perform_flush() function.
+> With that now resolved in,
+>   'tty: Fix recursive deadlock in tty_perform_flush()'
+> the recursion design in ldsem has been removed.
+>
+> The recursion removal is in its own patch,
+>   'tty: Remove ldsem recursion support'
+> to ease review for those that have already reviewed the
+> ldsem implementation.
+>
+> In addition, this patchset implements lock stealing derived
+> from the work of Michel Lespinasse <walken@google.com> on
+> writer lock stealing in rwsem.
+>
+> Although the rwsem write lock stealing changes are motivated
+> by performance criteria, these changes are motivated by reduced
+> code line count and simplicity of design.
+>
+> *** Edited below to remove recursion discussion ***
+>
+> Back in early December I realized that a classic read/write semaphore
+> with writer priority was the ideal mechanism for handling the
+> line discipline referencing.
+>
+> Line discipline references act as "readers"; closing or changing the
+> line discipline is prevented while these references are outstanding.
+> Conversely, line discipline references should not be granted while
+> the line discipline is closing or changing; these are the "writers".
+>
+> Unfortunately, the existing rwsem uses a FIFO priority for
+> waiting threads and does not support timeouts.
+>
+> So this implements just that: a writer-priority
+> read/write semaphore with timed waits.
 
-I neglected to cc the proper folks. Sorry about that.
+Thanks for eliminating the recursion requirement. I think this really
+helps - I didn't like that multiple readers with a colliding current
+hash could basically starve out a writer forever.
 
-Regards,
-Peter Hurley
+Not knowing anything about the tty layer, I am curious about the
+context for your other requirements. What are ldisc references taken
+for and for how long are they held ? I am surprised that the writers
+may hit a 5 second timeout (because I didn't expect the references to
+be held for very long).
 
-On Mon, 2013-03-11 at 16:44 -0400, Peter Hurley wrote:
-> tty_perform_flush() can deadlock when called while holding
-> a line discipline reference. By definition, all ldisc drivers
-> hold a ldisc reference, so calls originating from ldisc drivers
-> must not block for a ldisc reference.
-> 
-> The deadlock can occur when:
->   CPU 0                    |  CPU 1
->                            |
-> tty_ldisc_ref(tty)         |
-> ....                       | <line discipline halted>
-> tty_ldisc_ref_wait(tty)    |
->                            |
-> 
-> CPU 0 cannot progess because it cannot obtain an ldisc reference
-> with the line discipline has been halted (thus no new references
-> are granted).
-> CPU 1 cannot progress because an outstanding ldisc reference
-> has not been released.
-> 
-> An in-tree call-tree audit of tty_perform_flush() [1] shows 5
-> ldisc drivers calling tty_perform_flush() indirectly via
-> n_tty_ioctl_helper() and 2 ldisc drivers calling directly.
-> A single tty driver safely uses the function.
-> 
-> [1]
-> Recursive usage:
-> 
-> /* These functions are line discipline ioctls and thus
->  * recursive wrt line discipline references */
-> 
-> tty_perform_flush() - ./drivers/tty/tty_ioctl.c
->     n_tty_ioctl_helper()
->         hci_uart_tty_ioctl(default) - drivers/bluetooth/hci_ldisc.c (N_HCI)
->         n_hdlc_tty_ioctl(default) - drivers/tty/n_hdlc.c (N_HDLC)
->         gsmld_ioctl(default) - drivers/tty/n_gsm.c (N_GSM0710)
->         n_tty_ioctl(default) - drivers/tty/n_tty.c (N_TTY)
->         gigaset_tty_ioctl(default) - drivers/isdn/gigaset/ser-gigaset.c (N_GIGASET_M101)
->     ppp_synctty_ioctl(TCFLSH) - drivers/net/ppp/pps_synctty.c
->     ppp_asynctty_ioctl(TCFLSH) - drivers/net/ppp/ppp_async.c
-> 
-> Non-recursive use:
-> 
-> tty_perform_flush() - drivers/tty/tty_ioctl.c
->     ipw_ioctl(TCFLSH) - drivers/tty/ipwireless/tty.c
->        /* This function is a tty i/o ioctl method, which
->         * is invoked by tty_ioctl() */
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/net/ppp/ppp_async.c   |  2 +-
->  drivers/net/ppp/ppp_synctty.c |  2 +-
->  drivers/tty/tty_ioctl.c       | 28 +++++++++++++++++++---------
->  3 files changed, 21 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
-> index a031f6b..9c889e0 100644
-> --- a/drivers/net/ppp/ppp_async.c
-> +++ b/drivers/net/ppp/ppp_async.c
-> @@ -314,7 +314,7 @@ ppp_asynctty_ioctl(struct tty_struct *tty, struct file *file,
->  		/* flush our buffers and the serial port's buffer */
->  		if (arg == TCIOFLUSH || arg == TCOFLUSH)
->  			ppp_async_flush_output(ap);
-> -		err = tty_perform_flush(tty, arg);
-> +		err = n_tty_ioctl_helper(tty, file, cmd, arg);
->  		break;
->  
->  	case FIONREAD:
-> diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
-> index 1a12033..bdf3b13 100644
-> --- a/drivers/net/ppp/ppp_synctty.c
-> +++ b/drivers/net/ppp/ppp_synctty.c
-> @@ -355,7 +355,7 @@ ppp_synctty_ioctl(struct tty_struct *tty, struct file *file,
->  		/* flush our buffers and the serial port's buffer */
->  		if (arg == TCIOFLUSH || arg == TCOFLUSH)
->  			ppp_sync_flush_output(ap);
-> -		err = tty_perform_flush(tty, arg);
-> +		err = n_tty_ioctl_helper(tty, file, cmd, arg);
->  		break;
->  
->  	case FIONREAD:
-> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-> index d58b92c..935b032 100644
-> --- a/drivers/tty/tty_ioctl.c
-> +++ b/drivers/tty/tty_ioctl.c
-> @@ -1086,14 +1086,12 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
->  }
->  EXPORT_SYMBOL_GPL(tty_mode_ioctl);
->  
-> -int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
-> +
-> +/* Caller guarantees ldisc reference is held */
-> +static int __tty_perform_flush(struct tty_struct *tty, unsigned long arg)
->  {
-> -	struct tty_ldisc *ld;
-> -	int retval = tty_check_change(tty);
-> -	if (retval)
-> -		return retval;
-> +	struct tty_ldisc *ld = tty->ldisc;
->  
-> -	ld = tty_ldisc_ref_wait(tty);
->  	switch (arg) {
->  	case TCIFLUSH:
->  		if (ld && ld->ops->flush_buffer) {
-> @@ -1111,12 +1109,24 @@ int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
->  		tty_driver_flush_buffer(tty);
->  		break;
->  	default:
-> -		tty_ldisc_deref(ld);
->  		return -EINVAL;
->  	}
-> -	tty_ldisc_deref(ld);
->  	return 0;
->  }
-> +
-> +int tty_perform_flush(struct tty_struct *tty, unsigned long arg)
-> +{
-> +	struct tty_ldisc *ld;
-> +	int retval = tty_check_change(tty);
-> +	if (retval)
-> +		return retval;
-> +
-> +	ld = tty_ldisc_ref_wait(tty);
-> +	retval = __tty_perform_flush(tty, arg);
-> +	if (ld)
-> +		tty_ldisc_deref(ld);
-> +	return retval;
-> +}
->  EXPORT_SYMBOL_GPL(tty_perform_flush);
->  
->  int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
-> @@ -1155,7 +1165,7 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
->  		}
->  		return 0;
->  	case TCFLSH:
-> -		return tty_perform_flush(tty, arg);
-> +		return __tty_perform_flush(tty, arg);
->  	default:
->  		/* Try the mode commands */
->  		return tty_mode_ioctl(tty, file, cmd, arg);
+Also why the write-priority requirement rather than reader-writer
+fairness ? Is it to make it less likely to hit the writer timeouts ?
+
+In short: I am worried about the introduciton of a new lock type, and
+would be happier if rwsem could be made to fit. BTW, extending rwsem
+itself to add writer timeouts seems quite doable (but making it work
+as a write priority lock would seem like a bad idea).
+
+-- 
+Michel "Walken" Lespinasse
+A program is never fully debugged until the last user dies.
