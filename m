@@ -1,57 +1,80 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 0/6] TTY: port hangup and close fixes
-Date: Wed, 13 Mar 2013 15:50:32 -0400
-Message-ID: <1363204232.25976.106.camel@thor.lan>
-References: <51361724.4050107@suse.cz>
-	 <1362668153-10972-1-git-send-email-jhovold@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.9-rc2
+Date: Wed, 13 Mar 2013 13:58:14 -0700
+Message-ID: <20130313205814.GA17563@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2013-03-07 at 15:55 +0100, Johan Hovold wrote:
-> These patches against 3.9-rc1 fix a few issues with tty-port hangup and
-> close.
-> 
-> The first and fifth patch are essentially clean ups.
-> 
-> The second and third patch fix the fact that DTR could get raised
-> (rather than dropped) at hangup if there are blocked opens. [ Note that
-> the second patch has been separated into its own patch and that the
-> third patch is new in v3 of this series. ]
-> 
-> The fourth patch makes sure DTR is dropped also on hangup and that DTR
-> is only dropped for initialised ports (where it could have been raised
-> in the first place).
-> 
-> The sixth and final patch, makes sure no tty callbacks are made from
-> tty_port_close_start when the port has not been initialised (successfully
-> opened). This was previously only done for wait_until_sent but there's
-> no reason to call flush_buffer or to honour port drain delay either.
-> The latter could cause a failed open to stall for up to two seconds.
-> 
-> As a side-effect, these patches also fix an issue in USB-serial where we
-> could get tty-port callbacks on an uninitialised port after having hung
-> up and unregistered a device after disconnect.
-> 
-> Johan
-> 
-> 
-> v3: 
->  - amend series with fix of DTR sometimes being raised on hang-up
->  - do not lower DTR on hangup if port tty is gone
->  - make sure tty in call to shutdown is refcounted
->  - use cflag-macros throughout
+The following changes since commit 6dbe51c251a327e012439c4772097a13df43c5b8:
 
-Other than the comments for patch 3/6, this series looks good. Thanks
-again for your work on this.
+  Linux 3.9-rc1 (2013-03-03 15:11:05 -0800)
 
-Please cc: me on the USB serial core changes as well, if you don't mind.
+are available in the git repository at:
 
-Regards,
-Peter Hurley
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.9-rc2
+
+for you to fetch changes up to c51d41a1dd8f23a06a4ed651ebb9617de7f59368:
+
+  tty: serial: fix typo "SERIAL_S3C2412" (2013-03-12 08:53:23 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.9-rc2
+
+Here are some tty/serial driver fixes for 3.9
+
+We finally mute the annoying WARN_ON that lots of people are hitting and
+it turns out isn't needed anymore.  Also add a few new device ids and a
+some other minor fixes.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Anatolij Gustschin (1):
+      tty: serial: mpc5xxx: fix PSC clock name bug
+
+Jiri Slaby (1):
+      TTY: disable debugging warning
+
+Jonas Gorski (1):
+      serial: bcm63xx_uart: fix compilation after "TTY: switch tty_insert_flip_char"
+
+Josh Boyer (1):
+      serial: 8250: Keep 8250.<xxxx> module options functional after driver rename
+
+Ley Foon Tan (1):
+      tty/serial: Add support for Altera serial port
+
+Paul Bolle (2):
+      tty: serial: fix typo "ARCH_S5P6450"
+      tty: serial: fix typo "SERIAL_S3C2412"
+
+Scott Ashcroft (1):
+      Fix 4 port and add support for 8 port 'Unknown' PCI serial port cards
+
+Sean Young (1):
+      tty/8250_pnp: serial port detection regression since v3.7
+
+Tony Prisk (1):
+      tty: serial: vt8500: Unneccessary duplicated clock code removed
+
+Wang YanQing (1):
+      serial: 8250_pci: add support for another kind of NetMos Technology PCI 9835 Multi-I/O Controller
+
+ Documentation/devicetree/bindings/tty/serial/of-serial.txt |  3 +++
+ drivers/tty/serial/8250/8250.c                             | 52 ++++++++++++++++++++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_pci.c                         | 21 +++++++++--------
+ drivers/tty/serial/8250/8250_pnp.c                         | 12 ++++++----
+ drivers/tty/serial/Kconfig                                 |  4 ++--
+ drivers/tty/serial/bcm63xx_uart.c                          |  8 +++----
+ drivers/tty/serial/mpc52xx_uart.c                          |  2 +-
+ drivers/tty/serial/of_serial.c                             |  6 +++++
+ drivers/tty/serial/vt8500_serial.c                         |  9 +------
+ drivers/tty/tty_buffer.c                                   |  2 +-
+ include/uapi/linux/serial_core.h                           |  5 +++-
+ 11 files changed, 91 insertions(+), 33 deletions(-)
