@@ -1,67 +1,69 @@
-From: Michel Lespinasse <walken@google.com>
-Subject: Re: [PATCH v5 00/44] ldisc patchset
-Date: Wed, 13 Mar 2013 04:36:56 -0700
-Message-ID: <CANN689HX1VAURYZL4=ixOSwim2LdYDgZyORtfUffrc4JCqK4xQ@mail.gmail.com>
-References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-	<1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-	<CANN689HvZK3gHyxRBPZyXwz2cJfheiEoQMA23oRARMCp=7GUCQ@mail.gmail.com>
-	<1363106846.27803.174.camel@thor.lan>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 3/6] TTY: fix DTR being raised on hang up
+Date: Wed, 13 Mar 2013 15:43:43 -0400
+Message-ID: <1363203823.25976.102.camel@thor.lan>
+References: <51361724.4050107@suse.cz>
+	 <1362668153-10972-1-git-send-email-jhovold@gmail.com>
+	 <1362668153-10972-4-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1363106846.27803.174.camel@thor.lan>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:39797 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932709Ab3CMTny (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 13 Mar 2013 15:43:54 -0400
+In-Reply-To: <1362668153-10972-4-git-send-email-jhovold@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Mar 12, 2013 at 9:47 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On Mon, 2013-03-11 at 19:28 -0700, Michel Lespinasse wrote:
->> Also why the write-priority requirement rather than reader-writer
->> fairness ? Is it to make it less likely to hit the writer timeouts ?
->
-> Since tty i/o can be really [painfully] slow, allowing waiting future
-> references to succeed is not an option.
+On Thu, 2013-03-07 at 15:55 +0100, Johan Hovold wrote:
+> Make sure to check ASYNC_INITIALISED before raising DTR when waking up
+> from blocked open in tty_port_block_til_ready.
+> 
+> Currently DTR could get raised at hang up as a blocked process would
+> raise DTR unconditionally before checking for hang up and returning.
+> 
+> Signed-off-by: Johan Hovold <jhovold@gmail.com>
+> ---
+>  drivers/tty/tty_port.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 3de5918..52f1066 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -355,7 +355,7 @@ int tty_port_block_til_ready(struct tty_port *port,
+>  
+>  	while (1) {
+>  		/* Indicate we are open */
+> -		if (tty->termios.c_cflag & CBAUD)
+> +		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
+>  			tty_port_raise_dtr_rts(port);
+>  
+>  		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
 
-All right, that makes sense after your explanation.
+This is ok, but there are 6 other *_block_til_ready() functions:
 
-> I understand the concern regarding the potential proliferation of new
-> lock types. Lock implementations are hard to get right, and no one wants
-> to debug 7 different lock policy implementations of a read/write
-> semaphore.
->
-> OTOH, a lack of existing options has spawned a DIY approach without
-> higher-order locks that is rarely correct, but which goes largely
-> unnoticed exactly because it's not a new lock. A brief review of the
-> hangs, races, and deadlocks fixed by this patchset should be convincing
-> enough of that fact. In my opinion, this is the overriding concern.
+This one doesn't use DTR/RTS so can be ignored:
+./drivers/staging/sb105x/sb_pci_mp.c:static int mp_block_til_ready(struct file *filp, struct sb_uart_state *state)
 
-Agree that having a suitable lock for your usage is much nicer than
-having ad-hoc solutions.
+This one is so scary you should probably leave it alone:
+./drivers/tty/serial/crisv10.c:block_til_ready(struct tty_struct *tty, struct file * filp,
 
-> The two main problems with a one-size-fits-all lock policy is that,
-> 1) lock experts can't realistically foresee the consequences of policy
-> changes without already being experts in the subsystems in which that
-> lock is used. Even domain experts may miss potential consequences, and
-> 2) domain experts typically wouldn't even consider writing a new lock.
-> So they make do with atomic bit states, spinlocks, reference counts,
-> mutexes, and waitqueues, making a mostly-functional, higher-order lock.
+These will need the same change (although be careful: some use
+ASYNC_INITIALIZED rather than ASYNCB_INITIALIZED).
+./drivers/tty/synclinkmp.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
+./drivers/tty/synclink_gt.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
+./drivers/tty/synclink.c:static int block_til_ready(struct tty_struct *tty, struct file * filp,
+./net/irda/ircomm/ircomm_tty.c:static int ircomm_tty_block_til_ready(struct ircomm_tty_cb *self,
 
-Have you considered building your ldlock based on lib/rwsem-spinlock.c
-instead ? i.e. having an internal spinlock to protect the ldisc
-reference count and the reader and writer queues. This would seem much
-simpler get right. The downside would be that a spinlock would be
-taken for a short time whenever an ldisc reference is taken or
-released. I don't expect that the internal spinlock would get
-significant contention ?
+Please be sure to Cc: David Miller <davem@davemloft.net> on changes to
+net/irda.
 
-> Perhaps a future direction for rwsem would be to provide a selectable
-> lock policy (fifo, mostly-fair, writer-first) on initialization so that
-> the different use cases can be easily accomodated?
+Regards,
+Peter Hurley
 
-Probably makes more sense to have different locks for the different
-usage models IMO...
-
--- 
-Michel "Walken" Lespinasse
-A program is never fully debugged until the last user dies.
