@@ -1,69 +1,57 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 3/6] TTY: fix DTR being raised on hang up
-Date: Wed, 13 Mar 2013 15:43:43 -0400
-Message-ID: <1363203823.25976.102.camel@thor.lan>
+Subject: Re: [PATCH v3 0/6] TTY: port hangup and close fixes
+Date: Wed, 13 Mar 2013 15:50:32 -0400
+Message-ID: <1363204232.25976.106.camel@thor.lan>
 References: <51361724.4050107@suse.cz>
 	 <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-	 <1362668153-10972-4-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:39797 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932709Ab3CMTny (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Mar 2013 15:43:54 -0400
-In-Reply-To: <1362668153-10972-4-git-send-email-jhovold@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Johan Hovold <jhovold@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
 On Thu, 2013-03-07 at 15:55 +0100, Johan Hovold wrote:
-> Make sure to check ASYNC_INITIALISED before raising DTR when waking up
-> from blocked open in tty_port_block_til_ready.
+> These patches against 3.9-rc1 fix a few issues with tty-port hangup and
+> close.
 > 
-> Currently DTR could get raised at hang up as a blocked process would
-> raise DTR unconditionally before checking for hang up and returning.
+> The first and fifth patch are essentially clean ups.
 > 
-> Signed-off-by: Johan Hovold <jhovold@gmail.com>
-> ---
->  drivers/tty/tty_port.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The second and third patch fix the fact that DTR could get raised
+> (rather than dropped) at hangup if there are blocked opens. [ Note that
+> the second patch has been separated into its own patch and that the
+> third patch is new in v3 of this series. ]
 > 
-> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-> index 3de5918..52f1066 100644
-> --- a/drivers/tty/tty_port.c
-> +++ b/drivers/tty/tty_port.c
-> @@ -355,7 +355,7 @@ int tty_port_block_til_ready(struct tty_port *port,
->  
->  	while (1) {
->  		/* Indicate we are open */
-> -		if (tty->termios.c_cflag & CBAUD)
-> +		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
->  			tty_port_raise_dtr_rts(port);
->  
->  		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
+> The fourth patch makes sure DTR is dropped also on hangup and that DTR
+> is only dropped for initialised ports (where it could have been raised
+> in the first place).
+> 
+> The sixth and final patch, makes sure no tty callbacks are made from
+> tty_port_close_start when the port has not been initialised (successfully
+> opened). This was previously only done for wait_until_sent but there's
+> no reason to call flush_buffer or to honour port drain delay either.
+> The latter could cause a failed open to stall for up to two seconds.
+> 
+> As a side-effect, these patches also fix an issue in USB-serial where we
+> could get tty-port callbacks on an uninitialised port after having hung
+> up and unregistered a device after disconnect.
+> 
+> Johan
+> 
+> 
+> v3: 
+>  - amend series with fix of DTR sometimes being raised on hang-up
+>  - do not lower DTR on hangup if port tty is gone
+>  - make sure tty in call to shutdown is refcounted
+>  - use cflag-macros throughout
 
-This is ok, but there are 6 other *_block_til_ready() functions:
+Other than the comments for patch 3/6, this series looks good. Thanks
+again for your work on this.
 
-This one doesn't use DTR/RTS so can be ignored:
-./drivers/staging/sb105x/sb_pci_mp.c:static int mp_block_til_ready(struct file *filp, struct sb_uart_state *state)
-
-This one is so scary you should probably leave it alone:
-./drivers/tty/serial/crisv10.c:block_til_ready(struct tty_struct *tty, struct file * filp,
-
-These will need the same change (although be careful: some use
-ASYNC_INITIALIZED rather than ASYNCB_INITIALIZED).
-./drivers/tty/synclinkmp.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
-./drivers/tty/synclink_gt.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
-./drivers/tty/synclink.c:static int block_til_ready(struct tty_struct *tty, struct file * filp,
-./net/irda/ircomm/ircomm_tty.c:static int ircomm_tty_block_til_ready(struct ircomm_tty_cb *self,
-
-Please be sure to Cc: David Miller <davem@davemloft.net> on changes to
-net/irda.
+Please cc: me on the USB serial core changes as well, if you don't mind.
 
 Regards,
 Peter Hurley
-
