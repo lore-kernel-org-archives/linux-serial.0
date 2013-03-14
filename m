@@ -1,46 +1,79 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v5 00/44] ldisc patchset
-Date: Wed, 13 Mar 2013 21:12:54 -0400
-Message-ID: <1363223574.25976.135.camel@thor.lan>
-References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
-	 <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
-	 <CANN689HvZK3gHyxRBPZyXwz2cJfheiEoQMA23oRARMCp=7GUCQ@mail.gmail.com>
-	 <1363106846.27803.174.camel@thor.lan>
-	 <CANN689HX1VAURYZL4=ixOSwim2LdYDgZyORtfUffrc4JCqK4xQ@mail.gmail.com>
+From: Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: Re: [PATCH] serial: imx: Add Rx Fifo overrun error message
+Date: Thu, 14 Mar 2013 08:11:59 +0100
+Message-ID: <11760652.ModhOFer6k@ws-stein>
+References: <1362997628-20246-1-git-send-email-alexander.stein@systec-electronic.com> <20130312154623.GA18972@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:38984 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755609Ab3CNBNQ (ORCPT
+Received: from webbox1416.server-home.net ([77.236.96.61]:56363 "EHLO
+	webbox1416.server-home.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753515Ab3CNHMC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 13 Mar 2013 21:13:16 -0400
-In-Reply-To: <CANN689HX1VAURYZL4=ixOSwim2LdYDgZyORtfUffrc4JCqK4xQ@mail.gmail.com>
+	Thu, 14 Mar 2013 03:12:02 -0400
+In-Reply-To: <20130312154623.GA18972@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michel Lespinasse <walken@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Wed, 2013-03-13 at 04:36 -0700, Michel Lespinasse wrote:
-> Have you considered building your ldlock based on lib/rwsem-spinlock.c
-> instead ? i.e. having an internal spinlock to protect the ldisc
-> reference count and the reader and writer queues. This would seem much
-> simpler get right. The downside would be that a spinlock would be
-> taken for a short time whenever an ldisc reference is taken or
-> released. I don't expect that the internal spinlock would get
-> significant contention ?
+On Tuesday 12 March 2013 08:46:23, Greg Kroah-Hartman wrote:
+> On Mon, Mar 11, 2013 at 11:27:08AM +0100, Alexander Stein wrote:
+> > Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+> 
+> No description of what you are doing in the changelog area?
 
-That would have been too easy :)
+I can be more verbose here in a v2.
 
-TBH, I hadn't considered it until I was most the way through a working
-atomic version. I had already split the reader/writer wait lists. And
-figured out how to always use the wait bias for every waiting reader and
-writer -- rather than the rwsem way of testing for an empty list --
-which made the timeout handling easier.
+> > ---
+> >  drivers/tty/serial/imx.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > index 147c9e1..fe72099 100644
+> > --- a/drivers/tty/serial/imx.c
+> > +++ b/drivers/tty/serial/imx.c
+> > @@ -449,6 +449,13 @@ static void imx_start_tx(struct uart_port *port)
+> >  		temp &= ~(UCR1_RRDYEN);
+> >  		writel(temp, sport->port.membase + UCR1);
+> >  	}
+> > +	/* Clear any pending ORE flag before enabling interrupt */
+> > +	temp = readl(sport->port.membase + USR2);
+> > +	writel(temp | USR2_ORE, sport->port.membase + USR2);
+> > +
+> > +	temp = readl(sport->port.membase + UCR4);
+> > +	temp |= UCR4_OREN;
+> > +	writel(temp, sport->port.membase + UCR4);
+> 
+> This seems like a bugfix, right?  Different than what you put in the
+> Subject line above.
 
-At the time, the only thing that I was still struggling with was
-recursion, and the spinlock flavor wasn't going to fix that. So I just
-kept with the atomic flavor.
+I would not see this as a bugfix. It enables the overrun interrupt which can be tested in the interrupt handler (see below).
 
+> >  
+> >  	temp = readl(sport->port.membase + UCR1);
+> >  	writel(temp | UCR1_TXMPTYEN, sport->port.membase + UCR1);
+> > @@ -582,6 +589,7 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+> >  {
+> >  	struct imx_port *sport = dev_id;
+> >  	unsigned int sts;
+> > +	unsigned int sts2;
+> >  
+> >  	sts = readl(sport->port.membase + USR1);
+> >  
+> > @@ -598,6 +606,12 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+> >  	if (sts & USR1_AWAKE)
+> >  		writel(USR1_AWAKE, sport->port.membase + USR1);
+> >  
+> > +	sts2 = readl(sport->port.membase + USR2);
+> > +	if (sts2 & USR2_ORE) {
+> > +		dev_err(sport->port.dev, "Rx FIFO overrun\n");
+> 
+> Why?  What can a user now do about this?  Will this flood the syslog?
+
+I have next to no knowledge on tty, so I don't know much how a user can be notified on a serial device that characters have been dropped. If this occurs very often, it will flood your syslog. Until now it is the only way to inform the user at all.
+
+Best regards,
+Alexander
 
