@@ -1,100 +1,92 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 1/6] serial: 8250_dw: add support for clocks property
- when using DeviceTree
-Date: Fri, 15 Mar 2013 14:56:15 +0200
-Message-ID: <20130315125615.GA27560@xps8300>
-References: <1362694460-1919-1-git-send-email-maxime.ripard@free-electrons.com>
- <1362694460-1919-2-git-send-email-maxime.ripard@free-electrons.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 1/1] tty: atmel_serial_probe(): index of atmel_ports[]
+ fix
+Date: Fri, 15 Mar 2013 15:36:38 +0100
+Message-ID: <514331F6.6070204@atmel.com>
+References: <1361377580-10437-1-git-send-email-wpawel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:28046 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754221Ab3COM4U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 08:56:20 -0400
-Content-Disposition: inline
-In-Reply-To: <1362694460-1919-2-git-send-email-maxime.ripard@free-electrons.com>
+Received: from eusmtp01.atmel.com ([212.144.249.242]:60733 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755166Ab3COOgo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 15 Mar 2013 10:36:44 -0400
+In-Reply-To: <1361377580-10437-1-git-send-email-wpawel@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Pawel Wieczorkiewicz <wpawel@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: grant.likely@secretlab.ca, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi,
+On 02/20/2013 05:26 PM, Pawel Wieczorkiewicz :
+> From: Pawel Wieczorkiewicz <wpawel@gmail.com>
+> 
+> Index of atmel_ports[ATMEL_MAX_UART] should be smaller
+> than ATMEL_MAX_UART.
+> 
+> Signed-off-by: Pawel Wieczorkiewicz <wpawel@gmail.com>
 
-On Thu, Mar 07, 2013 at 11:14:15PM +0100, Maxime Ripard wrote:
-> From: Emilio L=F3pez <emilio@elopez.com.ar>
->=20
-> This commit implements support for using the "clocks" DT property, in=
-stead
-> of having to use clock-frequency.
->=20
-> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+It can be good to include this one in 3.9-rc.
+
+I also would like to add the "stable" tag to it:
+
+Cc: stable <stable@vger.kernel.org> # 3.2+
+
+Greg, can you take this one or do I need to re-send it with appropriate
+"stable" line?
+
+Thanks, best regards,
+
 > ---
->  drivers/tty/serial/8250/8250_dw.c |   32 ++++++++++++++++++++++-----=
------
->  1 file changed, 22 insertions(+), 10 deletions(-)
-
-<snip>
-
-> @@ -137,8 +140,15 @@ static int dw8250_probe_of(struct uart_port *p)
->  		p->regshift =3D val;
-> =20
->  	if (of_property_read_u32(np, "clock-frequency", &val)) {
-> -		dev_err(p->dev, "no clock-frequency property set\n");
-> -		return -EINVAL;
-> +		/* Get clk rate through clk driver if present */
-> +		data->clk =3D clk_get(p->dev, NULL);
-> +		if (IS_ERR(data->clk)) {
-> +			dev_err(p->dev, "clk or clock-frequency not defined\n");
-> +			return -EINVAL;
-> +		}
-> +
-> +		clk_prepare_enable(data->clk);
-> +		val =3D clk_get_rate(data->clk);
-
-Don't get the clk here..
-
+>  drivers/tty/serial/atmel_serial.c |   11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index d4a7c24..3467462 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -158,7 +158,7 @@ struct atmel_uart_port {
+>  };
+>  
+>  static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
+> -static unsigned long atmel_ports_in_use;
+> +static DECLARE_BITMAP(atmel_ports_in_use, ATMEL_MAX_UART);
+>  
+>  #ifdef SUPPORT_SYSRQ
+>  static struct console atmel_console;
+> @@ -1769,15 +1769,14 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		/* port id not found in platform data nor device-tree aliases:
+>  		 * auto-enumerate it */
+> -		ret = find_first_zero_bit(&atmel_ports_in_use,
+> -				sizeof(atmel_ports_in_use));
+> +		ret = find_first_zero_bit(atmel_ports_in_use, ATMEL_MAX_UART);
+>  
+> -	if (ret > ATMEL_MAX_UART) {
+> +	if (ret >= ATMEL_MAX_UART) {
+>  		ret = -ENODEV;
+>  		goto err;
 >  	}
->  	p->uartclk =3D val;
-> =20
-> @@ -300,6 +310,12 @@ static int dw8250_probe(struct platform_device *=
-pdev)
+>  
+> -	if (test_and_set_bit(ret, &atmel_ports_in_use)) {
+> +	if (test_and_set_bit(ret, atmel_ports_in_use)) {
+>  		/* port already in use */
+>  		ret = -EBUSY;
+>  		goto err;
+> @@ -1857,7 +1856,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
+>  
+>  	/* "port" is allocated statically, so we shouldn't free it */
+>  
+> -	clear_bit(port->line, &atmel_ports_in_use);
+> +	clear_bit(port->line, atmel_ports_in_use);
+>  
+>  	clk_put(atmel_port->clk);
+>  
+> 
 
-Get it here so it is then handled for also others besides DT users.
-And prefer devm_clk_get(). Something like this:
 
-        ...
-        uart.port.membase =3D ioremap(regs->start, resource_size(regs))=
-;
-        if (!uart.port.membase)
-                return -ENOMEM;
-
-+       data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+       if (!data)
-+       	return -ENOMEM;
-+       =20
-+       data->clk =3D devm_clk_get(&pdev->dev, NULL);
-+       clk_prepare_enable(data->clk);
-+
-        uart.port.iotype =3D UPIO_MEM;
-        uart.port.serial_in =3D dw8250_serial_in;
-        uart.port.serial_out =3D dw8250_serial_out;
-+       uart.port.private_data =3D data;
-+       uart.port.uartclk =3D clk_get_rate(data->clk);
-
-  	dw8250_setup_port(&uart);
-        ...=20
-
-Then in dw8250_probe_of() you need to use the "clock-frequency"
-property only when p->uartclk is 0.
-
-Thanks,
-
---=20
-heikki
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Nicolas Ferre
