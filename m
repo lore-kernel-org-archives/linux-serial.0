@@ -1,47 +1,95 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH] tty/serial: Fix uninitialized variable warning
-Date: Fri, 15 Mar 2013 21:24:38 +0000
-Message-ID: <CACxGe6twB3fSkQ97Jq-+zSn7wen9axS=5fB4uSs08etfREJaPQ@mail.gmail.com>
-References: <1362360907-4439-1-git-send-email-grant.likely@secretlab.ca> <20130315203010.GA25081@kroah.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 1/6] serial: 8250_dw: add support for clk api
+Date: Fri, 15 Mar 2013 22:39:17 +0000
+Message-ID: <20130315223917.GZ4977@n2100.arm.linux.org.uk>
+References: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com> <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f179.google.com ([209.85.223.179]:45657 "EHLO
-	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932544Ab3COVY7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 17:24:59 -0400
-Received: by mail-ie0-f179.google.com with SMTP id k11so4969563iea.10
-        for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2013 14:24:59 -0700 (PDT)
-In-Reply-To: <20130315203010.GA25081@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-arm-kernel@lists.infradead.org, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sunny@allwinnertech.com, shuge@allwinnertech.com, Jiri Slaby <jslaby@suse.cz>, kevin@allwinnertech.com
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Fri, Mar 15, 2013 at 8:30 PM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Mon, Mar 04, 2013 at 09:35:07AM +0800, Grant Likely wrote:
->> drivers/tty/serial/8250/8250.c: In function 'serial_unlink_irq_chain':
->> drivers/tty/serial/8250/8250.c:1676:19: warning: 'i' may be used uninitialized in this function
->>
->> There isn't an actual bug here since the function tests the condition
->> that would cause i to be uninitialized before dereferencing i. However,
->> at least some versions of GCC complain as shown above. (in my case,
->> powerpc gcc 2.5.2). Initializing i to NULL makes it clear to GCC and the
->> casual code reviewer that i will not be dereferenced to a random
->> address.
->>
->> Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> ---
->> Greg, some may argue that this is a tool problem, not a kernel problem,
->> but it is useful to me. If anyone objects I'm not going to spend any
->> time championing for this patch.
->
-> Upgrade your tools to ones that work properly :)
+On Fri, Mar 15, 2013 at 09:06:23PM +0100, Maxime Ripard wrote:
+> +	/* clock got configured through clk api, all done */
+> +	if (p->uartclk)
 
-FWIW, it's still a toolchain that a lot of people use for embedded
-powerpc development.
+	if (IS_ERR(p->uartclk))
 
-g.
+> +		return 0;
+> +
+> +	/* try to find out clock frequency from DT as fallback */
+>  	if (of_property_read_u32(np, "clock-frequency", &val)) {
+> -		dev_err(p->dev, "no clock-frequency property set\n");
+> +		dev_err(p->dev, "clk or clock-frequency not defined\n");
+>  		return -EINVAL;
+>  	}
+>  	p->uartclk = val;
+> @@ -294,9 +301,21 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	if (!uart.port.membase)
+>  		return -ENOMEM;
+>  
+> +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(data->clk))
+> +		data->clk = NULL;
+> +	else
+> +		clk_prepare_enable(data->clk);
+
+	if (!IS_ERR(data->clk))
+		clk_prepare_enable(data->clk);
+
+> +
+>  	uart.port.iotype = UPIO_MEM;
+>  	uart.port.serial_in = dw8250_serial_in;
+>  	uart.port.serial_out = dw8250_serial_out;
+> +	uart.port.private_data = data;
+> +	uart.port.uartclk = clk_get_rate(data->clk);
+
+What if data->clk is invalid?
+
+	if (!IS_ERR(data->clk)
+		uart.port.uartclk = clk_get_rate(data->clk);
+
+>  
+>  	dw8250_setup_port(&uart);
+>  
+> @@ -312,12 +331,6 @@ static int dw8250_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+>  
+> -	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> -	if (!data)
+> -		return -ENOMEM;
+> -
+> -	uart.port.private_data = data;
+> -
+>  	data->line = serial8250_register_8250_port(&uart);
+>  	if (data->line < 0)
+>  		return data->line;
+> @@ -333,6 +346,8 @@ static int dw8250_remove(struct platform_device *pdev)
+>  
+>  	serial8250_unregister_port(data->line);
+>  
+
+	if (!IS_ERR(data->clk)
+
+> +	clk_disable_unprepare(data->clk);
+> +
+>  	return 0;
+>  }
+>  
+> -- 
+> 1.7.10.4
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
