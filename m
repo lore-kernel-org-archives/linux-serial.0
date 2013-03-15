@@ -1,107 +1,100 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 3/6] TTY: fix DTR being raised on hang up
-Date: Fri, 15 Mar 2013 07:57:54 -0400
-Message-ID: <1363348674.3194.167.camel@thor.lan>
-References: <51361724.4050107@suse.cz>
-	 <1362668153-10972-1-git-send-email-jhovold@gmail.com>
-	 <1362668153-10972-4-git-send-email-jhovold@gmail.com>
-	 <1363203823.25976.102.camel@thor.lan> <20130315092401.GB28843@localhost>
-	 <1363345388.3194.148.camel@thor.lan> <20130315113017.GE28843@localhost>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 1/6] serial: 8250_dw: add support for clocks property
+ when using DeviceTree
+Date: Fri, 15 Mar 2013 14:56:15 +0200
+Message-ID: <20130315125615.GA27560@xps8300>
+References: <1362694460-1919-1-git-send-email-maxime.ripard@free-electrons.com>
+ <1362694460-1919-2-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:56926 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754033Ab3COL6G (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 07:58:06 -0400
-In-Reply-To: <20130315113017.GE28843@localhost>
+Received: from mga01.intel.com ([192.55.52.88]:28046 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754221Ab3COM4U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 15 Mar 2013 08:56:20 -0400
+Content-Disposition: inline
+In-Reply-To: <1362694460-1919-2-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, 2013-03-15 at 12:30 +0100, Johan Hovold wrote:
-> On Fri, Mar 15, 2013 at 07:03:08AM -0400, Peter Hurley wrote:
-> > On Fri, 2013-03-15 at 10:24 +0100, Johan Hovold wrote:
-> > > On Wed, Mar 13, 2013 at 03:43:43PM -0400, Peter Hurley wrote:
-> > > > On Thu, 2013-03-07 at 15:55 +0100, Johan Hovold wrote:
-> > > > > Make sure to check ASYNC_INITIALISED before raising DTR when waking up
-> > > > > from blocked open in tty_port_block_til_ready.
-> > > > > 
-> > > > > Currently DTR could get raised at hang up as a blocked process would
-> > > > > raise DTR unconditionally before checking for hang up and returning.
-> > > > > 
-> > > > > Signed-off-by: Johan Hovold <jhovold@gmail.com>
-> > > > > ---
-> > > > >  drivers/tty/tty_port.c | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-> > > > > index 3de5918..52f1066 100644
-> > > > > --- a/drivers/tty/tty_port.c
-> > > > > +++ b/drivers/tty/tty_port.c
-> > > > > @@ -355,7 +355,7 @@ int tty_port_block_til_ready(struct tty_port *port,
-> > > > >  
-> > > > >  	while (1) {
-> > > > >  		/* Indicate we are open */
-> > > > > -		if (tty->termios.c_cflag & CBAUD)
-> > > > > +		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
-> > > > >  			tty_port_raise_dtr_rts(port);
-> > > > >  
-> > > > >  		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
-> > > > 
-> > > > This is ok, but there are 6 other *_block_til_ready() functions:
-> >      ^^^^^^
-> > Comment on patch
-> 
-> I saw that, but just wanted to stress that those comments shouldn't
-> block the series.
+Hi,
 
-I completely agree. In fact, I should have said as much in the initial
-review. Sorry.
+On Thu, Mar 07, 2013 at 11:14:15PM +0100, Maxime Ripard wrote:
+> From: Emilio L=F3pez <emilio@elopez.com.ar>
+>=20
+> This commit implements support for using the "clocks" DT property, in=
+stead
+> of having to use clock-frequency.
+>=20
+> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c |   32 ++++++++++++++++++++++-----=
+-----
+>  1 file changed, 22 insertions(+), 10 deletions(-)
 
-> > > Yes, but that's not really a comment on this patch, is it?
-> > > 
-> > > The purpose of this series is to fix the tty-port implementation, and
-> > > I've only touched individual drivers when I had to in order not to break
-> > > anything due to changed assumptions.
-> > > 
-> > > There's a ton of buggy and odd behaviour to be found once you start
-> > > turning the stones. Drivers like the ones below really ought to be
-> > > using tty ports and it's helpers.
-> > 
-> > Sure, I understand.
-> > 
-> > OTOH, tty_port and these drivers stem from the same ancestor and it's
-> > partly because of localized bug fixes like these that the drivers have
-> > buggy and odd behavior (because tty_port gets fixed and these do not).
-> 
-> Arguably, fixing the core isn't really a localised bug fix. Some of
-> those drivers you mentioned have custom open, close, hangup which are
-> quite different from the tty port implementation, and surely would have
-> a lot to gain from being ported to tty ports if someone could find the
-> time to do so.
+<snip>
 
-I think the reluctance to do a full port is partly due to lack of
-testable hardware.
+> @@ -137,8 +140,15 @@ static int dw8250_probe_of(struct uart_port *p)
+>  		p->regshift =3D val;
+> =20
+>  	if (of_property_read_u32(np, "clock-frequency", &val)) {
+> -		dev_err(p->dev, "no clock-frequency property set\n");
+> -		return -EINVAL;
+> +		/* Get clk rate through clk driver if present */
+> +		data->clk =3D clk_get(p->dev, NULL);
+> +		if (IS_ERR(data->clk)) {
+> +			dev_err(p->dev, "clk or clock-frequency not defined\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		clk_prepare_enable(data->clk);
+> +		val =3D clk_get_rate(data->clk);
 
-> > As you can verify from the changelogs of these drivers, it's traditional
-> > to continue to maintain the common aspects, despite the desire to
-> > abandon them.
-> 
-> Most entries I see have to do with changed interfaces.
-> 
-> > That said, I'm not the maintainer so feel free to disagree with my
-> > point-of-view.
-> 
-> You do have a point, and I will try to find the time for a follow-up
-> series fixing at least a few of those five-or-so custom block_til_ready
-> you pointed to.
+Don't get the clk here..
 
-Thanks.
+>  	}
+>  	p->uartclk =3D val;
+> =20
+> @@ -300,6 +310,12 @@ static int dw8250_probe(struct platform_device *=
+pdev)
 
-Regards,
-Peter Hurley
+Get it here so it is then handled for also others besides DT users.
+And prefer devm_clk_get(). Something like this:
 
+        ...
+        uart.port.membase =3D ioremap(regs->start, resource_size(regs))=
+;
+        if (!uart.port.membase)
+                return -ENOMEM;
+
++       data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++       if (!data)
++       	return -ENOMEM;
++       =20
++       data->clk =3D devm_clk_get(&pdev->dev, NULL);
++       clk_prepare_enable(data->clk);
++
+        uart.port.iotype =3D UPIO_MEM;
+        uart.port.serial_in =3D dw8250_serial_in;
+        uart.port.serial_out =3D dw8250_serial_out;
++       uart.port.private_data =3D data;
++       uart.port.uartclk =3D clk_get_rate(data->clk);
+
+  	dw8250_setup_port(&uart);
+        ...=20
+
+Then in dw8250_probe_of() you need to use the "clock-frequency"
+property only when p->uartclk is 0.
+
+Thanks,
+
+--=20
+heikki
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
