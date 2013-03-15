@@ -1,108 +1,77 @@
-From: Shuge <shugelinux@gmail.com>
-Subject: Re: [BUG]: when printk too more through serial, cpu up is failed.
-Date: Fri, 15 Mar 2013 09:26:26 +0800
-Message-ID: <514278C2.3020900@gmail.com>
-References: <5141D5E6.4060001@gmail.com> <20130314140553.GA4895@kroah.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 3/6] TTY: fix DTR being raised on hang up
+Date: Fri, 15 Mar 2013 10:24:01 +0100
+Message-ID: <20130315092401.GB28843@localhost>
+References: <51361724.4050107@suse.cz>
+ <1362668153-10972-1-git-send-email-jhovold@gmail.com>
+ <1362668153-10972-4-git-send-email-jhovold@gmail.com>
+ <1363203823.25976.102.camel@thor.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f47.google.com ([209.85.160.47]:41701 "EHLO
-	mail-pb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751970Ab3COBeO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 14 Mar 2013 21:34:14 -0400
-In-Reply-To: <20130314140553.GA4895@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1363203823.25976.102.camel-AsKIXgLx6sE@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, Kevin <kevin@allwinnertech.com>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Tejun Heo <tj@kernel.org>
 
-=E4=BA=8E 2013=E5=B9=B403=E6=9C=8814=E6=97=A5 22:05, Greg KH =E5=86=99=E9=
-=81=93:
-> On Thu, Mar 14, 2013 at 09:51:34PM +0800, Shuge wrote:
->> Hi all,
->>      When the kernel printk too many log, the cpu is failed to come =
-online.
->> The problem is this:
->> For example, cpu0 bring up cpu1:
->>
->>        a. cpu0 call cpu_up:
->>           cpu_up()
->>           ->_cpu_up()
->>              ->__cpu_notify(CPU_UP_PREPARE)
->>              ->__cpu_up()
->>                 ->boot_secondary()
->> #       ->wait_for_completion_timeout(&cpu_running, msecs_to_jiffire=
-s(1000))
->>           -> if (!cpu_online(cpu)) {
->>                    pr_crit("CPU%u: failed to come online\n", cpu);
->>                    ret =3D -EIO;
->>                }
->>           ->cpu_notify(CPU_ONLINE)
->>
->>        b. cpu1 enter kernel:
->>        secondary_start_kernel()
->> @   ->printk("CPU%u: Booted secondary processor\n", cpu)
->> *   ->calibrate_delay()
->>        ->set_cpu_online()
->>        ->complete(cpu_running)
->>          ->cpumask_set_cpu()
->>
->>     While cpu0 run to mark #,  which wait that cpu1 complete
->> cpu_running, and set online.
->> Generally, cpu0 can get it. But if the __log_buf is too large or
->> other threads write
->> it unceasing, then cpu1 come to mark @ or * in this moment. Cpu1 is
->> busy outputing
->> buffer, which cost time more than 1s, and cpu1 have not join in
->> sched, so cpu0 wait it timeout.
->>     By reading printk.c, I found that can_use_console() always retur=
-n
->> true, which be called by
->> console_trylock_for_printk(). Because, have_callable_console()
->> return ture always, if the console
->> driver set CON_ANYTIME flag. I think that cpu should not output the
->> __log_buf in coming online,
->> even though have_callable_console() is true.
->>
->> /*
->>   * Can we actually use the console at this time on this cpu?
->>   *
->>   * Console drivers may assume that per-cpu resources have
->>   * been allocated. So unless they're explicitly marked as
->>   * being able to cope (CON_ANYTIME) don't call them until
->>   * this CPU is officially up.
->>   */
->> static inline int can_use_console(unsigned int cpu)
->> {
->>      return cpu_online(cpu) || have_callable_console();
->> }
->>
->> In can_use_console, why not is &&, but ||?
->>
->> Kernel Version: 3.3.0
-> Why such an old and obsolete kernel version?  Please try this on 3.8,
-> lots of work have gone into the printk area that should have solved t=
-his
-> issue.
->
-> greg k-h
+On Wed, Mar 13, 2013 at 03:43:43PM -0400, Peter Hurley wrote:
+> On Thu, 2013-03-07 at 15:55 +0100, Johan Hovold wrote:
+> > Make sure to check ASYNC_INITIALISED before raising DTR when waking up
+> > from blocked open in tty_port_block_til_ready.
+> > 
+> > Currently DTR could get raised at hang up as a blocked process would
+> > raise DTR unconditionally before checking for hang up and returning.
+> > 
+> > Signed-off-by: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  drivers/tty/tty_port.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> > index 3de5918..52f1066 100644
+> > --- a/drivers/tty/tty_port.c
+> > +++ b/drivers/tty/tty_port.c
+> > @@ -355,7 +355,7 @@ int tty_port_block_til_ready(struct tty_port *port,
+> >  
+> >  	while (1) {
+> >  		/* Indicate we are open */
+> > -		if (tty->termios.c_cflag & CBAUD)
+> > +		if (C_BAUD(tty) && test_bit(ASYNCB_INITIALIZED, &port->flags))
+> >  			tty_port_raise_dtr_rts(port);
+> >  
+> >  		prepare_to_wait(&port->open_wait, &wait, TASK_INTERRUPTIBLE);
+> 
+> This is ok, but there are 6 other *_block_til_ready() functions:
 
-I saw the printk.c in version 3.9, it still check=20
-console_trylock_for_printk() to decide to call console_unlock. In=20
-vprintk_emit(), cpu1 also have the opportunity to execute=20
-console_unlock() at coming online time.
-Once cpu which is coming online can output buffer, nothing can interrup=
-t=20
-it until buffer is empty.But we can't ensure that none always write the=
-=20
-__log_buf. It is danger! I think, the solution is that we should preven=
-t=20
-to use console at coming online.
+Yes, but that's not really a comment on this patch, is it?
+
+The purpose of this series is to fix the tty-port implementation, and
+I've only touched individual drivers when I had to in order not to break
+anything due to changed assumptions.
+
+There's a ton of buggy and odd behaviour to be found once you start
+turning the stones. Drivers like the ones below really ought to be
+using tty ports and it's helpers.
+
+Thanks,
+Johan
+
+> This one doesn't use DTR/RTS so can be ignored:
+> ./drivers/staging/sb105x/sb_pci_mp.c:static int mp_block_til_ready(struct file *filp, struct sb_uart_state *state)
+> 
+> This one is so scary you should probably leave it alone:
+> ./drivers/tty/serial/crisv10.c:block_til_ready(struct tty_struct *tty, struct file * filp,
+> 
+> These will need the same change (although be careful: some use
+> ASYNC_INITIALIZED rather than ASYNCB_INITIALIZED).
+> ./drivers/tty/synclinkmp.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
+> ./drivers/tty/synclink_gt.c:static int block_til_ready(struct tty_struct *tty, struct file *filp,
+> ./drivers/tty/synclink.c:static int block_til_ready(struct tty_struct *tty, struct file * filp,
+> ./net/irda/ircomm/ircomm_tty.c:static int ircomm_tty_block_til_ready(struct ircomm_tty_cb *self,
+
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
