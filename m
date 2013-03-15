@@ -1,129 +1,68 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 1/6] serial: 8250_dw: add support for clk api
-Date: Fri, 15 Mar 2013 21:06:23 +0100
-Message-ID: <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com>
-References: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: Serial port initialization broken on Armada 370/XP due to
+ "serial: 8250_dw: Don't use UPF_FIXED_TYPE"
+Date: Fri, 15 Mar 2013 13:24:52 -0700
+Message-ID: <20130315202452.GA15617@kroah.com>
+References: <512E1AD9.4090403@free-electrons.com>
+ <512E2F64.2010706@free-electrons.com>
+ <20130228092602.GA5688@xps8300>
+ <512F428E.3080400@free-electrons.com>
+ <20130228123421.GC5688@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:56675 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932156Ab3COUGi (ORCPT
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:45404 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755020Ab3COUY5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 16:06:38 -0400
-In-Reply-To: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com>
+	Fri, 15 Mar 2013 16:24:57 -0400
+Received: by mail-pb0-f46.google.com with SMTP id uo15so4289665pbc.33
+        for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2013 13:24:57 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20130228123421.GC5688@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Gregory CLEMENT <gregory.clement@free-electrons.com>, Jamie Iles <jamie@jamieiles.com>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+On Thu, Feb 28, 2013 at 02:34:21PM +0200, Heikki Krogerus wrote:
+> Hi,
+> 
+> On Thu, Feb 28, 2013 at 12:42:06PM +0100, Gregory CLEMENT wrote:
+> > >> Would you agree with this kind of patch to fix the issue?
+> > >>
+> > >> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> > >> index e2ac25a..0b284c6 100644
+> > >> --- a/drivers/tty/serial/8250/8250.c
+> > >> +++ b/drivers/tty/serial/8250/8250.c
+> > >> @@ -1119,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+> > >>         serial_out(up, UART_LCR, 0);
+> > >>
+> > >>         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
+> > >> -       scratch = serial_in(up, UART_IIR) >> 6;
+> > >> +       scratch = (serial_in(up, UART_IIR) & 0xFF) >> 6;
+> > >>
+> > >>         switch (scratch) {
+> > >>         case 0:
+> > > 
+> > > Instead, can you test if it's enough for you to set the reg-io-width
+> > > to 1 instead of 4:
+> > 
+> > Yes indeed it worked and it seems to be the correct description of my
+> > hardware. So I will fix the dtsi file.
+> > 
+> > However isn't buggy to use a function as it returned a char whereas
+> > it returns an int?
+> 
+> Yes, the driver should probable be cleaned.
+> 
+> It seems to be happening in quite a few places in 8250.c.
+> autoconfig_16550a() has pretty much identical code in it, where
+> UART_IIR is read to unsigned char and shifted without a mask.
 
-This commit implements support for using the clk api; this lets us use
-the "clocks" property with device tree, instead of having to use
-clock-frequency.
+Can someone send me the correct fix here, if they want it included in
+3.9-final?
 
-Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- drivers/tty/serial/8250/8250_dw.c |   33 ++++++++++++++++++++++++-----=
-----
- 1 file changed, 24 insertions(+), 9 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-index db0e66f..9a834a1 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/clk.h>
-=20
- #include "8250.h"
-=20
-@@ -55,8 +56,9 @@
-=20
-=20
- struct dw8250_data {
--	int	last_lcr;
--	int	line;
-+	int		last_lcr;
-+	int		line;
-+	struct clk	*clk;
- };
-=20
- static void dw8250_serial_out(struct uart_port *p, int offset, int val=
-ue)
-@@ -136,8 +138,13 @@ static int dw8250_probe_of(struct uart_port *p)
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift =3D val;
-=20
-+	/* clock got configured through clk api, all done */
-+	if (p->uartclk)
-+		return 0;
-+
-+	/* try to find out clock frequency from DT as fallback */
- 	if (of_property_read_u32(np, "clock-frequency", &val)) {
--		dev_err(p->dev, "no clock-frequency property set\n");
-+		dev_err(p->dev, "clk or clock-frequency not defined\n");
- 		return -EINVAL;
- 	}
- 	p->uartclk =3D val;
-@@ -294,9 +301,21 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 	if (!uart.port.membase)
- 		return -ENOMEM;
-=20
-+	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->clk =3D devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(data->clk))
-+		data->clk =3D NULL;
-+	else
-+		clk_prepare_enable(data->clk);
-+
- 	uart.port.iotype =3D UPIO_MEM;
- 	uart.port.serial_in =3D dw8250_serial_in;
- 	uart.port.serial_out =3D dw8250_serial_out;
-+	uart.port.private_data =3D data;
-+	uart.port.uartclk =3D clk_get_rate(data->clk);
-=20
- 	dw8250_setup_port(&uart);
-=20
-@@ -312,12 +331,6 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 		return -ENODEV;
- 	}
-=20
--	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	uart.port.private_data =3D data;
--
- 	data->line =3D serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
-@@ -333,6 +346,8 @@ static int dw8250_remove(struct platform_device *pd=
-ev)
-=20
- 	serial8250_unregister_port(data->line);
-=20
-+	clk_disable_unprepare(data->clk);
-+
- 	return 0;
- }
-=20
---=20
-1.7.10.4
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
