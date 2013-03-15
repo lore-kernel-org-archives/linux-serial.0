@@ -1,99 +1,67 @@
-From: Jason Cooper <jason@lakedaemon.net>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: Serial port initialization broken on Armada 370/XP due to
  "serial: 8250_dw: Don't use UPF_FIXED_TYPE"
-Date: Fri, 15 Mar 2013 16:32:51 -0400
-Message-ID: <20130315203251.GY12700@titan.lakedaemon.net>
+Date: Fri, 15 Mar 2013 13:50:44 -0700
+Message-ID: <20130315205044.GA20514@kroah.com>
 References: <512E1AD9.4090403@free-electrons.com>
  <512E2F64.2010706@free-electrons.com>
  <20130228092602.GA5688@xps8300>
  <512F428E.3080400@free-electrons.com>
  <20130228123421.GC5688@xps8300>
  <20130315202452.GA15617@kroah.com>
+ <20130315203251.GY12700@titan.lakedaemon.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-04-ewr.mailhop.org ([204.13.248.74]:38904 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755229Ab3COUcz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 16:32:55 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20130315202452.GA15617@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In-Reply-To: <20130315203251.GY12700@titan.lakedaemon.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jason Cooper <jason@lakedaemon.net>
 Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Jamie Iles <jamie@jamieiles.com>, Andrew Lunn <andrew@lunn.ch>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 15, 2013 at 01:24:52PM -0700, Greg Kroah-Hartman wrote:
-> On Thu, Feb 28, 2013 at 02:34:21PM +0200, Heikki Krogerus wrote:
-> > Hi,
-> > 
-> > On Thu, Feb 28, 2013 at 12:42:06PM +0100, Gregory CLEMENT wrote:
-> > > >> Would you agree with this kind of patch to fix the issue?
-> > > >>
-> > > >> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> > > >> index e2ac25a..0b284c6 100644
-> > > >> --- a/drivers/tty/serial/8250/8250.c
-> > > >> +++ b/drivers/tty/serial/8250/8250.c
-> > > >> @@ -1119,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
-> > > >>         serial_out(up, UART_LCR, 0);
-> > > >>
-> > > >>         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
-> > > >> -       scratch = serial_in(up, UART_IIR) >> 6;
-> > > >> +       scratch = (serial_in(up, UART_IIR) & 0xFF) >> 6;
-> > > >>
-> > > >>         switch (scratch) {
-> > > >>         case 0:
+On Fri, Mar 15, 2013 at 04:32:51PM -0400, Jason Cooper wrote:
+> On Fri, Mar 15, 2013 at 01:24:52PM -0700, Greg Kroah-Hartman wrote:
+> > On Thu, Feb 28, 2013 at 02:34:21PM +0200, Heikki Krogerus wrote:
+> > > Hi,
+> > > 
+> > > On Thu, Feb 28, 2013 at 12:42:06PM +0100, Gregory CLEMENT wrote:
+> > > > >> Would you agree with this kind of patch to fix the issue?
+> > > > >>
+> > > > >> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+> > > > >> index e2ac25a..0b284c6 100644
+> > > > >> --- a/drivers/tty/serial/8250/8250.c
+> > > > >> +++ b/drivers/tty/serial/8250/8250.c
+> > > > >> @@ -1119,7 +1119,7 @@ static void autoconfig(struct uart_8250_port *up, unsigned int probeflags)
+> > > > >>         serial_out(up, UART_LCR, 0);
+> > > > >>
+> > > > >>         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
+> > > > >> -       scratch = serial_in(up, UART_IIR) >> 6;
+> > > > >> +       scratch = (serial_in(up, UART_IIR) & 0xFF) >> 6;
+> > > > >>
+> > > > >>         switch (scratch) {
+> > > > >>         case 0:
+> > > > > 
+> > > > > Instead, can you test if it's enough for you to set the reg-io-width
+> > > > > to 1 instead of 4:
 > > > > 
-> > > > Instead, can you test if it's enough for you to set the reg-io-width
-> > > > to 1 instead of 4:
+> > > > Yes indeed it worked and it seems to be the correct description of my
+> > > > hardware. So I will fix the dtsi file.
+> > > > 
+> > > > However isn't buggy to use a function as it returned a char whereas
+> > > > it returns an int?
 > > > 
-> > > Yes indeed it worked and it seems to be the correct description of my
-> > > hardware. So I will fix the dtsi file.
+> > > Yes, the driver should probable be cleaned.
 > > > 
-> > > However isn't buggy to use a function as it returned a char whereas
-> > > it returns an int?
+> > > It seems to be happening in quite a few places in 8250.c.
+> > > autoconfig_16550a() has pretty much identical code in it, where
+> > > UART_IIR is read to unsigned char and shifted without a mask.
 > > 
-> > Yes, the driver should probable be cleaned.
-> > 
-> > It seems to be happening in quite a few places in 8250.c.
-> > autoconfig_16550a() has pretty much identical code in it, where
-> > UART_IIR is read to unsigned char and shifted without a mask.
+> > Can someone send me the correct fix here, if they want it included in
+> > 3.9-final?
 > 
-> Can someone send me the correct fix here, if they want it included in
-> 3.9-final?
+> The fix is in arm-soc/fixes slated for merging into 3.9:
 
-The fix is in arm-soc/fixes slated for merging into 3.9:
+Nice, I like it when I don't have to do anything....
 
-  commit e366154f70c54dee3665d1c0f780007e514412f3
-  Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-  Date:   Wed Mar 6 11:23:33 2013 +0100
-
-      arm: mvebu: Reduce reg-io-width with UARTs
-
-      Setting the reg-io-width to 1 byte represents more accurate
-      description of the HW.
-
-      This will fix an issue where UART driver causes kernel
-      panic during bootup. Gregory CLEMENT traced the issue to
-      autoconfig() in 8250.c, where the existence of FIFO is
-      checked from UART_IIR register. The register is now read as
-      32-bit value as the reg-io-width is set to 4-bytes. The
-      retuned value seems to contain bogus data for bits 31:8,
-      causing the issue.
-
-      Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-      Cc: Gregory CLEMENT <gregory.clement@free-electrons.com>
-      Cc: Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
-      Tested-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-      Acked-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-      Tested-by: Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
-      Tested-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-      Signed-off-by: Jason Cooper <jason@lakedaemon.net>
-
-   arch/arm/boot/dts/armada-370-xp.dtsi | 4 ++--
-   arch/arm/boot/dts/armada-xp.dtsi     | 4 ++--
-
-thx,
-
-Jason.
+greg k-h
