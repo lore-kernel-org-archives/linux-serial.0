@@ -1,95 +1,117 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: =?ISO-8859-1?Q?Emilio_L=F3pez?= <emilio@elopez.com.ar>
 Subject: Re: [PATCH 1/6] serial: 8250_dw: add support for clk api
-Date: Fri, 15 Mar 2013 22:39:17 +0000
-Message-ID: <20130315223917.GZ4977@n2100.arm.linux.org.uk>
-References: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com> <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com>
+Date: Fri, 15 Mar 2013 21:15:11 -0300
+Message-ID: <BLU0-SMTP4156A39670AA58651B05028AEE0@phx.gbl>
+References: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com> <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com> <20130315223917.GZ4977@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <20130315223917.GZ4977@n2100.arm.linux.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-arm-kernel@lists.infradead.org, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sunny@allwinnertech.com, shuge@allwinnertech.com, Jiri Slaby <jslaby@suse.cz>, kevin@allwinnertech.com
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sunny@allwinnertech.com, shuge@allwinnertech.com, Jiri Slaby <jslaby@suse.cz>, kevin@allwinnertech.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 15, 2013 at 09:06:23PM +0100, Maxime Ripard wrote:
-> +	/* clock got configured through clk api, all done */
-> +	if (p->uartclk)
+Hello Russell,
 
-	if (IS_ERR(p->uartclk))
+El 15/03/13 19:39, Russell King - ARM Linux escribi=F3:
+> On Fri, Mar 15, 2013 at 09:06:23PM +0100, Maxime Ripard wrote:
+>> +	/* clock got configured through clk api, all done */
+>> +	if (p->uartclk)
+>=20
+> 	if (IS_ERR(p->uartclk))
+>=20
 
-> +		return 0;
-> +
-> +	/* try to find out clock frequency from DT as fallback */
->  	if (of_property_read_u32(np, "clock-frequency", &val)) {
-> -		dev_err(p->dev, "no clock-frequency property set\n");
-> +		dev_err(p->dev, "clk or clock-frequency not defined\n");
->  		return -EINVAL;
->  	}
->  	p->uartclk = val;
-> @@ -294,9 +301,21 @@ static int dw8250_probe(struct platform_device *pdev)
->  	if (!uart.port.membase)
->  		return -ENOMEM;
->  
-> +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	data->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(data->clk))
-> +		data->clk = NULL;
-> +	else
-> +		clk_prepare_enable(data->clk);
+Isn't IS_ERR for pointers? p->uartclk is an unsigned int
 
-	if (!IS_ERR(data->clk))
-		clk_prepare_enable(data->clk);
+>> +		return 0;
+>> +
+>> +	/* try to find out clock frequency from DT as fallback */
+>>  	if (of_property_read_u32(np, "clock-frequency", &val)) {
+>> -		dev_err(p->dev, "no clock-frequency property set\n");
+>> +		dev_err(p->dev, "clk or clock-frequency not defined\n");
+>>  		return -EINVAL;
+>>  	}
+>>  	p->uartclk =3D val;
+>> @@ -294,9 +301,21 @@ static int dw8250_probe(struct platform_device =
+*pdev)
+>>  	if (!uart.port.membase)
+>>  		return -ENOMEM;
+>> =20
+>> +	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+>> +	if (!data)
+>> +		return -ENOMEM;
+>> +
+>> +	data->clk =3D devm_clk_get(&pdev->dev, NULL);
+>> +	if (IS_ERR(data->clk))
+>> +		data->clk =3D NULL;
+>> +	else
+>> +		clk_prepare_enable(data->clk);
+>=20
+> 	if (!IS_ERR(data->clk))
+> 		clk_prepare_enable(data->clk);
+>=20
 
-> +
->  	uart.port.iotype = UPIO_MEM;
->  	uart.port.serial_in = dw8250_serial_in;
->  	uart.port.serial_out = dw8250_serial_out;
-> +	uart.port.private_data = data;
-> +	uart.port.uartclk = clk_get_rate(data->clk);
+See below
 
-What if data->clk is invalid?
+>> +
+>>  	uart.port.iotype =3D UPIO_MEM;
+>>  	uart.port.serial_in =3D dw8250_serial_in;
+>>  	uart.port.serial_out =3D dw8250_serial_out;
+>> +	uart.port.private_data =3D data;
+>> +	uart.port.uartclk =3D clk_get_rate(data->clk);
+>=20
+> What if data->clk is invalid?
+>=20
+> 	if (!IS_ERR(data->clk)
+> 		uart.port.uartclk =3D clk_get_rate(data->clk);
+>=20
 
-	if (!IS_ERR(data->clk)
-		uart.port.uartclk = clk_get_rate(data->clk);
+I'm not sure if it is coincidental or the way it is supposed to be, but
+when using the common clock framework, if you pass a NULL to
+clk_get_rate, the function explicitly checks for it and returns 0. I
+relied on that behaviour when implementing this; see the if..else block
+above. Is this not always the case on other clock drivers?
 
->  
->  	dw8250_setup_port(&uart);
->  
-> @@ -312,12 +331,6 @@ static int dw8250_probe(struct platform_device *pdev)
->  		return -ENODEV;
->  	}
->  
-> -	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-> -	if (!data)
-> -		return -ENOMEM;
-> -
-> -	uart.port.private_data = data;
-> -
->  	data->line = serial8250_register_8250_port(&uart);
->  	if (data->line < 0)
->  		return data->line;
-> @@ -333,6 +346,8 @@ static int dw8250_remove(struct platform_device *pdev)
->  
->  	serial8250_unregister_port(data->line);
->  
+>> =20
+>>  	dw8250_setup_port(&uart);
+>> =20
+>> @@ -312,12 +331,6 @@ static int dw8250_probe(struct platform_device =
+*pdev)
+>>  		return -ENODEV;
+>>  	}
+>> =20
+>> -	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+>> -	if (!data)
+>> -		return -ENOMEM;
+>> -
+>> -	uart.port.private_data =3D data;
+>> -
+>>  	data->line =3D serial8250_register_8250_port(&uart);
+>>  	if (data->line < 0)
+>>  		return data->line;
+>> @@ -333,6 +346,8 @@ static int dw8250_remove(struct platform_device =
+*pdev)
+>> =20
+>>  	serial8250_unregister_port(data->line);
+>> =20
+>=20
+> 	if (!IS_ERR(data->clk)
+>=20
 
-	if (!IS_ERR(data->clk)
+I just double checked and clk_enable/disable, clk_prepare/unprepare als=
+o
+ignore NULLs passed to them on the CCF.
 
-> +	clk_disable_unprepare(data->clk);
-> +
->  	return 0;
->  }
->  
-> -- 
-> 1.7.10.4
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>> +	clk_disable_unprepare(data->clk);
+>> +
+>>  	return 0;
+>>  }
+>> =20
+>> --=20
+>> 1.7.10.4
+
+Thanks for the review,
+
+Emilio
