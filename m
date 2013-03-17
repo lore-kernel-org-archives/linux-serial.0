@@ -1,101 +1,107 @@
-From: =?ISO-8859-1?Q?Emilio_L=F3pez?= <emilio@elopez.com.ar>
-Subject: Re: [PATCH 1/6] serial: 8250_dw: add support for clk api
-Date: Fri, 15 Mar 2013 21:40:47 -0300
-Message-ID: <BLU0-SMTP18236DF570FFD5F879EC61B8AEE0@phx.gbl>
-References: <1363377988-4966-1-git-send-email-maxime.ripard@free-electrons.com> <1363377988-4966-2-git-send-email-maxime.ripard@free-electrons.com> <20130315223917.GZ4977@n2100.arm.linux.org.uk> <BLU0-SMTP4156A39670AA58651B05028AEE0@phx.gbl> <20130316002952.GA4977@n2100.arm.linux.org.uk>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: Re: [PATCH] tty: Correct tty buffer flush.
+Date: Sun, 17 Mar 2013 04:06:37 +0000
+Message-ID: <1363493197.3937.241.camel@deadeye.wl.decadent.org.uk>
+References: <50BC76E9.2070703@ilyx.ru> <5134F3CD.3020805@ilyx.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="=-xL337aW7h21SNm6HEK1P"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from blu0-omc1-s29.blu0.hotmail.com ([65.55.116.40]:9925 "EHLO
-	blu0-omc1-s29.blu0.hotmail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932125Ab3CPAkx convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Mar 2013 20:40:53 -0400
-In-Reply-To: <20130316002952.GA4977@n2100.arm.linux.org.uk>
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:53719 "EHLO
+	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750699Ab3CQEGq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 17 Mar 2013 00:06:46 -0400
+In-Reply-To: <5134F3CD.3020805@ilyx.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sunny@allwinnertech.com, shuge@allwinnertech.com, Jiri Slaby <jslaby@suse.cz>, kevin@allwinnertech.com
+To: Ilya Zykov <ilya@ilyx.ru>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org
 
-El 15/03/13 21:29, Russell King - ARM Linux escribi=F3:
-> On Fri, Mar 15, 2013 at 09:15:11PM -0300, Emilio L=F3pez wrote:
->> Hello Russell,
->>
->> El 15/03/13 19:39, Russell King - ARM Linux escribi=F3:
->>> On Fri, Mar 15, 2013 at 09:06:23PM +0100, Maxime Ripard wrote:
->>>> +	/* clock got configured through clk api, all done */
->>>> +	if (p->uartclk)
->>>
->>> 	if (IS_ERR(p->uartclk))
->>>
->>
->> Isn't IS_ERR for pointers? p->uartclk is an unsigned int
->=20
-> Right, sorry, ignore that.
->=20
->>>> +		return 0;
->>>> +
->>>> +	/* try to find out clock frequency from DT as fallback */
->>>>  	if (of_property_read_u32(np, "clock-frequency", &val)) {
->>>> -		dev_err(p->dev, "no clock-frequency property set\n");
->>>> +		dev_err(p->dev, "clk or clock-frequency not defined\n");
->>>>  		return -EINVAL;
->>>>  	}
->>>>  	p->uartclk =3D val;
->>>> @@ -294,9 +301,21 @@ static int dw8250_probe(struct platform_devic=
-e *pdev)
->>>>  	if (!uart.port.membase)
->>>>  		return -ENOMEM;
->>>> =20
->>>> +	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
->>>> +	if (!data)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	data->clk =3D devm_clk_get(&pdev->dev, NULL);
->>>> +	if (IS_ERR(data->clk))
->>>> +		data->clk =3D NULL;
->>>> +	else
->>>> +		clk_prepare_enable(data->clk);
->>>
->>> 	if (!IS_ERR(data->clk))
->>> 		clk_prepare_enable(data->clk);
->>>
->>
->> See below
->>
->>>> +
->>>>  	uart.port.iotype =3D UPIO_MEM;
->>>>  	uart.port.serial_in =3D dw8250_serial_in;
->>>>  	uart.port.serial_out =3D dw8250_serial_out;
->>>> +	uart.port.private_data =3D data;
->>>> +	uart.port.uartclk =3D clk_get_rate(data->clk);
->>>
->>> What if data->clk is invalid?
->>>
->>> 	if (!IS_ERR(data->clk)
->>> 		uart.port.uartclk =3D clk_get_rate(data->clk);
->>>
->>
->> I'm not sure if it is coincidental or the way it is supposed to be, =
-but
->> when using the common clock framework, if you pass a NULL to
->> clk_get_rate, the function explicitly checks for it and returns 0. I
->> relied on that behaviour when implementing this; see the if..else bl=
-ock
->> above. Is this not always the case on other clock drivers?
->=20
-> That's something that the common clock framework decided to do.  It's
-> not a defined part of the API though, so drivers shouldn't rely on
-> this behaviour meaning anything special.
 
-Ok then, I'll rework the error checking on the clock calls and get a ne=
-w
-patch sent. Thanks for the clarification.
+--=-xL337aW7h21SNm6HEK1P
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Emilio
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Mon, 2013-03-04 at 23:19 +0400, Ilya Zykov wrote:
+> On 03.12.2012 13:54, Ilya Zykov wrote:
+> >   The root of problem is carelessly zeroing pointer(in function __tty_b=
+uffer_flush()),
+> > when another thread can use it. It can be cause of "NULL pointer derefe=
+rence".
+> >   Main idea of the patch, this is never release last (struct tty_buffer=
+) in the active buffer.
+> > Only flush data for ldisc(tty->buf.head->read =3D tty->buf.head->commit=
+).
+> > At that moment driver can collect(write) data in buffer without conflic=
+t.
+> > It is repeat behavior of flush_to_ldisc(), only without feeding data to=
+ ldisc.
+> > Test program and bug report you can see:
+> > https://lkml.org/lkml/2012/11/29/368
+> >=20
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Ilya Zykov <ilya@ilyx.ru>
+> > ---
+> > diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> > index 6c9b7cd..4f02f9c 100644
+> > --- a/drivers/tty/tty_buffer.c
+> > +++ b/drivers/tty/tty_buffer.c
+> > @@ -114,11 +114,14 @@ static void __tty_buffer_flush(struct tty_struct =
+*tty)
+> >  {
+> >  	struct tty_buffer *thead;
+> > =20
+> > -	while ((thead =3D tty->buf.head) !=3D NULL) {
+> > -		tty->buf.head =3D thead->next;
+> > -		tty_buffer_free(tty, thead);
+> > +	if (tty->buf.head =3D=3D NULL)
+> > +		return;
+> > +	while ((thead =3D tty->buf.head->next) !=3D NULL) {
+> > +		tty_buffer_free(tty, tty->buf.head);
+> > +		tty->buf.head =3D thead;
+> >  	}
+> > -	tty->buf.tail =3D NULL;
+> > +	WARN_ON(tty->buf.head !=3D tty->buf.tail);
+> > +	tty->buf.head->read =3D tty->buf.head->commit;
+> >  }
+> > =20
+> >  /**
+> >=20
+>=20
+> You can include this patch, in 3.2 series , for improve stability,
+> it would be merged in upstream 3.9-rc1.
+
+Added to the queue, thanks.
+
+Ben.
+
+--=20
+Ben Hutchings
+Usenet is essentially a HUGE group of people passing notes in class.
+                      - Rachel Kadel, `A Quick Guide to Newsgroup Etiquette=
+'
+
+--=-xL337aW7h21SNm6HEK1P
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIVAwUAUUVBTee/yOyVhhEJAQpafRAAqIUtLIB3ekURM1dUy5MecGG8G2NLyiDV
+5mJJhk85382xJ7ac9yxlWI2KWfiQP3o2c1dRw8c4ScybFZLxbkowSThZ21JGKGVq
+UrMjZQOUiO7PG2ro+L+KL1du59LIlGrBhjR1aDSgasS8EbPpcbVPD200U/iTZ+lF
+2c4rqk7KxPGEF7tTp7c+otGJYLj92qVfhicJPJwboYUbT4U+RM4CdGiXegNro4Di
+tMxu5QRDGVLV1OiNIN6x784fWmz5qBdv3oy5WcE7Gi09um6x/cfxDZHWN5OHD0LK
+QrPqV1RCHWHSduTURR3S0o79ODQ6AIiY92wOybrXcM5y+WnVvmk0VDqfp8zH4UZ0
+rNqV0ZFWFelEvDVnLsmV0ch8x38MrYg7MfBsjDlyAAyjpXTjJ5AZsHM3xEyUXlL7
+ttR37w1OhEvHZKuTOBDhlPPXS30/mP+qH1rLmWY5JUKQao+jfdwzD8TAmKO9hRlo
+V8otd5jaue/kymFIm6RgwiX+tt3J5CE7AYazZYCpqvtYxK7Smzq385aj8+s4WZVx
+UsFl3ko4BhzjgvQTk5KJosZFhvfSppR1w3hKcdPkp8cJMcGwS5LCVQkjIT8xREvl
+fNJRb2Tl98sZUXniliFwOmX8LThHrXO444L1rOO4v3n91PYg2qqVVIR/Auv/rKn0
++4BmP0S/7dE=
+=3jsf
+-----END PGP SIGNATURE-----
+
+--=-xL337aW7h21SNm6HEK1P--
