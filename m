@@ -1,44 +1,30 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 4/7] n_tty: Encapsulate minimum_to_wake within N_TTY
-Date: Mon, 18 Mar 2013 16:15:38 -0700
-Message-ID: <20130318231538.GA16280@kroah.com>
-References: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
- <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 0/6] TTY: port hangup and close fixes
+Date: Mon, 18 Mar 2013 16:28:50 -0700
+Message-ID: <20130318232850.GA20477@kroah.com>
+References: <51361724.4050107@suse.cz>
+ <1362668153-10972-1-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:44216 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752632Ab3CRXOX (ORCPT
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:54214 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755783Ab3CRX1f (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Mar 2013 19:14:23 -0400
-Received: by mail-pb0-f46.google.com with SMTP id uo15so6761193pbc.5
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2013 16:14:22 -0700 (PDT)
+	Mon, 18 Mar 2013 19:27:35 -0400
+Received: by mail-pd0-f181.google.com with SMTP id q10so968261pdj.40
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2013 16:27:34 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1362668153-10972-1-git-send-email-jhovold@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, Mar 06, 2013 at 08:38:22AM -0500, Peter Hurley wrote:
-> minimum_to_wake is unique to N_TTY processing, and belongs in
-> per-ldisc data.
-> 
-> Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
-> when signal-driven I/O is enabled or disabled. When enabled for N_TTY
-> (by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
-> for any readable input. When disabled, blocking reader/polls are not
-> woken until the read buffer is full.
-> 
-> Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
-> the minimum_to_wake setting.
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+On Thu, Mar 07, 2013 at 03:55:47PM +0100, Johan Hovold wrote:
+> These patches against 3.9-rc1 fix a few issues with tty-port hangup and
+> close.
 
-For some reason, this patch doesn't apply.  Care to refresh this one,
-and the rest in this series, and resend?
-
-thanks,
+all now applied, thanks.
 
 greg k-h
