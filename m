@@ -1,60 +1,44 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [PATCH 1/2] driver: serial-omap: move max uart count into generic header file.
-Date: Mon, 18 Mar 2013 11:45:26 -0700
-Message-ID: <87r4jcim2h.fsf@linaro.org>
-References: <1363604206-11264-1-git-send-email-sourav.poddar@ti.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 4/7] n_tty: Encapsulate minimum_to_wake within N_TTY
+Date: Mon, 18 Mar 2013 16:15:38 -0700
+Message-ID: <20130318231538.GA16280@kroah.com>
+References: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
+ <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1363604206-11264-1-git-send-email-sourav.poddar@ti.com> (Sourav
-	Poddar's message of "Mon, 18 Mar 2013 16:26:46 +0530")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:44216 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752632Ab3CRXOX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Mar 2013 19:14:23 -0400
+Received: by mail-pb0-f46.google.com with SMTP id uo15so6761193pbc.5
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2013 16:14:22 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
+On Wed, Mar 06, 2013 at 08:38:22AM -0500, Peter Hurley wrote:
+> minimum_to_wake is unique to N_TTY processing, and belongs in
+> per-ldisc data.
+> 
+> Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
+> when signal-driven I/O is enabled or disabled. When enabled for N_TTY
+> (by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
+> for any readable input. When disabled, blocking reader/polls are not
+> woken until the read buffer is full.
+> 
+> Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
+> the minimum_to_wake setting.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-> OMAP_MAX_HSUART_PORTS is moved to omap_serial header file.
+For some reason, this patch doesn't apply.  Care to refresh this one,
+and the rest in this series, and resend?
 
-Why?  
+thanks,
 
-You started to explain it in the cover letter, but a full description
-belongs here for the permanent git history.
-
-Kevin
-
-> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
-> Cc: Felipe Balbi <balbi@ti.com>
-> Cc: Rajendra nayak <rnayak@ti.com>
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-> ---
->  drivers/tty/serial/omap-serial.c          |    2 --
->  include/linux/platform_data/serial-omap.h |    1 +
->  2 files changed, 1 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 5722eaf..4c2ba9f 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -43,8 +43,6 @@
->  #include <linux/pinctrl/consumer.h>
->  #include <linux/platform_data/serial-omap.h>
->  
-> -#define OMAP_MAX_HSUART_PORTS	6
-> -
->  #define UART_BUILD_REVISION(x, y)	(((x) << 8) | (y))
->  
->  #define OMAP_UART_REV_42 0x0402
-> diff --git a/include/linux/platform_data/serial-omap.h b/include/linux/platform_data/serial-omap.h
-> index ff9b0aa..92c48c2 100644
-> --- a/include/linux/platform_data/serial-omap.h
-> +++ b/include/linux/platform_data/serial-omap.h
-> @@ -29,6 +29,7 @@
->   * is used as console uart.
->   */
->  #define OMAP_SERIAL_NAME	"ttyO"
-> +#define OMAP_MAX_HSUART_PORTS   6
->  
->  struct omap_uart_port_info {
->  	bool			dma_enabled;	/* To specify DMA Mode */
+greg k-h
