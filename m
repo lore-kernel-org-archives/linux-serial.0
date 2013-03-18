@@ -1,111 +1,50 @@
 From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: [PATCH 2/2] arm: mach-omap2: prevent UART console idle on suspend while using "no_console_suspend"
-Date: Mon, 18 Mar 2013 16:27:13 +0530
-Message-ID: <1363604233-11295-1-git-send-email-sourav.poddar@ti.com>
+Subject: Re: [PATCH 0/2] omap serial fix.
+Date: Mon, 18 Mar 2013 18:51:29 +0530
+Message-ID: <514714D9.1040702@ti.com>
+References: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Sourav Poddar <sourav.poddar@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:45951 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750899Ab3CRNVv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Mar 2013 09:21:51 -0400
+In-Reply-To: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-With dt boot on omap5, uart wakeup after suspend is non functional while using
-"no_console_suspend" in the bootargs. With "no_console_suspend" used, od->flags
-should be ORed with "OMAP_DEVICE_NO_IDLE_ON_SUSPEND", thereby not allowing the console
-to idle in the suspend path. For non-dt case, this was taken care by platform data.
+Hi,
+On Monday 18 March 2013 04:24 PM, Sourav Poddar wrote:
+> The first patch is a rearrangement of a macro "OMAP_MAX_HSUART_PORTS"
+> to a header file so that it can be used in other file.
+> The second patch fixes the wakeup from uart issue while using "no_console_suspend" in the
+> bootargs.
+>
+> These patches are developed on 3.8 custom kernel containing omap5 supend/resume support.
+>
+Adding a bit more information,
+These patches are not omap5 specific and required for omap4 also.
+For OMAP5 testing purpose, I used 3.8 based internal tree.
 
-Tested on omap5430evm, omap4430sdp.
+First patch gets applied cleanly on 3.9-rc3.
+Resending the second patch rebased on 3.9-rc3, as there is a small
+merge conflict.
+> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+> Cc: Felipe Balbi<balbi@ti.com>
+> Cc: Rajendra nayak<rnayak@ti.com>
+>
+> Sourav Poddar (2):
+>    driver: serial-omap: move max uart count into generic header file.
+>    arm: mach-omap2: prevent UART console idle on suspend while using
+>      "no_console_suspend"
+>
+>   arch/arm/mach-omap2/omap_device.c         |   36 ++++++++++++++++++++++++++++-
+>   drivers/tty/serial/omap-serial.c          |    2 -
+>   include/linux/platform_data/serial-omap.h |    1 +
+>   3 files changed, 36 insertions(+), 3 deletions(-)
+>
 
-Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
-Cc: Felipe Balbi <balbi@ti.com>
-Cc: Rajendra nayak <rnayak@ti.com>
-Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
----
- arch/arm/mach-omap2/omap_device.c |   35 ++++++++++++++++++++++++++++++++++-
- 1 files changed, 34 insertions(+), 1 deletions(-)
-
-diff --git a/arch/arm/mach-omap2/omap_device.c b/arch/arm/mach-omap2/omap_device.c
-index e065daa..ed3404c 100644
---- a/arch/arm/mach-omap2/omap_device.c
-+++ b/arch/arm/mach-omap2/omap_device.c
-@@ -88,6 +88,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/of.h>
- #include <linux/notifier.h>
-+#include <linux/platform_data/serial-omap.h>
- 
- #include "omap_device.h"
- #include "omap_hwmod.h"
-@@ -96,6 +97,11 @@
- #define USE_WAKEUP_LAT			0
- #define IGNORE_WAKEUP_LAT		1
- 
-+#define MAX_UART_HWMOD_NAME_LEN         16
-+
-+static u8 no_console_suspend;
-+static u8 console_uart_num;
-+
- static int omap_early_device_register(struct platform_device *pdev);
- 
- static struct omap_device_pm_latency omap_default_latency[] = {
-@@ -307,6 +313,12 @@ static void _add_hwmod_clocks_clkdev(struct omap_device *od,
- 		_add_clkdev(od, oh->opt_clks[i].role, oh->opt_clks[i].clk);
- }
- 
-+static char *cmdline_find_option(char *str)
-+{
-+	extern char *saved_command_line;
-+
-+	return strstr(saved_command_line, str);
-+}
- 
- /**
-  * omap_device_build_from_dt - build an omap_device with multiple hwmods
-@@ -331,6 +343,7 @@ static int omap_device_build_from_dt(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 	const char *oh_name;
- 	int oh_cnt, i, ret = 0;
-+	static u8 console_uart_id;
- 
- 	oh_cnt = of_property_count_strings(node, "ti,hwmods");
- 	if (!oh_cnt || IS_ERR_VALUE(oh_cnt)) {
-@@ -372,7 +385,13 @@ static int omap_device_build_from_dt(struct platform_device *pdev)
- 			r->name = dev_name(&pdev->dev);
- 	}
- 
--	if (of_get_property(node, "ti,no_idle_on_suspend", NULL))
-+	if (no_console_suspend && !strncmp(oh->name, "uart", 4)) {
-+		if (console_uart_num == console_uart_id)
-+			omap_device_disable_idle_on_suspend(pdev);
-+		else
-+			console_uart_id++;
-+	}
-+	else if (of_get_property(node, "ti,no_idle_on_suspend", NULL))
- 		omap_device_disable_idle_on_suspend(pdev);
- 
- 	pdev->dev.pm_domain = &omap_device_pm_domain;
-@@ -1256,7 +1275,21 @@ static struct notifier_block platform_nb = {
- 
- static int __init omap_device_init(void)
- {
-+	int i;
-+	char uart_name[MAX_UART_HWMOD_NAME_LEN];
-+
- 	bus_register_notifier(&platform_bus_type, &platform_nb);
-+
-+	if (cmdline_find_option("no_console_suspend")) {
-+		no_console_suspend = true;
-+		for (i = 0; i < OMAP_MAX_HSUART_PORTS; i++) {
-+			snprintf(uart_name, MAX_UART_HWMOD_NAME_LEN,
-+				"%s%d", OMAP_SERIAL_NAME, i);
-+			if (cmdline_find_option(uart_name))
-+				console_uart_num = i;
-+		}
-+	}
-+
- 	return 0;
- }
- core_initcall(omap_device_init);
--- 
-1.7.1
