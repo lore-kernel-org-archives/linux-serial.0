@@ -1,238 +1,39 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 4/7] n_tty: Encapsulate minimum_to_wake within N_TTY
-Date: Tue, 19 Mar 2013 10:26:55 -0400
-Message-ID: <1363703218-32333-1-git-send-email-peter@hurleysoftware.com>
-References: <20130319141017.GB24900@kroah.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130319141017.GB24900@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+From: "jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Plug and play for a tty line disciple networking device
+Date: Tue, 19 Mar 2013 11:30:05 -0400
+Message-ID: <CAKON4OxNV85-J8C-hodpq9pY5tRCT+7aYa=m4T3Vk04XSGhOrA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Ott <alan-yzvJWuRpmD1zbRFIqnYvSA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-minimum_to_wake is unique to N_TTY processing, and belongs in
-per-ldisc data.
+How can you achieve plug and play for a ft2232 based USB serial device
+implementing 802.15.4 networking?
 
-Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
-when signal-driven I/O is enabled or disabled. When enabled for N_TTY
-(by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
-for any readable input. When disabled, blocking reader/polls are not
-woken until the read buffer is full.
+The device has a 802.15.4 SOC with a UART attached to a ft2232. With
+firmware loaded the only thing it can do is talk the 802.15.4 tty line
+discipline, it is not a general purpose serial port.
 
-Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
-the minimum_to_wake setting.
+Right now the device works by plugging it in and it appears as a
+generic USB serial device like ttyUSB0. You then run a user space app
+which sets the line discipline, holds the port open and attaches it to
+the 6lowpan implementation in the networking code. But doing that is
+inconvenient and users needs to be trained to do it. Much simpler if
+we could just plug the device in and it worked.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c       | 39 +++++++++++++++++++++++++++------------
- drivers/tty/tty_io.c      | 17 +++++++++--------
- include/linux/tty.h       |  1 -
- include/linux/tty_ldisc.h |  6 ++++++
- 4 files changed, 42 insertions(+), 21 deletions(-)
+We can add a EEPROM to the ft2232 to give it a unique USB ID.  Is it
+possible to make a kernel driver that see this ID, sets the line
+discipline and wires the serial port directly into the networking
+code? There is already a driver in the 6lowpan code that turns the
+line discipline into a net device. In this case there is no need for
+the ttyUSB0 device to appear in user space.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 61797c4..3fd657b 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -89,6 +89,7 @@ struct n_tty_data {
- 	int read_head;
- 	int read_tail;
- 	int read_cnt;
-+	int minimum_to_wake;
- 
- 	unsigned char *echo_buf;
- 	unsigned int echo_pos;
-@@ -1471,7 +1472,7 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 
- 	n_tty_set_room(tty);
- 
--	if ((!ldata->icanon && (ldata->read_cnt >= tty->minimum_to_wake)) ||
-+	if ((!ldata->icanon && (ldata->read_cnt >= ldata->minimum_to_wake)) ||
- 		L_EXTPROC(tty)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
- 		if (waitqueue_active(&tty->read_wait))
-@@ -1649,7 +1650,7 @@ static int n_tty_open(struct tty_struct *tty)
- 	tty->disc_data = ldata;
- 	reset_buffer_flags(tty->disc_data);
- 	ldata->column = 0;
--	tty->minimum_to_wake = 1;
-+	ldata->minimum_to_wake = 1;
- 	tty->closing = 0;
- 	/* indicate buffer work may resume */
- 	clear_bit(TTY_LDISC_HALTED, &tty->flags);
-@@ -1817,17 +1818,17 @@ do_it_again:
- 		minimum = MIN_CHAR(tty);
- 		if (minimum) {
- 			if (time)
--				tty->minimum_to_wake = 1;
-+				ldata->minimum_to_wake = 1;
- 			else if (!waitqueue_active(&tty->read_wait) ||
--				 (tty->minimum_to_wake > minimum))
--				tty->minimum_to_wake = minimum;
-+				 (ldata->minimum_to_wake > minimum))
-+				ldata->minimum_to_wake = minimum;
- 		} else {
- 			timeout = 0;
- 			if (time) {
- 				timeout = time;
- 				time = 0;
- 			}
--			tty->minimum_to_wake = minimum = 1;
-+			ldata->minimum_to_wake = minimum = 1;
- 		}
- 	}
- 
-@@ -1867,9 +1868,9 @@ do_it_again:
- 		   TASK_RUNNING. */
- 		set_current_state(TASK_INTERRUPTIBLE);
- 
--		if (((minimum - (b - buf)) < tty->minimum_to_wake) &&
-+		if (((minimum - (b - buf)) < ldata->minimum_to_wake) &&
- 		    ((minimum - (b - buf)) >= 1))
--			tty->minimum_to_wake = (minimum - (b - buf));
-+			ldata->minimum_to_wake = (minimum - (b - buf));
- 
- 		if (!input_available_p(tty, 0)) {
- 			if (test_bit(TTY_OTHER_CLOSED, &tty->flags)) {
-@@ -1979,7 +1980,7 @@ do_it_again:
- 	remove_wait_queue(&tty->read_wait, &wait);
- 
- 	if (!waitqueue_active(&tty->read_wait))
--		tty->minimum_to_wake = minimum;
-+		ldata->minimum_to_wake = minimum;
- 
- 	__set_current_state(TASK_RUNNING);
- 	size = b - buf;
-@@ -2111,6 +2112,7 @@ break_out:
- static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
- 							poll_table *wait)
- {
-+	struct n_tty_data *ldata = tty->disc_data;
- 	unsigned int mask = 0;
- 
- 	poll_wait(file, &tty->read_wait, wait);
-@@ -2125,9 +2127,9 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
- 		mask |= POLLHUP;
- 	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
- 		if (MIN_CHAR(tty) && !TIME_CHAR(tty))
--			tty->minimum_to_wake = MIN_CHAR(tty);
-+			ldata->minimum_to_wake = MIN_CHAR(tty);
- 		else
--			tty->minimum_to_wake = 1;
-+			ldata->minimum_to_wake = 1;
- 	}
- 	if (tty->ops->write && !tty_is_writelocked(tty) &&
- 			tty_chars_in_buffer(tty) < WAKEUP_CHARS &&
-@@ -2175,6 +2177,18 @@ static int n_tty_ioctl(struct tty_struct *tty, struct file *file,
- 	}
- }
- 
-+static void n_tty_fasync(struct tty_struct *tty, int on)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+
-+	if (!waitqueue_active(&tty->read_wait)) {
-+		if (on)
-+			ldata->minimum_to_wake = 1;
-+		else if (!tty->fasync)
-+			ldata->minimum_to_wake = N_TTY_BUF_SIZE;
-+	}
-+}
-+
- struct tty_ldisc_ops tty_ldisc_N_TTY = {
- 	.magic           = TTY_LDISC_MAGIC,
- 	.name            = "n_tty",
-@@ -2188,7 +2202,8 @@ struct tty_ldisc_ops tty_ldisc_N_TTY = {
- 	.set_termios     = n_tty_set_termios,
- 	.poll            = n_tty_poll,
- 	.receive_buf     = n_tty_receive_buf,
--	.write_wakeup    = n_tty_write_wakeup
-+	.write_wakeup    = n_tty_write_wakeup,
-+	.fasync		 = n_tty_fasync,
- };
- 
- /**
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index adc1d01..525c915 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2077,6 +2077,7 @@ static unsigned int tty_poll(struct file *filp, poll_table *wait)
- static int __tty_fasync(int fd, struct file *filp, int on)
- {
- 	struct tty_struct *tty = file_tty(filp);
-+	struct tty_ldisc *ldisc;
- 	unsigned long flags;
- 	int retval = 0;
- 
-@@ -2087,11 +2088,17 @@ static int __tty_fasync(int fd, struct file *filp, int on)
- 	if (retval <= 0)
- 		goto out;
- 
-+	ldisc = tty_ldisc_ref(tty);
-+	if (ldisc) {
-+		if (ldisc->ops->fasync)
-+			ldisc->ops->fasync(tty, on);
-+		tty_ldisc_deref(ldisc);
-+	}
-+
- 	if (on) {
- 		enum pid_type type;
- 		struct pid *pid;
--		if (!waitqueue_active(&tty->read_wait))
--			tty->minimum_to_wake = 1;
-+
- 		spin_lock_irqsave(&tty->ctrl_lock, flags);
- 		if (tty->pgrp) {
- 			pid = tty->pgrp;
-@@ -2104,13 +2111,7 @@ static int __tty_fasync(int fd, struct file *filp, int on)
- 		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- 		retval = __f_setown(filp, pid, type, 0);
- 		put_pid(pid);
--		if (retval)
--			goto out;
--	} else {
--		if (!tty->fasync && !waitqueue_active(&tty->read_wait))
--			tty->minimum_to_wake = N_TTY_BUF_SIZE;
- 	}
--	retval = 0;
- out:
- 	return retval;
- }
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 2c109a3..39f0317 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -272,7 +272,6 @@ struct tty_struct {
- #define N_TTY_BUF_SIZE 4096
- 
- 	unsigned char closing:1;
--	unsigned short minimum_to_wake;
- 	unsigned char *write_buf;
- 	int write_cnt;
- 	/* If the tty has a pending do_SAK, queue it here - akpm */
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index 1ef449e..44584d9 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -100,6 +100,11 @@
-  *	seek to perform this action quickly but should wait until
-  *	any pending driver I/O is completed.
-  *
-+ * void (*fasync)(struct tty_struct *, int on)
-+ *
-+ *	Notify line discipline when signal-driven I/O is enabled or
-+ *	disabled.
-+ *
-  * void (*dcd_change)(struct tty_struct *tty, unsigned int status)
-  *
-  *	Tells the discipline that the DCD pin has changed its status.
-@@ -190,6 +195,7 @@ struct tty_ldisc_ops {
- 			       char *fp, int count);
- 	void	(*write_wakeup)(struct tty_struct *);
- 	void	(*dcd_change)(struct tty_struct *, unsigned int);
-+	void	(*fasync)(struct tty_struct *tty, int on);
- 
- 	struct  module *owner;
- 
--- 
-1.8.1.2
+--
+Jon Smirl
+jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
