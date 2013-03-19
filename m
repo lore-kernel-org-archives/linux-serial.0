@@ -1,45 +1,74 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 15/18] n_tty: Reset lnext if canonical mode changes
-Date: Tue, 19 Mar 2013 16:21:50 -0400
-Message-ID: <1363724513-15604-16-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 18/18] n_tty: Separate buffer indices to prevent cache-line sharing
+Date: Tue, 19 Mar 2013 16:21:53 -0400
+Message-ID: <1363724513-15604-19-git-send-email-peter@hurleysoftware.com>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:40512 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757145Ab3CSUpN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 16:45:13 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Min Zhang <mzhang@mvista.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-lnext escapes the next input character as a literal, and must
-be reset when canonical mode changes (to avoid misinterpreting
-a special character as a literal if canonical mode is changed
-back again).
+If the read buffer indices are in the same cache-line, cpus will
+contended over the cache-line (so called 'false sharing').
 
-lnext is specifically not reset on a buffer flush so as to avoid
-misinterpreting the next input character as a special character.
+Separate the producer-published fields from the consumer-published
+fields; document the locks relevant to each field.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/n_tty.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index b1b934c..9d7badc 100644
+index adccff8..9b828f0 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1577,6 +1577,7 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- 		bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
- 		ldata->canon_head = ldata->read_tail;
- 		ldata->erasing = 0;
-+		ldata->lnext = 0;
- 	}
+@@ -86,28 +86,38 @@
+ #define NO_ROOM		0
  
- 	if (canon_change && !L_ICANON(tty) && read_cnt(ldata))
+ struct n_tty_data {
+-	unsigned int column;
++	/* producer-published */
++	size_t read_head;
++	size_t canon_head;
++	DECLARE_BITMAP(process_char_map, 256);
++
++	/* private to n_tty_receive_overrun (single-threaded) */
+ 	unsigned long overrun_time;
+ 	int num_overrun;
+ 
++	/* atomic */
+ 	unsigned long flags;
+ 
++	/* must hold exclusive termios_rwsem to reset these */
+ 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+ 	unsigned char echo_overrun:1;
+ 
+-	DECLARE_BITMAP(process_char_map, 256);
++	/* shared by producer and consumer */
++	char *read_buf;
+ 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
+ 
+-	char *read_buf;
+-	size_t read_head;
+-	size_t read_tail;
+ 	int minimum_to_wake;
+ 
++	/* consumer-published */
++	size_t read_tail;
++
++	/* protected by echo_lock */
+ 	unsigned char *echo_buf;
+ 	unsigned int echo_pos;
+ 	unsigned int echo_cnt;
+ 
+-	size_t canon_head;
++	/* protected by output lock */
++	unsigned int column;
+ 	unsigned int canon_column;
+ 
+ 	struct mutex atomic_read_lock;
 -- 
 1.8.1.2
-
