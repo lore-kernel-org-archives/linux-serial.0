@@ -1,688 +1,585 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 3/7] tty: Replace ldisc locking with ldisc_sem
-Date: Tue, 19 Mar 2013 15:26:05 -0400
-Message-ID: <1363721169-22445-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 1/7] tty: Add timed, writer-prioritized rw semaphore
+Date: Tue, 19 Mar 2013 15:26:03 -0400
+Message-ID: <1363721169-22445-2-git-send-email-peter@hurleysoftware.com>
 References: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
  <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:33209 "EHLO
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:33278 "EHLO
 	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932361Ab3CSUDg (ORCPT
+	with ESMTP id S932315Ab3CSUE2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 16:03:36 -0400
+	Tue, 19 Mar 2013 16:04:28 -0400
 In-Reply-To: <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, David Howells <dhowells@redhat.com>
 Cc: Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Michel Lespinasse <walken@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Line discipline locking was performed with a combination of
-a mutex, a status bit, a count, and a waitqueue -- basically,
-a rw semaphore.
+The semantics of a rw semaphore are almost ideally suited
+for tty line discipline lifetime management;  multiple active
+threads obtain "references" (read locks) while performing i/o
+to prevent the loss or change of the current line discipline
+(write lock).
 
-Replace the existing combination with an ld_semaphore.
+Unfortunately, the existing rw_semaphore is ill-suited in other
+ways;
+1) TIOCSETD ioctl (change line discipline) expects to return an
+   error if the line discipline cannot be exclusively locked within
+   5 secs. Lock wait timeouts are not supported by rwsem.
+2) A tty hangup is expected to halt and scrap pending i/o, so
+   exclusive locking must be prioritized.
+   Writer priority is not supported by rwsem.
 
-Fixes:
- 1) the 'reference acquire after ldisc locked' bug
- 2) the over-complicated halt mechanism
- 3) lock order wrt. tty_lock()
- 4) dropping locks while changing ldisc
- 5) previously unidentified deadlock while locking ldisc from
-    both linked ttys concurrently
- 6) previously unidentified recursive deadlocks
+Add ld_semaphore which implements these requirements in a
+semantically similar way to rw_semaphore.
 
-Adds much-needed lockdep diagnostics.
+Writer priority is handled by separate wait lists for readers and
+writers. Pending write waits are priortized before existing read
+waits and prevent further read locks.
 
+Wait timeouts are trivially added, but obviously change the lock
+semantics as lock attempts can fail (but only due to timeout).
+
+This implementation incorporates the write-lock stealing work of
+Michel Lespinasse <walken@google.com>.
+
+Cc: Michel Lespinasse <walken@google.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c  |   2 +-
- drivers/tty/tty_io.c      |   7 +-
- drivers/tty/tty_ldisc.c   | 324 ++++++----------------------------------------
- include/linux/tty.h       |   4 +-
- include/linux/tty_ldisc.h |   3 +-
- 5 files changed, 48 insertions(+), 292 deletions(-)
+ drivers/tty/Makefile      |   2 +-
+ drivers/tty/tty_ldsem.c   | 453 ++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/tty_ldisc.h |  46 +++++
+ 3 files changed, 500 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/tty/tty_ldsem.c
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 578aa75..8e8d730 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -429,7 +429,7 @@ static void flush_to_ldisc(struct work_struct *work)
- 		return;
- 
- 	disc = tty_ldisc_ref(tty);
--	if (disc == NULL)	/*  !TTY_LDISC */
-+	if (disc == NULL)
- 		return;
- 
- 	spin_lock_irqsave(&buf->lock, flags);
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 2f77af4..06f0e25 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1326,8 +1326,7 @@ static int tty_reopen(struct tty_struct *tty)
- 	struct tty_driver *driver = tty->driver;
- 
- 	if (test_bit(TTY_CLOSING, &tty->flags) ||
--			test_bit(TTY_HUPPING, &tty->flags) ||
--			test_bit(TTY_LDISC_CHANGING, &tty->flags))
-+			test_bit(TTY_HUPPING, &tty->flags))
- 		return -EIO;
- 
- 	if (driver->type == TTY_DRIVER_TYPE_PTY &&
-@@ -1343,7 +1342,7 @@ static int tty_reopen(struct tty_struct *tty)
- 	}
- 	tty->count++;
- 
--	WARN_ON(!test_bit(TTY_LDISC, &tty->flags));
-+	WARN_ON(!tty->ldisc);
- 
- 	return 0;
- }
-@@ -2952,7 +2951,7 @@ void initialize_tty_struct(struct tty_struct *tty,
- 	tty->pgrp = NULL;
- 	mutex_init(&tty->legacy_mutex);
- 	mutex_init(&tty->termios_mutex);
--	mutex_init(&tty->ldisc_mutex);
-+	init_ldsem(&tty->ldisc_sem);
- 	init_waitqueue_head(&tty->write_wait);
- 	init_waitqueue_head(&tty->read_wait);
- 	INIT_WORK(&tty->hangup_work, do_tty_hangup);
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index ae0287f..a150f95 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -45,7 +45,6 @@ enum {
-  */
- 
- static DEFINE_RAW_SPINLOCK(tty_ldisc_lock);
--static DECLARE_WAIT_QUEUE_HEAD(tty_ldisc_wait);
- /* Line disc dispatch table */
- static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
- 
-@@ -153,7 +152,7 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
-  *		takes tty_ldisc_lock to guard against ldisc races
-  */
- 
--static struct tty_ldisc *tty_ldisc_get(int disc)
-+static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
- {
- 	struct tty_ldisc *ld;
- 	struct tty_ldisc_ops *ldops;
-@@ -180,8 +179,7 @@ static struct tty_ldisc *tty_ldisc_get(int disc)
- 	}
- 
- 	ld->ops = ldops;
--	atomic_set(&ld->users, 1);
--	init_waitqueue_head(&ld->wq_idle);
-+	ld->tty = tty;
- 
- 	return ld;
- }
-@@ -193,20 +191,11 @@ static struct tty_ldisc *tty_ldisc_get(int disc)
-  */
- static inline void tty_ldisc_put(struct tty_ldisc *ld)
- {
--	unsigned long flags;
--
- 	if (WARN_ON_ONCE(!ld))
- 		return;
- 
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
--
--	/* unreleased reader reference(s) will cause this WARN */
--	WARN_ON(!atomic_dec_and_test(&ld->users));
--
--	ld->ops->refcount--;
--	module_put(ld->ops->owner);
-+	put_ldops(ld->ops);
- 	kfree(ld);
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
- }
- 
- static void *tty_ldiscs_seq_start(struct seq_file *m, loff_t *pos)
-@@ -258,34 +247,6 @@ const struct file_operations tty_ldiscs_proc_fops = {
- };
- 
- /**
-- *	tty_ldisc_try		-	internal helper
-- *	@tty: the tty
-- *
-- *	Make a single attempt to grab and bump the refcount on
-- *	the tty ldisc. Return 0 on failure or 1 on success. This is
-- *	used to implement both the waiting and non waiting versions
-- *	of tty_ldisc_ref
-- *
-- *	Locking: takes tty_ldisc_lock
-- */
--
--static struct tty_ldisc *tty_ldisc_try(struct tty_struct *tty)
--{
--	unsigned long flags;
--	struct tty_ldisc *ld;
--
--	/* FIXME: this allows reference acquire after TTY_LDISC is cleared */
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
--	ld = NULL;
--	if (test_bit(TTY_LDISC, &tty->flags) && tty->ldisc) {
--		ld = tty->ldisc;
--		atomic_inc(&ld->users);
--	}
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
--	return ld;
--}
--
--/**
-  *	tty_ldisc_ref_wait	-	wait for the tty ldisc
-  *	@tty: tty device
-  *
-@@ -298,16 +259,15 @@ static struct tty_ldisc *tty_ldisc_try(struct tty_struct *tty)
-  *	against a discipline change, such as an existing ldisc reference
-  *	(which we check for)
-  *
-- *	Locking: call functions take tty_ldisc_lock
-+ *	Note: only callable from a file_operations routine (which
-+ *	guarantees tty->ldisc !- NULL when the lock is acquired).
-  */
- 
- struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *tty)
- {
--	struct tty_ldisc *ld;
--
--	/* wait_event is a macro */
--	wait_event(tty_ldisc_wait, (ld = tty_ldisc_try(tty)) != NULL);
--	return ld;
-+	ldsem_down_read(&tty->ldisc_sem, MAX_SCHEDULE_TIMEOUT);
-+	WARN_ON(!tty->ldisc);
-+	return tty->ldisc;
- }
- EXPORT_SYMBOL_GPL(tty_ldisc_ref_wait);
- 
-@@ -318,13 +278,16 @@ EXPORT_SYMBOL_GPL(tty_ldisc_ref_wait);
-  *	Dereference the line discipline for the terminal and take a
-  *	reference to it. If the line discipline is in flux then
-  *	return NULL. Can be called from IRQ and timer functions.
-- *
-- *	Locking: called functions take tty_ldisc_lock
-  */
- 
- struct tty_ldisc *tty_ldisc_ref(struct tty_struct *tty)
- {
--	return tty_ldisc_try(tty);
-+	if (ldsem_down_read_trylock(&tty->ldisc_sem)) {
-+		if (!tty->ldisc)
-+			ldsem_up_read(&tty->ldisc_sem);
-+		return tty->ldisc;
+diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
+index 6b78399..58ad1c0 100644
+--- a/drivers/tty/Makefile
++++ b/drivers/tty/Makefile
+@@ -1,5 +1,5 @@
+ obj-$(CONFIG_TTY)		+= tty_io.o n_tty.o tty_ioctl.o tty_ldisc.o \
+-				   tty_buffer.o tty_port.o tty_mutex.o
++				   tty_buffer.o tty_port.o tty_mutex.o tty_ldsem.o
+ obj-$(CONFIG_LEGACY_PTYS)	+= pty.o
+ obj-$(CONFIG_UNIX98_PTYS)	+= pty.o
+ obj-$(CONFIG_AUDIT)		+= tty_audit.o
+diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
+new file mode 100644
+index 0000000..22fad8a
+--- /dev/null
++++ b/drivers/tty/tty_ldsem.c
+@@ -0,0 +1,453 @@
++/*
++ * Ldisc rw semaphore
++ *
++ * The ldisc semaphore is semantically a rw_semaphore but which enforces
++ * an alternate policy, namely:
++ *   1) Supports lock wait timeouts
++ *   2) Write waiter has priority
++ *   3) Downgrading is not supported
++ *
++ * Implementation notes:
++ *   1) Upper half of semaphore count is a wait count (differs from rwsem
++ *	in that rwsem normalizes the upper half to the wait bias)
++ *   2) Lacks overflow checking
++ *
++ * The generic counting was copied and modified from include/asm-generic/rwsem.h
++ * by Paul Mackerras <paulus@samba.org>.
++ *
++ * The scheduling policy was copied and modified from lib/rwsem.c
++ * Written by David Howells (dhowells@redhat.com).
++ *
++ * This implementation incorporates the write lock stealing work of
++ * Michel Lespinasse <walken@google.com>.
++ *
++ * Copyright (C) 2013 Peter Hurley <peter@hurleysoftware.com>
++ *
++ * This file may be redistributed under the terms of the GNU General Public
++ * License v2.
++ */
++
++#include <linux/list.h>
++#include <linux/spinlock.h>
++#include <linux/atomic.h>
++#include <linux/tty.h>
++#include <linux/sched.h>
++
++
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++# define __acq(l, s, t, r, c, n, i)		\
++				lock_acquire(&(l)->dep_map, s, t, r, c, n, i)
++# define __rel(l, n, i)				\
++				lock_release(&(l)->dep_map, n, i)
++# ifdef CONFIG_PROVE_LOCKING
++#  define lockdep_acquire(l, s, t, i)		__acq(l, s, t, 0, 2, NULL, i)
++#  define lockdep_acquire_nest(l, s, t, n, i)	__acq(l, s, t, 0, 2, n, i)
++#  define lockdep_acquire_read(l, s, t, i)	__acq(l, s, t, 1, 2, NULL, i)
++#  define lockdep_release(l, n, i)		__rel(l, n, i)
++# else
++#  define lockdep_acquire(l, s, t, i)		__acq(l, s, t, 0, 1, NULL, i)
++#  define lockdep_acquire_nest(l, s, t, n, i)	__acq(l, s, t, 0, 1, n, i)
++#  define lockdep_acquire_read(l, s, t, i)	__acq(l, s, t, 1, 1, NULL, i)
++#  define lockdep_release(l, n, i)		__rel(l, n, i)
++# endif
++#else
++# define lockdep_acquire(l, s, t, i)		do { } while (0)
++# define lockdep_acquire_nest(l, s, t, n, i)	do { } while (0)
++# define lockdep_acquire_read(l, s, t, i)	do { } while (0)
++# define lockdep_release(l, n, i)		do { } while (0)
++#endif
++
++#ifdef CONFIG_LOCK_STAT
++# define lock_stat(_lock, stat)		lock_##stat(&(_lock)->dep_map, _RET_IP_)
++#else
++# define lock_stat(_lock, stat)		do { } while (0)
++#endif
++
++
++#if BITS_PER_LONG == 64
++# define LDSEM_ACTIVE_MASK	0xffffffffL
++#else
++# define LDSEM_ACTIVE_MASK	0x0000ffffL
++#endif
++
++#define LDSEM_UNLOCKED		0L
++#define LDSEM_ACTIVE_BIAS	1L
++#define LDSEM_WAIT_BIAS		(-LDSEM_ACTIVE_MASK-1)
++#define LDSEM_READ_BIAS		LDSEM_ACTIVE_BIAS
++#define LDSEM_WRITE_BIAS	(LDSEM_WAIT_BIAS + LDSEM_ACTIVE_BIAS)
++
++struct ldsem_waiter {
++	struct list_head list;
++	struct task_struct *task;
++};
++
++static inline long ldsem_atomic_update(long delta, struct ld_semaphore *sem)
++{
++	return atomic_long_add_return(delta, (atomic_long_t *)&sem->count);
++}
++
++static inline int ldsem_cmpxchg(long *old, long new, struct ld_semaphore *sem)
++{
++	long tmp = *old;
++	*old = atomic_long_cmpxchg(&sem->count, *old, new);
++	return *old == tmp;
++}
++
++/*
++ * Initialize an ldsem:
++ */
++void __init_ldsem(struct ld_semaphore *sem, const char *name,
++		  struct lock_class_key *key)
++{
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++	/*
++	 * Make sure we are not reinitializing a held semaphore:
++	 */
++	debug_check_no_locks_freed((void *)sem, sizeof(*sem));
++	lockdep_init_map(&sem->dep_map, name, key, 0);
++#endif
++	sem->count = LDSEM_UNLOCKED;
++	sem->wait_readers = 0;
++	raw_spin_lock_init(&sem->wait_lock);
++	INIT_LIST_HEAD(&sem->read_wait);
++	INIT_LIST_HEAD(&sem->write_wait);
++}
++
++static void __ldsem_wake_readers(struct ld_semaphore *sem)
++{
++	struct ldsem_waiter *waiter, *next;
++	struct task_struct *tsk;
++	long adjust, count;
++
++	/* Try to grant read locks to all readers on the read wait list.
++	 * Note the 'active part' of the count is incremented by
++	 * the number of readers before waking any processes up.
++	 */
++	adjust = sem->wait_readers * (LDSEM_ACTIVE_BIAS - LDSEM_WAIT_BIAS);
++	count = ldsem_atomic_update(adjust, sem);
++	do {
++		if (count > 0)
++			break;
++		if (ldsem_cmpxchg(&count, count - adjust, sem))
++			return;
++	} while (1);
++
++	list_for_each_entry_safe(waiter, next, &sem->read_wait, list) {
++		tsk = waiter->task;
++		smp_mb();
++		waiter->task = NULL;
++		wake_up_process(tsk);
++		put_task_struct(tsk);
 +	}
-+	return NULL;
- }
- EXPORT_SYMBOL_GPL(tty_ldisc_ref);
- 
-@@ -334,27 +297,11 @@ EXPORT_SYMBOL_GPL(tty_ldisc_ref);
-  *
-  *	Undoes the effect of tty_ldisc_ref or tty_ldisc_ref_wait. May
-  *	be called in IRQ context.
-- *
-- *	Locking: takes tty_ldisc_lock
-  */
- 
- void tty_ldisc_deref(struct tty_ldisc *ld)
- {
--	unsigned long flags;
--
--	if (WARN_ON_ONCE(!ld))
--		return;
--
--	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
--	/*
--	 * WARNs if one-too-many reader references were released
--	 * - the last reference must be released with tty_ldisc_put
--	 */
--	WARN_ON(atomic_dec_and_test(&ld->users));
--	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
--
--	if (waitqueue_active(&ld->wq_idle))
--		wake_up(&ld->wq_idle);
-+	ldsem_up_read(&ld->tty->ldisc_sem);
- }
- EXPORT_SYMBOL_GPL(tty_ldisc_deref);
- 
-@@ -439,26 +386,6 @@ static void __lockfunc tty_ldisc_enable_pair(struct tty_struct *tty,
- 
- 
- /**
-- *	tty_ldisc_enable	-	allow ldisc use
-- *	@tty: terminal to activate ldisc on
-- *
-- *	Set the TTY_LDISC flag when the line discipline can be called
-- *	again. Do necessary wakeups for existing sleepers. Clear the LDISC
-- *	changing flag to indicate any ldisc change is now over.
-- *
-- *	Note: nobody should set the TTY_LDISC bit except via this function.
-- *	Clearing directly is allowed.
-- */
--
--static void tty_ldisc_enable(struct tty_struct *tty)
--{
--	clear_bit(TTY_LDISC_HALTED, &tty->flags);
--	set_bit(TTY_LDISC, &tty->flags);
--	clear_bit(TTY_LDISC_CHANGING, &tty->flags);
--	wake_up(&tty_ldisc_wait);
--}
--
--/**
-  *	tty_ldisc_flush	-	flush line discipline queue
-  *	@tty: tty
-  *
-@@ -555,14 +482,14 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
- 	int r;
- 
- 	/* There is an outstanding reference here so this is safe */
--	old = tty_ldisc_get(old->ops->num);
-+	old = tty_ldisc_get(tty, old->ops->num);
- 	WARN_ON(IS_ERR(old));
- 	tty->ldisc = old;
- 	tty_set_termios_ldisc(tty, old->ops->num);
- 	if (tty_ldisc_open(tty, old) < 0) {
- 		tty_ldisc_put(old);
- 		/* This driver is always present */
--		new_ldisc = tty_ldisc_get(N_TTY);
-+		new_ldisc = tty_ldisc_get(tty, N_TTY);
- 		if (IS_ERR(new_ldisc))
- 			panic("n_tty: get");
- 		tty->ldisc = new_ldisc;
-@@ -576,101 +503,6 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
- }
- 
- /**
-- *	tty_ldisc_wait_idle	-	wait for the ldisc to become idle
-- *	@tty: tty to wait for
-- *	@timeout: for how long to wait at most
-- *
-- *	Wait for the line discipline to become idle. The discipline must
-- *	have been halted for this to guarantee it remains idle.
-- */
--static int tty_ldisc_wait_idle(struct tty_struct *tty, long timeout)
--{
--	long ret;
--	ret = wait_event_timeout(tty->ldisc->wq_idle,
--			atomic_read(&tty->ldisc->users) == 1, timeout);
--	return ret > 0 ? 0 : -EBUSY;
--}
--
--/**
-- *	tty_ldisc_halt		-	shut down the line discipline
-- *	@tty: tty device
-- *	@o_tty: paired pty device (can be NULL)
-- *	@timeout: # of jiffies to wait for ldisc refs to be released
-- *
-- *	Shut down the line discipline and work queue for this tty device and
-- *	its paired pty (if exists). Clearing the TTY_LDISC flag ensures
-- *	no further references can be obtained, while waiting for existing
-- *	references to be released ensures no more data is fed to the ldisc.
-- *
-- *	You need to do a 'flush_scheduled_work()' (outside the ldisc_mutex)
-- *	in order to make sure any currently executing ldisc work is also
-- *	flushed.
-- */
--
--static int tty_ldisc_halt(struct tty_struct *tty, struct tty_struct *o_tty,
--			  long timeout)
--{
--	int retval;
--
--	clear_bit(TTY_LDISC, &tty->flags);
--	if (o_tty)
--		clear_bit(TTY_LDISC, &o_tty->flags);
--
--	retval = tty_ldisc_wait_idle(tty, timeout);
--	if (!retval && o_tty)
--		retval = tty_ldisc_wait_idle(o_tty, timeout);
--	if (retval)
--		return retval;
--
--	set_bit(TTY_LDISC_HALTED, &tty->flags);
--	if (o_tty)
--		set_bit(TTY_LDISC_HALTED, &o_tty->flags);
--
--	return 0;
--}
--
--/**
-- *	tty_ldisc_hangup_halt - halt the line discipline for hangup
-- *	@tty: tty being hung up
-- *
-- *	Shut down the line discipline and work queue for the tty device
-- *	being hungup. Clear the TTY_LDISC flag to ensure no further
-- *	references can be obtained and wait for remaining references to be
-- *	released to ensure no more data is fed to this ldisc.
-- *	Caller must hold legacy and ->ldisc_mutex.
-- *
-- *	NB: tty_set_ldisc() is prevented from changing the ldisc concurrently
-- *	with this function by checking the TTY_HUPPING flag.
-- */
--static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
--{
--	char cur_n[TASK_COMM_LEN], tty_n[64];
--	long timeout = 3 * HZ;
--
--	clear_bit(TTY_LDISC, &tty->flags);
--
--	if (tty->ldisc) {	/* Not yet closed */
--		tty_unlock(tty);
--
--		while (tty_ldisc_wait_idle(tty, timeout) == -EBUSY) {
--			timeout = MAX_SCHEDULE_TIMEOUT;
--			printk_ratelimited(KERN_WARNING
--				"%s: waiting (%s) for %s took too long, but we keep waiting...\n",
--				__func__, get_task_comm(cur_n, current),
--				tty_name(tty, tty_n));
--		}
--
--		set_bit(TTY_LDISC_HALTED, &tty->flags);
--
--		/* must reacquire both locks and preserve lock order */
--		mutex_unlock(&tty->ldisc_mutex);
--		tty_lock(tty);
--		mutex_lock(&tty->ldisc_mutex);
--	}
--	return !!tty->ldisc;
--}
--
--/**
-  *	tty_set_ldisc		-	set line discipline
-  *	@tty: the terminal to set
-  *	@ldisc: the line discipline
-@@ -679,103 +511,45 @@ static bool tty_ldisc_hangup_halt(struct tty_struct *tty)
-  *	context. The ldisc change logic has to protect itself against any
-  *	overlapping ldisc change (including on the other end of pty pairs),
-  *	the close of one side of a tty/pty pair, and eventually hangup.
-- *
-- *	Locking: takes tty_ldisc_lock, termios_mutex
-  */
- 
- int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- {
- 	int retval;
- 	struct tty_ldisc *o_ldisc, *new_ldisc;
--	struct tty_struct *o_tty;
-+	struct tty_struct *o_tty = tty->link;
- 
--	new_ldisc = tty_ldisc_get(ldisc);
-+	new_ldisc = tty_ldisc_get(tty, ldisc);
- 	if (IS_ERR(new_ldisc))
- 		return PTR_ERR(new_ldisc);
- 
--	tty_lock(tty);
--	/*
--	 *	We need to look at the tty locking here for pty/tty pairs
--	 *	when both sides try to change in parallel.
--	 */
--
--	o_tty = tty->link;	/* o_tty is the pty side or NULL */
--
-+	retval = tty_ldisc_lock_pair_timeout(tty, o_tty, 5 * HZ);
-+	if (retval)
-+		return retval;
- 
- 	/*
- 	 *	Check the no-op case
- 	 */
- 
- 	if (tty->ldisc->ops->num == ldisc) {
--		tty_unlock(tty);
-+		tty_ldisc_enable_pair(tty, o_tty);
- 		tty_ldisc_put(new_ldisc);
- 		return 0;
- 	}
- 
--	mutex_lock(&tty->ldisc_mutex);
--
--	/*
--	 *	We could be midstream of another ldisc change which has
--	 *	dropped the lock during processing. If so we need to wait.
--	 */
--
--	while (test_bit(TTY_LDISC_CHANGING, &tty->flags)) {
--		mutex_unlock(&tty->ldisc_mutex);
--		tty_unlock(tty);
--		wait_event(tty_ldisc_wait,
--			test_bit(TTY_LDISC_CHANGING, &tty->flags) == 0);
--		tty_lock(tty);
--		mutex_lock(&tty->ldisc_mutex);
--	}
--
--	set_bit(TTY_LDISC_CHANGING, &tty->flags);
--
--	/*
--	 *	No more input please, we are switching. The new ldisc
--	 *	will update this value in the ldisc open function
--	 */
--
-+	/* FIXME: why 'shutoff' input if the ldisc is locked? */
- 	tty->receive_room = 0;
- 
- 	o_ldisc = tty->ldisc;
--
--	tty_unlock(tty);
--	/*
--	 *	Make sure we don't change while someone holds a
--	 *	reference to the line discipline. The TTY_LDISC bit
--	 *	prevents anyone taking a reference once it is clear.
--	 *	We need the lock to avoid racing reference takers.
--	 *
--	 *	We must clear the TTY_LDISC bit here to avoid a livelock
--	 *	with a userspace app continually trying to use the tty in
--	 *	parallel to the change and re-referencing the tty.
--	 */
--
--	retval = tty_ldisc_halt(tty, o_tty, 5 * HZ);
--
--	/*
--	 * Wait for hangup to complete, if pending.
--	 * We must drop the mutex here in case a hangup is also in process.
--	 */
--
--	mutex_unlock(&tty->ldisc_mutex);
--
--	flush_work(&tty->hangup_work);
--
- 	tty_lock(tty);
--	mutex_lock(&tty->ldisc_mutex);
- 
--	/* handle wait idle failure locked */
--	if (retval) {
--		tty_ldisc_put(new_ldisc);
--		goto enable;
--	}
-+	/* FIXME: for testing only */
-+	WARN_ON(test_bit(TTY_HUPPED, &tty->flags));
- 
- 	if (test_bit(TTY_HUPPING, &tty->flags)) {
- 		/* We were raced by the hangup method. It will have stomped
- 		   the ldisc data and closed the ldisc down */
--		clear_bit(TTY_LDISC_CHANGING, &tty->flags);
--		mutex_unlock(&tty->ldisc_mutex);
-+		tty_ldisc_enable_pair(tty, o_tty);
- 		tty_ldisc_put(new_ldisc);
- 		tty_unlock(tty);
- 		return -EIO;
-@@ -804,14 +578,10 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 
- 	tty_ldisc_put(o_ldisc);
- 
--enable:
- 	/*
- 	 *	Allow ldisc referencing to occur again
- 	 */
--
--	tty_ldisc_enable(tty);
--	if (o_tty)
--		tty_ldisc_enable(o_tty);
-+	tty_ldisc_enable_pair(tty, o_tty);
- 
- 	/* Restart the work queue in case no characters kick it off. Safe if
- 	   already running */
-@@ -819,7 +589,6 @@ enable:
- 	if (o_tty)
- 		schedule_work(&o_tty->port->buf.work);
- 
--	mutex_unlock(&tty->ldisc_mutex);
- 	tty_unlock(tty);
- 	return retval;
- }
-@@ -852,7 +621,7 @@ static void tty_reset_termios(struct tty_struct *tty)
- 
- static int tty_ldisc_reinit(struct tty_struct *tty, int ldisc)
- {
--	struct tty_ldisc *ld = tty_ldisc_get(ldisc);
-+	struct tty_ldisc *ld = tty_ldisc_get(tty, ldisc);
- 
- 	if (IS_ERR(ld))
- 		return -1;
-@@ -891,14 +660,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 
- 	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
- 
--	/*
--	 * FIXME! What are the locking issues here? This may me overdoing
--	 * things... This question is especially important now that we've
--	 * removed the irqlock.
--	 */
- 	ld = tty_ldisc_ref(tty);
- 	if (ld != NULL) {
--		/* We may have no line discipline at this point */
- 		if (ld->ops->flush_buffer)
- 			ld->ops->flush_buffer(tty);
- 		tty_driver_flush_buffer(tty);
-@@ -909,21 +672,22 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 			ld->ops->hangup(tty);
- 		tty_ldisc_deref(ld);
- 	}
--	/*
--	 * FIXME: Once we trust the LDISC code better we can wait here for
--	 * ldisc completion and fix the driver call race
--	 */
++	INIT_LIST_HEAD(&sem->read_wait);
++	sem->wait_readers = 0;
++}
 +
- 	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
- 	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
++static inline int writer_trylock(struct ld_semaphore *sem)
++{
++	/* only wake this writer if the active part of the count can be
++	 * transitioned from 0 -> 1
++	 */
++	long count = ldsem_atomic_update(LDSEM_ACTIVE_BIAS, sem);
++	do {
++		if ((count & LDSEM_ACTIVE_MASK) == LDSEM_ACTIVE_BIAS)
++			return 1;
++		if (ldsem_cmpxchg(&count, count - LDSEM_ACTIVE_BIAS, sem))
++			return 0;
++	} while (1);
++}
 +
-+	tty_unlock(tty);
++static void __ldsem_wake_writer(struct ld_semaphore *sem)
++{
++	struct ldsem_waiter *waiter;
 +
- 	/*
- 	 * Shutdown the current line discipline, and reset it to
- 	 * N_TTY if need be.
- 	 *
- 	 * Avoid racing set_ldisc or tty_ldisc_release
- 	 */
--	mutex_lock(&tty->ldisc_mutex);
-+	tty_ldisc_lock_pair(tty, tty->link);
-+	tty_lock(tty);
- 
--	if (tty_ldisc_hangup_halt(tty)) {
-+	if (tty->ldisc) {
- 
- 		/* At this point we have a halted ldisc; we want to close it and
- 		   reopen a new ldisc. We could defer the reopen to the next
-@@ -942,9 +706,8 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 			BUG_ON(tty_ldisc_reinit(tty, N_TTY));
- 			WARN_ON(tty_ldisc_open(tty, tty->ldisc));
- 		}
--		tty_ldisc_enable(tty);
- 	}
--	mutex_unlock(&tty->ldisc_mutex);
-+	tty_ldisc_enable_pair(tty, tty->link);
- 	if (reset)
- 		tty_reset_termios(tty);
- 
-@@ -976,15 +739,12 @@ int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty)
- 			tty_ldisc_close(tty, ld);
- 			return retval;
- 		}
--		tty_ldisc_enable(o_tty);
- 	}
--	tty_ldisc_enable(tty);
- 	return 0;
- }
- 
- static void tty_ldisc_kill(struct tty_struct *tty)
- {
--	mutex_lock(&tty->ldisc_mutex);
- 	/*
- 	 * Now kill off the ldisc
- 	 */
-@@ -995,7 +755,6 @@ static void tty_ldisc_kill(struct tty_struct *tty)
- 
- 	/* Ensure the next open requests the N_TTY ldisc */
- 	tty_set_termios_ldisc(tty, N_TTY);
--	mutex_unlock(&tty->ldisc_mutex);
- }
- 
- /**
-@@ -1017,15 +776,16 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 
- 	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
- 
--	tty_ldisc_halt(tty, o_tty, MAX_SCHEDULE_TIMEOUT);
--
-+	tty_ldisc_lock_pair(tty, o_tty);
- 	tty_lock_pair(tty, o_tty);
--	/* This will need doing differently if we need to lock */
++	waiter = list_entry(sem->write_wait.next, struct ldsem_waiter, list);
++	wake_up_process(waiter->task);
++}
 +
- 	tty_ldisc_kill(tty);
- 	if (o_tty)
- 		tty_ldisc_kill(o_tty);
- 
- 	tty_unlock_pair(tty, o_tty);
-+	tty_ldisc_unlock_pair(tty, o_tty);
++/*
++ * handle the lock release when processes blocked on it that can now run
++ * - if we come here from up_xxxx(), then:
++ *   - the 'active part' of count (&0x0000ffff) reached 0 (but may have changed)
++ *   - the 'waiting part' of count (&0xffff0000) is -ve (and will still be so)
++ * - the spinlock must be held by the caller
++ * - woken process blocks are discarded from the list after having task zeroed
++ */
++static void __ldsem_wake(struct ld_semaphore *sem)
++{
++	if (!list_empty(&sem->write_wait))
++		__ldsem_wake_writer(sem);
++	else if (!list_empty(&sem->read_wait))
++		__ldsem_wake_readers(sem);
++}
 +
- 	/* And the memory resources remaining (buffers, termios) will be
- 	   disposed of when the kref hits zero */
- 
-@@ -1042,7 +802,7 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 
- void tty_ldisc_init(struct tty_struct *tty)
- {
--	struct tty_ldisc *ld = tty_ldisc_get(N_TTY);
-+	struct tty_ldisc *ld = tty_ldisc_get(tty, N_TTY);
- 	if (IS_ERR(ld))
- 		panic("n_tty: init_tty");
- 	tty->ldisc = ld;
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index bfa6fca..2c109a3 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -238,7 +238,7 @@ struct tty_struct {
- 	int index;
- 
- 	/* Protects ldisc changes: Lock tty not pty */
--	struct mutex ldisc_mutex;
-+	struct ld_semaphore ldisc_sem;
- 	struct tty_ldisc *ldisc;
- 
- 	struct mutex atomic_write_lock;
-@@ -306,8 +306,6 @@ struct tty_file_private {
- #define TTY_DO_WRITE_WAKEUP 	5	/* Call write_wakeup after queuing new */
- #define TTY_PUSH 		6	/* n_tty private */
- #define TTY_CLOSING 		7	/* ->close() in progress */
--#define TTY_LDISC 		9	/* Line discipline attached */
--#define TTY_LDISC_CHANGING 	10	/* Line discipline changing */
- #define TTY_LDISC_OPEN	 	11	/* Line discipline is open */
- #define TTY_HW_COOK_OUT 	14	/* Hardware can do output cooking */
- #define TTY_HW_COOK_IN 		15	/* Hardware can do input cooking */
++static void ldsem_wake(struct ld_semaphore *sem)
++{
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&sem->wait_lock, flags);
++	__ldsem_wake(sem);
++	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
++}
++
++/*
++ * wait for the read lock to be granted
++ */
++static struct ld_semaphore __sched *
++down_read_failed(struct ld_semaphore *sem, long count, long timeout)
++{
++	struct ldsem_waiter waiter;
++	struct task_struct *tsk = current;
++	long adjust = -LDSEM_ACTIVE_BIAS + LDSEM_WAIT_BIAS;
++
++	/* set up my own style of waitqueue */
++	raw_spin_lock_irq(&sem->wait_lock);
++
++	/* Try to reverse the lock attempt but if the count has changed
++	 * so that reversing fails, check if there are are no waiters,
++	 * and early-out if not */
++	do {
++		if (ldsem_cmpxchg(&count, count + adjust, sem))
++			break;
++		if (count > 0) {
++			raw_spin_unlock_irq(&sem->wait_lock);
++			return sem;
++		}
++	} while (1);
++
++	list_add_tail(&waiter.list, &sem->read_wait);
++	sem->wait_readers++;
++
++	waiter.task = tsk;
++	get_task_struct(tsk);
++
++	/* if there are no active locks, wake the new lock owner(s) */
++	if ((count & LDSEM_ACTIVE_MASK) == 0)
++		__ldsem_wake(sem);
++
++	raw_spin_unlock_irq(&sem->wait_lock);
++
++	/* wait to be given the lock */
++	for (;;) {
++		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
++
++		if (!waiter.task)
++			break;
++		if (!timeout)
++			break;
++		timeout = schedule_timeout(timeout);
++	}
++
++	__set_task_state(tsk, TASK_RUNNING);
++
++	if (!timeout) {
++		/* lock timed out but check if this task was just
++		 * granted lock ownership - if so, pretend there
++		 * was no timeout; otherwise, cleanup lock wait */
++		raw_spin_lock_irq(&sem->wait_lock);
++		if (waiter.task) {
++			ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
++			list_del(&waiter.list);
++			raw_spin_unlock_irq(&sem->wait_lock);
++			put_task_struct(waiter.task);
++			return NULL;
++		}
++		raw_spin_unlock_irq(&sem->wait_lock);
++	}
++
++	return sem;
++}
++
++/*
++ * wait for the write lock to be granted
++ */
++static struct ld_semaphore __sched *
++down_write_failed(struct ld_semaphore *sem, long count, long timeout)
++{
++	struct ldsem_waiter waiter;
++	struct task_struct *tsk = current;
++	long adjust = -LDSEM_ACTIVE_BIAS;
++	int locked = 0;
++
++	/* set up my own style of waitqueue */
++	raw_spin_lock_irq(&sem->wait_lock);
++
++	/* Try to reverse the lock attempt but if the count has changed
++	 * so that reversing fails, check if the lock is now owned,
++	 * and early-out if so */
++	do {
++		if (ldsem_cmpxchg(&count, count + adjust, sem))
++			break;
++		if ((count & LDSEM_ACTIVE_MASK) == LDSEM_ACTIVE_BIAS) {
++			raw_spin_unlock_irq(&sem->wait_lock);
++			return sem;
++		}
++	} while (1);
++
++	list_add_tail(&waiter.list, &sem->write_wait);
++
++	waiter.task = tsk;
++
++	set_task_state(tsk, TASK_UNINTERRUPTIBLE);
++	for (;;) {
++		if (!timeout)
++			break;
++		raw_spin_unlock_irq(&sem->wait_lock);
++		timeout = schedule_timeout(timeout);
++		raw_spin_lock_irq(&sem->wait_lock);
++		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
++		if ((locked = writer_trylock(sem)))
++			break;
++	}
++
++	if (!locked)
++		ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
++	list_del(&waiter.list);
++	raw_spin_unlock_irq(&sem->wait_lock);
++
++	__set_task_state(tsk, TASK_RUNNING);
++
++	/* lock wait may have timed out */
++	if (!locked)
++		return NULL;
++	return sem;
++}
++
++
++
++static inline int __ldsem_down_read_nested(struct ld_semaphore *sem,
++					   int subclass, long timeout)
++{
++	long count;
++
++	lockdep_acquire_read(sem, subclass, 0, _RET_IP_);
++
++	count = ldsem_atomic_update(LDSEM_READ_BIAS, sem);
++	if (count <= 0) {
++		lock_stat(sem, contended);
++		if (!down_read_failed(sem, count, timeout)) {
++			lockdep_release(sem, 1, _RET_IP_);
++			return 0;
++		}
++	}
++	lock_stat(sem, acquired);
++	return 1;
++}
++
++static inline int __ldsem_down_write_nested(struct ld_semaphore *sem,
++					    int subclass, long timeout)
++{
++	long count;
++
++	lockdep_acquire(sem, subclass, 0, _RET_IP_);
++
++	count = ldsem_atomic_update(LDSEM_WRITE_BIAS, sem);
++	if ((count & LDSEM_ACTIVE_MASK) != LDSEM_ACTIVE_BIAS) {
++		lock_stat(sem, contended);
++		if (!down_write_failed(sem, count, timeout)) {
++			lockdep_release(sem, 1, _RET_IP_);
++			return 0;
++		}
++	}
++	lock_stat(sem, acquired);
++	return 1;
++}
++
++
++/*
++ * lock for reading -- returns 1 if successful, 0 if timed out
++ */
++int __sched ldsem_down_read(struct ld_semaphore *sem, long timeout)
++{
++	might_sleep();
++	return __ldsem_down_read_nested(sem, 0, timeout);
++}
++
++/*
++ * trylock for reading -- returns 1 if successful, 0 if contention
++ */
++int ldsem_down_read_trylock(struct ld_semaphore *sem)
++{
++	long count = sem->count;
++
++	while (count >= 0) {
++		if (ldsem_cmpxchg(&count, count + LDSEM_READ_BIAS, sem)) {
++			lockdep_acquire_read(sem, 0, 1, _RET_IP_);
++			lock_stat(sem, acquired);
++			return 1;
++		}
++	}
++	return 0;
++}
++
++/*
++ * lock for writing -- returns 1 if successful, 0 if timed out
++ */
++int __sched ldsem_down_write(struct ld_semaphore *sem, long timeout)
++{
++	might_sleep();
++	return __ldsem_down_write_nested(sem, 0, timeout);
++}
++
++/*
++ * trylock for writing -- returns 1 if successful, 0 if contention
++ */
++int ldsem_down_write_trylock(struct ld_semaphore *sem)
++{
++	long count = sem->count;
++
++	while ((count & LDSEM_ACTIVE_MASK) == 0) {
++		if (ldsem_cmpxchg(&count, count + LDSEM_WRITE_BIAS, sem)) {
++			lockdep_acquire(sem, 0, 1, _RET_IP_);
++			lock_stat(sem, acquired);
++			return 1;
++		}
++	}
++	return 0;
++}
++
++/*
++ * release a read lock
++ */
++void ldsem_up_read(struct ld_semaphore *sem)
++{
++	long count;
++
++	lockdep_release(sem, 1, _RET_IP_);
++
++	count = ldsem_atomic_update(-LDSEM_READ_BIAS, sem);
++	if (count < 0 && (count & LDSEM_ACTIVE_MASK) == 0)
++		ldsem_wake(sem);
++}
++
++/*
++ * release a write lock
++ */
++void ldsem_up_write(struct ld_semaphore *sem)
++{
++	long count;
++
++	lockdep_release(sem, 1, _RET_IP_);
++
++	count = ldsem_atomic_update(-LDSEM_WRITE_BIAS, sem);
++	if (count < 0)
++		ldsem_wake(sem);
++}
++
++
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++
++int ldsem_down_read_nested(struct ld_semaphore *sem, int subclass, long timeout)
++{
++	might_sleep();
++	return __ldsem_down_read_nested(sem, subclass, timeout);
++}
++
++int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
++			    long timeout)
++{
++	might_sleep();
++	return __ldsem_down_write_nested(sem, subclass, timeout);
++}
++
++#endif
 diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index ca000fc..272075e 100644
+index 455a0d7..ca000fc 100644
 --- a/include/linux/tty_ldisc.h
 +++ b/include/linux/tty_ldisc.h
-@@ -197,8 +197,7 @@ struct tty_ldisc_ops {
+@@ -110,6 +110,52 @@
+ #include <linux/wait.h>
+ #include <linux/wait.h>
  
- struct tty_ldisc {
- 	struct tty_ldisc_ops *ops;
--	atomic_t users;
--	wait_queue_head_t wq_idle;
-+	struct tty_struct *tty;
- };
- 
- #define TTY_LDISC_MAGIC	0x5403
++
++/*
++ * the semaphore definition
++ */
++struct ld_semaphore {
++	long			count;
++	raw_spinlock_t		wait_lock;
++	unsigned int		wait_readers;
++	struct list_head	read_wait;
++	struct list_head	write_wait;
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++	struct lockdep_map	dep_map;
++#endif
++};
++
++extern void __init_ldsem(struct ld_semaphore *sem, const char *name,
++			 struct lock_class_key *key);
++
++#define init_ldsem(sem)						\
++do {								\
++	static struct lock_class_key __key;			\
++								\
++	__init_ldsem((sem), #sem, &__key);			\
++} while (0)
++
++
++extern int ldsem_down_read(struct ld_semaphore *sem, long timeout);
++extern int ldsem_down_read_trylock(struct ld_semaphore *sem);
++extern int ldsem_down_write(struct ld_semaphore *sem, long timeout);
++extern int ldsem_down_write_trylock(struct ld_semaphore *sem);
++extern void ldsem_up_read(struct ld_semaphore *sem);
++extern void ldsem_up_write(struct ld_semaphore *sem);
++
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++extern int ldsem_down_read_nested(struct ld_semaphore *sem, int subclass,
++				  long timeout);
++extern int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
++				   long timeout);
++#else
++# define ldsem_down_read_nested(sem, subclass, timeout)		\
++		ldsem_down_read(sem, timeout)
++# define ldsem_down_write_nested(sem, subclass, timeout)	\
++		ldsem_down_write(sem, timeout)
++#endif
++
++
+ struct tty_ldisc_ops {
+ 	int	magic;
+ 	char	*name;
 -- 
 1.8.1.2
 
