@@ -1,135 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 2/7] tty: Add lock/unlock ldisc pair functions
-Date: Tue, 19 Mar 2013 15:26:04 -0400
-Message-ID: <1363721169-22445-3-git-send-email-peter@hurleysoftware.com>
-References: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
- <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
+From: Philippe Langlais <philippe.langlais@st.com>
+Subject: [PATCH] tty: serial: 8250: remove U6715 16550A auto-detection
+Date: Tue, 19 Mar 2013 20:50:09 +0100
+Message-ID: <1363722609-20021-1-git-send-email-philippe.langlais@st.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:59919 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757074Ab3CSTxh (ORCPT
+Received: from smtp10.smtpout.orange.fr ([80.12.242.132]:24610 "EHLO
+	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754739Ab3CST62 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 15:53:37 -0400
-In-Reply-To: <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
+	Tue, 19 Mar 2013 15:58:28 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, David Howells <dhowells@redhat.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Michel Lespinasse <walken@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hans-Peter Oeri <hp@oeri.ch>, Philippe Langlais <philippe.langlais@st.com>
 
-Just as the tty pair must be locked in a stable sequence
-(ie, independent of which is consider the 'other' tty), so must
-the ldisc pair be locked in a stable sequence as well.
+The auto-detection based on 64 bytes fifo size causes troubles
+for the identification of the MultiTechZPX Modems (pci 11c1:0480).
+They loose the ability to do hardware flow control
+(specifically CTS is never set).
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Philippe Langlais <philippe.langlais@st.com>
 ---
- drivers/tty/tty_ldisc.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 87 insertions(+)
+ drivers/tty/serial/8250/8250.c |    9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 1afe192..ae0287f 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -31,6 +31,13 @@
- #define tty_ldisc_debug(tty, f, args...)
- #endif
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index cf6a538..3255014 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -1026,15 +1026,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
  
-+/* lockdep nested classes for tty->ldisc_sem */
-+enum {
-+	LDISC_SEM_NORMAL,
-+	LDISC_SEM_OTHER,
-+};
-+
-+
- /*
-  *	This guards the refcounted line discipline lists. The lock
-  *	must be taken with irqs off because there are hangup path
-@@ -351,6 +358,86 @@ void tty_ldisc_deref(struct tty_ldisc *ld)
+ 		return;
+ 	}
+-
+-	/*
+-	 * We distinguish between 16550A and U6 16550A by counting
+-	 * how many bytes are in the FIFO.
+-	 */
+-	if (up->port.type == PORT_16550A && size_fifo(up) == 64) {
+-		up->port.type = PORT_U6_16550A;
+-		up->capabilities |= UART_CAP_AFE;
+-	}
  }
- EXPORT_SYMBOL_GPL(tty_ldisc_deref);
  
-+
-+static inline int __lockfunc
-+tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout)
-+{
-+	return ldsem_down_write(&tty->ldisc_sem, timeout);
-+}
-+
-+static inline int __lockfunc
-+tty_ldisc_lock_nested(struct tty_struct *tty, unsigned long timeout)
-+{
-+	return ldsem_down_write_nested(&tty->ldisc_sem,
-+				       LDISC_SEM_OTHER, timeout);
-+}
-+
-+static inline void tty_ldisc_unlock(struct tty_struct *tty)
-+{
-+	return ldsem_up_write(&tty->ldisc_sem);
-+}
-+
-+static int __lockfunc
-+tty_ldisc_lock_pair_timeout(struct tty_struct *tty, struct tty_struct *tty2,
-+			    unsigned long timeout)
-+{
-+	int ret;
-+
-+	if (tty < tty2) {
-+		ret = tty_ldisc_lock(tty, timeout);
-+		if (ret) {
-+			ret = tty_ldisc_lock_nested(tty2, timeout);
-+			if (!ret)
-+				tty_ldisc_unlock(tty);
-+		}
-+	} else {
-+		/* if this is possible, it has lots of implications */
-+		WARN_ON_ONCE(tty == tty2);
-+		if (tty2 && tty != tty2) {
-+			ret = tty_ldisc_lock(tty2, timeout);
-+			if (ret) {
-+				ret = tty_ldisc_lock_nested(tty, timeout);
-+				if (!ret)
-+					tty_ldisc_unlock(tty2);
-+			}
-+		} else
-+			ret = tty_ldisc_lock(tty, timeout);
-+	}
-+
-+	if (!ret)
-+		return -EBUSY;
-+
-+	set_bit(TTY_LDISC_HALTED, &tty->flags);
-+	if (tty2)
-+		set_bit(TTY_LDISC_HALTED, &tty2->flags);
-+	return 0;
-+}
-+
-+static void __lockfunc
-+tty_ldisc_lock_pair(struct tty_struct *tty, struct tty_struct *tty2)
-+{
-+	tty_ldisc_lock_pair_timeout(tty, tty2, MAX_SCHEDULE_TIMEOUT);
-+}
-+
-+static void __lockfunc tty_ldisc_unlock_pair(struct tty_struct *tty,
-+					     struct tty_struct *tty2)
-+{
-+	tty_ldisc_unlock(tty);
-+	if (tty2)
-+		tty_ldisc_unlock(tty2);
-+}
-+
-+static void __lockfunc tty_ldisc_enable_pair(struct tty_struct *tty,
-+					     struct tty_struct *tty2)
-+{
-+	clear_bit(TTY_LDISC_HALTED, &tty->flags);
-+	if (tty2)
-+		clear_bit(TTY_LDISC_HALTED, &tty2->flags);
-+
-+	tty_ldisc_unlock_pair(tty, tty2);
-+}
-+
-+
- /**
-  *	tty_ldisc_enable	-	allow ldisc use
-  *	@tty: terminal to activate ldisc on
+ /*
 -- 
-1.8.1.2
+1.7.9.5
 
