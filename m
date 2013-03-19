@@ -1,44 +1,70 @@
-From: Santosh Shilimkar <santosh.shilimkar@ti.com>
-Subject: Re: [PATCH 0/2] omap serial fix.
-Date: Tue, 19 Mar 2013 12:24:37 +0530
-Message-ID: <51480BAD.2040902@ti.com>
-References: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCHv4 0/7] ARM: sunxi: Extend UART support for Allwinner SoCs
+Date: Tue, 19 Mar 2013 11:35:09 +0100
+Message-ID: <1363689316-7847-1-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:43034 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751834Ab3CSGxD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 02:53:03 -0400
-In-Reply-To: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
+Received: from mail.free-electrons.com ([94.23.35.102]:42762 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752781Ab3CSKfU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Mar 2013 06:35:20 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org
 
-On Monday 18 March 2013 04:24 PM, Sourav Poddar wrote:
-> The first patch is a rearrangement of a macro "OMAP_MAX_HSUART_PORTS"
-> to a header file so that it can be used in other file. 
-> The second patch fixes the wakeup from uart issue while using "no_console_suspend" in the
-> bootargs.
-> 
-> These patches are developed on 3.8 custom kernel containing omap5 supend/resume support.
-> 
-> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
-Thanks Sourav for sorting out the issue. With update of changelog
-suggested by Kevin on patch 1, Feel free to add,
-Acked-Tested-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Hi,
 
+This patchset reworks a bit the UART support that is found in the DT
+for Allwinner SoCs, which was quite limited until now.
 
-> Sourav Poddar (2):
->   driver: serial-omap: move max uart count into generic header file.
->   arm: mach-omap2: prevent UART console idle on suspend while using
->     "no_console_suspend"
-> 
->  arch/arm/mach-omap2/omap_device.c         |   36 ++++++++++++++++++++++++++++-
->  drivers/tty/serial/omap-serial.c          |    2 -
->  include/linux/platform_data/serial-omap.h |    1 +
->  3 files changed, 36 insertions(+), 3 deletions(-)
-> 
+It first switches to using the clocks property, then rework a bit the
+DTSI to have only the UART available in the A10 and the A13 (the A10
+has 8 UARTs, while A13 has only the uart1 and uart3).
 
+Thanks,
+Maxime
+
+Changes from v3:
+  - Renamed uart nodes to serial
+  - Reworked the patch for 8250_dw to use the IS_ERR macro for clocks e=
+rror
+    checking
+
+Changes from v2:
+  - Reworked Emilio's patch according to Heikki Krogerus' review to ena=
+ble the
+    use of the clock framework even when not using the dt
+
+Emilio L=C3=B3pez (1):
+  serial: 8250_dw: add support for clk api
+
+Maxime Ripard (6):
+  ARM: sunxi: dt: Use clocks property instead of clock-frequency for
+    the UARTs
+  ARM: sunxi: Rename uart nodes to serial
+  ARM: sunxi: dt: Move uart0 to sun4i-a10.dtsi
+  ARM: sunxi: dt: Add uart3 dt node
+  ARM: sunxi: dt: Add A10 UARTs to the dtsi.
+  ARM: sunxi: hackberry: Add UART muxing
+
+ arch/arm/boot/dts/sun4i-a10-cubieboard.dts |    4 +-
+ arch/arm/boot/dts/sun4i-a10-hackberry.dts  |    4 +-
+ arch/arm/boot/dts/sun4i-a10.dtsi           |   60 ++++++++++++++++++++=
+++++++++
+ arch/arm/boot/dts/sun5i-a13-olinuxino.dts  |    2 +-
+ arch/arm/boot/dts/sunxi.dtsi               |   16 ++++----
+ drivers/tty/serial/8250/8250_dw.c          |   33 ++++++++++-----
+ 6 files changed, 98 insertions(+), 21 deletions(-)
+
+--=20
+1.7.10.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
