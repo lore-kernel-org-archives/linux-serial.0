@@ -1,128 +1,48 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH] serial: 8250_dw: add support for clk api
-Date: Tue, 19 Mar 2013 11:52:49 +0100
-Message-ID: <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com>
-References: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 4/7] n_tty: Encapsulate minimum_to_wake within N_TTY
+Date: Tue, 19 Mar 2013 09:57:09 -0400
+Message-ID: <1363701429.7084.2.camel@thor.lan>
+References: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
+	 <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
+	 <20130318231538.GA16280@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:42902 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750929Ab3CSKxB (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:33539 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752134Ab3CSN5P (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 06:53:01 -0400
-In-Reply-To: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com>
+	Tue, 19 Mar 2013 09:57:15 -0400
+In-Reply-To: <20130318231538.GA16280@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+On Mon, 2013-03-18 at 16:15 -0700, Greg Kroah-Hartman wrote:
+> On Wed, Mar 06, 2013 at 08:38:22AM -0500, Peter Hurley wrote:
+> > minimum_to_wake is unique to N_TTY processing, and belongs in
+> > per-ldisc data.
+> > 
+> > Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
+> > when signal-driven I/O is enabled or disabled. When enabled for N_TTY
+> > (by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
+> > for any readable input. When disabled, blocking reader/polls are not
+> > woken until the read buffer is full.
+> > 
+> > Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
+> > the minimum_to_wake setting.
+> > 
+> > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> 
+> For some reason, this patch doesn't apply.  Care to refresh this one,
+> and the rest in this series, and resend?
 
-This commit implements support for using the clk api; this lets us use
-the "clocks" property with device tree, instead of having to use
-clock-frequency.
+Sorry. There was probably some accidental dependency on one of the other
+patchsets of mine you did apply.
 
-Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
----
- drivers/tty/serial/8250/8250_dw.c |   33 ++++++++++++++++++++++++-----=
-----
- 1 file changed, 24 insertions(+), 9 deletions(-)
+This and patch 5 now apply without error to tty-next.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-index db0e66f..3dedd24 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/clk.h>
-=20
- #include "8250.h"
-=20
-@@ -55,8 +56,9 @@
-=20
-=20
- struct dw8250_data {
--	int	last_lcr;
--	int	line;
-+	int		last_lcr;
-+	int		line;
-+	struct clk	*clk;
- };
-=20
- static void dw8250_serial_out(struct uart_port *p, int offset, int val=
-ue)
-@@ -136,8 +138,13 @@ static int dw8250_probe_of(struct uart_port *p)
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift =3D val;
-=20
-+	/* clock got configured through clk api, all done */
-+	if (p->uartclk)
-+		return 0;
-+
-+	/* try to find out clock frequency from DT as fallback */
- 	if (of_property_read_u32(np, "clock-frequency", &val)) {
--		dev_err(p->dev, "no clock-frequency property set\n");
-+		dev_err(p->dev, "clk or clock-frequency not defined\n");
- 		return -EINVAL;
- 	}
- 	p->uartclk =3D val;
-@@ -294,9 +301,20 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 	if (!uart.port.membase)
- 		return -ENOMEM;
-=20
-+	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->clk =3D devm_clk_get(&pdev->dev, NULL);
-+	if (!IS_ERR(data->clk)) {
-+		clk_prepare_enable(data->clk);
-+		uart.port.uartclk =3D clk_get_rate(data->clk);
-+	}
-+
- 	uart.port.iotype =3D UPIO_MEM;
- 	uart.port.serial_in =3D dw8250_serial_in;
- 	uart.port.serial_out =3D dw8250_serial_out;
-+	uart.port.private_data =3D data;
-=20
- 	dw8250_setup_port(&uart);
-=20
-@@ -312,12 +330,6 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 		return -ENODEV;
- 	}
-=20
--	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	uart.port.private_data =3D data;
--
- 	data->line =3D serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
-@@ -333,6 +345,9 @@ static int dw8250_remove(struct platform_device *pd=
-ev)
-=20
- 	serial8250_unregister_port(data->line);
-=20
-+	if (!IS_ERR(data->clk))
-+		clk_disable_unprepare(data->clk);
-+
- 	return 0;
- }
-=20
---=20
-1.7.10.4
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
