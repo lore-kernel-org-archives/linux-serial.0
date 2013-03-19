@@ -1,69 +1,44 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCH 1/2] driver: serial-omap: move max uart count into generic
- header file.
-Date: Tue, 19 Mar 2013 11:30:34 +0530
-Message-ID: <5147FF02.1070900@ti.com>
-References: <1363604206-11264-1-git-send-email-sourav.poddar@ti.com> <87r4jcim2h.fsf@linaro.org>
+From: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Subject: Re: [PATCH 0/2] omap serial fix.
+Date: Tue, 19 Mar 2013 12:24:37 +0530
+Message-ID: <51480BAD.2040902@ti.com>
+References: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87r4jcim2h.fsf@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kevin Hilman <khilman@linaro.org>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:43034 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751834Ab3CSGxD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Mar 2013 02:53:03 -0400
+In-Reply-To: <1363604081-11169-1-git-send-email-sourav.poddar@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-Hi Kevin,
-On Tuesday 19 March 2013 12:15 AM, Kevin Hilman wrote:
-> Sourav Poddar<sourav.poddar@ti.com>  writes:
->
->> OMAP_MAX_HSUART_PORTS is moved to omap_serial header file.
-> Why?
->
-The patch is a prerequisitive for the next patch in the series, where I am
-making use of the max number of uarts, omap device supports. Hence, I
-am rearranging the macro from a driver file to a header file. So, it can 
-be used at
-multiple places.
-> You started to explain it in the cover letter, but a full description
-> belongs here for the permanent git history.
->
-Sure, I will add the complete description for this here itself in my next
-version.
-> Kevin
->
->> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
->> Cc: Felipe Balbi<balbi@ti.com>
->> Cc: Rajendra nayak<rnayak@ti.com>
->> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
->> ---
->>   drivers/tty/serial/omap-serial.c          |    2 --
->>   include/linux/platform_data/serial-omap.h |    1 +
->>   2 files changed, 1 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->> index 5722eaf..4c2ba9f 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -43,8 +43,6 @@
->>   #include<linux/pinctrl/consumer.h>
->>   #include<linux/platform_data/serial-omap.h>
->>
->> -#define OMAP_MAX_HSUART_PORTS	6
->> -
->>   #define UART_BUILD_REVISION(x, y)	(((x)<<  8) | (y))
->>
->>   #define OMAP_UART_REV_42 0x0402
->> diff --git a/include/linux/platform_data/serial-omap.h b/include/linux/platform_data/serial-omap.h
->> index ff9b0aa..92c48c2 100644
->> --- a/include/linux/platform_data/serial-omap.h
->> +++ b/include/linux/platform_data/serial-omap.h
->> @@ -29,6 +29,7 @@
->>    * is used as console uart.
->>    */
->>   #define OMAP_SERIAL_NAME	"ttyO"
->> +#define OMAP_MAX_HSUART_PORTS   6
->>
->>   struct omap_uart_port_info {
->>   	bool			dma_enabled;	/* To specify DMA Mode */
+On Monday 18 March 2013 04:24 PM, Sourav Poddar wrote:
+> The first patch is a rearrangement of a macro "OMAP_MAX_HSUART_PORTS"
+> to a header file so that it can be used in other file. 
+> The second patch fixes the wakeup from uart issue while using "no_console_suspend" in the
+> bootargs.
+> 
+> These patches are developed on 3.8 custom kernel containing omap5 supend/resume support.
+> 
+> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Thanks Sourav for sorting out the issue. With update of changelog
+suggested by Kevin on patch 1, Feel free to add,
+Acked-Tested-by: Santosh Shilimkar <santosh.shilimkar@ti.com>
+
+
+> Sourav Poddar (2):
+>   driver: serial-omap: move max uart count into generic header file.
+>   arm: mach-omap2: prevent UART console idle on suspend while using
+>     "no_console_suspend"
+> 
+>  arch/arm/mach-omap2/omap_device.c         |   36 ++++++++++++++++++++++++++++-
+>  drivers/tty/serial/omap-serial.c          |    2 -
+>  include/linux/platform_data/serial-omap.h |    1 +
+>  3 files changed, 36 insertions(+), 3 deletions(-)
+> 
+
