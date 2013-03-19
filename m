@@ -1,117 +1,69 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v5 26/44] tty: Add read-recursive, writer-prioritized rw
- semaphore
-Date: Mon, 18 Mar 2013 18:59:36 -0700
-Message-ID: <20130319015936.GA21241@kroah.com>
-References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
- <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
- <1363034704-28036-27-git-send-email-peter@hurleysoftware.com>
- <20130318235815.GA5320@kroah.com>
- <1363654879.4568.42.camel@thor.lan>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: Re: [PATCH 1/2] driver: serial-omap: move max uart count into generic
+ header file.
+Date: Tue, 19 Mar 2013 11:30:34 +0530
+Message-ID: <5147FF02.1070900@ti.com>
+References: <1363604206-11264-1-git-send-email-sourav.poddar@ti.com> <87r4jcim2h.fsf@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f49.google.com ([209.85.210.49]:56625 "EHLO
-	mail-da0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754800Ab3CSB6V (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Mar 2013 21:58:21 -0400
-Received: by mail-da0-f49.google.com with SMTP id t11so1680927daj.22
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2013 18:58:20 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1363654879.4568.42.camel@thor.lan>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87r4jcim2h.fsf@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kevin Hilman <khilman@linaro.org>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, b-cousson@ti.com, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Mar 18, 2013 at 09:01:19PM -0400, Peter Hurley wrote:
-> On Mon, 2013-03-18 at 16:58 -0700, Greg Kroah-Hartman wrote:
-> > On Mon, Mar 11, 2013 at 04:44:46PM -0400, Peter Hurley wrote:
-> > > 2) TIOCSETD ioctl (change line discipline) expects to return an
-> > >    error if the line discipline cannot be exclusively locked within
-> > >    5 secs. Lock wait timeouts are not supported by rwsem.
-> > 
-> > Don't we have some other lock that can timeout?
-> 
-> Not that behaves like a r/w semaphore.
-
-Can't we just add it?  Or is that too much work?
-
-> > > 3) A tty hangup is expected to halt and scrap pending i/o, so
-> > >    exclusive locking must be prioritized without precluding
-> > >    existing reference holders from obtaining recursive read locks.
-> > >    Writer priority is not supported by rwsem.
-> > 
-> > But how bad is it really if we have to wait a bit for that write lock to
-> > get through all of the existing readers?  Either way, we are supposed to
-> > be dropping i/o, so it shouldn't be a big deal, right?
-> 
-> The rwsem behavior is in the process of changing. Write lock stealing
-> has already been added and refinements there will likely allow some
-> readers in front of writers.
-> 
-> With slow serial i/o, I'd rather have hangups occur promptly than let a
-> bunch more i/o through.
-
-So all we are now lacking, with the changes to rwsem, is the timeout
-problem?
-
-> > > Add ld_semaphore which implements these requirements in a
-> > > semantically and operationally similar way to rw_semaphore.
-> > 
-> > I _really_ don't want to add a new lock to the kernel, especially one
-> > that is only used by one "driver".  You are going to have to convince
-> > the current lock authors that this really is needed, before I can take
-> > it, sorry.
-> 
-> That's fine. I can understand the reluctance to take on a new lock
-> [although you might be interested to read my analysis of rwsem here
-> https://lkml.org/lkml/2013/3/11/533 which outlines an existing flaw].
-> 
-> That said, part of the reason why the current ldisc implementation is
-> broken is the lack of appropriate locks. As I recently explained
-> (actually in this patchset's thread),
-> 
->         a lack of existing options has spawned a DIY approach without
->         higher-order locks that is rarely correct, but which goes largely
->         unnoticed exactly because it's not a new lock. A brief review of the
->         hangs, races, and deadlocks fixed by this patchset should be convincing
->         enough of that fact. In my opinion, this is the overriding concern.
->         
->         The two main problems with a one-size-fits-all lock policy is that,
->         1) lock experts can't realistically foresee the consequences of policy
->         changes without already being experts in the subsystems in which that
->         lock is used. Even domain experts may miss potential consequences, and
->         2) domain experts typically wouldn't even consider writing a new lock.
->         So they make do with atomic bit states, spinlocks, reference counts,
->         mutexes, and waitqueues, making a mostly-functional, higher-order lock. 
-
-I read that, however rolling your own lock is almost never the solution.
-
-> From whom would you like me to get an ack for this?
-
-The people who wrote the rwsem code?
-
-> > What is wrong with the existing ldisc code that the creation of this
-> > lock is needed?  Is our current code that broken?
-> 
-> Yes. Even just the acquistion of the ldisc reference is wrong [the
-> analysis is in the patch 21 changelog].
-
-Yes, very nice work, I'm not saying that this isn't a messed up area at
-all, it's just that such deep flaws that require a new type of a lock
-don't usually come up all that often.
-
-> If you'd like, I can send you 6 or so short user test programs that
-> hang, crash, or deadlock inside 60 seconds on mainline and next, but not
-> with this patchset.
-
-That would be interesting to have, please send them.
-
-And I hope that they only lock up when run as root, but I'm afraid to
-ask that question...
-
-thanks,
-
-greg k-h
+Hi Kevin,
+On Tuesday 19 March 2013 12:15 AM, Kevin Hilman wrote:
+> Sourav Poddar<sourav.poddar@ti.com>  writes:
+>
+>> OMAP_MAX_HSUART_PORTS is moved to omap_serial header file.
+> Why?
+>
+The patch is a prerequisitive for the next patch in the series, where I am
+making use of the max number of uarts, omap device supports. Hence, I
+am rearranging the macro from a driver file to a header file. So, it can 
+be used at
+multiple places.
+> You started to explain it in the cover letter, but a full description
+> belongs here for the permanent git history.
+>
+Sure, I will add the complete description for this here itself in my next
+version.
+> Kevin
+>
+>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+>> Cc: Felipe Balbi<balbi@ti.com>
+>> Cc: Rajendra nayak<rnayak@ti.com>
+>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>> ---
+>>   drivers/tty/serial/omap-serial.c          |    2 --
+>>   include/linux/platform_data/serial-omap.h |    1 +
+>>   2 files changed, 1 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index 5722eaf..4c2ba9f 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -43,8 +43,6 @@
+>>   #include<linux/pinctrl/consumer.h>
+>>   #include<linux/platform_data/serial-omap.h>
+>>
+>> -#define OMAP_MAX_HSUART_PORTS	6
+>> -
+>>   #define UART_BUILD_REVISION(x, y)	(((x)<<  8) | (y))
+>>
+>>   #define OMAP_UART_REV_42 0x0402
+>> diff --git a/include/linux/platform_data/serial-omap.h b/include/linux/platform_data/serial-omap.h
+>> index ff9b0aa..92c48c2 100644
+>> --- a/include/linux/platform_data/serial-omap.h
+>> +++ b/include/linux/platform_data/serial-omap.h
+>> @@ -29,6 +29,7 @@
+>>    * is used as console uart.
+>>    */
+>>   #define OMAP_SERIAL_NAME	"ttyO"
+>> +#define OMAP_MAX_HSUART_PORTS   6
+>>
+>>   struct omap_uart_port_info {
+>>   	bool			dma_enabled;	/* To specify DMA Mode */
