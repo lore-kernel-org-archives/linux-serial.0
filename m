@@ -1,8 +1,11 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 3/7] ARM: sunxi: Rename uart nodes to serial
-Date: Tue, 19 Mar 2013 11:35:12 +0100
-Message-ID: <1363689316-7847-4-git-send-email-maxime.ripard@free-electrons.com>
+Subject: [PATCH 5/7] ARM: sunxi: dt: Add uart3 dt node
+Date: Tue, 19 Mar 2013 11:35:14 +0100
+Message-ID: <1363689316-7847-6-git-send-email-maxime.ripard@free-electrons.com>
 References: <1363689316-7847-1-git-send-email-maxime.ripard@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1363689316-7847-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -10,82 +13,35 @@ To: linux-arm-kernel@lists.infradead.org
 Cc: kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The other architecture use serial@address for their uart nodes, so
-rename our uart dt nodes to be consistent
+Both A10 and A13 Allwinner SoCs have a Synopsys APB uart3 device
+available, so add it to the sunxi.dtsi file
 
 Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
 ---
- arch/arm/boot/dts/sun4i-a10-cubieboard.dts |    4 ++--
- arch/arm/boot/dts/sun4i-a10-hackberry.dts  |    2 +-
- arch/arm/boot/dts/sun5i-a13-olinuxino.dts  |    2 +-
- arch/arm/boot/dts/sunxi.dtsi               |    4 ++--
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/sunxi.dtsi |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun4i-a10-cubieboard.dts b/arch/arm/boot/dts/sun4i-a10-cubieboard.dts
-index 88e2dc1..cd06a3c 100644
---- a/arch/arm/boot/dts/sun4i-a10-cubieboard.dts
-+++ b/arch/arm/boot/dts/sun4i-a10-cubieboard.dts
-@@ -36,11 +36,11 @@
- 			};
- 		};
- 
--		uart0: uart@01c28000 {
-+		uart0: serial@01c28000 {
- 			status = "okay";
- 		};
- 
--		uart1: uart@01c28400 {
-+		uart1: serial@01c28400 {
- 			status = "okay";
- 		};
- 	};
-diff --git a/arch/arm/boot/dts/sun4i-a10-hackberry.dts b/arch/arm/boot/dts/sun4i-a10-hackberry.dts
-index f84549a..9ab6875 100644
---- a/arch/arm/boot/dts/sun4i-a10-hackberry.dts
-+++ b/arch/arm/boot/dts/sun4i-a10-hackberry.dts
-@@ -23,7 +23,7 @@
- 	};
- 
- 	soc {
--		uart0: uart@01c28000 {
-+		uart0: serial@01c28000 {
- 			status = "okay";
- 		};
- 	};
-diff --git a/arch/arm/boot/dts/sun5i-a13-olinuxino.dts b/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
-index 33d1c7e..f1579a8 100644
---- a/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
-+++ b/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
-@@ -32,7 +32,7 @@
- 			};
- 		};
- 
--		uart1: uart@01c28400 {
-+		uart1: serial@01c28400 {
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&uart1_pins_b>;
- 			status = "okay";
-diff --git a/arch/arm/boot/dts/sunxi.dtsi b/arch/arm/boot/dts/sunxi.dtsi
-index 791c02a..1e0f4b5 100644
+diff --git a/arch/arm/boot/dts/sunxi.dtsi b/arch/arm/boot/dts/sunxi.dts=
+i
+index cf53c43..a85030b 100644
 --- a/arch/arm/boot/dts/sunxi.dtsi
 +++ b/arch/arm/boot/dts/sunxi.dtsi
-@@ -59,7 +59,7 @@
- 			#interrupt-cells = <1>;
+@@ -68,5 +68,15 @@
+ 			clocks =3D <&osc>;
+ 			status =3D "disabled";
  		};
- 
--		uart0: uart@01c28000 {
-+		uart0: serial@01c28000 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01c28000 0x400>;
- 			interrupts = <1>;
-@@ -69,7 +69,7 @@
- 			status = "disabled";
- 		};
- 
--		uart1: uart@01c28400 {
-+		uart1: serial@01c28400 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01c28400 0x400>;
- 			interrupts = <2>;
--- 
++
++		uart3: serial@01c28c00 {
++			compatible =3D "snps,dw-apb-uart";
++			reg =3D <0x01c28c00 0x400>;
++			interrupts =3D <4>;
++			reg-shift =3D <2>;
++			reg-io-width =3D <4>;
++			clocks =3D <&osc>;
++			status =3D "disabled";
++		};
+ 	};
+ };
+--=20
 1.7.10.4
