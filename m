@@ -1,56 +1,95 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 4/7] n_tty: Encapsulate minimum_to_wake within N_TTY
-Date: Tue, 19 Mar 2013 07:10:17 -0700
-Message-ID: <20130319141017.GB24900@kroah.com>
-References: <1362577105-19757-1-git-send-email-peter@hurleysoftware.com>
- <1362577105-19757-5-git-send-email-peter@hurleysoftware.com>
- <20130318231538.GA16280@kroah.com>
- <1363701429.7084.2.camel@thor.lan>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f44.google.com ([209.85.210.44]:33107 "EHLO
-	mail-da0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753448Ab3CSOI6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 10:08:58 -0400
-Received: by mail-da0-f44.google.com with SMTP id z20so339193dae.3
-        for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2013 07:08:58 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1363701429.7084.2.camel@thor.lan>
-Sender: linux-serial-owner@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 6/7] n_tty: Fix unsafe update of available buffer space
+Date: Tue, 19 Mar 2013 10:26:57 -0400
+Message-ID: <1363703218-32333-3-git-send-email-peter@hurleysoftware.com>
+References: <20130319141017.GB24900@kroah.com>
+ <1363703218-32333-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1363703218-32333-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Mar 19, 2013 at 09:57:09AM -0400, Peter Hurley wrote:
-> On Mon, 2013-03-18 at 16:15 -0700, Greg Kroah-Hartman wrote:
-> > On Wed, Mar 06, 2013 at 08:38:22AM -0500, Peter Hurley wrote:
-> > > minimum_to_wake is unique to N_TTY processing, and belongs in
-> > > per-ldisc data.
-> > > 
-> > > Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
-> > > when signal-driven I/O is enabled or disabled. When enabled for N_TTY
-> > > (by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
-> > > for any readable input. When disabled, blocking reader/polls are not
-> > > woken until the read buffer is full.
-> > > 
-> > > Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
-> > > the minimum_to_wake setting.
-> > > 
-> > > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> > 
-> > For some reason, this patch doesn't apply.  Care to refresh this one,
-> > and the rest in this series, and resend?
-> 
-> Sorry. There was probably some accidental dependency on one of the other
-> patchsets of mine you did apply.
-> 
-> This and patch 5 now apply without error to tty-next.
+receive_room is used to control the amount of data the flip
+buffer work can push to the read buffer. This update is unsafe:
 
-Ok, but they are now long gone from my queue.  Can you please resend
-what I haven't applied?
+  CPU 0                        |  CPU 1
+                               |
+                               | n_tty_read()
+                               |   n_tty_set_room()
+                               |     left = <calc of space>
+n_tty_receive_buf()            |
+  <push data to buffer>        |
+  n_tty_set_room()             |
+    left = <calc of space>     |
+    tty->receive_room = left   |
+                               |     tty->receive_room = left
 
-thanks,
+receive_room is now updated with a stale calculation of the
+available buffer space, and the subsequent work loop will likely
+overwrite unread data in the input buffer.
 
-greg k-h
+Update receive_room atomically with the calculation of the
+available buffer space.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index b2f621f..61a55f4 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -115,13 +115,14 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
+ }
+ 
+ /**
+- *	n_tty_set__room	-	receive space
++ *	n_tty_set_room	-	receive space
+  *	@tty: terminal
+  *
+- *	Called by the driver to find out how much data it is
+- *	permitted to feed to the line discipline without any being lost
+- *	and thus to manage flow control. Not serialized. Answers for the
+- *	"instant".
++ *	Sets tty->receive_room to reflect the currently available space
++ *	in the input buffer, and re-schedules the flip buffer work if space
++ *	just became available.
++ *
++ *	Locks: Concurrent update is protected with read_lock
+  */
+ 
+ static void n_tty_set_room(struct tty_struct *tty)
+@@ -129,8 +130,10 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int left;
+ 	int old_left;
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+ 
+-	/* ldata->read_cnt is not read locked ? */
+ 	if (I_PARMRK(tty)) {
+ 		/* Multiply read_cnt by 3, since each byte might take up to
+ 		 * three times as many spaces when PARMRK is set (depending on
+@@ -150,6 +153,8 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	old_left = tty->receive_room;
+ 	tty->receive_room = left;
+ 
++	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++
+ 	/* Did this open up the receive buffer? We may need to flip */
+ 	if (left && !old_left) {
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+@@ -1885,7 +1890,6 @@ do_it_again:
+ 				retval = -ERESTARTSYS;
+ 				break;
+ 			}
+-			/* FIXME: does n_tty_set_room need locking ? */
+ 			n_tty_set_room(tty);
+ 			timeout = schedule_timeout(timeout);
+ 			continue;
+-- 
+1.8.1.2
