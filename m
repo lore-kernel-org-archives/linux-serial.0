@@ -1,77 +1,126 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 4/7] tty: Clarify ldisc variable
-Date: Tue, 19 Mar 2013 15:26:06 -0400
-Message-ID: <1363721169-22445-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 7/7] tty: Fix tty_ldisc_lock name collision
+Date: Tue, 19 Mar 2013 15:26:09 -0400
+Message-ID: <1363721169-22445-8-git-send-email-peter@hurleysoftware.com>
 References: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
  <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:59754 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756708Ab3CSTwQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Mar 2013 15:52:16 -0400
 In-Reply-To: <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, David Howells <dhowells@redhat.com>
 Cc: Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Michel Lespinasse <walken@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
-
-Rename o_ldisc to avoid confusion with the ldisc of the
-'other' tty.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/tty_ldisc.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index a150f95..9ace119 100644
+index 9725c94..ba49c0e 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -516,7 +516,7 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
- int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+@@ -44,7 +44,7 @@ enum {
+  *	callers who will do ldisc lookups and cannot sleep.
+  */
+ 
+-static DEFINE_RAW_SPINLOCK(tty_ldisc_lock);
++static DEFINE_RAW_SPINLOCK(tty_ldiscs_lock);
+ /* Line disc dispatch table */
+ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
+ 
+@@ -58,7 +58,7 @@ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
+  *	from this point onwards.
+  *
+  *	Locking:
+- *		takes tty_ldisc_lock to guard against ldisc races
++ *		takes tty_ldiscs_lock to guard against ldisc races
+  */
+ 
+ int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc)
+@@ -69,11 +69,11 @@ int tty_register_ldisc(int disc, struct tty_ldisc_ops *new_ldisc)
+ 	if (disc < N_TTY || disc >= NR_LDISCS)
+ 		return -EINVAL;
+ 
+-	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
++	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
+ 	tty_ldiscs[disc] = new_ldisc;
+ 	new_ldisc->num = disc;
+ 	new_ldisc->refcount = 0;
+-	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
++	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
+ 
+ 	return ret;
+ }
+@@ -88,7 +88,7 @@ EXPORT_SYMBOL(tty_register_ldisc);
+  *	currently in use.
+  *
+  *	Locking:
+- *		takes tty_ldisc_lock to guard against ldisc races
++ *		takes tty_ldiscs_lock to guard against ldisc races
+  */
+ 
+ int tty_unregister_ldisc(int disc)
+@@ -99,12 +99,12 @@ int tty_unregister_ldisc(int disc)
+ 	if (disc < N_TTY || disc >= NR_LDISCS)
+ 		return -EINVAL;
+ 
+-	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
++	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
+ 	if (tty_ldiscs[disc]->refcount)
+ 		ret = -EBUSY;
+ 	else
+ 		tty_ldiscs[disc] = NULL;
+-	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
++	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
+ 
+ 	return ret;
+ }
+@@ -115,7 +115,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
+ 	unsigned long flags;
+ 	struct tty_ldisc_ops *ldops, *ret;
+ 
+-	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
++	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
+ 	ret = ERR_PTR(-EINVAL);
+ 	ldops = tty_ldiscs[disc];
+ 	if (ldops) {
+@@ -125,7 +125,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
+ 			ret = ldops;
+ 		}
+ 	}
+-	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
++	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
+ 	return ret;
+ }
+ 
+@@ -133,10 +133,10 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
  {
- 	int retval;
--	struct tty_ldisc *o_ldisc, *new_ldisc;
-+	struct tty_ldisc *old_ldisc, *new_ldisc;
- 	struct tty_struct *o_tty = tty->link;
+ 	unsigned long flags;
  
- 	new_ldisc = tty_ldisc_get(tty, ldisc);
-@@ -540,7 +540,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	/* FIXME: why 'shutoff' input if the ldisc is locked? */
- 	tty->receive_room = 0;
+-	raw_spin_lock_irqsave(&tty_ldisc_lock, flags);
++	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
+ 	ldops->refcount--;
+ 	module_put(ldops->owner);
+-	raw_spin_unlock_irqrestore(&tty_ldisc_lock, flags);
++	raw_spin_unlock_irqrestore(&tty_ldiscs_lock, flags);
+ }
  
--	o_ldisc = tty->ldisc;
-+	old_ldisc = tty->ldisc;
- 	tty_lock(tty);
+ /**
+@@ -149,7 +149,7 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
+  *	available
+  *
+  *	Locking:
+- *		takes tty_ldisc_lock to guard against ldisc races
++ *		takes tty_ldiscs_lock to guard against ldisc races
+  */
  
- 	/* FIXME: for testing only */
-@@ -555,8 +555,8 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 		return -EIO;
- 	}
- 
--	/* Shutdown the current discipline. */
--	tty_ldisc_close(tty, o_ldisc);
-+	/* Shutdown the old discipline. */
-+	tty_ldisc_close(tty, old_ldisc);
- 
- 	/* Now set up the new line discipline. */
- 	tty->ldisc = new_ldisc;
-@@ -566,17 +566,17 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	if (retval < 0) {
- 		/* Back to the old one or N_TTY if we can't */
- 		tty_ldisc_put(new_ldisc);
--		tty_ldisc_restore(tty, o_ldisc);
-+		tty_ldisc_restore(tty, old_ldisc);
- 	}
- 
- 	/* At this point we hold a reference to the new ldisc and a
- 	   a reference to the old ldisc. If we ended up flipping back
- 	   to the existing ldisc we have two references to it */
- 
--	if (tty->ldisc->ops->num != o_ldisc->ops->num && tty->ops->set_ldisc)
-+	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
- 		tty->ops->set_ldisc(tty);
- 
--	tty_ldisc_put(o_ldisc);
-+	tty_ldisc_put(old_ldisc);
- 
- 	/*
- 	 *	Allow ldisc referencing to occur again
+ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
 -- 
 1.8.1.2
+
