@@ -1,50 +1,73 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 6/7] tty: Clarify multiple-references comment in TIOCSETD ioctl
-Date: Tue, 19 Mar 2013 15:26:08 -0400
-Message-ID: <1363721169-22445-7-git-send-email-peter@hurleysoftware.com>
-References: <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
- <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 06/18] n_tty: Split n_tty_chars_in_buffer() for reader-only interface
+Date: Tue, 19 Mar 2013 16:21:41 -0400
+Message-ID: <1363724513-15604-7-git-send-email-peter@hurleysoftware.com>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:33470 "EHLO
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:36823 "EHLO
 	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757207Ab3CSUGF (ORCPT
+	with ESMTP id S933289Ab3CSUdD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Mar 2013 16:06:05 -0400
-In-Reply-To: <1363721169-22445-1-git-send-email-peter@hurleysoftware.com>
+	Tue, 19 Mar 2013 16:33:03 -0400
+In-Reply-To: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, David Howells <dhowells@redhat.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, Michel Lespinasse <walken@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Min Zhang <mzhang@mvista.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+
+N_TTY .chars_in_buffer() method requires serialized access if
+the current thread is not the single-consumer, n_tty_read().
+
+Separate the internal interface; prepare for lockless read-side.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/tty/n_tty.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 84ba790..9725c94 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -567,13 +567,15 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 		tty_ldisc_restore(tty, old_ldisc);
- 	}
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 2cc3be0..51b08d9 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -299,7 +299,7 @@ static void n_tty_flush_buffer(struct tty_struct *tty)
+  *	Locking: read_lock
+  */
  
--	/* At this point we hold a reference to the new ldisc and a
--	   a reference to the old ldisc. If we ended up flipping back
--	   to the existing ldisc we have two references to it */
--
- 	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
- 		tty->ops->set_ldisc(tty);
+-static ssize_t n_tty_chars_in_buffer(struct tty_struct *tty)
++static ssize_t chars_in_buffer(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	unsigned long flags;
+@@ -317,6 +317,11 @@ static ssize_t n_tty_chars_in_buffer(struct tty_struct *tty)
+ 	return n;
+ }
  
-+	/* At this point we hold a reference to the new ldisc and a
-+	   reference to the old ldisc, or we hold two references to
-+	   the old ldisc (if it was restored as part of error cleanup
-+	   above). In either case, releasing a single reference from
-+	   the old ldisc is correct. */
++static ssize_t n_tty_chars_in_buffer(struct tty_struct *tty)
++{
++	return chars_in_buffer(tty);
++}
 +
- 	tty_ldisc_put(old_ldisc);
+ /**
+  *	is_utf8_continuation	-	utf8 multibyte check
+  *	@c: byte to check
+@@ -2030,7 +2035,7 @@ do_it_again:
+ 		}
  
- 	/*
+ 		/* If there is enough space in the read buffer now, let the
+-		 * low-level driver know. We use n_tty_chars_in_buffer() to
++		 * low-level driver know. We use chars_in_buffer() to
+ 		 * check the buffer, as it now knows about canonical mode.
+ 		 * Otherwise, if the driver is throttled and the line is
+ 		 * longer than TTY_THRESHOLD_UNTHROTTLE in canonical mode,
+@@ -2038,7 +2043,7 @@ do_it_again:
+ 		 */
+ 		while (1) {
+ 			tty_set_flow_change(tty, TTY_UNTHROTTLE_SAFE);
+-			if (n_tty_chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
++			if (chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
+ 				break;
+ 			if (!tty->count)
+ 				break;
 -- 
 1.8.1.2
 
