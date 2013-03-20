@@ -1,38 +1,54 @@
-From: Ilya Zykov <linux@izyk.ru>
-Subject: Re: [PATCH 03/18] tty: Simplify tty buffer/ldisc interface with helper
- function
-Date: Wed, 20 Mar 2013 23:25:28 +0400
-Message-ID: <514A0D28.4060804@izyk.ru>
-References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>   <1363724513-15604-4-git-send-email-peter@hurleysoftware.com>   <5148E9D2.4030305@izyk.ru> <1363737036.3413.49.camel@thor.lan>  <5149AFD0.8020604@izyk.ru> <1363801796.4280.24.camel@thor.lan>
+From: John Crispin <blogic@openwrt.org>
+Subject: Re: [PATCH 2/2] serial: of: allow au1x00 and rt288x to load from
+ OF
+Date: Wed, 20 Mar 2013 20:59:57 +0100
+Message-ID: <514A153D.8020608@openwrt.org>
+References: <1359111008-9998-1-git-send-email-blogic@openwrt.org> <1359111008-9998-2-git-send-email-blogic@openwrt.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 95-31-19-74.broadband.corbina.ru ([95.31.19.74]:53713 "EHLO
-	mail.izyk.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751120Ab3CTTZc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Mar 2013 15:25:32 -0400
-In-Reply-To: <1363801796.4280.24.camel@thor.lan>
+Received: from nbd.name ([46.4.11.11]:60330 "EHLO nbd.name"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754439Ab3CTUDa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 20 Mar 2013 16:03:30 -0400
+In-Reply-To: <1359111008-9998-2-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Min Zhang <mzhang@mvista.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
 
-On 20.03.2013 21:49, Peter Hurley wrote:
-> The motivation for changing the workqueue api to allow parallel work
-> items on SMP was to fix a class of deadlocks where forward progress
-> could not be made due to subtle dependencies between work items
-> (actually that potential still exists with self-modifying work-items,
-> ie., work items that change their function).
-> 
-> The tty layer would need a detailed and thorough analysis of potential
-> dependencies to avoid creating problems. The drivers that use work items
-> might need examination as well.
+On 25/01/13 11:50, John Crispin wrote:
+> In order to make serial_8250 loadable via OF on Au1x00 and Ralink WiSoC we need
+> to default the iotype to UPIO_AU.
+>
+> Signed-off-by: John Crispin<blogic@openwrt.org>
+> ---
+>   drivers/tty/serial/of_serial.c |    4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index e7cae1c..72e9743 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -97,7 +97,11 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>   		port->regshift = prop;
+>
+>   	port->irq = irq_of_parse_and_map(np, 0);
+> +#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
+> +	port->iotype = UPIO_AU;
+> +#else
+>   	port->iotype = UPIO_MEM;
+> +#endif
+>   	if (of_property_read_u32(np, "reg-io-width",&prop) == 0) {
+>   		switch (prop) {
+>   		case 1:
 
-Sorry, but I don't understand.
-My knowledge is very weak.
+Hi Greg,
 
-We say about three works:
-hangup_work, SAK_work, buf.work
-or anything else?
+i have the impression that this patch got lost somewhere on the way to 
+linus. I can see the 1/2 got merged with 3.9-rc1. 2/2 is missing however
 
+Thanks for you help,
+
+     John
