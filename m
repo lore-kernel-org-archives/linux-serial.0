@@ -1,54 +1,42 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: Re: [PATCH 2/2] serial: of: allow au1x00 and rt288x to load from
- OF
-Date: Wed, 20 Mar 2013 20:59:57 +0100
-Message-ID: <514A153D.8020608@openwrt.org>
-References: <1359111008-9998-1-git-send-email-blogic@openwrt.org> <1359111008-9998-2-git-send-email-blogic@openwrt.org>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: Plug and play for a tty line disciple networking device
+Date: Wed, 20 Mar 2013 16:26:45 -0700
+Message-ID: <20130320232645.GC19779@kroah.com>
+References: <CAKON4OxNV85-J8C-hodpq9pY5tRCT+7aYa=m4T3Vk04XSGhOrA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:60330 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754439Ab3CTUDa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Mar 2013 16:03:30 -0400
-In-Reply-To: <1359111008-9998-2-git-send-email-blogic@openwrt.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAKON4OxNV85-J8C-hodpq9pY5tRCT+7aYa=m4T3Vk04XSGhOrA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Ott <alan-yzvJWuRpmD1zbRFIqnYvSA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-On 25/01/13 11:50, John Crispin wrote:
-> In order to make serial_8250 loadable via OF on Au1x00 and Ralink WiSoC we need
-> to default the iotype to UPIO_AU.
->
-> Signed-off-by: John Crispin<blogic@openwrt.org>
-> ---
->   drivers/tty/serial/of_serial.c |    4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index e7cae1c..72e9743 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -97,7 +97,11 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->   		port->regshift = prop;
->
->   	port->irq = irq_of_parse_and_map(np, 0);
-> +#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
-> +	port->iotype = UPIO_AU;
-> +#else
->   	port->iotype = UPIO_MEM;
-> +#endif
->   	if (of_property_read_u32(np, "reg-io-width",&prop) == 0) {
->   		switch (prop) {
->   		case 1:
+On Tue, Mar 19, 2013 at 11:30:05AM -0400, jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> How can you achieve plug and play for a ft2232 based USB serial device
+> implementing 802.15.4 networking?
+> 
+> The device has a 802.15.4 SOC with a UART attached to a ft2232. With
+> firmware loaded the only thing it can do is talk the 802.15.4 tty line
+> discipline, it is not a general purpose serial port.
+> 
+> Right now the device works by plugging it in and it appears as a
+> generic USB serial device like ttyUSB0. You then run a user space app
+> which sets the line discipline, holds the port open and attaches it to
+> the 6lowpan implementation in the networking code. But doing that is
+> inconvenient and users needs to be trained to do it. Much simpler if
+> we could just plug the device in and it worked.
+> 
+> We can add a EEPROM to the ft2232 to give it a unique USB ID.  Is it
+> possible to make a kernel driver that see this ID, sets the line
+> discipline and wires the serial port directly into the networking
+> code?
 
-Hi Greg,
+Yes, you can do that.
 
-i have the impression that this patch got lost somewhere on the way to 
-linus. I can see the 1/2 got merged with 3.9-rc1. 2/2 is missing however
-
-Thanks for you help,
-
-     John
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
