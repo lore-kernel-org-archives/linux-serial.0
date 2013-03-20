@@ -1,50 +1,98 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: 8250: remove U6715 16550A auto-detection
-Date: Wed, 20 Mar 2013 10:21:25 -0700
-Message-ID: <20130320172125.GB28605@kroah.com>
-References: <1363722609-20021-1-git-send-email-philippe.langlais@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] tty: Fix race condition if flushing tty flip buffers
+Date: Wed, 20 Mar 2013 13:20:43 -0400
+Message-ID: <1363800043-21449-1-git-send-email-peter@hurleysoftware.com>
+References: <5149AFD0.8020604@izyk.ru>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1363722609-20021-1-git-send-email-philippe.langlais@st.com>
+In-Reply-To: <5149AFD0.8020604@izyk.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philippe Langlais <philippe.langlais@st.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hans-Peter Oeri <hp@oeri.ch>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ilya Zykov <linux@izyk.ru>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 19, 2013 at 08:50:09PM +0100, Philippe Langlais wrote:
-> The auto-detection based on 64 bytes fifo size causes troubles
-> for the identification of the MultiTechZPX Modems (pci 11c1:0480).
-> They loose the ability to do hardware flow control
-> (specifically CTS is never set).
-> 
-> Signed-off-by: Philippe Langlais <philippe.langlais@st.com>
-> ---
->  drivers/tty/serial/8250/8250.c |    9 ---------
->  1 file changed, 9 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
-> index cf6a538..3255014 100644
-> --- a/drivers/tty/serial/8250/8250.c
-> +++ b/drivers/tty/serial/8250/8250.c
-> @@ -1026,15 +1026,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
->  
->  		return;
->  	}
-> -
-> -	/*
-> -	 * We distinguish between 16550A and U6 16550A by counting
-> -	 * how many bytes are in the FIFO.
-> -	 */
-> -	if (up->port.type == PORT_16550A && size_fifo(up) == 64) {
-> -		up->port.type = PORT_U6_16550A;
-> -		up->capabilities |= UART_CAP_AFE;
-> -	}
+As Ilya Zykov identified in his patch 'PROBLEM: Race condition in
+tty buffer's function flush_to_ldisc()', a race condition exists
+which allows a parallel flush_to_ldisc() to flush and free the tty
+flip buffers while those buffers are in-use. For example,
 
-So you just broke this functionality for all of the other devices it
-does work properly for?  That's not nice, and not acceptable.
+  CPU 0                         |  CPU 1                                  |  CPU 2
+                                | flush_to_ldisc()                        |
+                                |  grab spin lock                         |
+tty_buffer_flush()              |                                         | flush_to_ldisc()
+ wait for spin lock             |                                         |  wait for spin lock
+                                |   if (!test_and_set_bit(TTYP_FLUSHING)) |
+                                |    while (next flip buffer)             |
+                                |     ...                                 |
+                                |     drop spin lock                      |
+  grab spin lock                |                                         |
+   if (test_bit(TTYP_FLUSHING)) |                                         |
+    set_bit(TTYP_FLUSHPENDING)  |      receive_buf()                      |
+    drop spin lock              |                                         |
+                                |                                         |   grab spin lock
+                                |                                         |    if (!test_and_set_bit(TTYP_FLUSHING))
+                                |                                         |    if (test_bit(TTYP_FLUSHPENDING))
+                                |                                         |    __tty_buffer_flush()
 
-Please fix this properly.
+CPU 2 has just flushed and freed all tty flip buffers while CPU 1 is
+transferring data from the head flip buffer.
 
-greg k-h
+The original patch was rejected under the assumption that parallel
+flush_to_ldisc() was not possible. Because of necessary changes to
+the workqueue api, work items can execute in parallel on SMP.
+
+This patch differs slightly from the original patch by testing for
+a pending flush _after_ each receive_buf(), since TTYP_FLUSHPENDING
+can only be set while the lock is dropped around receive_buf().
+
+Reported-by: Ilya Zykov <linux@izyk.ru>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_buffer.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index bb11993..9fd8acd 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -449,11 +449,6 @@ static void flush_to_ldisc(struct work_struct *work)
+ 				tty_buffer_free(port, head);
+ 				continue;
+ 			}
+-			/* Ldisc or user is trying to flush the buffers
+-			   we are feeding to the ldisc, stop feeding the
+-			   line discipline as we want to empty the queue */
+-			if (test_bit(TTYP_FLUSHPENDING, &port->iflags))
+-				break;
+ 			if (!tty->receive_room)
+ 				break;
+ 			if (count > tty->receive_room)
+@@ -465,17 +460,20 @@ static void flush_to_ldisc(struct work_struct *work)
+ 			disc->ops->receive_buf(tty, char_buf,
+ 							flag_buf, count);
+ 			spin_lock_irqsave(&buf->lock, flags);
++			/* Ldisc or user is trying to flush the buffers.
++			   We may have a deferred request to flush the
++			   input buffer, if so pull the chain under the lock
++			   and empty the queue */
++			if (test_bit(TTYP_FLUSHPENDING, &port->iflags)) {
++				__tty_buffer_flush(port);
++				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
++				wake_up(&tty->read_wait);
++				break;
++			}
+ 		}
+ 		clear_bit(TTYP_FLUSHING, &port->iflags);
+ 	}
+ 
+-	/* We may have a deferred request to flush the input buffer,
+-	   if so pull the chain under the lock and empty the queue */
+-	if (test_bit(TTYP_FLUSHPENDING, &port->iflags)) {
+-		__tty_buffer_flush(port);
+-		clear_bit(TTYP_FLUSHPENDING, &port->iflags);
+-		wake_up(&tty->read_wait);
+-	}
+ 	spin_unlock_irqrestore(&buf->lock, flags);
+ 
+ 	tty_ldisc_deref(disc);
+-- 
+1.8.1.2
