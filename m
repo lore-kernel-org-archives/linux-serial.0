@@ -1,98 +1,53 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] tty: Fix race condition if flushing tty flip buffers
-Date: Wed, 20 Mar 2013 13:20:43 -0400
-Message-ID: <1363800043-21449-1-git-send-email-peter@hurleysoftware.com>
-References: <5149AFD0.8020604@izyk.ru>
+Subject: Re: [PATCH 03/18] tty: Simplify tty buffer/ldisc interface with
+ helper function
+Date: Wed, 20 Mar 2013 13:49:56 -0400
+Message-ID: <1363801796.4280.24.camel@thor.lan>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
+	  <1363724513-15604-4-git-send-email-peter@hurleysoftware.com>
+	  <5148E9D2.4030305@izyk.ru> <1363737036.3413.49.camel@thor.lan>
+	 <5149AFD0.8020604@izyk.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <5149AFD0.8020604@izyk.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ilya Zykov <linux@izyk.ru>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: Ilya Zykov <linux@izyk.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Min Zhang <mzhang@mvista.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-As Ilya Zykov identified in his patch 'PROBLEM: Race condition in
-tty buffer's function flush_to_ldisc()', a race condition exists
-which allows a parallel flush_to_ldisc() to flush and free the tty
-flip buffers while those buffers are in-use. For example,
+On Wed, 2013-03-20 at 16:47 +0400, Ilya Zykov wrote:
+> >> I have little question about flush_to_ldisc().
+> >> Does can it be multithreaded?
+> >>
+> >> I think yes, because on SMP schedule_work() can work on different CPU paralleled.
+> > 
+> > Yes, the same work item can now run in parallel on SMP since Tejun Heo
+> > re-did the workqueue implementation on 2.6.36 [Stefan Richter, the
+> > firewire maintainer, recently explained this history to me].
+> 
+> About multi threaded delayed works:
+> 
+> In many cases tty layer needs single threaded delayed work for each tty instance.
+> I propose discussion about create for this purpose (tty layer)'s workqueue with WQ_NON_REENTRANT flag.
+> And use it instead common schedule_work()'s workqueue - system_wq.
+> I don't know how expensive(for system resource and CPU) it can be,
+> but for tty layer, it can be very useful.
 
-  CPU 0                         |  CPU 1                                  |  CPU 2
-                                | flush_to_ldisc()                        |
-                                |  grab spin lock                         |
-tty_buffer_flush()              |                                         | flush_to_ldisc()
- wait for spin lock             |                                         |  wait for spin lock
-                                |   if (!test_and_set_bit(TTYP_FLUSHING)) |
-                                |    while (next flip buffer)             |
-                                |     ...                                 |
-                                |     drop spin lock                      |
-  grab spin lock                |                                         |
-   if (test_bit(TTYP_FLUSHING)) |                                         |
-    set_bit(TTYP_FLUSHPENDING)  |      receive_buf()                      |
-    drop spin lock              |                                         |
-                                |                                         |   grab spin lock
-                                |                                         |    if (!test_and_set_bit(TTYP_FLUSHING))
-                                |                                         |    if (test_bit(TTYP_FLUSHPENDING))
-                                |                                         |    __tty_buffer_flush()
+Ok. I agree it makes sense to explore the possible benefit.
 
-CPU 2 has just flushed and freed all tty flip buffers while CPU 1 is
-transferring data from the head flip buffer.
+There is another potential drawback to using non-reentrant workqueues.
 
-The original patch was rejected under the assumption that parallel
-flush_to_ldisc() was not possible. Because of necessary changes to
-the workqueue api, work items can execute in parallel on SMP.
+The motivation for changing the workqueue api to allow parallel work
+items on SMP was to fix a class of deadlocks where forward progress
+could not be made due to subtle dependencies between work items
+(actually that potential still exists with self-modifying work-items,
+ie., work items that change their function).
 
-This patch differs slightly from the original patch by testing for
-a pending flush _after_ each receive_buf(), since TTYP_FLUSHPENDING
-can only be set while the lock is dropped around receive_buf().
+The tty layer would need a detailed and thorough analysis of potential
+dependencies to avoid creating problems. The drivers that use work items
+might need examination as well.
 
-Reported-by: Ilya Zykov <linux@izyk.ru>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_buffer.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index bb11993..9fd8acd 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -449,11 +449,6 @@ static void flush_to_ldisc(struct work_struct *work)
- 				tty_buffer_free(port, head);
- 				continue;
- 			}
--			/* Ldisc or user is trying to flush the buffers
--			   we are feeding to the ldisc, stop feeding the
--			   line discipline as we want to empty the queue */
--			if (test_bit(TTYP_FLUSHPENDING, &port->iflags))
--				break;
- 			if (!tty->receive_room)
- 				break;
- 			if (count > tty->receive_room)
-@@ -465,17 +460,20 @@ static void flush_to_ldisc(struct work_struct *work)
- 			disc->ops->receive_buf(tty, char_buf,
- 							flag_buf, count);
- 			spin_lock_irqsave(&buf->lock, flags);
-+			/* Ldisc or user is trying to flush the buffers.
-+			   We may have a deferred request to flush the
-+			   input buffer, if so pull the chain under the lock
-+			   and empty the queue */
-+			if (test_bit(TTYP_FLUSHPENDING, &port->iflags)) {
-+				__tty_buffer_flush(port);
-+				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
-+				wake_up(&tty->read_wait);
-+				break;
-+			}
- 		}
- 		clear_bit(TTYP_FLUSHING, &port->iflags);
- 	}
- 
--	/* We may have a deferred request to flush the input buffer,
--	   if so pull the chain under the lock and empty the queue */
--	if (test_bit(TTYP_FLUSHPENDING, &port->iflags)) {
--		__tty_buffer_flush(port);
--		clear_bit(TTYP_FLUSHPENDING, &port->iflags);
--		wake_up(&tty->read_wait);
--	}
- 	spin_unlock_irqrestore(&buf->lock, flags);
- 
- 	tty_ldisc_deref(disc);
--- 
-1.8.1.2
+Regards,
+Peter Hurley
