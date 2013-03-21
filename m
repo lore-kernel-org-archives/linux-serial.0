@@ -1,66 +1,42 @@
-From: Philippe LANGLAIS <philippe.langlais@st.com>
-Subject: Re: [PATCH] tty: serial: 8250: remove U6715 16550A auto-detection
-Date: Thu, 21 Mar 2013 09:36:58 +0100
-Message-ID: <514AC6AA.6050102@st.com>
-References: <1363722609-20021-1-git-send-email-philippe.langlais@st.com>
- <20130320172125.GB28605@kroah.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250_dw: add support for clk api
+Date: Thu, 21 Mar 2013 10:47:07 +0200
+Message-ID: <20130321084707.GB2862@xps8300>
+References: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com>
+ <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog113.obsmtp.com ([207.126.144.135]:50607 "EHLO
-	eu1sys200aog113.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932461Ab3CUIhV convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Mar 2013 04:37:21 -0400
-In-Reply-To: <20130320172125.GB28605@kroah.com>
-Content-Language: en-US
+Received: from mga11.intel.com ([192.55.52.93]:57032 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752057Ab3CUIrN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 21 Mar 2013 04:47:13 -0400
+Content-Disposition: inline
+In-Reply-To: <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Hans-Peter Oeri <hp@oeri.ch>, "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
+On Tue, Mar 19, 2013 at 11:52:49AM +0100, Maxime Ripard wrote:
+> From: Emilio L=F3pez <emilio@elopez.com.ar>
+>=20
+> This commit implements support for using the clk api; this lets us us=
+e
+> the "clocks" property with device tree, instead of having to use
+> clock-frequency.
+>=20
+> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
 
-On 03/20/2013 06:21 PM, Greg Kroah-Hartman wrote:
-> On Tue, Mar 19, 2013 at 08:50:09PM +0100, Philippe Langlais wrote:
->> The auto-detection based on 64 bytes fifo size causes troubles
->> for the identification of the MultiTechZPX Modems (pci 11c1:0480).
->> They loose the ability to do hardware flow control
->> (specifically CTS is never set).
->>
->> Signed-off-by: Philippe Langlais <philippe.langlais@st.com>
->> ---
->>   drivers/tty/serial/8250/8250.c |    9 ---------
->>   1 file changed, 9 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
->> index cf6a538..3255014 100644
->> --- a/drivers/tty/serial/8250/8250.c
->> +++ b/drivers/tty/serial/8250/8250.c
->> @@ -1026,15 +1026,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
->>   
->>   		return;
->>   	}
->> -
->> -	/*
->> -	 * We distinguish between 16550A and U6 16550A by counting
->> -	 * how many bytes are in the FIFO.
->> -	 */
->> -	if (up->port.type == PORT_16550A && size_fifo(up) == 64) {
->> -		up->port.type = PORT_U6_16550A;
->> -		up->capabilities |= UART_CAP_AFE;
->> -	}
-> So you just broke this functionality for all of the other devices it
-> does work properly for?  That's not nice, and not acceptable.
-Yes, I know, but as U6715 & U6XXX kernel maintainer there is no risk to 
-do that,
-kernel for such platforms are not managed in mainstream, there are more 
-risks
-to keep these lines for other platforms.
->
-> Please fix this properly.
-I don't know how to distinguish MultiTechZPX Modems, so I rather to 
-remove these lines.
->
-> greg k-h
-Philippe
+=46WIW,
+
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+--=20
+heikki
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
