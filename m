@@ -1,92 +1,136 @@
-From: Craig McQueen <craig.mcqueen@beamcommunications.com>
-Subject: RE: Add hardware handshaking to pseudo-tty and USB serial gadget
-Date: Thu, 21 Mar 2013 23:32:10 +0000
-Message-ID: <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F537@SINPRD0211MB405.apcprd02.prod.outlook.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Add hardware handshaking to pseudo-tty and USB serial gadget
+Date: Thu, 21 Mar 2013 20:03:35 -0400
+Message-ID: <1363910615.3395.9.camel@thor.lan>
 References: <5D7CD300-386D-4AA1-B48A-0051D17C1F1F@beamcommunications.com>
 	 <kifr4e$kc5$1@ger.gmane.org> <1363904564.4488.47.camel@thor.lan>
+	 <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F537@SINPRD0211MB405.apcprd02.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:22856 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754022Ab3CUXci (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:51995 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752016Ab3CVADl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Mar 2013 19:32:38 -0400
-In-Reply-To: <1363904564.4488.47.camel@thor.lan>
-Content-Language: en-US
+	Thu, 21 Mar 2013 20:03:41 -0400
+In-Reply-To: <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F537@SINPRD0211MB405.apcprd02.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Peter Hurley' <peter@hurleysoftware.com>, Grant Edwards <grant.b.edwards@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Craig McQueen <craig.mcqueen@beamcommunications.com>
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
-DQoNCj4gRnJvbTogUGV0ZXIgSHVybGV5IFttYWlsdG86cGV0ZXJAaHVybGV5c29mdHdhcmUuY29t
-XQ0KPiBPbiBUaHUsIDIwMTMtMDMtMjEgYXQgMjA6MzggKzAwMDAsIEdyYW50IEVkd2FyZHMgd3Jv
-dGU6DQo+ID4gT24gMjAxMy0wMy0yMSwgQ3JhaWcgTWNRdWVlbiA8Y3JhaWcubWNxdWVlbkBiZWFt
-Y29tbXVuaWNhdGlvbnMuY29tPg0KPiB3cm90ZToNCj4gPg0KPiA+ID4gSSdtIGludGVyZXN0ZWQg
-aW4gaGF2aW5nIHN1cHBvcnQgZm9yIGhhcmR3YXJlIGhhbmRzaGFraW5nIGxpbmVzIGZvcg0KPiA+
-ID4gYm90aCBwc2V1ZG8tdHR5IChVbml4IDk4IHN0eWxlKSBhbmQgVVNCIHNlcmlhbCBnYWRnZXQg
-ZHJpdmVycy4NCj4gPiA+IFVubGVzcyBJJ3ZlIG1pc3NlZCBzb21ldGhpbmcsIGl0IGxvb2tzIGFz
-IHRob3VnaCB0aGV5IGRvbid0IHN1cHBvcnQNCj4gPiA+IHRoZSBoYXJkd2FyZSBoYW5kc2hha2lu
-ZyBsaW5lcy4NCj4gPiA+DQo+ID4gPiBIYXMgYW55b25lIHdvcmtlZCBvbiB0aGlzIGFscmVhZHks
-IGZvciBlaXRoZXIgcHNldWRvLXR0eSBvciBVU0INCj4gPiA+IHNlcmlhbCBnYWRnZXQ/DQo+ID4N
-Cj4gPiBGb3IgeWVhcnMsIEkndmUgd2FudGVkIHRvIGJlIGFibGUgdG8gaW1wbGVtZW50IHNlcmlh
-bC1wb3J0cyBpbg0KPiA+IHVzZXItc3BhY2UsIGJ1dCB0aGUgcHNldWRvLXR0eSBpbXBsbWVudHMg
-dG9vIHNtYWxsIGEgc3Vic2V0IG9mIHRoZQ0KPiB0dHkNCj4gPiBBUEkgdG8gbWFrZSBpdCB1c2Fi
-bGUgZm9yIHRoYXQuICBJbiBhZGRpdGlvbiB0byB0aGUgVElPQ01TRVQvVElPQ01HRVQNCj4gPiBz
-dXBwb3J0LCBpdCB3b3VsZCBuZWVkIHRvIHN1cHBvcnQgYWxsIHRoZSBvdGhlciBzdGFuZGFyZCBz
-ZXJpYWwtcG9ydA0KPiA+IGNvbmZpZ3VyYXRpb24gb3B0aW9ucyAoY2hhcmFjdGVyIGxlbiwgcGFy
-aXR5LCBiYXVkIHJhdGUsIFJUUy9DVFMgZmxvdw0KPiA+IGNvbnRyb2wsIGV0Yy4pLg0KPiA+DQo+
-ID4gSSBhc2tlZCBzZXZlcmFsIHllYXJzIGFnbyBpZiBzdWNoIGVuaGFuY2VtZW50cyB0byB0aGUg
-cHNldWRvLXR0eQ0KPiA+IGRyaXZlciB3b3VsZCBiZSBhY2NlcHRlZCwgYnV0IEkgbmV2ZXIgZ290
-IGFueSByZXNwb25zZSwgc28gSSB0b29rDQo+IHRoYXQNCj4gPiBhcyBhICJubyIuDQo+IA0KPiBB
-bnl0aGluZyB0YWNrZWQgb250byB0aGUgcHR5IGRyaXZlciBpcyBhIG5vbi1zdGFydGVyIGJlY2F1
-c2UgYW55IGFwcA0KPiB0aGF0IG1pcy1oYW5kbGVzIHRlcm1pb3MgZm9yIGEgcHR5IHdpbGwgYmUg
-aW4gZm9yIGEgc2hvY2suIFRoZXJlJ3MgYQ0KPiBsb3Qgb2Ygd2VpcmQgbGVnYWN5IGJlaGF2aW9y
-IHRoYXQgbXVzdCBjb250aW51ZSB0byB3b3JrLg0KDQpJIHVuZGVyc3RhbmQgdGhhdCBjb3VsZCBi
-ZSBhIGNvbmNlcm4uDQoNCkhvdyBhYm91dCB3ZSBhZGQgdGhlIGZ1bmN0aW9uYWxpdHkgdG8gdGhl
-IHB0eSBkcml2ZXIsIGJ1dCBpdCdzIGRpc2FibGVkIGJ5IGRlZmF1bHQsIGFuZCBhcHBsaWNhdGlv
-bnMgdGhhdCB3YW50IGl0IGNhbiB0dXJuIGl0IG9uIHdpdGggYW4gaW9jdGwgY2FsbD8NCg0KPiA+
-ID4gSXQgc291bmRzIGFzIHRob3VnaCBwZW9wbGUgaGF2ZSBkb25lIHBzZXVkby10dHlzIHdpdGgg
-SFcNCj4gaGFuZHNoYWtpbmcNCj4gPiA+IHN1cHBvcnQtLWVnIHR0eTB0dHkgcHJvamVjdC4gSG93
-ZXZlciBJJ2QgcmF0aGVyIGltcGxlbWVudCB0aGlzDQo+ID4gPiBmdW5jdGlvbiBpbiB0aGUga2Vy
-bmVsIHBzZXVkby10ZXJtaW5hbCBkcml2ZXIgaXRzZWxmLiBJcyB0aGVyZSBhbnkNCj4gPiA+IHJl
-YXNvbiBub3QgdG8gZG8gdGhhdD8NCj4gPg0KPiA+IE5vIHJlYXNvbiBvdGhlciB0aGFuIHlvdSBh
-bmQgSSBhcmUgdGhlIG9ubHkgdHdvIHBlb3BsZSB3aG8gY2FyZSBhYm91dA0KPiA+IGl0LiA6KQ0K
-PiANCj4gQXNzdW1pbmcgeW91J3JlIGxlYW5pbmcgdG93YXJkIGFuIGluLWtlcm5lbCBzb2x1dGlv
-biwgd2h5IG5vdCBqdXN0DQo+IGltcGxlbWVudCBhIG5ldyB0dHkgZHJpdmVyIHRoYXQgYmVoYXZl
-cyBsaWtlIGEgbG9jYWwgc2VyaWFsIHBvcnQ/DQoNClRoZSBwc2V1ZG8tdHR5IGFscmVhZHkgcHJv
-dmlkZXMgbW9zdCBvZiB0aGUgZnVuY3Rpb25hbGl0eSBJIHdhbnQsIHNvIEkgZG9uJ3Qgd2FudCB0
-byByZWludmVudCB0aGUgd2hlZWwuIEkgd2FudCB0byB1c2UgaXQgdG8gc2ltdWxhdGUgYSBtb2Rl
-bSBkZXZpY2UuIFZhcmlvdXMgb3RoZXIgcHJvZ3JhbXMgY291bGQgYmVuZWZpdCBmcm9tIGFuIGVu
-aGFuY2VkIHBzZXVkby10dHksIHNvIHRoZXkgYWxzbyBkb24ndCBoYXZlIHRvIGltcGxlbWVudCB0
-aGVpciBvd24ga2VybmVsIGRyaXZlcnMtLWUuZy46DQoNCiogaW50ZXJjZXB0dHkgY291bGQgYmUg
-ZW5oYW5jZWQgaWYgdGhlIHBzZXVkby10dHkgY291bGQgaGFuZGxlIGhhcmR3YXJlIGhhbmRzaGFr
-aW5nIGFzIHdlbGwgYXMgc2V0dGluZyBwb3J0IHNwZWVkIGV0Yy4NCiogU2VyaWFsLW92ZXItRXRo
-ZXJuZXQgKFJGQy0yMjE3KSBjbGllbnQgZHJpdmVycyBjb3VsZCB1c2UgYSBwc2V1ZG8tdHR5IHRv
-IGltcGxlbWVudCB0aGUgdmlydHVhbCB0dHkgZGV2aWNlLCBpbmNsdWRpbmcgaGFyZHdhcmUgaGFu
-ZHNoYWtpbmcgYW5kIHNldHRpbmcgcG9ydCBzcGVlZCBldGMuDQoNCj4gRm9yIHRoZSBmaXJld2ly
-ZS1vdmVyLXNlcmlhbCBzdGFnaW5nIGRyaXZlciwgSSBkaWQgYSBzb2Z0d2FyZS1vbmx5DQo+IGxv
-b3BiYWNrIGRyaXZlciB0aGF0IGRvZXMgYWxsIHRoYXQgKHNpbXVsYXRlIE1DVFJMLCBldGMuKSBh
-cyBhIHdheSB0bw0KPiB0ZXN0IGFuZCBpc29sYXRlIGZpcmV3aXJlL2RtYSBwcm9ibGVtcyBmcm9t
-IGRhdGEgaGFuZGxpbmcgYW5kIHR0eQ0KPiBkcml2ZXIgcHJvYmxlbXMuDQo+IA0KPiA+ID4gSSB3
-YXMgd29uZGVyaW5nIGhvdyB0byBoYW5kbGUgdGhlIEhXIGxpbmVzIG9uIHRoZSBtYXN0ZXIgc2lk
-ZSBvZg0KPiB0aGUNCj4gPiA+IHBzZXVkby10dHksIGFuZCBvbiB0aGUgVVNCIGdhZGdldCBkZXZp
-Y2UuIEl0J3MgdGhlIG9wcG9zaXRlIHdheSB0bw0KPiBhDQo+ID4gPiByZWd1bGFyIHNlcmlhbCBw
-b3J0IChEQ0UgcmF0aGVyIHRoYW4gRFRFKSwgc28geW91IF93cml0ZV8gRFNSLCBDVFMsDQo+ID4g
-PiBEQ0QgYW5kIFJJTkcsIGFuZCBfcmVhZF8gRFRSIGFuZCBSVFMuIFRoZXJlIGNvdWxkIGJlIHR3
-byB3YXlzIHRvIGRvDQo+ID4gPiB0aGlzOg0KPiA+ID4NCj4gPiA+IDEpIFJldmVyc2Ugbm9ybWFs
-IG9wZXJhdGlvbnMsIHNvIGRvIFRJT0NNU0VUIG9mIFRJT0NNX0RTUiwgVElPQ01fQ0QNCj4gPiA+
-IGV0Yy4NCj4gPg0KPiA+IFRoYXQncyB3aGF0IEknZCB2b3RlIGZvci4NCj4gPg0KPiA+ID4gMikg
-QWN0IGxpa2UgYSBub3JtYWwgcG9ydCwgYW5kICJjcm9zcy1vdmVyIiBzaWduYWxzLiBTbyBkbw0K
-PiA+ID4NCj4gPiA+IFRJT0NNU0VUIG9mIFRJT0NNX0RUUiwgd2hpY2ggY2hhbmdlcyBEU1Igb24g
-dGhlIHNsYXZlOyBUSU9DTUdFVCBvZg0KPiA+ID4gVElPQ01fRFNSIHRvIHJlYWQgdGhlIHN0YXRl
-IG9mIERUUiBzZXQgYnkgdGhlIHNsYXZlLiBFdGMuIFdoYXQNCj4gYWJvdXQNCj4gPiA+IHNldHRp
-bmcgdGhlIHNsYXZlJ3MgRENEIGFuZCBSSU5HPyBNYXliZSBkbyBUSU9DTVNFVCBvZiBUSU9DTV9P
-VVQxDQo+ID4gPiBhbmQNCj4gPiA+IFRJT0NNX09VVDIgb24gdGhlIG1hc3Rlci4NCj4gDQo+IFRo
-aXMgaXMgdGhlIGFwcHJvYWNoIEkgdG9vayBmb3Igc2ltdWxhdGluZyBIVyBmbG93IGNvbnRyb2wg
-b3Zlcg0KPiBmaXJld2lyZS4gU29mdHdhcmUgbnVsbC1tb2RlbSBjYWJsZS4NCg0KUGVyaGFwcyB0
-aGVyZSBhcmUgcHJvcyBhbmQgY29ucyBmb3IgYm90aCBvcHRpb25zLiBJZiB3ZSBjYW4ndCBnZXQg
-YSBjbGVhciBjb25zZW5zdXMsIGNvdWxkIHdlIG1ha2UgdGhpcyBjb25maWd1cmFibGUgd2l0aCBh
-biBpb2N0bCBjYWxsPw0KDQpSZWdhcmRzLA0KQ3JhaWcgTWNRdWVlbg0KDQo=
+[ +Jiri Slaby who doesn't read linux-serial ;) ]
+
+On Thu, 2013-03-21 at 23:32 +0000, Craig McQueen wrote:
+> 
+> > From: Peter Hurley [mailto:peter@hurleysoftware.com]
+> > On Thu, 2013-03-21 at 20:38 +0000, Grant Edwards wrote:
+> > > On 2013-03-21, Craig McQueen <craig.mcqueen@beamcommunications.com>
+> > wrote:
+> > >
+> > > > I'm interested in having support for hardware handshaking lines for
+> > > > both pseudo-tty (Unix 98 style) and USB serial gadget drivers.
+> > > > Unless I've missed something, it looks as though they don't support
+> > > > the hardware handshaking lines.
+> > > >
+> > > > Has anyone worked on this already, for either pseudo-tty or USB
+> > > > serial gadget?
+> > >
+> > > For years, I've wanted to be able to implement serial-ports in
+> > > user-space, but the pseudo-tty implments too small a subset of the
+> > tty
+> > > API to make it usable for that.  In addition to the TIOCMSET/TIOCMGET
+> > > support, it would need to support all the other standard serial-port
+> > > configuration options (character len, parity, baud rate, RTS/CTS flow
+> > > control, etc.).
+> > >
+> > > I asked several years ago if such enhancements to the pseudo-tty
+> > > driver would be accepted, but I never got any response, so I took
+> > that
+> > > as a "no".
+> > 
+> > Anything tacked onto the pty driver is a non-starter because any app
+> > that mis-handles termios for a pty will be in for a shock. There's a
+> > lot of weird legacy behavior that must continue to work.
+> 
+> I understand that could be a concern.
+> 
+> How about we add the functionality to the pty driver, but it's
+> disabled by default, and applications that want it can turn it on with
+> an ioctl call?
+
+It's not my place to say yes or no here.
+
+FWIW the pty driver is still a maintenance burden -- I just fixed 2
+problems with open()/close() this release.
+
+> > > > It sounds as though people have done pseudo-ttys with HW
+> > handshaking
+> > > > support--eg tty0tty project. However I'd rather implement this
+> > > > function in the kernel pseudo-terminal driver itself. Is there any
+> > > > reason not to do that?
+> > >
+> > > No reason other than you and I are the only two people who care about
+> > > it. :)
+> > 
+> > Assuming you're leaning toward an in-kernel solution, why not just
+> > implement a new tty driver that behaves like a local serial port?
+> 
+> The pseudo-tty already provides most of the functionality I want, so I
+> don't want to reinvent the wheel. I want to use it to simulate a modem
+> device. Various other programs could benefit from an enhanced
+> pseudo-tty, so they also don't have to implement their own kernel
+> drivers--e.g.:
+
+I should have been more specific: I didn't mean necessarily start from
+scratch. As a starting point you could just dup pty.c, rip out the BSD
+legacy support, and rename the driver/tty device base names.
+
+Whatever that was would behave just like ptm/pts.
+
+> * interceptty could be enhanced if the pseudo-tty could handle
+> hardware handshaking as well as setting port speed etc.
+> * Serial-over-Ethernet (RFC-2217) client drivers could use a
+> pseudo-tty to implement the virtual tty device, including hardware
+> handshaking and setting port speed etc.
+> 
+> > For the firewire-over-serial staging driver, I did a software-only
+> > loopback driver that does all that (simulate MCTRL, etc.) as a way to
+> > test and isolate firewire/dma problems from data handling and tty
+> > driver problems.
+> > 
+> > > > I was wondering how to handle the HW lines on the master side of
+> > the
+> > > > pseudo-tty, and on the USB gadget device. It's the opposite way to
+> > a
+> > > > regular serial port (DCE rather than DTE), so you _write_ DSR, CTS,
+> > > > DCD and RING, and _read_ DTR and RTS. There could be two ways to do
+> > > > this:
+> > > >
+> > > > 1) Reverse normal operations, so do TIOCMSET of TIOCM_DSR, TIOCM_CD
+> > > > etc.
+> > >
+> > > That's what I'd vote for.
+> > >
+> > > > 2) Act like a normal port, and "cross-over" signals. So do
+> > > >
+> > > > TIOCMSET of TIOCM_DTR, which changes DSR on the slave; TIOCMGET of
+> > > > TIOCM_DSR to read the state of DTR set by the slave. Etc. What
+> > about
+> > > > setting the slave's DCD and RING? Maybe do TIOCMSET of TIOCM_OUT1
+> > > > and
+> > > > TIOCM_OUT2 on the master.
+> > 
+> > This is the approach I took for simulating HW flow control over
+> > firewire. Software null-modem cable.
+> 
+> Perhaps there are pros and cons for both options. If we can't get a
+> clear consensus, could we make this configurable with an ioctl call?
+
+I was just sharing my experience. For this part, "the right way" is
+whatever you implement.
+
+Regards,
+Peter Hurley
 
