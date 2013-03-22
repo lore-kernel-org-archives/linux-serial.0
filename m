@@ -1,61 +1,88 @@
-From: Craig McQueen <craig.mcqueen@beamcommunications.com>
-Subject: RE: Add hardware handshaking to pseudo-tty and USB serial gadget
-Date: Fri, 22 Mar 2013 01:44:38 +0000
-Message-ID: <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F908@SINPRD0211MB405.apcprd02.prod.outlook.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Add hardware handshaking to pseudo-tty and USB serial gadget
+Date: Thu, 21 Mar 2013 22:14:58 -0400
+Message-ID: <1363918498.3395.26.camel@thor.lan>
 References: <5D7CD300-386D-4AA1-B48A-0051D17C1F1F@beamcommunications.com>
 	 <kifr4e$kc5$1@ger.gmane.org> <1363904564.4488.47.camel@thor.lan>
 	 <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F537@SINPRD0211MB405.apcprd02.prod.outlook.com>
- <1363910615.3395.9.camel@thor.lan>
+	 <1363910615.3395.9.camel@thor.lan>
+	 <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F908@SINPRD0211MB405.apcprd02.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe003.messaging.microsoft.com ([213.199.154.206]:7663
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752075Ab3CVBpJ (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:33965 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753831Ab3CVCPE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Mar 2013 21:45:09 -0400
-In-Reply-To: <1363910615.3395.9.camel@thor.lan>
-Content-Language: en-US
+	Thu, 21 Mar 2013 22:15:04 -0400
+In-Reply-To: <DB8F1B3EEF94C3439BFFE674EB05E3CC23F2F908@SINPRD0211MB405.apcprd02.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Peter Hurley' <peter@hurleysoftware.com>
+To: Craig McQueen <craig.mcqueen@beamcommunications.com>
 Cc: Grant Edwards <grant.b.edwards@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
-PiBGcm9tOiBQZXRlciBIdXJsZXkNCj4gWyArSmlyaSBTbGFieSB3aG8gZG9lc24ndCByZWFkIGxp
-bnV4LXNlcmlhbCA7KSBdDQo+IA0KPiBPbiBUaHUsIDIwMTMtMDMtMjEgYXQgMjM6MzIgKzAwMDAs
-IENyYWlnIE1jUXVlZW4gd3JvdGU6DQo+ID4NCj4gPiA+IEZyb206IFBldGVyIEh1cmxleSBbbWFp
-bHRvOnBldGVyQGh1cmxleXNvZnR3YXJlLmNvbV0gT24gVGh1LA0KPiA+ID4gMjAxMy0wMy0yMSBh
-dCAyMDozOCArMDAwMCwgR3JhbnQgRWR3YXJkcyB3cm90ZToNCj4gPiA+ID4gT24gMjAxMy0wMy0y
-MSwgQ3JhaWcgTWNRdWVlbg0KPiA+ID4gPiA8Y3JhaWcubWNxdWVlbkBiZWFtY29tbXVuaWNhdGlv
-bnMuY29tPg0KPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gSXQgc291bmRzIGFzIHRob3VnaCBwZW9w
-bGUgaGF2ZSBkb25lIHBzZXVkby10dHlzIHdpdGggSFcNCj4gPiA+IGhhbmRzaGFraW5nDQo+ID4g
-PiA+ID4gc3VwcG9ydC0tZWcgdHR5MHR0eSBwcm9qZWN0LiBIb3dldmVyIEknZCByYXRoZXIgaW1w
-bGVtZW50IHRoaXMNCj4gPiA+ID4gPiBmdW5jdGlvbiBpbiB0aGUga2VybmVsIHBzZXVkby10ZXJt
-aW5hbCBkcml2ZXIgaXRzZWxmLiBJcyB0aGVyZQ0KPiA+ID4gPiA+IGFueSByZWFzb24gbm90IHRv
-IGRvIHRoYXQ/DQo+ID4gPiA+DQo+ID4gPiA+IE5vIHJlYXNvbiBvdGhlciB0aGFuIHlvdSBhbmQg
-SSBhcmUgdGhlIG9ubHkgdHdvIHBlb3BsZSB3aG8gY2FyZQ0KPiA+ID4gPiBhYm91dCBpdC4gOikN
-Cj4gPiA+DQo+ID4gPiBBc3N1bWluZyB5b3UncmUgbGVhbmluZyB0b3dhcmQgYW4gaW4ta2VybmVs
-IHNvbHV0aW9uLCB3aHkgbm90IGp1c3QNCj4gPiA+IGltcGxlbWVudCBhIG5ldyB0dHkgZHJpdmVy
-IHRoYXQgYmVoYXZlcyBsaWtlIGEgbG9jYWwgc2VyaWFsIHBvcnQ/DQo+ID4NCj4gPiBUaGUgcHNl
-dWRvLXR0eSBhbHJlYWR5IHByb3ZpZGVzIG1vc3Qgb2YgdGhlIGZ1bmN0aW9uYWxpdHkgSSB3YW50
-LCBzbw0KPiBJDQo+ID4gZG9uJ3Qgd2FudCB0byByZWludmVudCB0aGUgd2hlZWwuIEkgd2FudCB0
-byB1c2UgaXQgdG8gc2ltdWxhdGUgYQ0KPiBtb2RlbQ0KPiA+IGRldmljZS4gVmFyaW91cyBvdGhl
-ciBwcm9ncmFtcyBjb3VsZCBiZW5lZml0IGZyb20gYW4gZW5oYW5jZWQNCj4gPiBwc2V1ZG8tdHR5
-LCBzbyB0aGV5IGFsc28gZG9uJ3QgaGF2ZSB0byBpbXBsZW1lbnQgdGhlaXIgb3duIGtlcm5lbA0K
-PiA+IGRyaXZlcnMtLWUuZy46DQo+IA0KPiBJIHNob3VsZCBoYXZlIGJlZW4gbW9yZSBzcGVjaWZp
-YzogSSBkaWRuJ3QgbWVhbiBuZWNlc3NhcmlseSBzdGFydCBmcm9tDQo+IHNjcmF0Y2guIEFzIGEg
-c3RhcnRpbmcgcG9pbnQgeW91IGNvdWxkIGp1c3QgZHVwIHB0eS5jLCByaXAgb3V0IHRoZSBCU0QN
-Cj4gbGVnYWN5IHN1cHBvcnQsIGFuZCByZW5hbWUgdGhlIGRyaXZlci90dHkgZGV2aWNlIGJhc2Ug
-bmFtZXMuDQo+IA0KPiBXaGF0ZXZlciB0aGF0IHdhcyB3b3VsZCBiZWhhdmUganVzdCBsaWtlIHB0
-bS9wdHMuDQoNCkknbSBhIGxpdHRsZSBmdXp6eSBhYm91dCB0aGlzLi4uIElmIEkgZG8gdGhpcywg
-aG93IHdvdWxkIHVzZXJsYW5kIHByb2dyYW1zIGNyZWF0ZSBwdHkgbWFzdGVyL3NsYXZlIGRldmlj
-ZSBwYWlycz8gQ291bGQgaXQgd29yayB3aXRoIHRoZSBBUEkgb2YgdGhlIFVOSVggOTggc3R5bGUg
-cHNldWRvLXR0eSBpbiAnbWFuIDcgcHR5Jz8gVGhhdCBpczoNCg0KcG9zaXhfb3BlbnB0KCkNCmdy
-YW50cHQoKQ0KdW5sb2NrcHQoKQ0KcHRzbmFtZSgpDQoNCkkgc2VlIHBvc2l4X29wZW5wdChmbGFn
-cykgaXMgZXNzZW50aWFsbHkgZXF1aXZhbGVudCB0byBvcGVuKCIvZGV2L3B0bXgiLCBmbGFncyks
-IHNvIG1heWJlIGlmIEkgbWFkZSBteSBvd24gZHJpdmVyLCBwb3NpeF9vcGVucHQoZmxhZ3MpIHdv
-dWxkIGJlIHJlcGxhY2VkIGJ5IG9wZW4oIi9kZXYvbXktZHJpdmVyLXB0bXgiLCBmbGFncyksIGFu
-ZCB0aGUgb3RoZXIgZnVuY3Rpb24gY2FsbHMgY291bGQgc3RheSB0aGUgc2FtZS4gSXMgdGhhdCBy
-aWdodD8NCg0KVGhhbmtzLA0KQ3JhaWcgTWNRdWVlbg0KDQo=
+On Fri, 2013-03-22 at 01:44 +0000, Craig McQueen wrote:
+> > From: Peter Hurley
+> > [ +Jiri Slaby who doesn't read linux-serial ;) ]
+> > 
+> > On Thu, 2013-03-21 at 23:32 +0000, Craig McQueen wrote:
+> > >
+> > > > From: Peter Hurley [mailto:peter@hurleysoftware.com] On Thu,
+> > > > 2013-03-21 at 20:38 +0000, Grant Edwards wrote:
+> > > > > On 2013-03-21, Craig McQueen
+> > > > > <craig.mcqueen@beamcommunications.com>
+> > > > wrote:
+> > > > > > It sounds as though people have done pseudo-ttys with HW
+> > > > handshaking
+> > > > > > support--eg tty0tty project. However I'd rather implement this
+> > > > > > function in the kernel pseudo-terminal driver itself. Is there
+> > > > > > any reason not to do that?
+> > > > >
+> > > > > No reason other than you and I are the only two people who care
+> > > > > about it. :)
+> > > >
+> > > > Assuming you're leaning toward an in-kernel solution, why not just
+> > > > implement a new tty driver that behaves like a local serial port?
+> > >
+> > > The pseudo-tty already provides most of the functionality I want, so
+> > I
+> > > don't want to reinvent the wheel. I want to use it to simulate a
+> > modem
+> > > device. Various other programs could benefit from an enhanced
+> > > pseudo-tty, so they also don't have to implement their own kernel
+> > > drivers--e.g.:
+> > 
+> > I should have been more specific: I didn't mean necessarily start from
+> > scratch. As a starting point you could just dup pty.c, rip out the BSD
+> > legacy support, and rename the driver/tty device base names.
+> > 
+> > Whatever that was would behave just like ptm/pts.
+> 
+> I'm a little fuzzy about this...If I do this, how would userland
+> programs create pty master/slave device pairs? Could it work with the
+> API of the UNIX 98 style pseudo-tty in 'man 7 pty'? That is:
+>
+> posix_openpt()
+> grantpt()
+> unlockpt()
+> ptsname()
+>
+> I see posix_openpt(flags) is essentially equivalent to
+> open("/dev/ptmx", flags), so maybe if I made my own driver,
+> posix_openpt(flags) would be replaced by open("/dev/my-driver-ptmx",
+> flags), and the other function calls could stay the same. Is that
+> right?
+
+I was in the middle of dropping in some simple user-space code that
+would do the trick when I remembered that what I suggested wouldn't be
+that simple because of the devpts filesystem.
+
+Sorry for the false start.
+
+Regards,
+Peter Hurley
+
+
+
 
