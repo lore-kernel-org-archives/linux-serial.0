@@ -1,30 +1,50 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCHv2 3/3] serial: of_serial: Handle auto-flow-control property
-Date: Mon, 25 Mar 2013 13:53:41 +0000
-Message-ID: <201303251353.41501.arnd@arndb.de>
-References: <20130325131727.GB2847@xps8300> <1364219475-18215-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: [PATCH] serial: 8250: remove a few lines of dead code
+Date: Mon, 25 Mar 2013 23:01:21 +0100
+Message-ID: <1364248881.1390.302.camel@x61.thuisdomein>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:59976 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757822Ab3CYNxt (ORCPT
+Received: from cpsmtpb-ews02.kpnxchange.com ([213.75.39.5]:55543 "EHLO
+	cpsmtpb-ews02.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752022Ab3CYWBY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Mar 2013 09:53:49 -0400
-In-Reply-To: <1364219475-18215-1-git-send-email-heikki.krogerus@linux.intel.com>
+	Mon, 25 Mar 2013 18:01:24 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ley Foon Tan <lftan@altera.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Monday 25 March 2013, Heikki Krogerus wrote:
-> 
-> Automatic Flow Control capability is not tied to this
-> property. This is only one way of detecting it. The property
-> is limited to be used only with 8250 driver.
-> 
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Support for the WindRiver SBC8560 board was removed in v3.6. But there
+are still a few lines depending on its obsolete Kconfig macro. Remove
+these now.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+---
+Not tested.
+
+ drivers/tty/serial/8250/8250.h | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 34eb676..1ebf853 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -117,13 +117,6 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
+  * is cleared, the machine locks up with endless interrupts.
+  */
+ #define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
+-#elif defined(CONFIG_SBC8560)
+-/*
+- * WindRiver did something similarly broken on their SBC8560 board. The
+- * UART tristates its IRQ output while OUT2 is clear, but they pulled
+- * the interrupt line _up_ instead of down, so if we register the IRQ
+- * while the UART is in that state, we die in an IRQ storm. */
+-#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
+ #else
+ #define ALPHA_KLUDGE_MCR 0
+ #endif
+-- 
+1.7.11.7
+
