@@ -1,42 +1,84 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 3/3] serial: of_serial: Handle hw-flow-control property
-Date: Mon, 25 Mar 2013 15:17:27 +0200
-Message-ID: <20130325131727.GB2847@xps8300>
-References: <1364211286-31611-1-git-send-email-heikki.krogerus@linux.intel.com>
- <201303251247.58823.arnd@arndb.de>
- <20130325125757.GA2847@xps8300>
- <201303251304.47559.arnd@arndb.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCHv2 3/3] serial: of_serial: Handle auto-flow-control property
+Date: Mon, 25 Mar 2013 15:51:15 +0200
+Message-ID: <1364219475-18215-1-git-send-email-heikki.krogerus@linux.intel.com>
+References: <20130325131727.GB2847@xps8300>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:2924 "EHLO mga14.intel.com"
+Received: from mga14.intel.com ([143.182.124.37]:30576 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757729Ab3CYNRb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Mar 2013 09:17:31 -0400
-Content-Disposition: inline
-In-Reply-To: <201303251304.47559.arnd@arndb.de>
+	id S1757950Ab3CYNvW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 25 Mar 2013 09:51:22 -0400
+In-Reply-To: <20130325131727.GB2847@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ley Foon Tan <lftan@altera.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ley Foon Tan <lftan@altera.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Mar 25, 2013 at 01:04:47PM +0000, Arnd Bergmann wrote:
-> > > I still find the text in the binding and the name of the property confusing,
-> > > because it seems to imply that you have no hardware flow control without this.
-> > > I think what you mean here is really "automatic flow control" rather than
-> > > "hardware flow control".
-> > 
-> > Ah, I understand. I'll change the property name to auto-flow-control.
-> > 
-> 
-> Ok, sounds good. I would also suggest rewording the description in the
-> binding so that the driver is allowed to detect the presence of the automatic
-> flow control capability even if the property is not set, because that's
-> what the driver does.
+Automatic Flow Control capability is not tied to this
+property. This is only one way of detecting it. The property
+is limited to be used only with 8250 driver.
 
-OK, I'll fix the description too.
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ .../devicetree/bindings/tty/serial/of-serial.txt          |    3 +++
+ drivers/tty/serial/of_serial.c                            |   13 ++++++++++---
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-Thanks,
-
+diff --git a/Documentation/devicetree/bindings/tty/serial/of-serial.txt b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+index c13f0ce..1928a3e 100644
+--- a/Documentation/devicetree/bindings/tty/serial/of-serial.txt
++++ b/Documentation/devicetree/bindings/tty/serial/of-serial.txt
+@@ -34,6 +34,9 @@ Optional properties:
+ - no-loopback-test: set to indicate that the port does not implements loopback
+   test mode
+ - fifo-size: the fifo size of the UART.
++- auto-flow-control: one way to enable automatic flow control support. The
++  driver is allowed to detect support for the capability even without this
++  property.
+ 
+ Example:
+ 
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 267711b..39c7ea4 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -14,7 +14,6 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/serial_core.h>
+-#include <linux/serial_8250.h>
+ #include <linux/serial_reg.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+@@ -22,6 +21,8 @@
+ #include <linux/nwpserial.h>
+ #include <linux/clk.h>
+ 
++#include "8250/8250.h"
++
+ struct of_serial_info {
+ 	struct clk *clk;
+ 	int type;
+@@ -171,11 +172,17 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ #ifdef CONFIG_SERIAL_8250
+ 	case PORT_8250 ... PORT_MAX_8250:
+ 	{
+-		/* For now the of bindings don't support the extra
+-		   8250 specific bits */
+ 		struct uart_8250_port port8250;
+ 		memset(&port8250, 0, sizeof(port8250));
+ 		port8250.port = port;
++
++		if (port.fifosize)
++			port8250.capabilities = UART_CAP_FIFO;
++
++		if (of_property_read_bool(ofdev->dev.of_node,
++					  "auto-flow-control"))
++			port8250.capabilities |= UART_CAP_AFE;
++
+ 		ret = serial8250_register_8250_port(&port8250);
+ 		break;
+ 	}
 -- 
-heikki
+1.7.10.4
+
