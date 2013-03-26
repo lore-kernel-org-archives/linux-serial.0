@@ -1,56 +1,50 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH] serial: 8250_dw: add support for clk api
-Date: Tue, 26 Mar 2013 11:35:18 +0100
-Message-ID: <515179E6.4020709@free-electrons.com>
-References: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com> <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com> <20130321084707.GB2862@xps8300>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:51618 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753717Ab3CZKfX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Mar 2013 06:35:23 -0400
-In-Reply-To: <20130321084707.GB2862@xps8300>
-Sender: linux-serial-owner@vger.kernel.org
+From: Tomasz Figa <t.figa@samsung.com>
+Subject: [PATCH] tty: serial: samsung: Disable interrupts in a suspend-friendly
+ way
+Date: Tue, 26 Mar 2013 15:57:35 +0100
+Message-ID: <1364309855-10391-1-git-send-email-t.figa@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, kyungmin.park@samsung.com, kgene.kim@samsung.com, m.szyprowski@samsung.com, thomas.abraham@linaro.org, Tomasz Figa <t.figa@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, =?ISO-8859-1?Q?Emilio_L=F3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
-Hi Greg,
+Since the interrupt mask register is not preserved across system suspend
+and it defaults to all interrupts enabled, it is not enough to disable
+UART interrupt.
 
-Le 21/03/2013 09:47, Heikki Krogerus a =E9crit :
-> On Tue, Mar 19, 2013 at 11:52:49AM +0100, Maxime Ripard wrote:
->> From: Emilio L=F3pez <emilio@elopez.com.ar>
->>
->> This commit implements support for using the clk api; this lets us u=
-se
->> the "clocks" property with device tree, instead of having to use
->> clock-frequency.
->>
->> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
->=20
-> FWIW,
->=20
-> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+This patch adds free_irq to port shutdown and mask setting to port
+startup to handle IRQ disabling in a suspend-friendly way. In addition,
+a bug caused by multiple request_irq calls in port startup callback is
+fixed.
 
-Would you consider merging this patch, or do you have additional commen=
-ts?
+Signed-off-by: Tomasz Figa <t.figa@samsung.com>
+Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ drivers/tty/serial/samsung.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-We have several patch series that depends on this one that I'd like to
-see included in 3.10, and we begin to see the end of the 3.9 release cy=
-cle.
-
-Thanks,
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 2769a38..b386fc8 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -446,6 +446,8 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
+ 
+ 	/* Clear pending interrupts and mask all interrupts */
+ 	if (s3c24xx_serial_has_interrupt_mask(port)) {
++		free_irq(port->irq, ourport);
++
+ 		wr_regl(port, S3C64XX_UINTP, 0xf);
+ 		wr_regl(port, S3C64XX_UINTM, 0xf);
+ 	}
+@@ -505,6 +507,8 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+ 	dbg("s3c64xx_serial_startup: port=%p (%08lx,%p)\n",
+ 	    port->mapbase, port->membase);
+ 
++	wr_regl(port, S3C64XX_UINTM, 0xf);
++
+ 	ret = request_irq(port->irq, s3c64xx_serial_handle_irq, IRQF_SHARED,
+ 			  s3c24xx_serial_portname(port), ourport);
+ 	if (ret) {
+-- 
+1.8.1.5
