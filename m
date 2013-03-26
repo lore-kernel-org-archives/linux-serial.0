@@ -1,53 +1,208 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_dw: add support for clk api
-Date: Tue, 26 Mar 2013 16:34:33 -0700
-Message-ID: <20130326233433.GA31077@kroah.com>
-References: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com>
- <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com>
- <20130321084707.GB2862@xps8300>
- <515179E6.4020709@free-electrons.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v5 26/44] tty: Add read-recursive, writer-prioritized rw
+ semaphore
+Date: Tue, 26 Mar 2013 19:47:47 -0400
+Message-ID: <1364341667.3512.11.camel@thor.lan>
+References: <1361390599-15195-1-git-send-email-peter@hurleysoftware.com>
+	 <1363034704-28036-1-git-send-email-peter@hurleysoftware.com>
+	 <1363034704-28036-27-git-send-email-peter@hurleysoftware.com>
+	 <20130318235815.GA5320@kroah.com> <1363654879.4568.42.camel@thor.lan>
+	 <20130319015936.GA21241@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <515179E6.4020709@free-electrons.com>
+In-Reply-To: <20130319015936.GA21241@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ilya Zykov <linux@izyk.ru>, Jiri Slaby <jslaby@suse.cz>, Sasha Levin <levinsasha928@gmail.com>, Dave Jones <davej@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 26, 2013 at 11:35:18AM +0100, Maxime Ripard wrote:
-> Hi Greg,
->=20
-> Le 21/03/2013 09:47, Heikki Krogerus a =E9crit :
-> > On Tue, Mar 19, 2013 at 11:52:49AM +0100, Maxime Ripard wrote:
-> >> From: Emilio L=F3pez <emilio@elopez.com.ar>
-> >>
-> >> This commit implements support for using the clk api; this lets us=
- use
-> >> the "clocks" property with device tree, instead of having to use
-> >> clock-frequency.
-> >>
-> >> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
-> >=20
-> > FWIW,
-> >=20
-> > Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
->=20
-> Would you consider merging this patch, or do you have additional comm=
-ents?
->=20
-> We have several patch series that depends on this one that I'd like t=
-o
-> see included in 3.10, and we begin to see the end of the 3.9 release =
-cycle.
+On Mon, 2013-03-18 at 18:59 -0700, Greg Kroah-Hartman wrote:
+> > If you'd like, I can send you 6 or so short user test programs that
+> > hang, crash, or deadlock inside 60 seconds on mainline and next, but not
+> > with this patchset.
+> 
+> That would be interesting to have, please send them.
+> 
+> And I hope that they only lock up when run as root, but I'm afraid to
+> ask that question...
 
-You resent one patch, in the middle of a 7 patch series, with me on the
- cc: and somehow expected me to know that I was supposed to apply it?
+Sorry Greg, I meant to get to this sooner.
 
-Please be specific and realistic with your requests.
+This one is pretty straightforward. Does not require suid.
+I would still recommend only running this in a disposable vm -- that's
+what I do. The vm should have 6 cores to do real business.
 
-Resend it if you feel I should apply it.
+It helps to hook up netconsole or whatever so you can see what kind of
+progress it's making but don't use a slow framebuffer console because
+that invariably locks up :). If it pauses for 5 secs., that's actually
+correct behavior.
 
-greg k-h
+--- >% ---
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ pts_test3.c | 151 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 151 insertions(+)
+ create mode 100644 pts_test3.c
+
+diff --git a/pts_test3.c b/pts_test3.c
+new file mode 100644
+index 0000000..b673f17
+--- /dev/null
++++ b/pts_test3.c
+@@ -0,0 +1,151 @@
++/*
++ *  pts_test3.c
++ *
++ *  Created on: Dec, 2012
++ *  Copyright (C) 2012  Ilya Zykov
++ *
++ *  This program is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ *  Modified-by: Peter Hurley <peter@hurleysoftware.com>
++ */
++
++#include <stdio.h>
++#include <fcntl.h>
++#include <sys/ioctl.h>
++#include <termios.h>
++#include <stdlib.h>
++#include <pthread.h>
++#include <signal.h>
++
++#define BUF_SIZE 2
++#define ERROR_EXIT_CODE 1
++#define parent child_id
++
++static int
++mfd=-1, sfd=-1, parent=1;
++
++static pthread_t
++pth_id;
++
++static char
++pty_name[24], buf[]={ '1', '\n' };
++
++
++static void
++pty_exit(int ret, char * exit_message){
++        if (sfd >= 0) close(sfd);
++        if (mfd >= 0) close(mfd);
++        printf("%s %s %s exit. \n",exit_message?exit_message:"",
++                ret?"Error":"Normal", parent?"parent":"child");
++        exit(ret);
++}
++
++static void
++pty_init(void){
++        int ptn;
++        if( (mfd=open("/dev/ptmx", O_RDWR )) < 0 )
++                pty_exit(ERROR_EXIT_CODE,"Couldn't open /dev/ptmx. \n");
++        if (ioctl(mfd, TIOCGPTN, &ptn) < 0 )
++                pty_exit(ERROR_EXIT_CODE,"Couldn't get pty number. \n");
++        snprintf(pty_name, sizeof(pty_name), "/dev/pts/%d", ptn);
++        //printf("Slave pty name = %s.\n",pty_name);
++        ptn=0;
++        if (ioctl(mfd, TIOCSPTLCK, &ptn) < 0 )
++                pty_exit(ERROR_EXIT_CODE,"Couldn't unlock pty slave. \n");
++        if ( (sfd=open(pty_name, O_RDWR )) < 0 )
++                pty_exit(ERROR_EXIT_CODE, "Couldn't open pty slave. \n");
++}
++
++static void *
++pty_thread_open(void * arg) {
++        static const char ret[]="Thread open has been created.\n";
++        printf(ret);
++        do {
++                close(open(pty_name, O_RDWR ));
++        } while(1);
++        return ret;
++}
++
++static void *
++pty_thread_read(void * arg) {
++        static const char ret[]="Thread read has been created.\n";
++        printf(ret);
++        do {
++                read(sfd, buf, BUF_SIZE);
++        } while(1);
++        return ret;
++}
++
++static void *
++pty_thread_write(void * arg) {
++        static char ret[]="Thread write has been created.\n";
++        printf(ret);
++        do {
++                write(mfd, buf, BUF_SIZE);
++        } while(1);
++        return ret;
++}
++
++#define N_PPS 18
++
++static void *
++pty_thread_msetd(void * arg) {
++        static const char ret[]="Thread msetd has been created.\n";
++	static int ldisc;
++        printf(ret);
++        do {
++		ldisc = N_PPS;
++                ioctl(mfd, TIOCSETD, &ldisc);
++		ldisc = N_TTY;
++		ioctl(mfd, TIOCSETD, &ldisc);
++        } while(1);
++        return ret;
++}
++
++static void *
++pty_thread_ssetd(void * arg) {
++        static char ret[]="Thread ssetd has been created.\n";
++	static int ldisc;
++        printf(ret);
++        do {
++		ldisc = N_PPS;
++                ioctl(sfd, TIOCSETD, &ldisc);
++		ldisc = N_TTY;
++		ioctl(sfd, TIOCSETD, &ldisc);
++        } while(1);
++        return ret;
++}
++
++int main(int argc,char *argv[]) {
++        pty_init();
++        child_id=fork();
++        if(parent) {
++                sleep(100);
++                kill(child_id, SIGINT);
++                pty_exit(0,"Parent normal exit\n");
++        }
++        pthread_create(&pth_id, NULL, &pty_thread_open, 0);
++	/* For WARNINGS. */
++        pthread_create(&pth_id, NULL, &pty_thread_write, 0);
++        pthread_create(&pth_id, NULL, &pty_thread_read, 0);
++
++	pthread_create(&pth_id, NULL, &pty_thread_msetd, 0);
++	pthread_create(&pth_id, NULL, &pty_thread_ssetd, 0);
++        do {
++                close(sfd);
++                close(mfd);
++                pty_init();
++        } while(1);
++        return 0;
++}
+-- 
+1.8.1.2
