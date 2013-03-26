@@ -1,50 +1,56 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] serial: 8250: remove a few lines of dead code
-Date: Mon, 25 Mar 2013 23:01:21 +0100
-Message-ID: <1364248881.1390.302.camel@x61.thuisdomein>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH] serial: 8250_dw: add support for clk api
+Date: Tue, 26 Mar 2013 11:35:18 +0100
+Message-ID: <515179E6.4020709@free-electrons.com>
+References: <1363689316-7847-2-git-send-email-maxime.ripard@free-electrons.com> <1363690369-8067-1-git-send-email-maxime.ripard@free-electrons.com> <20130321084707.GB2862@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpsmtpb-ews02.kpnxchange.com ([213.75.39.5]:55543 "EHLO
-	cpsmtpb-ews02.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752022Ab3CYWBY (ORCPT
+Received: from mail.free-electrons.com ([94.23.35.102]:51618 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753717Ab3CZKfX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Mar 2013 18:01:24 -0400
+	Tue, 26 Mar 2013 06:35:23 -0400
+In-Reply-To: <20130321084707.GB2862@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-arm-kernel@lists.infradead.org, kevin@allwinnertech.com, sunny@allwinnertech.com, shuge@allwinnertech.com, linux-serial@vger.kernel.org, =?ISO-8859-1?Q?Emilio_L=F3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
-Support for the WindRiver SBC8560 board was removed in v3.6. But there
-are still a few lines depending on its obsolete Kconfig macro. Remove
-these now.
+Hi Greg,
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
----
-Not tested.
+Le 21/03/2013 09:47, Heikki Krogerus a =E9crit :
+> On Tue, Mar 19, 2013 at 11:52:49AM +0100, Maxime Ripard wrote:
+>> From: Emilio L=F3pez <emilio@elopez.com.ar>
+>>
+>> This commit implements support for using the clk api; this lets us u=
+se
+>> the "clocks" property with device tree, instead of having to use
+>> clock-frequency.
+>>
+>> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
+>=20
+> FWIW,
+>=20
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
- drivers/tty/serial/8250/8250.h | 7 -------
- 1 file changed, 7 deletions(-)
+Would you consider merging this patch, or do you have additional commen=
+ts?
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 34eb676..1ebf853 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -117,13 +117,6 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
-  * is cleared, the machine locks up with endless interrupts.
-  */
- #define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
--#elif defined(CONFIG_SBC8560)
--/*
-- * WindRiver did something similarly broken on their SBC8560 board. The
-- * UART tristates its IRQ output while OUT2 is clear, but they pulled
-- * the interrupt line _up_ instead of down, so if we register the IRQ
-- * while the UART is in that state, we die in an IRQ storm. */
--#define ALPHA_KLUDGE_MCR (UART_MCR_OUT2)
- #else
- #define ALPHA_KLUDGE_MCR 0
- #endif
--- 
-1.7.11.7
+We have several patch series that depends on this one that I'd like to
+see included in 3.10, and we begin to see the end of the 3.9 release cy=
+cle.
 
+Thanks,
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
