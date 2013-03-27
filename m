@@ -1,360 +1,222 @@
-From: Chanho Min <chanho.min@lge.com>
-Subject: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling.
-Date: Wed, 27 Mar 2013 18:38:11 +0900
-Message-ID: <CAOAMb1AcBprsZ1RpA3XDjUC6hAZMrbBcmvVJk7oryeMsPcJy1A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 02/18] tty: Make ldisc input flow control concurrency-friendly
+Date: Wed, 27 Mar 2013 07:43:52 -0400
+Message-ID: <1364384648-6636-3-git-send-email-peter@hurleysoftware.com>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
+ <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f44.google.com ([74.125.83.44]:39345 "EHLO
-	mail-ee0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750932Ab3C0JiN (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:54248 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752672Ab3C0Loj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Mar 2013 05:38:13 -0400
+	Wed, 27 Mar 2013 07:44:39 -0400
+In-Reply-To: <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Min Zhang <mzhang@mvista.com>, Ilya Zykov <linux@izyk.ru>, Peter Hurley <peter@hurleysoftware.com>
 
-In DMA support, The received data is not pushed to tty until the DMA buffer
-is filled. But some megabyte rate chips such as BT expect fast response and
-data should be pushed immediately. In order to fix this issue, We suggest
-the use of the timer for polling DMA buffer.
-In our test, no data loss occurred at high-baudrate as compared with interrupt-
-driven (We tested with 3Mbps).
-We changes:
+Although line discipline receiving is single-producer/single-consumer,
+using tty->receive_room to manage flow control creates unnecessary
+critical regions requiring additional lock use.
 
-- We add timer for polling. If we set poll_timer to 10, every 10ms,
- timer handler checks the residue in the dma buffer and transfer data
- to the tty. Also, last_residue is updated for the next polling.
+Instead, introduce the optional .receive_room() ldisc method which
+returns the maximum # of bytes the .receive_buf() ldisc method can
+accept. Serialization is guaranteed by the caller.
 
-- poll_timeout is used to prevent the timer's system cost.
-  If poll_timeout is set to 3000 and no data is received in 3 seconds,
-  we inactivate poll timer and driver falls back to interrupt-driven.
-  When data is received again in FIFO and UART irq is occurred, we switch
-  back to DMA mode and start polling.
+In turn, the line discipline should schedule the buffer work item
+whenever space becomes available; ie., when there is room to receive
+data and receive_room() previously returned 0 (the buffer work
+item stops processing if receive_room() is 0).
 
-- We use consistent DMA mappings to avoid from the frequent cache operation
-  of the timer function for default.
+Add n_tty_receive_room() as the receive_room() method for N_TTY
+and remove tty->receive_room references in N_TTY.
 
-- pl011_dma_rx_chars is modified. the pending size is recalculated because
-  data can be taken by polling.
+Line disciplines not using input flow control can continue to set
+tty->receive_room to a fixed value.
 
-- the polling time is adjusted if dma rx poll is enabled but no rate is
-  specified. Ideal polling interval to push 1 character at every interval
-  is the reciprocal of 'baud rate / 10 line bits per character / 1000 ms
-  per sec'. But It is very aggressive to system. Experimentally,
- '10000000 / baud' is suitable to receive dozens of characters. the poll rate
- can be specified statically by dma_rx_poll_rate of the platform data as well.
-
-Changes compared to v1:
- - Use of consistent DMA mappings.
- - Added dma_rx_poll_rate in platform data to specify the polling interval.
- - Added dma_rx_poll_timeout in platform data to specify the polling timeout.
-
-Changes compared to v2:
- - Use of consistent DMA mappings for default.
- - Added dma_rx_poll_enable in platform data to adjust the polling time
-   according to the baud rate.
- - remove unnecessary lock from the polling function.
-
-Signed-off-by: Chanho Min <chanho.min@lge.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/amba-pl011.c |  157 ++++++++++++++++++++++++++++++++++-----
- include/linux/amba/serial.h     |    3 +
- 2 files changed, 141 insertions(+), 19 deletions(-)
+ drivers/tty/n_tty.c       | 68 ++++++++++++++++++++++++++++++-----------------
+ drivers/tty/tty_buffer.c  |  3 +++
+ include/linux/tty_ldisc.h |  8 ++++++
+ 3 files changed, 54 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 3ea5408..3b093b5 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -29,6 +29,7 @@
-  * and hooked into this driver.
-  */
-
-+
- #if defined(CONFIG_SERIAL_AMBA_PL011_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
- #define SUPPORT_SYSRQ
- #endif
-@@ -117,6 +118,12 @@ struct pl011_dmarx_data {
- 	struct pl011_sgbuf	sgbuf_b;
- 	dma_cookie_t		cookie;
- 	bool			running;
-+	struct timer_list	timer;
-+	unsigned int last_residue;
-+	unsigned long last_jiffies;
-+	bool auto_poll_rate;
-+	unsigned int poll_rate;
-+	unsigned int poll_timeout;
- };
-
- struct pl011_dmatx_data {
-@@ -223,16 +230,18 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
- static int pl011_sgbuf_init(struct dma_chan *chan, struct pl011_sgbuf *sg,
- 	enum dma_data_direction dir)
- {
--	sg->buf = kmalloc(PL011_DMA_BUFFER_SIZE, GFP_KERNEL);
-+	dma_addr_t dma_addr;
-+
-+	sg->buf = dma_alloc_coherent(chan->device->dev,
-+		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
- 	if (!sg->buf)
- 		return -ENOMEM;
-
--	sg_init_one(&sg->sg, sg->buf, PL011_DMA_BUFFER_SIZE);
-+	sg_init_table(&sg->sg, 1);
-+	sg_set_page(&sg->sg, phys_to_page(dma_addr),
-+		PL011_DMA_BUFFER_SIZE, offset_in_page(dma_addr));
-+	sg_dma_address(&sg->sg) = dma_addr;
-
--	if (dma_map_sg(chan->device->dev, &sg->sg, 1, dir) != 1) {
--		kfree(sg->buf);
--		return -EINVAL;
--	}
- 	return 0;
- }
-
-@@ -240,8 +249,9 @@ static void pl011_sgbuf_free(struct dma_chan
-*chan, struct pl011_sgbuf *sg,
- 	enum dma_data_direction dir)
- {
- 	if (sg->buf) {
--		dma_unmap_sg(chan->device->dev, &sg->sg, 1, dir);
--		kfree(sg->buf);
-+		dma_free_coherent(chan->device->dev,
-+			PL011_DMA_BUFFER_SIZE, sg->buf,
-+			sg_dma_address(&sg->sg));
- 	}
- }
-
-@@ -300,6 +310,29 @@ static void pl011_dma_probe_initcall(struct
-uart_amba_port *uap)
- 		dmaengine_slave_config(chan, &rx_conf);
- 		uap->dmarx.chan = chan;
-
-+		if (plat->dma_rx_poll_enable) {
-+			/* Set poll rate if specified. */
-+			if (plat->dma_rx_poll_rate) {
-+				uap->dmarx.auto_poll_rate = false;
-+				uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
-+			} else {
-+				/*
-+				 * 100 ms defaults to poll rate if not
-+				 * specified. This will be adjusted with
-+				 * the baud rate at set_termios.
-+				 */
-+				uap->dmarx.auto_poll_rate = true;
-+				uap->dmarx.poll_rate =  100;
-+			}
-+			/* 3 secs defaults poll_timeout if not specified. */
-+			if (plat->dma_rx_poll_timeout)
-+				uap->dmarx.poll_timeout =
-+					plat->dma_rx_poll_timeout;
-+			else
-+				uap->dmarx.poll_timeout = 3000;
-+		} else
-+			uap->dmarx.auto_poll_rate = false;
-+
- 		dev_info(uap->port.dev, "DMA channel RX %s\n",
- 			 dma_chan_name(uap->dmarx.chan));
- 	}
-@@ -701,24 +734,30 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
- 	struct tty_port *port = &uap->port.state->port;
- 	struct pl011_sgbuf *sgbuf = use_buf_b ?
- 		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
--	struct device *dev = uap->dmarx.chan->device->dev;
- 	int dma_count = 0;
- 	u32 fifotaken = 0; /* only used for vdbg() */
-
--	/* Pick everything from the DMA first */
-+	struct pl011_dmarx_data *dmarx = &uap->dmarx;
-+	int dmataken = 0;
-+
-+	if (uap->dmarx.poll_rate) {
-+		/* The data can be taken by polling */
-+		dmataken = sgbuf->sg.length - dmarx->last_residue;
-+		/* Recalculate the pending size */
-+		if (pending >= dmataken)
-+			pending -= dmataken;
-+	}
-+
-+	/* Pick the remain data from the DMA */
- 	if (pending) {
--		/* Sync in buffer */
--		dma_sync_sg_for_cpu(dev, &sgbuf->sg, 1, DMA_FROM_DEVICE);
-
- 		/*
- 		 * First take all chars in the DMA pipe, then look in the FIFO.
- 		 * Note that tty_insert_flip_buf() tries to take as many chars
- 		 * as it can.
- 		 */
--		dma_count = tty_insert_flip_string(port, sgbuf->buf, pending);
--
--		/* Return buffer to device */
--		dma_sync_sg_for_device(dev, &sgbuf->sg, 1, DMA_FROM_DEVICE);
-+		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
-+				pending);
-
- 		uap->port.icount.rx += dma_count;
- 		if (dma_count < pending)
-@@ -726,6 +765,10 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
- 				 "couldn't insert all characters (TTY is full?)\n");
- 	}
-
-+	/* Reset the last_residue for Rx DMA poll */
-+	if (uap->dmarx.poll_rate)
-+		dmarx->last_residue = sgbuf->sg.length;
-+
- 	/*
- 	 * Only continue with trying to read the FIFO if all DMA chars have
- 	 * been taken first.
-@@ -865,6 +908,57 @@ static inline void pl011_dma_rx_stop(struct
-uart_amba_port *uap)
- 	writew(uap->dmacr, uap->port.membase + UART011_DMACR);
- }
-
-+/*
-+ * Timer handler for Rx DMA polling.
-+ * Every polling, It checks the residue in the dma buffer and transfer
-+ * data to the tty. Also, last_residue is updated for the next polling.
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 9b7f571..a185aff 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -74,11 +74,17 @@
+ #define ECHO_OP_SET_CANON_COL 0x81
+ #define ECHO_OP_ERASE_TAB 0x82
+ 
++/* Bit values for flags field
 + */
-+static void pl011_dma_rx_poll(unsigned long args)
++#define NO_ROOM		0
++
+ struct n_tty_data {
+ 	unsigned int column;
+ 	unsigned long overrun_time;
+ 	int num_overrun;
+ 
++	unsigned long flags;
++
+ 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+ 	unsigned char echo_overrun:1;
+ 
+@@ -114,25 +120,10 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
+ 	return put_user(x, ptr);
+ }
+ 
+-/**
+- *	n_tty_set_room	-	receive space
+- *	@tty: terminal
+- *
+- *	Updates tty->receive_room to reflect the currently available space
+- *	in the input buffer, and re-schedules the flip buffer work if space
+- *	just became available.
+- *
+- *	Locks: Concurrent update is protected with read_lock
+- */
+-
+-static int set_room(struct tty_struct *tty)
++static ssize_t receive_room(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int left;
+-	int old_left;
+-	unsigned long flags;
+-
+-	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+ 
+ 	if (I_PARMRK(tty)) {
+ 		/* Multiply read_cnt by 3, since each byte might take up to
+@@ -150,18 +141,25 @@ static int set_room(struct tty_struct *tty)
+ 	 */
+ 	if (left <= 0)
+ 		left = ldata->icanon && !ldata->canon_data;
+-	old_left = tty->receive_room;
+-	tty->receive_room = left;
+-
+-	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 
+-	return left && !old_left;
++	return left;
+ }
+ 
++/**
++ *	n_tty_set_room	-	receive space
++ *	@tty: terminal
++ *
++ *	Re-schedules the flip buffer work if space just became available.
++ *
++ *	Locks: Concurrent update is protected with read_lock
++ */
++
+ static void n_tty_set_room(struct tty_struct *tty)
+ {
++	struct n_tty_data *ldata = tty->disc_data;
++
+ 	/* Did this open up the receive buffer? We may need to flip */
+-	if (set_room(tty)) {
++	if (receive_room(tty) && test_and_clear_bit(NO_ROOM, &ldata->flags)) {
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
+ 		/* see if ldisc has been killed - if so, this means that
+@@ -174,6 +172,27 @@ static void n_tty_set_room(struct tty_struct *tty)
+ 	}
+ }
+ 
++/**
++ *	n_tty_receive_room	-	receive space
++ *	@tty: terminal
++ *
++ *	Called by flush_to_ldisc() to determine the currently
++ *	available space in the input buffer.
++ *
++ *	Locks: Concurrent update is protected with read_lock
++ */
++
++static ssize_t n_tty_receive_room(struct tty_struct *tty)
 +{
-+	struct uart_amba_port *uap = (struct uart_amba_port *)args;
-+	struct tty_port *port = &uap->port.state->port;
-+	struct pl011_dmarx_data *dmarx = &uap->dmarx;
-+	struct dma_chan *rxchan = uap->dmarx.chan;
-+	unsigned long flags = 0;
-+	unsigned int dmataken = 0;
-+	unsigned int size = 0;
-+	struct pl011_sgbuf *sgbuf;
-+	int dma_count;
-+	struct dma_tx_state state;
++	struct n_tty_data *ldata = tty->disc_data;
 +
-+	sgbuf = dmarx->use_buf_b ? &uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
-+	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
-+	if (likely(state.residue < dmarx->last_residue)) {
-+		dmataken = sgbuf->sg.length - dmarx->last_residue;
-+		size = dmarx->last_residue - state.residue;
-+		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
-+				size);
-+		if (dma_count == size)
-+			dmarx->last_residue =  state.residue;
-+		dmarx->last_jiffies = jiffies;
-+	}
-+	tty_flip_buffer_push(port);
++	ssize_t room = receive_room(tty);
++	if (!room)
++		__set_bit(NO_ROOM, &ldata->flags);
 +
-+	/*
-+	 * If no data is received in poll_timeout, the driver will fall back
-+	 * to interrupt mode. We will retrigger DMA at the first interrupt.
-+	 */
-+	if (jiffies_to_msecs(jiffies - dmarx->last_jiffies)
-+			> uap->dmarx.poll_timeout) {
-+
-+		spin_lock_irqsave(&uap->port.lock, flags);
-+		pl011_dma_rx_stop(uap);
-+		spin_unlock_irqrestore(&uap->port.lock, flags);
-+
-+		uap->dmarx.running = false;
-+		dmaengine_terminate_all(rxchan);
-+		del_timer(&uap->dmarx.timer);
-+	} else {
-+		mod_timer(&uap->dmarx.timer,
-+			jiffies + msecs_to_jiffies(uap->dmarx.poll_rate));
-+	}
++	return room;
 +}
 +
- static void pl011_dma_startup(struct uart_amba_port *uap)
+ static void put_tty_queue_nolock(unsigned char c, struct n_tty_data *ldata)
  {
- 	int ret;
-@@ -927,6 +1021,16 @@ skip_rx:
- 		if (pl011_dma_rx_trigger_dma(uap))
- 			dev_dbg(uap->port.dev, "could not trigger initial "
- 				"RX DMA job, fall back to interrupt mode\n");
-+		if (uap->dmarx.poll_rate) {
-+			init_timer(&(uap->dmarx.timer));
-+			uap->dmarx.timer.function = pl011_dma_rx_poll;
-+			uap->dmarx.timer.data = (unsigned long)uap;
-+			mod_timer(&uap->dmarx.timer,
-+				jiffies +
-+				msecs_to_jiffies(uap->dmarx.poll_rate));
-+			uap->dmarx.last_residue = PL011_DMA_BUFFER_SIZE;
-+			uap->dmarx.last_jiffies = jiffies;
-+		}
+ 	if (ldata->read_cnt < N_TTY_BUF_SIZE) {
+@@ -1465,8 +1484,6 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 			tty->ops->flush_chars(tty);
  	}
- }
-
-@@ -962,6 +1066,8 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
- 		/* Clean up the RX DMA */
- 		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_a, DMA_FROM_DEVICE);
- 		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_b, DMA_FROM_DEVICE);
-+		if (uap->dmarx.poll_rate)
-+			del_timer_sync(&uap->dmarx.timer);
- 		uap->using_rx_dma = false;
- 	}
- }
-@@ -976,7 +1082,6 @@ static inline bool pl011_dma_rx_running(struct
-uart_amba_port *uap)
- 	return uap->using_rx_dma && uap->dmarx.running;
- }
-
+ 
+-	set_room(tty);
 -
- #else
- /* Blank functions if the DMA engine is not available */
- static inline void pl011_dma_probe(struct uart_amba_port *uap)
-@@ -1088,8 +1193,18 @@ static void pl011_rx_chars(struct uart_amba_port *uap)
- 			dev_dbg(uap->port.dev, "could not trigger RX DMA job "
- 				"fall back to interrupt mode again\n");
- 			uap->im |= UART011_RXIM;
--		} else
-+		} else {
- 			uap->im &= ~UART011_RXIM;
-+			/* Start Rx DMA poll */
-+			if (uap->dmarx.poll_rate) {
-+				uap->dmarx.last_jiffies = jiffies;
-+				uap->dmarx.last_residue	= PL011_DMA_BUFFER_SIZE;
-+				mod_timer(&uap->dmarx.timer,
-+					jiffies +
-+					msecs_to_jiffies(uap->dmarx.poll_rate));
-+			}
-+		}
-+
- 		writew(uap->im, uap->port.membase + UART011_IMSC);
- 	}
- 	spin_lock(&uap->port.lock);
-@@ -1164,7 +1279,6 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 	unsigned int dummy_read;
-
- 	spin_lock_irqsave(&uap->port.lock, flags);
--
- 	status = readw(uap->port.membase + UART011_MIS);
- 	if (status) {
- 		do {
-@@ -1551,6 +1665,11 @@ pl011_set_termios(struct uart_port *port,
-struct ktermios *termios,
+ 	if ((!ldata->icanon && (ldata->read_cnt >= ldata->minimum_to_wake)) ||
+ 		L_EXTPROC(tty)) {
+ 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+@@ -1481,7 +1498,7 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
  	 */
- 	baud = uart_get_baud_rate(port, termios, old, 0,
- 				  port->uartclk / clkdiv);
-+	/*
-+	 * Adjust RX DMA polling rate with baud rate if not specified.
-+	 */
-+	if (uap->dmarx.auto_poll_rate)
-+		uap->dmarx.poll_rate = DIV_ROUND_UP(10000000, baud);
-
- 	if (baud > port->uartclk/16)
- 		quot = DIV_ROUND_CLOSEST(port->uartclk * 8, baud);
-diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
-index f612c78..62d9303 100644
---- a/include/linux/amba/serial.h
-+++ b/include/linux/amba/serial.h
-@@ -203,6 +203,9 @@ struct amba_pl011_data {
- 	bool (*dma_filter)(struct dma_chan *chan, void *filter_param);
- 	void *dma_rx_param;
- 	void *dma_tx_param;
-+	bool dma_rx_poll_enable;
-+	unsigned int dma_rx_poll_rate;
-+	unsigned int dma_rx_poll_timeout;
-         void (*init) (void);
- 	void (*exit) (void);
+ 	while (1) {
+ 		tty_set_flow_change(tty, TTY_THROTTLE_SAFE);
+-		if (tty->receive_room >= TTY_THRESHOLD_THROTTLE)
++		if (receive_room(tty) >= TTY_THRESHOLD_THROTTLE)
+ 			break;
+ 		if (!tty_throttle_safe(tty))
+ 			break;
+@@ -2201,6 +2218,7 @@ struct tty_ldisc_ops tty_ldisc_N_TTY = {
+ 	.receive_buf     = n_tty_receive_buf,
+ 	.write_wakeup    = n_tty_write_wakeup,
+ 	.fasync		 = n_tty_fasync,
++	.receive_room	 = n_tty_receive_room,
  };
+ 
+ /**
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index a42a028..f294631 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -449,6 +449,9 @@ static void flush_to_ldisc(struct work_struct *work)
+ 				tty_buffer_free(port, head);
+ 				continue;
+ 			}
++
++			if (disc->ops->receive_room)
++				tty->receive_room = disc->ops->receive_room(tty);
+ 			if (!tty->receive_room)
+ 				break;
+ 			if (count > tty->receive_room)
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index 23bdd9d..6a8cb18 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -109,6 +109,13 @@
+  *
+  *	Tells the discipline that the DCD pin has changed its status.
+  *	Used exclusively by the N_PPS (Pulse-Per-Second) line discipline.
++ *
++ * ssize_t (*receive_room)(struct tty_struct *tty)
++ *
++ *	If defined, returns the current # of bytes the receive_buf()
++ *	method can accept. If not defined, this value is determined by
++ *	the tty->receive_room value (which may be static if the line
++ *	discipline does not perform flow control).
+  */
+ 
+ #include <linux/fs.h>
+@@ -195,6 +202,7 @@ struct tty_ldisc_ops {
+ 	void	(*write_wakeup)(struct tty_struct *);
+ 	void	(*dcd_change)(struct tty_struct *, unsigned int);
+ 	void	(*fasync)(struct tty_struct *tty, int on);
++	ssize_t	(*receive_room)(struct tty_struct *tty);
+ 
+ 	struct  module *owner;
+ 
 -- 
-1.7.9.5
+1.8.1.2
+
