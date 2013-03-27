@@ -1,94 +1,112 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 03/18] tty: Simplify tty buffer/ldisc interface with helper function
-Date: Wed, 27 Mar 2013 07:43:53 -0400
-Message-ID: <1364384648-6636-4-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 00/18] lockless n_tty receive path
+Date: Wed, 27 Mar 2013 07:46:45 -0400
+Message-ID: <1364384805.3411.25.camel@thor.lan>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
- <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	 <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:54466 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752178Ab3C0Lqv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Mar 2013 07:46:51 -0400
 In-Reply-To: <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Min Zhang <mzhang@mvista.com>, Ilya Zykov <linux@izyk.ru>, Peter Hurley <peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Min Zhang <mzhang@mvista.com>, Ilya Zykov <linux@izyk.ru>
 
-Ldisc interface functions must be called with interrupts enabled.
-Separating the ldisc calls into a helper function simplies the
-spin lock management.
+On Wed, 2013-03-27 at 07:43 -0400, Peter Hurley wrote:
+> ** v2 changes **
+> - Rebased on top of 'tty: Fix race condition if flushing tty flip buffers'
+> - I forgot to mention; this is ~35% faster on end-to-end tests on SMP.
 
-Update the buffer's read index _after_ the data has been received
-by the ldisc.
+And adds Ilya's suggestions for cleaning up 'tty: Simplify tty
+buffer/ldisc interface with helper function'
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_buffer.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+> 
+> 
+> This patchset implements lockless receive from tty flip buffers
+> to the n_tty read buffer and lockless copy into the user-space
+> read buffer.
+> 
+> By lockless, I'm referring to the fine-grained read_lock formerly used
+> to serialize access to the shared n_tty read buffer (which wasn't being
+> used everywhere it should have been).
+> 
+> In the current n_tty, the read_lock is grabbed a minimum of
+> 3 times per byte!
+> - ^^^^
+> - should say 2 times per byte!
+> 
+> The read_lock is unnecessary to serialize access between the flip
+> buffer work and the single reader, as this is a
+> single-producer/single-consumer pattern.
+> 
+> However, other threads may attempt to read or modify the buffer indices,
+> notably for buffer flushing and for setting/resetting termios
+> (there are some others). In addition, termios changes can cause
+> havoc while the tty flip buffer work is pushing more data.
+> Read more about that here: https://lkml.org/lkml/2013/2/22/480
+> 
+> Both hurdles are overcome with the same mechanism: converting the
+> termios_mutex to a r/w semaphore (just a normal one :).
+> 
+> Both the receive_buf() path and the read() path claim a reader lock
+> on the termios_rwsem. This prevents concurrent changes to termios.
+> Also, flush_buffer() and TIOCINQ ioctl obtain a write lock on the
+> termios_rwsem to exclude the flip buffer work and user-space read
+> from accessing the buffer indices while resetting them.
+> 
+> This patchset also implements a block copy from the read_buf
+> into the user-space buffer in canonical mode (rather than the
+> current byte-by-byte method).
+> 
+> 
+> 
+> Greg,
+> 
+> Unfortunately, this series is dependent on the 'ldsem patchset'.
+> The reason is that this series abandons tty->receive_room as
+> a flow control mechanism (because that requires locking),
+> and the TIOCSETD ioctl _without ldsem_ uses tty->receive_room
+> to shutoff i/o.
+> 
+> 
+> Peter Hurley (18):
+>   tty: Don't change receive_room for ioctl(TIOCSETD)
+>   tty: Make ldisc input flow control concurrency-friendly
+>   tty: Simplify tty buffer/ldisc interface with helper function
+>   n_tty: Factor canonical mode copy from n_tty_read()
+>   n_tty: Line copy to user buffer in canonical mode
+>   n_tty: Split n_tty_chars_in_buffer() for reader-only interface
+>   tty: Deprecate ldisc .chars_in_buffer() method
+>   n_tty: Get read_cnt through accessor
+>   n_tty: Don't wrap input buffer indices at buffer size
+>   n_tty: Remove read_cnt
+>   tty: Convert termios_mutex to termios_rwsem
+>   n_tty: Access termios values safely
+>   n_tty: Replace canon_data with index comparison
+>   n_tty: Make N_TTY ldisc receive path lockless
+>   n_tty: Reset lnext if canonical mode changes
+>   n_tty: Fix type mismatches in receive_buf raw copy
+>   n_tty: Don't wait for buffer work in read() loop
+>   n_tty: Separate buffer indices to prevent cache-line sharing
+> 
+>  drivers/net/irda/irtty-sir.c |   8 +-
+>  drivers/tty/n_tty.c          | 550 +++++++++++++++++++++++++++----------------
+>  drivers/tty/pty.c            |   4 +-
+>  drivers/tty/tty_buffer.c     |  33 ++-
+>  drivers/tty/tty_io.c         |  14 +-
+>  drivers/tty/tty_ioctl.c      |  90 +++----
+>  drivers/tty/tty_ldisc.c      |  13 +-
+>  drivers/tty/vt/vt.c          |   4 +-
+>  include/linux/tty.h          |   7 +-
+>  include/linux/tty_ldisc.h    |   8 +
+>  10 files changed, 439 insertions(+), 292 deletions(-)
+> 
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index f294631..f508a71 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -403,6 +403,21 @@ int tty_prepare_flip_string_flags(struct tty_port *port,
- EXPORT_SYMBOL_GPL(tty_prepare_flip_string_flags);
- 
- 
-+static int receive_buf(struct tty_struct *tty, struct tty_buffer *head,
-+		       int count)
-+{
-+	struct tty_ldisc *disc = tty->ldisc;
-+
-+	if (disc->ops->receive_room)
-+		tty->receive_room = disc->ops->receive_room(tty);
-+	if (count > tty->receive_room)
-+		count = tty->receive_room;
-+	if (count)
-+		disc->ops->receive_buf(tty, head->char_buf_ptr + head->read,
-+				       head->flag_buf_ptr + head->read, count);
-+	head->read += count;
-+	return count;
-+}
- 
- /**
-  *	flush_to_ldisc
-@@ -438,8 +453,6 @@ static void flush_to_ldisc(struct work_struct *work)
- 		struct tty_buffer *head;
- 		while ((head = buf->head) != NULL) {
- 			int count;
--			char *char_buf;
--			unsigned char *flag_buf;
- 
- 			count = head->commit - head->read;
- 			if (!count) {
-@@ -450,18 +463,10 @@ static void flush_to_ldisc(struct work_struct *work)
- 				continue;
- 			}
- 
--			if (disc->ops->receive_room)
--				tty->receive_room = disc->ops->receive_room(tty);
--			if (!tty->receive_room)
--				break;
--			if (count > tty->receive_room)
--				count = tty->receive_room;
--			char_buf = head->char_buf_ptr + head->read;
--			flag_buf = head->flag_buf_ptr + head->read;
--			head->read += count;
- 			spin_unlock_irqrestore(&buf->lock, flags);
--			disc->ops->receive_buf(tty, char_buf,
--							flag_buf, count);
-+
-+			count = receive_buf(tty, head, count);
-+
- 			spin_lock_irqsave(&buf->lock, flags);
- 			/* Ldisc or user is trying to flush the buffers.
- 			   We may have a deferred request to flush the
-@@ -472,7 +477,8 @@ static void flush_to_ldisc(struct work_struct *work)
- 				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
- 				wake_up(&tty->read_wait);
- 				break;
--			}
-+			} else if (!count)
-+				break;
- 		}
- 		clear_bit(TTYP_FLUSHING, &port->iflags);
- 	}
--- 
-1.8.1.2
+
