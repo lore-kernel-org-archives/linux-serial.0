@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 12/18] n_tty: Access termios values safely
-Date: Wed, 27 Mar 2013 07:44:02 -0400
-Message-ID: <1364384648-6636-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 13/18] n_tty: Replace canon_data with index comparison
+Date: Wed, 27 Mar 2013 07:44:03 -0400
+Message-ID: <1364384648-6636-14-git-send-email-peter@hurleysoftware.com>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
  <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,124 +11,110 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Min Zhang <mzhang@mvista.com>, Ilya Zykov <linux@izyk.ru>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use termios_rwsem to guarantee safe access to the termios values.
-This is particularly important for N_TTY as changing certain termios
-settings alters the mode of operation.
+canon_data represented the # of lines which had been copied
+to the receive buffer but not yet copied to the user buffer.
+The value was tested to determine if input was available in
+canonical mode (and also to force input overrun if the
+receive buffer was full but a newline had not been received).
 
-termios_rwsem must be dropped across throttle/unthrottle since
-those functions claim the termios_rwsem exclusively (to guarantee
-safe access to the termios and for mutual exclusion).
+However, the actual count was irrelevent; only whether it was
+non-zero (meaning 'is there any input to transfer?'). This
+shared count is unnecessary and unsafe with a lockless algorithm.
+The same check is made by comparing canon_head with read_tail instead.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 35 ++++++++++++++++++++++++++++++-----
- 1 file changed, 30 insertions(+), 5 deletions(-)
+ drivers/tty/n_tty.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index fa463a9..985e0a3 100644
+index 985e0a3..2a3ab63 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1457,6 +1457,8 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	char	buf[64];
- 	unsigned long cpuflags;
+@@ -107,7 +107,6 @@ struct n_tty_data {
+ 	unsigned int echo_pos;
+ 	unsigned int echo_cnt;
  
-+	down_read(&tty->termios_rwsem);
-+
- 	if (ldata->real_raw) {
- 		raw_spin_lock_irqsave(&ldata->read_lock, cpuflags);
- 		i = min(N_TTY_BUF_SIZE - read_cnt(ldata),
-@@ -1514,13 +1516,19 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	 * canonical mode and don't have a newline yet!
+-	int canon_data;
+ 	size_t canon_head;
+ 	unsigned int canon_column;
+ 
+@@ -161,7 +160,7 @@ static ssize_t receive_room(struct tty_struct *tty)
+ 	 * characters will be beeped.
  	 */
- 	while (1) {
-+		int throttled;
- 		tty_set_flow_change(tty, TTY_THROTTLE_SAFE);
- 		if (receive_room(tty) >= TTY_THRESHOLD_THROTTLE)
- 			break;
--		if (!tty_throttle_safe(tty))
-+		up_read(&tty->termios_rwsem);
-+		throttled = tty_throttle_safe(tty);
-+		down_read(&tty->termios_rwsem);
-+		if (!throttled)
- 			break;
- 	}
- 	__tty_set_flow_change(tty, 0);
-+
-+	up_read(&tty->termios_rwsem);
+ 	if (left <= 0)
+-		left = ldata->icanon && !ldata->canon_data;
++		left = ldata->icanon && ldata->canon_head == ldata->read_tail;
+ 
+ 	return left;
+ }
+@@ -259,14 +258,14 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-	ldata->read_head = ldata->read_tail = 0;
++	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 
+ 	mutex_lock(&ldata->echo_lock);
+ 	ldata->echo_pos = ldata->echo_cnt = ldata->echo_overrun = 0;
+ 	mutex_unlock(&ldata->echo_lock);
+ 
+-	ldata->canon_head = ldata->canon_data = ldata->erasing = 0;
++	ldata->erasing = 0;
+ 	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
  }
  
- int is_ignored(int sig)
-@@ -1932,6 +1940,8 @@ do_it_again:
- 	if (c < 0)
- 		return c;
- 
-+	down_read(&tty->termios_rwsem);
-+
- 	minimum = time = 0;
- 	timeout = MAX_SCHEDULE_TIMEOUT;
- 	if (!ldata->icanon) {
-@@ -1953,11 +1963,15 @@ do_it_again:
- 	 *	Internal serialization of reads.
- 	 */
- 	if (file->f_flags & O_NONBLOCK) {
--		if (!mutex_trylock(&ldata->atomic_read_lock))
-+		if (!mutex_trylock(&ldata->atomic_read_lock)) {
-+			up_read(&tty->termios_rwsem);
- 			return -EAGAIN;
-+		}
- 	} else {
--		if (mutex_lock_interruptible(&ldata->atomic_read_lock))
-+		if (mutex_lock_interruptible(&ldata->atomic_read_lock)) {
-+			up_read(&tty->termios_rwsem);
- 			return -ERESTARTSYS;
-+		}
+@@ -1383,7 +1382,6 @@ handle_newline:
+ 			set_bit(ldata->read_head & (N_TTY_BUF_SIZE - 1), ldata->read_flags);
+ 			put_tty_queue_nolock(c, ldata);
+ 			ldata->canon_head = ldata->read_head;
+-			ldata->canon_data++;
+ 			raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+ 			if (waitqueue_active(&tty->read_wait))
+@@ -1561,7 +1559,6 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 	if (canon_change) {
+ 		bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+ 		ldata->canon_head = ldata->read_tail;
+-		ldata->canon_data = 0;
+ 		ldata->erasing = 0;
  	}
- 	packet = tty->packet;
  
-@@ -2007,7 +2021,11 @@ do_it_again:
- 				break;
- 			}
- 			n_tty_set_room(tty);
-+			up_read(&tty->termios_rwsem);
-+
- 			timeout = schedule_timeout(timeout);
-+
-+			down_read(&tty->termios_rwsem);
- 			continue;
- 		}
- 		__set_current_state(TASK_RUNNING);
-@@ -2046,13 +2064,17 @@ do_it_again:
- 		 * we won't get any more characters.
- 		 */
- 		while (1) {
-+			int unthrottled;
- 			tty_set_flow_change(tty, TTY_UNTHROTTLE_SAFE);
- 			if (chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
- 				break;
- 			if (!tty->count)
- 				break;
- 			n_tty_set_room(tty);
--			if (!tty_unthrottle_safe(tty))
-+			up_read(&tty->termios_rwsem);
-+			unthrottled = tty_unthrottle_safe(tty);
-+			down_read(&tty->termios_rwsem);
-+			if (!unthrottled)
- 				break;
- 		}
- 		__tty_set_flow_change(tty, 0);
-@@ -2074,9 +2096,12 @@ do_it_again:
- 		retval = size;
- 		if (nr)
- 			clear_bit(TTY_PUSH, &tty->flags);
--	} else if (test_and_clear_bit(TTY_PUSH, &tty->flags))
-+	} else if (test_and_clear_bit(TTY_PUSH, &tty->flags)) {
-+		up_read(&tty->termios_rwsem);
- 		goto do_it_again;
-+	}
+@@ -1709,7 +1706,7 @@ static inline int input_available_p(struct tty_struct *tty, int amt)
  
-+	up_read(&tty->termios_rwsem);
- 	n_tty_set_room(tty);
- 	return retval;
- }
+ 	tty_flush_to_ldisc(tty);
+ 	if (ldata->icanon && !L_EXTPROC(tty)) {
+-		if (ldata->canon_data)
++		if (ldata->canon_head != ldata->read_tail)
+ 			return 1;
+ 	} else if (read_cnt(ldata) >= (amt ? amt : 1))
+ 		return 1;
+@@ -1846,15 +1843,8 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
+ 
+ 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+ 	ldata->read_tail += c;
+-	if (found) {
++	if (found)
+ 		__clear_bit(eol, ldata->read_flags);
+-		/* this test should be redundant:
+-		 * we shouldn't be reading data if
+-		 * canon_data is 0
+-		 */
+-		if (--ldata->canon_data < 0)
+-			ldata->canon_data = 0;
+-	}
+ 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 
+ 	if (found)
+@@ -2253,7 +2243,7 @@ static unsigned long inq_canon(struct n_tty_data *ldata)
+ {
+ 	size_t nr, head, tail;
+ 
+-	if (!ldata->canon_data)
++	if (ldata->canon_head == ldata->read_tail)
+ 		return 0;
+ 	head = ldata->canon_head;
+ 	tail = ldata->read_tail;
 -- 
 1.8.1.2
