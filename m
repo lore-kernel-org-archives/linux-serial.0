@@ -1,222 +1,136 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 02/18] tty: Make ldisc input flow control concurrency-friendly
-Date: Wed, 27 Mar 2013 07:43:52 -0400
-Message-ID: <1364384648-6636-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 04/18] n_tty: Factor canonical mode copy from n_tty_read()
+Date: Wed, 27 Mar 2013 07:43:54 -0400
+Message-ID: <1364384648-6636-5-git-send-email-peter@hurleysoftware.com>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
  <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:54248 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752672Ab3C0Loj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Mar 2013 07:44:39 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1364384648-6636-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Min Zhang <mzhang@mvista.com>, Ilya Zykov <linux@izyk.ru>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Although line discipline receiving is single-producer/single-consumer,
-using tty->receive_room to manage flow control creates unnecessary
-critical regions requiring additional lock use.
-
-Instead, introduce the optional .receive_room() ldisc method which
-returns the maximum # of bytes the .receive_buf() ldisc method can
-accept. Serialization is guaranteed by the caller.
-
-In turn, the line discipline should schedule the buffer work item
-whenever space becomes available; ie., when there is room to receive
-data and receive_room() previously returned 0 (the buffer work
-item stops processing if receive_room() is 0).
-
-Add n_tty_receive_room() as the receive_room() method for N_TTY
-and remove tty->receive_room references in N_TTY.
-
-Line disciplines not using input flow control can continue to set
-tty->receive_room to a fixed value.
+Simplify n_tty_read(); extract complex copy algorithm
+into separate function, canon_copy_to_user().
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c       | 68 ++++++++++++++++++++++++++++++-----------------
- drivers/tty/tty_buffer.c  |  3 +++
- include/linux/tty_ldisc.h |  8 ++++++
- 3 files changed, 54 insertions(+), 25 deletions(-)
+ drivers/tty/n_tty.c | 95 ++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 57 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 9b7f571..a185aff 100644
+index a185aff..9888972 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -74,11 +74,17 @@
- #define ECHO_OP_SET_CANON_COL 0x81
- #define ECHO_OP_ERASE_TAB 0x82
- 
-+/* Bit values for flags field
-+ */
-+#define NO_ROOM		0
-+
- struct n_tty_data {
- 	unsigned int column;
- 	unsigned long overrun_time;
- 	int num_overrun;
- 
-+	unsigned long flags;
-+
- 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
- 	unsigned char echo_overrun:1;
- 
-@@ -114,25 +120,10 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
- 	return put_user(x, ptr);
- }
- 
--/**
-- *	n_tty_set_room	-	receive space
-- *	@tty: terminal
-- *
-- *	Updates tty->receive_room to reflect the currently available space
-- *	in the input buffer, and re-schedules the flip buffer work if space
-- *	just became available.
-- *
-- *	Locks: Concurrent update is protected with read_lock
-- */
--
--static int set_room(struct tty_struct *tty)
-+static ssize_t receive_room(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	int left;
--	int old_left;
--	unsigned long flags;
--
--	raw_spin_lock_irqsave(&ldata->read_lock, flags);
- 
- 	if (I_PARMRK(tty)) {
- 		/* Multiply read_cnt by 3, since each byte might take up to
-@@ -150,18 +141,25 @@ static int set_room(struct tty_struct *tty)
- 	 */
- 	if (left <= 0)
- 		left = ldata->icanon && !ldata->canon_data;
--	old_left = tty->receive_room;
--	tty->receive_room = left;
--
--	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
- 
--	return left && !old_left;
-+	return left;
+@@ -1745,6 +1745,62 @@ static int copy_from_read_buf(struct tty_struct *tty,
+ 	return retval;
  }
  
 +/**
-+ *	n_tty_set_room	-	receive space
-+ *	@tty: terminal
++ *	canon_copy_to_user	-	copy read data in canonical mode
++ *	@tty: terminal device
++ *	@b: user data
++ *	@nr: size of data
 + *
-+ *	Re-schedules the flip buffer work if space just became available.
++ *	Helper function for n_tty_read.  It is only called when ICANON is on;
++ *	it copies characters one at a time from the read buffer to the user
++ *	space buffer.
 + *
-+ *	Locks: Concurrent update is protected with read_lock
++ *	Called under the atomic_read_lock mutex
 + */
 +
- static void n_tty_set_room(struct tty_struct *tty)
- {
-+	struct n_tty_data *ldata = tty->disc_data;
-+
- 	/* Did this open up the receive buffer? We may need to flip */
--	if (set_room(tty)) {
-+	if (receive_room(tty) && test_and_clear_bit(NO_ROOM, &ldata->flags)) {
- 		WARN_RATELIMIT(tty->port->itty == NULL,
- 				"scheduling with invalid itty\n");
- 		/* see if ldisc has been killed - if so, this means that
-@@ -174,6 +172,27 @@ static void n_tty_set_room(struct tty_struct *tty)
- 	}
- }
- 
-+/**
-+ *	n_tty_receive_room	-	receive space
-+ *	@tty: terminal
-+ *
-+ *	Called by flush_to_ldisc() to determine the currently
-+ *	available space in the input buffer.
-+ *
-+ *	Locks: Concurrent update is protected with read_lock
-+ */
-+
-+static ssize_t n_tty_receive_room(struct tty_struct *tty)
++static int canon_copy_to_user(struct tty_struct *tty,
++			      unsigned char __user **b,
++			      size_t *nr)
 +{
 +	struct n_tty_data *ldata = tty->disc_data;
++	unsigned long flags;
++	int eol, c;
 +
-+	ssize_t room = receive_room(tty);
-+	if (!room)
-+		__set_bit(NO_ROOM, &ldata->flags);
++	/* N.B. avoid overrun if nr == 0 */
++	raw_spin_lock_irqsave(&ldata->read_lock, flags);
++	while (*nr && ldata->read_cnt) {
 +
-+	return room;
++		eol = test_and_clear_bit(ldata->read_tail, ldata->read_flags);
++		c = ldata->read_buf[ldata->read_tail];
++		ldata->read_tail = (ldata->read_tail+1) & (N_TTY_BUF_SIZE-1);
++		ldata->read_cnt--;
++		if (eol) {
++			/* this test should be redundant:
++			 * we shouldn't be reading data if
++			 * canon_data is 0
++			 */
++			if (--ldata->canon_data < 0)
++				ldata->canon_data = 0;
++		}
++		raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++
++		if (!eol || (c != __DISABLED_CHAR)) {
++			if (tty_put_user(tty, c, *b))
++				return -EFAULT;
++			*b += 1;
++			*nr -= 1;
++		}
++		if (eol) {
++			tty_audit_push(tty);
++			return 0;
++		}
++		raw_spin_lock_irqsave(&ldata->read_lock, flags);
++	}
++	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++
++	return 0;
 +}
 +
- static void put_tty_queue_nolock(unsigned char c, struct n_tty_data *ldata)
- {
- 	if (ldata->read_cnt < N_TTY_BUF_SIZE) {
-@@ -1465,8 +1484,6 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 			tty->ops->flush_chars(tty);
- 	}
+ extern ssize_t redirected_tty_write(struct file *, const char __user *,
+ 							size_t, loff_t *);
  
--	set_room(tty);
+@@ -1914,44 +1970,7 @@ do_it_again:
+ 		}
+ 
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+-			/* N.B. avoid overrun if nr == 0 */
+-			raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-			while (nr && ldata->read_cnt) {
+-				int eol;
 -
- 	if ((!ldata->icanon && (ldata->read_cnt >= ldata->minimum_to_wake)) ||
- 		L_EXTPROC(tty)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
-@@ -1481,7 +1498,7 @@ static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	 */
- 	while (1) {
- 		tty_set_flow_change(tty, TTY_THROTTLE_SAFE);
--		if (tty->receive_room >= TTY_THRESHOLD_THROTTLE)
-+		if (receive_room(tty) >= TTY_THRESHOLD_THROTTLE)
- 			break;
- 		if (!tty_throttle_safe(tty))
- 			break;
-@@ -2201,6 +2218,7 @@ struct tty_ldisc_ops tty_ldisc_N_TTY = {
- 	.receive_buf     = n_tty_receive_buf,
- 	.write_wakeup    = n_tty_write_wakeup,
- 	.fasync		 = n_tty_fasync,
-+	.receive_room	 = n_tty_receive_room,
- };
- 
- /**
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index a42a028..f294631 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -449,6 +449,9 @@ static void flush_to_ldisc(struct work_struct *work)
- 				tty_buffer_free(port, head);
- 				continue;
- 			}
-+
-+			if (disc->ops->receive_room)
-+				tty->receive_room = disc->ops->receive_room(tty);
- 			if (!tty->receive_room)
+-				eol = test_and_clear_bit(ldata->read_tail,
+-						ldata->read_flags);
+-				c = ldata->read_buf[ldata->read_tail];
+-				ldata->read_tail = ((ldata->read_tail+1) &
+-						  (N_TTY_BUF_SIZE-1));
+-				ldata->read_cnt--;
+-				if (eol) {
+-					/* this test should be redundant:
+-					 * we shouldn't be reading data if
+-					 * canon_data is 0
+-					 */
+-					if (--ldata->canon_data < 0)
+-						ldata->canon_data = 0;
+-				}
+-				raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+-
+-				if (!eol || (c != __DISABLED_CHAR)) {
+-					if (tty_put_user(tty, c, b++)) {
+-						retval = -EFAULT;
+-						b--;
+-						raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-						break;
+-					}
+-					nr--;
+-				}
+-				if (eol) {
+-					tty_audit_push(tty);
+-					raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-					break;
+-				}
+-				raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-			}
+-			raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++			retval = canon_copy_to_user(tty, &b, &nr);
+ 			if (retval)
  				break;
- 			if (count > tty->receive_room)
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index 23bdd9d..6a8cb18 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -109,6 +109,13 @@
-  *
-  *	Tells the discipline that the DCD pin has changed its status.
-  *	Used exclusively by the N_PPS (Pulse-Per-Second) line discipline.
-+ *
-+ * ssize_t (*receive_room)(struct tty_struct *tty)
-+ *
-+ *	If defined, returns the current # of bytes the receive_buf()
-+ *	method can accept. If not defined, this value is determined by
-+ *	the tty->receive_room value (which may be static if the line
-+ *	discipline does not perform flow control).
-  */
- 
- #include <linux/fs.h>
-@@ -195,6 +202,7 @@ struct tty_ldisc_ops {
- 	void	(*write_wakeup)(struct tty_struct *);
- 	void	(*dcd_change)(struct tty_struct *, unsigned int);
- 	void	(*fasync)(struct tty_struct *tty, int on);
-+	ssize_t	(*receive_room)(struct tty_struct *tty);
- 
- 	struct  module *owner;
- 
+ 		} else {
 -- 
 1.8.1.2
-
