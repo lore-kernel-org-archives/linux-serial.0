@@ -1,126 +1,44 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH] serial: 8250_dw: add support for clk api
-Date: Wed, 27 Mar 2013 13:35:48 +0100
-Message-ID: <1364387748-13015-1-git-send-email-maxime.ripard@free-electrons.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: 8250serial driver causing DEADLOCK, suggestions needed
+Date: Wed, 27 Mar 2013 08:11:06 -0700
+Message-ID: <20130327151106.GA18686@kroah.com>
+References: <CAD15agYNgq2uC0D4nGChCJyKr7F8+X-7QpG=8QSnNPs1qG=t6w@mail.gmail.com>
+ <CAD15agbuTCt1YzUxCOqL=8N3KXqae0iaa=fsU2pvG2D+6HiLwg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:59505 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750960Ab3C0MgM (ORCPT
+Received: from mail-pd0-f176.google.com ([209.85.192.176]:51543 "EHLO
+	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751939Ab3C0PLK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Mar 2013 08:36:12 -0400
+	Wed, 27 Mar 2013 11:11:10 -0400
+Received: by mail-pd0-f176.google.com with SMTP id r11so1045422pdi.7
+        for <linux-serial@vger.kernel.org>; Wed, 27 Mar 2013 08:11:09 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAD15agbuTCt1YzUxCOqL=8N3KXqae0iaa=fsU2pvG2D+6HiLwg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Ritesh Harjani <ritesh.harjani@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+On Wed, Mar 27, 2013 at 07:33:47PM +0530, Ritesh Harjani wrote:
+> 
+> Hi guys
+> 
+> I am facing following deadlock on my ARM SMP machine and thought of mailing you
+> guys for any valuable suggestions on this.
+> 
+> [Problem]
+> 1. In serial8250_handle_irq function after acquiring a spin_lock, I want to
+> print some debug info. This printk will call serial8250_console_write function.
+> This function too tries to acquire the same spin_lock and spins on it if
+> someone else already acquired it. Assume that this scenario happened on cpu0,
+> that means this situation will create a deadlock (as cpu0 will busy spin for
+> acquiring a lock which it had already acquired).
 
-This commit implements support for using the clk api; this lets us use
-the "clocks" property with device tree, instead of having to use
-clock-frequency.
+Then don't do that :)
 
-Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
----
- drivers/tty/serial/8250/8250_dw.c |   33 ++++++++++++++++++++++++-----=
-----
- 1 file changed, 24 insertions(+), 9 deletions(-)
+Use the tracing infrastructure if you really want to do debug stuff from
+within your console irq handler.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-index db0e66f..3dedd24 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/clk.h>
-=20
- #include "8250.h"
-=20
-@@ -55,8 +56,9 @@
-=20
-=20
- struct dw8250_data {
--	int	last_lcr;
--	int	line;
-+	int		last_lcr;
-+	int		line;
-+	struct clk	*clk;
- };
-=20
- static void dw8250_serial_out(struct uart_port *p, int offset, int val=
-ue)
-@@ -136,8 +138,13 @@ static int dw8250_probe_of(struct uart_port *p)
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift =3D val;
-=20
-+	/* clock got configured through clk api, all done */
-+	if (p->uartclk)
-+		return 0;
-+
-+	/* try to find out clock frequency from DT as fallback */
- 	if (of_property_read_u32(np, "clock-frequency", &val)) {
--		dev_err(p->dev, "no clock-frequency property set\n");
-+		dev_err(p->dev, "clk or clock-frequency not defined\n");
- 		return -EINVAL;
- 	}
- 	p->uartclk =3D val;
-@@ -294,9 +301,20 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 	if (!uart.port.membase)
- 		return -ENOMEM;
-=20
-+	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->clk =3D devm_clk_get(&pdev->dev, NULL);
-+	if (!IS_ERR(data->clk)) {
-+		clk_prepare_enable(data->clk);
-+		uart.port.uartclk =3D clk_get_rate(data->clk);
-+	}
-+
- 	uart.port.iotype =3D UPIO_MEM;
- 	uart.port.serial_in =3D dw8250_serial_in;
- 	uart.port.serial_out =3D dw8250_serial_out;
-+	uart.port.private_data =3D data;
-=20
- 	dw8250_setup_port(&uart);
-=20
-@@ -312,12 +330,6 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 		return -ENODEV;
- 	}
-=20
--	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	uart.port.private_data =3D data;
--
- 	data->line =3D serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
-@@ -333,6 +345,9 @@ static int dw8250_remove(struct platform_device *pd=
-ev)
-=20
- 	serial8250_unregister_port(data->line);
-=20
-+	if (!IS_ERR(data->clk))
-+		clk_disable_unprepare(data->clk);
-+
- 	return 0;
- }
-=20
---=20
-1.7.10.4
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
