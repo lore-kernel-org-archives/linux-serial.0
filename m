@@ -1,70 +1,100 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.9-rc4
-Date: Thu, 28 Mar 2013 10:18:32 -0700
-Message-ID: <20130328171832.GA2704@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Karthik Manamcheri <karthik.manamcheri@gmail.com>
+Subject: [PATCH] serial: 8250: Make SERIAL8250_CONFIG_RUNTIME_UARTS work correctly
+Date: Thu, 28 Mar 2013 15:20:43 -0500
+Message-ID: <1364502043-13018-1-git-send-email-karthik.manamcheri@ni.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:49920 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755610Ab3C1RSe (ORCPT
+Received: from mail-qc0-f169.google.com ([209.85.216.169]:64221 "EHLO
+	mail-qc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751335Ab3C1UU6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Mar 2013 13:18:34 -0400
-Received: by mail-pd0-f174.google.com with SMTP id p12so2200326pdj.5
-        for <linux-serial@vger.kernel.org>; Thu, 28 Mar 2013 10:18:34 -0700 (PDT)
-Content-Disposition: inline
+	Thu, 28 Mar 2013 16:20:58 -0400
+Received: by mail-qc0-f169.google.com with SMTP id t2so4409148qcq.14
+        for <linux-serial@vger.kernel.org>; Thu, 28 Mar 2013 13:20:57 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Karthik Manamcheri <karthik.manamcheri@ni.com>
 
-The following changes since commit c51d41a1dd8f23a06a4ed651ebb9617de7f59368:
+Currently, if you set SERIAL8250_CONFIG_RUNTIME_UARTS
+to 0, you cannot get any working ports. This change
+will enable serial8250_register_port to successfully
+register a port even if SERIAL8250_CONFIG_RUNTIME_UARTS
+is 0. If you need legacy ports, you will set the
+SERIAL8250_CONFIG_RUNTIME_UARTS to the number of legacy
+ports you need created at boot time.
 
-  tty: serial: fix typo "SERIAL_S3C2412" (2013-03-12 08:53:23 -0700)
+Signed-off-by: Karthik Manamcheri <karthik.manamcheri@ni.com>
+---
+ drivers/tty/serial/8250/8250.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-are available in the git repository at:
+diff --git a/drivers/tty/serial/8250/8250.c b/drivers/tty/serial/8250/8250.c
+index cf6a538..65f1478 100644
+--- a/drivers/tty/serial/8250/8250.c
++++ b/drivers/tty/serial/8250/8250.c
+@@ -2755,7 +2755,7 @@ static void __init serial8250_isa_init_ports(void)
+ 	if (nr_uarts > UART_NR)
+ 		nr_uarts = UART_NR;
+ 
+-	for (i = 0; i < nr_uarts; i++) {
++	for (i = 0; i < UART_NR; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
+ 		struct uart_port *port = &up->port;
+ 
+@@ -2916,7 +2916,7 @@ static int __init serial8250_console_setup(struct console *co, char *options)
+ 	 * if so, search for the first available port that does have
+ 	 * console support.
+ 	 */
+-	if (co->index >= nr_uarts)
++	if (co->index >= UART_NR)
+ 		co->index = 0;
+ 	port = &serial8250_ports[co->index].port;
+ 	if (!port->iobase && !port->membase)
+@@ -2957,7 +2957,7 @@ int serial8250_find_port(struct uart_port *p)
+ 	int line;
+ 	struct uart_port *port;
+ 
+-	for (line = 0; line < nr_uarts; line++) {
++	for (line = 0; line < UART_NR; line++) {
+ 		port = &serial8250_ports[line].port;
+ 		if (uart_match_port(p, port))
+ 			return line;
+@@ -3110,7 +3110,7 @@ static int serial8250_remove(struct platform_device *dev)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < nr_uarts; i++) {
++	for (i = 0; i < UART_NR; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
+ 
+ 		if (up->port.dev == &dev->dev)
+@@ -3178,7 +3178,7 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
+ 	/*
+ 	 * First, find a port entry which matches.
+ 	 */
+-	for (i = 0; i < nr_uarts; i++)
++	for (i = 0; i < UART_NR; i++)
+ 		if (uart_match_port(&serial8250_ports[i].port, port))
+ 			return &serial8250_ports[i];
+ 
+@@ -3187,7 +3187,7 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
+ 	 * free entry.  We look for one which hasn't been previously
+ 	 * used (indicated by zero iobase).
+ 	 */
+-	for (i = 0; i < nr_uarts; i++)
++	for (i = 0; i < UART_NR; i++)
+ 		if (serial8250_ports[i].port.type == PORT_UNKNOWN &&
+ 		    serial8250_ports[i].port.iobase == 0)
+ 			return &serial8250_ports[i];
+@@ -3196,7 +3196,7 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
+ 	 * That also failed.  Last resort is to find any entry which
+ 	 * doesn't have a real port associated with it.
+ 	 */
+-	for (i = 0; i < nr_uarts; i++)
++	for (i = 0; i < UART_NR; i++)
+ 		if (serial8250_ports[i].port.type == PORT_UNKNOWN)
+ 			return &serial8250_ports[i];
+ 
+-- 
+1.8.1.4
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.9-rc4
-
-for you to fetch changes up to 855f6fd941019ecc9525ca038b78f50c6c1e80a8:
-
-  Xilinx: ARM: UART: clear pending irqs before enabling irqs (2013-03-25 16:26:23 -0700)
-
-----------------------------------------------------------------
-TTY/serial fixes for 3.9-rc4
-
-Here are some tty/serial driver fixes for 3.9.
-
-The big thing here is the fix for the huge mess we caused renaming the 8250
-driver accidentally in the 3.7 kernel release, without realizing that there
-were users of the module options that suddenly broke.  This is now resolved,
-and, to top the injury off, we have a backwards-compatible option for those
-users who got used to the new name since 3.7.  Ugh, sorry about that.
-
-Other than that, some other minor fixes for issues that have been reported by
-users.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Jiri Slaby (2):
-      TTY: 8250, revert module name change
-      TTY: 8250, deprecated 8250_core.* options
-
-John Linn (1):
-      Xilinx: ARM: UART: clear pending irqs before enabling irqs
-
-Pawel Wieczorkiewicz (1):
-      tty: atmel_serial_probe(): index of atmel_ports[] fix
-
-Wang YanQing (1):
-      serial: 8250_pci: Add WCH CH352 quirk to avoid Xscale detection
-
- drivers/tty/serial/8250/{8250.c => 8250_core.c} |  6 ++++--
- drivers/tty/serial/8250/8250_pci.c              | 13 +++++++++++++
- drivers/tty/serial/8250/Kconfig                 | 17 +++++++++++++++++
- drivers/tty/serial/8250/Makefile                |  8 ++++----
- drivers/tty/serial/atmel_serial.c               | 11 +++++------
- drivers/tty/serial/xilinx_uartps.c              |  2 ++
- 6 files changed, 45 insertions(+), 12 deletions(-)
- rename drivers/tty/serial/8250/{8250.c => 8250_core.c} (99%)
