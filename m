@@ -1,44 +1,131 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_dw: add support for clk api
-Date: Thu, 28 Mar 2013 16:09:23 -0700
-Message-ID: <20130328230923.GA14536@kroah.com>
-References: <1364387748-13015-1-git-send-email-maxime.ripard@free-electrons.com>
- <20130328230342.GA24556@kroah.com>
- <5154CD0C.60901@free-electrons.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCHv2] serial: 8250_dw: add support for clk api
+Date: Fri, 29 Mar 2013 00:15:49 +0100
+Message-ID: <1364512549-10886-1-git-send-email-maxime.ripard@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5154CD0C.60901@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:39985 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752563Ab3C1XPz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Mar 2013 19:15:55 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Mar 29, 2013 at 12:06:52AM +0100, Maxime Ripard wrote:
-> Hi Greg,
->=20
-> Le 29/03/2013 00:03, Greg Kroah-Hartman a =E9crit :
-> > On Wed, Mar 27, 2013 at 01:35:48PM +0100, Maxime Ripard wrote:
-> >> From: Emilio L=F3pez <emilio@elopez.com.ar>
-> >>
-> >> This commit implements support for using the clk api; this lets us=
- use
-> >> the "clocks" property with device tree, instead of having to use
-> >> clock-frequency.
-> >>
-> >> Signed-off-by: Emilio L=F3pez <emilio@elopez.com.ar>
-> >> ---
-> >=20
-> > Why aren't you signing off on this patch as well?
->=20
-> Hmm, I forgot to do so, and no one pointed that one before. Sorry.
->=20
-> Do you want me to resend it with my SoB?
+=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
 
-Yes, please do.
+This commit implements support for using the clk api; this lets us use
+the "clocks" property with device tree, instead of having to use
+clock-frequency.
 
-thanks,
+Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+Changes from v1:
+  - Add my SoB and Heikki Krogerus Reviewed-by tags
 
-greg k-h
+ drivers/tty/serial/8250/8250_dw.c |   33 ++++++++++++++++++++++++-----=
+----
+ 1 file changed, 24 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
+0/8250_dw.c
+index db0e66f..3dedd24 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
++#include <linux/clk.h>
+=20
+ #include "8250.h"
+=20
+@@ -55,8 +56,9 @@
+=20
+=20
+ struct dw8250_data {
+-	int	last_lcr;
+-	int	line;
++	int		last_lcr;
++	int		line;
++	struct clk	*clk;
+ };
+=20
+ static void dw8250_serial_out(struct uart_port *p, int offset, int val=
+ue)
+@@ -136,8 +138,13 @@ static int dw8250_probe_of(struct uart_port *p)
+ 	if (!of_property_read_u32(np, "reg-shift", &val))
+ 		p->regshift =3D val;
+=20
++	/* clock got configured through clk api, all done */
++	if (p->uartclk)
++		return 0;
++
++	/* try to find out clock frequency from DT as fallback */
+ 	if (of_property_read_u32(np, "clock-frequency", &val)) {
+-		dev_err(p->dev, "no clock-frequency property set\n");
++		dev_err(p->dev, "clk or clock-frequency not defined\n");
+ 		return -EINVAL;
+ 	}
+ 	p->uartclk =3D val;
+@@ -294,9 +301,20 @@ static int dw8250_probe(struct platform_device *pd=
+ev)
+ 	if (!uart.port.membase)
+ 		return -ENOMEM;
+=20
++	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	data->clk =3D devm_clk_get(&pdev->dev, NULL);
++	if (!IS_ERR(data->clk)) {
++		clk_prepare_enable(data->clk);
++		uart.port.uartclk =3D clk_get_rate(data->clk);
++	}
++
+ 	uart.port.iotype =3D UPIO_MEM;
+ 	uart.port.serial_in =3D dw8250_serial_in;
+ 	uart.port.serial_out =3D dw8250_serial_out;
++	uart.port.private_data =3D data;
+=20
+ 	dw8250_setup_port(&uart);
+=20
+@@ -312,12 +330,6 @@ static int dw8250_probe(struct platform_device *pd=
+ev)
+ 		return -ENODEV;
+ 	}
+=20
+-	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+-	if (!data)
+-		return -ENOMEM;
+-
+-	uart.port.private_data =3D data;
+-
+ 	data->line =3D serial8250_register_8250_port(&uart);
+ 	if (data->line < 0)
+ 		return data->line;
+@@ -333,6 +345,9 @@ static int dw8250_remove(struct platform_device *pd=
+ev)
+=20
+ 	serial8250_unregister_port(data->line);
+=20
++	if (!IS_ERR(data->clk))
++		clk_disable_unprepare(data->clk);
++
+ 	return 0;
+ }
+=20
+--=20
+1.7.10.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
