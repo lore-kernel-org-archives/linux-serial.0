@@ -1,59 +1,70 @@
-From: Fengguang Wu <fengguang.wu@intel.com>
-Subject: make[2]: *** No rule to make target `drivers/serial/serial_core.c',
- needed by `Documentation/DocBook/kernel-api.xml'.
-Date: Thu, 28 Mar 2013 09:00:12 +0800
-Message-ID: <20130328010012.GA14108@localhost>
-References: <5153256d.SyZXdcYq+1mLl7KI%fengguang.wu@intel.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.9-rc4
+Date: Thu, 28 Mar 2013 10:18:32 -0700
+Message-ID: <20130328171832.GA2704@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:30826 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753960Ab3C1BAQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Mar 2013 21:00:16 -0400
+Received: from mail-pd0-f174.google.com ([209.85.192.174]:49920 "EHLO
+	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755610Ab3C1RSe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Mar 2013 13:18:34 -0400
+Received: by mail-pd0-f174.google.com with SMTP id p12so2200326pdj.5
+        for <linux-serial@vger.kernel.org>; Thu, 28 Mar 2013 10:18:34 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <5153256d.SyZXdcYq+1mLl7KI%fengguang.wu@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: serial <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+The following changes since commit c51d41a1dd8f23a06a4ed651ebb9617de7f59368:
 
-Hi Greg,
+  tty: serial: fix typo "SERIAL_S3C2412" (2013-03-12 08:53:23 -0700)
 
-FYI, kernel build failed on
+are available in the git repository at:
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux master
-head:   de55eb1d60d2ed0f1ba5e13226d91b3bfbe1c108
-commit: ab4382d27412e7e3e7c936e8d50d8888dfac3df8 tty: move drivers/serial/ to drivers/tty/serial/
-date:   2 years, 2 months ago
-config: make ARCH=x86_64 allmodconfig
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.9-rc4
 
-All error/warnings:
+for you to fetch changes up to 855f6fd941019ecc9525ca038b78f50c6c1e80a8:
 
-   make[2]: *** No rule to make target `kernel/sched/core.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `kernel/sched/cpupri.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `kernel/sched/fair.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/base/syscore.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/base/dma-buf.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/base/fence.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `include/linux/fence.h', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/base/reservation.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `include/linux/reservation.h', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/tty/serial/8250/8250.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `include/linux/hsi/hsi.h', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `drivers/hsi/hsi.c', needed by `Documentation/DocBook/device-drivers.xml'.
-   make[2]: *** No rule to make target `arch/x86/include/asm/io_32.h', needed by `Documentation/DocBook/deviceiobook.xml'.
-   make[2]: *** No rule to make target `drivers/gpu/drm/drm_dp_helper.c', needed by `Documentation/DocBook/drm.xml'.
-   make[2]: *** No rule to make target `arch/x86/include/asm/atomic_32.h', needed by `Documentation/DocBook/kernel-api.xml'.
-   make[2]: *** No rule to make target `block/blk-barrier.c', needed by `Documentation/DocBook/kernel-api.xml'.
-   make[2]: *** No rule to make target `block/blktrace.c', needed by `Documentation/DocBook/kernel-api.xml'.
->> make[2]: *** No rule to make target `drivers/serial/serial_core.c', needed by `Documentation/DocBook/kernel-api.xml'.
->> make[2]: *** No rule to make target `drivers/serial/8250.c', needed by `Documentation/DocBook/kernel-api.xml'.
-   make[2]: *** No rule to make target `drivers/net/wan/syncppp.c', needed by `Documentation/DocBook/networking.xml'.
-   make[2]: *** No rule to make target `arch/powerpc/kernel/rio.c', needed by `Documentation/DocBook/rapidio.xml'.
-   make[2]: Target `htmldocs' not remade because of errors.
+  Xilinx: ARM: UART: clear pending irqs before enabling irqs (2013-03-25 16:26:23 -0700)
 
----
-0-DAY kernel build testing backend              Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+----------------------------------------------------------------
+TTY/serial fixes for 3.9-rc4
+
+Here are some tty/serial driver fixes for 3.9.
+
+The big thing here is the fix for the huge mess we caused renaming the 8250
+driver accidentally in the 3.7 kernel release, without realizing that there
+were users of the module options that suddenly broke.  This is now resolved,
+and, to top the injury off, we have a backwards-compatible option for those
+users who got used to the new name since 3.7.  Ugh, sorry about that.
+
+Other than that, some other minor fixes for issues that have been reported by
+users.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Jiri Slaby (2):
+      TTY: 8250, revert module name change
+      TTY: 8250, deprecated 8250_core.* options
+
+John Linn (1):
+      Xilinx: ARM: UART: clear pending irqs before enabling irqs
+
+Pawel Wieczorkiewicz (1):
+      tty: atmel_serial_probe(): index of atmel_ports[] fix
+
+Wang YanQing (1):
+      serial: 8250_pci: Add WCH CH352 quirk to avoid Xscale detection
+
+ drivers/tty/serial/8250/{8250.c => 8250_core.c} |  6 ++++--
+ drivers/tty/serial/8250/8250_pci.c              | 13 +++++++++++++
+ drivers/tty/serial/8250/Kconfig                 | 17 +++++++++++++++++
+ drivers/tty/serial/8250/Makefile                |  8 ++++----
+ drivers/tty/serial/atmel_serial.c               | 11 +++++------
+ drivers/tty/serial/xilinx_uartps.c              |  2 ++
+ 6 files changed, 45 insertions(+), 12 deletions(-)
+ rename drivers/tty/serial/8250/{8250.c => 8250_core.c} (99%)
