@@ -1,81 +1,59 @@
-From: Michael Spang <spang@chromium.org>
-Subject: [PATCH 2/2] serial: samsung: Avoid waiting forever for TX ready
-Date: Wed, 27 Mar 2013 19:34:25 -0400
-Message-ID: <1364427265-5304-2-git-send-email-spang@chromium.org>
-References: <1364427265-5304-1-git-send-email-spang@chromium.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1364427265-5304-1-git-send-email-spang@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Michael Spang <spang@chromium.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
+Subject: make[2]: *** No rule to make target `drivers/serial/serial_core.c',
+ needed by `Documentation/DocBook/kernel-api.xml'.
+Date: Thu, 28 Mar 2013 09:00:12 +0800
+Message-ID: <20130328010012.GA14108@localhost>
+References: <5153256d.SyZXdcYq+1mLl7KI%fengguang.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:30826 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753960Ab3C1BAQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Mar 2013 21:00:16 -0400
+Content-Disposition: inline
+In-Reply-To: <5153256d.SyZXdcYq+1mLl7KI%fengguang.wu@intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: serial <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 
-The no_console_suspend option allows the console to write to the UART
-during early resume, before the serial port itself is resumed. Such
-writes hang indefinitely waiting for TX ready.
 
-This adds a check to the console putchar function to drop characters
-instead of hanging if the port hasn't been initialized. That way, we
-can use no_console_suspend without risk of hanging.
+Hi Greg,
 
-Signed-off-by: Michael Spang <spang@chromium.org>
+FYI, kernel build failed on
+
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux master
+head:   de55eb1d60d2ed0f1ba5e13226d91b3bfbe1c108
+commit: ab4382d27412e7e3e7c936e8d50d8888dfac3df8 tty: move drivers/serial/ to drivers/tty/serial/
+date:   2 years, 2 months ago
+config: make ARCH=x86_64 allmodconfig
+
+All error/warnings:
+
+   make[2]: *** No rule to make target `kernel/sched/core.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `kernel/sched/cpupri.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `kernel/sched/fair.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/base/syscore.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/base/dma-buf.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/base/fence.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `include/linux/fence.h', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/base/reservation.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `include/linux/reservation.h', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/tty/serial/8250/8250.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `include/linux/hsi/hsi.h', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `drivers/hsi/hsi.c', needed by `Documentation/DocBook/device-drivers.xml'.
+   make[2]: *** No rule to make target `arch/x86/include/asm/io_32.h', needed by `Documentation/DocBook/deviceiobook.xml'.
+   make[2]: *** No rule to make target `drivers/gpu/drm/drm_dp_helper.c', needed by `Documentation/DocBook/drm.xml'.
+   make[2]: *** No rule to make target `arch/x86/include/asm/atomic_32.h', needed by `Documentation/DocBook/kernel-api.xml'.
+   make[2]: *** No rule to make target `block/blk-barrier.c', needed by `Documentation/DocBook/kernel-api.xml'.
+   make[2]: *** No rule to make target `block/blktrace.c', needed by `Documentation/DocBook/kernel-api.xml'.
+>> make[2]: *** No rule to make target `drivers/serial/serial_core.c', needed by `Documentation/DocBook/kernel-api.xml'.
+>> make[2]: *** No rule to make target `drivers/serial/8250.c', needed by `Documentation/DocBook/kernel-api.xml'.
+   make[2]: *** No rule to make target `drivers/net/wan/syncppp.c', needed by `Documentation/DocBook/networking.xml'.
+   make[2]: *** No rule to make target `arch/powerpc/kernel/rio.c', needed by `Documentation/DocBook/rapidio.xml'.
+   make[2]: Target `htmldocs' not remade because of errors.
+
 ---
- drivers/tty/serial/samsung.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 161a7a0..ca04901 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1363,6 +1363,13 @@ s3c24xx_serial_console_txrdy(struct uart_port *port, unsigned int ufcon)
- 	return (utrstat & S3C2410_UTRSTAT_TXE) ? 1 : 0;
- }
- 
-+static bool
-+s3c24xx_port_configured(unsigned int ucon)
-+{
-+	/* consider the serial port configured if the tx/rx mode set */
-+	return (ucon & 0xf) != 0;
-+}
-+
- #ifdef CONFIG_CONSOLE_POLL
- /*
-  * Console polling routines for writing and reading from the uart while
-@@ -1385,6 +1392,11 @@ static void s3c24xx_serial_put_poll_char(struct uart_port *port,
- 		unsigned char c)
- {
- 	unsigned int ufcon = rd_regl(cons_uart, S3C2410_UFCON);
-+	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+
-+	/* not possible to xmit on unconfigured port */
-+	if (!s3c24xx_port_configured(ucon))
-+		return;
- 
- 	while (!s3c24xx_serial_console_txrdy(port, ufcon))
- 		cpu_relax();
-@@ -1397,6 +1409,12 @@ static void
- s3c24xx_serial_console_putchar(struct uart_port *port, int ch)
- {
- 	unsigned int ufcon = rd_regl(cons_uart, S3C2410_UFCON);
-+	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+
-+	/* not possible to xmit on unconfigured port */
-+	if (!s3c24xx_port_configured(ucon))
-+		return;
-+
- 	while (!s3c24xx_serial_console_txrdy(port, ufcon))
- 		barrier();
- 	wr_regb(cons_uart, S3C2410_UTXH, ch);
-@@ -1429,9 +1447,7 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 	    "registers: ulcon=%08x, ucon=%08x, ubdriv=%08x\n",
- 	    port, ulcon, ucon, ubrdiv);
- 
--	if ((ucon & 0xf) != 0) {
--		/* consider the serial port configured if the tx/rx mode set */
--
-+	if (s3c24xx_port_configured(ucon)) {
- 		switch (ulcon & S3C2410_LCON_CSMASK) {
- 		case S3C2410_LCON_CS5:
- 			*bits = 5;
--- 
-1.8.1.3
+0-DAY kernel build testing backend              Open Source Technology Center
+http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
