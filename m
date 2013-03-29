@@ -1,71 +1,58 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling.
-Date: Fri, 29 Mar 2013 09:19:57 -0700
-Message-ID: <20130329161957.GA14717@kroah.com>
-References: <CAOAMb1AcBprsZ1RpA3XDjUC6hAZMrbBcmvVJk7oryeMsPcJy1A@mail.gmail.com>
+Subject: Re: make[2]: *** No rule to make target
+ `drivers/serial/serial_core.c', needed by
+ `Documentation/DocBook/kernel-api.xml'.
+Date: Fri, 29 Mar 2013 09:51:15 -0700
+Message-ID: <20130329165115.GA26331@kroah.com>
+References: <5153256d.SyZXdcYq+1mLl7KI%fengguang.wu@intel.com>
+ <20130328010012.GA14108@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:49268 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754132Ab3C2QUC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Mar 2013 12:20:02 -0400
-Received: by mail-pa0-f48.google.com with SMTP id lj1so405765pab.21
-        for <linux-serial@vger.kernel.org>; Fri, 29 Mar 2013 09:20:01 -0700 (PDT)
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAOAMb1AcBprsZ1RpA3XDjUC6hAZMrbBcmvVJk7oryeMsPcJy1A@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20130328010012.GA14108@localhost>
+Sender: linux-doc-owner@vger.kernel.org
+To: Fengguang Wu <fengguang.wu@intel.com>
+Cc: serial <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Chanho Min <chanho.min@lge.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
 
-On Wed, Mar 27, 2013 at 06:38:11PM +0900, Chanho Min wrote:
-> In DMA support, The received data is not pushed to tty until the DMA buffer
-> is filled. But some megabyte rate chips such as BT expect fast response and
-> data should be pushed immediately. In order to fix this issue, We suggest
-> the use of the timer for polling DMA buffer.
-> In our test, no data loss occurred at high-baudrate as compared with interrupt-
-> driven (We tested with 3Mbps).
-> We changes:
+On Thu, Mar 28, 2013 at 09:00:12AM +0800, Fengguang Wu wrote:
 > 
-> - We add timer for polling. If we set poll_timer to 10, every 10ms,
->  timer handler checks the residue in the dma buffer and transfer data
->  to the tty. Also, last_residue is updated for the next polling.
+> Hi Greg,
 > 
-> - poll_timeout is used to prevent the timer's system cost.
->   If poll_timeout is set to 3000 and no data is received in 3 seconds,
->   we inactivate poll timer and driver falls back to interrupt-driven.
->   When data is received again in FIFO and UART irq is occurred, we switch
->   back to DMA mode and start polling.
+> FYI, kernel build failed on
 > 
-> - We use consistent DMA mappings to avoid from the frequent cache operation
->   of the timer function for default.
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux master
+> head:   de55eb1d60d2ed0f1ba5e13226d91b3bfbe1c108
+> commit: ab4382d27412e7e3e7c936e8d50d8888dfac3df8 tty: move drivers/serial/ to drivers/tty/serial/
+> date:   2 years, 2 months ago
+> config: make ARCH=x86_64 allmodconfig
 > 
-> - pl011_dma_rx_chars is modified. the pending size is recalculated because
->   data can be taken by polling.
+> All error/warnings:
 > 
-> - the polling time is adjusted if dma rx poll is enabled but no rate is
->   specified. Ideal polling interval to push 1 character at every interval
->   is the reciprocal of 'baud rate / 10 line bits per character / 1000 ms
->   per sec'. But It is very aggressive to system. Experimentally,
->  '10000000 / baud' is suitable to receive dozens of characters. the poll rate
->  can be specified statically by dma_rx_poll_rate of the platform data as well.
-> 
-> Changes compared to v1:
->  - Use of consistent DMA mappings.
->  - Added dma_rx_poll_rate in platform data to specify the polling interval.
->  - Added dma_rx_poll_timeout in platform data to specify the polling timeout.
-> 
-> Changes compared to v2:
->  - Use of consistent DMA mappings for default.
->  - Added dma_rx_poll_enable in platform data to adjust the polling time
->    according to the baud rate.
->  - remove unnecessary lock from the polling function.
-> 
-> Signed-off-by: Chanho Min <chanho.min@lge.com>
+>    make[2]: *** No rule to make target `kernel/sched/core.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `kernel/sched/cpupri.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `kernel/sched/fair.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/base/syscore.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/base/dma-buf.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/base/fence.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `include/linux/fence.h', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/base/reservation.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `include/linux/reservation.h', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/tty/serial/8250/8250.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `include/linux/hsi/hsi.h', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `drivers/hsi/hsi.c', needed by `Documentation/DocBook/device-drivers.xml'.
+>    make[2]: *** No rule to make target `arch/x86/include/asm/io_32.h', needed by `Documentation/DocBook/deviceiobook.xml'.
+>    make[2]: *** No rule to make target `drivers/gpu/drm/drm_dp_helper.c', needed by `Documentation/DocBook/drm.xml'.
+>    make[2]: *** No rule to make target `arch/x86/include/asm/atomic_32.h', needed by `Documentation/DocBook/kernel-api.xml'.
+>    make[2]: *** No rule to make target `block/blk-barrier.c', needed by `Documentation/DocBook/kernel-api.xml'.
+>    make[2]: *** No rule to make target `block/blktrace.c', needed by `Documentation/DocBook/kernel-api.xml'.
+> >> make[2]: *** No rule to make target `drivers/serial/serial_core.c', needed by `Documentation/DocBook/kernel-api.xml'.
+> >> make[2]: *** No rule to make target `drivers/serial/8250.c', needed by `Documentation/DocBook/kernel-api.xml'.
+>    make[2]: *** No rule to make target `drivers/net/wan/syncppp.c', needed by `Documentation/DocBook/networking.xml'.
+>    make[2]: *** No rule to make target `arch/powerpc/kernel/rio.c', needed by `Documentation/DocBook/rapidio.xml'.
+>    make[2]: Target `htmldocs' not remade because of errors.
 
-This patch was line-wrapped and I had to fix it up by editing it by
-hand.  Please fix your email client to not have this happen again.
+I can't duplicate this on my tree, sorry.
 
 greg k-h
