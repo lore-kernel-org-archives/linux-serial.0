@@ -1,131 +1,71 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCHv2] serial: 8250_dw: add support for clk api
-Date: Fri, 29 Mar 2013 00:15:49 +0100
-Message-ID: <1364512549-10886-1-git-send-email-maxime.ripard@free-electrons.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] ARM: PL011: Add support for Rx DMA buffer polling.
+Date: Fri, 29 Mar 2013 09:19:57 -0700
+Message-ID: <20130329161957.GA14717@kroah.com>
+References: <CAOAMb1AcBprsZ1RpA3XDjUC6hAZMrbBcmvVJk7oryeMsPcJy1A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:39985 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752563Ab3C1XPz (ORCPT
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:49268 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754132Ab3C2QUC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Mar 2013 19:15:55 -0400
+	Fri, 29 Mar 2013 12:20:02 -0400
+Received: by mail-pa0-f48.google.com with SMTP id lj1so405765pab.21
+        for <linux-serial@vger.kernel.org>; Fri, 29 Mar 2013 09:20:01 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAOAMb1AcBprsZ1RpA3XDjUC6hAZMrbBcmvVJk7oryeMsPcJy1A@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?q?Emilio=20L=C3=B3pez?= <emilio@elopez.com.ar>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Chanho Min <chanho.min@lge.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Chanho Min <chanho0207@gmail.com>
 
-=46rom: Emilio L=C3=B3pez <emilio@elopez.com.ar>
+On Wed, Mar 27, 2013 at 06:38:11PM +0900, Chanho Min wrote:
+> In DMA support, The received data is not pushed to tty until the DMA buffer
+> is filled. But some megabyte rate chips such as BT expect fast response and
+> data should be pushed immediately. In order to fix this issue, We suggest
+> the use of the timer for polling DMA buffer.
+> In our test, no data loss occurred at high-baudrate as compared with interrupt-
+> driven (We tested with 3Mbps).
+> We changes:
+> 
+> - We add timer for polling. If we set poll_timer to 10, every 10ms,
+>  timer handler checks the residue in the dma buffer and transfer data
+>  to the tty. Also, last_residue is updated for the next polling.
+> 
+> - poll_timeout is used to prevent the timer's system cost.
+>   If poll_timeout is set to 3000 and no data is received in 3 seconds,
+>   we inactivate poll timer and driver falls back to interrupt-driven.
+>   When data is received again in FIFO and UART irq is occurred, we switch
+>   back to DMA mode and start polling.
+> 
+> - We use consistent DMA mappings to avoid from the frequent cache operation
+>   of the timer function for default.
+> 
+> - pl011_dma_rx_chars is modified. the pending size is recalculated because
+>   data can be taken by polling.
+> 
+> - the polling time is adjusted if dma rx poll is enabled but no rate is
+>   specified. Ideal polling interval to push 1 character at every interval
+>   is the reciprocal of 'baud rate / 10 line bits per character / 1000 ms
+>   per sec'. But It is very aggressive to system. Experimentally,
+>  '10000000 / baud' is suitable to receive dozens of characters. the poll rate
+>  can be specified statically by dma_rx_poll_rate of the platform data as well.
+> 
+> Changes compared to v1:
+>  - Use of consistent DMA mappings.
+>  - Added dma_rx_poll_rate in platform data to specify the polling interval.
+>  - Added dma_rx_poll_timeout in platform data to specify the polling timeout.
+> 
+> Changes compared to v2:
+>  - Use of consistent DMA mappings for default.
+>  - Added dma_rx_poll_enable in platform data to adjust the polling time
+>    according to the baud rate.
+>  - remove unnecessary lock from the polling function.
+> 
+> Signed-off-by: Chanho Min <chanho.min@lge.com>
 
-This commit implements support for using the clk api; this lets us use
-the "clocks" property with device tree, instead of having to use
-clock-frequency.
+This patch was line-wrapped and I had to fix it up by editing it by
+hand.  Please fix your email client to not have this happen again.
 
-Signed-off-by: Emilio L=C3=B3pez <emilio@elopez.com.ar>
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
-Changes from v1:
-  - Add my SoB and Heikki Krogerus Reviewed-by tags
-
- drivers/tty/serial/8250/8250_dw.c |   33 ++++++++++++++++++++++++-----=
-----
- 1 file changed, 24 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-index db0e66f..3dedd24 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/clk.h>
-=20
- #include "8250.h"
-=20
-@@ -55,8 +56,9 @@
-=20
-=20
- struct dw8250_data {
--	int	last_lcr;
--	int	line;
-+	int		last_lcr;
-+	int		line;
-+	struct clk	*clk;
- };
-=20
- static void dw8250_serial_out(struct uart_port *p, int offset, int val=
-ue)
-@@ -136,8 +138,13 @@ static int dw8250_probe_of(struct uart_port *p)
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift =3D val;
-=20
-+	/* clock got configured through clk api, all done */
-+	if (p->uartclk)
-+		return 0;
-+
-+	/* try to find out clock frequency from DT as fallback */
- 	if (of_property_read_u32(np, "clock-frequency", &val)) {
--		dev_err(p->dev, "no clock-frequency property set\n");
-+		dev_err(p->dev, "clk or clock-frequency not defined\n");
- 		return -EINVAL;
- 	}
- 	p->uartclk =3D val;
-@@ -294,9 +301,20 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 	if (!uart.port.membase)
- 		return -ENOMEM;
-=20
-+	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->clk =3D devm_clk_get(&pdev->dev, NULL);
-+	if (!IS_ERR(data->clk)) {
-+		clk_prepare_enable(data->clk);
-+		uart.port.uartclk =3D clk_get_rate(data->clk);
-+	}
-+
- 	uart.port.iotype =3D UPIO_MEM;
- 	uart.port.serial_in =3D dw8250_serial_in;
- 	uart.port.serial_out =3D dw8250_serial_out;
-+	uart.port.private_data =3D data;
-=20
- 	dw8250_setup_port(&uart);
-=20
-@@ -312,12 +330,6 @@ static int dw8250_probe(struct platform_device *pd=
-ev)
- 		return -ENODEV;
- 	}
-=20
--	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	uart.port.private_data =3D data;
--
- 	data->line =3D serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
-@@ -333,6 +345,9 @@ static int dw8250_remove(struct platform_device *pd=
-ev)
-=20
- 	serial8250_unregister_port(data->line);
-=20
-+	if (!IS_ERR(data->clk))
-+		clk_disable_unprepare(data->clk);
-+
- 	return 0;
- }
-=20
---=20
-1.7.10.4
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+greg k-h
