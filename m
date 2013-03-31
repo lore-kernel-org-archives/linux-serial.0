@@ -1,43 +1,41 @@
-From: Karsten Malcher <debian@dct.mine.nu>
-Subject: Driver for PL-2303 HX not working
-Date: Sun, 31 Mar 2013 15:26:57 +0200
-Message-ID: <515839A1.2050904@dct.mine.nu>
-Reply-To: debian@dct.mine.nu
+From: Greg KH <greg@kroah.com>
+Subject: Re: Driver for PL-2303 HX not working
+Date: Sun, 31 Mar 2013 08:01:11 -0700
+Message-ID: <20130331150111.GB9494@kroah.com>
+References: <515839A1.2050904@dct.mine.nu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay02.ispgateway.de ([80.67.31.36]:59394 "EHLO
-	smtprelay02.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753744Ab3CaNhL (ORCPT
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46832 "EHLO
+	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755197Ab3CaPCg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 31 Mar 2013 09:37:11 -0400
-Received: from [77.10.100.96] (helo=dct.mine.nu)
-	by smtprelay02.ispgateway.de with esmtpsa (TLSv1:AES256-SHA:256)
-	(Exim 4.68)
-	(envelope-from <karsten@dct.mine.nu>)
-	id 1UMIHo-0001Oh-2Z
-	for linux-serial@vger.kernel.org; Sun, 31 Mar 2013 15:27:04 +0200
-Received: from pc10 ([192.168.1.10])
-	by dct.mine.nu with esmtpsa (TLS-1.0:RSA_AES_256_CBC_SHA1:32)
-	(Exim 4.63)
-	(envelope-from <karsten@dct.mine.nu>)
-	id 1UMIHf-0000r7-AY
-	for linux-serial@vger.kernel.org; Sun, 31 Mar 2013 15:27:01 +0200
+	Sun, 31 Mar 2013 11:02:36 -0400
+Content-Disposition: inline
+In-Reply-To: <515839A1.2050904@dct.mine.nu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Karsten Malcher <debian@dct.mine.nu>
+Cc: linux-serial@vger.kernel.org
 
-Hello,
+On Sun, Mar 31, 2013 at 03:26:57PM +0200, Karsten Malcher wrote:
+> Hello,
+> 
+> I have a problem with the PL2303HX chip.
+> 
+> Please refer to this bug:
+> http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=704242
+> 
+> Where can i address such a bug?
+> How can i debug and help to solve the problem?
 
-I have a problem with the PL2303HX chip.
+Please post to the linux-usb@vger.kernel.org mailing list the output of
+the kernel log when you try to use the device.
 
-Please refer to this bug:
-http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=704242
+Also, as you are using a distro kernel, there's usually not much we can
+do to help out.  If you use a kernel.org release, like the latest one
+(3.8), we can help you, otherwise you need to work with your distro.
 
-Where can i address such a bug?
-How can i debug and help to solve the problem?
+good luck,
 
-Best regards
-Karsten Malcher
-
+greg k-h
