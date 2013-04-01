@@ -1,41 +1,90 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Driver for PL-2303 HX not working
-Date: Sun, 31 Mar 2013 08:01:11 -0700
-Message-ID: <20130331150111.GB9494@kroah.com>
-References: <515839A1.2050904@dct.mine.nu>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: [PATCH] Revert "OMAP/serial: Fix incorrect Rx FIFO threshold setting,
+ LSR validation on Tx, and Tx FIFO IRQ generation"
+Date: Mon, 1 Apr 2013 05:25:11 +0000 (UTC)
+Message-ID: <alpine.DEB.2.00.1304010519260.28273@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46832 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755197Ab3CaPCg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 31 Mar 2013 11:02:36 -0400
-Content-Disposition: inline
-In-Reply-To: <515839A1.2050904@dct.mine.nu>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Alexey Pelykh <alexey.pelykh@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Karsten Malcher <debian@dct.mine.nu>
-Cc: linux-serial@vger.kernel.org
 
-On Sun, Mar 31, 2013 at 03:26:57PM +0200, Karsten Malcher wrote:
-> Hello,
-> 
-> I have a problem with the PL2303HX chip.
-> 
-> Please refer to this bug:
-> http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=704242
-> 
-> Where can i address such a bug?
-> How can i debug and help to solve the problem?
 
-Please post to the linux-usb@vger.kernel.org mailing list the output of
-the kernel log when you try to use the device.
+This reverts commit 1776fd059c40907297d6c26c51876575d63fd9e2.
 
-Also, as you are using a distro kernel, there's usually not much we can
-do to help out.  If you use a kernel.org release, like the latest one
-(3.8), we can help you, otherwise you need to work with your distro.
+Commit 1776fd059c40 causes UART sluggishness on the OMAP37xx EVM.
+This can be demonstrated by pasting in a ten-character string, like
+"ffffffffff", at the serial console.  The string will be echoed back
+two to three characters at a time, with about a one-second pause
+between groups.  This causes one of the OMAP PM validation tests to
+time out:
 
-good luck,
+http://www.pwsan.com/omap/testlogs/test_v3.9-rc5/20130331205513/pm/37xxevm/37xxevm_log.txt
 
-greg k-h
+With commit 1776fd059c40 reverted, the test succeeds:
+
+http://www.pwsan.com/omap/testlogs/serial_fix_37xx_v3.9-rc/20130331230517/pm/37xxevm/37xxevm_log.txt
+
+This problem has been present since v3.9-rc1, but was incorrectly 
+suspected to be due to commit 6aa9707099c4b25700940eb3d016f16c4434360d 
+("lockdep: check that no locks held at freeze time"), due to limitations
+in my local testbed.
+
+Signed-off-by: Paul Walmsley <paul@pwsan.com>
+Cc: Alexey Pelykh <alexey.pelykh@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+
+Alexey, care to make another attempt for 3.11 at fixing the issue you were 
+originally debugging, but one that also works on OMAP37xx EVM?  It would 
+be good to cc the <linux-omap@vger.kernel.org> on your OMAP work.  If you 
+don't have a 37xx EVM, someone there might be able to help you test.
+
+ drivers/tty/serial/omap-serial.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 4dc4140..9915e4d 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -59,7 +59,6 @@
+ 
+ /* SCR register bitmasks */
+ #define OMAP_UART_SCR_RX_TRIG_GRANU1_MASK		(1 << 7)
+-#define OMAP_UART_SCR_TX_TRIG_GRANU1_MASK		(1 << 6)
+ #define OMAP_UART_SCR_TX_EMPTY			(1 << 3)
+ 
+ /* FCR register bitmasks */
+@@ -321,6 +320,9 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 	struct circ_buf *xmit = &up->port.state->xmit;
+ 	int count;
+ 
++	if (!(lsr & UART_LSR_THRE))
++		return;
++
+ 	if (up->port.x_char) {
+ 		serial_out(up, UART_TX, up->port.x_char);
+ 		up->port.icount.tx++;
+@@ -862,7 +864,7 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	serial_out(up, UART_IER, up->ier);
+ 	serial_out(up, UART_LCR, cval);		/* reset DLAB */
+ 	up->lcr = cval;
+-	up->scr = 0;
++	up->scr = OMAP_UART_SCR_TX_EMPTY;
+ 
+ 	/* FIFOs and DMA Settings */
+ 
+@@ -886,6 +888,8 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	serial_out(up, UART_MCR, up->mcr | UART_MCR_TCRTLR);
+ 	/* FIFO ENABLE, DMA MODE */
+ 
++	up->scr |= OMAP_UART_SCR_RX_TRIG_GRANU1_MASK;
++
+ 	/* Set receive FIFO threshold to 16 characters and
+ 	 * transmit FIFO threshold to 16 spaces
+ 	 */
+-- 
+1.7.10.4
+
