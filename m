@@ -1,36 +1,58 @@
-From: Paul Walmsley <paul@pwsan.com>
+From: Alexey Pelykh <alexey.pelykh@gmail.com>
 Subject: Re: [PATCH] Revert "OMAP/serial: Fix incorrect Rx FIFO threshold
  setting, LSR validation on Tx, and Tx FIFO IRQ generation"
-Date: Tue, 2 Apr 2013 18:24:25 +0000 (UTC)
-Message-ID: <alpine.DEB.2.00.1304021821190.27146@utopia.booyaka.com>
-References: <alpine.DEB.2.00.1304010519260.28273@utopia.booyaka.com> <CAOmKuSpttQJmrL=Htiz-Zc4voAF7CnG_GQYAO2onKpauwYjtvw@mail.gmail.com> <alpine.DEB.2.00.1304010844100.28273@utopia.booyaka.com> <CAOmKuSrABrPcZ=Yg1+LAHWbh9CdTYR0eUmJ2dd3z91oz0uu21g@mail.gmail.com>
- <alpine.DEB.2.00.1304011008230.28273@utopia.booyaka.com> <CAOmKuSrbDc025Tj9xsqDebJ_KZdp_VnWAOs_OO5UAegV43JcDQ@mail.gmail.com> <CAOmKuSpbaKutLxbNihBRDz+B0Wt0XiPss-PcEHc-efCTvciNFg@mail.gmail.com> <alpine.DEB.2.00.1304011654520.9148@utopia.booyaka.com>
- <CAOmKuSo4onVtk2Ke-i+0_1Ych33KuUYspRy+cySRHf4yWB5XDw@mail.gmail.com>
+Date: Wed, 3 Apr 2013 00:19:45 +0300
+Message-ID: <CAOmKuSqd=gNYFutpgDref58pbAbDwDin4mvL_OEooD1XuwKtgQ@mail.gmail.com>
+References: <alpine.DEB.2.00.1304010519260.28273@utopia.booyaka.com>
+	<CAOmKuSpttQJmrL=Htiz-Zc4voAF7CnG_GQYAO2onKpauwYjtvw@mail.gmail.com>
+	<alpine.DEB.2.00.1304010844100.28273@utopia.booyaka.com>
+	<CAOmKuSrABrPcZ=Yg1+LAHWbh9CdTYR0eUmJ2dd3z91oz0uu21g@mail.gmail.com>
+	<alpine.DEB.2.00.1304011008230.28273@utopia.booyaka.com>
+	<CAOmKuSrbDc025Tj9xsqDebJ_KZdp_VnWAOs_OO5UAegV43JcDQ@mail.gmail.com>
+	<CAOmKuSpbaKutLxbNihBRDz+B0Wt0XiPss-PcEHc-efCTvciNFg@mail.gmail.com>
+	<alpine.DEB.2.00.1304011654520.9148@utopia.booyaka.com>
+	<CAOmKuSo4onVtk2Ke-i+0_1Ych33KuUYspRy+cySRHf4yWB5XDw@mail.gmail.com>
+	<alpine.DEB.2.00.1304021821190.27146@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([74.50.51.50]:49587 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760629Ab3DBSY0 (ORCPT
+Received: from mail-ia0-f173.google.com ([209.85.210.173]:62466 "EHLO
+	mail-ia0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754460Ab3DBVTq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Apr 2013 14:24:26 -0400
-In-Reply-To: <CAOmKuSo4onVtk2Ke-i+0_1Ych33KuUYspRy+cySRHf4yWB5XDw@mail.gmail.com>
+	Tue, 2 Apr 2013 17:19:46 -0400
+In-Reply-To: <alpine.DEB.2.00.1304021821190.27146@utopia.booyaka.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexey Pelykh <alexey.pelykh@gmail.com>
+To: Paul Walmsley <paul@pwsan.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Kevin Hilman <khilman@linaro.org>, balbi@ti.com
 
-On Mon, 1 Apr 2013, Alexey Pelykh wrote:
+Hi Paul,
 
-> Paul, can you please try to comment out change related to Rx line
-> (granulation one). That's only Rx line related change in the patch.
+No problem, I'll prepare patch in next 24 hours and will send in ASAP.
 
-Yes, looks like simply reverting the commit 1776fd059c40 ("OMAP/serial: 
-Fix incorrect Rx FIFO threshold setting, LSR validation on Tx, and Tx FIFO 
-IRQ generation") change to OMAP_UART_SCR_RX_TRIG_GRANU1_MASK fixes it.
+But, since we've found the issue, I suggest that we should look at it
+closer, especially since at this moment only you can reproduce it. As
+far as I understand, but I may be wrong,
+this comment is wrong, since if to specify
+OMAP_UART_SCR_RX_TRIG_GRANU1_MASK, it effectively sets Rx threshold to
+1 character, instead of 16.
+/* Set receive FIFO threshold to 16 characters and
+ * transmit FIFO threshold to 16 spaces
+ */
 
-Care to send a patch doing so ASAP for v3.9-rc fixes?  That would moot the 
-revert of the entire commit 1776fd059c40.
-
-
-- Paul
+On Tue, Apr 2, 2013 at 9:24 PM, Paul Walmsley <paul@pwsan.com> wrote:
+> On Mon, 1 Apr 2013, Alexey Pelykh wrote:
+>
+>> Paul, can you please try to comment out change related to Rx line
+>> (granulation one). That's only Rx line related change in the patch.
+>
+> Yes, looks like simply reverting the commit 1776fd059c40 ("OMAP/serial:
+> Fix incorrect Rx FIFO threshold setting, LSR validation on Tx, and Tx FIFO
+> IRQ generation") change to OMAP_UART_SCR_RX_TRIG_GRANU1_MASK fixes it.
+>
+> Care to send a patch doing so ASAP for v3.9-rc fixes?  That would moot the
+> revert of the entire commit 1776fd059c40.
+>
+>
+> - Paul
