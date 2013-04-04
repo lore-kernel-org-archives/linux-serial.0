@@ -1,78 +1,39 @@
-From: Grazvydas Ignotas <notasas@gmail.com>
-Subject: Re: [PATCH] Revert "OMAP/serial: Fix incorrect Rx FIFO threshold
- setting, LSR validation on Tx, and Tx FIFO IRQ generation"
-Date: Thu, 4 Apr 2013 13:54:55 +0300
-Message-ID: <CANOLnONgRtaBK8OpszJBsU=D+kSoQzQgb0ALQGMtwW67JEfP8g@mail.gmail.com>
-References: <alpine.DEB.2.00.1304010519260.28273@utopia.booyaka.com>
-	<CAOmKuSpttQJmrL=Htiz-Zc4voAF7CnG_GQYAO2onKpauwYjtvw@mail.gmail.com>
-	<alpine.DEB.2.00.1304010844100.28273@utopia.booyaka.com>
-	<CAOmKuSrABrPcZ=Yg1+LAHWbh9CdTYR0eUmJ2dd3z91oz0uu21g@mail.gmail.com>
-	<alpine.DEB.2.00.1304011008230.28273@utopia.booyaka.com>
-	<CAOmKuSrbDc025Tj9xsqDebJ_KZdp_VnWAOs_OO5UAegV43JcDQ@mail.gmail.com>
-	<CAOmKuSpbaKutLxbNihBRDz+B0Wt0XiPss-PcEHc-efCTvciNFg@mail.gmail.com>
-	<alpine.DEB.2.00.1304011654520.9148@utopia.booyaka.com>
-	<CAOmKuSo4onVtk2Ke-i+0_1Ych33KuUYspRy+cySRHf4yWB5XDw@mail.gmail.com>
-	<alpine.DEB.2.00.1304021821190.27146@utopia.booyaka.com>
-	<CAOmKuSqd=gNYFutpgDref58pbAbDwDin4mvL_OEooD1XuwKtgQ@mail.gmail.com>
-	<alpine.DEB.2.00.1304030933510.12727@utopia.booyaka.com>
-	<CAOmKuSr1NohJBZ_sU43b=6oNtk+P1mL=AOA6ZW6c1dLQBkw6Ng@mail.gmail.com>
+From: "Zheng, Lv" <lv.zheng@intel.com>
+Subject: RE: [PATCH v6] ACPI / serial: Add peripheral PnP IDs enumeration
+ support
+Date: Thu, 4 Apr 2013 15:43:43 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88015CC891@SHSMSX101.ccr.corp.intel.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
+ <eb535db4b040bbe8712a975ed70cb3899b5b0fea.1364954385.git.lv.zheng@intel.com>
+ <20130403161431.GB21383@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f180.google.com ([209.85.214.180]:35740 "EHLO
-	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757333Ab3DDKyz convert rfc822-to-8bit (ORCPT
+Received: from mga09.intel.com ([134.134.136.24]:56904 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760334Ab3DDPnr convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Apr 2013 06:54:55 -0400
-In-Reply-To: <CAOmKuSr1NohJBZ_sU43b=6oNtk+P1mL=AOA6ZW6c1dLQBkw6Ng@mail.gmail.com>
+	Thu, 4 Apr 2013 11:43:47 -0400
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexey Pelykh <alexey.pelykh@gmail.com>
-Cc: Paul Walmsley <paul@pwsan.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Kevin Hilman <khilman@linaro.org>, Felipe Balbi <balbi@ti.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Zhang, Rui" <rui.zhang@intel.com>
 
-On Thu, Apr 4, 2013 at 12:06 AM, Alexey Pelykh <alexey.pelykh@gmail.com=
-> wrote:
->
-> Is it possible to check behavior on 3.0-3.2 kernels?
+Hi,
 
-We use 3.2 on pandora as production kernel and it doesn't have this
-issue that 3.9 had. 3.2 serial PM code is vastly different from what's
-in later ones though.
+> > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
+> >
+> > What is the "uart" part for?  Isn't that kind of obvious?
+> 
+> It is the default "peripheral_type" content.
+> Before sending next revision out, let me ask a question here:
+> Shall I leave this empty as my previous revisions?
 
->
-> On Wed, Apr 3, 2013 at 11:57 PM, Paul Walmsley <paul@pwsan.com> wrote=
-:
->> Hi Alexey,
->>
->> On Wed, 3 Apr 2013, Alexey Pelykh wrote:
->>
->>> But, since we've found the issue, I suggest that we should look at =
-it
->>> closer, especially since at this moment only you can reproduce it.
->>
->> Well probably no one else is testing it :-)
->>
->>> As far as I understand, but I may be wrong, this comment is wrong, =
-since
->>> if to specify OMAP_UART_SCR_RX_TRIG_GRANU1_MASK, it effectively set=
-s Rx
->>> threshold to 1 character, instead of 16. /* Set receive FIFO thresh=
-old
->>> to 16 characters and
->>>  * transmit FIFO threshold to 16 spaces
->>>  */
->>
->> Again it certainly would not surprise me... that UART IP block seems=
- to be
->> poorly understood :-(  Bizarre, I know.
->>
->> - Paul
+Hmm, if this is empty by default then the udev rules may require additional handlings.
+Can I use "NONE" here for the user space users?
 
---
-Gra=C5=BEvydas
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks and best regards
+-Lv
+
