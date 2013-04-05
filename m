@@ -1,43 +1,60 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v6] ACPI / serial: Add peripheral PnP IDs enumeration
- support
-Date: Thu, 4 Apr 2013 11:23:35 -0700
-Message-ID: <20130404182335.GC24711@kroah.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
- <eb535db4b040bbe8712a975ed70cb3899b5b0fea.1364954385.git.lv.zheng@intel.com>
- <20130403161431.GB21383@kroah.com>
- <1AE640813FDE7649BE1B193DEA596E88015CC891@SHSMSX101.ccr.corp.intel.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: [PATCH] serial: max3100: use spi_get_drvdata() and spi_set_drvdata()
+Date: Fri, 05 Apr 2013 10:54:05 +0900
+Message-ID: <000a01ce31a0$74724fa0$5d56eee0$%han@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f42.google.com ([209.85.160.42]:57449 "EHLO
-	mail-pb0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1764374Ab3DDSXj (ORCPT
+Received: from mailout1.samsung.com ([203.254.224.24]:42478 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932071Ab3DEByH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Apr 2013 14:23:39 -0400
-Received: by mail-pb0-f42.google.com with SMTP id up7so1577516pbc.1
-        for <linux-serial@vger.kernel.org>; Thu, 04 Apr 2013 11:23:39 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E88015CC891@SHSMSX101.ccr.corp.intel.com>
+	Thu, 4 Apr 2013 21:54:07 -0400
+Received: from epcpsbgr1.samsung.com
+ (u141.gpu120.samsung.co.kr [203.254.230.141])
+ by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0MKR0060OEM2QSC0@mailout1.samsung.com> for
+ linux-serial@vger.kernel.org; Fri, 05 Apr 2013 10:54:06 +0900 (KST)
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Zheng, Lv" <lv.zheng@intel.com>
-Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Zhang, Rui" <rui.zhang@intel.com>
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 
-On Thu, Apr 04, 2013 at 03:43:43PM +0000, Zheng, Lv wrote:
-> Hi,
-> 
-> > > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
-> > >
-> > > What is the "uart" part for?  Isn't that kind of obvious?
-> > 
-> > It is the default "peripheral_type" content.
-> > Before sending next revision out, let me ask a question here:
-> > Shall I leave this empty as my previous revisions?
-> 
-> Hmm, if this is empty by default then the udev rules may require additional handlings.
-> Can I use "NONE" here for the user space users?
+Use the wrapper functions for getting and setting the driver data using
+spi_device instead of using dev_{get|set}_drvdata with &spi->dev, so we
+can directly pass a struct spi_device.
 
-No, just don't create the sysfs file at all for that type of device.
+Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+---
+ drivers/tty/serial/max3100.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 57da9bb..35866d5 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -778,7 +778,7 @@ static int max3100_probe(struct spi_device *spi)
+ 	max3100s[i]->spi = spi;
+ 	max3100s[i]->irq = spi->irq;
+ 	spin_lock_init(&max3100s[i]->conf_lock);
+-	dev_set_drvdata(&spi->dev, max3100s[i]);
++	spi_set_drvdata(spi, max3100s[i]);
+ 	pdata = spi->dev.platform_data;
+ 	max3100s[i]->crystal = pdata->crystal;
+ 	max3100s[i]->loopback = pdata->loopback;
+@@ -819,7 +819,7 @@ static int max3100_probe(struct spi_device *spi)
+ 
+ static int max3100_remove(struct spi_device *spi)
+ {
+-	struct max3100_port *s = dev_get_drvdata(&spi->dev);
++	struct max3100_port *s = spi_get_drvdata(spi);
+ 	int i;
+ 
+ 	mutex_lock(&max3100s_lock);
+-- 
+1.7.2.5
+
+
