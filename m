@@ -1,49 +1,79 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [PATCHv3] driver: serial: prevent UART console idle on suspend while using "no_console_suspend"
-Date: Fri, 05 Apr 2013 10:40:29 -0700
-Message-ID: <87mwtclvua.fsf@linaro.org>
-References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:35680 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1162214Ab3DERkd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Apr 2013 13:40:33 -0400
-Received: by mail-pa0-f48.google.com with SMTP id lj1so2152690pab.21
-        for <linux-serial@vger.kernel.org>; Fri, 05 Apr 2013 10:40:32 -0700 (PDT)
-In-Reply-To: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com> (Sourav
-	Poddar's message of "Fri, 5 Apr 2013 18:45:33 +0530")
-Sender: linux-serial-owner@vger.kernel.org
+From: Jonas Gorski <jogo@openwrt.org>
+Subject: [PATCH] MIPS: BCM63XX: merge bcm63xx_clk.h into bcm63xx/clk.c
+Date: Sat,  6 Apr 2013 13:31:02 +0200
+Message-ID: <1365247862-19358-1-git-send-email-jogo@openwrt.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>, John Crispin <blogic@openwrt.org>, Maxime Bizon <mbizon@freebox.fr>, Florian Fainelli <florian@openwrt.org>, Kevin Cernekee <cernekee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
+All the header file does is provide the internal structure of clk,
+which shouldn't be used by anyone except clk.c itself anyway.
 
-> With dt boot, uart wakeup after suspend is non functional while using
-> "no_console_suspend" in the bootargs. With "no_console_suspend" used, we
-> should prevent the runtime suspend of the uart port which is getting used
-> as an console.
->
-> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
-> Cc: Felipe Balbi<balbi@ti.com>
-> Cc: Rajendra nayak<rnayak@ti.com>
-> Tested on omap5430evm, omap4430sdp.
->
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+---
+ arch/mips/bcm63xx/clk.c                          |    8 +++++++-
+ arch/mips/include/asm/mach-bcm63xx/bcm63xx_clk.h |   11 -----------
+ drivers/tty/serial/bcm63xx_uart.c                |    1 -
+ 3 files changed, 7 insertions(+), 13 deletions(-)
+ delete mode 100644 arch/mips/include/asm/mach-bcm63xx/bcm63xx_clk.h
 
-Rather than make these special checks inside the driver's runtime PM
-callbacks, you should just disable runtime PM (pm_runtime_disable())
-
-Then, this should be broken into 2 patches.
-
-1) serial core: add the '->is_console' flag.  (nit on naming: don't call
-   it port_is_console, since the struct is already a uart_port)
-
-2) In the OMAP UART driver's ->prepare callback, check the is_console flag
-   and pm_runtime_disable() accordingly  (then pm_runtime_enable() in
-   the drivers's ->complete callback.
-
-Kevin
+diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
+index e357d55..6601214 100644
+--- a/arch/mips/bcm63xx/clk.c
++++ b/arch/mips/bcm63xx/clk.c
+@@ -15,7 +15,13 @@
+ #include <bcm63xx_io.h>
+ #include <bcm63xx_regs.h>
+ #include <bcm63xx_reset.h>
+-#include <bcm63xx_clk.h>
++
++struct clk {
++	void		(*set)(struct clk *, int);
++	unsigned int	rate;
++	unsigned int	usage;
++	int		id;
++};
+ 
+ static DEFINE_MUTEX(clocks_mutex);
+ 
+diff --git a/arch/mips/include/asm/mach-bcm63xx/bcm63xx_clk.h b/arch/mips/include/asm/mach-bcm63xx/bcm63xx_clk.h
+deleted file mode 100644
+index 8fcf8df..0000000
+--- a/arch/mips/include/asm/mach-bcm63xx/bcm63xx_clk.h
++++ /dev/null
+@@ -1,11 +0,0 @@
+-#ifndef BCM63XX_CLK_H_
+-#define BCM63XX_CLK_H_
+-
+-struct clk {
+-	void		(*set)(struct clk *, int);
+-	unsigned int	rate;
+-	unsigned int	usage;
+-	int		id;
+-};
+-
+-#endif /* ! BCM63XX_CLK_H_ */
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 52a3ecd..6fa2ae7 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -30,7 +30,6 @@
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ 
+-#include <bcm63xx_clk.h>
+ #include <bcm63xx_irq.h>
+ #include <bcm63xx_regs.h>
+ #include <bcm63xx_io.h>
+-- 
+1.7.10.4
