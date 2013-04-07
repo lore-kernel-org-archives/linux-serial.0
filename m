@@ -1,59 +1,63 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: n_tty_write() going into schedule but NOT coming out
-Date: Sat, 6 Apr 2013 15:02:02 +0530
-Message-ID: <515FEB92.9060707@synopsys.com>
-References: <5156DC21.20901@synopsys.com> <5159925B.5050806@synopsys.com>  <1364829008.3617.21.camel@thor.lan> <515ADC96.7090908@synopsys.com> <1365191567.3585.10.camel@thor.lan>
+From: "Zheng, Lv" <lv.zheng@intel.com>
+Subject: RE: [PATCH v6] ACPI / serial: Add peripheral PnP IDs enumeration
+ support
+Date: Sun, 7 Apr 2013 03:05:43 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88015CDA22@SHSMSX101.ccr.corp.intel.com>
+References: <cover.1354505471.git.lv.zheng@intel.com>
+ <eb535db4b040bbe8712a975ed70cb3899b5b0fea.1364954385.git.lv.zheng@intel.com>
+ <20130403161431.GB21383@kroah.com>
+ <1AE640813FDE7649BE1B193DEA596E88015CC828@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from us02smtp2.synopsys.com ([198.182.60.77]:48110 "EHLO
-	alvesta.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1163221Ab3DFJcQ (ORCPT
+Received: from mga14.intel.com ([143.182.124.37]:37516 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1161315Ab3DGDG0 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Apr 2013 05:32:16 -0400
-In-Reply-To: <1365191567.3585.10.camel@thor.lan>
+	Sat, 6 Apr 2013 23:06:26 -0400
+In-Reply-To: <1AE640813FDE7649BE1B193DEA596E88015CC828@SHSMSX101.ccr.corp.intel.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: "Zheng, Lv" <lv.zheng@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Zhang, Rui" <rui.zhang@intel.com>
 
-On 04/06/2013 01:22 AM, Peter Hurley wrote:
-> I'll see if I can reproduce this over the weekend on an old single-core laptop I
-> still have.
+Hi, Greg
 
-TIA for doing this.
+I think I may misunderstand what you mean here, let me confirm again.
+Sorry for doing this.
 
-> There were some race conditions in the N_TTY line discipline which I
-> recently fixed. Those changes are in linux-next. Can you test if this is
-> reproducible on linux-next?
+> > > +#ifdef CONFIG_ACPI_UART
+> > > +int acpi_uart_get_peripheral_type(struct device *dev,
+> > > +	char *buf, size_t size);
+> > > +#else
+> > > +static inline int acpi_uart_get_peripheral_type(struct device *dev,
+> > > +	char *buf, size_t size)
+> > > +{
+> > > +	return -ENODEV;
+> > > +}
+> > > +#endif
 
-I tried today's -next and I see the same issue :-(
+> > I see you never tested this code without the configuration option enabled :(
 
-> Assuming I don't reproduce this on the laptop, the only other
-> explanation I can think of right now is that ARCLinux is not properly
-> handling signal-driven i/o (assuming the BusyBox /bin/sh uses SIGIO). Do
-> you know if there is anything special about the way ARCLinux handle
-> signals?
+I was thinking you were talking about test plans.
+Since I didn't see any issues here and I just didn't want to argue on this topic and replied in this way. :-)
+The only user - uart_get_attr_peripheral_type with "int" return value check can ensure no issues here.
+> > > +static ssize_t uart_get_attr_peripheral_type(struct device *dev,
+> > > +		struct device_attribute *attr, char *buf) {
+> > > +	int len;
+> > > +
+> > > +	len = acpi_uart_get_peripheral_type(dev, buf, 1024);
+> > > +	if (len > 0) {
+> > > +		buf[len++] = '\n';
+> > > +		return len;
+> > > +	}
+> > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
 
-No, it's pretty standard stuff - we are uClibc based though - as opposed to glibc
-so there might be some subtleties - but we do run LTP open posix regularly. Also
-the test setup is a slowish 80MHz FPGA so this is not something many people have
-in their regular test setups.
+Now I realize that you might be talking about the "-NODEV" return value is not a good choice, "0" or something else is better.
+Shall I return 0 here?
 
-I'll start reading the relevant code myself - and will be willing to take any
-debug/test patches which help with troubleshooting of this issue.
+Thanks and best regards
+-Lv
 
-Just to re-iterate, my test setup has a minimal busybox based rootfs, 3 telnet
-sessions, each running a
-while true; do find / -name "*" ; done
-
-I'm running out of ramfs, no external disk/nfs mounts to reduce the peripheral I/O
-slowing down the find (although NFS stuff will be caches anyways after first fetch).
-
-Also please make sure you have CONFIG_PREEMPT_COUNT otherwise there's a
-possibility (atleast on ARC builds) that a stale register causes timer list to be
-corrupted in mod_timer().
-
-Thx,
--Vineet
