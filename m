@@ -1,48 +1,62 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [PATCH v6] ACPI / serial: Add peripheral PnP IDs enumeration
- support
-Date: Sun, 7 Apr 2013 03:11:51 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88015CDA38@SHSMSX101.ccr.corp.intel.com>
-References: <cover.1354505471.git.lv.zheng@intel.com>
- <eb535db4b040bbe8712a975ed70cb3899b5b0fea.1364954385.git.lv.zheng@intel.com>
- <20130403161431.GB21383@kroah.com>
- <1AE640813FDE7649BE1B193DEA596E88015CC891@SHSMSX101.ccr.corp.intel.com>
- <20130404182335.GC24711@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20130404182335.GC24711@kroah.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Zhang, Rui" <rui.zhang@intel.com>
+From: Sean Young <sean@mess.org>
+Subject: [PATCH] Revert "tty/8250_pnp: serial port detection regression since v3.7"
+Date: Sun,  7 Apr 2013 20:47:18 +0100
+Message-ID: <1365364038-3959-1-git-send-email-sean@mess.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from pequod.mess.org ([46.65.169.142]:51451 "EHLO pequod.mess.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933168Ab3DGTrW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 7 Apr 2013 15:47:22 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Josh Boyer <jwboyer@redhat.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Vincent Deffontaines <vincent@gryzor.com>, tkil@scrye.com, stable@vger.kernel.org
 
-> > Hi,
-> >
-> > > > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
-> > > >
-> > > > What is the "uart" part for?  Isn't that kind of obvious?
-> > >
-> > > It is the default "peripheral_type" content.
-> > > Before sending next revision out, let me ask a question here:
-> > > Shall I leave this empty as my previous revisions?
-> >
-> > Hmm, if this is empty by default then the udev rules may require additional
-> handlings.
-> > Can I use "NONE" here for the user space users?
-> 
-> No, just don't create the sysfs file at all for that type of device.
+This reverts commit 77e372a3d82e5e4878ce1962207edd766773cc76.
 
-Sorry for the delayed reply.
+Checking for disabled resources board breaks detection pnp on another
+board "AMI UEFI implementation (Version: 0406 Release Date: 06/06/2012)".
+I'm working with the reporter of the original bug to write and test
+a better fix.
 
-I was thinking developers are encouraged to use the default attributes.
-In the tty subsystem, the default attributes are owned by the tty drivers, thus I added peripheral_type file in the serial layer.
+https://bugzilla.redhat.com/show_bug.cgi?id=928246
 
-If we want to have it as a dynamic attribute, we may modify the codes in the tty_register_device_attr, splitting device_register into two parts, and add sysfs addition codes between the device_initialize and device_add.
-So that the uevents received by the user space can have this attribute set.
-Sorry that I need your confirmation before doing such modification.
+Signed-off-by: Sean Young <sean@mess.org>
+Cc: stable <stable@kernel.org>
+---
+ drivers/tty/serial/8250/8250_pnp.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-Thanks and best regards
--Lv
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index b3455a9..35d9ab9 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -429,7 +429,6 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ {
+ 	struct uart_8250_port uart;
+ 	int ret, line, flags = dev_id->driver_data;
+-	struct resource *res = NULL;
+ 
+ 	if (flags & UNKNOWN_DEV) {
+ 		ret = serial_pnp_guess_board(dev);
+@@ -440,12 +439,11 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	memset(&uart, 0, sizeof(uart));
+ 	if (pnp_irq_valid(dev, 0))
+ 		uart.port.irq = pnp_irq(dev, 0);
+-	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2))
+-		res = pnp_get_resource(dev, IORESOURCE_IO, 2);
+-	else if (pnp_port_valid(dev, 0))
+-		res = pnp_get_resource(dev, IORESOURCE_IO, 0);
+-	if (pnp_resource_enabled(res)) {
+-		uart.port.iobase = res->start;
++	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
++		uart.port.iobase = pnp_port_start(dev, 2);
++		uart.port.iotype = UPIO_PORT;
++	} else if (pnp_port_valid(dev, 0)) {
++		uart.port.iobase = pnp_port_start(dev, 0);
+ 		uart.port.iotype = UPIO_PORT;
+ 	} else if (pnp_mem_valid(dev, 0)) {
+ 		uart.port.mapbase = pnp_mem_start(dev, 0);
+-- 
+1.8.1.4
+
