@@ -1,63 +1,48 @@
 From: "Zheng, Lv" <lv.zheng@intel.com>
 Subject: RE: [PATCH v6] ACPI / serial: Add peripheral PnP IDs enumeration
  support
-Date: Sun, 7 Apr 2013 03:05:43 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88015CDA22@SHSMSX101.ccr.corp.intel.com>
+Date: Sun, 7 Apr 2013 03:11:51 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88015CDA38@SHSMSX101.ccr.corp.intel.com>
 References: <cover.1354505471.git.lv.zheng@intel.com>
  <eb535db4b040bbe8712a975ed70cb3899b5b0fea.1364954385.git.lv.zheng@intel.com>
  <20130403161431.GB21383@kroah.com>
- <1AE640813FDE7649BE1B193DEA596E88015CC828@SHSMSX101.ccr.corp.intel.com>
+ <1AE640813FDE7649BE1B193DEA596E88015CC891@SHSMSX101.ccr.corp.intel.com>
+ <20130404182335.GC24711@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:37516 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1161315Ab3DGDG0 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Apr 2013 23:06:26 -0400
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E88015CC828@SHSMSX101.ccr.corp.intel.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20130404182335.GC24711@kroah.com>
 Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: "Zheng, Lv" <lv.zheng@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Brown, Len" <len.brown@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Zhang, Rui" <rui.zhang@intel.com>
+List-Id: linux-serial@vger.kernel.org
 
-Hi, Greg
+> > Hi,
+> >
+> > > > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
+> > > >
+> > > > What is the "uart" part for?  Isn't that kind of obvious?
+> > >
+> > > It is the default "peripheral_type" content.
+> > > Before sending next revision out, let me ask a question here:
+> > > Shall I leave this empty as my previous revisions?
+> >
+> > Hmm, if this is empty by default then the udev rules may require additional
+> handlings.
+> > Can I use "NONE" here for the user space users?
+> 
+> No, just don't create the sysfs file at all for that type of device.
 
-I think I may misunderstand what you mean here, let me confirm again.
-Sorry for doing this.
+Sorry for the delayed reply.
 
-> > > +#ifdef CONFIG_ACPI_UART
-> > > +int acpi_uart_get_peripheral_type(struct device *dev,
-> > > +	char *buf, size_t size);
-> > > +#else
-> > > +static inline int acpi_uart_get_peripheral_type(struct device *dev,
-> > > +	char *buf, size_t size)
-> > > +{
-> > > +	return -ENODEV;
-> > > +}
-> > > +#endif
+I was thinking developers are encouraged to use the default attributes.
+In the tty subsystem, the default attributes are owned by the tty drivers, thus I added peripheral_type file in the serial layer.
 
-> > I see you never tested this code without the configuration option enabled :(
-
-I was thinking you were talking about test plans.
-Since I didn't see any issues here and I just didn't want to argue on this topic and replied in this way. :-)
-The only user - uart_get_attr_peripheral_type with "int" return value check can ensure no issues here.
-> > > +static ssize_t uart_get_attr_peripheral_type(struct device *dev,
-> > > +		struct device_attribute *attr, char *buf) {
-> > > +	int len;
-> > > +
-> > > +	len = acpi_uart_get_peripheral_type(dev, buf, 1024);
-> > > +	if (len > 0) {
-> > > +		buf[len++] = '\n';
-> > > +		return len;
-> > > +	}
-> > > +	return snprintf(buf, PAGE_SIZE, "uart\n");
-
-Now I realize that you might be talking about the "-NODEV" return value is not a good choice, "0" or something else is better.
-Shall I return 0 here?
+If we want to have it as a dynamic attribute, we may modify the codes in the tty_register_device_attr, splitting device_register into two parts, and add sysfs addition codes between the device_initialize and device_add.
+So that the uevents received by the user space can have this attribute set.
+Sorry that I need your confirmation before doing such modification.
 
 Thanks and best regards
 -Lv
-
