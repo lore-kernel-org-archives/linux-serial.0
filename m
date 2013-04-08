@@ -1,41 +1,59 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCHv3] driver: serial: prevent UART console idle on suspend
-	while using "no_console_suspend"
-Date: Mon, 8 Apr 2013 18:14:32 +0100
-Message-ID: <20130408171432.GY30923@n2100.arm.linux.org.uk>
-References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>
+From: Hans Beckerus <hans.beckerus@gmail.com>
+Subject: Re: USB serial support / Prolific PL2303 Driver
+Date: Mon, 08 Apr 2013 19:35:49 +0200
+Message-ID: <5162FFF5.6040403@gmail.com>
+References: <CAFyqS9rphU1ua=mzvQhWPRuqJDJHo79s5fq9ZF+oXMMcMXkUjA@mail.gmail.com> <20130408150351.GA13824@kroah.com> <1365433602.618685252@f30.mail.ru> <CAFyqS9oLTcc8dStUzF7XaLQYAQPK+VCsvuVkOmpW8g2rOjvv_Q@mail.gmail.com> <20130408160351.GB12665@kroah.com> <CAFyqS9qz+cHLY4zt1Bmuf6ubov57T3dKTP7B2d2g=ta=Qwg98g@mail.gmail.com> <20130408162945.GA26133@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, khilman@linaro.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f171.google.com ([209.85.217.171]:44585 "EHLO
+	mail-lb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760775Ab3DHRfy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 8 Apr 2013 13:35:54 -0400
+Received: by mail-lb0-f171.google.com with SMTP id v10so6008470lbd.30
+        for <linux-serial@vger.kernel.org>; Mon, 08 Apr 2013 10:35:52 -0700 (PDT)
+In-Reply-To: <20130408162945.GA26133@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org
 
-On Fri, Apr 05, 2013 at 06:45:33PM +0530, Sourav Poddar wrote:
-> With dt boot, uart wakeup after suspend is non functional while using
-> "no_console_suspend" in the bootargs. With "no_console_suspend" used, we
-> should prevent the runtime suspend of the uart port which is getting used
-> as an console.
-> 
-> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
-> Cc: Felipe Balbi<balbi@ti.com>
-> Cc: Rajendra nayak<rnayak@ti.com>
-> Tested on omap5430evm, omap4430sdp.
-> 
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-> ---
-> v2->v3
-> Based on Kevin Hilman and Santosh Shilimkar comments, modified
-> serial core/driver layer to bypass runtime suspend 
-> for console uart while using "no_console_suspend".
-> 
-> This patch is based on Santosh Shilimkar serial patch[1]
+On 2013-04-08 6:29, Greg KH wrote:
+> On Mon, Apr 08, 2013 at 06:20:23PM +0200, Hans Beck=E9rus wrote:
+>> Sure, dmesg will show me the details, but I would really like to hav=
+e
+>> it in real-time ;) Actually when I set console=3DttyUSB0,115200 all =
+I
+>> get is the prompt :( Nothing comes out from the boot, and it does no=
+t
+>> seem to act as a real console either since any thing that usually po=
+ps
+>> up there are only showing in dmesg now.  Do I need to configure the
+>> kernel in some specific way to support USB console mode?
+> You do have:
+> 	CONFIG_USB_SERIAL_CONSOLE
+> enabled, right?
+Hmm. Coming to think about it, no ;)
+Will try it first thing tomorrow! Thanks.
+> USB starts as one of the last things in the kernel boot process, so t=
+he
+> best you can ever get is a summary of what happened during the boot, =
+not
+> the kernel boot messages as they happen because they happen before th=
+e
+> USB device is initialized.
+Sure. That is an acceptable limitation. However, I wonder if this will=20
+be different once we get U-Boot USB console support on this platform?
+Question though is if Linux  ever will be able to benefit from a first=20
+stage driver already being kicked-off by U-Boot.
 
-Rather than introducing this "port_is_console" thing, please move
-uart_console() into the serial_core.h header file, making it an inline
-function, and use that in omap-serial.c.
+Hans
 
-Remember to fix drivers/tty/serial/mpc52xx_uart.c as well for that change.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
