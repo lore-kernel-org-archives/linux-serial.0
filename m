@@ -1,7 +1,7 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 8/9] serial: 8250_dw: Set port capabilities based on CPR register
-Date: Wed, 10 Apr 2013 16:58:31 +0300
-Message-ID: <1365602312-25436-9-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCH 4/9] serial: 8250_dma: Provide default slave configuration parameters
+Date: Wed, 10 Apr 2013 16:58:27 +0300
+Message-ID: <1365602312-25436-5-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
@@ -10,30 +10,35 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The Designware UART has an optional support for 16750
-compatible Auto Flow Control. This will enable it based on
-the AFCE bit in Component Parameter Register.
+Some slave channel parameters will be always the same. For
+example, direction for the Rx channel will always be
+DMA_DEV_TO_MEM and DMA_MEM_TO_DEV for Tx channel.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dw.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/8250/8250_dma.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 09aaea2..b7c7d6a 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -221,7 +221,11 @@ static void dw8250_setup_port(struct uart_8250_port *up)
- 		p->flags |= UPF_FIXED_TYPE;
- 		p->fifosize = DW_UART_CPR_FIFO_SIZE(reg);
- 		up->tx_loadsz = p->fifosize;
-+		up->capabilities = UART_CAP_FIFO;
- 	}
-+
-+	if (reg & DW_UART_CPR_AFCE_MODE)
-+		up->capabilities |= UART_CAP_AFE;
- }
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index fdb6139e..7046769 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -149,8 +149,14 @@ int serial8250_request_dma(struct uart_8250_port *p)
+ 	struct uart_8250_dma	*dma = p->dma;
+ 	dma_cap_mask_t		mask;
  
- static int dw8250_probe(struct platform_device *pdev)
+-	dma->rxconf.src_addr = p->port.mapbase + UART_RX;
+-	dma->txconf.dst_addr = p->port.mapbase + UART_TX;
++	/* Default slave configuration parameters */
++	dma->rxconf.direction		= DMA_DEV_TO_MEM;
++	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
++	dma->rxconf.src_addr		= p->port.mapbase + UART_RX;
++
++	dma->txconf.direction		= DMA_MEM_TO_DEV;
++	dma->txconf.dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
++	dma->txconf.dst_addr		= p->port.mapbase + UART_TX;
+ 
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
 -- 
 1.7.10.4
