@@ -1,47 +1,41 @@
-From: "Bedia, Vaibhav" <vaibhav.bedia@ti.com>
-Subject: RE: [PATCHv3] driver: serial: prevent UART console idle on suspend
- while using "no_console_suspend"
-Date: Wed, 10 Apr 2013 11:26:56 +0000
-Message-ID: <B5906170F1614E41A8A28DE3B8D121433ED96C45@DBDE01.ent.ti.com>
-References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>
-	<87mwtclvua.fsf@linaro.org> <516463D2.2070008@ti.com>
- <87obdnh6au.fsf@linaro.org> <516501A0.4000004@ti.com>
- <B5906170F1614E41A8A28DE3B8D121433ED96446@DBDE01.ent.ti.com>
- <51653450.2010200@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <51653450.2010200@ti.com>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: "Poddar, Sourav" <sourav.poddar@ti.com>
-Cc: Kevin Hilman <khilman@linaro.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tony@atomide.com" <tony@atomide.com>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "Balbi, Felipe" <balbi@ti.com>, "Nayak, Rajendra" <rnayak@ti.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: [PATCH 0/9] serial: 8250_dma to use the new dmaengine helpers
+Date: Wed, 10 Apr 2013 16:58:23 +0300
+Message-ID: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:55949 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S936145Ab3DJN6o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Apr 2013 09:58:44 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Sourav,
+These will update 8250_dma to take advantage of the new dmaengine API helpers
+that makes it possible to request channels without the filter parameters. The
+helpers also support ACPI on top of DT, so the ACPI specific DMA information
+parsing in 8250_dw can also be dropped.
 
-On Wed, Apr 10, 2013 at 15:13:44, Poddar, Sourav wrote:
-[...]
-> Yes, had a look at that and found your situation similar to UART.
-> 
-> But how exactly this gets used, I mean I don't  see any drivers/ in mainline
-> making use of this compatible string  "ti,am3352-ocmcram".  ?
+These also include a few minor improvements for both 8250_dma and 8250_dw plus
+runtime PM support for 8250_dw.
 
-OCMC clock is enabled during bootup (not sure whether that's the h/w
-default or ROM does it) since the initial bootloader runs from there.
-By marking the corresponding hwmod with HWMOD_INIT_NO_IDLE we leave the
-clock running. Right now the sram code under arch/arm/plat-omap/ is what
-manages the OCMC. I guess this needs to move somewhere under drivers/
-and start managing the clocks. Even then we'll need a mechanism
-to leave the clocks running as part of the kernel suspend process
-since the assembly code which runs at the fag end of the suspend
-process runs out of OCMC and hence we can't cut its clock.
 
-On AM335x, the OCMC clock is cut to have PER power domain transition
-but that's done in the WKUP-M3 firmware when going down. During the
-wakeup sequence, WKUP-M3 re-enables the OCMC clock so that when the
-kernel resumes the h/w state is same.
+Heikki Krogerus (9):
+  serial: 8250_dma: TX cleanup
+  serial: 8250_dma: Fix RX handling
+  serial: 8250_dma: Use dmaengine helpers to get the slave channels
+  serial: 8250_dma: Provide default slave configuration parameters
+  serial: 8250_dw: Enable runtime PM
+  serial: 8250_dw: Support clk framework also with ACPI
+  serial: 8250_dw: Let ACPI code extract the DMA client info
+  serial: 8250_dw: Set port capabilities based on CPR register
+  serial: 8250_dw: Use devm_request_and_ioremap()
 
-Regards,
-Vaibhav
+ drivers/tty/serial/8250/8250_dma.c |   52 ++++++++----
+ drivers/tty/serial/8250/8250_dw.c  |  158 ++++++++++++++++--------------------
+ 2 files changed, 104 insertions(+), 106 deletions(-)
+
+-- 
+1.7.10.4
+
