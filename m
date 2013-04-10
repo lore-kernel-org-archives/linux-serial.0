@@ -1,88 +1,46 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [PATCHv3] driver: serial: prevent UART console idle on suspend while using "no_console_suspend"
-Date: Tue, 09 Apr 2013 12:07:05 -0700
-Message-ID: <87obdnh6au.fsf@linaro.org>
-References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>
-	<87mwtclvua.fsf@linaro.org> <516463D2.2070008@ti.com>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: Re: [PATCHv3] driver: serial: prevent UART console idle on suspend
+ while using "no_console_suspend"
+Date: Wed, 10 Apr 2013 10:57:09 +0530
+Message-ID: <5164F82D.3090501@ti.com>
+References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com> <20130408171432.GY30923@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f53.google.com ([209.85.160.53]:52427 "EHLO
-	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934965Ab3DITHJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Apr 2013 15:07:09 -0400
-Received: by mail-pb0-f53.google.com with SMTP id un15so369722pbc.40
-        for <linux-serial@vger.kernel.org>; Tue, 09 Apr 2013 12:07:08 -0700 (PDT)
-In-Reply-To: <516463D2.2070008@ti.com> (Sourav Poddar's message of "Wed, 10
-	Apr 2013 00:24:10 +0530")
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20130408171432.GY30923@n2100.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, khilman@linaro.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
-
-> Hi Kevin,
-> On Friday 05 April 2013 11:10 PM, Kevin Hilman wrote:
->> Sourav Poddar<sourav.poddar@ti.com>  writes:
+Hi Russell,
+On Monday 08 April 2013 10:44 PM, Russell King - ARM Linux wrote:
+> On Fri, Apr 05, 2013 at 06:45:33PM +0530, Sourav Poddar wrote:
+>> With dt boot, uart wakeup after suspend is non functional while using
+>> "no_console_suspend" in the bootargs. With "no_console_suspend" used, we
+>> should prevent the runtime suspend of the uart port which is getting used
+>> as an console.
 >>
->>> With dt boot, uart wakeup after suspend is non functional while using
->>> "no_console_suspend" in the bootargs. With "no_console_suspend" used, we
->>> should prevent the runtime suspend of the uart port which is getting used
->>> as an console.
->>>
->>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
->>> Cc: Felipe Balbi<balbi@ti.com>
->>> Cc: Rajendra nayak<rnayak@ti.com>
->>> Tested on omap5430evm, omap4430sdp.
->>>
->>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
->> Rather than make these special checks inside the driver's runtime PM
->> callbacks, you should just disable runtime PM (pm_runtime_disable())
+>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+>> Cc: Felipe Balbi<balbi@ti.com>
+>> Cc: Rajendra nayak<rnayak@ti.com>
+>> Tested on omap5430evm, omap4430sdp.
 >>
->> Then, this should be broken into 2 patches.
+>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>> ---
+>> v2->v3
+>> Based on Kevin Hilman and Santosh Shilimkar comments, modified
+>> serial core/driver layer to bypass runtime suspend
+>> for console uart while using "no_console_suspend".
 >>
->> 1) serial core: add the '->is_console' flag.  (nit on naming: don't call
->>     it port_is_console, since the struct is already a uart_port)
->>
->> 2) In the OMAP UART driver's ->prepare callback, check the is_console flag
->>     and pm_runtime_disable() accordingly  (then pm_runtime_enable() in
->>     the drivers's ->complete callback.
->>
->> Kevin
+>> This patch is based on Santosh Shilimkar serial patch[1]
+> Rather than introducing this "port_is_console" thing, please move
+> uart_console() into the serial_core.h header file, making it an inline
+> function, and use that in omap-serial.c.
 >
-> I was working on your above suggestions, but realised there is not
-> only console
-> uart which has the requirement of keeping the clocks enabled while going on
-> suspend.
->
-> If you see arch/arm/boot/dts/am33xx.dtsi, there is a ocmcram which has
-> "no_idle_on_suspend" property used.
+> Remember to fix drivers/tty/serial/mpc52xx_uart.c as well for that change.
+Thanks for the pointer. Will take care of your suggestions
+in the next version.
 
-Can you please ask the AM33xx folks how (and why) this is being used?
-
-I don't see/find a driver for this device in mainline, so without a
-driver this flag will not be used.
-
->     ocmcram: ocmcram@40300000 {
->                         compatible = "ti,am3352-ocmcram";
->                         reg = <0x40300000 0x10000>;
->                         ti,hwmods = "ocmcram";
->                         ti,no_idle_on_suspend;
->         };
-> This property gets checked in omap_device file and correspondingly
-> od->flags is set.
->
-> Based on your above inputs, the patches which I cooked up is
-> inlined[1]. Though, the below
-> patches works fine for uart case. The patches will effect ocmcram case
-> and I am inling them
-> "just for discussion".
-
-Could you also have a look at Russell's suggestion for getting rid of
-the 'is_console' flag.
-
-Thanks,
-
-Kevin
+~Sourav
