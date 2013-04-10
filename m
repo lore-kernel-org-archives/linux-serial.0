@@ -1,7 +1,7 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 4/9] serial: 8250_dma: Provide default slave configuration parameters
-Date: Wed, 10 Apr 2013 16:58:27 +0300
-Message-ID: <1365602312-25436-5-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCH 5/9] serial: 8250_dw: Enable runtime PM
+Date: Wed, 10 Apr 2013 16:58:28 +0300
+Message-ID: <1365602312-25436-6-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
@@ -10,35 +10,148 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Some slave channel parameters will be always the same. For
-example, direction for the Rx channel will always be
-DMA_DEV_TO_MEM and DMA_MEM_TO_DEV for Tx channel.
+This allows ACPI to put the device to D3 when it's not used.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c |   61 +++++++++++++++++++++++++++++++------
+ 1 file changed, 52 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index fdb6139e..7046769 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -149,8 +149,14 @@ int serial8250_request_dma(struct uart_8250_port *p)
- 	struct uart_8250_dma	*dma = p->dma;
- 	dma_cap_mask_t		mask;
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 3dedd24..d6aea85 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -27,6 +27,7 @@
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+ #include <linux/clk.h>
++#include <linux/pm_runtime.h>
  
--	dma->rxconf.src_addr = p->port.mapbase + UART_RX;
--	dma->txconf.dst_addr = p->port.mapbase + UART_TX;
-+	/* Default slave configuration parameters */
-+	dma->rxconf.direction		= DMA_DEV_TO_MEM;
-+	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	dma->rxconf.src_addr		= p->port.mapbase + UART_RX;
+ #include "8250.h"
+ 
+@@ -115,6 +116,18 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void
++dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
++{
++	if (!state)
++		pm_runtime_get_sync(port->dev);
 +
-+	dma->txconf.direction		= DMA_MEM_TO_DEV;
-+	dma->txconf.dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	dma->txconf.dst_addr		= p->port.mapbase + UART_TX;
++	serial8250_do_pm(port, state, old);
++
++	if (state)
++		pm_runtime_put_sync_suspend(port->dev);
++}
++
+ static int dw8250_probe_of(struct uart_port *p)
+ {
+ 	struct device_node	*np = p->dev->of_node;
+@@ -293,6 +306,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	uart.port.mapbase = regs->start;
+ 	uart.port.irq = irq->start;
+ 	uart.port.handle_irq = dw8250_handle_irq;
++	uart.port.pm = dw8250_do_pm;
+ 	uart.port.type = PORT_8250;
+ 	uart.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 	uart.port.dev = &pdev->dev;
+@@ -336,6 +350,9 @@ static int dw8250_probe(struct platform_device *pdev)
  
- 	dma_cap_zero(mask);
- 	dma_cap_set(DMA_SLAVE, mask);
+ 	platform_set_drvdata(pdev, data);
+ 
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++
+ 	return 0;
+ }
+ 
+@@ -343,37 +360,64 @@ static int dw8250_remove(struct platform_device *pdev)
+ {
+ 	struct dw8250_data *data = platform_get_drvdata(pdev);
+ 
++	pm_runtime_get_sync(&pdev->dev);
++
+ 	serial8250_unregister_port(data->line);
+ 
+ 	if (!IS_ERR(data->clk))
+ 		clk_disable_unprepare(data->clk);
+ 
++	pm_runtime_disable(&pdev->dev);
++	pm_runtime_put_noidle(&pdev->dev);
++
+ 	return 0;
+ }
+ 
+ #ifdef CONFIG_PM
+-static int dw8250_suspend(struct platform_device *pdev, pm_message_t state)
++static int dw8250_suspend(struct device *dev)
+ {
+-	struct dw8250_data *data = platform_get_drvdata(pdev);
++	struct dw8250_data *data = dev_get_drvdata(dev);
+ 
+ 	serial8250_suspend_port(data->line);
+ 
+ 	return 0;
+ }
+ 
+-static int dw8250_resume(struct platform_device *pdev)
++static int dw8250_resume(struct device *dev)
+ {
+-	struct dw8250_data *data = platform_get_drvdata(pdev);
++	struct dw8250_data *data = dev_get_drvdata(dev);
+ 
+ 	serial8250_resume_port(data->line);
+ 
+ 	return 0;
+ }
+-#else
+-#define dw8250_suspend NULL
+-#define dw8250_resume NULL
+ #endif /* CONFIG_PM */
+ 
++#ifdef CONFIG_PM_RUNTIME
++static int dw8250_runtime_suspend(struct device *dev)
++{
++	struct dw8250_data *data = dev_get_drvdata(dev);
++
++	clk_disable_unprepare(data->clk);
++
++	return 0;
++}
++
++static int dw8250_runtime_resume(struct device *dev)
++{
++	struct dw8250_data *data = dev_get_drvdata(dev);
++
++	clk_prepare_enable(data->clk);
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops dw8250_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
++	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
++};
++
+ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+ 	{ /* Sentinel */ }
+@@ -391,13 +435,12 @@ static struct platform_driver dw8250_platform_driver = {
+ 	.driver = {
+ 		.name		= "dw-apb-uart",
+ 		.owner		= THIS_MODULE,
++		.pm		= &dw8250_pm_ops,
+ 		.of_match_table	= dw8250_of_match,
+ 		.acpi_match_table = ACPI_PTR(dw8250_acpi_match),
+ 	},
+ 	.probe			= dw8250_probe,
+ 	.remove			= dw8250_remove,
+-	.suspend		= dw8250_suspend,
+-	.resume			= dw8250_resume,
+ };
+ 
+ module_platform_driver(dw8250_platform_driver);
 -- 
 1.7.10.4
