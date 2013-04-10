@@ -1,50 +1,60 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 3/9] serial: 8250_dma: Use dmaengine helpers to get the slave channels
-Date: Wed, 10 Apr 2013 16:58:26 +0300
-Message-ID: <1365602312-25436-4-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCH 1/9] serial: 8250_dma: TX cleanup
+Date: Wed, 10 Apr 2013 16:58:24 +0300
+Message-ID: <1365602312-25436-2-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:55949 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S936721Ab3DJN6p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Apr 2013 09:58:45 -0400
 In-Reply-To: <1365602312-25436-1-git-send-email-heikki.krogerus@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-The helper functions in dmaengine API allow the drivers to
-request slave channels without the filter parameters. They
-will attempt to extract the needed DMA client information
-from DT or ACPI, but if such information is not available
-the filter parameters can still be used.
+Removing one unneeded uart_write_wakeup(). There is no need
+to start PIO transfer unless DMA fails, so this also changes
+serial8250_tx_dma() to return 0 unless that is the case.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c |   11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 6643061..fdb6139e 100644
+index b9f7fd2..ce2518d 100644
 --- a/drivers/tty/serial/8250/8250_dma.c
 +++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -156,14 +156,18 @@ int serial8250_request_dma(struct uart_8250_port *p)
- 	dma_cap_set(DMA_SLAVE, mask);
+@@ -33,10 +33,8 @@ static void __dma_tx_complete(void *param)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&p->port);
  
- 	/* Get a channel for RX */
--	dma->rxchan = dma_request_channel(mask, dma->fn, dma->rx_param);
-+	dma->rxchan = dma_request_slave_channel_compat(mask,
-+						       dma->fn, dma->rx_param,
-+						       p->port.dev, "rx");
- 	if (!dma->rxchan)
- 		return -ENODEV;
+-	if (!uart_circ_empty(xmit) && !uart_tx_stopped(&p->port)) {
++	if (!uart_circ_empty(xmit) && !uart_tx_stopped(&p->port))
+ 		serial8250_tx_dma(p);
+-		uart_write_wakeup(&p->port);
+-	}
+ }
  
- 	dmaengine_slave_config(dma->rxchan, &dma->rxconf);
+ static void __dma_rx_complete(void *param)
+@@ -67,12 +65,11 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
  
- 	/* Get a channel for TX */
--	dma->txchan = dma_request_channel(mask, dma->fn, dma->tx_param);
-+	dma->txchan = dma_request_slave_channel_compat(mask,
-+						       dma->fn, dma->tx_param,
-+						       p->port.dev, "tx");
- 	if (!dma->txchan) {
- 		dma_release_channel(dma->rxchan);
- 		return -ENODEV;
+-	if (dma->tx_running)
+-		return -EBUSY;
++	if (uart_tx_stopped(&p->port) || dma->tx_running ||
++	    uart_circ_empty(xmit))
++		return 0;
+ 
+ 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+-	if (!dma->tx_size)
+-		return -EINVAL;
+ 
+ 	desc = dmaengine_prep_slave_single(dma->txchan,
+ 					   dma->tx_addr + xmit->tail,
 -- 
 1.7.10.4
+
