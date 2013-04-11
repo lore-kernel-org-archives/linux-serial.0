@@ -1,62 +1,71 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.9-rc6
-Date: Wed, 10 Apr 2013 15:48:40 -0700
-Message-ID: <20130410224840.GA32608@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-da0-f43.google.com ([209.85.210.43]:43372 "EHLO
-	mail-da0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933304Ab3DJWsn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Apr 2013 18:48:43 -0400
-Received: by mail-da0-f43.google.com with SMTP id u36so408541dak.16
-        for <linux-serial@vger.kernel.org>; Wed, 10 Apr 2013 15:48:42 -0700 (PDT)
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 05/30] tty: serial/samsung: prepare for common clock API
+Date: Thu, 11 Apr 2013 02:04:47 +0200
+Message-ID: <1365638712-1028578-6-git-send-email-arnd@arndb.de>
+References: <1365638712-1028578-1-git-send-email-arnd@arndb.de>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1365638712-1028578-1-git-send-email-arnd@arndb.de>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, linux-samsung-soc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-The following changes since commit 07961ac7c0ee8b546658717034fe692fd12eefa9:
+With the common clock interface, there is no way to provide the
+"clock_source" sysfs attribute for the samsung serial ports. Given that
+this file was purely informational and had fixed contents, we have reason
+to believe that no user space programs were relying on it.
 
-  Linux 3.9-rc5 (2013-03-31 15:12:43 -0700)
+The sysfs file is not documented in the ABI docs.
 
-are available in the git repository at:
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/samsung.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.9-rc6
-
-for you to fetch changes up to 1b581f173992cded311f810346378f763a1f1e5d:
-
-  tty: mxser: fix cycle termination condition in mxser_probe() and mxser_module_init() (2013-04-08 11:30:04 -0700)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 3.9-rc6
-
-Here are 4 small tty/serial fixes for 3.9.
-
-One fixes a bug where we broke the documentation build, and the others
-fix reported problems in some serial drivers.
-
-All have been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alexey Khoroshilov (1):
-      tty: mxser: fix cycle termination condition in mxser_probe() and mxser_module_init()
-
-Alexey Pelykh (1):
-      OMAP/serial: Revert bad fix of Rx FIFO threshold granularity
-
-Guennadi Liakhovetski (1):
-      tty: Documentation: fix a path in a DocBook template
-
-Sean Young (1):
-      Revert "tty/8250_pnp: serial port detection regression since v3.7"
-
- Documentation/DocBook/device-drivers.tmpl |  2 +-
- drivers/tty/mxser.c                       |  8 ++++----
- drivers/tty/serial/8250/8250_pnp.c        | 12 +++++-------
- drivers/tty/serial/omap-serial.c          | 11 +++++++++++
- 4 files changed, 21 insertions(+), 12 deletions(-)
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 2769a38..603f3f3 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1179,6 +1179,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_SAMSUNG_CLOCK
+ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
+ 					  struct device_attribute *attr,
+ 					  char *buf)
+@@ -1194,7 +1195,7 @@ static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
+ }
+ 
+ static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
+-
++#endif
+ 
+ /* Device driver serial port probe */
+ 
+@@ -1252,9 +1253,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+ 	platform_set_drvdata(pdev, &ourport->port);
+ 
++#ifdef CONFIG_SAMSUNG_CLOCK
+ 	ret = device_create_file(&pdev->dev, &dev_attr_clock_source);
+ 	if (ret < 0)
+ 		dev_err(&pdev->dev, "failed to add clock source attr.\n");
++#endif
+ 
+ 	ret = s3c24xx_serial_cpufreq_register(ourport);
+ 	if (ret < 0)
+@@ -1272,7 +1275,9 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
+ 
+ 	if (port) {
+ 		s3c24xx_serial_cpufreq_deregister(to_ourport(port));
++#ifdef CONFIG_SAMSUNG_CLOCK
+ 		device_remove_file(&dev->dev, &dev_attr_clock_source);
++#endif
+ 		uart_remove_one_port(&s3c24xx_uart_drv, port);
+ 	}
+ 
+-- 
+1.8.1.2
