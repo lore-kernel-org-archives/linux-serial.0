@@ -1,104 +1,43 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 2/2] serial: sccnxp: Replace pdata.init/exit with regulator API
-Date: Sat, 13 Apr 2013 08:46:58 +0400
-Message-ID: <1365828418-1920-2-git-send-email-shc_work@mail.ru>
-References: <1365828418-1920-1-git-send-email-shc_work@mail.ru>
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH 1/3] tty: of_serial: allow rt288x-uart to load from OF
+Date: Sat, 13 Apr 2013 11:33:36 +0200
+Message-ID: <1365845618-16040-2-git-send-email-blogic@openwrt.org>
+References: <1365845618-16040-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp3.mail.ru ([94.100.176.131]:52958 "EHLO smtp3.mail.ru"
+Received: from nbd.name ([46.4.11.11]:39367 "EHLO nbd.name"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751180Ab3DMErH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 13 Apr 2013 00:47:07 -0400
-In-Reply-To: <1365828418-1920-1-git-send-email-shc_work@mail.ru>
+	id S1751826Ab3DMJho (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 13 Apr 2013 05:37:44 -0400
+In-Reply-To: <1365845618-16040-1-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, John Crispin <blogic@openwrt.org>
 
-Typical usage of pdata.init/exit is enable/disable power and/or toggle
-reset for the target chip.
-This patch replaces these callbacks with regulator API.
+In order to make serial_8250 loadable via OF on Ralink WiSoC we need to default
+the iotype to UPIO_RT.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+Signed-off-by: John Crispin <blogic@openwrt.org>
 ---
- drivers/tty/serial/sccnxp.c                 | 21 +++++++++++++++------
- include/linux/platform_data/serial-sccnxp.h |  4 ----
- 2 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/tty/serial/of_serial.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
-index b1d04aa..c773041 100644
---- a/drivers/tty/serial/sccnxp.c
-+++ b/drivers/tty/serial/sccnxp.c
-@@ -27,6 +27,7 @@
- #include <linux/spinlock.h>
- #include <linux/platform_device.h>
- #include <linux/platform_data/serial-sccnxp.h>
-+#include <linux/regulator/consumer.h>
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index b025d54..42f8550 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -98,7 +98,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->regshift = prop;
  
- #define SCCNXP_NAME			"uart-sccnxp"
- #define SCCNXP_MAJOR			204
-@@ -131,6 +132,8 @@ struct sccnxp_port {
- 	struct timer_list	timer;
- 
- 	struct sccnxp_pdata	pdata;
-+
-+	struct regulator	*regulator;
- };
- 
- static inline u8 sccnxp_raw_read(void __iomem *base, u8 reg, u8 shift)
-@@ -916,6 +919,16 @@ static int sccnxp_probe(struct platform_device *pdev)
- 		goto err_out;
- 	}
- 
-+	s->regulator = devm_regulator_get(&pdev->dev, "VCC");
-+	if (!IS_ERR(s->regulator)) {
-+		ret = regulator_enable(s->regulator);
-+		if (ret) {
-+			dev_err(&pdev->dev,
-+				"Failed to enable regulator: %i\n", ret);
-+			return ret;
-+		}
-+	}
-+
- 	membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(membase)) {
- 		ret = PTR_ERR(membase);
-@@ -965,10 +978,6 @@ static int sccnxp_probe(struct platform_device *pdev)
- 	s->imr = 0;
- 	sccnxp_write(&s->port[0], SCCNXP_IMR_REG, 0);
- 
--	/* Board specific configure */
--	if (s->pdata.init)
--		s->pdata.init();
--
- 	if (!s->poll) {
- 		ret = devm_request_threaded_irq(&pdev->dev, s->irq, NULL,
- 						sccnxp_ist,
-@@ -1009,8 +1018,8 @@ static int sccnxp_remove(struct platform_device *pdev)
- 	uart_unregister_driver(&s->uart);
- 	platform_set_drvdata(pdev, NULL);
- 
--	if (s->pdata.exit)
--		s->pdata.exit();
-+	if (!IS_ERR(s->regulator))
-+		return regulator_disable(s->regulator);
- 
- 	return 0;
- }
-diff --git a/include/linux/platform_data/serial-sccnxp.h b/include/linux/platform_data/serial-sccnxp.h
-index 215574d..bdc510d 100644
---- a/include/linux/platform_data/serial-sccnxp.h
-+++ b/include/linux/platform_data/serial-sccnxp.h
-@@ -86,10 +86,6 @@ struct sccnxp_pdata {
- 	const u32		mctrl_cfg[SCCNXP_MAX_UARTS];
- 	/* Timer value for polling mode (usecs) */
- 	const unsigned int	poll_time_us;
--	/* Called during startup */
--	void (*init)(void);
--	/* Called before finish */
--	void (*exit)(void);
- };
- 
- #endif
+ 	port->irq = irq_of_parse_and_map(np, 0);
+-	port->iotype = UPIO_MEM;
++	if (of_device_is_compatible(np, "ralink,rt2880-uart"))
++		port->iotype = UPIO_AU;
++	else
++		port->iotype = UPIO_MEM;
+ 	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+ 		switch (prop) {
+ 		case 1:
 -- 
-1.8.1.5
+1.7.10.4
 
