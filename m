@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 06/16] tty: Use lockless flip buffer free list
-Date: Mon, 15 Apr 2013 11:25:57 -0400
-Message-ID: <1366039567-8620-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 01/16] tty: Compute flip buffer ptrs
+Date: Mon, 15 Apr 2013 11:25:52 -0400
+Message-ID: <1366039567-8620-2-git-send-email-peter@hurleysoftware.com>
 References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
  <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,170 +11,130 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-In preparation for lockless flip buffers, make the flip buffer
-free list lockless.
+The char_buf_ptr and flag_buf_ptr values are trivially derived from
+the .data field offset; compute values as needed.
 
-NB: using llist is not the optimal solution, as the driver and
-buffer work may contend over the llist head unnecessarily. However,
-test measurements indicate this contention is low.
+Fixes a long-standing type-mismatch with the char and flag ptrs.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c | 29 ++++++++++++-----------------
- include/linux/llist.h    | 23 +++++++++++++++++++++++
- include/linux/tty.h      |  8 ++++++--
- 3 files changed, 41 insertions(+), 19 deletions(-)
+ drivers/tty/tty_buffer.c | 22 ++++++++++------------
+ include/linux/tty.h      | 12 ++++++++++--
+ include/linux/tty_flip.h |  4 ++--
+ 3 files changed, 22 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 0259a76..069640e 100644
+index ff1b2e3..170674c 100644
 --- a/drivers/tty/tty_buffer.c
 +++ b/drivers/tty/tty_buffer.c
-@@ -44,16 +44,17 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
- void tty_buffer_free_all(struct tty_port *port)
- {
- 	struct tty_bufhead *buf = &port->buf;
--	struct tty_buffer *p;
-+	struct tty_buffer *p, *next;
-+	struct llist_node *llist;
- 
- 	while ((p = buf->head) != NULL) {
- 		buf->head = p->next;
- 		kfree(p);
- 	}
--	while ((p = buf->free) != NULL) {
--		buf->free = p->next;
-+	llist = llist_del_all(&buf->free);
-+	llist_for_each_entry_safe(p, next, llist, free)
- 		kfree(p);
--	}
-+
- 	buf->tail = NULL;
- 	buf->memory_used = 0;
+@@ -71,8 +71,6 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
+ 	p->next = NULL;
+ 	p->commit = 0;
+ 	p->read = 0;
+-	p->char_buf_ptr = (char *)(p->data);
+-	p->flag_buf_ptr = (unsigned char *)p->char_buf_ptr + size;
+ 	port->buf.memory_used += size;
+ 	return p;
  }
-@@ -68,22 +69,20 @@ void tty_buffer_free_all(struct tty_port *port)
-  *	allocation behaviour.
-  *	Return NULL if out of memory or the allocation would exceed the
-  *	per device queue
-- *
-- *	Locking: Caller must hold tty->buf.lock
-  */
- 
- static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
- {
--	struct tty_buffer **tbh = &port->buf.free;
-+	struct llist_node *free;
- 	struct tty_buffer *p;
- 
- 	/* Round the buffer size out */
- 	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
- 
- 	if (size <= MIN_TTYB_SIZE) {
--		if (*tbh) {
--			p = *tbh;
--			*tbh = p->next;
-+		free = llist_del_first(&port->buf.free);
-+		if (free) {
-+			p = llist_entry(free, struct tty_buffer, free);
- 			goto found;
+@@ -265,8 +263,8 @@ int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+ 		if (unlikely(space == 0)) {
+ 			break;
  		}
+-		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+-		memset(tb->flag_buf_ptr + tb->used, flag, space);
++		memcpy(char_buf_ptr(tb, tb->used), chars, space);
++		memset(flag_buf_ptr(tb, tb->used), flag, space);
+ 		tb->used += space;
+ 		copied += space;
+ 		chars += space;
+@@ -303,8 +301,8 @@ int tty_insert_flip_string_flags(struct tty_port *port,
+ 		if (unlikely(space == 0)) {
+ 			break;
+ 		}
+-		memcpy(tb->char_buf_ptr + tb->used, chars, space);
+-		memcpy(tb->flag_buf_ptr + tb->used, flags, space);
++		memcpy(char_buf_ptr(tb, tb->used), chars, space);
++		memcpy(flag_buf_ptr(tb, tb->used), flags, space);
+ 		tb->used += space;
+ 		copied += space;
+ 		chars += space;
+@@ -364,8 +362,8 @@ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
+ 	int space = tty_buffer_request_room(port, size);
+ 	if (likely(space)) {
+ 		struct tty_buffer *tb = port->buf.tail;
+-		*chars = tb->char_buf_ptr + tb->used;
+-		memset(tb->flag_buf_ptr + tb->used, TTY_NORMAL, space);
++		*chars = char_buf_ptr(tb, tb->used);
++		memset(flag_buf_ptr(tb, tb->used), TTY_NORMAL, space);
+ 		tb->used += space;
  	}
-@@ -109,8 +108,6 @@ found:
-  *
-  *	Free a tty buffer, or add it to the free list according to our
-  *	internal strategy
-- *
-- *	Locking: Caller must hold tty->buf.lock
-  */
+ 	return space;
+@@ -394,8 +392,8 @@ int tty_prepare_flip_string_flags(struct tty_port *port,
+ 	int space = tty_buffer_request_room(port, size);
+ 	if (likely(space)) {
+ 		struct tty_buffer *tb = port->buf.tail;
+-		*chars = tb->char_buf_ptr + tb->used;
+-		*flags = tb->flag_buf_ptr + tb->used;
++		*chars = char_buf_ptr(tb, tb->used);
++		*flags = flag_buf_ptr(tb, tb->used);
+ 		tb->used += space;
+ 	}
+ 	return space;
+@@ -407,8 +405,8 @@ static int
+ receive_buf(struct tty_struct *tty, struct tty_buffer *head, int count)
+ {
+ 	struct tty_ldisc *disc = tty->ldisc;
+-	char 	      *p = head->char_buf_ptr + head->read;
+-	unsigned char *f = head->flag_buf_ptr + head->read;
++	unsigned char *p = char_buf_ptr(head, head->read);
++	char	      *f = flag_buf_ptr(head, head->read);
  
- static void tty_buffer_free(struct tty_port *port, struct tty_buffer *b)
-@@ -123,10 +120,8 @@ static void tty_buffer_free(struct tty_port *port, struct tty_buffer *b)
- 
- 	if (b->size > MIN_TTYB_SIZE)
- 		kfree(b);
--	else {
--		b->next = buf->free;
--		buf->free = b;
--	}
-+	else
-+		llist_add(&b->free, &buf->free);
- }
- 
- /**
-@@ -542,7 +537,7 @@ void tty_buffer_init(struct tty_port *port)
- 	spin_lock_init(&buf->lock);
- 	buf->head = NULL;
- 	buf->tail = NULL;
--	buf->free = NULL;
-+	init_llist_head(&buf->free);
- 	buf->memory_used = 0;
- 	INIT_WORK(&buf->work, flush_to_ldisc);
- }
-diff --git a/include/linux/llist.h b/include/linux/llist.h
-index a5199f6..97cf31d 100644
---- a/include/linux/llist.h
-+++ b/include/linux/llist.h
-@@ -125,6 +125,29 @@ static inline void init_llist_head(struct llist_head *list)
- 	     (pos) = llist_entry((pos)->member.next, typeof(*(pos)), member))
- 
- /**
-+ * llist_for_each_entry_safe - iterate over some deleted entries of lock-less list of given type
-+ *			       safe against removal of list entry
-+ * @pos:	the type * to use as a loop cursor.
-+ * @n:		another type * to use as temporary storage
-+ * @node:	the first entry of deleted list entries.
-+ * @member:	the name of the llist_node with the struct.
-+ *
-+ * In general, some entries of the lock-less list can be traversed
-+ * safely only after being removed from list, so start with an entry
-+ * instead of list head.
-+ *
-+ * If being used on entries deleted from lock-less list directly, the
-+ * traverse order is from the newest to the oldest added entry.  If
-+ * you want to traverse from the oldest to the newest, you must
-+ * reverse the order by yourself before traversing.
-+ */
-+#define llist_for_each_entry_safe(pos, n, node, member)			       \
-+	for (pos = llist_entry((node), typeof(*pos), member);		       \
-+	     &pos->member != NULL &&					       \
-+	        (n = llist_entry(pos->member.next, typeof(*n), member), true); \
-+	     pos = n)
-+
-+/**
-  * llist_empty - tests whether a lock-less list is empty
-  * @head:	the list to test
-  *
+ 	if (disc->ops->receive_buf2)
+ 		count = disc->ops->receive_buf2(tty, p, f, count);
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index c0ee322..a01fda7 100644
+index e56ab4c..c0ee322 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -11,6 +11,7 @@
- #include <linux/tty_flags.h>
- #include <uapi/linux/tty.h>
- #include <linux/rwsem.h>
-+#include <linux/llist.h>
- 
- 
- 
-@@ -30,7 +31,10 @@
- #define __DISABLED_CHAR '\0'
+@@ -31,8 +31,6 @@
  
  struct tty_buffer {
--	struct tty_buffer *next;
-+	union {
-+		struct tty_buffer *next;
-+		struct llist_node free;
-+	};
+ 	struct tty_buffer *next;
+-	char *char_buf_ptr;
+-	unsigned char *flag_buf_ptr;
  	int used;
  	int size;
  	int commit;
-@@ -65,7 +69,7 @@ struct tty_bufhead {
- 	spinlock_t lock;
- 	struct tty_buffer *head;	/* Queue head */
- 	struct tty_buffer *tail;	/* Active buffer */
--	struct tty_buffer *free;	/* Free queue head */
-+	struct llist_head free;		/* Free queue head */
- 	int memory_used;		/* Buffer space used excluding
- 								free queue */
+@@ -41,6 +39,16 @@ struct tty_buffer {
+ 	unsigned long data[0];
  };
+ 
++static inline unsigned char *char_buf_ptr(struct tty_buffer *b, int ofs)
++{
++	return ((unsigned char *)b->data) + ofs;
++}
++
++static inline char *flag_buf_ptr(struct tty_buffer *b, int ofs)
++{
++	return (char *)char_buf_ptr(b, ofs) + b->size;
++}
++
+ /*
+  * We default to dicing tty buffer allocations to this many characters
+  * in order to avoid multiple page allocations. We know the size of
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index e0f2526..ad03039 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -18,8 +18,8 @@ static inline int tty_insert_flip_char(struct tty_port *port,
+ {
+ 	struct tty_buffer *tb = port->buf.tail;
+ 	if (tb && tb->used < tb->size) {
+-		tb->flag_buf_ptr[tb->used] = flag;
+-		tb->char_buf_ptr[tb->used++] = ch;
++		*flag_buf_ptr(tb, tb->used) = flag;
++		*char_buf_ptr(tb, tb->used++) = ch;
+ 		return 1;
+ 	}
+ 	return tty_insert_flip_string_flags(port, &ch, &flag, 1);
 -- 
 1.8.1.2
