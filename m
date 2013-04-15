@@ -1,175 +1,120 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 01/20] n_tty: Fix EOF push handling
-Date: Mon, 15 Apr 2013 11:32:32 -0400
-Message-ID: <1366039971-8770-2-git-send-email-peter@hurleysoftware.com>
-References: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
- <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 13/24] n_tty: Replace canon_data with index comparison
+Date: Mon, 15 Apr 2013 11:19:17 -0400
+Message-ID: <1366039168-8510-14-git-send-email-peter@hurleysoftware.com>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
+ <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-In canonical mode, an EOF which is not the first character of the line
-causes read() to complete and return the number of characters read so
-far (commonly referred to as EOF push). However, if the previous read()
-returned because the user buffer was full _and_ the next character
-is an EOF not at the beginning of the line, read() must not return 0,
-thus mistakenly indicating the end-of-file condition.
+canon_data represented the # of lines which had been copied
+to the receive buffer but not yet copied to the user buffer.
+The value was tested to determine if input was available in
+canonical mode (and also to force input overrun if the
+receive buffer was full but a newline had not been received).
 
-The TTY_PUSH flag is used to indicate an EOF was received which is not
-at the beginning of the line. Because the EOF push condition is
-evaluated by a thread other than the read(), multiple EOF pushes can
-cause a premature end-of-file to be indicated.
-
-Instead, discover the 'EOF push as first read character' condition
-from the read() thread itself, and restart the i/o loop if detected.
+However, the actual count was irrelevent; only whether it was
+non-zero (meaning 'is there any input to transfer?'). This
+shared count is unnecessary and unsafe with a lockless algorithm.
+The same check is made by comparing canon_head with read_tail instead.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c  | 34 +++++++++++++++++-----------------
- drivers/tty/tty_io.c |  1 -
- include/linux/tty.h  |  1 -
- 3 files changed, 17 insertions(+), 19 deletions(-)
+ drivers/tty/n_tty.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index aa63cd3..4dbebc8 100644
+index 924a3f5..8f42dde 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -113,6 +113,7 @@ struct n_tty_data {
+@@ -104,7 +104,6 @@ struct n_tty_data {
+ 	unsigned int echo_pos;
+ 	unsigned int echo_cnt;
  
- 	/* consumer-published */
- 	size_t read_tail;
-+	size_t line_start;
+-	int canon_data;
+ 	size_t canon_head;
+ 	unsigned int canon_column;
  
- 	/* protected by output lock */
- 	unsigned int column;
-@@ -336,6 +337,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
- {
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
- 	ldata->echo_head = ldata->echo_tail = ldata->echo_commit = 0;
-+	ldata->line_start = 0;
+@@ -158,7 +157,7 @@ static int receive_room(struct tty_struct *tty)
+ 	 * characters will be beeped.
+ 	 */
+ 	if (left <= 0)
+-		left = ldata->icanon && !ldata->canon_data;
++		left = ldata->icanon && ldata->canon_head == ldata->read_tail;
  
- 	ldata->erasing = 0;
+ 	return left;
+ }
+@@ -237,14 +236,14 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-	ldata->read_head = ldata->read_tail = 0;
++	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 
+ 	mutex_lock(&ldata->echo_lock);
+ 	ldata->echo_pos = ldata->echo_cnt = ldata->echo_overrun = 0;
+ 	mutex_unlock(&ldata->echo_lock);
+ 
+-	ldata->canon_head = ldata->canon_data = ldata->erasing = 0;
++	ldata->erasing = 0;
  	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
-@@ -1396,8 +1398,6 @@ send_signal:
- 		if (c == EOF_CHAR(tty)) {
- 			if (read_cnt(ldata) >= N_TTY_BUF_SIZE)
- 				return;
--			if (ldata->canon_head != ldata->read_head)
--				set_bit(TTY_PUSH, &tty->flags);
- 			c = __DISABLED_CHAR;
- 			goto handle_newline;
- 		}
-@@ -1604,6 +1604,7 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- 		canon_change = (old->c_lflag ^ tty->termios.c_lflag) & ICANON;
- 	if (canon_change) {
- 		bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
-+		ldata->line_start = 0;
- 		ldata->canon_head = ldata->read_tail;
- 		ldata->erasing = 0;
- 		ldata->lnext = 0;
-@@ -1834,6 +1835,7 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 	size_t eol;
- 	size_t tail;
- 	int ret, found = 0;
-+	bool eof_push = 0;
- 
- 	/* N.B. avoid overrun if nr == 0 */
- 	n = min(*nr, read_cnt(ldata));
-@@ -1860,8 +1862,10 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 	n = (found + eol + size) & (N_TTY_BUF_SIZE - 1);
- 	c = n;
- 
--	if (found && read_buf(ldata, eol) == __DISABLED_CHAR)
-+	if (found && read_buf(ldata, eol) == __DISABLED_CHAR) {
- 		n--;
-+		eof_push = !n && ldata->read_tail != ldata->line_start;
-+	}
- 
- 	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu size:%zu more:%zu\n",
- 		    __func__, eol, found, n, c, size, more);
-@@ -1884,9 +1888,11 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 	smp_mb__after_clear_bit();
- 	ldata->read_tail += c;
- 
--	if (found)
-+	if (found) {
-+		ldata->line_start = ldata->read_tail;
- 		tty_audit_push(tty);
--	return 0;
-+	}
-+	return eof_push ? -EAGAIN : 0;
  }
  
- extern ssize_t redirected_tty_write(struct file *, const char __user *,
-@@ -1961,12 +1967,10 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	int c;
- 	int minimum, time;
- 	ssize_t retval = 0;
--	ssize_t size;
- 	long timeout;
- 	unsigned long flags;
- 	int packet;
+@@ -1361,7 +1360,6 @@ handle_newline:
+ 			set_bit(ldata->read_head & (N_TTY_BUF_SIZE - 1), ldata->read_flags);
+ 			put_tty_queue_nolock(c, ldata);
+ 			ldata->canon_head = ldata->read_head;
+-			ldata->canon_data++;
+ 			raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+ 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+ 			if (waitqueue_active(&tty->read_wait))
+@@ -1563,7 +1561,6 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 	if (canon_change) {
+ 		bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+ 		ldata->canon_head = ldata->read_tail;
+-		ldata->canon_data = 0;
+ 		ldata->erasing = 0;
+ 	}
  
--do_it_again:
- 	c = job_control(tty, file);
- 	if (c < 0)
- 		return c;
-@@ -2073,7 +2077,10 @@ do_it_again:
+@@ -1711,7 +1708,7 @@ static inline int input_available_p(struct tty_struct *tty, int amt)
  
- 		if (ldata->icanon && !L_EXTPROC(tty)) {
- 			retval = canon_copy_from_read_buf(tty, &b, &nr);
--			if (retval)
-+			if (retval == -EAGAIN) {
-+				retval = 0;
-+				continue;
-+			} else if (retval)
- 				break;
- 		} else {
- 			int uncopied;
-@@ -2101,15 +2108,8 @@ do_it_again:
- 		ldata->minimum_to_wake = minimum;
+ 	tty_flush_to_ldisc(tty);
+ 	if (ldata->icanon && !L_EXTPROC(tty)) {
+-		if (ldata->canon_data)
++		if (ldata->canon_head != ldata->read_tail)
+ 			return 1;
+ 	} else if (read_cnt(ldata) >= (amt ? amt : 1))
+ 		return 1;
+@@ -1848,15 +1845,8 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
  
- 	__set_current_state(TASK_RUNNING);
--	size = b - buf;
--	if (size) {
--		retval = size;
--		if (nr)
--			clear_bit(TTY_PUSH, &tty->flags);
--	} else if (test_and_clear_bit(TTY_PUSH, &tty->flags)) {
--		up_read(&tty->termios_rwsem);
--		goto do_it_again;
+ 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+ 	ldata->read_tail += c;
+-	if (found) {
++	if (found)
+ 		__clear_bit(eol, ldata->read_flags);
+-		/* this test should be redundant:
+-		 * we shouldn't be reading data if
+-		 * canon_data is 0
+-		 */
+-		if (--ldata->canon_data < 0)
+-			ldata->canon_data = 0;
 -	}
-+	if (b - buf)
-+		retval = b - buf;
+ 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
  
- 	n_tty_set_room(tty);
- 	up_read(&tty->termios_rwsem);
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 7be6cf0..2e01d3c 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -664,7 +664,6 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
+ 	if (found)
+@@ -2262,7 +2252,7 @@ static unsigned long inq_canon(struct n_tty_data *ldata)
+ {
+ 	size_t nr, head, tail;
  
- 	spin_lock_irq(&tty->ctrl_lock);
- 	clear_bit(TTY_THROTTLED, &tty->flags);
--	clear_bit(TTY_PUSH, &tty->flags);
- 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
- 	put_pid(tty->session);
- 	put_pid(tty->pgrp);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 747c9e2..e10846a 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -305,7 +305,6 @@ struct tty_file_private {
- #define TTY_EXCLUSIVE 		3	/* Exclusive open mode */
- #define TTY_DEBUG 		4	/* Debugging */
- #define TTY_DO_WRITE_WAKEUP 	5	/* Call write_wakeup after queuing new */
--#define TTY_PUSH 		6	/* n_tty private */
- #define TTY_CLOSING 		7	/* ->close() in progress */
- #define TTY_LDISC_OPEN	 	11	/* Line discipline is open */
- #define TTY_HW_COOK_OUT 	14	/* Hardware can do output cooking */
+-	if (!ldata->canon_data)
++	if (ldata->canon_head == ldata->read_tail)
+ 		return 0;
+ 	head = ldata->canon_head;
+ 	tail = ldata->read_tail;
 -- 
 1.8.1.2
