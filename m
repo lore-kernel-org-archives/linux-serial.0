@@ -1,110 +1,49 @@
-From: Federico Vaga <federico.vaga@gmail.com>
-Subject: [PATCH] serial_core.c: add put_device() after device_find_child()
-Date: Mon, 15 Apr 2013 16:01:07 +0200
-Message-ID: <1366034468-6911-1-git-send-email-federico.vaga@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH tty-next] tty: Fix unsafe bit ops in tty_throttle_safe/unthrottle_safe
+Date: Mon, 15 Apr 2013 11:06:06 -0400
+Message-ID: <1366038366-8332-1-git-send-email-peter@hurleysoftware.com>
+References: <1362576053-1295-2-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f53.google.com ([209.85.214.53]:44874 "EHLO
-	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751304Ab3DOOBf (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:43661 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751335Ab3DOPGd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 10:01:35 -0400
+	Mon, 15 Apr 2013 11:06:33 -0400
+In-Reply-To: <1362576053-1295-2-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Federico Vaga <federico.vaga@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Vincent Pillet <vincentx.pillet@intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-The serial core uses device_find_child() but does not drop the reference to
-the retrieved child after using it. This patch add the missing put_device().
+tty->flags needs to be atomically modified.
 
-Signed-off-by: Federico Vaga <federico.vaga@gmail.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
+ drivers/tty/tty_ioctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-What I have done to test this issue.
-
-I used a machine with an AMBA PL011 serial driver. I tested the patch on
-next-20120408 because the last branch [next-20120415] does not boot on this
-board.
-
-For test purpose, I added some pr_info() messages to print the refcount
-after device_find_child() (lines: 1937,2009), and after put_device()
-(lines: 1947, 2021).
-
-
-Boot the machine *without* put_device(). Then:
-
-echo reboot > /sys/power/disk
-echo disk > /sys/power/state
-[   87.058575] uart_suspend_port:1937 refcount 4
-[   87.058582] uart_suspend_port:1947 refcount 4
-[   87.098083] uart_resume_port:2009refcount 5
-[   87.098088] uart_resume_port:2021 refcount 5
-
-echo disk > /sys/power/state
-[  103.055574] uart_suspend_port:1937 refcount 6
-[  103.055580] uart_suspend_port:1947 refcount 6
-[  103.095322] uart_resume_port:2009 refcount 7
-[  103.095327] uart_resume_port:2021 refcount 7
-
-echo disk > /sys/power/state
-[  252.459580] uart_suspend_port:1937 refcount 8
-[  252.459586] uart_suspend_port:1947 refcount 8
-[  252.499611] uart_resume_port:2009 refcount 9
-[  252.499616] uart_resume_port:2021 refcount 9
-
-The refcount continuously increased.
-
-
-Boot the machine *with* this patch. Then:
-
-echo reboot > /sys/power/disk
-echo disk > /sys/power/state
-[  159.333559] uart_suspend_port:1937 refcount 4
-[  159.333566] uart_suspend_port:1947 refcount 3
-[  159.372751] uart_resume_port:2009 refcount 4
-[  159.372755] uart_resume_port:2021 refcount 3
-
-echo disk > /sys/power/state
-[  185.713614] uart_suspend_port:1937 refcount 4
-[  185.713621] uart_suspend_port:1947 refcount 3
-[  185.752935] uart_resume_port:2009 refcount 4
-[  185.752940] uart_resume_port:2021 refcount 3
-
-echo disk > /sys/power/state
-[  207.458584] uart_suspend_port:1937 refcount 4
-[  207.458591] uart_suspend_port:1947 refcount 3
-[  207.498598] uart_resume_port:2009 refcount 4
-[  207.498605] uart_resume_port:2021 refcount 3
-
-The refcount correctly handled.
-
- drivers/tty/serial/serial_core.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 19cc749..f87dbfd 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1941,6 +1941,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		mutex_unlock(&port->mutex);
- 		return 0;
- 	}
-+	put_device(tty_dev);
-+
- 	if (console_suspend_enabled || !uart_console(uport))
- 		uport->suspended = 1;
- 
-@@ -2006,9 +2008,11 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 			disable_irq_wake(uport->irq);
- 			uport->irq_wake = 0;
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 2febed5..ce67f2c 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -156,7 +156,7 @@ int tty_throttle_safe(struct tty_struct *tty)
+ 		if (tty->flow_change != TTY_THROTTLE_SAFE)
+ 			ret = 1;
+ 		else {
+-			__set_bit(TTY_THROTTLED, &tty->flags);
++			set_bit(TTY_THROTTLED, &tty->flags);
+ 			if (tty->ops->throttle)
+ 				tty->ops->throttle(tty);
  		}
-+		put_device(tty_dev);
- 		mutex_unlock(&port->mutex);
- 		return 0;
- 	}
-+	put_device(tty_dev);
- 	uport->suspended = 0;
- 
- 	/*
+@@ -187,7 +187,7 @@ int tty_unthrottle_safe(struct tty_struct *tty)
+ 		if (tty->flow_change != TTY_UNTHROTTLE_SAFE)
+ 			ret = 1;
+ 		else {
+-			__clear_bit(TTY_THROTTLED, &tty->flags);
++			clear_bit(TTY_THROTTLED, &tty->flags);
+ 			if (tty->ops->unthrottle)
+ 				tty->ops->unthrottle(tty);
+ 		}
 -- 
-1.8.1.4
+1.8.1.2
 
