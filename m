@@ -1,103 +1,110 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCHv3] driver: serial: prevent UART console idle on suspend
- while using "no_console_suspend"
-Date: Mon, 15 Apr 2013 17:25:48 +0530
-Message-ID: <516BEAC4.7040608@ti.com>
-References: <1365167733-28083-1-git-send-email-sourav.poddar@ti.com>	<87mwtclvua.fsf@linaro.org> <516463D2.2070008@ti.com>	<87obdnh6au.fsf@linaro.org> <516501A0.4000004@ti.com>	<B5906170F1614E41A8A28DE3B8D121433ED96446@DBDE01.ent.ti.com>	<51653450.2010200@ti.com>	<B5906170F1614E41A8A28DE3B8D121433ED96C45@DBDE01.ent.ti.com>	<87bo9myt52.fsf@linaro.org> <87y5cpxiey.fsf@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Federico Vaga <federico.vaga@gmail.com>
+Subject: [PATCH] serial_core.c: add put_device() after device_find_child()
+Date: Mon, 15 Apr 2013 16:01:07 +0200
+Message-ID: <1366034468-6911-1-git-send-email-federico.vaga@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:42093 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752948Ab3DOL4D (ORCPT
+Received: from mail-bk0-f53.google.com ([209.85.214.53]:44874 "EHLO
+	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751304Ab3DOOBf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 07:56:03 -0400
-In-Reply-To: <87y5cpxiey.fsf@linaro.org>
+	Mon, 15 Apr 2013 10:01:35 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@linaro.org>
-Cc: "Bedia, Vaibhav" <vaibhav.bedia@ti.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tony@atomide.com" <tony@atomide.com>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>, "Balbi, Felipe" <balbi@ti.com>, "Nayak, Rajendra" <rnayak@ti.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Federico Vaga <federico.vaga@gmail.com>
 
-Hi Kevin,
-On Thursday 11 April 2013 07:45 PM, Kevin Hilman wrote:
-> Kevin Hilman<khilman@linaro.org>  writes:
->
->> "Bedia, Vaibhav"<vaibhav.bedia@ti.com>  writes:
->>
->>> Hi Sourav,
->>>
->>> On Wed, Apr 10, 2013 at 15:13:44, Poddar, Sourav wrote:
->>> [...]
->>>> Yes, had a look at that and found your situation similar to UART.
->>>>
->>>> But how exactly this gets used, I mean I don't  see any drivers/ in mainline
->>>> making use of this compatible string  "ti,am3352-ocmcram".  ?
->>> OCMC clock is enabled during bootup (not sure whether that's the h/w
->>> default or ROM does it) since the initial bootloader runs from there.
->>> By marking the corresponding hwmod with HWMOD_INIT_NO_IDLE we leave the
->>> clock running. Right now the sram code under arch/arm/plat-omap/ is what
->>> manages the OCMC. I guess this needs to move somewhere under drivers/
->>> and start managing the clocks. Even then we'll need a mechanism
->>> to leave the clocks running as part of the kernel suspend process
->>> since the assembly code which runs at the fag end of the suspend
->>> process runs out of OCMC and hence we can't cut its clock.
->>>
->>> On AM335x, the OCMC clock is cut to have PER power domain transition
->>> but that's done in the WKUP-M3 firmware when going down. During the
->>> wakeup sequence, WKUP-M3 re-enables the OCMC clock so that when the
->>> kernel resumes the h/w state is same.
->> OK, but *today*, in *mainline*, where in the linux kernel (not the M3
->> firmware) is the OCMRAM clock cut during suspend?
->>
->>  From what I can see, there is no driver for this device, so there are no
->> system PM calls being done for that device, and thus no omap_device
->> calls being done for that device, so the no_idle_on_suspend has no
->> effect.
-> OK, I think I confused things here, sorry. I was thinking runtime PM
-> here, but wrote system PM.  The no_idle_on_suspend feature only affects
-> system PM, and the omap_device calls will still be called during system
-> PM, even without a driver.
->
-> That being said, the commit below[1], added in v3.6 should prevent the
-> any automaic clock gating for devices without drivers bound.  Since
-> there is no driver for the OCM RAM block, you shouldn't be affected by
-> the automatic idle on suspend anyways.
->
-> So, my proposal is that Sourav remove that flag from the AM33xx hwmod
-> when he removes this feature.
->
-> Kevin
->
-Thanks a lot for your inputs and helping in bringing this thread to
-a logical conclusion.
+The serial core uses device_find_child() but does not drop the reference to
+the retrieved child after using it. This patch add the missing put_device().
 
-I will post a v4 for this patch along with other fixes/cleanups
-required as recommended by you and russell.
+Signed-off-by: Federico Vaga <federico.vaga@gmail.com>
+---
 
-Thanks,
-Sourav
-> [1]
-> commit 72bb6f9b51c82c820ddef892455a85b115460904
-> Author: Kevin Hilman<khilman@ti.com>
-> Date:   Tue Jul 10 15:29:04 2012 -0700
->
->      ARM: OMAP: omap_device: don't attempt late suspend if no driver bound
->
->      Currently, the omap_device PM domain layer uses the late suspend and
->      early resume callbacks to ensure devices are in their low power
->      states.
->
->      However, this is attempted even in cases where a driver probe has
->      failed.  If a driver's ->probe() method fails, the driver is likely in
->      a state where it is not expecting its runtime PM callbacks to be
->      called, yet currently the omap_device PM domain code attempts to call
->      the drivers callbacks.
->
->      To fix, use the omap_device driver_status field to check whether a
->      driver is bound to the omap_device before attempting to trigger driver
->      callbacks.
->
->      Reviewed-by: Paul Walmsley<paul@pwsan.com>
->      Signed-off-by: Kevin Hilman<khilman@ti.com>
+What I have done to test this issue.
+
+I used a machine with an AMBA PL011 serial driver. I tested the patch on
+next-20120408 because the last branch [next-20120415] does not boot on this
+board.
+
+For test purpose, I added some pr_info() messages to print the refcount
+after device_find_child() (lines: 1937,2009), and after put_device()
+(lines: 1947, 2021).
+
+
+Boot the machine *without* put_device(). Then:
+
+echo reboot > /sys/power/disk
+echo disk > /sys/power/state
+[   87.058575] uart_suspend_port:1937 refcount 4
+[   87.058582] uart_suspend_port:1947 refcount 4
+[   87.098083] uart_resume_port:2009refcount 5
+[   87.098088] uart_resume_port:2021 refcount 5
+
+echo disk > /sys/power/state
+[  103.055574] uart_suspend_port:1937 refcount 6
+[  103.055580] uart_suspend_port:1947 refcount 6
+[  103.095322] uart_resume_port:2009 refcount 7
+[  103.095327] uart_resume_port:2021 refcount 7
+
+echo disk > /sys/power/state
+[  252.459580] uart_suspend_port:1937 refcount 8
+[  252.459586] uart_suspend_port:1947 refcount 8
+[  252.499611] uart_resume_port:2009 refcount 9
+[  252.499616] uart_resume_port:2021 refcount 9
+
+The refcount continuously increased.
+
+
+Boot the machine *with* this patch. Then:
+
+echo reboot > /sys/power/disk
+echo disk > /sys/power/state
+[  159.333559] uart_suspend_port:1937 refcount 4
+[  159.333566] uart_suspend_port:1947 refcount 3
+[  159.372751] uart_resume_port:2009 refcount 4
+[  159.372755] uart_resume_port:2021 refcount 3
+
+echo disk > /sys/power/state
+[  185.713614] uart_suspend_port:1937 refcount 4
+[  185.713621] uart_suspend_port:1947 refcount 3
+[  185.752935] uart_resume_port:2009 refcount 4
+[  185.752940] uart_resume_port:2021 refcount 3
+
+echo disk > /sys/power/state
+[  207.458584] uart_suspend_port:1937 refcount 4
+[  207.458591] uart_suspend_port:1947 refcount 3
+[  207.498598] uart_resume_port:2009 refcount 4
+[  207.498605] uart_resume_port:2021 refcount 3
+
+The refcount correctly handled.
+
+ drivers/tty/serial/serial_core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 19cc749..f87dbfd 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1941,6 +1941,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		mutex_unlock(&port->mutex);
+ 		return 0;
+ 	}
++	put_device(tty_dev);
++
+ 	if (console_suspend_enabled || !uart_console(uport))
+ 		uport->suspended = 1;
+ 
+@@ -2006,9 +2008,11 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 			disable_irq_wake(uport->irq);
+ 			uport->irq_wake = 0;
+ 		}
++		put_device(tty_dev);
+ 		mutex_unlock(&port->mutex);
+ 		return 0;
+ 	}
++	put_device(tty_dev);
+ 	uport->suspended = 0;
+ 
+ 	/*
+-- 
+1.8.1.4
 
