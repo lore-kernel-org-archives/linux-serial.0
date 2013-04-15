@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 3/9] n_tty: Replace echo_cnt with computed value
-Date: Mon, 15 Apr 2013 11:29:41 -0400
-Message-ID: <1366039787-8719-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 9/9] n_tty: Avoid false-sharing echo buffer indices
+Date: Mon, 15 Apr 2013 11:29:47 -0400
+Message-ID: <1366039787-8719-10-git-send-email-peter@hurleysoftware.com>
 References: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
  <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,89 +11,50 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Prepare for lockless echo_buf handling; compute current byte count
-of echo_buf from head and tail indices.
+Separate the head & commit indices from the tail index to avoid
+cache-line contention (so called 'false-sharing') between concurrent
+threads.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ drivers/tty/n_tty.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 85334f8..cd41733 100644
+index eb20777..aa63cd3 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -110,7 +110,6 @@ struct n_tty_data {
- 	unsigned char *echo_buf;
- 	size_t echo_head;
- 	size_t echo_tail;
--	unsigned int echo_cnt;
+@@ -90,6 +90,8 @@ struct n_tty_data {
+ 	/* producer-published */
+ 	size_t read_head;
+ 	size_t canon_head;
++	size_t echo_head;
++	size_t echo_commit;
+ 	DECLARE_BITMAP(process_char_map, 256);
  
+ 	/* private to n_tty_receive_overrun (single-threaded) */
+@@ -105,20 +107,17 @@ struct n_tty_data {
+ 	/* shared by producer and consumer */
+ 	char *read_buf;
+ 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
++	unsigned char *echo_buf;
+ 
+ 	int minimum_to_wake;
+ 
+ 	/* consumer-published */
+ 	size_t read_tail;
+ 
+-	unsigned char *echo_buf;
+-	size_t echo_head;
+-	size_t echo_tail;
+-	size_t echo_commit;
+-
  	/* protected by output lock */
  	unsigned int column;
-@@ -335,7 +334,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 	unsigned int canon_column;
++	size_t echo_tail;
  
- 	mutex_lock(&ldata->echo_lock);
--	ldata->echo_head = ldata->echo_tail = ldata->echo_cnt = 0;
-+	ldata->echo_head = ldata->echo_tail  = 0;
- 	mutex_unlock(&ldata->echo_lock);
- 
- 	ldata->erasing = 0;
-@@ -653,7 +652,7 @@ static void process_echoes(struct tty_struct *tty)
- 	size_t tail;
- 	unsigned char c;
- 
--	if (!ldata->echo_cnt)
-+	if (ldata->echo_head == ldata->echo_tail)
- 		return;
- 
- 	mutex_lock(&ldata->output_lock);
-@@ -662,7 +661,7 @@ static void process_echoes(struct tty_struct *tty)
- 	space = tty_write_room(tty);
- 
- 	tail = ldata->echo_tail;
--	nr = ldata->echo_cnt;
-+	nr = ldata->echo_head - ldata->echo_tail;
- 	while (nr > 0) {
- 		c = echo_buf(ldata, tail);
- 		if (c == ECHO_OP_START) {
-@@ -779,7 +778,6 @@ static void process_echoes(struct tty_struct *tty)
- 	}
- 
- 	ldata->echo_tail = tail;
--	ldata->echo_cnt = nr;
- 
- 	mutex_unlock(&ldata->echo_lock);
- 	mutex_unlock(&ldata->output_lock);
-@@ -800,24 +798,20 @@ static void process_echoes(struct tty_struct *tty)
- 
- static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- {
--	if (ldata->echo_cnt == N_TTY_BUF_SIZE) {
-+	if (ldata->echo_head - ldata->echo_tail == N_TTY_BUF_SIZE) {
- 		size_t head = ldata->echo_head;
- 		/*
- 		 * Since the buffer start position needs to be advanced,
- 		 * be sure to step by a whole operation byte group.
- 		 */
- 		if (echo_buf(ldata, head) == ECHO_OP_START) {
--			if (echo_buf(ldata, head + 1) == ECHO_OP_ERASE_TAB) {
-+			if (echo_buf(ldata, head + 1) == ECHO_OP_ERASE_TAB)
- 				ldata->echo_tail += 3;
--				ldata->echo_cnt -= 2;
--			} else {
-+			else
- 				ldata->echo_tail += 2;
--				ldata->echo_cnt -= 1;
--			}
- 		} else
- 			ldata->echo_tail++;
--	} else
--		ldata->echo_cnt++;
-+	}
- 
- 	*echo_buf_addr(ldata, ldata->echo_head++) = c;
- }
+ 	struct mutex atomic_read_lock;
+ 	struct mutex output_lock;
 -- 
 1.8.1.2
