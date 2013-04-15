@@ -1,77 +1,34 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 13/20] n_tty: Eliminate char tests from IXANY restart test
-Date: Mon, 15 Apr 2013 11:32:44 -0400
-Message-ID: <1366039971-8770-14-git-send-email-peter@hurleysoftware.com>
-References: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
- <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/3] tty: serial: add iosize field to struct uart_port
+Date: Mon, 15 Apr 2013 11:10:53 -0700
+Message-ID: <20130415181053.GA24990@kroah.com>
+References: <1365845618-16040-1-git-send-email-blogic@openwrt.org>
+ <1365845618-16040-3-git-send-email-blogic@openwrt.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:48251 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752426Ab3DOQCm (ORCPT
+Received: from mail-da0-f42.google.com ([209.85.210.42]:53883 "EHLO
+	mail-da0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753196Ab3DOSLA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 12:02:42 -0400
-In-Reply-To: <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+	Mon, 15 Apr 2013 14:11:00 -0400
+Received: by mail-da0-f42.google.com with SMTP id n15so2186314dad.1
+        for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2013 11:11:00 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1365845618-16040-3-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: John Crispin <blogic@openwrt.org>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>
 
-Relocate the IXANY restart tty test to code paths where the
-the received char is not START_CHAR, STOP_CHAR, INTR_CHAR,
-QUIT_CHAR or SUSP_CHAR.
+On Sat, Apr 13, 2013 at 11:33:37AM +0200, John Crispin wrote:
+> From: Gabor Juhos <juhosg@openwrt.org>
+> 
+> Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
 
-Fixes the condition when ISIG if off and one of INTR_CHAR,
-QUIT_CHAR or SUSP_CHAR does not restart i/o.
+Why?  You provide no justification for this patch here, so I guess I
+can't accept it.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+sorry,
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 8808833..33994e6 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1269,13 +1269,6 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 		return;
- 	}
- 
--	if (tty->stopped && !tty->flow_stopped && I_IXON(tty) &&
--	    I_IXANY(tty) && c != START_CHAR(tty) && c != STOP_CHAR(tty) &&
--	    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) && c != SUSP_CHAR(tty)) {
--		start_tty(tty);
--		process_echoes(tty);
--	}
--
- 	/*
- 	 * If the previous character was LNEXT, or we know that this
- 	 * character is not one of the characters that we'll have to
-@@ -1284,6 +1277,13 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 	 */
- 	if (!test_bit(c, ldata->char_map) || ldata->lnext) {
- 		ldata->lnext = 0;
-+
-+		if (tty->stopped && !tty->flow_stopped && I_IXON(tty) &&
-+		    I_IXANY(tty)) {
-+			start_tty(tty);
-+			process_echoes(tty);
-+		}
-+
- 		parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
- 		if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk - 1)) {
- 			/* beep if no space */
-@@ -1330,6 +1330,11 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 		}
- 	}
- 
-+	if (tty->stopped && !tty->flow_stopped && I_IXON(tty) && I_IXANY(tty)) {
-+		start_tty(tty);
-+		process_echoes(tty);
-+	}
-+
- 	if (c == '\r') {
- 		if (I_IGNCR(tty))
- 			return;
--- 
-1.8.1.2
-
+greg k-h
