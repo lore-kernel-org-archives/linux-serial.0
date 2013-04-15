@@ -1,55 +1,38 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/2] tty: serial: ralink: fix SERIAL_8250_RT288X
- dependency
-Date: Mon, 15 Apr 2013 11:15:27 -0700
-Message-ID: <20130415181527.GA25341@kroah.com>
-References: <1365845973-16164-1-git-send-email-blogic@openwrt.org>
+Subject: Re: [PATCH v3 00/24] lockless n_tty receive path
+Date: Mon, 15 Apr 2013 13:14:11 -0700
+Message-ID: <20130415201411.GA27360@kroah.com>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
+ <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:43034 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756082Ab3DOSPd (ORCPT
+Received: from mail-pd0-f171.google.com ([209.85.192.171]:62996 "EHLO
+	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755871Ab3DOUOX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 14:15:33 -0400
-Received: by mail-pa0-f54.google.com with SMTP id fa11so2693889pad.13
-        for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2013 11:15:33 -0700 (PDT)
+	Mon, 15 Apr 2013 16:14:23 -0400
+Received: by mail-pd0-f171.google.com with SMTP id z10so2721412pdj.16
+        for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2013 13:14:22 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1365845973-16164-1-git-send-email-blogic@openwrt.org>
+In-Reply-To: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: John Crispin <blogic@openwrt.org>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Sat, Apr 13, 2013 at 11:39:32AM +0200, John Crispin wrote:
-> With every Ralink SoC that we add, we would need to extend the dependency. In
-> order to make life easier we make the symbol depend on MIPS & RALINK and then
-> select it from within arch/mips/ralink/.
+On Mon, Apr 15, 2013 at 11:19:04AM -0400, Peter Hurley wrote:
+> Greg,
 > 
-> Signed-off-by: John Crispin <blogic@openwrt.org>
-> ---
-> 
-> These 2 patches in this series should be merged via the mips tree. Patch 1/2
-> requires an Ack from the tty maintainer.
-> 
->  drivers/tty/serial/8250/Kconfig |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 80fe91e..24ea3c8 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -295,8 +295,8 @@ config SERIAL_8250_EM
->  	  If unsure, say N.
->  
->  config SERIAL_8250_RT288X
-> -	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
-> -	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883)
-> +	bool
-> +	depends on SERIAL_8250 && MIPS && RALINK
+> Unfortunately, this series is dependent on the 'ldsem patchset'.
+> The reason is that this series abandons tty->receive_room as
+> a flow control mechanism (because that requires locking),
+> and the TIOCSETD ioctl _without ldsem_ uses tty->receive_room
+> to shutoff i/o.
 
+Can you also resend the ldsem patch series, as I no longer have it
+around anymore, and I don't think it was part of this big resend, right?
 
-This patch doesn't create a select anywhere, so how can a user know what
-to do here?
+thanks,
 
 greg k-h
