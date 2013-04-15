@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 9/9] n_tty: Avoid false-sharing echo buffer indices
-Date: Mon, 15 Apr 2013 11:29:47 -0400
-Message-ID: <1366039787-8719-10-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 8/9] n_tty: Eliminate counter in __process_echoes
+Date: Mon, 15 Apr 2013 11:29:46 -0400
+Message-ID: <1366039787-8719-9-git-send-email-peter@hurleysoftware.com>
 References: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
  <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,50 +11,73 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Separate the head & commit indices from the tail index to avoid
-cache-line contention (so called 'false-sharing') between concurrent
-threads.
+Since neither echo_commit nor echo_tail can change for the duration
+of __process_echoes loop, substitute index comparison for the
+snapshot counter.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/tty/n_tty.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index eb20777..aa63cd3 100644
+index a601c46..eb20777 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -90,6 +90,8 @@ struct n_tty_data {
- 	/* producer-published */
- 	size_t read_head;
- 	size_t canon_head;
-+	size_t echo_head;
-+	size_t echo_commit;
- 	DECLARE_BITMAP(process_char_map, 256);
+@@ -655,8 +655,7 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 	old_space = space = tty_write_room(tty);
  
- 	/* private to n_tty_receive_overrun (single-threaded) */
-@@ -105,20 +107,17 @@ struct n_tty_data {
- 	/* shared by producer and consumer */
- 	char *read_buf;
- 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
-+	unsigned char *echo_buf;
+ 	tail = ldata->echo_tail;
+-	nr = ldata->echo_commit - ldata->echo_tail;
+-	while (nr > 0) {
++	while (ldata->echo_commit != tail) {
+ 		c = echo_buf(ldata, tail);
+ 		if (c == ECHO_OP_START) {
+ 			unsigned char op;
+@@ -700,20 +699,17 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 						ldata->column--;
+ 				}
+ 				tail += 3;
+-				nr -= 3;
+ 				break;
  
- 	int minimum_to_wake;
+ 			case ECHO_OP_SET_CANON_COL:
+ 				ldata->canon_column = ldata->column;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
  
- 	/* consumer-published */
- 	size_t read_tail;
+ 			case ECHO_OP_MOVE_BACK_COL:
+ 				if (ldata->column > 0)
+ 					ldata->column--;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
  
--	unsigned char *echo_buf;
--	size_t echo_head;
--	size_t echo_tail;
--	size_t echo_commit;
--
- 	/* protected by output lock */
- 	unsigned int column;
- 	unsigned int canon_column;
-+	size_t echo_tail;
+ 			case ECHO_OP_START:
+@@ -726,7 +722,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				ldata->column++;
+ 				space--;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
  
- 	struct mutex atomic_read_lock;
- 	struct mutex output_lock;
+ 			default:
+@@ -748,7 +743,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				ldata->column += 2;
+ 				space -= 2;
+ 				tail += 2;
+-				nr -= 2;
+ 			}
+ 
+ 			if (no_space_left)
+@@ -767,7 +761,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				space -= 1;
+ 			}
+ 			tail += 1;
+-			nr -= 1;
+ 		}
+ 	}
+ 
 -- 
 1.8.1.2
