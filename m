@@ -1,200 +1,99 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 08/24] n_tty: Get read_cnt through accessor
-Date: Mon, 15 Apr 2013 11:19:12 -0400
-Message-ID: <1366039168-8510-9-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 02/24] tty: Simplify tty buffer/ldisc interface with helper function
+Date: Mon, 15 Apr 2013 11:19:06 -0400
+Message-ID: <1366039168-8510-3-git-send-email-peter@hurleysoftware.com>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
  <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:44753 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753366Ab3DOPUK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 11:20:10 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Prepare for replacing read_cnt field with computed value.
+Ldisc interface functions must be called with interrupts enabled.
+Separating the ldisc calls into a helper function simplies the
+eventual removal of the spinlock.
+
+Note that access to the buf->head ptr outside the spinlock is
+safe here because;
+* __tty_buffer_flush() is prevented from running while buffer work
+  performs i/o,
+* tty_buffer_find() only assigns buf->head if the flip buffer list
+  is empty (which is never the case in flush_to_ldisc() since at
+  least one buffer is always left in the list after use)
+Access to the read index outside the spinlock is safe here for the
+same reasons.
+
+Update the buffer's read index _after_ the data has been received
+by the ldisc.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 41 +++++++++++++++++++++++------------------
- 1 file changed, 23 insertions(+), 18 deletions(-)
+ drivers/tty/tty_buffer.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 0bc0869..8d6fe42 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -115,6 +115,11 @@ struct n_tty_data {
- 	raw_spinlock_t read_lock;
- };
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index a42a028..6c7a1d0 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -403,6 +403,18 @@ int tty_prepare_flip_string_flags(struct tty_port *port,
+ EXPORT_SYMBOL_GPL(tty_prepare_flip_string_flags);
  
-+static inline size_t read_cnt(struct n_tty_data *ldata)
+ 
++static int
++receive_buf(struct tty_struct *tty, struct tty_buffer *head, int count)
 +{
-+	return ldata->read_cnt;
-+}
++	struct tty_ldisc *disc = tty->ldisc;
 +
- static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
- 			       unsigned char __user *ptr)
- {
-@@ -133,9 +138,9 @@ static int receive_room(struct tty_struct *tty)
- 		/* Multiply read_cnt by 3, since each byte might take up to
- 		 * three times as many spaces when PARMRK is set (depending on
- 		 * its flags, e.g. parity error). */
--		left = N_TTY_BUF_SIZE - ldata->read_cnt * 3 - 1;
-+		left = N_TTY_BUF_SIZE - read_cnt(ldata) * 3 - 1;
- 	} else
--		left = N_TTY_BUF_SIZE - ldata->read_cnt - 1;
-+		left = N_TTY_BUF_SIZE - read_cnt(ldata) - 1;
++	count = min_t(int, count, tty->receive_room);
++	if (count)
++		disc->ops->receive_buf(tty, head->char_buf_ptr + head->read,
++				       head->flag_buf_ptr + head->read, count);
++	head->read += count;
++	return count;
++}
  
- 	/*
- 	 * If we are doing input canonicalization, and there are no
-@@ -180,7 +185,7 @@ static void n_tty_set_room(struct tty_struct *tty)
+ /**
+  *	flush_to_ldisc
+@@ -438,8 +450,6 @@ static void flush_to_ldisc(struct work_struct *work)
+ 		struct tty_buffer *head;
+ 		while ((head = buf->head) != NULL) {
+ 			int count;
+-			char *char_buf;
+-			unsigned char *flag_buf;
  
- static void put_tty_queue_nolock(unsigned char c, struct n_tty_data *ldata)
- {
--	if (ldata->read_cnt < N_TTY_BUF_SIZE) {
-+	if (read_cnt(ldata) < N_TTY_BUF_SIZE) {
- 		ldata->read_buf[ldata->read_head] = c;
- 		ldata->read_head = (ldata->read_head + 1) & (N_TTY_BUF_SIZE-1);
- 		ldata->read_cnt++;
-@@ -285,7 +290,7 @@ static ssize_t chars_in_buffer(struct tty_struct *tty)
- 
- 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
- 	if (!ldata->icanon) {
--		n = ldata->read_cnt;
-+		n = read_cnt(ldata);
- 	} else if (ldata->canon_data) {
- 		n = (ldata->canon_head > ldata->read_tail) ?
- 			ldata->canon_head - ldata->read_tail :
-@@ -1205,7 +1210,7 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 	if (!test_bit(c, ldata->process_char_map) || ldata->lnext) {
- 		ldata->lnext = 0;
- 		parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
--		if (ldata->read_cnt >= (N_TTY_BUF_SIZE - parmrk - 1)) {
-+		if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk - 1)) {
- 			/* beep if no space */
- 			if (L_ECHO(tty))
- 				process_output('\a', tty);
-@@ -1305,7 +1310,7 @@ send_signal:
- 			return;
+ 			count = head->commit - head->read;
+ 			if (!count) {
+@@ -449,16 +459,10 @@ static void flush_to_ldisc(struct work_struct *work)
+ 				tty_buffer_free(port, head);
+ 				continue;
+ 			}
+-			if (!tty->receive_room)
+-				break;
+-			if (count > tty->receive_room)
+-				count = tty->receive_room;
+-			char_buf = head->char_buf_ptr + head->read;
+-			flag_buf = head->flag_buf_ptr + head->read;
+-			head->read += count;
+ 			spin_unlock_irqrestore(&buf->lock, flags);
+-			disc->ops->receive_buf(tty, char_buf,
+-							flag_buf, count);
++
++			count = receive_buf(tty, head, count);
++
+ 			spin_lock_irqsave(&buf->lock, flags);
+ 			/* Ldisc or user is trying to flush the buffers.
+ 			   We may have a deferred request to flush the
+@@ -469,7 +473,8 @@ static void flush_to_ldisc(struct work_struct *work)
+ 				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
+ 				wake_up(&tty->read_wait);
+ 				break;
+-			}
++			} else if (!count)
++				break;
  		}
- 		if (c == '\n') {
--			if (ldata->read_cnt >= N_TTY_BUF_SIZE) {
-+			if (read_cnt(ldata) >= N_TTY_BUF_SIZE) {
- 				if (L_ECHO(tty))
- 					process_output('\a', tty);
- 				return;
-@@ -1317,7 +1322,7 @@ send_signal:
- 			goto handle_newline;
- 		}
- 		if (c == EOF_CHAR(tty)) {
--			if (ldata->read_cnt >= N_TTY_BUF_SIZE)
-+			if (read_cnt(ldata) >= N_TTY_BUF_SIZE)
- 				return;
- 			if (ldata->canon_head != ldata->read_head)
- 				set_bit(TTY_PUSH, &tty->flags);
-@@ -1328,7 +1333,7 @@ send_signal:
- 		    (c == EOL2_CHAR(tty) && L_IEXTEN(tty))) {
- 			parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty))
- 				 ? 1 : 0;
--			if (ldata->read_cnt >= (N_TTY_BUF_SIZE - parmrk)) {
-+			if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk)) {
- 				if (L_ECHO(tty))
- 					process_output('\a', tty);
- 				return;
-@@ -1365,7 +1370,7 @@ handle_newline:
+ 		clear_bit(TTYP_FLUSHING, &port->iflags);
  	}
- 
- 	parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
--	if (ldata->read_cnt >= (N_TTY_BUF_SIZE - parmrk - 1)) {
-+	if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk - 1)) {
- 		/* beep if no space */
- 		if (L_ECHO(tty))
- 			process_output('\a', tty);
-@@ -1431,7 +1436,7 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 
- 	if (ldata->real_raw) {
- 		raw_spin_lock_irqsave(&ldata->read_lock, cpuflags);
--		i = min(N_TTY_BUF_SIZE - ldata->read_cnt,
-+		i = min(N_TTY_BUF_SIZE - read_cnt(ldata),
- 			N_TTY_BUF_SIZE - ldata->read_head);
- 		i = min(count, i);
- 		memcpy(ldata->read_buf + ldata->read_head, cp, i);
-@@ -1440,7 +1445,7 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 		cp += i;
- 		count -= i;
- 
--		i = min(N_TTY_BUF_SIZE - ldata->read_cnt,
-+		i = min(N_TTY_BUF_SIZE - read_cnt(ldata),
- 			N_TTY_BUF_SIZE - ldata->read_head);
- 		i = min(count, i);
- 		memcpy(ldata->read_buf + ldata->read_head, cp, i);
-@@ -1475,7 +1480,7 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 			tty->ops->flush_chars(tty);
- 	}
- 
--	if ((!ldata->icanon && (ldata->read_cnt >= ldata->minimum_to_wake)) ||
-+	if ((!ldata->icanon && (read_cnt(ldata) >= ldata->minimum_to_wake)) ||
- 		L_EXTPROC(tty)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
- 		if (waitqueue_active(&tty->read_wait))
-@@ -1553,7 +1558,7 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- 		ldata->erasing = 0;
- 	}
- 
--	if (canon_change && !L_ICANON(tty) && ldata->read_cnt)
-+	if (canon_change && !L_ICANON(tty) && read_cnt(ldata))
- 		wake_up_interruptible(&tty->read_wait);
- 
- 	ldata->icanon = (L_ICANON(tty) != 0);
-@@ -1699,7 +1704,7 @@ static inline int input_available_p(struct tty_struct *tty, int amt)
- 	if (ldata->icanon && !L_EXTPROC(tty)) {
- 		if (ldata->canon_data)
- 			return 1;
--	} else if (ldata->read_cnt >= (amt ? amt : 1))
-+	} else if (read_cnt(ldata) >= (amt ? amt : 1))
- 		return 1;
- 
- 	return 0;
-@@ -1735,7 +1740,7 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 
- 	retval = 0;
- 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
--	n = min(ldata->read_cnt, N_TTY_BUF_SIZE - ldata->read_tail);
-+	n = min(read_cnt(ldata), N_TTY_BUF_SIZE - ldata->read_tail);
- 	n = min(*nr, n);
- 	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
- 	if (n) {
-@@ -1749,7 +1754,7 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 		ldata->read_tail = (ldata->read_tail + n) & (N_TTY_BUF_SIZE-1);
- 		ldata->read_cnt -= n;
- 		/* Turn single EOF into zero-length read */
--		if (L_EXTPROC(tty) && ldata->icanon && is_eof && !ldata->read_cnt)
-+		if (L_EXTPROC(tty) && ldata->icanon && is_eof && !read_cnt(ldata))
- 			n = 0;
- 		raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
- 		*b += n;
-@@ -1785,7 +1790,7 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 
- 	raw_spin_lock_irqsave(&ldata->read_lock, flags);
- 
--	n = min_t(size_t, *nr, ldata->read_cnt);
-+	n = min(*nr, read_cnt(ldata));
- 	if (!n) {
- 		raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
- 		return 0;
-@@ -2251,7 +2256,7 @@ static int n_tty_ioctl(struct tty_struct *tty, struct file *file,
- 		return put_user(tty_chars_in_buffer(tty), (int __user *) arg);
- 	case TIOCINQ:
- 		/* FIXME: Locking */
--		retval = ldata->read_cnt;
-+		retval = read_cnt(ldata);
- 		if (L_ICANON(tty))
- 			retval = inq_canon(ldata);
- 		return put_user(retval, (unsigned int __user *) arg);
 -- 
 1.8.1.2
-
