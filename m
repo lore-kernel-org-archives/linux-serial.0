@@ -1,67 +1,114 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 1/9] n_tty: Remove unused echo_overrun field
-Date: Mon, 15 Apr 2013 11:29:39 -0400
-Message-ID: <1366039787-8719-2-git-send-email-peter@hurleysoftware.com>
-References: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
- <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH 11/20] n_tty: Factor tty->closing receive_buf() into separate fn
+Date: Mon, 15 Apr 2013 11:32:42 -0400
+Message-ID: <1366039971-8770-12-git-send-email-peter@hurleysoftware.com>
+References: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
+ <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:48240 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752426Ab3DOQCj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Apr 2013 12:02:39 -0400
+In-Reply-To: <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-The echo_overrun field is only assigned and never tested; remove it.
+Convert to modal receive_buf() processing; factor receive char
+processing when tty->closing into n_tty_receive_buf_closing().
+
+Note that EXTPROC when ISTRIP or IUCLC is set continues to be
+handled by n_tty_receive_char().
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/tty/n_tty.c | 50 +++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 39 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 4dbb558..e9a392a 100644
+index 9b52bf9..81e2bb3 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -96,7 +96,6 @@ struct n_tty_data {
- 
- 	/* must hold exclusive termios_rwsem to reset these */
- 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
--	unsigned char echo_overrun:1;
- 
- 	/* shared by producer and consumer */
- 	char *read_buf;
-@@ -325,7 +324,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
- 
- 	mutex_lock(&ldata->echo_lock);
--	ldata->echo_pos = ldata->echo_cnt = ldata->echo_overrun = 0;
-+	ldata->echo_pos = ldata->echo_cnt = 0;
- 	mutex_unlock(&ldata->echo_lock);
- 
- 	ldata->erasing = 0;
-@@ -782,14 +781,11 @@ static void process_echoes(struct tty_struct *tty)
- 	if (nr == 0) {
- 		ldata->echo_pos = 0;
- 		ldata->echo_cnt = 0;
--		ldata->echo_overrun = 0;
- 	} else {
- 		int num_processed = ldata->echo_cnt - nr;
- 		ldata->echo_pos += num_processed;
- 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
- 		ldata->echo_cnt = nr;
--		if (num_processed > 0)
--			ldata->echo_overrun = 0;
+@@ -1276,17 +1276,6 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
+ 		process_echoes(tty);
  	}
  
- 	mutex_unlock(&ldata->echo_lock);
-@@ -835,8 +831,6 @@ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- 			ldata->echo_pos++;
- 		}
- 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
+-	if (tty->closing) {
+-		if (I_IXON(tty)) {
+-			if (c == START_CHAR(tty)) {
+-				start_tty(tty);
+-				process_echoes(tty);
+-			} else if (c == STOP_CHAR(tty))
+-				stop_tty(tty);
+-		}
+-		return;
+-	}
 -
--		ldata->echo_overrun = 1;
- 	} else {
- 		new_byte_pos = ldata->echo_pos + ldata->echo_cnt;
- 		new_byte_pos &= N_TTY_BUF_SIZE - 1;
+ 	/*
+ 	 * If the previous character was LNEXT, or we know that this
+ 	 * character is not one of the characters that we'll have to
+@@ -1463,6 +1452,27 @@ handle_newline:
+ 	put_tty_queue(c, ldata);
+ }
+ 
++static inline void
++n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c)
++{
++	if (I_ISTRIP(tty))
++		c &= 0x7f;
++	if (I_IUCLC(tty) && L_IEXTEN(tty))
++		c = tolower(c);
++
++	if (I_IXON(tty)) {
++		if (c == STOP_CHAR(tty))
++			stop_tty(tty);
++		else if (c == START_CHAR(tty) ||
++			 (tty->stopped && !tty->flow_stopped && I_IXANY(tty) &&
++			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
++			  c != SUSP_CHAR(tty))) {
++			start_tty(tty);
++			process_echoes(tty);
++		}
++	}
++}
++
+ static void
+ n_tty_receive_char_flagged(struct tty_struct *tty, unsigned char c, char flag)
+ {
+@@ -1542,6 +1552,22 @@ n_tty_receive_buf_raw(struct tty_struct *tty, const unsigned char *cp,
+ 	}
+ }
+ 
++static void
++n_tty_receive_buf_closing(struct tty_struct *tty, const unsigned char *cp,
++			  char *fp, int count)
++{
++	char flag = TTY_NORMAL;
++
++	while (count--) {
++		if (fp)
++			flag = *fp++;
++		if (likely(flag == TTY_NORMAL))
++			n_tty_receive_char_closing(tty, *cp++);
++		else
++			n_tty_receive_char_flagged(tty, *cp++, flag);
++	}
++}
++
+ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 			  char *fp, int count)
+ {
+@@ -1552,6 +1578,8 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 		n_tty_receive_buf_real_raw(tty, cp, fp, count);
+ 	else if (ldata->raw || (L_EXTPROC(tty) && !preops))
+ 		n_tty_receive_buf_raw(tty, cp, fp, count);
++	else if (tty->closing && !L_EXTPROC(tty))
++		n_tty_receive_buf_closing(tty, cp, fp, count);
+ 	else {
+ 		char flag = TTY_NORMAL;
+ 
 -- 
 1.8.1.2
+
