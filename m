@@ -1,125 +1,81 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 11/16] tty: Only perform flip buffer flush from tty_buffer_flush()
-Date: Mon, 15 Apr 2013 11:26:02 -0400
-Message-ID: <1366039567-8620-12-git-send-email-peter@hurleysoftware.com>
-References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
- <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v3 18/24] n_tty: Separate buffer indices to prevent cache-line sharing
+Date: Mon, 15 Apr 2013 11:19:22 -0400
+Message-ID: <1366039168-8510-19-git-send-email-peter@hurleysoftware.com>
+References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
+ <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:45937 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933952Ab3DOPdA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Apr 2013 11:33:00 -0400
+In-Reply-To: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-Now that dropping the buffer lock is not necessary (as result of
-converting the spin lock to a mutex), the flip buffer flush no
-longer needs to be handled by the buffer work.
+If the read buffer indices are in the same cache-line, cpus will
+contended over the cache-line (so called 'false sharing').
 
-Simply signal a flush is required; the buffer work will exit the
-i/o loop, which allows tty_buffer_flush() to proceed.
+Separate the producer-published fields from the consumer-published
+fields; document the locks relevant to each field.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c | 63 ++++++++++++++++--------------------------------
- include/linux/tty.h      |  1 -
- 2 files changed, 21 insertions(+), 43 deletions(-)
+ drivers/tty/n_tty.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index c3c606c..39cae61 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -189,19 +189,11 @@ void tty_buffer_flush(struct tty_struct *tty)
- 	struct tty_port *port = tty->port;
- 	struct tty_bufhead *buf = &port->buf;
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 2ce01aa..3d334ef 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -82,29 +82,38 @@
+ #endif
  
--	mutex_lock(&buf->flush_mutex);
--	/* If the data is being pushed to the tty layer then we can't
--	   process it here. Instead set a flag and the flush_to_ldisc
--	   path will process the flush request before it exits */
--	if (test_bit(TTYP_FLUSHING, &port->iflags)) {
--		set_bit(TTYP_FLUSHPENDING, &port->iflags);
--		mutex_unlock(&buf->flush_mutex);
--		wait_event(tty->read_wait,
--				test_bit(TTYP_FLUSHPENDING, &port->iflags) == 0);
--		return;
--	}
-+	set_bit(TTYP_FLUSHPENDING, &port->iflags);
- 
-+	mutex_lock(&buf->flush_mutex);
- 	__tty_buffer_flush(port);
-+	clear_bit(TTYP_FLUSHPENDING, &port->iflags);
- 	mutex_unlock(&buf->flush_mutex);
- }
- 
-@@ -429,39 +421,26 @@ static void flush_to_ldisc(struct work_struct *work)
- 
- 	mutex_lock(&buf->flush_mutex);
- 
--	if (!test_and_set_bit(TTYP_FLUSHING, &port->iflags)) {
--		while (1) {
--			struct tty_buffer *head = buf->head;
--			int count;
--
--			count = head->commit - head->read;
--			if (!count) {
--				if (head->next == NULL)
--					break;
--				buf->head = head->next;
--				tty_buffer_free(port, head);
--				continue;
--			}
--
--			mutex_unlock(&buf->flush_mutex);
--
--			count = receive_buf(tty, head, count);
--
--			mutex_lock(&buf->flush_mutex);
--
--			/* Ldisc or user is trying to flush the buffers.
--			   We may have a deferred request to flush the
--			   input buffer, if so pull the chain under the lock
--			   and empty the queue */
--			if (test_bit(TTYP_FLUSHPENDING, &port->iflags)) {
--				__tty_buffer_flush(port);
--				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
--				wake_up(&tty->read_wait);
--				break;
--			} else if (!count)
-+	while (1) {
-+		struct tty_buffer *head = buf->head;
-+		int count;
+ struct n_tty_data {
+-	unsigned int column;
++	/* producer-published */
++	size_t read_head;
++	size_t canon_head;
++	DECLARE_BITMAP(process_char_map, 256);
 +
-+		/* Ldisc or user is trying to flush the buffers. */
-+		if (test_bit(TTYP_FLUSHPENDING, &port->iflags))
-+			break;
-+
-+		count = head->commit - head->read;
-+		if (!count) {
-+			if (head->next == NULL)
- 				break;
-+			buf->head = head->next;
-+			tty_buffer_free(port, head);
-+			continue;
- 		}
--		clear_bit(TTYP_FLUSHING, &port->iflags);
-+
-+		count = receive_buf(tty, head, count);
-+		if (!count)
-+			break;
- 	}
++	/* private to n_tty_receive_overrun (single-threaded) */
+ 	unsigned long overrun_time;
+ 	int num_overrun;
  
- 	mutex_unlock(&buf->flush_mutex);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index f068c4c..094a909 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -213,7 +213,6 @@ struct tty_port {
- 	wait_queue_head_t	delta_msr_wait;	/* Modem status change */
- 	unsigned long		flags;		/* TTY flags ASY_*/
- 	unsigned long		iflags;		/* TTYP_ internal flags */
--#define TTYP_FLUSHING			1  /* Flushing to ldisc in progress */
- #define TTYP_FLUSHPENDING		2  /* Queued buffer flush pending */
- 	unsigned char		console:1,	/* port is a console */
- 				low_latency:1;	/* direct buffer flush */
+ 	/* non-atomic */
+ 	bool no_room;
+ 
++	/* must hold exclusive termios_rwsem to reset these */
+ 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+ 	unsigned char echo_overrun:1;
+ 
+-	DECLARE_BITMAP(process_char_map, 256);
++	/* shared by producer and consumer */
++	char *read_buf;
+ 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
+ 
+-	char *read_buf;
+-	size_t read_head;
+-	size_t read_tail;
+ 	int minimum_to_wake;
+ 
++	/* consumer-published */
++	size_t read_tail;
++
++	/* protected by echo_lock */
+ 	unsigned char *echo_buf;
+ 	unsigned int echo_pos;
+ 	unsigned int echo_cnt;
+ 
+-	size_t canon_head;
++	/* protected by output lock */
++	unsigned int column;
+ 	unsigned int canon_column;
+ 
+ 	struct mutex atomic_read_lock;
 -- 
 1.8.1.2
+
