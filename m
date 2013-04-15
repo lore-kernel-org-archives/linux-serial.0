@@ -1,45 +1,92 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH] tty/serial: add MVF uart driver support
-Date: Sun, 14 Apr 2013 10:42:40 +0200
-Message-ID: <20130414084240.GY1906@pengutronix.de>
-References: <1365750655-3530-1-git-send-email-b35083@freescale.com>
- <CAOMZO5D-uQQJAc6zAMkF9ViR0KWg4q7cPr7+pLdfyAm9gtPyTA@mail.gmail.com>
+From: Jongsung Kim <neidhard.kim@lge.com>
+Subject: [RESEND][PATCH] ARM: PL011: add support for extended FIFO-size of PL011-r1p5
+Date: Mon, 15 Apr 2013 14:45:25 +0900
+Message-ID: <201304151445.25151.neidhard.kim@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:59423 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751439Ab3DNImo (ORCPT
+Received: from LGEMRELSE7Q.lge.com ([156.147.1.151]:60165 "EHLO
+	LGEMRELSE7Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750739Ab3DOFp1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Apr 2013 04:42:44 -0400
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5D-uQQJAc6zAMkF9ViR0KWg4q7cPr7+pLdfyAm9gtPyTA@mail.gmail.com>
+	Mon, 15 Apr 2013 01:45:27 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Jingchang Lu <b35083@freescale.com>, linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org
+To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sat, Apr 13, 2013 at 05:41:26PM -0300, Fabio Estevam wrote:
-> On Fri, Apr 12, 2013 at 4:10 AM, Jingchang Lu <b35083@freescale.com> wrote:
-> > It adds Freescale Vybrid Family uart driver support
-> >
-> > Signed-off-by: Jingchang Lu <b35083@freescale.com>
-> > ---
-> >  drivers/tty/serial/Kconfig       |   17 +
-> >  drivers/tty/serial/Makefile      |    1 +
-> >  drivers/tty/serial/mvf.c         | 1246 ++++++++++++++++++++++++++++++++++++++
-> >  include/uapi/linux/serial_core.h |    3 +
-> >  4 files changed, 1267 insertions(+)
-> >  create mode 100644 drivers/tty/serial/mvf.c
-> 
-> Would it be possible to add Vybrid support into the existing imx serial port?
+The latest r1p5-revision of the ARM PL011 UART has 32-byte FIFOs,
+while all earlier ones have 16-byte FIFOs. This patch suggests
+a way to set the FIFO-size correctly & flexibly by using a member
+function named get_fifosize, rather than using the fifosize member
+variable. The function takes the UARTPeriphID, and returns the
+correct FIFO size.
 
-That's completely different hardware.
+Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
+---
+ drivers/tty/serial/amba-pl011.c |   20 ++++++++++++++++----
+ 1 files changed, 16 insertions(+), 4 deletions(-)
 
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 3ea5408..22af0c8 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -72,32 +72,44 @@
+ /* There is by now at least one vendor with differing details, so handle it */
+ struct vendor_data {
+ 	unsigned int		ifls;
+-	unsigned int		fifosize;
+ 	unsigned int		lcrh_tx;
+ 	unsigned int		lcrh_rx;
+ 	bool			oversampling;
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
++
++	unsigned int (*get_fifosize)(unsigned int periphid);
+ };
+ 
++static unsigned int get_fifosize_arm(unsigned int periphid)
++{
++	unsigned int rev = (periphid >> 20) & 0xf;
++	return rev < 3 ? 16 : 32;
++}
++
+ static struct vendor_data vendor_arm = {
+ 	.ifls			= UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
+-	.fifosize		= 16,
+ 	.lcrh_tx		= UART011_LCRH,
+ 	.lcrh_rx		= UART011_LCRH,
+ 	.oversampling		= false,
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
++	.get_fifosize		= get_fifosize_arm,
+ };
+ 
++static unsigned int get_fifosize_st(unsigned int periphid)
++{
++	return 64;
++}
++
+ static struct vendor_data vendor_st = {
+ 	.ifls			= UART011_IFLS_RX_HALF|UART011_IFLS_TX_HALF,
+-	.fifosize		= 64,
+ 	.lcrh_tx		= ST_UART011_LCRH_TX,
+ 	.lcrh_rx		= ST_UART011_LCRH_RX,
+ 	.oversampling		= true,
+ 	.dma_threshold		= true,
+ 	.cts_event_workaround	= true,
++	.get_fifosize		= get_fifosize_st,
+ };
+ 
+ static struct uart_amba_port *amba_ports[UART_NR];
+@@ -2010,7 +2022,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
+ 	uap->old_cr = 0;
+-	uap->fifosize = vendor->fifosize;
++	uap->fifosize = vendor->get_fifosize(dev->periphid);
+ 	uap->port.dev = &dev->dev;
+ 	uap->port.mapbase = dev->res.start;
+ 	uap->port.membase = base;
