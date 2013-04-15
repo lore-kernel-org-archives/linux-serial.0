@@ -1,49 +1,67 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 12/16] tty: Avoid false-sharing flip buffer ptrs
-Date: Mon, 15 Apr 2013 11:26:03 -0400
-Message-ID: <1366039567-8620-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 16/16] tty: Remove private constant from global namespace
+Date: Mon, 15 Apr 2013 11:26:07 -0400
+Message-ID: <1366039567-8620-17-git-send-email-peter@hurleysoftware.com>
 References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
  <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:45899 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933250Ab3DOPcr (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Apr 2013 11:32:47 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Separate the head and tail ptrs to avoid cache-line contention
-(so called 'false-sharing') between concurrent threads.
+TTY_BUFFER_PAGE is only used within drivers/tty/tty_buffer.c;
+relocate to that file scope.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- include/linux/tty.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/tty_buffer.c | 10 ++++++++++
+ include/linux/tty.h      | 11 -----------
+ 2 files changed, 10 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index f22e116..c043136f 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -28,6 +28,16 @@
+  */
+ #define TTYB_MEM_LIMIT	65536
+ 
++/*
++ * We default to dicing tty buffer allocations to this many characters
++ * in order to avoid multiple page allocations. We know the size of
++ * tty_buffer itself but it must also be taken into account that the
++ * the buffer is 256 byte aligned. See tty_buffer_find for the allocation
++ * logic this must match
++ */
++
++#define TTY_BUFFER_PAGE	(((PAGE_SIZE - sizeof(struct tty_buffer)) / 2) & ~0xFF)
++
+ 
+ /**
+  *	tty_buffer_lock_exclusive	-	gain exclusive access to buffer
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 094a909..08633e0 100644
+index 0959a7b..747c9e2 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -65,13 +65,13 @@ static inline char *flag_buf_ptr(struct tty_buffer *b, int ofs)
+@@ -53,17 +53,6 @@ static inline char *flag_buf_ptr(struct tty_buffer *b, int ofs)
+ 	return (char *)char_buf_ptr(b, ofs) + b->size;
+ }
  
- 
+-/*
+- * We default to dicing tty buffer allocations to this many characters
+- * in order to avoid multiple page allocations. We know the size of
+- * tty_buffer itself but it must also be taken into account that the
+- * the buffer is 256 byte aligned. See tty_buffer_find for the allocation
+- * logic this must match
+- */
+-
+-#define TTY_BUFFER_PAGE	(((PAGE_SIZE - sizeof(struct tty_buffer)) / 2) & ~0xFF)
+-
+-
  struct tty_bufhead {
-+	struct tty_buffer *head;	/* Queue head */
+ 	struct tty_buffer *head;	/* Queue head */
  	struct work_struct work;
- 	struct mutex flush_mutex;
- 	struct tty_buffer sentinel;
--	struct tty_buffer *head;	/* Queue head */
--	struct tty_buffer *tail;	/* Active buffer */
- 	struct llist_head free;		/* Free queue head */
- 	atomic_t	   memory_used; /* In-use buffers excluding free list */
-+	struct tty_buffer *tail;	/* Active buffer */
- };
- /*
-  * When a break, frame error, or parity error happens, these codes are
 -- 
 1.8.1.2
-
