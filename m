@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 02/24] tty: Simplify tty buffer/ldisc interface with helper function
-Date: Mon, 15 Apr 2013 11:19:06 -0400
-Message-ID: <1366039168-8510-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 07/24] tty: Deprecate ldisc .chars_in_buffer() method
+Date: Mon, 15 Apr 2013 11:19:11 -0400
+Message-ID: <1366039168-8510-8-git-send-email-peter@hurleysoftware.com>
 References: <1363724513-15604-1-git-send-email-peter@hurleysoftware.com>
  <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,89 +11,22 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.or
 Cc: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Ldisc interface functions must be called with interrupts enabled.
-Separating the ldisc calls into a helper function simplies the
-eventual removal of the spinlock.
-
-Note that access to the buf->head ptr outside the spinlock is
-safe here because;
-* __tty_buffer_flush() is prevented from running while buffer work
-  performs i/o,
-* tty_buffer_find() only assigns buf->head if the flip buffer list
-  is empty (which is never the case in flush_to_ldisc() since at
-  least one buffer is always left in the list after use)
-Access to the read index outside the spinlock is safe here for the
-same reasons.
-
-Update the buffer's read index _after_ the data has been received
-by the ldisc.
-
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/tty/n_tty.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index a42a028..6c7a1d0 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -403,6 +403,18 @@ int tty_prepare_flip_string_flags(struct tty_port *port,
- EXPORT_SYMBOL_GPL(tty_prepare_flip_string_flags);
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index c37f250..0bc0869 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -297,6 +297,7 @@ static ssize_t chars_in_buffer(struct tty_struct *tty)
  
+ static ssize_t n_tty_chars_in_buffer(struct tty_struct *tty)
+ {
++	WARN_ONCE(1, "%s is deprecated and scheduled for removal.", __func__);
+ 	return chars_in_buffer(tty);
+ }
  
-+static int
-+receive_buf(struct tty_struct *tty, struct tty_buffer *head, int count)
-+{
-+	struct tty_ldisc *disc = tty->ldisc;
-+
-+	count = min_t(int, count, tty->receive_room);
-+	if (count)
-+		disc->ops->receive_buf(tty, head->char_buf_ptr + head->read,
-+				       head->flag_buf_ptr + head->read, count);
-+	head->read += count;
-+	return count;
-+}
- 
- /**
-  *	flush_to_ldisc
-@@ -438,8 +450,6 @@ static void flush_to_ldisc(struct work_struct *work)
- 		struct tty_buffer *head;
- 		while ((head = buf->head) != NULL) {
- 			int count;
--			char *char_buf;
--			unsigned char *flag_buf;
- 
- 			count = head->commit - head->read;
- 			if (!count) {
-@@ -449,16 +459,10 @@ static void flush_to_ldisc(struct work_struct *work)
- 				tty_buffer_free(port, head);
- 				continue;
- 			}
--			if (!tty->receive_room)
--				break;
--			if (count > tty->receive_room)
--				count = tty->receive_room;
--			char_buf = head->char_buf_ptr + head->read;
--			flag_buf = head->flag_buf_ptr + head->read;
--			head->read += count;
- 			spin_unlock_irqrestore(&buf->lock, flags);
--			disc->ops->receive_buf(tty, char_buf,
--							flag_buf, count);
-+
-+			count = receive_buf(tty, head, count);
-+
- 			spin_lock_irqsave(&buf->lock, flags);
- 			/* Ldisc or user is trying to flush the buffers.
- 			   We may have a deferred request to flush the
-@@ -469,7 +473,8 @@ static void flush_to_ldisc(struct work_struct *work)
- 				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
- 				wake_up(&tty->read_wait);
- 				break;
--			}
-+			} else if (!count)
-+				break;
- 		}
- 		clear_bit(TTYP_FLUSHING, &port->iflags);
- 	}
 -- 
 1.8.1.2
