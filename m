@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 03/20] n_tty: Move buffers into n_tty_data
-Date: Mon, 15 Apr 2013 11:32:34 -0400
-Message-ID: <1366039971-8770-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 01/20] n_tty: Fix EOF push handling
+Date: Mon, 15 Apr 2013 11:32:32 -0400
+Message-ID: <1366039971-8770-2-git-send-email-peter@hurleysoftware.com>
 References: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
  <1366039971-8770-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,82 +11,165 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Reduce pointer reloading and improve locality-of-reference;
-allocate read_buf and echo_buf within struct n_tty_data.
+In canonical mode, an EOF which is not the first character of the line
+causes read() to complete and return the number of characters read so
+far (commonly referred to as EOF push). However, if the previous read()
+returned because the user buffer was full _and_ the next character
+is an EOF not at the beginning of the line, read() must not return 0,
+thus mistakenly indicating the end-of-file condition.
+
+The TTY_PUSH flag is used to indicate an EOF was received which is not
+at the beginning of the line. Because the EOF push condition is
+evaluated by a thread other than the read(), multiple EOF pushes can
+cause a premature end-of-file to be indicated.
+
+Instead, discover the 'EOF push as first read character' condition
+from the read() thread itself, and restart the i/o loop if detected.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+ drivers/tty/n_tty.c  | 34 +++++++++++++++++-----------------
+ drivers/tty/tty_io.c |  1 -
+ include/linux/tty.h  |  1 -
+ 3 files changed, 17 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index bfb04d3..8aac758 100644
+index aa63cd3..4dbebc8 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -105,9 +105,9 @@ struct n_tty_data {
- 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+@@ -113,6 +113,7 @@ struct n_tty_data {
  
- 	/* shared by producer and consumer */
--	char *read_buf;
-+	char read_buf[N_TTY_BUF_SIZE];
- 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
--	unsigned char *echo_buf;
-+	unsigned char echo_buf[N_TTY_BUF_SIZE];
+ 	/* consumer-published */
+ 	size_t read_tail;
++	size_t line_start;
  
- 	int minimum_to_wake;
- 
-@@ -1692,9 +1692,7 @@ static void n_tty_close(struct tty_struct *tty)
- 	if (tty->link)
- 		n_tty_packet_mode_flush(tty);
- 
--	kfree(ldata->read_buf);
--	kfree(ldata->echo_buf);
--	kfree(ldata);
-+	vfree(ldata);
- 	tty->disc_data = NULL;
- }
- 
-@@ -1712,7 +1710,8 @@ static int n_tty_open(struct tty_struct *tty)
+ 	/* protected by output lock */
+ 	unsigned int column;
+@@ -336,6 +337,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
  {
- 	struct n_tty_data *ldata;
+ 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 	ldata->echo_head = ldata->echo_tail = ldata->echo_commit = 0;
++	ldata->line_start = 0;
  
--	ldata = kzalloc(sizeof(*ldata), GFP_KERNEL);
-+	/* Currently a malloc failure here can panic */
-+	ldata = vmalloc(sizeof(*ldata));
- 	if (!ldata)
- 		goto err;
+ 	ldata->erasing = 0;
+ 	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+@@ -1396,8 +1398,6 @@ send_signal:
+ 		if (c == EOF_CHAR(tty)) {
+ 			if (read_cnt(ldata) >= N_TTY_BUF_SIZE)
+ 				return;
+-			if (ldata->canon_head != ldata->read_head)
+-				set_bit(TTY_PUSH, &tty->flags);
+ 			c = __DISABLED_CHAR;
+ 			goto handle_newline;
+ 		}
+@@ -1604,6 +1604,7 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 		canon_change = (old->c_lflag ^ tty->termios.c_lflag) & ICANON;
+ 	if (canon_change) {
+ 		bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
++		ldata->line_start = 0;
+ 		ldata->canon_head = ldata->read_tail;
+ 		ldata->erasing = 0;
+ 		ldata->lnext = 0;
+@@ -1834,6 +1835,7 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
+ 	size_t eol;
+ 	size_t tail;
+ 	int ret, found = 0;
++	bool eof_push = 0;
  
-@@ -1720,16 +1719,14 @@ static int n_tty_open(struct tty_struct *tty)
- 	mutex_init(&ldata->atomic_read_lock);
- 	mutex_init(&ldata->output_lock);
+ 	/* N.B. avoid overrun if nr == 0 */
+ 	n = min(*nr, read_cnt(ldata));
+@@ -1860,8 +1862,10 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
+ 	n = (found + eol + size) & (N_TTY_BUF_SIZE - 1);
+ 	c = n;
  
--	/* These are ugly. Currently a malloc failure here can panic */
--	ldata->read_buf = kzalloc(N_TTY_BUF_SIZE, GFP_KERNEL);
--	ldata->echo_buf = kzalloc(N_TTY_BUF_SIZE, GFP_KERNEL);
--	if (!ldata->read_buf || !ldata->echo_buf)
--		goto err_free_bufs;
--
- 	tty->disc_data = ldata;
- 	reset_buffer_flags(tty->disc_data);
- 	ldata->column = 0;
-+	ldata->canon_column = 0;
- 	ldata->minimum_to_wake = 1;
-+	ldata->num_overrun = 0;
-+	ldata->no_room = 0;
-+	ldata->lnext = 0;
- 	tty->closing = 0;
- 	/* indicate buffer work may resume */
- 	clear_bit(TTY_LDISC_HALTED, &tty->flags);
-@@ -1737,10 +1734,6 @@ static int n_tty_open(struct tty_struct *tty)
- 	tty_unthrottle(tty);
+-	if (found && read_buf(ldata, eol) == __DISABLED_CHAR)
++	if (found && read_buf(ldata, eol) == __DISABLED_CHAR) {
+ 		n--;
++		eof_push = !n && ldata->read_tail != ldata->line_start;
++	}
  
- 	return 0;
--err_free_bufs:
--	kfree(ldata->read_buf);
--	kfree(ldata->echo_buf);
--	kfree(ldata);
- err:
- 	return -ENOMEM;
+ 	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu size:%zu more:%zu\n",
+ 		    __func__, eol, found, n, c, size, more);
+@@ -1884,9 +1888,11 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
+ 	smp_mb__after_clear_bit();
+ 	ldata->read_tail += c;
+ 
+-	if (found)
++	if (found) {
++		ldata->line_start = ldata->read_tail;
+ 		tty_audit_push(tty);
+-	return 0;
++	}
++	return eof_push ? -EAGAIN : 0;
  }
+ 
+ extern ssize_t redirected_tty_write(struct file *, const char __user *,
+@@ -1961,12 +1967,10 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 	int c;
+ 	int minimum, time;
+ 	ssize_t retval = 0;
+-	ssize_t size;
+ 	long timeout;
+ 	unsigned long flags;
+ 	int packet;
+ 
+-do_it_again:
+ 	c = job_control(tty, file);
+ 	if (c < 0)
+ 		return c;
+@@ -2073,7 +2077,10 @@ do_it_again:
+ 
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+ 			retval = canon_copy_from_read_buf(tty, &b, &nr);
+-			if (retval)
++			if (retval == -EAGAIN) {
++				retval = 0;
++				continue;
++			} else if (retval)
+ 				break;
+ 		} else {
+ 			int uncopied;
+@@ -2101,15 +2108,8 @@ do_it_again:
+ 		ldata->minimum_to_wake = minimum;
+ 
+ 	__set_current_state(TASK_RUNNING);
+-	size = b - buf;
+-	if (size) {
+-		retval = size;
+-		if (nr)
+-			clear_bit(TTY_PUSH, &tty->flags);
+-	} else if (test_and_clear_bit(TTY_PUSH, &tty->flags)) {
+-		up_read(&tty->termios_rwsem);
+-		goto do_it_again;
+-	}
++	if (b - buf)
++		retval = b - buf;
+ 
+ 	n_tty_set_room(tty);
+ 	up_read(&tty->termios_rwsem);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 7be6cf0..2e01d3c 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -664,7 +664,6 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
+ 
+ 	spin_lock_irq(&tty->ctrl_lock);
+ 	clear_bit(TTY_THROTTLED, &tty->flags);
+-	clear_bit(TTY_PUSH, &tty->flags);
+ 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+ 	put_pid(tty->session);
+ 	put_pid(tty->pgrp);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 747c9e2..e10846a 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -305,7 +305,6 @@ struct tty_file_private {
+ #define TTY_EXCLUSIVE 		3	/* Exclusive open mode */
+ #define TTY_DEBUG 		4	/* Debugging */
+ #define TTY_DO_WRITE_WAKEUP 	5	/* Call write_wakeup after queuing new */
+-#define TTY_PUSH 		6	/* n_tty private */
+ #define TTY_CLOSING 		7	/* ->close() in progress */
+ #define TTY_LDISC_OPEN	 	11	/* Line discipline is open */
+ #define TTY_HW_COOK_OUT 	14	/* Hardware can do output cooking */
 -- 
 1.8.1.2
