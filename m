@@ -1,114 +1,56 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 04/16] tty: Merge tty_buffer_find() into tty_buffer_alloc()
-Date: Mon, 15 Apr 2013 11:25:55 -0400
-Message-ID: <1366039567-8620-5-git-send-email-peter@hurleysoftware.com>
-References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
- <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Subject: [PATCH 0/9] mostly lockless tty echo
+Date: Mon, 15 Apr 2013 11:29:38 -0400
+Message-ID: <1366039787-8719-1-git-send-email-peter@hurleysoftware.com>
+References: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:45522 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754858Ab3DOPaE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Apr 2013 11:30:04 -0400
 In-Reply-To: <1366039567-8620-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-tty_buffer_find() implements a simple free list lookaside cache.
-Merge this functionality into tty_buffer_alloc() to reflect the
-more traditional alloc/free symmetry.
+This 3rd of 4 patchsets implements a mostly-lockless tty echo output.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_buffer.c | 50 +++++++++++++++++-------------------------------
- 1 file changed, 18 insertions(+), 32 deletions(-)
+Because echoing is performed solely by the single-threaded ldisc
+receive_buf() method, most of the lockless requirements are already
+in-place. The main existing complications were;
+1) Echoing could overrun itself. A fixed-size buffer is used to record
+   the operations necessary when outputting the echoes; the most recent
+   echo data is preserved.
+2) An attempt to push unprocessed echoes is made by the n_tty_write method
+   (on a different thread) before attempting write output.
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 56d4602..a428fa2 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -64,6 +64,8 @@ void tty_buffer_free_all(struct tty_port *port)
-  *	@size: desired size (characters)
-  *
-  *	Allocate a new tty buffer to hold the desired number of characters.
-+ *	We round our buffers off in 256 character chunks to get better
-+ *	allocation behaviour.
-  *	Return NULL if out of memory or the allocation would exceed the
-  *	per device queue
-  *
-@@ -72,14 +74,29 @@ void tty_buffer_free_all(struct tty_port *port)
- 
- static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
- {
-+	struct tty_buffer **tbh = &port->buf.free;
- 	struct tty_buffer *p;
- 
-+	/* Round the buffer size out */
-+	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
-+
-+	if (size <= MIN_TTYB_SIZE) {
-+		if (*tbh) {
-+			p = *tbh;
-+			*tbh = p->next;
-+			goto found;
-+		}
-+	}
-+
-+	/* Should possibly check if this fails for the largest buffer we
-+	   have queued and recycle that ? */
- 	if (port->buf.memory_used + size > 65536)
- 		return NULL;
- 	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
- 	if (p == NULL)
- 		return NULL;
- 
-+found:
- 	tty_buffer_reset(p, size);
- 	port->buf.memory_used += size;
- 	return p;
-@@ -172,37 +189,6 @@ void tty_buffer_flush(struct tty_struct *tty)
- }
- 
- /**
-- *	tty_buffer_find		-	find a free tty buffer
-- *	@tty: tty owning the buffer
-- *	@size: characters wanted
-- *
-- *	Locate an existing suitable tty buffer or if we are lacking one then
-- *	allocate a new one. We round our buffers off in 256 character chunks
-- *	to get better allocation behaviour.
-- *
-- *	Locking: Caller must hold tty->buf.lock
-- */
--
--static struct tty_buffer *tty_buffer_find(struct tty_port *port, size_t size)
--{
--	struct tty_buffer **tbh = &port->buf.free;
--	if (size <= MIN_TTYB_SIZE) {
--		if (*tbh) {
--			struct tty_buffer *t = *tbh;
--
--			*tbh = t->next;
--			tty_buffer_reset(t, t->size);
--			port->buf.memory_used += t->size;
--			return t;
--		}
--	}
--	/* Round the buffer size out */
--	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
--	return tty_buffer_alloc(port, size);
--	/* Should possibly check if this fails for the largest buffer we
--	   have queued and recycle that ? */
--}
--/**
-  *	tty_buffer_request_room		-	grow tty buffer if needed
-  *	@tty: tty structure
-  *	@size: size desired
-@@ -230,7 +216,7 @@ int tty_buffer_request_room(struct tty_port *port, size_t size)
- 
- 	if (left < size) {
- 		/* This is the slow path - looking for new buffers to use */
--		if ((n = tty_buffer_find(port, size)) != NULL) {
-+		if ((n = tty_buffer_alloc(port, size)) != NULL) {
- 			if (b != NULL) {
- 				b->next = n;
- 				b->commit = b->used;
+The overrun condition is solved by outputting the echoes in blocks and
+ensuring that at least that much space is available each time an echo
+operation is committed. At the conclusion of each flip buffer received,
+any remaining unprocessed echoes are output.
+
+This block output method is particularly effective when there is no reader
+(the tty is output-only) and termios is misconfigured with echo enabled.
+
+The concurrent access by the n_tty_write() method is already excluded
+by the existing output_lock mutex.
+
+Peter Hurley (9):
+  n_tty: Remove unused echo_overrun field
+  n_tty: Use separate head and tail indices for echo_buf
+  n_tty: Replace echo_cnt with computed value
+  n_tty: Remove echo_lock
+  n_tty: Eliminate echo_commit memory barrier
+  n_tty: Process echoes in blocks
+  n_tty: Only flush echo output if actually output
+  n_tty: Eliminate counter in __process_echoes
+  n_tty: Avoid false-sharing echo buffer indices
+
+ drivers/tty/n_tty.c | 248 ++++++++++++++++++++++++----------------------------
+ 1 file changed, 113 insertions(+), 135 deletions(-)
+
 -- 
 1.8.1.2
+
