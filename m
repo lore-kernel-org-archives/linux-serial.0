@@ -1,19 +1,19 @@
 From: Kevin Hilman <khilman@linaro.org>
 Subject: Re: [PATCH 6/6] arm: mach-omap2: Remove "no_console_suspend"
-Date: Thu, 18 Apr 2013 11:09:08 -0700
-Message-ID: <87d2tr4sor.fsf@linaro.org>
+Date: Thu, 18 Apr 2013 11:11:53 -0700
+Message-ID: <877gjz4sk6.fsf@linaro.org>
 References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>
 	<1366198467-6757-7-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f173.google.com ([209.85.192.173]:34297 "EHLO
-	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751252Ab3DRSJM (ORCPT
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:49616 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751146Ab3DRSL5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Apr 2013 14:09:12 -0400
-Received: by mail-pd0-f173.google.com with SMTP id v14so1727399pde.4
-        for <linux-serial@vger.kernel.org>; Thu, 18 Apr 2013 11:09:11 -0700 (PDT)
+	Thu, 18 Apr 2013 14:11:57 -0400
+Received: by mail-pa0-f43.google.com with SMTP id hz11so1780355pad.16
+        for <linux-serial@vger.kernel.org>; Thu, 18 Apr 2013 11:11:56 -0700 (PDT)
 In-Reply-To: <1366198467-6757-7-git-send-email-sourav.poddar@ti.com> (Sourav
 	Poddar's message of "Wed, 17 Apr 2013 17:04:27 +0530")
 Sender: linux-serial-owner@vger.kernel.org
@@ -36,9 +36,10 @@ Sourav Poddar <sourav.poddar@ti.com> writes:
 > Cc: Rajendra nayak <rnayak@ti.com>
 > Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
 
-Subject should be arm: omap2+: omap_device: remove no_idle_on_suspend
+also, the serial.c change here should be a separate patch
+subject: arm: omap2+: serial: remove no_console_suspend support
 
-Also, you should remove the flag from omap_device.h.
+with a changelog stating that it's no longer handled in the core.
 
 Kevin
 
