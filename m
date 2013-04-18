@@ -1,56 +1,52 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCH 3/6] driver: serial: omap: add prepare/complete callback
- for "no_console_suspend" case
-Date: Thu, 18 Apr 2013 17:37:48 +0530
-Message-ID: <516FE214.6010008@ti.com>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com> <1366198467-6757-4-git-send-email-sourav.poddar@ti.com> <20130418035801.GB18349@arwen.pp.htv.fi>
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Subject: S3C64xx serial broken in -next
+Date: Thu, 18 Apr 2013 13:56:26 +0100
+Message-ID: <20130418125625.GF13687@opensource.wolfsonmicro.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:42775 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755034Ab3DRMIF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Apr 2013 08:08:05 -0400
-In-Reply-To: <20130418035801.GB18349@arwen.pp.htv.fi>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qpqR4wE1CEr+Roqx"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Michael Spang <spang@chromium.org>, Kukjin Kim <kgene.kim@samsung.com>
+Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, arnd@arndb.de
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-
-Hi Felipe,
-On Thursday 18 April 2013 09:28 AM, Felipe Balbi wrote:
-> Hi,
->
-> On Wed, Apr 17, 2013 at 05:04:24PM +0530, Sourav Poddar wrote:
->> @@ -1632,6 +1650,8 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
->>   	SET_SYSTEM_SLEEP_PM_OPS(serial_omap_suspend, serial_omap_resume)
->>   	SET_RUNTIME_PM_OPS(serial_omap_runtime_suspend,
->>   				serial_omap_runtime_resume, NULL)
->> +	.prepare        = serial_omap_prepare,
->> +	.complete       = serial_omap_complete,
-> if CONFIG_PM_SLEEP isn't defined, this will break compilation.
->
-True.
-
-Then, will it not be  a better idea to add a similar macro[1] in 
-include/linux/pm.h for
-prepare/complete callback as it is present for suspend/resume ?.
-
-[1]:
-#ifdef CONFIG_PM_SLEEP
-#define SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-         .suspend = suspend_fn, \
-         .resume = resume_fn, \
-         .freeze = suspend_fn, \
-         .thaw = resume_fn, \
-         .poweroff = suspend_fn, \
-         .restore = resume_fn,
-#else
-#define SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-#endif
 
 
+--qpqR4wE1CEr+Roqx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-~Sourav
+I'm seeing lots of dropped characters from the s3c64xx serial driver in
+something closely resmbling -next today, it seemed fine yesterday.  Not
+100% sure that this is the serial driver itself but reverting 38adbc
+(serial: samsung: Avoid waiting forever for TX ready) seems to improve
+things a bit.
 
+I'm not seeing any obvious changes in the arch code recently, the serial
+driver looks like the most recently updated thing though that wasn't
+today either.
+
+--qpqR4wE1CEr+Roqx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRb+1yAAoJELSic+t+oim9abcP/0fBoa/WgSRQ9i73SmbHC7z9
+59hPzbRjses6lH3788EPARKT6KHUzh3tsXVzC2y7T6MVNVok/GLrvXo05TBYSH0j
+XPA0fC5bSjGgXHAGSQkaey2YfCyIyuHw8+eaiJ8D29E3kyQJqME14xrfe1LEVmTs
++EvkH0eh+vUnLC/JZxNycm1yi40m4tQAB+tM0Y6fY/o9kuCZKZVhjk3N+JKa+lNV
+RxfW993/4Gf8Zs/U8gZaWptAbInwXc7CBHHBohJjZNCrMerS/z/fxbyt/Dt/vu5D
+N8n/N1uE3YQgx4uWgRBBtVvfkuqPC01E5wMimWljkC+PKAQ9JdoDIHiexdkAlB0a
+qAX4v8Uy40bjFIPYkOOqI66w9WzNB1wQzO5OasWkFNjYSZM3/BwNJHeb6D2aAm6e
+lGSGA/DnIvcs5fuhYXk7ktTtVY139teFBQuvtEkiMuZxvHsWNG1KjmtyBKTQYIYg
+NAId5i+dtp2EvPZ/AdH9Qbsv0r2B+n5T6M0/lbNOefg+nJpi0c9jq4oXdimfkyya
+pTLRvbovv7wtEnOtPvU1eiCNupNV4vddcu9ToFpTPQH6Dc8LzhT0qjaBbzNETAbt
+bYS5cRfm3Z6MSsgng/EAlQ7QEU9S0UodP9WmtwM0tud0kxoSxBcBpV9bs3d8lj99
+4q84iGYUlvpAXmresb8+
+=IF14
+-----END PGP SIGNATURE-----
+
+--qpqR4wE1CEr+Roqx--
