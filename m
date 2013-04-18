@@ -1,104 +1,88 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCH 3/6] driver: serial: omap: add prepare/complete callback
- for "no_console_suspend" case
-Date: Thu, 18 Apr 2013 23:41:43 +0530
-Message-ID: <5170375F.2020603@ti.com>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>	<1366198467-6757-4-git-send-email-sourav.poddar@ti.com> <874nf367th.fsf@linaro.org>
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCH 0/6] Serial Omap fixes and cleanups
+Date: Thu, 18 Apr 2013 11:23:23 -0700
+Message-ID: <87mwsv3dgk.fsf@linaro.org>
+References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <874nf367th.fsf@linaro.org>
+In-Reply-To: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com> (Sourav
+	Poddar's message of "Wed, 17 Apr 2013 17:04:21 +0530")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kevin Hilman <khilman@linaro.org>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kevin,
-On Thursday 18 April 2013 11:26 PM, Kevin Hilman wrote:
-> Sourav Poddar<sourav.poddar@ti.com>  writes:
->
->> The patch adapt the serial core/driver to take care of the case when "no_console_suspend"
->> is used in the bootargs. The patch will remove dependency to set od->flags to
->> "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" in serial.c(non dt case) and omap_device.c(dt case).
->>
->> Prepare and complete callbacks will ensure that clocks remain active for the console
->> uart when "no_console_suspend" is used in the bootargs.
->>
->> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
-> This changelog needs a rework.  The driver itself was not aware of
-> od->flags and omap_device stuff in general, so it's not really
-> relevant.  The driver is also not directly managing clocks, int's only
-> doing runtime PM callbacks.
->
-> What you want to say in the changelog is that the driver manages
-> "no_console_suspend" by preventing runtime PM during the suspend path,
-> which forces the console UART to stay awake.
->
-Yes, looks to the point. Will update the changelog in the next version.
->> ---
->>   drivers/tty/serial/omap-serial.c |   20 ++++++++++++++++++++
->>   1 files changed, 20 insertions(+), 0 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->> index 08332f3..9ef80cf 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -1278,6 +1278,24 @@ static struct uart_driver serial_omap_reg = {
->>   };
->>
->>   #ifdef CONFIG_PM_SLEEP
->> +static int serial_omap_prepare(struct device *dev)
->> +{
->> +	struct uart_omap_port *up = dev_get_drvdata(dev);
->> +
->> +	if (!console_suspend_enabled&&  uart_console(&up->port))
->> +		pm_runtime_disable(dev);
->> +
->> +	return 0;
->> +}
->> +
->> +static void serial_omap_complete(struct device *dev)
->> +{
->> +	struct uart_omap_port *up = dev_get_drvdata(dev);
->> +
->> +	if (!console_suspend_enabled&&  uart_console(&up->port))
->> +		pm_runtime_enable(dev);
->> +}
->> +
-> For compilation with !CONFIG_PM_SLEEP, you'll also need:
->
-> #else
-> #define serial_omap_prepare NULL
-> #define serial_omap_prepare NULL
-> #endif /* CONFIG_PM_SLEEP */
->
-Ok. Will change this.
-Though, just a query/proposal on this, will it be correct if we try to 
-create a macro[1]
-in include/linux/pm.h for prepare/complete as it is done for 
-suspend/resume. ?
+Hi Sourav,
 
-[1]:
-#ifdef CONFIG_PM_SLEEP
-#define SET_SYSTEM_SLEEP_PM_PREP_COMP_OPS(prepare_fn, complete_fn) \
-         .prepare = prepare_fn, \
-         .complete = complete_fn, \
-#else
-#define SET_SYSTEM_SLEEP_PM_PREP_COMP_OPS(prepare_fn, complete_fn)
-#endif
+Sourav Poddar <sourav.poddar@ti.com> writes:
 
-~Sourav
->>   static int serial_omap_suspend(struct device *dev)
->>   {
->>   	struct uart_omap_port *up = dev_get_drvdata(dev);
->> @@ -1632,6 +1650,8 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
->>   	SET_SYSTEM_SLEEP_PM_OPS(serial_omap_suspend, serial_omap_resume)
->>   	SET_RUNTIME_PM_OPS(serial_omap_runtime_suspend,
->>   				serial_omap_runtime_resume, NULL)
->> +	.prepare        = serial_omap_prepare,
->> +	.complete       = serial_omap_complete,
->>   };
->>
->>   #if defined(CONFIG_OF)
-> Kevin
+> Hi,
+>
+> This patch series contains fixes and cleanups around the issue that 
+> the console UART should not idled on suspend while using "no_console_suspend"
+> in bootargs.
+>
+
+The direction of the series is right, thanks for the updated approach.
+I had a comple minor comments on specific patches, but the ordering of
+the series needs a little tweaking.  It should be
+
+- core/driver changes [current 1-3/6 are ok]
+- remove usage from mach-omap2/serial.c (currently part of 4/6)
+- remove am33x DT usage (current 5/6 is ok)
+- remove entirely from omap_device (omap_device part of 4/6 and 6/6 should be combined)
+
+Kevin
+
+> The approach thought of is to modify the serial core/serial driver to bypass
+> runtime PM if the UART in contention is a console and we are using "no_console_suspend"
+> in our bootargs.
+>
+> While fixing the above issue, there are other cleanups also done as part of
+> this series which are no longer required. This cleanups mainly include getting
+> rid of using "omap_device_disable_idle_on_suspend" api for both dt and non dt case 
+> as the serial driver will be self sufficient to handle the "no_idle_on_suspend" issue.
+> Serial was the only one making use of "omap_device_disable_idle_on_suspend"
+>
+> Test info (except drivers: serial: mpc52xx_uart: Remove "uart_console" defintion):
+> Omap4430sdp:
+> - Tested wakeup from UART after suspend for dt and non dt case.
+> Omap5430evm:
+> - Tested wakeup from UART after suspend for dt case.
+>
+>
+> There were discussions about how to handle "no_idle_on_suspend" issue and all the
+> discussions are as follows:
+> [v3]: https://lkml.org/lkml/2013/4/5/239
+> [v2]: https://lkml.org/lkml/2013/4/2/350
+> [v1]: https://lkml.org/lkml/2013/3/18/199
+>       https://lkml.org/lkml/2013/3/18/295
+> Due to the amount of change in approach and other cleanups coming around it, I am posting
+> this as a new series.
+>
+> This patches are based on 3.9-rc3 custom tree which has 
+> Santosh Shilimkar serial patch[1]
+> [1]: http://permalink.gmane.org/gmane.linux.ports.arm.omap/95828
+>
+> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+> Cc: Felipe Balbi <balbi@ti.com>
+> Cc: Rajendra nayak <rnayak@ti.com>
+>
+> Sourav Poddar (6):
+>   drivers: tty: serial: Move "uart_console" def to core header file.
+>   drivers: serial: mpc52xx_uart: Remove "uart_console" defintion
+>   driver: serial: omap: add prepare/complete callback for
+>     "no_console_suspend" case
+>   arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check
+>   arm: dts: am33xx: Remove "ti,no_idle_on_suspend" property.
+>   arm: mach-omap2: Remove "no_console_suspend"
+>
+>  arch/arm/boot/dts/am33xx.dtsi     |    1 -
+>  arch/arm/mach-omap2/omap_device.c |   10 +---------
+>  arch/arm/mach-omap2/serial.c      |    7 -------
+>  drivers/tty/serial/mpc52xx_uart.c |   10 ----------
+>  drivers/tty/serial/omap-serial.c  |   20 ++++++++++++++++++++
+>  drivers/tty/serial/serial_core.c  |    6 ------
+>  include/linux/serial_core.h       |    6 ++++++
+>  7 files changed, 27 insertions(+), 33 deletions(-)
