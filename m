@@ -1,30 +1,27 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [RFT/PATCH 2/6] driver: serial: mpc52xx_uart: Remove "uart_console"
- defintion
-Date: Thu, 18 Apr 2013 10:47:20 +0530
-Message-ID: <516F81E0.9030803@ti.com>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com> <1366198467-6757-3-git-send-email-sourav.poddar@ti.com> <20130418035610.GA18349@arwen.pp.htv.fi>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFT/PATCH 2/6] driver: serial: mpc52xx_uart: Remove
+	"uart_console" defintion
+Date: Thu, 18 Apr 2013 11:50:03 +0100
+Message-ID: <20130418105003.GB14500@n2100.arm.linux.org.uk>
+References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com> <1366198467-6757-3-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130418035610.GA18349@arwen.pp.htv.fi>
-Sender: linux-kernel-owner@vger.kernel.org
-To: balbi@ti.com
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Sylvain Munaut <tnt@246tNt.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra nayak <rnayak@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:33737 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S967094Ab3DRKuQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Apr 2013 06:50:16 -0400
+Content-Disposition: inline
+In-Reply-To: <1366198467-6757-3-git-send-email-sourav.poddar@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, khilman@linaro.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Sylvain Munaut <tnt@246tNt.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-On Thursday 18 April 2013 09:26 AM, Felipe Balbi wrote:
-> On Wed, Apr 17, 2013 at 05:04:23PM +0530, Sourav Poddar wrote:
->> Since "uart_console" definition is now moved to serial core
->> haeder file . Serial drivers need not define them.
->>
->> Cc: Sylvain Munaut<tnt@246tNt.com>
->> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
->> Cc: Felipe Balbi<balbi@ti.com>
->> Cc: Rajendra nayak<rnayak@ti.com>
->> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
-> looks like it should be merged with previous patch to avoid redefinition
-> errors.
->
-true..i can squash it with the previous patch.
+On Wed, Apr 17, 2013 at 05:04:23PM +0530, Sourav Poddar wrote:
+> Since "uart_console" definition is now moved to serial core
+> haeder file . Serial drivers need not define them.
+
+This needs to be part of patch 1.  Having it separate may provoke compiler
+warnings.
