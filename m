@@ -1,25 +1,24 @@
 From: Sourav Poddar <sourav.poddar@ti.com>
 Subject: Re: [PATCH 6/6] arm: mach-omap2: Remove "no_console_suspend"
-Date: Fri, 19 Apr 2013 00:39:44 +0530
-Message-ID: <517044F8.9060701@ti.com>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>	<1366198467-6757-7-git-send-email-sourav.poddar@ti.com> <87d2tr4sor.fsf@linaro.org>
+Date: Fri, 19 Apr 2013 00:41:19 +0530
+Message-ID: <51704557.5080307@ti.com>
+References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>	<1366198467-6757-7-git-send-email-sourav.poddar@ti.com> <877gjz4sk6.fsf@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:54437 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752782Ab3DRTJ5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 18 Apr 2013 15:09:57 -0400
-In-Reply-To: <87d2tr4sor.fsf@linaro.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:35989 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932262Ab3DRTLe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Apr 2013 15:11:34 -0400
+In-Reply-To: <877gjz4sk6.fsf@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Kevin Hilman <khilman@linaro.org>
 Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
 Hi Kevin,
-On Thursday 18 April 2013 11:39 PM, Kevin Hilman wrote:
+On Thursday 18 April 2013 11:41 PM, Kevin Hilman wrote:
 > Sourav Poddar<sourav.poddar@ti.com>  writes:
 >
 >> Since the omap serial driver is now adapted to handle the
@@ -34,14 +33,14 @@ On Thursday 18 April 2013 11:39 PM, Kevin Hilman wrote:
 >> Cc: Felipe Balbi<balbi@ti.com>
 >> Cc: Rajendra nayak<rnayak@ti.com>
 >> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
-> Subject should be arm: omap2+: omap_device: remove no_idle_on_suspend
+> also, the serial.c change here should be a separate patch
+> subject: arm: omap2+: serial: remove no_console_suspend support
 >
-> Also, you should remove the flag from omap_device.h.
+> with a changelog stating that it's no longer handled in the core.
 >
+Ok. Will create a seperate patch and update the changelog.
 > Kevin
-Ok. Will change it in the next version.
-
-~Sourav
+>
 >> ---
 >>   arch/arm/mach-omap2/omap_device.c |    3 ---
 >>   arch/arm/mach-omap2/serial.c      |    7 -------
