@@ -1,75 +1,54 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [PATCH 4/6] arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check
-Date: Fri, 19 Apr 2013 07:52:23 -0700
-Message-ID: <871ua6zi6w.fsf@linaro.org>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>
-	<1366198467-6757-5-git-send-email-sourav.poddar@ti.com>
-	<87li8f4sum.fsf@linaro.org> <5170434C.7040706@ti.com>
-	<874nf31opn.fsf@linaro.org> <51714CCC.9090800@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <51714CCC.9090800@ti.com> (Sourav Poddar's message of "Fri, 19
-	Apr 2013 19:25:24 +0530")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH] serial: mxs: drop superfluous {get|put}_device
+Date: Fri, 19 Apr 2013 21:06:20 +0200
+Message-ID: <1366398380-26441-1-git-send-email-wsa@the-dreams.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from sauhun.de ([89.238.76.85]:35533 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753274Ab3DSTGi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Apr 2013 15:06:38 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huang Shijie <b32955@freescale.com>, kernel@pengutronix.de, Wolfram Sang <wsa@the-dreams.de>
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
+Driver core already takes care of refcounting, no need to do this on
+driver level again.
 
-[...]
+Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+---
+ drivers/tty/serial/mxs-auart.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> Yes, got your point. omap_device_idle should not be called only
-> for console uart.
->
-> Just did a quick testing by including the following hunk on top of my
-> patch series..
->
-> diff --git a/arch/arm/mach-omap2/omap_device.c
-> b/arch/arm/mach-omap2/omap_device.c
-> index c226946..7480e87 100644
-> --- a/arch/arm/mach-omap2/omap_device.c
-> +++ b/arch/arm/mach-omap2/omap_device.c
-> @@ -617,8 +617,10 @@ static int _od_suspend_noirq(struct device *dev)
->         ret = pm_generic_suspend_noirq(dev);
->
->         if (!ret && !pm_runtime_status_suspended(dev)) {
-> -               if (pm_generic_runtime_suspend(dev) == 0)
-> +               if (pm_generic_runtime_suspend(dev) == 0) {
-> +                       omap_device_idle(pdev);
->                         od->flags |= OMAP_DEVICE_SUSPENDED;
-> +               }
->         }
->
->         return ret;
-> @@ -631,6 +633,7 @@ static int _od_resume_noirq(struct device *dev)
->
->         if ((od->flags & OMAP_DEVICE_SUSPENDED) &&
->             !pm_runtime_status_suspended(dev)) {
-> +               omap_device_enable(pdev);
->                 od->flags &= ~OMAP_DEVICE_SUSPENDED;
->                 pm_generic_runtime_resume(dev);
->         }
-> And found the wakeup from UART is no more functional.
-> So, the omap_device_idle gets called for console UART also, thereby
-> preventing the "no_idle_on_suspend" theory.
->
-> Hence, merely putting prepare/complete callback the way I did is not
-> helping.
-> We need to delete omap_device_idle also, which I agree is not correct.
-> So, we need a way to bypass this "omap_device_idle"
-> call for console UART. ?
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index d549fe1..3c2d8be 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1103,7 +1103,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	s->port.fifosize = 16;
+ 	s->port.uartclk = clk_get_rate(s->clk);
+ 	s->port.type = PORT_IMX;
+-	s->port.dev = s->dev = get_device(&pdev->dev);
++	s->port.dev = s->dev = &pdev->dev;
+ 
+ 	s->ctrl = 0;
+ 
+@@ -1134,7 +1134,6 @@ out_free_irq:
+ 	auart_port[pdev->id] = NULL;
+ 	free_irq(s->irq, s);
+ out_free_clk:
+-	put_device(s->dev);
+ 	clk_put(s->clk);
+ out_free:
+ 	kfree(s);
+@@ -1150,7 +1149,6 @@ static int mxs_auart_remove(struct platform_device *pdev)
+ 
+ 	auart_port[pdev->id] = NULL;
+ 
+-	put_device(s->dev);
+ 	clk_put(s->clk);
+ 	free_irq(s->irq, s);
+ 	kfree(s);
+-- 
+1.7.10.4
 
-OK, I see what's happening now.
-
-How about this: rather than using prepare/complete callbacks, can you
-use the runtime_suspend callback to return an error code during suspend?
-(only for the console, and only when no_console_suspend is enabled, and
-only during suspend)
-
-Since _od_suspend_noirq checks to be sure the drivers ->runtime_suspend
-callback succeeds before it calls omap_device_idle(), if you report a
-failure, omap_device_idle will not be called.
-
-Kevin
