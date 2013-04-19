@@ -1,74 +1,170 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [PATCH 4/6] arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check
-Date: Thu, 18 Apr 2013 15:03:16 -0700
-Message-ID: <874nf31opn.fsf@linaro.org>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>
-	<1366198467-6757-5-git-send-email-sourav.poddar@ti.com>
-	<87li8f4sum.fsf@linaro.org> <5170434C.7040706@ti.com>
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Re: [PATCH 0/6] Serial Omap fixes and cleanups
+Date: Fri, 19 Apr 2013 15:02:33 +0300
+Message-ID: <51713259.7000205@ti.com>
+References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com> <87mwsv3dgk.fsf@linaro.org> <517046B8.6000900@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <5170434C.7040706@ti.com> (Sourav Poddar's message of "Fri, 19
-	Apr 2013 00:32:36 +0530")
-Sender: linux-omap-owner@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:51086 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S968123Ab3DSMD0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Apr 2013 08:03:26 -0400
+In-Reply-To: <517046B8.6000900@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: Kevin Hilman <khilman@linaro.org>, gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
-
-> On Thursday 18 April 2013 11:35 PM, Kevin Hilman wrote:
+On 04/18/2013 10:17 PM, Sourav Poddar wrote:
+> Hi Kevin,
+> On Thursday 18 April 2013 11:53 PM, Kevin Hilman wrote:
+>> Hi Sourav,
+>>
 >> Sourav Poddar<sourav.poddar@ti.com>  writes:
 >>
->>> Remove the "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check, since UART was the only one making
->>> use of it. Now serial core/driver takes care of the case when "no_console_suspend"
->>> is used in the bootargs and you need to keep the clock enable for console even while suspend.
+>>> Hi,
 >>>
->>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
->> NAK.  This patch will break many things...
+>>> This patch series contains fixes and cleanups around the issue that
+>>> the console UART should not idled on suspend while using 
+>>> "no_console_suspend"
+>>> in bootargs.
+>>>
+>> The direction of the series is right, thanks for the updated approach.
+>> I had a comple minor comments on specific patches, but the ordering of
+>> the series needs a little tweaking.  It should be
 >>
->>> ---
->>>   arch/arm/mach-omap2/omap_device.c |    7 +------
->>>   1 files changed, 1 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/arch/arm/mach-omap2/omap_device.c b/arch/arm/mach-omap2/omap_device.c
->>> index 381be7a..d6dce8f 100644
->>> --- a/arch/arm/mach-omap2/omap_device.c
->>> +++ b/arch/arm/mach-omap2/omap_device.c
->>> @@ -620,11 +620,8 @@ static int _od_suspend_noirq(struct device *dev)
->>>   	ret = pm_generic_suspend_noirq(dev);
->>>
->>>   	if (!ret&&  !pm_runtime_status_suspended(dev)) {
->>> -		if (pm_generic_runtime_suspend(dev) == 0) {
->>> -			if (!(od->flags&  OMAP_DEVICE_NO_IDLE_ON_SUSPEND))
->>> -				omap_device_idle(pdev);
->> Why did you remove the omap_device_idle() here?
-> This patch is used along with patch3 to get rid of the issue. I posted
-> them as a
-> seperate patch beacuse of the subject line as one goes under drivers/*
-> and the other
-> arm/mach-omap2/*..
+>> - core/driver changes [current 1-3/6 are ok]
+>> - remove usage from mach-omap2/serial.c (currently part of 4/6)
+>> - remove am33x DT usage (current 5/6 is ok)
+>> - remove entirely from omap_device (omap_device part of 4/6 and 6/6 
+>> should be combined)
+>>
+> Thanks a lot for your review and comments.
+> I have replied to your comments on the respective patches.
+> Will take care of the "ordering" which you mentioned above
+> in the next version.
 >
-> This check was only valid for UART, and if od->flags is set to the
-> "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" flag, then UART will not be idled. 
+> Thanks
+> Sourav
+Hi Sourav
 
-correct, but *every other device* would be idled (if not already idle.)
+I'd like to clarify some points regarding this series:
 
-> But now, we no longer depend on od->flag value to prevent idling of
-> our console UART as the prepare/complete apis will take care of them.
+1) I'm not sure that removing OMAP_DEVICE_NO_IDLE_ON_SUSPEND is fine.
+FYI - 
+review.omapzoom.org/#/q/status:open,n,zI9e21bf4432a537a4ccb217cf9c425b0e4e499ce8
+"ASoC: omap-abe: Allow no idle on suspend"
+The above "voice call" use case allows Audio playback while system is in 
+"suspend" state.
+In addition HSI and SmartReflex may need to be active after 
+suspend_noirq stage.
+By removing this flag such functionality will be broken (in case of 
+porting it
+on newest Kernel or MainLine).
+So, How it can be handled without OMAP_DEVICE_NO_IDLE_ON_SUSPEND?
 
-Right, so removing the check on od->flags is fine, but what I asked
-about is why you removed the omap_device_idle() call.
+2) Runtime PM vs System suspend
+- The commit 88d26136a "PM: Prevent runtime suspend during system resume"
+   block pm_runtime_put_xx() while suspending/resuming, so if your UART 
+will became active
+   (at least one call to pm_runtime_get_xx()) while system is suspending 
+it will stay active
+   until suspend_noirq stage.
+- At suspend_noirq stage OMAP device framework will finally (brutally) 
+disable it to reach
+   system suspend state (in _od_suspend_noirq).
+- At resume_noirq stage OMAP device framework will re-enable device if 
+it was disabled in
+   _od_suspend_noirq() to keep device state and Runtime PM in sync.
+- In addition, the commit 9f6d8f6 "PM: Move disabling/enabling runtime 
+PM to late suspend/early resume"
+   will disable Runtime PM at suspend_late and enable it resume_early 
+stages.
 
-Remember that this code is called for *every* omap_device during
-suspend, not just UART.
+As, result:
+- serial_omap_prepare()/serial_omap_complete() not needed - usually 
+console is active.
+   Or you may call pm_runtime_get_xxx() in serial_omap_prepare() to be 
+sure (that's all)
+- removing OMAP_DEVICE_NO_IDLE_ON_SUSPEND will not help, because to 
+handle your use case
+   omap_device_idle() need to be removed from od_suspend_noirq().
+   !! Which, in turn, will kill OMAP suspend !! (see Kevin's comments)
 
-What you did stops *every* device from being idled during suspend.
+Unfortunately, I see no way to avoid usage 
+OMAP_DEVICE_NO_IDLE_ON_SUSPEND with the current
+OMAP device framework.
 
-You didn't read my whole message.  Specifically this part:
+Regards,
+-grygorii
+>> Kevin
+>>
+>>> The approach thought of is to modify the serial core/serial driver 
+>>> to bypass
+>>> runtime PM if the UART in contention is a console and we are using 
+>>> "no_console_suspend"
+>>> in our bootargs.
+>>>
+>>> While fixing the above issue, there are other cleanups also done as 
+>>> part of
+>>> this series which are no longer required. This cleanups mainly 
+>>> include getting
+>>> rid of using "omap_device_disable_idle_on_suspend" api for both dt 
+>>> and non dt case
+>>> as the serial driver will be self sufficient to handle the 
+>>> "no_idle_on_suspend" issue.
+>>> Serial was the only one making use of 
+>>> "omap_device_disable_idle_on_suspend"
+>>>
+>>> Test info (except drivers: serial: mpc52xx_uart: Remove 
+>>> "uart_console" defintion):
+>>> Omap4430sdp:
+>>> - Tested wakeup from UART after suspend for dt and non dt case.
+>>> Omap5430evm:
+>>> - Tested wakeup from UART after suspend for dt case.
+>>>
+>>>
+>>> There were discussions about how to handle "no_idle_on_suspend" 
+>>> issue and all the
+>>> discussions are as follows:
+>>> [v3]: https://lkml.org/lkml/2013/4/5/239
+>>> [v2]: https://lkml.org/lkml/2013/4/2/350
+>>> [v1]: https://lkml.org/lkml/2013/3/18/199
+>>>        https://lkml.org/lkml/2013/3/18/295
+>>> Due to the amount of change in approach and other cleanups coming 
+>>> around it, I am posting
+>>> this as a new series.
+>>>
+>>> This patches are based on 3.9-rc3 custom tree which has
+>>> Santosh Shilimkar serial patch[1]
+>>> [1]: http://permalink.gmane.org/gmane.linux.ports.arm.omap/95828
+>>>
+>>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+>>> Cc: Felipe Balbi<balbi@ti.com>
+>>> Cc: Rajendra nayak<rnayak@ti.com>
+>>>
+>>> Sourav Poddar (6):
+>>>    drivers: tty: serial: Move "uart_console" def to core header file.
+>>>    drivers: serial: mpc52xx_uart: Remove "uart_console" defintion
+>>>    driver: serial: omap: add prepare/complete callback for
+>>>      "no_console_suspend" case
+>>>    arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check
+>>>    arm: dts: am33xx: Remove "ti,no_idle_on_suspend" property.
+>>>    arm: mach-omap2: Remove "no_console_suspend"
+>>>
+>>>   arch/arm/boot/dts/am33xx.dtsi     |    1 -
+>>>   arch/arm/mach-omap2/omap_device.c |   10 +---------
+>>>   arch/arm/mach-omap2/serial.c      |    7 -------
+>>>   drivers/tty/serial/mpc52xx_uart.c |   10 ----------
+>>>   drivers/tty/serial/omap-serial.c  |   20 ++++++++++++++++++++
+>>>   drivers/tty/serial/serial_core.c  |    6 ------
+>>>   include/linux/serial_core.h       |    6 ++++++
+>>>   7 files changed, 27 insertions(+), 33 deletions(-)
+>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
->> Note that the check is for when the flag is *not* set, so this patch
->> changes behavior for all the drivers that do not use
->> _NO_IDLE_ON_SUSPEND.  I think that's the opposite of what you intended.
-
-Kevin
