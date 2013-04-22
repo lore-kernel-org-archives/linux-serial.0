@@ -1,80 +1,65 @@
 From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCH 4/6] arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND"
- check
-Date: Mon, 22 Apr 2013 11:20:27 +0530
-Message-ID: <5174CFA3.6020402@ti.com>
-References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>	<1366198467-6757-5-git-send-email-sourav.poddar@ti.com>	<87li8f4sum.fsf@linaro.org> <5170434C.7040706@ti.com>	<874nf31opn.fsf@linaro.org> <51714CCC.9090800@ti.com> <871ua6zi6w.fsf@linaro.org>
+Subject: [PATCHv2 4/5] arm: dts: am33xx: Remove "ti,no_idle_on_suspend" property.
+Date: Mon, 22 Apr 2013 19:13:56 +0530
+Message-ID: <1366638237-6880-5-git-send-email-sourav.poddar@ti.com>
+References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <871ua6zi6w.fsf@linaro.org>
+In-Reply-To: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kevin Hilman <khilman@linaro.org>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>, Benoit Cousson <b-cousson@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kevin,
-On Friday 19 April 2013 08:22 PM, Kevin Hilman wrote:
-> Sourav Poddar<sourav.poddar@ti.com>  writes:
->
-> [...]
->
->> Yes, got your point. omap_device_idle should not be called only
->> for console uart.
->>
->> Just did a quick testing by including the following hunk on top of my
->> patch series..
->>
->> diff --git a/arch/arm/mach-omap2/omap_device.c
->> b/arch/arm/mach-omap2/omap_device.c
->> index c226946..7480e87 100644
->> --- a/arch/arm/mach-omap2/omap_device.c
->> +++ b/arch/arm/mach-omap2/omap_device.c
->> @@ -617,8 +617,10 @@ static int _od_suspend_noirq(struct device *dev)
->>          ret = pm_generic_suspend_noirq(dev);
->>
->>          if (!ret&&  !pm_runtime_status_suspended(dev)) {
->> -               if (pm_generic_runtime_suspend(dev) == 0)
->> +               if (pm_generic_runtime_suspend(dev) == 0) {
->> +                       omap_device_idle(pdev);
->>                          od->flags |= OMAP_DEVICE_SUSPENDED;
->> +               }
->>          }
->>
->>          return ret;
->> @@ -631,6 +633,7 @@ static int _od_resume_noirq(struct device *dev)
->>
->>          if ((od->flags&  OMAP_DEVICE_SUSPENDED)&&
->>              !pm_runtime_status_suspended(dev)) {
->> +               omap_device_enable(pdev);
->>                  od->flags&= ~OMAP_DEVICE_SUSPENDED;
->>                  pm_generic_runtime_resume(dev);
->>          }
->> And found the wakeup from UART is no more functional.
->> So, the omap_device_idle gets called for console UART also, thereby
->> preventing the "no_idle_on_suspend" theory.
->>
->> Hence, merely putting prepare/complete callback the way I did is not
->> helping.
->> We need to delete omap_device_idle also, which I agree is not correct.
->> So, we need a way to bypass this "omap_device_idle"
->> call for console UART. ?
-> OK, I see what's happening now.
->
-> How about this: rather than using prepare/complete callbacks, can you
-> use the runtime_suspend callback to return an error code during suspend?
-Yes, that can be done.
-> (only for the console, and only when no_console_suspend is enabled, and
-> only during suspend)
->
-> Since _od_suspend_noirq checks to be sure the drivers ->runtime_suspend
-> callback succeeds before it calls omap_device_idle(), if you report a
-> failure, omap_device_idle will not be called.
->
-True.
+The "ti,no_idle_on_suspend" property was required to keep ocmcram
+clocks running during idle.
 
-~Sourav
-> Kevin
->
->
+But the commit below[1], added in v3.6 should prevent the
+any automaic clock gating for devices without drivers bound.  Since
+there is no driver for the OCM RAM block, we are not affected by
+the automatic idle on suspend anyways.
+[1]:
+commit 72bb6f9b51c82c820ddef892455a85b115460904
+Author: Kevin Hilman <khilman@ti.com>
+Date:   Tue Jul 10 15:29:04 2012 -0700
+
+    ARM: OMAP: omap_device: don't attempt late suspend if no driver bound
+
+    Currently, the omap_device PM domain layer uses the late suspend and
+    early resume callbacks to ensure devices are in their low power
+    states.
+
+    However, this is attempted even in cases where a driver probe has
+    failed.  If a driver's ->probe() method fails, the driver is likely in
+    a state where it is not expecting its runtime PM callbacks to be
+    called, yet currently the omap_device PM domain code attempts to call
+    the drivers callbacks.
+
+    To fix, use the omap_device driver_status field to check whether a
+    driver is bound to the omap_device before attempting to trigger driver
+    callbacks.
+
+Cc: Benoit Cousson <b-cousson@ti.com>
+Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Cc: Felipe Balbi <balbi@ti.com>
+Cc: Rajendra nayak <rnayak@ti.com>
+Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+---
+ arch/arm/boot/dts/am33xx.dtsi |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+index 74a8125..49a050e 100644
+--- a/arch/arm/boot/dts/am33xx.dtsi
++++ b/arch/arm/boot/dts/am33xx.dtsi
+@@ -394,7 +394,6 @@
+ 			compatible = "ti,am3352-ocmcram";
+ 			reg = <0x40300000 0x10000>;
+ 			ti,hwmods = "ocmcram";
+-			ti,no_idle_on_suspend;
+ 		};
+ 
+ 		wkup_m3: wkup_m3@44d00000 {
+-- 
+1.7.1
