@@ -1,86 +1,89 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [RFC/PATCHv2 5/5] arm: omap2+: omap_device: remove no_idle_on_suspend
-Date: Mon, 22 Apr 2013 11:41:41 -0700
-Message-ID: <87y5ca76hm.fsf@linaro.org>
-References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com>
-	<1366638237-6880-6-git-send-email-sourav.poddar@ti.com>
-	<517545C2.3080006@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: using a RS232->RS485 adapter issues...
+Date: Mon, 22 Apr 2013 21:53:37 +0000 (UTC)
+Message-ID: <kl4bh1$lir$1@ger.gmane.org>
+References: <51757F18.8070908@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:33397 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754569Ab3DVSlp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Apr 2013 14:41:45 -0400
-Received: by mail-pa0-f46.google.com with SMTP id lb1so3836151pab.19
-        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2013 11:41:44 -0700 (PDT)
-In-Reply-To: <517545C2.3080006@ti.com> (Grygorii Strashko's message of "Mon,
-	22 Apr 2013 17:14:26 +0300")
+Received: from plane.gmane.org ([80.91.229.3]:39874 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752969Ab3DVVxx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 22 Apr 2013 17:53:53 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1UUOgK-0003yu-8l
+	for linux-serial@vger.kernel.org; Mon, 22 Apr 2013 23:53:52 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2013 23:53:52 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2013 23:53:52 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grygorii Strashko <grygorii.strashko@ti.com>
-Cc: Sourav Poddar <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+To: linux-serial@vger.kernel.org
 
-Grygorii Strashko <grygorii.strashko@ti.com> writes:
+On 2013-04-22, Rick Bolen(gm) <rickbolgm@gmail.com> wrote:
 
-> On 04/22/2013 04:43 PM, Sourav Poddar wrote:
->> Remove the "OMAP_DEVICE_NO_IDLE_ON_SUSPEND" check, since
->> driver should be able to prevent idling of an omap device
->> whenever required.
->>
->> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
->> Cc: Felipe Balbi <balbi@ti.com>
->> Cc: Rajendra nayak <rnayak@ti.com>
->> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
->> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
->> ---
->> Hi Kevin,
->>
->> I have put this as an RFC, due to few comments on cover letter of
->> the previous version by Grygorii Strashko.
->> As, he has mentioned that there are Audio playback use cases which
->> also requires "no_idle_on_suspend" and using them on mainline after
->> this series can cause regression.
->>
->> What you think will be the right approach on this in relation to this patch?
->> I mean every driver(if possible) should  prevent
->> runtime PM for no_idle_on_suspend usecase and we get
->> rid of this OMAP_DEVICE_NO_IDLE_ON_SUSPEND check? OR we should
->> drop this patch as of now?
+> I'm perplexed in using a RS232C->RS485 dongle that worked perfectly
+> on a Debian Lenny box for years. Now that I'm migrating to Debian
+> Wheezy, albeit, different mobo (Intel mini-itx D2500CC) and serial
+> card (RocketPort), this dongle doesn't work as before.
+>
+> The dongle sourced working power *from* the host serial port 
+> (cannibalizing DTR, etc?). Using the RocketPort, I have to power the 
+> dongle separately and create a simple data only pass-thru (TX\RX\GND, no 
+> other connections) connection for this dongle to function.
+>
+> So I don't know if there are voltage level differences on the DTR etc 
+> that result in the failure to power the dongle from the serial port.
 
-This is the correct approach, and AFAICT you've fixed the *mainline*
-users of this patch which is the important part.  If there are other
-mainline users of this feature, we need to know about them.
+That could be.  
 
-Let me be clear: this OMAP_DEVICE_NO_IDLE_ON_SUSPEND feature is a hack
-(it was introduced by me, but still a hack.)  We've found a way to
-handle using the generic framework, and we should move to that.  There
-are already a handful of complications when combining runtime PM and
-system suspend, and this is just another one.  It makes the most sense
-for this handling to be in the drivers themselves.  IOW: if the driver
-wants to refuse to runtime suspend (during system suspend), it has the
-choice.
+It's not as common as it used to be, but motherboard serial ports used
+to put out +/- 12V.  The RocketPort card is probably only putting out
++/- 5V (the RS-232 spec only requires +/- 3V).  Even if the RS485
+adapter could run off 5V, the RocketPort card might not be capable of
+sourcing enough current at 5V to power it.
 
->> Hi Grygorii,
->>
->> Is it possible to handle ABE no_idle_on_suspend uscase the way I am
->> trying to handle it for UART in the 2nd patch of this series?
-> Unfortunately, I don't know ASOC details (my part is PM),  but from
-> the first look it
-> will be not easy, because map4-dmic have no Runtime PM handlers at
-> all, for example ((
+Have you verified that the pins from which you're scavenging power are
+in the same states in the two different setups?  Is your software
+explicitly setting the states of the pins from which you're scavenging
+power (RTS and DTR), or are you relying on the default states for DTR
+and RTS when the port opens.  IIRC, it should be the same for the
+RocketPort card as for the motherboard UART, but you might want to
+verify that.
 
-Are those drivers upstream?  If so, please point them out and show how
-this feature is being used in *mainline* by those drivers.
+> Also, having examined the serial port configs with stty between the two 
+> machines, and making all the settings identical, I don't understand why 
+> I have to create the data only pass-thru for communication to work.
 
-For OMAP PM, we have been very clear for a long time all of our PM was
-based on runtime PM.  Any drivers that are not runtime PM are broken and
-need to be fixed.
+If your adapter requires DTR to be (for example) at 9V or higher, then
+connecting it to a DTR driver that's only putting out 5V might cause
+it to malfunction.  It's also possible that the adapter with the
+external power supply is trying to put out a voltage on DTR that's
+higher than the RocketPort DTR driver output voltage.  If that's the
+case, your adapter could be sourcing current into the RocketPort DTR
+output. Transceivers can act pretty weird when you do that, and it can
+corrupt either transmit or receive data.  I saw that happen just last
+week when a 5V RTS driver on one machine was connected to a 12V RTS
+driver on another machine.  Even though nobody was doing anything with
+the RTS pins, the overvoltage condition on the RTS pin was causing the
+charge-pump in the transceiver to malfunction causing the negative
+rail to collapse and as aresult tx data would get corrupted.
 
-As long as Sourav is fixing up all the mainline users of this feature, my
-plan to merge/ack the changes unless there are some good arguemnts based
-on *upstream* users of the feature.
+> All hw\sw flow controls are identical between the working machine and
+> the new machine... at least as far as stty reports.
 
-Kevin
+> 1) What serial pin can reliably measure to determine voltage level
+>    for the port (i.e. 12V, 5V, 3.3V)?
+
+Data lines should idle low (-5V).  DTR and RTS are usually low when
+the port isn't opened and high (+5) when the port is opened.
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! Excuse me, but didn't
+                                  at               I tell you there's NO HOPE
+                              gmail.com            for the survival of OFFSET
+                                                   PRINTING?
 
