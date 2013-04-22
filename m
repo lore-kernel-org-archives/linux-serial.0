@@ -1,77 +1,82 @@
-From: "Rick Bolen(gm)" <rickbolgm@gmail.com>
-Subject: using a RS232->RS485 adapter issues...
-Date: Mon, 22 Apr 2013 14:19:04 -0400
-Message-ID: <51757F18.8070908@gmail.com>
-Reply-To: rickbolgm@gmail.com
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCHv2 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
+Date: Mon, 22 Apr 2013 11:36:50 -0700
+Message-ID: <87fvyi8la5.fsf@linaro.org>
+References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com>
+	<1366638237-6880-3-git-send-email-sourav.poddar@ti.com>
+	<51754DD7.6040904@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f180.google.com ([209.85.216.180]:41157 "EHLO
-	mail-qc0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754513Ab3DVSTK (ORCPT
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:62735 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754136Ab3DVSgy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Apr 2013 14:19:10 -0400
-Received: by mail-qc0-f180.google.com with SMTP id b40so3403209qcq.11
-        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2013 11:19:09 -0700 (PDT)
+	Mon, 22 Apr 2013 14:36:54 -0400
+Received: by mail-pa0-f54.google.com with SMTP id fa11so3811079pad.27
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2013 11:36:54 -0700 (PDT)
+In-Reply-To: <51754DD7.6040904@ti.com> (Grygorii Strashko's message of "Mon,
+	22 Apr 2013 17:48:55 +0300")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Sourav Poddar <sourav.poddar@ti.com>, gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello,
+Grygorii Strashko <grygorii.strashko@ti.com> writes:
 
-I'm perplexed in using a RS232C->RS485 dongle that worked perfectly on a 
-Debian Lenny box for years. Now that I'm migrating to Debian Wheezy, 
-albeit, different mobo (Intel mini-itx D2500CC) and serial card 
-(RocketPort), this dongle doesn't work as before.
+> On 04/22/2013 04:43 PM, Sourav Poddar wrote:
+>> The driver manages "no_console_suspend" by preventing runtime PM
+>> during the suspend path, which forces the console UART to stay awake.
+>>
+>> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+>> ---
+>>   drivers/tty/serial/omap-serial.c |    5 ++++-
+>>   1 files changed, 4 insertions(+), 1 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index 08332f3..640b14e 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -1582,7 +1582,7 @@ static int serial_omap_runtime_suspend(struct device *dev)
+>>   	struct uart_omap_port *up = dev_get_drvdata(dev);
+>>   	struct omap_uart_port_info *pdata = dev->platform_data;
+>>   -	if (!up)
+>> +	if (!up || (!console_suspend_enabled && uart_console(&up->port)))
+>>   		return -EINVAL;
+> Hi Sourav,
+> No ) You will block Runtime PM for console UART forever, but instead
+> it need to be blocked only during suspend - autosuspend should
+> continue working.
 
-The dongle sourced working power *from* the host serial port 
-(cannibalizing DTR, etc?). Using the RocketPort, I have to power the 
-dongle separately and create a simple data only pass-thru (TX\RX\GND, no 
-other connections) connection for this dongle to function.
+Correct.  
 
-So I don't know if there are voltage level differences on the DTR etc 
-that result in the failure to power the dongle from the serial port.
+Sourav, as I mentioned when I suggested this approach, it should be done
+*only* during suspend.
 
-Also, having examined the serial port configs with stty between the two 
-machines, and making all the settings identical, I don't understand why 
-I have to create the data only pass-thru for communication to work. All 
-hw\sw flow controls are identical between the working machine and the 
-new machine... at least as far as stty reports.
+> But this will be not easy, again, -
+> because System suspend isn't synchronized with Runtime PM (I mean,
+> serial_omap_suspend/resume() may be called from one thread and
+> serial_omap_runtime_suspend/resume() from another at same time).
+> And now, serial_omap_suspend() callback is the only one place where you
+> can detect that system is going to sleep.
 
-1) What serial pin can reliably measure to determine voltage level for 
-the port (i.e. 12V, 5V, 3.3V)?
+So set an 'is_suspending' flag in ->suspend (it may need to be in
+->prepare) and clear it in ->resume (->complete), and check the flag in
+the ->runtime_supend() callback.  It's not uncommon for drivers to have
+such a flag for various reasons.
 
-2) What else might be different between the working machine and the new 
-machine with respect to serial port config?
+> Personally, i don't believe in such approach (my experiences from K3.4
+> said me that there will be more problems than benefits).
+>
+> And, I like combination of "no_console_suspend" in bootargs +
+> "ti,no_idle_on_suspend" for console UART in DT, because 1) it's debug
+> option and 2) until
+> smth. will be decided about OMAP OCP Bus it can be used.
+>
+> It's just my opinion.
 
-3) Is there an stty config that should effectively provide me with the 
-same "port config\functionality" that the data only pass-thru adapter 
-gives me (i.e., can I achieve in software config what I'm doing in 
-hardware)?
+No, we need to get rid of ti,no_idle_on_suspend.  It's an ugly,
+OMAP-specific hack (and I'm free to insult it because I introduced it.)
 
-The working (and duplicated) stty config is:
-
-speed 9600 baud; rows 0; columns 0; line = 0;
-intr = ^C; quit = ^\; erase = ^?; kill = ^U; eof = ^D; eol = <undef>; 
-eol2 = <undef>; swtch = <undef>; start = ^Q; stop = ^S; susp = ^Z; rprnt 
-= ^R;
-werase = ^W; lnext = ^V; flush = ^O; min = 0; time = 0;
--parenb -parodd cs8 hupcl -cstopb cread clocal -crtscts
--ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr -icrnl 
--ixon -ixoff -iuclc -ixany -imaxbel -iutf8
--opost -olcuc -ocrnl onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 
-vt0 ff0
--isig -icanon -iexten -echo echoe echok -echonl -noflsh -xcase -tostop 
--echoprt echoctl echoke
-
-Or in stty form:
-
-0:4:cbd:a30:3:1c:7f:15:4:0:0:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
-
-
-Thanks,
-
-Rick
-
+Kevin
 
