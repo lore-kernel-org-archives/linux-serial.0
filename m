@@ -1,44 +1,80 @@
-From: "Jongsung Kim" <neidhard.kim@lge.com>
-Subject: RE: [RESEND][PATCH] ARM: PL011: add support for extended FIFO-size	of PL011-r1p5
-Date: Mon, 22 Apr 2013 11:24:18 +0900
-Message-ID: <019701ce3f00$7e0c5390$7a24fab0$@lge.com>
-References: <201304151445.25151.neidhard.kim@lge.com> <20130419141748.GU14496@n2100.arm.linux.org.uk>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: Re: [PATCH 4/6] arm: mach-omap2: remove "OMAP_DEVICE_NO_IDLE_ON_SUSPEND"
+ check
+Date: Mon, 22 Apr 2013 11:20:27 +0530
+Message-ID: <5174CFA3.6020402@ti.com>
+References: <1366198467-6757-1-git-send-email-sourav.poddar@ti.com>	<1366198467-6757-5-git-send-email-sourav.poddar@ti.com>	<87li8f4sum.fsf@linaro.org> <5170434C.7040706@ti.com>	<874nf31opn.fsf@linaro.org> <51714CCC.9090800@ti.com> <871ua6zi6w.fsf@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from LGEMRELSE6Q.lge.com ([156.147.1.121]:49585 "EHLO
-	LGEMRELSE6Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753904Ab3DVCYX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 Apr 2013 22:24:23 -0400
-In-Reply-To: <20130419141748.GU14496@n2100.arm.linux.org.uk>
-Content-Language: ko
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <871ua6zi6w.fsf@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kevin Hilman <khilman@linaro.org>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Russell King - ARM Linux' <linux@arm.linux.org.uk>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Thank you for your comments, Russell. I'll happily apply your recommendation
-just after it come up to the merge window. Or, do you want me to send it by now?
+Hi Kevin,
+On Friday 19 April 2013 08:22 PM, Kevin Hilman wrote:
+> Sourav Poddar<sourav.poddar@ti.com>  writes:
+>
+> [...]
+>
+>> Yes, got your point. omap_device_idle should not be called only
+>> for console uart.
+>>
+>> Just did a quick testing by including the following hunk on top of my
+>> patch series..
+>>
+>> diff --git a/arch/arm/mach-omap2/omap_device.c
+>> b/arch/arm/mach-omap2/omap_device.c
+>> index c226946..7480e87 100644
+>> --- a/arch/arm/mach-omap2/omap_device.c
+>> +++ b/arch/arm/mach-omap2/omap_device.c
+>> @@ -617,8 +617,10 @@ static int _od_suspend_noirq(struct device *dev)
+>>          ret = pm_generic_suspend_noirq(dev);
+>>
+>>          if (!ret&&  !pm_runtime_status_suspended(dev)) {
+>> -               if (pm_generic_runtime_suspend(dev) == 0)
+>> +               if (pm_generic_runtime_suspend(dev) == 0) {
+>> +                       omap_device_idle(pdev);
+>>                          od->flags |= OMAP_DEVICE_SUSPENDED;
+>> +               }
+>>          }
+>>
+>>          return ret;
+>> @@ -631,6 +633,7 @@ static int _od_resume_noirq(struct device *dev)
+>>
+>>          if ((od->flags&  OMAP_DEVICE_SUSPENDED)&&
+>>              !pm_runtime_status_suspended(dev)) {
+>> +               omap_device_enable(pdev);
+>>                  od->flags&= ~OMAP_DEVICE_SUSPENDED;
+>>                  pm_generic_runtime_resume(dev);
+>>          }
+>> And found the wakeup from UART is no more functional.
+>> So, the omap_device_idle gets called for console UART also, thereby
+>> preventing the "no_idle_on_suspend" theory.
+>>
+>> Hence, merely putting prepare/complete callback the way I did is not
+>> helping.
+>> We need to delete omap_device_idle also, which I agree is not correct.
+>> So, we need a way to bypass this "omap_device_idle"
+>> call for console UART. ?
+> OK, I see what's happening now.
+>
+> How about this: rather than using prepare/complete callbacks, can you
+> use the runtime_suspend callback to return an error code during suspend?
+Yes, that can be done.
+> (only for the console, and only when no_console_suspend is enabled, and
+> only during suspend)
+>
+> Since _od_suspend_noirq checks to be sure the drivers ->runtime_suspend
+> callback succeeds before it calls omap_device_idle(), if you report a
+> failure, omap_device_idle will not be called.
+>
+True.
 
------Original Message-----
-From: Russell King - ARM Linux [mailto:linux@arm.linux.org.uk] 
-Sent: Friday, April 19, 2013 11:18 PM
-To: Jongsung Kim
-Cc: gregkh@linuxfoundation.org; jslaby@suse.cz; linux-serial@vger.kernel.org;
-linux-kernel@vger.kernel.org
-Subject: Re: [RESEND][PATCH] ARM: PL011: add support for extended FIFO-size of
-PL011-r1p5
-
-On Mon, Apr 15, 2013 at 02:45:25PM +0900, Jongsung Kim wrote:
-> The latest r1p5-revision of the ARM PL011 UART has 32-byte FIFOs,
-> while all earlier ones have 16-byte FIFOs. This patch suggests
-> a way to set the FIFO-size correctly & flexibly by using a member
-> function named get_fifosize, rather than using the fifosize member
-> variable. The function takes the UARTPeriphID, and returns the
-> correct FIFO size.
-
-Same comments as previous version.
-
+~Sourav
+> Kevin
+>
+>
