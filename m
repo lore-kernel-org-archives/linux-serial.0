@@ -1,71 +1,27 @@
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCHv2 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
-Date: Mon, 22 Apr 2013 17:48:55 +0300
-Message-ID: <51754DD7.6040904@ti.com>
-References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com> <1366638237-6880-3-git-send-email-sourav.poddar@ti.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RESEND][PATCH] ARM: PL011: add support for extended FIFO-size
+	of PL011-r1p5
+Date: Mon, 22 Apr 2013 18:36:03 +0100
+Message-ID: <20130422173603.GR14496@n2100.arm.linux.org.uk>
+References: <201304151445.25151.neidhard.kim@lge.com> <20130419141748.GU14496@n2100.arm.linux.org.uk> <019701ce3f00$7e0c5390$7a24fab0$@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1366638237-6880-3-git-send-email-sourav.poddar@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:36558 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752417Ab3DVRg7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 22 Apr 2013 13:36:59 -0400
+Content-Disposition: inline
+In-Reply-To: <019701ce3f00$7e0c5390$7a24fab0$@lge.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jongsung Kim <neidhard.kim@lge.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 04/22/2013 04:43 PM, Sourav Poddar wrote:
-> The driver manages "no_console_suspend" by preventing runtime PM
-> during the suspend path, which forces the console UART to stay awake.
->
-> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-> ---
->   drivers/tty/serial/omap-serial.c |    5 ++++-
->   1 files changed, 4 insertions(+), 1 deletions(-)
->
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 08332f3..640b14e 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1582,7 +1582,7 @@ static int serial_omap_runtime_suspend(struct device *dev)
->   	struct uart_omap_port *up = dev_get_drvdata(dev);
->   	struct omap_uart_port_info *pdata = dev->platform_data;
->   
-> -	if (!up)
-> +	if (!up || (!console_suspend_enabled && uart_console(&up->port)))
->   		return -EINVAL;
-Hi Sourav,
-No ) You will block Runtime PM for console UART forever, but instead
-it need to be blocked only during suspend - autosuspend should continue 
-working.
-But this will be not easy, again, -
-because System suspend isn't synchronized with Runtime PM (I mean,
-serial_omap_suspend/resume() may be called from one thread and
-serial_omap_runtime_suspend/resume() from another at same time).
-And now, serial_omap_suspend() callback is the only one place where you
-can detect that system is going to sleep.
+On Mon, Apr 22, 2013 at 11:24:18AM +0900, Jongsung Kim wrote:
+> Thank you for your comments, Russell. I'll happily apply your recommendation
+> just after it come up to the merge window. Or, do you want me to send it by
+> now?
 
-Personally, i don't believe in such approach (my experiences from K3.4 
-said me
-that there will be more problems than benefits).
-
-And, I like combination of "no_console_suspend" in bootargs +
-"ti,no_idle_on_suspend" for console UART in DT, because 1) it's debug 
-option and 2) until
-smth. will be decided about OMAP OCP Bus it can be used.
-
-It's just my opinion.
-
-Regards,
--grygorii
->   
->   	if (!pdata)
-> @@ -1614,6 +1614,9 @@ static int serial_omap_runtime_resume(struct device *dev)
->   
->   	int loss_cnt = serial_omap_get_context_loss_count(up);
->   
-> +	if (!console_suspend_enabled && uart_console(&up->port))
-> +		return -EINVAL;
-> +
->   	if (loss_cnt < 0) {
->   		dev_err(dev, "serial_omap_get_context_loss_count failed : %d\n",
->   			loss_cnt);
+Sorry, don't understand what you're asking, could you rephrase please?
