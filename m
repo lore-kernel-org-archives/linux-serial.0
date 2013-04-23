@@ -1,53 +1,79 @@
 From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: Re: [PATCHv2 4/5] arm: dts: am33xx: Remove "ti,no_idle_on_suspend"
- property.
-Date: Tue, 23 Apr 2013 10:23:03 +0530
-Message-ID: <517613AF.7060305@ti.com>
-References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com> <1366638237-6880-5-git-send-email-sourav.poddar@ti.com> <20130422143537.GD7508@arwen.pp.htv.fi>
+Subject: Re: [PATCHv2 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
+Date: Tue, 23 Apr 2013 10:44:35 +0530
+Message-ID: <517618BB.7040603@ti.com>
+References: <1366638237-6880-1-git-send-email-sourav.poddar@ti.com>	<1366638237-6880-3-git-send-email-sourav.poddar@ti.com>	<51754DD7.6040904@ti.com> <87fvyi8la5.fsf@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:49045 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754802Ab3DWExM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Apr 2013 00:53:12 -0400
-In-Reply-To: <20130422143537.GD7508@arwen.pp.htv.fi>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:46961 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754721Ab3DWFOt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Apr 2013 01:14:49 -0400
+In-Reply-To: <87fvyi8la5.fsf@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Benoit Cousson <b-cousson@ti.com>, Santosh Shilimkar <santosh.shilimkar@ti.com>, Rajendra nayak <rnayak@ti.com>
+To: Kevin Hilman <khilman@linaro.org>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>, gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Felipe,
-On Monday 22 April 2013 08:05 PM, Felipe Balbi wrote:
-> Hi,
+Hi Kevin,
+On Tuesday 23 April 2013 12:06 AM, Kevin Hilman wrote:
+> Grygorii Strashko<grygorii.strashko@ti.com>  writes:
 >
-> On Mon, Apr 22, 2013 at 07:13:56PM +0530, Sourav Poddar wrote:
->> The "ti,no_idle_on_suspend" property was required to keep ocmcram
->> clocks running during idle.
+>> On 04/22/2013 04:43 PM, Sourav Poddar wrote:
+>>> The driver manages "no_console_suspend" by preventing runtime PM
+>>> during the suspend path, which forces the console UART to stay awake.
+>>>
+>>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>>> ---
+>>>    drivers/tty/serial/omap-serial.c |    5 ++++-
+>>>    1 files changed, 4 insertions(+), 1 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>>> index 08332f3..640b14e 100644
+>>> --- a/drivers/tty/serial/omap-serial.c
+>>> +++ b/drivers/tty/serial/omap-serial.c
+>>> @@ -1582,7 +1582,7 @@ static int serial_omap_runtime_suspend(struct device *dev)
+>>>    	struct uart_omap_port *up = dev_get_drvdata(dev);
+>>>    	struct omap_uart_port_info *pdata = dev->platform_data;
+>>>    -	if (!up)
+>>> +	if (!up || (!console_suspend_enabled&&  uart_console(&up->port)))
+>>>    		return -EINVAL;
+>> Hi Sourav,
+>> No ) You will block Runtime PM for console UART forever, but instead
+>> it need to be blocked only during suspend - autosuspend should
+>> continue working.
+> Correct.
+>
+> Sourav, as I mentioned when I suggested this approach, it should be done
+> *only* during suspend.
+>
+Yes, got the point.
+>> But this will be not easy, again, -
+>> because System suspend isn't synchronized with Runtime PM (I mean,
+>> serial_omap_suspend/resume() may be called from one thread and
+>> serial_omap_runtime_suspend/resume() from another at same time).
+>> And now, serial_omap_suspend() callback is the only one place where you
+>> can detect that system is going to sleep.
+> So set an 'is_suspending' flag in ->suspend (it may need to be in
+> ->prepare) and clear it in ->resume (->complete), and check the flag in
+> the ->runtime_supend() callback.  It's not uncommon for drivers to have
+> such a flag for various reasons.
+>
+Ok. Will adapt the next version inline with the above suggestions.
+>> Personally, i don't believe in such approach (my experiences from K3.4
+>> said me that there will be more problems than benefits).
 >>
->> But the commit below[1], added in v3.6 should prevent the
->> any automaic clock gating for devices without drivers bound.  Since
->> there is no driver for the OCM RAM block, we are not affected by
->> the automatic idle on suspend anyways.
->> [1]:
->> commit 72bb6f9b51c82c820ddef892455a85b115460904
-> your commit log can be improved a bit, it could look like below:
+>> And, I like combination of "no_console_suspend" in bootargs +
+>> "ti,no_idle_on_suspend" for console UART in DT, because 1) it's debug
+>> option and 2) until
+>> smth. will be decided about OMAP OCP Bus it can be used.
+>>
+>> It's just my opinion.
+> No, we need to get rid of ti,no_idle_on_suspend.  It's an ugly,
+> OMAP-specific hack (and I'm free to insult it because I introduced it.)
 >
-> The "ti,no_idle_on_suspend" property was required to keep ocmcram clocks
-> running during idle.
->
-> But commit 72bb6f9 (ARM: OMAP: omap_device: don't attempt late suspend
-> if no driver bound), added in v3.6 should prevent any automatic clock
-> gating for devices without drivers bound.  Since there is no driver for
-> the OCM RAM block, we are not affected by the automatic idle on suspend
-> anyways which means "ti,no_idle_on_suspend" can be safely removed since
-> there are no users for it.
->
-Looks better. Will make the necesary change in the next version.
-> other than that:
->
-> Reviewed-by: Felipe Balbi<balbi@ti.com>
+> Kevin
 >
 
