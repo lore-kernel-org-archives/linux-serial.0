@@ -1,110 +1,108 @@
-From: Mark Hounschell <markh@compro.net>
-Subject: Out of tree GPL serial tty driver help?
-Date: Wed, 24 Apr 2013 13:44:57 -0400
-Message-ID: <51781A19.5030707@compro.net>
-Reply-To: markh@compro.net
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCHv3 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
+Date: Wed, 24 Apr 2013 14:34:58 -0700
+Message-ID: <87sj2f394t.fsf@linaro.org>
+References: <1366809353-19435-1-git-send-email-sourav.poddar@ti.com>
+	<1366809353-19435-3-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx2.compro.net ([12.186.155.4]:19671 "EHLO mx2.compro.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755508Ab3DXR7J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Apr 2013 13:59:09 -0400
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:48612 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757864Ab3DXVfD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Apr 2013 17:35:03 -0400
+Received: by mail-pd0-f178.google.com with SMTP id w10so872523pde.37
+        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2013 14:35:02 -0700 (PDT)
+In-Reply-To: <1366809353-19435-3-git-send-email-sourav.poddar@ti.com> (Sourav
+	Poddar's message of "Wed, 24 Apr 2013 18:45:50 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Mark Hounschell <dmarkh@cfl.rr.com>
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I've been sort of maintaining a couple of Digi International serial port 
-card (XP and AP) drivers for years now because, well, they just won't do 
-it anymore. In any case, I'm moving from a 3.4.x kernel, that works just 
-fine, to a 3.8.8 kernel, that does not. I have code that does something 
-like this:
+Sourav Poddar <sourav.poddar@ti.com> writes:
 
-     tty_set_operations(&SerialDriver, &SerialOps);
-     tty_register_driver(&SerialDriver);
-     maxminor = NumBoards * 64;
-     for (i = 0; i < maxminor; i++)
-         tty_register_device(&SerialDriver, i, NULL);
+> The driver manages "no_console_suspend" by preventing runtime PM
+> during the suspend path, which forces the console UART to stay awake.
+>
+> Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+> ---
+>  drivers/tty/serial/omap-serial.c |   29 ++++++++++++++++++++++++++++-
+>  1 files changed, 28 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index 08332f3..468e7ad 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -161,6 +161,7 @@ struct uart_omap_port {
+>  	u32			calc_latency;
+>  	struct work_struct	qos_work;
+>  	struct pinctrl		*pins;
+> +	bool			is_suspending;
+>  };
+>  
+>  #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
+> @@ -1278,6 +1279,24 @@ static struct uart_driver serial_omap_reg = {
+>  };
+>  
+>  #ifdef CONFIG_PM_SLEEP
+> +static int serial_omap_prepare(struct device *dev)
+> +{
+> +	struct uart_omap_port *up = dev_get_drvdata(dev);
+> +
+> +	if (!console_suspend_enabled && uart_console(&up->port))
+> +		up->is_suspending = true;
 
-The first call to tty_register_device barfs:
+This flag should be set unconditionally.  IOW, the system is suspending
+independently of the values of those flags.  And then...
 
-[   76.528626] BUG: unable to handle kernel NULL pointer dereference at 
-   (null)
-[   76.528628] IP: [<c02fa460>] cdev_init+0x30/0x90
-[   76.528632] *pde = 00000000
-[   76.528634] Oops: 0002 [#1] PREEMPT SMP
-[   76.528636] Modules linked in: kvm snd_hda_codec_realtek 
-snd_hda_intel snd_hda_codec snd_hwdep snd_pcm nvidia(PO) osst snd_seq 
-dgdm(O+) snd_timer snd_seq_device eprm(O) st sr_mod sg synclink_gt snd 
-crc32c_intel aesni_intel ablk_helper cryptd lrw gpiohsd(O) k10temp 
-lcrsmem(O) hdlc aes_i586 3c59x firewire_ohci pcspkr xts gf128mul mxm_wmi 
-shpchp soundcore i2c_piix4 firewire_core snd_page_alloc crc_itu_t cdrom 
-wmi pci_hotplug r8169 fam15h_power microcode rtom(O) button edd autofs4 
-ext4 jbd2 crc16 xhci_hcd scsi_dh_hp_sw scsi_dh_emc scsi_dh_alua 
-scsi_dh_rdac scsi_dh ata_generic pata_atiixp aic7xxx aic79xx 
-scsi_transport_spi
-[   76.528661] Pid: 393, comm: systemd-udevd Tainted: P           O 
-3.8.8-lcrs #8 Gigabyte Technology Co., Ltd. GA-990FXA-UD5/GA-990FXA-UD5
-[   76.528662] EIP: 0060:[<c02fa460>] EFLAGS: 00010246 CPU: 4
-[   76.528664] EIP is at cdev_init+0x30/0x90
-[   76.528665] EAX: 00000000 EBX: 00000000 ECX: 0000000f EDX: 0000003c
-[   76.528667] ESI: c06d38c0 EDI: 00000000 EBP: ed449d0c ESP: ed449d00
-[   76.528668]  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
-[   76.528669] CR0: 8005003b CR2: f72f9920 CR3: 2ebc8000 CR4: 000407d0
-[   76.528670] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[   76.528672] DR6: ffff0ff0 DR7: 00000400
-[   76.528673] Process systemd-udevd (pid: 393, ti=ed448000 
-task=ee753240 task.ti=ed448000)
-[   76.528674] Stack:
-[   76.528675]  fb396220 00000000 04600000 ed449d30 c04780a6 c0826710 
-0000003c 00000000
-[   76.528678]  00000000 fb396220 00000000 04600000 ed449dac c0478d52 
-00000001 ed449d60
-[   76.528681]  00000000 00000002 00000000 04600000 00000730 ed449d60 
-00000000 00000000
-[   76.528684] Call Trace:
-[   76.528688]  [<c04780a6>] tty_cdev_add+0x56/0x80
-[   76.528690]  [<c0478d52>] tty_register_device_attr+0x192/0x220
-[   76.528693]  [<c02fa96d>] ? register_chrdev_region+0x4d/0xa0
-[   76.528695]  [<c0478dfa>] tty_register_device+0x1a/0x20
-[   76.528702]  [<fb37e701>] dgdm_tty_init+0x601/0x660 [dgdm]
-[   76.528707]  [<fb375818>] init_module+0x2008/0x22f0 [dgdm]
-[   76.528711]  [<c069d843>] ? notifier_call_chain+0x43/0x60
-[   76.528716]  [<fb373810>] ? dgdm_boardread+0x430/0x430 [dgdm]
-[   76.528718]  [<c0201222>] do_one_initcall+0x112/0x160
-[   76.528721]  [<c0252707>] ? __blocking_notifier_call_chain+0x47/0x60
-[   76.528723]  [<c02849d8>] load_module+0x1c58/0x2280
-[   76.528729]  [<c028508d>] sys_init_module+0x8d/0xf0
-[   76.528734]  [<c069ad1d>] syscall_call+0x7/0xb
-[   76.528735] Code: 0c a8 01 89 5d f4 89 c3 89 75 f8 89 d6 ba 3c 00 00 
-00 89 7d fc 89 c7 75 52 f7 c7 02 00 00 00 75 5a 89 d1 31 c0 c1 e9 02 f6 
-c2 02 <f3> ab 74 08 66 c7 07 00 00 83 c7 02 83 e2 01 74 03 c6 07 00 8d
-[   76.528753] EIP: [<c02fa460>] cdev_init+0x30/0x90 SS:ESP 0068:ed449d00
-[   76.528756] CR2: 0000000000000000
-[   76.528758] ---[ end trace 99a84df60dc687d6 ]---
+> +	return 0;
+> +}
+> +
+> +static void serial_omap_complete(struct device *dev)
+> +{
+> +	struct uart_omap_port *up = dev_get_drvdata(dev);
+> +
+> +	if (!console_suspend_enabled && uart_console(&up->port))
+> +		up->is_suspending = false;
+> +}
+> +
+>  static int serial_omap_suspend(struct device *dev)
+>  {
+>  	struct uart_omap_port *up = dev_get_drvdata(dev);
+> @@ -1296,7 +1315,10 @@ static int serial_omap_resume(struct device *dev)
+>  
+>  	return 0;
+>  }
+> -#endif
+> +#else
+> +#define serial_omap_prepare NULL
+> +#define serial_omap_prepare NULL
+> +#endif /* CONFIG_PM_SLEEP */
+>  
+>  static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
+>  {
+> @@ -1582,6 +1604,9 @@ static int serial_omap_runtime_suspend(struct device *dev)
+>  	struct uart_omap_port *up = dev_get_drvdata(dev);
+>  	struct omap_uart_port_info *pdata = dev->platform_data;
+>  
+> +	if (up->is_suspending)
+> +		return -EBUSY;
 
+... the console checks should be here.
 
-I've put a printk in tty_io.c that shows the NULL pointer in 
-driver->cdevs, that I assume. is what is causing it to barf. The first 4 
-below are from Synclink-GT driver. The last is mine.
+>  	if (!up)
+>  		return -EINVAL;
+>  
+> @@ -1632,6 +1657,8 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
+>  	SET_SYSTEM_SLEEP_PM_OPS(serial_omap_suspend, serial_omap_resume)
+>  	SET_RUNTIME_PM_OPS(serial_omap_runtime_suspend,
+>  				serial_omap_runtime_resume, NULL)
+> +	.prepare        = serial_omap_prepare,
+> +	.complete       = serial_omap_complete,
+>  };
+>  
+>  #if defined(CONFIG_OF)
 
-tty_cdev_add: Entered. driver = 0xeebd9900 driver->cdevs = 0xe678b800 
-index = 0 name = ttySLG0
-tty_cdev_add: Entered. driver = 0xeebd9900 driver->cdevs = 0xe678b800 
-index = 1 name = ttySLG1
-tty_cdev_add: Entered. driver = 0xeebd9900 driver->cdevs = 0xe678b800 
-index = 2 name = ttySLG2
-tty_cdev_add: Entered. driver = 0xeebd9900 driver->cdevs = 0xe678b800 
-index = 3 name = ttySLG3
-tty_cdev_add: Entered. driver = 0xf6d723a0 driver->cdevs = 0x00000000 
-index = 0 name = tty_dgdm_G0
-
-I've tried adding cdev_alloc and cdev_init into the mix but things seem 
-to get much worse when I do.
-
-Any tips or pointers would be appreciated.
-
-Thanks in advance
-Mark
+Kevin
