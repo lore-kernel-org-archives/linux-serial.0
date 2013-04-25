@@ -1,46 +1,101 @@
-From: Wei Yongjun <weiyj.lk@gmail.com>
-Subject: [PATCH] serial: mcf: missing uart_unregister_driver() on error in mcf_init()
-Date: Thu, 25 Apr 2013 09:17:23 +0800
-Message-ID: <CAPgLHd8dt1hCYhkC1DYMXNBNbmyDqQyfYucDZSTijtruvvKG6A@mail.gmail.com>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: Re: [PATCHv3 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
+Date: Thu, 25 Apr 2013 10:58:03 +0530
+Message-ID: <5178BEE3.80600@ti.com>
+References: <1366809353-19435-1-git-send-email-sourav.poddar@ti.com>	<1366809353-19435-3-git-send-email-sourav.poddar@ti.com> <87sj2f394t.fsf@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f48.google.com ([209.85.214.48]:35813 "EHLO
-	mail-bk0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758658Ab3DYBRY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Apr 2013 21:17:24 -0400
-Received: by mail-bk0-f48.google.com with SMTP id jf3so993062bkc.7
-        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2013 18:17:23 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87sj2f394t.fsf@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kevin Hilman <khilman@linaro.org>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org
 
-From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-
-Add the missing uart_unregister_driver() before return
-from mcf_init() in the error handling case.
-
-Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
----
- drivers/tty/serial/mcf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index e956377..65be0c0 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -707,8 +707,10 @@ static int __init mcf_init(void)
- 	if (rc)
- 		return rc;
- 	rc = platform_driver_register(&mcf_platform_driver);
--	if (rc)
-+	if (rc) {
-+		uart_unregister_driver(&mcf_driver);
- 		return rc;
-+	}
- 	return 0;
- }
- 
-
+Hi Kevin,
+On Thursday 25 April 2013 03:04 AM, Kevin Hilman wrote:
+> Sourav Poddar<sourav.poddar@ti.com>  writes:
+>
+>> The driver manages "no_console_suspend" by preventing runtime PM
+>> during the suspend path, which forces the console UART to stay awake.
+>>
+>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>> ---
+>>   drivers/tty/serial/omap-serial.c |   29 ++++++++++++++++++++++++++++-
+>>   1 files changed, 28 insertions(+), 1 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index 08332f3..468e7ad 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -161,6 +161,7 @@ struct uart_omap_port {
+>>   	u32			calc_latency;
+>>   	struct work_struct	qos_work;
+>>   	struct pinctrl		*pins;
+>> +	bool			is_suspending;
+>>   };
+>>
+>>   #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
+>> @@ -1278,6 +1279,24 @@ static struct uart_driver serial_omap_reg = {
+>>   };
+>>
+>>   #ifdef CONFIG_PM_SLEEP
+>> +static int serial_omap_prepare(struct device *dev)
+>> +{
+>> +	struct uart_omap_port *up = dev_get_drvdata(dev);
+>> +
+>> +	if (!console_suspend_enabled&&  uart_console(&up->port))
+>> +		up->is_suspending = true;
+> This flag should be set unconditionally.  IOW, the system is suspending
+> independently of the values of those flags.  And then...
+>
+True. Will change.
+>> +	return 0;
+>> +}
+>> +
+>> +static void serial_omap_complete(struct device *dev)
+>> +{
+>> +	struct uart_omap_port *up = dev_get_drvdata(dev);
+>> +
+>> +	if (!console_suspend_enabled&&  uart_console(&up->port))
+>> +		up->is_suspending = false;
+>> +}
+>> +
+>>   static int serial_omap_suspend(struct device *dev)
+>>   {
+>>   	struct uart_omap_port *up = dev_get_drvdata(dev);
+>> @@ -1296,7 +1315,10 @@ static int serial_omap_resume(struct device *dev)
+>>
+>>   	return 0;
+>>   }
+>> -#endif
+>> +#else
+>> +#define serial_omap_prepare NULL
+>> +#define serial_omap_prepare NULL
+>> +#endif /* CONFIG_PM_SLEEP */
+>>
+>>   static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
+>>   {
+>> @@ -1582,6 +1604,9 @@ static int serial_omap_runtime_suspend(struct device *dev)
+>>   	struct uart_omap_port *up = dev_get_drvdata(dev);
+>>   	struct omap_uart_port_info *pdata = dev->platform_data;
+>>
+>> +	if (up->is_suspending)
+>> +		return -EBUSY;
+> ... the console checks should be here.
+>
+Ok. will change.
+>>   	if (!up)
+>>   		return -EINVAL;
+>>
+>> @@ -1632,6 +1657,8 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
+>>   	SET_SYSTEM_SLEEP_PM_OPS(serial_omap_suspend, serial_omap_resume)
+>>   	SET_RUNTIME_PM_OPS(serial_omap_runtime_suspend,
+>>   				serial_omap_runtime_resume, NULL)
+>> +	.prepare        = serial_omap_prepare,
+>> +	.complete       = serial_omap_complete,
+>>   };
+>>
+>>   #if defined(CONFIG_OF)
+> Kevin
