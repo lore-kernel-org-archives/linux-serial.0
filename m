@@ -1,61 +1,104 @@
-From: Wei Yongjun <weiyj.lk@gmail.com>
-Subject: [PATCH] tty: serial: mpc5xxx: fix error handing in mpc52xx_uart_init()
-Date: Thu, 25 Apr 2013 15:34:27 +0800
-Message-ID: <CAPgLHd_nFRt_QwQbHwW5U=gWAhrFBg7645NgASW8=CQESDsHKA@mail.gmail.com>
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCHv3 5/5] arm: omap2+: omap_device: remove no_idle_on_suspend
+Date: Thu, 25 Apr 2013 09:22:55 -0700
+Message-ID: <87ehdy1sww.fsf@linaro.org>
+References: <1366809353-19435-1-git-send-email-sourav.poddar@ti.com>
+	<1366809353-19435-6-git-send-email-sourav.poddar@ti.com>
+	<87d2tj378q.fsf@linaro.org> <5178D1E0.6010400@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f52.google.com ([209.85.214.52]:64921 "EHLO
-	mail-bk0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754869Ab3DYHe3 (ORCPT
+Received: from mail-pb0-f53.google.com ([209.85.160.53]:38643 "EHLO
+	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755921Ab3DYQW7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Apr 2013 03:34:29 -0400
-Received: by mail-bk0-f52.google.com with SMTP id je9so194749bkc.39
-        for <linux-serial@vger.kernel.org>; Thu, 25 Apr 2013 00:34:27 -0700 (PDT)
+	Thu, 25 Apr 2013 12:22:59 -0400
+Received: by mail-pb0-f53.google.com with SMTP id un15so839573pbc.26
+        for <linux-serial@vger.kernel.org>; Thu, 25 Apr 2013 09:22:58 -0700 (PDT)
+In-Reply-To: <5178D1E0.6010400@ti.com> (Sourav Poddar's message of "Thu, 25
+	Apr 2013 12:19:04 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com
-Cc: yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>, Grygorii Strashko <grygorii.strashko@ti.com>
 
-From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+Hi Sourav,
 
-Add the missing uart_unregister_driver() and uninit before return
-from mpc52xx_uart_init() in the error handling case.
+Sourav Poddar <sourav.poddar@ti.com> writes:
 
-Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
----
- drivers/tty/serial/mpc52xx_uart.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+> Hi Kevin,
+> On Thursday 25 April 2013 03:45 AM, Kevin Hilman wrote:
+>> Sourav Poddar<sourav.poddar@ti.com>  writes:
+>>
+>>> Remove "no_idle_on_suspend" check, since respective
+>>> driver should be able to prevent idling of a
+>>> device whenever required.
+>>>
+>>> Driver's can get same behavior by just returning -EBUSY
+>>> from their ->runtime_suspend only during suspend.
+>>>
+>>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+>>> Cc: Felipe Balbi<balbi@ti.com>
+>>> Cc: Rajendra nayak<rnayak@ti.com>
+>>> Cc: Grygorii Strashko<grygorii.strashko@ti.com>
+>>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>>> Reviewed-by: Felipe Balbi<balbi@ti.com>
+>>> ---
+>>>   arch/arm/mach-omap2/omap_device.c |   12 +++---------
+>>>   arch/arm/mach-omap2/omap_device.h |   10 ----------
+>>>   2 files changed, 3 insertions(+), 19 deletions(-)
+>>>
+>>> diff --git a/arch/arm/mach-omap2/omap_device.c b/arch/arm/mach-omap2/omap_device.c
+>>> index 381be7a..2043d71 100644
+>>> --- a/arch/arm/mach-omap2/omap_device.c
+>>> +++ b/arch/arm/mach-omap2/omap_device.c
+>>> @@ -170,9 +170,6 @@ static int omap_device_build_from_dt(struct platform_device *pdev)
+>>>   			r->name = dev_name(&pdev->dev);
+>>>   	}
+>>>
+>>> -	if (of_get_property(node, "ti,no_idle_on_suspend", NULL))
+>>> -		omap_device_disable_idle_on_suspend(pdev);
+>>> -
+>>>   	pdev->dev.pm_domain =&omap_device_pm_domain;
+>>>
+>>>   odbfd_exit1:
+>>> @@ -620,11 +617,9 @@ static int _od_suspend_noirq(struct device *dev)
+>>>   	ret = pm_generic_suspend_noirq(dev);
+>>>
+>>>   	if (!ret&&  !pm_runtime_status_suspended(dev)) {
+>>> -		if (pm_generic_runtime_suspend(dev) == 0) {
+>>> -			if (!(od->flags&  OMAP_DEVICE_NO_IDLE_ON_SUSPEND))
+>>> -				omap_device_idle(pdev);
+>>> +		if (pm_generic_runtime_suspend(dev) == 0)
+>>> +			omap_device_idle(pdev);
+>>>   			od->flags |= OMAP_DEVICE_SUSPENDED;
+>>> -		}
+>> Look closely at the if statement, followed by more than one line, and
+>> the braces removed.
+>>
+>> That means that od->flag will be set, even when omap_device_idle() was
+>> not called.  Which in turn means that upon resume, omap_device_enable()
+>> will be called on a device that has not had omap_device_idle() called,
+>> which means there would be WARNs coming from omap_device due to the
+>> mismatch.
+>>
+> True, my bad. Will modify the code to bypass
+> "od->flags |= OMAP_DEVICE_SUSPENDED"
+>> Hmm... this does not instill confidence that this code has been tested.
+>>
+> Sorry for the above glitch, I tested this code. I checked that the
+> system is able to resume from suspend state, but completely missed the
+> following statement in the log..
+> "[   47.922424] omap_uart omap_uart.2: omap_device:
+> omap_device_enable() called from invalid state 1"
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 018bad9..43a6c0a 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -1497,18 +1497,23 @@ mpc52xx_uart_init(void)
- 	if (psc_ops && psc_ops->fifoc_init) {
- 		ret = psc_ops->fifoc_init();
- 		if (ret)
--			return ret;
-+			goto err_init;
- 	}
- 
- 	ret = platform_driver_register(&mpc52xx_uart_of_driver);
- 	if (ret) {
- 		printk(KERN_ERR "%s: platform_driver_register failed (%i)\n",
- 		       __FILE__, ret);
--		uart_unregister_driver(&mpc52xx_uart_driver);
--		return ret;
-+		goto err_reg;
- 	}
- 
- 	return 0;
-+err_reg:
-+	if (psc_ops && psc_ops->fifoc_uninit)
-+		psc_ops->fifoc_uninit();
-+err_init:
-+	uart_unregister_driver(&mpc52xx_uart_driver);
-+	return ret;
- }
- 
- static void __exit
+No worries.
+
+Thanks a lot for your responsiveness on this on this series.  We've gone
+through several ideas/approaches to fix this problem and you've been
+very quick to address concerns and adapt the solution.
+
+Thanks for your persistence, we're almost there...
+
+Kevin
 
