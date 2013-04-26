@@ -1,63 +1,160 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: Out of tree GPL serial tty driver help?
-Date: Fri, 26 Apr 2013 09:03:48 -0700
-Message-ID: <20130426160348.GA28863@kroah.com>
+Date: Fri, 26 Apr 2013 12:37:52 -0400
+Message-ID: <1366994272.689.4.camel@thor.lan>
 References: <51781A19.5030707@compro.net>
- <1366926071.3452.17.camel@thor.lan>
- <517A79E1.8060504@compro.net>
- <1366983913.3452.33.camel@thor.lan>
- <517A8EF1.8040006@compro.net>
- <20130426143526.GA15132@kroah.com>
- <517A98D6.2020701@compro.net>
- <20130426151905.GA27340@kroah.com>
- <1366990765.3452.50.camel@thor.lan>
+	 <1366926071.3452.17.camel@thor.lan> <517A79E1.8060504@compro.net>
+	 <1366983913.3452.33.camel@thor.lan> <517A8EF1.8040006@compro.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f51.google.com ([209.85.160.51]:41338 "EHLO
-	mail-pb0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751427Ab3DZQDw (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:49332 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755004Ab3DZQh6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Apr 2013 12:03:52 -0400
-Received: by mail-pb0-f51.google.com with SMTP id rr4so1193984pbb.38
-        for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2013 09:03:51 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1366990765.3452.50.camel@thor.lan>
+	Fri, 26 Apr 2013 12:37:58 -0400
+In-Reply-To: <517A8EF1.8040006@compro.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Mark Hounschell <markh@compro.net>, linux-serial@vger.kernel.org, Mark Hounschell <dmarkh@cfl.rr.com>
+To: markh@compro.net
+Cc: linux-serial@vger.kernel.org, Mark Hounschell <dmarkh@cfl.rr.com>
 
-On Fri, Apr 26, 2013 at 11:39:25AM -0400, Peter Hurley wrote:
-> On Fri, 2013-04-26 at 08:19 -0700, Greg KH wrote:
-> > On Fri, Apr 26, 2013 at 11:10:14AM -0400, Mark Hounschell wrote:
-> > > >Also, any reason why these drivers aren't in the main kernel tree?  If
-> > > >they were, all of this work would have been done for you :)
-> > > >
-> > > 
-> > > Yes, I wish they were in the kernel. I've had to maintain them since
-> > > the 2.6 days because Digi just won't do it and their cards do what
-> > > we need quite well and are still current products. Ya, you can buy a
-> > > brand new one but the latest kernel supported is 2.6. I think Digi
-> > > at one point long ago may have tried the "in kernel" route but you
-> > > probably know more about that than I do.
-> > > 
-> > > Since 2.6, the maintenance on these hasn't been to bad, until udev
-> > > came along. But I guess after 3.4 the tty layer is going through
-> > > quite some changes that I have yet to understand.
-> > 
-> > And there will be lots more changes happening to it in the future.  Why
-> > not submit the drivers now (after you get them working)?
+
+On Fri, 2013-04-26 at 10:28 -0400, Mark Hounschell wrote:
+> On 04/26/2013 09:45 AM, Peter Hurley wrote:
+> > On Fri, 2013-04-26 at 08:58 -0400, Mark Hounschell wrote:
+> >> On 04/25/2013 05:41 PM, Peter Hurley wrote:
+> >>> On Wed, 2013-04-24 at 13:44 -0400, Mark Hounschell wrote:
+> >>>> I've been sort of maintaining a couple of Digi International serial port
+> >>>> card (XP and AP) drivers for years now because, well, they just won't do
+> >>>> it anymore. In any case, I'm moving from a 3.4.x kernel, that works just
+> >>>> fine, to a 3.8.8 kernel, that does not. I have code that does something
+> >>>> like this:
+> >>>>
+> >>>>        tty_set_operations(&SerialDriver, &SerialOps);
+> >>>>        tty_register_driver(&SerialDriver);
+> >>>>        maxminor = NumBoards * 64;
+> >>>>        for (i = 0; i < maxminor; i++)
+> >>>>            tty_register_device(&SerialDriver, i, NULL);
+> >>>
+> >>> You're correct in diagnosing the problem to cdevs == NULL.
+> >>> You're missing:
+> >>>
+> >>> 	maxminor = min(num_boards * 64, 256);
+> >>> 	serial_driver = alloc_tty_driver(maxminor);
+> >>>
+> >>> then,
+> >>> 	/* Fill in pertinent tty_driver fields, esp. */
+> >>> 	serial_driver->flags = TTY_DRIVER_DYNAMIC_DEV;
+> >>>
+> >>> 	tty_set_operations(serial_driver, &serial_ops);
+> >>> 	tty_register_driver(serial_driver);
+> >>> 	for (i = 0; i < maxminor; i++)
+> >>> 		tty_register_device(serial_driver, i, NULL);
+> >>>
+> >>>
+> >>
+> >> Thanks for responding Peter.
+> >>
+> >> Earlier in the code they do this:
+> >>
+> >> static struct tty_driver SerialDriver
+> >> and things like
+> >> SerialDriver.termios = kmalloc((maxminor - 256) * sizeof(TERMIOS *),
+> >                                    ^^^^^^^^^^^^^^
+> >                                  is this a transcription error?
 > 
-> Probably not Mark's (or Compro's) code to submit.
+> Yes, sorry. (MIN(maxminor,256) * sizeof(TERMIOS *)
 
-If it's a GPL driver, anyone can submit it.
+Ok.
 
-However, if the original copyright owner doesn't want it to be
-submitted, we will be glad to take that under consideration.
+> >
+> >> GFP_KERNEL);
+> >>
+>    >> So is the above no longer going to work and I _must_ now use
+> >> alloc_tty_driver?
+> >
+> > Not required but functionally equivalent. alloc_tty_driver() is actually
+> > a wrapper macro which calls __tty_alloc_driver(). You can verify your
+> > driver behavior against that function, if you want.
+> >
+> >> If alloc_tty_driver is now a requirement, how much is
+> >> it going to do for me? There are several things like the termios above
+> >> that are manually allocated. How much if any of this is alloc_tty_driver
+> >> going to do for me?
+> >
+> > I can't answer this because I don't know what else your open-coded
+> > method is doing.
+> >
+> 
+> Looking at __tty_alloc_driver, it looks as though only driver, cdevs and 
+> ports are provided.
+> 
+> >> or might this work
+> >>
+> >> static struct tty_driver SerialDriver
+> >> .
+> >> .
+> >> .
+> >>    	serial_driver.flags = TTY_DRIVER_DYNAMIC_DEV;
+> >>
+> >>           SerialDriver.cdevs  = kcalloc(maxminor,
+> >> sizeof(SerialDriver.cdevs), GFP_KERNEL);
+> 
+> So might something like the above for cdevs and ports get me where I 
+> need to be?
+> 
+> >>
+> >>    	tty_set_operations(&serial_driver, &serial_ops);
+> >>    	tty_register_driver(&serial_driver);
+> >>    	for (i = 0; i < maxminor; i++)
+> >>    		tty_register_device(&serial_driver, i, NULL);
+> >>
+> >> ???
+> >>
+> >>>
+> >>> PS - Each board supports 64 individual serial ports??
+> >>
+> >> No, this particular card comes in 4, 8, and 16 port flavors. I never did
+> >> understand why they create so many device entries. I just figured they
+> >> had a reason. For a single card, no matter how many ports, they create
+> >> 64 normal serial tty entries (tty_dgdm_G0 - tty_dgdm_G63), 64 serial
+> >> printer entries (lp_dgdm_G0 - lp_dgdm_G63), and then 64 serial modem
+> >> entries (cu_dgdm_G0 - cu_dgdm_G63). Don't know why.
+> >
+> > So where does i/o go for tty_dgdm_G16?
+> >
+> 
+> I have no idea. I do know that G0 - G7 are the ones I actually use for 
+> ports 0-7 of an 8 port card-0, and
+> G64 - G71 are the ones I use for ports 0-7 of an 8 port card-1. I 
+> remember long ago I had some doc explaining this but can't seem to find 
+> it now.
+> 
+> > Also, what host bus are these cards for?
+> >
+> 
+> This particular driver and one other are normal PCI based cards. I also 
+> have one other that is PCI-e. This particular one is the only one that 
+> creates all these weird device entries. The other 2 are pretty straight 
+> forward. One entry per port. I figured I'd tackle this one first.
 
-Mark, what's the reason this has never been submitted?
+Ok. Looking at Digi's website, I see they have external port
+concentrators. That would explain the fixed 64-port allocation (although
+that's not really how to do it).
 
-thanks,
+These drivers weren't really current at 3.4 though, either. I'm not sure
+what else you're going to find that doesn't work.
 
-greg k-h
+For both PCI and PCI-e, these drivers should _at a minimum_ be pci
+drivers that register the tty driver at module init and register _only_
+the tty devices for that particular PCI device at PCI probe time. Look
+at the end of synclink_gt.c for how this is supposed to look.
+
+Good luck,
+Peter Hurley
+
+
+
+
