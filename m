@@ -1,56 +1,57 @@
-From: Mark Hounschell <markh@compro.net>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: Out of tree GPL serial tty driver help?
-Date: Fri, 26 Apr 2013 11:10:14 -0400
-Message-ID: <517A98D6.2020701@compro.net>
-References: <51781A19.5030707@compro.net> <1366926071.3452.17.camel@thor.lan> <517A79E1.8060504@compro.net> <1366983913.3452.33.camel@thor.lan> <517A8EF1.8040006@compro.net> <20130426143526.GA15132@kroah.com>
-Reply-To: markh@compro.net
+Date: Fri, 26 Apr 2013 08:19:05 -0700
+Message-ID: <20130426151905.GA27340@kroah.com>
+References: <51781A19.5030707@compro.net>
+ <1366926071.3452.17.camel@thor.lan>
+ <517A79E1.8060504@compro.net>
+ <1366983913.3452.33.camel@thor.lan>
+ <517A8EF1.8040006@compro.net>
+ <20130426143526.GA15132@kroah.com>
+ <517A98D6.2020701@compro.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx2.compro.net ([12.186.155.4]:7078 "EHLO mx2.compro.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750936Ab3DZPKP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Apr 2013 11:10:15 -0400
-In-Reply-To: <20130426143526.GA15132@kroah.com>
+Received: from mail-pb0-f49.google.com ([209.85.160.49]:44324 "EHLO
+	mail-pb0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751381Ab3DZPTI (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Apr 2013 11:19:08 -0400
+Received: by mail-pb0-f49.google.com with SMTP id rp2so1191781pbb.36
+        for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2013 08:19:08 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <517A98D6.2020701@compro.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
+To: Mark Hounschell <markh@compro.net>
 Cc: Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Mark Hounschell <dmarkh@cfl.rr.com>
 
-On 04/26/2013 10:35 AM, Greg KH wrote:
-> On Fri, Apr 26, 2013 at 10:28:01AM -0400, Mark Hounschell wrote:
->> This particular driver and one other are normal PCI based cards. I
->> also have one other that is PCI-e. This particular one is the only
->> one that creates all these weird device entries. The other 2 are
->> pretty straight forward. One entry per port. I figured I'd tackle
->> this one first.
->
-> I would remove those other "weird" device entries from the driver, we
-> removed those types of device nodes from the kernel tree many many years
-> ago.  Just stick to one device node per port, and all should be fine.
->
+On Fri, Apr 26, 2013 at 11:10:14AM -0400, Mark Hounschell wrote:
+> >Also, any reason why these drivers aren't in the main kernel tree?  If
+> >they were, all of this work would have been done for you :)
+> >
+> 
+> Yes, I wish they were in the kernel. I've had to maintain them since
+> the 2.6 days because Digi just won't do it and their cards do what
+> we need quite well and are still current products. Ya, you can buy a
+> brand new one but the latest kernel supported is 2.6. I think Digi
+> at one point long ago may have tried the "in kernel" route but you
+> probably know more about that than I do.
+> 
+> Since 2.6, the maintenance on these hasn't been to bad, until udev
+> came along. But I guess after 3.4 the tty layer is going through
+> quite some changes that I have yet to understand.
 
-Ya, you are certainly right there. First things first though.
+And there will be lots more changes happening to it in the future.  Why
+not submit the drivers now (after you get them working)?
 
-> Also, any reason why these drivers aren't in the main kernel tree?  If
-> they were, all of this work would have been done for you :)
->
+> Actually, we also have 3-4 of our own "out of kernel" GPL drivers
+> that I would love to see in the kernel. They are mature and only
+> require changes when something in the kernel changes. That's another
+> story though.
 
-Yes, I wish they were in the kernel. I've had to maintain them since the 
-2.6 days because Digi just won't do it and their cards do what we need 
-quite well and are still current products. Ya, you can buy a brand new 
-one but the latest kernel supported is 2.6. I think Digi at one point 
-long ago may have tried the "in kernel" route but you probably know more 
-about that than I do.
+Why not submit those as well?  What's keeping you from doing this?
 
-Since 2.6, the maintenance on these hasn't been to bad, until udev came 
-along. But I guess after 3.4 the tty layer is going through quite some 
-changes that I have yet to understand.
+thanks,
 
-Actually, we also have 3-4 of our own "out of kernel" GPL drivers that I 
-would love to see in the kernel. They are mature and only require 
-changes when something in the kernel changes. That's another story though.
-
-Regards
-Mark
+greg k-h
