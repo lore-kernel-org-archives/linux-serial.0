@@ -1,92 +1,97 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: [PATCHv4 2/5] driver: serial: omap: prevent runtime PM for "no_console_suspend"
-Date: Fri, 26 Apr 2013 18:12:45 +0530
-Message-ID: <1366980168-30566-3-git-send-email-sourav.poddar@ti.com>
-References: <1366980168-30566-1-git-send-email-sourav.poddar@ti.com>
+From: Mark Hounschell <markh@compro.net>
+Subject: Re: Out of tree GPL serial tty driver help?
+Date: Fri, 26 Apr 2013 08:58:09 -0400
+Message-ID: <517A79E1.8060504@compro.net>
+References: <51781A19.5030707@compro.net> <1366926071.3452.17.camel@thor.lan>
+Reply-To: markh@compro.net
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1366980168-30566-1-git-send-email-sourav.poddar@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, khilman@linaro.org, linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Sourav Poddar <sourav.poddar@ti.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mx2.compro.net ([12.186.155.4]:21832 "EHLO mx2.compro.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752536Ab3DZM6K (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Apr 2013 08:58:10 -0400
+In-Reply-To: <1366926071.3452.17.camel@thor.lan>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, Mark Hounschell <dmarkh@cfl.rr.com>
 
-The driver manages "no_console_suspend" by preventing runtime PM
-during the suspend path, which forces the console UART to stay awake.
+On 04/25/2013 05:41 PM, Peter Hurley wrote:
+> On Wed, 2013-04-24 at 13:44 -0400, Mark Hounschell wrote:
+>> I've been sort of maintaining a couple of Digi International serial port
+>> card (XP and AP) drivers for years now because, well, they just won't do
+>> it anymore. In any case, I'm moving from a 3.4.x kernel, that works just
+>> fine, to a 3.8.8 kernel, that does not. I have code that does something
+>> like this:
+>>
+>>       tty_set_operations(&SerialDriver, &SerialOps);
+>>       tty_register_driver(&SerialDriver);
+>>       maxminor = NumBoards * 64;
+>>       for (i = 0; i < maxminor; i++)
+>>           tty_register_device(&SerialDriver, i, NULL);
+>
+> You're correct in diagnosing the problem to cdevs == NULL.
+> You're missing:
+>
+> 	maxminor = min(num_boards * 64, 256);
+> 	serial_driver = alloc_tty_driver(maxminor);
+>
+> then,
+> 	/* Fill in pertinent tty_driver fields, esp. */
+> 	serial_driver->flags = TTY_DRIVER_DYNAMIC_DEV;
+>
+> 	tty_set_operations(serial_driver, &serial_ops);
+> 	tty_register_driver(serial_driver);
+> 	for (i = 0; i < maxminor; i++)
+> 		tty_register_device(serial_driver, i, NULL);
+>
+>
 
-Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
-Reviewed-by: Felipe Balbi <balbi@ti.com>
----
- drivers/tty/serial/omap-serial.c |   28 +++++++++++++++++++++++++++-
- 1 files changed, 27 insertions(+), 1 deletions(-)
+Thanks for responding Peter.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 30d4f7a..eddff3c 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -161,6 +161,7 @@ struct uart_omap_port {
- 	u32			calc_latency;
- 	struct work_struct	qos_work;
- 	struct pinctrl		*pins;
-+	bool			is_suspending;
- };
- 
- #define to_uart_omap_port(p)	((container_of((p), struct uart_omap_port, port)))
-@@ -1312,6 +1313,22 @@ static struct uart_driver serial_omap_reg = {
- };
- 
- #ifdef CONFIG_PM_SLEEP
-+static int serial_omap_prepare(struct device *dev)
-+{
-+	struct uart_omap_port *up = dev_get_drvdata(dev);
-+
-+	up->is_suspending = true;
-+
-+	return 0;
-+}
-+
-+static void serial_omap_complete(struct device *dev)
-+{
-+	struct uart_omap_port *up = dev_get_drvdata(dev);
-+
-+	up->is_suspending = false;
-+}
-+
- static int serial_omap_suspend(struct device *dev)
- {
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
-@@ -1330,7 +1347,10 @@ static int serial_omap_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
-+#else
-+#define serial_omap_prepare NULL
-+#define serial_omap_prepare NULL
-+#endif /* CONFIG_PM_SLEEP */
- 
- static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
- {
-@@ -1616,6 +1636,10 @@ static int serial_omap_runtime_suspend(struct device *dev)
- 	struct uart_omap_port *up = dev_get_drvdata(dev);
- 	struct omap_uart_port_info *pdata = dev->platform_data;
- 
-+	if (up->is_suspending && !console_suspend_enabled
-+			&& uart_console(&up->port))
-+		return -EBUSY;
-+
- 	if (!up)
- 		return -EINVAL;
- 
-@@ -1666,6 +1690,8 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(serial_omap_suspend, serial_omap_resume)
- 	SET_RUNTIME_PM_OPS(serial_omap_runtime_suspend,
- 				serial_omap_runtime_resume, NULL)
-+	.prepare        = serial_omap_prepare,
-+	.complete       = serial_omap_complete,
- };
- 
- #if defined(CONFIG_OF)
--- 
-1.7.1
+Earlier in the code they do this:
+
+static struct tty_driver SerialDriver
+and things like
+SerialDriver.termios = kmalloc((maxminor - 256) * sizeof(TERMIOS *), 
+GFP_KERNEL);
+
+So is the above no longer going to work and I _must_ now use 
+alloc_tty_driver? If alloc_tty_driver is now a requirement, how much is 
+it going to do for me? There are several things like the termios above 
+that are manually allocated. How much if any of this is alloc_tty_driver 
+going to do for me?
+
+or might this work
+
+static struct tty_driver SerialDriver
+.
+.
+.
+  	serial_driver.flags = TTY_DRIVER_DYNAMIC_DEV;
+
+         SerialDriver.cdevs  = kcalloc(maxminor, 
+sizeof(SerialDriver.cdevs), GFP_KERNEL);
+
+  	tty_set_operations(&serial_driver, &serial_ops);
+  	tty_register_driver(&serial_driver);
+  	for (i = 0; i < maxminor; i++)
+  		tty_register_device(&serial_driver, i, NULL);
+
+???
+
+>
+> PS - Each board supports 64 individual serial ports??
+
+No, this particular card comes in 4, 8, and 16 port flavors. I never did 
+understand why they create so many device entries. I just figured they 
+had a reason. For a single card, no matter how many ports, they create 
+64 normal serial tty entries (tty_dgdm_G0 - tty_dgdm_G63), 64 serial 
+printer entries (lp_dgdm_G0 - lp_dgdm_G63), and then 64 serial modem 
+entries (cu_dgdm_G0 - cu_dgdm_G63). Don't know why.
+
+
+Thanks again
+Mark
