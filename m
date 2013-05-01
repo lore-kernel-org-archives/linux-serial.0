@@ -1,50 +1,77 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Michal Simek <monstr@monstr.eu>
 Subject: Re: [PATCH 1/7] tty: xuartps: Sort #includes alphabetically
-Date: Tue, 30 Apr 2013 17:23:21 -0700
-Message-ID: <20130501002321.GB7435@kroah.com>
-References: <1367366284-28304-1-git-send-email-soren.brinkmann@xilinx.com>
- <1367366284-28304-2-git-send-email-soren.brinkmann@xilinx.com>
- <20130501000048.GA1840@kroah.com>
- <cbd8c55c-066b-4396-9a4b-97d58a93b573@DB8EHSMHS005.ehs.local>
+Date: Wed, 01 May 2013 08:50:09 +0200
+Message-ID: <5180BB21.2080306@monstr.eu>
+References: <1367366284-28304-1-git-send-email-soren.brinkmann@xilinx.com> <1367366284-28304-2-git-send-email-soren.brinkmann@xilinx.com> <20130501000048.GA1840@kroah.com> <cbd8c55c-066b-4396-9a4b-97d58a93b573@DB8EHSMHS005.ehs.local> <20130501002321.GB7435@kroah.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="----enig2HHIMRCGXHWASFBPUPLRX"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f52.google.com ([209.85.160.52]:52587 "EHLO
-	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934128Ab3EAAXY (ORCPT
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:44887 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753426Ab3EAGuT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Apr 2013 20:23:24 -0400
-Received: by mail-pb0-f52.google.com with SMTP id mc17so512741pbc.25
-        for <linux-serial@vger.kernel.org>; Tue, 30 Apr 2013 17:23:23 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <cbd8c55c-066b-4396-9a4b-97d58a93b573@DB8EHSMHS005.ehs.local>
+	Wed, 1 May 2013 02:50:19 -0400
+Received: by mail-ee0-f52.google.com with SMTP id d41so561400eek.39
+        for <linux-serial@vger.kernel.org>; Tue, 30 Apr 2013 23:50:18 -0700 (PDT)
+In-Reply-To: <20130501002321.GB7435@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?iso-8859-1?Q?S=F6ren?= Brinkmann <soren.brinkmann@xilinx.com>
-Cc: Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Tue, Apr 30, 2013 at 05:05:40PM -0700, S=F6ren Brinkmann wrote:
-> On Tue, Apr 30, 2013 at 05:00:48PM -0700, Greg Kroah-Hartman wrote:
-> > On Tue, Apr 30, 2013 at 04:57:58PM -0700, Soren Brinkmann wrote:
-> > > Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> > > CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > CC: Jiri Slaby <jslaby@suse.cz>
-> > > CC: linux-serial@vger.kernel.org
-> >=20
-> > Why would you need/want to do this?
-> I often come across duplicated includes. Having some kind of order he=
-lps
-> avoiding that, imho.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+------enig2HHIMRCGXHWASFBPUPLRX
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-We have a tool to handle duplicated includes, no need to put them in
-sorted order for them to be detected.
+On 05/01/2013 02:23 AM, Greg Kroah-Hartman wrote:
+> On Tue, Apr 30, 2013 at 05:05:40PM -0700, S=F6ren Brinkmann wrote:
+>> On Tue, Apr 30, 2013 at 05:00:48PM -0700, Greg Kroah-Hartman wrote:
+>>> On Tue, Apr 30, 2013 at 04:57:58PM -0700, Soren Brinkmann wrote:
+>>>> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+>>>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>> CC: Jiri Slaby <jslaby@suse.cz>
+>>>> CC: linux-serial@vger.kernel.org
+>>>
+>>> Why would you need/want to do this?
+>> I often come across duplicated includes. Having some kind of order hel=
+ps
+>> avoiding that, imho.
+>=20
+> We have a tool to handle duplicated includes, no need to put them in
+> sorted order for them to be detected.
 
-thanks,
+What's the name of tool which does that?
+I have seen results from it but have never tried to find it out name and
+how to use it.
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Michal
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+------enig2HHIMRCGXHWASFBPUPLRX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlGAuyIACgkQykllyylKDCEAJwCcCF+pLdFSrpn3D1i3UzlHfmpo
++rUAn2wVsWO82kPG118bE5NwICbEhIRS
+=NX8z
+-----END PGP SIGNATURE-----
+
+------enig2HHIMRCGXHWASFBPUPLRX--
