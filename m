@@ -1,19 +1,26 @@
-From: grego rigolo <gregorigolo2002@yahoo.fr>
-Subject: Re:6
-Date: Sat, 11 May 2013 16:09:27 +0100 (BST)
-Message-ID: <1368284967.76655.BPMail_high_noncarrier@web171202.mail.ir2.yahoo.com>
+From: "Mr. Wayne Scott" <scwaynescot@yahoo.com>
+Subject: Investment Placement
+Date: Fri, 03 May 2013 22:14:24 +0400
+Message-ID: <20130503181518.052C51FBA08__12316.5098987103$1368305913$gmane$org@FMEmail.localdomain>
+Reply-To: wayne_scott29@aol.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm18.bullet.mail.ird.yahoo.com ([77.238.189.71]:32134 "HELO
-	nm18.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1752916Ab3EKPPY convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 May 2013 11:15:24 -0400
+Received: from educacao.niteroi.urbi.com.br ([200.152.56.131]:48363 "EHLO
+	FMEmail.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753906Ab3EKU55 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 11 May 2013 16:57:57 -0400
+Content-Description: Mail message body
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, jean-pierre.hermant0682@orange.fr, edithdelsemme@hotmail.com, delphine.delelis1@sfr.fr, patrick.hidalgo@neuf.fr, ducattigrou@yahoo.com, tahar.aberkane@wanadoo.fr, pascal.pozzi@aliceadsl.fr, sophie.collignon1@aliceadsl.fr
+To: Recipients <scwaynescot@yahoo.com>
 
+Greetings,
 
-8f739Sat, 11 May 2013 8:09:15 http://domaine-de-montboulon.com/work.at.home.n.php?SID=071
+I am a Civil Lawyer in the United Kingdom. I have a Client that has Interest in investing in Your country. Can You be of assistance?
+
+I shall give you details when you reply
+
+Wayne
