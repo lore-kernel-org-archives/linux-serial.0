@@ -1,28 +1,69 @@
-From: William Fagan <willf@commtech-fastcom.com>
-Subject: Special Character Detection (SCD)
-Date: Thu, 2 May 2013 10:49:54 -0500
-Message-ID: <CAGyNnbgWBaqC12TmtbgbDcqZC3twczSNuC+MawTe=JPxSBnMcQ@mail.gmail.com>
+From: Jongsung Kim <neidhard.kim@lge.com>
+Subject: [PATCH] ARM: PL011: revise to use amba_rev macro
+Date: Fri, 3 May 2013 21:49:10 +0900
+Message-ID: <201305032149.10482.neidhard.kim@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f176.google.com ([209.85.220.176]:53769 "EHLO
-	mail-vc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759734Ab3EBPuQ (ORCPT
+Received: from LGEMRELSE7Q.lge.com ([156.147.1.151]:48237 "EHLO
+	LGEMRELSE7Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759816Ab3ECMtN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 May 2013 11:50:16 -0400
-Received: by mail-vc0-f176.google.com with SMTP id ib11so613807vcb.35
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2013 08:50:15 -0700 (PDT)
+	Fri, 3 May 2013 08:49:13 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I have a 16C550 UART that is registered with the Linux serial driver
-and I am hoping someone can give me advice on how to be alerted that
-the Special Character Detection (SCD) interrupt has happened.
+This patch replaces the ugly bit-operations with the convenient
+amba_rev macro from the get_fifosize_arm function. The type of
+get_fifosize member function is also slightly changed to take
+a pointer to the amba_device.
 
-I'm not sure if there is a way I can configure termios to send the
-user-space program a signal, or what the correct route is.
+Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
+---
+ drivers/tty/serial/amba-pl011.c |   11 +++++------
+ 1 files changed, 5 insertions(+), 6 deletions(-)
 
-Thank you very much for any help you can give.
-
-Will
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index b2e9e17..72b57f9 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -79,13 +79,12 @@ struct vendor_data {
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
+ 
+-	unsigned int (*get_fifosize)(unsigned int periphid);
++	unsigned int (*get_fifosize)(struct amba_device *dev);
+ };
+ 
+-static unsigned int get_fifosize_arm(unsigned int periphid)
++static unsigned int get_fifosize_arm(struct amba_device *dev)
+ {
+-	unsigned int rev = (periphid >> 20) & 0xf;
+-	return rev < 3 ? 16 : 32;
++	return amba_rev(dev) < 3 ? 16 : 32;
+ }
+ 
+ static struct vendor_data vendor_arm = {
+@@ -98,7 +97,7 @@ static struct vendor_data vendor_arm = {
+ 	.get_fifosize		= get_fifosize_arm,
+ };
+ 
+-static unsigned int get_fifosize_st(unsigned int periphid)
++static unsigned int get_fifosize_st(struct amba_device *dev)
+ {
+ 	return 64;
+ }
+@@ -2145,7 +2144,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->lcrh_rx = vendor->lcrh_rx;
+ 	uap->lcrh_tx = vendor->lcrh_tx;
+ 	uap->old_cr = 0;
+-	uap->fifosize = vendor->get_fifosize(dev->periphid);
++	uap->fifosize = vendor->get_fifosize(dev);
+ 	uap->port.dev = &dev->dev;
+ 	uap->port.mapbase = dev->res.start;
+ 	uap->port.membase = base;
+--
