@@ -1,69 +1,52 @@
-From: Jongsung Kim <neidhard.kim@lge.com>
-Subject: [PATCH] ARM: PL011: revise to use amba_rev macro
-Date: Fri, 3 May 2013 21:49:10 +0900
-Message-ID: <201305032149.10482.neidhard.kim@lge.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Regression: ftdi_sio is slow (since Wed Oct 10 15:05:06 2012)
+Date: Fri, 3 May 2013 09:30:08 -0700
+Message-ID: <20130503163008.GA30699@kroah.com>
+References: <5183D196.2080305@list.ru>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from LGEMRELSE7Q.lge.com ([156.147.1.151]:48237 "EHLO
-	LGEMRELSE7Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759816Ab3ECMtN (ORCPT
+Received: from mail-da0-f43.google.com ([209.85.210.43]:60342 "EHLO
+	mail-da0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753486Ab3ECQca (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 May 2013 08:49:13 -0400
+	Fri, 3 May 2013 12:32:30 -0400
+Received: by mail-da0-f43.google.com with SMTP id u7so880790dae.2
+        for <linux-serial@vger.kernel.org>; Fri, 03 May 2013 09:32:30 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <5183D196.2080305@list.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Stas Sergeev <stsp@list.ru>
+Cc: Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Linux kernel <linux-kernel@vger.kernel.org>, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>
 
-This patch replaces the ugly bit-operations with the convenient
-amba_rev macro from the get_fifosize_arm function. The type of
-get_fifosize member function is also slightly changed to take
-a pointer to the amba_device.
+On Fri, May 03, 2013 at 07:02:46PM +0400, Stas Sergeev wrote:
+> Hi.
+> 
+> We have a regression because of this patch:
+> http://lkml.indiana.edu/hypermail/linux/kernel/1210.1/01456.html
+> While it is arguably reasonable to have this for tcdrain or close,
+> it also slows down poll/select a lot because n_tty_poll() does this:
+> 
+> tty_chars_in_buffer(tty) < WAKEUP_CHARS
 
-Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
----
- drivers/tty/serial/amba-pl011.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+What do you mean "slows down"?
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index b2e9e17..72b57f9 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -79,13 +79,12 @@ struct vendor_data {
- 	bool			dma_threshold;
- 	bool			cts_event_workaround;
- 
--	unsigned int (*get_fifosize)(unsigned int periphid);
-+	unsigned int (*get_fifosize)(struct amba_device *dev);
- };
- 
--static unsigned int get_fifosize_arm(unsigned int periphid)
-+static unsigned int get_fifosize_arm(struct amba_device *dev)
- {
--	unsigned int rev = (periphid >> 20) & 0xf;
--	return rev < 3 ? 16 : 32;
-+	return amba_rev(dev) < 3 ? 16 : 32;
- }
- 
- static struct vendor_data vendor_arm = {
-@@ -98,7 +97,7 @@ static struct vendor_data vendor_arm = {
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
--static unsigned int get_fifosize_st(unsigned int periphid)
-+static unsigned int get_fifosize_st(struct amba_device *dev)
- {
- 	return 64;
- }
-@@ -2145,7 +2144,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->lcrh_rx = vendor->lcrh_rx;
- 	uap->lcrh_tx = vendor->lcrh_tx;
- 	uap->old_cr = 0;
--	uap->fifosize = vendor->get_fifosize(dev->periphid);
-+	uap->fifosize = vendor->get_fifosize(dev);
- 	uap->port.dev = &dev->dev;
- 	uap->port.mapbase = dev->res.start;
- 	uap->port.membase = base;
---
+> And it also slows down TIOCOUTQ ioctl I think (not measured).
+> The slowdown of select() is big, the customer reports the inability
+> to work that way.
+
+Inability to work what way?
+
+> Is this patch really needed? I mean, if the time to check TEMT is
+> longer than to xmit that char, then what's the use?
+> Or, if it is really a big deal, I guess it would be necessary to add
+> a separate, .chars_in_buffer_fast method.
+
+We need some way to check the chars in the buffer, is the device you are
+using just very slow to respond to this request?  How slow?  Do you have
+a test case that we can see how it is affected?
+
+thanks,
+
+greg k-h
