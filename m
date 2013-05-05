@@ -1,95 +1,107 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH 6/7] USB: ti_usb_3410_5052: fix chars_in_buffer overhead
-Date: Sun,  5 May 2013 20:32:32 +0200
-Message-ID: <1367778753-22297-7-git-send-email-jhovold@gmail.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 2/7] USB: serial: add generic wait_until_sent implementation
+Date: Sun,  5 May 2013 20:32:28 +0200
+Message-ID: <1367778753-22297-3-git-send-email-jhovold@gmail.com>
 References: <20130505182913.GE16818@localhost>
  <1367778753-22297-1-git-send-email-jhovold@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1367778753-22297-1-git-send-email-jhovold@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Stas Sergeev <stsp@list.ru>, Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>, Johan Hovold <jhovold@gmail.com>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1367778753-22297-1-git-send-email-jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Stas Sergeev <stsp-cmBhpYW9OiY@public.gmane.org>, Jarkko Huijts <jarkko.huijts-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Use the new generic usb-serial wait_until_sent implementation to wait
-for hardware buffers to drain.
+Add generic wait_until_sent implementation which polls for empty
+hardware buffers using the new port-operation tx_empty.
 
-This removes the need to check the hardware buffers in chars_in_buffer
-and thus removes the overhead introduced by commit 2c992cd73 ("USB:
-ti_usb_3410_5052: query hardware-buffer status in chars_in_buffer")
-without breaking tty_wait_until_sent (used by, for example, tcdrain,
-tcsendbreak and close).
+The generic implementation will be used for all sub-drivers that
+implement tx_empty but does not define wait_until_sent.
 
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
+Signed-off-by: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/usb/serial/ti_usb_3410_5052.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/usb/serial/generic.c    | 29 +++++++++++++++++++++++++++++
+ drivers/usb/serial/usb-serial.c |  2 ++
+ include/linux/usb/serial.h      |  3 +++
+ 3 files changed, 34 insertions(+)
 
-diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
-index cac47ae..c92c5ed 100644
---- a/drivers/usb/serial/ti_usb_3410_5052.c
-+++ b/drivers/usb/serial/ti_usb_3410_5052.c
-@@ -101,6 +101,7 @@ static int ti_write(struct tty_struct *tty, struct usb_serial_port *port,
- 		const unsigned char *data, int count);
- static int ti_write_room(struct tty_struct *tty);
- static int ti_chars_in_buffer(struct tty_struct *tty);
-+static bool ti_tx_empty(struct usb_serial_port *port);
- static void ti_throttle(struct tty_struct *tty);
- static void ti_unthrottle(struct tty_struct *tty);
- static int ti_ioctl(struct tty_struct *tty,
-@@ -222,6 +223,7 @@ static struct usb_serial_driver ti_1port_device = {
- 	.write			= ti_write,
- 	.write_room		= ti_write_room,
- 	.chars_in_buffer	= ti_chars_in_buffer,
-+	.tx_empty		= ti_tx_empty,
- 	.throttle		= ti_throttle,
- 	.unthrottle		= ti_unthrottle,
- 	.ioctl			= ti_ioctl,
-@@ -253,6 +255,7 @@ static struct usb_serial_driver ti_2port_device = {
- 	.write			= ti_write,
- 	.write_room		= ti_write_room,
- 	.chars_in_buffer	= ti_chars_in_buffer,
-+	.tx_empty		= ti_tx_empty,
- 	.throttle		= ti_throttle,
- 	.unthrottle		= ti_unthrottle,
- 	.ioctl			= ti_ioctl,
-@@ -684,8 +687,6 @@ static int ti_chars_in_buffer(struct tty_struct *tty)
- 	struct ti_port *tport = usb_get_serial_port_data(port);
- 	int chars = 0;
- 	unsigned long flags;
--	int ret;
--	u8 lsr;
- 
- 	if (tport == NULL)
- 		return 0;
-@@ -694,16 +695,22 @@ static int ti_chars_in_buffer(struct tty_struct *tty)
- 	chars = kfifo_len(&tport->write_fifo);
- 	spin_unlock_irqrestore(&tport->tp_lock, flags);
- 
--	if (!chars) {
--		ret = ti_get_lsr(tport, &lsr);
--		if (!ret && !(lsr & TI_LSR_TX_EMPTY))
--			chars = 1;
--	}
--
- 	dev_dbg(&port->dev, "%s - returns %d\n", __func__, chars);
- 	return chars;
+diff --git a/drivers/usb/serial/generic.c b/drivers/usb/serial/generic.c
+index 297665f..70ae019 100644
+--- a/drivers/usb/serial/generic.c
++++ b/drivers/usb/serial/generic.c
+@@ -253,6 +253,35 @@ int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
  }
+ EXPORT_SYMBOL_GPL(usb_serial_generic_chars_in_buffer);
  
-+static bool ti_tx_empty(struct usb_serial_port *port)
++void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
 +{
-+	struct ti_port *tport = usb_get_serial_port_data(port);
-+	int ret;
-+	u8 lsr;
++	struct usb_serial_port *port = tty->driver_data;
++	unsigned int bps;
++	unsigned long period;
++	unsigned long expire;
 +
-+	ret = ti_get_lsr(tport, &lsr);
-+	if (!ret && !(lsr & TI_LSR_TX_EMPTY))
-+		return false;
++	/*
++	 * Use a poll-period of roughly the time it takes to send one
++	 * character or at least one jiffy.
++	 */
++	bps =  tty_get_baud_rate(tty);
++	period = max_t(unsigned long, (10 * HZ / bps), 1);
++	period = min_t(unsigned long, period, timeout);
 +
-+	return true;
++	dev_dbg(&port->dev, "%s - timeout = %u ms, period = %u ms\n",
++					__func__, jiffies_to_msecs(timeout),
++					jiffies_to_msecs(period));
++	expire = jiffies + timeout;
++	while (!port->serial->type->tx_empty(port)) {
++		schedule_timeout_interruptible(period);
++		if (signal_pending(current))
++			break;
++		if (time_after(jiffies, expire))
++			break;
++	}
 +}
- 
- static void ti_throttle(struct tty_struct *tty)
++EXPORT_SYMBOL_GPL(usb_serial_generic_wait_until_sent);
++
+ static int usb_serial_generic_submit_read_urb(struct usb_serial_port *port,
+ 						int index, gfp_t mem_flags)
  {
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 31d2768..60caf9c 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -1333,6 +1333,8 @@ static void usb_serial_operations_init(struct usb_serial_driver *device)
+ 	set_to_generic_if_null(device, close);
+ 	set_to_generic_if_null(device, write_room);
+ 	set_to_generic_if_null(device, chars_in_buffer);
++	if (device->tx_empty)
++		set_to_generic_if_null(device, wait_until_sent);
+ 	set_to_generic_if_null(device, read_bulk_callback);
+ 	set_to_generic_if_null(device, write_bulk_callback);
+ 	set_to_generic_if_null(device, process_read_urb);
+diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
+index afbb7ee..302ddf5 100644
+--- a/include/linux/usb/serial.h
++++ b/include/linux/usb/serial.h
+@@ -269,6 +269,7 @@ struct usb_serial_driver {
+ 	void (*break_ctl)(struct tty_struct *tty, int break_state);
+ 	int  (*chars_in_buffer)(struct tty_struct *tty);
+ 	void (*wait_until_sent)(struct tty_struct *tty, long timeout);
++	bool (*tx_empty)(struct usb_serial_port *port);
+ 	void (*throttle)(struct tty_struct *tty);
+ 	void (*unthrottle)(struct tty_struct *tty);
+ 	int  (*tiocmget)(struct tty_struct *tty);
+@@ -328,6 +329,8 @@ extern void usb_serial_generic_close(struct usb_serial_port *port);
+ extern int usb_serial_generic_resume(struct usb_serial *serial);
+ extern int usb_serial_generic_write_room(struct tty_struct *tty);
+ extern int usb_serial_generic_chars_in_buffer(struct tty_struct *tty);
++extern void usb_serial_generic_wait_until_sent(struct tty_struct *tty,
++								long timeout);
+ extern void usb_serial_generic_read_bulk_callback(struct urb *urb);
+ extern void usb_serial_generic_write_bulk_callback(struct urb *urb);
+ extern void usb_serial_generic_throttle(struct tty_struct *tty);
 -- 
 1.8.2.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
