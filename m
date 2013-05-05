@@ -1,27 +1,89 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] serial: sunsu: add missing
- platform_driver_unregister() when module exit
-Date: Sat, 04 May 2013 21:32:55 -0400 (EDT)
-Message-ID: <20130504.213255.347200760283293043.davem@davemloft.net>
-References: <CAPgLHd_4TH7Ur2VWtqHD3puc9eCkfHKEP9dA-ZwnxE8MtpGLww@mail.gmail.com>
+From: Johan Hovold <jhovold@gmail.com>
+Subject: Re: Regression: ftdi_sio is slow (since Wed Oct 10 15:05:06 2012)
+Date: Sun, 5 May 2013 20:29:13 +0200
+Message-ID: <20130505182913.GE16818@localhost>
+References: <20130503163008.GA30699@kroah.com>
+ <5183F62A.1020801@list.ru>
+ <20130503165231.GA1966@kroah.com>
+ <5183FC83.8090602@list.ru>
+ <20130503171618.GA16686@kroah.com>
+ <51840186.7000608@list.ru>
+ <20130503203419.GA25932@kroah.com>
+ <51843132.9040304@list.ru>
+ <20130504111535.GC16818@localhost>
+ <5184F38D.9090507@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <sparclinux-owner@vger.kernel.org>
-In-Reply-To: <CAPgLHd_4TH7Ur2VWtqHD3puc9eCkfHKEP9dA-ZwnxE8MtpGLww@mail.gmail.com>
-Sender: sparclinux-owner@vger.kernel.org
-To: weiyj.lk@gmail.com
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com, yongjun_wei@trendmicro.com.cn, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5184F38D.9090507@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Johan Hovold <jhovold@gmail.com>, Stas Sergeev <stsp@list.ru>, Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Linux kernel <linux-kernel@vger.kernel.org>, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>
 List-Id: linux-serial@vger.kernel.org
 
-From: Wei Yongjun <weiyj.lk@gmail.com>
-Date: Sat, 27 Apr 2013 18:13:16 +0800
+On Sat, May 04, 2013 at 07:39:57AM -0400, Peter Hurley wrote:
+> On 05/04/2013 07:15 AM, Johan Hovold wrote:
+> > On Sat, May 04, 2013 at 01:50:42AM +0400, Stas Sergeev wrote:
+> >> 04.05.2013 00:34, Greg KH =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> >>> On Fri, May 03, 2013 at 10:27:18PM +0400, Stas Sergeev wrote:
+> >>>> 03.05.2013 21:16, Greg KH =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
 
-> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> 
-> We have registered platform driver when module init, and
-> need unregister it when module exit.
-> 
-> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+[...]
 
-Applied.
+> > But you do have a point, and I have been meaning to look into wheth=
+er
+> > the added overhead of checking the hardware buffers could be mitiga=
+ted
+> > by adding wait_until_sent support to usb-serial. This way the we wo=
+uld
+> > only query the hardware buffers on tty_wait_until_sent (e.g. at clo=
+se)
+> > and select and TIOCMOUTQ would not suffer. This is also the way thi=
+ngs
+> > are handled in serial_core.
+>=20
+> Agreed. This is the correct solution.
+>=20
+> > I'll prepare a series which adds wait_until_sent to usb-serial, but=
+ I
+> > doubt it would be stable material (even if it could get into 3.10).
+> >
+> > What do you think Greg, is this overhead to chars_in_buffer reason
+> > enough to disable it in the stable trees or should we simply fix it=
+ in
+> > 3.11 (or 3.10)? (The overhead is about 3-400 us per call when the p=
+ort
+> > fifo is empty, which makes chars_in_buffer about 100 times slower o=
+n my
+> > test system.)
+>=20
+> A better solution for stable would be to set port->drain_delay. It
+> won't help tcdrain() but at least the port won't shutdown on live
+> outbound data.
+
+Removing the hardware-buffer checks from chars_in_buffer would mean
+breaking tty_wait_until_sent and thus also, for example, tcdrain,
+tcsendbreak, and close. Using drain_delay would partially work-around
+the problem with close, but at the cost of adding delays for all users
+while still not being able to guarantee that the buffers have been
+drained. Either way, this seems to amount to a regression.
+
+On the other hand, the added overhead to chars_in_buffer seems to break
+at least one application as well.
+
+I've implemented wait_until_sent-support for usb-serial, which fixes th=
+e
+problem without any such trade-offs and which I believe needs to go in
+to v3.10.
+
+=46or the stable trees I think keeping the current, less efficient (but
+more complete) chars_in_buffer implementations is preferred over
+introducing further regressions. Back-porting wait_until_sent-support
+could perhaps also be considered.
+
+I'm responding to this mail with a wait_until_sent-support series.
+
+Thanks,
+Johan
