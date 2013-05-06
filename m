@@ -1,68 +1,50 @@
-From: Fabio Estevam <fabio.estevam@freescale.com>
-Subject: [PATCH 10/13] serial: mxs-auart: Let device core handle pinctrl
-Date: Mon, 6 May 2013 15:05:58 -0300
-Message-ID: <1367863561-11534-10-git-send-email-fabio.estevam@freescale.com>
-References: <1367863561-11534-1-git-send-email-fabio.estevam@freescale.com>
+From: Fernando Di Nucci <f.dinucci@alice.it>
+Subject: Setting PL2303 baud rate
+Date: Mon, 06 May 2013 22:27:51 +0200
+Message-ID: <51881247.9050809@alice.it>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe005.messaging.microsoft.com ([213.199.154.208]:55472
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755075Ab3EFSGo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 May 2013 14:06:44 -0400
-In-Reply-To: <1367863561-11534-1-git-send-email-fabio.estevam@freescale.com>
+Received: from smtp206.alice.it ([82.57.200.102]:49316 "EHLO smtp206.alice.it"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755971Ab3EFU1y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 6 May 2013 16:27:54 -0400
+Received: from [192.168.30.175] (79.22.98.121) by smtp206.alice.it (8.6.060.15) (authenticated as f.dinucci@alice.it)
+        id 511D120D0CD7B39D for linux-serial@vger.kernel.org; Mon, 6 May 2013 22:27:52 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: shawn.guo@linaro.org
-Cc: kernel@pengutronix.de, festevam@gmail.com, Fabio Estevam <fabio.estevam@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
-we can rely on device core for handling pinctrl.
+I have a PL2303HX adapter and I need to set up its baud rate to 1228800 
+or 2457600
 
-So remove devm_pinctrl_get_select_default() from the driver. 
+(openwrt, linux kernel 3.3.8, coreutils 8.16 and ubuntu quantal 
+3.5.0-28, same coreutils).
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: <linux-serial@vger.kernel.org>
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/mxs-auart.c |    8 --------
- 1 file changed, 8 deletions(-)
+I tried stty -F /dev/ttyUSB0 baudrate
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index d549fe1..573d656 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -32,7 +32,6 @@
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/io.h>
--#include <linux/pinctrl/consumer.h>
- #include <linux/of_device.h>
- #include <linux/dma-mapping.h>
- #include <linux/fsl/mxs-dma.h>
-@@ -1059,7 +1058,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	u32 version;
- 	int ret = 0;
- 	struct resource *r;
--	struct pinctrl *pinctrl;
- 
- 	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
- 	if (!s) {
-@@ -1073,12 +1071,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	else if (ret < 0)
- 		goto out_free;
- 
--	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
--	if (IS_ERR(pinctrl)) {
--		ret = PTR_ERR(pinctrl);
--		goto out_free;
--	}
--
- 	if (of_id) {
- 		pdev->id_entry = of_id->data;
- 		s->devtype = pdev->id_entry->driver_data;
--- 
-1.7.9.5
+Well, when baudrate is 921600 or 3000000 everything is fine, but when I 
+try 1228800 or 2457600 stty complaints:
+stty: invalid argument '2457600'.
 
+I searched stty source and added:
 
+#ifdef B1228800
+   {"1228800", B1228800, 1228800},
+#endif
+#ifdef B2457600
+   {"2457600", B2457600, 2457600},
+#endif
+
+and compiled but no luck. I don't know where else those values need also 
+to be modified.
+
+Can you please point me to the right direction?
+
+Or there is another way to set pl2303 baud rate passing some information 
+on the command line of kernel module?
+
+I searched the web but didn't find any clue.
+
+Any help appreciated, thank you very much anyway.
