@@ -1,52 +1,44 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 15/15] serial: pxa: remove unnecessary platform_set_drvdata()
-Date: Tue, 07 May 2013 17:07:54 +0900
-Message-ID: <009401ce4af9$fa3284d0$ee978e70$@samsung.com>
+From: Tony Prisk <linux@prisktech.co.nz>
+Subject: Re: [PATCH 14/15] serial: vt8500: remove unnecessary platform_set_drvdata()
+Date: Tue, 07 May 2013 20:17:18 +1200
+Message-ID: <5188B88E.9050700@prisktech.co.nz>
+References: <009301ce4af9$eecae6f0$cc60b4d0$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:32401 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754068Ab3EGIHz (ORCPT
+Received: from server.prisktech.co.nz ([115.188.14.127]:57978 "EHLO
+	server.prisktech.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758231Ab3EGIRQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 May 2013 04:07:55 -0400
-Received: from epcpsbgr1.samsung.com
- (u141.gpu120.samsung.co.kr [203.254.230.141])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MMF003P358KP5M0@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Tue, 07 May 2013 17:07:55 +0900 (KST)
-Content-language: ko
+	Tue, 7 May 2013 04:17:16 -0400
+In-Reply-To: <009301ce4af9$eecae6f0$cc60b4d0$@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-The driver core clears the driver data to NULL after device_release
-or on probe failure, since commit 0998d0631001288a5974afc0b2a5f568bcdecb4d
-(device-core: Ensure drvdata = NULL when no driver is bound).
-Thus, it is not needed to manually clear the device driver data to NULL.
-
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/tty/serial/pxa.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 05f504e..ac8b2f5 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -945,8 +945,6 @@ static int serial_pxa_remove(struct platform_device *dev)
- {
- 	struct uart_pxa_port *sport = platform_get_drvdata(dev);
- 
--	platform_set_drvdata(dev, NULL);
--
- 	uart_remove_one_port(&serial_pxa_reg, &sport->port);
- 
- 	clk_unprepare(sport->clk);
--- 
-1.7.2.5
-
-
+On 07/05/13 20:07, Jingoo Han wrote:
+> The driver core clears the driver data to NULL after device_release
+> or on probe failure, since commit 0998d0631001288a5974afc0b2a5f568bcdecb4d
+> (device-core: Ensure drvdata = NULL when no driver is bound).
+> Thus, it is not needed to manually clear the device driver data to NULL.
+>
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> ---
+>   drivers/tty/serial/vt8500_serial.c |    1 -
+>   1 files changed, 0 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+> index 1a8bc22..053de1b 100644
+> --- a/drivers/tty/serial/vt8500_serial.c
+> +++ b/drivers/tty/serial/vt8500_serial.c
+> @@ -630,7 +630,6 @@ static int vt8500_serial_remove(struct platform_device *pdev)
+>   {
+>   	struct vt8500_port *vt8500_port = platform_get_drvdata(pdev);
+>   
+> -	platform_set_drvdata(pdev, NULL);
+>   	clk_disable_unprepare(vt8500_port->clk);
+>   	uart_remove_one_port(&vt8500_uart_driver, &vt8500_port->uart);
+>   
+Acked-by: Tony Prisk <linux@prisktech.co.nz>
