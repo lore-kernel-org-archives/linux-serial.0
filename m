@@ -1,23 +1,22 @@
 From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 10/15] serial: pnx8xxx: remove unnecessary
- platform_set_drvdata()
-Date: Tue, 07 May 2013 17:04:49 +0900
-Message-ID: <008f01ce4af9$8bc9bf90$a35d3eb0$@samsung.com>
+Subject: [PATCH 11/15] serial: sa1100: remove unnecessary platform_set_drvdata()
+Date: Tue, 07 May 2013 17:05:26 +0900
+Message-ID: <009001ce4af9$a1df6f50$e59e4df0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:31676 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757720Ab3EGIEv (ORCPT
+Received: from mailout1.samsung.com ([203.254.224.24]:22508 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756632Ab3EGIF2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 May 2013 04:04:51 -0400
-Received: from epcpsbgr2.samsung.com
- (u142.gpu120.samsung.co.kr [203.254.230.142])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+	Tue, 7 May 2013 04:05:28 -0400
+Received: from epcpsbgr1.samsung.com
+ (u141.gpu120.samsung.co.kr [203.254.230.141])
+ by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
  (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MMF00D0L53S02G0@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Tue, 07 May 2013 17:04:49 +0900 (KST)
+ with ESMTP id <0MMF00BNO5497RV0@mailout1.samsung.com> for
+ linux-serial@vger.kernel.org; Tue, 07 May 2013 17:05:27 +0900 (KST)
 Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -31,21 +30,21 @@ Thus, it is not needed to manually clear the device driver data to NULL.
 
 Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/tty/serial/pnx8xxx_uart.c |    2 --
+ drivers/tty/serial/sa1100.c |    2 --
  1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
-index 7e277a5..b6b7aca 100644
---- a/drivers/tty/serial/pnx8xxx_uart.c
-+++ b/drivers/tty/serial/pnx8xxx_uart.c
-@@ -801,8 +801,6 @@ static int pnx8xxx_serial_remove(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index af6b3e3..fc23ea19 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -864,8 +864,6 @@ static int sa1100_serial_remove(struct platform_device *pdev)
  {
- 	struct pnx8xxx_port *sport = platform_get_drvdata(pdev);
+ 	struct sa1100_port *sport = platform_get_drvdata(pdev);
  
 -	platform_set_drvdata(pdev, NULL);
 -
  	if (sport)
- 		uart_remove_one_port(&pnx8xxx_reg, &sport->port);
+ 		uart_remove_one_port(&sa1100_reg, &sport->port);
  
 -- 
 1.7.2.5
