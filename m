@@ -1,23 +1,23 @@
 From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 09/15] serial: pmac_zilog: remove unnecessary
+Subject: [PATCH 10/15] serial: pnx8xxx: remove unnecessary
  platform_set_drvdata()
-Date: Tue, 07 May 2013 17:04:27 +0900
-Message-ID: <008e01ce4af9$7ed7ff40$7c87fdc0$@samsung.com>
+Date: Tue, 07 May 2013 17:04:49 +0900
+Message-ID: <008f01ce4af9$8bc9bf90$a35d3eb0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:31592 "EHLO
+Received: from mailout3.samsung.com ([203.254.224.33]:31676 "EHLO
 	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756632Ab3EGIE3 (ORCPT
+	with ESMTP id S1757720Ab3EGIEv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 May 2013 04:04:29 -0400
+	Tue, 7 May 2013 04:04:51 -0400
 Received: from epcpsbgr2.samsung.com
  (u142.gpu120.samsung.co.kr [203.254.230.142])
  by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
  (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MMF00DXQ51G02F0@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Tue, 07 May 2013 17:04:28 +0900 (KST)
+ with ESMTP id <0MMF00D0L53S02G0@mailout3.samsung.com> for
+ linux-serial@vger.kernel.org; Tue, 07 May 2013 17:04:49 +0900 (KST)
 Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -31,21 +31,22 @@ Thus, it is not needed to manually clear the device driver data to NULL.
 
 Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/tty/serial/pmac_zilog.c |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ drivers/tty/serial/pnx8xxx_uart.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index b1785f5..f87f1a0 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1798,7 +1798,6 @@ static int __exit pmz_detach(struct platform_device *pdev)
- 
- 	uart_remove_one_port(&pmz_uart_reg, &uap->port);
+diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
+index 7e277a5..b6b7aca 100644
+--- a/drivers/tty/serial/pnx8xxx_uart.c
++++ b/drivers/tty/serial/pnx8xxx_uart.c
+@@ -801,8 +801,6 @@ static int pnx8xxx_serial_remove(struct platform_device *pdev)
+ {
+ 	struct pnx8xxx_port *sport = platform_get_drvdata(pdev);
  
 -	platform_set_drvdata(pdev, NULL);
- 	uap->port.dev = NULL;
+-
+ 	if (sport)
+ 		uart_remove_one_port(&pnx8xxx_reg, &sport->port);
  
- 	return 0;
 -- 
 1.7.2.5
 
