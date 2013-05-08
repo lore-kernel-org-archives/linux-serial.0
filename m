@@ -1,54 +1,49 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC 1/8] serial:st-asc: Add ST ASC driver.
-Date: Wed, 8 May 2013 17:40:57 +0200
-Message-ID: <20130508154057.GB3041@game.jcrosoft.org>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081634.43498.arnd@arndb.de>
- <20130508153459.GA17186@kroah.com>
+From: Johan Hovold <jhovold@gmail.com>
+Subject: Re: [PATCH 2/7] USB: serial: add generic wait_until_sent
+ implementation
+Date: Wed, 8 May 2013 17:48:55 +0200
+Message-ID: <20130508154855.GA14438@localhost>
+References: <20130505182913.GE16818@localhost>
+ <1367778753-22297-1-git-send-email-jhovold@gmail.com>
+ <1367778753-22297-3-git-send-email-jhovold@gmail.com>
+ <518A6049.4090303@list.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f174.google.com ([209.85.217.174]:65227 "EHLO
+	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755018Ab3EHPtA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 May 2013 11:49:00 -0400
 Content-Disposition: inline
-In-Reply-To: <20130508153459.GA17186-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, jslaby-AlSwsSmVLrQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
+In-Reply-To: <518A6049.4090303@list.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Stas Sergeev <stsp@list.ru>
+Cc: Johan Hovold <jhovold@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>
 
-On 08:34 Wed 08 May     , Greg KH wrote:
-> On Wed, May 08, 2013 at 04:34:43PM +0200, Arnd Bergmann wrote:
-> > > +#define ASC_MAJOR		204
-> > > +#define ASC_MINOR_START		40
-> > 
-> > I don't know what the current policy is on allocating major/minor numbers,
-> > but I'm sure you cannot just reuse one that is already used.
-> 
-> I agree, why are you trying to create a new tty device name?  Can't you
-> use the existing ttyS name and minor number as you will not have any
-> other type of serial device on this system?
+On Wed, May 08, 2013 at 06:25:13PM +0400, Stas Sergeev wrote:
+> 05.05.2013 22:32, Johan Hovold =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > Add generic wait_until_sent implementation which polls for empty
+> > hardware buffers using the new port-operation tx_empty.
+> >
+> > The generic implementation will be used for all sub-drivers that
+> > implement tx_empty but does not define wait_until_sent.
+> Hi Johan.
+>=20
+> The customer reports an Oops below.
+> Does that ring any bells?
+> Well, there is only one division in usb_serial_generic_wait_until_sen=
+t(),
+> anyway. :)
 
-Greg on ST STB for more than 10 years we use ttyASC I'll prefer ttySx
+Yes, you're right I forgot about B0. I'll send a v2.
 
-on the DTB SoC you have one one IP present the st,asc
-
-Best Regards,
-J.
-> 
-> thanks,
-> 
-> greg k-h
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
+Thanks for catching this,
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
