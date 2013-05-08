@@ -1,67 +1,57 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
-Date: Wed, 8 May 2013 15:49:07 +0100
-Message-ID: <20130508144907.GB20820@mudshark.cambridge.arm.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081638.23100.arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Wed, 8 May 2013 16:50:22 +0200
+Message-ID: <201305081650.23264.arnd@arndb.de>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <201305081638.23100.arnd-r2nGTMty4D4@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.171]:53825 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755957Ab3EHOul (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 May 2013 10:50:41 -0400
+In-Reply-To: <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 
-On Wed, May 08, 2013 at 03:38:22PM +0100, Arnd Bergmann wrote:
-> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
-> > From: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
-> > 
-> > This is a simple driver for the global timer module found in the Cortex
-> > A9-MP cores from revision r1p0 onwards. This should be able to perform
-> > the functions of the system timer and the local timer in an SMP system.
-> > 
-> > The global timer has the following features:
-> >     The global timer is a 64-bit incrementing counter with an
-> > auto-incrementing feature. It continues incrementing after sending
-> > interrupts. The global timer is memory mapped in the private memory
-> > region.
-> >     The global timer is accessible to all Cortex-A9 processors in the
-> > cluster. Each Cortex-A9 processor has a private 64-bit comparator that
-> > is used to assert a private interrupt when the global timer has reached
-> > the comparator value. All the Cortex-A9 processors in a design use the
-> > banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
-> > Controller as a Private Peripheral Interrupt. The global timer is
-> > clocked by PERIPHCLK.
-> > 
-> > Signed-off-by: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
-> > Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-> >
+On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
+> From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 > 
-> Are you sure we don't already have a driver for this? It sounds unlikely
-> that you are the first one to do this when the hardware is so common.
+> This patch introduces syscon_claim, syscon_read, syscon_write,
+> syscon_release APIs to help drivers to use syscon registers in much more
+> flexible way.
+> 
+> With this patch, a driver can claim few/all bits in the syscon registers
+> and do read/write and then release them when its totally finished with
+> them, in the mean time if another driver requests same bits or registers
+> the API will detect conflit and return error to the second request.
+> 
+> Reason to introduce this API.
+> System configuration/control registers are very basic configuration
+> registers arranged in groups across ST Settop Box parts. These registers
+> are independent of IP itself. Many IPs, clock, pad and other functions
+> are wired up to these registers.
+> 
+> In many cases a single syconf register contains bits related to multiple
+> devices, and therefore it need to be shared across multiple drivers at
+> bit level. The same IP block can have different syscon mappings on
+> different SOCs.
+> 
+> Typically in a SOC there will be more than hundreds of these registers,
+> which are again divided into groups.
+> 
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> CC: Stuart Menefy <stuart.menefy@st.com>
 
-An additional reason why people don't make use of this timer (on top of the
-power domain concerns raised by Rob) is due to the following from the A9
-TRM:
+My feeling is that syscon is the wrong place for this functionality,
+since regmap already handles (some of?) these issues. If you need
+additional synchronization, it's probably best to extend regmap
+as needed so other code besides syscon can take advantage of that
+as well.
 
-  `From r2p0 the comparators for each processor with the global timer fire
-   when the timer value is greater than or equal to. In previous revisions
-   the comparators fired when the timer value was equal to.'
-
-So you'll get into all sorts of horrible races on those older revisions if
-you're not careful.
-
-Will
+	Arnd
