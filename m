@@ -1,1029 +1,1107 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: =?UTF-8?q?=5BRFC=206/8=5D=20ARM=3Astih41x=3A=20Add=20STiH416=20SOC=20support?=
-Date: Wed,  8 May 2013 15:11:58 +0100
-Message-ID: <1368022318-2380-1-git-send-email-srinivas.kandagatla@st.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+Subject: [RFC 1/8] serial:st-asc: Add ST ASC driver.
+Date: Wed,  8 May 2013 15:10:48 +0100
+Message-ID: <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
 References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux@arm.linux.org.uk, arnd@arndb.de, olof@lixom.net
-Cc: Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Samuel Ortiz <sameo@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Srinivas Kandagatla <srinivas.kandagatla@st.com>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozla
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1368022187-1633-1-git-send-email-srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org
+Cc: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-=46rom: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+From: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 
-The STiH416 is advanced HD AVC processor with 3D graphics acceleration
-and 1.2-GHz ARM Cortex-A9 SMP CPU.
+This patch adds support to ASC (asynchronous serial controller)
+driver, which is basically a standard serial driver. This IP is common
+across all the ST parts for settop box platforms.
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-CC: Stephen Gallimore <stephen.gallimore@st.com>
-CC: Stuart Menefy <stuart.menefy@st.com>
+ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
+It support all industry standard baud rates.
+
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+CC: Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>
+CC: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
 ---
- Documentation/arm/STiH41x/stih416-overview.txt |   12 +
- arch/arm/boot/dts/stih416-clock.dtsi           |   41 ++
- arch/arm/boot/dts/stih416-pinctrl.dtsi         |  718 ++++++++++++++++=
-++++++++
- arch/arm/boot/dts/stih416.dtsi                 |  103 ++++
- arch/arm/boot/dts/stih416.h                    |   24 +
- arch/arm/configs/stih41x_defconfig             |    1 +
- arch/arm/mach-stih41x/Kconfig                  |    9 +
- arch/arm/mach-stih41x/board-dt.c               |    2 +-
- 8 files changed, 909 insertions(+), 1 deletions(-)
- create mode 100644 Documentation/arm/STiH41x/stih416-overview.txt
- create mode 100644 arch/arm/boot/dts/stih416-clock.dtsi
- create mode 100644 arch/arm/boot/dts/stih416-pinctrl.dtsi
- create mode 100644 arch/arm/boot/dts/stih416.dtsi
- create mode 100644 arch/arm/boot/dts/stih416.h
+ .../devicetree/bindings/tty/serial/st-asc.txt      |   18 +
+ drivers/tty/serial/Kconfig                         |   19 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/st-asc.c                        |  821 ++++++++++++++++++++
+ drivers/tty/serial/st-asc.h                        |  146 ++++
+ include/uapi/linux/serial_core.h                   |    3 +
+ 6 files changed, 1008 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/st-asc.txt
+ create mode 100644 drivers/tty/serial/st-asc.c
+ create mode 100644 drivers/tty/serial/st-asc.h
 
-diff --git a/Documentation/arm/STiH41x/stih416-overview.txt b/Documenta=
-tion/arm/STiH41x/stih416-overview.txt
+diff --git a/Documentation/devicetree/bindings/tty/serial/st-asc.txt b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
 new file mode 100644
-index 0000000..e060867
+index 0000000..75d877f
 --- /dev/null
-+++ b/Documentation/arm/STiH41x/stih416-overview.txt
-@@ -0,0 +1,12 @@
-+			STiH416 Overview
-+			=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++++ b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
+@@ -0,0 +1,18 @@
++*st-asc(Serial Port)
 +
-+Introduction
-+------------
++Required properties:
++- compatible : Should be "st,asc".
++- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
++			resources with names. look in
++			Documentation/devicetree/bindings/resource-names.txt
 +
-+    The STiH416 is the next generation of HD, AVC set-top box processo=
-rs
-+    for satellite, cable, terrestrial and IP-STB markets.
-+
-+    Features
-+    - ARM Cortex-A9 1.2 GHz dual core CPU
-+    - SATA2=C3=972,USB 2.0=C3=973, PCIe, Gbit Ethernet MAC=C3=972
-diff --git a/arch/arm/boot/dts/stih416-clock.dtsi b/arch/arm/boot/dts/s=
-tih416-clock.dtsi
-new file mode 100644
-index 0000000..7026bf1
---- /dev/null
-+++ b/arch/arm/boot/dts/stih416-clock.dtsi
-@@ -0,0 +1,41 @@
-+/*
-+ * Copyright (C) 2013 STMicroelectronics R&D Limited
-+ * <stlinux-devel@stlinux.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+/ {
-+	clocks {
-+		/*
-+		 * Fixed 30MHz oscillator inputs to SoC
-+		 */
-+		CLK_SYSIN: CLK_SYSIN {
-+			#clock-cells =3D <0>;
-+			compatible =3D "fixed-clock";
-+			clock-frequency =3D <30000000>;
-+			clock-output-names =3D "CLK_SYSIN";
-+		};
-+
-+		/*
-+		 * ARM Peripheral clock for timers
-+		 */
-+		arm_periph_clk: arm_periph_clk {
-+			#clock-cells =3D <0>;
-+			compatible =3D "fixed-clock";
-+			clock-frequency =3D <600000000>;
-+		};
-+
-+		/*
-+		 * Bootloader initialized system infrastructure clock for
-+		 * serial devices.
-+		 */
-+		CLK_S_ICN_REG_0: clockgenA0@4 {
-+			#clock-cells =3D <0>;
-+			compatible =3D "fixed-clock";
-+			clock-frequency =3D <100000000>;
-+			clock-output-names =3D "CLK_S_ICN_REG_0";
-+		};
-+	};
++Optional properties:
++- st,hw-flow-ctrl	bool flag to enable hardware flow control.
++- st,force-m1		bool flat to force asc to be in Mode-1 recommeded
++			for high bit rates (above 19.2K)
++Example:
++serial@fe440000{
++    compatible    = "st,asc";
++    reg         = <0xfe440000 0x2c>;
++    interrupts     =  <0 209 0>;
 +};
-diff --git a/arch/arm/boot/dts/stih416-pinctrl.dtsi b/arch/arm/boot/dts=
-/stih416-pinctrl.dtsi
-new file mode 100644
-index 0000000..f1266bb
---- /dev/null
-+++ b/arch/arm/boot/dts/stih416-pinctrl.dtsi
-@@ -0,0 +1,718 @@
-+
-+/*
-+ * Copyright (C) 2013 STMicroelectronics Limited.
-+ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y
-+ * it under the terms of the GNU General Public License version 2 as
-+ * publishhed by the Free Software Foundation.
-+ */
-+#include "stixxxx-pincfg.h"
-+#include "stih416.h"
-+/ {
-+
-+	aliases {
-+		gpio0	=3D &PIO0;
-+		gpio1	=3D &PIO1;
-+		gpio2	=3D &PIO2;
-+		gpio3	=3D &PIO3;
-+		gpio4	=3D &PIO4;
-+		gpio5	=3D &PIO40;
-+		gpio6	=3D &PIO5;
-+		gpio7	=3D &PIO6;
-+		gpio8	=3D &PIO7;
-+		gpio9	=3D &PIO8;
-+		gpio10	=3D &PIO9;
-+		gpio11	=3D &PIO10;
-+		gpio12	=3D &PIO11;
-+		gpio13	=3D &PIO12;
-+		gpio14	=3D &PIO30;
-+		gpio15	=3D &PIO31;
-+		gpio16	=3D &PIO13;
-+		gpio17	=3D &PIO14;
-+		gpio18	=3D &PIO15;
-+		gpio19	=3D &PIO16;
-+		gpio20	=3D &PIO17;
-+		gpio21	=3D &PIO18;
-+		gpio22	=3D &PIO100;
-+		gpio23	=3D &PIO101;
-+		gpio24	=3D &PIO102;
-+		gpio25	=3D &PIO103;
-+		gpio26	=3D &PIO104;
-+		gpio27	=3D &PIO105;
-+		gpio28	=3D &PIO106;
-+		gpio29	=3D &PIO107;
-+	};
-+
-+
-+	soc {
-+		pin-controller {
-+			#address-cells	=3D <1>;
-+			#size-cells	=3D <1>;
-+			#retime-delay-cells	=3D <14>;
-+			compatible	=3D "st,stixxxx-pinctrl", "simple-bus";
-+			st,retime-in-delay	=3D <0 300 500 750 1000 1250 1500 1750 2000 2250=
- 2500 2750 3000 3250>;
-+			st,retime-out-delay	=3D <0 300 500 750 1000 1250 1500 1750 2000 225=
-0 2500 2750 3000 3250>;
-+			ranges;
-+			PIO0: pinctrl@fe610000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe610000 0x100>;
-+				st,bank-name 	=3D "PIO0";
-+				st,alt-control	=3D <&SYSCFG_SBC(0) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(40) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_SBC(50) 0 7>;
-+				st,od-control	=3D <&SYSCFG_SBC(60) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(100) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(101) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(102) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(103) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(104) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(105) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(106) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_SBC(107) 0 31>;
-+			};
-+			PIO1: pinctrl@fe611000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe611000 0x100>;
-+				st,bank-name 	=3D "PIO1";
-+				st,alt-control	=3D <&SYSCFG_SBC(1) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(40) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_SBC(50) 8 15>;
-+				st,od-control	=3D <&SYSCFG_SBC(60) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(108) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(109) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(110) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(111) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(112) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(113) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(114) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_SBC(115) 0 31>;
-+			};
-+			PIO2: pinctrl@fe612000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe612000 0x100>;
-+				st,bank-name 	=3D "PIO2";
-+				st,alt-control	=3D <&SYSCFG_SBC(2) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(40) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_SBC(50) 16 23>;
-+				st,od-control	=3D <&SYSCFG_SBC(60) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(116) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(117) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(118) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(119) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(120) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(121) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(122) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_SBC(123) 0 31>;
-+			};
-+			PIO3: pinctrl@fe613000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe613000 0x100>;
-+				st,bank-name 	=3D "PIO3";
-+				st,alt-control	=3D <&SYSCFG_SBC(3) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(40) 24 31>;
-+				st,pu-control	=3D <&SYSCFG_SBC(50) 24 31>;
-+				st,od-control	=3D <&SYSCFG_SBC(60) 24 31>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(124) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(125) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(126) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(127) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(128) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(129) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(130) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_SBC(131) 0 31>;
-+			};
-+
-+			PIO4: pinctrl@fe614000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe614000 0x100>;
-+				st,bank-name 	=3D "PIO4";
-+				st,alt-control	=3D <&SYSCFG_SBC(4) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(41) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_SBC(51) 0 7>;
-+				st,od-control	=3D <&SYSCFG_SBC(61) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(132) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(133) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(134) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(135) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(136) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(137) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(138) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_SBC(139) 0 31>;
-+			};
-+
-+			PIO40: pinctrl@fe615000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe615000 0x100>;
-+				st,bank-name 	=3D "PIO40";
-+				st,alt-control	=3D <&SYSCFG_SBC(5) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_SBC(41) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_SBC(51) 8 15>;
-+				st,od-control	=3D <&SYSCFG_SBC(61) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0x7f>;
-+				st,retime-control0	=3D <&SYSCFG_SBC(140) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_SBC(141) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_SBC(142) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_SBC(143) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_SBC(144) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_SBC(145) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_SBC(146) 0 31>;
-+			};
-+
-+			PIO5: pinctrl@fee00000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee00000 0x100>;
-+				st,bank-name 	=3D "PIO5";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1000) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1040) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1050) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1060) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1100) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1101) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1102) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1103) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1104) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1105) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1106) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1107) 0 31>;
-+			};
-+			PIO6: pinctrl@fee01000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee01000 0x100>;
-+				st,bank-name 	=3D "PIO6";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1001) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1040) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1050) 8 15>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1060) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1108) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1109) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1110) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1111) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1112) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1113) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1114) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1115) 0 31>;
-+			};
-+			PIO7: pinctrl@fee02000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee02000 0x100>;
-+				st,bank-name 	=3D "PIO7";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1002) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1040) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1050) 16 23>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1060) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1116) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1117) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1118) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1119) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1120) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1121) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1122) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1123) 0 31>;
-+			};
-+			PIO8: pinctrl@fee03000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee03000 0x100>;
-+				st,bank-name 	=3D "PIO8";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1003) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1040) 24 31>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1050) 24 31>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1060) 24 31>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1124) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1125) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1126) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1127) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1128) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1129) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1130) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1131) 0 31>;
-+			};
-+
-+			PIO9: pinctrl@fee04000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee04000 0x100>;
-+				st,bank-name 	=3D "PIO9";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1004) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1041) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1051) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1061) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1132) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1133) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1134) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1135) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1136) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1137) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1138) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1139) 0 31>;
-+			};
-+			PIO10: pinctrl@fee05000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee05000 0x100>;
-+				st,bank-name 	=3D "PIO10";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1005) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1041) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1051) 8 15>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1061) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1140) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1141) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1142) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1143) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1144) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1145) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1146) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1147) 0 31>;
-+			};
-+			PIO11: pinctrl@fee06000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee06000 0x100>;
-+				st,bank-name 	=3D "PIO11";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1006) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1041) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1051) 16 23>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1061) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1148) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1149) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1150) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1151) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1152) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1153) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1154) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1155) 0 31>;
-+			};
-+			PIO12: pinctrl@fee07000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee07000 0x100>;
-+				st,bank-name 	=3D "PIO12";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1007) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1041) 24 31>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1051) 24 31>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1061) 24 31>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1156) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1157) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1158) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1159) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1160) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1161) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1162) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1163) 0 31>;
-+			};
-+
-+			PIO30: pinctrl@fee08000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee08000 0x100>;
-+				st,bank-name 	=3D "PIO30";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1008) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1042) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1052) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1062) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1164) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1165) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1166) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1167) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1168) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1169) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1170) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1171) 0 31>;
-+			};
-+
-+			PIO31: pinctrl@fee09000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfee09000 0x100>;
-+				st,bank-name 	=3D "PIO31";
-+				st,alt-control	=3D <&SYSCFG_FRONT(1009) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FRONT(1042) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_FRONT(1052) 8 15>;
-+				st,od-control	=3D <&SYSCFG_FRONT(1062) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FRONT(1172) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FRONT(1173) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FRONT(1174) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FRONT(1175) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FRONT(1176) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FRONT(1177) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FRONT(1178) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FRONT(1179) 0 31>;
-+			};
-+
-+
-+
-+			PIO13: pinctrl@fe820000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe820000 0x100>;
-+				st,bank-name 	=3D "PIO13";
-+				st,alt-control	=3D <&SYSCFG_REAR(2000) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2040) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2050) 0 7>;
-+				st,od-control	=3D <&SYSCFG_REAR(2060) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2100) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2101) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2102) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2103) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_REAR(2104) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_REAR(2105) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_REAR(2106) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_REAR(2107) 0 31>;
-+			};
-+			PIO14: pinctrl@fe821000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe821000 0x100>;
-+				st,bank-name 	=3D "PIO14";
-+				st,alt-control	=3D <&SYSCFG_REAR(2001) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2040) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2050) 8 15>;
-+				st,od-control	=3D <&SYSCFG_REAR(2060) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2108) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2109) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2110) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2111) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_REAR(2112) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_REAR(2113) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_REAR(2114) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_REAR(2115) 0 31>;
-+			};
-+			PIO15: pinctrl@fe822000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe822000 0x100>;
-+				st,bank-name 	=3D "PIO15";
-+				st,alt-control	=3D <&SYSCFG_REAR(2002) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2040) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2050) 16 23>;
-+				st,od-control	=3D <&SYSCFG_REAR(2060) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2116) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2117) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2118) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2119) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_REAR(2120) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_REAR(2121) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_REAR(2122) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_REAR(2123) 0 31>;
-+			};
-+			PIO16: pinctrl@fe823000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe823000 0x100>;
-+				st,bank-name 	=3D "PIO16";
-+				st,alt-control	=3D <&SYSCFG_REAR(2003) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2040) 24 31>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2050) 24 31>;
-+				st,od-control	=3D <&SYSCFG_REAR(2060) 24 31>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2124) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2125) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2126) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2127) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_REAR(2128) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_REAR(2129) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_REAR(2130) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_REAR(2131) 0 31>;
-+			};
-+
-+			PIO17: pinctrl@fe824000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe824000 0x100>;
-+				st,bank-name 	=3D "PIO17";
-+				st,alt-control	=3D <&SYSCFG_REAR(2004) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2041) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2051) 0 7>;
-+				st,od-control	=3D <&SYSCFG_REAR(2061) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2132) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2133) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2134) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2135) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_REAR(2136) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_REAR(2137) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_REAR(2138) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_REAR(2139) 0 31>;
-+			};
-+
-+			PIO18: pinctrl@fe825000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfe825000 0x100>;
-+				st,bank-name 	=3D "PIO18";
-+				st,alt-control	=3D <&SYSCFG_REAR(2005) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_REAR(2041) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_REAR(2051) 8 15>;
-+				st,od-control	=3D <&SYSCFG_REAR(2061) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xf>;
-+				st,retime-control0	=3D <&SYSCFG_REAR(2140) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_REAR(2141) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_REAR(2142) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_REAR(2143) 0 31>;
-+			};
-+			PIO100: pinctrl@fd6b0000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd6b0000 0x100>;
-+				st,bank-name 	=3D "PIO100";
-+				st,alt-control	=3D <&SYSCFG_FVDP_FE(5000) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_FE(5040) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_FE(5050) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FVDP_FE(5060) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_FE(5100) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_FE(5101) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_FE(5102) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_FE(5103) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_FE(5104) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_FE(5105) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_FE(5106) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_FE(5107) 0 31>;
-+			};
-+
-+			PIO101: pinctrl@fd6b1000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd6b1000 0x100>;
-+				st,bank-name 	=3D "PIO101";
-+				st,alt-control	=3D <&SYSCFG_FVDP_FE(5001) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_FE(5040) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_FE(5050) 8 15>;
-+				st,od-control	=3D <&SYSCFG_FVDP_FE(5060) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_FE(5108) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_FE(5109) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_FE(5110) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_FE(5111) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_FE(5112) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_FE(5113) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_FE(5114) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_FE(5115) 0 31>;
-+			};
-+
-+			PIO102: pinctrl@fd6b2000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd6b2000 0x100>;
-+				st,bank-name 	=3D "PIO102";
-+				st,alt-control	=3D <&SYSCFG_FVDP_FE(5002) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_FE(5040) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_FE(5050) 16 23>;
-+				st,od-control	=3D <&SYSCFG_FVDP_FE(5060) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_FE(5116) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_FE(5117) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_FE(5118) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_FE(5119) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_FE(5120) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_FE(5121) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_FE(5122) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_FE(5123) 0 31>;
-+			};
-+
-+
-+
-+			PIO103: pinctrl@fd330000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd330000 0x100>;
-+				st,bank-name 	=3D "PIO103";
-+				st,alt-control	=3D <&SYSCFG_FVDP_LITE(6000) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_LITE(6040) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_LITE(6050) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FVDP_LITE(6060) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_LITE(6100) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_LITE(6101) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_LITE(6102) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_LITE(6103) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_LITE(6104) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_LITE(6105) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_LITE(6106) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_LITE(6107) 0 31>;
-+			};
-+			PIO104: pinctrl@fd331000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd331000 0x100>;
-+				st,bank-name 	=3D "PIO104";
-+				st,alt-control	=3D <&SYSCFG_FVDP_LITE(6001) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_LITE(6040) 8 15>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_LITE(6050) 8 15>;
-+				st,od-control	=3D <&SYSCFG_FVDP_LITE(6060) 8 15>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_LITE(6108) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_LITE(6109) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_LITE(6110) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_LITE(6111) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_LITE(6112) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_LITE(6113) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_LITE(6114) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_LITE(6115) 0 31>;
-+			};
-+			PIO105: pinctrl@fd332000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd332000 0x100>;
-+				st,bank-name 	=3D "PIO105";
-+				st,alt-control	=3D <&SYSCFG_FVDP_LITE(6002) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_LITE(6040) 16 23>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_LITE(6050) 16 23>;
-+				st,od-control	=3D <&SYSCFG_FVDP_LITE(6060) 16 23>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_LITE(6116) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_LITE(6117) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_LITE(6118) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_LITE(6119) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_LITE(6120) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_LITE(6121) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_LITE(6122) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_LITE(6123) 0 31>;
-+			};
-+			PIO106: pinctrl@fd333000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd333000 0x100>;
-+				st,bank-name 	=3D "PIO106";
-+				st,alt-control	=3D <&SYSCFG_FVDP_LITE(6003) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_LITE(6040) 24 31>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_LITE(6050) 24 31>;
-+				st,od-control	=3D <&SYSCFG_FVDP_LITE(6060) 24 31>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xff>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_LITE(6124) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_LITE(6125) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_LITE(6126) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_LITE(6127) 0 31>;
-+				st,retime-control4	=3D <&SYSCFG_FVDP_LITE(6128) 0 31>;
-+				st,retime-control5	=3D <&SYSCFG_FVDP_LITE(6129) 0 31>;
-+				st,retime-control6	=3D <&SYSCFG_FVDP_LITE(6130) 0 31>;
-+				st,retime-control7	=3D <&SYSCFG_FVDP_LITE(6131) 0 31>;
-+			};
-+
-+			PIO107: pinctrl@fd334000 {
-+				#gpio-cells	=3D <1>;
-+				compatible	=3D "st,stixxxx-gpio";
-+				gpio-controller;
-+				reg	=3D <0xfd334000 0x100>;
-+				st,bank-name 	=3D "PIO107";
-+				st,alt-control	=3D <&SYSCFG_FVDP_LITE(6004) 0 31>;
-+				st,oe-control	=3D <&SYSCFG_FVDP_LITE(6041) 0 7>;
-+				st,pu-control	=3D <&SYSCFG_FVDP_LITE(6051) 0 7>;
-+				st,od-control	=3D <&SYSCFG_FVDP_LITE(6061) 0 7>;
-+				st,retime-style	=3D "dedicated";
-+				st,retime-pin-mask	=3D <0xf>;
-+				st,retime-control0	=3D <&SYSCFG_FVDP_LITE(6132) 0 31>;
-+				st,retime-control1	=3D <&SYSCFG_FVDP_LITE(6133) 0 31>;
-+				st,retime-control2	=3D <&SYSCFG_FVDP_LITE(6134) 0 31>;
-+				st,retime-control3	=3D <&SYSCFG_FVDP_LITE(6135) 0 31>;
-+			};
-+
-+			uart2 {
-+				pinctrl_uart2: uart2-0 {
-+					st,function =3D <ALT2>;
-+					st,pins {
-+						tx	=3D <&PIO17 4 OUT>;
-+						rx	=3D <&PIO17 5 IN>;
-+						output-enable	=3D <&PIO11 3 OUT>;
-+					};
-+				};
-+			};
-+
-+			sbc_uart1 {
-+				pinctrl_sbc_uart1: sbc_uart1 {
-+					st,function =3D <ALT3>;
-+					st,pins {
-+						tx	=3D <&PIO2 6 OUT>;
-+						rx	=3D <&PIO2 7 IN>;
-+					};
-+				};
-+			};
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416=
-=2Edtsi
-new file mode 100644
-index 0000000..47439b3
---- /dev/null
-+++ b/arch/arm/boot/dts/stih416.dtsi
-@@ -0,0 +1,103 @@
-+/*
-+ * Copyright (C) 2012 STMicroelectronics Limited.
-+ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modif=
-y
-+ * it under the terms of the GNU General Public License version 2 as
-+ * publishhed by the Free Software Foundation.
-+ */
-+#include "stih41x.dtsi"
-+#include "stih416-clock.dtsi"
-+#include "stih416-pinctrl.dtsi"
-+/ {
-+	L2: cache-controller {
-+		compatible =3D "arm,pl310-cache";
-+		reg =3D <0xfffe2000 0x1000>;
-+		arm,data-latency =3D <3 3 3>;
-+		arm,tag-latency =3D <2 2 2>;
-+		cache-unified;
-+		cache-level =3D <2>;
-+	};
-+
-+	soc {
-+		#address-cells =3D <1>;
-+		#size-cells =3D <1>;
-+		#interrupt-cells =3D <3>;
-+		interrupt-parent =3D <&intc>;
-+		ranges;
-+		compatible	=3D "simple-bus";
-+
-+		syscfg_sbc:syscon@fe600000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfe600000 0x1000>;
-+			syscon-name	=3D "SYSCFG_SBC";
-+		};
-+		syscfg_front:syscon@fee10000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfee10000 0x1000>;
-+			syscon-name	=3D "SYSCFG_FRONT";
-+		};
-+		syscfg_rear:syscon@fe830000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfe830000 0x1000>;
-+			syscon-name	=3D "SYSCFG_REAR";
-+		};
-+
-+		/* MPE */
-+		syscfg_fvdp_fe:syscon@fddf0000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfddf0000 0x1000>;
-+			syscon-name	=3D "SYSCFG_FVDP_FE";
-+		};
-+		syscfg_fvdp_lite:syscon@fd6a0000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfd6a0000 0x1000>;
-+			syscon-name	=3D "SYSCFG_FVDP_LITE";
-+		};
-+
-+		syscfg_cpu:syscon@fdde0000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfdde0000 0x1000>;
-+			syscon-name	=3D "SYSCFG_CPU";
-+		};
-+
-+		syscfg_compo:syscon@fd320000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfd320000 0x1000>;
-+			syscon-name	=3D "SYSCFG_COMPO";
-+		};
-+
-+		syscfg_transport:syscon@fd690000{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfd690000 0x1000>;
-+			syscon-name	=3D "SYSCFG_TRANSPORT";
-+		};
-+
-+		syscfg_lpm:syscon@fe4b5100{
-+			compatible	=3D "syscon";
-+			reg		=3D <0xfe4b5100 0x54>;
-+			syscon-name	=3D "LPM_CFG_REGS";
-+		};
-+
-+		uart2: uart@fed32000{
-+			compatible	=3D "st,asc";
-+			status 		=3D "disabled";
-+			reg		=3D <0xfed32000 0x2c>;
-+			interrupts	=3D <0 197 0>;
-+			clocks          =3D <&CLK_S_ICN_REG_0>;
-+			pinctrl-names 	=3D "default";
-+			pinctrl-0 	=3D <&pinctrl_uart2>;
-+		};
-+
-+		/* SBC_UART1 */
-+		sbc_uart1: uart@fe531000 {
-+			compatible	=3D "st,asc";
-+			status 		=3D "disabled";
-+			reg		=3D <0xfe531000 0x2c>;
-+			interrupts	=3D <0 210 0>;
-+			pinctrl-names 	=3D "default";
-+			pinctrl-0 	=3D <&pinctrl_sbc_uart1>;
-+			clocks          =3D <&CLK_SYSIN>;
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/stih416.h b/arch/arm/boot/dts/stih416.h
-new file mode 100644
-index 0000000..2e27792
---- /dev/null
-+++ b/arch/arm/boot/dts/stih416.h
-@@ -0,0 +1,24 @@
-+#ifndef __STIH416_H_
-+#define __STIH416_H_
-+
-+#define CONFIG_SBC(num)		num
-+#define CONFIG_FRONT(num)	(num - 1000)
-+#define CONFIG_REAR(num)	(num - 2000)
-+#define CONFIG_FVDP_FE(num)	(num - 5000)
-+#define CONFIG_FVDP_LITE(num)	(num - 6000)
-+#define CONFIG_CPU(num)		(num - 7000)
-+#define CONFIG_COMPO(num)	(num - 8000)
-+#define CONFIG_TRANSPORT(num)	(num - 9000)
-+#define CONFIG_LPM(num)		num
-+
-+#define SYSCFG_SBC(num)		syscfg_sbc CONFIG_SBC(num)
-+#define SYSCFG_FRONT(num)	syscfg_front CONFIG_FRONT(num)
-+#define SYSCFG_REAR(num)	syscfg_rear CONFIG_REAR(num)
-+#define SYSCFG_FVDP_FE(num)	syscfg_fvdp_fe CONFIG_FVDP_FE(num)
-+#define SYSCFG_FVDP_LITE(num)	syscfg_fvdp_lite CONFIG_FVDP_LITE(num)
-+#define SYSCFG_CPU(num)		syscfg_cpu CONFIG_CPU(num)
-+#define SYSCFG_COMPO(num)	syscfg_compo CONFIG_COMPO(num)
-+#define SYSCFG_TRANSPORT(num)	syscfg_transport CONFIG_TRANSPORT(num)
-+#define SYSCFG_LPM(num)		syscfg_lpm CONFIG_LPM(num)
-+
-+#endif /* __STIH416_H_ */
-diff --git a/arch/arm/configs/stih41x_defconfig b/arch/arm/configs/stih=
-41x_defconfig
-index dd9268b..cc4e2dc 100644
---- a/arch/arm/configs/stih41x_defconfig
-+++ b/arch/arm/configs/stih41x_defconfig
-@@ -24,6 +24,7 @@ CONFIG_MODULE_SRCVERSION_ALL=3Dy
- CONFIG_BLK_DEV_INTEGRITY=3Dy
- CONFIG_ARCH_STIH41X=3Dy
- CONFIG_SOC_STIH415=3Dy
-+CONFIG_SOC_STIH416=3Dy
- # CONFIG_ARCH_VEXPRESS_CORTEX_A5_A9_ERRATA is not set
- # CONFIG_SWP_EMULATE is not set
- CONFIG_ARM_ERRATA_720789=3Dy
-diff --git a/arch/arm/mach-stih41x/Kconfig b/arch/arm/mach-stih41x/Kcon=
-fig
-index 9c40540..848d3e8 100644
---- a/arch/arm/mach-stih41x/Kconfig
-+++ b/arch/arm/mach-stih41x/Kconfig
-@@ -31,5 +31,14 @@ config SOC_STIH415
- 	  and other digital audio/video applications using Flattned Device
- 	  Trees.
-=20
-+config SOC_STIH416
-+	bool "STiH416 STMicroelectronics Consumer Electronics family"
-+	select PLAT_STIXXXX
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 7e7006f..346f325 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1484,6 +1484,25 @@ config SERIAL_RP2_NR_UARTS
+ 	  If multiple cards are present, the default limit of 32 ports may
+ 	  need to be increased.
+ 
++config SERIAL_ST_ASC
++	tristate "ST ASC serial port support"
++	depends on PLAT_STIXXXX
++	default y
++	select SERIAL_CORE
 +	help
-+	  This enables support for STMicroelectronics Digital Consumer
-+	  Electronics family StiH416 parts, primarily targetted at set-top-bo=
-x
-+	  and other digital audio/video applications using Flattened Device
-+	  Trees.
++	  This driver is for the on-chip Asychronous Serial Controller on
++	  STMicroelectronics STixxxx SoCs.
++	  ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
++	  It support all industry standard baud rates.
++
++	  If unsure, say N.
++
++config SERIAL_ST_ASC_CONSOLE
++	bool "Support for console on ST ASC"
++	depends on SERIAL_ST_ASC
++	default y
++	select SERIAL_CORE_CONSOLE
 +
  endmenu
- endif
-diff --git a/arch/arm/mach-stih41x/board-dt.c b/arch/arm/mach-stih41x/b=
-oard-dt.c
-index c51e2c9..8005f71 100644
---- a/arch/arm/mach-stih41x/board-dt.c
-+++ b/arch/arm/mach-stih41x/board-dt.c
-@@ -66,7 +66,7 @@ static const char *stih41x_dt_match[] __initdata =3D =
-{
- 	NULL
- };
-=20
--DT_MACHINE_START(STM, "STiH415 SoC with Flattened Device Tree")
-+DT_MACHINE_START(STM, "STiH415/416 SoC with Flattened Device Tree")
- 	.map_io		=3D stih41x_map_io,
- 	.init_time	=3D stih41x_timer_init,
- 	.init_machine	=3D stih41x_dt_init,
---=20
+ 
+ endif # TTY
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index eedfec4..536ccc7 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -65,6 +65,7 @@ obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
+ obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
+ obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
+ obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
++obj-$(CONFIG_SERIAL_ST_ASC) += st-asc.o
+ obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
+ obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
+ obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+new file mode 100644
+index 0000000..2acc597
+--- /dev/null
++++ b/drivers/tty/serial/st-asc.c
+@@ -0,0 +1,821 @@
++/*
++ * st-asc.c: ST Asynchronous serial controller (ASC) driver
++ *
++ * Copyright (C) 2003-2013 STMicroelectronics (R&D) Limited
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ */
++
++#if defined(CONFIG_SERIAL_ST_ASC_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
++
++#include <linux/module.h>
++#include <linux/serial.h>
++#include <linux/console.h>
++#include <linux/sysrq.h>
++#include <linux/platform_device.h>
++#include <linux/io.h>
++#include <linux/irq.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
++#include <linux/delay.h>
++#include <linux/spinlock.h>
++#include <linux/pm_runtime.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++
++#include "st-asc.h"
++
++#define DRIVER_NAME "st-asc"
++#define ASC_SERIAL_NAME "ttyAS"
++
++static struct asc_port asc_ports[ASC_MAX_PORTS];
++static struct uart_driver asc_uart_driver;
++
++/*---- Forward function declarations---------------------------*/
++static irqreturn_t asc_interrupt(int irq, void *ptr);
++static void asc_transmit_chars(struct uart_port *);
++static int asc_set_baud(struct asc_port *ascport, int baud);
++
++/*---- Inline function definitions ---------------------------*/
++
++static inline struct asc_port *to_asc_port(struct uart_port *port)
++{
++	return container_of(port, struct asc_port, port);
++}
++
++static inline u32 asc_in(struct uart_port *port, u32 offset)
++{
++	return readl(port->membase + offset);
++}
++
++static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
++{
++	writel(value, port->membase + offset);
++}
++
++/*
++ * Some simple utility functions to enable and disable interrupts.
++ * Note that these need to be called with interrupts disabled.
++ */
++static inline void asc_disable_tx_interrupts(struct uart_port *port)
++{
++	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_THE;
++	asc_out(port, ASC_INTEN, intenable);
++	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
++}
++
++static inline void asc_enable_tx_interrupts(struct uart_port *port)
++{
++	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_THE;
++	asc_out(port, ASC_INTEN, intenable);
++}
++
++static inline void asc_disable_rx_interrupts(struct uart_port *port)
++{
++	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_RBE;
++	asc_out(port, ASC_INTEN, intenable);
++	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
++}
++
++static inline void asc_enable_rx_interrupts(struct uart_port *port)
++{
++	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_RBE;
++	asc_out(port, ASC_INTEN, intenable);
++}
++
++static inline u32 asc_txfifo_is_empty(struct uart_port *port)
++{
++	return asc_in(port, ASC_STA) & ASC_STA_TE;
++}
++
++static inline int asc_txfifo_is_full(struct uart_port *port)
++{
++	return asc_in(port, ASC_STA) & ASC_STA_TF;
++}
++
++static const char *asc_port_name(struct uart_port *port)
++{
++	return to_platform_device(port->dev)->name;
++}
++
++/*----------------------------------------------------------------------*/
++
++/*
++ * UART Functions
++ */
++
++static unsigned int asc_tx_empty(struct uart_port *port)
++{
++	return asc_txfifo_is_empty(port) ? TIOCSER_TEMT : 0;
++}
++
++static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	/*
++	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
++	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
++	 * Some boards have DTR and DCD implemented using PIO pins,
++	 * code to do this should be hooked in here.
++	 */
++}
++
++static unsigned int asc_get_mctrl(struct uart_port *port)
++{
++	/*
++	 * This routine is used for geting signals of: DTR, DCD, DSR, RI,
++	 * and CTS/RTS
++	 */
++	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
++}
++
++/* There are probably characters waiting to be transmitted. */
++static void asc_start_tx(struct uart_port *port)
++{
++	struct circ_buf *xmit = &port->state->xmit;
++
++	if (!uart_circ_empty(xmit))
++		asc_enable_tx_interrupts(port);
++}
++
++/* Transmit stop */
++static void asc_stop_tx(struct uart_port *port)
++{
++	asc_disable_tx_interrupts(port);
++}
++
++/* Receive stop */
++static void asc_stop_rx(struct uart_port *port)
++{
++	asc_disable_rx_interrupts(port);
++}
++
++/* Force modem status interrupts on */
++static void asc_enable_ms(struct uart_port *port)
++{
++	/* Nothing here yet .. */
++}
++
++/* Handle breaks - ignored by us */
++static void asc_break_ctl(struct uart_port *port, int break_state)
++{
++	/* Nothing here yet .. */
++}
++
++/*
++ * Enable port for reception.
++ */
++static int asc_startup(struct uart_port *port)
++{
++	if (request_irq(port->irq, asc_interrupt, 0,
++			asc_port_name(port), port)) {
++		dev_err(port->dev, "cannot allocate irq.\n");
++		return -ENODEV;
++	}
++
++	asc_transmit_chars(port);
++	asc_enable_rx_interrupts(port);
++
++	return 0;
++}
++
++static void asc_shutdown(struct uart_port *port)
++{
++	asc_disable_tx_interrupts(port);
++	asc_disable_rx_interrupts(port);
++	free_irq(port->irq, port);
++}
++
++static void asc_pm(struct uart_port *port, unsigned int state,
++		unsigned int oldstate)
++{
++	struct asc_port *ascport = to_asc_port(port);
++	unsigned long flags = 0;
++	u32 ctl;
++
++	switch (state) {
++	case UART_PM_STATE_ON:
++		clk_prepare_enable(ascport->clk);
++		break;
++	case UART_PM_STATE_OFF:
++		/*
++		 * Disable the ASC baud rate generator, which is as close as
++		 * we can come to turning it off. Note this is not called with
++		 * the port spinlock held.
++		 */
++		spin_lock_irqsave(&port->lock, flags);
++		ctl = asc_in(port, ASC_CTL) & ~ASC_CTL_RUN;
++		asc_out(port, ASC_CTL, ctl);
++		spin_unlock_irqrestore(&port->lock, flags);
++		clk_disable_unprepare(ascport->clk);
++		break;
++	}
++}
++
++static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
++			    struct ktermios *old)
++{
++	struct asc_port *ascport = to_asc_port(port);
++	unsigned int baud;
++	u32 ctrl_val;
++	tcflag_t cflag;
++	unsigned long flags;
++
++	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
++	cflag = termios->c_cflag;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/* read control register */
++	ctrl_val = asc_in(port, ASC_CTL);
++
++	/* stop serial port and reset value */
++	asc_out(port, ASC_CTL, (ctrl_val & ~ASC_CTL_RUN));
++	ctrl_val = ASC_CTL_RXENABLE | ASC_CTL_FIFOENABLE;
++
++	/* reset fifo rx & tx */
++	asc_out(port, ASC_TXRESET, 1);
++	asc_out(port, ASC_RXRESET, 1);
++
++	/* set character length */
++	if ((cflag & CSIZE) == CS7) {
++		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
++	} else {
++		if (cflag & PARENB)
++			ctrl_val |= ASC_CTL_MODE_8BIT_PAR;
++		else
++			ctrl_val |= ASC_CTL_MODE_8BIT;
++	}
++
++	ascport->check_parity = (cflag & PARENB) ? 1 : 0;
++
++	/* set stop bit */
++	if (cflag & CSTOPB)
++		ctrl_val |= ASC_CTL_STOP_2BIT;
++	else
++		ctrl_val |= ASC_CTL_STOP_1BIT;
++
++	/* odd parity */
++	if (cflag & PARODD)
++		ctrl_val |= ASC_CTL_PARITYODD;
++
++	/* hardware flow control */
++	if ((cflag & CRTSCTS) && ascport->hw_flow_control)
++		ctrl_val |= ASC_CTL_CTSENABLE;
++
++	ctrl_val |= asc_set_baud(ascport, baud);
++	uart_update_timeout(port, cflag, baud);
++
++	/* Set the timeout */
++	asc_out(port, ASC_TIMEOUT, 20);
++
++	/* write final value and enable port */
++	asc_out(port, ASC_CTL, (ctrl_val | ASC_CTL_RUN));
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static const char *asc_type(struct uart_port *port)
++{
++	return (port->type == PORT_ASC) ? DRIVER_NAME : NULL;
++}
++
++static void asc_release_port(struct uart_port *port)
++{
++}
++
++static int asc_request_port(struct uart_port *port)
++{
++	return 0;
++}
++
++/*
++ * Called when the port is opened, and UPF_BOOT_AUTOCONF flag is set
++ * Set type field if successful
++ */
++static void asc_config_port(struct uart_port *port, int flags)
++{
++	if ((flags & UART_CONFIG_TYPE))
++		port->type = PORT_ASC;
++}
++
++static int
++asc_verify_port(struct uart_port *port, struct serial_struct *ser)
++{
++	/* No user changeable parameters */
++	return -EINVAL;
++}
++
++#ifdef CONFIG_CONSOLE_POLL
++/*
++ * Console polling routines for writing and reading from the uart while
++ * in an interrupt or debug context (i.e. kgdb).
++ */
++
++static int asc_get_poll_char(struct uart_port *port)
++{
++	if (!(asc_in(port, ASC_STA) & ASC_STA_RBF))
++		return NO_POLL_CHAR;
++
++	return asc_in(port, ASC_RXBUF);
++}
++
++static void asc_put_poll_char(struct uart_port *port, unsigned char c)
++{
++	while (asc_txfifo_is_full(port))
++		cpu_relax();
++	asc_out(port, ASC_TXBUF, c);
++}
++
++#endif /* CONFIG_CONSOLE_POLL */
++
++/*---------------------------------------------------------------------*/
++
++static struct uart_ops asc_uart_ops = {
++	.tx_empty	= asc_tx_empty,
++	.set_mctrl	= asc_set_mctrl,
++	.get_mctrl	= asc_get_mctrl,
++	.start_tx	= asc_start_tx,
++	.stop_tx	= asc_stop_tx,
++	.stop_rx	= asc_stop_rx,
++	.enable_ms	= asc_enable_ms,
++	.break_ctl	= asc_break_ctl,
++	.startup	= asc_startup,
++	.shutdown	= asc_shutdown,
++	.set_termios	= asc_set_termios,
++	.type		= asc_type,
++	.release_port	= asc_release_port,
++	.request_port	= asc_request_port,
++	.config_port	= asc_config_port,
++	.verify_port	= asc_verify_port,
++	.pm		= asc_pm,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char = asc_get_poll_char,
++	.poll_put_char = asc_put_poll_char,
++#endif /* CONFIG_CONSOLE_POLL */
++};
++
++static int asc_init_port(struct asc_port *ascport,
++			  struct platform_device *pdev)
++{
++	struct uart_port *port = &ascport->port;
++	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++
++	if (!res) {
++		dev_err(&pdev->dev, "Unable to get io resource\n");
++		return -ENODEV;
++	}
++
++	port->iotype	= UPIO_MEM;
++	port->flags	= UPF_BOOT_AUTOCONF;
++	port->ops	= &asc_uart_ops;
++	port->fifosize	= ASC_FIFO_SIZE;
++	port->dev	= &pdev->dev;
++	port->mapbase	= res->start;
++	port->irq	= platform_get_irq(pdev, 0);
++
++	port->membase = devm_request_and_ioremap(&pdev->dev, res);
++	if (!port->membase) {
++		dev_err(&pdev->dev, "Unable to request io memory\n");
++		return -ENODEV;
++	}
++
++	spin_lock_init(&port->lock);
++
++	ascport->clk = devm_clk_get(&pdev->dev, NULL);
++
++	if (WARN_ON(IS_ERR(ascport->clk)))
++		return -EINVAL;
++	/* ensure that clk rate is correct by enabling the clk */
++	clk_prepare_enable(ascport->clk);
++	ascport->port.uartclk = clk_get_rate(ascport->clk);
++	WARN_ON(ascport->port.uartclk == 0);
++	clk_disable_unprepare(ascport->clk);
++
++	return 0;
++}
++
++static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	int id;
++
++	if (!np)
++		return NULL;
++
++	id = of_alias_get_id(np, ASC_SERIAL_NAME);
++	if (WARN_ON(id >= ASC_MAX_PORTS))
++		return NULL;
++
++	asc_ports[id].hw_flow_control = of_property_read_bool(np,
++							"st,hw-flow-control");
++	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
++	asc_ports[id].port.line = id;
++	return &asc_ports[id];
++}
++
++static struct of_device_id asc_match[] = {
++	{ .compatible = "st,asc", },
++	{},
++};
++
++MODULE_DEVICE_TABLE(of, asc_match);
++
++static int asc_serial_probe(struct platform_device *pdev)
++{
++	int ret;
++	struct asc_port *ascport;
++
++	ascport = asc_of_get_asc_port(pdev);
++	if (!ascport)
++		return -ENODEV;
++
++	ret = asc_init_port(ascport, pdev);
++	if (ret)
++		return ret;
++
++	ret = uart_add_one_port(&asc_uart_driver, &ascport->port);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, &ascport->port);
++
++	return 0;
++}
++
++static int asc_serial_remove(struct platform_device *pdev)
++{
++	struct uart_port *port = platform_get_drvdata(pdev);
++
++	platform_set_drvdata(pdev, NULL);
++	return uart_remove_one_port(&asc_uart_driver, port);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int asc_serial_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct uart_port *port = platform_get_drvdata(pdev);
++
++	return uart_suspend_port(&asc_uart_driver, port);
++}
++
++static int asc_serial_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct uart_port *port = platform_get_drvdata(pdev);
++
++	if (pdev->dev.pins->default_state) {
++		if (pinctrl_select_state(pdev->dev.pins->p,
++					pdev->dev.pins->default_state) < 0)
++			return -EBUSY;
++	}
++
++	return uart_resume_port(&asc_uart_driver, port);
++}
++
++#endif /* CONFIG_PM_SLEEP */
++
++/*----------------------------------------------------------------------*/
++
++/* This sections contains code to support the use of the ASC as a
++ * generic serial port.
++ */
++
++static int asc_set_baud(struct asc_port *ascport, int baud)
++{
++	struct uart_port *port = &ascport->port;
++	unsigned long rate = clk_get_rate(ascport->clk);
++	u32 t;
++
++	if ((baud < 19200) && !ascport->force_m1) {
++		t = BAUDRATE_VAL_M0(baud, rate);
++		asc_out(port, ASC_BAUDRATE, t);
++		return 0;
++	} else {
++		t = BAUDRATE_VAL_M1(baud, rate);
++		asc_out(port, ASC_BAUDRATE, t);
++		return ASC_CTL_BAUDMODE;
++	}
++}
++
++static inline unsigned asc_hw_txroom(struct uart_port *port)
++{
++	u32 status = asc_in(port, ASC_STA);
++
++	if (status & ASC_STA_THE)
++		return port->fifosize / 2;
++	else if (!(status & ASC_STA_TF))
++		return 1;
++
++	return 0;
++}
++
++/*
++ * Start transmitting chars.
++ * This is called from both interrupt and task level.
++ * Either way interrupts are disabled.
++ */
++static void asc_transmit_chars(struct uart_port *port)
++{
++	struct circ_buf *xmit = &port->state->xmit;
++	int txroom;
++	unsigned char c;
++
++	txroom = asc_hw_txroom(port);
++
++	if ((txroom != 0) && port->x_char) {
++		c = port->x_char;
++		port->x_char = 0;
++		asc_out(port, ASC_TXBUF, c);
++		port->icount.tx++;
++		txroom = asc_hw_txroom(port);
++	}
++
++	if (uart_tx_stopped(port)) {
++		/*
++		 * We should try and stop the hardware here, but I
++		 * don't think the ASC has any way to do that.
++		 */
++		asc_disable_tx_interrupts(port);
++		return;
++	}
++
++	if (uart_circ_empty(xmit)) {
++		asc_disable_tx_interrupts(port);
++		return;
++	}
++
++	if (txroom == 0)
++		return;
++
++	do {
++		c = xmit->buf[xmit->tail];
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		asc_out(port, ASC_TXBUF, c);
++		port->icount.tx++;
++		txroom--;
++	} while ((txroom > 0) && (!uart_circ_empty(xmit)));
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (uart_circ_empty(xmit))
++		asc_disable_tx_interrupts(port);
++}
++
++static void asc_receive_chars(struct uart_port *port)
++{
++	int count;
++	struct asc_port *ascport = to_asc_port(port);
++	struct tty_port *tport = &port->state->port;
++	int copied = 0;
++	unsigned long status;
++	unsigned long c = 0;
++	char flag;
++	int overrun;
++
++	if (port->irq_wake)
++		pm_wakeup_event(tport->tty->dev, 0);
++
++	while (1) {
++		status = asc_in(port, ASC_STA);
++		if (status & ASC_STA_RHF)
++			count = port->fifosize / 2;
++		else if (status & ASC_STA_RBF)
++			count = 1;
++		else
++			break;
++
++		/*
++		 * Check for overrun before reading any data from the
++		 * RX FIFO, as this clears the overflow error condition.
++		 */
++		overrun = status & ASC_STA_OE;
++
++		for (; count != 0; count--) {
++			c = asc_in(port, ASC_RXBUF);
++			flag = TTY_NORMAL;
++			port->icount.rx++;
++
++			if (unlikely(c & ASC_RXBUF_FE)) {
++				if (c == ASC_RXBUF_FE) {
++					port->icount.brk++;
++					if (uart_handle_break(port))
++						continue;
++					flag = TTY_BREAK;
++				} else {
++					port->icount.frame++;
++					flag = TTY_FRAME;
++				}
++			} else if (ascport->check_parity &&
++				   unlikely(c & ASC_RXBUF_PE)) {
++				port->icount.parity++;
++				flag = TTY_PARITY;
++			}
++
++			if (uart_handle_sysrq_char(port, c))
++				continue;
++			tty_insert_flip_char(tport, c & 0xff, flag);
++		}
++		if (overrun) {
++			port->icount.overrun++;
++			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
++		}
++
++		copied = 1;
++	}
++
++	if (copied) {
++		/* Tell the rest of the system the news. New characters! */
++		tty_flip_buffer_push(tport);
++	}
++}
++
++static irqreturn_t asc_interrupt(int irq, void *ptr)
++{
++	struct uart_port *port = ptr;
++	u32 status;
++
++	spin_lock(&port->lock);
++
++	status = asc_in(port, ASC_STA);
++
++	if (status & ASC_STA_RBF) {
++		/* Receive FIFO not empty */
++		asc_receive_chars(port);
++	}
++
++	if ((status & ASC_STA_THE) &&
++	    (asc_in(port, ASC_INTEN) & ASC_INTEN_THE)) {
++		/* Transmitter FIFO at least half empty */
++		asc_transmit_chars(port);
++	}
++
++	spin_unlock(&port->lock);
++
++	return IRQ_HANDLED;
++}
++
++/*----------------------------------------------------------------------*/
++
++#ifdef CONFIG_SERIAL_ST_ASC_CONSOLE
++static void asc_console_putchar(struct uart_port *port, int ch)
++{
++	unsigned int timeout = 1000000;
++
++	/* Wait for upto 1 second in case flow control is stopping us. */
++	while (--timeout && asc_txfifo_is_full(port))
++		udelay(1);
++
++	asc_out(port, ASC_TXBUF, ch);
++}
++
++/*
++ *  Print a string to the serial port trying not to disturb
++ *  any possible real use of the port...
++ */
++
++static void asc_console_write(struct console *co, const char *s, unsigned count)
++{
++	struct uart_port *port = &asc_ports[co->index].port;
++	unsigned long flags;
++	unsigned long timeout = 1000000;
++	int locked = 1;
++	u32 intenable;
++
++	local_irq_save(flags);
++	if (port->sysrq)
++		locked = 0; /* asc_interrupt has already claimed the lock */
++	else if (oops_in_progress)
++		locked = spin_trylock(&port->lock);
++	else
++		spin_lock(&port->lock);
++
++	/*
++	 * Disable interrupts so we don't get the IRQ line bouncing
++	 * up and down while interrupts are disabled.
++	 */
++	intenable = asc_in(port, ASC_INTEN);
++	asc_out(port, ASC_INTEN, 0);
++	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
++
++	uart_console_write(port, s, count, asc_console_putchar);
++
++	while (--timeout && !asc_txfifo_is_empty(port))
++		udelay(1);
++
++	asc_out(port, ASC_INTEN, intenable);
++
++	if (locked)
++		spin_unlock(&port->lock);
++	local_irq_restore(flags);
++}
++
++static int asc_console_setup(struct console *co, char *options)
++{
++	struct asc_port *ascport;
++	int baud = 9600;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
++
++	if (co->index >= ASC_MAX_PORTS)
++		return -ENODEV;
++
++	ascport = &asc_ports[co->index];
++
++	/*
++	 * This driver does not support early console initialization
++	 * (use ARM early printk support instead), so we only expect
++	 * this to be called during the uart port registration when the
++	 * driver gets probed and the port should be mapped at that point.
++	 */
++	BUG_ON(ascport->port.mapbase == 0 || ascport->port.membase == NULL);
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++
++	return uart_set_options(&ascport->port, co, baud, parity, bits, flow);
++}
++
++static struct console asc_console = {
++	.name		= ASC_SERIAL_NAME,
++	.device		= uart_console_device,
++	.write		= asc_console_write,
++	.setup		= asc_console_setup,
++	.flags		= CON_PRINTBUFFER,
++	.index		= -1,
++	.data		= &asc_uart_driver,
++};
++
++#define ASC_SERIAL_CONSOLE (&asc_console)
++
++#else
++#define ASC_SERIAL_CONSOLE NULL
++#endif /* CONFIG_SERIAL_ST_ASC_CONSOLE */
++
++
++static struct uart_driver asc_uart_driver = {
++	.owner		= THIS_MODULE,
++	.driver_name	= DRIVER_NAME,
++	.dev_name	= ASC_SERIAL_NAME,
++	.major		= ASC_MAJOR,
++	.minor		= ASC_MINOR_START,
++	.nr		= ASC_MAX_PORTS,
++	.cons		= ASC_SERIAL_CONSOLE,
++};
++
++static const struct dev_pm_ops asc_serial_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
++};
++
++
++static struct platform_driver asc_serial_driver = {
++	.probe		= asc_serial_probe,
++	.remove		= asc_serial_remove,
++	.driver	= {
++		.name	= DRIVER_NAME,
++		.pm	= &asc_serial_pm_ops,
++		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(asc_match),
++	},
++};
++
++static int __init asc_init(void)
++{
++	int ret;
++	static char banner[] __initdata =
++		KERN_INFO "STMicroelectronics ASC driver initialized\n";
++
++	printk(banner);
++
++	ret = uart_register_driver(&asc_uart_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&asc_serial_driver);
++	if (ret)
++		uart_unregister_driver(&asc_uart_driver);
++
++	return ret;
++}
++
++static void __exit asc_exit(void)
++{
++	platform_driver_unregister(&asc_serial_driver);
++	uart_unregister_driver(&asc_uart_driver);
++}
++
++module_init(asc_init);
++module_exit(asc_exit);
++
++MODULE_ALIAS("platform:" DRIVER_NAME);
++MODULE_AUTHOR("STMicroelectronics (R&D) Limited");
++MODULE_DESCRIPTION("STMicroelectronics ASC serial port driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/serial/st-asc.h b/drivers/tty/serial/st-asc.h
+new file mode 100644
+index 0000000..e59f818
+--- /dev/null
++++ b/drivers/tty/serial/st-asc.h
+@@ -0,0 +1,146 @@
++/*
++ * st-asc.h: ST Asynchronous serial controller (ASC) driver
++ *
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ */
++
++#ifndef _ST_ASC_H
++#define _ST_ASC_H
++
++#include <linux/serial_core.h>
++#include <linux/clk.h>
++
++struct asc_port {
++	struct uart_port port;
++	struct clk *clk;
++	unsigned int hw_flow_control:1;
++	unsigned int check_parity:1;
++	unsigned int force_m1:1;
++};
++
++#define ASC_MAJOR		204
++#define ASC_MINOR_START		40
++
++#define ASC_FIFO_SIZE		16
++
++#define ASC_MAX_PORTS		8
++
++/*---- UART Register definitions ------------------------------*/
++
++/* Register offsets */
++
++#define ASC_BAUDRATE			0x00
++#define ASC_TXBUF			0x04
++#define ASC_RXBUF			0x08
++#define ASC_CTL				0x0C
++#define ASC_INTEN			0x10
++#define ASC_STA				0x14
++#define ASC_GUARDTIME			0x18
++#define ASC_TIMEOUT			0x1C
++#define ASC_TXRESET			0x20
++#define ASC_RXRESET			0x24
++#define ASC_RETRIES			0x28
++
++/* ASC_RXBUF */
++#define ASC_RXBUF_PE			0x100
++#define ASC_RXBUF_FE			0x200
++
++/* ASC_CTL */
++
++#define ASC_CTL_MODE_MSK		0x0007
++#define  ASC_CTL_MODE_8BIT		0x0001
++#define  ASC_CTL_MODE_7BIT_PAR		0x0003
++#define  ASC_CTL_MODE_9BIT		0x0004
++#define  ASC_CTL_MODE_8BIT_WKUP		0x0005
++#define  ASC_CTL_MODE_8BIT_PAR		0x0007
++#define ASC_CTL_STOP_MSK		0x0018
++#define  ASC_CTL_STOP_HALFBIT		0x0000
++#define  ASC_CTL_STOP_1BIT		0x0008
++#define  ASC_CTL_STOP_1_HALFBIT		0x0010
++#define  ASC_CTL_STOP_2BIT		0x0018
++#define ASC_CTL_PARITYODD		0x0020
++#define ASC_CTL_LOOPBACK		0x0040
++#define ASC_CTL_RUN			0x0080
++#define ASC_CTL_RXENABLE		0x0100
++#define ASC_CTL_SCENABLE		0x0200
++#define ASC_CTL_FIFOENABLE		0x0400
++#define ASC_CTL_CTSENABLE		0x0800
++#define ASC_CTL_BAUDMODE		0x1000
++
++/* ASC_GUARDTIME */
++
++#define ASC_GUARDTIME_MSK		0x00FF
++
++/* ASC_INTEN */
++
++#define ASC_INTEN_RBE			0x0001
++#define ASC_INTEN_TE			0x0002
++#define ASC_INTEN_THE			0x0004
++#define ASC_INTEN_PE			0x0008
++#define ASC_INTEN_FE			0x0010
++#define ASC_INTEN_OE			0x0020
++#define ASC_INTEN_TNE			0x0040
++#define ASC_INTEN_TOI			0x0080
++#define ASC_INTEN_RHF			0x0100
++
++/* ASC_RETRIES */
++
++#define ASC_RETRIES_MSK			0x00FF
++
++/* ASC_RXBUF */
++
++#define ASC_RXBUF_MSK			0x03FF
++
++/* ASC_STA */
++
++#define ASC_STA_RBF			0x0001
++#define ASC_STA_TE			0x0002
++#define ASC_STA_THE			0x0004
++#define ASC_STA_PE			0x0008
++#define ASC_STA_FE			0x0010
++#define ASC_STA_OE			0x0020
++#define ASC_STA_TNE			0x0040
++#define ASC_STA_TOI			0x0080
++#define ASC_STA_RHF			0x0100
++#define ASC_STA_TF			0x0200
++#define ASC_STA_NKD			0x0400
++
++/* ASC_TIMEOUT */
++
++#define ASC_TIMEOUT_MSK			0x00FF
++
++/* ASC_TXBUF */
++
++#define ASC_TXBUF_MSK			0x01FF
++
++/*---- Values for the BAUDRATE Register -----------------------*/
++
++/*
++ * MODE 0
++ * recommended for low bit rates (below 19.2K)
++ *
++ *                       ICCLK
++ * ASCBaudRate =   ----------------
++ *                   baudrate * 16
++ *
++ * MODE 1
++ * recommended for high bit rates (above 19.2K)
++ *
++ *                   baudrate * 16 * 2^16
++ * ASCBaudRate =   ------------------------
++ *                          ICCLK
++ */
++
++#define ADJ 1
++#define BAUDRATE_VAL_M0(bps, clk) \
++	((clk) / (16 * (bps)))
++#define BAUDRATE_VAL_M1(bps, clk) \
++	(((bps * (1 << 14)) / ((clk) / (1 << 6))) + ADJ)
++
++#endif /* _ST_ASC_H */
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 74c2bf7..ec80e01 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -226,4 +226,7 @@
+ /* Rocketport EXPRESS/INFINITY */
+ #define PORT_RP2	102
+ 
++/* ST ASC type numbers */
++#define PORT_ASC       103
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
+-- 
 1.7.6.5
