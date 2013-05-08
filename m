@@ -1,90 +1,236 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [RFC 1/8] serial:st-asc: Add ST ASC driver.
-Date: Wed, 8 May 2013 09:15:27 -0700
-Message-ID: <20130508161527.GA28080@kroah.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081634.43498.arnd@arndb.de>
- <20130508153459.GA17186@kroah.com>
- <20130508154057.GB3041@game.jcrosoft.org>
- <20130508155301.GB27273@kroah.com>
- <B5A00B86-5332-427E-A82A-5B71EC0979A8@jcrosoft.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC 5/8] ARM:stih41x: Add STiH415 SOC support
+Date: Wed, 8 May 2013 18:18:01 +0200
+Message-ID: <201305081818.01927.arnd@arndb.de>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022297-2334-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <B5A00B86-5332-427E-A82A-5B71EC0979A8-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
-Cc: Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, jslaby-AlSwsSmVLrQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1368022297-2334-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: linux@arm.linux.org.uk, olof@lixom.net, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Samuel Ortiz <sameo@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 09, 2013 at 12:03:05AM +0800, Jean-Christophe PLAGNIOL-VILLARD wrote:
+On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
+> From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 > 
-> On May 8, 2013, at 11:53 PM, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
+> The STiH415 is the next generation of HD, AVC set-top box processors for
+> satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A9
+> 1.0 GHz, dual-core CPU.
 > 
-> > On Wed, May 08, 2013 at 05:40:57PM +0200, Jean-Christophe PLAGNIOL-VILLARD wrote:
-> >> On 08:34 Wed 08 May     , Greg KH wrote:
-> >>> On Wed, May 08, 2013 at 04:34:43PM +0200, Arnd Bergmann wrote:
-> >>>>> +#define ASC_MAJOR		204
-> >>>>> +#define ASC_MINOR_START		40
-> >>>> 
-> >>>> I don't know what the current policy is on allocating major/minor numbers,
-> >>>> but I'm sure you cannot just reuse one that is already used.
-> >>> 
-> >>> I agree, why are you trying to create a new tty device name?  Can't you
-> >>> use the existing ttyS name and minor number as you will not have any
-> >>> other type of serial device on this system?
-> >> 
-> >> Greg on ST STB for more than 10 years we use ttyASC I'll prefer ttySx
-> > 
-> > For 10+ years you have had an out-of-tree serial driver?
-> yes ST have it out of tree for very long time even I puts them to come mainline
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> CC: Stephen Gallimore <stephen.gallimore@st.com>
+> CC: Stuart Menefy <stuart.menefy@st.com>
+> ---
+>  Documentation/arm/STiH41x/overview.txt         |   39 ++
+>  Documentation/arm/STiH41x/stih415-overview.txt |   12 +
+>  arch/arm/Kconfig                               |    3 +
+>  arch/arm/Kconfig.debug                         |   38 ++
+>  arch/arm/Makefile                              |    2 +
+>  arch/arm/boot/dts/stih415-clock.dtsi           |   38 ++
+>  arch/arm/boot/dts/stih415-pinctrl.dtsi         |  480 ++++++++++++++++++++++++
+>  arch/arm/boot/dts/stih415.dtsi                 |   94 +++++
+>  arch/arm/boot/dts/stih415.h                    |   20 +
+>  arch/arm/boot/dts/stih41x.dtsi                 |   30 ++
+>  arch/arm/boot/dts/stixxxx-pincfg.h             |   95 +++++
+>  arch/arm/configs/stih41x_defconfig             |   94 +++++
+>  arch/arm/include/debug/stixxxx.S               |   61 +++
+>  arch/arm/mach-stih41x/Kconfig                  |   35 ++
+>  arch/arm/mach-stih41x/Makefile                 |    4 +
+>  arch/arm/mach-stih41x/board-dt.c               |   76 ++++
+>  arch/arm/mach-stih41x/stih41x.c                |   82 ++++
+>  arch/arm/mach-stih41x/stih41x.h                |    7 +
+>  arch/arm/plat-stixxxx/Kconfig                  |    2 +
+>  arch/arm/plat-stixxxx/Makefile                 |    2 +
+>  arch/arm/plat-stixxxx/headsmp.S                |   44 +++
+>  arch/arm/plat-stixxxx/include/plat/hardware.h  |   20 +
+>  arch/arm/plat-stixxxx/include/plat/smp.h       |   19 +
+>  arch/arm/plat-stixxxx/platsmp.c                |  144 +++++++
 
-Crazy...
+I think there is no point in having a separate mach- and plat- directory
+here, given that modern machines require very little code. You can probably
+fold the three files in mach-stih41x (board-dt.c, stih41x.c and stih41x.h)
+into a single file and rename plat-stixxxx to mach-stixxxx
 
-> >  What
-> > major/minor numbers did you use for it?
-> 
-> http://git.stlinux.com/?p=havana/com.st.havana.kernel.git;a=blob;f=drivers/serial/stm-asc.h;h=79e003ffeb21df55a6af94774fc9c4b3d8de18e9;hb=HEAD
-> 
->   52 #define ASC_MAJOR               204
->   53 #define ASC_MINOR_START         40
-> 
-> same as in this patch
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index 9b31f43..42a5193 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -447,6 +447,16 @@ choice
+>  		  This option selects UART0 on VIA/Wondermedia System-on-a-chip
+>  		  devices, including VT8500, WM8505, WM8650 and WM8850.
+>  
+> +	config DEBUG_STIH41X_UART
+> +		depends on ARCH_STIH41X
+> +		bool "Use StiH415/416 ASC for low-level debug"
+> +		help
+> +		  Say Y here if you want kernel low-level debugging support
+> +		  on StiH415/416 based platforms like B2000, B2020.
+> +		  It support UART2 and SBC_UART1.
+> +
+> +		  If unsure, say N.
+> +
+>  	config DEBUG_LL_UART_NONE
+>  		bool "No low-level debugging UART"
+>  		depends on !ARCH_MULTIPLATFORM
 
-Ok, but just because you have been using an out-of-tree name, and
-non-reserved major/minor, doesn't mean we have to accept it.  As you are
-probably using a tool like udev/devtmpfs on your systems, the
-major/minor number shouldn't matter, only the name.
+I would split out the debug code into a separate patch though.
 
-And I'd argue that we should change the name as well.
+> @@ -600,6 +637,7 @@ config DEBUG_LL_INCLUDE
+>  	default "debug/vt8500.S" if DEBUG_VT8500_UART0
+>  	default "debug/tegra.S" if DEBUG_TEGRA_UART
+>  	default "debug/zynq.S" if DEBUG_ZYNQ_UART0 || DEBUG_ZYNQ_UART1
+> +	default "debug/stixxxx.S" if DEBUG_STIH41X_UART
+>  	default "mach/debug-macro.S"
 
-> >> on the DTB SoC you have one one IP present the st,asc
-> > 
-> > I don't understand, what do you mean by this?
-> > 
-> > confused,
-> 
-> just mention there is not hardware reason to not use the generic ttySx
-> in place of ttyAS as we have only one IP that handle serial on this
-> family of SoC
-> 
-> personally I'll switch to ttySx
+Please keep this in alphabetical order.
 
-Great, then you can use the same major/minor range as well, so there's
-no more objection from me about this :)
+> +	soc {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		#interrupt-cells = <3>;
+> +		interrupt-parent = <&intc>;
 
-thanks,
+The "#interrupt-cells" property doesn't belong here I think.
 
-greg k-h
+> +
+> +		uart2: uart@fed32000 {
+> +			compatible	= "st,asc";
+> +			status 		= "disabled";
+> +			reg		= <0xfed32000 0x2c>;
+> +			interrupts	= <0 197 0>;
+> +			pinctrl-names 	= "default";
+> +			pinctrl-0 	= <&pinctrl_uart2>;
+> +			clocks		= <&CLKS_ICN_REG_0>;
+> +		};
+> +
+> +		/* SBC comms block ASCs in SASG1 */
+> +		sbc_uart1: uart@fe531000 {
+> +			compatible	= "st,asc";
+> +			status 		= "disabled";
+> +			reg		= <0xfe531000 0x2c>;
+> +			interrupts	= <0 210 0>;
+> +			clocks		= <&CLK_SYSIN>;
+> +			pinctrl-names 	= "default";
+> +			pinctrl-0	= <&pinctrl_sbc_uart1>;
+> +		};
+> +	};
+
+Please name these devices "serial", not "uart".
+
+> diff --git a/arch/arm/configs/stih41x_defconfig b/arch/arm/configs/stih41x_defconfig
+> new file mode 100644
+> index 0000000..dd9268b
+> --- /dev/null
+> +++ b/arch/arm/configs/stih41x_defconfig
+
+I would prefer to have this be part of multi_v7_defconfig, unless
+you have strong reason why it can't be.
+
+> diff --git a/arch/arm/mach-stih41x/Kconfig b/arch/arm/mach-stih41x/Kconfig
+> new file mode 100644
+> index 0000000..9c40540
+> --- /dev/null
+> +++ b/arch/arm/mach-stih41x/Kconfig
+> @@ -0,0 +1,35 @@
+> +config ARCH_STIH41X
+> +	bool "STMicroelectronics STiH41x SOCs with Flattened Device Tree" if ARCH_MULTI_V7
+> +	select GENERIC_CLOCKEVENTS
+> +	select CLKDEV_LOOKUP
+> +	select ARM_GIC
+
+
+> +if ARCH_STIH41X
+> +menu "STMicroelectronics Consumer Electronics SOCs"
+
+You can use 'menuconfig' to combine these two.
+
+> +static void __init stih41x_timer_init(void)
+> +{
+> +	of_clk_init(NULL);
+> +	clocksource_of_init();
+> +	stih41x_l2x0_init();
+> +}
+
+I'm hoping we can kill make the clk and l2x0 init work by default in 3.11,
+as clocksource_of_init already does, so you won't need this function
+any more.
+
+> +/*
+> + * A basic implementation of irq_set_wake that ensures wakeup source
+> + * interrupts are not disabled during PM_SUSPEND_FREEZE.
+> + */
+> +static int stih41x_set_wake(struct irq_data *d, unsigned int on)
+> +{
+> +	struct irq_desc *desc = irq_to_desc(d->irq);
+> +
+> +	if (on) {
+> +		if (desc->action)
+> +			desc->action->flags |= IRQF_NO_SUSPEND;
+> +	} else {
+> +		if (desc->action)
+> +			desc->action->flags &= ~IRQF_NO_SUSPEND;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static void __init stih41x_irq_init(void)
+> +{
+> +	gic_arch_extn.irq_set_wake = stih41x_set_wake;
+> +	gic_arch_extn.flags = IRQCHIP_MASK_ON_SUSPEND;
+> +
+> +	irqchip_init();
+> +}
+
+This looks like it should be generic. Why do you need this?
+
+> +void __init stih41x_dt_init(void)
+> +{
+> +	of_platform_populate(NULL, of_default_bus_match_table,
+> +				NULL, NULL);
+> +	return;
+> +}
+
+This is already not needed in 3.10.
+
+> +static struct map_desc stih41x_io_desc[] __initdata = {
+> +#ifdef CONFIG_SMP
+> +	{
+> +		.virtual	= IO_ADDRESS(MPE41_SCU_BASE),
+> +		.pfn		= __phys_to_pfn(MPE41_SCU_BASE),
+> +		.length		= SZ_4K,
+> +		.type		= MT_DEVICE,
+> +	},
+> +#endif
+
+> +void __init stih41x_map_io(void)
+> +{
+> +#ifdef CONFIG_SMP
+> +	stixxxx_scu_base_addr = ((void __iomem *)IO_ADDRESS(MPE41_SCU_BASE));
+> +#endif
+> +	iotable_init(stih41x_io_desc, ARRAY_SIZE(stih41x_io_desc));
+> +}
+
+IIRC the SCU no longer needs to be mapped this early, so you can use
+ioremap these days.
+
+> +void __init stih41x_l2x0_init(void)
+> +{
+> +	u32 way_size = 0x4;
+> +	u32 aux_ctrl;
+> +
+> +	aux_ctrl = (0x1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |
+> +		(0x1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |
+> +		(0x1 << L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT) |
+> +		(way_size << L2X0_AUX_CTRL_WAY_SIZE_SHIFT);
+> +
+> +	l2x0_of_init(aux_ctrl, L2X0_AUX_CTRL_MASK);
+> +}
+
+I don't know where we stand on this, but I think we should kill all
+calls like these.
+
+	Arnd
