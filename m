@@ -1,342 +1,470 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Wed,  8 May 2013 15:11:12 +0100
-Message-ID: <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
+Date: Wed, 08 May 2013 09:26:33 -0500
+Message-ID: <518A6099.8070505@gmail.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog115.obsmtp.com ([207.126.144.139]:38870 "EHLO
-	eu1sys200aog115.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755188Ab3EHOVz (ORCPT
+Received: from mail-qc0-f180.google.com ([209.85.216.180]:57265 "EHLO
+	mail-qc0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755252Ab3EHO0j (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 May 2013 10:21:55 -0400
-In-Reply-To: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+	Wed, 8 May 2013 10:26:39 -0400
+In-Reply-To: <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dong.aisheng@linaro.org, sameo@linux.intel.com
-Cc: Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Srinivas Kandagatla <srinivas.kandagatla@st.com>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, dev
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: linux@arm.linux.org.uk, will.deacon@arm.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Samuel Ortiz <sameo@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Mark Brown <broonie@opensource.wolfsonmicro.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.orglinux-
 
-From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+On 05/08/2013 09:11 AM, Srinivas KANDAGATLA wrote:
+> From: Stuart Menefy <stuart.menefy@st.com>
+> 
+> This is a simple driver for the global timer module found in the Cortex
+> A9-MP cores from revision r1p0 onwards. This should be able to perform
+> the functions of the system timer and the local timer in an SMP system.
+> 
+> The global timer has the following features:
+>     The global timer is a 64-bit incrementing counter with an
+> auto-incrementing feature. It continues incrementing after sending
+> interrupts. The global timer is memory mapped in the private memory
+> region.
+>     The global timer is accessible to all Cortex-A9 processors in the
+> cluster. Each Cortex-A9 processor has a private 64-bit comparator that
+> is used to assert a private interrupt when the global timer has reached
+> the comparator value. All the Cortex-A9 processors in a design use the
+> banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
+> Controller as a Private Peripheral Interrupt. The global timer is
+> clocked by PERIPHCLK.
 
-This patch introduces syscon_claim, syscon_read, syscon_write,
-syscon_release APIs to help drivers to use syscon registers in much more
-flexible way.
+PERIPHCLK scales with cpu clock typically so the global timer is not a
+suitable clocksource if you use cpufreq. You can deal with the scaling
+on clockevents, but not a clocksource. I imagine the global timers is
+also typically power-gated in some low power modes. This is why no one
+has added support already. Are neither of those an issue or going to be
+an issue for you?
 
-With this patch, a driver can claim few/all bits in the syscon registers
-and do read/write and then release them when its totally finished with
-them, in the mean time if another driver requests same bits or registers
-the API will detect conflit and return error to the second request.
+Rob
 
-Reason to introduce this API.
-System configuration/control registers are very basic configuration
-registers arranged in groups across ST Settop Box parts. These registers
-are independent of IP itself. Many IPs, clock, pad and other functions
-are wired up to these registers.
-
-In many cases a single syconf register contains bits related to multiple
-devices, and therefore it need to be shared across multiple drivers at
-bit level. The same IP block can have different syscon mappings on
-different SOCs.
-
-Typically in a SOC there will be more than hundreds of these registers,
-which are again divided into groups.
-
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-CC: Stuart Menefy <stuart.menefy@st.com>
----
- drivers/mfd/syscon.c       |  199 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/syscon.h |   43 ++++++++++
- 2 files changed, 242 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index 61aea63..fab85da 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -16,6 +16,7 @@
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/slab.h>
- #include <linux/of_address.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-@@ -28,8 +29,23 @@ struct syscon {
- 	struct device *dev;
- 	void __iomem *base;
- 	struct regmap *regmap;
-+	struct device_node *of_node;
-+	struct list_head list;
-+	struct list_head fields;
-+	spinlock_t fields_lock;
- };
- 
-+struct syscon_field {
-+	struct syscon *syscon;
-+	u16 num;
-+	u8 lsb, msb;
-+	unsigned int offset;
-+	const char *owner;
-+	struct list_head list;
-+};
-+
-+static LIST_HEAD(syscons);
-+
- static int syscon_match(struct device *dev, void *data)
- {
- 	struct syscon *syscon = dev_get_drvdata(dev);
-@@ -87,6 +103,185 @@ struct regmap *syscon_regmap_lookup_by_phandle(struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_phandle);
- 
-+static int syscon_add_field(struct syscon_field *field)
-+{
-+	struct syscon_field *entry;
-+	enum {
-+		status_not_found,
-+		status_found_register,
-+		status_add_field_here,
-+	} status = status_not_found;
-+	int bit_avail = 0;
-+	struct syscon *syscon = field->syscon;
-+	int rval = 0;
-+	int num = field->num;
-+	int lsb = field->lsb;
-+	int msb = field->msb;
-+
-+	spin_lock(&syscon->fields_lock);
-+	/*
-+	 * The list is always in syscon->num->lsb/msb order, so it's easy to
-+	 * find a place to insert a new field (and to detect conflicts)
-+	 */
-+	list_for_each_entry(entry, &syscon->fields, list) {
-+		if (entry->num == num) {
-+			status = status_found_register;
-+			/*
-+			 * Someone already claimed a field from this
-+			 * register - let's try to find some space for
-+			 * requested bits...
-+			 */
-+			if (bit_avail <= lsb && msb < entry->lsb) {
-+				status = status_add_field_here;
-+				break;
-+			}
-+			bit_avail = entry->msb + 1;
-+		} else if (entry->num > num) {
-+			/*
-+			 * There is no point of looking further -
-+			 * the num values are bigger then
-+			 * the ones we are looking for
-+			 */
-+			if ((status == status_found_register &&
-+					bit_avail <= lsb) ||
-+					status == status_not_found)
-+				/*
-+				 * A remainder of the given register is not
-+				 * used or the register wasn't used at all
-+				 */
-+				status = status_add_field_here;
-+			else
-+				/*
-+				 * Apparently some bits of the claimed field
-+				 * are already in use...
-+				 */
-+				rval = -EBUSY;
-+			break;
-+		}
-+	}
-+
-+	if ((status == status_not_found) || (status == status_found_register))
-+		list_add_tail(&field->list, &syscon->fields);
-+	else if (status == status_add_field_here)
-+		list_add(&field->list, entry->list.prev);
-+
-+	spin_unlock(&syscon->fields_lock);
-+	return rval;
-+}
-+
-+static struct syscon *find_syscon(struct device_node *np)
-+{
-+	struct syscon *syscon;
-+
-+	list_for_each_entry(syscon, &syscons, list) {
-+		if (syscon->of_node == np)
-+			return syscon;
-+	}
-+	return NULL;
-+}
-+
-+#define MIN_SYSCON_CELLS	(4)
-+
-+struct syscon_field *syscon_claim(struct device_node *np,
-+				const char *prop)
-+{
-+	const __be32 *list;
-+	const struct property *pp;
-+	struct syscon_field *field;
-+	phandle phandle;
-+	struct device_node *syscon_np;
-+	u32 syscon_num;
-+
-+	pp = of_find_property(np, prop, NULL);
-+	if (!pp)
-+		return NULL;
-+
-+	if (pp->length < ((MIN_SYSCON_CELLS) * sizeof(*list)))
-+		return NULL;
-+
-+	list = pp->value;
-+
-+	/* syscon */
-+	phandle = be32_to_cpup(list++);
-+	syscon_np = of_find_node_by_phandle(phandle);
-+	if (!syscon_np) {
-+		pr_warn("No syscon found for %s syscon\n", prop);
-+		return NULL;
-+	}
-+
-+	field = kzalloc(sizeof(struct syscon_field), GFP_KERNEL);
-+	if (!field)
-+		return NULL;
-+
-+	field->syscon = find_syscon(syscon_np);
-+	if (!field->syscon) {
-+		pr_warn("No syscon registered for %s syscon\n", prop);
-+		goto error;
-+	}
-+
-+	of_node_put(syscon_np);
-+	syscon_num = be32_to_cpup(list++);
-+	field->offset = (syscon_num) * 4;
-+	field->lsb = be32_to_cpup(list++);
-+	field->msb = be32_to_cpup(list++);
-+	field->num = syscon_num;
-+	field->owner = pp->name;
-+
-+	if (syscon_add_field(field))
-+		goto error;
-+
-+	return field;
-+error:
-+	kfree(field);
-+	return NULL;
-+}
-+EXPORT_SYMBOL(syscon_claim);
-+
-+void syscon_release(struct syscon_field *field)
-+{
-+	struct syscon *syscon;
-+	if (field) {
-+		syscon = field->syscon;
-+		spin_lock(&syscon->fields_lock);
-+		list_del(&field->list);
-+		spin_unlock(&syscon->fields_lock);
-+		kfree(field);
-+	}
-+}
-+EXPORT_SYMBOL(syscon_release);
-+
-+void syscon_write(struct syscon_field *field, unsigned long value)
-+{
-+	int field_bits;
-+	struct syscon *syscon = field->syscon;
-+
-+	field_bits = field->msb - field->lsb + 1;
-+	if (field_bits == 32) {
-+		regmap_write(syscon->regmap, field->offset, value);
-+	} else {
-+		u32 reg_mask;
-+		reg_mask = (((1 << field_bits) - 1) << field->lsb);
-+		regmap_update_bits(syscon->regmap, field->offset,
-+					reg_mask, value << field->lsb);
-+	}
-+}
-+EXPORT_SYMBOL(syscon_write);
-+
-+unsigned long syscon_read(struct syscon_field *field)
-+{
-+	int field_bits;
-+	u32 result;
-+	struct syscon *syscon = field->syscon;
-+
-+	regmap_read(syscon->regmap, field->offset, &result);
-+	field_bits = field->msb - field->lsb + 1;
-+	result >>= field->lsb;
-+	result &= (1 << field_bits) - 1;
-+
-+	return result;
-+}
-+EXPORT_SYMBOL(syscon_read);
-+
- static const struct of_device_id of_syscon_match[] = {
- 	{ .compatible = "syscon", },
- 	{ },
-@@ -122,6 +317,10 @@ static int syscon_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	list_add_tail(&syscon->list, &syscons);
-+	INIT_LIST_HEAD(&syscon->fields);
-+	syscon->of_node = np;
-+
- 	syscon_regmap_config.max_register = res.end - res.start - 3;
- 	syscon->regmap = devm_regmap_init_mmio(dev, syscon->base,
- 					&syscon_regmap_config);
-diff --git a/include/linux/mfd/syscon.h b/include/linux/mfd/syscon.h
-index 6aeb6b8..0de0da5 100644
---- a/include/linux/mfd/syscon.h
-+++ b/include/linux/mfd/syscon.h
-@@ -15,9 +15,52 @@
- #ifndef __LINUX_MFD_SYSCON_H__
- #define __LINUX_MFD_SYSCON_H__
- 
-+struct syscon_field;
-+
- extern struct regmap *syscon_node_to_regmap(struct device_node *np);
- extern struct regmap *syscon_regmap_lookup_by_compatible(const char *s);
- extern struct regmap *syscon_regmap_lookup_by_phandle(
- 					struct device_node *np,
- 					const char *property);
-+
-+/**
-+ * syscon_claim - Claim ownership of a field of a syscon register
-+ * @np: parent node pointer.
-+ * @prop: name of sysconf to claim.
-+ *
-+ * This function claims ownership of a field from a syscon register.
-+ * It returns a &struct syscon_field which can be used in subsequent
-+ * operations on this field.
-+ */
-+struct syscon_field *syscon_claim(struct device_node *np,
-+			const char *prop);
-+
-+/**
-+ * syscon_release - Release ownership of a field of a syscon register
-+ * @field: the syscon field to write to
-+ *
-+ * Release ownership of a field from a syscon register.
-+ * @field must have been claimed using syscon_claim().
-+ */
-+void syscon_release(struct syscon_field *field);
-+
-+/**
-+ * syscon_write - Write a value into a field of a syscon register
-+ * @field: the syscon field to write to
-+ * @value: the value to write into the field
-+ *
-+ * This writes @value into the field of the syscon register @field.
-+ * @field must have been claimed using syscon_claim().
-+ */
-+void syscon_write(struct syscon_field *field, unsigned long value);
-+
-+/**
-+ * syscon_read - Read a field of a syscon register
-+ * @field: the syscon field to read
-+ *
-+ * This reads a field of the syscon register @field.
-+ * @field must have been claimed using syscon_claim().
-+ */
-+unsigned long syscon_read(struct syscon_field *field);
-+
- #endif /* __LINUX_MFD_SYSCON_H__ */
--- 
-1.7.6.5
+> 
+> Signed-off-by: Stuart Menefy <stuart.menefy@st.com>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> ---
+>  Documentation/devicetree/bindings/arm/gt.txt |   21 ++
+>  arch/arm/Kconfig                             |    6 +
+>  arch/arm/include/asm/global_timer.h          |   12 +
+>  arch/arm/kernel/Makefile                     |    1 +
+>  arch/arm/kernel/global_timer.c               |  325 ++++++++++++++++++++++++++
+>  5 files changed, 365 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/arm/gt.txt
+>  create mode 100644 arch/arm/include/asm/global_timer.h
+>  create mode 100644 arch/arm/kernel/global_timer.c
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/gt.txt b/Documentation/devicetree/bindings/arm/gt.txt
+> new file mode 100644
+> index 0000000..4ec5fb0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/gt.txt
+> @@ -0,0 +1,21 @@
+> +
+> +* ARM Global Timer
+> +	Cortex-A9 are often associated with a per-core Global timer.
+> +
+> +** Timer node required properties:
+> +
+> +- compatible : Should be one of:
+> +	"arm,cortex-a9-global-timer"
+> +
+> +- interrupts : One interrupt to each core
+> +
+> +- reg : Specify the base address and the size of the GT timer
+> +	register window.
+> +
+> +Example:
+> +
+> +	gt-timer@2c000600 {
+> +		compatible = "arm,cortex-a9-global-timer";
+> +		reg = <0x2c000600 0x20>;
+> +		interrupts = <1 13 0xf01>;
+> +	};
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 1cacda4..c8c524e 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -1606,6 +1606,12 @@ config HAVE_ARM_TWD
+>  	help
+>  	  This options enables support for the ARM timer and watchdog unit
+>  
+> +config HAVE_ARM_GT
+> +	bool
+> +	select CLKSRC_OF if OF
+> +	help
+> +	  This options enables support for the ARM global timer unit
+> +
+>  choice
+>  	prompt "Memory split"
+>  	default VMSPLIT_3G
+> diff --git a/arch/arm/include/asm/global_timer.h b/arch/arm/include/asm/global_timer.h
+> new file mode 100644
+> index 0000000..46f9188
+> --- /dev/null
+> +++ b/arch/arm/include/asm/global_timer.h
+> @@ -0,0 +1,12 @@
+> +/*
+> + * arch/arm/include/asm/global_timer.h
+> + *
+> + * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
+> + * Author: Stuart Menefy <stuart.menefy@st.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq);
+> diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+> index 5f3338e..af51808 100644
+> --- a/arch/arm/kernel/Makefile
+> +++ b/arch/arm/kernel/Makefile
+> @@ -35,6 +35,7 @@ obj-$(CONFIG_ARM_CPU_SUSPEND)	+= sleep.o suspend.o
+>  obj-$(CONFIG_SMP)		+= smp.o smp_tlb.o
+>  obj-$(CONFIG_HAVE_ARM_SCU)	+= smp_scu.o
+>  obj-$(CONFIG_HAVE_ARM_TWD)	+= smp_twd.o
+> +obj-$(CONFIG_HAVE_ARM_GT)	+= global_timer.o
+>  obj-$(CONFIG_ARM_ARCH_TIMER)	+= arch_timer.o
+>  obj-$(CONFIG_DYNAMIC_FTRACE)	+= ftrace.o insn.o
+>  obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o insn.o
+> diff --git a/arch/arm/kernel/global_timer.c b/arch/arm/kernel/global_timer.c
+> new file mode 100644
+> index 0000000..0ab1af3
+> --- /dev/null
+> +++ b/arch/arm/kernel/global_timer.c
+> @@ -0,0 +1,325 @@
+> +/*
+> + * linux/arch/arm/kernel/global_timer.c
+> + *
+> + * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
+> + * Author: Stuart Menefy <stuart.menefy@st.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/init.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/clocksource.h>
+> +#include <linux/clockchips.h>
+> +#include <linux/clk.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_address.h>
+> +
+> +#include <asm/mach/irq.h>
+> +#include <asm/global_timer.h>
+> +#include <asm/localtimer.h>
+> +
+> +#define GT_COUNTER0	0x00
+> +#define GT_COUNTER1	0x04
+> +
+> +#define GT_CONTROL	0x08
+> +#define GT_CONTROL_TIMER_ENABLE		BIT(0)
+> +#define GT_CONTROL_COMP_ENABLE		BIT(1)	/* banked */
+> +#define GT_CONTROL_IRQ_ENABLE		BIT(2)	/* banked */
+> +#define GT_CONTROL_AUTO_INC		BIT(3)	/* banked */
+> +
+> +#define GT_INT_STATUS	0x0c
+> +#define GT_INT_STATUS_EVENT_FLAG	BIT(0)
+> +
+> +#define GT_COMP0	0x10
+> +#define GT_COMP1	0x14
+> +#define GT_AUTO_INC	0x18
+> +
+> +/*
+> + * We are expecting to be clocked by the ARM peripheral clock.
+> + *
+> + * Note: it is assumed we are using a prescaler value of zero, so this is
+> + * the units for all operations.
+> + */
+> +static void __iomem *gt_base;
+> +static struct clk *gt_clk;
+> +static unsigned long gt_clk_rate;
+> +static int gt_ppi;
+> +static struct clock_event_device __percpu **gt_evt;
+> +static DEFINE_PER_CPU(bool, percpu_init_called);
+> +static DEFINE_PER_CPU(struct clock_event_device, gt_clockevent);
+> +
+> +union gt_counter {
+> +	cycle_t cycles;
+> +	struct {
+> +		uint32_t lower;
+> +		uint32_t upper;
+> +	};
+> +};
+> +
+> +static union gt_counter gt_counter_read(void)
+> +{
+> +	union gt_counter res;
+> +	uint32_t upper;
+> +
+> +	upper = readl(gt_base + GT_COUNTER1);
+> +	do {
+> +		res.upper = upper;
+> +		res.lower = readl(gt_base + GT_COUNTER0);
+> +		upper = readl(gt_base + GT_COUNTER1);
+> +	} while (upper != res.upper);
+> +
+> +	return res;
+> +}
+> +
+> +static void gt_compare_set(unsigned long delta, int periodic)
+> +{
+> +	union gt_counter counter = gt_counter_read();
+> +	unsigned long ctrl = readl(gt_base + GT_CONTROL);
+> +
+> +	BUG_ON(!(ctrl & GT_CONTROL_TIMER_ENABLE));
+> +	BUG_ON(ctrl & (GT_CONTROL_COMP_ENABLE |
+> +		       GT_CONTROL_IRQ_ENABLE |
+> +		       GT_CONTROL_AUTO_INC));
+> +
+> +	counter.cycles += delta;
+> +	writel(counter.lower, gt_base + GT_COMP0);
+> +	writel(counter.upper, gt_base + GT_COMP1);
+> +
+> +	ctrl |= GT_CONTROL_COMP_ENABLE | GT_CONTROL_IRQ_ENABLE;
+> +
+> +	if (periodic) {
+> +		writel(delta, gt_base + GT_AUTO_INC);
+> +		ctrl |= GT_CONTROL_AUTO_INC;
+> +	}
+> +
+> +	writel(ctrl, gt_base + GT_CONTROL);
+> +}
+> +
+> +static void gt_clockevent_set_mode(enum clock_event_mode mode,
+> +				   struct clock_event_device *clk)
+> +{
+> +	switch (mode) {
+> +	case CLOCK_EVT_MODE_PERIODIC:
+> +		gt_compare_set(gt_clk_rate/HZ, 1);
+> +		break;
+> +	case CLOCK_EVT_MODE_ONESHOT:
+> +		/* period set, and timer enabled in 'next_event' hook */
+> +		BUG_ON(readl(gt_base + GT_CONTROL) &
+> +		       (GT_CONTROL_COMP_ENABLE |
+> +			GT_CONTROL_IRQ_ENABLE |
+> +			GT_CONTROL_AUTO_INC));
+> +		/* Fall through */
+> +	case CLOCK_EVT_MODE_UNUSED:
+> +	case CLOCK_EVT_MODE_SHUTDOWN:
+> +	default:
+> +		writel(GT_CONTROL_TIMER_ENABLE, gt_base + GT_CONTROL);
+> +		break;
+> +	}
+> +}
+> +
+> +static int gt_clockevent_set_next_event(unsigned long evt,
+> +					struct clock_event_device *unused)
+> +{
+> +	gt_compare_set(evt, 0);
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t gt_clockevent_interrupt(int irq, void *dev_id)
+> +{
+> +	struct clock_event_device *evt = *(struct clock_event_device **)dev_id;
+> +
+> +	writel(GT_INT_STATUS_EVENT_FLAG, gt_base + GT_INT_STATUS);
+> +	evt->event_handler(evt);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int __cpuinit gt_clockevents_init(struct clock_event_device *clk)
+> +{
+> +	struct clock_event_device **this_cpu_clk;
+> +	int cpu = smp_processor_id();
+> +
+> +	clk->name = "Global Timer CE";
+> +	clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
+> +	clk->set_mode = gt_clockevent_set_mode;
+> +	clk->set_next_event = gt_clockevent_set_next_event;
+> +	this_cpu_clk = __this_cpu_ptr(gt_evt);
+> +	*this_cpu_clk = clk;
+> +	clk->irq = gt_ppi;
+> +	clockevents_config_and_register(clk, gt_clk_rate,
+> +					0xf, 0xffffffff);
+> +	per_cpu(percpu_init_called, cpu) = true;
+> +	enable_percpu_irq(clk->irq, IRQ_TYPE_NONE);
+> +	return 0;
+> +}
+> +
+> +static void gt_clockevents_stop(struct clock_event_device *clk)
+> +{
+> +	gt_clockevent_set_mode(CLOCK_EVT_MODE_UNUSED, clk);
+> +	disable_percpu_irq(clk->irq);
+> +}
+> +
+> +static int __cpuinit gt_clockevents_setup(struct clock_event_device *clk)
+> +{
+> +	int cpu = smp_processor_id();
+> +
+> +	/* Use existing clock_event for boot cpu */
+> +	if (per_cpu(percpu_init_called, cpu))
+> +		return 0;
+> +
+> +	writel(0, gt_base + GT_CONTROL);
+> +	writel(0, gt_base + GT_COUNTER0);
+> +	writel(0, gt_base + GT_COUNTER1);
+> +	writel(GT_CONTROL_TIMER_ENABLE, gt_base + GT_CONTROL);
+> +
+> +	return gt_clockevents_init(clk);
+> +}
+> +
+> +static cycle_t gt_clocksource_read(struct clocksource *cs)
+> +{
+> +	union gt_counter res = gt_counter_read();
+> +	return res.cycles;
+> +}
+> +
+> +static struct clocksource gt_clocksource = {
+> +	.name	= "Global Timer CS",
+> +	.rating	= 300,
+> +	.read	= gt_clocksource_read,
+> +	.mask	= CLOCKSOURCE_MASK(64),
+> +	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
+> +};
+> +
+> +static void __init gt_clocksource_init(void)
+> +{
+> +	writel(0, gt_base + GT_CONTROL);
+> +	writel(0, gt_base + GT_COUNTER0);
+> +	writel(0, gt_base + GT_COUNTER1);
+> +	writel(GT_CONTROL_TIMER_ENABLE, gt_base + GT_CONTROL);
+> +
+> +	gt_clocksource.shift = 20;
+> +	gt_clocksource.mult =
+> +		clocksource_hz2mult(gt_clk_rate, gt_clocksource.shift);
+> +	clocksource_register(&gt_clocksource);
+> +}
+> +
+> +static struct clk *gt_get_clock(void)
+> +{
+> +	struct clk *clk;
+> +	int err;
+> +
+> +	clk = clk_get_sys("gt", NULL);
+> +	if (IS_ERR(clk)) {
+> +		pr_err("global-timer: clock not found: %ld\n", PTR_ERR(clk));
+> +		return clk;
+> +	}
+> +
+> +	err = clk_prepare_enable(clk);
+> +	if (err) {
+> +		pr_err("global-timer: clock prepare+enable failed: %d\n", err);
+> +		clk_put(clk);
+> +		return ERR_PTR(err);
+> +	}
+> +
+> +	return clk;
+> +}
+> +
+> +static struct local_timer_ops gt_lt_ops __cpuinitdata = {
+> +	.setup	= gt_clockevents_setup,
+> +	.stop	= gt_clockevents_stop,
+> +};
+> +
+> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq)
+> +{
+> +	unsigned int cpu = smp_processor_id();
+> +	struct clock_event_device *evt = &per_cpu(gt_clockevent, cpu);
+> +	int err = 0;
+> +
+> +	if (gt_base) {
+> +		pr_warn("global-timer: invalid base address\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	gt_clk = gt_get_clock();
+> +	if (IS_ERR(gt_clk)) {
+> +		pr_warn("global-timer: clk not found\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	gt_evt = alloc_percpu(struct clock_event_device *);
+> +	if (!gt_evt) {
+> +		pr_warn("global-timer: can't allocate memory\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	err = request_percpu_irq(timer_irq, gt_clockevent_interrupt,
+> +				 "gt", gt_evt);
+> +	if (err) {
+> +		pr_warn("global-timer: can't register interrupt %d (%d)\n",
+> +			timer_irq, err);
+> +		goto out_free;
+> +	}
+> +
+> +	gt_base = base;
+> +	gt_clk_rate = clk_get_rate(gt_clk);
+> +
+> +	evt->irq = timer_irq;
+> +	gt_ppi = timer_irq;
+> +	evt->cpumask = cpumask_of(cpu);
+> +
+> +	gt_clocksource_init();
+> +	gt_clockevents_init(evt);
+> +	err =  local_timer_register(&gt_lt_ops);
+> +	if (err) {
+> +		pr_warn("global-timer: unable to register local timer.\n");
+> +		goto out_irq;
+> +	}
+> +
+> +	return 0;
+> +
+> +out_irq:
+> +	free_percpu_irq(timer_irq, gt_evt);
+> +out_free:
+> +	free_percpu(gt_evt);
+> +	return err;
+> +}
+> +
+> +#ifdef CONFIG_OF
+> +static void __init global_timer_of_register(struct device_node *np)
+> +{
+> +	struct clk *clk;
+> +	int err = 0;
+> +	int gt_ppi;
+> +	static void __iomem *gt_base;
+> +
+> +	gt_ppi = irq_of_parse_and_map(np, 0);
+> +	if (!gt_ppi) {
+> +		err = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	gt_base = of_iomap(np, 0);
+> +	if (!gt_base) {
+> +		err = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	clk = of_clk_get(np, 0);
+> +	if (!IS_ERR(clk))
+> +		clk_register_clkdev(clk, NULL, "gt");
+> +
+> +	global_timer_init(gt_base, gt_ppi);
+> +
+> +out:
+> +	WARN(err, "Global timer register failed (%d)\n", err);
+> +}
+> +
+> +CLOCKSOURCE_OF_DECLARE(arm_gt_a9, "arm,cortex-a9-global-timer",
+> +			global_timer_of_register);
+> +#endif
+> 
 
