@@ -1,57 +1,47 @@
-From: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-Subject: [PATCH] serial: 8250_dw: Add valid clk pointer check
-Date: Tue,  7 May 2013 08:27:16 -0300
-Message-ID: <1367926036-26399-1-git-send-email-ezequiel.garcia@free-electrons.com>
+From: "John P. Goldman" <gliceaga@mendoza-conicet.gob.ar>
+Subject: dringender Vorschlag
+Date: Wed, 8 May 2013 05:46:28 -0300 (ART)
+Message-ID: <351326728.69416.1368002788604.JavaMail.root__47943.0747604512$1368004088$gmane$org@correo.mendoza-conicet.gob.ar>
+Reply-To: "John P. Goldman" <johnp.goldman@yahoo.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:51332 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754585Ab3EGL13 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 May 2013 07:27:29 -0400
+Received: from mx2.mendoza-conicet.gob.ar ([200.69.149.90]:40948 "EHLO
+	mx2.mendoza-conicet.gob.ar" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751190Ab3EHJG6 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 May 2013 05:06:58 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: heikki.krogerus@linux.intel.com, jslaby@suse.cz, gregkh@linuxfoundation.org, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
 
-Commit ffc3ae6dd "serial: 8250_dw: Enable runtime PM" introduced runtime
-PM management, which enables/disables the clk without checking if the clk
-is valid. However, this driver allows to be probed without a defined clk,
-using clock-frequency, as a fallback.
 
-Therefore, on platforms that are device tree probed using clock-frequency
-instead of clk, we get an ugly NULL pointer dereference.
 
-This patch fixes it by simply adding a check before accessing the clk api.
+Entschuldigungen f=C3=BCr kommen in Ihre Privatsph=C3=A4re! Ich bin Rec=
+htsanwalt
+Werner Erich Zeller; Ich habe einen meiner einflussreichen und
+wohlhabenden Kunden zum Tode; und er hatte eine sehr geheime und privat=
+e
+Investitionen von =E2=82=AC15,000,000.00 bei einer privaten Bank in Gro=
+=C3=9Fbritannien
+hier zu Lebzeiten. Diese Investition wurde ohne einen deklarierten
+n=C3=A4chsten Angeh=C3=B6rigen und beg=C3=BCnstigte. Jetzt brauche ich =
+Sie arbeiten mit
+mir als mein Partner zu erholen und zu je 50 % Aktienfonds. Alle Dokume=
+nte
+werden rechtlich beantragt und beschafft, und in 5 Werktage, wird diese
+Transaktion auftreten. Aber ich brauche einen ernsten, treuen und
+glaubw=C3=BCrdigen Partner.
 
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
----
- drivers/tty/serial/8250/8250_dw.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Bitte senden Sie mir eine vertrauliche Antwort, wenn Sie denken, Sie
+vertraut werden k=C3=B6nnen und sind von den Qualit=C3=A4ten! Ich warte=
+ auf Ihre
+schnelle Antwort.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index beaa283..0b0eef9 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -338,7 +338,8 @@ static int dw8250_runtime_suspend(struct device *dev)
- {
- 	struct dw8250_data *data = dev_get_drvdata(dev);
- 
--	clk_disable_unprepare(data->clk);
-+	if (!IS_ERR(data->clk))
-+		clk_disable_unprepare(data->clk);
- 
- 	return 0;
- }
-@@ -347,7 +348,8 @@ static int dw8250_runtime_resume(struct device *dev)
- {
- 	struct dw8250_data *data = dev_get_drvdata(dev);
- 
--	clk_prepare_enable(data->clk);
-+	if (!IS_ERR(data->clk))
-+		clk_prepare_enable(data->clk);
- 
- 	return 0;
- }
--- 
-1.8.1.5
-
+Werner Erich Zeller (Rechtsanwalt)
+Rufen Sie + 44-702-409-0820 (Office)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
