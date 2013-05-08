@@ -1,72 +1,112 @@
-From: Stuart MENEFY <stuart.menefy@st.com>
-Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
-Date: Wed, 08 May 2013 16:48:31 +0100
-Message-ID: <518A73CF.8000309@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081638.23100.arnd@arndb.de>
- <20130508144907.GB20820@mudshark.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20130508144907.GB20820@mudshark.cambridge.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Dave Martin <dave.martin@linaro.org>, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Viresh Kumar <viresh.kumar@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Grant Likely <grant.likely@secretlab.ca>, Jiri Slaby <jslaby@suse.cz>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <Marc.Zyngier@arm.com>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg
+From: Johan Hovold <jhovold@gmail.com>
+Subject: [PATCH v2 2/8] USB: serial: add generic wait_until_sent implementation
+Date: Wed,  8 May 2013 17:51:43 +0200
+Message-ID: <1368028303-11923-1-git-send-email-jhovold@gmail.com>
+References: <1367778753-22297-3-git-send-email-jhovold@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f54.google.com ([209.85.215.54]:43376 "EHLO
+	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754558Ab3EHPwD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 May 2013 11:52:03 -0400
+In-Reply-To: <1367778753-22297-3-git-send-email-jhovold@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Stas Sergeev <stsp@list.ru>, Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>, Johan Hovold <jhovold@gmail.com>
 
-On 08/05/13 15:49, Will Deacon wrote:
-> On Wed, May 08, 2013 at 03:38:22PM +0100, Arnd Bergmann wrote:
->> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
->>> From: Stuart Menefy <stuart.menefy@st.com>
->>>
->>> This is a simple driver for the global timer module found in the Cortex
->>> A9-MP cores from revision r1p0 onwards. This should be able to perform
->>> the functions of the system timer and the local timer in an SMP system.
->>>
->>> The global timer has the following features:
->>>     The global timer is a 64-bit incrementing counter with an
->>> auto-incrementing feature. It continues incrementing after sending
->>> interrupts. The global timer is memory mapped in the private memory
->>> region.
->>>     The global timer is accessible to all Cortex-A9 processors in the
->>> cluster. Each Cortex-A9 processor has a private 64-bit comparator that
->>> is used to assert a private interrupt when the global timer has reached
->>> the comparator value. All the Cortex-A9 processors in a design use the
->>> banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
->>> Controller as a Private Peripheral Interrupt. The global timer is
->>> clocked by PERIPHCLK.
->>>
->>> Signed-off-by: Stuart Menefy <stuart.menefy@st.com>
->>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
->>>
->>
->> Are you sure we don't already have a driver for this? It sounds unlikely
->> that you are the first one to do this when the hardware is so common.
-> 
-> An additional reason why people don't make use of this timer (on top of the
-> power domain concerns raised by Rob) is due to the following from the A9
-> TRM:
-> 
->   `From r2p0 the comparators for each processor with the global timer fire
->    when the timer value is greater than or equal to. In previous revisions
->    the comparators fired when the timer value was equal to.'
-> 
-> So you'll get into all sorts of horrible races on those older revisions if
-> you're not careful.
+Add generic wait_until_sent implementation which polls for empty
+hardware buffers using the new port-operation tx_empty.
 
-Fortunately the earliest version of these SoCs uses r2p2, so we avoided that
-particular issue. But as the code doesn't attempt to work around these
-problems a check on the version number might be a good idea to prevent other
-people accidentally hitting it.
+The generic implementation will be used for all sub-drivers that
+implement tx_empty but does not define wait_until_sent.
 
-Stuart
+Signed-off-by: Johan Hovold <jhovold@gmail.com>
+---
+
+v2: make sure to handle B0
+
+ drivers/usb/serial/generic.c    | 31 +++++++++++++++++++++++++++++++
+ drivers/usb/serial/usb-serial.c |  2 ++
+ include/linux/usb/serial.h      |  3 +++
+ 3 files changed, 36 insertions(+)
+
+diff --git a/drivers/usb/serial/generic.c b/drivers/usb/serial/generic.c
+index 297665f..ba45170 100644
+--- a/drivers/usb/serial/generic.c
++++ b/drivers/usb/serial/generic.c
+@@ -253,6 +253,37 @@ int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
+ }
+ EXPORT_SYMBOL_GPL(usb_serial_generic_chars_in_buffer);
+ 
++void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
++{
++	struct usb_serial_port *port = tty->driver_data;
++	unsigned int bps;
++	unsigned long period;
++	unsigned long expire;
++
++	bps = tty_get_baud_rate(tty);
++	if (!bps)
++		bps = 9600;	/* B0 */
++	/*
++	 * Use a poll-period of roughly the time it takes to send one
++	 * character or at least one jiffy.
++	 */
++	period = max_t(unsigned long, (10 * HZ / bps), 1);
++	period = min_t(unsigned long, period, timeout);
++
++	dev_dbg(&port->dev, "%s - timeout = %u ms, period = %u ms\n",
++					__func__, jiffies_to_msecs(timeout),
++					jiffies_to_msecs(period));
++	expire = jiffies + timeout;
++	while (!port->serial->type->tx_empty(port)) {
++		schedule_timeout_interruptible(period);
++		if (signal_pending(current))
++			break;
++		if (time_after(jiffies, expire))
++			break;
++	}
++}
++EXPORT_SYMBOL_GPL(usb_serial_generic_wait_until_sent);
++
+ static int usb_serial_generic_submit_read_urb(struct usb_serial_port *port,
+ 						int index, gfp_t mem_flags)
+ {
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 31d2768..60caf9c 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -1333,6 +1333,8 @@ static void usb_serial_operations_init(struct usb_serial_driver *device)
+ 	set_to_generic_if_null(device, close);
+ 	set_to_generic_if_null(device, write_room);
+ 	set_to_generic_if_null(device, chars_in_buffer);
++	if (device->tx_empty)
++		set_to_generic_if_null(device, wait_until_sent);
+ 	set_to_generic_if_null(device, read_bulk_callback);
+ 	set_to_generic_if_null(device, write_bulk_callback);
+ 	set_to_generic_if_null(device, process_read_urb);
+diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
+index afbb7ee..302ddf5 100644
+--- a/include/linux/usb/serial.h
++++ b/include/linux/usb/serial.h
+@@ -269,6 +269,7 @@ struct usb_serial_driver {
+ 	void (*break_ctl)(struct tty_struct *tty, int break_state);
+ 	int  (*chars_in_buffer)(struct tty_struct *tty);
+ 	void (*wait_until_sent)(struct tty_struct *tty, long timeout);
++	bool (*tx_empty)(struct usb_serial_port *port);
+ 	void (*throttle)(struct tty_struct *tty);
+ 	void (*unthrottle)(struct tty_struct *tty);
+ 	int  (*tiocmget)(struct tty_struct *tty);
+@@ -328,6 +329,8 @@ extern void usb_serial_generic_close(struct usb_serial_port *port);
+ extern int usb_serial_generic_resume(struct usb_serial *serial);
+ extern int usb_serial_generic_write_room(struct tty_struct *tty);
+ extern int usb_serial_generic_chars_in_buffer(struct tty_struct *tty);
++extern void usb_serial_generic_wait_until_sent(struct tty_struct *tty,
++								long timeout);
+ extern void usb_serial_generic_read_bulk_callback(struct urb *urb);
+ extern void usb_serial_generic_write_bulk_callback(struct urb *urb);
+ extern void usb_serial_generic_throttle(struct tty_struct *tty);
+-- 
+1.8.2.1
+
