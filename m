@@ -1,112 +1,44 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v2 2/8] USB: serial: add generic wait_until_sent implementation
-Date: Wed,  8 May 2013 17:51:43 +0200
-Message-ID: <1368028303-11923-1-git-send-email-jhovold@gmail.com>
-References: <1367778753-22297-3-git-send-email-jhovold@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f54.google.com ([209.85.215.54]:43376 "EHLO
-	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754558Ab3EHPwD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 May 2013 11:52:03 -0400
-In-Reply-To: <1367778753-22297-3-git-send-email-jhovold@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [RFC 1/8] serial:st-asc: Add ST ASC driver.
+Date: Wed, 8 May 2013 08:53:01 -0700
+Message-ID: <20130508155301.GB27273@kroah.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081634.43498.arnd@arndb.de>
+ <20130508153459.GA17186@kroah.com>
+ <20130508154057.GB3041@game.jcrosoft.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20130508154057.GB3041@game.jcrosoft.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Viresh Kumar <viresh.kumar@linaro.org>, Will Deacon <will.deacon@arm.com>, jslaby@suse.cz, Russell King <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, linux-doc@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Stas Sergeev <stsp@list.ru>, Jarkko Huijts <jarkko.huijts@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Caylan Van Larson <i@caylan.net>, "Rafael J. Wysocki" <rjw@sisk.pl>, Johan Hovold <jhovold@gmail.com>
 
-Add generic wait_until_sent implementation which polls for empty
-hardware buffers using the new port-operation tx_empty.
+On Wed, May 08, 2013 at 05:40:57PM +0200, Jean-Christophe PLAGNIOL-VILLARD wrote:
+> On 08:34 Wed 08 May     , Greg KH wrote:
+> > On Wed, May 08, 2013 at 04:34:43PM +0200, Arnd Bergmann wrote:
+> > > > +#define ASC_MAJOR		204
+> > > > +#define ASC_MINOR_START		40
+> > > 
+> > > I don't know what the current policy is on allocating major/minor numbers,
+> > > but I'm sure you cannot just reuse one that is already used.
+> > 
+> > I agree, why are you trying to create a new tty device name?  Can't you
+> > use the existing ttyS name and minor number as you will not have any
+> > other type of serial device on this system?
+> 
+> Greg on ST STB for more than 10 years we use ttyASC I'll prefer ttySx
 
-The generic implementation will be used for all sub-drivers that
-implement tx_empty but does not define wait_until_sent.
+For 10+ years you have had an out-of-tree serial driver?  What
+major/minor numbers did you use for it?
 
-Signed-off-by: Johan Hovold <jhovold@gmail.com>
----
+> on the DTB SoC you have one one IP present the st,asc
 
-v2: make sure to handle B0
+I don't understand, what do you mean by this?
 
- drivers/usb/serial/generic.c    | 31 +++++++++++++++++++++++++++++++
- drivers/usb/serial/usb-serial.c |  2 ++
- include/linux/usb/serial.h      |  3 +++
- 3 files changed, 36 insertions(+)
+confused,
 
-diff --git a/drivers/usb/serial/generic.c b/drivers/usb/serial/generic.c
-index 297665f..ba45170 100644
---- a/drivers/usb/serial/generic.c
-+++ b/drivers/usb/serial/generic.c
-@@ -253,6 +253,37 @@ int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
- }
- EXPORT_SYMBOL_GPL(usb_serial_generic_chars_in_buffer);
- 
-+void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
-+{
-+	struct usb_serial_port *port = tty->driver_data;
-+	unsigned int bps;
-+	unsigned long period;
-+	unsigned long expire;
-+
-+	bps = tty_get_baud_rate(tty);
-+	if (!bps)
-+		bps = 9600;	/* B0 */
-+	/*
-+	 * Use a poll-period of roughly the time it takes to send one
-+	 * character or at least one jiffy.
-+	 */
-+	period = max_t(unsigned long, (10 * HZ / bps), 1);
-+	period = min_t(unsigned long, period, timeout);
-+
-+	dev_dbg(&port->dev, "%s - timeout = %u ms, period = %u ms\n",
-+					__func__, jiffies_to_msecs(timeout),
-+					jiffies_to_msecs(period));
-+	expire = jiffies + timeout;
-+	while (!port->serial->type->tx_empty(port)) {
-+		schedule_timeout_interruptible(period);
-+		if (signal_pending(current))
-+			break;
-+		if (time_after(jiffies, expire))
-+			break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(usb_serial_generic_wait_until_sent);
-+
- static int usb_serial_generic_submit_read_urb(struct usb_serial_port *port,
- 						int index, gfp_t mem_flags)
- {
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 31d2768..60caf9c 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -1333,6 +1333,8 @@ static void usb_serial_operations_init(struct usb_serial_driver *device)
- 	set_to_generic_if_null(device, close);
- 	set_to_generic_if_null(device, write_room);
- 	set_to_generic_if_null(device, chars_in_buffer);
-+	if (device->tx_empty)
-+		set_to_generic_if_null(device, wait_until_sent);
- 	set_to_generic_if_null(device, read_bulk_callback);
- 	set_to_generic_if_null(device, write_bulk_callback);
- 	set_to_generic_if_null(device, process_read_urb);
-diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
-index afbb7ee..302ddf5 100644
---- a/include/linux/usb/serial.h
-+++ b/include/linux/usb/serial.h
-@@ -269,6 +269,7 @@ struct usb_serial_driver {
- 	void (*break_ctl)(struct tty_struct *tty, int break_state);
- 	int  (*chars_in_buffer)(struct tty_struct *tty);
- 	void (*wait_until_sent)(struct tty_struct *tty, long timeout);
-+	bool (*tx_empty)(struct usb_serial_port *port);
- 	void (*throttle)(struct tty_struct *tty);
- 	void (*unthrottle)(struct tty_struct *tty);
- 	int  (*tiocmget)(struct tty_struct *tty);
-@@ -328,6 +329,8 @@ extern void usb_serial_generic_close(struct usb_serial_port *port);
- extern int usb_serial_generic_resume(struct usb_serial *serial);
- extern int usb_serial_generic_write_room(struct tty_struct *tty);
- extern int usb_serial_generic_chars_in_buffer(struct tty_struct *tty);
-+extern void usb_serial_generic_wait_until_sent(struct tty_struct *tty,
-+								long timeout);
- extern void usb_serial_generic_read_bulk_callback(struct urb *urb);
- extern void usb_serial_generic_write_bulk_callback(struct urb *urb);
- extern void usb_serial_generic_throttle(struct tty_struct *tty);
--- 
-1.8.2.1
-
+greg k-h
