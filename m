@@ -1,44 +1,56 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [RFC 5/8] ARM:stih41x: Add STiH415 SOC support
-Date: Wed, 8 May 2013 18:21:21 +0200
-Message-ID: <20130508162121.GD3041@game.jcrosoft.org>
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
+Subject: Re: [RFC 7/8] ARM:stih41x: Add B2000 board support
+Date: Wed, 8 May 2013 18:24:07 +0200
+Message-ID: <20130508162407.GE3041@game.jcrosoft.org>
 References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022297-2334-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081818.01927.arnd@arndb.de>
+ <1368022329-2424-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081820.23968.arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <201305081818.01927.arnd@arndb.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, linux-doc@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, devicetree-discuss@lists.ozlabs.org, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Will Deacon <will.deacon@arm.com>, Stephen Gallimore <stephen.gallimore@st.com>, Rob Herring <rob.herring@calxeda.com>, linux-kernel@vger.kernel.org, Stuart Menefy <stuart.menefy@st.com>, Nicolas Pitre <nico@linaro.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Jason Cooper <jason@lakedaemon.net>
+In-Reply-To: <201305081820.23968.arnd-r2nGTMty4D4@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 18:18 Wed 08 May     , Arnd Bergmann wrote:
+On 18:20 Wed 08 May     , Arnd Bergmann wrote:
 > On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
-> > From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-> > 
-> > The STiH415 is the next generation of HD, AVC set-top box processors for
-> > satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A9
-> > 1.0 GHz, dual-core CPU.
-> > 
-> > Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-> > CC: Stephen Gallimore <stephen.gallimore@st.com>
-> > CC: Stuart Menefy <stuart.menefy@st.com>
-> > ---
-patch no receive on the ML
+> > diff --git a/arch/arm/mach-stih41x/board-dt.c b/arch/arm/mach-stih41x/board-dt.c
+> > index 8005f71..1f23aca 100644
+> > --- a/arch/arm/mach-stih41x/board-dt.c
+> > +++ b/arch/arm/mach-stih41x/board-dt.c
+> > @@ -63,6 +63,8 @@ void __init stih41x_dt_init(void)
+> >  }
+> >  
+> >  static const char *stih41x_dt_match[] __initdata = {
+> > +       "st,stih415-b2000",
+> > +       "st,stih416-b2000",
+> >         NULL
+> >  };
+> 
+> I probably wouldn't bother listing all the boards here. Just make sure
+> the .dts file lists both the name of the board and of the soc in
+> its compatible property, and list all the SoCs here that you can boot on.
 
-please resend
+was going to do the same comment
 
 Best Regards,
 J.
+> 
+> 	Arnd
+> _______________________________________________
+> devicetree-discuss mailing list
+> devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> https://lists.ozlabs.org/listinfo/devicetree-discuss
