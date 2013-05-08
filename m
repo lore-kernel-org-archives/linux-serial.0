@@ -1,7 +1,7 @@
 From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Subject: [RFC 1/8] serial:st-asc: Add ST ASC driver.
-Date: Wed,  8 May 2013 15:10:48 +0100
-Message-ID: <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
+Subject: [RFC 7/8] ARM:stih41x: Add B2000 board support
+Date: Wed,  8 May 2013 15:12:09 +0100
+Message-ID: <1368022329-2424-1-git-send-email-srinivas.kandagatla@st.com>
 References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,1090 +18,147 @@ List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
 Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 Sender: "devicetree-discuss"
  <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org
-Cc: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org
+Cc: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Dong Aisheng <dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 
-This patch adds support to ASC (asynchronous serial controller)
-driver, which is basically a standard serial driver. This IP is common
-across all the ST parts for settop box platforms.
+B2000 board is reference board for STIH415/416 SOCs, it has
+2 x UART, 4x USB, 2 x Ethernet, 1 x SATA, 1 x PCIe, and 1GB RAM.
 
-ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
-It support all industry standard baud rates.
+This patch add initial support to b2000 with STiH415/416 with UART2 as
+console and a heard beat LED.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 CC: Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>
 CC: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
 ---
- .../devicetree/bindings/tty/serial/st-asc.txt      |   18 +
- drivers/tty/serial/Kconfig                         |   19 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/st-asc.c                        |  821 ++++++++++++++++++++
- drivers/tty/serial/st-asc.h                        |  146 ++++
- include/uapi/linux/serial_core.h                   |    3 +
- 6 files changed, 1008 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/st-asc.txt
- create mode 100644 drivers/tty/serial/st-asc.c
- create mode 100644 drivers/tty/serial/st-asc.h
+ arch/arm/boot/dts/Makefile           |    2 +
+ arch/arm/boot/dts/stih415-b2000.dtsp |   15 ++++++++++++
+ arch/arm/boot/dts/stih416-b2000.dtsp |   16 +++++++++++++
+ arch/arm/boot/dts/stih41x-b2000.dtsi |   41 ++++++++++++++++++++++++++++++++++
+ arch/arm/mach-stih41x/board-dt.c     |    2 +
+ 5 files changed, 76 insertions(+), 0 deletions(-)
+ create mode 100644 arch/arm/boot/dts/stih415-b2000.dtsp
+ create mode 100644 arch/arm/boot/dts/stih416-b2000.dtsp
+ create mode 100644 arch/arm/boot/dts/stih41x-b2000.dtsi
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/st-asc.txt b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 9c62558..78b0271 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -147,6 +147,8 @@ dtb-$(CONFIG_ARCH_SPEAR3XX)+= spear300-evb.dtb \
+ 	spear320-evb.dtb \
+ 	spear320-hmi.dtb
+ dtb-$(CONFIG_ARCH_SPEAR6XX)+= spear600-evb.dtb
++dtb-$(CONFIG_ARCH_STIH41X)+= stih415-b2000.dtb \
++	stih416-b2000.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun4i-a10-cubieboard.dtb \
+ 	sun4i-a10-hackberry.dtb \
+ 	sun5i-a13-olinuxino.dtb
+diff --git a/arch/arm/boot/dts/stih415-b2000.dtsp b/arch/arm/boot/dts/stih415-b2000.dtsp
 new file mode 100644
-index 0000000..75d877f
+index 0000000..d4af531
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
-@@ -0,0 +1,18 @@
-+*st-asc(Serial Port)
-+
-+Required properties:
-+- compatible : Should be "st,asc".
-+- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
-+			resources with names. look in
-+			Documentation/devicetree/bindings/resource-names.txt
-+
-+Optional properties:
-+- st,hw-flow-ctrl	bool flag to enable hardware flow control.
-+- st,force-m1		bool flat to force asc to be in Mode-1 recommeded
-+			for high bit rates (above 19.2K)
-+Example:
-+serial@fe440000{
-+    compatible    = "st,asc";
-+    reg         = <0xfe440000 0x2c>;
-+    interrupts     =  <0 209 0>;
-+};
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 7e7006f..346f325 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1484,6 +1484,25 @@ config SERIAL_RP2_NR_UARTS
- 	  If multiple cards are present, the default limit of 32 ports may
- 	  need to be increased.
- 
-+config SERIAL_ST_ASC
-+	tristate "ST ASC serial port support"
-+	depends on PLAT_STIXXXX
-+	default y
-+	select SERIAL_CORE
-+	help
-+	  This driver is for the on-chip Asychronous Serial Controller on
-+	  STMicroelectronics STixxxx SoCs.
-+	  ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
-+	  It support all industry standard baud rates.
-+
-+	  If unsure, say N.
-+
-+config SERIAL_ST_ASC_CONSOLE
-+	bool "Support for console on ST ASC"
-+	depends on SERIAL_ST_ASC
-+	default y
-+	select SERIAL_CORE_CONSOLE
-+
- endmenu
- 
- endif # TTY
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index eedfec4..536ccc7 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -65,6 +65,7 @@ obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
- obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
- obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
- obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
-+obj-$(CONFIG_SERIAL_ST_ASC) += st-asc.o
- obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
- obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
- obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-new file mode 100644
-index 0000000..2acc597
---- /dev/null
-+++ b/drivers/tty/serial/st-asc.c
-@@ -0,0 +1,821 @@
++++ b/arch/arm/boot/dts/stih415-b2000.dtsp
+@@ -0,0 +1,15 @@
 +/*
-+ * st-asc.c: ST Asynchronous serial controller (ASC) driver
-+ *
-+ * Copyright (C) 2003-2013 STMicroelectronics (R&D) Limited
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Author: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
++ * it under the terms of the GNU General Public License version 2 as
++ * publishhed by the Free Software Foundation.
 + */
-+
-+#if defined(CONFIG_SERIAL_ST_ASC_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#define SUPPORT_SYSRQ
-+#endif
-+
-+#include <linux/module.h>
-+#include <linux/serial.h>
-+#include <linux/console.h>
-+#include <linux/sysrq.h>
-+#include <linux/platform_device.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+#include <linux/delay.h>
-+#include <linux/spinlock.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+
-+#include "st-asc.h"
-+
-+#define DRIVER_NAME "st-asc"
-+#define ASC_SERIAL_NAME "ttyAS"
-+
-+static struct asc_port asc_ports[ASC_MAX_PORTS];
-+static struct uart_driver asc_uart_driver;
-+
-+/*---- Forward function declarations---------------------------*/
-+static irqreturn_t asc_interrupt(int irq, void *ptr);
-+static void asc_transmit_chars(struct uart_port *);
-+static int asc_set_baud(struct asc_port *ascport, int baud);
-+
-+/*---- Inline function definitions ---------------------------*/
-+
-+static inline struct asc_port *to_asc_port(struct uart_port *port)
-+{
-+	return container_of(port, struct asc_port, port);
-+}
-+
-+static inline u32 asc_in(struct uart_port *port, u32 offset)
-+{
-+	return readl(port->membase + offset);
-+}
-+
-+static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
-+{
-+	writel(value, port->membase + offset);
-+}
-+
-+/*
-+ * Some simple utility functions to enable and disable interrupts.
-+ * Note that these need to be called with interrupts disabled.
-+ */
-+static inline void asc_disable_tx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_THE;
-+	asc_out(port, ASC_INTEN, intenable);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
-+}
-+
-+static inline void asc_enable_tx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_THE;
-+	asc_out(port, ASC_INTEN, intenable);
-+}
-+
-+static inline void asc_disable_rx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_RBE;
-+	asc_out(port, ASC_INTEN, intenable);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
-+}
-+
-+static inline void asc_enable_rx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_RBE;
-+	asc_out(port, ASC_INTEN, intenable);
-+}
-+
-+static inline u32 asc_txfifo_is_empty(struct uart_port *port)
-+{
-+	return asc_in(port, ASC_STA) & ASC_STA_TE;
-+}
-+
-+static inline int asc_txfifo_is_full(struct uart_port *port)
-+{
-+	return asc_in(port, ASC_STA) & ASC_STA_TF;
-+}
-+
-+static const char *asc_port_name(struct uart_port *port)
-+{
-+	return to_platform_device(port->dev)->name;
-+}
-+
-+/*----------------------------------------------------------------------*/
-+
-+/*
-+ * UART Functions
-+ */
-+
-+static unsigned int asc_tx_empty(struct uart_port *port)
-+{
-+	return asc_txfifo_is_empty(port) ? TIOCSER_TEMT : 0;
-+}
-+
-+static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	/*
-+	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
-+	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
-+	 * Some boards have DTR and DCD implemented using PIO pins,
-+	 * code to do this should be hooked in here.
-+	 */
-+}
-+
-+static unsigned int asc_get_mctrl(struct uart_port *port)
-+{
-+	/*
-+	 * This routine is used for geting signals of: DTR, DCD, DSR, RI,
-+	 * and CTS/RTS
-+	 */
-+	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
-+}
-+
-+/* There are probably characters waiting to be transmitted. */
-+static void asc_start_tx(struct uart_port *port)
-+{
-+	struct circ_buf *xmit = &port->state->xmit;
-+
-+	if (!uart_circ_empty(xmit))
-+		asc_enable_tx_interrupts(port);
-+}
-+
-+/* Transmit stop */
-+static void asc_stop_tx(struct uart_port *port)
-+{
-+	asc_disable_tx_interrupts(port);
-+}
-+
-+/* Receive stop */
-+static void asc_stop_rx(struct uart_port *port)
-+{
-+	asc_disable_rx_interrupts(port);
-+}
-+
-+/* Force modem status interrupts on */
-+static void asc_enable_ms(struct uart_port *port)
-+{
-+	/* Nothing here yet .. */
-+}
-+
-+/* Handle breaks - ignored by us */
-+static void asc_break_ctl(struct uart_port *port, int break_state)
-+{
-+	/* Nothing here yet .. */
-+}
-+
-+/*
-+ * Enable port for reception.
-+ */
-+static int asc_startup(struct uart_port *port)
-+{
-+	if (request_irq(port->irq, asc_interrupt, 0,
-+			asc_port_name(port), port)) {
-+		dev_err(port->dev, "cannot allocate irq.\n");
-+		return -ENODEV;
-+	}
-+
-+	asc_transmit_chars(port);
-+	asc_enable_rx_interrupts(port);
-+
-+	return 0;
-+}
-+
-+static void asc_shutdown(struct uart_port *port)
-+{
-+	asc_disable_tx_interrupts(port);
-+	asc_disable_rx_interrupts(port);
-+	free_irq(port->irq, port);
-+}
-+
-+static void asc_pm(struct uart_port *port, unsigned int state,
-+		unsigned int oldstate)
-+{
-+	struct asc_port *ascport = to_asc_port(port);
-+	unsigned long flags = 0;
-+	u32 ctl;
-+
-+	switch (state) {
-+	case UART_PM_STATE_ON:
-+		clk_prepare_enable(ascport->clk);
-+		break;
-+	case UART_PM_STATE_OFF:
-+		/*
-+		 * Disable the ASC baud rate generator, which is as close as
-+		 * we can come to turning it off. Note this is not called with
-+		 * the port spinlock held.
-+		 */
-+		spin_lock_irqsave(&port->lock, flags);
-+		ctl = asc_in(port, ASC_CTL) & ~ASC_CTL_RUN;
-+		asc_out(port, ASC_CTL, ctl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+		clk_disable_unprepare(ascport->clk);
-+		break;
-+	}
-+}
-+
-+static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
-+			    struct ktermios *old)
-+{
-+	struct asc_port *ascport = to_asc_port(port);
-+	unsigned int baud;
-+	u32 ctrl_val;
-+	tcflag_t cflag;
-+	unsigned long flags;
-+
-+	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
-+	cflag = termios->c_cflag;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* read control register */
-+	ctrl_val = asc_in(port, ASC_CTL);
-+
-+	/* stop serial port and reset value */
-+	asc_out(port, ASC_CTL, (ctrl_val & ~ASC_CTL_RUN));
-+	ctrl_val = ASC_CTL_RXENABLE | ASC_CTL_FIFOENABLE;
-+
-+	/* reset fifo rx & tx */
-+	asc_out(port, ASC_TXRESET, 1);
-+	asc_out(port, ASC_RXRESET, 1);
-+
-+	/* set character length */
-+	if ((cflag & CSIZE) == CS7) {
-+		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
-+	} else {
-+		if (cflag & PARENB)
-+			ctrl_val |= ASC_CTL_MODE_8BIT_PAR;
-+		else
-+			ctrl_val |= ASC_CTL_MODE_8BIT;
-+	}
-+
-+	ascport->check_parity = (cflag & PARENB) ? 1 : 0;
-+
-+	/* set stop bit */
-+	if (cflag & CSTOPB)
-+		ctrl_val |= ASC_CTL_STOP_2BIT;
-+	else
-+		ctrl_val |= ASC_CTL_STOP_1BIT;
-+
-+	/* odd parity */
-+	if (cflag & PARODD)
-+		ctrl_val |= ASC_CTL_PARITYODD;
-+
-+	/* hardware flow control */
-+	if ((cflag & CRTSCTS) && ascport->hw_flow_control)
-+		ctrl_val |= ASC_CTL_CTSENABLE;
-+
-+	ctrl_val |= asc_set_baud(ascport, baud);
-+	uart_update_timeout(port, cflag, baud);
-+
-+	/* Set the timeout */
-+	asc_out(port, ASC_TIMEOUT, 20);
-+
-+	/* write final value and enable port */
-+	asc_out(port, ASC_CTL, (ctrl_val | ASC_CTL_RUN));
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static const char *asc_type(struct uart_port *port)
-+{
-+	return (port->type == PORT_ASC) ? DRIVER_NAME : NULL;
-+}
-+
-+static void asc_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int asc_request_port(struct uart_port *port)
-+{
-+	return 0;
-+}
-+
-+/*
-+ * Called when the port is opened, and UPF_BOOT_AUTOCONF flag is set
-+ * Set type field if successful
-+ */
-+static void asc_config_port(struct uart_port *port, int flags)
-+{
-+	if ((flags & UART_CONFIG_TYPE))
-+		port->type = PORT_ASC;
-+}
-+
-+static int
-+asc_verify_port(struct uart_port *port, struct serial_struct *ser)
-+{
-+	/* No user changeable parameters */
-+	return -EINVAL;
-+}
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+/*
-+ * Console polling routines for writing and reading from the uart while
-+ * in an interrupt or debug context (i.e. kgdb).
-+ */
-+
-+static int asc_get_poll_char(struct uart_port *port)
-+{
-+	if (!(asc_in(port, ASC_STA) & ASC_STA_RBF))
-+		return NO_POLL_CHAR;
-+
-+	return asc_in(port, ASC_RXBUF);
-+}
-+
-+static void asc_put_poll_char(struct uart_port *port, unsigned char c)
-+{
-+	while (asc_txfifo_is_full(port))
-+		cpu_relax();
-+	asc_out(port, ASC_TXBUF, c);
-+}
-+
-+#endif /* CONFIG_CONSOLE_POLL */
-+
-+/*---------------------------------------------------------------------*/
-+
-+static struct uart_ops asc_uart_ops = {
-+	.tx_empty	= asc_tx_empty,
-+	.set_mctrl	= asc_set_mctrl,
-+	.get_mctrl	= asc_get_mctrl,
-+	.start_tx	= asc_start_tx,
-+	.stop_tx	= asc_stop_tx,
-+	.stop_rx	= asc_stop_rx,
-+	.enable_ms	= asc_enable_ms,
-+	.break_ctl	= asc_break_ctl,
-+	.startup	= asc_startup,
-+	.shutdown	= asc_shutdown,
-+	.set_termios	= asc_set_termios,
-+	.type		= asc_type,
-+	.release_port	= asc_release_port,
-+	.request_port	= asc_request_port,
-+	.config_port	= asc_config_port,
-+	.verify_port	= asc_verify_port,
-+	.pm		= asc_pm,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char = asc_get_poll_char,
-+	.poll_put_char = asc_put_poll_char,
-+#endif /* CONFIG_CONSOLE_POLL */
++/dts-v1/;
++#include "stih415.dtsi"
++#include "stih41x-b2000.dtsi"
++/ {
++	model = "STiH415 B2000 Board";
++	compatible = "st,stih415", "st,stih415-b2000";
 +};
-+
-+static int asc_init_port(struct asc_port *ascport,
-+			  struct platform_device *pdev)
-+{
-+	struct uart_port *port = &ascport->port;
-+	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	if (!res) {
-+		dev_err(&pdev->dev, "Unable to get io resource\n");
-+		return -ENODEV;
-+	}
-+
-+	port->iotype	= UPIO_MEM;
-+	port->flags	= UPF_BOOT_AUTOCONF;
-+	port->ops	= &asc_uart_ops;
-+	port->fifosize	= ASC_FIFO_SIZE;
-+	port->dev	= &pdev->dev;
-+	port->mapbase	= res->start;
-+	port->irq	= platform_get_irq(pdev, 0);
-+
-+	port->membase = devm_request_and_ioremap(&pdev->dev, res);
-+	if (!port->membase) {
-+		dev_err(&pdev->dev, "Unable to request io memory\n");
-+		return -ENODEV;
-+	}
-+
-+	spin_lock_init(&port->lock);
-+
-+	ascport->clk = devm_clk_get(&pdev->dev, NULL);
-+
-+	if (WARN_ON(IS_ERR(ascport->clk)))
-+		return -EINVAL;
-+	/* ensure that clk rate is correct by enabling the clk */
-+	clk_prepare_enable(ascport->clk);
-+	ascport->port.uartclk = clk_get_rate(ascport->clk);
-+	WARN_ON(ascport->port.uartclk == 0);
-+	clk_disable_unprepare(ascport->clk);
-+
-+	return 0;
-+}
-+
-+static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	int id;
-+
-+	if (!np)
-+		return NULL;
-+
-+	id = of_alias_get_id(np, ASC_SERIAL_NAME);
-+	if (WARN_ON(id >= ASC_MAX_PORTS))
-+		return NULL;
-+
-+	asc_ports[id].hw_flow_control = of_property_read_bool(np,
-+							"st,hw-flow-control");
-+	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
-+	asc_ports[id].port.line = id;
-+	return &asc_ports[id];
-+}
-+
-+static struct of_device_id asc_match[] = {
-+	{ .compatible = "st,asc", },
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(of, asc_match);
-+
-+static int asc_serial_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	struct asc_port *ascport;
-+
-+	ascport = asc_of_get_asc_port(pdev);
-+	if (!ascport)
-+		return -ENODEV;
-+
-+	ret = asc_init_port(ascport, pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = uart_add_one_port(&asc_uart_driver, &ascport->port);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, &ascport->port);
-+
-+	return 0;
-+}
-+
-+static int asc_serial_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	platform_set_drvdata(pdev, NULL);
-+	return uart_remove_one_port(&asc_uart_driver, port);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int asc_serial_suspend(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	return uart_suspend_port(&asc_uart_driver, port);
-+}
-+
-+static int asc_serial_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	if (pdev->dev.pins->default_state) {
-+		if (pinctrl_select_state(pdev->dev.pins->p,
-+					pdev->dev.pins->default_state) < 0)
-+			return -EBUSY;
-+	}
-+
-+	return uart_resume_port(&asc_uart_driver, port);
-+}
-+
-+#endif /* CONFIG_PM_SLEEP */
-+
-+/*----------------------------------------------------------------------*/
-+
-+/* This sections contains code to support the use of the ASC as a
-+ * generic serial port.
-+ */
-+
-+static int asc_set_baud(struct asc_port *ascport, int baud)
-+{
-+	struct uart_port *port = &ascport->port;
-+	unsigned long rate = clk_get_rate(ascport->clk);
-+	u32 t;
-+
-+	if ((baud < 19200) && !ascport->force_m1) {
-+		t = BAUDRATE_VAL_M0(baud, rate);
-+		asc_out(port, ASC_BAUDRATE, t);
-+		return 0;
-+	} else {
-+		t = BAUDRATE_VAL_M1(baud, rate);
-+		asc_out(port, ASC_BAUDRATE, t);
-+		return ASC_CTL_BAUDMODE;
-+	}
-+}
-+
-+static inline unsigned asc_hw_txroom(struct uart_port *port)
-+{
-+	u32 status = asc_in(port, ASC_STA);
-+
-+	if (status & ASC_STA_THE)
-+		return port->fifosize / 2;
-+	else if (!(status & ASC_STA_TF))
-+		return 1;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Start transmitting chars.
-+ * This is called from both interrupt and task level.
-+ * Either way interrupts are disabled.
-+ */
-+static void asc_transmit_chars(struct uart_port *port)
-+{
-+	struct circ_buf *xmit = &port->state->xmit;
-+	int txroom;
-+	unsigned char c;
-+
-+	txroom = asc_hw_txroom(port);
-+
-+	if ((txroom != 0) && port->x_char) {
-+		c = port->x_char;
-+		port->x_char = 0;
-+		asc_out(port, ASC_TXBUF, c);
-+		port->icount.tx++;
-+		txroom = asc_hw_txroom(port);
-+	}
-+
-+	if (uart_tx_stopped(port)) {
-+		/*
-+		 * We should try and stop the hardware here, but I
-+		 * don't think the ASC has any way to do that.
-+		 */
-+		asc_disable_tx_interrupts(port);
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit)) {
-+		asc_disable_tx_interrupts(port);
-+		return;
-+	}
-+
-+	if (txroom == 0)
-+		return;
-+
-+	do {
-+		c = xmit->buf[xmit->tail];
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		asc_out(port, ASC_TXBUF, c);
-+		port->icount.tx++;
-+		txroom--;
-+	} while ((txroom > 0) && (!uart_circ_empty(xmit)));
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (uart_circ_empty(xmit))
-+		asc_disable_tx_interrupts(port);
-+}
-+
-+static void asc_receive_chars(struct uart_port *port)
-+{
-+	int count;
-+	struct asc_port *ascport = to_asc_port(port);
-+	struct tty_port *tport = &port->state->port;
-+	int copied = 0;
-+	unsigned long status;
-+	unsigned long c = 0;
-+	char flag;
-+	int overrun;
-+
-+	if (port->irq_wake)
-+		pm_wakeup_event(tport->tty->dev, 0);
-+
-+	while (1) {
-+		status = asc_in(port, ASC_STA);
-+		if (status & ASC_STA_RHF)
-+			count = port->fifosize / 2;
-+		else if (status & ASC_STA_RBF)
-+			count = 1;
-+		else
-+			break;
-+
-+		/*
-+		 * Check for overrun before reading any data from the
-+		 * RX FIFO, as this clears the overflow error condition.
-+		 */
-+		overrun = status & ASC_STA_OE;
-+
-+		for (; count != 0; count--) {
-+			c = asc_in(port, ASC_RXBUF);
-+			flag = TTY_NORMAL;
-+			port->icount.rx++;
-+
-+			if (unlikely(c & ASC_RXBUF_FE)) {
-+				if (c == ASC_RXBUF_FE) {
-+					port->icount.brk++;
-+					if (uart_handle_break(port))
-+						continue;
-+					flag = TTY_BREAK;
-+				} else {
-+					port->icount.frame++;
-+					flag = TTY_FRAME;
-+				}
-+			} else if (ascport->check_parity &&
-+				   unlikely(c & ASC_RXBUF_PE)) {
-+				port->icount.parity++;
-+				flag = TTY_PARITY;
-+			}
-+
-+			if (uart_handle_sysrq_char(port, c))
-+				continue;
-+			tty_insert_flip_char(tport, c & 0xff, flag);
-+		}
-+		if (overrun) {
-+			port->icount.overrun++;
-+			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
-+		}
-+
-+		copied = 1;
-+	}
-+
-+	if (copied) {
-+		/* Tell the rest of the system the news. New characters! */
-+		tty_flip_buffer_push(tport);
-+	}
-+}
-+
-+static irqreturn_t asc_interrupt(int irq, void *ptr)
-+{
-+	struct uart_port *port = ptr;
-+	u32 status;
-+
-+	spin_lock(&port->lock);
-+
-+	status = asc_in(port, ASC_STA);
-+
-+	if (status & ASC_STA_RBF) {
-+		/* Receive FIFO not empty */
-+		asc_receive_chars(port);
-+	}
-+
-+	if ((status & ASC_STA_THE) &&
-+	    (asc_in(port, ASC_INTEN) & ASC_INTEN_THE)) {
-+		/* Transmitter FIFO at least half empty */
-+		asc_transmit_chars(port);
-+	}
-+
-+	spin_unlock(&port->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/*----------------------------------------------------------------------*/
-+
-+#ifdef CONFIG_SERIAL_ST_ASC_CONSOLE
-+static void asc_console_putchar(struct uart_port *port, int ch)
-+{
-+	unsigned int timeout = 1000000;
-+
-+	/* Wait for upto 1 second in case flow control is stopping us. */
-+	while (--timeout && asc_txfifo_is_full(port))
-+		udelay(1);
-+
-+	asc_out(port, ASC_TXBUF, ch);
-+}
-+
-+/*
-+ *  Print a string to the serial port trying not to disturb
-+ *  any possible real use of the port...
-+ */
-+
-+static void asc_console_write(struct console *co, const char *s, unsigned count)
-+{
-+	struct uart_port *port = &asc_ports[co->index].port;
-+	unsigned long flags;
-+	unsigned long timeout = 1000000;
-+	int locked = 1;
-+	u32 intenable;
-+
-+	local_irq_save(flags);
-+	if (port->sysrq)
-+		locked = 0; /* asc_interrupt has already claimed the lock */
-+	else if (oops_in_progress)
-+		locked = spin_trylock(&port->lock);
-+	else
-+		spin_lock(&port->lock);
-+
-+	/*
-+	 * Disable interrupts so we don't get the IRQ line bouncing
-+	 * up and down while interrupts are disabled.
-+	 */
-+	intenable = asc_in(port, ASC_INTEN);
-+	asc_out(port, ASC_INTEN, 0);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
-+
-+	uart_console_write(port, s, count, asc_console_putchar);
-+
-+	while (--timeout && !asc_txfifo_is_empty(port))
-+		udelay(1);
-+
-+	asc_out(port, ASC_INTEN, intenable);
-+
-+	if (locked)
-+		spin_unlock(&port->lock);
-+	local_irq_restore(flags);
-+}
-+
-+static int asc_console_setup(struct console *co, char *options)
-+{
-+	struct asc_port *ascport;
-+	int baud = 9600;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	if (co->index >= ASC_MAX_PORTS)
-+		return -ENODEV;
-+
-+	ascport = &asc_ports[co->index];
-+
-+	/*
-+	 * This driver does not support early console initialization
-+	 * (use ARM early printk support instead), so we only expect
-+	 * this to be called during the uart port registration when the
-+	 * driver gets probed and the port should be mapped at that point.
-+	 */
-+	BUG_ON(ascport->port.mapbase == 0 || ascport->port.membase == NULL);
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(&ascport->port, co, baud, parity, bits, flow);
-+}
-+
-+static struct console asc_console = {
-+	.name		= ASC_SERIAL_NAME,
-+	.device		= uart_console_device,
-+	.write		= asc_console_write,
-+	.setup		= asc_console_setup,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &asc_uart_driver,
-+};
-+
-+#define ASC_SERIAL_CONSOLE (&asc_console)
-+
-+#else
-+#define ASC_SERIAL_CONSOLE NULL
-+#endif /* CONFIG_SERIAL_ST_ASC_CONSOLE */
-+
-+
-+static struct uart_driver asc_uart_driver = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= DRIVER_NAME,
-+	.dev_name	= ASC_SERIAL_NAME,
-+	.major		= ASC_MAJOR,
-+	.minor		= ASC_MINOR_START,
-+	.nr		= ASC_MAX_PORTS,
-+	.cons		= ASC_SERIAL_CONSOLE,
-+};
-+
-+static const struct dev_pm_ops asc_serial_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
-+};
-+
-+
-+static struct platform_driver asc_serial_driver = {
-+	.probe		= asc_serial_probe,
-+	.remove		= asc_serial_remove,
-+	.driver	= {
-+		.name	= DRIVER_NAME,
-+		.pm	= &asc_serial_pm_ops,
-+		.owner	= THIS_MODULE,
-+		.of_match_table = of_match_ptr(asc_match),
-+	},
-+};
-+
-+static int __init asc_init(void)
-+{
-+	int ret;
-+	static char banner[] __initdata =
-+		KERN_INFO "STMicroelectronics ASC driver initialized\n";
-+
-+	printk(banner);
-+
-+	ret = uart_register_driver(&asc_uart_driver);
-+	if (ret)
-+		return ret;
-+
-+	ret = platform_driver_register(&asc_serial_driver);
-+	if (ret)
-+		uart_unregister_driver(&asc_uart_driver);
-+
-+	return ret;
-+}
-+
-+static void __exit asc_exit(void)
-+{
-+	platform_driver_unregister(&asc_serial_driver);
-+	uart_unregister_driver(&asc_uart_driver);
-+}
-+
-+module_init(asc_init);
-+module_exit(asc_exit);
-+
-+MODULE_ALIAS("platform:" DRIVER_NAME);
-+MODULE_AUTHOR("STMicroelectronics (R&D) Limited");
-+MODULE_DESCRIPTION("STMicroelectronics ASC serial port driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/st-asc.h b/drivers/tty/serial/st-asc.h
+diff --git a/arch/arm/boot/dts/stih416-b2000.dtsp b/arch/arm/boot/dts/stih416-b2000.dtsp
 new file mode 100644
-index 0000000..e59f818
+index 0000000..a5eb6ee
 --- /dev/null
-+++ b/drivers/tty/serial/st-asc.h
-@@ -0,0 +1,146 @@
++++ b/arch/arm/boot/dts/stih416-b2000.dtsp
+@@ -0,0 +1,16 @@
 +/*
-+ * st-asc.h: ST Asynchronous serial controller (ASC) driver
-+ *
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Author: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
++ * it under the terms of the GNU General Public License version 2 as
++ * publishhed by the Free Software Foundation.
 + */
++/dts-v1/;
++#include "stih416.dtsi"
++#include "stih41x-b2000.dtsi"
 +
-+#ifndef _ST_ASC_H
-+#define _ST_ASC_H
-+
-+#include <linux/serial_core.h>
-+#include <linux/clk.h>
-+
-+struct asc_port {
-+	struct uart_port port;
-+	struct clk *clk;
-+	unsigned int hw_flow_control:1;
-+	unsigned int check_parity:1;
-+	unsigned int force_m1:1;
++/ {
++	compatible = "st,stih416", "st,stih416-b2000";
++	model = "STiH416 B2000";
 +};
-+
-+#define ASC_MAJOR		204
-+#define ASC_MINOR_START		40
-+
-+#define ASC_FIFO_SIZE		16
-+
-+#define ASC_MAX_PORTS		8
-+
-+/*---- UART Register definitions ------------------------------*/
-+
-+/* Register offsets */
-+
-+#define ASC_BAUDRATE			0x00
-+#define ASC_TXBUF			0x04
-+#define ASC_RXBUF			0x08
-+#define ASC_CTL				0x0C
-+#define ASC_INTEN			0x10
-+#define ASC_STA				0x14
-+#define ASC_GUARDTIME			0x18
-+#define ASC_TIMEOUT			0x1C
-+#define ASC_TXRESET			0x20
-+#define ASC_RXRESET			0x24
-+#define ASC_RETRIES			0x28
-+
-+/* ASC_RXBUF */
-+#define ASC_RXBUF_PE			0x100
-+#define ASC_RXBUF_FE			0x200
-+
-+/* ASC_CTL */
-+
-+#define ASC_CTL_MODE_MSK		0x0007
-+#define  ASC_CTL_MODE_8BIT		0x0001
-+#define  ASC_CTL_MODE_7BIT_PAR		0x0003
-+#define  ASC_CTL_MODE_9BIT		0x0004
-+#define  ASC_CTL_MODE_8BIT_WKUP		0x0005
-+#define  ASC_CTL_MODE_8BIT_PAR		0x0007
-+#define ASC_CTL_STOP_MSK		0x0018
-+#define  ASC_CTL_STOP_HALFBIT		0x0000
-+#define  ASC_CTL_STOP_1BIT		0x0008
-+#define  ASC_CTL_STOP_1_HALFBIT		0x0010
-+#define  ASC_CTL_STOP_2BIT		0x0018
-+#define ASC_CTL_PARITYODD		0x0020
-+#define ASC_CTL_LOOPBACK		0x0040
-+#define ASC_CTL_RUN			0x0080
-+#define ASC_CTL_RXENABLE		0x0100
-+#define ASC_CTL_SCENABLE		0x0200
-+#define ASC_CTL_FIFOENABLE		0x0400
-+#define ASC_CTL_CTSENABLE		0x0800
-+#define ASC_CTL_BAUDMODE		0x1000
-+
-+/* ASC_GUARDTIME */
-+
-+#define ASC_GUARDTIME_MSK		0x00FF
-+
-+/* ASC_INTEN */
-+
-+#define ASC_INTEN_RBE			0x0001
-+#define ASC_INTEN_TE			0x0002
-+#define ASC_INTEN_THE			0x0004
-+#define ASC_INTEN_PE			0x0008
-+#define ASC_INTEN_FE			0x0010
-+#define ASC_INTEN_OE			0x0020
-+#define ASC_INTEN_TNE			0x0040
-+#define ASC_INTEN_TOI			0x0080
-+#define ASC_INTEN_RHF			0x0100
-+
-+/* ASC_RETRIES */
-+
-+#define ASC_RETRIES_MSK			0x00FF
-+
-+/* ASC_RXBUF */
-+
-+#define ASC_RXBUF_MSK			0x03FF
-+
-+/* ASC_STA */
-+
-+#define ASC_STA_RBF			0x0001
-+#define ASC_STA_TE			0x0002
-+#define ASC_STA_THE			0x0004
-+#define ASC_STA_PE			0x0008
-+#define ASC_STA_FE			0x0010
-+#define ASC_STA_OE			0x0020
-+#define ASC_STA_TNE			0x0040
-+#define ASC_STA_TOI			0x0080
-+#define ASC_STA_RHF			0x0100
-+#define ASC_STA_TF			0x0200
-+#define ASC_STA_NKD			0x0400
-+
-+/* ASC_TIMEOUT */
-+
-+#define ASC_TIMEOUT_MSK			0x00FF
-+
-+/* ASC_TXBUF */
-+
-+#define ASC_TXBUF_MSK			0x01FF
-+
-+/*---- Values for the BAUDRATE Register -----------------------*/
-+
+diff --git a/arch/arm/boot/dts/stih41x-b2000.dtsi b/arch/arm/boot/dts/stih41x-b2000.dtsi
+new file mode 100644
+index 0000000..8c17e4a
+--- /dev/null
++++ b/arch/arm/boot/dts/stih41x-b2000.dtsi
+@@ -0,0 +1,41 @@
 +/*
-+ * MODE 0
-+ * recommended for low bit rates (below 19.2K)
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Author: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 + *
-+ *                       ICCLK
-+ * ASCBaudRate =   ----------------
-+ *                   baudrate * 16
-+ *
-+ * MODE 1
-+ * recommended for high bit rates (above 19.2K)
-+ *
-+ *                   baudrate * 16 * 2^16
-+ * ASCBaudRate =   ------------------------
-+ *                          ICCLK
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * publishhed by the Free Software Foundation.
 + */
++/ {
 +
-+#define ADJ 1
-+#define BAUDRATE_VAL_M0(bps, clk) \
-+	((clk) / (16 * (bps)))
-+#define BAUDRATE_VAL_M1(bps, clk) \
-+	(((bps * (1 << 14)) / ((clk) / (1 << 6))) + ADJ)
++	memory{
++		device_type = "memory";
++		reg = <0x60000000 0x40000000>;
++	};
 +
-+#endif /* _ST_ASC_H */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 74c2bf7..ec80e01 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -226,4 +226,7 @@
- /* Rocketport EXPRESS/INFINITY */
- #define PORT_RP2	102
++	chosen {
++		bootargs = "console=ttyAS0,115200";
++		linux,stdout-path = &uart2;
++	};
++
++	aliases {
++		ttyAS0 = &uart2;
++	};
++
++	soc {
++		uart2: uart@fed32000 {
++			status = "okay";
++		};
++
++		leds {
++			compatible	= "gpio-leds";
++			fp_led {
++				#gpio-cells = <1>;
++				label	= "Front Panel LED";
++				gpios	= <&PIO105 7>;
++				linux,default-trigger	= "heartbeat";
++			};
++		};
++
++	};
++};
+diff --git a/arch/arm/mach-stih41x/board-dt.c b/arch/arm/mach-stih41x/board-dt.c
+index 8005f71..1f23aca 100644
+--- a/arch/arm/mach-stih41x/board-dt.c
++++ b/arch/arm/mach-stih41x/board-dt.c
+@@ -63,6 +63,8 @@ void __init stih41x_dt_init(void)
+ }
  
-+/* ST ASC type numbers */
-+#define PORT_ASC       103
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
+ static const char *stih41x_dt_match[] __initdata = {
++	"st,stih415-b2000",
++	"st,stih416-b2000",
+ 	NULL
+ };
+ 
 -- 
 1.7.6.5
