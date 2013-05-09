@@ -1,84 +1,46 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 9 May 2013 14:26:00 +0100
-Message-ID: <20130509132600.GA3200@sirena.org.uk>
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Subject: Re: [RFC 1/8] serial:st-asc: Add ST ASC driver.
+Date: Thu, 9 May 2013 15:36:45 +0200
+Message-ID: <20130509133645.GG3041@game.jcrosoft.org>
 References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081650.23264.arnd@arndb.de>
- <20130508150141.GA5057@opensource.wolfsonmicro.com>
- <518A8E6C.6070907@st.com>
- <20130509095143.GB7478@sirena.org.uk>
- <518B8F49.5020902@st.com>
+ <201305081831.48566.arnd@arndb.de>
+ <alpine.LFD.2.03.1305081239260.13109@syhkavp.arg>
+ <201305082035.57154.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <518B8F49.5020902@st.com>
+In-Reply-To: <201305082035.57154.arnd@arndb.de>
 Sender: linux-doc-owner@vger.kernel.org
-To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, Greg KH <gregkh@linuxfoundation.org>, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Viresh Kumar <viresh.kumar@linaro.org>, Will Deacon <will.deacon@arm.com>, jslaby@suse.cz, Russell King <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, linux-doc@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On 20:35 Wed 08 May     , Arnd Bergmann wrote:
+> On Wednesday 08 May 2013, Nicolas Pitre wrote:
+> > I tried to fix this up over 10 years ago.  RMK tried as well. This 
+> > failed because X86 people insisted on always having COM1 as /dev/ttyS0, 
+> > COM3 as /dev/ttyS2 and so on, even when some of them weren't present.
+> > 
+> > A common and dynamic namespace eventually succeeded for hard disks.
+> > Maybe people are ready to accept it for serial ports as well now?
+> 
+> Unfortunately it only worked for hard disks because the old name
+> space was abandoned entirely. It also caused a lot of surprises
+> for people upgrading their kernels, which is something we probably
+> don't want to repeat.
+> 
+> Now we could add a new dynamic registration facility to the tty
+> layer for drivers that don't already have a name and dev_t
+> associated with the driver, and then use it for all new drivers
+> as well as those that intentionally want to convert.
 
---EVF5PPMfhYS0aIcm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+specially that we use devtmpfs and udev
 
-On Thu, May 09, 2013 at 12:58:01PM +0100, Srinivas KANDAGATLA wrote:
-
-> Currently, we have two bits of information which come from device trees.
-> 1> The syscon bank/group definition itself.
-> 2> syscon register offsets and bits information to the drivers.
-
-> These are the 2 things which keep changing per each SOC.
-
-> There is no other way to pass this information to the drivers other than
-> passing them as part of their own device node and syscon node.
-
-Sure there is, for example the drivers could have this information
-internally as part of knowing which device they're working with or they
-could take advantage of some patterns in the register map to store some
-higher level information that they use to configure.
-
-> >  and to the extent that it is sensible it feels like something
-> > which might be useful with any device using register maps, not just
-> > syscon.
-
-> If you think this is going to be useful for other drivers, Am happy to
-> move this out of syscon to regmap something like adding
-> of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
-> functions.
-
-> so any exiting drivers can still use the old syscon API to get the
-> regmap instance.
-> Alternatively they can use the new regmap APIs directly.
-
-Well, I'd need to see the code to decide if it was sane but I do think
-that if this is a good approach it's not syscon specific.  Anything like
-this needs to be independent of DT too since not all architectures use
-DT.
-
---EVF5PPMfhYS0aIcm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRi6PhAAoJELSic+t+oim9KC8P/RhLDLjfaPiuWOd+fCm5qqXJ
-xKoiS9+Z/JJf3K5eUwFnJAl+3Txm8gjyQxv5xJKT1OGyn83PQ0JbdAW46yelczNW
-vQJaKPUHNPuspRBdQu/g7FNH5U9J40nYtFv3WrmcXisg4jshEP8fuVIi2oZmdyPM
-hXQxWD4xKPG3tR+SBHuKjSp7rOeWVcnQpPph+6wbxTJpZIBYTxj6IvITJr4Zd0mj
-yxeclFHsaxgt+HASw3I7evr/tB8tYfljHRF1dFSthEXwqBddlfAfXvaEMc7YP6Tj
-w4QyBDbGv/2SChRWufr9qzUz4WoLcsQMAO6iFE6JW2m5/PLIfhZ4GHDz23YV1xRB
-7+UXiNJL0iMIztTnkiWiV+3uKcA9R9EnIUbs5JgM5zuAYjSjbj9t3cgRkWQ9uEK9
-2gpUgyvx1Ua55LXgqxX5vYkIrJsxZ72MiLEHr3o/Lm5Ct1K5Zgn6REgvkSxy8KL4
-9J/9+88NGUz47tJfLHL+o7nHKD6OHScDQB77UZRpw4ufgIxaH2HSIY1KHPyqRy/I
-XTMd/UKhmZoLZ5OAEY3Y1WY5dPDihTwpkVQSz7oHbIWZqpHNxKWTW65x06eE69l/
-9B+FAAJb61xoRrTwAfCtHXC9jGCu0Ekg9UNNLd2GDVgQFBsQPry6bfCd6mnvirWS
-C5Oxvj1/9p+THRFSzTHq
-=Pi9l
------END PGP SIGNATURE-----
-
---EVF5PPMfhYS0aIcm--
+we do not care much about minor/major
+> 
+> With DT aliases, we already have a way to enumerate serial ports
+> across device drivers, so if we are going to do something new,
+> we should make sure it works with the numbers defined there.
+> 
+> 	Arnd
