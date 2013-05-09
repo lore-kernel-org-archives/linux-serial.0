@@ -1,101 +1,153 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 09 May 2013 11:17:37 +0100
-Message-ID: <518B77C1.70107@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <518A8C1D.3090600@st.com> <201305082148.10933.arnd@arndb.de>
-Reply-To: srinivas.kandagatla@st.com
+From: James Hogan <james.hogan@imgtec.com>
+Subject: [PATCH] serial: 8250_dw: set clock rate
+Date: Thu, 9 May 2013 11:29:16 +0100
+Message-ID: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <201305082148.10933.arnd@arndb.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from multi.imgtec.com ([194.200.65.239]:27358 "EHLO multi.imgtec.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753662Ab3EIKac (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 May 2013 06:30:32 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, James Hogan <james.hogan@imgtec.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Bill Pemberton <wfp5p@virginia.edu>
 
-Hi Arnd,
-Thankyou for extending the discussion.
+If the uart clock provided to the 8250_dw driver is adjustable it may
+not be set to the desired rate. Therefore if both a uart clock and a
+clock frequency is specified (e.g. via device tree), try and update the
+clock to match the frequency.
 
-On 08/05/13 20:48, Arnd Bergmann wrote:
-> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
->> the pinctrl driver calls syconf_claim(np, "st,alt-control) to get a
->> field and then do a read/write on the field.
->>
->> Just in pinctrl driver we use around 50-100 sysconf registers scatters
->> across different groups.
->>
->> Without these new APIs, its very difficult to pass this information to
->> the drivers.
-> But are those necessarily things you would configure using DT?
-In last comment.
->
-> If there are so many registers that are shared between mutliple
-> subsystems, maybe using drivers/mfd/syscon for that is taking things
-> further than you should, since it is unlike what any of the other
-> SoC families need from syscon.
-I agree, my initial approach was having a dedicated driver specific to
-ST syscon, however syscon seems to do things very much similar to what
-we want, so I have integrated those 3 functions in syscon.
-Am happy to go back with my first approach of adding ST specific syscon
-driver if no one is actually going to benefit with such a change to
-syscon driver.
+Unfortunately if the resulting frequency is rounded down (which is the
+default behaviour of the generic clk-divider), the 8250 core won't allow
+the highest baud rate to be used, so if an explicit frequency is
+specified we always report that to the 8250 core.
 
->
-> Can you describe how your syscon registers are laid out?
-On STiH416 SOC we have 9 SYSCONF(aka System Configuration
-Registers)named banks/groups, each bank has its own memory map.
-Each sysconf bank has number of 32 bit registers which vary from bank to
-bank, like sysconf bank "sbc" has range from SYSTEM_CONFIG0 to
-SYSTEM_CONFIG999 where as  sysconf bank "front" has range of
-SYSTEM_CONFIG1000 to SYSTEM_CONFIG1999 and so on.
+The device tree bindings document is also updated accordingly.
 
-Each register is assigned with a unique SYCONF number, example:
-SYSTEM_CONFIG100, SYSTEM_CONFIG101 , .. and so on.
-Each sysconf contains bits of the IP configurations wired-up to the
-sysconf register bits.
+Signed-off-by: James Hogan <james.hogan@imgtec.com>
+Cc: Grant Likely <grant.likely@linaro.org>
+Cc: Rob Herring <rob.herring@calxeda.com>
+Cc: Rob Landley <rob@landley.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Alan Cox <alan@linux.intel.com>
+Cc: Jamie Iles <jamie@jamieiles.com>
+Cc: Bill Pemberton <wfp5p@virginia.edu>
+---
+ .../bindings/tty/serial/snps-dw-apb-uart.txt       |  4 +-
+ drivers/tty/serial/8250/8250_dw.c                  | 47 +++++++++++++++++-----
+ 2 files changed, 39 insertions(+), 12 deletions(-)
 
-As example:
+diff --git a/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
+index f13f1c5..e0cfc47 100644
+--- a/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
++++ b/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
+@@ -4,9 +4,11 @@ Required properties:
+ - compatible : "snps,dw-apb-uart"
+ - reg : offset and length of the register set for the device.
+ - interrupts : should contain uart interrupt.
+-- clock-frequency : the input clock frequency for the UART.
+ 
+ Optional properties:
++- clock-frequency : the input clock frequency for the UART. If specified in
++  addition to clocks, the clock rate will be set to this frequency.
++- clocks : the input clock specifier for the UART.
+ - reg-shift : quantity to shift the register offsets by.  If this property is
+   not present then the register offsets are not shifted.
+ - reg-io-width : the size (in bytes) of the IO accesses that should be
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index beaa283..85b3b63 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -128,6 +128,7 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+ static int dw8250_probe_of(struct uart_port *p)
+ {
+ 	struct device_node	*np = p->dev->of_node;
++	struct dw8250_data	*d = p->private_data;
+ 	u32			val;
+ 
+ 	if (!of_property_read_u32(np, "reg-io-width", &val)) {
+@@ -148,16 +149,13 @@ static int dw8250_probe_of(struct uart_port *p)
+ 	if (!of_property_read_u32(np, "reg-shift", &val))
+ 		p->regshift = val;
+ 
+-	/* clock got configured through clk api, all done */
+-	if (p->uartclk)
+-		return 0;
+-
+-	/* try to find out clock frequency from DT as fallback */
+-	if (of_property_read_u32(np, "clock-frequency", &val)) {
++	/* try to find out clock frequency from DT */
++	if (!of_property_read_u32(np, "clock-frequency", &val)) {
++		p->uartclk = val;
++	} else if (IS_ERR(d->clk)) {
+ 		dev_err(p->dev, "clk or clock-frequency not defined\n");
+ 		return -EINVAL;
+ 	}
+-	p->uartclk = val;
+ 
+ 	return 0;
+ }
+@@ -235,6 +233,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	struct dw8250_data *data;
+ 	int err;
++	unsigned long clk_rate;
+ 
+ 	if (!regs || !irq) {
+ 		dev_err(&pdev->dev, "no registers/irq defined\n");
+@@ -260,10 +259,6 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	data->clk = devm_clk_get(&pdev->dev, NULL);
+-	if (!IS_ERR(data->clk)) {
+-		clk_prepare_enable(data->clk);
+-		uart.port.uartclk = clk_get_rate(data->clk);
+-	}
+ 
+ 	uart.port.iotype = UPIO_MEM;
+ 	uart.port.serial_in = dw8250_serial_in;
+@@ -284,6 +279,36 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
++	/* Read the clock rate from the clock */
++	if (!IS_ERR(data->clk)) {
++		clk_prepare_enable(data->clk);
++		clk_rate = clk_get_rate(data->clk);
++		/*
++		 * If uartclk hasn't been explicitly specified (e.g. from device
++		 * tree), use the rate from the clock instead.
++		 */
++		if (!uart.port.uartclk)
++			uart.port.uartclk = clk_rate;
++		/*
++		 * If the current clock rate differs from the rate specified,
++		 * try and set the clock rate.
++		 */
++		if (uart.port.uartclk != clk_rate) {
++			if (!clk_set_rate(data->clk, uart.port.uartclk))
++				clk_rate = clk_get_rate(data->clk);
++			dev_info(&pdev->dev,
++				 "uartclk at %lu Hz (%u Hz requested)\n",
++				 clk_rate, uart.port.uartclk);
++			/*
++			 * Don't update uartclk. If the rate was rounded down by
++			 * clk_set_rate() the 8250 core won't allow the highest
++			 * baud rate to be used.
++			 */
++		} else {
++			dev_info(&pdev->dev, "uartclk at %lu Hz\n", clk_rate);
++		}
++	}
++
+ 	data->line = serial8250_register_8250_port(&uart);
+ 	if (data->line < 0)
+ 		return data->line;
+-- 
+1.8.1.2
 
-- Each pinctrl entry for set of 8 pins uses around 8-10 sysconfig
-register to control pinconf and pin functions.
-- IPs like Ethernet have few bit like Ethernet-Mode selection external
-or internal phyclk wired up to bits in sysconf registers,
-- Few clocks are controlled by sysconf registers.
-- Reset to IPs are wired up to bits of sysconf same registers.
-- ARM core soft reset is wired up to the sysconf registers...
-And most of the IPs have similar requirements ......
-
-Total layout of the sysconf changes per SOC, and the bit arrangements
-aswell, however the core IP(pinctrl, etherenet ...) and logic to drive
-those bits remains exactly same.
-
-As the code remains the same, the information about the hardware
-configuration and offsets to the registers are passed by device trees
-using the node properties.
-
-In general the requirements of the sysconf support to the SOC/driver
-support is.
-1> It should be able to read/write a sysconf register bits without
-having to "if" each SOC in the code. So that code is totally abstracted.
-Which is currently achieved by passing the information from the device
-trees and the driver just uses the property to get it.
-2> The infrastructure should protect the claimed registers from
-over-writing by other drivers. We do this by claim-read/write-release
-style API.
-3> The driver should be able to set a group of sysconf registers bits to
-a particular values before initialises the IP. I was thinking of doing
-this in a same way as pinctrl state.
-
-Any suggestion is most appreciated?
-
-Thanks,
-srini
-
-> Which subsystems beside pinctrl need to directly interact
-> with it? Is there any logical structure in it or do you just
-> have tons of bits scattered around an MMIO area?
->
-> 	Arnd
->
 
