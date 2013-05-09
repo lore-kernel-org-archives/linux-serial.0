@@ -1,40 +1,31 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
-Date: Thu, 9 May 2013 16:51:13 +0200
-Message-ID: <201305091651.13896.arnd@arndb.de>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305081638.23100.arnd@arndb.de> <518BADBF.4070303@st.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Thu, 09 May 2013 15:47:36 +0100
+Message-ID: <518BB708.7040505@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com> <20130509095143.GB7478@sirena.org.uk> <518B8F49.5020902@st.com> <20130509132600.GA3200@sirena.org.uk> <518BABF0.7040201@st.com> <20130509144055.GF3200@sirena.org.uk>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <518BADBF.4070303@st.com>
+In-Reply-To: <20130509144055.GF3200@sirena.org.uk>
 Sender: linux-doc-owner@vger.kernel.org
-To: srinivas.kandagatla@st.com
-Cc: Dave Martin <dave.martin@linaro.org>, linux-doc@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, will.deacon@arm.com, Grant Likely <grant.likely@secretlab.ca>, Jiri Slaby <jslaby@suse.cz>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>
+To: Mark Brown <broonie@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday 09 May 2013, Srinivas KANDAGATLA wrote:
-> >> diff --git a/arch/arm/include/asm/global_timer.h b/arch/arm/include/asm/global_timer.h
-> >> new file mode 100644
-> >> index 0000000..46f9188
-> >> --- /dev/null
-> >> +++ b/arch/arm/include/asm/global_timer.h
-> >> @@ -0,0 +1,12 @@
-> >> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq);
-> > 
-> > I don't see a need to call this from platform code for non-DT platforms, it
-> > can easily be used with CLOCKSOURCE_OF_DECLARE() all the time I think.
-> 
-> sorry Am confused here.
-> How would this work for non-DT?
+On 09/05/13 15:40, Mark Brown wrote:
+> So what exactly is the driver doing then?  If the register maps look
+> nothing like each other then what's the common functionality the driver
+> is providing?
+What I meant here is that, sysconf registers are reassigned per SOC, so
+the sysconf register definitions change per SOC, not the register map of
+the device itself.
 
-It won't.
+The register map of the device itself still looks the same, however few
+bits of the IP are wired up to the global sysconf registers, which is
+what keeps changing, w.r.t sysconf number or bits of the sysconf itself.
 
-> Looking at the code in clocksource_of_init it just goes through the
-> of_device_id table, which is not used in case of non-DT.
 
-All new platforms are DT-only, and none of the old platforms use this
-driver, so it does not matter.
 
-	Arnd
+
