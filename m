@@ -1,98 +1,101 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
 Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 9 May 2013 10:51:43 +0100
-Message-ID: <20130509095143.GB7478@sirena.org.uk>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081650.23264.arnd@arndb.de>
- <20130508150141.GA5057@opensource.wolfsonmicro.com>
- <518A8E6C.6070907@st.com>
+Date: Thu, 09 May 2013 11:17:37 +0100
+Message-ID: <518B77C1.70107@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <518A8C1D.3090600@st.com> <201305082148.10933.arnd@arndb.de>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0730921491666076171=="
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <518A8E6C.6070907-qxv4g6HH51o@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <201305082148.10933.arnd@arndb.de>
+Sender: linux-doc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi Arnd,
+Thankyou for extending the discussion.
 
---===============0730921491666076171==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="67nA0I2t09EExhkH"
-Content-Disposition: inline
+On 08/05/13 20:48, Arnd Bergmann wrote:
+> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
+>> the pinctrl driver calls syconf_claim(np, "st,alt-control) to get a
+>> field and then do a read/write on the field.
+>>
+>> Just in pinctrl driver we use around 50-100 sysconf registers scatters
+>> across different groups.
+>>
+>> Without these new APIs, its very difficult to pass this information to
+>> the drivers.
+> But are those necessarily things you would configure using DT?
+In last comment.
+>
+> If there are so many registers that are shared between mutliple
+> subsystems, maybe using drivers/mfd/syscon for that is taking things
+> further than you should, since it is unlike what any of the other
+> SoC families need from syscon.
+I agree, my initial approach was having a dedicated driver specific to
+ST syscon, however syscon seems to do things very much similar to what
+we want, so I have integrated those 3 functions in syscon.
+Am happy to go back with my first approach of adding ST specific syscon
+driver if no one is actually going to benefit with such a change to
+syscon driver.
 
+>
+> Can you describe how your syscon registers are laid out?
+On STiH416 SOC we have 9 SYSCONF(aka System Configuration
+Registers)named banks/groups, each bank has its own memory map.
+Each sysconf bank has number of 32 bit registers which vary from bank to
+bank, like sysconf bank "sbc" has range from SYSTEM_CONFIG0 to
+SYSTEM_CONFIG999 where as  sysconf bank "front" has range of
+SYSTEM_CONFIG1000 to SYSTEM_CONFIG1999 and so on.
 
---67nA0I2t09EExhkH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Each register is assigned with a unique SYCONF number, example:
+SYSTEM_CONFIG100, SYSTEM_CONFIG101 , .. and so on.
+Each sysconf contains bits of the IP configurations wired-up to the
+sysconf register bits.
 
-On Wed, May 08, 2013 at 06:42:04PM +0100, Srinivas KANDAGATLA wrote:
+As example:
 
-Fix your mailer to word wrap within paragraphs.
+- Each pinctrl entry for set of 8 pins uses around 8-10 sysconfig
+register to control pinconf and pin functions.
+- IPs like Ethernet have few bit like Ethernet-Mode selection external
+or internal phyclk wired up to bits in sysconf registers,
+- Few clocks are controlled by sysconf registers.
+- Reset to IPs are wired up to bits of sysconf same registers.
+- ARM core soft reset is wired up to the sysconf registers...
+And most of the IPs have similar requirements ......
 
-> Ultimately the syscon_write use the regmap_update_bits, however we
-> really want is the flexibility in using/referring the syscon
-> registers/bits in both device-trees and non-device tree cases.
+Total layout of the sysconf changes per SOC, and the bit arrangements
+aswell, however the core IP(pinctrl, etherenet ...) and logic to drive
+those bits remains exactly same.
 
-So what you're looking for here is some way to offload discovery of
-register fields from the driver?
+As the code remains the same, the information about the hardware
+configuration and offsets to the registers are passed by device trees
+using the node properties.
 
-> The reason for these APIs, is the extent of syscon usage is very high
-> in ST set-top-box parts.
+In general the requirements of the sysconf support to the SOC/driver
+support is.
+1> It should be able to read/write a sysconf register bits without
+having to "if" each SOC in the code. So that code is totally abstracted.
+Which is currently achieved by passing the information from the device
+trees and the driver just uses the property to get it.
+2> The infrastructure should protect the claimed registers from
+over-writing by other drivers. We do this by claim-read/write-release
+style API.
+3> The driver should be able to set a group of sysconf registers bits to
+a particular values before initialises the IP. I was thinking of doing
+this in a same way as pinctrl state.
 
-> Without these new APIs, its very difficult to pass this information to
-> the drivers.
+Any suggestion is most appreciated?
 
-I'm not 100% convinced that putting all this information into DT is a
-good idea, and to the extent that it is sensible it feels like something
-which might be useful with any device using register maps, not just
-syscon.  For example many MFDs have similar needs - essentially the
-system controllers are just a particular kind of MFD.  To me that says
-that this should be outside syscon so other things can use it.
+Thanks,
+srini
 
---67nA0I2t09EExhkH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+> Which subsystems beside pinctrl need to directly interact
+> with it? Is there any logical structure in it or do you just
+> have tons of bits scattered around an MMIO area?
+>
+> 	Arnd
+>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRi3GrAAoJELSic+t+oim9IWoQAJHvNeQZZXveXmlB1koA35Uf
-gPsYkfgFvkD/EaS9Rr7OO3kd5RfavgeoOQu7CMrn5k4Cm4AXHDBW15YI6ZgBacvU
-mP34x1IJh93o2AUtspBxWAGebGO+KahFKv+t5kag9mvfVjXE1QUnLQbOucWYBr/S
-059Z5+WO8sPbcpuRAIfr3qYFwqrztYz6LcBmOK0XOpkgp/0to9W5wvUzG6xFgywz
-YWCZfjh+vn7FUFR2U8mifUp48SHrKUqEu1EFDTG0u69yk5olnwSD1C71ga4LADau
-O+N0/p6MtJe9V9r9/kxHTJYRfZqvB927ta8awZqCpCsuhepi1Tfihx0KcvefvJKU
-2RL+LJhChs0jVwHCAmaFcE5D4xyT3EGrTiPWn+AaKrg17aHaz2qonQJTtpDuUBPC
-K40ebQMzxlbXDh/1R71ZxPP3R+Kd5DdWKzG5SILYak0qTEVlcHiUpFhv/UIhsw4E
-D8qQuxcELQkNMHAa6B3nuXCDUgYMNpot4cJiXLvKZbeRjZ4tLSnrzen4skkDZt7e
-HMUf39XiYm2gfrPbcMb1GY1vrNUHrbMfpbkArvbRVa6l5tbh9Q972uk8Q0G2fQjb
-r3dgXUGkooco4d5ruQVopj9m5bxTlQy3nG2U/SvEYC6NffkZHs42LLDrw+wzcCGZ
-w6FS6DNQPrxLMbvrQT5I
-=vpYd
------END PGP SIGNATURE-----
-
---67nA0I2t09EExhkH--
-
---===============0730921491666076171==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-devicetree-discuss mailing list
-devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-https://lists.ozlabs.org/listinfo/devicetree-discuss
-
---===============0730921491666076171==--
