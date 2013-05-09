@@ -1,64 +1,40 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 9 May 2013 15:40:55 +0100
-Message-ID: <20130509144055.GF3200@sirena.org.uk>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081650.23264.arnd@arndb.de>
- <20130508150141.GA5057@opensource.wolfsonmicro.com>
- <518A8E6C.6070907@st.com>
- <20130509095143.GB7478@sirena.org.uk>
- <518B8F49.5020902@st.com>
- <20130509132600.GA3200@sirena.org.uk>
- <518BABF0.7040201@st.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
+Date: Thu, 9 May 2013 16:51:13 +0200
+Message-ID: <201305091651.13896.arnd@arndb.de>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305081638.23100.arnd@arndb.de> <518BADBF.4070303@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="E7i4zwmWs5DOuDSH"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <518BABF0.7040201@st.com>
+In-Reply-To: <518BADBF.4070303@st.com>
 Sender: linux-doc-owner@vger.kernel.org
-To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
+To: srinivas.kandagatla@st.com
+Cc: Dave Martin <dave.martin@linaro.org>, linux-doc@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, will.deacon@arm.com, Grant Likely <grant.likely@secretlab.ca>, Jiri Slaby <jslaby@suse.cz>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>
 List-Id: linux-serial@vger.kernel.org
 
+On Thursday 09 May 2013, Srinivas KANDAGATLA wrote:
+> >> diff --git a/arch/arm/include/asm/global_timer.h b/arch/arm/include/asm/global_timer.h
+> >> new file mode 100644
+> >> index 0000000..46f9188
+> >> --- /dev/null
+> >> +++ b/arch/arm/include/asm/global_timer.h
+> >> @@ -0,0 +1,12 @@
+> >> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq);
+> > 
+> > I don't see a need to call this from platform code for non-DT platforms, it
+> > can easily be used with CLOCKSOURCE_OF_DECLARE() all the time I think.
+> 
+> sorry Am confused here.
+> How would this work for non-DT?
 
---E7i4zwmWs5DOuDSH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+It won't.
 
-On Thu, May 09, 2013 at 03:00:16PM +0100, Srinivas KANDAGATLA wrote:
+> Looking at the code in clocksource_of_init it just goes through the
+> of_device_id table, which is not used in case of non-DT.
 
-> Some of layouts of the sysconf registers are totally changed for each SOC.
+All new platforms are DT-only, and none of the old platforms use this
+driver, so it does not matter.
 
-> Looking at driver by driver maybe some drivers can take advantage of the
-> patterns, but Am not sure if this will be a sustainable solution for all
-> the drivers.
-
-So what exactly is the driver doing then?  If the register maps look
-nothing like each other then what's the common functionality the driver
-is providing?
-
---E7i4zwmWs5DOuDSH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRi7V0AAoJELSic+t+oim9QEsP/3PYTETaOGDXGkLb5WdAC/6K
-SvMEIrDDS3EjA9oc8PED996LqrB0X3KfzDjKI4dV62g+0syOEuMbLu4QvyLjB83v
-Vsq6VsO0wZ9p++4QljCBThb1opO4Ot+VkLtQuavEHTjd2ejxigxpG0wBQkNxwiYu
-MmXVVXgO+HqEAcjwLyy1Uz26Y46VupNkaKmNNF/IW50h2+dSkH5vMZBQEl9UTfkg
-yadmMVbtep9MFRRUrt4gZ5uY59/15CXgjnaO/bUJq/23ycTwaSsh0YYb+6MV7A6X
-VRXEWSpz0d8b+BbKMtZl/iwWN4Raoi+fOamwFz1rJ1BslEXekK6g4ydE/ODtb0Vx
-JavId06SA+YZ+DNGiLGXSe6XrLGDlXQesiH8EMPXYiDxtDkDmDalFlksmfWgFuu0
-UvjJGe2zqaYPFvWBTyFqxagDNC+FkZOkcRqzWq5ka3Q39bNsFiuAO86kxKKxisX5
-e7/RbskUxqddaQZmtWJj0zrU8dZ+hY2YA5a1j+Nx/m9+PrRbMsIQ6wA6DZZJIooX
-6+qccSLZlxTm1MtCVbupWqorWDWcpPdw9u+a+bpkbjZITrqe8X9jKOXzbg6BWsb8
-cgQi30E2YhO1NdLz1TgyPNt2vA4HqE9fZLNg2DK4PDXZMeMFEncmtZeaQYV8dtQj
-udqBvOSjKXhsRrb82mCb
-=SzXK
------END PGP SIGNATURE-----
-
---E7i4zwmWs5DOuDSH--
+	Arnd
