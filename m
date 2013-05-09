@@ -1,113 +1,53 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 09 May 2013 12:58:01 +0100
-Message-ID: <518B8F49.5020902@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com> <20130509095143.GB7478@sirena.org.uk>
-Reply-To: srinivas.kandagatla@st.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20130509095143.GB7478@sirena.org.uk>
-Sender: linux-doc-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH] serial: pl011: protect attribute read from NULL platform data struct
+Date: Thu,  9 May 2013 13:50:55 +0100
+Message-ID: <1368103855-28363-1-git-send-email-lee.jones@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-we0-f172.google.com ([74.125.82.172]:37591 "EHLO
+	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753188Ab3EIMvG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 May 2013 08:51:06 -0400
+Received: by mail-we0-f172.google.com with SMTP id w60so2864089wes.31
+        for <linux-serial@vger.kernel.org>; Thu, 09 May 2013 05:51:04 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: arnd@arndb.de, linus.walleij@stericsson.com, srinidhi.kasagar@stericsson.com, Lee Jones <lee.jones@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On 09/05/13 10:51, Mark Brown wrote:
-> On Wed, May 08, 2013 at 06:42:04PM +0100, Srinivas KANDAGATLA wrote:
-> 
-> Fix your mailer to word wrap within paragraphs.
-> 
-Sorry about that.
->> Ultimately the syscon_write use the regmap_update_bits, however we
->> really want is the flexibility in using/referring the syscon
->> registers/bits in both device-trees and non-device tree cases.
-> 
-> So what you're looking for here is some way to offload discovery of
-> register fields from the driver?
+It's completely feasible that platform data will be empty i.e. when
+booting with Device Tree with no device AUXDATA. So we must protect
+it's use in these use-cases, or risk a kernel Oops.
 
-Exactly,
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+*******                                                        *******
+If this issue has not already been fixed, this patch should be applied
+during the v3.10 -rc:s, as it fixes a serious bug which was introduced
+in the merge-window.
+*******                                                        *******
 
-As the System configuration registers change per each SOC, and the
-logic/code to drive still remain same across SOCs.
+ drivers/tty/serial/amba-pl011.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It makes sense to abstract the information of sysconf register and its
-offsets from the driver, as we do not want to change the driver per each
-SOC.
-
-> 
->> The reason for these APIs, is the extent of syscon usage is very high
->> in ST set-top-box parts.
-> 
->> Without these new APIs, its very difficult to pass this information to
->> the drivers.
-> 
-> I'm not 100% convinced that putting all this information into DT is a
-> good idea,
-
-Currently, we have two bits of information which come from device trees.
-1> The syscon bank/group definition itself.
-2> syscon register offsets and bits information to the drivers.
-
-These are the 2 things which keep changing per each SOC.
-
-There is no other way to pass this information to the drivers other than
-passing them as part of their own device node and syscon node.
-
->  and to the extent that it is sensible it feels like something
-> which might be useful with any device using register maps, not just
-> syscon.
-
-If you think this is going to be useful for other drivers, Am happy to
-move this out of syscon to regmap something like adding
-of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
-functions.
-
-so any exiting drivers can still use the old syscon API to get the
-regmap instance.
-Alternatively they can use the new regmap APIs directly.
-
-regmap_field_claim to claim bits of the register
-of_regmap_field_claim DT version of reg_map_field_claim.
-regmap_field_write to write to bits of register
-regmap_field_read to bit of the register.
-regmap_field_release to release the bits of the register.
-
-For DT version it might involve adding new member to struct
-regmap_config to lookup regmap by phandle, so that regmap can get hold
-of regmap instance from device tree phandle.
-syscon driver already does this in syscon_regmap_lookup_by_phandle()
-
-On the device tree side it will look like:
-syscfg_sbc:syscon@fe600000{
-	compatible	= "syscon";
-	reg		= <0xfe600000 0x1000>;
-};
-
-node {
-	property-1 = <&syscfg_sbc 10 0 31>;
-};
-
-property has "phandle", register_offset, lsb, msb.
-
-On the driver side, it can just use the API's like
-
-field = of_regmap_field_claim(np, "property-1");
-regmap_field_write(field, val);
-regmap_field_release(field);
-
-All this involves is very minimal code change in syscon and a new APIs
-and DT awareness into regmap.
-
-What do you think?
-
-Thanks,
-srini
-
->  For example many MFDs have similar needs - essentially the
-> system controllers are just a particular kind of MFD.  To me that says
-> that this should be outside syscon so other things can use it.
-
-> 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 8ab70a6..e2774f9 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -332,7 +332,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
+ 		dmaengine_slave_config(chan, &rx_conf);
+ 		uap->dmarx.chan = chan;
+ 
+-		if (plat->dma_rx_poll_enable) {
++		if (plat && plat->dma_rx_poll_enable) {
+ 			/* Set poll rate if specified. */
+ 			if (plat->dma_rx_poll_rate) {
+ 				uap->dmarx.auto_poll_rate = false;
+-- 
+1.7.10.4
 
