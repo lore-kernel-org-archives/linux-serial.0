@@ -1,88 +1,64 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
-Date: Thu, 09 May 2013 15:07:59 +0100
-Message-ID: <518BADBF.4070303@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com> <201305081638.23100.arnd@arndb.de>
-Reply-To: srinivas.kandagatla@st.com
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Thu, 9 May 2013 15:40:55 +0100
+Message-ID: <20130509144055.GF3200@sirena.org.uk>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081650.23264.arnd@arndb.de>
+ <20130508150141.GA5057@opensource.wolfsonmicro.com>
+ <518A8E6C.6070907@st.com>
+ <20130509095143.GB7478@sirena.org.uk>
+ <518B8F49.5020902@st.com>
+ <20130509132600.GA3200@sirena.org.uk>
+ <518BABF0.7040201@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="E7i4zwmWs5DOuDSH"
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <201305081638.23100.arnd@arndb.de>
+Content-Disposition: inline
+In-Reply-To: <518BABF0.7040201@st.com>
 Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Dave Martin <dave.martin@linaro.org>, linux-doc@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, will.deacon@arm.com, Grant Likely <grant.likely@secretlab.ca>, Jiri Slaby <jslaby@suse.cz>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>Maxime Ripard <ma>
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
 List-Id: linux-serial@vger.kernel.org
 
-On 08/05/13 15:38, Arnd Bergmann wrote:
-> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
->> From: Stuart Menefy <stuart.menefy@st.com>
->>
->> This is a simple driver for the global timer module found in the Cortex
->> A9-MP cores from revision r1p0 onwards. This should be able to perform
->> the functions of the system timer and the local timer in an SMP system.
->>
->> The global timer has the following features:
->>     The global timer is a 64-bit incrementing counter with an
->> auto-incrementing feature. It continues incrementing after sending
->> interrupts. The global timer is memory mapped in the private memory
->> region.
->>     The global timer is accessible to all Cortex-A9 processors in the
->> cluster. Each Cortex-A9 processor has a private 64-bit comparator that
->> is used to assert a private interrupt when the global timer has reached
->> the comparator value. All the Cortex-A9 processors in a design use the
->> banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
->> Controller as a Private Peripheral Interrupt. The global timer is
->> clocked by PERIPHCLK.
->>
->> Signed-off-by: Stuart Menefy <stuart.menefy@st.com>
->> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
->>
-> 
-> Are you sure we don't already have a driver for this? It sounds unlikely
-> that you are the first one to do this when the hardware is so common.
 
-Yes, in mainline we do not have support to this.
+--E7i4zwmWs5DOuDSH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
->>  Documentation/devicetree/bindings/arm/gt.txt |   21 ++
->>  arch/arm/Kconfig                             |    6 +
->>  arch/arm/include/asm/global_timer.h          |   12 +
->>  arch/arm/kernel/Makefile                     |    1 +
->>  arch/arm/kernel/global_timer.c               |  325 ++++++++++++++++++++++++++
->>  5 files changed, 365 insertions(+), 0 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/arm/gt.txt
->>  create mode 100644 arch/arm/include/asm/global_timer.h
->>  create mode 100644 arch/arm/kernel/global_timer.c
-> 
-> Move it into drivers/clocksource?
+On Thu, May 09, 2013 at 03:00:16PM +0100, Srinivas KANDAGATLA wrote:
 
-Sure, I will move this in the next version.
+> Some of layouts of the sysconf registers are totally changed for each SOC.
 
->  
->> diff --git a/arch/arm/include/asm/global_timer.h b/arch/arm/include/asm/global_timer.h
->> new file mode 100644
->> index 0000000..46f9188
->> --- /dev/null
->> +++ b/arch/arm/include/asm/global_timer.h
->> @@ -0,0 +1,12 @@
->> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq);
-> 
-> I don't see a need to call this from platform code for non-DT platforms, it
-> can easily be used with CLOCKSOURCE_OF_DECLARE() all the time I think.
+> Looking at driver by driver maybe some drivers can take advantage of the
+> patterns, but Am not sure if this will be a sustainable solution for all
+> the drivers.
 
-sorry Am confused here.
-How would this work for non-DT?
+So what exactly is the driver doing then?  If the register maps look
+nothing like each other then what's the common functionality the driver
+is providing?
 
-Looking at the code in clocksource_of_init it just goes through the
-of_device_id table, which is not used in case of non-DT.
-> 
-> 	Arnd
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
-> 
+--E7i4zwmWs5DOuDSH
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRi7V0AAoJELSic+t+oim9QEsP/3PYTETaOGDXGkLb5WdAC/6K
+SvMEIrDDS3EjA9oc8PED996LqrB0X3KfzDjKI4dV62g+0syOEuMbLu4QvyLjB83v
+Vsq6VsO0wZ9p++4QljCBThb1opO4Ot+VkLtQuavEHTjd2ejxigxpG0wBQkNxwiYu
+MmXVVXgO+HqEAcjwLyy1Uz26Y46VupNkaKmNNF/IW50h2+dSkH5vMZBQEl9UTfkg
+yadmMVbtep9MFRRUrt4gZ5uY59/15CXgjnaO/bUJq/23ycTwaSsh0YYb+6MV7A6X
+VRXEWSpz0d8b+BbKMtZl/iwWN4Raoi+fOamwFz1rJ1BslEXekK6g4ydE/ODtb0Vx
+JavId06SA+YZ+DNGiLGXSe6XrLGDlXQesiH8EMPXYiDxtDkDmDalFlksmfWgFuu0
+UvjJGe2zqaYPFvWBTyFqxagDNC+FkZOkcRqzWq5ka3Q39bNsFiuAO86kxKKxisX5
+e7/RbskUxqddaQZmtWJj0zrU8dZ+hY2YA5a1j+Nx/m9+PrRbMsIQ6wA6DZZJIooX
+6+qccSLZlxTm1MtCVbupWqorWDWcpPdw9u+a+bpkbjZITrqe8X9jKOXzbg6BWsb8
+cgQi30E2YhO1NdLz1TgyPNt2vA4HqE9fZLNg2DK4PDXZMeMFEncmtZeaQYV8dtQj
+udqBvOSjKXhsRrb82mCb
+=SzXK
+-----END PGP SIGNATURE-----
+
+--E7i4zwmWs5DOuDSH--
