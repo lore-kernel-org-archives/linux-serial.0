@@ -1,91 +1,88 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 09 May 2013 15:00:16 +0100
-Message-ID: <518BABF0.7040201@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081650.23264.arnd@arndb.de>
- <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com>
- <20130509095143.GB7478@sirena.org.uk> <518B8F49.5020902@st.com>
- <20130509132600.GA3200@sirena.org.uk>
-Reply-To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [RFC 2/8] ARM:global_timer: Add ARM global timer support.
+Date: Thu, 09 May 2013 15:07:59 +0100
+Message-ID: <518BADBF.4070303@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022260-2197-1-git-send-email-srinivas.kandagatla@st.com> <201305081638.23100.arnd@arndb.de>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <20130509132600.GA3200-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <201305081638.23100.arnd@arndb.de>
+Sender: linux-doc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Dave Martin <dave.martin@linaro.org>, linux-doc@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, will.deacon@arm.com, Grant Likely <grant.likely@secretlab.ca>, Jiri Slaby <jslaby@suse.cz>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Nicolas Pitre <nico@linaro.org>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>Maxime Ripard <ma>
 List-Id: linux-serial@vger.kernel.org
 
-On 09/05/13 14:26, Mark Brown wrote:
-> On Thu, May 09, 2013 at 12:58:01PM +0100, Srinivas KANDAGATLA wrote:
+On 08/05/13 15:38, Arnd Bergmann wrote:
+> On Wednesday 08 May 2013, Srinivas KANDAGATLA wrote:
+>> From: Stuart Menefy <stuart.menefy@st.com>
+>>
+>> This is a simple driver for the global timer module found in the Cortex
+>> A9-MP cores from revision r1p0 onwards. This should be able to perform
+>> the functions of the system timer and the local timer in an SMP system.
+>>
+>> The global timer has the following features:
+>>     The global timer is a 64-bit incrementing counter with an
+>> auto-incrementing feature. It continues incrementing after sending
+>> interrupts. The global timer is memory mapped in the private memory
+>> region.
+>>     The global timer is accessible to all Cortex-A9 processors in the
+>> cluster. Each Cortex-A9 processor has a private 64-bit comparator that
+>> is used to assert a private interrupt when the global timer has reached
+>> the comparator value. All the Cortex-A9 processors in a design use the
+>> banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
+>> Controller as a Private Peripheral Interrupt. The global timer is
+>> clocked by PERIPHCLK.
+>>
+>> Signed-off-by: Stuart Menefy <stuart.menefy@st.com>
+>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+>>
 > 
->> Currently, we have two bits of information which come from device trees.
->> 1> The syscon bank/group definition itself.
->> 2> syscon register offsets and bits information to the drivers.
-> 
->> These are the 2 things which keep changing per each SOC.
-> 
->> There is no other way to pass this information to the drivers other than
->> passing them as part of their own device node and syscon node.
-> 
-> Sure there is, for example the drivers could have this information
-> internally as part of knowing which device they're working with or they
-> could take advantage of some patterns in the register map to store some
-> higher level information that they use to configure.
-> 
-Some of layouts of the sysconf registers are totally changed for each SOC.
+> Are you sure we don't already have a driver for this? It sounds unlikely
+> that you are the first one to do this when the hardware is so common.
 
-Looking at driver by driver maybe some drivers can take advantage of the
-patterns, but Am not sure if this will be a sustainable solution for all
-the drivers.
-
-The big disadvantage of this approach is that
-- Every driver has to be touched for new SOC,
-- Secondly the drivers will end up having more of such information than
-code over a time.
-
->>>  and to the extent that it is sensible it feels like something
->>> which might be useful with any device using register maps, not just
->>> syscon.
-> 
->> If you think this is going to be useful for other drivers, Am happy to
->> move this out of syscon to regmap something like adding
->> of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
->> functions.
-> 
->> so any exiting drivers can still use the old syscon API to get the
->> regmap instance.
->> Alternatively they can use the new regmap APIs directly.
-> 
-> Well, I'd need to see the code to decide if it was sane but I do think
-> that if this is a good approach it's not syscon specific.  Anything like
-> this needs to be independent of DT too since not all architectures use
-> DT.
-In the suggested approach, the API supports, both DT and non-DT style.
-
-for DT style user can use.
-of_regmap_field_claim -> regmap_field_read -> regmap_field_write-
-->regmap_field_release
-
-and for NON-DT user can use
-regmap_field_claim  -> regmap_field_read -> regmap_field_write-
-->regmap_field_release
-
-
-thanks,
-srini
-
+Yes, in mainline we do not have support to this.
 
 > 
+>>  Documentation/devicetree/bindings/arm/gt.txt |   21 ++
+>>  arch/arm/Kconfig                             |    6 +
+>>  arch/arm/include/asm/global_timer.h          |   12 +
+>>  arch/arm/kernel/Makefile                     |    1 +
+>>  arch/arm/kernel/global_timer.c               |  325 ++++++++++++++++++++++++++
+>>  5 files changed, 365 insertions(+), 0 deletions(-)
+>>  create mode 100644 Documentation/devicetree/bindings/arm/gt.txt
+>>  create mode 100644 arch/arm/include/asm/global_timer.h
+>>  create mode 100644 arch/arm/kernel/global_timer.c
+> 
+> Move it into drivers/clocksource?
+
+Sure, I will move this in the next version.
+
+>  
+>> diff --git a/arch/arm/include/asm/global_timer.h b/arch/arm/include/asm/global_timer.h
+>> new file mode 100644
+>> index 0000000..46f9188
+>> --- /dev/null
+>> +++ b/arch/arm/include/asm/global_timer.h
+>> @@ -0,0 +1,12 @@
+>> +int __init global_timer_init(void __iomem *base, unsigned int timer_irq);
+> 
+> I don't see a need to call this from platform code for non-DT platforms, it
+> can easily be used with CLOCKSOURCE_OF_DECLARE() all the time I think.
+
+sorry Am confused here.
+How would this work for non-DT?
+
+Looking at the code in clocksource_of_init it just goes through the
+of_device_id table, which is not used in case of non-DT.
+> 
+> 	Arnd
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+> 
+
