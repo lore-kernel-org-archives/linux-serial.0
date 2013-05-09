@@ -1,44 +1,84 @@
-From: James Hogan <james.hogan@imgtec.com>
-Subject: Re: [PATCH] serial: 8250_dw: set clock rate
-Date: Thu, 9 May 2013 13:58:09 +0100
-Message-ID: <518B9D61.4090406@imgtec.com>
-References: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Thu, 9 May 2013 14:26:00 +0100
+Message-ID: <20130509132600.GA3200@sirena.org.uk>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081650.23264.arnd@arndb.de>
+ <20130508150141.GA5057@opensource.wolfsonmicro.com>
+ <518A8E6C.6070907@st.com>
+ <20130509095143.GB7478@sirena.org.uk>
+ <518B8F49.5020902@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from multi.imgtec.com ([194.200.65.239]:52700 "EHLO multi.imgtec.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751260Ab3EIM6M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 May 2013 08:58:12 -0400
-In-Reply-To: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <518B8F49.5020902@st.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: James Hogan <james.hogan@imgtec.com>, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Bill Pemberton <wfp5p@virginia.edu>
 
-On 09/05/13 11:29, James Hogan wrote:
-> If the uart clock provided to the 8250_dw driver is adjustable it may
-> not be set to the desired rate. Therefore if both a uart clock and a
-> clock frequency is specified (e.g. via device tree), try and update the
-> clock to match the frequency.
-> 
-> Unfortunately if the resulting frequency is rounded down (which is the
-> default behaviour of the generic clk-divider), the 8250 core won't allow
-> the highest baud rate to be used, so if an explicit frequency is
-> specified we always report that to the 8250 core.
 
-Hi,
+--EVF5PPMfhYS0aIcm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Sorry, please ignore this patch.
+On Thu, May 09, 2013 at 12:58:01PM +0100, Srinivas KANDAGATLA wrote:
 
-I've realised that a larger (e.g. non-divided) source clock can just be
-provided directly to the uart and it appears to have enough of an
-internal divider for the driver to do the right thing without changing
-the input clock rate, although of course that clock rate still needs
-setting somewhere. I'm not sure why we didn't do this all along as it
-gives a closer frequency anyway.
+> Currently, we have two bits of information which come from device trees.
+> 1> The syscon bank/group definition itself.
+> 2> syscon register offsets and bits information to the drivers.
 
-Thanks
-James
+> These are the 2 things which keep changing per each SOC.
 
+> There is no other way to pass this information to the drivers other than
+> passing them as part of their own device node and syscon node.
+
+Sure there is, for example the drivers could have this information
+internally as part of knowing which device they're working with or they
+could take advantage of some patterns in the register map to store some
+higher level information that they use to configure.
+
+> >  and to the extent that it is sensible it feels like something
+> > which might be useful with any device using register maps, not just
+> > syscon.
+
+> If you think this is going to be useful for other drivers, Am happy to
+> move this out of syscon to regmap something like adding
+> of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
+> functions.
+
+> so any exiting drivers can still use the old syscon API to get the
+> regmap instance.
+> Alternatively they can use the new regmap APIs directly.
+
+Well, I'd need to see the code to decide if it was sane but I do think
+that if this is a good approach it's not syscon specific.  Anything like
+this needs to be independent of DT too since not all architectures use
+DT.
+
+--EVF5PPMfhYS0aIcm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRi6PhAAoJELSic+t+oim9KC8P/RhLDLjfaPiuWOd+fCm5qqXJ
+xKoiS9+Z/JJf3K5eUwFnJAl+3Txm8gjyQxv5xJKT1OGyn83PQ0JbdAW46yelczNW
+vQJaKPUHNPuspRBdQu/g7FNH5U9J40nYtFv3WrmcXisg4jshEP8fuVIi2oZmdyPM
+hXQxWD4xKPG3tR+SBHuKjSp7rOeWVcnQpPph+6wbxTJpZIBYTxj6IvITJr4Zd0mj
+yxeclFHsaxgt+HASw3I7evr/tB8tYfljHRF1dFSthEXwqBddlfAfXvaEMc7YP6Tj
+w4QyBDbGv/2SChRWufr9qzUz4WoLcsQMAO6iFE6JW2m5/PLIfhZ4GHDz23YV1xRB
+7+UXiNJL0iMIztTnkiWiV+3uKcA9R9EnIUbs5JgM5zuAYjSjbj9t3cgRkWQ9uEK9
+2gpUgyvx1Ua55LXgqxX5vYkIrJsxZ72MiLEHr3o/Lm5Ct1K5Zgn6REgvkSxy8KL4
+9J/9+88NGUz47tJfLHL+o7nHKD6OHScDQB77UZRpw4ufgIxaH2HSIY1KHPyqRy/I
+XTMd/UKhmZoLZ5OAEY3Y1WY5dPDihTwpkVQSz7oHbIWZqpHNxKWTW65x06eE69l/
+9B+FAAJb61xoRrTwAfCtHXC9jGCu0Ekg9UNNLd2GDVgQFBsQPry6bfCd6mnvirWS
+C5Oxvj1/9p+THRFSzTHq
+=Pi9l
+-----END PGP SIGNATURE-----
+
+--EVF5PPMfhYS0aIcm--
