@@ -1,46 +1,91 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [RFC 1/8] serial:st-asc: Add ST ASC driver.
-Date: Thu, 9 May 2013 15:36:45 +0200
-Message-ID: <20130509133645.GG3041@game.jcrosoft.org>
+From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Thu, 09 May 2013 15:00:16 +0100
+Message-ID: <518BABF0.7040201@st.com>
 References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081831.48566.arnd@arndb.de>
- <alpine.LFD.2.03.1305081239260.13109@syhkavp.arg>
- <201305082035.57154.arnd@arndb.de>
+ <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081650.23264.arnd@arndb.de>
+ <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com>
+ <20130509095143.GB7478@sirena.org.uk> <518B8F49.5020902@st.com>
+ <20130509132600.GA3200@sirena.org.uk>
+Reply-To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <201305082035.57154.arnd@arndb.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, Greg KH <gregkh@linuxfoundation.org>, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Viresh Kumar <viresh.kumar@linaro.org>, Will Deacon <will.deacon@arm.com>, jslaby@suse.cz, Russell King <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, linux-doc@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Stephen Warren <swarren@nvidia.com>, Dong Aisheng <dong.aisheng@linaro.org>, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <20130509132600.GA3200-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 20:35 Wed 08 May     , Arnd Bergmann wrote:
-> On Wednesday 08 May 2013, Nicolas Pitre wrote:
-> > I tried to fix this up over 10 years ago.  RMK tried as well. This 
-> > failed because X86 people insisted on always having COM1 as /dev/ttyS0, 
-> > COM3 as /dev/ttyS2 and so on, even when some of them weren't present.
-> > 
-> > A common and dynamic namespace eventually succeeded for hard disks.
-> > Maybe people are ready to accept it for serial ports as well now?
+On 09/05/13 14:26, Mark Brown wrote:
+> On Thu, May 09, 2013 at 12:58:01PM +0100, Srinivas KANDAGATLA wrote:
 > 
-> Unfortunately it only worked for hard disks because the old name
-> space was abandoned entirely. It also caused a lot of surprises
-> for people upgrading their kernels, which is something we probably
-> don't want to repeat.
+>> Currently, we have two bits of information which come from device trees.
+>> 1> The syscon bank/group definition itself.
+>> 2> syscon register offsets and bits information to the drivers.
 > 
-> Now we could add a new dynamic registration facility to the tty
-> layer for drivers that don't already have a name and dev_t
-> associated with the driver, and then use it for all new drivers
-> as well as those that intentionally want to convert.
+>> These are the 2 things which keep changing per each SOC.
+> 
+>> There is no other way to pass this information to the drivers other than
+>> passing them as part of their own device node and syscon node.
+> 
+> Sure there is, for example the drivers could have this information
+> internally as part of knowing which device they're working with or they
+> could take advantage of some patterns in the register map to store some
+> higher level information that they use to configure.
+> 
+Some of layouts of the sysconf registers are totally changed for each SOC.
 
-specially that we use devtmpfs and udev
+Looking at driver by driver maybe some drivers can take advantage of the
+patterns, but Am not sure if this will be a sustainable solution for all
+the drivers.
 
-we do not care much about minor/major
+The big disadvantage of this approach is that
+- Every driver has to be touched for new SOC,
+- Secondly the drivers will end up having more of such information than
+code over a time.
+
+>>>  and to the extent that it is sensible it feels like something
+>>> which might be useful with any device using register maps, not just
+>>> syscon.
 > 
-> With DT aliases, we already have a way to enumerate serial ports
-> across device drivers, so if we are going to do something new,
-> we should make sure it works with the numbers defined there.
+>> If you think this is going to be useful for other drivers, Am happy to
+>> move this out of syscon to regmap something like adding
+>> of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
+>> functions.
 > 
-> 	Arnd
+>> so any exiting drivers can still use the old syscon API to get the
+>> regmap instance.
+>> Alternatively they can use the new regmap APIs directly.
+> 
+> Well, I'd need to see the code to decide if it was sane but I do think
+> that if this is a good approach it's not syscon specific.  Anything like
+> this needs to be independent of DT too since not all architectures use
+> DT.
+In the suggested approach, the API supports, both DT and non-DT style.
+
+for DT style user can use.
+of_regmap_field_claim -> regmap_field_read -> regmap_field_write-
+->regmap_field_release
+
+and for NON-DT user can use
+regmap_field_claim  -> regmap_field_read -> regmap_field_write-
+->regmap_field_release
+
+
+thanks,
+srini
+
+
+> 
