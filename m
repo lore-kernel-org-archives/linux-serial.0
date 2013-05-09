@@ -1,153 +1,113 @@
-From: James Hogan <james.hogan@imgtec.com>
-Subject: [PATCH] serial: 8250_dw: set clock rate
-Date: Thu, 9 May 2013 11:29:16 +0100
-Message-ID: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Thu, 09 May 2013 12:58:01 +0100
+Message-ID: <518B8F49.5020902@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com> <20130509095143.GB7478@sirena.org.uk>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from multi.imgtec.com ([194.200.65.239]:27358 "EHLO multi.imgtec.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753662Ab3EIKac (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 May 2013 06:30:32 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20130509095143.GB7478@sirena.org.uk>
+Sender: linux-doc-owner@vger.kernel.org
+To: Mark Brown <broonie@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, James Hogan <james.hogan@imgtec.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Bill Pemberton <wfp5p@virginia.edu>
 
-If the uart clock provided to the 8250_dw driver is adjustable it may
-not be set to the desired rate. Therefore if both a uart clock and a
-clock frequency is specified (e.g. via device tree), try and update the
-clock to match the frequency.
+On 09/05/13 10:51, Mark Brown wrote:
+> On Wed, May 08, 2013 at 06:42:04PM +0100, Srinivas KANDAGATLA wrote:
+> 
+> Fix your mailer to word wrap within paragraphs.
+> 
+Sorry about that.
+>> Ultimately the syscon_write use the regmap_update_bits, however we
+>> really want is the flexibility in using/referring the syscon
+>> registers/bits in both device-trees and non-device tree cases.
+> 
+> So what you're looking for here is some way to offload discovery of
+> register fields from the driver?
 
-Unfortunately if the resulting frequency is rounded down (which is the
-default behaviour of the generic clk-divider), the 8250 core won't allow
-the highest baud rate to be used, so if an explicit frequency is
-specified we always report that to the 8250 core.
+Exactly,
 
-The device tree bindings document is also updated accordingly.
+As the System configuration registers change per each SOC, and the
+logic/code to drive still remain same across SOCs.
 
-Signed-off-by: James Hogan <james.hogan@imgtec.com>
-Cc: Grant Likely <grant.likely@linaro.org>
-Cc: Rob Herring <rob.herring@calxeda.com>
-Cc: Rob Landley <rob@landley.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Jamie Iles <jamie@jamieiles.com>
-Cc: Bill Pemberton <wfp5p@virginia.edu>
----
- .../bindings/tty/serial/snps-dw-apb-uart.txt       |  4 +-
- drivers/tty/serial/8250/8250_dw.c                  | 47 +++++++++++++++++-----
- 2 files changed, 39 insertions(+), 12 deletions(-)
+It makes sense to abstract the information of sysconf register and its
+offsets from the driver, as we do not want to change the driver per each
+SOC.
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
-index f13f1c5..e0cfc47 100644
---- a/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
-+++ b/Documentation/devicetree/bindings/tty/serial/snps-dw-apb-uart.txt
-@@ -4,9 +4,11 @@ Required properties:
- - compatible : "snps,dw-apb-uart"
- - reg : offset and length of the register set for the device.
- - interrupts : should contain uart interrupt.
--- clock-frequency : the input clock frequency for the UART.
- 
- Optional properties:
-+- clock-frequency : the input clock frequency for the UART. If specified in
-+  addition to clocks, the clock rate will be set to this frequency.
-+- clocks : the input clock specifier for the UART.
- - reg-shift : quantity to shift the register offsets by.  If this property is
-   not present then the register offsets are not shifted.
- - reg-io-width : the size (in bytes) of the IO accesses that should be
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index beaa283..85b3b63 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -128,6 +128,7 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- static int dw8250_probe_of(struct uart_port *p)
- {
- 	struct device_node	*np = p->dev->of_node;
-+	struct dw8250_data	*d = p->private_data;
- 	u32			val;
- 
- 	if (!of_property_read_u32(np, "reg-io-width", &val)) {
-@@ -148,16 +149,13 @@ static int dw8250_probe_of(struct uart_port *p)
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift = val;
- 
--	/* clock got configured through clk api, all done */
--	if (p->uartclk)
--		return 0;
--
--	/* try to find out clock frequency from DT as fallback */
--	if (of_property_read_u32(np, "clock-frequency", &val)) {
-+	/* try to find out clock frequency from DT */
-+	if (!of_property_read_u32(np, "clock-frequency", &val)) {
-+		p->uartclk = val;
-+	} else if (IS_ERR(d->clk)) {
- 		dev_err(p->dev, "clk or clock-frequency not defined\n");
- 		return -EINVAL;
- 	}
--	p->uartclk = val;
- 
- 	return 0;
- }
-@@ -235,6 +233,7 @@ static int dw8250_probe(struct platform_device *pdev)
- 	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct dw8250_data *data;
- 	int err;
-+	unsigned long clk_rate;
- 
- 	if (!regs || !irq) {
- 		dev_err(&pdev->dev, "no registers/irq defined\n");
-@@ -260,10 +259,6 @@ static int dw8250_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	data->clk = devm_clk_get(&pdev->dev, NULL);
--	if (!IS_ERR(data->clk)) {
--		clk_prepare_enable(data->clk);
--		uart.port.uartclk = clk_get_rate(data->clk);
--	}
- 
- 	uart.port.iotype = UPIO_MEM;
- 	uart.port.serial_in = dw8250_serial_in;
-@@ -284,6 +279,36 @@ static int dw8250_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	/* Read the clock rate from the clock */
-+	if (!IS_ERR(data->clk)) {
-+		clk_prepare_enable(data->clk);
-+		clk_rate = clk_get_rate(data->clk);
-+		/*
-+		 * If uartclk hasn't been explicitly specified (e.g. from device
-+		 * tree), use the rate from the clock instead.
-+		 */
-+		if (!uart.port.uartclk)
-+			uart.port.uartclk = clk_rate;
-+		/*
-+		 * If the current clock rate differs from the rate specified,
-+		 * try and set the clock rate.
-+		 */
-+		if (uart.port.uartclk != clk_rate) {
-+			if (!clk_set_rate(data->clk, uart.port.uartclk))
-+				clk_rate = clk_get_rate(data->clk);
-+			dev_info(&pdev->dev,
-+				 "uartclk at %lu Hz (%u Hz requested)\n",
-+				 clk_rate, uart.port.uartclk);
-+			/*
-+			 * Don't update uartclk. If the rate was rounded down by
-+			 * clk_set_rate() the 8250 core won't allow the highest
-+			 * baud rate to be used.
-+			 */
-+		} else {
-+			dev_info(&pdev->dev, "uartclk at %lu Hz\n", clk_rate);
-+		}
-+	}
-+
- 	data->line = serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
--- 
-1.8.1.2
+> 
+>> The reason for these APIs, is the extent of syscon usage is very high
+>> in ST set-top-box parts.
+> 
+>> Without these new APIs, its very difficult to pass this information to
+>> the drivers.
+> 
+> I'm not 100% convinced that putting all this information into DT is a
+> good idea,
 
+Currently, we have two bits of information which come from device trees.
+1> The syscon bank/group definition itself.
+2> syscon register offsets and bits information to the drivers.
+
+These are the 2 things which keep changing per each SOC.
+
+There is no other way to pass this information to the drivers other than
+passing them as part of their own device node and syscon node.
+
+>  and to the extent that it is sensible it feels like something
+> which might be useful with any device using register maps, not just
+> syscon.
+
+If you think this is going to be useful for other drivers, Am happy to
+move this out of syscon to regmap something like adding
+of_regmap_field_claim/regmap_field_claim/regmap_field_read/regmap_field_write/regmap_field_release
+functions.
+
+so any exiting drivers can still use the old syscon API to get the
+regmap instance.
+Alternatively they can use the new regmap APIs directly.
+
+regmap_field_claim to claim bits of the register
+of_regmap_field_claim DT version of reg_map_field_claim.
+regmap_field_write to write to bits of register
+regmap_field_read to bit of the register.
+regmap_field_release to release the bits of the register.
+
+For DT version it might involve adding new member to struct
+regmap_config to lookup regmap by phandle, so that regmap can get hold
+of regmap instance from device tree phandle.
+syscon driver already does this in syscon_regmap_lookup_by_phandle()
+
+On the device tree side it will look like:
+syscfg_sbc:syscon@fe600000{
+	compatible	= "syscon";
+	reg		= <0xfe600000 0x1000>;
+};
+
+node {
+	property-1 = <&syscfg_sbc 10 0 31>;
+};
+
+property has "phandle", register_offset, lsb, msb.
+
+On the driver side, it can just use the API's like
+
+field = of_regmap_field_claim(np, "property-1");
+regmap_field_write(field, val);
+regmap_field_release(field);
+
+All this involves is very minimal code change in syscon and a new APIs
+and DT awareness into regmap.
+
+What do you think?
+
+Thanks,
+srini
+
+>  For example many MFDs have similar needs - essentially the
+> system controllers are just a particular kind of MFD.  To me that says
+> that this should be outside syscon so other things can use it.
+
+> 
 
