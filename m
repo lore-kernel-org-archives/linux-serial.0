@@ -1,53 +1,44 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH] serial: pl011: protect attribute read from NULL platform data struct
-Date: Thu,  9 May 2013 13:50:55 +0100
-Message-ID: <1368103855-28363-1-git-send-email-lee.jones@linaro.org>
+From: James Hogan <james.hogan@imgtec.com>
+Subject: Re: [PATCH] serial: 8250_dw: set clock rate
+Date: Thu, 9 May 2013 13:58:09 +0100
+Message-ID: <518B9D61.4090406@imgtec.com>
+References: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f172.google.com ([74.125.82.172]:37591 "EHLO
-	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753188Ab3EIMvG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 May 2013 08:51:06 -0400
-Received: by mail-we0-f172.google.com with SMTP id w60so2864089wes.31
-        for <linux-serial@vger.kernel.org>; Thu, 09 May 2013 05:51:04 -0700 (PDT)
+Received: from multi.imgtec.com ([194.200.65.239]:52700 "EHLO multi.imgtec.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751260Ab3EIM6M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 May 2013 08:58:12 -0400
+In-Reply-To: <1368095356-21081-1-git-send-email-james.hogan@imgtec.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: arnd@arndb.de, linus.walleij@stericsson.com, srinidhi.kasagar@stericsson.com, Lee Jones <lee.jones@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: James Hogan <james.hogan@imgtec.com>, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Jamie Iles <jamie@jamieiles.com>, Bill Pemberton <wfp5p@virginia.edu>
 
-It's completely feasible that platform data will be empty i.e. when
-booting with Device Tree with no device AUXDATA. So we must protect
-it's use in these use-cases, or risk a kernel Oops.
+On 09/05/13 11:29, James Hogan wrote:
+> If the uart clock provided to the 8250_dw driver is adjustable it may
+> not be set to the desired rate. Therefore if both a uart clock and a
+> clock frequency is specified (e.g. via device tree), try and update the
+> clock to match the frequency.
+> 
+> Unfortunately if the resulting frequency is rounded down (which is the
+> default behaviour of the generic clk-divider), the 8250 core won't allow
+> the highest baud rate to be used, so if an explicit frequency is
+> specified we always report that to the 8250 core.
 
-Cc: Russell King <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
-*******                                                        *******
-If this issue has not already been fixed, this patch should be applied
-during the v3.10 -rc:s, as it fixes a serious bug which was introduced
-in the merge-window.
-*******                                                        *******
+Hi,
 
- drivers/tty/serial/amba-pl011.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sorry, please ignore this patch.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8ab70a6..e2774f9 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -332,7 +332,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
- 		dmaengine_slave_config(chan, &rx_conf);
- 		uap->dmarx.chan = chan;
- 
--		if (plat->dma_rx_poll_enable) {
-+		if (plat && plat->dma_rx_poll_enable) {
- 			/* Set poll rate if specified. */
- 			if (plat->dma_rx_poll_rate) {
- 				uap->dmarx.auto_poll_rate = false;
--- 
-1.7.10.4
+I've realised that a larger (e.g. non-divided) source clock can just be
+provided directly to the uart and it appears to have enough of an
+internal divider for the driver to do the right thing without changing
+the input clock rate, although of course that clock rate still needs
+setting somewhere. I'm not sure why we didn't do this all along as it
+gives a closer frequency anyway.
+
+Thanks
+James
 
