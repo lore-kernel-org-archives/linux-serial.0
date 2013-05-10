@@ -1,69 +1,76 @@
-From: Jongsung Kim <neidhard.kim@lge.com>
-Subject: [RESEND] tty: serial: amba-pl011: revise to use amba_rev macro
-Date: Fri, 10 May 2013 18:05:35 +0900
-Message-ID: <1368176735-32093-1-git-send-email-neidhard.kim@lge.com>
-References: <201305032149.10482.neidhard.kim@lge.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from LGEMRELSE7Q.lge.com ([156.147.1.151]:47115 "EHLO
-	LGEMRELSE7Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751247Ab3EJJFy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 May 2013 05:05:54 -0400
-In-Reply-To: <201305032149.10482.neidhard.kim@lge.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Fri, 10 May 2013 13:51:14 +0100
+Message-ID: <518CED42.7010700@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com> <20130509095143.GB7478@sirena.org.uk>
+Reply-To: srinivas.kandagatla@st.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20130509095143.GB7478@sirena.org.uk>
+Sender: linux-doc-owner@vger.kernel.org
+To: Mark Brown <broonie@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
 List-Id: linux-serial@vger.kernel.org
-To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>
 
-This patch replaces the ugly bit-operations with the convenient
-amba_rev macro from the get_fifosize_arm function. The type of
-get_fifosize member function is also slightly changed to take
-a pointer to the amba_device.
+Hi Marc,
 
-Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
----
- drivers/tty/serial/amba-pl011.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+I would like to explain you bit more about "ST System Configuration
+registers".
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8ab70a6..85cfe11 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -79,13 +79,12 @@ struct vendor_data {
- 	bool			dma_threshold;
- 	bool			cts_event_workaround;
- 
--	unsigned int (*get_fifosize)(unsigned int periphid);
-+	unsigned int (*get_fifosize)(struct amba_device *dev);
- };
- 
--static unsigned int get_fifosize_arm(unsigned int periphid)
-+static unsigned int get_fifosize_arm(struct amba_device *dev)
- {
--	unsigned int rev = (periphid >> 20) & 0xf;
--	return rev < 3 ? 16 : 32;
-+	return amba_rev(dev) < 3 ? 16 : 32;
- }
- 
- static struct vendor_data vendor_arm = {
-@@ -98,7 +97,7 @@ static struct vendor_data vendor_arm = {
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
--static unsigned int get_fifosize_st(unsigned int periphid)
-+static unsigned int get_fifosize_st(struct amba_device *dev)
- {
- 	return 64;
- }
-@@ -2157,7 +2156,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->lcrh_rx = vendor->lcrh_rx;
- 	uap->lcrh_tx = vendor->lcrh_tx;
- 	uap->old_cr = 0;
--	uap->fifosize = vendor->get_fifosize(dev->periphid);
-+	uap->fifosize = vendor->get_fifosize(dev);
- 	uap->port.dev = &dev->dev;
- 	uap->port.mapbase = dev->res.start;
- 	uap->port.membase = base;
--- 
-1.7.1
+The SOCs are assembled from existing IP blocks, which don't change very
+often. However these blocks are assembled in different configurations to
+meet the device requirements. So most IP blocks as well as having a bus
+interface through which their own registers are accessible, will also
+have a number of bristles(wires) which are signals that are going in and
+out of the IP for configuration and status. To make these signals
+accessible to software they are wired to "System Configuration Registers".
+
+Drivers target the IP blocks, which don't change much. Where as the
+mapping of IP specific bristles(wires) to "System Configuration
+Registers" do change per each SOC, and therefore we do not want this
+information to be part of the driver.
+
+Having a System Configuration infrastructure gives much flexibility and
+abstraction to drivers to configure them.
+
+Given the comments on the patch, I am inclined not to use syscon for ST
+specific "System Configuration Registers", alternatively I would like to
+create a separate mfd system configuration driver specific to ST.
+
+This is how we did it initially in the out-of-tree kernel.
+http://git.stlinux.com/?p=stm/linux-stm.git;a=blob;f=drivers/stm/sysconf.c
+
+Any suggestions?
+
+
+thanks,
+srini
+
+On 09/05/13 10:51, Mark Brown wrote:
+> On Wed, May 08, 2013 at 06:42:04PM +0100, Srinivas KANDAGATLA wrote:
+> 
+> Fix your mailer to word wrap within paragraphs.
+> 
+>> Ultimately the syscon_write use the regmap_update_bits, however we
+>> really want is the flexibility in using/referring the syscon
+>> registers/bits in both device-trees and non-device tree cases.
+> 
+> So what you're looking for here is some way to offload discovery of
+> register fields from the driver?
+> 
+>> The reason for these APIs, is the extent of syscon usage is very high
+>> in ST set-top-box parts.
+> 
+>> Without these new APIs, its very difficult to pass this information to
+>> the drivers.
+> 
+> I'm not 100% convinced that putting all this information into DT is a
+> good idea, and to the extent that it is sensible it feels like something
+> which might be useful with any device using register maps, not just
+> syscon.  For example many MFDs have similar needs - essentially the
+> system controllers are just a particular kind of MFD.  To me that says
+> that this should be outside syscon so other things can use it.
+> 
 
