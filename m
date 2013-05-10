@@ -1,76 +1,48 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Fri, 10 May 2013 13:51:14 +0100
-Message-ID: <518CED42.7010700@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <1368022272-2241-1-git-send-email-srinivas.kandagatla@st.com> <201305081650.23264.arnd@arndb.de> <20130508150141.GA5057@opensource.wolfsonmicro.com> <518A8E6C.6070907@st.com> <20130509095143.GB7478@sirena.org.uk>
-Reply-To: srinivas.kandagatla@st.com
+From: Stephen GALLIMORE <stephen.gallimore@st.com>
+Subject: RE: [RFC 1/8] serial:st-asc: Add ST ASC driver.
+Date: Fri, 10 May 2013 15:50:16 +0200
+Message-ID: <A3BF01DB4A606149A4C20C4C4C808F6C3189F9A245@SAFEX1MAIL1.st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081634.43498.arnd@arndb.de> <20130508153459.GA17186@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20130509095143.GB7478@sirena.org.uk>
-Sender: linux-doc-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@li
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog106.obsmtp.com ([207.126.144.121]:60625 "EHLO
+	eu1sys200aog106.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751271Ab3EJNuZ convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 May 2013 09:50:25 -0400
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, Stuart MENEFY <stuart.menefy@st.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Hi Marc,
-
-I would like to explain you bit more about "ST System Configuration
-registers".
-
-The SOCs are assembled from existing IP blocks, which don't change very
-often. However these blocks are assembled in different configurations to
-meet the device requirements. So most IP blocks as well as having a bus
-interface through which their own registers are accessible, will also
-have a number of bristles(wires) which are signals that are going in and
-out of the IP for configuration and status. To make these signals
-accessible to software they are wired to "System Configuration Registers".
-
-Drivers target the IP blocks, which don't change much. Where as the
-mapping of IP specific bristles(wires) to "System Configuration
-Registers" do change per each SOC, and therefore we do not want this
-information to be part of the driver.
-
-Having a System Configuration infrastructure gives much flexibility and
-abstraction to drivers to configure them.
-
-Given the comments on the patch, I am inclined not to use syscon for ST
-specific "System Configuration Registers", alternatively I would like to
-create a separate mfd system configuration driver specific to ST.
-
-This is how we did it initially in the out-of-tree kernel.
-http://git.stlinux.com/?p=stm/linux-stm.git;a=blob;f=drivers/stm/sysconf.c
-
-Any suggestions?
-
-
-thanks,
-srini
-
-On 09/05/13 10:51, Mark Brown wrote:
-> On Wed, May 08, 2013 at 06:42:04PM +0100, Srinivas KANDAGATLA wrote:
+>On Wed, May 08, 2013 at 04:34:43PM +0200, Arnd Bergmann wrote:
+> > > +#define ASC_MAJOR		204
+> > > +#define ASC_MINOR_START		40
+> > 
+> > I don't know what the current policy is on allocating major/minor 
+> > numbers, but I'm sure you cannot just reuse one that is already used.
+>
+> First, our apologies, this issue was raised internally and then got forgotten about, there's always something I guess.
 > 
-> Fix your mailer to word wrap within paragraphs.
-> 
->> Ultimately the syscon_write use the regmap_update_bits, however we
->> really want is the flexibility in using/referring the syscon
->> registers/bits in both device-trees and non-device tree cases.
-> 
-> So what you're looking for here is some way to offload discovery of
-> register fields from the driver?
-> 
->> The reason for these APIs, is the extent of syscon usage is very high
->> in ST set-top-box parts.
-> 
->> Without these new APIs, its very difficult to pass this information to
->> the drivers.
-> 
-> I'm not 100% convinced that putting all this information into DT is a
-> good idea, and to the extent that it is sensible it feels like something
-> which might be useful with any device using register maps, not just
-> syscon.  For example many MFDs have similar needs - essentially the
-> system controllers are just a particular kind of MFD.  To me that says
-> that this should be outside syscon so other things can use it.
-> 
+> > >I agree, why are you trying to create a new tty device name?  Can't 
+> > >you use the existing ttyS name and minor number as you will not have any other type of serial device on this system?
+>
+> That is an interesting question Greg; I believe it probably stems from historic ST SoCs that had two different types of serial devices,
+> something that is no longer the case. We will review our approach to this again, although we are not sure we can use the
+> existing ttyS major/minor (even if that is an acceptable thing to do) because of the (remote) possibility of someone using 
+> a standard PCIe attached serial card.
 
+Greg, having looked at this we have concluded that we should just go dynamic, as others have mentioned with udev on a full system
+or devtmpfs on a minimal initramfs system there is no reason to use a static major/minor. However the view here is that we
+would prefer to keep the unique name, as for example the lantiq driver which is also dynamic does, for the reason previously
+mentioned regarding PCIe cards.
+
+Is that acceptable?
+
+Regards,
+-stephen
