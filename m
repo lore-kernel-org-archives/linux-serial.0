@@ -1,26 +1,74 @@
-From: "Mr. Wayne Scott" <scwaynescot@yahoo.com>
-Subject: Investment Placement
-Date: Mon, 06 May 2013 23:18:18 +0400
-Message-ID: <20130506191834.B9FE820F89A__23998.862799681$1368321057$gmane$org@FMEmail.localdomain>
-Reply-To: wayne_scott29@aol.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from educacao.niteroi.urbi.com.br ([200.152.56.131]:35774 "EHLO
-	FMEmail.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752619Ab3ELBKb convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 11 May 2013 21:10:31 -0400
-Content-Description: Mail message body
-Sender: linux-serial-owner@vger.kernel.org
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH v2 1/5] tty: xuartps: Remove suspend/resume functions
+Date: Mon, 13 May 2013 10:46:35 -0700
+Message-ID: <1368467199-8702-2-git-send-email-soren.brinkmann@xilinx.com>
+References: <1368467199-8702-1-git-send-email-soren.brinkmann@xilinx.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1368467199-8702-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <scwaynescot@yahoo.com>
 
-Greetings,
+Currently Zynq does not support suspend/resume.
+The driver callbacks are never used or tested, broken and using the old
+PM interface.
 
-I am a Civil Lawyer in the United Kingdom. I have a Client that has Interest in investing in Your country. Can You be of assistance?
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/xilinx_uartps.c | 30 ------------------------------
+ 1 file changed, 30 deletions(-)
 
-I shall give you details when you reply
-
-Wayne
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 4e5c778..b5f655d 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1006,34 +1006,6 @@ static int xuartps_remove(struct platform_device *pdev)
+ 	return rc;
+ }
+ 
+-/**
+- * xuartps_suspend - suspend event
+- * @pdev: Pointer to the platform device structure
+- * @state: State of the device
+- *
+- * Returns 0
+- **/
+-static int xuartps_suspend(struct platform_device *pdev, pm_message_t state)
+-{
+-	/* Call the API provided in serial_core.c file which handles
+-	 * the suspend.
+-	 */
+-	uart_suspend_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
+-	return 0;
+-}
+-
+-/**
+- * xuartps_resume - Resume after a previous suspend
+- * @pdev: Pointer to the platform device structure
+- *
+- * Returns 0
+- **/
+-static int xuartps_resume(struct platform_device *pdev)
+-{
+-	uart_resume_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
+-	return 0;
+-}
+-
+ /* Match table for of_platform binding */
+ static struct of_device_id xuartps_of_match[] = {
+ 	{ .compatible = "xlnx,xuartps", },
+@@ -1044,8 +1016,6 @@ MODULE_DEVICE_TABLE(of, xuartps_of_match);
+ static struct platform_driver xuartps_platform_driver = {
+ 	.probe   = xuartps_probe,		/* Probe method */
+ 	.remove  = xuartps_remove,		/* Detach method */
+-	.suspend = xuartps_suspend,		/* Suspend */
+-	.resume  = xuartps_resume,		/* Resume after a suspend */
+ 	.driver  = {
+ 		.owner = THIS_MODULE,
+ 		.name = XUARTPS_NAME,		/* Driver name */
+-- 
+1.8.2.3
