@@ -1,47 +1,31 @@
-From: "Jongsung Kim" <neidhard.kim@lge.com>
-Subject: RE: [PATCH] ARM: PL011: add support for extended FIFO-size of PL011-r1p5
-Date: Tue, 14 May 2013 16:15:39 +0900
-Message-ID: <01fd01ce5072$d6b9fcd0$842df670$@lge.com>
-References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCH 01/15] serial: altera: remove unnecessary
+ platform_set_drvdata()
+Date: Tue, 14 May 2013 09:13:32 +0200
+Message-ID: <20130514071331.GE25205@distanz.ch>
+References: <007301ce4af2$a72676e0$f57364a0$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5191D200.3040604@wwwdotorg.org>
-Content-Language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Stephen Warren' <swarren@wwwdotorg.org>
-Cc: 'Russell King' <linux@arm.linux.org.uk>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from sym2.noone.org ([178.63.92.236]:41714 "EHLO sym2.noone.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756163Ab3ENHWu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 May 2013 03:22:50 -0400
+Content-Disposition: inline
+In-Reply-To: <007301ce4af2$a72676e0$f57364a0$@samsung.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-Stephen Warren <swarren@wwwdotorg.org> :
-> For reference, the AMBA periphid of the UART device there is 0x00341011.
-> The nibble "3" is the revision being tested in:
+On 2013-05-07 at 09:15:28 +0200, Jingoo Han <jg1.han@samsung.com> wrote:
+> The driver core clears the driver data to NULL after device_release
+> or on probe failure, since commit 0998d0631001288a5974afc0b2a5f568bcdecb4d
+> (device-core: Ensure drvdata = NULL when no driver is bound).
+> Thus, it is not needed to manually clear the device driver data to NULL.
+> 
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 
-The UART device has periphid 0x00341011, and is compatible with the
-original PL011 prior to r1p5. Not with r1p5. It could be a possible
-way to specify the compatible periphid (such as 0x00241011) instead
-of just 0x0 when initializing the amba_device for the UART.
+Acked-by: Tobias Klauser <tklauser@distanz.ch>
 
-> > +static unsigned int get_fifosize_arm(unsigned int periphid)
-> > +{
-> > +	unsigned int rev = (periphid >> 20) & 0xf;
-> > +	return rev < 3 ? 16 : 32;
-> > +}
->
-> Should that be <= not <, or is there just something more wrong in the
-> patch or bcm2835 HW? I wonder how r1p5 maps to 3 in the test above.
-
->From the PL011-r1p5 TRM, bits[7:4] of the UARTPeriphID2 register are
-read as:
-
-r1p0 - 0x0
-r1p1 - 0x1
-r1p3 - 0x2
-r1p4 - 0x2
-r1p5 - 0x3.
-
-Doesn't the BCM2835 UART have anything different from the ARM PL011?
-What about the UARTPCellID registers? They are set to 0xb105f00d with
-the ARM PL011.
+Thanks a lot
