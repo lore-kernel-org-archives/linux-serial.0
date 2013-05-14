@@ -1,35 +1,51 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmVbMl06IFtQQVRDSCB2Ml0gc2VyaWFsOiBzY2NueHA6IEltcHJvdmUgdmVy?=
- =?UTF-8?B?aWZ5X3BvcnQ=?=
-Date: Tue, 14 May 2013 20:58:40 +0400
-Message-ID: <1368550720.127813454@f159.mail.ru>
-References: <1368547151-7384-1-git-send-email-shc_work@mail.ru>
- <1368549047.374871060@f159.mail.ru>
- <20130514164639.GA3686@kroah.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH] ARM: PL011: add support for extended FIFO-size of PL011-r1p5
+Date: Tue, 14 May 2013 15:03:14 -0600
+Message-ID: <5192A692.4010700@wwwdotorg.org>
+References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org> <01fd01ce5072$d6b9fcd0$842df670$@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f159.mail.ru ([217.69.128.111]:53326 "EHLO f159.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754905Ab3ENQ6m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 May 2013 12:58:42 -0400
-In-Reply-To: <20130514164639.GA3686@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <01fd01ce5072$d6b9fcd0$842df670$@lge.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jongsung Kim <neidhard.kim@lge.com>
+Cc: 'Russell King' <linux@arm.linux.org.uk>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>
 
-PiA+ID4gT24gVHVlLCBNYXkgMTQsIDIwMTMgYXQgMDc6NTk6MTFQTSArMDQwMCwgQWxleGFuZGVy
-IFNoaXlhbiB3cm90ZToKPiA+ID4gPiBUaGUgcGF0Y2ggaW1wcm92ZXMgdmVyaWZ5X3BvcnQgcHJv
-Y2VkdXJlIGJ5IGNvbXBhcmluZyB0aGUgdHlwZSBvZgo+ID4gPiA+IHBvcnQgYW5kIElSUSBudW1i
-ZXJzIHNpbXVsdGFuZW91c2x5LiBUaGlzIGNhbiBiZSBpbXBvcnRhbnQgaW4gdGhlCj4gPiA+ID4g
-Y2FzZSBvZiBtdWx0aXBsZSBkcml2ZXJzIFNDQ05YUCBpbiB0aGUgc3lzdGVtIHRoYXQgYXJlIGRp
-ZmZlcmVudCBJUlFzLgo+ID4gPiAKPiA+ID4gU28gdGhpcyBmaXhlcyBhIGJ1Zz8gIFJlYWxseT8K
-PiA+IAo+ID4gT25seSBpbiB0aGVvcnkuCj4gCj4gSG93PyAgSXQgcmVhbGx5IGRvZXNuJ3QgbG9v
-ayBsaWtlIHlvdSBhcmUgZG9pbmcgYW55dGhpbmcgaGVyZSwgZXhjZXB0Cj4gcmVhcnJhbmdpbmcg
-dGhlIGxvZ2ljIHRvIGxvb2sgZGlmZmVyZW50LCBidXQgeWV0IGRvIHRoZSBzYW1lIHRoaW5nLgoK
-UHJvY2VkdXJlIGRvIG5vdCBjb21wYXJlIElSUSBiZWZvcmUgaWYgcG9ydCB0eXBlIGlzIHZhbGlk
-LgoKPiBTbyBhZ2Fpbiwgd2h5IGFyZSB5b3UgZG9pbmcgdGhpcz8KCldlbGwsIGp1c3QgZHJvcCB0
-aGlzIHBhdGNoLiBJIGNhbm5vdCBzYXkgbW9yZSB0aGFuIG5vdy4KCi0tLQo=
+On 05/14/2013 01:15 AM, Jongsung Kim wrote:
+> Stephen Warren <swarren@wwwdotorg.org> :
+>> For reference, the AMBA periphid of the UART device there is 0x00341011.
+>> The nibble "3" is the revision being tested in:
+> 
+> The UART device has periphid 0x00341011, and is compatible with the
+> original PL011 prior to r1p5. Not with r1p5. It could be a possible
+> way to specify the compatible periphid (such as 0x00241011) instead
+> of just 0x0 when initializing the amba_device for the UART.
+> 
+>>> +static unsigned int get_fifosize_arm(unsigned int periphid)
+>>> +{
+>>> +	unsigned int rev = (periphid >> 20) & 0xf;
+>>> +	return rev < 3 ? 16 : 32;
+>>> +}
+...
+> Doesn't the BCM2835 UART have anything different from the ARM PL011?
+> What about the UARTPCellID registers? They are set to 0xb105f00d with
+> the ARM PL011.
+
+Looking at BCM2835-ARM-Peripherals.pdf (i.e. the public documentation
+for the BCM2835 chip), I see:
+
+=====
+The UART provides:
+* Separate 16x8 transmit and 16x12 receive FIFO memory.
+...
+For the in-depth UART overview, please, refer to the ARM PrimeCell UART
+(PL011) Revision: r1p5 Technical Reference Manual.
+=====
+
+That seems to imply that not all r1p5 PL011s actually have a depth-32
+FIFO. Perhaps this is a configurable property of the IP block, not
+something that all r1p5 have?
+
+I can't check the UARTPCellID registers right now.
