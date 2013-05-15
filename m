@@ -1,56 +1,34 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] serial: pl011: protect attribute read from NULL platform
- data struct
-Date: Wed, 15 May 2013 10:23:22 +0100
-Message-ID: <20130515092322.GC3494@gmail.com>
-References: <1368103855-28363-1-git-send-email-lee.jones@linaro.org>
- <CACRpkdZR3AsGyCUH=cbskcZPs0PVBjH6QXUGkD+KG8SzGMMOKg@mail.gmail.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] ARM: PL011: add support for extended FIFO-size of
+	PL011-r1p5
+Date: Wed, 15 May 2013 10:37:13 +0100
+Message-ID: <20130515093713.GJ18614@n2100.arm.linux.org.uk>
+References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org> <01fd01ce5072$d6b9fcd0$842df670$@lge.com> <5192A692.4010700@wwwdotorg.org> <022d01ce5107$8bc668e0$a3533aa0$@lge.com> <5193164E.6050400@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from caramon.arm.linux.org.uk ([78.32.30.218]:50436 "EHLO
+	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751995Ab3EOJhc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 May 2013 05:37:32 -0400
 Content-Disposition: inline
-In-Reply-To: <CACRpkdZR3AsGyCUH=cbskcZPs0PVBjH6QXUGkD+KG8SzGMMOKg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linus WALLEIJ <linus.walleij@stericsson.com>, Srinidhi KASAGAR <srinidhi.kasagar@stericsson.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+In-Reply-To: <5193164E.6050400@wwwdotorg.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: Jongsung Kim <neidhard.kim@lge.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, 13 May 2013, Linus Walleij wrote:
+On Tue, May 14, 2013 at 10:59:58PM -0600, Stephen Warren wrote:
+> Well, that certainly isn't true in practice. I think we should revert
+> this commit until we can determine what the problem is.
+> 
+> I validated that the periphid register in HW contains the r1p5 revision
+> (3), and the pcellid register does indeed contain the expected
+> 0xb105f00d value. However, if I run the following hacky code in U-Boot
+> to determine the FIFO depth, it comes out as 16, which explains the
+> symptoms I'm seeing:
 
-> On Thu, May 9, 2013 at 2:50 PM, Lee Jones <lee.jones@linaro.org> wrot=
-e:
->=20
-> > It's completely feasible that platform data will be empty i.e. when
-> > booting with Device Tree with no device AUXDATA. So we must protect
-> > it's use in these use-cases, or risk a kernel Oops.
-> >
-> > Cc: Russell King <linux@arm.linux.org.uk>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.cz>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> > *******                                                        ****=
-***
-> > If this issue has not already been fixed, this patch should be appl=
-ied
-> > during the v3.10 -rc:s, as it fixes a serious bug which was introdu=
-ced
-> > in the merge-window.
-> > *******                                                        ****=
-***
->=20
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->=20
-> You should probably put Greg on To: so that he picks this up for
-> the -rc:s ASAP.
-
-I spoke with Greg yesterday. He's catching up on mail.
-
---=20
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+We could do that, just like we do in 8250.c to check the FIFO depth.
+There's not much harm in doing that at boot time, it just needs to be
+done carefully so that it doesn't disrupt any existing use of the UART.
