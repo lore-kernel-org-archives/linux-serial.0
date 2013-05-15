@@ -1,48 +1,29 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] ARM: PL011: add support for extended FIFO-size of
-	PL011-r1p5
-Date: Tue, 14 May 2013 23:50:54 +0100
-Message-ID: <20130514225054.GI18614@n2100.arm.linux.org.uk>
+From: "Jongsung Kim" <neidhard.kim@lge.com>
+Subject: RE: [PATCH] ARM: PL011: add support for extended FIFO-size of PL011-r1p5
+Date: Wed, 15 May 2013 10:00:07 +0900
+Message-ID: <022d01ce5107$8bc668e0$a3533aa0$@lge.com>
 References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org> <01fd01ce5072$d6b9fcd0$842df670$@lge.com> <5192A692.4010700@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:50046 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758429Ab3ENWwY (ORCPT
+Received: from LGEMRELSE6Q.lge.com ([156.147.1.121]:50571 "EHLO
+	LGEMRELSE6Q.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758286Ab3EOBAM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 May 2013 18:52:24 -0400
-Content-Disposition: inline
+	Tue, 14 May 2013 21:00:12 -0400
 In-Reply-To: <5192A692.4010700@wwwdotorg.org>
+Content-Language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Jongsung Kim <neidhard.kim@lge.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: 'Stephen Warren' <swarren@wwwdotorg.org>
+Cc: 'Russell King' <linux@arm.linux.org.uk>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 
-On Tue, May 14, 2013 at 03:03:14PM -0600, Stephen Warren wrote:
-> On 05/14/2013 01:15 AM, Jongsung Kim wrote:
-> > Stephen Warren <swarren@wwwdotorg.org> :
-> >> For reference, the AMBA periphid of the UART device there is 0x00341011.
-> >> The nibble "3" is the revision being tested in:
-> > 
-> > The UART device has periphid 0x00341011, and is compatible with the
-> > original PL011 prior to r1p5. Not with r1p5. It could be a possible
-> > way to specify the compatible periphid (such as 0x00241011) instead
-> > of just 0x0 when initializing the amba_device for the UART.
-> > 
-> >>> +static unsigned int get_fifosize_arm(unsigned int periphid)
-> >>> +{
-> >>> +	unsigned int rev = (periphid >> 20) & 0xf;
-> >>> +	return rev < 3 ? 16 : 32;
-> >>> +}
-> ...
-> > Doesn't the BCM2835 UART have anything different from the ARM PL011?
-> > What about the UARTPCellID registers? They are set to 0xb105f00d with
-> > the ARM PL011.
-> 
-> Looking at BCM2835-ARM-Peripherals.pdf (i.e. the public documentation
-> for the BCM2835 chip), I see:
-> 
+Stephen Warren <swarren@wwwdotorg.org> :
+> Looking at BCM2835-ARM-Peripherals.pdf (i.e. the public documentation for
+> the BCM2835 chip), I see:
+>
 > =====
 > The UART provides:
 > * Separate 16x8 transmit and 16x12 receive FIFO memory.
@@ -50,12 +31,20 @@ On Tue, May 14, 2013 at 03:03:14PM -0600, Stephen Warren wrote:
 > For the in-depth UART overview, please, refer to the ARM PrimeCell UART
 > (PL011) Revision: r1p5 Technical Reference Manual.
 > =====
-> 
+>
 > That seems to imply that not all r1p5 PL011s actually have a depth-32
-> FIFO. Perhaps this is a configurable property of the IP block, not
-> something that all r1p5 have?
-> 
-> I can't check the UARTPCellID registers right now.
+FIFO.
+> Perhaps this is a configurable property of the IP block, not something
+that
+> all r1p5 have?
 
-The PCellID value is a marker for primecells, and is common to all primecells
-which implement the ID scheme.  It's the other ID registers you want. :)
+All r1p5 have 32-byte FIFO depth and it's not configurable. From the PL011
+TRM:
+
+r1p4-r1p5	Contains the following differences in functionality:
+		* The receive and transmit FIFOs are increased to a depth of
+32.
+		* The Revision field in the UARTPeriphID2 Register on page
+3-24
+		  bits [7:4] now reads back as 0x3.
+
