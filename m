@@ -1,34 +1,47 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] ARM: PL011: add support for extended FIFO-size of
-	PL011-r1p5
-Date: Wed, 15 May 2013 10:37:13 +0100
-Message-ID: <20130515093713.GJ18614@n2100.arm.linux.org.uk>
-References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org> <01fd01ce5072$d6b9fcd0$842df670$@lge.com> <5192A692.4010700@wwwdotorg.org> <022d01ce5107$8bc668e0$a3533aa0$@lge.com> <5193164E.6050400@wwwdotorg.org>
+From: Sourav Poddar <sourav.poddar@ti.com>
+Subject: Re: [PATCHv5 1/2] driver: tty: serial: Move "uart_console" def to
+ core header file.
+Date: Wed, 15 May 2013 20:13:09 +0530
+Message-ID: <51939EFD.60900@ti.com>
+References: <1367006686-3720-1-git-send-email-sourav.poddar@ti.com> <1367006686-3720-2-git-send-email-sourav.poddar@ti.com> <87vc79uezo.fsf@linaro.org> <20130426221817.GA28377@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:50436 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751995Ab3EOJhc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 May 2013 05:37:32 -0400
-Content-Disposition: inline
-In-Reply-To: <5193164E.6050400@wwwdotorg.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20130426221817.GA28377@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Kevin Hilman <khilman@linaro.org>, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Jongsung Kim <neidhard.kim@lge.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 
-On Tue, May 14, 2013 at 10:59:58PM -0600, Stephen Warren wrote:
-> Well, that certainly isn't true in practice. I think we should revert
-> this commit until we can determine what the problem is.
-> 
-> I validated that the periphid register in HW contains the r1p5 revision
-> (3), and the pcellid register does indeed contain the expected
-> 0xb105f00d value. However, if I run the following hacky code in U-Boot
-> to determine the FIFO depth, it comes out as 16, which explains the
-> symptoms I'm seeing:
-
-We could do that, just like we do in 8250.c to check the FIFO depth.
-There's not much harm in doing that at boot time, it just needs to be
-done carefully so that it doesn't disrupt any existing use of the UART.
+Hi Greg,
+On Saturday 27 April 2013 03:48 AM, Greg KH wrote:
+> On Fri, Apr 26, 2013 at 03:03:07PM -0700, Kevin Hilman wrote:
+>> Hi Greg,
+>>
+>> Sourav Poddar<sourav.poddar@ti.com>  writes:
+>>
+>>> Move "uart_console" definition to serial core header file, so that it can be
+>>> used by serial drivers.
+>>> Get rid of the uart_console defintion from mpc52xx_uart driver.
+>>>
+>>> Cc: Santosh Shilimkar<santosh.shilimkar@ti.com>
+>>> Cc: Felipe Balbi<balbi@ti.com>
+>>> Cc: Rajendra nayak<rnayak@ti.com>
+>>> Signed-off-by: Sourav Poddar<sourav.poddar@ti.com>
+>>> Reviewed-by: Felipe Balbi<balbi@ti.com>
+>> Can you queue up this patch (and 2/2)?  Once these are in, I will queue
+>> up the corresponding arch/arm changes which can go independently.
+>>
+>> And feel free to add
+>>
+>> Reviewed-by: Kevin Hilman<khilman@linaro.org>
+>> Tested-by: Kevin Hilman<khilman@linaro.org>
+> I will do so after 3.10-rc1 is out, it is _way_ too late in the
+> development cycle for me to add these to my trees right now, considering
+> they are pretty much closed at the moment.
+>
+Do you want me to rebase this patches on top of 3.10-rc1?
+> thanks,
+>
+> greg k-h
