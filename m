@@ -1,130 +1,117 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH v2 1/5] tty: xuartps: Remove suspend/resume functions
-Date: Fri, 17 May 2013 14:09:38 +0200
-Message-ID: <51961E02.9020501@monstr.eu>
-References: <1368467199-8702-1-git-send-email-soren.brinkmann@xilinx.com> <1368467199-8702-2-git-send-email-soren.brinkmann@xilinx.com>
-Reply-To: monstr@monstr.eu
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Fri, 17 May 2013 16:36:49 +0200
+Message-ID: <201305171636.49627.arnd@arndb.de>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305082148.10933.arnd@arndb.de> <518B77C1.70107@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="----enig2PCWAEBDEBAMGCOJONILT"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:33483 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754512Ab3EQMJs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 May 2013 08:09:48 -0400
-Received: by mail-wi0-f180.google.com with SMTP id hn14so408747wib.13
-        for <linux-serial@vger.kernel.org>; Fri, 17 May 2013 05:09:46 -0700 (PDT)
-In-Reply-To: <1368467199-8702-2-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <518B77C1.70107-qxv4g6HH51o@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
+Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Nicolas Pitre <nico-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dong.aisheng-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
-------enig2PCWAEBDEBAMGCOJONILT
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Thursday 09 May 2013, Srinivas KANDAGATLA wrote:
+> On 08/05/13 20:48, Arnd Bergmann wrote:
+> I agree, my initial approach was having a dedicated driver specific to
+> ST syscon, however syscon seems to do things very much similar to what
+> we want, so I have integrated those 3 functions in syscon.
+> Am happy to go back with my first approach of adding ST specific syscon
+> driver if no one is actually going to benefit with such a change to
+> syscon driver.
 
-Hi Greg,
+That would at least be less controversial.
 
-can you please add this patch to your tree?
-It is unrelated to clk changes which Soren sent.
+> > Can you describe how your syscon registers are laid out?
+> On STiH416 SOC we have 9 SYSCONF(aka System Configuration
+> Registers)named banks/groups, each bank has its own memory map.
+> Each sysconf bank has number of 32 bit registers which vary from bank to
+> bank, like sysconf bank "sbc" has range from SYSTEM_CONFIG0 to
+> SYSTEM_CONFIG999 where as  sysconf bank "front" has range of
+> SYSTEM_CONFIG1000 to SYSTEM_CONFIG1999 and so on.
+> 
+> Each register is assigned with a unique SYCONF number, example:
+> SYSTEM_CONFIG100, SYSTEM_CONFIG101 , .. and so on.
+> Each sysconf contains bits of the IP configurations wired-up to the
+> sysconf register bits.
 
-Thanks,
-Michal
+Ok.
 
-On 05/13/2013 07:46 PM, Soren Brinkmann wrote:
-> Currently Zynq does not support suspend/resume.
-> The driver callbacks are never used or tested, broken and using the old=
+> As example:
+> 
+> - Each pinctrl entry for set of 8 pins uses around 8-10 sysconfig
+> register to control pinconf and pin functions.
+> - IPs like Ethernet have few bit like Ethernet-Mode selection external
+> or internal phyclk wired up to bits in sysconf registers,
+> - Few clocks are controlled by sysconf registers.
+> - Reset to IPs are wired up to bits of sysconf same registers.
+> - ARM core soft reset is wired up to the sysconf registers...
+> And most of the IPs have similar requirements ......
+> 
+> Total layout of the sysconf changes per SOC, and the bit arrangements
+> aswell, however the core IP(pinctrl, etherenet ...) and logic to drive
+> those bits remains exactly same.
 
-> PM interface.
->=20
-> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 30 ------------------------------=
+It sounds like you really need a driver with high-level interfaces
+for the bits that change by each core and are needed by otherwise
+identical drivers, like the Ethernet driver you mention.
 
->  1 file changed, 30 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xi=
-linx_uartps.c
-> index 4e5c778..b5f655d 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1006,34 +1006,6 @@ static int xuartps_remove(struct platform_device=
- *pdev)
->  	return rc;
->  }
-> =20
-> -/**
-> - * xuartps_suspend - suspend event
-> - * @pdev: Pointer to the platform device structure
-> - * @state: State of the device
-> - *
-> - * Returns 0
-> - **/
-> -static int xuartps_suspend(struct platform_device *pdev, pm_message_t =
-state)
-> -{
-> -	/* Call the API provided in serial_core.c file which handles
-> -	 * the suspend.
-> -	 */
-> -	uart_suspend_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
-> -	return 0;
-> -}
-> -
-> -/**
-> - * xuartps_resume - Resume after a previous suspend
-> - * @pdev: Pointer to the platform device structure
-> - *
-> - * Returns 0
-> - **/
-> -static int xuartps_resume(struct platform_device *pdev)
-> -{
-> -	uart_resume_port(&xuartps_uart_driver, &xuartps_port[pdev->id]);
-> -	return 0;
-> -}
-> -
->  /* Match table for of_platform binding */
->  static struct of_device_id xuartps_of_match[] =3D {
->  	{ .compatible =3D "xlnx,xuartps", },
-> @@ -1044,8 +1016,6 @@ MODULE_DEVICE_TABLE(of, xuartps_of_match);
->  static struct platform_driver xuartps_platform_driver =3D {
->  	.probe   =3D xuartps_probe,		/* Probe method */
->  	.remove  =3D xuartps_remove,		/* Detach method */
-> -	.suspend =3D xuartps_suspend,		/* Suspend */
-> -	.resume  =3D xuartps_resume,		/* Resume after a suspend */
->  	.driver  =3D {
->  		.owner =3D THIS_MODULE,
->  		.name =3D XUARTPS_NAME,		/* Driver name */
->=20
+I would not go as far as you did describing the individual bits in
+the device node using these however. That driver can be layered on
+top of the existing syscon driver, but hardcode the bits for each
+SoC it knows of.
 
+For drivers that are essentially just wrappers around sysconf,
+I would make them one driver per SoC and use a low-level interface
+but still hardcode the offsets in the driver instead of using DT
+to find the registers.
 
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
-Maintainer of Linux kernel - Xilinx Zynq ARM architecture
-Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+The pinctrl and reset drivers are examples of this.
 
+> In general the requirements of the sysconf support to the SOC/driver
+> support is.
+> 1> It should be able to read/write a sysconf register bits without
+> having to "if" each SOC in the code. So that code is totally abstracted.
+> Which is currently achieved by passing the information from the device
+> trees and the driver just uses the property to get it.
 
+The goal sounds fine, just the method is a bit more complex than necessary
+here I think.
 
-------enig2PCWAEBDEBAMGCOJONILT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> 2> The infrastructure should protect the claimed registers from
+> over-writing by other drivers. We do this by claim-read/write-release
+> style API.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+I don't understand this part. Is it about atomicity of accesses to
+32-bit registers when you only want to change a bit? That is something
+the regmap interface handles already.
 
-iEYEARECAAYFAlGWHgIACgkQykllyylKDCF8DwCgm6sCltNDqIZorML3DDFvf7sS
-hzkAnRfDYy2Lvon7tnPNDFhneKk9jO0W
-=sjsH
------END PGP SIGNATURE-----
+If this is about drivers touching registers they should not touch
+in the first place, I think it should not be needed at all, because
+that would be a driver bug, and you can't really protect yourself
+from broken drivers anyway.
 
-------enig2PCWAEBDEBAMGCOJONILT--
+> 3> The driver should be able to set a group of sysconf registers bits to
+> a particular values before initialises the IP. I was thinking of doing
+> this in a same way as pinctrl state.
+
+That does not fit well with the model we use for other subsystems. If possible,
+try to use the existing abstractions for clock, regulator, pinctrl, reset,
+etc. and call generic interfaces from the driver. When that does not work,
+create a high-level function call from your sysconf driver to do a particular
+thing (e.g. stih_sysconf_ethernet_set_phy_mode()) rather than set up random
+bits from the driver.
+
+	Arnd
