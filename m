@@ -1,83 +1,106 @@
-From: Stephen GALLIMORE <stephen.gallimore@st.com>
-Subject: RE: [RFC 1/8] serial:st-asc: Add ST ASC driver.
-Date: Mon, 20 May 2013 13:49:36 +0200
-Message-ID: <A3BF01DB4A606149A4C20C4C4C808F6C336343F95B@SAFEX1MAIL1.st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
- <1368022248-2153-1-git-send-email-srinivas.kandagatla@st.com>
- <201305081634.43498.arnd@arndb.de>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
+Date: Mon, 20 May 2013 13:48:59 +0100
+Message-ID: <519A1BBB.2070903@st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305082148.10933.arnd@arndb.de> <518B77C1.70107@st.com> <201305171636.49627.arnd@arndb.de>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201305081634.43498.arnd@arndb.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <201305171636.49627.arnd@arndb.de>
+Sender: linux-doc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Arnd,
+Thankyou for the comments.
 
-We have pretty much completed reworking the patch set we sent recently, but
-there is one comment you made which seemed to make perfect sense
-but after investigating it has left me totally confused, which was:
+On 17/05/13 15:36, Arnd Bergmann wrote:
+> On Thursday 09 May 2013, Srinivas KANDAGATLA wrote:
+>> On 08/05/13 20:48, Arnd Bergmann wrote:
+>> I agree, my initial approach was having a dedicated driver specific to
+>> ST syscon, however syscon seems to do things very much similar to what
+>> we want, so I have integrated those 3 functions in syscon.
+>> Am happy to go back with my first approach of adding ST specific syscon
+>> driver if no one is actually going to benefit with such a change to
+>> syscon driver.
+> 
+> That would at least be less controversial.
 
->I would also recommed adding a way to set the default baud rate through
-> a property. Following the example of the 8250 driver, you should probably
-> call that "current-speed".
+yes I agree.
+> 
+>> Total layout of the sysconf changes per SOC, and the bit arrangements
+>> aswell, however the core IP(pinctrl, etherenet ...) and logic to drive
+>> those bits remains exactly same.
+> 
+> It sounds like you really need a driver with high-level interfaces
+> for the bits that change by each core and are needed by otherwise
+> identical drivers, like the Ethernet driver you mention.
+> 
+> I would not go as far as you did describing the individual bits in
+> the device node using these however. That driver can be layered on
+> top of the existing syscon driver, but hardcode the bits for each
+> SoC it knows of.
+Some of the drivers like Ethernet already provide higher level
+interfaces via callbacks. We did implement such a callbacks per each SOC
+in non-DT case, and ended up having code duplicated for each SOC.
 
-I note that you are listed as the author of of_serial.c so I was assuming
-that looking at this would make sense, but it doesn't at all, and I would
-be really grateful if you could explain what you were trying to achieve
-and how you thought it worked. The code does:
+On the other hand using device trees to describe the HW
+configuration(sysconfs) made more sense and got rid of SOC specific
+callbacks.
 
-        /* If current-speed was set, then try not to change it. */
-        if (of_property_read_u32(np, "current-speed", &spd) == 0)
-                port->custom_divisor = clk / (16 * spd);
+> 
+> For drivers that are essentially just wrappers around sysconf,
+> I would make them one driver per SoC and use a low-level interface
+> but still hardcode the offsets in the driver instead of using DT
+> to find the registers.
+> 
+> The pinctrl and reset drivers are examples of this.
 
-The "spd" variable is not used again and I do not understand why you 
-thought setting port->custom_divisor would have any impact on the default 
-or current baud rate of the UART, or that this information was useful to 
-any other part of the system. A search has only revealed that this port 
-field has only one purpose, which is to provide a "custom" speed 
-(unsurprisingly) when the user requests 38.4K _and_ the port flag 
-UPF_SPD_CUST has been set through a TIOCSSERIAL ioctl call, instead of
-actually getting 38.4K. The key part of that assessment being the 
-implementation of uart_get_divisor() :
+In pinctrl bindings case, I think we could do better job by replacing
+the existing bindings of sysconfs for a group of banks with just two
+integer offsets. This would mean that, we can still use the a common
+driver across the SOCs.
 
-       if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
-                quot = port->custom_divisor;
-        else
-                quot = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
+And w.r.t to reset, we are planning on using sysconf based
+reset-controller API sitting underneath the reset-controller subsystem.
+Passing the information from device trees would be much clear and
+flexible than adding new driver per/SOC.
 
-Also all of the custom_divisor functionality is basically commented as "old" 
-or has a kernel warning saying it is deprecated (see uart_set_info), so as
-far as I can see for our (and I suspect most) hardware it is completely 
-irrelevant functionality.
+>> 2> The infrastructure should protect the claimed registers from
+>> over-writing by other drivers. We do this by claim-read/write-release
+>> style API.
+> 
+> I don't understand this part. Is it about atomicity of accesses to
+> 32-bit registers when you only want to change a bit? That is something
+> the regmap interface handles already.
 
-If you really wanted to specify a default rate for a TTY then surely you need 
-to change the driver's init_termios, or change the termios on a per port basis 
-after they get registered. Only a handful of drivers do not use the default 
-uart_register_driver() and change the init_termios (statically) to something 
-other than 9600 8N1. I have been unable so far to find any evidence of drivers 
-changing the termios after a port has been registered based on either platform 
-data or OF attributes. So I do not see why we would want to provide that 
-functionality explicitly in the ASC driver if nobody else does; if you want 
-to change the TTY speed, use the tty IOCTL interfaces (or stty).
+I forget to mention a important point here, the protection is at bit
+level for the sysconfs. Some of sysconfs have bits shared across IPs, so
+protecting them while the IP is still using it is what we are trying to
+achieve with sysconf-claim/release apis.
+While it may be overkill, but In past it has found bugs and been helpful
+with a meaning full debug output.
 
-So I don't see why you think the concept of a default or current speed belongs 
-in the device tree description of the uart at all, unless there is something 
-special about the hardware. One possible example of that seems to be the ARC
-driver which only appears to support one serial speed and uses "current-speed"
-attribute to specify that speed; or the ARC driver is broken and they have
-made a mistake in their set_termios implementation, we cannot quite work out
-which of those two things is true. But that isn't the case for the ASC
-hardware so it again would not be relevant in this driver.
+>> 3> The driver should be able to set a group of sysconf registers bits to
+>> a particular values before initialises the IP. I was thinking of doing
+>> this in a same way as pinctrl state.
+> 
+> That does not fit well with the model we use for other subsystems. If possible,
+> try to use the existing abstractions for clock, regulator, pinctrl, reset,
+> etc. and call generic interfaces from the driver. When that does not work,
+> create a high-level function call from your sysconf driver to do a particular
+> thing (e.g. stih_sysconf_ethernet_set_phy_mode()) rather than set up random
+> bits from the driver.
+I agree going for a higher level api in this case makes sense.
 
-So basically we would like some help understanding what it is you would
-really like us to do. Clearly we can just duplicate what you did in
-of_serial.c for the 8250 and move on, but we would like to understand why
-that wouldn't just be adding redundant code.
+Thanks,
+srini
 
-Regards,
--stephen
+> 
+> 	Arnd
+> 
+> 
+
