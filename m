@@ -1,55 +1,33 @@
-From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] tty: nwpserial: Pass correct pointer to free_irq()
-Date: Mon, 20 May 2013 19:07:30 +0200
-Message-ID: <1369069650-1742-1-git-send-email-lars@metafoo.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Benjamin Krill <ben@codiert.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 10/13] serial: mxs-auart: Let device core handle pinctrl
+Date: Mon, 20 May 2013 11:49:56 -0700
+Message-ID: <20130520184956.GA24761@kroah.com>
+References: <1367863561-11534-1-git-send-email-fabio.estevam@freescale.com>
+ <1367863561-11534-10-git-send-email-fabio.estevam@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:45864 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752796Ab3ETSt5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 May 2013 14:49:57 -0400
+Content-Disposition: inline
+In-Reply-To: <1367863561-11534-10-git-send-email-fabio.estevam@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, festevam@gmail.com, linux-serial@vger.kernel.org
 
-free_irq() expects the same pointer that was passed to request_irq(), otherwise
-the IRQ is not freed.
+On Mon, May 06, 2013 at 03:05:58PM -0300, Fabio Estevam wrote:
+> Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
+> we can rely on device core for handling pinctrl.
+> 
+> So remove devm_pinctrl_get_select_default() from the driver. 
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: <linux-serial@vger.kernel.org>
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+> ---
 
-The issue was found using the following coccinelle script:
-
-<smpl>
-@r1@
-type T;
-T devid;
-@@
-request_irq(..., devid)
-
-@r2@
-type r1.T;
-T devid;
-position p;
-@@
-free_irq@p(..., devid)
-
-@@
-position p != r2.p;
-@@
-*free_irq@p(...)
-</smpl>
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/tty/serial/nwpserial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
-index 77287c5..549c70a 100644
---- a/drivers/tty/serial/nwpserial.c
-+++ b/drivers/tty/serial/nwpserial.c
-@@ -199,7 +199,7 @@ static void nwpserial_shutdown(struct uart_port *port)
- 	dcr_write(up->dcr_host, UART_IER, up->ier);
- 
- 	/* free irq */
--	free_irq(up->port.irq, port);
-+	free_irq(up->port.irq, up);
- }
- 
- static int nwpserial_verify_port(struct uart_port *port,
--- 
-1.8.0
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
