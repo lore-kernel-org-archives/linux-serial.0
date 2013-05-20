@@ -1,106 +1,55 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Mon, 20 May 2013 13:48:59 +0100
-Message-ID: <519A1BBB.2070903@st.com>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305082148.10933.arnd@arndb.de> <518B77C1.70107@st.com> <201305171636.49627.arnd@arndb.de>
-Reply-To: srinivas.kandagatla@st.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <201305171636.49627.arnd@arndb.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] tty: nwpserial: Pass correct pointer to free_irq()
+Date: Mon, 20 May 2013 19:07:30 +0200
+Message-ID: <1369069650-1742-1-git-send-email-lars@metafoo.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Benjamin Krill <ben@codiert.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-Thankyou for the comments.
+free_irq() expects the same pointer that was passed to request_irq(), otherwise
+the IRQ is not freed.
 
-On 17/05/13 15:36, Arnd Bergmann wrote:
-> On Thursday 09 May 2013, Srinivas KANDAGATLA wrote:
->> On 08/05/13 20:48, Arnd Bergmann wrote:
->> I agree, my initial approach was having a dedicated driver specific to
->> ST syscon, however syscon seems to do things very much similar to what
->> we want, so I have integrated those 3 functions in syscon.
->> Am happy to go back with my first approach of adding ST specific syscon
->> driver if no one is actually going to benefit with such a change to
->> syscon driver.
-> 
-> That would at least be less controversial.
+The issue was found using the following coccinelle script:
 
-yes I agree.
-> 
->> Total layout of the sysconf changes per SOC, and the bit arrangements
->> aswell, however the core IP(pinctrl, etherenet ...) and logic to drive
->> those bits remains exactly same.
-> 
-> It sounds like you really need a driver with high-level interfaces
-> for the bits that change by each core and are needed by otherwise
-> identical drivers, like the Ethernet driver you mention.
-> 
-> I would not go as far as you did describing the individual bits in
-> the device node using these however. That driver can be layered on
-> top of the existing syscon driver, but hardcode the bits for each
-> SoC it knows of.
-Some of the drivers like Ethernet already provide higher level
-interfaces via callbacks. We did implement such a callbacks per each SOC
-in non-DT case, and ended up having code duplicated for each SOC.
+<smpl>
+@r1@
+type T;
+T devid;
+@@
+request_irq(..., devid)
 
-On the other hand using device trees to describe the HW
-configuration(sysconfs) made more sense and got rid of SOC specific
-callbacks.
+@r2@
+type r1.T;
+T devid;
+position p;
+@@
+free_irq@p(..., devid)
 
-> 
-> For drivers that are essentially just wrappers around sysconf,
-> I would make them one driver per SoC and use a low-level interface
-> but still hardcode the offsets in the driver instead of using DT
-> to find the registers.
-> 
-> The pinctrl and reset drivers are examples of this.
+@@
+position p != r2.p;
+@@
+*free_irq@p(...)
+</smpl>
 
-In pinctrl bindings case, I think we could do better job by replacing
-the existing bindings of sysconfs for a group of banks with just two
-integer offsets. This would mean that, we can still use the a common
-driver across the SOCs.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/tty/serial/nwpserial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-And w.r.t to reset, we are planning on using sysconf based
-reset-controller API sitting underneath the reset-controller subsystem.
-Passing the information from device trees would be much clear and
-flexible than adding new driver per/SOC.
-
->> 2> The infrastructure should protect the claimed registers from
->> over-writing by other drivers. We do this by claim-read/write-release
->> style API.
-> 
-> I don't understand this part. Is it about atomicity of accesses to
-> 32-bit registers when you only want to change a bit? That is something
-> the regmap interface handles already.
-
-I forget to mention a important point here, the protection is at bit
-level for the sysconfs. Some of sysconfs have bits shared across IPs, so
-protecting them while the IP is still using it is what we are trying to
-achieve with sysconf-claim/release apis.
-While it may be overkill, but In past it has found bugs and been helpful
-with a meaning full debug output.
-
->> 3> The driver should be able to set a group of sysconf registers bits to
->> a particular values before initialises the IP. I was thinking of doing
->> this in a same way as pinctrl state.
-> 
-> That does not fit well with the model we use for other subsystems. If possible,
-> try to use the existing abstractions for clock, regulator, pinctrl, reset,
-> etc. and call generic interfaces from the driver. When that does not work,
-> create a high-level function call from your sysconf driver to do a particular
-> thing (e.g. stih_sysconf_ethernet_set_phy_mode()) rather than set up random
-> bits from the driver.
-I agree going for a higher level api in this case makes sense.
-
-Thanks,
-srini
-
-> 
-> 	Arnd
-> 
-> 
-
+diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
+index 77287c5..549c70a 100644
+--- a/drivers/tty/serial/nwpserial.c
++++ b/drivers/tty/serial/nwpserial.c
+@@ -199,7 +199,7 @@ static void nwpserial_shutdown(struct uart_port *port)
+ 	dcr_write(up->dcr_host, UART_IER, up->ier);
+ 
+ 	/* free irq */
+-	free_irq(up->port.irq, port);
++	free_irq(up->port.irq, up);
+ }
+ 
+ static int nwpserial_verify_port(struct uart_port *port,
+-- 
+1.8.0
