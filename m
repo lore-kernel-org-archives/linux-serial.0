@@ -1,31 +1,41 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 1/5] tty: xuartps: Remove suspend/resume functions
-Date: Mon, 20 May 2013 11:57:25 -0700
-Message-ID: <20130520185725.GA21134@kroah.com>
-References: <1368467199-8702-1-git-send-email-soren.brinkmann@xilinx.com>
- <1368467199-8702-2-git-send-email-soren.brinkmann@xilinx.com>
- <51961E02.9020501@monstr.eu>
+Subject: Re: [PATCH 2/7] tty: Add lock/unlock ldisc pair functions
+Date: Mon, 20 May 2013 12:34:03 -0700
+Message-ID: <20130520193403.GA14340@kroah.com>
+References: <20130415201411.GA27360@kroah.com>
+ <1366107356-7699-1-git-send-email-peter@hurleysoftware.com>
+ <1366107356-7699-2-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:45918 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:46141 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756357Ab3ETS50 (ORCPT
+	with ESMTP id S1756396Ab3ETTeE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 May 2013 14:57:26 -0400
+	Mon, 20 May 2013 15:34:04 -0400
 Content-Disposition: inline
-In-Reply-To: <51961E02.9020501@monstr.eu>
+In-Reply-To: <1366107356-7699-2-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michal Simek <monstr@monstr.eu>
-Cc: Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, May 17, 2013 at 02:09:38PM +0200, Michal Simek wrote:
-> Hi Greg,
+On Tue, Apr 16, 2013 at 06:15:51AM -0400, Peter Hurley wrote:
+> Just as the tty pair must be locked in a stable sequence
+> (ie, independent of which is consider the 'other' tty), so must
+> the ldisc pair be locked in a stable sequence as well.
 > 
-> can you please add this patch to your tree?
-> It is unrelated to clk changes which Soren sent.
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/tty_ldisc.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 87 insertions(+)
 
-Ok, will do.
+This patch breaks the build :(
+
+I've taken the first one, care to mush this one with the 7/7 patch, so
+there are no build breaks, and resend the 5 resulting patches so I can
+apply these?
+
+thanks,
 
 greg k-h
