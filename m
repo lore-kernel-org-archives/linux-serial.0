@@ -1,35 +1,31 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 09/13] serial: imx: Let device core handle pinctrl
-Date: Mon, 20 May 2013 11:50:12 -0700
-Message-ID: <20130520185012.GB24761@kroah.com>
-References: <1367863561-11534-1-git-send-email-fabio.estevam@freescale.com>
- <1367863561-11534-9-git-send-email-fabio.estevam@freescale.com>
+Subject: Re: [PATCH v2 1/5] tty: xuartps: Remove suspend/resume functions
+Date: Mon, 20 May 2013 11:57:25 -0700
+Message-ID: <20130520185725.GA21134@kroah.com>
+References: <1368467199-8702-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1368467199-8702-2-git-send-email-soren.brinkmann@xilinx.com>
+ <51961E02.9020501@monstr.eu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:45869 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:45918 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752796Ab3ETSuN (ORCPT
+	with ESMTP id S1756357Ab3ETS50 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 May 2013 14:50:13 -0400
+	Mon, 20 May 2013 14:57:26 -0400
 Content-Disposition: inline
-In-Reply-To: <1367863561-11534-9-git-send-email-fabio.estevam@freescale.com>
+In-Reply-To: <51961E02.9020501@monstr.eu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: shawn.guo@linaro.org, kernel@pengutronix.de, festevam@gmail.com, linux-serial@vger.kernel.org
+To: Michal Simek <monstr@monstr.eu>
+Cc: Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Josh Cartwright <joshc@eso.teric.us>, Mike Turquette <mturquette@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Russell King <linux@arm.linux.org.uk>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Mon, May 06, 2013 at 03:05:57PM -0300, Fabio Estevam wrote:
-> Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
-> we can rely on device core for handling pinctrl.
+On Fri, May 17, 2013 at 02:09:38PM +0200, Michal Simek wrote:
+> Hi Greg,
 > 
-> So remove devm_pinctrl_get_select_default() from the driver. 
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: <linux-serial@vger.kernel.org>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->  drivers/tty/serial/imx.c |    9 ---------
->  1 file changed, 9 deletions(-)
+> can you please add this patch to your tree?
+> It is unrelated to clk changes which Soren sent.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Ok, will do.
+
+greg k-h
