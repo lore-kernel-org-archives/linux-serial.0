@@ -1,55 +1,49 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH] ARM: PL011: add support for extended FIFO-size of PL011-r1p5
-Date: Mon, 20 May 2013 20:12:58 -0600
-Message-ID: <519AD82A.6090809@wwwdotorg.org>
-References: <007301ce375e$bcf6d6b0$36e48410$@lge.com> <5191D200.3040604@wwwdotorg.org> <01fd01ce5072$d6b9fcd0$842df670$@lge.com> <5192A692.4010700@wwwdotorg.org> <022d01ce5107$8bc668e0$a3533aa0$@lge.com> <5193164E.6050400@wwwdotorg.org> <007001ce55c4$139f96e0$3adec4a0$@lge.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Jongsung Kim <neidhard.kim@lge.com>
+Subject: [PATCH] ARM: bcm2835: override the HW UART periphid
+Date: Tue, 21 May 2013 15:02:29 +0900
+Message-ID: <1369116149-2361-1-git-send-email-neidhard.kim@lge.com>
+References: <519AD82A.6090809@wwwdotorg.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:56340 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750732Ab3EUCNB (ORCPT
+Received: from lgeamrelo02.lge.com ([156.147.1.126]:58957 "EHLO
+	LGEAMRELO02.lge.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753816Ab3EUGC4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 May 2013 22:13:01 -0400
-In-Reply-To: <007001ce55c4$139f96e0$3adec4a0$@lge.com>
+	Tue, 21 May 2013 02:02:56 -0400
+In-Reply-To: <519AD82A.6090809@wwwdotorg.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jongsung Kim <neidhard.kim@lge.com>
-Cc: 'Russell King' <linux@arm.linux.org.uk>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: swarren@wwwdotorg.org, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>
 
-On 05/20/2013 07:39 PM, Jongsung Kim wrote:
-> Jongsung Kim <neidhard.kim@lge.com> :
->> Stephen Warren <swarren@wwwdotorg.org> :
->>>> All r1p5 have 32-byte FIFO depth and it's not configurable. From the 
->>>> PL011
->>>> TRM:
->>>>
->>>> r1p4-r1p5	Contains the following differences in functionality:
->>>> 		* The receive and transmit FIFOs are increased to a depth of
-> 32.
->>>> 		* The Revision field in the UARTPeriphID2 Register on page
-> 3-24
->>>> 		  bits [7:4] now reads back as 0x3.
->>>
->>> Well, that certainly isn't true in practice. I think we should revert 
->>> this commit until we can determine what the problem is.
->>
->> I asked to the ARM support about this. Waiting for reply..
-> 
-> ARM support said they doesn't have information about BCM2835 UART. Does
-> anyone have a communication channel to Broadcom? It takes time for me to
-> get contact point to Broadcom.. (I'm trying)
-> 
-> However, ARM support also said:
-> 
-> "If the Broadcom part definitely has 16-deep FIFOs, it cannot be based
-> on a PL011 r1p5, so I might guess that Broadcom have just referenced
-> the latest version of the documentation on our website, but have actually
-> implemented an earlier version."
+Stephen Warren reported the recent commit 78506f2 (add support for
+extended FIFO-size of PL011-r1p5) breaks the serial port on the
+BCM2835 ARM SoC.
 
-This all seems rather academic. Irrespective of what the cause of the
-problem is, the commit actively breaks a previously working
-configuration. I still believe we should revert it first, then find out
-exactly what's going on later. Should I sent the revert commit?
+A UART compatible with the ARM PL011-r1p5 should have 32-deep FIFOs.
+The BCM2835 UART just looks like an ARM PL011-r1p5, but has 16-deep
+FIFOs just like PL011-r1p4 or earlier revisions. As a workaround for
+this compatibility issue, this patch overrides the HW UART periphid
+register values with the actually compatible UART periphid 0x00241011
+(r1p3 or r1p4).
+
+Reported-by: Stephen Warren <swarren@wwwdotorg.org>
+Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
+---
+ arch/arm/boot/dts/bcm2835.dtsi |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2835.dtsi b/arch/arm/boot/dts/bcm2835.dtsi
+index f0052dc..1e12aef 100644
+--- a/arch/arm/boot/dts/bcm2835.dtsi
++++ b/arch/arm/boot/dts/bcm2835.dtsi
+@@ -44,6 +44,7 @@
+ 			reg = <0x7e201000 0x1000>;
+ 			interrupts = <2 25>;
+ 			clock-frequency = <3000000>;
++			arm,primecell-periphid = <0x00241011>;
+ 		};
+ 
+ 		gpio: gpio {
+-- 
+1.7.1
 
