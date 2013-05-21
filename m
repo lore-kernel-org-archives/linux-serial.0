@@ -1,51 +1,54 @@
-From: Gordon Hollingworth <gordon@holliweb.co.uk>
-Subject: Re: [PATCH] ARM: bcm2835: override the HW UART periphid
-Date: Tue, 21 May 2013 10:00:37 +0100
-Message-ID: <CAE8Q9tD8UiV=3sYbPPFGgiPCGzMS6xUWSGCRnR8tpGwQegyEQQ@mail.gmail.com>
-References: <519AD82A.6090809@wwwdotorg.org>
-	<1369116149-2361-1-git-send-email-neidhard.kim@lge.com>
-	<008d01ce55e9$7c479510$74d6bf30$@lge.com>
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: [PATCH] tty: mxser: fix usage of opmode_ioaddr
+Date: Tue, 21 May 2013 13:57:37 +0400 (MSK)
+Message-ID: <alpine.LRH.2.00.1305211349360.20113@lnfm1.sai.msu.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f179.google.com ([209.85.217.179]:55676 "EHLO
-	mail-lb0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751583Ab3EUJAj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 May 2013 05:00:39 -0400
-In-Reply-To: <008d01ce55e9$7c479510$74d6bf30$@lge.com>
+Received: from lnfm1.sai.msu.ru ([93.180.26.255]:54074 "EHLO lnfm1.sai.msu.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752655Ab3EUK11 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 May 2013 06:27:27 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jongsung Kim <neidhard.kim@lge.com>
-Cc: Stephen Warren <swarren@wwwdotorg.org>, Russell King <linux@arm.linux.org.uk>, gregkh@linuxfoundation.org, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-rpi-kernel@lists.infradead.org" <linux-rpi-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: jirislaby@gmail.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Have checked with the designer of the UART block and he confirmed that
-the 2835 PL011 contains a 16 deep fifo not 32 deep...
+From: Matwey V. Kornilov <matwey@sai.msu.ru>
 
-Hardware guys, they can never just leave it alone!!!
+mxser_port->opmode_ioaddr is initialized only for MOXA_MUST_MU860_HWID 
+chips, but no precautions have been undertaken to prevent reading and 
+writing to undefined port number.
 
-Gordon
+Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+---
 
-On 21 May 2013 07:07, Jongsung Kim <neidhard.kim@lge.com> wrote:
-> Jongsung Kim <neidhard.kim@lge.com> :
->> diff --git a/arch/arm/boot/dts/bcm2835.dtsi
-> b/arch/arm/boot/dts/bcm2835.dtsi
->> index f0052dc..1e12aef 100644
->> --- a/arch/arm/boot/dts/bcm2835.dtsi
->> +++ b/arch/arm/boot/dts/bcm2835.dtsi
->> @@ -44,6 +44,7 @@
->>                       reg = <0x7e201000 0x1000>;
->>                       interrupts = <2 25>;
->>                       clock-frequency = <3000000>;
->> +                     arm,primecell-periphid = <0x00241011>;
->>               };
->>
->>               gpio: gpio {
->
-> Stephen, how do you think about this kind of approach instead?
->
->
-> _______________________________________________
-> linux-rpi-kernel mailing list
-> linux-rpi-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 71d6eb2..f97b196 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -1618,8 +1618,12 @@ static int mxser_ioctl_special(unsigned int cmd, void __user *argp)
+  				if (ip->type == PORT_16550A)
+  					me->fifo[p] = 1;
+
+-				opmode = inb(ip->opmode_ioaddr)>>((p % 4) * 2);
+-				opmode &= OP_MODE_MASK;
++				if (ip->board->chip_flag == MOXA_MUST_MU860_HWID) {
++					opmode = inb(ip->opmode_ioaddr)>>((p % 4) * 2);
++					opmode &= OP_MODE_MASK;
++				} else {
++					opmode = RS232_MODE;
++				}
+  				me->iftype[p] = opmode;
+  				mutex_unlock(&port->mutex);
+  			}
+@@ -1670,6 +1674,9 @@ static int mxser_ioctl(struct tty_struct *tty,
+  		return mxser_ioctl_special(cmd, argp);
+
+  	if (cmd == MOXA_SET_OP_MODE || cmd == MOXA_GET_OP_MODE) {
++		if (info->board->chip_flag != MOXA_MUST_MU860_HWID)
++			return -EFAULT;
++
+  		int p;
+  		unsigned long opmode;
+  		static unsigned char ModeMask[] = { 0xfc, 0xf3, 0xcf, 0x3f };
