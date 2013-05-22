@@ -1,50 +1,48 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: [PATCH] tty: mxser: Fix build warning introduced by dfc7b837c7f9
- (Re: linux-next: build warning after merge of the tty.current tree)
-Date: Wed, 22 May 2013 11:13:38 +0400 (MSK)
-Message-ID: <alpine.LRH.2.00.1305221109110.10829@lnfm1.sai.msu.ru>
-References: <20130522133722.d52b827e455275dfdecf12dd@canb.auug.org.au>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v3] tty: serial: add Freescale lpuart driver support
+Date: Wed, 22 May 2013 15:23:05 +0800
+Message-ID: <CAAQ0ZWRz+byPKxMjDH3zKsc0u4bmkPO_1u6w2H4Z7nD0z8+9ig@mail.gmail.com>
+References: <1368685096-13177-1-git-send-email-b35083@freescale.com>
+	<20130520030523.GB25113@S2101-09.ap.freescale.net>
+	<13F8657A829DAB49A2A937FD6FC10F790B3CDB85@039-SN2MPN1-012.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lnfm1.sai.msu.ru ([93.180.26.255]:47904 "EHLO lnfm1.sai.msu.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752984Ab3EVHOB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 May 2013 03:14:01 -0400
-In-Reply-To: <20130522133722.d52b827e455275dfdecf12dd@canb.auug.org.au>
+Received: from mail-ie0-f176.google.com ([209.85.223.176]:35799 "EHLO
+	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751220Ab3EVHXI convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 May 2013 03:23:08 -0400
+Received: by mail-ie0-f176.google.com with SMTP id at1so4333452iec.7
+        for <linux-serial@vger.kernel.org>; Wed, 22 May 2013 00:23:05 -0700 (PDT)
+In-Reply-To: <13F8657A829DAB49A2A937FD6FC10F790B3CDB85@039-SN2MPN1-012.039d.mgd.msft.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Greg KH <greg@kroah.com>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, jirislaby@gmail.com, linux-serial@vger.kernel.org
+To: Jin Zhengxiong-R64188 <R64188@freescale.com>
+Cc: Lu Jingchang-B35083 <B35083@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
 
-From: Matwey V. Kornilov <matwey@sai.msu.ru>
+On 22 May 2013 14:40, Jin Zhengxiong-R64188 <R64188@freescale.com> wrote:
+> [Jason Jin-R64188] Reuse the same LPUART on LS-1 with the compatible strings 'fsl,mvf600-lpuart' is technically OK, But it will fuss the route map of the product Line. The general name can show that the IP is shared between several product lines, and the history for which SOC firstly used the IP is not very important. With general compatible name, We can setup the general dts for the shared IPs.
+>
+> That's also the case for the IPs used on Power platform, Take the IFC for example, this IP implemented on Power platform will also be reused LS-1, The compatible string is set as  "fsl,ifc", "simple-bus" but not the soc name on which the IP first used.
+>
+>  Another example, though a little different, the nor flash driver, which is used for many platform, the compatible "cfi-flash" will be more reasonable than the soc/board name.
+>
+> With the general name for the compatible string in the driver, if there is minor difference for the different implementation of the same IP, we can add the soc related compatible string to the driver to pass different .data structure for that soc.
+>
 
-Fix build warning at mxser.c introduced by dfc7b837c7f9
+As I already said, a generic compatible string does not specify
+anything about compatibility/version, and hence it's not a good
+compatible for IP block which is possibly to be integrated on multiple
+SoCs with slight differences.
 
-Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
----
+For example, if there is a new SoC mvf900 integrating the IP with
+everything compatible to the version used on mvf600,
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index f97b196..4c4a236 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1674,15 +1674,15 @@ static int mxser_ioctl(struct tty_struct *tty,
-  		return mxser_ioctl_special(cmd, argp);
+  compatible = <fsl,mvf900-uart>, <fsl,mvf600-uart>;
+  compatible = <fsl,mvf900-uart>, <fsl,lpuart>;
 
-  	if (cmd == MOXA_SET_OP_MODE || cmd == MOXA_GET_OP_MODE) {
--		if (info->board->chip_flag != MOXA_MUST_MU860_HWID)
--			return -EFAULT;
--
-  		int p;
-  		unsigned long opmode;
-  		static unsigned char ModeMask[] = { 0xfc, 0xf3, 0xcf, 0x3f };
-  		int shiftbit;
-  		unsigned char val, mask;
+which one do you think is better to tell the compatibility/version?
 
-+		if (info->board->chip_flag != MOXA_MUST_MU860_HWID)
-+			return -EFAULT;
-+
-  		p = tty->index % 4;
-  		if (cmd == MOXA_SET_OP_MODE) {
-  			if (get_user(opmode, (int __user *) argp))
-
+Shawn
