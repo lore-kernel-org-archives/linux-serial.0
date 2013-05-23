@@ -1,78 +1,90 @@
-From: Kevin Hilman <khilman@linaro.org>
-Subject: Re: [Resend/PATCHv5 0/3] Omap serial cleanup
-Date: Thu, 23 May 2013 07:14:41 -0700
-Message-ID: <87y5b5iy0e.fsf@linaro.org>
-References: <1368633673-32308-1-git-send-email-sourav.poddar@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.10-rc3
+Date: Thu, 23 May 2013 09:17:03 -0700
+Message-ID: <20130523161703.GA14601@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:46758 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757586Ab3EWOOp (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:48721 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759668Ab3EWQRE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 May 2013 10:14:45 -0400
-Received: by mail-pa0-f44.google.com with SMTP id wp1so427409pac.31
-        for <linux-serial@vger.kernel.org>; Thu, 23 May 2013 07:14:44 -0700 (PDT)
-In-Reply-To: <1368633673-32308-1-git-send-email-sourav.poddar@ti.com> (Sourav
-	Poddar's message of "Wed, 15 May 2013 21:31:10 +0530")
+	Thu, 23 May 2013 12:17:04 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sourav Poddar <sourav.poddar@ti.com>
-Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Sourav,
+The following changes since commit f722406faae2d073cc1d01063d1123c35425939e:
 
-Sourav Poddar <sourav.poddar@ti.com> writes:
+  Linux 3.10-rc1 (2013-05-11 17:14:08 -0700)
 
-> Resending this patch series again on top of 3.10-rc1.
->
-> This is a cleanup series done in response to the
-> serial driver fixes done for "no_console_suspend" case.
+are available in the git repository at:
 
-Greg has queued the serial core changes for v3.11, and I've queued this
-series for the OMAP specific changes for v3.11[1].
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.10-rc2
 
-Thanks again for your persistence with this series.
+for you to fetch changes up to e037f95ffb5355ffe295e1d106d02fefd284d882:
 
-Kevin
+  tty: mxser: Fix build warning introduced by dfc7b837c7f9 (Re: linux-next: build warning after merge of the tty.current tree) (2013-05-22 10:26:02 -0700)
 
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-omap-pm.git for_3.11/uart/no_console_suspend
+----------------------------------------------------------------
+tty/serial fixes for 3.10-rc2
 
-> This cleanups mainly include getting
-> rid of using "omap_device_disable_idle_on_suspend" api for both dt and non dt case
-> as the serial driver will be self sufficient to handle the "no_idle_on_suspend" issue.
-> Serial was the only one making use of "omap_device_disable_idle_on_suspend"
->
-> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
-> Cc: Felipe Balbi <balbi@ti.com>
-> Cc: Rajendra nayak <rnayak@ti.com>
->
-> Test info
-> Omap4430sdp:
-> - Tested wakeup from UART after suspend for dt and non dt case.
-> Omap5430evm:
-> - Tested wakeup from UART after suspend for dt case.
->
-> These patches were the part of the bigger series[2]. Breaking them into
-> two relevant series as they go through the different tree.
->
-> [2]: http://lkml.org/lkml/2013/4/26/274
->
-> The following changes since commit b973425cbb51e08301b34fecdfd476a44507d8cf:
->
->   Merge tag 'ext4_for_linus_stable' of git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4 (2013-05-14 09:30:54 -0700)
->
-> are available in the git repository at:
->
->   git://gitorious.org/linux-connectivity/linux-connectivity.git omap_fix_resend
->
-> Sourav Poddar (3):
->       arm: omap2+: serial: remove no_console_suspend support
->       arm: dts: am33xx: Remove "ti,no_idle_on_suspend" property.
->       arm: omap2+: omap_device: remove no_idle_on_suspend
->
->  arch/arm/boot/dts/am33xx.dtsi     |    1 -
->  arch/arm/mach-omap2/omap_device.c |    9 ++-------
->  arch/arm/mach-omap2/omap_device.h |   10 ----------
->  arch/arm/mach-omap2/serial.c      |    7 -------
->  4 files changed, 2 insertions(+), 25 deletions(-)
+Here are some tty / serial driver fixes for 3.10-rc2.
+
+Nothing huge, although the rocket driver fix looks large, it's just
+moving the code around to fix the reported build issues in it.  Other
+than that, this has the fix for the of-reported lockdep warning from the
+vt layer, as well as some other needed bugfixes.
+
+All of these have been in linux-next for a while.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Ezequiel Garcia (1):
+      serial: 8250_dw: Add valid clk pointer check
+
+Heikki Krogerus (1):
+      serial: 8250_dw: add ACPI ID for Intel BayTrail
+
+Jiri Slaby (1):
+      TTY: rocket, fix more no-PCI warnings
+
+Lars-Peter Clausen (1):
+      tty: nwpserial: Pass correct pointer to free_irq()
+
+Lee Jones (1):
+      serial: pl011: protect attribute read from NULL platform data struct
+
+Matwey V. Kornilov (2):
+      tty: mxser: fix usage of opmode_ioaddr
+      tty: mxser: Fix build warning introduced by dfc7b837c7f9 (Re: linux-next: build warning after merge of the tty.current tree)
+
+Peter Hurley (1):
+      tty/vt: Fix vc_deallocate() lock order
+
+Wang YanQing (1):
+      TTY: Fix tty miss restart after we turn off flow-control
+
+Wei Yongjun (4):
+      serial: samsung: add missing platform_driver_unregister() when module exit
+      tty: serial: mpc5xxx: fix error handing in mpc52xx_uart_init()
+      serial: mcf: missing uart_unregister_driver() on error in mcf_init()
+      TTY: ehv_bytechan: add missing platform_driver_unregister() when module exit
+
+ drivers/tty/ehv_bytechan.c        |   1 +
+ drivers/tty/mxser.c               |  11 +-
+ drivers/tty/n_tty.c               |   8 ++
+ drivers/tty/rocket.c              | 288 +++++++++++++++++++-------------------
+ drivers/tty/serial/8250/8250_dw.c |   7 +-
+ drivers/tty/serial/amba-pl011.c   |   2 +-
+ drivers/tty/serial/mcf.c          |   4 +-
+ drivers/tty/serial/mpc52xx_uart.c |  11 +-
+ drivers/tty/serial/nwpserial.c    |   2 +-
+ drivers/tty/serial/samsung.c      |   1 +
+ drivers/tty/vt/vt.c               |  14 +-
+ drivers/tty/vt/vt_ioctl.c         |  67 ++++++---
+ include/linux/vt_kern.h           |   2 +-
+ 13 files changed, 234 insertions(+), 184 deletions(-)
