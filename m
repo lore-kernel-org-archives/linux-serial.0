@@ -1,139 +1,78 @@
-From: "Manjunathappa, Prakash" <prakash.pm@ti.com>
-Subject: RE: [PATCH 1/4] ARM: davinci: uart: move to dev_id based clk_get
-Date: Thu, 23 May 2013 13:25:57 +0000
-Message-ID: <A73F36158E33644199EB82C5EC81C7BC3EA6726A@DBDE04.ent.ti.com>
-References: <1365510481-32129-1-git-send-email-prakash.pm@ti.com>
- <1365510664-1394-2-git-send-email-prakash.pm@ti.com>
- <517A2661.3000605@ti.com>
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [Resend/PATCHv5 0/3] Omap serial cleanup
+Date: Thu, 23 May 2013 07:14:41 -0700
+Message-ID: <87y5b5iy0e.fsf@linaro.org>
+References: <1368633673-32308-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:41196 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758797Ab3EWN0s (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 May 2013 09:26:48 -0400
-In-Reply-To: <517A2661.3000605@ti.com>
-Content-Language: en-US
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:46758 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757586Ab3EWOOp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 May 2013 10:14:45 -0400
+Received: by mail-pa0-f44.google.com with SMTP id wp1so427409pac.31
+        for <linux-serial@vger.kernel.org>; Thu, 23 May 2013 07:14:44 -0700 (PDT)
+In-Reply-To: <1368633673-32308-1-git-send-email-sourav.poddar@ti.com> (Sourav
+	Poddar's message of "Wed, 15 May 2013 21:31:10 +0530")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Nori, Sekhar" <nsekhar@ti.com>
-Cc: "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "hs@denx.de" <hs@denx.de>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: gregkh@linuxfoundation.org, tony@atomide.com, rmk+kernel@arm.linux.org.uk, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Santosh Shilimkar <santosh.shilimkar@ti.com>, Felipe Balbi <balbi@ti.com>, Rajendra nayak <rnayak@ti.com>
 
-SGkgU2VraGFyLA0KDQpUaGFua3MgZm9yIHJldmlld2luZy4NCg0KT24gRnJpLCBBcHIgMjYsIDIw
-MTMgYXQgMTI6MzE6NTMsIE5vcmksIFNla2hhciB3cm90ZToNCj4gSGkgUHJha2FzaCwNCj4gDQo+
-IE9uIDQvOS8yMDEzIDY6MDEgUE0sIE1hbmp1bmF0aGFwcGEsIFByYWthc2ggd3JvdGU6DQo+ID4g
-Rm9yIG1vZHVsZXMgaGF2aW5nIHNpbmdsZSBjbG9jaywgY2xrX2dldCBzaG91bGQgYmUgZG9uZSB3
-aXRoIGRldl9pZC4NCj4gPiBCdXQgY3VycmVudCBkYXZpbmNpIGltcGxlbWVudGF0aW9uIGhhbmRs
-ZXMgbXVsdGlwbGUgaW5zdGFuY2VzDQo+ID4gb2YgdGhlIFVBUlQgZGV2aWNlcyB3aXRoIHNpbmds
-ZSBwbGF0Zm9ybV9kZXZpY2VfcmVnaXN0ZXIuIEhlbmNlIGNsa19nZXQNCj4gPiBpcyBiYXNlZCBv
-biBjb25faWQgcmF0aGVyIHRoYW4gZGV2X2lkLCB0aGlzIGlzIG5vdCBjb3JyZWN0LiBEbw0KPiA+
-IHBsYXRmb3JtX2RldmljZV9yZWdpc3RlciBmb3IgZWFjaCBpbnN0YW5jZSBhbmQgY2xrX2dldCBv
-biBkZXZfaWQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTWFuanVuYXRoYXBwYSwgUHJha2Fz
-aCA8cHJha2FzaC5wbUB0aS5jb20+DQo+ID4gLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5j
-aS9kYTgzMC5jICAgICAgICAgICAgICAgICAgfCAgICA4ICsrLS0NCj4gPiAgYXJjaC9hcm0vbWFj
-aC1kYXZpbmNpL2RhODUwLmMgICAgICAgICAgICAgICAgICB8ICAgIDggKystLQ0KPiA+ICBhcmNo
-L2FybS9tYWNoLWRhdmluY2kvZGV2aWNlcy1kYTh4eC5jICAgICAgICAgIHwgICA0MCArKysrKysr
-KysrKysrKysrLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9kZXZpY2VzLXRuZXR2MTA3
-eC5jICAgICAgfCAgIDM1ICsrKysrKysrKysrKysrLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2
-aW5jaS9kbTM1NS5jICAgICAgICAgICAgICAgICAgfCAgIDQ4ICsrKysrKysrKysrKysrKysrKy0t
-LS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9kbTM2NS5jICAgICAgICAgICAgICAgICAg
-fCAgIDM1ICsrKysrKysrKysrKy0tLS0NCj4gPiAgYXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RtNjQ0
-eC5jICAgICAgICAgICAgICAgICB8ICAgNDggKysrKysrKysrKysrKysrKysrLS0tLS0NCj4gPiAg
-YXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RtNjQ2eC5jICAgICAgICAgICAgICAgICB8ICAgNDkgKysr
-KysrKysrKysrKysrKysrKy0tLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9pbmNsdWRl
-L21hY2gvZGE4eHguaCAgICAgfCAgICAyICstDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9p
-bmNsdWRlL21hY2gvdG5ldHYxMDd4LmggfCAgICAyICstDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2
-aW5jaS9zZXJpYWwuYyAgICAgICAgICAgICAgICAgfCAgIDE5ICsrKysrKy0tLQ0KPiA+ICBhcmNo
-L2FybS9tYWNoLWRhdmluY2kvdG5ldHYxMDd4LmMgICAgICAgICAgICAgIHwgICAgOCArKy0tDQo+
-ID4gIDEyIGZpbGVzIGNoYW5nZWQsIDIzMCBpbnNlcnRpb25zKCspLCA3MiBkZWxldGlvbnMoLSkN
-Cj4gDQo+IFsuLi5dDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9tYWNoLWRhdmluY2kv
-ZGV2aWNlcy1kYTh4eC5jIGIvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RldmljZXMtZGE4eHguYw0K
-PiA+IGluZGV4IGZjNTAyNDMuLmVlYzcxMzIgMTAwNjQ0DQo+ID4gLS0tIGEvYXJjaC9hcm0vbWFj
-aC1kYXZpbmNpL2RldmljZXMtZGE4eHguYw0KPiA+ICsrKyBiL2FyY2gvYXJtL21hY2gtZGF2aW5j
-aS9kZXZpY2VzLWRhOHh4LmMNCj4gPiBAQCAtNjcsNyArNjcsNyBAQA0KPiA+ICB2b2lkIF9faW9t
-ZW0gKmRhOHh4X3N5c2NmZzBfYmFzZTsNCj4gPiAgdm9pZCBfX2lvbWVtICpkYTh4eF9zeXNjZmcx
-X2Jhc2U7DQo+ID4gIA0KPiA+IC1zdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9wb3J0IGRh
-OHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICtzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1
-MF9wb3J0IGRhOHh4X3NlcmlhbF9wZGF0YTBbXSA9IHsNCj4gDQo+IGRhOHh4X3NlcmlhbDBfcGRh
-dGEgaXMgbW9yZSBhcHByb3ByaWF0ZS4gTGlrZXdpc2UgZm9yIG90aGVyIGVudHJpZXMgYmVsb3cu
-DQo+IA0KDQpUcnVlLCB3aWxsIGNoYW5nZSB0aGVtLg0KDQo+ID4gIAl7DQo+ID4gIAkJLm1hcGJh
-c2UJPSBEQThYWF9VQVJUMF9CQVNFLA0KPiA+ICAJCS5pcnEJCT0gSVJRX0RBOFhYX1VBUlRJTlQw
-LA0KPiA+IEBAIC03Nyw2ICs3NywxMSBAQCBzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9w
-b3J0IGRhOHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICAJCS5yZWdzaGlmdAk9IDIsDQo+ID4g
-IAl9LA0KPiA+ICAJew0KPiA+ICsJCS5mbGFncwk9IDAsDQo+ID4gKwl9LA0KPiANCj4gTm8gbmVl
-ZCBvZiB0cmFpbGluZyAnLCcgb24gc2VudGluZWwuIE5vIG5lZWQgb2YgdGhlIHplcm8gaW5pdGlh
-bGl6YXRpb24uDQo+IEhlcmUgYW5kIG90aGVyIHBsYWNlcyBiZWxvdy4NCj4gDQoNCk9rLiBJIHdp
-bGwgcmVtb3ZlIHRoZW0uDQoNCj4gPiArfTsNCj4gPiArc3RhdGljIHN0cnVjdCBwbGF0X3Nlcmlh
-bDgyNTBfcG9ydCBkYTh4eF9zZXJpYWxfcGRhdGExW10gPSB7DQo+ID4gKwl7DQo+ID4gIAkJLm1h
-cGJhc2UJPSBEQThYWF9VQVJUMV9CQVNFLA0KPiA+ICAJCS5pcnEJCT0gSVJRX0RBOFhYX1VBUlRJ
-TlQxLA0KPiA+ICAJCS5mbGFncwkJPSBVUEZfQk9PVF9BVVRPQ09ORiB8IFVQRl9TS0lQX1RFU1Qg
-fA0KPiA+IEBAIC04NSw2ICs5MCwxMSBAQCBzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9w
-b3J0IGRhOHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICAJCS5yZWdzaGlmdAk9IDIsDQo+ID4g
-IAl9LA0KPiA+ICAJew0KPiA+ICsJCS5mbGFncwk9IDAsDQo+ID4gKwl9LA0KPiA+ICt9Ow0KPiA+
-ICtzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9wb3J0IGRhOHh4X3NlcmlhbF9wZGF0YTJb
-XSA9IHsNCj4gPiArCXsNCj4gPiAgCQkubWFwYmFzZQk9IERBOFhYX1VBUlQyX0JBU0UsDQo+ID4g
-IAkJLmlycQkJPSBJUlFfREE4WFhfVUFSVElOVDIsDQo+ID4gIAkJLmZsYWdzCQk9IFVQRl9CT09U
-X0FVVE9DT05GIHwgVVBGX1NLSVBfVEVTVCB8DQo+ID4gQEAgLTk3LDExICsxMDcsMjkgQEAgc3Rh
-dGljIHN0cnVjdCBwbGF0X3NlcmlhbDgyNTBfcG9ydCBkYTh4eF9zZXJpYWxfcGRhdGFbXSA9IHsN
-Cj4gPiAgCX0sDQo+ID4gIH07DQo+ID4gIA0KPiA+IC1zdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlIGRh
-OHh4X3NlcmlhbF9kZXZpY2UgPSB7DQo+ID4gLQkubmFtZQk9ICJzZXJpYWw4MjUwIiwNCj4gPiAt
-CS5pZAk9IFBMQVQ4MjUwX0RFVl9QTEFURk9STSwNCj4gPiAtCS5kZXYJPSB7DQo+ID4gLQkJLnBs
-YXRmb3JtX2RhdGEJPSBkYTh4eF9zZXJpYWxfcGRhdGEsDQo+ID4gK3N0cnVjdCBwbGF0Zm9ybV9k
-ZXZpY2UgZGE4eHhfc2VyaWFsX2RldmljZVtdID0gew0KPiA+ICsJew0KPiA+ICsJCS5uYW1lCT0g
-InNlcmlhbDgyNTAiLA0KPiA+ICsJCS5pZAk9IFBMQVQ4MjUwX0RFVl9QTEFURk9STSwNCj4gPiAr
-CQkuZGV2CT0gew0KPiA+ICsJCQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTAs
-DQo+ID4gKwkJfSwNCj4gPiArCX0sDQo+ID4gKwl7DQo+ID4gKwkJLm5hbWUJPSAic2VyaWFsODI1
-MCIsDQo+ID4gKwkJLmlkCT0gUExBVDgyNTBfREVWX1BMQVRGT1JNMSwNCj4gPiArCQkuZGV2CT0g
-ew0KPiA+ICsJCQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTEsDQo+ID4gKwkJ
-fSwNCj4gPiArCX0sDQo+ID4gKwl7DQo+ID4gKwkJLm5hbWUJPSAic2VyaWFsODI1MCIsDQo+ID4g
-KwkJLmlkCT0gUExBVDgyNTBfREVWX1BMQVRGT1JNMiwNCj4gPiArCQkuZGV2CT0gew0KPiA+ICsJ
-CQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTIsDQo+ID4gKwkJfSwNCj4gPiAr
-CX0sDQo+ID4gKwl7DQo+ID4gIAl9LA0KPiA+ICB9Ow0KPiANCj4gWy4uLl0NCj4gDQo+ID4gZGlm
-ZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtZGF2aW5jaS9zZXJpYWwuYyBiL2FyY2gvYXJtL21hY2gt
-ZGF2aW5jaS9zZXJpYWwuYw0KPiA+IGluZGV4IGYyNjI1ODEuLjU3ZTYxNTAgMTAwNjQ0DQo+ID4g
-LS0tIGEvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL3NlcmlhbC5jDQo+ID4gKysrIGIvYXJjaC9hcm0v
-bWFjaC1kYXZpbmNpL3NlcmlhbC5jDQo+ID4gQEAgLTc2LDcgKzc2LDcgQEAgaW50IF9faW5pdCBk
-YXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsodW5zaWduZWQgaW5zdGFuY2UsIHVuc2lnbmVkIGludCAq
-cmF0ZSkNCj4gPiAgCWNoYXIgbmFtZVsxNl07DQo+ID4gIAlzdHJ1Y3QgY2xrICpjbGs7DQo+ID4g
-IAlzdHJ1Y3QgZGF2aW5jaV9zb2NfaW5mbyAqc29jX2luZm8gPSAmZGF2aW5jaV9zb2NfaW5mbzsN
-Cj4gPiAtCXN0cnVjdCBkZXZpY2UgKmRldiA9ICZzb2NfaW5mby0+c2VyaWFsX2Rldi0+ZGV2Ow0K
-PiA+ICsJc3RydWN0IGRldmljZSAqZGV2ID0gJnNvY19pbmZvLT5zZXJpYWxfZGV2W2luc3RhbmNl
-XS5kZXY7DQo+ID4gIA0KPiA+ICAJc3ByaW50ZihuYW1lLCAidWFydCVkIiwgaW5zdGFuY2UpOw0K
-PiA+ICAJY2xrID0gY2xrX2dldChkZXYsIG5hbWUpOw0KPiANCj4gV2h5IG5vdCBwYXNzIGNvbl9p
-ZCA9IE5VTEwgbm93Pw0KPiANCg0KQ29ycmVjdCwgSSB3aWxsIGNoYW5nZSBpdC4NCg0KPiA+IEBA
-IC05NiwxOSArOTYsMjUgQEAgaW50IF9faW5pdCBkYXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsodW5z
-aWduZWQgaW5zdGFuY2UsIHVuc2lnbmVkIGludCAqcmF0ZSkNCj4gPiAgDQo+ID4gIGludCBfX2lu
-aXQgZGF2aW5jaV9zZXJpYWxfaW5pdChzdHJ1Y3QgZGF2aW5jaV91YXJ0X2NvbmZpZyAqaW5mbykN
-Cj4gPiAgew0KPiA+IC0JaW50IGksIHJldDsNCj4gPiArCWludCBpLCByZXQgPSAwOw0KPiA+ICAJ
-c3RydWN0IGRhdmluY2lfc29jX2luZm8gKnNvY19pbmZvID0gJmRhdmluY2lfc29jX2luZm87DQo+
-ID4gLQlzdHJ1Y3QgZGV2aWNlICpkZXYgPSAmc29jX2luZm8tPnNlcmlhbF9kZXYtPmRldjsNCj4g
-PiAtCXN0cnVjdCBwbGF0X3NlcmlhbDgyNTBfcG9ydCAqcCA9IGRldi0+cGxhdGZvcm1fZGF0YTsN
-Cj4gPiArCXN0cnVjdCBkZXZpY2UgKmRldjsNCj4gPiArCXN0cnVjdCBwbGF0X3NlcmlhbDgyNTBf
-cG9ydCAqcDsNCj4gPiAgDQo+ID4gIAkvKg0KPiA+ICAJICogTWFrZSBzdXJlIHRoZSBzZXJpYWwg
-cG9ydHMgYXJlIG11eGVkIG9uIGF0IHRoaXMgcG9pbnQuDQo+ID4gIAkgKiBZb3UgaGF2ZSB0byBt
-dXggdGhlbSBvZmYgaW4gZGV2aWNlIGRyaXZlcnMgbGF0ZXIgb24gaWYgbm90IG5lZWRlZC4NCj4g
-PiAgCSAqLw0KPiA+IC0JZm9yIChpID0gMDsgcC0+ZmxhZ3M7IGkrKywgcCsrKSB7DQo+ID4gKwlm
-b3IgKGkgPSAwOyBzb2NfaW5mby0+c2VyaWFsX2RldltpXS5kZXYucGxhdGZvcm1fZGF0YSAhPSBO
-VUxMOyBpKyspIHsNCj4gPiArCQlkZXYgPSAmc29jX2luZm8tPnNlcmlhbF9kZXZbaV0uZGV2Ow0K
-PiA+ICsJCXAgPSBkZXYtPnBsYXRmb3JtX2RhdGE7DQo+ID4gIAkJaWYgKCEoaW5mby0+ZW5hYmxl
-ZF91YXJ0cyAmICgxIDw8IGkpKSkNCj4gPiAgCQkJY29udGludWU7DQo+ID4gIA0KPiA+ICsJCXJl
-dCA9IHBsYXRmb3JtX2RldmljZV9yZWdpc3Rlcigmc29jX2luZm8tPnNlcmlhbF9kZXZbaV0pOw0K
-PiA+ICsJCWlmIChyZXQpDQo+ID4gKwkJCWNvbnRpbnVlOw0KPiA+ICsNCj4gPiAgCQlyZXQgPSBk
-YXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsoaSwgJnAtPnVhcnRjbGspOw0KPiA+ICAJCWlmIChyZXQp
-DQo+ID4gIAkJCWNvbnRpbnVlOw0KPiA+IEBAIC0xMjUsNiArMTMxLDUgQEAgaW50IF9faW5pdCBk
-YXZpbmNpX3NlcmlhbF9pbml0KHN0cnVjdCBkYXZpbmNpX3VhcnRfY29uZmlnICppbmZvKQ0KPiA+
-ICAJCWlmIChwLT5tZW1iYXNlICYmIHAtPnR5cGUgIT0gUE9SVF9BUjcpDQo+ID4gIAkJCWRhdmlu
-Y2lfc2VyaWFsX3Jlc2V0KHApOw0KPiA+ICAJfQ0KPiA+IC0NCj4gPiAtCXJldHVybiBwbGF0Zm9y
-bV9kZXZpY2VfcmVnaXN0ZXIoc29jX2luZm8tPnNlcmlhbF9kZXYpOw0KPiA+ICsJcmV0dXJuIHJl
-dDsNCj4gPiAgfQ0KPiANCj4gTm93IHRoYXQgd2UgYXJlIG92ZXJoYXVsaW5nIHRoaXMgcGFydCBv
-ZiBjb2RlLCBzb21lIGltcHJvdmVtZW50cyBjYW4gYmUNCj4gZG9uZS4gRmlyc3QsIGdldCByaWQg
-b2Ygc3RydWN0IGRhdmluY2lfdWFydF9jb25maWcuIE5vbmUgb2YgdGhlIGJvYXJkDQo+IGZpbGVz
-IHVzZSBpdCBtZWFuaW5nZnVsbHkgYW5kIHdlIGtub3cgd2UgYXJlIG5vdCBnb2luZyB0byBoYXZl
-IG1vcmUNCj4gYm9hcmQgZmlsZXMuIFNlY29uZCwgbWFrZSBkYXZpbmNpX3NlcmlhbF9pbml0KCkg
-dGFrZSBwb2ludGVyIHRvIHNlcmlhbA0KPiBwbGF0Zm9ybSBkZXZpY2UgZGlyZWN0bHkuIFRoaXMg
-ZWxpbWluYXRlcyBuZWVkIGZvciBzZXJpYWxfZGV2IGluIHRoZQ0KPiBzb2NfaW5mbyBzdHJ1Y3R1
-cmUgKHlheSEpLiBZb3UgbWlnaHQgYWxzbyBmaW5kIHRoYXQNCj4gZGF2aW5jaV9zZXJpYWxfc2V0
-dXBfY2xrKCkgY2FuIGJlIGVsaW1pbmF0ZWQgYXMgd2VsbCBzaW5jZSB0aGVyZSBpcyBub3QNCj4g
-bXVjaCB0byBkbyB0aGVyZSBub3cuDQo+IA0KDQpPayBJIHdpbGwgY2xlYW51cCB0aGlzIGFuZCBz
-dWJtaXQgdjIuDQoNClRoYW5rcywNClByYWthc2gNCg==
+Hi Sourav,
+
+Sourav Poddar <sourav.poddar@ti.com> writes:
+
+> Resending this patch series again on top of 3.10-rc1.
+>
+> This is a cleanup series done in response to the
+> serial driver fixes done for "no_console_suspend" case.
+
+Greg has queued the serial core changes for v3.11, and I've queued this
+series for the OMAP specific changes for v3.11[1].
+
+Thanks again for your persistence with this series.
+
+Kevin
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-omap-pm.git for_3.11/uart/no_console_suspend
+
+> This cleanups mainly include getting
+> rid of using "omap_device_disable_idle_on_suspend" api for both dt and non dt case
+> as the serial driver will be self sufficient to handle the "no_idle_on_suspend" issue.
+> Serial was the only one making use of "omap_device_disable_idle_on_suspend"
+>
+> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+> Cc: Felipe Balbi <balbi@ti.com>
+> Cc: Rajendra nayak <rnayak@ti.com>
+>
+> Test info
+> Omap4430sdp:
+> - Tested wakeup from UART after suspend for dt and non dt case.
+> Omap5430evm:
+> - Tested wakeup from UART after suspend for dt case.
+>
+> These patches were the part of the bigger series[2]. Breaking them into
+> two relevant series as they go through the different tree.
+>
+> [2]: http://lkml.org/lkml/2013/4/26/274
+>
+> The following changes since commit b973425cbb51e08301b34fecdfd476a44507d8cf:
+>
+>   Merge tag 'ext4_for_linus_stable' of git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4 (2013-05-14 09:30:54 -0700)
+>
+> are available in the git repository at:
+>
+>   git://gitorious.org/linux-connectivity/linux-connectivity.git omap_fix_resend
+>
+> Sourav Poddar (3):
+>       arm: omap2+: serial: remove no_console_suspend support
+>       arm: dts: am33xx: Remove "ti,no_idle_on_suspend" property.
+>       arm: omap2+: omap_device: remove no_idle_on_suspend
+>
+>  arch/arm/boot/dts/am33xx.dtsi     |    1 -
+>  arch/arm/mach-omap2/omap_device.c |    9 ++-------
+>  arch/arm/mach-omap2/omap_device.h |   10 ----------
+>  arch/arm/mach-omap2/serial.c      |    7 -------
+>  4 files changed, 2 insertions(+), 25 deletions(-)
