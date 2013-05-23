@@ -1,90 +1,75 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.10-rc3
-Date: Thu, 23 May 2013 09:17:03 -0700
-Message-ID: <20130523161703.GA14601@kroah.com>
+From: Stephen GALLIMORE <stephen.gallimore@st.com>
+Subject: RE: [RFC 1/8] serial:st-asc: Add ST ASC driver.
+Date: Thu, 23 May 2013 18:26:09 +0200
+Message-ID: <A3BF01DB4A606149A4C20C4C4C808F6C3363440503@SAFEX1MAIL1.st.com>
+References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com>
+ <201305081634.43498.arnd@arndb.de>
+ <A3BF01DB4A606149A4C20C4C4C808F6C336343F95B@SAFEX1MAIL1.st.com>
+ <201305221713.37752.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:48721 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759668Ab3EWQRE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 May 2013 12:17:04 -0400
-Content-Disposition: inline
+Received: from eu1sys200aog117.obsmtp.com ([207.126.144.143]:40525 "EHLO
+	eu1sys200aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752403Ab3EWQ0R convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 May 2013 12:26:17 -0400
+In-Reply-To: <201305221713.37752.arnd@arndb.de>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-The following changes since commit f722406faae2d073cc1d01063d1123c35425939e:
 
-  Linux 3.10-rc1 (2013-05-11 17:14:08 -0700)
+On Wednesday 22 May 2013, Arnd Bergmann wrote:
+> > Also all of the custom_divisor functionality is basically commented as "old"
+> > or has a kernel warning saying it is deprecated (see uart_set_info), so as
+> > far as I can see for our (and I suspect most) hardware it is completely
+> > irrelevant functionality.
+> 
+> What may have happened here is that custom_divisor was used in a different
+> way when I added that code than it is today, and the change was not propagated
+> into the of_serial driver. However, going back to 2.6.20 shows no different
+> code than what we have today in this regard. It may simply have been
+> a mistake on my side.
 
-are available in the git repository at:
+Thanks for looking into this and digging around in the history. At least I didn't
+miss something really obvious.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.10-rc2
+> I looked it up in the original serial port binding at
+> http://www.openfirmware.org/1275/bindings/devices/html/serial.ht
+> ml, which does
+> not specify the property, and in ePAPR, which does have it in the
+> section about
+> "serial class devices":
+> 
+> 18 6.2.1.2 current-speed
+> 19 Property: current-speed
+> 20 Value type: <u32>
+> 21 Description:
+> 22 Specifies the current speed of a serial device in bits per second. A
+> boot program should set
+> 23 this property if it has initialized the serial device.
+> 24 Example:
+> 25 current - speed = <115200>; # 115200 baud
+> 
+> The reason you want this is so that the driver can initialize the hardware from
+> scratch more easily and get back to the same settings. Why they only specified
+> the baud rate but not also start/stop bits and flow control I don't understand
+> though.
 
-for you to fetch changes up to e037f95ffb5355ffe295e1d106d02fefd284d882:
+Yes, I had been made aware of the ePAPR definition by Srini after I sent the post.
+In fact I had exactly the same question in my head about the other settings as
+well.  
 
-  tty: mxser: Fix build warning introduced by dfc7b837c7f9 (Re: linux-next: build warning after merge of the tty.current tree) (2013-05-22 10:26:02 -0700)
+> 
+> I guess you can ignore my original comment.
+> 
+OK.
 
-----------------------------------------------------------------
-tty/serial fixes for 3.10-rc2
+Thanks again for your time.
 
-Here are some tty / serial driver fixes for 3.10-rc2.
-
-Nothing huge, although the rocket driver fix looks large, it's just
-moving the code around to fix the reported build issues in it.  Other
-than that, this has the fix for the of-reported lockdep warning from the
-vt layer, as well as some other needed bugfixes.
-
-All of these have been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Ezequiel Garcia (1):
-      serial: 8250_dw: Add valid clk pointer check
-
-Heikki Krogerus (1):
-      serial: 8250_dw: add ACPI ID for Intel BayTrail
-
-Jiri Slaby (1):
-      TTY: rocket, fix more no-PCI warnings
-
-Lars-Peter Clausen (1):
-      tty: nwpserial: Pass correct pointer to free_irq()
-
-Lee Jones (1):
-      serial: pl011: protect attribute read from NULL platform data struct
-
-Matwey V. Kornilov (2):
-      tty: mxser: fix usage of opmode_ioaddr
-      tty: mxser: Fix build warning introduced by dfc7b837c7f9 (Re: linux-next: build warning after merge of the tty.current tree)
-
-Peter Hurley (1):
-      tty/vt: Fix vc_deallocate() lock order
-
-Wang YanQing (1):
-      TTY: Fix tty miss restart after we turn off flow-control
-
-Wei Yongjun (4):
-      serial: samsung: add missing platform_driver_unregister() when module exit
-      tty: serial: mpc5xxx: fix error handing in mpc52xx_uart_init()
-      serial: mcf: missing uart_unregister_driver() on error in mcf_init()
-      TTY: ehv_bytechan: add missing platform_driver_unregister() when module exit
-
- drivers/tty/ehv_bytechan.c        |   1 +
- drivers/tty/mxser.c               |  11 +-
- drivers/tty/n_tty.c               |   8 ++
- drivers/tty/rocket.c              | 288 +++++++++++++++++++-------------------
- drivers/tty/serial/8250/8250_dw.c |   7 +-
- drivers/tty/serial/amba-pl011.c   |   2 +-
- drivers/tty/serial/mcf.c          |   4 +-
- drivers/tty/serial/mpc52xx_uart.c |  11 +-
- drivers/tty/serial/nwpserial.c    |   2 +-
- drivers/tty/serial/samsung.c      |   1 +
- drivers/tty/vt/vt.c               |  14 +-
- drivers/tty/vt/vt_ioctl.c         |  67 ++++++---
- include/linux/vt_kern.h           |   2 +-
- 13 files changed, 234 insertions(+), 184 deletions(-)
+Regards,
+-stephen
