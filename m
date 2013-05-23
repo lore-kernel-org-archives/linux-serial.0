@@ -1,358 +1,139 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] serial: use platform_{get,set}_drvdata()
-Date: Thu, 23 May 2013 19:39:36 +0900
-Message-ID: <002f01ce57a1$d2016120$76042360$@samsung.com>
+From: "Manjunathappa, Prakash" <prakash.pm@ti.com>
+Subject: RE: [PATCH 1/4] ARM: davinci: uart: move to dev_id based clk_get
+Date: Thu, 23 May 2013 13:25:57 +0000
+Message-ID: <A73F36158E33644199EB82C5EC81C7BC3EA6726A@DBDE04.ent.ti.com>
+References: <1365510481-32129-1-git-send-email-prakash.pm@ti.com>
+ <1365510664-1394-2-git-send-email-prakash.pm@ti.com>
+ <517A2661.3000605@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:58277 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758065Ab3EWKji (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 May 2013 06:39:38 -0400
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MN800FP9YXAY2Z0@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Thu, 23 May 2013 19:39:36 +0900 (KST)
-Content-language: ko
+Received: from comal.ext.ti.com ([198.47.26.152]:41196 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758797Ab3EWN0s (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 May 2013 09:26:48 -0400
+In-Reply-To: <517A2661.3000605@ti.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, "'David S. Miller'" <davem@davemloft.net>, 'Timur Tabi' <timur@tabi.org>
+To: "Nori, Sekhar" <nsekhar@ti.com>
+Cc: "davinci-linux-open-source@linux.davincidsp.com" <davinci-linux-open-source@linux.davincidsp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@secretlab.ca" <grant.likely@secretlab.ca>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "hs@denx.de" <hs@denx.de>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 
-Use the wrapper functions for getting and setting the driver data using
-platform_device instead of using dev_{get,set}_drvdata() with &pdev->dev,
-so we can directly pass a struct platform_device.
-
-Also, unnecessary dev_set_drvdata() is removed, because the driver core
-clears the driver data to NULL after device_release or on probe failure.
-
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/tty/serial/cpm_uart/cpm_uart_core.c |    4 ++--
- drivers/tty/serial/mpc52xx_uart.c           |    9 ++++-----
- drivers/tty/serial/of_serial.c              |    4 ++--
- drivers/tty/serial/sc26xx.c                 |    5 ++---
- drivers/tty/serial/sunhv.c                  |    6 ++----
- drivers/tty/serial/sunsab.c                 |    6 ++----
- drivers/tty/serial/sunsu.c                  |    8 +++-----
- drivers/tty/serial/sunzilog.c               |    6 ++----
- drivers/tty/serial/ucc_uart.c               |    5 ++---
- drivers/tty/serial/xilinx_uartps.c          |    6 ++----
- 10 files changed, 23 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 97f4e18..f7672ca 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1384,7 +1384,7 @@ static int cpm_uart_probe(struct platform_device *ofdev)
- 	if (index >= UART_NR)
- 		return -ENODEV;
- 
--	dev_set_drvdata(&ofdev->dev, pinfo);
-+	platform_set_drvdata(ofdev, pinfo);
- 
- 	/* initialize the device pointer for the port */
- 	pinfo->port.dev = &ofdev->dev;
-@@ -1398,7 +1398,7 @@ static int cpm_uart_probe(struct platform_device *ofdev)
- 
- static int cpm_uart_remove(struct platform_device *ofdev)
- {
--	struct uart_cpm_port *pinfo = dev_get_drvdata(&ofdev->dev);
-+	struct uart_cpm_port *pinfo = platform_get_drvdata(ofdev);
- 	return uart_remove_one_port(&cpm_reg, &pinfo->port);
- }
- 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 510fa98..2c03904 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -1362,15 +1362,14 @@ static int mpc52xx_uart_of_probe(struct platform_device *op)
- 	if (ret)
- 		return ret;
- 
--	dev_set_drvdata(&op->dev, (void *)port);
-+	platform_set_drvdata(op, (void *)port);
- 	return 0;
- }
- 
- static int
- mpc52xx_uart_of_remove(struct platform_device *op)
- {
--	struct uart_port *port = dev_get_drvdata(&op->dev);
--	dev_set_drvdata(&op->dev, NULL);
-+	struct uart_port *port = platform_get_drvdata(op);
- 
- 	if (port)
- 		uart_remove_one_port(&mpc52xx_uart_driver, port);
-@@ -1382,7 +1381,7 @@ mpc52xx_uart_of_remove(struct platform_device *op)
- static int
- mpc52xx_uart_of_suspend(struct platform_device *op, pm_message_t state)
- {
--	struct uart_port *port = (struct uart_port *) dev_get_drvdata(&op->dev);
-+	struct uart_port *port = (struct uart_port *) platform_get_drvdata(op);
- 
- 	if (port)
- 		uart_suspend_port(&mpc52xx_uart_driver, port);
-@@ -1393,7 +1392,7 @@ mpc52xx_uart_of_suspend(struct platform_device *op, pm_message_t state)
- static int
- mpc52xx_uart_of_resume(struct platform_device *op)
- {
--	struct uart_port *port = (struct uart_port *) dev_get_drvdata(&op->dev);
-+	struct uart_port *port = (struct uart_port *) platform_get_drvdata(op);
- 
- 	if (port)
- 		uart_resume_port(&mpc52xx_uart_driver, port);
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 39c7ea4..2caf9c6 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -204,7 +204,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 
- 	info->type = port_type;
- 	info->line = ret;
--	dev_set_drvdata(&ofdev->dev, info);
-+	platform_set_drvdata(ofdev, info);
- 	return 0;
- out:
- 	kfree(info);
-@@ -217,7 +217,7 @@ out:
-  */
- static int of_platform_serial_remove(struct platform_device *ofdev)
- {
--	struct of_serial_info *info = dev_get_drvdata(&ofdev->dev);
-+	struct of_serial_info *info = platform_get_drvdata(ofdev);
- 	switch (info->type) {
- #ifdef CONFIG_SERIAL_8250
- 	case PORT_8250 ... PORT_MAX_8250:
-diff --git a/drivers/tty/serial/sc26xx.c b/drivers/tty/serial/sc26xx.c
-index c973568..4b1434d 100644
---- a/drivers/tty/serial/sc26xx.c
-+++ b/drivers/tty/serial/sc26xx.c
-@@ -696,7 +696,7 @@ static int sc26xx_probe(struct platform_device *dev)
- 	if (err)
- 		goto out_remove_ports;
- 
--	dev_set_drvdata(&dev->dev, up);
-+	platform_set_drvdata(dev, up);
- 	return 0;
- 
- out_remove_ports:
-@@ -716,7 +716,7 @@ out_free_port:
- 
- static int __exit sc26xx_driver_remove(struct platform_device *dev)
- {
--	struct uart_sc26xx_port *up = dev_get_drvdata(&dev->dev);
-+	struct uart_sc26xx_port *up = platform_get_drvdata(dev);
- 
- 	free_irq(up->port[0].irq, up);
- 
-@@ -728,7 +728,6 @@ static int __exit sc26xx_driver_remove(struct platform_device *dev)
- 	kfree(up);
- 	sc26xx_port = NULL;
- 
--	dev_set_drvdata(&dev->dev, NULL);
- 	return 0;
- }
- 
-diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
-index ba60708..cf86e72 100644
---- a/drivers/tty/serial/sunhv.c
-+++ b/drivers/tty/serial/sunhv.c
-@@ -577,7 +577,7 @@ static int hv_probe(struct platform_device *op)
- 	if (err)
- 		goto out_remove_port;
- 
--	dev_set_drvdata(&op->dev, port);
-+	platform_set_drvdata(op, port);
- 
- 	return 0;
- 
-@@ -601,7 +601,7 @@ out_free_port:
- 
- static int hv_remove(struct platform_device *dev)
- {
--	struct uart_port *port = dev_get_drvdata(&dev->dev);
-+	struct uart_port *port = platform_get_drvdata(dev);
- 
- 	free_irq(port->irq, port);
- 
-@@ -612,8 +612,6 @@ static int hv_remove(struct platform_device *dev)
- 	kfree(port);
- 	sunhv_port = NULL;
- 
--	dev_set_drvdata(&dev->dev, NULL);
--
- 	return 0;
- }
- 
-diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
-index a422c8b..5d6136b 100644
---- a/drivers/tty/serial/sunsab.c
-+++ b/drivers/tty/serial/sunsab.c
-@@ -1037,7 +1037,7 @@ static int sab_probe(struct platform_device *op)
- 	if (err)
- 		goto out3;
- 
--	dev_set_drvdata(&op->dev, &up[0]);
-+	platform_set_drvdata(op, &up[0]);
- 
- 	inst++;
- 
-@@ -1059,7 +1059,7 @@ out:
- 
- static int sab_remove(struct platform_device *op)
- {
--	struct uart_sunsab_port *up = dev_get_drvdata(&op->dev);
-+	struct uart_sunsab_port *up = platform_get_drvdata(op);
- 
- 	uart_remove_one_port(&sunsab_reg, &up[1].port);
- 	uart_remove_one_port(&sunsab_reg, &up[0].port);
-@@ -1070,8 +1070,6 @@ static int sab_remove(struct platform_device *op)
- 		   up[0].port.membase,
- 		   sizeof(union sab82532_async_regs));
- 
--	dev_set_drvdata(&op->dev, NULL);
--
- 	return 0;
- }
- 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 0d84657..699cc1b 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1454,7 +1454,7 @@ static int su_probe(struct platform_device *op)
- 			kfree(up);
- 			return err;
- 		}
--		dev_set_drvdata(&op->dev, up);
-+		platform_set_drvdata(op, up);
- 
- 		nr_inst++;
- 
-@@ -1483,7 +1483,7 @@ static int su_probe(struct platform_device *op)
- 	if (err)
- 		goto out_unmap;
- 
--	dev_set_drvdata(&op->dev, up);
-+	platform_set_drvdata(op, up);
- 
- 	nr_inst++;
- 
-@@ -1496,7 +1496,7 @@ out_unmap:
- 
- static int su_remove(struct platform_device *op)
- {
--	struct uart_sunsu_port *up = dev_get_drvdata(&op->dev);
-+	struct uart_sunsu_port *up = platform_get_drvdata(op);
- 	bool kbdms = false;
- 
- 	if (up->su_type == SU_PORT_MS ||
-@@ -1516,8 +1516,6 @@ static int su_remove(struct platform_device *op)
- 	if (kbdms)
- 		kfree(up);
- 
--	dev_set_drvdata(&op->dev, NULL);
--
- 	return 0;
- }
- 
-diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-index 813ef8e..135a152 100644
---- a/drivers/tty/serial/sunzilog.c
-+++ b/drivers/tty/serial/sunzilog.c
-@@ -1495,7 +1495,7 @@ static int zs_probe(struct platform_device *op)
- 		kbm_inst++;
- 	}
- 
--	dev_set_drvdata(&op->dev, &up[0]);
-+	platform_set_drvdata(op, &up[0]);
- 
- 	return 0;
- }
-@@ -1512,7 +1512,7 @@ static void zs_remove_one(struct uart_sunzilog_port *up)
- 
- static int zs_remove(struct platform_device *op)
- {
--	struct uart_sunzilog_port *up = dev_get_drvdata(&op->dev);
-+	struct uart_sunzilog_port *up = platform_get_drvdata(op);
- 	struct zilog_layout __iomem *regs;
- 
- 	zs_remove_one(&up[0]);
-@@ -1521,8 +1521,6 @@ static int zs_remove(struct platform_device *op)
- 	regs = sunzilog_chip_regs[up[0].port.line / 2];
- 	of_iounmap(&op->resource[0], regs, sizeof(struct zilog_layout));
- 
--	dev_set_drvdata(&op->dev, NULL);
--
- 	return 0;
- }
- 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 7355303..c8ab8e4 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1451,7 +1451,7 @@ static int ucc_uart_probe(struct platform_device *ofdev)
- 		goto out_np;
- 	}
- 
--	dev_set_drvdata(&ofdev->dev, qe_port);
-+	platform_set_drvdata(ofdev, qe_port);
- 
- 	dev_info(&ofdev->dev, "UCC%u assigned to /dev/ttyQE%u\n",
- 		qe_port->ucc_num + 1, qe_port->port.line);
-@@ -1471,13 +1471,12 @@ out_free:
- 
- static int ucc_uart_remove(struct platform_device *ofdev)
- {
--	struct uart_qe_port *qe_port = dev_get_drvdata(&ofdev->dev);
-+	struct uart_qe_port *qe_port = platform_get_drvdata(ofdev);
- 
- 	dev_info(&ofdev->dev, "removing /dev/ttyQE%u\n", qe_port->port.line);
- 
- 	uart_remove_one_port(&ucc_uart_driver, &qe_port->port);
- 
--	dev_set_drvdata(&ofdev->dev, NULL);
- 	kfree(qe_port);
- 
- 	return 0;
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index b5f655d..6c91745 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -974,12 +974,11 @@ static int xuartps_probe(struct platform_device *pdev)
- 		port->dev = &pdev->dev;
- 		port->uartclk = clk_get_rate(clk);
- 		port->private_data = clk;
--		dev_set_drvdata(&pdev->dev, port);
-+		platform_set_drvdata(pdev, port);
- 		rc = uart_add_one_port(&xuartps_uart_driver, port);
- 		if (rc) {
- 			dev_err(&pdev->dev,
- 				"uart_add_one_port() failed; err=%i\n", rc);
--			dev_set_drvdata(&pdev->dev, NULL);
- 			return rc;
- 		}
- 		return 0;
-@@ -994,13 +993,12 @@ static int xuartps_probe(struct platform_device *pdev)
-  **/
- static int xuartps_remove(struct platform_device *pdev)
- {
--	struct uart_port *port = dev_get_drvdata(&pdev->dev);
-+	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct clk *clk = port->private_data;
- 	int rc;
- 
- 	/* Remove the xuartps port from the serial core */
- 	rc = uart_remove_one_port(&xuartps_uart_driver, port);
--	dev_set_drvdata(&pdev->dev, NULL);
- 	port->mapbase = 0;
- 	clk_disable_unprepare(clk);
- 	return rc;
--- 
-1.7.10.4
-
-
+SGkgU2VraGFyLA0KDQpUaGFua3MgZm9yIHJldmlld2luZy4NCg0KT24gRnJpLCBBcHIgMjYsIDIw
+MTMgYXQgMTI6MzE6NTMsIE5vcmksIFNla2hhciB3cm90ZToNCj4gSGkgUHJha2FzaCwNCj4gDQo+
+IE9uIDQvOS8yMDEzIDY6MDEgUE0sIE1hbmp1bmF0aGFwcGEsIFByYWthc2ggd3JvdGU6DQo+ID4g
+Rm9yIG1vZHVsZXMgaGF2aW5nIHNpbmdsZSBjbG9jaywgY2xrX2dldCBzaG91bGQgYmUgZG9uZSB3
+aXRoIGRldl9pZC4NCj4gPiBCdXQgY3VycmVudCBkYXZpbmNpIGltcGxlbWVudGF0aW9uIGhhbmRs
+ZXMgbXVsdGlwbGUgaW5zdGFuY2VzDQo+ID4gb2YgdGhlIFVBUlQgZGV2aWNlcyB3aXRoIHNpbmds
+ZSBwbGF0Zm9ybV9kZXZpY2VfcmVnaXN0ZXIuIEhlbmNlIGNsa19nZXQNCj4gPiBpcyBiYXNlZCBv
+biBjb25faWQgcmF0aGVyIHRoYW4gZGV2X2lkLCB0aGlzIGlzIG5vdCBjb3JyZWN0LiBEbw0KPiA+
+IHBsYXRmb3JtX2RldmljZV9yZWdpc3RlciBmb3IgZWFjaCBpbnN0YW5jZSBhbmQgY2xrX2dldCBv
+biBkZXZfaWQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTWFuanVuYXRoYXBwYSwgUHJha2Fz
+aCA8cHJha2FzaC5wbUB0aS5jb20+DQo+ID4gLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5j
+aS9kYTgzMC5jICAgICAgICAgICAgICAgICAgfCAgICA4ICsrLS0NCj4gPiAgYXJjaC9hcm0vbWFj
+aC1kYXZpbmNpL2RhODUwLmMgICAgICAgICAgICAgICAgICB8ICAgIDggKystLQ0KPiA+ICBhcmNo
+L2FybS9tYWNoLWRhdmluY2kvZGV2aWNlcy1kYTh4eC5jICAgICAgICAgIHwgICA0MCArKysrKysr
+KysrKysrKysrLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9kZXZpY2VzLXRuZXR2MTA3
+eC5jICAgICAgfCAgIDM1ICsrKysrKysrKysrKysrLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2
+aW5jaS9kbTM1NS5jICAgICAgICAgICAgICAgICAgfCAgIDQ4ICsrKysrKysrKysrKysrKysrKy0t
+LS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9kbTM2NS5jICAgICAgICAgICAgICAgICAg
+fCAgIDM1ICsrKysrKysrKysrKy0tLS0NCj4gPiAgYXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RtNjQ0
+eC5jICAgICAgICAgICAgICAgICB8ICAgNDggKysrKysrKysrKysrKysrKysrLS0tLS0NCj4gPiAg
+YXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RtNjQ2eC5jICAgICAgICAgICAgICAgICB8ICAgNDkgKysr
+KysrKysrKysrKysrKysrKy0tLS0tDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9pbmNsdWRl
+L21hY2gvZGE4eHguaCAgICAgfCAgICAyICstDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2aW5jaS9p
+bmNsdWRlL21hY2gvdG5ldHYxMDd4LmggfCAgICAyICstDQo+ID4gIGFyY2gvYXJtL21hY2gtZGF2
+aW5jaS9zZXJpYWwuYyAgICAgICAgICAgICAgICAgfCAgIDE5ICsrKysrKy0tLQ0KPiA+ICBhcmNo
+L2FybS9tYWNoLWRhdmluY2kvdG5ldHYxMDd4LmMgICAgICAgICAgICAgIHwgICAgOCArKy0tDQo+
+ID4gIDEyIGZpbGVzIGNoYW5nZWQsIDIzMCBpbnNlcnRpb25zKCspLCA3MiBkZWxldGlvbnMoLSkN
+Cj4gDQo+IFsuLi5dDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9tYWNoLWRhdmluY2kv
+ZGV2aWNlcy1kYTh4eC5jIGIvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL2RldmljZXMtZGE4eHguYw0K
+PiA+IGluZGV4IGZjNTAyNDMuLmVlYzcxMzIgMTAwNjQ0DQo+ID4gLS0tIGEvYXJjaC9hcm0vbWFj
+aC1kYXZpbmNpL2RldmljZXMtZGE4eHguYw0KPiA+ICsrKyBiL2FyY2gvYXJtL21hY2gtZGF2aW5j
+aS9kZXZpY2VzLWRhOHh4LmMNCj4gPiBAQCAtNjcsNyArNjcsNyBAQA0KPiA+ICB2b2lkIF9faW9t
+ZW0gKmRhOHh4X3N5c2NmZzBfYmFzZTsNCj4gPiAgdm9pZCBfX2lvbWVtICpkYTh4eF9zeXNjZmcx
+X2Jhc2U7DQo+ID4gIA0KPiA+IC1zdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9wb3J0IGRh
+OHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICtzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1
+MF9wb3J0IGRhOHh4X3NlcmlhbF9wZGF0YTBbXSA9IHsNCj4gDQo+IGRhOHh4X3NlcmlhbDBfcGRh
+dGEgaXMgbW9yZSBhcHByb3ByaWF0ZS4gTGlrZXdpc2UgZm9yIG90aGVyIGVudHJpZXMgYmVsb3cu
+DQo+IA0KDQpUcnVlLCB3aWxsIGNoYW5nZSB0aGVtLg0KDQo+ID4gIAl7DQo+ID4gIAkJLm1hcGJh
+c2UJPSBEQThYWF9VQVJUMF9CQVNFLA0KPiA+ICAJCS5pcnEJCT0gSVJRX0RBOFhYX1VBUlRJTlQw
+LA0KPiA+IEBAIC03Nyw2ICs3NywxMSBAQCBzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9w
+b3J0IGRhOHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICAJCS5yZWdzaGlmdAk9IDIsDQo+ID4g
+IAl9LA0KPiA+ICAJew0KPiA+ICsJCS5mbGFncwk9IDAsDQo+ID4gKwl9LA0KPiANCj4gTm8gbmVl
+ZCBvZiB0cmFpbGluZyAnLCcgb24gc2VudGluZWwuIE5vIG5lZWQgb2YgdGhlIHplcm8gaW5pdGlh
+bGl6YXRpb24uDQo+IEhlcmUgYW5kIG90aGVyIHBsYWNlcyBiZWxvdy4NCj4gDQoNCk9rLiBJIHdp
+bGwgcmVtb3ZlIHRoZW0uDQoNCj4gPiArfTsNCj4gPiArc3RhdGljIHN0cnVjdCBwbGF0X3Nlcmlh
+bDgyNTBfcG9ydCBkYTh4eF9zZXJpYWxfcGRhdGExW10gPSB7DQo+ID4gKwl7DQo+ID4gIAkJLm1h
+cGJhc2UJPSBEQThYWF9VQVJUMV9CQVNFLA0KPiA+ICAJCS5pcnEJCT0gSVJRX0RBOFhYX1VBUlRJ
+TlQxLA0KPiA+ICAJCS5mbGFncwkJPSBVUEZfQk9PVF9BVVRPQ09ORiB8IFVQRl9TS0lQX1RFU1Qg
+fA0KPiA+IEBAIC04NSw2ICs5MCwxMSBAQCBzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9w
+b3J0IGRhOHh4X3NlcmlhbF9wZGF0YVtdID0gew0KPiA+ICAJCS5yZWdzaGlmdAk9IDIsDQo+ID4g
+IAl9LA0KPiA+ICAJew0KPiA+ICsJCS5mbGFncwk9IDAsDQo+ID4gKwl9LA0KPiA+ICt9Ow0KPiA+
+ICtzdGF0aWMgc3RydWN0IHBsYXRfc2VyaWFsODI1MF9wb3J0IGRhOHh4X3NlcmlhbF9wZGF0YTJb
+XSA9IHsNCj4gPiArCXsNCj4gPiAgCQkubWFwYmFzZQk9IERBOFhYX1VBUlQyX0JBU0UsDQo+ID4g
+IAkJLmlycQkJPSBJUlFfREE4WFhfVUFSVElOVDIsDQo+ID4gIAkJLmZsYWdzCQk9IFVQRl9CT09U
+X0FVVE9DT05GIHwgVVBGX1NLSVBfVEVTVCB8DQo+ID4gQEAgLTk3LDExICsxMDcsMjkgQEAgc3Rh
+dGljIHN0cnVjdCBwbGF0X3NlcmlhbDgyNTBfcG9ydCBkYTh4eF9zZXJpYWxfcGRhdGFbXSA9IHsN
+Cj4gPiAgCX0sDQo+ID4gIH07DQo+ID4gIA0KPiA+IC1zdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlIGRh
+OHh4X3NlcmlhbF9kZXZpY2UgPSB7DQo+ID4gLQkubmFtZQk9ICJzZXJpYWw4MjUwIiwNCj4gPiAt
+CS5pZAk9IFBMQVQ4MjUwX0RFVl9QTEFURk9STSwNCj4gPiAtCS5kZXYJPSB7DQo+ID4gLQkJLnBs
+YXRmb3JtX2RhdGEJPSBkYTh4eF9zZXJpYWxfcGRhdGEsDQo+ID4gK3N0cnVjdCBwbGF0Zm9ybV9k
+ZXZpY2UgZGE4eHhfc2VyaWFsX2RldmljZVtdID0gew0KPiA+ICsJew0KPiA+ICsJCS5uYW1lCT0g
+InNlcmlhbDgyNTAiLA0KPiA+ICsJCS5pZAk9IFBMQVQ4MjUwX0RFVl9QTEFURk9STSwNCj4gPiAr
+CQkuZGV2CT0gew0KPiA+ICsJCQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTAs
+DQo+ID4gKwkJfSwNCj4gPiArCX0sDQo+ID4gKwl7DQo+ID4gKwkJLm5hbWUJPSAic2VyaWFsODI1
+MCIsDQo+ID4gKwkJLmlkCT0gUExBVDgyNTBfREVWX1BMQVRGT1JNMSwNCj4gPiArCQkuZGV2CT0g
+ew0KPiA+ICsJCQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTEsDQo+ID4gKwkJ
+fSwNCj4gPiArCX0sDQo+ID4gKwl7DQo+ID4gKwkJLm5hbWUJPSAic2VyaWFsODI1MCIsDQo+ID4g
+KwkJLmlkCT0gUExBVDgyNTBfREVWX1BMQVRGT1JNMiwNCj4gPiArCQkuZGV2CT0gew0KPiA+ICsJ
+CQkucGxhdGZvcm1fZGF0YQk9IGRhOHh4X3NlcmlhbF9wZGF0YTIsDQo+ID4gKwkJfSwNCj4gPiAr
+CX0sDQo+ID4gKwl7DQo+ID4gIAl9LA0KPiA+ICB9Ow0KPiANCj4gWy4uLl0NCj4gDQo+ID4gZGlm
+ZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtZGF2aW5jaS9zZXJpYWwuYyBiL2FyY2gvYXJtL21hY2gt
+ZGF2aW5jaS9zZXJpYWwuYw0KPiA+IGluZGV4IGYyNjI1ODEuLjU3ZTYxNTAgMTAwNjQ0DQo+ID4g
+LS0tIGEvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL3NlcmlhbC5jDQo+ID4gKysrIGIvYXJjaC9hcm0v
+bWFjaC1kYXZpbmNpL3NlcmlhbC5jDQo+ID4gQEAgLTc2LDcgKzc2LDcgQEAgaW50IF9faW5pdCBk
+YXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsodW5zaWduZWQgaW5zdGFuY2UsIHVuc2lnbmVkIGludCAq
+cmF0ZSkNCj4gPiAgCWNoYXIgbmFtZVsxNl07DQo+ID4gIAlzdHJ1Y3QgY2xrICpjbGs7DQo+ID4g
+IAlzdHJ1Y3QgZGF2aW5jaV9zb2NfaW5mbyAqc29jX2luZm8gPSAmZGF2aW5jaV9zb2NfaW5mbzsN
+Cj4gPiAtCXN0cnVjdCBkZXZpY2UgKmRldiA9ICZzb2NfaW5mby0+c2VyaWFsX2Rldi0+ZGV2Ow0K
+PiA+ICsJc3RydWN0IGRldmljZSAqZGV2ID0gJnNvY19pbmZvLT5zZXJpYWxfZGV2W2luc3RhbmNl
+XS5kZXY7DQo+ID4gIA0KPiA+ICAJc3ByaW50ZihuYW1lLCAidWFydCVkIiwgaW5zdGFuY2UpOw0K
+PiA+ICAJY2xrID0gY2xrX2dldChkZXYsIG5hbWUpOw0KPiANCj4gV2h5IG5vdCBwYXNzIGNvbl9p
+ZCA9IE5VTEwgbm93Pw0KPiANCg0KQ29ycmVjdCwgSSB3aWxsIGNoYW5nZSBpdC4NCg0KPiA+IEBA
+IC05NiwxOSArOTYsMjUgQEAgaW50IF9faW5pdCBkYXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsodW5z
+aWduZWQgaW5zdGFuY2UsIHVuc2lnbmVkIGludCAqcmF0ZSkNCj4gPiAgDQo+ID4gIGludCBfX2lu
+aXQgZGF2aW5jaV9zZXJpYWxfaW5pdChzdHJ1Y3QgZGF2aW5jaV91YXJ0X2NvbmZpZyAqaW5mbykN
+Cj4gPiAgew0KPiA+IC0JaW50IGksIHJldDsNCj4gPiArCWludCBpLCByZXQgPSAwOw0KPiA+ICAJ
+c3RydWN0IGRhdmluY2lfc29jX2luZm8gKnNvY19pbmZvID0gJmRhdmluY2lfc29jX2luZm87DQo+
+ID4gLQlzdHJ1Y3QgZGV2aWNlICpkZXYgPSAmc29jX2luZm8tPnNlcmlhbF9kZXYtPmRldjsNCj4g
+PiAtCXN0cnVjdCBwbGF0X3NlcmlhbDgyNTBfcG9ydCAqcCA9IGRldi0+cGxhdGZvcm1fZGF0YTsN
+Cj4gPiArCXN0cnVjdCBkZXZpY2UgKmRldjsNCj4gPiArCXN0cnVjdCBwbGF0X3NlcmlhbDgyNTBf
+cG9ydCAqcDsNCj4gPiAgDQo+ID4gIAkvKg0KPiA+ICAJICogTWFrZSBzdXJlIHRoZSBzZXJpYWwg
+cG9ydHMgYXJlIG11eGVkIG9uIGF0IHRoaXMgcG9pbnQuDQo+ID4gIAkgKiBZb3UgaGF2ZSB0byBt
+dXggdGhlbSBvZmYgaW4gZGV2aWNlIGRyaXZlcnMgbGF0ZXIgb24gaWYgbm90IG5lZWRlZC4NCj4g
+PiAgCSAqLw0KPiA+IC0JZm9yIChpID0gMDsgcC0+ZmxhZ3M7IGkrKywgcCsrKSB7DQo+ID4gKwlm
+b3IgKGkgPSAwOyBzb2NfaW5mby0+c2VyaWFsX2RldltpXS5kZXYucGxhdGZvcm1fZGF0YSAhPSBO
+VUxMOyBpKyspIHsNCj4gPiArCQlkZXYgPSAmc29jX2luZm8tPnNlcmlhbF9kZXZbaV0uZGV2Ow0K
+PiA+ICsJCXAgPSBkZXYtPnBsYXRmb3JtX2RhdGE7DQo+ID4gIAkJaWYgKCEoaW5mby0+ZW5hYmxl
+ZF91YXJ0cyAmICgxIDw8IGkpKSkNCj4gPiAgCQkJY29udGludWU7DQo+ID4gIA0KPiA+ICsJCXJl
+dCA9IHBsYXRmb3JtX2RldmljZV9yZWdpc3Rlcigmc29jX2luZm8tPnNlcmlhbF9kZXZbaV0pOw0K
+PiA+ICsJCWlmIChyZXQpDQo+ID4gKwkJCWNvbnRpbnVlOw0KPiA+ICsNCj4gPiAgCQlyZXQgPSBk
+YXZpbmNpX3NlcmlhbF9zZXR1cF9jbGsoaSwgJnAtPnVhcnRjbGspOw0KPiA+ICAJCWlmIChyZXQp
+DQo+ID4gIAkJCWNvbnRpbnVlOw0KPiA+IEBAIC0xMjUsNiArMTMxLDUgQEAgaW50IF9faW5pdCBk
+YXZpbmNpX3NlcmlhbF9pbml0KHN0cnVjdCBkYXZpbmNpX3VhcnRfY29uZmlnICppbmZvKQ0KPiA+
+ICAJCWlmIChwLT5tZW1iYXNlICYmIHAtPnR5cGUgIT0gUE9SVF9BUjcpDQo+ID4gIAkJCWRhdmlu
+Y2lfc2VyaWFsX3Jlc2V0KHApOw0KPiA+ICAJfQ0KPiA+IC0NCj4gPiAtCXJldHVybiBwbGF0Zm9y
+bV9kZXZpY2VfcmVnaXN0ZXIoc29jX2luZm8tPnNlcmlhbF9kZXYpOw0KPiA+ICsJcmV0dXJuIHJl
+dDsNCj4gPiAgfQ0KPiANCj4gTm93IHRoYXQgd2UgYXJlIG92ZXJoYXVsaW5nIHRoaXMgcGFydCBv
+ZiBjb2RlLCBzb21lIGltcHJvdmVtZW50cyBjYW4gYmUNCj4gZG9uZS4gRmlyc3QsIGdldCByaWQg
+b2Ygc3RydWN0IGRhdmluY2lfdWFydF9jb25maWcuIE5vbmUgb2YgdGhlIGJvYXJkDQo+IGZpbGVz
+IHVzZSBpdCBtZWFuaW5nZnVsbHkgYW5kIHdlIGtub3cgd2UgYXJlIG5vdCBnb2luZyB0byBoYXZl
+IG1vcmUNCj4gYm9hcmQgZmlsZXMuIFNlY29uZCwgbWFrZSBkYXZpbmNpX3NlcmlhbF9pbml0KCkg
+dGFrZSBwb2ludGVyIHRvIHNlcmlhbA0KPiBwbGF0Zm9ybSBkZXZpY2UgZGlyZWN0bHkuIFRoaXMg
+ZWxpbWluYXRlcyBuZWVkIGZvciBzZXJpYWxfZGV2IGluIHRoZQ0KPiBzb2NfaW5mbyBzdHJ1Y3R1
+cmUgKHlheSEpLiBZb3UgbWlnaHQgYWxzbyBmaW5kIHRoYXQNCj4gZGF2aW5jaV9zZXJpYWxfc2V0
+dXBfY2xrKCkgY2FuIGJlIGVsaW1pbmF0ZWQgYXMgd2VsbCBzaW5jZSB0aGVyZSBpcyBub3QNCj4g
+bXVjaCB0byBkbyB0aGVyZSBub3cuDQo+IA0KDQpPayBJIHdpbGwgY2xlYW51cCB0aGlzIGFuZCBz
+dWJtaXQgdjIuDQoNClRoYW5rcywNClByYWthc2gNCg==
