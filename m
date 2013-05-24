@@ -1,76 +1,74 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC 3/8] mfd:syscon: Introduce claim/read/write/release APIs
-Date: Thu, 23 May 2013 23:44:11 +0200
-Message-ID: <201305232344.11974.arnd@arndb.de>
-References: <1368022187-1633-1-git-send-email-srinivas.kandagatla@st.com> <201305171636.49627.arnd@arndb.de> <519A1BBB.2070903@st.com>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <519A1BBB.2070903@st.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: srinivas.kandagatla@st.com
-Cc: dong.aisheng@linaro.org, sameo@linux.intel.com, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Stuart Menefy <stuart.menefy@st.com>, Shawn Guo <shawn.guo@linaro.org>, Olof Johansson <olof@lixom.net>, Jason Cooper <jason@lakedaemon.net>, Stephen Warren <swarren@nvidia.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Pitre <nico@linaro.org>, Will Deacon <will.deacon@arm.com>, Dave Martin <dave.martin@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+From: Kevin Cernekee <cernekee@gmail.com>
+Subject: [PATCH V3 -firmware] rp2: Initial commit of Comtrol RocketPort 2 microcode
+Date: Fri, 24 May 2013 00:53:10 -0700
+Message-ID: <1369381990-8640-1-git-send-email-cernekee@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f174.google.com ([209.85.192.174]:59397 "EHLO
+	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758598Ab3EXHy2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 24 May 2013 03:54:28 -0400
+Received: by mail-pd0-f174.google.com with SMTP id 3so2036178pdj.5
+        for <linux-serial@vger.kernel.org>; Fri, 24 May 2013 00:54:28 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: ben@decadent.org.uk, dwmw2@infradead.org
+Cc: linux-serial@vger.kernel.org, grant.edwards@comtrol.com, nick.thompson@comtrol.com
 
-On Monday 20 May 2013, Srinivas KANDAGATLA wrote:
-> On 17/05/13 15:36, Arnd Bergmann wrote:
->
-> Some of the drivers like Ethernet already provide higher level
-> interfaces via callbacks. We did implement such a callbacks per each SOC
-> in non-DT case, and ended up having code duplicated for each SOC.
-> 
-> On the other hand using device trees to describe the HW
-> configuration(sysconfs) made more sense and got rid of SOC specific
-> callbacks.
+This is used by drivers/tty/serial/rp2.c.
 
-I'm sure it's possible to reduce the duplication without going all
-the way to describing every bit in DT.
+Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+Signed-off-by: Grant Edwards <grant.edwards@comtrol.com>
+Signed-off-by: Nick Thompson <nick.thompson@comtrol.com>
+---
+ WHENCE |   18 ++++++++++++++++++
+ rp2.fw |  Bin 0 -> 63 bytes
+ 2 files changed, 18 insertions(+)
+ create mode 100644 rp2.fw
 
-> > For drivers that are essentially just wrappers around sysconf,
-> > I would make them one driver per SoC and use a low-level interface
-> > but still hardcode the offsets in the driver instead of using DT
-> > to find the registers.
-> > 
-> > The pinctrl and reset drivers are examples of this.
-> 
-> In pinctrl bindings case, I think we could do better job by replacing
-> the existing bindings of sysconfs for a group of banks with just two
-> integer offsets. This would mean that, we can still use the a common
-> driver across the SOCs.
->
-> And w.r.t to reset, we are planning on using sysconf based
-> reset-controller API sitting underneath the reset-controller subsystem.
-> Passing the information from device trees would be much clear and
-> flexible than adding new driver per/SOC.
 
-Ok
+V3: Update license text after clearing the changes with the vendor
 
-> >> 2> The infrastructure should protect the claimed registers from
-> >> over-writing by other drivers. We do this by claim-read/write-release
-> >> style API.
-> > 
-> > I don't understand this part. Is it about atomicity of accesses to
-> > 32-bit registers when you only want to change a bit? That is something
-> > the regmap interface handles already.
-> 
-> I forget to mention a important point here, the protection is at bit
-> level for the sysconfs. Some of sysconfs have bits shared across IPs, so
-> protecting them while the IP is still using it is what we are trying to
-> achieve with sysconf-claim/release apis.
-> While it may be overkill, but In past it has found bugs and been helpful
-> with a meaning full debug output.
+git pull: git://github.com/cernekee/linux-firmware rp2
 
-Can you give an example of something that is shared across multiple IPs?
 
-Are those always done in the way that you have e.g. the ethernet pinctrl
-in the same register as the usb pinctrl, or could you have an ethernet
-pinctrl setting mixed together with the usb clock setting for instance?
+diff --git a/WHENCE b/WHENCE
+index c08336a..b7c6169 100644
+--- a/WHENCE
++++ b/WHENCE
+@@ -2110,3 +2110,21 @@ File: intel/ibt-hw-37.7.10-fw-1.80.2.3.d.bseq
+ Licence: Redistributable. See LICENCE.ibt_firmware for details
+ 
+ --------------------------------------------------------------------------
++
++Driver: rp2 -- Comtrol RocketPort 2 serial driver
++
++File: rp2.fw
++
++Licence:
++Copyright (C) 2013 Comtrol Corporation
++
++Comtrol grants permission to use and redistribute these firmware
++files for use with Comtrol devices, but not as part of the Linux
++kernel or in any other form which would require these files themselves
++to be covered by the terms of the GNU General Public License.
++
++These firmware files are distributed in the hope that they will be
++useful, but WITHOUT ANY WARRANTY; without even the implied warranty
++of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++
++--------------------------------------------------------------------------
+diff --git a/rp2.fw b/rp2.fw
+new file mode 100644
+index 0000000000000000000000000000000000000000..a571e77925d479cbd4d17e72f49ee9b90bc8e2d7
+GIT binary patch
+literal 63
+zcmey?J@<(45y2S>T#8)1zuFib1SPo`9E2sgel;_4F>pEl?>v;&);Q52wGYhba7b-!
+NVQAvw-~s^-E&$nE6vO}k
 
-If the hardware has been designed in a sensible way rather than just
-grown by randomly adding bits in open spaces, I would assume that it's
-possible to have high-level interfaces built around ranges of registers
-rather than arbitrary subsets of registers.
+literal 0
+HcmV?d00001
 
-	Arnd
+-- 
+1.7.9.5
+
