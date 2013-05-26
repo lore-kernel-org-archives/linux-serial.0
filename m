@@ -1,357 +1,47 @@
-From: Anatolij Gustschin <agust@denx.de>
-Subject: [PATCH RESEND v2 1/2] serial/mpc52xx_uart: prepare for adding MPC5125 PSC UART support
-Date: Fri, 24 May 2013 20:24:58 +0200
-Message-ID: <1369419899-2907-1-git-send-email-agust@denx.de>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 09/13] serial: imx: Let device core handle pinctrl
+Date: Sun, 26 May 2013 14:46:30 -0300
+Message-ID: <CAOMZO5B+Le92n-0m2wwspW6iA_qP6d7M_YSAzmtFOhaBtbQyrQ@mail.gmail.com>
+References: <1367863561-11534-1-git-send-email-fabio.estevam@freescale.com>
+	<1367863561-11534-9-git-send-email-fabio.estevam@freescale.com>
+	<20130520185012.GB24761@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:35272 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757297Ab3EXSZM (ORCPT
+Received: from mail-ve0-f170.google.com ([209.85.128.170]:65022 "EHLO
+	mail-ve0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754633Ab3EZRqb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 May 2013 14:25:12 -0400
+	Sun, 26 May 2013 13:46:31 -0400
+Received: by mail-ve0-f170.google.com with SMTP id 15so4670988vea.29
+        for <linux-serial@vger.kernel.org>; Sun, 26 May 2013 10:46:30 -0700 (PDT)
+In-Reply-To: <20130520185012.GB24761@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linuxppc-dev@lists.ozlabs.org, Matteo Facchinetti <matteo.facchinetti@sirius-es.it>, Vladimir Ermakov <vooon341@gmail.com>, Anatolij Gustschin <agust@denx.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>, shawn.guo@linaro.org, kernel@pengutronix.de, linux-serial@vger.kernel.org
 
-From: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
+Hi Greg,
 
-MPC5125 PSC controller has different register layout than MPC5121.
-To support MPC5125 PSC in this driver we have to provide further
-psc_ops functions for SoC specific register accesses.
+On Mon, May 20, 2013 at 3:50 PM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Mon, May 06, 2013 at 03:05:57PM -0300, Fabio Estevam wrote:
+>> Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
+>> we can rely on device core for handling pinctrl.
+>>
+>> So remove devm_pinctrl_get_select_default() from the driver.
+>>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: <linux-serial@vger.kernel.org>
+>> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+>> ---
+>>  drivers/tty/serial/imx.c |    9 ---------
+>>  1 file changed, 9 deletions(-)
+>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Add new register access functions to the psc_ops structure and
-provide MPC52xx and MPC512x specific implementation for them.
-Then replace remaining direct register accesses in the driver by
-appropriate psc_ops function calls. The subsequent patch can now
-add MPC5125 specific set of psc_ops functions.
+Could you please apply this one and 10/13 in your tree?
 
-Signed-off-by: Vladimir Ermakov <vooon341@gmail.com>
-Signed-off-by: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
-Signed-off-by: Anatolij Gustschin <agust@denx.de>
----
+Regards,
 
-Changes in v2:
- - split into two patches to simplify review
- - minor coding style changes
- - revise commit log
-
- drivers/tty/serial/mpc52xx_uart.c |  161 +++++++++++++++++++++++++++----------
- 1 file changed, 119 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 018bad9..5aa87ac 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -122,6 +122,15 @@ struct psc_ops {
- 	void		(*fifoc_uninit)(void);
- 	void		(*get_irq)(struct uart_port *, struct device_node *);
- 	irqreturn_t	(*handle_irq)(struct uart_port *port);
-+	u16		(*get_status)(struct uart_port *port);
-+	u8		(*get_ipcr)(struct uart_port *port);
-+	void		(*command)(struct uart_port *port, u8 cmd);
-+	void		(*set_mode)(struct uart_port *port, u8 mr1, u8 mr2);
-+	void		(*set_rts)(struct uart_port *port, int state);
-+	void		(*enable_ms)(struct uart_port *port);
-+	void		(*set_sicr)(struct uart_port *port, u32 val);
-+	void		(*set_imr)(struct uart_port *port, u16 val);
-+	u8		(*get_mr1)(struct uart_port *port);
- };
- 
- /* setting the prescaler and divisor reg is common for all chips */
-@@ -134,6 +143,65 @@ static inline void mpc52xx_set_divisor(struct mpc52xx_psc __iomem *psc,
- 	out_8(&psc->ctlr, divisor & 0xff);
- }
- 
-+static u16 mpc52xx_psc_get_status(struct uart_port *port)
-+{
-+	return in_be16(&PSC(port)->mpc52xx_psc_status);
-+}
-+
-+static u8 mpc52xx_psc_get_ipcr(struct uart_port *port)
-+{
-+	return in_8(&PSC(port)->mpc52xx_psc_ipcr);
-+}
-+
-+static void mpc52xx_psc_command(struct uart_port *port, u8 cmd)
-+{
-+	out_8(&PSC(port)->command, cmd);
-+}
-+
-+static void mpc52xx_psc_set_mode(struct uart_port *port, u8 mr1, u8 mr2)
-+{
-+	out_8(&PSC(port)->command, MPC52xx_PSC_SEL_MODE_REG_1);
-+	out_8(&PSC(port)->mode, mr1);
-+	out_8(&PSC(port)->mode, mr2);
-+}
-+
-+static void mpc52xx_psc_set_rts(struct uart_port *port, int state)
-+{
-+	if (state)
-+		out_8(&PSC(port)->op1, MPC52xx_PSC_OP_RTS);
-+	else
-+		out_8(&PSC(port)->op0, MPC52xx_PSC_OP_RTS);
-+}
-+
-+static void mpc52xx_psc_enable_ms(struct uart_port *port)
-+{
-+	struct mpc52xx_psc __iomem *psc = PSC(port);
-+
-+	/* clear D_*-bits by reading them */
-+	in_8(&psc->mpc52xx_psc_ipcr);
-+	/* enable CTS and DCD as IPC interrupts */
-+	out_8(&psc->mpc52xx_psc_acr, MPC52xx_PSC_IEC_CTS | MPC52xx_PSC_IEC_DCD);
-+
-+	port->read_status_mask |= MPC52xx_PSC_IMR_IPC;
-+	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
-+}
-+
-+static void mpc52xx_psc_set_sicr(struct uart_port *port, u32 val)
-+{
-+	out_be32(&PSC(port)->sicr, val);
-+}
-+
-+static void mpc52xx_psc_set_imr(struct uart_port *port, u16 val)
-+{
-+	out_be16(&PSC(port)->mpc52xx_psc_imr, val);
-+}
-+
-+static u8 mpc52xx_psc_get_mr1(struct uart_port *port)
-+{
-+	out_8(&PSC(port)->command, MPC52xx_PSC_SEL_MODE_REG_1);
-+	return in_8(&PSC(port)->mode);
-+}
-+
- #ifdef CONFIG_PPC_MPC52xx
- #define FIFO_52xx(port) ((struct mpc52xx_psc_fifo __iomem *)(PSC(port)+1))
- static void mpc52xx_psc_fifo_init(struct uart_port *port)
-@@ -304,6 +372,15 @@ static struct psc_ops mpc52xx_psc_ops = {
- 	.set_baudrate = mpc5200_psc_set_baudrate,
- 	.get_irq = mpc52xx_psc_get_irq,
- 	.handle_irq = mpc52xx_psc_handle_irq,
-+	.get_status = mpc52xx_psc_get_status,
-+	.get_ipcr = mpc52xx_psc_get_ipcr,
-+	.command = mpc52xx_psc_command,
-+	.set_mode = mpc52xx_psc_set_mode,
-+	.set_rts = mpc52xx_psc_set_rts,
-+	.enable_ms = mpc52xx_psc_enable_ms,
-+	.set_sicr = mpc52xx_psc_set_sicr,
-+	.set_imr = mpc52xx_psc_set_imr,
-+	.get_mr1 = mpc52xx_psc_get_mr1,
- };
- 
- static struct psc_ops mpc5200b_psc_ops = {
-@@ -325,6 +402,15 @@ static struct psc_ops mpc5200b_psc_ops = {
- 	.set_baudrate = mpc5200b_psc_set_baudrate,
- 	.get_irq = mpc52xx_psc_get_irq,
- 	.handle_irq = mpc52xx_psc_handle_irq,
-+	.get_status = mpc52xx_psc_get_status,
-+	.get_ipcr = mpc52xx_psc_get_ipcr,
-+	.command = mpc52xx_psc_command,
-+	.set_mode = mpc52xx_psc_set_mode,
-+	.set_rts = mpc52xx_psc_set_rts,
-+	.enable_ms = mpc52xx_psc_enable_ms,
-+	.set_sicr = mpc52xx_psc_set_sicr,
-+	.set_imr = mpc52xx_psc_set_imr,
-+	.get_mr1 = mpc52xx_psc_get_mr1,
- };
- 
- #endif /* CONFIG_MPC52xx */
-@@ -595,8 +681,18 @@ static struct psc_ops mpc512x_psc_ops = {
- 	.fifoc_uninit = mpc512x_psc_fifoc_uninit,
- 	.get_irq = mpc512x_psc_get_irq,
- 	.handle_irq = mpc512x_psc_handle_irq,
-+	.get_status = mpc52xx_psc_get_status,
-+	.get_ipcr = mpc52xx_psc_get_ipcr,
-+	.command = mpc52xx_psc_command,
-+	.set_mode = mpc52xx_psc_set_mode,
-+	.set_rts = mpc52xx_psc_set_rts,
-+	.enable_ms = mpc52xx_psc_enable_ms,
-+	.set_sicr = mpc52xx_psc_set_sicr,
-+	.set_imr = mpc52xx_psc_set_imr,
-+	.get_mr1 = mpc52xx_psc_get_mr1,
- };
--#endif
-+#endif /* CONFIG_PPC_MPC512x */
-+
- 
- static const struct psc_ops *psc_ops;
- 
-@@ -613,17 +709,14 @@ mpc52xx_uart_tx_empty(struct uart_port *port)
- static void
- mpc52xx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	if (mctrl & TIOCM_RTS)
--		out_8(&PSC(port)->op1, MPC52xx_PSC_OP_RTS);
--	else
--		out_8(&PSC(port)->op0, MPC52xx_PSC_OP_RTS);
-+	psc_ops->set_rts(port, mctrl & TIOCM_RTS);
- }
- 
- static unsigned int
- mpc52xx_uart_get_mctrl(struct uart_port *port)
- {
- 	unsigned int ret = TIOCM_DSR;
--	u8 status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
-+	u8 status = psc_ops->get_ipcr(port);
- 
- 	if (!(status & MPC52xx_PSC_CTS))
- 		ret |= TIOCM_CTS;
-@@ -673,15 +766,7 @@ mpc52xx_uart_stop_rx(struct uart_port *port)
- static void
- mpc52xx_uart_enable_ms(struct uart_port *port)
- {
--	struct mpc52xx_psc __iomem *psc = PSC(port);
--
--	/* clear D_*-bits by reading them */
--	in_8(&psc->mpc52xx_psc_ipcr);
--	/* enable CTS and DCD as IPC interrupts */
--	out_8(&psc->mpc52xx_psc_acr, MPC52xx_PSC_IEC_CTS | MPC52xx_PSC_IEC_DCD);
--
--	port->read_status_mask |= MPC52xx_PSC_IMR_IPC;
--	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
-+	psc_ops->enable_ms(port);
- }
- 
- static void
-@@ -691,9 +776,9 @@ mpc52xx_uart_break_ctl(struct uart_port *port, int ctl)
- 	spin_lock_irqsave(&port->lock, flags);
- 
- 	if (ctl == -1)
--		out_8(&PSC(port)->command, MPC52xx_PSC_START_BRK);
-+		psc_ops->command(port, MPC52xx_PSC_START_BRK);
- 	else
--		out_8(&PSC(port)->command, MPC52xx_PSC_STOP_BRK);
-+		psc_ops->command(port, MPC52xx_PSC_STOP_BRK);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
-@@ -701,7 +786,6 @@ mpc52xx_uart_break_ctl(struct uart_port *port, int ctl)
- static int
- mpc52xx_uart_startup(struct uart_port *port)
- {
--	struct mpc52xx_psc __iomem *psc = PSC(port);
- 	int ret;
- 
- 	if (psc_ops->clock) {
-@@ -717,15 +801,15 @@ mpc52xx_uart_startup(struct uart_port *port)
- 		return ret;
- 
- 	/* Reset/activate the port, clear and enable interrupts */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
--	out_8(&psc->command, MPC52xx_PSC_RST_TX);
-+	psc_ops->command(port, MPC52xx_PSC_RST_RX);
-+	psc_ops->command(port, MPC52xx_PSC_RST_TX);
- 
--	out_be32(&psc->sicr, 0);	/* UART mode DCD ignored */
-+	psc_ops->set_sicr(port, 0);	/* UART mode DCD ignored */
- 
- 	psc_ops->fifo_init(port);
- 
--	out_8(&psc->command, MPC52xx_PSC_TX_ENABLE);
--	out_8(&psc->command, MPC52xx_PSC_RX_ENABLE);
-+	psc_ops->command(port, MPC52xx_PSC_TX_ENABLE);
-+	psc_ops->command(port, MPC52xx_PSC_RX_ENABLE);
- 
- 	return 0;
- }
-@@ -733,15 +817,13 @@ mpc52xx_uart_startup(struct uart_port *port)
- static void
- mpc52xx_uart_shutdown(struct uart_port *port)
- {
--	struct mpc52xx_psc __iomem *psc = PSC(port);
--
- 	/* Shut down the port.  Leave TX active if on a console port */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
-+	psc_ops->command(port, MPC52xx_PSC_RST_RX);
- 	if (!uart_console(port))
--		out_8(&psc->command, MPC52xx_PSC_RST_TX);
-+		psc_ops->command(port, MPC52xx_PSC_RST_TX);
- 
- 	port->read_status_mask = 0;
--	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
-+	psc_ops->set_imr(port, port->read_status_mask);
- 
- 	if (psc_ops->clock)
- 		psc_ops->clock(port, 0);
-@@ -754,7 +836,6 @@ static void
- mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 			 struct ktermios *old)
- {
--	struct mpc52xx_psc __iomem *psc = PSC(port);
- 	unsigned long flags;
- 	unsigned char mr1, mr2;
- 	unsigned int j;
-@@ -818,13 +899,11 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 			"Some chars may have been lost.\n");
- 
- 	/* Reset the TX & RX */
--	out_8(&psc->command, MPC52xx_PSC_RST_RX);
--	out_8(&psc->command, MPC52xx_PSC_RST_TX);
-+	psc_ops->command(port, MPC52xx_PSC_RST_RX);
-+	psc_ops->command(port, MPC52xx_PSC_RST_TX);
- 
- 	/* Send new mode settings */
--	out_8(&psc->command, MPC52xx_PSC_SEL_MODE_REG_1);
--	out_8(&psc->mode, mr1);
--	out_8(&psc->mode, mr2);
-+	psc_ops->set_mode(port, mr1, mr2);
- 	baud = psc_ops->set_baudrate(port, new, old);
- 
- 	/* Update the per-port timeout */
-@@ -834,8 +913,8 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 		mpc52xx_uart_enable_ms(port);
- 
- 	/* Reenable TX & RX */
--	out_8(&psc->command, MPC52xx_PSC_TX_ENABLE);
--	out_8(&psc->command, MPC52xx_PSC_RX_ENABLE);
-+	psc_ops->command(port, MPC52xx_PSC_TX_ENABLE);
-+	psc_ops->command(port, MPC52xx_PSC_RX_ENABLE);
- 
- 	/* We're all set, release the lock */
- 	spin_unlock_irqrestore(&port->lock, flags);
-@@ -963,7 +1042,7 @@ mpc52xx_uart_int_rx_chars(struct uart_port *port)
- 		flag = TTY_NORMAL;
- 		port->icount.rx++;
- 
--		status = in_be16(&PSC(port)->mpc52xx_psc_status);
-+		status = psc_ops->get_status(port);
- 
- 		if (status & (MPC52xx_PSC_SR_PE |
- 			      MPC52xx_PSC_SR_FE |
-@@ -983,7 +1062,7 @@ mpc52xx_uart_int_rx_chars(struct uart_port *port)
- 			}
- 
- 			/* Clear error condition */
--			out_8(&PSC(port)->command, MPC52xx_PSC_RST_ERR_STAT);
-+			psc_ops->command(port, MPC52xx_PSC_RST_ERR_STAT);
- 
- 		}
- 		tty_insert_flip_char(tport, ch, flag);
-@@ -1066,7 +1145,7 @@ mpc5xxx_uart_process_int(struct uart_port *port)
- 		if (psc_ops->tx_rdy(port))
- 			keepgoing |= mpc52xx_uart_int_tx_chars(port);
- 
--		status = in_8(&PSC(port)->mpc52xx_psc_ipcr);
-+		status = psc_ops->get_ipcr(port);
- 		if (status & MPC52xx_PSC_D_DCD)
- 			uart_handle_dcd_change(port, !(status & MPC52xx_PSC_DCD));
- 
-@@ -1107,14 +1186,12 @@ static void __init
- mpc52xx_console_get_options(struct uart_port *port,
- 			    int *baud, int *parity, int *bits, int *flow)
- {
--	struct mpc52xx_psc __iomem *psc = PSC(port);
- 	unsigned char mr1;
- 
- 	pr_debug("mpc52xx_console_get_options(port=%p)\n", port);
- 
- 	/* Read the mode registers */
--	out_8(&psc->command, MPC52xx_PSC_SEL_MODE_REG_1);
--	mr1 = in_8(&psc->mode);
-+	mr1 = psc_ops->get_mr1(port);
- 
- 	/* CT{U,L}R are write-only ! */
- 	*baud = CONFIG_SERIAL_MPC52xx_CONSOLE_BAUD;
--- 
-1.7.9.5
-
+Fabio Estevam
