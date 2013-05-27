@@ -1,66 +1,44 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 2/2] serial: mxs-auart: Let device core handle pinctrl
-Date: Sun, 26 May 2013 22:43:05 -0300
-Message-ID: <1369618985-9658-2-git-send-email-festevam@gmail.com>
-References: <1369618985-9658-1-git-send-email-festevam@gmail.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v3] tty: serial: add Freescale lpuart driver support
+Date: Mon, 27 May 2013 13:57:37 +0800
+Message-ID: <20130527055734.GD7782@S2101-09.ap.freescale.net>
+References: <1368685096-13177-1-git-send-email-b35083@freescale.com>
+ <20130520030523.GB25113@S2101-09.ap.freescale.net>
+ <13F8657A829DAB49A2A937FD6FC10F790B3CDB85@039-SN2MPN1-012.039d.mgd.msft.net>
+ <CAAQ0ZWRz+byPKxMjDH3zKsc0u4bmkPO_1u6w2H4Z7nD0z8+9ig@mail.gmail.com>
+ <13F8657A829DAB49A2A937FD6FC10F790B3CECEB@039-SN2MPN1-012.039d.mgd.msft.net>
+ <20130523025059.GB2704@S2101-09.ap.freescale.net>
+ <13F8657A829DAB49A2A937FD6FC10F790B3D5056@039-SN2MPN1-012.039d.mgd.msft.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ye0-f175.google.com ([209.85.213.175]:60572 "EHLO
-	mail-ye0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755812Ab3E0BuG (ORCPT
+Received: from mail-db8lp0187.outbound.messaging.microsoft.com ([213.199.154.187]:37505
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752615Ab3E0F50 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 26 May 2013 21:50:06 -0400
-Received: by mail-ye0-f175.google.com with SMTP id q1so694740yen.34
-        for <linux-serial@vger.kernel.org>; Sun, 26 May 2013 18:50:05 -0700 (PDT)
-In-Reply-To: <1369618985-9658-1-git-send-email-festevam@gmail.com>
+	Mon, 27 May 2013 01:57:26 -0400
+Content-Disposition: inline
+In-Reply-To: <13F8657A829DAB49A2A937FD6FC10F790B3D5056@039-SN2MPN1-012.039d.mgd.msft.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: shawn.guo@linaro.org, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: Jin Zhengxiong-R64188 <R64188@freescale.com>
+Cc: "grant.likely@linaro.org" <grant.likely@linaro.org>, Lu Jingchang-B35083 <B35083@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+On Mon, May 27, 2013 at 01:27:04AM +0000, Jin Zhengxiong-R64188 wrote:
+> By the way, we'll change the SoC name from mvf600 to vf610 to align the description in the document. 
+> 
 
-Since commit ab78029 (drivers/pinctrl: grab default handles from device core)
-we can rely on device core for handling pinctrl, so remove 
-devm_pinctrl_get_select_default() from the driver.
+Such product renaming in documents happen on IMX as well, but we do
+not bother to churn the source tree (file, function renaming) to catch
+up with it, as long as we know what it is.
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/mxs-auart.c | 8 --------
- 1 file changed, 8 deletions(-)
+For this mvf600 to vf610 renaming, if you want to catch up with it, you
+will need to rename a bunch of files functions, compatibles in Jingchang's
+series, and it's probably fine even though it's not really necessary
+since they haven't been merged.  But for those which have been merged,
+like fec compatible string, doing this will probably piss off
+maintainers.  So I would suggest that we stick to name mvf600 in the
+source tree, and just be aware of it's the equivalent of vf610.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 4f5f161..a63a20e 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -32,7 +32,6 @@
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/io.h>
--#include <linux/pinctrl/consumer.h>
- #include <linux/of_device.h>
- #include <linux/dma-mapping.h>
- #include <linux/dmaengine.h>
-@@ -1015,7 +1014,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	u32 version;
- 	int ret = 0;
- 	struct resource *r;
--	struct pinctrl *pinctrl;
- 
- 	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
- 	if (!s) {
-@@ -1029,12 +1027,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	else if (ret < 0)
- 		goto out_free;
- 
--	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
--	if (IS_ERR(pinctrl)) {
--		ret = PTR_ERR(pinctrl);
--		goto out_free;
--	}
--
- 	if (of_id) {
- 		pdev->id_entry = of_id->data;
- 		s->devtype = pdev->id_entry->driver_data;
--- 
-1.8.1.2
+Shawn
 
