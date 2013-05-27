@@ -1,46 +1,71 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH v3] tty: serial: add Freescale lpuart driver support
-Date: Mon, 27 May 2013 19:34:16 +0800
-Message-ID: <20130527113414.GA7737@S2101-09.ap.freescale.net>
-References: <1368685096-13177-1-git-send-email-b35083@freescale.com>
- <20130520030523.GB25113@S2101-09.ap.freescale.net>
- <13F8657A829DAB49A2A937FD6FC10F790B3CDB85@039-SN2MPN1-012.039d.mgd.msft.net>
- <CAAQ0ZWRz+byPKxMjDH3zKsc0u4bmkPO_1u6w2H4Z7nD0z8+9ig@mail.gmail.com>
- <13F8657A829DAB49A2A937FD6FC10F790B3CECEB@039-SN2MPN1-012.039d.mgd.msft.net>
- <20130523025059.GB2704@S2101-09.ap.freescale.net>
- <13F8657A829DAB49A2A937FD6FC10F790B3D5056@039-SN2MPN1-012.039d.mgd.msft.net>
- <20130527055734.GD7782@S2101-09.ap.freescale.net>
- <13F8657A829DAB49A2A937FD6FC10F790B3D644B@039-SN2MPN1-012.039d.mgd.msft.net>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: Re: [PATCH V3 -firmware] rp2: Initial commit of Comtrol RocketPort
+ 2 microcode
+Date: Mon, 27 May 2013 17:30:34 +0100
+Message-ID: <1369672234.3469.385.camel@deadeye.wl.decadent.org.uk>
+References: <1369381990-8640-1-git-send-email-cernekee@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="=-16r7csbIIECz2Z63BVsX"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe003.messaging.microsoft.com ([216.32.180.186]:34177
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758032Ab3E0Ley (ORCPT
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:51100 "EHLO
+	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752566Ab3E0Qan (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 May 2013 07:34:54 -0400
-Content-Disposition: inline
-In-Reply-To: <13F8657A829DAB49A2A937FD6FC10F790B3D644B@039-SN2MPN1-012.039d.mgd.msft.net>
+	Mon, 27 May 2013 12:30:43 -0400
+In-Reply-To: <1369381990-8640-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jin Zhengxiong-R64188 <R64188@freescale.com>
-Cc: "grant.likely@linaro.org" <grant.likely@linaro.org>, Lu Jingchang-B35083 <B35083@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: dwmw2@infradead.org, linux-serial@vger.kernel.org, grant.edwards@comtrol.com, nick.thompson@comtrol.com
 
-On Mon, May 27, 2013 at 09:12:25AM +0000, Jin Zhengxiong-R64188 wrote:
-> [Jason Jin-R64188] I think we need to align with the document as it's posted at Freescale website, otherwise, the inconsistency will confuse the customer. 
-> please refer to:
-> http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=VF6xx&fsrch=1&sr=5
-> http://www.freescale.com/webapp/sps/site/homepage.jsp?code=VYBRID
-> As the development work is ahead of the formal name posted outside, we continued to use the name for upstreaming patches. Sorry for taking into the confusion. For those patches aren't merged, please help to review them based on the new SoC name.
-> 
 
-Okay.
+--=-16r7csbIIECz2Z63BVsX
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> For the merged FEC patch, we'd like to explain it to the maintainer, Or can we just keep the FEC compatible string as before("fsl, mvf600-fec")? And be aware of it's the equivalent of "fsl,vf610-fec"?
-> 
+On Fri, 2013-05-24 at 00:53 -0700, Kevin Cernekee wrote:
+> This is used by drivers/tty/serial/rp2.c.
+>=20
+> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+> Signed-off-by: Grant Edwards <grant.edwards@comtrol.com>
+> Signed-off-by: Nick Thompson <nick.thompson@comtrol.com>
+> ---
+>  WHENCE |   18 ++++++++++++++++++
+>  rp2.fw |  Bin 0 -> 63 bytes
+>  2 files changed, 18 insertions(+)
+>  create mode 100644 rp2.fw
+[...]
 
-I'm fine with either way.  But if you do want to change it, please
-change it as early as possible.
+Applied, thanks all.
 
-Shawn
+Ben.
 
+--=20
+Ben Hutchings
+Experience is what causes a person to make new mistakes instead of old ones=
+.
+
+--=-16r7csbIIECz2Z63BVsX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIVAwUAUaOKKue/yOyVhhEJAQpnhw/8C7bPr9FvEpolVqzxbnDzvcFJEwmSNy0k
+aKyPZ1FsX8CX+P73+5VMInevxDliKWo0Q9tmvmSXketg1WCXq3+h89jr05ckdJci
+zSkg386pymppyls6xxhBBO5pqZ58KqQlBbgmycDGA3GROZL5tjdVZ9eZLLj/zm8Q
+zOHMX9orj7Sh2LS05y2AQUJioQl5Z6WPeywkxvsLl7qa5IVr/7XrzonDKDqe/O1C
+iRHQYy9GMJS2i1H/4JhtvT6wFG3fCNFhSpVpSr7oNDe47QEwt36llNqXGQkuPvFX
+L9Y4f+vCHNDDIX2E4cI0Cn7mmf5RBmvDZpY3gsW6akckKKSwE5gG7oI45wblwMAd
+dXigKlb2O8Y99ksGQwDke8N7McX+WRlPs1o/4uNKwy1OjkptlEgVLdA6CxUUFQEI
+qVjIIA9SpgVVl0td/TBFr4WSpEfLXoesKeZNjp3rx1Fubl7baOe3OvvzQNgbXuUy
+kxjysseq67wVKPamCpq2vtw43yNRTHwXknVRoMZ23dbdGRS0/XDVW4HeHg6n663v
+89fPQreCEzz0TcfL4c+DZ/Q0jtEbC12f0k6HYhNpdqJh0dmp9b+8sj2JbKWfCUSn
+3Mas1yajGXIgdslkGZg6R7Pk4VgZJJmCbJLQ6C8N/3J9I3nwP5K4VAB2GUXmhd9u
+bkoRG4mFgDg=
+=7/uQ
+-----END PGP SIGNATURE-----
+
+--=-16r7csbIIECz2Z63BVsX--
