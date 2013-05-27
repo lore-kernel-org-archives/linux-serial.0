@@ -1,61 +1,65 @@
-From: Jin Zhengxiong-R64188 <R64188@freescale.com>
-Subject: RE: [PATCH v3] tty: serial: add Freescale lpuart driver support
-Date: Mon, 27 May 2013 01:27:04 +0000
-Message-ID: <13F8657A829DAB49A2A937FD6FC10F790B3D5056@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1368685096-13177-1-git-send-email-b35083@freescale.com>
- <20130520030523.GB25113@S2101-09.ap.freescale.net>
- <13F8657A829DAB49A2A937FD6FC10F790B3CDB85@039-SN2MPN1-012.039d.mgd.msft.net>
- <CAAQ0ZWRz+byPKxMjDH3zKsc0u4bmkPO_1u6w2H4Z7nD0z8+9ig@mail.gmail.com>
- <13F8657A829DAB49A2A937FD6FC10F790B3CECEB@039-SN2MPN1-012.039d.mgd.msft.net>
- <20130523025059.GB2704@S2101-09.ap.freescale.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH 1/2] serial: imx: Let device core handle pinctrl
+Date: Sun, 26 May 2013 22:43:04 -0300
+Message-ID: <1369618985-9658-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe004.messaging.microsoft.com ([216.32.181.184]:17962
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755677Ab3E0B11 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 26 May 2013 21:27:27 -0400
-In-Reply-To: <20130523025059.GB2704@S2101-09.ap.freescale.net>
-Content-Language: en-US
+Received: from mail-yh0-f51.google.com ([209.85.213.51]:36556 "EHLO
+	mail-yh0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755690Ab3E0BnV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 26 May 2013 21:43:21 -0400
+Received: by mail-yh0-f51.google.com with SMTP id c41so155754yho.38
+        for <linux-serial@vger.kernel.org>; Sun, 26 May 2013 18:43:20 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Shawn Guo' <shawn.guo@linaro.org>
-Cc: "grant.likely@linaro.org" <grant.likely@linaro.org>, Lu Jingchang-B35083 <B35083@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To: gregkh@linuxfoundation.org
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-> On Wed, May 22, 2013 at 08:59:20AM +0000, Jin Zhengxiong-R64188 wrote:
-> > [Jason Jin-R64188] For the lpuart itself, I do not think it will have
-> different version IP.
-> 
-> You can never tell in 5 or 10 years.  Also no major version doesn't
-> necessarily mean no minor updates or revise.
-> 
-> > The general name is sufficient and soc related name can introduce the
-> minor difference. If the there are update version, we can name it
-> lpuart2.0 or something like that.
-> >
-> 
-> Yeah, if IP designers name it lpuart2.0, it surely works.  But from my
-> experience on IMX, hardware guys are not always properly updating IP name.
-> Then the version 2.0 becomes a versioning given by software people which
-> is improper to be used in compatible string.
-> 
-[Jason Jin-R64188] We had some internal discussion on this. For the lpuart itself, as we cannot get the version information at run time from the version register and lpuart is not publicly versioned, we agree to use the SoC name for lpuart. 
-However, if the version information can be got from the register at run time, or the version was publicly versioned. the general name still useful than the SoC name. 
-on the other side, the SoC itself may also have new versions, So the SoC name is also not a perfect solution.
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-> >
-> 
-> Think about it from "compatibility" point of view.  It does not cause
-> confusion but just help understand the compatible history.  Saying the
-> same IP is reused on LS-1 SoC, I do not see a problem with putting the
-> following compatible into LS-1 <soc>.dtsi under UART node, to tell that
-> the UART block on LS-1 is completely compatible with the one used on
-> MVF600.
-> 
->   compatible = "fsl,ls1-uart", "fsl,mvf600-uart";
-> 
-[Jason Jin-R64188] We'll leverage this compatible strings for compatible history. Thanks.
-By the way, we'll change the SoC name from mvf600 to vf610 to align the description in the document. 
+Since commit ab78029 (drivers/pinctrl: grab default handles from device core)
+we can rely on device core for handling pinctrl, so remove 
+devm_pinctrl_get_select_default() from the driver.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/imx.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 72bc1db..2ea3494 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -47,7 +47,6 @@
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+-#include <linux/pinctrl/consumer.h>
+ #include <linux/io.h>
+ 
+ #include <asm/irq.h>
+@@ -1481,7 +1480,6 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	void __iomem *base;
+ 	int ret = 0;
+ 	struct resource *res;
+-	struct pinctrl *pinctrl;
+ 
+ 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
+ 	if (!sport)
+@@ -1517,13 +1515,6 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	sport->timer.function = imx_timeout;
+ 	sport->timer.data     = (unsigned long)sport;
+ 
+-	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
+-	if (IS_ERR(pinctrl)) {
+-		ret = PTR_ERR(pinctrl);
+-		dev_err(&pdev->dev, "failed to get default pinctrl: %d\n", ret);
+-		return ret;
+-	}
+-
+ 	sport->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+ 	if (IS_ERR(sport->clk_ipg)) {
+ 		ret = PTR_ERR(sport->clk_ipg);
+-- 
+1.8.1.2
 
