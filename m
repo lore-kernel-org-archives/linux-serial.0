@@ -1,15 +1,17 @@
 From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 1/2] serial: imx: Let device core handle pinctrl
-Date: Sun, 26 May 2013 22:43:04 -0300
-Message-ID: <1369618985-9658-1-git-send-email-festevam@gmail.com>
+Subject: [PATCH 2/2] serial: mxs-auart: Let device core handle pinctrl
+Date: Sun, 26 May 2013 22:43:05 -0300
+Message-ID: <1369618985-9658-2-git-send-email-festevam@gmail.com>
+References: <1369618985-9658-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yh0-f51.google.com ([209.85.213.51]:36556 "EHLO
-	mail-yh0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755690Ab3E0BnV (ORCPT
+Received: from mail-ye0-f175.google.com ([209.85.213.175]:60572 "EHLO
+	mail-ye0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755812Ab3E0BuG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 26 May 2013 21:43:21 -0400
-Received: by mail-yh0-f51.google.com with SMTP id c41so155754yho.38
-        for <linux-serial@vger.kernel.org>; Sun, 26 May 2013 18:43:20 -0700 (PDT)
+	Sun, 26 May 2013 21:50:06 -0400
+Received: by mail-ye0-f175.google.com with SMTP id q1so694740yen.34
+        for <linux-serial@vger.kernel.org>; Sun, 26 May 2013 18:50:05 -0700 (PDT)
+In-Reply-To: <1369618985-9658-1-git-send-email-festevam@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
@@ -23,43 +25,42 @@ devm_pinctrl_get_select_default() from the driver.
 
 Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
- drivers/tty/serial/imx.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 72bc1db..2ea3494 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -47,7 +47,6 @@
- #include <linux/slab.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
--#include <linux/pinctrl/consumer.h>
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 4f5f161..a63a20e 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -32,7 +32,6 @@
+ #include <linux/clk.h>
+ #include <linux/delay.h>
  #include <linux/io.h>
- 
- #include <asm/irq.h>
-@@ -1481,7 +1480,6 @@ static int serial_imx_probe(struct platform_device *pdev)
- 	void __iomem *base;
+-#include <linux/pinctrl/consumer.h>
+ #include <linux/of_device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+@@ -1015,7 +1014,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	u32 version;
  	int ret = 0;
- 	struct resource *res;
+ 	struct resource *r;
 -	struct pinctrl *pinctrl;
  
- 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
- 	if (!sport)
-@@ -1517,13 +1515,6 @@ static int serial_imx_probe(struct platform_device *pdev)
- 	sport->timer.function = imx_timeout;
- 	sport->timer.data     = (unsigned long)sport;
+ 	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
+ 	if (!s) {
+@@ -1029,12 +1027,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	else if (ret < 0)
+ 		goto out_free;
  
 -	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
 -	if (IS_ERR(pinctrl)) {
 -		ret = PTR_ERR(pinctrl);
--		dev_err(&pdev->dev, "failed to get default pinctrl: %d\n", ret);
--		return ret;
+-		goto out_free;
 -	}
 -
- 	sport->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(sport->clk_ipg)) {
- 		ret = PTR_ERR(sport->clk_ipg);
+ 	if (of_id) {
+ 		pdev->id_entry = of_id->data;
+ 		s->devtype = pdev->id_entry->driver_data;
 -- 
 1.8.1.2
 
