@@ -1,71 +1,71 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: Re: [PATCH V3 -firmware] rp2: Initial commit of Comtrol RocketPort
- 2 microcode
-Date: Mon, 27 May 2013 17:30:34 +0100
-Message-ID: <1369672234.3469.385.camel@deadeye.wl.decadent.org.uk>
-References: <1369381990-8640-1-git-send-email-cernekee@gmail.com>
+From: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH v2 0/5] ARM: davinci: fix UART clock enabling
+Date: Tue, 28 May 2013 13:58:01 +0530
+Message-ID: <1369729686-6595-1-git-send-email-prakash.pm@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-16r7csbIIECz2Z63BVsX"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:51100 "EHLO
-	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752566Ab3E0Qan (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 May 2013 12:30:43 -0400
-In-Reply-To: <1369381990-8640-1-git-send-email-cernekee@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
+List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
+List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
+Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
+To: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: dwmw2@infradead.org, linux-serial@vger.kernel.org, grant.edwards@comtrol.com, nick.thompson@comtrol.com
 
+Patch series addresses below issues:
+1) Do clk_get on dev_id when there is single clock for a module
+2) Fix garbled UART log with DT kernel on da850-evm.
+3) Cleanup of serila platform code.
 
---=-16r7csbIIECz2Z63BVsX
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Applies on top of v3.9-rc9 of Linus's.
+Tested on da850-evm. Able to see proper bootup log and console on UART2.
 
-On Fri, 2013-05-24 at 00:53 -0700, Kevin Cernekee wrote:
-> This is used by drivers/tty/serial/rp2.c.
->=20
-> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
-> Signed-off-by: Grant Edwards <grant.edwards@comtrol.com>
-> Signed-off-by: Nick Thompson <nick.thompson@comtrol.com>
-> ---
->  WHENCE |   18 ++++++++++++++++++
->  rp2.fw |  Bin 0 -> 63 bytes
->  2 files changed, 18 insertions(+)
->  create mode 100644 rp2.fw
-[...]
+Since v1:
+Change names of platform data names appropriately.
+Added 5/5: platform code cleanup.
 
-Applied, thanks all.
+Manjunathappa, Prakash (5):
+  ARM: davinci: uart: move to devid based clk_get
+  ARM: davinci: da850: override device name of UART in DT kernel
+  ARM: davinci: da850: do not specify clock_frequency for UART DT node
+  ARM: davinci: da8xx: remove da8xx_uart_clk_enable
+  ARM: davinci: serial: platform code cleanup
 
-Ben.
+ arch/arm/boot/dts/da850.dtsi                   |    3 -
+ arch/arm/mach-davinci/board-da830-evm.c        |    6 +--
+ arch/arm/mach-davinci/board-da850-evm.c        |    6 +--
+ arch/arm/mach-davinci/board-dm355-evm.c        |    6 +--
+ arch/arm/mach-davinci/board-dm355-leopard.c    |    6 +--
+ arch/arm/mach-davinci/board-dm365-evm.c        |    6 +--
+ arch/arm/mach-davinci/board-dm644x-evm.c       |    6 +--
+ arch/arm/mach-davinci/board-dm646x-evm.c       |    6 +--
+ arch/arm/mach-davinci/board-mityomapl138.c     |    6 +--
+ arch/arm/mach-davinci/board-neuros-osd2.c      |    6 +--
+ arch/arm/mach-davinci/board-omapl138-hawk.c    |    6 +--
+ arch/arm/mach-davinci/board-sffsdr.c           |    7 +--
+ arch/arm/mach-davinci/da830.c                  |    7 +--
+ arch/arm/mach-davinci/da850.c                  |    7 +--
+ arch/arm/mach-davinci/da8xx-dt.c               |   11 +----
+ arch/arm/mach-davinci/devices-da8xx.c          |   41 +++++++++++++-----
+ arch/arm/mach-davinci/devices-tnetv107x.c      |   36 +++++++++++-----
+ arch/arm/mach-davinci/dm355.c                  |   48 ++++++++++++++-------
+ arch/arm/mach-davinci/dm365.c                  |   36 ++++++++++------
+ arch/arm/mach-davinci/dm644x.c                 |   48 ++++++++++++++-------
+ arch/arm/mach-davinci/dm646x.c                 |   47 ++++++++++++++-------
+ arch/arm/mach-davinci/include/mach/common.h    |    1 -
+ arch/arm/mach-davinci/include/mach/da8xx.h     |    2 +-
+ arch/arm/mach-davinci/include/mach/serial.h    |   14 ++++---
+ arch/arm/mach-davinci/include/mach/tnetv107x.h |    3 +-
+ arch/arm/mach-davinci/serial.c                 |   54 +++++++++---------------
+ arch/arm/mach-davinci/tnetv107x.c              |    8 ++--
+ 27 files changed, 227 insertions(+), 206 deletions(-)
 
---=20
-Ben Hutchings
-Experience is what causes a person to make new mistakes instead of old ones=
-.
-
---=-16r7csbIIECz2Z63BVsX
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIVAwUAUaOKKue/yOyVhhEJAQpnhw/8C7bPr9FvEpolVqzxbnDzvcFJEwmSNy0k
-aKyPZ1FsX8CX+P73+5VMInevxDliKWo0Q9tmvmSXketg1WCXq3+h89jr05ckdJci
-zSkg386pymppyls6xxhBBO5pqZ58KqQlBbgmycDGA3GROZL5tjdVZ9eZLLj/zm8Q
-zOHMX9orj7Sh2LS05y2AQUJioQl5Z6WPeywkxvsLl7qa5IVr/7XrzonDKDqe/O1C
-iRHQYy9GMJS2i1H/4JhtvT6wFG3fCNFhSpVpSr7oNDe47QEwt36llNqXGQkuPvFX
-L9Y4f+vCHNDDIX2E4cI0Cn7mmf5RBmvDZpY3gsW6akckKKSwE5gG7oI45wblwMAd
-dXigKlb2O8Y99ksGQwDke8N7McX+WRlPs1o/4uNKwy1OjkptlEgVLdA6CxUUFQEI
-qVjIIA9SpgVVl0td/TBFr4WSpEfLXoesKeZNjp3rx1Fubl7baOe3OvvzQNgbXuUy
-kxjysseq67wVKPamCpq2vtw43yNRTHwXknVRoMZ23dbdGRS0/XDVW4HeHg6n663v
-89fPQreCEzz0TcfL4c+DZ/Q0jtEbC12f0k6HYhNpdqJh0dmp9b+8sj2JbKWfCUSn
-3Mas1yajGXIgdslkGZg6R7Pk4VgZJJmCbJLQ6C8N/3J9I3nwP5K4VAB2GUXmhd9u
-bkoRG4mFgDg=
-=7/uQ
------END PGP SIGNATURE-----
-
---=-16r7csbIIECz2Z63BVsX--
+-- 
+1.7.4.1
