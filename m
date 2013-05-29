@@ -1,49 +1,55 @@
-From: Wei Yongjun <weiyj.lk@gmail.com>
-Subject: [PATCH] serial: samsung: missing uart_unregister_driver() on error in s3c24xx_serial_modinit()
-Date: Wed, 29 May 2013 13:47:09 +0800
-Message-ID: <CAPgLHd9ZCxMnYkEVOMtNafY=PsZX7AZ0-+D=9wBOLEc8fF-0_w@mail.gmail.com>
+From: Lu Jingchang-B35083 <B35083@freescale.com>
+Subject: RE: [PATCH v4] tty: serial: add Freescale lpuart driver support
+Date: Wed, 29 May 2013 06:57:43 +0000
+Message-ID: <B56CDBE15CE27145A4B77D2D24263E851CDEFB@039-SN1MPN1-003.039d.mgd.msft.net>
+References: <1369733161-19168-1-git-send-email-b35083@freescale.com>
+ <20130529034913.GF370@S2101-09.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f52.google.com ([209.85.214.52]:64079 "EHLO
-	mail-bk0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753077Ab3E2FrL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 29 May 2013 01:47:11 -0400
-Received: by mail-bk0-f52.google.com with SMTP id mz10so4572304bkb.25
-        for <linux-serial@vger.kernel.org>; Tue, 28 May 2013 22:47:09 -0700 (PDT)
+Received: from mail-db8lp0187.outbound.messaging.microsoft.com ([213.199.154.187]:13715
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933908Ab3E2G6I convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 29 May 2013 02:58:08 -0400
+In-Reply-To: <20130529034913.GF370@S2101-09.ap.freescale.net>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com
-Cc: yongjun_wei@trendmicro.com.cn, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
 
-From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-Add the missing uart_unregister_driver() before return from
-s3c24xx_serial_modinit() in the error handling case.
 
-Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
----
- drivers/tty/serial/samsung.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+>> +static int __init lpuart_serial_init(void) {
+>> +	int ret;
+>> +
+>> +	pr_info("serial: Freescale lpuart driver\n");
+>> +
+>> +	ret = uart_register_driver(&lpuart_reg);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = platform_driver_register(&lpuart_uart_driver);
+>> +	if (ret)
+>> +		uart_unregister_driver(&lpuart_reg);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void __exit lpuart_serial_exit(void) {
+>> +	platform_driver_unregister(&lpuart_uart_driver);
+>> +	uart_unregister_driver(&lpuart_reg);
+>> +}
+>> +
+>> +module_init(lpuart_serial_init);
+>> +module_exit(lpuart_serial_exit);
+>
+>I think you can call uart_register_driver and uart_unregister_driver
+>in .probe and .remove hook, and then you can simply use
+>module_platform_driver for lpuart_uart_driver.
+[Lu Jingchang-B35083] 
+  For multiple dts uart nodes, each node will call .probe once. If the uart_register_driver is called from .probe without any conditioning check, it will then be called more than once, but the uart_register_deiver can only register the same uart driver once. So I think current arrangement will be more reasonable. Thanks!
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 8942941..1c2b8c3 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1798,7 +1798,13 @@ static int __init s3c24xx_serial_modinit(void)
- 		return ret;
- 	}
- 
--	return platform_driver_register(&samsung_serial_driver);
-+	ret = platform_driver_register(&samsung_serial_driver);
-+	if (ret < 0) {
-+		pr_err("Failed to register platform driver\n");
-+		uart_unregister_driver(&s3c24xx_uart_drv);
-+	}
-+
-+	return ret;
- }
- 
- static void __exit s3c24xx_serial_modexit(void)
 
