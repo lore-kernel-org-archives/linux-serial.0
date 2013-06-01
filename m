@@ -1,43 +1,35 @@
-From: Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH] serial/imx: disable hardware flow control at startup
-Date: Thu, 30 May 2013 15:47:04 +0200
-Message-ID: <1369921624-5595-1-git-send-email-mpa@pengutronix.de>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: MAX14830 serial driver
+Date: Sat, 1 Jun 2013 22:37:01 +0400
+Message-ID: <20130601223701.3f3e27704d1d4f2219aec5d4@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:48529 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756503Ab3E3Nrk (ORCPT
+Received: from fallback1.mail.ru ([94.100.176.18]:54298 "EHLO
+	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751326Ab3FASh2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 30 May 2013 09:47:40 -0400
+	Sat, 1 Jun 2013 14:37:28 -0400
+Received: from smtp14.mail.ru (smtp14.mail.ru [94.100.176.91])
+	by fallback1.mail.ru (mPOP.Fallback_MX) with ESMTP id CDA011CA6A40
+	for <linux-serial@vger.kernel.org>; Sat,  1 Jun 2013 22:37:26 +0400 (MSK)
+Received: from [188.134.40.128] (port=57602 helo=localhost)
+	by smtp14.mail.ru with esmtpa (envelope-from <shc_work@mail.ru>)
+	id 1Uiqfm-0005w8-34
+	for linux-serial@vger.kernel.org; Sat, 01 Jun 2013 22:37:02 +0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lucas Stach <l.stach@pengutronix.de>, Markus Pargmann <mpa@pengutronix.de>
+To: linux-serial@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+Hello All.
 
-We only want to enable hardware flow control if RTS/CTS pins
-are connected.
+For all who ask me about MAX14830 support in the max310x driver,
+support is completed, preliminary version I can send to test.
+Once driver is being tested, patch for this chip will be posted
+for apply in the kernel. So if you want to test initial version,
+please mail me.
+Thanks.
 
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
----
-
- drivers/tty/serial/imx.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 147c9e1..8cdfbd3 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -761,6 +761,8 @@ static int imx_startup(struct uart_port *port)
- 
- 	temp = readl(sport->port.membase + UCR2);
- 	temp |= (UCR2_RXEN | UCR2_TXEN);
-+	if (!sport->have_rtscts)
-+		temp |= UCR2_IRTS;
- 	writel(temp, sport->port.membase + UCR2);
- 
- 	if (USE_IRDA(sport)) {
 -- 
-1.8.2.1
-
+Alexander Shiyan <shc_work@mail.ru>
