@@ -1,61 +1,50 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/7] tty: Add lock/unlock ldisc pair functions
-Date: Mon, 3 Jun 2013 12:24:36 -0700
-Message-ID: <20130603192436.GB22733@kroah.com>
-References: <20130415201411.GA27360@kroah.com>
- <1366107356-7699-1-git-send-email-peter@hurleysoftware.com>
- <1366107356-7699-2-git-send-email-peter@hurleysoftware.com>
- <20130520193403.GA14340@kroah.com>
- <519A9920.3010702@hurleysoftware.com>
- <20130520230657.GA21500@kroah.com>
- <519AB411.7000807@hurleysoftware.com>
+From: Karthik Manamcheri <karthik.manamcheri@ni.com>
+Subject: Re: Revert "serial: 8250: Make SERIAL_8250_RUNTIME_UARTS work correctly"
+Date: Mon, 3 Jun 2013 15:05:55 -0500
+Message-ID: <OF9219EF22.9BB86D35-ON86257B7F.006E67B1-86257B7F.006E67B5@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:39158 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754036Ab3FCTYh (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jun 2013 15:24:37 -0400
-Content-Disposition: inline
-In-Reply-To: <519AB411.7000807@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: 
+References: 
+Sender: linux-kernel-owner@vger.kernel.org
+To: kyle@infradead.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, torvalds@linuxfoundation.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, May 20, 2013 at 07:38:57PM -0400, Peter Hurley wrote:
-> On 05/20/2013 07:06 PM, Greg Kroah-Hartman wrote:
-> >On Mon, May 20, 2013 at 05:44:00PM -0400, Peter Hurley wrote:
-> >>On 05/20/2013 03:34 PM, Greg Kroah-Hartman wrote:
-> >>>On Tue, Apr 16, 2013 at 06:15:51AM -0400, Peter Hurley wrote:
-> >>>>Just as the tty pair must be locked in a stable sequence
-> >>>>(ie, independent of which is consider the 'other' tty), so must
-> >>>>the ldisc pair be locked in a stable sequence as well.
-> >>>>
-> >>>>Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> >>>>---
-> >>>>  drivers/tty/tty_ldisc.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++
-> >>>>  1 file changed, 87 insertions(+)
-> >>>
-> >>>This patch breaks the build :(
-> >>
-> >>Sorry about that.
-> >>
-> >>>I've taken the first one, care to mush this one with the 7/7 patch, so
-> >>>there are no build breaks, and resend the 5 resulting patches so I can
-> >>>apply these?
-> >>
-> >>Maybe it would be better to reorder 7/7 to be 1/6, if that's ok?
-> >>More work for me but the history will be cleaner.
-> >
-> >Sure, that works for me as well, care to just resend them?  Or, I can
-> >dig them out of my archive if needed.
-> 
-> I'll resend them because the rebase will require some re-editing.
+> No worries, I undertand what Karthik is talking about, so I'll try to
+> figure this out.
+>
+> CONFIG_SERIAL_8250_NR_UARTS=32
+> CONFIG_SERIAL_8250_RUNTIME_UARTS=4
 
-Did you ever resend these?  If so, I didn't see them :(
+The description for "CONFIG_SERIAL_8250_RUNTIME_UARTS" is "Set this to the maximum number of serial ports you want the kernel to register at boot time."
+Setting it to 4 means that you want to use 4 legacy ports! If you do not have any legacy UARTs, you are to set this to 0.
 
-thanks,
+>
+> is what was set in my .config, resulting in:
+>
+> [3.9.y]
+> 0: uart:16550A port:00001030 irq:16 tx:16522 rx:0 RTS|CTS|DTR|CD
+> 1: uart:unknown port:000002F8 irq:3
+> 2: uart:unknown port:000003E8 irq:4
+> 3: uart:unknown port:000002E8 irq:3
+>
+> [3.10-rc2]
+> 0: uart:unknown port:000003F8 irq:4
+> 1: uart:unknown port:000002F8 irq:3
+> 2: uart:unknown port:000003E8 irq:4
+> 3: uart:unknown port:000002E8 irq:3
+> 4: uart:16550A port:00001030 irq:16 tx:16226 rx:0 RTS|CTS|DTR|CD
 
-greg k-h
+You have five ports because you set CONFIG_SERIAL_8250_RUNTIME_UARTS to 4 and then you have to PCI port. This is exactly what my change addressed. We had issues with the ghost ports created in the system. In your case, if you set CONFIG_SERIAL_8250_RUNTIME_UARTS to 0, you'll have just one port which is the working available port.
+
+> There's undeniably something wrong if RUNTIME_UARTS=0 doesn't result
+> in his serial ports showing up, I'll try to help debug that, but I
+> think the 3.9 behaviour is desireable if no "legacy" uarts are found.
+
+The variable nr_uarts is set to CONFIG_SERIAL_8250_RUNTIME_UARTS and if you set it to 0, then well, nothing will be created since you are looping to nr_uarts time, which is what I changed.
+
+> regards, Kyle
+
+Karthik Manamcheri | Software R&D | Instrument control products | National Instruments | (512) 683 6174
