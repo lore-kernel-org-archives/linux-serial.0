@@ -1,7 +1,7 @@
 From: Lu Jingchang-B35083 <B35083@freescale.com>
 Subject: RE: [PATCH v6] tty: serial: add Freescale lpuart driver support
-Date: Tue, 4 Jun 2013 03:37:50 +0000
-Message-ID: <B56CDBE15CE27145A4B77D2D24263E851CF028@039-SN1MPN1-003.039d.mgd.msft.net>
+Date: Tue, 4 Jun 2013 04:55:38 +0000
+Message-ID: <B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
 References: <1370309270-21019-1-git-send-email-b35083@freescale.com>
 	<CAOMZO5BNbbbX0wycis_3nyg-B76kJYrQu-e+D1SpGLs10Zp3yw@mail.gmail.com>
 	<B56CDBE15CE27145A4B77D2D24263E851CEFD9@039-SN1MPN1-003.039d.mgd.msft.net>
@@ -11,11 +11,11 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe003.messaging.microsoft.com ([216.32.180.186]:51657
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755384Ab3FDDiS (ORCPT
+Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:59168
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750915Ab3FDE4H (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jun 2013 23:38:18 -0400
+	Tue, 4 Jun 2013 00:56:07 -0400
 In-Reply-To: <CAOMZO5Bo58Qa0Rmz+oKt0ZOUjYDDskBsPykCVc79j4mybcG8rA@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
@@ -38,8 +38,19 @@ X0ZTTF9MUFVBUlQ9eSBpbiB0aGUgcGF0Y2gNCj5hcyBiZWxvdywgd2hlbiBTRVJJQUxfRlNMX0xQ
 VUFSVCBpcyBjb25maWd1cmVkIGFzIG1vZHVsZSwgaXQgY2FuJ3QgYmUNCj5jb25maWd1cmVkIGFz
 IGNvbnNvbGUuIFRoYW5rcyENCj4+DQo+PiBXaHkgdG8gcHJldmVudCB1c2luZyB0aGUgY29uc29s
 ZSBvZiB0aGUgZHJpdmVyIGlzIGJ1aWx0IGFzIG1vZHVsZT8NCj4NCj5JIG1lYW50ICJpZiB0aGUg
-ZHJpdmVyIGlzIGJ1aWx0IGFzIG1vZHVsZSINCltMdSBKaW5nY2hhbmctQjM1MDgzXSANCkluIHNl
-cmlhbCBkcml2ZXIgaW14LmMsIHdoZW4gQ09ORklHX1NFUklBTF9JTVhfQ09OU09MRT1tLCBkb2Vz
-IHRoZSBjb2RlIGJldHdlZW4gI2lmZGVmIENPTkZJR19TRVJJQUxfSU1YX0NPTlNPTEUgLi4uICNl
-bHNlIGJlIGNvbXBpbGVkPw0KVGhhbmtzISANCg0K
+ZHJpdmVyIGlzIGJ1aWx0IGFzIG1vZHVsZSINCltMdSBKaW5nY2hhbmctQjM1MDgzXSANCiAgRnJv
+bSB5b3VyIHBhdGNoIG9mICIgc2VyaWFsOiBpbXg6IEFsbG93IG1vZHVsZSBidWlsZCIsIEkgdGhp
+bmsgdGhlIGNvZGUgYmV0d2VlbiAjaWZkZWYgQ09ORklHX1NFUklBTF9JTVhfQ09OU09MRSAuLi4g
+I2Vsc2UgaW4gaW14LmMgd29uJ3QgYmUgYnVpbHQgYmVjYXVzZSB0aGUgY29uZmlndXJhdGlvbiBp
+cyBDT05GSUdfU0VSSUFMX0lNWF9DT05TT0xFX01PRFVMRSBub3cuIFNvIGl0IGlzIHRoZSBzYW1l
+IGFzIGlmIGRpc2FibGUgQ09ORklHX1NFUklBTF9JTVhfQ09OU09MRSB3aGVuIGJ1aWx0IHRoZSBk
+cml2ZXIgYXMgYSBtb2R1bGUsIGlzbid0IGl0Pw0KIE9uIG90aGVyIGhhbmQsIGlmIGVuYWJsZSBD
+T05GSUdfU0VSSUFMX1hfQ09OU09MRSBvcHRpb24gd2hlbiB0aGUgZHJpdmVyIGlzIGNvbmZpZ3Vy
+ZWQgYXMgbW9kdWxlLCB0aGUgYnVpbGQgd2lsbCBmYWlsIHdpdGggbWVzc2FnZSBsaWtlIEVSUk9S
+OiAidWFydF9jb25zb2xlX2RldmljZSIgW2RyaXZlcnMvdHR5L3NlcmlhbC8qKi5rb10gdW5kZWZp
+bmVkISBTdGVwaGVuIFJvdGh3ZWwgZ2l2ZXMgdGhlIHNvbHV0aW9uIG9uY2UgYXQgdXJsOg0KaHR0
+cDovL3d3dy5saW51eGhvcml6b24uY29tLzktbGludXgvNDJiMzNhNjVmNjRkOTVhMi5odG0NCiAg
+SSBoYXZlIGNoZWNrZWQgZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcgdG8gbWFrZSBzdXJlIHRo
+YXQgb3RoZXIgc2VyaWFsIGRyaXZlcnMgaW5kZWVkIGRpZCB0aGlzIHdheS4gDQogIFRoYW5rcyEN
+Cg==
 
