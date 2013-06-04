@@ -1,85 +1,57 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH V2] serial: imx: enable the clocks only when the uart is used
-Date: Tue, 4 Jun 2013 09:59:33 +0800
-Message-ID: <1370311173-15019-1-git-send-email-b32955@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH 1/3] serial: imx: Fix warning when !CONFIG_SERIAL_IMX_CONSOLE
+Date: Mon,  3 Jun 2013 23:51:46 -0300
+Message-ID: <1370314308-11637-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:49064
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752412Ab3FDCTk (ORCPT
+Received: from mail-ye0-f170.google.com ([209.85.213.170]:49600 "EHLO
+	mail-ye0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755384Ab3FDCwE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Jun 2013 22:19:40 -0400
+	Mon, 3 Jun 2013 22:52:04 -0400
+Received: by mail-ye0-f170.google.com with SMTP id q3so439238yen.1
+        for <linux-serial@vger.kernel.org>; Mon, 03 Jun 2013 19:52:03 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
+Cc: shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-Current code opens the clocks when the uart driver is probed.
-This will wastes some power if several uarts are enabled, but not really
-used.
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-So close these clocks for uart, and enable the clocks only when
-the uart is used.
+When CONFIG_SERIAL_IMX_CONSOLE is not selected the following build warnings
+appear:
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
+drivers/tty/serial/imx.c:274:13: warning: 'imx_port_ucrs_save' defined but not used [-Wunused-function]
+drivers/tty/serial/imx.c:283:13: warning: 'imx_port_ucrs_restore' defined but not used [-Wunused-function]
+
+imx_port_ucrs_save() and imx_port_ucrs_restore() are only used when 
+CONFIG_CONSOLE_POLL or CONFIG_SERIAL_IMX_CONSOLE are selected, so protect these
+functions declaration with a proper ifdef.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
-v1 --> v2:
-	check the return value of clk_prepare_enable().
----
- drivers/tty/serial/imx.c |   17 ++++++++++++++---
- 1 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/tty/serial/imx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 72bc1db..7cc4810 100644
+index 72bc1db..90eba78 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -699,6 +699,14 @@ static int imx_startup(struct uart_port *port)
- 	int retval;
- 	unsigned long flags, temp;
- 
-+	retval = clk_prepare_enable(sport->clk_per);
-+	if (retval)
-+		goto error_out1;
-+
-+	retval = clk_prepare_enable(sport->clk_ipg);
-+	if (retval)
-+		goto error_out1;
-+
- 	imx_setup_ufcr(sport, 0);
- 
- 	/* disable the DREN bit (Data Ready interrupt enable) before
-@@ -884,6 +892,9 @@ static void imx_shutdown(struct uart_port *port)
- 
- 	writel(temp, sport->port.membase + UCR1);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
-+
-+	clk_disable_unprepare(sport->clk_per);
-+	clk_disable_unprepare(sport->clk_ipg);
+@@ -271,6 +271,7 @@ static inline int is_imx21_uart(struct imx_port *sport)
+ /*
+  * Save and restore functions for UCR1, UCR2 and UCR3 registers
+  */
++#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_IMX_CONSOLE)
+ static void imx_port_ucrs_save(struct uart_port *port,
+ 			       struct imx_port_ucrs *ucr)
+ {
+@@ -288,6 +289,7 @@ static void imx_port_ucrs_restore(struct uart_port *port,
+ 	writel(ucr->ucr2, port->membase + UCR2);
+ 	writel(ucr->ucr3, port->membase + UCR3);
  }
++#endif
  
- static void
-@@ -1557,6 +1568,9 @@ static int serial_imx_probe(struct platform_device *pdev)
- 		goto deinit;
- 	platform_set_drvdata(pdev, sport);
- 
-+	clk_disable_unprepare(sport->clk_per);
-+	clk_disable_unprepare(sport->clk_ipg);
-+
- 	return 0;
- deinit:
- 	if (pdata && pdata->exit)
-@@ -1578,9 +1592,6 @@ static int serial_imx_remove(struct platform_device *pdev)
- 
- 	uart_remove_one_port(&imx_reg, &sport->port);
- 
--	clk_disable_unprepare(sport->clk_per);
--	clk_disable_unprepare(sport->clk_ipg);
--
- 	if (pdata && pdata->exit)
- 		pdata->exit(pdev);
- 
+ /*
+  * Handle any change of modem status signal since we were last called.
 -- 
-1.7.1
-
+1.8.1.2
 
