@@ -1,62 +1,47 @@
-From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-Subject: Re: [PATCH] tty: serial: Enable uartlite for ARM zynq
-Date: Tue, 4 Jun 2013 14:54:51 +0200
-Message-ID: <20130604125451.GD5107@pengutronix.de>
-References: <26d21aaa1f4a5b3bcae1d82f1524ea53ce9a36bd.1370348438.git.michal.simek@xilinx.com>
- <20130604124351.GC5107@pengutronix.de>
- <51ADE312.3040801@monstr.eu>
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Subject: [PATCH v2 2/2] serial: imx: Allow module build
+Date: Tue, 4 Jun 2013 14:08:38 -0300
+Message-ID: <1370365718-23474-2-git-send-email-fabio.estevam@freescale.com>
+References: <1370365718-23474-1-git-send-email-fabio.estevam@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <51ADE312.3040801@monstr.eu>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <monstr@monstr.eu>
-Cc: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from am1ehsobe005.messaging.microsoft.com ([213.199.154.208]:46880
+	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755644Ab3FDRJC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Jun 2013 13:09:02 -0400
+In-Reply-To: <1370365718-23474-1-git-send-email-fabio.estevam@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On Tue, Jun 04, 2013 at 02:52:34PM +0200, Michal Simek wrote:
-> On 06/04/2013 02:43 PM, Steffen Trumtrar wrote:
-> > On Tue, Jun 04, 2013 at 02:20:43PM +0200, Michal Simek wrote:
-> >> Enable it in Kconfig.
-> >>
-> >> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> >> ---
-> >>  drivers/tty/serial/Kconfig | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> >> index 7e7006f..64250b1 100644
-> >> --- a/drivers/tty/serial/Kconfig
-> >> +++ b/drivers/tty/serial/Kconfig
-> >> @@ -576,7 +576,7 @@ config SERIAL_IMX_CONSOLE
-> >>
-> >>  config SERIAL_UARTLITE
-> >>  	tristate "Xilinx uartlite serial port support"
-> >> -	depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE
-> >> +	depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE || ARCH_ZYNQ
-> >>  	select SERIAL_CORE
-> >>  	help
-> >>  	  Say Y here if you want to use the Xilinx uartlite serial controller.
-> >> --
-> >> 1.8.2.3
-> >>
-> > 
-> > Hi!
-> > 
-> > Doesn't the Zynq use xilinx_uartps ? (which in turn is actually a Cadence UART)
-> 
-> You can add this soft IP to programmable logic.
-> It means 2 uartps are hard blocks in the zynq and then you can add unlimited number
-> of these uartlite drivers or ns16550 to PL.
+There is no need to only allow the serial driver to be built-in.
 
-Ah, okay.
+Allow the imx serial driver to be build as a module.
 
-Thanks,
-Steffen
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+Changes since v1:
+- None
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a9ae1cd..28cffda 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -551,7 +551,7 @@ config BFIN_UART3_CTSRTS
+ 	  Enable hardware flow control in the driver.
+ 
+ config SERIAL_IMX
+-	bool "IMX serial port support"
++	tristate "IMX serial port support"
+ 	depends on ARCH_MXC
+ 	select SERIAL_CORE
+ 	select SERIAL_CORE_CONSOLE
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.8.1.2
+
+
