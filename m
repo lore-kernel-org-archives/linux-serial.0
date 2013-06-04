@@ -1,42 +1,39 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
-Date: Tue, 4 Jun 2013 02:06:40 -0300
-Message-ID: <CAOMZO5BQ6kef8u4_K3S6vCAa0Ym4HJhg1TcmpYx7i8gFphTnew@mail.gmail.com>
-References: <1370309270-21019-1-git-send-email-b35083@freescale.com>
-	<CAOMZO5BNbbbX0wycis_3nyg-B76kJYrQu-e+D1SpGLs10Zp3yw@mail.gmail.com>
-	<B56CDBE15CE27145A4B77D2D24263E851CEFD9@039-SN1MPN1-003.039d.mgd.msft.net>
-	<CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
-	<CAOMZO5Bo58Qa0Rmz+oKt0ZOUjYDDskBsPykCVc79j4mybcG8rA@mail.gmail.com>
-	<B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH 1/3] serial: imx: Fix warning when
+ !CONFIG_SERIAL_IMX_CONSOLE
+Date: Tue, 4 Jun 2013 07:10:39 +0200
+Message-ID: <20130604051039.GF32299@pengutronix.de>
+References: <1370314308-11637-1-git-send-email-festevam@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f50.google.com ([209.85.212.50]:41629 "EHLO
-	mail-vb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751026Ab3FDFGl convert rfc822-to-8bit (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:60988 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751026Ab3FDFKp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Jun 2013 01:06:41 -0400
-Received: by mail-vb0-f50.google.com with SMTP id w16so1132230vbb.23
-        for <linux-serial@vger.kernel.org>; Mon, 03 Jun 2013 22:06:40 -0700 (PDT)
-In-Reply-To: <B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
+	Tue, 4 Jun 2013 01:10:45 -0400
+Content-Disposition: inline
+In-Reply-To: <1370314308-11637-1-git-send-email-festevam@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lu Jingchang-B35083 <B35083@freescale.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On Tue, Jun 4, 2013 at 1:55 AM, Lu Jingchang-B35083
-<B35083@freescale.com> wrote:
+On Mon, Jun 03, 2013 at 11:51:46PM -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> When CONFIG_SERIAL_IMX_CONSOLE is not selected the following build warnings
+> appear:
 
->   From your patch of " serial: imx: Allow module build", I think the code between #ifdef CONFIG_SERIAL_IMX_CONSOLE ... #else in imx.c won't be built because the configuration is CONFIG_SERIAL_IMX_CONSOLE_MODULE now. So it is the same as if disable CONFIG_SERIAL_IMX_CONSOLE when built the driver as a module, isn't it?
->  On other hand, if enable CONFIG_SERIAL_X_CONSOLE option when the driver is configured as module, the build will fail with message like ERROR: "uart_console_device" [drivers/tty/serial/**.ko] undefined! Stephen Rothwel gives the solution once at url:
-> http://www.linuxhorizon.com/9-linux/42b33a65f64d95a2.htm
->   I have checked drivers/tty/serial/Kconfig to make sure that other serial drivers indeed did this way.
+My take on this would be to remove CONFIG_SERIAL_IMX_CONSOLE completely
+and make it mandatory. I know traditionally console support is optional
+for all UART drivers, but is it really worth it to have these few bytes
+saved?
 
-Maybe we need to use "#if IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE)"
+Sascha
 
-I will resend the series tomorrow.
-
-Thanks,
-
-Fabio Estevam
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
