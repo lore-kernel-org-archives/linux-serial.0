@@ -1,34 +1,65 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
-Date: Tue, 04 Jun 2013 11:11:57 +0200
-Message-ID: <2240836.PbCUa091WM@wuerfel>
-References: <1370309270-21019-1-git-send-email-b35083@freescale.com> <B56CDBE15CE27145A4B77D2D24263E851CEFD9@039-SN1MPN1-003.039d.mgd.msft.net> <CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] tty: serial: Enable uartlite for ARM zynq
+Date: Tue,  4 Jun 2013 14:20:43 +0200
+Message-ID: <26d21aaa1f4a5b3bcae1d82f1524ea53ce9a36bd.1370348438.git.michal.simek@xilinx.com>
+Content-Type: multipart/signed;
+    boundary="=_mimegpg-monstr-desktop-13300-1370348443-0001";
+    micalg=pgp-sha1; protocol="application/pgp-signature"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.9]:56014 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750889Ab3FDJMN (ORCPT
+Received: from mail-we0-f180.google.com ([74.125.82.180]:46067 "EHLO
+	mail-we0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752948Ab3FDMU7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Jun 2013 05:12:13 -0400
-In-Reply-To: <CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
+	Tue, 4 Jun 2013 08:20:59 -0400
+Received: by mail-we0-f180.google.com with SMTP id w56so128351wes.25
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2013 05:20:58 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Fabio Estevam <festevam@gmail.com>, Lu Jingchang-B35083 <B35083@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: Michal Simek <monstr@monstr.eu>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Tuesday 04 June 2013 00:08:27 Fabio Estevam wrote:
-> On Tue, Jun 4, 2013 at 12:02 AM, Lu Jingchang-B35083
-> <B35083@freescale.com> wrote:
-> 
-> > [Lu Jingchang-B35083]
-> >   SERIAL_FSL_LPUART_CONSOLE depends on SERIAL_FSL_LPUART=y in the patch as below, when SERIAL_FSL_LPUART is configured as module, it can't be configured as console. Thanks!
-> 
-> Why to prevent using the console of the driver is built as module?
+This is a MIME GnuPG-signed message.  If you see this text, it means that
+your E-mail or Usenet software does not support MIME signed messages.
+The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
+To open this message correctly you will need to install E-mail or Usenet
+software that supports modern Internet standards.
 
-All serial port drivers do this. IIRC the reason is that the console
-has to be started from console_initcall(), which is not available in
-modules.
+--=_mimegpg-monstr-desktop-13300-1370348443-0001
 
-	Arnd
+Enable it in Kconfig.
+
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 7e7006f..64250b1 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -576,7 +576,7 @@ config SERIAL_IMX_CONSOLE
+
+ config SERIAL_UARTLITE
+ 	tristate "Xilinx uartlite serial port support"
+-	depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE
++	depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE || ARCH_ZYNQ
+ 	select SERIAL_CORE
+ 	help
+ 	  Say Y here if you want to use the Xilinx uartlite serial controller.
+--
+1.8.2.3
+
+
+--=_mimegpg-monstr-desktop-13300-1370348443-0001
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEABECAAYFAlGt25wACgkQykllyylKDCH3rQCeN61WmWg4aPcOXEBqJCv0uwV0
+QFIAoJW5lP2ESEfZ70v/Wy/GKaeEEs51
+=lMXc
+-----END PGP SIGNATURE-----
+
+--=_mimegpg-monstr-desktop-13300-1370348443-0001--
