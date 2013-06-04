@@ -1,39 +1,34 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/3] serial: imx: Fix warning when
- !CONFIG_SERIAL_IMX_CONSOLE
-Date: Tue, 4 Jun 2013 07:10:39 +0200
-Message-ID: <20130604051039.GF32299@pengutronix.de>
-References: <1370314308-11637-1-git-send-email-festevam@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
+Date: Tue, 04 Jun 2013 11:11:57 +0200
+Message-ID: <2240836.PbCUa091WM@wuerfel>
+References: <1370309270-21019-1-git-send-email-b35083@freescale.com> <B56CDBE15CE27145A4B77D2D24263E851CEFD9@039-SN1MPN1-003.039d.mgd.msft.net> <CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60988 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751026Ab3FDFKp (ORCPT
+Received: from moutng.kundenserver.de ([212.227.17.9]:56014 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750889Ab3FDJMN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Jun 2013 01:10:45 -0400
-Content-Disposition: inline
-In-Reply-To: <1370314308-11637-1-git-send-email-festevam@gmail.com>
+	Tue, 4 Jun 2013 05:12:13 -0400
+In-Reply-To: <CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Fabio Estevam <festevam@gmail.com>, Lu Jingchang-B35083 <B35083@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Mon, Jun 03, 2013 at 11:51:46PM -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
+On Tuesday 04 June 2013 00:08:27 Fabio Estevam wrote:
+> On Tue, Jun 4, 2013 at 12:02 AM, Lu Jingchang-B35083
+> <B35083@freescale.com> wrote:
 > 
-> When CONFIG_SERIAL_IMX_CONSOLE is not selected the following build warnings
-> appear:
+> > [Lu Jingchang-B35083]
+> >   SERIAL_FSL_LPUART_CONSOLE depends on SERIAL_FSL_LPUART=y in the patch as below, when SERIAL_FSL_LPUART is configured as module, it can't be configured as console. Thanks!
+> 
+> Why to prevent using the console of the driver is built as module?
 
-My take on this would be to remove CONFIG_SERIAL_IMX_CONSOLE completely
-and make it mandatory. I know traditionally console support is optional
-for all UART drivers, but is it really worth it to have these few bytes
-saved?
+All serial port drivers do this. IIRC the reason is that the console
+has to be started from console_initcall(), which is not available in
+modules.
 
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+	Arnd
