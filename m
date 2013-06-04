@@ -1,56 +1,42 @@
-From: Lu Jingchang-B35083 <B35083@freescale.com>
-Subject: RE: [PATCH v6] tty: serial: add Freescale lpuart driver support
-Date: Tue, 4 Jun 2013 04:55:38 +0000
-Message-ID: <B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
+Date: Tue, 4 Jun 2013 02:06:40 -0300
+Message-ID: <CAOMZO5BQ6kef8u4_K3S6vCAa0Ym4HJhg1TcmpYx7i8gFphTnew@mail.gmail.com>
 References: <1370309270-21019-1-git-send-email-b35083@freescale.com>
 	<CAOMZO5BNbbbX0wycis_3nyg-B76kJYrQu-e+D1SpGLs10Zp3yw@mail.gmail.com>
 	<B56CDBE15CE27145A4B77D2D24263E851CEFD9@039-SN1MPN1-003.039d.mgd.msft.net>
 	<CAOMZO5DzVhh4REj5S=cVVVrGzxmTxY9s_h_6ZQ-G8wOxi+KG=A@mail.gmail.com>
- <CAOMZO5Bo58Qa0Rmz+oKt0ZOUjYDDskBsPykCVc79j4mybcG8rA@mail.gmail.com>
+	<CAOMZO5Bo58Qa0Rmz+oKt0ZOUjYDDskBsPykCVc79j4mybcG8rA@mail.gmail.com>
+	<B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:59168
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750915Ab3FDE4H (ORCPT
+Received: from mail-vb0-f50.google.com ([209.85.212.50]:41629 "EHLO
+	mail-vb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751026Ab3FDFGl convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Jun 2013 00:56:07 -0400
-In-Reply-To: <CAOMZO5Bo58Qa0Rmz+oKt0ZOUjYDDskBsPykCVc79j4mybcG8rA@mail.gmail.com>
-Content-Language: en-US
+	Tue, 4 Jun 2013 01:06:41 -0400
+Received: by mail-vb0-f50.google.com with SMTP id w16so1132230vbb.23
+        for <linux-serial@vger.kernel.org>; Mon, 03 Jun 2013 22:06:40 -0700 (PDT)
+In-Reply-To: <B56CDBE15CE27145A4B77D2D24263E851CF068@039-SN1MPN1-003.039d.mgd.msft.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
+To: Lu Jingchang-B35083 <B35083@freescale.com>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEZhYmlvIEVzdGV2YW0gW21h
-aWx0bzpmZXN0ZXZhbUBnbWFpbC5jb21dDQo+U2VudDogVHVlc2RheSwgSnVuZSAwNCwgMjAxMyAx
-MTowOSBBTQ0KPlRvOiBMdSBKaW5nY2hhbmctQjM1MDgzDQo+Q2M6IGxpbnV4LXNlcmlhbEB2Z2Vy
-Lmtlcm5lbC5vcmc7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOw0KPnMuaGF1ZXJAcGVuZ3V0
-cm9uaXguZGU7IHNoYXduLmd1b0BsaW5hcm8ub3JnOyBsaW51eC1hcm0tDQo+a2VybmVsQGxpc3Rz
-LmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIHY2XSB0dHk6IHNlcmlhbDogYWRk
-IEZyZWVzY2FsZSBscHVhcnQgZHJpdmVyIHN1cHBvcnQNCj4NCj5PbiBUdWUsIEp1biA0LCAyMDEz
-IGF0IDEyOjA4IEFNLCBGYWJpbyBFc3RldmFtIDxmZXN0ZXZhbUBnbWFpbC5jb20+IHdyb3RlOg0K
-Pj4gT24gVHVlLCBKdW4gNCwgMjAxMyBhdCAxMjowMiBBTSwgTHUgSmluZ2NoYW5nLUIzNTA4Mw0K
-Pj4gPEIzNTA4M0BmcmVlc2NhbGUuY29tPiB3cm90ZToNCj4+DQo+Pj4gW0x1IEppbmdjaGFuZy1C
-MzUwODNdDQo+Pj4gICBTRVJJQUxfRlNMX0xQVUFSVF9DT05TT0xFIGRlcGVuZHMgb24gU0VSSUFM
-X0ZTTF9MUFVBUlQ9eSBpbiB0aGUgcGF0Y2gNCj5hcyBiZWxvdywgd2hlbiBTRVJJQUxfRlNMX0xQ
-VUFSVCBpcyBjb25maWd1cmVkIGFzIG1vZHVsZSwgaXQgY2FuJ3QgYmUNCj5jb25maWd1cmVkIGFz
-IGNvbnNvbGUuIFRoYW5rcyENCj4+DQo+PiBXaHkgdG8gcHJldmVudCB1c2luZyB0aGUgY29uc29s
-ZSBvZiB0aGUgZHJpdmVyIGlzIGJ1aWx0IGFzIG1vZHVsZT8NCj4NCj5JIG1lYW50ICJpZiB0aGUg
-ZHJpdmVyIGlzIGJ1aWx0IGFzIG1vZHVsZSINCltMdSBKaW5nY2hhbmctQjM1MDgzXSANCiAgRnJv
-bSB5b3VyIHBhdGNoIG9mICIgc2VyaWFsOiBpbXg6IEFsbG93IG1vZHVsZSBidWlsZCIsIEkgdGhp
-bmsgdGhlIGNvZGUgYmV0d2VlbiAjaWZkZWYgQ09ORklHX1NFUklBTF9JTVhfQ09OU09MRSAuLi4g
-I2Vsc2UgaW4gaW14LmMgd29uJ3QgYmUgYnVpbHQgYmVjYXVzZSB0aGUgY29uZmlndXJhdGlvbiBp
-cyBDT05GSUdfU0VSSUFMX0lNWF9DT05TT0xFX01PRFVMRSBub3cuIFNvIGl0IGlzIHRoZSBzYW1l
-IGFzIGlmIGRpc2FibGUgQ09ORklHX1NFUklBTF9JTVhfQ09OU09MRSB3aGVuIGJ1aWx0IHRoZSBk
-cml2ZXIgYXMgYSBtb2R1bGUsIGlzbid0IGl0Pw0KIE9uIG90aGVyIGhhbmQsIGlmIGVuYWJsZSBD
-T05GSUdfU0VSSUFMX1hfQ09OU09MRSBvcHRpb24gd2hlbiB0aGUgZHJpdmVyIGlzIGNvbmZpZ3Vy
-ZWQgYXMgbW9kdWxlLCB0aGUgYnVpbGQgd2lsbCBmYWlsIHdpdGggbWVzc2FnZSBsaWtlIEVSUk9S
-OiAidWFydF9jb25zb2xlX2RldmljZSIgW2RyaXZlcnMvdHR5L3NlcmlhbC8qKi5rb10gdW5kZWZp
-bmVkISBTdGVwaGVuIFJvdGh3ZWwgZ2l2ZXMgdGhlIHNvbHV0aW9uIG9uY2UgYXQgdXJsOg0KaHR0
-cDovL3d3dy5saW51eGhvcml6b24uY29tLzktbGludXgvNDJiMzNhNjVmNjRkOTVhMi5odG0NCiAg
-SSBoYXZlIGNoZWNrZWQgZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcgdG8gbWFrZSBzdXJlIHRo
-YXQgb3RoZXIgc2VyaWFsIGRyaXZlcnMgaW5kZWVkIGRpZCB0aGlzIHdheS4gDQogIFRoYW5rcyEN
-Cg==
+On Tue, Jun 4, 2013 at 1:55 AM, Lu Jingchang-B35083
+<B35083@freescale.com> wrote:
 
+>   From your patch of " serial: imx: Allow module build", I think the code between #ifdef CONFIG_SERIAL_IMX_CONSOLE ... #else in imx.c won't be built because the configuration is CONFIG_SERIAL_IMX_CONSOLE_MODULE now. So it is the same as if disable CONFIG_SERIAL_IMX_CONSOLE when built the driver as a module, isn't it?
+>  On other hand, if enable CONFIG_SERIAL_X_CONSOLE option when the driver is configured as module, the build will fail with message like ERROR: "uart_console_device" [drivers/tty/serial/**.ko] undefined! Stephen Rothwel gives the solution once at url:
+> http://www.linuxhorizon.com/9-linux/42b33a65f64d95a2.htm
+>   I have checked drivers/tty/serial/Kconfig to make sure that other serial drivers indeed did this way.
+
+Maybe we need to use "#if IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE)"
+
+I will resend the series tomorrow.
+
+Thanks,
+
+Fabio Estevam
