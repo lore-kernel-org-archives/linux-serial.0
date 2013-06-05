@@ -1,61 +1,44 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v3 3/3] serial: imx: Improve Kconfig text
-Date: Wed,  5 Jun 2013 00:58:48 -0300
-Message-ID: <1370404728-29707-3-git-send-email-festevam@gmail.com>
-References: <1370404728-29707-1-git-send-email-festevam@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gh0-f173.google.com ([209.85.160.173]:47870 "EHLO
-	mail-gh0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750882Ab3FEE0W (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Jun 2013 00:26:22 -0400
-Received: by mail-gh0-f173.google.com with SMTP id g16so123910ghb.4
-        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2013 21:26:21 -0700 (PDT)
-In-Reply-To: <1370404728-29707-1-git-send-email-festevam@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v2 5/5] ARM: davinci: serial: platform code cleanup
+Date: Wed, 5 Jun 2013 17:11:52 +0530
+Message-ID: <51AF2400.3020906@ti.com>
+References: <1369729686-6595-1-git-send-email-prakash.pm@ti.com>
+	<1369729686-6595-6-git-send-email-prakash.pm@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+In-Reply-To: <1369729686-6595-6-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
+List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
+List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
+Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
+To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
+Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Some improvements in the Kconfig text:
+On 5/28/2013 1:58 PM, Manjunathappa, Prakash wrote:
+> 1) "struct davinci_uart_config" is introduced to specify
+>    UART ports brought out or enabled on the board. But
+>    none of the boards use them for that purpose, so clean
+>    it up.
+> 2) Have pointer to platform device as a argument for
+>    davinci_serial_init(), no need of serial_dev in
+>    struct soc_info now.
+> 3) No need of davinci_serial_setup_clk(), not called from
+>    multiple places, hence reduce function call overhead.
+> 
+> Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
+> Suggested-by: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
 
-- Vendor is Freescale now
-- Provide a better example for the console parameter, which is something like
-console=ttymxc0
-- Do not pass the names of ancient bootloaders 
+We generally clean up code before undertaking modifications. Is there a
+reason why this cannot be done first-up?
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
-Changes since v2:
-- Same as v1
- drivers/tty/serial/Kconfig | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 7a0f705..1f2f54c 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -564,15 +564,14 @@ config SERIAL_IMX_CONSOLE
- 	depends on SERIAL_IMX=y
- 	select SERIAL_CORE_CONSOLE
- 	help
--	  If you have enabled the serial port on the Motorola IMX
-+	  If you have enabled the serial port on the Freescale IMX
- 	  CPU you can make it the console by answering Y to this option.
- 
- 	  Even if you say Y here, the currently visible virtual console
- 	  (/dev/tty0) will still be used as the system console by default, but
- 	  you can alter that using a kernel command line option such as
--	  "console=ttySA0". (Try "man bootparam" or see the documentation of
--	  your boot loader (lilo or loadlin) about how to pass options to the
--	  kernel at boot time.)
-+	  "console=ttymxc0". (Try "man bootparam" or see the documentation of
-+	  your bootloader about how to pass options to the kernel at boot time.)
- 
- config SERIAL_UARTLITE
- 	tristate "Xilinx uartlite serial port support"
--- 
-1.8.1.2
-
+Thanks,
+Sekhar
