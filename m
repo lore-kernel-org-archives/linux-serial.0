@@ -1,64 +1,44 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH -next] serial: omap: fix potential NULL pointer
- dereference in serial_omap_runtime_suspend()
-Date: Wed, 5 Jun 2013 08:28:56 -0700
-Message-ID: <20130605152856.GS3331@atomide.com>
-References: <CAPgLHd-N6jTD_WvT2KgsG8vOtKCtpJET8ddyQBWUMp=qG_3G+Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH] tty/serial/sirf: fix error propagation in sirfsoc_uart_probe()
+Date: Thu,  6 Jun 2013 01:28:12 +0400
+Message-ID: <1370467692-4468-1-git-send-email-khoroshilov@ispras.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:33791 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756319Ab3FEP3J (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Jun 2013 11:29:09 -0400
-Content-Disposition: inline
-In-Reply-To: <CAPgLHd-N6jTD_WvT2KgsG8vOtKCtpJET8ddyQBWUMp=qG_3G+Q@mail.gmail.com>
+Received: from mail.ispras.ru ([83.149.199.45]:48343 "EHLO mail.ispras.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752756Ab3FEV2Z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Jun 2013 17:28:25 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Wei Yongjun <weiyj.lk@gmail.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com, sourav.poddar@ti.com, yongjun_wei@trendmicro.com.cn, devicetree-discuss@lists.ozlabs.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 
-* Wei Yongjun <weiyj.lk@gmail.com> [130604 19:10]:
-> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> 
-> The dereference to 'up' should be moved below the NULL test.
-> Introduced by commit ddd85e225c8885b5e4419b0499ab27100e7c366a
-> (serial: omap: prevent runtime PM for "no_console_suspend")
+If pinctrl_get_select_default() fails, sirfsoc_uart_probe()
+returns IS_ERR(result) instead of PTR_ERR(result).
 
-Acked-by: Tony Lindgren <tony@atomide.com>
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+ drivers/tty/serial/sirfsoc_uart.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 03465b6..1fd564b 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -687,9 +687,10 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
  
-> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> ---
->  drivers/tty/serial/omap-serial.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 1aaeca8..156b5aa 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1613,6 +1613,9 @@ static int serial_omap_runtime_suspend(struct device *dev)
->  	struct uart_omap_port *up = dev_get_drvdata(dev);
->  	struct omap_uart_port_info *pdata = dev->platform_data;
->  
-> +	if (!up)
-> +		return -EINVAL;
-> +
->  	/*
->  	* When using 'no_console_suspend', the console UART must not be
->  	* suspended. Since driver suspend is managed by runtime suspend,
-> @@ -1623,9 +1626,6 @@ static int serial_omap_runtime_suspend(struct device *dev)
->  	    uart_console(&up->port))
->  		return -EBUSY;
->  
-> -	if (!up)
-> -		return -EINVAL;
-> -
->  	if (!pdata)
->  		return 0;
->  
-> 
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss@lists.ozlabs.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
+ 	if (sirfport->hw_flow_ctrl) {
+ 		sirfport->p = pinctrl_get_select_default(&pdev->dev);
+-		ret = IS_ERR(sirfport->p);
+-		if (ret)
++		if (IS_ERR(sirfport->p)) {
++			ret = PTR_ERR(sirfport->p);
+ 			goto err;
++		}
+ 	}
+ 
+ 	sirfport->clk = clk_get(&pdev->dev, NULL);
+-- 
+1.8.1.2
+
