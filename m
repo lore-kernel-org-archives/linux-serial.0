@@ -1,41 +1,59 @@
 From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v2 2/2] serial: imx: Allow module build
-Date: Tue, 4 Jun 2013 23:44:11 -0300
-Message-ID: <CAOMZO5BW_GgAAsJKyKfRW_vfO7ajLkfZdUiD=PHdLpzNUDYOFg@mail.gmail.com>
-References: <1370365718-23474-1-git-send-email-fabio.estevam@freescale.com>
-	<1370365718-23474-2-git-send-email-fabio.estevam@freescale.com>
-	<B56CDBE15CE27145A4B77D2D24263E851CF28F@039-SN1MPN1-003.039d.mgd.msft.net>
-	<86D15885F63D1143A519F161FB828EAF267106@039-SN2MPN1-013.039d.mgd.msft.net>
-	<B56CDBE15CE27145A4B77D2D24263E851CF2E7@039-SN1MPN1-003.039d.mgd.msft.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH v3 1/3] serial: imx: Fix warning when !CONFIG_SERIAL_IMX_CONSOLE
+Date: Wed,  5 Jun 2013 00:58:46 -0300
+Message-ID: <1370404728-29707-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f179.google.com ([209.85.128.179]:33997 "EHLO
-	mail-ve0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751116Ab3FECoM (ORCPT
+Received: from mail-gg0-f170.google.com ([209.85.161.170]:35918 "EHLO
+	mail-gg0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750713Ab3FEEEp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Jun 2013 22:44:12 -0400
-Received: by mail-ve0-f179.google.com with SMTP id d10so854741vea.10
-        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2013 19:44:11 -0700 (PDT)
-In-Reply-To: <B56CDBE15CE27145A4B77D2D24263E851CF2E7@039-SN1MPN1-003.039d.mgd.msft.net>
+	Wed, 5 Jun 2013 00:04:45 -0400
+Received: by mail-gg0-f170.google.com with SMTP id s6so275673ggc.29
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2013 21:04:44 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lu Jingchang-B35083 <B35083@freescale.com>
-Cc: Estevam Fabio-R49496 <r49496@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: shawn.guo@linaro.org, b35083@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On Tue, Jun 4, 2013 at 11:33 PM, Lu Jingchang-B35083
-<B35083@freescale.com> wrote:
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-> [Lu Jingchang-B35083]
-> With make arch=ARM clean, I still meet the same fail problem. Does the driver support console when built as module?
-> If it does, I see that "uart_console_device" referenced by imx.c is not exported with EXPORT_SYMBOL in serial core.
-> From the patch, I think the drive support console when built as module, doesn't it?
-> But explanation from Arnd Bergmann [arnd@arndb.de] yesterday is: "All serial port drivers do this. IIRC the reason is that the console has to be started from console_initcall(), which is not available in modules."
-> It seems serial driver module mode doesn't support console support, do I misunderstand?
+When CONFIG_SERIAL_IMX_CONSOLE is not selected the following build warnings
+appear:
 
-Yes, correct. Looks like your last patch is the correct approach. I
-will send a v3.
+drivers/tty/serial/imx.c:274:13: warning: 'imx_port_ucrs_save' defined but not used [-Wunused-function]
+drivers/tty/serial/imx.c:283:13: warning: 'imx_port_ucrs_restore' defined but not used [-Wunused-function]
 
-Regards,
+imx_port_ucrs_save() and imx_port_ucrs_restore() are only used when 
+CONFIG_CONSOLE_POLL or CONFIG_SERIAL_IMX_CONSOLE are selected, so protect these
+functions declaration with a proper ifdef.
 
-Fabio Estevam
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+Changes since v2:
+- Do the same as in v1
+ drivers/tty/serial/imx.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index a07e94f..981749f 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -272,6 +272,7 @@ static inline int is_imx21_uart(struct imx_port *sport)
+ /*
+  * Save and restore functions for UCR1, UCR2 and UCR3 registers
+  */
++#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_IMX_CONSOLE)
+ static void imx_port_ucrs_save(struct uart_port *port,
+ 			       struct imx_port_ucrs *ucr)
+ {
+@@ -289,6 +290,7 @@ static void imx_port_ucrs_restore(struct uart_port *port,
+ 	writel(ucr->ucr2, port->membase + UCR2);
+ 	writel(ucr->ucr3, port->membase + UCR3);
+ }
++#endif
+ 
+ /*
+  * Handle any change of modem status signal since we were last called.
+-- 
+1.8.1.2
+
