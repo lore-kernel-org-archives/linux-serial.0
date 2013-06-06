@@ -1,54 +1,52 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 04/13] ARM: dts: list the CPU nodes for Exynos5250
-Date: Thu, 6 Jun 2013 17:54:39 +0100
-Message-ID: <20130606165439.GC23311@e106331-lin.cambridge.arm.com>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
- <1370516488-25860-4-git-send-email-chander.kashyap@linaro.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.10-rc5
+Date: Thu, 6 Jun 2013 10:58:05 -0700
+Message-ID: <20130606175805.GA25986@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:50945 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751625Ab3FFR6G (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Jun 2013 13:58:06 -0400
 Content-Disposition: inline
-In-Reply-To: <1370516488-25860-4-git-send-email-chander.kashyap@linaro.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Chander Kashyap <chander.kashyap@linaro.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Jun 06, 2013 at 12:01:18PM +0100, Chander Kashyap wrote:
-> Instead of having to specify the number for CPUs in Exynos5250 in platsmp.c
-> file, let the number of CPUs be determined by having this information listed
-> in Exynos5250 device tree file.
-> 
-> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-> ---
->  arch/arm/boot/dts/exynos5250.dtsi |   14 ++++++++++++++
->  arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
->  2 files changed, 21 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
-> index e571d3b..7f6b1c7 100644
-> --- a/arch/arm/boot/dts/exynos5250.dtsi
-> +++ b/arch/arm/boot/dts/exynos5250.dtsi
-> @@ -50,6 +50,20 @@
->  		pinctrl3 = &pinctrl_3;
->  	};
->  
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu@0 {
-> +			compatible = "arm,cortex-a15";
-> +			reg = <0>;
-> +		};
-> +		cpu@1 {
-> +			compatible = "arm,cortex-a15";
-> +			reg = <1>;
-> +		};
-> +	};
-> +
+The following changes since commit e4aa937ec75df0eea0bee03bffa3303ad36c986b:
 
-It would be nice to have device_type = "cpu" on each of the cpu nodes.
+  Linux 3.10-rc3 (2013-05-26 16:00:47 -0700)
 
-Thanks,
-Mark.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.10-rc4
+
+for you to fetch changes up to 317a68427d4b0a302ecff252fd83a00557947db8:
+
+  Revert "serial: 8250: Make SERIAL_8250_RUNTIME_UARTS work correctly" (2013-06-03 10:08:28 -0700)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 3.10-rc4
+
+Here are some small bugfixes, and one revert, of serial driver issues
+that have been reported.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Chander Kashyap (1):
+      serial: samsung: enable clock before clearing pending interrupts during init
+
+Kyle McMartin (1):
+      Revert "serial: 8250: Make SERIAL_8250_RUNTIME_UARTS work correctly"
+
+Lucas Stach (1):
+      serial/imx: disable hardware flow control at startup
+
+ drivers/tty/serial/8250/8250_core.c | 14 +++++++-------
+ drivers/tty/serial/imx.c            |  2 ++
+ drivers/tty/serial/samsung.c        | 13 +++++++++++++
+ 3 files changed, 22 insertions(+), 7 deletions(-)
