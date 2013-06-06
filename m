@@ -1,91 +1,50 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] ARM: davinci: uart: move to devid based clk_get
-Date: Thu, 6 Jun 2013 16:14:19 +0530
-Message-ID: <51B06803.2020008@ti.com>
-References: <1369729686-6595-1-git-send-email-prakash.pm@ti.com>
-	<1369729686-6595-2-git-send-email-prakash.pm@ti.com>
-	<51B06547.8030709@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <51B06547.8030709-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
-List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
-List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
-Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
-To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
-Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Chander Kashyap <chander.kashyap@linaro.org>
+Subject: [PATCH 01/13] ARM: Exynos: initialize l2x0 cache controller only for cortex-a9 based SoCs
+Date: Thu,  6 Jun 2013 16:31:15 +0530
+Message-ID: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f42.google.com ([209.85.160.42]:43811 "EHLO
+	mail-pb0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932076Ab3FFLCe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Jun 2013 07:02:34 -0400
+Received: by mail-pb0-f42.google.com with SMTP id uo1so3123483pbc.1
+        for <linux-serial@vger.kernel.org>; Thu, 06 Jun 2013 04:02:34 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
 
+Only cortex-a9 based Exynos SoCs have l2x0 cache controller. Hence instead of
+checking for every SoC with soc_is_xxx, just check for cpu part number and
+initialize the cache controller for cortex-a9 based SoCs.
 
+Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+---
+ arch/arm/mach-exynos/common.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On 6/6/2013 4:02 PM, Sekhar Nori wrote:
-> Hi Prakash,
-> 
-> It appears that this patch was not tested thoroughly. See below:
-> 
-> On 5/28/2013 1:58 PM, Manjunathappa, Prakash wrote:
->> For modules having single clock, clk_get should be done with dev_id.
->> But current davinci implementation handles multiple instances
->> of the UART devices with single platform_device_register. Hence clk_get
->> is based on con_id rather than dev_id, this is not correct. Do
->> platform_device_register for each instance and clk_get on dev_id.
->>
->> Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
->> ---
-> 
->> -static struct plat_serial8250_port da8xx_serial_pdata[] = {
->> +static struct plat_serial8250_port da8xx_serial0_pdata[] = {
->>  	{
->>  		.mapbase	= DA8XX_UART0_BASE,
->>  		.irq		= IRQ_DA8XX_UARTINT0,
->> @@ -75,7 +75,9 @@ static struct plat_serial8250_port da8xx_serial_pdata[] = {
->>  					UPF_IOREMAP,
->>  		.iotype		= UPIO_MEM,
->>  		.regshift	= 2,
->> -	},
->> +	}
->> +};
->> +static struct plat_serial8250_port da8xx_serial1_pdata[] = {
->>  	{
->>  		.mapbase	= DA8XX_UART1_BASE,
->>  		.irq		= IRQ_DA8XX_UARTINT1,
->> @@ -83,7 +85,9 @@ static struct plat_serial8250_port da8xx_serial_pdata[] = {
->>  					UPF_IOREMAP,
->>  		.iotype		= UPIO_MEM,
->>  		.regshift	= 2,
->> -	},
->> +	}
->> +};
->> +static struct plat_serial8250_port da8xx_serial2_pdata[] = {
->>  	{
->>  		.mapbase	= DA8XX_UART2_BASE,
->>  		.irq		= IRQ_DA8XX_UARTINT2,
->> @@ -91,18 +95,31 @@ static struct plat_serial8250_port da8xx_serial_pdata[] = {
->>  					UPF_IOREMAP,
->>  		.iotype		= UPIO_MEM,
->>  		.regshift	= 2,
->> -	},
->> -	{
->> -		.flags	= 0,
->> -	},
->> +	}
-> 
-> 8250_core.c relies on sentinel value with p->flags = 0 to terminate
-> looking for more ports. You don't have sentinel values in any of pdata
-> the arrays you introduced so the code basically goes looking into areas
-> of memory not its own. This caused bunch of "cannot register port"
-> errors for me but I can easily imagine more serious errors.
+diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
+index 8ce2db4..bad000e 100644
+--- a/arch/arm/mach-exynos/common.c
++++ b/arch/arm/mach-exynos/common.c
+@@ -35,6 +35,7 @@
+ #include <asm/mach/map.h>
+ #include <asm/mach/irq.h>
+ #include <asm/cacheflush.h>
++#include <asm/cputype.h>
+ 
+ #include <mach/regs-irq.h>
+ #include <mach/regs-pmu.h>
+@@ -520,7 +521,7 @@ static int __init exynos4_l2x0_cache_init(void)
+ {
+ 	int ret;
+ 
+-	if (soc_is_exynos5250() || soc_is_exynos5440())
++	if (read_cpuid_part_number() != ARM_CPU_PART_CORTEX_A9)
+ 		return 0;
+ 
+ 	ret = l2x0_of_init(L2_AUX_VAL, L2_AUX_MASK);
+-- 
+1.7.9.5
 
-Similarly, you check for platform_data being NULL to go over the list of
-serial devices in the code in serial.c you introduced, but don't have a
-sentinel when you define the serial device array.
-
-Thanks,
-Sekhar
