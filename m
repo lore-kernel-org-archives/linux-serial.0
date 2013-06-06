@@ -1,36 +1,46 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH 06/13] serial: samsung: add support for Exynos5420
-Date: Thu,  6 Jun 2013 16:31:20 +0530
-Message-ID: <1370516488-25860-6-git-send-email-chander.kashyap@linaro.org>
+Subject: [PATCH 07/13] ARM: Exynos: use four additional chipid bits to identify Exynos family
+Date: Thu,  6 Jun 2013 16:31:21 +0530
+Message-ID: <1370516488-25860-7-git-send-email-chander.kashyap@linaro.org>
 References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-Reply-To: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
+Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>, Thomas Abraham <thomas.abraham@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-The serial port used in Exynos5420 is similar to the serial ports used
-in the other Exynos SoC. Hence, extend the serial driver support for
-Exynos5420.
+Use chipid[27:20] bits to identify the Exynos family while setting up
+the serial port during the uncompression setup. This uses four additional
+bits of chipid to identify the Exynos family since this is required for
+identifying Exynos5420 SoC.
 
 Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+Signed-off-by: Thomas Abraham <thomas.abraham@linaro.org>
 ---
- drivers/tty/serial/samsung.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-exynos/include/mach/uncompress.h |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 3cda4ed..841221c 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1716,7 +1716,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+diff --git a/arch/arm/mach-exynos/include/mach/uncompress.h b/arch/arm/mach-exynos/include/mach/uncompress.h
+index 2979995..1937e0f 100644
+--- a/arch/arm/mach-exynos/include/mach/uncompress.h
++++ b/arch/arm/mach-exynos/include/mach/uncompress.h
+@@ -31,13 +31,12 @@ static void arch_detect_cpu(void)
  
- #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) || \
- 	defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) || \
--	defined(CONFIG_SOC_EXYNOS5440)
-+	defined(CONFIG_SOC_EXYNOS5420) || defined(CONFIG_SOC_EXYNOS5440)
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
- 	.info = &(struct s3c24xx_uart_info) {
- 		.name		= "Samsung Exynos4 UART",
+ 	/*
+ 	 * product_id is bits 31:12
+-	 *    bits 23:20 describe the exynosX family
+-	 *
++	 * bits 23:20 describe the exynosX family
++	 * bits 27:24 describe the exynosX family in exynos5420
+ 	 */
+ 	chip_id >>= 20;
+-	chip_id &= 0xf;
+ 
+-	if (chip_id == 0x5)
++	if ((chip_id & 0x0f) == 0x5 || (chip_id & 0xf0) == 0x50)
+ 		uart_base = (volatile u8 *)EXYNOS5_PA_UART + (S3C_UART_OFFSET * CONFIG_S3C_LOWLEVEL_UART_PORT);
+ 	else
+ 		uart_base = (volatile u8 *)EXYNOS4_PA_UART + (S3C_UART_OFFSET * CONFIG_S3C_LOWLEVEL_UART_PORT);
 -- 
 1.7.9.5
