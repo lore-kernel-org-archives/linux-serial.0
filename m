@@ -1,50 +1,78 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH 01/13] ARM: Exynos: initialize l2x0 cache controller only for cortex-a9 based SoCs
-Date: Thu,  6 Jun 2013 16:31:15 +0530
-Message-ID: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f42.google.com ([209.85.160.42]:43811 "EHLO
-	mail-pb0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932076Ab3FFLCe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jun 2013 07:02:34 -0400
-Received: by mail-pb0-f42.google.com with SMTP id uo1so3123483pbc.1
-        for <linux-serial@vger.kernel.org>; Thu, 06 Jun 2013 04:02:34 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH 02/13] ARM: Exynos: fix secondary cpu power control register address calculation
+Date: Thu,  6 Jun 2013 16:31:16 +0530
+Message-ID: <1370516488-25860-2-git-send-email-chander.kashyap@linaro.org>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
+List-Id: linux-serial@vger.kernel.org
 
-Only cortex-a9 based Exynos SoCs have l2x0 cache controller. Hence instead of
-checking for every SoC with soc_is_xxx, just check for cpu part number and
-initialize the cache controller for cortex-a9 based SoCs.
+The CPU power control register address calculation for secondary CPUs is
+generalized by calculating the register address using secondary cpu
+logical number.
 
 Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
 ---
- arch/arm/mach-exynos/common.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/mach-exynos/include/mach/regs-pmu.h |    6 ++++++
+ arch/arm/mach-exynos/platsmp.c               |   10 +++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
-index 8ce2db4..bad000e 100644
---- a/arch/arm/mach-exynos/common.c
-+++ b/arch/arm/mach-exynos/common.c
-@@ -35,6 +35,7 @@
- #include <asm/mach/map.h>
- #include <asm/mach/irq.h>
- #include <asm/cacheflush.h>
-+#include <asm/cputype.h>
+diff --git a/arch/arm/mach-exynos/include/mach/regs-pmu.h b/arch/arm/mach-exynos/include/mach/regs-pmu.h
+index 3f30aa1..b77f72c 100644
+--- a/arch/arm/mach-exynos/include/mach/regs-pmu.h
++++ b/arch/arm/mach-exynos/include/mach/regs-pmu.h
+@@ -125,11 +125,17 @@
+ #define S5P_GPS_ALIVE_LOWPWR			S5P_PMUREG(0x13A0)
  
- #include <mach/regs-irq.h>
- #include <mach/regs-pmu.h>
-@@ -520,7 +521,7 @@ static int __init exynos4_l2x0_cache_init(void)
- {
- 	int ret;
+ #define S5P_ARM_CORE0_CONFIGURATION		S5P_PMUREG(0x2000)
++#define S5P_ARM_CORE0_STATUS			S5P_PMUREG(0x2004)
+ #define S5P_ARM_CORE0_OPTION			S5P_PMUREG(0x2008)
+ #define S5P_ARM_CORE1_CONFIGURATION		S5P_PMUREG(0x2080)
+ #define S5P_ARM_CORE1_STATUS			S5P_PMUREG(0x2084)
+ #define S5P_ARM_CORE1_OPTION			S5P_PMUREG(0x2088)
  
--	if (soc_is_exynos5250() || soc_is_exynos5440())
-+	if (read_cpuid_part_number() != ARM_CPU_PART_CORTEX_A9)
- 		return 0;
++#define S5P_ARM_CORE_CONFIGURATION(_nr)		\
++			(S5P_ARM_CORE0_CONFIGURATION + (_nr) * 0x80)
++#define S5P_ARM_CORE_STATUS(_nr)			\
++			(S5P_ARM_CORE0_STATUS + (_nr) * 0x80)
++
+ #define S5P_ARM_COMMON_OPTION			S5P_PMUREG(0x2408)
+ #define S5P_TOP_PWR_OPTION			S5P_PMUREG(0x2C48)
+ #define S5P_CAM_OPTION				S5P_PMUREG(0x3C08)
+diff --git a/arch/arm/mach-exynos/platsmp.c b/arch/arm/mach-exynos/platsmp.c
+index d9c6d0a..1a4e4e5 100644
+--- a/arch/arm/mach-exynos/platsmp.c
++++ b/arch/arm/mach-exynos/platsmp.c
+@@ -109,14 +109,14 @@ static int __cpuinit exynos_boot_secondary(unsigned int cpu, struct task_struct
+ 	 */
+ 	write_pen_release(phys_cpu);
  
- 	ret = l2x0_of_init(L2_AUX_VAL, L2_AUX_MASK);
+-	if (!(__raw_readl(S5P_ARM_CORE1_STATUS) & S5P_CORE_LOCAL_PWR_EN)) {
++	if (!(__raw_readl(S5P_ARM_CORE_STATUS(cpu)) & S5P_CORE_LOCAL_PWR_EN)) {
+ 		__raw_writel(S5P_CORE_LOCAL_PWR_EN,
+-			     S5P_ARM_CORE1_CONFIGURATION);
++			     S5P_ARM_CORE_CONFIGURATION(cpu));
+ 
+ 		timeout = 10;
+ 
+-		/* wait max 10 ms until cpu1 is on */
+-		while ((__raw_readl(S5P_ARM_CORE1_STATUS)
++		/* wait max 10 ms until secondary cpu is on */
++		while ((__raw_readl(S5P_ARM_CORE_STATUS(cpu))
+ 			& S5P_CORE_LOCAL_PWR_EN) != S5P_CORE_LOCAL_PWR_EN) {
+ 			if (timeout-- == 0)
+ 				break;
+@@ -125,7 +125,7 @@ static int __cpuinit exynos_boot_secondary(unsigned int cpu, struct task_struct
+ 		}
+ 
+ 		if (timeout == 0) {
+-			printk(KERN_ERR "cpu1 power enable failed");
++			pr_err("secondary cpu power enable failed\n");
+ 			spin_unlock(&boot_lock);
+ 			return -ETIMEDOUT;
+ 		}
 -- 
 1.7.9.5
-
