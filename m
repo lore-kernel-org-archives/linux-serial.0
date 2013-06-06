@@ -1,114 +1,54 @@
 From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 11/13] clocksource: exynos_mct: extend local timer
- support for four cores
-Date: Thu, 6 Jun 2013 17:50:40 +0100
-Message-ID: <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
+Subject: Re: [PATCH 04/13] ARM: dts: list the CPU nodes for Exynos5250
+Date: Thu, 6 Jun 2013 17:54:39 +0100
+Message-ID: <20130606165439.GC23311@e106331-lin.cambridge.arm.com>
 References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
- <1370516488-25860-11-git-send-email-chander.kashyap@linaro.org>
+ <1370516488-25860-4-git-send-email-chander.kashyap@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:36713 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751841Ab3FFQvK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jun 2013 12:51:10 -0400
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1370516488-25860-11-git-send-email-chander.kashyap@linaro.org>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+In-Reply-To: <1370516488-25860-4-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Chander Kashyap <chander.kashyap@linaro.org>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-I have a few comments.
-
-On Thu, Jun 06, 2013 at 12:01:25PM +0100, Chander Kashyap wrote:
-> Extend the local timer interrupt support for handling four local timers.
-
-Is this the maximum number of CPUs the MCT could theoretically support?
-
+On Thu, Jun 06, 2013 at 12:01:18PM +0100, Chander Kashyap wrote:
+> Instead of having to specify the number for CPUs in Exynos5250 in platsmp.c
+> file, let the number of CPUs be determined by having this information listed
+> in Exynos5250 device tree file.
 > 
 > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
 > ---
->  drivers/clocksource/exynos_mct.c |   33 ++++++++++++++++++++++++++++++---
->  1 file changed, 30 insertions(+), 3 deletions(-)
+>  arch/arm/boot/dts/exynos5250.dtsi |   14 ++++++++++++++
+>  arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
+>  2 files changed, 21 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-> index 662fcc0..6af17d4 100644
-> --- a/drivers/clocksource/exynos_mct.c
-> +++ b/drivers/clocksource/exynos_mct.c
-> @@ -412,6 +412,18 @@ static struct irqaction mct_tick1_event_irq = {
->  	.handler	= exynos4_mct_tick_isr,
->  };
+> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+> index e571d3b..7f6b1c7 100644
+> --- a/arch/arm/boot/dts/exynos5250.dtsi
+> +++ b/arch/arm/boot/dts/exynos5250.dtsi
+> @@ -50,6 +50,20 @@
+>  		pinctrl3 = &pinctrl_3;
+>  	};
 >  
-> +static struct irqaction mct_tick2_event_irq = {
-> +	.name		= "mct_tick2_irq",
-> +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
-> +	.handler	= exynos4_mct_tick_isr,
-> +};
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
 > +
-> +static struct irqaction mct_tick3_event_irq = {
-> +	.name		= "mct_tick3_irq",
-> +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
-> +	.handler	= exynos4_mct_tick_isr,
-> +};
+> +		cpu@0 {
+> +			compatible = "arm,cortex-a15";
+> +			reg = <0>;
+> +		};
+> +		cpu@1 {
+> +			compatible = "arm,cortex-a15";
+> +			reg = <1>;
+> +		};
+> +	};
 > +
 
-Is there any reason you can't use {request,free}_irq?
-
->  static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
->  {
->  	struct mct_clock_event_device *mevt;
-> @@ -439,11 +451,21 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
->  			mct_tick0_event_irq.dev_id = mevt;
->  			evt->irq = mct_irqs[MCT_L0_IRQ];
->  			setup_irq(evt->irq, &mct_tick0_event_irq);
-> -		} else {
-> +		} else if (cpu == 1) {
->  			mct_tick1_event_irq.dev_id = mevt;
->  			evt->irq = mct_irqs[MCT_L1_IRQ];
->  			setup_irq(evt->irq, &mct_tick1_event_irq);
->  			irq_set_affinity(evt->irq, cpumask_of(1));
-> +		} else if (cpu == 2) {
-> +			mct_tick2_event_irq.dev_id = mevt;
-> +			evt->irq = mct_irqs[MCT_L2_IRQ];
-> +			setup_irq(evt->irq, &mct_tick2_event_irq);
-> +			irq_set_affinity(evt->irq, cpumask_of(2));
-> +		} else if (cpu == 3) {
-> +			mct_tick3_event_irq.dev_id = mevt;
-> +			evt->irq = mct_irqs[MCT_L3_IRQ];
-> +			setup_irq(evt->irq, &mct_tick3_event_irq);
-> +			irq_set_affinity(evt->irq, cpumask_of(3));
-
-This doesn't seem good to me. You're duplicating the logic for each CPU. Can
-you not figure out which values you need based on the smp_processor_id (or even
-better, the *evt) without requiring a separate branch for each CPU?
-
->  		}
->  	} else {
->  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
-> @@ -456,11 +478,16 @@ static void exynos4_local_timer_stop(struct clock_event_device *evt)
->  {
->  	unsigned int cpu = smp_processor_id();
->  	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
-> -	if (mct_int_type == MCT_INT_SPI)
-> +	if (mct_int_type == MCT_INT_SPI) {
->  		if (cpu == 0)
->  			remove_irq(evt->irq, &mct_tick0_event_irq);
-> -		else
-> +		else if (cpu == 1)
->  			remove_irq(evt->irq, &mct_tick1_event_irq);
-> +		else if (cpu == 2)
-> +			remove_irq(evt->irq, &mct_tick2_event_irq);
-> +		else if (cpu == 3)
-> +			remove_irq(evt->irq, &mct_tick3_event_irq);
-> +	}
-
-Again, I don't think each CPU should be special-cased. If you used
-{request,free}_irq this would be simpler.
+It would be nice to have device_type = "cpu" on each of the cpu nodes.
 
 Thanks,
 Mark.
