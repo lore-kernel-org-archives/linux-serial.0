@@ -1,52 +1,43 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.10-rc5
-Date: Thu, 6 Jun 2013 10:58:05 -0700
-Message-ID: <20130606175805.GA25986@kroah.com>
+Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
+Date: Thu, 6 Jun 2013 13:05:19 -0700
+Message-ID: <20130606200519.GA1644@kroah.com>
+References: <1370309270-21019-1-git-send-email-b35083@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50945 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:52268 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751625Ab3FFR6G (ORCPT
+	with ESMTP id S1752101Ab3FFUFU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jun 2013 13:58:06 -0400
+	Thu, 6 Jun 2013 16:05:20 -0400
 Content-Disposition: inline
+In-Reply-To: <1370309270-21019-1-git-send-email-b35083@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Jingchang Lu <b35083@freescale.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, s.hauer@pengutronix.de
 
-The following changes since commit e4aa937ec75df0eea0bee03bffa3303ad36c986b:
+On Tue, Jun 04, 2013 at 09:27:50AM +0800, Jingchang Lu wrote:
+> Add Freescale lpuart driver support. The lpuart device
+> can be found on Vybrid VF610 and Layerscape LS-1 SoCs.
+>=20
+> Signed-off-by: Jingchang Lu <b35083@freescale.com>
 
-  Linux 3.10-rc3 (2013-05-26 16:00:47 -0700)
+This breaks the build on x86 systems with:
+  CC [M]  drivers/tty/serial/fsl_lpuart.o
+drivers/tty/serial/fsl_lpuart.c: In function =E2=80=98lpuart_probe=E2=80=
+=99:
+drivers/tty/serial/fsl_lpuart.c:751:2: error: implicit declaration of f=
+unction =E2=80=98of_alias_get_id=E2=80=99 [-Werror=3Dimplicit-function-=
+declaration]
 
-are available in the git repository at:
+so I can't take this :(
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.10-rc4
-
-for you to fetch changes up to 317a68427d4b0a302ecff252fd83a00557947db8:
-
-  Revert "serial: 8250: Make SERIAL_8250_RUNTIME_UARTS work correctly" (2013-06-03 10:08:28 -0700)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 3.10-rc4
-
-Here are some small bugfixes, and one revert, of serial driver issues
-that have been reported.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Chander Kashyap (1):
-      serial: samsung: enable clock before clearing pending interrupts during init
-
-Kyle McMartin (1):
-      Revert "serial: 8250: Make SERIAL_8250_RUNTIME_UARTS work correctly"
-
-Lucas Stach (1):
-      serial/imx: disable hardware flow control at startup
-
- drivers/tty/serial/8250/8250_core.c | 14 +++++++-------
- drivers/tty/serial/imx.c            |  2 ++
- drivers/tty/serial/samsung.c        | 13 +++++++++++++
- 3 files changed, 22 insertions(+), 7 deletions(-)
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
