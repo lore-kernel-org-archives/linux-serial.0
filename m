@@ -1,72 +1,62 @@
-From: Tushar Behera <tushar.behera@linaro.org>
-Subject: Re: [PATCH 13/13] ARM: Exynos: extend soft-reset support for Exynos5420
-Date: Thu, 06 Jun 2013 17:14:49 +0530
-Message-ID: <51B07631.2010802@linaro.org>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-13-git-send-email-chander.kashyap@linaro.org>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 10/13] ARM: dts: Add initial device tree support for
+ Exynos5420
+Date: Thu, 6 Jun 2013 17:34:11 +0100
+Message-ID: <20130606163411.GA23311@e106331-lin.cambridge.arm.com>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+ <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1370516488-25860-13-git-send-email-chander.kashyap@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Chander Kashyap <chander.kashyap@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 06/06/2013 04:31 PM, Chander Kashyap wrote:
-> Extend the soft reset support for Exynos5420 SoC.
-> 
-> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-> ---
->  arch/arm/mach-exynos/common.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
-> index fbe1aa7..dc7c134 100644
-> --- a/arch/arm/mach-exynos/common.c
-> +++ b/arch/arm/mach-exynos/common.c
-> @@ -321,7 +321,8 @@ void exynos5_restart(char mode, const char *cmd)
->  	u32 val;
->  	void __iomem *addr;
->  
-> -	if (of_machine_is_compatible("samsung,exynos5250")) {
-> +	if (of_machine_is_compatible("samsung,exynos5250") ||
-> +		(of_machine_is_compatible("samsung,exynos5420"))) {
->  		val = 0x1;
->  		addr = EXYNOS_SWRESET;
->  	} else if (of_machine_is_compatible("samsung,exynos5440")) {
-> 
+Hi,
 
-How about making 0x1 and EXYNOS_SWRESET as default values of val and
-addr. That way we can remove this check for exynos5250 and exynos5420.
-Also we can remove the trailing else statement as there are no non-DT
-boards for EXYNOS5.
+> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+> new file mode 100644
+> index 0000000..b14e775
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+> @@ -0,0 +1,40 @@
+> +/*
+> + * SAMSUNG SMDK5420 board device tree source
+> + *
+> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
+> + *		http://www.samsung.com
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> +*/
+> +
+> +/dts-v1/;
+> +/include/ "exynos5420.dtsi"
+> +
+> +/ {
+> +	model = "Samsung SMDK5420 board based on EXYNOS5420";
+> +	compatible = "samsung,smdk5420", "samsung,exynos5420";
+> +
+> +	memory {
+> +		reg =	<0x20000000 0x10000000
+> +			 0x30000000 0x10000000
+> +			 0x40000000 0x10000000
+> +			 0x50000000 0x10000000
+> +			 0x60000000 0x10000000
+> +			 0x70000000 0x10000000
+> +			 0x80000000 0x10000000
+> +			 0x90000000 0x10000000>;
+> +	};
 
- void exynos5_restart(char mode, const char *cmd)
- {
-        struct device_node *np;
--       u32 val;
--       void __iomem *addr;
-+       u32 val = 0x1;
-+       void __iomem *addr = EXYNOS_SWRESET;
+This looks a little odd. As these are continguous, you can describe them as one
+bank:
 
--       if (of_machine_is_compatible("samsung,exynos5250")) {
--               val = 0x1;
--               addr = EXYNOS_SWRESET;
--       } else if (of_machine_is_compatible("samsung,exynos5440")) {
-+       if (of_machine_is_compatible("samsung,exynos5440")) {
-                u32 status;
-                np = of_find_compatible_node(NULL, NULL,
-"samsung,exynos5440-clock");
+	memory {
+		reg = <0x20000000 0x80000000>;
+	};
 
-@@ -336,9 +333,6 @@ void exynos5_restart(char mode, const char *cmd)
-                val = __raw_readl(addr);
-
-                val = (val & 0xffff0000) | (status & 0xffff);
--       } else {
--               pr_err("%s: cannot support non-DT\n", __func__);
--               return;
-        }
-
--- 
-Tushar Behera
+Mark.
