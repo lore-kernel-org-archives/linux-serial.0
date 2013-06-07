@@ -1,1006 +1,221 @@
-From: Jingchang Lu <b35083@freescale.com>
-Subject: [PATCH v7] tty: serial: add Freescale lpuart driver support
-Date: Fri, 7 Jun 2013 09:20:40 +0800
-Message-ID: <1370568040-6119-1-git-send-email-b35083@freescale.com>
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] ARM: davinci: uart: move to devid based clk_get
+Date: Fri, 7 Jun 2013 11:05:47 +0530
+Message-ID: <51B17133.40508@ti.com>
+References: <1369729686-6595-1-git-send-email-prakash.pm@ti.com>
+	<1369729686-6595-2-git-send-email-prakash.pm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: s.hauer@pengutronix.de, linux-serial@vger.kernel.org, Jingchang Lu <b35083@freescale.com>, shawn.guo@linaro.org, festevam@gmail.com, linux-arm-kernel@lists.infradead.org
+Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+In-Reply-To: <1369729686-6595-2-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
+List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
+List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
+Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
+To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
+Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Add Freescale lpuart driver support. The lpuart device
-can be found on Vybrid VF610 and Layerscape LS-1 SoCs.
+On 5/28/2013 1:58 PM, Manjunathappa, Prakash wrote:
+> For modules having single clock, clk_get should be done with dev_id.
+> But current davinci implementation handles multiple instances
+> of the UART devices with single platform_device_register. Hence clk_get
+> is based on con_id rather than dev_id, this is not correct. Do
+> platform_device_register for each instance and clk_get on dev_id.
+> 
+> Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
 
-Signed-off-by: Jingchang Lu <b35083@freescale.com>
----
-changes in v7:
-  Fix build error of "error: implicit declaration of function 
-"of_alias_get_id" on x86 system.
+> +struct platform_device da8xx_serial_device[] = {
+> +	{
+> +		.name	= "serial8250",
+> +		.id	= PLAT8250_DEV_PLATFORM,
+> +		.dev	= {
+> +			.platform_data	= da8xx_serial0_pdata
+> +		}
+>  	},
+> +	{
+> +		.name	= "serial8250",
+> +		.id	= PLAT8250_DEV_PLATFORM1,
+> +		.dev	= {
+> +			.platform_data	= da8xx_serial1_pdata
+> +		}
+> +	},
+> +	{
+> +		.name	= "serial8250",
+> +		.id	= PLAT8250_DEV_PLATFORM2,
+> +		.dev	= {
+> +			.platform_data	= da8xx_serial2_pdata
+> +		}
+> +	}
 
-changes in v6:
-  Enable being built as a module support.
+You should include trailing ',' when defining structures like these
+(except on the sentinel value).
 
-changes in v5:
-  Coding style fix, remove redundant code.
-  Checking clk_prepare_enable return value.
-  Using devm_ioremap_resource instead of devm_request_and_ioremap.
+> diff --git a/arch/arm/mach-davinci/include/mach/serial.h b/arch/arm/mach-davinci/include/mach/serial.h
+> index 62ad300..34d9877 100644
+> --- a/arch/arm/mach-davinci/include/mach/serial.h
+> +++ b/arch/arm/mach-davinci/include/mach/serial.h
+> @@ -44,6 +44,10 @@ struct davinci_uart_config {
+>  
+>  extern int davinci_serial_init(struct davinci_uart_config *);
+>  extern int davinci_serial_setup_clk(unsigned instance, unsigned int *rate);
+> +extern struct platform_device dm365_serial_device[];
+> +extern struct platform_device dm355_serial_device[];
+> +extern struct platform_device dm644x_serial_device[];
+> +extern struct platform_device dm646x_serial_device[];
 
-changes in v4:
-  Change Vybrid VF610 SoC compatible string to "fsl,vf610-lpuart"
+This patch fails to build because of these extern definitions here.
+Looks like they belong to 5/5. Also, add them to the local davinci.h
+instead of globally visible serial.h - no need for rest of the kernel to
+know about these.
 
-changes in v3:
-  Use general driver name lpuart instead of mvf for further share between SoCs.
-  Add bind doc in Documentation/devicetree/bindings/tty/serial.
-  Remove unused #include header lines and clean up code.
+After this is fixed locally, applying this patch to master branch of my
+tree leads to the attached crash (sorry about the broken linewrap, I
+hope its readable). Please fix this issue along with others that I
+already pointed out and resubmit.
 
-changes in v2:
-  Remove unused variables and clean up the code.
+Thanks,
+Sekhar
 
- .../devicetree/bindings/tty/serial/fsl-lpuart.txt  |  14 +
- drivers/tty/serial/Kconfig                         |  14 +
- drivers/tty/serial/Makefile                        |   1 +
- drivers/tty/serial/fsl_lpuart.c                    | 874 +++++++++++++++++++++
- include/uapi/linux/serial_core.h                   |   3 +
- 5 files changed, 906 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/fsl-lpuart.txt
- create mode 100644 drivers/tty/serial/fsl_lpuart.c
-
-diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-lpuart.txt
-new file mode 100644
-index 0000000..6fd1dd1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/fsl-lpuart.txt
-@@ -0,0 +1,14 @@
-+* Freescale low power universal asynchronous receiver/transmitter (lpuart)
-+
-+Required properties:
-+- compatible : Should be "fsl,<soc>-lpuart"
-+- reg : Address and length of the register set for the device
-+- interrupts : Should contain uart interrupt
-+
-+Example:
-+
-+uart0: serial@40027000 {
-+	       compatible = "fsl,vf610-lpuart";
-+	       reg = <0x40027000 0x1000>;
-+	       interrupts = <0 61 0x00>;
-+       };
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 7e7006f..8b756a8 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1484,6 +1484,20 @@ config SERIAL_RP2_NR_UARTS
- 	  If multiple cards are present, the default limit of 32 ports may
- 	  need to be increased.
- 
-+config SERIAL_FSL_LPUART
-+	tristate "Freescale lpuart serial port support"
-+	select SERIAL_CORE
-+	help
-+	  Support for the on-chip lpuart on some Freescale SOCs.
-+
-+config SERIAL_FSL_LPUART_CONSOLE
-+	bool "Console on Freescale lpuart serial port"
-+	depends on SERIAL_FSL_LPUART=y
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  If you have enabled the lpuart serial port on the Freescale SoCs,
-+	  you can make it the console by answering Y to this option.
-+
- endmenu
- 
- endif # TTY
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index eedfec4..cf650f0 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -85,3 +85,4 @@ obj-$(CONFIG_SERIAL_AR933X)   += ar933x_uart.o
- obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
- obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
- obj-$(CONFIG_SERIAL_RP2)	+= rp2.o
-+obj-$(CONFIG_SERIAL_FSL_LPUART)	+= fsl_lpuart.o
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-new file mode 100644
-index 0000000..263cfaa
---- /dev/null
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -0,0 +1,874 @@
-+/*
-+ *  Freescale lpuart serial port driver
-+ *
-+ *  Copyright 2012-2013 Freescale Semiconductor, Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+#if defined(CONFIG_SERIAL_FSL_LPUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#define SUPPORT_SYSRQ
-+#endif
-+
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/clk.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/console.h>
-+#include <linux/serial_core.h>
-+#include <linux/tty_flip.h>
-+
-+/* All registers are 8-bit width */
-+#define UARTBDH			0x00
-+#define UARTBDL			0x01
-+#define UARTCR1			0x02
-+#define UARTCR2			0x03
-+#define UARTSR1			0x04
-+#define UARTCR3			0x06
-+#define UARTDR			0x07
-+#define UARTCR4			0x0a
-+#define UARTCR5			0x0b
-+#define UARTMODEM		0x0d
-+#define UARTPFIFO		0x10
-+#define UARTCFIFO		0x11
-+#define UARTSFIFO		0x12
-+#define UARTTWFIFO		0x13
-+#define UARTTCFIFO		0x14
-+#define UARTRWFIFO		0x15
-+
-+#define UARTBDH_LBKDIE		0x80
-+#define UARTBDH_RXEDGIE		0x40
-+#define UARTBDH_SBR_MASK	0x1f
-+
-+#define UARTCR1_LOOPS		0x80
-+#define UARTCR1_RSRC		0x20
-+#define UARTCR1_M		0x10
-+#define UARTCR1_WAKE		0x08
-+#define UARTCR1_ILT		0x04
-+#define UARTCR1_PE		0x02
-+#define UARTCR1_PT		0x01
-+
-+#define UARTCR2_TIE		0x80
-+#define UARTCR2_TCIE		0x40
-+#define UARTCR2_RIE		0x20
-+#define UARTCR2_ILIE		0x10
-+#define UARTCR2_TE		0x08
-+#define UARTCR2_RE		0x04
-+#define UARTCR2_RWU		0x02
-+#define UARTCR2_SBK		0x01
-+
-+#define UARTSR1_TDRE		0x80
-+#define UARTSR1_TC		0x40
-+#define UARTSR1_RDRF		0x20
-+#define UARTSR1_IDLE		0x10
-+#define UARTSR1_OR		0x08
-+#define UARTSR1_NF		0x04
-+#define UARTSR1_FE		0x02
-+#define UARTSR1_PE		0x01
-+
-+#define UARTCR3_R8		0x80
-+#define UARTCR3_T8		0x40
-+#define UARTCR3_TXDIR		0x20
-+#define UARTCR3_TXINV		0x10
-+#define UARTCR3_ORIE		0x08
-+#define UARTCR3_NEIE		0x04
-+#define UARTCR3_FEIE		0x02
-+#define UARTCR3_PEIE		0x01
-+
-+#define UARTCR4_MAEN1		0x80
-+#define UARTCR4_MAEN2		0x40
-+#define UARTCR4_M10		0x20
-+#define UARTCR4_BRFA_MASK	0x1f
-+#define UARTCR4_BRFA_OFF	0
-+
-+#define UARTCR5_TDMAS		0x80
-+#define UARTCR5_RDMAS		0x20
-+
-+#define UARTMODEM_RXRTSE	0x08
-+#define UARTMODEM_TXRTSPOL	0x04
-+#define UARTMODEM_TXRTSE	0x02
-+#define UARTMODEM_TXCTSE	0x01
-+
-+#define UARTPFIFO_TXFE		0x80
-+#define UARTPFIFO_FIFOSIZE_MASK	0x7
-+#define UARTPFIFO_TXSIZE_OFF	4
-+#define UARTPFIFO_RXFE		0x08
-+#define UARTPFIFO_RXSIZE_OFF	0
-+
-+#define UARTCFIFO_TXFLUSH	0x80
-+#define UARTCFIFO_RXFLUSH	0x40
-+#define UARTCFIFO_RXOFE		0x04
-+#define UARTCFIFO_TXOFE		0x02
-+#define UARTCFIFO_RXUFE		0x01
-+
-+#define UARTSFIFO_TXEMPT	0x80
-+#define UARTSFIFO_RXEMPT	0x40
-+#define UARTSFIFO_RXOF		0x04
-+#define UARTSFIFO_TXOF		0x02
-+#define UARTSFIFO_RXUF		0x01
-+
-+#define DRIVER_NAME	"fsl-lpuart"
-+#define DEV_NAME	"ttyLP"
-+#define UART_NR		6
-+
-+struct lpuart_port {
-+	struct uart_port	port;
-+	struct clk		*clk;
-+	unsigned int		txfifo_size;
-+	unsigned int		rxfifo_size;
-+};
-+
-+static struct of_device_id lpuart_dt_ids[] = {
-+	{
-+		.compatible = "fsl,vf610-lpuart",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
-+
-+static void lpuart_stop_tx(struct uart_port *port)
-+{
-+	unsigned char temp;
-+
-+	temp = readb(port->membase + UARTCR2);
-+	temp &= ~(UARTCR2_TIE | UARTCR2_TCIE);
-+	writeb(temp, port->membase + UARTCR2);
-+}
-+
-+static void lpuart_stop_rx(struct uart_port *port)
-+{
-+	unsigned char temp;
-+
-+	temp = readb(port->membase + UARTCR2);
-+	writeb(temp & ~UARTCR2_RE, port->membase + UARTCR2);
-+}
-+
-+static void lpuart_enable_ms(struct uart_port *port)
-+{
-+}
-+
-+static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
-+{
-+	struct circ_buf *xmit = &sport->port.state->xmit;
-+
-+	while (!uart_circ_empty(xmit) &&
-+		(readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size)) {
-+		writeb(xmit->buf[xmit->tail], sport->port.membase + UARTDR);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		sport->port.icount.tx++;
-+	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(&sport->port);
-+
-+	if (uart_circ_empty(xmit))
-+		lpuart_stop_tx(&sport->port);
-+}
-+
-+static void lpuart_start_tx(struct uart_port *port)
-+{
-+	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-+	unsigned char temp;
-+
-+	temp = readb(port->membase + UARTCR2);
-+	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
-+
-+	if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
-+		lpuart_transmit_buffer(sport);
-+}
-+
-+static irqreturn_t lpuart_txint(int irq, void *dev_id)
-+{
-+	struct lpuart_port *sport = dev_id;
-+	struct circ_buf *xmit = &sport->port.state->xmit;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+	if (sport->port.x_char) {
-+		writeb(sport->port.x_char, sport->port.membase + UARTDR);
-+		goto out;
-+	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+		lpuart_stop_tx(&sport->port);
-+		goto out;
-+	}
-+
-+	lpuart_transmit_buffer(sport);
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(&sport->port);
-+
-+out:
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t lpuart_rxint(int irq, void *dev_id)
-+{
-+	struct lpuart_port *sport = dev_id;
-+	unsigned int flg, ignored = 0;
-+	struct tty_port *port = &sport->port.state->port;
-+	unsigned long flags;
-+	unsigned char rx, sr;
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
-+	while (!(readb(sport->port.membase + UARTSFIFO) & UARTSFIFO_RXEMPT)) {
-+		flg = TTY_NORMAL;
-+		sport->port.icount.rx++;
-+		/*
-+		 * to clear the FE, OR, NF, FE, PE flags,
-+		 * read SR1 then read DR
-+		 */
-+		sr = readb(sport->port.membase + UARTSR1);
-+		rx = readb(sport->port.membase + UARTDR);
-+
-+		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-+			continue;
-+
-+		if (sr & (UARTSR1_PE | UARTSR1_OR | UARTSR1_FE)) {
-+			if (sr & UARTSR1_PE)
-+				sport->port.icount.parity++;
-+			else if (sr & UARTSR1_FE)
-+				sport->port.icount.frame++;
-+
-+			if (sr & UARTSR1_OR)
-+				sport->port.icount.overrun++;
-+
-+			if (sr & sport->port.ignore_status_mask) {
-+				if (++ignored > 100)
-+					goto out;
-+				continue;
-+			}
-+
-+			sr &= sport->port.read_status_mask;
-+
-+			if (sr & UARTSR1_PE)
-+				flg = TTY_PARITY;
-+			else if (sr & UARTSR1_FE)
-+				flg = TTY_FRAME;
-+
-+			if (sr & UARTSR1_OR)
-+				flg = TTY_OVERRUN;
-+
-+#ifdef SUPPORT_SYSRQ
-+			sport->port.sysrq = 0;
-+#endif
-+		}
-+
-+		tty_insert_flip_char(port, rx, flg);
-+	}
-+
-+out:
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
-+
-+	tty_flip_buffer_push(port);
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t lpuart_int(int irq, void *dev_id)
-+{
-+	struct lpuart_port *sport = dev_id;
-+	unsigned char sts;
-+
-+	sts = readb(sport->port.membase + UARTSR1);
-+
-+	if (sts & UARTSR1_RDRF)
-+		lpuart_rxint(irq, dev_id);
-+
-+	if (sts & UARTSR1_TDRE &&
-+		!(readb(sport->port.membase + UARTCR5) & UARTCR5_TDMAS))
-+		lpuart_txint(irq, dev_id);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* return TIOCSER_TEMT when transmitter is not busy */
-+static unsigned int lpuart_tx_empty(struct uart_port *port)
-+{
-+	return (readb(port->membase + UARTSR1) & UARTSR1_TC) ?
-+		TIOCSER_TEMT : 0;
-+}
-+
-+static unsigned int lpuart_get_mctrl(struct uart_port *port)
-+{
-+	unsigned int temp = 0;
-+	unsigned char reg;
-+
-+	reg = readb(port->membase + UARTMODEM);
-+	if (reg & UARTMODEM_TXCTSE)
-+		temp |= TIOCM_CTS;
-+
-+	if (reg & UARTMODEM_RXRTSE)
-+		temp |= TIOCM_RTS;
-+
-+	return temp;
-+}
-+
-+static void lpuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	unsigned char temp;
-+
-+	temp = readb(port->membase + UARTMODEM) &
-+			~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
-+
-+	if (mctrl & TIOCM_RTS)
-+		temp |= UARTMODEM_RXRTSE;
-+
-+	if (mctrl & TIOCM_CTS)
-+		temp |= UARTMODEM_TXCTSE;
-+
-+	writeb(temp, port->membase + UARTMODEM);
-+}
-+
-+static void lpuart_break_ctl(struct uart_port *port, int break_state)
-+{
-+	unsigned char temp;
-+
-+	temp = readb(port->membase + UARTCR2) & ~UARTCR2_SBK;
-+
-+	if (break_state != 0)
-+		temp |= UARTCR2_SBK;
-+
-+	writeb(temp, port->membase + UARTCR2);
-+}
-+
-+static void lpuart_setup_watermark(struct lpuart_port *sport)
-+{
-+	unsigned char val, cr2;
-+
-+	cr2 = readb(sport->port.membase + UARTCR2);
-+	cr2 &= ~(UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_TE |
-+			UARTCR2_RIE | UARTCR2_RE);
-+	writeb(cr2, sport->port.membase + UARTCR2);
-+
-+	/* determine FIFO size and enable FIFO mode */
-+	val = readb(sport->port.membase + UARTPFIFO);
-+
-+	sport->txfifo_size = 0x1 << (((val >> UARTPFIFO_TXSIZE_OFF) &
-+		UARTPFIFO_FIFOSIZE_MASK) + 1);
-+
-+	sport->rxfifo_size = 0x1 << (((val >> UARTPFIFO_RXSIZE_OFF) &
-+		UARTPFIFO_FIFOSIZE_MASK) + 1);
-+
-+	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
-+			sport->port.membase + UARTPFIFO);
-+
-+	/* flush Tx and Rx FIFO */
-+	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
-+			sport->port.membase + UARTCFIFO);
-+
-+	writeb(2, sport->port.membase + UARTTWFIFO);
-+	writeb(1, sport->port.membase + UARTRWFIFO);
-+}
-+
-+static int lpuart_startup(struct uart_port *port)
-+{
-+	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-+	int ret;
-+	unsigned long flags;
-+	unsigned char temp;
-+
-+	ret = devm_request_irq(port->dev, port->irq, lpuart_int, 0,
-+				DRIVER_NAME, sport);
-+	if (ret)
-+		return ret;
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
-+	lpuart_setup_watermark(sport);
-+
-+	temp = readb(sport->port.membase + UARTCR2);
-+	temp |= (UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE);
-+	writeb(temp, sport->port.membase + UARTCR2);
-+
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	return 0;
-+}
-+
-+static void lpuart_shutdown(struct uart_port *port)
-+{
-+	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-+	unsigned char temp;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* disable Rx/Tx and interrupts */
-+	temp = readb(port->membase + UARTCR2);
-+	temp &= ~(UARTCR2_TE | UARTCR2_RE |
-+			UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_RIE);
-+	writeb(temp, port->membase + UARTCR2);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	devm_free_irq(port->dev, port->irq, sport);
-+}
-+
-+static void
-+lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
-+		   struct ktermios *old)
-+{
-+	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-+	unsigned long flags;
-+	unsigned char cr1, old_cr1, old_cr2, cr4, bdh, modem;
-+	unsigned int  baud;
-+	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
-+	unsigned int sbr, brfa;
-+
-+	cr1 = old_cr1 = readb(sport->port.membase + UARTCR1);
-+	old_cr2 = readb(sport->port.membase + UARTCR2);
-+	cr4 = readb(sport->port.membase + UARTCR4);
-+	bdh = readb(sport->port.membase + UARTBDH);
-+	modem = readb(sport->port.membase + UARTMODEM);
-+	/*
-+	 * only support CS8 and CS7, and for CS7 must enable PE.
-+	 * supported mode:
-+	 *  - (7,e/o,1)
-+	 *  - (8,n,1)
-+	 *  - (8,m/s,1)
-+	 *  - (8,e/o,1)
-+	 */
-+	while ((termios->c_cflag & CSIZE) != CS8 &&
-+		(termios->c_cflag & CSIZE) != CS7) {
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= old_csize;
-+		old_csize = CS8;
-+	}
-+
-+	if ((termios->c_cflag & CSIZE) == CS8 ||
-+		(termios->c_cflag & CSIZE) == CS7)
-+		cr1 = old_cr1 & ~UARTCR1_M;
-+
-+	if (termios->c_cflag & CMSPAR) {
-+		if ((termios->c_cflag & CSIZE) != CS8) {
-+			termios->c_cflag &= ~CSIZE;
-+			termios->c_cflag |= CS8;
-+		}
-+		cr1 |= UARTCR1_M;
-+	}
-+
-+	if (termios->c_cflag & CRTSCTS) {
-+		modem |= (UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
-+	} else {
-+		termios->c_cflag &= ~CRTSCTS;
-+		modem &= ~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
-+	}
-+
-+	if (termios->c_cflag & CSTOPB)
-+		termios->c_cflag &= ~CSTOPB;
-+
-+	/* parity must be enabled when CS7 to match 8-bits format */
-+	if ((termios->c_cflag & CSIZE) == CS7)
-+		termios->c_cflag |= PARENB;
-+
-+	if ((termios->c_cflag & PARENB)) {
-+		if (termios->c_cflag & CMSPAR) {
-+			cr1 &= ~UARTCR1_PE;
-+			cr1 |= UARTCR1_M;
-+		} else {
-+			cr1 |= UARTCR1_PE;
-+			if ((termios->c_cflag & CSIZE) == CS8)
-+				cr1 |= UARTCR1_M;
-+			if (termios->c_cflag & PARODD)
-+				cr1 |= UARTCR1_PT;
-+			else
-+				cr1 &= ~UARTCR1_PT;
-+		}
-+	}
-+
-+	/* ask the core to calculate the divisor */
-+	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
-+	sport->port.read_status_mask = 0;
-+	if (termios->c_iflag & INPCK)
-+		sport->port.read_status_mask |=	(UARTSR1_FE | UARTSR1_PE);
-+	if (termios->c_iflag & (BRKINT | PARMRK))
-+		sport->port.read_status_mask |= UARTSR1_FE;
-+
-+	/* characters to ignore */
-+	sport->port.ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		sport->port.ignore_status_mask |= UARTSR1_PE;
-+	if (termios->c_iflag & IGNBRK) {
-+		sport->port.ignore_status_mask |= UARTSR1_FE;
-+		/*
-+		 * if we're ignoring parity and break indicators,
-+		 * ignore overruns too (for real raw support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			sport->port.ignore_status_mask |= UARTSR1_OR;
-+	}
-+
-+	/* update the per-port timeout */
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	/* wait transmit engin complete */
-+	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
-+		barrier();
-+
-+	/* disable transmit and receive */
-+	writeb(old_cr2 & ~(UARTCR2_TE | UARTCR2_RE),
-+			sport->port.membase + UARTCR2);
-+
-+	sbr = sport->port.uartclk / (16 * baud);
-+	brfa = ((sport->port.uartclk - (16 * sbr * baud)) * 2) / baud;
-+	bdh &= ~UARTBDH_SBR_MASK;
-+	bdh |= (sbr >> 8) & 0x1F;
-+	cr4 &= ~UARTCR4_BRFA_MASK;
-+	brfa &= UARTCR4_BRFA_MASK;
-+	writeb(cr4 | brfa, sport->port.membase + UARTCR4);
-+	writeb(bdh, sport->port.membase + UARTBDH);
-+	writeb(sbr & 0xFF, sport->port.membase + UARTBDL);
-+	writeb(cr1, sport->port.membase + UARTCR1);
-+	writeb(modem, sport->port.membase + UARTMODEM);
-+
-+	/* restore control register */
-+	writeb(old_cr2, sport->port.membase + UARTCR2);
-+
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
-+}
-+
-+static const char *lpuart_type(struct uart_port *port)
-+{
-+	return "FSL_LPUART";
-+}
-+
-+static void lpuart_release_port(struct uart_port *port)
-+{
-+	/* nothing to do */
-+}
-+
-+static int lpuart_request_port(struct uart_port *port)
-+{
-+	return  0;
-+}
-+
-+/* configure/autoconfigure the port */
-+static void lpuart_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE)
-+		port->type = PORT_LPUART;
-+}
-+
-+static int lpuart_verify_port(struct uart_port *port, struct serial_struct *ser)
-+{
-+	int ret = 0;
-+
-+	if (ser->type != PORT_UNKNOWN && ser->type != PORT_LPUART)
-+		ret = -EINVAL;
-+	if (port->irq != ser->irq)
-+		ret = -EINVAL;
-+	if (ser->io_type != UPIO_MEM)
-+		ret = -EINVAL;
-+	if (port->uartclk / 16 != ser->baud_base)
-+		ret = -EINVAL;
-+	if (port->iobase != ser->port)
-+		ret = -EINVAL;
-+	if (ser->hub6 != 0)
-+		ret = -EINVAL;
-+	return ret;
-+}
-+
-+static struct uart_ops lpuart_pops = {
-+	.tx_empty	= lpuart_tx_empty,
-+	.set_mctrl	= lpuart_set_mctrl,
-+	.get_mctrl	= lpuart_get_mctrl,
-+	.stop_tx	= lpuart_stop_tx,
-+	.start_tx	= lpuart_start_tx,
-+	.stop_rx	= lpuart_stop_rx,
-+	.enable_ms	= lpuart_enable_ms,
-+	.break_ctl	= lpuart_break_ctl,
-+	.startup	= lpuart_startup,
-+	.shutdown	= lpuart_shutdown,
-+	.set_termios	= lpuart_set_termios,
-+	.type		= lpuart_type,
-+	.request_port	= lpuart_request_port,
-+	.release_port	= lpuart_release_port,
-+	.config_port	= lpuart_config_port,
-+	.verify_port	= lpuart_verify_port,
-+};
-+
-+static struct lpuart_port *lpuart_ports[UART_NR];
-+
-+#ifdef CONFIG_SERIAL_FSL_LPUART_CONSOLE
-+static void lpuart_console_putchar(struct uart_port *port, int ch)
-+{
-+	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
-+		barrier();
-+
-+	writeb(ch, port->membase + UARTDR);
-+}
-+
-+static void
-+lpuart_console_write(struct console *co, const char *s, unsigned int count)
-+{
-+	struct lpuart_port *sport = lpuart_ports[co->index];
-+	unsigned char  old_cr2, cr2;
-+
-+	/* first save CR2 and then disable interrupts */
-+	cr2 = old_cr2 = readb(sport->port.membase + UARTCR2);
-+	cr2 |= (UARTCR2_TE |  UARTCR2_RE);
-+	cr2 &= ~(UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_RIE);
-+	writeb(cr2, sport->port.membase + UARTCR2);
-+
-+	uart_console_write(&sport->port, s, count, lpuart_console_putchar);
-+
-+	/* wait for transmitter finish complete and restore CR2 */
-+	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
-+		barrier();
-+
-+	writeb(old_cr2, sport->port.membase + UARTCR2);
-+}
-+
-+/*
-+ * if the port was already initialised (eg, by a boot loader),
-+ * try to determine the current setup.
-+ */
-+static void __init
-+lpuart_console_get_options(struct lpuart_port *sport, int *baud,
-+			   int *parity, int *bits)
-+{
-+	unsigned char cr, bdh, bdl, brfa;
-+	unsigned int sbr, uartclk, baud_raw;
-+
-+	cr = readb(sport->port.membase + UARTCR2);
-+	cr &= UARTCR2_TE | UARTCR2_RE;
-+	if (!cr)
-+		return;
-+
-+	/* ok, the port was enabled */
-+
-+	cr = readb(sport->port.membase + UARTCR1);
-+
-+	*parity = 'n';
-+	if (cr & UARTCR1_PE) {
-+		if (cr & UARTCR1_PT)
-+			*parity = 'o';
-+		else
-+			*parity = 'e';
-+	}
-+
-+	if (cr & UARTCR1_M)
-+		*bits = 9;
-+	else
-+		*bits = 8;
-+
-+	bdh = readb(sport->port.membase + UARTBDH);
-+	bdh &= UARTBDH_SBR_MASK;
-+	bdl = readb(sport->port.membase + UARTBDL);
-+	sbr = bdh;
-+	sbr <<= 8;
-+	sbr |= bdl;
-+	brfa = readb(sport->port.membase + UARTCR4);
-+	brfa &= UARTCR4_BRFA_MASK;
-+
-+	uartclk = clk_get_rate(sport->clk);
-+	/*
-+	 * baud = mod_clk/(16*(sbr[13]+(brfa)/32)
-+	 */
-+	baud_raw = uartclk / (16 * (sbr + brfa / 32));
-+
-+	if (*baud != baud_raw)
-+		printk(KERN_INFO "Serial: Console lpuart rounded baud rate"
-+				"from %d to %d\n", baud_raw, *baud);
-+}
-+
-+static int __init lpuart_console_setup(struct console *co, char *options)
-+{
-+	struct lpuart_port *sport;
-+	int baud = 115200;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	/*
-+	 * check whether an invalid uart number has been specified, and
-+	 * if so, search for the first available port that does have
-+	 * console support.
-+	 */
-+	if (co->index == -1 || co->index >= ARRAY_SIZE(lpuart_ports))
-+		co->index = 0;
-+
-+	sport = lpuart_ports[co->index];
-+	if (sport == NULL)
-+		return -ENODEV;
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+	else
-+		lpuart_console_get_options(sport, &baud, &parity, &bits);
-+
-+	lpuart_setup_watermark(sport);
-+
-+	return uart_set_options(&sport->port, co, baud, parity, bits, flow);
-+}
-+
-+static struct uart_driver lpuart_reg;
-+static struct console lpuart_console = {
-+	.name		= DEV_NAME,
-+	.write		= lpuart_console_write,
-+	.device		= uart_console_device,
-+	.setup		= lpuart_console_setup,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &lpuart_reg,
-+};
-+
-+#define LPUART_CONSOLE	(&lpuart_console)
-+#else
-+#define LPUART_CONSOLE	NULL
-+#endif
-+
-+static struct uart_driver lpuart_reg = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= DRIVER_NAME,
-+	.dev_name	= DEV_NAME,
-+	.nr		= ARRAY_SIZE(lpuart_ports),
-+	.cons		= LPUART_CONSOLE,
-+};
-+
-+static int lpuart_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct lpuart_port *sport;
-+	struct resource *res;
-+	int ret;
-+
-+	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-+	if (!sport)
-+		return -ENOMEM;
-+
-+	pdev->dev.coherent_dma_mask = 0;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+		return ret;
-+	}
-+	sport->port.line = ret;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENODEV;
-+
-+	sport->port.mapbase = res->start;
-+	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(sport->port.membase))
-+		return PTR_ERR(sport->port.membase);
-+
-+	sport->port.dev = &pdev->dev;
-+	sport->port.type = PORT_LPUART;
-+	sport->port.iotype = UPIO_MEM;
-+	sport->port.irq = platform_get_irq(pdev, 0);
-+	sport->port.ops = &lpuart_pops;
-+	sport->port.flags = UPF_BOOT_AUTOCONF;
-+
-+	sport->clk = devm_clk_get(&pdev->dev, "ipg");
-+	if (IS_ERR(sport->clk)) {
-+		ret = PTR_ERR(sport->clk);
-+		dev_err(&pdev->dev, "failed to get uart clk: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = clk_prepare_enable(sport->clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to enable uart clk: %d\n", ret);
-+		return ret;
-+	}
-+
-+	sport->port.uartclk = clk_get_rate(sport->clk);
-+
-+	lpuart_ports[sport->port.line] = sport;
-+
-+	platform_set_drvdata(pdev, &sport->port);
-+
-+	ret = uart_add_one_port(&lpuart_reg, &sport->port);
-+	if (ret) {
-+		clk_disable_unprepare(sport->clk);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int lpuart_remove(struct platform_device *pdev)
-+{
-+	struct lpuart_port *sport = platform_get_drvdata(pdev);
-+
-+	uart_remove_one_port(&lpuart_reg, &sport->port);
-+
-+	clk_disable_unprepare(sport->clk);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int lpuart_suspend(struct device *dev)
-+{
-+	struct lpuart_port *sport = dev_get_drvdata(dev);
-+
-+	uart_suspend_port(&lpuart_reg, &sport->port);
-+
-+	return 0;
-+}
-+
-+static int lpuart_resume(struct device *dev)
-+{
-+	struct lpuart_port *sport = dev_get_drvdata(dev);
-+
-+	uart_resume_port(&lpuart_reg, &sport->port);
-+
-+	return 0;
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(lpuart_pm_ops, lpuart_suspend, lpuart_resume);
-+
-+static struct platform_driver lpuart_driver = {
-+	.probe		= lpuart_probe,
-+	.remove		= lpuart_remove,
-+	.driver		= {
-+		.name	= "fsl-lpuart",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = lpuart_dt_ids,
-+		.pm	= &lpuart_pm_ops,
-+	},
-+};
-+
-+static int __init lpuart_serial_init(void)
-+{
-+	int ret;
-+
-+	pr_info("serial: Freescale lpuart driver\n");
-+
-+	ret = uart_register_driver(&lpuart_reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = platform_driver_register(&lpuart_driver);
-+	if (ret)
-+		uart_unregister_driver(&lpuart_reg);
-+
-+	return 0;
-+}
-+
-+static void __exit lpuart_serial_exit(void)
-+{
-+	platform_driver_unregister(&lpuart_driver);
-+	uart_unregister_driver(&lpuart_reg);
-+}
-+
-+module_init(lpuart_serial_init);
-+module_exit(lpuart_serial_exit);
-+
-+MODULE_DESCRIPTION("Freescale lpuart serial port driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 74c2bf7..c8eaeb5 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -226,4 +226,7 @@
- /* Rocketport EXPRESS/INFINITY */
- #define PORT_RP2	102
- 
-+/* Freescale lpuart */
-+#define PORT_LPUART	103
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
--- 
-1.8.0
+Serial: 8250/16550 driver, 3 ports, IRQ sharing disabled
+serial8250.0: ttyS0 at MMIO 0x1c20000 (irq = 40) is a 16550A
+console [ttyS0] enabled
+serial8250 serial8250.0: unable to register port at index 1 (IO0
+MEM1c20400 IRQ41): -22
+serial8250 serial8250.0: unable to register port at index 2 (IO0
+MEM1c20800 IRQ42): -22
+Unable to handle kernel paging request at virtual address 019bfcc0
+pgd = c0004000
+[019bfcc0] *pgd=00000000
+Internal error: Oops: 80000005 [#1] PREEMPT ARM
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 3.10.0-rc4-08028-gc89afd8-dirty #32
+task: cf836000 ti: cf838000 task.ti: cf838000
+PC is at 0x19bfcc0
+LR is at serial8250_config_port+0x13c/0x668
+pc : [<019bfcc0>]    lr : [<c01bb99c>]    psr: 40000093
+sp : cf839bd0  ip : cf839bd0  fp : cf839c04
+r10: c03f6528  r9 : c0396484  r8 : 00000000
+r7 : 20000013  r6 : fffffffe  r5 : 00000001  r4 : c03f6628
+r3 : 019bfcc0  r2 : 10000002  r1 : 00000001  r0 : c03f6628
+Flags: nZcv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment kernel
+Control: 0005317f  Table: 80004000  DAC: 00000017
+Process swapper (pid: 1, stack limit = 0xcf8381b8)
+Stack: (0xcf839bd0 to 0xcf83a000)
+9bc0:                                     cf8acd08 cf838000 c0396484
+cf8accb0
+9be0: c03ccbf4 c03f6628 cf8acd08 cf838000 c0396484 c03f6528 cf839c94
+cf839c08
+9c00: c01b6584 c01bb870 cf8e3cfc 0000000f cf8acd08 c03ccbf4 cf839c44
+cf839c28
+9c20: c0178bf8 c0178d08 0000000f cf8acd08 c03ccacc cf838000 cf839c64
+cf839c48
+9c40: c02a8150 c005167c 00000000 cf8accb0 cf8acd08 c03ccbf4 cf839c74
+cf839c68
+9c60: c02a8224 c02a80f4 cf839c94 cf839cd0 c03f6628 00000003 c03f6728
+c03f6524
+9c80: c0396484 c03f6528 cf839cbc cf839c98 c01ba788 c01b6434 c03aecb0
+00000003
+9ca0: c03ada80 00000000 00000000 00000000 cf839df4 cf839cc0 c01ba8d8
+c01ba518
+9cc0: 01c20800 00000000 0000002a ffffffea 01c40800 fec40800 019bfcc0
+0000001f
+9ce0: c0332db0 ffffffff 00000000 00000000 00000000 019bfcc0 0000001f
+00000000
+9d00: 000c0000 00000000 00000000 00000000 00000000 00000000 00000000
+00000000
+9d20: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+00000000
+9d40: 00000000 00000002 00000000 00000000 00000000 00000000 00000000
+00000000
+9d60: 00000001 c03ada80 000000c4 00000000 01c40c00 00000000 00000000
+00000000
+9d80: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+00000000
+9da0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+00000000
+9dc0: 00000000 00000000 00000000 00000000 c00fb518 c03ada80 c03f6d70
+c03adab4
+9de0: c03ccc40 cfa0da10 cf839e04 cf839df8 c01c472c c01ba7c8 cf839e24
+cf839e08
+9e00: c01c32f8 c01c4720 c03ada80 c03ccc40 c03adab4 00000000 cf839e44
+cf839e28
+9e20: c01c352c c01c3284 00000000 00000000 c03ccc40 c01c3498 cf839e6c
+cf839e48
+9e40: c01c1894 c01c34a8 cf822258 cf894270 cf9b7cf4 c03ccc40 cf9b7cc0
+c03cd240
+9e60: cf839e7c cf839e70 c01c2e80 c01c1844 cf839eac cf839e80 c01c29fc
+c01c2e70
+9e80: c0332ed0 00000003 cf839eac c03ccc40 c03f6528 00000003 c02c3ba4
+cfa0da10
+9ea0: cf839ed4 cf839eb0 c01c3a54 c01c2930 c03ccbf4 c03f6528 00000003
+c02c3ba4
+9ec0: cfa0da10 00000000 cf839ee4 cf839ed8 c01c49f4 c01c39e4 cf839f0c
+cf839ee8
+9ee0: c038c0d8 c01c49b8 00000000 c039df5c 00000006 cf838000 c03d39a0
+c038bfd0
+9f00: cf839f4c cf839f10 c00088c4 c038bfe0 00000006 c0376610 00000000
+c034b6ac
+9f20: cf839f4c c039df5c 00000006 c03d39a0 c037826c c0396490 c0396484
+0000004f
+9f40: cf839f94 cf839f50 c0378968 c00087e8 00000006 00000006 c037826c
+00000000
+9f60: 00000000 00000000 cf839f94 00000000 c02a2a90 00000000 00000000
+00000000
+9f80: 00000000 00000000 cf839fac cf839f98 c02a2aa0 c0378884 00000000
+00000000
+9fa0: 00000000 cf839fb0 c00094d0 c02a2aa0 00000000 00000000 00000000
+00000000
+9fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+00000000
+9fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000
+00000000
+Backtrace:
+[<c01bb860>] (serial8250_config_port+0x0/0x668) from [<c01b6584>]
+(uart_add_one_port+0x160/0x3d4)
+[<c01b6424>] (uart_add_one_port+0x0/0x3d4) from [<c01ba788>]
+(serial8250_register_8250_port+0x280/0x2b0)
+[<c01ba508>] (serial8250_register_8250_port+0x0/0x2b0) from [<c01ba8d8>]
+(serial8250_probe+0x120/0x174)
+[<c01ba7b8>] (serial8250_probe+0x0/0x174) from [<c01c472c>]
+(platform_drv_probe+0x1c/0x20)
+ r8:cfa0da10 r7:c03ccc40 r6:c03adab4 r5:c03f6d70 r4:c03ada80
+[<c01c4710>] (platform_drv_probe+0x0/0x20) from [<c01c32f8>]
+(driver_probe_device+0x84/0x224)
+[<c01c3274>] (driver_probe_device+0x0/0x224) from [<c01c352c>]
+(__driver_attach+0x94/0x98)
+ r7:00000000 r6:c03adab4 r5:c03ccc40 r4:c03ada80
+[<c01c3498>] (__driver_attach+0x0/0x98) from [<c01c1894>]
+(bus_for_each_dev+0x60/0x90)
+ r6:c01c3498 r5:c03ccc40 r4:00000000 r3:00000000
+[<c01c1834>] (bus_for_each_dev+0x0/0x90) from [<c01c2e80>]
+(driver_attach+0x20/0x28)
+ r6:c03cd240 r5:cf9b7cc0 r4:c03ccc40
+[<c01c2e60>] (driver_attach+0x0/0x28) from [<c01c29fc>]
+(bus_add_driver+0xdc/0x238)
+[<c01c2920>] (bus_add_driver+0x0/0x238) from [<c01c3a54>]
+(driver_register+0x80/0x154)
+ r8:cfa0da10 r7:c02c3ba4 r6:00000003 r5:c03f6528 r4:c03ccc40
+[<c01c39d4>] (driver_register+0x0/0x154) from [<c01c49f4>]
+(platform_driver_register+0x4c/0x60)
+[<c01c49a8>] (platform_driver_register+0x0/0x60) from [<c038c0d8>]
+(serial8250_init+0x108/0x160)
+[<c038bfd0>] (serial8250_init+0x0/0x160) from [<c00088c4>]
+(do_one_initcall+0xec/0x158)
+ r8:c038bfd0 r7:c03d39a0 r6:cf838000 r5:00000006 r4:c039df5c
+r3:00000000
+[<c00087d8>] (do_one_initcall+0x0/0x158) from [<c0378968>]
+(kernel_init_freeable+0xf4/0x1b8)
+[<c0378874>] (kernel_init_freeable+0x0/0x1b8) from [<c02a2aa0>]
+(kernel_init+0x10/0xec)
+[<c02a2a90>] (kernel_init+0x0/0xec) from [<c00094d0>]
+(ret_from_fork+0x14/0x24)
+ r4:00000000 r3:00000000
+Code: bad PC value
+---[ end trace ad321c8a03a56474 ]---
