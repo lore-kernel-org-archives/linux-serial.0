@@ -1,56 +1,30 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v6] tty: serial: add Freescale lpuart driver support
-Date: Thu, 6 Jun 2013 20:06:04 -0300
-Message-ID: <CAOMZO5D+NLMc=10=iF6bd=3aav9ePZBQEJY7WKJpkp+fA=Cp1w@mail.gmail.com>
+From: Lu Jingchang-B35083 <B35083@freescale.com>
+Subject: RE: [PATCH v6] tty: serial: add Freescale lpuart driver support
+Date: Fri, 7 Jun 2013 01:29:27 +0000
+Message-ID: <B56CDBE15CE27145A4B77D2D24263E851CFC11@039-SN1MPN1-003.039d.mgd.msft.net>
 References: <1370309270-21019-1-git-send-email-b35083@freescale.com>
-	<20130606200519.GA1644@kroah.com>
+ <20130606200519.GA1644@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vb0-f49.google.com ([209.85.212.49]:32859 "EHLO
-	mail-vb0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752175Ab3FFXGG convert rfc822-to-8bit (ORCPT
+Received: from mail-db8lp0189.outbound.messaging.microsoft.com ([213.199.154.189]:47340
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754736Ab3FGBaE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Jun 2013 19:06:06 -0400
-Received: by mail-vb0-f49.google.com with SMTP id q13so2322056vbe.36
-        for <linux-serial@vger.kernel.org>; Thu, 06 Jun 2013 16:06:05 -0700 (PDT)
+	Thu, 6 Jun 2013 21:30:04 -0400
 In-Reply-To: <20130606200519.GA1644@kroah.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Jingchang Lu <b35083@freescale.com>, s.hauer@pengutronix.de, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
 
-Hi Jingchang,
+PlRoaXMgYnJlYWtzIHRoZSBidWlsZCBvbiB4ODYgc3lzdGVtcyB3aXRoOg0KPiAgQ0MgW01dICBk
+cml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5vDQo+ZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9s
+cHVhcnQuYzogSW4gZnVuY3Rpb24g4oCYbHB1YXJ0X3Byb2Jl4oCZOg0KPmRyaXZlcnMvdHR5L3Nl
+cmlhbC9mc2xfbHB1YXJ0LmM6NzUxOjI6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZg0K
+PmZ1bmN0aW9uIOKAmG9mX2FsaWFzX2dldF9pZOKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlv
+bi1kZWNsYXJhdGlvbl0NCj4NCltMdSBKaW5nY2hhbmctQjM1MDgzXSANCkkgd2lsbCBzZW5kIHRo
+ZSB2NyBwYXRjaCB3aXRoIHRoaXMgZXJyb3IgZml4ZWQuIFRoYW5rcyENCiANCg==
 
-On Thu, Jun 6, 2013 at 5:05 PM, Greg KH <gregkh@linuxfoundation.org> wr=
-ote:
-> On Tue, Jun 04, 2013 at 09:27:50AM +0800, Jingchang Lu wrote:
->> Add Freescale lpuart driver support. The lpuart device
->> can be found on Vybrid VF610 and Layerscape LS-1 SoCs.
->>
->> Signed-off-by: Jingchang Lu <b35083@freescale.com>
->
-> This breaks the build on x86 systems with:
->   CC [M]  drivers/tty/serial/fsl_lpuart.o
-> drivers/tty/serial/fsl_lpuart.c: In function =E2=80=98lpuart_probe=E2=
-=80=99:
-> drivers/tty/serial/fsl_lpuart.c:751:2: error: implicit declaration of=
- function =E2=80=98of_alias_get_id=E2=80=99 [-Werror=3Dimplicit-functio=
-n-declaration]
->
-> so I can't take this :(
-
-On imx serial driver this build error is avoided by protecting the
-serial_imx_probe_dt() with "#ifdef CONFIG_OF" and you could so the
-same on the fsl_lpaurt driver to avoid the build issue that Greg
-reported.
-
-Regards,
-
-=46abio Estevam
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
