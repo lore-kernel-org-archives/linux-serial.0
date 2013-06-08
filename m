@@ -1,132 +1,36 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH 11/13] clocksource: exynos_mct: extend local timer support for four cores
-Date: Sat, 08 Jun 2013 13:39:40 +0200
-Message-ID: <3210496.YAXEacJ0dm@flatron>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-11-git-send-email-chander.kashyap@linaro.org> <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmVbMl06IFtQQVRDSCBWMl0gc2VyaWFsOiBpbXg6IGVuYWJsZSB0aGUgY2xv?=
+ =?UTF-8?B?Y2tzIG9ubHkgd2hlbiB0aGUgdWFydCBpcyB1c2Vk?=
+Date: Sat, 08 Jun 2013 15:56:46 +0400
+Message-ID: <1370692606.345337886@f164.mail.ru>
+References: <1370311173-15019-1-git-send-email-b32955@freescale.com>
+ <51B2CDAF.3050104@freescale.com>
+ <20130608062307.GB22416@S2101-09.ap.freescale.net>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback3.mail.ru ([94.100.176.58]:32898 "EHLO
+	fallback3.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751373Ab3FHL5V (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 8 Jun 2013 07:57:21 -0400
+Received: from f164.mail.ru (f164.mail.ru [94.100.178.83])
+	by fallback3.mail.ru (mPOP.Fallback_MX) with ESMTP id EEB2EE687866
+	for <linux-serial@vger.kernel.org>; Sat,  8 Jun 2013 15:57:17 +0400 (MSK)
+In-Reply-To: <20130608062307.GB22416@S2101-09.ap.freescale.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?UTF-8?B?U2hhd24gR3Vv?= <shawn.guo@linaro.org>
+Cc: =?UTF-8?B?SHVhbmcgU2hpamll?= <b32955@freescale.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Thursday 06 of June 2013 17:50:40 Mark Rutland wrote:
-> Hi,
-> 
-> I have a few comments.
-> 
-> On Thu, Jun 06, 2013 at 12:01:25PM +0100, Chander Kashyap wrote:
-> > Extend the local timer interrupt support for handling four local
-> > timers.
-> Is this the maximum number of CPUs the MCT could theoretically support?
-> 
-> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-> > ---
-> > 
-> >  drivers/clocksource/exynos_mct.c |   33
-> >  ++++++++++++++++++++++++++++++--- 1 file changed, 30 insertions(+),
-> >  3 deletions(-)
-> > 
-> > diff --git a/drivers/clocksource/exynos_mct.c
-> > b/drivers/clocksource/exynos_mct.c index 662fcc0..6af17d4 100644
-> > --- a/drivers/clocksource/exynos_mct.c
-> > +++ b/drivers/clocksource/exynos_mct.c
-> > @@ -412,6 +412,18 @@ static struct irqaction mct_tick1_event_irq = {
-> > 
-> >  	.handler	= exynos4_mct_tick_isr,
-> >  
-> >  };
-> > 
-> > +static struct irqaction mct_tick2_event_irq = {
-> > +	.name		= "mct_tick2_irq",
-> > +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
-> > +	.handler	= exynos4_mct_tick_isr,
-> > +};
-> > +
-> > +static struct irqaction mct_tick3_event_irq = {
-> > +	.name		= "mct_tick3_irq",
-> > +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
-> > +	.handler	= exynos4_mct_tick_isr,
-> > +};
-> > +
-> 
-> Is there any reason you can't use {request,free}_irq?
-> 
-> >  static int __cpuinit exynos4_local_timer_setup(struct
-> >  clock_event_device *evt) {
-> >  
-> >  	struct mct_clock_event_device *mevt;
-> > 
-> > @@ -439,11 +451,21 @@ static int __cpuinit
-> > exynos4_local_timer_setup(struct clock_event_device *evt)> 
-> >  			mct_tick0_event_irq.dev_id = mevt;
-> >  			evt->irq = mct_irqs[MCT_L0_IRQ];
-> >  			setup_irq(evt->irq, &mct_tick0_event_irq);
-> > 
-> > -		} else {
-> > +		} else if (cpu == 1) {
-> > 
-> >  			mct_tick1_event_irq.dev_id = mevt;
-> >  			evt->irq = mct_irqs[MCT_L1_IRQ];
-> >  			setup_irq(evt->irq, &mct_tick1_event_irq);
-> >  			irq_set_affinity(evt->irq, cpumask_of(1));
-> > 
-> > +		} else if (cpu == 2) {
-> > +			mct_tick2_event_irq.dev_id = mevt;
-> > +			evt->irq = mct_irqs[MCT_L2_IRQ];
-> > +			setup_irq(evt->irq, &mct_tick2_event_irq);
-> > +			irq_set_affinity(evt->irq, cpumask_of(2));
-> > +		} else if (cpu == 3) {
-> > +			mct_tick3_event_irq.dev_id = mevt;
-> > +			evt->irq = mct_irqs[MCT_L3_IRQ];
-> > +			setup_irq(evt->irq, &mct_tick3_event_irq);
-> > +			irq_set_affinity(evt->irq, cpumask_of(3));
-> 
-> This doesn't seem good to me. You're duplicating the logic for each CPU.
-> Can you not figure out which values you need based on the
-> smp_processor_id (or even better, the *evt) without requiring a
-> separate branch for each CPU?
-> >  		}
-> >  	
-> >  	} else {
-> >  	
-> >  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
-> > 
-> > @@ -456,11 +478,16 @@ static void exynos4_local_timer_stop(struct
-> > clock_event_device *evt)> 
-> >  {
-> >  
-> >  	unsigned int cpu = smp_processor_id();
-> >  	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
-> > 
-> > -	if (mct_int_type == MCT_INT_SPI)
-> > +	if (mct_int_type == MCT_INT_SPI) {
-> > 
-> >  		if (cpu == 0)
-> >  		
-> >  			remove_irq(evt->irq, &mct_tick0_event_irq);
-> > 
-> > -		else
-> > +		else if (cpu == 1)
-> > 
-> >  			remove_irq(evt->irq, &mct_tick1_event_irq);
-> > 
-> > +		else if (cpu == 2)
-> > +			remove_irq(evt->irq, &mct_tick2_event_irq);
-> > +		else if (cpu == 3)
-> > +			remove_irq(evt->irq, &mct_tick3_event_irq);
-> > +	}
-> 
-> Again, I don't think each CPU should be special-cased. If you used
-> {request,free}_irq this would be simpler.
-> 
-> Thanks,
-> Mark.
-
-+1 to all Mark's comments.
-
-Best regards,
-Tomasz
+PiBPbiBTYXQsIEp1biAwOCwgMjAxMyBhdCAwMjoyMjozOVBNICswODAwLCBIdWFuZyBTaGlqaWUg
+d3JvdGU6Cj4gPiDkuo4gMjAxM+W5tDA25pyIMDjml6UgMTQ6MDEsIFNoYXduIEd1byDlhpnpgZM6
+Cj4gPiA+UnVubmluZyBsaW51eC1uZXh0IDIwMTMwNjA3LCBJIGp1c3QgZm91bmQgdGhhdCB0aGUg
+c2VyaWFsIGNvbnNvbGUgc3RvcHMKPiA+ID53b3JraW5nIGR1ZSB0byB0aGlzIHBhdGNoLiAgSSB0
+aGluayB0aGUgY2xvY2tzIG5lZWQgdG8gYmUgZW5hYmxlZCBmb3IKPiA+ID5jb25zb2xlIGFzIHdl
+bGwuCj4gPiBjb3VsZCB5b3UgdGVsbCBtZSB0aGUgYm9hcmQ/Cj4gPiBpIHRlc3RlZCBvbiBpbXg2
+cS1zYWJyZWF1dG8gYm9hcmRzLCB0aGUgY29uc29sZSBpcyBvay4KPiAKPiBpbXg2cS1zYWJyZXNk
+CgpJIGNvbmZpcm0gdGhhdCBjb25zb2xlIG5vdCB3b3JrIGNvcnJlY3QgYWZ0ZXIgdGhpcyBwYXRj
+aCBvbiB0aGUgaS5NWDI3IFBDTTAzOCBib2FyZC4KCi0tLQo=
