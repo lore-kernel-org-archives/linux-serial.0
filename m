@@ -1,246 +1,132 @@
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH 10/13] ARM: dts: Add initial device tree support for Exynos5420
-Date: Sat, 08 Jun 2013 04:38:03 -0700 (PDT)
-Message-ID: <5641151.psa9JbBo0O@flatron>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
+Subject: Re: [PATCH 11/13] clocksource: exynos_mct: extend local timer support for four cores
+Date: Sat, 08 Jun 2013 13:39:40 +0200
+Message-ID: <3210496.YAXEacJ0dm@flatron>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-11-git-send-email-chander.kashyap@linaro.org> <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bk0-f53.google.com ([209.85.214.53]:62968 "EHLO
-	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752097Ab3FHLiF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 8 Jun 2013 07:38:05 -0400
-In-Reply-To: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: Chander Kashyap <chander.kashyap@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com
 
-On Thursday 06 of June 2013 16:31:24 Chander Kashyap wrote:
-> Add initial device tree nodes for Exynos5420 SoC and SMDK5420 board.
+On Thursday 06 of June 2013 17:50:40 Mark Rutland wrote:
+> Hi,
 > 
-> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-> ---
->  arch/arm/boot/dts/Makefile                |    1 +
->  arch/arm/boot/dts/exynos5420-smdk5420.dts |   40 ++++++++++++
->  arch/arm/boot/dts/exynos5420.dtsi         |  101
-> +++++++++++++++++++++++++++++ 3 files changed, 142 insertions(+)
->  create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
->  create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
+> I have a few comments.
 > 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index cb31259..304ba4d 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -56,6 +56,7 @@ dtb-$(CONFIG_ARCH_EXYNOS) += exynos4210-origen.dtb \
->  	exynos5250-arndale.dtb \
->  	exynos5440-sd5v1.dtb \
->  	exynos5250-smdk5250.dtb \
-> +	exynos5420-smdk5420.dtb \
+> On Thu, Jun 06, 2013 at 12:01:25PM +0100, Chander Kashyap wrote:
+> > Extend the local timer interrupt support for handling four local
+> > timers.
+> Is this the maximum number of CPUs the MCT could theoretically support?
+> 
+> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+> > ---
+> > 
+> >  drivers/clocksource/exynos_mct.c |   33
+> >  ++++++++++++++++++++++++++++++--- 1 file changed, 30 insertions(+),
+> >  3 deletions(-)
+> > 
+> > diff --git a/drivers/clocksource/exynos_mct.c
+> > b/drivers/clocksource/exynos_mct.c index 662fcc0..6af17d4 100644
+> > --- a/drivers/clocksource/exynos_mct.c
+> > +++ b/drivers/clocksource/exynos_mct.c
+> > @@ -412,6 +412,18 @@ static struct irqaction mct_tick1_event_irq = {
+> > 
+> >  	.handler	= exynos4_mct_tick_isr,
+> >  
+> >  };
+> > 
+> > +static struct irqaction mct_tick2_event_irq = {
+> > +	.name		= "mct_tick2_irq",
+> > +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+> > +	.handler	= exynos4_mct_tick_isr,
+> > +};
+> > +
+> > +static struct irqaction mct_tick3_event_irq = {
+> > +	.name		= "mct_tick3_irq",
+> > +	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+> > +	.handler	= exynos4_mct_tick_isr,
+> > +};
+> > +
+> 
+> Is there any reason you can't use {request,free}_irq?
+> 
+> >  static int __cpuinit exynos4_local_timer_setup(struct
+> >  clock_event_device *evt) {
+> >  
+> >  	struct mct_clock_event_device *mevt;
+> > 
+> > @@ -439,11 +451,21 @@ static int __cpuinit
+> > exynos4_local_timer_setup(struct clock_event_device *evt)> 
+> >  			mct_tick0_event_irq.dev_id = mevt;
+> >  			evt->irq = mct_irqs[MCT_L0_IRQ];
+> >  			setup_irq(evt->irq, &mct_tick0_event_irq);
+> > 
+> > -		} else {
+> > +		} else if (cpu == 1) {
+> > 
+> >  			mct_tick1_event_irq.dev_id = mevt;
+> >  			evt->irq = mct_irqs[MCT_L1_IRQ];
+> >  			setup_irq(evt->irq, &mct_tick1_event_irq);
+> >  			irq_set_affinity(evt->irq, cpumask_of(1));
+> > 
+> > +		} else if (cpu == 2) {
+> > +			mct_tick2_event_irq.dev_id = mevt;
+> > +			evt->irq = mct_irqs[MCT_L2_IRQ];
+> > +			setup_irq(evt->irq, &mct_tick2_event_irq);
+> > +			irq_set_affinity(evt->irq, cpumask_of(2));
+> > +		} else if (cpu == 3) {
+> > +			mct_tick3_event_irq.dev_id = mevt;
+> > +			evt->irq = mct_irqs[MCT_L3_IRQ];
+> > +			setup_irq(evt->irq, &mct_tick3_event_irq);
+> > +			irq_set_affinity(evt->irq, cpumask_of(3));
+> 
+> This doesn't seem good to me. You're duplicating the logic for each CPU.
+> Can you not figure out which values you need based on the
+> smp_processor_id (or even better, the *evt) without requiring a
+> separate branch for each CPU?
+> >  		}
+> >  	
+> >  	} else {
+> >  	
+> >  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
+> > 
+> > @@ -456,11 +478,16 @@ static void exynos4_local_timer_stop(struct
+> > clock_event_device *evt)> 
+> >  {
+> >  
+> >  	unsigned int cpu = smp_processor_id();
+> >  	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
+> > 
+> > -	if (mct_int_type == MCT_INT_SPI)
+> > +	if (mct_int_type == MCT_INT_SPI) {
+> > 
+> >  		if (cpu == 0)
+> >  		
+> >  			remove_irq(evt->irq, &mct_tick0_event_irq);
+> > 
+> > -		else
+> > +		else if (cpu == 1)
+> > 
+> >  			remove_irq(evt->irq, &mct_tick1_event_irq);
+> > 
+> > +		else if (cpu == 2)
+> > +			remove_irq(evt->irq, &mct_tick2_event_irq);
+> > +		else if (cpu == 3)
+> > +			remove_irq(evt->irq, &mct_tick3_event_irq);
+> > +	}
+> 
+> Again, I don't think each CPU should be special-cased. If you used
+> {request,free}_irq this would be simpler.
+> 
+> Thanks,
+> Mark.
 
-Please keep the sorting order.
-
->  	exynos5250-snow.dtb \
-
-Here is the correct place for exynos5440-*.
-
->  	exynos5440-ssdk5440.dtb
->  dtb-$(CONFIG_ARCH_HIGHBANK) += highbank.dtb \
-> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-> b/arch/arm/boot/dts/exynos5420-smdk5420.dts new file mode 100644
-> index 0000000..b14e775
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-> @@ -0,0 +1,40 @@
-> +/*
-> + * SAMSUNG SMDK5420 board device tree source
-> + *
-> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
-> + *		http://www.samsung.com
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as +
-> * published by the Free Software Foundation.
-> +*/
-> +
-> +/dts-v1/;
-> +/include/ "exynos5420.dtsi"
-
-#include "exynos5420.dtsi"
-
-> +
-> +/ {
-> +	model = "Samsung SMDK5420 board based on EXYNOS5420";
-> +	compatible = "samsung,smdk5420", "samsung,exynos5420";
-> +
-> +	memory {
-> +		reg =	<0x20000000 0x10000000
-> +			 0x30000000 0x10000000
-> +			 0x40000000 0x10000000
-> +			 0x50000000 0x10000000
-> +			 0x60000000 0x10000000
-> +			 0x70000000 0x10000000
-> +			 0x80000000 0x10000000
-> +			 0x90000000 0x10000000>;
-> +	};
-> +
-> +	chosen {
-> +		bootargs = "console=ttySAC2,115200 init=/linuxrc";
-> +	};
-> +
-> +	fixed-rate-clocks {
-> +		oscclk {
-> +			compatible = "samsung,exynos5420-oscclk";
-> +			clock-frequency = <24000000>;
-> +		};
-> +	};
-> +};
-> diff --git a/arch/arm/boot/dts/exynos5420.dtsi
-> b/arch/arm/boot/dts/exynos5420.dtsi new file mode 100644
-> index 0000000..577dfe5
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/exynos5420.dtsi
-> @@ -0,0 +1,101 @@
-> +/*
-> + * SAMSUNG EXYNOS5420 SoC device tree source
-> + *
-> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
-> + *		http://www.samsung.com
-> + *
-> + * SAMSUNG EXYNOS54200 SoC device nodes are listed in this file.
-> + * EXYNOS5420 based board files can include this file and provide
-> + * values for board specfic bindings.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as +
-> * published by the Free Software Foundation.
-> +*/
-
-nitpick: missing space to keep the alignment of stars
-
-> +
-> +/include/ "skeleton.dtsi"
-> +/include/ "exynos5.dtsi"
-
-#include and IMHO skeleton.dtsi should be already included from 
-exynos5.dtsi.
-
-> +/ {
-> +	compatible = "samsung,exynos5420";
-> +
-> +	clock: clock-controller@0x10010000 {
-> +		compatible = "samsung,exynos5420-clock";
-> +		reg = <0x10010000 0x30000>;
-> +		#clock-cells = <1>;
-> +	};
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a15";
-> +			reg = <0x0>;
-> +			clock-frequency = <800000000>;
-
-Hmm. I don't remember seeing this property in CPU bindings, but maybe I'm 
-missing something. Anyway this makes little sense, since on every board 
-this frequency may be different. Not even saying about CPU frequency 
-scaling that would change it.
-
-> +		};
-> +
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a15";
-> +			reg = <0x1>;
-> +			clock-frequency = <800000000>;
-> +		};
-> +
-> +		cpu2: cpu@2 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a15";
-> +			reg = <0x2>;
-> +			clock-frequency = <800000000>;
-> +		};
-> +
-> +		cpu3: cpu@3 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a15";
-> +			reg = <0x3>;
-> +			clock-frequency = <800000000>;
-> +		};
-> +	};
-> +
-> +	mct@101C0000 {
-> +		compatible = "samsung,exynos4210-mct";
-> +		reg = <0x101C0000 0x800>;
-> +		interrupt-controller;
-> +		#interrups-cells = <2>;
-> +		interrupt-parent = <&mct_map>;
-> +		interrupts =	<0 0>, <1 0>, <2 0>, <3 0>,
-> +				<4 0>, <5 0>, <6 0>, <7 0>;
-> +		clocks = <&clock 1>, <&clock 315>;
-> +		clock-names = "fin_pll", "mct";
-> +
-> +		mct_map: mct-map {
-> +			#interrupt-cells = <2>;
-
-Why do you need 2 cells here, if second one is unused in the map and kept 
-as 0?
-
-> +			#address-cells = <0>;
-> +			#size-cells = <0>;
-> +			interrupt-map = <0x0 0 &combiner 23 3>,
-> +					<0x1 0 &combiner 23 4>,
-> +					<0x2 0 &combiner 25 2>,
-> +					<0x3 0 &combiner 25 3>,
-> +					<0x4 0 &gic 0 120 0>,
-> +					<0x5 0 &gic 0 121 0>,
-> +					<0x6 0 &gic 0 122 0>,
-> +					<0x7 0 &gic 0 123 0>;
-
-Having #interrupt-cells = <1> would allow to simplify the map to:
-
-	interrupt-map = <0 &combiner 23 3>,
-			<1 &combiner 23 4>,
-			<2 &combiner 25 2>,
-			<3 &combiner 25 3>,
-			<4 &gic 0 120 0>,
-			<5 &gic 0 121 0>,
-			<6 &gic 0 122 0>,
-			<7 &gic 0 123 0>;
-
-and interrupt specifiers in mct node to:
-
-	interrupts = <0>, <1>, <2>, <3>, <4>, <5>, <6>, <7>;
-
-> +		};
-> +	};
-> +
-> +	serial@12C00000 {
-> +		clocks = <&clock 257>, <&clock 128>;
-
-This looks a bit awkward without the clock-names property here. See my 
-comments to patch 03/13.
++1 to all Mark's comments.
 
 Best regards,
 Tomasz
-
-> +	};
-> +
-> +	serial@12C10000 {
-> +		clocks = <&clock 258>, <&clock 129>;
-> +	};
-> +
-> +	serial@12C20000 {
-> +		clocks = <&clock 259>, <&clock 130>;
-> +	};
-> +
-> +	serial@12C30000 {
-> +		clocks = <&clock 260>, <&clock 131>;
-> +	};
-> +};
