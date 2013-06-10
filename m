@@ -1,118 +1,118 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v2 07/11] ARM:stixxxx: Add STiH416 SOC support
-Date: Mon, 10 Jun 2013 17:17:53 +0100
-Message-ID: <51B5FC31.5050208@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856425-7135-1-git-send-email-srinivas.kandagatla@st.com> <3733079.FxbR14kFrs@wuerfel>
-Reply-To: srinivas.kandagatla@st.com
+From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
+Date: Mon, 10 Jun 2013 17:38:54 +0100
+Message-ID: <51B6011E.1060909@st.com>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
+ <CACRpkdZ-xnDO+bte4tyKDWwY4A_qWUhLru3dUmuY9MQwseP3uQ@mail.gmail.com>
+Reply-To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog111.obsmtp.com ([207.126.144.131]:60435 "EHLO
-	eu1sys200aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751132Ab3FJQVB (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jun 2013 12:21:01 -0400
-In-Reply-To: <3733079.FxbR14kFrs@wuerfel>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <CACRpkdZ-xnDO+bte4tyKDWwY4A_qWUhLru3dUmuY9MQwseP3uQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, linux-doc@vger.kernel.org, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
 
-Thankyou for your comments.
-On 10/06/13 14:52, Arnd Bergmann wrote:
-> On Monday 10 June 2013 10:27:05 Srinivas KANDAGATLA wrote:
+On 10/06/13 13:43, Linus Walleij wrote:
+> On Mon, Jun 10, 2013 at 11:26 AM, Srinivas KANDAGATLA
+> <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
 > 
->> +	soc {
->> +		pin-controller-sbc {
->> +			#address-cells	= <1>;
->> +			#size-cells	= <1>;
->> +			compatible	= "st,stih416-pinctrl", "simple-bus";
+>> The STiH415 is the next generation of HD, AVC set-top box processors for
+>> satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A9
+>> 1.0 GHz, dual-core CPU.
+> (...)
+>> +       soc {
+>> +               pin-controller-sbc {
+>> +                       #address-cells  = <1>;
+>> +                       #size-cells     = <1>;
+>> +                       compatible      = "st,stih415-pinctrl", "simple-bus";
 > 
-> Why is this both its own device with a compatible string and a
-> "simple-bus" at the same time? Wouldn't it be simpler to just
-> scan the child device nodes from the "st,stih416-pinctrl"
-> driver instead of having a separate platform_driver for them?
-Am happy to get rid of gpio platform_driver, But looking at the existing
-pinctrl drivers like at91, they do it exactly like this.
-
-Also having a gpio platform driver ties the resources to driver in a
-neat way.
+> Why is the pin controller be a simple bus?
+As gpio banks are children of this node, the gpio driver associated with
+these banks can only be probed if the parent of the node has simple bus
+compatible string.
 
 > 
->> +			st,retime-in-delay	= <0 300 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000 3250>;
->> +			st,retime-out-delay	= <0 300 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000 3250>;
->> +			st,syscfg		= <&syscfg_sbc>;
->> +			st,syscfg-offsets	= <0 40 50 60 100>;
->> +			ranges;
->> +			PIO0: pinctrl@fe610000 {
->> +				#gpio-cells = <1>;
->> +				compatible = "st,stixxxx-gpio";
->> +				gpio-controller;
->> +				reg = <0xfe610000 0x100>;
->> +				st,bank-name  = "PIO0";
->> +				st,retime-pin-mask = <0xff>;
->> +			};
->> +			PIO1: pinctrl@fe611000 {
->> +				#gpio-cells	= <1>;
->> +				compatible	= "st,stixxxx-gpio";
->> +				gpio-controller;
->> +				reg = <0xfe611000 0x100>;
->> +				st,bank-name  = "PIO1";
->> +				st,retime-pin-mask = <0xff>;
->> +			};
+> Maybe obvious, I'm not 100% familiar with when we use this...
 > 
-> What is in the ranges between these registers? It seems you have
-> 256 bytes for each pinctrl node, with 4kb spacing. I wonder if
-> it would make sense to declare the entire range to belong to a single
-> pinctrl device. At least since all of the registers are in a single
-> range, you could add a property like
+>> +               pin-controller-front {
+> (...)
+>> +               pin-controller-rear {
+> (...)
+>> +               pin-controller-left {
+> (...)
+>> +               pin-controller-right {
 > 
-> 	ranges = <0 0xfe610000 0x10000>;
+> Please explain these orientations in some comment in the device
+> tree, I'm half-guessing that it's about the edges around the chip so
+> the PIO* names are actually pad names.
 > 
-> and use relative addresses in the sub-nodes.
+> I would suggest you use the names north/south/west/east
+> if this is the case since left and right etc are relative measures.
+> (This terminology is used on e.g. dance mats for console games...)
 > 
-OK, I will change to use ranges.
-> Please don't use identifiers with 'xxx' in them. Instead use numbers
-> of actual chips, ideally using the first one that this is compatible
-> with.
+> If these names are from the datasheets by all means keep them.
 
-Ok, I will change st,stixxxx-gpio to st,stih415-gpio.
+I will add more comments in this area, the naming comes from
+data-sheets. I have no choice.
+> 
+>> +++ b/arch/arm/boot/dts/stixxxx-pincfg.h
+>> @@ -0,0 +1,94 @@
+>> +#ifndef _STIXXXX_PINCFG_H_
+>> +#define _STIXXXX_PINCFG_H_
+>> +
+>> +/* Alternate functions */
+>> +#define ALT1   1
+>> +#define ALT2   2
+>> +#define ALT3   3
+>> +#define ALT4   4
+>> +#define ALT5   5
+>> +#define ALT6   6
+>> +#define ALT7   7
+> 
+> Why is this part of the DT definitions? In the pinctrl world this
+> is an intrinsic detail on how groups and functions are associated,
+> not something that you hard-code into the device tree. The
+> device tree should state how to combine functions with groups
+> and those will be strings, not numerals.
+If this is wrong way to do things, I would like to fix this.
+Functions in ST are alt-functions which are generally from alt0-alt7.
+I use this property in the pinctrl group as shown in this simple example:
 
-> 
->> +		syscfg_sbc:syscfg@fe600000{
->> +			compatible	= "st,stih416-syscfg";
->> +			reg		= <0xfe600000 0x1000>;
->> +			syscfg-range	= <0 999>;
->> +			syscfg-name	= "SYSCFG_SBC";
->> +		};
->> +		syscfg_front:syscfg@fee10000{
->> +			compatible	= "st,stih416-syscfg";
->> +			reg		= <0xfee10000 0x1000>;
->> +			syscfg-range	= <1000 999>;
->> +			syscfg-name	= "SYSCFG_FRONT";
->> +		};
-> 
-> Did you mean to declare ranges excluding 1000 and 2000 here?
-> Normally I would expect inclusive ranges like syscfg-range=<0 1000>;
-> 
-These numbers are from data sheet so I used it as it is.
+pinctrl_sbc_serial1:sbc_serial1 {
+       st,function = <ALT3>;
+       st,pins {
+              tx      = <&PIO2 6 OUT>;
+              rx      = <&PIO2 7 IN>;
+       };
+};
 
-> What is the idea of the 'syscfg-name'? If the nodes are all different,
-The idea of having syscfg-name is to lookup any sysconf bank(regmap)
-from code which do not have reference to phandle from device trees.
+To configure the group in alternate function 3.
+You suggest that this should be
+st,function = "alt3"; it does not look any different to what I have.
 
-> I would expect them to have distinct "compatible" values and not
-> need them.
-Yes, If we have distinct compatible we would not need them, but there
-will be 5-10 compatibility list for each SOC.
-It looks like its going to be much neater Am going to try this change
-and see how it looks like.
-> 
-> 	Arnd
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss@lists.ozlabs.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
-> 
+Looking at some of existing pinctrl nodes, I can see like:
+                samsung,pin-function = <2>;
+or
+		brcm,function = <4>; /* alt0 */
 
+Sorry ...Am I missing some thing?
+
+Thanks,
+srini
+> 
+> Yours,
+> Linus Walleij
+> 
