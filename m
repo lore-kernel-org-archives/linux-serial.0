@@ -1,31 +1,148 @@
-From: sunil joshi <sjoshi.open@gmail.com>
-Subject: Re: [PATCH 09/13] clk: exynos5420: register clocks using common clock framework
-Date: Mon, 10 Jun 2013 16:42:08 +0530
-Message-ID: <CANruHrT_AVaQ0KAVkt6U0oS2_sz=2vmZn7KitNbQk96u7F4CSw@mail.gmail.com>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
-	<1370516488-25860-9-git-send-email-chander.kashyap@linaro.org>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
+Date: Mon, 10 Jun 2013 12:46:59 +0100
+Message-ID: <51B5BCB3.3060405@st.com>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com> <CAHTX3d+dk3W_9b7SVUokWq4KYXnj=Z1=WPj5zJ-gUvJqqwE=+Q@mail.gmail.com>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1370516488-25860-9-git-send-email-chander.kashyap@linaro.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Chander Kashyap <chander.kashyap@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, Thomas Abraham <thomas.abraham@linaro.org>, dianders@chromium.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHTX3d+dk3W_9b7SVUokWq4KYXnj=Z1=WPj5zJ-gUvJqqwE=+Q@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <monstr@monstr.eu>
+Cc: linux-arm <linux-arm-kernel@lists.infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stultz <john.stultz@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@arm.linux.org.uk>, linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Thomas Gleixner <tglx@linutronix.de>, Tony
 List-Id: linux-serial@vger.kernel.org
 
-Hi Chander,
+On 10/06/13 12:15, Michal Simek wrote:
 
-[snip]
+Thankyou for your comments,
+> Hi,
+> 
+> hmm - that's a nice bug that thunderbird is not able to send this email. :-(
+> Let's comment it again via gmail.
+>     diff --git a/arch/arm/boot/dts/stih415.dtsi
+>     b/arch/arm/boot/dts/stih415.dtsi
+>     new file mode 100644
+>     index 0000000..6dcf5b4
+>     --- /dev/null
+>     +++ b/arch/arm/boot/dts/stih415.dtsi
+...
+>     +
+>     +       soc {
+>     +               #address-cells = <1>;
+>     +               #size-cells = <1>;
+>     +               interrupt-parent = <&intc>;
+>     +               ranges;
+>     +               compatible      = "simple-bus";
+> 
+> 
+> 
+> Rob and Grant: what's the purpose of SoC node.
+> It seems to me odd that SoC is compatible with simple-bus.
 
-> +  sclk_uart3           131
-> +  sclk_mmc0            132
-> +  sclk_mmc1            132
-> +  sclk_mmc2            133
+All the drivers on this SOC are based on platform bus, so we use
+simple-bus, here.
 
-above 2 numbers got repeated. Doug had found this in chromium tree and
-fixed it. [ https://gerrit.chromium.org/gerrit/#/c/56626/]
+>     diff --git a/arch/arm/boot/dts/stih41x.dtsi
+>     b/arch/arm/boot/dts/stih41x.dtsi
+>     new file mode 100644
+>     index 0000000..7321403
+>     --- /dev/null
+>     +++ b/arch/arm/boot/dts/stih41x.dtsi
+>     @@ -0,0 +1,38 @@
+>     +/ {
+>     +       #address-cells = <1>;
+>     +       #size-cells = <1>;
+>     +
+>     +       cpus {
+>     +               #address-cells = <1>;
+>     +               #size-cells = <0>;
+>     +               cpu@0 {
+>     +                       compatible = "arm,cortex-a9";
+>     +                       reg = <0>;
+>     +               };
+>     +               cpu@1 {
+>     +                       compatible = "arm,cortex-a9";
+>     +                       reg = <1>;
+>     +               };
+>     +       };
+>     +
+> 
+> 
+> I believe your SoC also has a bus here.
 
-Pls fix the typo in next version.
+It does but there is no active driver to manage it.
 
-Regards
-Sunil
+>     --- /dev/null
+>     +++ b/arch/arm/mach-stixxxx/board-dt.c
+>     @@ -0,0 +1,47 @@
+
+>     +
+>     +void __init stih41x_l2x0_init(void)
+>     +{
+>     +       u32 way_size = 0x4;
+>     +       u32 aux_ctrl;
+>     +
+>     +       aux_ctrl = (0x1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |
+>     +               (0x1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |
+>     +               (0x1 << L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT) |
+>     +               (way_size << L2X0_AUX_CTRL_WAY_SIZE_SHIFT);
+> 
+> 
+> 
+> #include <linux/bitops.h>
+> Linus Walleij would write use  BIT() here
+
+I will use BIT() macro.
+
+>     diff --git a/arch/arm/mach-stixxxx/headsmp.S
+>     b/arch/arm/mach-stixxxx/headsmp.S
+>     new file mode 100644
+>     index 0000000..3dd5c04
+>     --- /dev/null
+>     +++ b/arch/arm/mach-stixxxx/headsmp.S
+>     @@ -0,0 +1,44 @@
+>     +/*
+>     + *  arch/arm/plat-stixxxx/headsmp.S
+> 
+
+>     +       .long   pen_release
+> 
+> 
+> check that your SoC has no option to start/reset cpus separately.
+> If yes, then you shouldn't use pen_release.
+> We discussed this with Russel some days ago.
+No, stih41x series can't reset the cores separately.
+>  
+> 
+>     diff --git a/arch/arm/mach-stixxxx/platsmp.c
+>     b/arch/arm/mach-stixxxx/platsmp.c
+>     new file mode 100644
+>     index 0000000..ffc40c0
+>     --- /dev/null
+>     +++ b/arch/arm/mach-stixxxx/platsmp.c
+>     @@ -0,0 +1,117 @@
+>     +/*
+>     + *  arch/arm/plat-stixxxx/platsmp.c
+> 
+> 
+> wrong.
+
+Left over, will clean it up in next version.
+
+>     + *  arch/arm/plat-stixxxx/platsmp.c
+> 
+> 
+> incorrect.
+Left over, will clean it up in next version.
+>  
+>     +extern struct smp_operations   stixxxx_smp_ops;
+>     +extern void __iomem *stixxxx_scu_base_addr;
+> 
+> 
+> Unused variable in this patch.
+yes, I will remove stixxxx_scu_base_addr.
+
+thanks,
+srini
