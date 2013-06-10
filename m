@@ -1,54 +1,44 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Connection to a 3G USB Module using USB-Serial
-Date: Mon, 10 Jun 2013 10:23:37 -0700
-Message-ID: <20130610172337.GA1934@kroah.com>
-References: <CA+y4WrSC0Z5hFodTDNL0KGu2_pZtu3WB98re-yQJOsFCo21nRw@mail.gmail.com>
- <20130608182232.GB5918@kroah.com>
- <CA+y4WrRcrnYNHsFEZ2aTPGyPB1e9z508wzMp0Cf3-kxXPoNEBg@mail.gmail.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
+Date: Tue, 11 Jun 2013 00:19:34 +0100
+Message-ID: <20130610231934.GG18614@n2100.arm.linux.org.uk>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
+ <CAHTX3d+dk3W_9b7SVUokWq4KYXnj=Z1=WPj5zJ-gUvJqqwE=+Q@mail.gmail.com>
+ <51B5BCB3.3060405@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46685 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751485Ab3FJRXF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jun 2013 13:23:05 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CA+y4WrRcrnYNHsFEZ2aTPGyPB1e9z508wzMp0Cf3-kxXPoNEBg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <51B5BCB3.3060405@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, linux-doc@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm <linux-arm-kernel@lists.infradead.org>, Michal Simek <monstr@monstr.eu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Fumi <ffumi68@googlemail.com>
-Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Mon, Jun 10, 2013 at 03:58:38PM +0200, Fabio Fumi wrote:
-> Thanks Greg for taking som etime to answer.
+On Mon, Jun 10, 2013 at 12:46:59PM +0100, Srinivas KANDAGATLA wrote:
+> >     +       aux_ctrl = (0x1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |
+> >     +               (0x1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |
+> >     +               (0x1 << L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT) |
+> >     +               (way_size << L2X0_AUX_CTRL_WAY_SIZE_SHIFT);
+> > 
+> > 
+> > 
+> > #include <linux/bitops.h>
+> > Linus Walleij would write use  BIT() here
 > 
-> My kernel is an old 2.6.35.7 and migrating it entirely to 3+ one is a
-> real mess (given the number of platfomr customization it includes).
+> I will use BIT() macro.
 
-Ick, really old obsolete kernels like that one are not good for trying
-to run new hardware with.  I suggest contacting the company that is
-forcing you to stick with that version, and getting support from them to
-do the needed backporting of this driver.
-
-> So probably the best is to try back-porting the ZTE usb-serial
-> driver...  I guess. Is it "drivers/usb/serial/zte_ev.c" what you're
-> referring to?  My device is a ZTE MF-210... does the same driver
-> really apply for this device too?
-
-I think it does, what is the device/vendor id of it?
-
-> Does the same driver rely on some kernel 3.x-only features?
-
-Yes, all drivers are tied tightly to the specific kernel version they
-are released with.
-
-> I can always give it a *blind* try, of course... but better knowing in
-> advance, if it won't work.
-
-You can try to backport it, it shouldn't be that hard, but your really
-going to be on your own here, sorry.
-
-best of luck,
-
-greg k-h
+Without checking those fields... BIT() is only appropriate if you're
+really talking about single bits.  If you have a field of more than a
+single bit which you happen to be setting to '1' then it's not
+appropriate to use BIT().
