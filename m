@@ -1,126 +1,82 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v2 01/11] serial:st-asc: Add ST ASC driver.
-Date: Mon, 10 Jun 2013 12:53:55 +0100
-Message-ID: <51B5BE53.2000105@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856060-6403-1-git-send-email-srinivas.kandagatla@st.com> <20130610093511.GT18614@n2100.arm.linux.org.uk>
-Reply-To: srinivas.kandagatla@st.com
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
+Date: Mon, 10 Jun 2013 14:43:03 +0200
+Message-ID: <CACRpkdZ-xnDO+bte4tyKDWwY4A_qWUhLru3dUmuY9MQwseP3uQ@mail.gmail.com>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog104.obsmtp.com ([207.126.144.117]:46858 "EHLO
-	eu1sys200aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751552Ab3FJL4d (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jun 2013 07:56:33 -0400
-In-Reply-To: <20130610093511.GT18614@n2100.arm.linux.org.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <1370856381-6644-1-git-send-email-srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, devicetree-discuss@lists.ozlabs.org, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stultz <john.stultz@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Thomas Gleixner <tglx@linutronix.de>, Tony Prisk <linux@prisktech.co.nz>
 
-Thankyou for your comment and suggestion,
-I will fix the POSIX compliant issue.
+On Mon, Jun 10, 2013 at 11:26 AM, Srinivas KANDAGATLA
+<srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
 
-On 10/06/13 10:35, Russell King - ARM Linux wrote:
-> On Mon, Jun 10, 2013 at 10:21:00AM +0100, Srinivas KANDAGATLA wrote:
->> This patch adds support to ASC (asynchronous serial controller)
->> driver, which is basically a standard serial driver. This IP is common
->> across all the ST parts for settop box platforms.
->>
->> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
->> It support all industry standard baud rates.
-> 
-> Your driver is not POSIX compliant.
-> 
->> +		for (; count != 0; count--) {
->> +			c = asc_in(port, ASC_RXBUF);
->> +			flag = TTY_NORMAL;
->> +			port->icount.rx++;
->> +
->> +			if (unlikely(c & ASC_RXBUF_FE)) {
->> +				if (c == ASC_RXBUF_FE) {
->> +					port->icount.brk++;
->> +					if (uart_handle_break(port))
->> +						continue;
->> +					flag = TTY_BREAK;
->> +				} else {
->> +					port->icount.frame++;
->> +					flag = TTY_FRAME;
->> +				}
->> +			} else if (ascport->check_parity &&
->> +				   unlikely(c & ASC_RXBUF_PE)) {
->> +				port->icount.parity++;
->> +				flag = TTY_PARITY;
->> +			}
->> +
->> +			if (uart_handle_sysrq_char(port, c))
->> +				continue;
->> +			tty_insert_flip_char(tport, c & 0xff, flag);
->> +		}
->> +		if (overrun) {
->> +			port->icount.overrun++;
->> +			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
->> +		}
-> 
-> No support for ignoring error conditions.  No support for ignoring all
-> input... and:
-> 
->> +static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
->> +			    struct ktermios *old)
->> +{
->> +	struct asc_port *ascport = to_asc_port(port);
->> +	unsigned int baud;
->> +	u32 ctrl_val;
->> +	tcflag_t cflag;
->> +	unsigned long flags;
->> +
->> +	port->uartclk = clk_get_rate(ascport->clk);
->> +
->> +	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
->> +	cflag = termios->c_cflag;
->> +
->> +	spin_lock_irqsave(&port->lock, flags);
->> +
->> +	/* read control register */
->> +	ctrl_val = asc_in(port, ASC_CTL);
->> +
->> +	/* stop serial port and reset value */
->> +	asc_out(port, ASC_CTL, (ctrl_val & ~ASC_CTL_RUN));
->> +	ctrl_val = ASC_CTL_RXENABLE | ASC_CTL_FIFOENABLE;
->> +
->> +	/* reset fifo rx & tx */
->> +	asc_out(port, ASC_TXRESET, 1);
->> +	asc_out(port, ASC_RXRESET, 1);
->> +
->> +	/* set character length */
->> +	if ((cflag & CSIZE) == CS7) {
->> +		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
->> +	} else {
->> +		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
->> +						ASC_CTL_MODE_8BIT;
->> +	}
->> +
->> +	ascport->check_parity = (cflag & PARENB) ? 1 : 0;
->> +
->> +	/* set stop bit */
->> +	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
->> +
->> +	/* odd parity */
->> +	if (cflag & PARODD)
->> +		ctrl_val |= ASC_CTL_PARITYODD;
->> +
->> +	/* hardware flow control */
->> +	if ((cflag & CRTSCTS) && ascport->hw_flow_control)
->> +		ctrl_val |= ASC_CTL_CTSENABLE;
-> 
-> This doesn't reflect those facts back into the termios structure to
-> indicate that they aren't supported.
-> 
-> Consider using uart_port's ignore and read status masks to implement
-> the break, framing, parity and overrun checking in your interrupt
-> handler using the same methodology as drivers like 8250, amba-pl011
-> etc.  That will help you get these code sequences correct.
-> 
-> 
+> The STiH415 is the next generation of HD, AVC set-top box processors for
+> satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A9
+> 1.0 GHz, dual-core CPU.
+(...)
+> +       soc {
+> +               pin-controller-sbc {
+> +                       #address-cells  = <1>;
+> +                       #size-cells     = <1>;
+> +                       compatible      = "st,stih415-pinctrl", "simple-bus";
 
+Why is the pin controller be a simple bus?
+
+Maybe obvious, I'm not 100% familiar with when we use this...
+
+> +               pin-controller-front {
+(...)
+> +               pin-controller-rear {
+(...)
+> +               pin-controller-left {
+(...)
+> +               pin-controller-right {
+
+Please explain these orientations in some comment in the device
+tree, I'm half-guessing that it's about the edges around the chip so
+the PIO* names are actually pad names.
+
+I would suggest you use the names north/south/west/east
+if this is the case since left and right etc are relative measures.
+(This terminology is used on e.g. dance mats for console games...)
+
+If these names are from the datasheets by all means keep them.
+
+> +++ b/arch/arm/boot/dts/stixxxx-pincfg.h
+> @@ -0,0 +1,94 @@
+> +#ifndef _STIXXXX_PINCFG_H_
+> +#define _STIXXXX_PINCFG_H_
+> +
+> +/* Alternate functions */
+> +#define ALT1   1
+> +#define ALT2   2
+> +#define ALT3   3
+> +#define ALT4   4
+> +#define ALT5   5
+> +#define ALT6   6
+> +#define ALT7   7
+
+Why is this part of the DT definitions? In the pinctrl world this
+is an intrinsic detail on how groups and functions are associated,
+not something that you hard-code into the device tree. The
+device tree should state how to combine functions with groups
+and those will be strings, not numerals.
+
+Yours,
+Linus Walleij
