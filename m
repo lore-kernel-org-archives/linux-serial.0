@@ -1,13 +1,15 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: [PATCH v2 11/11] ARM:stih41x: Add B2020 board support
-Date: Mon, 10 Jun 2013 10:28:28 +0100
-Message-ID: <1370856508-7328-1-git-send-email-srinivas.kandagatla@st.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH v2 01/11] serial:st-asc: Add ST ASC driver.
+Date: Mon, 10 Jun 2013 10:35:11 +0100
+Message-ID: <20130610093511.GT18614@n2100.arm.linux.org.uk>
 References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856060-6403-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+Content-Disposition: inline
+In-Reply-To: <1370856060-6403-1-git-send-email-srinivas.kandagatla@st.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,136 +19,105 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, linux-doc@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux@arm.linux.org.uk, Samuel Ortiz <sameo@linux.intel.com>, Srinivas Kandagatla <srinivas.kandagatla@st.com>, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, linux-doc@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, devicetree-discuss@lists.ozlabs.org, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-B2020 ADI board is reference board for STIH415/416 SOCs, it has 2 x
-UART, 4x USB, 1 x Ethernet, 1 x SATA, 1 x PCIe, and 2GB RAM  with
-standard set-top box IPs.
+On Mon, Jun 10, 2013 at 10:21:00AM +0100, Srinivas KANDAGATLA wrote:
+> This patch adds support to ASC (asynchronous serial controller)
+> driver, which is basically a standard serial driver. This IP is common
+> across all the ST parts for settop box platforms.
+> 
+> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
+> It support all industry standard baud rates.
 
-This patch adds initial support to B2020 with STiH415/416 with SBC_UART1
-as console and a heard beat LED.
+Your driver is not POSIX compliant.
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-CC: Stephen Gallimore <stephen.gallimore@st.com>
-CC: Stuart Menefy <stuart.menefy@st.com>
-CC: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/boot/dts/Makefile           |    4 ++-
- arch/arm/boot/dts/stih415-b2020.dts  |   15 ++++++++++++
- arch/arm/boot/dts/stih416-b2020.dts  |   16 +++++++++++++
- arch/arm/boot/dts/stih41x-b2020.dtsi |   42 ++++++++++++++++++++++++++++++++++
- 4 files changed, 76 insertions(+), 1 deletions(-)
- create mode 100644 arch/arm/boot/dts/stih415-b2020.dts
- create mode 100644 arch/arm/boot/dts/stih416-b2020.dts
- create mode 100644 arch/arm/boot/dts/stih41x-b2020.dtsi
+> +		for (; count != 0; count--) {
+> +			c = asc_in(port, ASC_RXBUF);
+> +			flag = TTY_NORMAL;
+> +			port->icount.rx++;
+> +
+> +			if (unlikely(c & ASC_RXBUF_FE)) {
+> +				if (c == ASC_RXBUF_FE) {
+> +					port->icount.brk++;
+> +					if (uart_handle_break(port))
+> +						continue;
+> +					flag = TTY_BREAK;
+> +				} else {
+> +					port->icount.frame++;
+> +					flag = TTY_FRAME;
+> +				}
+> +			} else if (ascport->check_parity &&
+> +				   unlikely(c & ASC_RXBUF_PE)) {
+> +				port->icount.parity++;
+> +				flag = TTY_PARITY;
+> +			}
+> +
+> +			if (uart_handle_sysrq_char(port, c))
+> +				continue;
+> +			tty_insert_flip_char(tport, c & 0xff, flag);
+> +		}
+> +		if (overrun) {
+> +			port->icount.overrun++;
+> +			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+> +		}
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index d4615fd..0d24c95 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -178,7 +178,9 @@ dtb-$(CONFIG_ARCH_SPEAR3XX)+= spear300-evb.dtb \
- 	spear320-hmi.dtb
- dtb-$(CONFIG_ARCH_SPEAR6XX)+= spear600-evb.dtb
- dtb-$(CONFIG_ARCH_STIXXXX)+= stih415-b2000.dtb \
--	stih416-b2000.dtb
-+	stih416-b2000.dtb \
-+	stih415-b2020.dtb \
-+	stih416-b2020.dtb
- dtb-$(CONFIG_ARCH_SUNXI) += \
- 	sun4i-a10-cubieboard.dtb \
- 	sun4i-a10-mini-xplus.dtb \
-diff --git a/arch/arm/boot/dts/stih415-b2020.dts b/arch/arm/boot/dts/stih415-b2020.dts
-new file mode 100644
-index 0000000..442b019
---- /dev/null
-+++ b/arch/arm/boot/dts/stih415-b2020.dts
-@@ -0,0 +1,15 @@
-+/*
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * publishhed by the Free Software Foundation.
-+ */
-+/dts-v1/;
-+#include "stih415.dtsi"
-+#include "stih41x-b2020.dtsi"
-+/ {
-+	model = "STiH415 B2020 Board";
-+	compatible = "st,stih415", "st,stih415-b2020";
-+};
-diff --git a/arch/arm/boot/dts/stih416-b2020.dts b/arch/arm/boot/dts/stih416-b2020.dts
-new file mode 100644
-index 0000000..276f28d
---- /dev/null
-+++ b/arch/arm/boot/dts/stih416-b2020.dts
-@@ -0,0 +1,16 @@
-+/*
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * publishhed by the Free Software Foundation.
-+ */
-+/dts-v1/;
-+#include "stih416.dtsi"
-+#include "stih41x-b2020.dtsi"
-+/ {
-+	model = "STiH416 B2020";
-+	compatible = "st,stih416", "st,stih416-b2020";
-+
-+};
-diff --git a/arch/arm/boot/dts/stih41x-b2020.dtsi b/arch/arm/boot/dts/stih41x-b2020.dtsi
-new file mode 100644
-index 0000000..133e181
---- /dev/null
-+++ b/arch/arm/boot/dts/stih41x-b2020.dtsi
-@@ -0,0 +1,42 @@
-+/*
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * publishhed by the Free Software Foundation.
-+ */
-+/ {
-+	memory{
-+		device_type = "memory";
-+		reg = <0x40000000 0x80000000>;
-+	};
-+
-+	chosen {
-+		bootargs = "console=ttyAS0,115200";
-+		linux,stdout-path = &sbc_serial1;
-+	};
-+
-+	aliases {
-+		ttyAS0 = &sbc_serial1;
-+	};
-+	soc {
-+		sbc_serial1: serial@fe531000 {
-+			status = "okay";
-+		};
-+
-+		leds {
-+			compatible	= "gpio-leds";
-+			red {
-+				#gpio-cells = <1>;
-+				label	= "Front Panel LED";
-+				gpios	= <&PIO4 1>;
-+				linux,default-trigger	= "heartbeat";
-+			};
-+			green {
-+				gpios	= <&PIO4 7>;
-+				default-state = "off";
-+			};
-+		};
-+	};
-+};
--- 
-1.7.6.5
+No support for ignoring error conditions.  No support for ignoring all
+input... and:
+
+> +static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+> +			    struct ktermios *old)
+> +{
+> +	struct asc_port *ascport = to_asc_port(port);
+> +	unsigned int baud;
+> +	u32 ctrl_val;
+> +	tcflag_t cflag;
+> +	unsigned long flags;
+> +
+> +	port->uartclk = clk_get_rate(ascport->clk);
+> +
+> +	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
+> +	cflag = termios->c_cflag;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +
+> +	/* read control register */
+> +	ctrl_val = asc_in(port, ASC_CTL);
+> +
+> +	/* stop serial port and reset value */
+> +	asc_out(port, ASC_CTL, (ctrl_val & ~ASC_CTL_RUN));
+> +	ctrl_val = ASC_CTL_RXENABLE | ASC_CTL_FIFOENABLE;
+> +
+> +	/* reset fifo rx & tx */
+> +	asc_out(port, ASC_TXRESET, 1);
+> +	asc_out(port, ASC_RXRESET, 1);
+> +
+> +	/* set character length */
+> +	if ((cflag & CSIZE) == CS7) {
+> +		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
+> +	} else {
+> +		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
+> +						ASC_CTL_MODE_8BIT;
+> +	}
+> +
+> +	ascport->check_parity = (cflag & PARENB) ? 1 : 0;
+> +
+> +	/* set stop bit */
+> +	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
+> +
+> +	/* odd parity */
+> +	if (cflag & PARODD)
+> +		ctrl_val |= ASC_CTL_PARITYODD;
+> +
+> +	/* hardware flow control */
+> +	if ((cflag & CRTSCTS) && ascport->hw_flow_control)
+> +		ctrl_val |= ASC_CTL_CTSENABLE;
+
+This doesn't reflect those facts back into the termios structure to
+indicate that they aren't supported.
+
+Consider using uart_port's ignore and read status masks to implement
+the break, framing, parity and overrun checking in your interrupt
+handler using the same methodology as drivers like 8250, amba-pl011
+etc.  That will help you get these code sequences correct.
