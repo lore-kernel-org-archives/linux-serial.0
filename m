@@ -1,33 +1,28 @@
 From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: [PATCH v2 05/11] pinctrl:stixxxx: Add pinctrl and pinconf support.
-Date: Mon, 10 Jun 2013 10:22:41 +0100
-Message-ID: <1370856161-6600-1-git-send-email-srinivas.kandagatla@st.com>
+Subject: =?yes?q?=5BPATCH=20v2=2006/11=5D=20ARM=3Astixxxx=3A=20Add=20STiH415=20SOC=20support?=
+Date: Mon, 10 Jun 2013 10:26:21 +0100
+Message-ID: <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
 References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
-Return-path: <linux-doc-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=yes
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from eu1sys200aog114.obsmtp.com ([207.126.144.137]:39951 "EHLO
+	eu1sys200aog114.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752883Ab3FJJ27 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Jun 2013 05:28:59 -0400
 In-Reply-To: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
-Sender: linux-doc-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 Cc: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, devicetree-discuss@lists.ozlabs.org, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stultz <john.stultz@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux@arm.linux.org.uk, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Samuel Ortiz <sameo@linux.intel.com>, Srinivas Kandagatla <srinivas.kandagatla@st.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Thomas Gleixner <tglx@linutronix.de>, Tony Prisk <linux@prisktech.co.nz>
-List-Id: linux-serial@vger.kernel.org
 
-This patch add pinctrl support to ST SoCs.
-
-About hardware:
-ST Set-Top-Box parts have two blocks called PIO and PIO-mux which handle
-pin configurations.
-
-Each multi-function pin is controlled, driven and routed through the PIO
-multiplexing block. Each pin supports GPIO functionality (ALT0) and
-multiple alternate functions(ALT1 - ALTx) that directly connect the pin
-to different hardware blocks. When a pin is in GPIO mode, Output Enable
-(OE), Open Drain(OD), and Pull Up (PU) are driven by the related PIO
-block. Otherwise the PIO multiplexing block configures these parameters
-and retiming the signal.
-
-About driver:
-This pinctrl driver manages both PIO and PIO-mux block using pinctrl,
-pinconf, pinmux, gpio subsystems. All the pinctrl related config
-information can only come from device trees.
+The STiH415 is the next generation of HD, AVC set-top box processors fo=
+r
+satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A=
+9
+1.0 GHz, dual-core CPU.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 CC: Stephen Gallimore <stephen.gallimore@st.com>
@@ -35,1593 +30,1120 @@ CC: Stuart Menefy <stuart.menefy@st.com>
 CC: Arnd Bergmann <arnd@arndb.de>
 CC: Linus Walleij <linus.walleij@linaro.org>
 ---
- .../bindings/pinctrl/pinctrl-stixxxx.txt           |  116 ++
- drivers/pinctrl/Kconfig                            |   11 +
- drivers/pinctrl/Makefile                           |    1 +
- drivers/pinctrl/pinctrl-stixxxx.c                  | 1212 ++++++++++++++++++++
- drivers/pinctrl/pinctrl-stixxxx.h                  |  197 ++++
- 5 files changed, 1537 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-stixxxx.txt
- create mode 100644 drivers/pinctrl/pinctrl-stixxxx.c
- create mode 100644 drivers/pinctrl/pinctrl-stixxxx.h
+ Documentation/arm/stixxxx/overview.txt         |   33 +++
+ Documentation/arm/stixxxx/stih415-overview.txt |   12 +
+ MAINTAINERS                                    |   11 +
+ arch/arm/Kconfig                               |    2 +
+ arch/arm/Makefile                              |    1 +
+ arch/arm/boot/dts/stih415-clock.dtsi           |   38 +++
+ arch/arm/boot/dts/stih415-pinctrl.dtsi         |  326 ++++++++++++++++=
+++++++++
+ arch/arm/boot/dts/stih415.dtsi                 |  102 ++++++++
+ arch/arm/boot/dts/stih41x.dtsi                 |   38 +++
+ arch/arm/boot/dts/stixxxx-pincfg.h             |   94 +++++++
+ arch/arm/mach-stixxxx/Kconfig                  |   45 ++++
+ arch/arm/mach-stixxxx/Makefile                 |    2 +
+ arch/arm/mach-stixxxx/board-dt.c               |   47 ++++
+ arch/arm/mach-stixxxx/headsmp.S                |   44 ++++
+ arch/arm/mach-stixxxx/platsmp.c                |  117 +++++++++
+ arch/arm/mach-stixxxx/smp.h                    |   19 ++
+ 16 files changed, 931 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/arm/stixxxx/overview.txt
+ create mode 100644 Documentation/arm/stixxxx/stih415-overview.txt
+ create mode 100644 arch/arm/boot/dts/stih415-clock.dtsi
+ create mode 100644 arch/arm/boot/dts/stih415-pinctrl.dtsi
+ create mode 100644 arch/arm/boot/dts/stih415.dtsi
+ create mode 100644 arch/arm/boot/dts/stih41x.dtsi
+ create mode 100644 arch/arm/boot/dts/stixxxx-pincfg.h
+ create mode 100644 arch/arm/mach-stixxxx/Kconfig
+ create mode 100644 arch/arm/mach-stixxxx/Makefile
+ create mode 100644 arch/arm/mach-stixxxx/board-dt.c
+ create mode 100644 arch/arm/mach-stixxxx/headsmp.S
+ create mode 100644 arch/arm/mach-stixxxx/platsmp.c
+ create mode 100644 arch/arm/mach-stixxxx/smp.h
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-stixxxx.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-stixxxx.txt
+diff --git a/Documentation/arm/stixxxx/overview.txt b/Documentation/arm=
+/stixxxx/overview.txt
 new file mode 100644
-index 0000000..ac69dca
+index 0000000..a2f6390
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-stixxxx.txt
-@@ -0,0 +1,116 @@
-+*ST pin controller.
++++ b/Documentation/arm/stixxxx/overview.txt
+@@ -0,0 +1,33 @@
++			STixxxx ARM Linux Overview
++			=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
 +
-+Each multi-function pin is controlled, driven and routed through the
-+PIO multiplexing block. Each pin supports GPIO functionality (ALT0)
-+and multiple alternate functions(ALT1 - ALTx) that directly connect
-+the pin to different hardware blocks.
++Introduction
++------------
 +
-+When a pin is in GPIO mode, Output Enable (OE), Open Drain(OD), and
-+Pull Up (PU) are driven by the related PIO block.
++  The ST Microelectronics Multimedia and Application Processors range =
+of
++  CortexA9 System-on-Chip are supported by the 'STixxxx' platform of
++  ARM Linux. Currently STiH415, STiH416 SOCs are supported with both
++  B2000 and B2020 Reference boards.
 +
-+ST pinctrl driver controls PIO multiplexing block and also interacts with
-+gpio driver to configure a pin.
 +
-+Required properties: (PIO multiplexing block)
-+- compatible	: should be "st,stixxxx-pinctrl"
-+			each subnode should set "st,stixxxx-gpio"
-+			as compatible for each gpio-controller bank.
-+- gpio-controller : Indicates this device is a GPIO controller
-+- #gpio-cells	  : Should be one. The first cell is the pin number.
-+- st,retime-in-delay	: Should be array of delays in nsecs.
-+- st,retime-out-delay	: Should be array of delays in nsecs.
-+- st,retime-pin-mask	: Should be mask to specify which pins can be retimed.
-+- st,bank-name		: Should be a name string for this bank.
-+- st,syscfg		: phandle of the syscfg node.
-+- st,syscfg-offsets	: Should be a 5 cell entry which represent offset of altfunc,
-+	output-enable, pull-up , open drain and retime registers in the syscfg bank
++  configuration
++  -------------
 +
-+Example:
-+	pin-controller {
-+		compatible = "st,stixxxx-pinctrl", "simple-bus";
-+		st,retime-in-delay = <0 500 1000 1500>;
-+		st,retime-out-delay = <0 1000 2000 3000>;
-+		st,syscfg		= <&syscfg_front>;
-+		st,syscfg-offsets	= <0 8 10 12 16>;
-+		ranges;
-+		PIO0: pinctrl@fe610000 {
-+			gpio-controller;
-+			#gpio-cells = <1>;
-+			compatible = "st,stixxxx-gpio";
-+			reg = <0xfe610000 0x100>;
-+			st,bank-name  = "PIO0";
++  A generic configuration is provided for both STiH415/416, and can be=
+ used as the
++  default by
++	make stih41x_defconfig
++
++  Layout
++  ------
++  All the files for multiple machine families (STiH415, STiH416, and S=
+TiG125)
++  are located in the platform code contained in arch/arm/mach-stixxxx
++
++  There is a generic board board-dt.c in the mach folder which support
++  Flattened Device Tree, which means, It works with any compatible boa=
+rd with
++  Device Trees.
++
++
++  Document Author
++  ---------------
++
++  Srinivas Kandagatla <srinivas.kandagatla@st.com>, (c) 2013 ST Microe=
+lectronics
+diff --git a/Documentation/arm/stixxxx/stih415-overview.txt b/Documenta=
+tion/arm/stixxxx/stih415-overview.txt
+new file mode 100644
+index 0000000..1c264b7
+--- /dev/null
++++ b/Documentation/arm/stixxxx/stih415-overview.txt
+@@ -0,0 +1,12 @@
++			STiH415 Overview
++			=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++
++Introduction
++------------
++
++    The STiH415 is the next generation of HD, AVC set-top box processo=
+rs
++    for satellite, cable, terrestrial and IP-STB markets.
++
++    Features
++    - ARM Cortex-A9 1.0 GHz, dual-core CPU
++    - SATA2=C3=972,USB 2.0=C3=973, PCIe, Gbit Ethernet MAC=C3=972
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 250dc97..2aca7d2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1201,6 +1201,17 @@ M:	Dinh Nguyen <dinguyen@altera.com>
+ S:	Maintained
+ F:	drivers/clk/socfpga/
+=20
++ARM/STIXXXX ARCHITECTURE
++M:	Srinivas Kandagatla <srinivas.kandagatla@st.com>
++M:	Stuart Menefy <stuart.menefy@st.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers=
+)
++W:	http://www.stlinux.com
++S:	Maintained
++F:	arch/arm/mach-stixxxx/
++F:	drivers/pinctrl/pinctrl-stixxxx*
++F:	drivers/mfd/stixxxx-syscfg*
++F:	drivers/clocksource/global_timer.c
++
+ ARM/TECHNOLOGIC SYSTEMS TS7250 MACHINE SUPPORT
+ M:	Lennert Buytenhek <kernel@wantstofly.org>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers=
+)
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 49d993c..790e321 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -989,6 +989,8 @@ source "arch/arm/mach-socfpga/Kconfig"
+=20
+ source "arch/arm/mach-spear/Kconfig"
+=20
++source "arch/arm/mach-stixxxx/Kconfig"
++
+ source "arch/arm/mach-s3c24xx/Kconfig"
+=20
+ if ARCH_S3C64XX
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 1ba358b..c876e0a 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -191,6 +191,7 @@ machine-$(CONFIG_ARCH_W90X900)		+=3D w90x900
+ machine-$(CONFIG_FOOTBRIDGE)		+=3D footbridge
+ machine-$(CONFIG_ARCH_SOCFPGA)		+=3D socfpga
+ machine-$(CONFIG_PLAT_SPEAR)		+=3D spear
++machine-$(CONFIG_ARCH_STIXXXX)		+=3D stixxxx
+ machine-$(CONFIG_ARCH_VIRT)		+=3D virt
+ machine-$(CONFIG_ARCH_ZYNQ)		+=3D zynq
+ machine-$(CONFIG_ARCH_SUNXI)		+=3D sunxi
+diff --git a/arch/arm/boot/dts/stih415-clock.dtsi b/arch/arm/boot/dts/s=
+tih415-clock.dtsi
+new file mode 100644
+index 0000000..174c799
+--- /dev/null
++++ b/arch/arm/boot/dts/stih415-clock.dtsi
+@@ -0,0 +1,38 @@
++/*
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++/ {
++	clocks {
++		/*
++		 * Fixed 30MHz oscillator input to SoC
++		 */
++		CLK_SYSIN: CLK_SYSIN {
++			#clock-cells =3D <0>;
++			compatible =3D "fixed-clock";
++			clock-frequency =3D <30000000>;
 +		};
-+		...
-+		pin-functions nodes follow...
++
++		/*
++		 * ARM Peripheral clock for timers
++		 */
++		arm_periph_clk: arm_periph_clk {
++			#clock-cells =3D <0>;
++			compatible =3D "fixed-clock";
++			clock-frequency =3D <500000000>;
++		};
++
++		/*
++		 * Bootloader initialized system infrastructure clock for
++		 * serial devices.
++		 */
++		CLKS_ICN_REG_0: CLKS_ICN_REG_0 {
++			#clock-cells =3D <0>;
++			compatible =3D "fixed-clock";
++			clock-frequency =3D <100000000>;
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/stih415-pinctrl.dtsi b/arch/arm/boot/dts=
+/stih415-pinctrl.dtsi
+new file mode 100644
+index 0000000..c510f11
+--- /dev/null
++++ b/arch/arm/boot/dts/stih415-pinctrl.dtsi
+@@ -0,0 +1,326 @@
++/*
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * publishhed by the Free Software Foundation.
++ */
++#include "stixxxx-pincfg.h"
++/ {
++
++	aliases {
++		gpio0	=3D &PIO0;
++		gpio1	=3D &PIO1;
++		gpio2	=3D &PIO2;
++		gpio3	=3D &PIO3;
++		gpio4	=3D &PIO4;
++		gpio5	=3D &PIO5;
++		gpio6	=3D &PIO6;
++		gpio7	=3D &PIO7;
++		gpio8	=3D &PIO8;
++		gpio9	=3D &PIO9;
++		gpio10	=3D &PIO10;
++		gpio11	=3D &PIO11;
++		gpio12	=3D &PIO12;
++		gpio13	=3D &PIO13;
++		gpio14	=3D &PIO14;
++		gpio15	=3D &PIO15;
++		gpio16	=3D &PIO16;
++		gpio17	=3D &PIO17;
++		gpio18	=3D &PIO18;
++		gpio19	=3D &PIO100;
++		gpio20	=3D &PIO101;
++		gpio21	=3D &PIO102;
++		gpio22	=3D &PIO103;
++		gpio23	=3D &PIO104;
++		gpio24	=3D &PIO105;
++		gpio25	=3D &PIO106;
++		gpio26	=3D &PIO107;
 +	};
 +
 +
-+Contents of function subnode node:
-+----------------------
-+Required properties for pin configuration node:
-+- st,function	: Should be alternate function number associated
-+		with this set of pins. Use same numbers from datasheet.
++	soc {
++		pin-controller-sbc {
++			#address-cells	=3D <1>;
++			#size-cells	=3D <1>;
++			compatible	=3D "st,stih415-pinctrl", "simple-bus";
++			st,retime-in-delay	=3D <0 500 1000 1500>;
++			st,retime-out-delay	=3D <0 1000 2000 3000>;
++			st,syscfg		=3D <&syscfg_sbc>;
++			st,syscfg-offsets	=3D <0 5 7 9 16>;
++			ranges;
 +
-+- st,pins	: Child node with list of pins with configuration.
++			PIO0: pinctrl@fe610000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe610000 0x100>;
++				st,bank-name	=3D "PIO0";
++			};
 +
-+Below is the format of how each pin conf should look like.
++			PIO1: pinctrl@fe611000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe611000 0x100>;
++				st,bank-name	=3D "PIO1";
++			};
 +
-+<bank offset mode rt_type rt_delay rt_clk>
++			PIO2: pinctrl@fe612000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe612000 0x100>;
++				st,bank-name	=3D "PIO2";
++			};
 +
-+Every PIO is represented with 4-7 parameters depending on retime configuration.
-+Each parameter is explained as below.
++			PIO3: pinctrl@fe613000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe613000 0x100>;
++				st,bank-name	=3D "PIO3";
 +
-+-bank		: Should be bank phandle to which this PIO belongs.
-+-offset		: Offset in the PIO bank.
-+-mode		:pin configuration is selected from one of the below values.
-+		IN
-+		IN_PU
-+		OUT
-+		BIDIR
-+		BIDIR_PU
++			};
 +
-+-rt_type	Retiming Configuration for the pin.
-+		Possible retime configuration are:
++			PIO4: pinctrl@fe614000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe614000 0x100>;
++				st,bank-name	=3D "PIO4";
++			};
 +
-+		-------		-------------
-+		value		args
-+		-------		-------------
-+		NICLK		<delay> <clk>
-+		ICLK_IO		<delay> <clk>
-+		BYPASS		<delay>
-+		DE_IO		<delay> <clk>
-+		SE_ICLK_IO	<delay> <clk>
-+		SE_NICLK_IO	<delay> <clk>
-+
-+- delay	is retime delay in pico seconds.
-+		Possible values are: refer to retime-in/out-delays
-+
-+- rt_clk	:clk to be use for retime.
-+		Possible values are:
-+		CLK_A
-+		CLK_B
-+		CLK_C
-+		CLK_D
-+
-+Example of mmcclk pin which is a bi-direction pull pu with retime config
-+as non inverted clock retimed with CLK_B and delay of 0 pico seconds:
-+
-+pin-controller {
-+	...
-+	mmc0 {
-+		pinctrl_mmc: mmc {
-+			st,function = <ALT4>;
-+			st,pins {
-+				mmcclk = <&PIO13 4 BIDIR_PU NICLK  0  CLK_B>;
-+				...
++			sbc_serial1 {
++				pinctrl_sbc_serial1:sbc_serial1 {
++					st,function =3D <ALT3>;
++					st,pins {
++						tx	=3D <&PIO2 6 OUT>;
++						rx	=3D <&PIO2 7 IN>;
++					};
++				};
 +			};
 +		};
-+	...
++
++		pin-controller-front {
++			#address-cells	=3D <1>;
++			#size-cells	=3D <1>;
++			compatible	=3D "st,stih415-pinctrl", "simple-bus";
++			st,retime-in-delay	=3D <0 500 1000 1500>;
++			st,retime-out-delay	=3D <0 1000 2000 3000>;
++			st,syscfg		=3D <&syscfg_front>;
++			st,syscfg-offsets	=3D <0 8 10 12 16>;
++			ranges;
++
++			PIO5: pinctrl@fee00000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee00000 0x100>;
++				st,bank-name	=3D "PIO5";
++			};
++			PIO6: pinctrl@fee01000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee01000 0x100>;
++				st,bank-name	=3D "PIO6";
++			};
++
++			PIO7: pinctrl@fee02000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee02000 0x100>;
++				st,bank-name	=3D "PIO7";
++			};
++			PIO8: pinctrl@fee03000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee03000 0x100>;
++				st,bank-name	=3D "PIO8";
++			};
++			PIO9: pinctrl@fee04000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee04000 0x100>;
++				st,bank-name	=3D "PIO9";
++			};
++			PIO10: pinctrl@fee05000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee05000 0x100>;
++				st,bank-name	=3D "PIO10";
++			};
++			PIO11: pinctrl@fee06000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee06000 0x100>;
++				st,bank-name	=3D "PIO11";
++			};
++			PIO12: pinctrl@fee07000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfee07000 0x100>;
++				st,bank-name	=3D "PIO12";
++			};
++		};
++
++		pin-controller-rear {
++			#address-cells	=3D <1>;
++			#size-cells	=3D <1>;
++			compatible	=3D "st,stih415-pinctrl", "simple-bus";
++			st,retime-in-delay	=3D <0 500 1000 1500>;
++			st,retime-out-delay	=3D <0 1000 2000 3000>;
++			st,syscfg		=3D <&syscfg_rear>;
++			st,syscfg-offsets	=3D <0 6 8 10 38>;
++			ranges;
++
++			PIO13: pinctrl@fe820000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe820000 0x100>;
++				st,bank-name	=3D "PIO13";
++			};
++			PIO14: pinctrl@fe821000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe821000 0x100>;
++				st,bank-name	=3D "PIO14";
++			};
++			PIO15: pinctrl@fe822000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe822000 0x100>;
++				st,bank-name	=3D "PIO15";
++			};
++			PIO16: pinctrl@fe823000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe823000 0x100>;
++				st,bank-name	=3D "PIO16";
++
++			};
++			PIO17: pinctrl@fe824000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe824000 0x100>;
++				st,bank-name	=3D "PIO17";
++
++			};
++			PIO18: pinctrl@fe825000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfe825000 0x100>;
++				st,bank-name	=3D "PIO18";
++
++			};
++
++			serial2 {
++				pinctrl_serial2: serial2-0 {
++					st,function =3D <ALT2>;
++					st,pins {
++						tx	=3D <&PIO17 4 OUT>;
++						rx	=3D <&PIO17 5 IN>;
++					};
++				};
++			};
++
++		};
++
++		pin-controller-left {
++			#address-cells	=3D <1>;
++			#size-cells	=3D <1>;
++			compatible	=3D "st,stih415-pinctrl", "simple-bus";
++			st,retime-in-delay	=3D <0 500 1000 1500>;
++			st,retime-out-delay	=3D <0 1000 2000 3000>;
++			st,syscfg		=3D <&syscfg_left>;
++			st,syscfg-offsets	=3D <0 3 4 5 6>;
++			ranges;
++
++			PIO100: pinctrl@fd6b0000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd6b0000 0x100>;
++				st,bank-name	=3D "PIO100";
++			};
++			PIO101: pinctrl@fd6b1000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd6b1000 0x100>;
++				st,bank-name	=3D "PIO101";
++
++			};
++			PIO102: pinctrl@fd6b2000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd6b2000 0x100>;
++				st,bank-name	=3D "PIO102";
++
++			};
++
++		};
++
++		pin-controller-right {
++			#address-cells	=3D <1>;
++			#size-cells	=3D <1>;
++			compatible	=3D "st,stih415-pinctrl", "simple-bus";
++			st,retime-in-delay	=3D <0 500 1000 1500>;
++			st,retime-out-delay	=3D <0 1000 2000 3000>;
++			st,syscfg		=3D <&syscfg_right>;
++			st,syscfg-offsets	=3D <0 5 7 9 11>;
++			ranges;
++
++			PIO103: pinctrl@fd330000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd330000 0x100>;
++				st,bank-name	=3D "PIO103";
++			};
++			PIO104: pinctrl@fd331000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd331000 0x100>;
++				st,bank-name	=3D "PIO104";
++			};
++			PIO105: pinctrl@fd332000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd332000 0x100>;
++				st,bank-name	=3D "PIO105";
++			};
++			PIO106: pinctrl@fd333000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd333000 0x100>;
++				st,bank-name	=3D "PIO106";
++			};
++			PIO107: pinctrl@fd334000 {
++				gpio-controller;
++				#gpio-cells	=3D <1>;
++				compatible	=3D "st,stixxxx-gpio";
++				reg	=3D <0xfd334000 0x100>;
++				st,bank-name	=3D "PIO107";
++			};
++		};
 +	};
 +};
-+
-+sdhci0:sdhci@fe810000{
-+	...
-+	pinctrl-names = "default";
-+	pinctrl-0	= <&pinctrl_mmc>;
-+};
-diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
-index 8f66924..0c040a3 100644
---- a/drivers/pinctrl/Kconfig
-+++ b/drivers/pinctrl/Kconfig
-@@ -169,6 +169,17 @@ config PINCTRL_SUNXI
- 	select PINMUX
- 	select GENERIC_PINCONF
- 
-+config PINCTRL_STIXXXX
-+	bool "ST Microelectronics pin controller driver for STixxxx SoCs"
-+	select PINMUX
-+	select PINCONF
-+	help
-+	  Say yes here to support pinctrl interface on STixxxx SOCs.
-+	  This driver is used to control both PIO block and PIO-mux
-+	  block to configure a pin.
-+
-+	  If unsure, say N.
-+
- config PINCTRL_TEGRA
- 	bool
- 	select PINMUX
-diff --git a/drivers/pinctrl/Makefile b/drivers/pinctrl/Makefile
-index 9bdaeb8..0e035bb 100644
---- a/drivers/pinctrl/Makefile
-+++ b/drivers/pinctrl/Makefile
-@@ -45,6 +45,7 @@ obj-$(CONFIG_PINCTRL_EXYNOS5440)	+= pinctrl-exynos5440.o
- obj-$(CONFIG_PINCTRL_S3C64XX)	+= pinctrl-s3c64xx.o
- obj-$(CONFIG_PINCTRL_XWAY)	+= pinctrl-xway.o
- obj-$(CONFIG_PINCTRL_LANTIQ)	+= pinctrl-lantiq.o
-+obj-$(CONFIG_PINCTRL_STIXXXX) 	+= pinctrl-stixxxx.o
- 
- obj-$(CONFIG_PLAT_ORION)        += mvebu/
- obj-$(CONFIG_ARCH_SHMOBILE)	+= sh-pfc/
-diff --git a/drivers/pinctrl/pinctrl-stixxxx.c b/drivers/pinctrl/pinctrl-stixxxx.c
+diff --git a/arch/arm/boot/dts/stih415.dtsi b/arch/arm/boot/dts/stih415=
+=2Edtsi
 new file mode 100644
-index 0000000..da4e3d7
+index 0000000..6dcf5b4
 --- /dev/null
-+++ b/drivers/pinctrl/pinctrl-stixxxx.c
-@@ -0,0 +1,1212 @@
++++ b/arch/arm/boot/dts/stih415.dtsi
+@@ -0,0 +1,102 @@
 +/*
 + * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Authors:
-+ *	Srinivas Kandagatla <srinivas.kandagatla@st.com>
++ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 + *
-+ * This program is free software; you can redistribute it and/or modify
++ * This program is free software; you can redistribute it and/or modif=
+y
 + * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * publishhed by the Free Software Foundation.
 + */
++#include "stih41x.dtsi"
++#include "stih415-clock.dtsi"
++#include "stih415-pinctrl.dtsi"
++/ {
 +
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/of.h>
-+#include <linux/of_gpio.h>
-+#include <linux/of_address.h>
-+#include <linux/regmap.h>
-+#include <linux/mfd/stixxxx-syscfg.h>
-+#include <linux/pinctrl/pinctrl.h>
-+#include <linux/pinctrl/pinmux.h>
-+#include <linux/pinctrl/pinconf.h>
-+#include <linux/platform_device.h>
-+#include "core.h"
-+#include "pinctrl-stixxxx.h"
++	L2: cache-controller {
++		compatible =3D "arm,pl310-cache";
++		reg =3D <0xfffe2000 0x1000>;
++		arm,data-latency =3D <3 2 2>;
++		arm,tag-latency =3D <1 1 1>;
++		cache-unified;
++		cache-level =3D <2>;
++	};
 +
-+struct stixxxx_pinconf {
-+	int		pin;
-+	const char	*name;
-+	unsigned long	config;
++	soc {
++		#address-cells =3D <1>;
++		#size-cells =3D <1>;
++		interrupt-parent =3D <&intc>;
++		ranges;
++		compatible	=3D "simple-bus";
++
++		syscfg_sbc: syscfg@fe600000{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfe600000 0xb4>;
++			syscfg-range	=3D <0 44>;
++			syscfg-name	=3D "SYSCFG_SBC";
++		};
++
++		syscfg_front: syscfg@fee10000{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfee10000 0x194>;
++			syscfg-range	=3D <100 100>;
++			syscfg-name	=3D "SYSCFG_FRONT";
++		};
++
++		syscfg_rear: syscfg@fe830000{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfe830000 0x190>;
++			syscfg-range	=3D <300 99>;
++			syscfg-name	=3D "SYSCFG_REAR";
++		};
++
++		/* MPE syscfgs */
++		syscfg_left: syscfg@fd690000{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfd690000 0x78>;
++			syscfg-range 	=3D <400 29>;
++			syscfg-name	=3D "SYSCFG_LEFT";
++		};
++
++		syscfg_right: syscfg@fd320000{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfd320000 0x180>;
++			syscfg-range	=3D <500 95>;
++			syscfg-name	=3D "SYSCFG_RIGHT";
++		};
++
++		syscfg_system: syscfg@fdde0000  {
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfdde0000 0x15c>;
++			syscfg-range	=3D <600 86>;
++			syscfg-name	=3D "SYSCFG_SYSTEM";
++		};
++
++		syscfg_lpm: syscfg@fe4b5100{
++			compatible      =3D "st,stih415-syscfg";
++			reg		=3D <0xfe4b5100 0x08>;
++			syscfg-range	=3D <0 10>;
++			syscfg-name	=3D "LPM_CFG_REGS";
++		};
++
++		serial2: serial@fed32000 {
++			compatible	=3D "st,asc";
++			status 		=3D "disabled";
++			reg		=3D <0xfed32000 0x2c>;
++			interrupts	=3D <0 197 0>;
++			pinctrl-names 	=3D "default";
++			pinctrl-0 	=3D <&pinctrl_serial2>;
++			clocks		=3D <&CLKS_ICN_REG_0>;
++		};
++
++		/* SBC comms block ASCs in SASG1 */
++		sbc_serial1: serial@fe531000 {
++			compatible	=3D "st,asc";
++			status 		=3D "disabled";
++			reg		=3D <0xfe531000 0x2c>;
++			interrupts	=3D <0 210 0>;
++			clocks		=3D <&CLK_SYSIN>;
++			pinctrl-names 	=3D "default";
++			pinctrl-0	=3D <&pinctrl_sbc_serial1>;
++		};
++
++	};
 +};
-+
-+struct stixxxx_pmx_func {
-+	const char	*name;
-+	const char	**groups;
-+	unsigned	ngroups;
-+};
-+
-+struct stixxxx_pctl_group {
-+	const char		*name;
-+	unsigned int		*pins;
-+	unsigned		npins;
-+	int			altfunc;
-+	struct stixxxx_pinconf	*pin_conf;
-+};
-+
-+#define to_stixxxx_gpio_port(chip) \
-+		container_of(chip, struct stixxxx_gpio_port, gpio_chip)
-+
-+struct stixxxx_gpio_port {
-+	struct gpio_chip	gpio_chip;
-+	struct pinctrl_gpio_range range;
-+	void __iomem		*base;
-+	struct device_node	*of_node;
-+	const char		*bank_name;
-+};
-+
-+static struct stixxxx_gpio_port *gpio_ports[STIXXXX_MAX_GPIO_BANKS];
-+
-+struct stixxxx_pinctrl {
-+	struct device			*dev;
-+	struct pinctrl_dev		*pctl;
-+	int				nbanks;
-+	struct stixxxx_pmx_func		*functions;
-+	int				nfunctions;
-+	struct stixxxx_pctl_group	*groups;
-+	int				ngroups;
-+	struct stixxxx_pio_control	*pio_controls;
-+	struct pinctrl_gpio_range	**gpio_ranges;
-+	struct regmap			*regmap;
-+};
-+
-+/* Low level functions.. */
-+static void stixxxx_pinconf_set_direction(struct stixxxx_pio_control *pc,
-+				int pin_id, unsigned long config)
-+{
-+	struct regmap_field *output_enable;
-+	struct regmap_field *pull_up;
-+	struct regmap_field *open_drain;
-+	unsigned int oe_value, pu_value, od_value;
-+	unsigned long mask;
-+	int pin = stixxxx_gpio_pin(pin_id);
-+
-+	output_enable = pc->oe;
-+	pull_up = pc->pu;
-+	open_drain = pc->od;
-+
-+	mask = BIT(pin);
-+
-+	regmap_field_read(output_enable, &oe_value);
-+	regmap_field_read(pull_up, &pu_value);
-+	regmap_field_read(open_drain, &od_value);
-+
-+	/* Clear old values */
-+	oe_value &= ~mask;
-+	pu_value &= ~mask;
-+	od_value &= ~mask;
-+
-+	if (config & STIXXXX_PINCONF_OE)
-+		oe_value |= mask;
-+	if (config & STIXXXX_PINCONF_PU)
-+		pu_value |= mask;
-+	if (config & STIXXXX_PINCONF_OD)
-+		od_value |= mask;
-+
-+	regmap_field_write(output_enable, oe_value);
-+	regmap_field_write(pull_up, pu_value);
-+	regmap_field_write(open_drain, od_value);
-+}
-+
-+static void stixxxx_pctl_set_function(struct stixxxx_pio_control *pc,
-+				int pin_id, int function)
-+{
-+	struct regmap_field *selector;
-+	int offset;
-+	unsigned int val;
-+	int pin = stixxxx_gpio_pin(pin_id);
-+
-+	selector = pc->alt;
-+	offset = pin * 4;
-+	regmap_field_read(selector, &val);
-+	val &= ~(0xf << offset);
-+	val |= function << offset;
-+	regmap_field_write(selector, val);
-+}
-+
-+static unsigned long stixxxx_pinconf_delay_to_bit(unsigned int delay,
-+		const struct stixxxx_retime_params *rt_params,
-+		unsigned long config)
-+{
-+	unsigned int *delay_times;
-+	int num_delay_times, i, closest_index = -1;
-+	unsigned int closest_divergence = UINT_MAX;
-+
-+	if (STIXXXX_PINCONF_UNPACK_OE(config)) {
-+		delay_times = rt_params->delay_times_out;
-+		num_delay_times = rt_params->num_delay_times_out;
-+	} else {
-+		delay_times = rt_params->delay_times_in;
-+		num_delay_times = rt_params->num_delay_times_in;
-+	}
-+
-+	for (i = 0; i < num_delay_times; i++) {
-+		unsigned int divergence = abs(delay - delay_times[i]);
-+
-+		if (divergence == 0)
-+			return i;
-+
-+		if (divergence < closest_divergence) {
-+			closest_divergence = divergence;
-+			closest_index = i;
-+		}
-+	}
-+
-+	pr_warn("Attempt to set delay %d, closest available %d\n",
-+	     delay, delay_times[closest_index]);
-+
-+	return closest_index;
-+}
-+
-+static unsigned long stixxxx_pinconf_bit_to_delay(unsigned int index,
-+		const struct stixxxx_retime_params *rt_params,
-+		unsigned long output)
-+{
-+	unsigned int *delay_times;
-+	int num_delay_times;
-+
-+	if (output) {
-+		delay_times = rt_params->delay_times_out;
-+		num_delay_times = rt_params->num_delay_times_out;
-+	} else {
-+		delay_times = rt_params->delay_times_in;
-+		num_delay_times = rt_params->num_delay_times_in;
-+	}
-+
-+	if (index < num_delay_times) {
-+		return delay_times[index];
-+	} else {
-+		pr_warn("Delay not found in/out delay list\n");
-+		return 0;
-+	}
-+}
-+
-+static void stixxxx_pinconf_set_retime_packed(
-+		struct stixxxx_pio_control *pc,
-+		unsigned long config, int pin)
-+{
-+	const struct stixxxx_retime_params *rt_params = pc->rt_params;
-+	const struct stixxxx_retime_offset *offset = rt_params->retime_offset;
-+	struct regmap_field **regs;
-+	unsigned int values[2];
-+	unsigned long mask;
-+	int i, j;
-+	int clk = STIXXXX_PINCONF_UNPACK_RT_CLK(config);
-+	int clknotdata = STIXXXX_PINCONF_UNPACK_RT_CLKNOTDATA(config);
-+	int double_edge = STIXXXX_PINCONF_UNPACK_RT_DOUBLE_EDGE(config);
-+	int invertclk = STIXXXX_PINCONF_UNPACK_RT_INVERTCLK(config);
-+	int retime = STIXXXX_PINCONF_UNPACK_RT(config);
-+	unsigned long delay = stixxxx_pinconf_delay_to_bit(
-+			STIXXXX_PINCONF_UNPACK_RT_DELAY(config),
-+			pc->rt_params, config);
-+
-+	unsigned long rt_cfg =
-+		((clk		& 1) << offset->clk1notclk0_offset) |
-+		((clknotdata	& 1) << offset->clknotdata_offset) |
-+		((delay		& 1) << offset->delay_lsb_offset) |
-+		(((delay >> 1)  & 1) << offset->delay_msb_offset) |
-+		((double_edge	& 1) << offset->double_edge_offset) |
-+		((invertclk	& 1) << offset->invertclk_offset) |
-+		((retime	& 1) << offset->retime_offset);
-+
-+	regs = pc->retiming;
-+	regmap_field_read(regs[0], &values[0]);
-+	regmap_field_read(regs[1], &values[1]);
-+
-+	for (i = 0; i < 2; i++) {
-+		mask = BIT(pin);
-+		for (j = 0; j < 4; j++) {
-+			if (rt_cfg & 1)
-+				values[i] |= mask;
-+			else
-+				values[i] &= ~mask;
-+			mask <<= 8;
-+			rt_cfg >>= 1;
-+		}
-+	}
-+
-+	regmap_field_write(regs[0], values[0]);
-+	regmap_field_write(regs[1], values[1]);
-+}
-+
-+static void stixxxx_pinconf_set_retime_dedicated(
-+	struct stixxxx_pio_control *pc,
-+	unsigned long config, int pin)
-+{
-+	struct regmap_field *reg;
-+	int input = STIXXXX_PINCONF_UNPACK_OE(config) ? 0 : 1;
-+	int clk = STIXXXX_PINCONF_UNPACK_RT_CLK(config);
-+	int clknotdata = STIXXXX_PINCONF_UNPACK_RT_CLKNOTDATA(config);
-+	int double_edge = STIXXXX_PINCONF_UNPACK_RT_DOUBLE_EDGE(config);
-+	int invertclk = STIXXXX_PINCONF_UNPACK_RT_INVERTCLK(config);
-+	int retime = STIXXXX_PINCONF_UNPACK_RT(config);
-+	unsigned long delay = stixxxx_pinconf_delay_to_bit(
-+			STIXXXX_PINCONF_UNPACK_RT_DELAY(config),
-+			pc->rt_params, config);
-+
-+	unsigned long retime_config =
-+		((clk		& 0x3) << 0) |
-+		((clknotdata	& 0x1) << 2) |
-+		((delay		& 0xf) << 3) |
-+		((input		& 0x1) << 7) |
-+		((double_edge	& 0x1) << 8) |
-+		((invertclk	& 0x1) << 9) |
-+		((retime	& 0x1) << 10);
-+
-+	reg = pc->retiming[pin];
-+	regmap_field_write(reg, retime_config);
-+}
-+
-+static void stixxxx_pinconf_get_direction(struct stixxxx_pio_control *pc,
-+	int pin_id, unsigned long *config)
-+{
-+	unsigned int oe_value, pu_value, od_value;
-+	int pin = stixxxx_gpio_pin(pin_id);
-+
-+	regmap_field_read(pc->oe, &oe_value);
-+	regmap_field_read(pc->pu, &pu_value);
-+	regmap_field_read(pc->od, &od_value);
-+
-+	oe_value = (oe_value >> pin) & 1;
-+	pu_value = (pu_value >> pin) & 1;
-+	od_value = (od_value >> pin) & 1;
-+
-+	STIXXXX_PINCONF_PACK_OE(*config, oe_value);
-+	STIXXXX_PINCONF_PACK_PU(*config, pu_value);
-+	STIXXXX_PINCONF_PACK_OD(*config, od_value);
-+}
-+
-+static int stixxxx_pinconf_get_retime_packed(
-+		struct stixxxx_pio_control *pc,
-+		int pin, unsigned long *config)
-+{
-+	const struct stixxxx_retime_params *rt_params = pc->rt_params;
-+	const struct stixxxx_retime_offset *offset = rt_params->retime_offset;
-+	unsigned long delay_bits, delay, rt_reduced;
-+	unsigned int rt_value[2];
-+	int i, j;
-+	int output = STIXXXX_PINCONF_UNPACK_OE(*config);
-+
-+	regmap_field_read(pc->retiming[0], &rt_value[0]);
-+	regmap_field_read(pc->retiming[1], &rt_value[1]);
-+
-+	rt_reduced = 0;
-+	for (i = 0; i < 2; i++) {
-+		for (j = 0; j < 4; j++) {
-+			if (rt_value[i] & (1<<((8*j)+pin)))
-+				rt_reduced |= 1 << ((i*4)+j);
-+		}
-+	}
-+
-+	STIXXXX_PINCONF_PACK_RT(*config,
-+			(rt_reduced >> offset->retime_offset) & 1);
-+	STIXXXX_PINCONF_PACK_RT_CLK(*config,
-+			(rt_reduced >> offset->clk1notclk0_offset) & 1);
-+	STIXXXX_PINCONF_PACK_RT_CLKNOTDATA(*config,
-+			(rt_reduced >> offset->clknotdata_offset) & 1);
-+	STIXXXX_PINCONF_PACK_RT_DOUBLE_EDGE(*config,
-+			(rt_reduced >> offset->double_edge_offset) & 1);
-+	STIXXXX_PINCONF_PACK_RT_INVERTCLK(*config,
-+			(rt_reduced >> offset->invertclk_offset) & 1);
-+
-+	delay_bits =  (((rt_reduced >> offset->delay_msb_offset) & 1)<<1) |
-+			((rt_reduced >> offset->delay_lsb_offset) & 1);
-+	delay =  stixxxx_pinconf_bit_to_delay(delay_bits, rt_params, output);
-+	STIXXXX_PINCONF_PACK_RT_DELAY(*config, delay);
-+	return 0;
-+}
-+
-+static int stixxxx_pinconf_get_retime_dedicated(
-+		struct stixxxx_pio_control *pc,
-+		int pin, unsigned long *config)
-+{
-+	unsigned int value;
-+	unsigned long delay_bits, delay;
-+	const struct stixxxx_retime_params *rt_params = pc->rt_params;
-+	int output = STIXXXX_PINCONF_UNPACK_OE(*config);
-+
-+	regmap_field_read(pc->retiming[pin], &value);
-+	STIXXXX_PINCONF_PACK_RT_CLK(*config, ((value >> 0) & 0x3));
-+	STIXXXX_PINCONF_PACK_RT_CLKNOTDATA(*config, ((value >> 2) & 0x1));
-+	delay_bits = ((value >> 3) & 0xf);
-+	delay =  stixxxx_pinconf_bit_to_delay(delay_bits, rt_params, output);
-+	STIXXXX_PINCONF_PACK_RT_DELAY(*config, delay);
-+	STIXXXX_PINCONF_PACK_RT_DOUBLE_EDGE(*config, ((value >> 8) & 0x1));
-+	STIXXXX_PINCONF_PACK_RT_INVERTCLK(*config, ((value >> 9) & 0x1));
-+	STIXXXX_PINCONF_PACK_RT(*config, ((value >> 10) & 0x1));
-+
-+	return 0;
-+}
-+
-+/* GPIO related functions */
-+
-+static inline void __stixxxx_gpio_set(struct stixxxx_gpio_port *port,
-+	unsigned offset, int value)
-+{
-+	if (value)
-+		writel(BIT(offset), port->base + REG_PIO_SET_POUT);
-+	else
-+		writel(BIT(offset), port->base + REG_PIO_CLR_POUT);
-+}
-+
-+static void stixxxx_gpio_direction(unsigned int gpio, unsigned int direction)
-+{
-+	int port_num = stixxxx_gpio_port(gpio);
-+	int offset = stixxxx_gpio_pin(gpio);
-+	struct stixxxx_gpio_port *port  = gpio_ports[port_num];
-+	int i = 0;
-+
-+	for (i = 0; i <= 2; i++) {
-+		if (direction & BIT(i))
-+			writel(BIT(offset), port->base + REG_PIO_SET_PC(i));
-+		else
-+			writel(BIT(offset), port->base + REG_PIO_CLR_PC(i));
-+	}
-+}
-+
-+static int stixxxx_gpio_request(struct gpio_chip *chip, unsigned offset)
-+{
-+	return pinctrl_request_gpio(chip->base + offset);
-+}
-+
-+static void stixxxx_gpio_free(struct gpio_chip *chip, unsigned offset)
-+{
-+	pinctrl_free_gpio(chip->base + offset);
-+}
-+
-+static int stixxxx_gpio_get(struct gpio_chip *chip, unsigned offset)
-+{
-+	struct stixxxx_gpio_port *port = to_stixxxx_gpio_port(chip);
-+
-+	return (readl(port->base + REG_PIO_PIN) >> offset) & 1;
-+}
-+
-+static void stixxxx_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
-+{
-+	struct stixxxx_gpio_port *port = to_stixxxx_gpio_port(chip);
-+	__stixxxx_gpio_set(port, offset, value);
-+}
-+
-+static int stixxxx_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
-+{
-+	pinctrl_gpio_direction_input(chip->base + offset);
-+	return 0;
-+}
-+
-+static int stixxxx_gpio_direction_output(struct gpio_chip *chip,
-+	unsigned offset, int value)
-+{
-+	struct stixxxx_gpio_port *port = to_stixxxx_gpio_port(chip);
-+
-+	__stixxxx_gpio_set(port, offset, value);
-+	pinctrl_gpio_direction_output(chip->base + offset);
-+
-+	return 0;
-+}
-+
-+static int stixxxx_gpio_xlate(struct gpio_chip *gc,
-+			const struct of_phandle_args *gpiospec, u32 *flags)
-+{
-+	if (WARN_ON(gc->of_gpio_n_cells < 1))
-+		return -EINVAL;
-+
-+	if (WARN_ON(gpiospec->args_count < gc->of_gpio_n_cells))
-+		return -EINVAL;
-+
-+	if (gpiospec->args[0] > gc->ngpio)
-+		return -EINVAL;
-+
-+	return gpiospec->args[0];
-+}
-+
-+/* Pinctrl Groups */
-+static int stixxxx_pctl_get_groups_count(struct pinctrl_dev *pctldev)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+
-+	return info->ngroups;
-+}
-+
-+static const char *stixxxx_pctl_get_group_name(struct pinctrl_dev *pctldev,
-+				       unsigned selector)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+
-+	return info->groups[selector].name;
-+}
-+
-+static int stixxxx_pctl_get_group_pins(struct pinctrl_dev *pctldev,
-+	unsigned selector, const unsigned **pins, unsigned *npins)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+
-+	if (selector >= info->ngroups)
-+		return -EINVAL;
-+
-+	*pins = info->groups[selector].pins;
-+	*npins = info->groups[selector].npins;
-+
-+	return 0;
-+}
-+
-+static const inline struct stixxxx_pctl_group *stixxxx_pctl_find_group_by_name(
-+	const struct stixxxx_pinctrl *info, const char *name)
-+{
-+	int i;
-+
-+	for (i = 0; i < info->ngroups; i++) {
-+		if (!strcmp(info->groups[i].name, name))
-+			return &info->groups[i];
-+	}
-+
-+	return NULL;
-+}
-+
-+static int stixxxx_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
-+	struct device_node *np, struct pinctrl_map **map, unsigned *num_maps)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	const struct stixxxx_pctl_group *grp;
-+	struct pinctrl_map *new_map;
-+	struct device_node *parent;
-+	int map_num, i;
-+
-+	grp = stixxxx_pctl_find_group_by_name(info, np->name);
-+	if (!grp) {
-+		dev_err(info->dev, "unable to find group for node %s\n",
-+			np->name);
-+		return -EINVAL;
-+	}
-+
-+	map_num = grp->npins + 1;
-+	new_map = devm_kzalloc(pctldev->dev,
-+				sizeof(*new_map) * map_num, GFP_KERNEL);
-+	if (!new_map)
-+		return -ENOMEM;
-+
-+	parent = of_get_parent(np);
-+	if (!parent) {
-+		devm_kfree(pctldev->dev, new_map);
-+		return -EINVAL;
-+	}
-+
-+	*map = new_map;
-+	*num_maps = map_num;
-+	new_map[0].type = PIN_MAP_TYPE_MUX_GROUP;
-+	new_map[0].data.mux.function = parent->name;
-+	new_map[0].data.mux.group = np->name;
-+	of_node_put(parent);
-+
-+	/* create config map per pin */
-+	new_map++;
-+	for (i = 0; i < grp->npins; i++) {
-+		new_map[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
-+		new_map[i].data.configs.group_or_pin =
-+				pin_get_name(pctldev, grp->pins[i]);
-+		new_map[i].data.configs.configs = &grp->pin_conf[i].config;
-+		new_map[i].data.configs.num_configs = 1;
-+	}
-+	dev_info(pctldev->dev, "maps: function %s group %s num %d\n",
-+		(*map)->data.mux.function, grp->name, map_num);
-+
-+	return 0;
-+}
-+
-+static void stixxxx_pctl_dt_free_map(struct pinctrl_dev *pctldev,
-+				struct pinctrl_map *map, unsigned num_maps)
-+{
-+}
-+
-+static struct pinctrl_ops stixxxx_pctlops = {
-+	.get_groups_count	= stixxxx_pctl_get_groups_count,
-+	.get_group_pins		= stixxxx_pctl_get_group_pins,
-+	.get_group_name		= stixxxx_pctl_get_group_name,
-+	.dt_node_to_map		= stixxxx_pctl_dt_node_to_map,
-+	.dt_free_map		= stixxxx_pctl_dt_free_map,
-+};
-+
-+/* Pinmux */
-+static int stixxxx_pmx_get_funcs_count(struct pinctrl_dev *pctldev)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+
-+	return info->nfunctions;
-+}
-+
-+const char *stixxxx_pmx_get_fname(struct pinctrl_dev *pctldev,
-+	unsigned selector)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+
-+	return info->functions[selector].name;
-+}
-+
-+static int stixxxx_pmx_get_groups(struct pinctrl_dev *pctldev,
-+	unsigned selector, const char * const **grps, unsigned * const ngrps)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	*grps = info->functions[selector].groups;
-+	*ngrps = info->functions[selector].ngroups;
-+
-+	return 0;
-+}
-+
-+static struct stixxxx_pio_control *stixxxx_get_pio_control(
-+			struct stixxxx_pinctrl *info, int pin_id)
-+{
-+	int index = stixxxx_gpio_port(pin_id) - info->gpio_ranges[0]->id;
-+	return &info->pio_controls[index];
-+}
-+
-+static int stixxxx_pmx_enable(struct pinctrl_dev *pctldev, unsigned fselector,
-+		unsigned group)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	struct stixxxx_pinconf *conf = info->groups[group].pin_conf;
-+	struct stixxxx_pio_control *pc;
-+	int i;
-+
-+	for (i = 0; i < info->groups[group].npins; i++) {
-+		pc = stixxxx_get_pio_control(info, conf[i].pin);
-+		stixxxx_pctl_set_function(pc, conf[i].pin,
-+					info->groups[group].altfunc);
-+	}
-+
-+	return 0;
-+}
-+
-+static void stixxxx_pmx_disable(struct pinctrl_dev *pctldev, unsigned selector,
-+		unsigned group)
-+{
-+}
-+
-+static int stixxxx_pmx_set_gpio_direction(struct pinctrl_dev *pctldev,
-+			struct pinctrl_gpio_range *range, unsigned gpio,
-+			bool input)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	int offset = range->id - info->gpio_ranges[0]->id;
-+	struct stixxxx_pio_control *pc = &info->pio_controls[offset];
-+	/*
-+	 * When a PIO port is used in its primary function mode (altfunc = 0)
-+	 * Output Enable (OE), Open Drain(OD), and Pull Up (PU)
-+	 * for the primary PIO functions are driven by the related PIO block
-+	 */
-+	stixxxx_pctl_set_function(pc, gpio, 0);
-+	stixxxx_gpio_direction(gpio, input ?
-+		STIXXXX_GPIO_DIRECTION_IN : STIXXXX_GPIO_DIRECTION_OUT);
-+
-+	return 0;
-+}
-+
-+static struct pinmux_ops stixxxx_pmxops = {
-+	.get_functions_count	= stixxxx_pmx_get_funcs_count,
-+	.get_function_name	= stixxxx_pmx_get_fname,
-+	.get_function_groups	= stixxxx_pmx_get_groups,
-+	.enable			= stixxxx_pmx_enable,
-+	.disable		= stixxxx_pmx_disable,
-+	.gpio_set_direction	= stixxxx_pmx_set_gpio_direction,
-+};
-+
-+/* Pinconf  */
-+static void stixxxx_pinconf_get_retime(struct stixxxx_pio_control *pc,
-+	int pin_id, unsigned long *config)
-+{
-+	int pin = stixxxx_gpio_pin(pin_id);
-+	if (pc->rt_style == stixxxx_retime_style_packed)
-+		stixxxx_pinconf_get_retime_packed(pc, pin, config);
-+	else if (pc->rt_style == stixxxx_retime_style_dedicated)
-+		if ((BIT(pin) & pc->rt_pin_mask))
-+			stixxxx_pinconf_get_retime_dedicated(pc, pin, config);
-+}
-+
-+static void stixxxx_pinconf_set_retime(struct stixxxx_pio_control *pc,
-+	int pin_id, unsigned long config)
-+{
-+	int pin = stixxxx_gpio_pin(pin_id);
-+
-+	if (pc->rt_style == stixxxx_retime_style_packed)
-+		stixxxx_pinconf_set_retime_packed(pc, config, pin);
-+	else if (pc->rt_style == stixxxx_retime_style_dedicated)
-+		if ((BIT(pin) & pc->rt_pin_mask))
-+			stixxxx_pinconf_set_retime_dedicated(pc, config, pin);
-+}
-+
-+static int stixxxx_pinconf_set(struct pinctrl_dev *pctldev,
-+			     unsigned pin_id, unsigned long config)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	struct stixxxx_pio_control *pc = stixxxx_get_pio_control(info, pin_id);
-+
-+	stixxxx_pinconf_set_direction(pc, pin_id, config);
-+	stixxxx_pinconf_set_retime(pc, pin_id, config);
-+	return 0;
-+}
-+
-+static int stixxxx_pinconf_get(struct pinctrl_dev *pctldev,
-+			     unsigned pin_id, unsigned long *config)
-+{
-+	struct stixxxx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
-+	struct stixxxx_pio_control *pc = stixxxx_get_pio_control(info, pin_id);
-+
-+	*config = 0;
-+	stixxxx_pinconf_get_direction(pc, pin_id, config);
-+	stixxxx_pinconf_get_retime(pc, pin_id, config);
-+
-+	return 0;
-+}
-+
-+static void stixxxx_pinconf_dbg_show(struct pinctrl_dev *pctldev,
-+				   struct seq_file *s, unsigned pin_id)
-+{
-+	unsigned long config;
-+	stixxxx_pinconf_get(pctldev, pin_id, &config);
-+
-+	seq_printf(s, "[OE:%ld,PU:%ld,OD:%ld]\n"
-+		"\t\t[retime:%ld,invclk:%ld,clknotdat:%ld,"
-+		"de:%ld,rt-clk:%ld,rt-delay:%ld]",
-+		STIXXXX_PINCONF_UNPACK_OE(config),
-+		STIXXXX_PINCONF_UNPACK_PU(config),
-+		STIXXXX_PINCONF_UNPACK_OD(config),
-+		STIXXXX_PINCONF_UNPACK_RT(config),
-+		STIXXXX_PINCONF_UNPACK_RT_INVERTCLK(config),
-+		STIXXXX_PINCONF_UNPACK_RT_CLKNOTDATA(config),
-+		STIXXXX_PINCONF_UNPACK_RT_DOUBLE_EDGE(config),
-+		STIXXXX_PINCONF_UNPACK_RT_CLK(config),
-+		STIXXXX_PINCONF_UNPACK_RT_DELAY(config));
-+}
-+
-+static struct pinconf_ops stixxxx_confops = {
-+	.pin_config_get		= stixxxx_pinconf_get,
-+	.pin_config_set		= stixxxx_pinconf_set,
-+	.pin_config_dbg_show	= stixxxx_pinconf_dbg_show,
-+};
-+
-+static int stixxxx_pinconf_dt_parse_rt_params(struct stixxxx_pinctrl *info,
-+	struct device_node *np,	struct stixxxx_retime_params *params)
-+{
-+	struct stixxxx_retime_offset *rt_offset;
-+	int delay_count = 0;
-+	int len;
-+	if (of_find_property(np, "st,retime-in-delay", &len))
-+		delay_count = len/sizeof(__be32);
-+	else
-+		dev_err(info->dev, "No delays found\n");
-+
-+	params->num_delay_times_out = delay_count;
-+	params->num_delay_times_in = delay_count;
-+	params->delay_times_in = devm_kzalloc(info->dev,
-+				sizeof(u32) * delay_count, GFP_KERNEL);
-+	params->delay_times_out = devm_kzalloc(info->dev,
-+				sizeof(u32) * delay_count, GFP_KERNEL);
-+
-+	if (!params->delay_times_in || !params->delay_times_out)
-+		return -ENOMEM;
-+
-+	of_property_read_u32_array(np, "st,retime-in-delay",
-+				(u32 *)params->delay_times_in, delay_count);
-+	of_property_read_u32_array(np, "st,retime-out-delay",
-+				(u32 *)params->delay_times_out, delay_count);
-+
-+	if (of_device_is_compatible(np, "st,stih415-pinctrl")) {
-+		rt_offset = devm_kzalloc(info->dev,
-+			sizeof(*rt_offset), GFP_KERNEL);
-+
-+		if (!rt_offset)
-+			return -ENOMEM;
-+
-+		rt_offset->clk1notclk0_offset = 0;
-+		rt_offset->delay_lsb_offset = 2;
-+		rt_offset->delay_msb_offset = 3;
-+		rt_offset->invertclk_offset = 4;
-+		rt_offset->retime_offset = 5;
-+		rt_offset->clknotdata_offset = 6;
-+		rt_offset->double_edge_offset = 7;
-+		params->retime_offset = rt_offset;
-+	}
-+
-+	return 0;
-+}
-+
-+static const char *gpio_compat = "st,stixxxx-gpio";
-+
-+static void stixxxx_pctl_dt_child_count(struct stixxxx_pinctrl *info,
-+				     struct device_node *np)
-+{
-+	struct device_node *child;
-+	for_each_child_of_node(np, child) {
-+		if (of_device_is_compatible(child, gpio_compat)) {
-+			info->nbanks++;
-+		} else {
-+			info->nfunctions++;
-+			info->ngroups += of_get_child_count(child);
-+		}
-+	}
-+}
-+
-+static int stixxxx_pctl_dt_get_retime_conf(struct stixxxx_pinctrl *info,
-+	struct stixxxx_pio_control *pc, u32 *syscfg)
-+{
-+	unsigned int j;
-+	int rt_syscfg = *syscfg;
-+	struct device_node *np = info->dev->of_node;
-+
-+	if (of_device_is_compatible(np, "st,stih415-pinctrl")) {
-+		pc->rt_style = stixxxx_retime_style_packed;
-+		for (j = 0; j < 2; j++) {
-+			struct reg_field rt_reg =
-+					REG_FIELD(4 * rt_syscfg ++, 0, 31);
-+			pc->retiming[j] = devm_regmap_field_alloc(info->dev,
-+						info->regmap, rt_reg);
-+			if (IS_ERR(pc->retiming[j]))
-+				return -ENODATA;
-+		}
-+	} else if (of_device_is_compatible(np, "st,stih416-pinctrl")) {
-+		pc->rt_style = stixxxx_retime_style_dedicated;
-+		for (j = 0; j < 8; j++) {
-+			if ((1<<j) & pc->rt_pin_mask) {
-+				struct reg_field rt_reg =
-+					REG_FIELD(4 * rt_syscfg ++, 0, 31);
-+				pc->retiming[j] = devm_regmap_field_alloc(
-+					info->dev, info->regmap, rt_reg);
-+				if (IS_ERR(pc->retiming[j]))
-+					return -ENODATA;
-+			}
-+		}
-+	} else {
-+		pc->rt_style = stixxxx_retime_style_none;
-+	}
-+
-+	*syscfg = rt_syscfg;
-+	return 0;
-+}
-+
-+static int stixxxx_pctl_dt_init(struct stixxxx_pinctrl *info,
-+			struct device_node *np)
-+{
-+	struct stixxxx_pio_control *pc;
-+	struct stixxxx_retime_params *rt_params;
-+	struct device *dev = info->dev;
-+	struct regmap *regmap;
-+	unsigned int i = 0;
-+	struct device_node *child = NULL;
-+	u32 alt_syscfg, oe_syscfg, pu_syscfg, od_syscfg, rt_syscfg;
-+	u32 syscfg_offsets[5];
-+	u32 msb, lsb;
-+
-+	pc = devm_kzalloc(dev, sizeof(*pc) * info->nbanks, GFP_KERNEL);
-+	rt_params = devm_kzalloc(dev, sizeof(*rt_params), GFP_KERNEL);
-+
-+	if (!pc || !rt_params)
-+		return -ENOMEM;
-+
-+	regmap = syscfg_regmap_lookup_by_phandle(np, "st,syscfg");
-+	if (!regmap) {
-+		dev_err(dev, "No syscfg phandle specified\n");
-+		return -ENOMEM;
-+	}
-+	info->regmap = regmap;
-+	info->pio_controls = pc;
-+	if (stixxxx_pinconf_dt_parse_rt_params(info, np, rt_params))
-+		return -ENOMEM;
-+
-+	if (of_property_read_u32_array(np, "st,syscfg-offsets",
-+				syscfg_offsets, 5)) {
-+		dev_err(dev, "Syscfg offsets not found\n");
-+		return -EINVAL;
-+	}
-+	alt_syscfg = syscfg_offsets[0];
-+	oe_syscfg = syscfg_offsets[1];
-+	pu_syscfg = syscfg_offsets[2];
-+	od_syscfg = syscfg_offsets[3];
-+	rt_syscfg = syscfg_offsets[4];
-+
-+	lsb = 0;
-+	msb = 7;
-+	for_each_child_of_node(np, child) {
-+		if (of_device_is_compatible(child, gpio_compat)) {
-+			struct reg_field alt_reg =
-+					REG_FIELD(4 * alt_syscfg++, 0, 31);
-+			struct reg_field oe_reg =
-+					REG_FIELD(4 * oe_syscfg, lsb, msb);
-+			struct reg_field pu_reg =
-+					REG_FIELD(4 * pu_syscfg, lsb, msb);
-+			struct reg_field od_reg =
-+					REG_FIELD(4 * od_syscfg, lsb, msb);
-+			pc[i].rt_params = rt_params;
-+
-+			pc[i].alt = devm_regmap_field_alloc(dev,
-+							regmap, alt_reg);
-+			pc[i].oe = devm_regmap_field_alloc(dev,
-+							regmap, oe_reg);
-+			pc[i].pu = devm_regmap_field_alloc(dev,
-+							regmap, pu_reg);
-+			pc[i].od = devm_regmap_field_alloc(dev,
-+							regmap, od_reg);
-+
-+			if (IS_ERR(pc[i].alt) || IS_ERR(pc[i].oe)
-+				|| IS_ERR(pc[i].pu) || IS_ERR(pc[i].od))
-+				goto failed;
-+
-+			of_property_read_u32(child, "st,retime-pin-mask",
-+						&pc[i].rt_pin_mask);
-+
-+			stixxxx_pctl_dt_get_retime_conf(info, &pc[i],
-+							&rt_syscfg);
-+			i++;
-+			if (msb  == 31) {
-+				oe_syscfg++;
-+				pu_syscfg++;
-+				od_syscfg++;
-+				lsb = 0;
-+				msb = 7;
-+			} else {
-+				lsb += 8;
-+				msb += 8;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+failed:
-+	dev_err(dev, "Unable to allocate syscfgs\n");
-+	return -ENOMEM;
-+}
-+
-+#define OF_GPIO_ARGS_MIN	(3)
-+/*
-+ * Each pin is represented in of the below forms.
-+ * <bank offset direction func rt_type rt_delay rt_clk>
-+ */
-+static int stixxxx_pctl_dt_parse_groups(struct device_node *np,
-+	struct stixxxx_pctl_group *grp, struct stixxxx_pinctrl *info, int idx)
-+{
-+	/* bank pad direction val altfunction */
-+	const __be32 *list;
-+	struct property *pp;
-+	struct stixxxx_pinconf *conf;
-+	phandle phandle;
-+	struct device_node *pins;
-+	u32 pin;
-+	int i = 0, npins = 0, nr_props;
-+
-+	pins = of_get_child_by_name(np, "st,pins");
-+	if (!pins)
-+		return -ENODATA;
-+
-+	for_each_property_of_node(pins, pp) {
-+		/* Skip those we do not want to proceed */
-+		if (!strcmp(pp->name, "name"))
-+			continue;
-+
-+		if (pp  && (pp->length/sizeof(__be32)) >= OF_GPIO_ARGS_MIN) {
-+			npins++;
-+		} else {
-+			pr_warn("Invalid st,pins in %s node\n", np->name);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	grp->npins = npins;
-+	grp->name = np->name;
-+	grp->pins = devm_kzalloc(info->dev, npins * sizeof(u32), GFP_KERNEL);
-+	grp->pin_conf = devm_kzalloc(info->dev,
-+					npins * sizeof(*conf), GFP_KERNEL);
-+	of_property_read_u32(np, "st,function", &grp->altfunc);
-+
-+	if (!grp->pins || !grp->pin_conf)
-+		return -ENOMEM;
-+
-+	/* <bank offset direction rt_type rt_delay rt_clk> */
-+	for_each_property_of_node(pins, pp) {
-+		if (!strcmp(pp->name, "name"))
-+			continue;
-+		nr_props = pp->length/sizeof(u32);
-+		list = pp->value;
-+		conf = &grp->pin_conf[i];
-+
-+		/* bank & offset */
-+		phandle = be32_to_cpup(list++);
-+		pin = be32_to_cpup(list++);
-+		conf->pin = of_get_named_gpio(pins, pp->name, 0);
-+		conf->name = pp->name;
-+		grp->pins[i] = conf->pin;
-+
-+		conf->config = 0;
-+		/* direction */
-+		conf->config |= be32_to_cpup(list++);
-+		/* rt_type rt_delay rt_clk */
-+		if (nr_props >= OF_GPIO_ARGS_MIN + 2) {
-+			/* rt_type */
-+			conf->config |= be32_to_cpup(list++);
-+			/* rt_delay */
-+			conf->config |= be32_to_cpup(list++);
-+			/* rt_clk */
-+			if (nr_props > OF_GPIO_ARGS_MIN + 2)
-+				conf->config |= be32_to_cpup(list++);
-+		}
-+		i++;
-+	}
-+	of_node_put(pins);
-+
-+	return 0;
-+}
-+
-+static int stixxxx_pctl_parse_functions(struct device_node *np,
-+			struct stixxxx_pinctrl *info, u32 index, int *grp_index)
-+{
-+	struct device_node *child;
-+	struct stixxxx_pmx_func *func;
-+	struct stixxxx_pctl_group *grp;
-+	int ret, i;
-+
-+	func = &info->functions[index];
-+	func->name = np->name;
-+	func->ngroups = of_get_child_count(np);
-+	if (func->ngroups <= 0) {
-+		dev_err(info->dev, "No groups defined\n");
-+		return -EINVAL;
-+	}
-+	func->groups = devm_kzalloc(info->dev,
-+			func->ngroups * sizeof(char *), GFP_KERNEL);
-+	if (!func->groups)
-+		return -ENOMEM;
-+
-+	i = 0;
-+	for_each_child_of_node(np, child) {
-+		func->groups[i] = child->name;
-+		grp = &info->groups[*grp_index];
-+		*grp_index += 1;
-+		ret = stixxxx_pctl_dt_parse_groups(child, grp, info, i++);
-+		if (ret)
-+			return ret;
-+	}
-+	dev_info(info->dev, "Function[%d\t name:%s,\tgroups:%d]\n",
-+				index, func->name, func->ngroups);
-+
-+	return 0;
-+}
-+
-+static struct pinctrl_gpio_range *find_gpio_range(struct device_node *np)
-+{
-+	int i;
-+	for (i = 0; i < STIXXXX_MAX_GPIO_BANKS; i++)
-+		if (gpio_ports[i]->of_node == np)
-+			return &gpio_ports[i]->range;
-+
-+	return NULL;
-+}
-+
-+static int stixxxx_pctl_probe_dt(struct platform_device *pdev,
-+	struct pinctrl_desc *pctl_desc, struct stixxxx_pinctrl *info)
-+{
-+	int ret = 0;
-+	int i = 0, j = 0, k = 0, bank;
-+	struct pinctrl_pin_desc *pdesc;
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *child;
-+	int grp_index = 0;
-+
-+	stixxxx_pctl_dt_child_count(info, np);
-+	if (info->nbanks < 1) {
-+		dev_err(&pdev->dev, "you need atleast one gpio bank\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = stixxxx_pctl_dt_init(info, np);
-+	if (ret)
-+		return ret;
-+
-+	dev_info(&pdev->dev, "nbanks = %d\n", info->nbanks);
-+	dev_info(&pdev->dev, "nfunctions = %d\n", info->nfunctions);
-+	dev_info(&pdev->dev, "ngroups = %d\n", info->ngroups);
-+	info->functions = devm_kzalloc(&pdev->dev,
-+		info->nfunctions * sizeof(*info->functions), GFP_KERNEL);
-+
-+	info->groups = devm_kzalloc(&pdev->dev,
-+		info->ngroups * sizeof(*info->groups) ,	GFP_KERNEL);
-+
-+	info->gpio_ranges = devm_kzalloc(&pdev->dev,
-+		info->nbanks * sizeof(*info->gpio_ranges), GFP_KERNEL);
-+
-+	if (!info->functions || !info->groups)
-+		return -ENOMEM;
-+
-+	pctl_desc->npins = info->nbanks * STIXXXX_GPIO_PINS_PER_PORT;
-+	pdesc =	devm_kzalloc(&pdev->dev,
-+			sizeof(*pdesc) * pctl_desc->npins, GFP_KERNEL);
-+	if (!pdesc)
-+		return -ENOMEM;
-+
-+	pctl_desc->pins = pdesc;
-+
-+	bank = 0;
-+	for_each_child_of_node(np, child) {
-+		if (of_device_is_compatible(child, gpio_compat)) {
-+			info->gpio_ranges[bank] = find_gpio_range(child);
-+			k = info->gpio_ranges[bank]->pin_base;
-+			for (j = 0; j < STIXXXX_GPIO_PINS_PER_PORT; j++, k++) {
-+				const char *port_name = NULL;
-+				pdesc->number = k;
-+				of_property_read_string(child, "st,bank-name",
-+							&port_name);
-+				pdesc->name = kasprintf(GFP_KERNEL, "%s[%d]",
-+							port_name ? : "PIO",
-+							port_name ? j : k);
-+				pdesc++;
-+			}
-+			bank++;
-+		} else {
-+			ret = stixxxx_pctl_parse_functions(child, info,
-+							i++, &grp_index);
-+			if (ret) {
-+				dev_err(&pdev->dev, "No functions found.\n");
-+				return ret;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int stixxxx_pctl_probe(struct platform_device *pdev)
-+{
-+	struct stixxxx_pinctrl *info;
-+	struct pinctrl_desc *pctl_desc;
-+	int ret, i;
-+
-+	if (!pdev->dev.of_node) {
-+		dev_err(&pdev->dev, "device node not found.\n");
-+		return -EINVAL;
-+	}
-+
-+	pctl_desc = devm_kzalloc(&pdev->dev, sizeof(*pctl_desc), GFP_KERNEL);
-+	if (!pctl_desc)
-+		return -ENOMEM;
-+
-+	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
-+	info->dev = &pdev->dev;
-+	platform_set_drvdata(pdev, info);
-+	ret = stixxxx_pctl_probe_dt(pdev, pctl_desc, info);
-+	if (ret)
-+		return ret;
-+
-+	pctl_desc->owner	= THIS_MODULE,
-+	pctl_desc->pctlops	= &stixxxx_pctlops,
-+	pctl_desc->pmxops	= &stixxxx_pmxops,
-+	pctl_desc->confops	= &stixxxx_confops,
-+	pctl_desc->name		= dev_name(&pdev->dev);
-+
-+	info->pctl = pinctrl_register(pctl_desc, &pdev->dev, info);
-+	if (IS_ERR(info->pctl)) {
-+		dev_err(&pdev->dev, "Failed pinctrl registration\n");
-+		return PTR_ERR(info->pctl);
-+	}
-+
-+	for (i = 0; i < info->nbanks; i++)
-+		pinctrl_add_gpio_range(info->pctl, info->gpio_ranges[i]);
-+
-+	return 0;
-+}
-+
-+static struct gpio_chip stixxxx_gpio_template = {
-+	.request		= stixxxx_gpio_request,
-+	.free			= stixxxx_gpio_free,
-+	.get			= stixxxx_gpio_get,
-+	.set			= stixxxx_gpio_set,
-+	.direction_input	= stixxxx_gpio_direction_input,
-+	.direction_output	= stixxxx_gpio_direction_output,
-+	.ngpio			= STIXXXX_GPIO_PINS_PER_PORT,
-+	.of_gpio_n_cells	= 1,
-+	.of_xlate		= stixxxx_gpio_xlate,
-+};
-+
-+static int stixxxx_gpio_probe(struct platform_device *pdev)
-+{
-+	struct stixxxx_gpio_port *port;
-+	struct pinctrl_gpio_range *range;
-+	struct device_node *np  = pdev->dev.of_node;
-+	int port_num = of_alias_get_id(np, "gpio");
-+	struct resource *res;
-+	int err;
-+
-+	port = devm_kzalloc(&pdev->dev, sizeof(*port), GFP_KERNEL);
-+	if (!port)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	port->base = devm_request_and_ioremap(&pdev->dev, res);
-+	if (!port->base) {
-+		dev_err(&pdev->dev, "Can't get IO memory mapping!\n");
-+		return -ENODEV;
-+	}
-+
-+	of_property_read_string(np, "st,bank-name", &port->bank_name);
-+	port->of_node = np;
-+
-+	port->gpio_chip = stixxxx_gpio_template;
-+	port->gpio_chip.base = port_num * STIXXXX_GPIO_PINS_PER_PORT;
-+	port->gpio_chip.ngpio = STIXXXX_GPIO_PINS_PER_PORT;
-+	port->gpio_chip.of_node = np;
-+	port->gpio_chip.label = dev_name(&pdev->dev);
-+
-+	dev_set_drvdata(&pdev->dev, port);
-+	range = &port->range;
-+	range->name = port->gpio_chip.label;
-+	range->id = port_num;
-+	range->pin_base = range->base = range->id * STIXXXX_GPIO_PINS_PER_PORT;
-+	range->npins = port->gpio_chip.ngpio;
-+	range->gc = &port->gpio_chip;
-+	gpio_ports[port_num] = port;
-+	err  = gpiochip_add(&port->gpio_chip);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to add gpiochip(%d)!\n", port_num);
-+		return err;
-+	}
-+	dev_info(&pdev->dev, "gpioport[%s] Added as bank%d\n",
-+				port->bank_name, port_num);
-+	return 0;
-+}
-+
-+static struct of_device_id stixxxx_gpio_of_match[] = {
-+	{ .compatible = "st,stixxxx-gpio", },
-+	{ /* sentinel */ }
-+};
-+
-+static struct platform_driver stixxxx_gpio_driver = {
-+	.driver = {
-+		.name = "st-gpio",
-+		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(stixxxx_gpio_of_match),
-+	},
-+	.probe = stixxxx_gpio_probe,
-+};
-+
-+static struct of_device_id stixxxx_pctl_of_match[] = {
-+	{ .compatible = "st,stixxxx-pinctrl",},
-+	{ .compatible = "st,stih415-pinctrl",},
-+	{ .compatible = "st,stih416-pinctrl",},
-+	{ /* sentinel */ }
-+};
-+
-+static struct platform_driver stixxxx_pctl_driver = {
-+	.driver = {
-+		.name = "st-pinctrl",
-+		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(stixxxx_pctl_of_match),
-+	},
-+	.probe = stixxxx_pctl_probe,
-+};
-+
-+static int __init stixxxx_pctl_init(void)
-+{
-+	int ret = platform_driver_register(&stixxxx_gpio_driver);
-+	if (ret)
-+		return ret;
-+	return platform_driver_register(&stixxxx_pctl_driver);
-+}
-+arch_initcall(stixxxx_pctl_init);
-diff --git a/drivers/pinctrl/pinctrl-stixxxx.h b/drivers/pinctrl/pinctrl-stixxxx.h
+diff --git a/arch/arm/boot/dts/stih41x.dtsi b/arch/arm/boot/dts/stih41x=
+=2Edtsi
 new file mode 100644
-index 0000000..e88ab09
+index 0000000..7321403
 --- /dev/null
-+++ b/drivers/pinctrl/pinctrl-stixxxx.h
-@@ -0,0 +1,197 @@
++++ b/arch/arm/boot/dts/stih41x.dtsi
+@@ -0,0 +1,38 @@
++/ {
++	#address-cells =3D <1>;
++	#size-cells =3D <1>;
 +
-+/*
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Authors:
-+ *	Srinivas Kandagatla <srinivas.kandagatla@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ */
++	cpus {
++		#address-cells =3D <1>;
++		#size-cells =3D <0>;
++		cpu@0 {
++			compatible =3D "arm,cortex-a9";
++			reg =3D <0>;
++		};
++		cpu@1 {
++			compatible =3D "arm,cortex-a9";
++			reg =3D <1>;
++		};
++	};
 +
-+#ifndef __LINUX_DRIVERS_PINCTRL_STIXXXX_H
-+#define __LINUX_DRIVERS_PINCTRL_STIXXXX_H
++	intc: interrupt-controller@fffe1000 {
++		compatible =3D "arm,cortex-a9-gic";
++		#interrupt-cells =3D <3>;
++		interrupt-controller;
++		reg =3D <0xfffe1000 0x1000>,
++		      <0xfffe0100 0x100>;
++	};
 +
-+enum stixxxx_retime_style {
-+	stixxxx_retime_style_none,
-+	stixxxx_retime_style_packed,
-+	stixxxx_retime_style_dedicated,
++	scu@fffe0000 {
++		compatible =3D "arm,cortex-a9-scu";
++		reg =3D <0xfffe0000 0x1000>;
++	};
++
++	timer@fffe0200 {
++		interrupt-parent =3D <&intc>;
++		compatible =3D "arm,cortex-a9-global-timer";
++		reg =3D <0xfffe0200 0x100>;
++		interrupts =3D <1 11 0x04>;
++		clocks =3D <&arm_periph_clk>;
++	};
 +};
+diff --git a/arch/arm/boot/dts/stixxxx-pincfg.h b/arch/arm/boot/dts/sti=
+xxxx-pincfg.h
+new file mode 100644
+index 0000000..0dfaba0
+--- /dev/null
++++ b/arch/arm/boot/dts/stixxxx-pincfg.h
+@@ -0,0 +1,94 @@
++#ifndef _STIXXXX_PINCFG_H_
++#define _STIXXXX_PINCFG_H_
 +
-+/* Byte positions in 2 syscon words, starts from 0 */
-+struct stixxxx_retime_offset {
-+	int retime_offset;
-+	int clk1notclk0_offset;
-+	int clknotdata_offset;
-+	int double_edge_offset;
-+	int invertclk_offset;
-+	int delay_lsb_offset;
-+	int delay_msb_offset;
-+};
-+
-+struct stixxxx_retime_params {
-+	const struct stixxxx_retime_offset *retime_offset;
-+	unsigned int *delay_times_in;
-+	int num_delay_times_in;
-+	unsigned int *delay_times_out;
-+	int num_delay_times_out;
-+};
-+
-+struct stixxxx_pio_control {
-+	enum stixxxx_retime_style rt_style;
-+	u32 rt_pin_mask;
-+	const struct stixxxx_retime_params *rt_params;
-+	struct regmap_field *alt;
-+	struct regmap_field *oe, *pu, *od;
-+	struct regmap_field *retiming[8];
-+};
-+
-+/* PIO Block registers */
-+/* PIO output */
-+#define REG_PIO_POUT			0x00
-+/* Set bits of POUT */
-+#define REG_PIO_SET_POUT		0x04
-+/* Clear bits of POUT */
-+#define REG_PIO_CLR_POUT		0x08
-+/* PIO input */
-+#define REG_PIO_PIN			0x10
-+/* PIO configuration */
-+#define REG_PIO_PC(n)			(0x20 + (n) * 0x10)
-+/* Set bits of PC[2:0] */
-+#define REG_PIO_SET_PC(n)		(0x24 + (n) * 0x10)
-+/* Clear bits of PC[2:0] */
-+#define REG_PIO_CLR_PC(n)		(0x28 + (n) * 0x10)
-+/* PIO input comparison */
-+#define REG_PIO_PCOMP			0x50
-+/* Set bits of PCOMP */
-+#define REG_PIO_SET_PCOMP		0x54
-+/* Clear bits of PCOMP */
-+#define REG_PIO_CLR_PCOMP		0x58
-+/* PIO input comparison mask */
-+#define REG_PIO_PMASK			0x60
-+/* Set bits of PMASK */
-+#define REG_PIO_SET_PMASK		0x64
-+/* Clear bits of PMASK */
-+#define REG_PIO_CLR_PMASK		0x68
-+
-+#define STIXXXX_MAX_GPIO_BANKS		32
-+
-+#define STIXXXX_GPIO_DIRECTION_BIDIR	0x1
-+#define STIXXXX_GPIO_DIRECTION_OUT	0x2
-+#define STIXXXX_GPIO_DIRECTION_IN	0x4
-+
-+#define STIXXXX_GPIO_PINS_PER_PORT	8
-+#define stixxxx_gpio_port(gpio) ((gpio) / STIXXXX_GPIO_PINS_PER_PORT)
-+#define stixxxx_gpio_pin(gpio) ((gpio) % STIXXXX_GPIO_PINS_PER_PORT)
-+
-+/* pinconf */
-+/*
-+ * Pinconf is represented in an opaque unsigned long variable.
-+ * Below is the bit allocation details for each possible configuration.
-+ * All the bit fields can be encapsulated into four variables
-+ * (direction, retime-type, retime-clk, retime-delay)
-+ *
-+ *	 +----------------+
-+ *[31:28]| reserved-3     |
-+ *	 +----------------+-------------
-+ *[27]   |	oe	  |		|
-+ *	 +----------------+		v
-+ *[26]   |	pu	  |	[Direction	]
-+ *	 +----------------+		^
-+ *[25]   |	od	  |		|
-+ *	 +----------------+-------------
-+ *[24]   | reserved-2     |
-+ *	 +----------------+-------------
-+ *[23]   |    retime      |		|
-+ *	 +----------------+		|
-+ *[22]   | retime-invclk  |		|
-+ *	 +----------------+		v
-+ *[21]   |retime-clknotdat|	[Retime-type	]
-+ *	 +----------------+		^
-+ *[20]   | retime-de      |		|
-+ *	 +----------------+-------------
-+ *[19:18]| retime-clk     |------>[Retime-Clk	]
-+ *	 +----------------+
-+ *[17:16]|  reserved-1    |
-+ *	 +----------------+
-+ *[15..0]| retime-delay   |------>[Retime Delay]
-+ *	 +----------------+
-+ */
-+
-+#define STIXXXX_PINCONF_UNPACK(conf, param)\
-+				((conf >> STIXXXX_PINCONF_ ##param ##_SHIFT) \
-+				& STIXXXX_PINCONF_ ##param ##_MASK)
-+
-+#define STIXXXX_PINCONF_PACK(conf, val, param)	(conf |=\
-+				((val & STIXXXX_PINCONF_ ##param ##_MASK) << \
-+					STIXXXX_PINCONF_ ##param ##_SHIFT))
++/* Alternate functions */
++#define ALT1	1
++#define ALT2	2
++#define ALT3	3
++#define ALT4	4
++#define ALT5	5
++#define ALT6	6
++#define ALT7	7
 +
 +/* Output enable */
-+#define STIXXXX_PINCONF_OE_MASK		0x1
-+#define STIXXXX_PINCONF_OE_SHIFT	27
-+#define STIXXXX_PINCONF_OE		BIT(27)
-+#define STIXXXX_PINCONF_UNPACK_OE(conf)	STIXXXX_PINCONF_UNPACK(conf, OE)
-+#define STIXXXX_PINCONF_PACK_OE(conf, val)  STIXXXX_PINCONF_PACK(conf, val, OE)
++#define OE_MASK			0x1
++#define OE_SHIFT		27
++#define OE			(1 << OE_SHIFT)
 +
 +/* Pull Up */
-+#define STIXXXX_PINCONF_PU_MASK		0x1
-+#define STIXXXX_PINCONF_PU_SHIFT	26
-+#define STIXXXX_PINCONF_PU		BIT(26)
-+#define STIXXXX_PINCONF_UNPACK_PU(conf)	STIXXXX_PINCONF_UNPACK(conf, PU)
-+#define STIXXXX_PINCONF_PACK_PU(conf, val) STIXXXX_PINCONF_PACK(conf, val, PU)
++#define PU_MASK			0x1
++#define PU_SHIFT		26
++#define PU			(1 << PU_SHIFT)
 +
 +/* Open Drain */
-+#define STIXXXX_PINCONF_OD_MASK		0x1
-+#define STIXXXX_PINCONF_OD_SHIFT	25
-+#define STIXXXX_PINCONF_OD		BIT(25)
-+#define STIXXXX_PINCONF_UNPACK_OD(conf)	STIXXXX_PINCONF_UNPACK(conf, OD)
-+#define STIXXXX_PINCONF_PACK_OD(conf, val) STIXXXX_PINCONF_PACK(conf, val, OD)
++#define OD_MASK			0x1
++#define OD_SHIFT		25
++#define OD			(1 << OD_SHIFT)
 +
-+#define STIXXXX_PINCONF_RT_MASK		0x1
-+#define STIXXXX_PINCONF_RT_SHIFT	23
-+#define STIXXXX_PINCONF_RT		BIT(23)
-+#define STIXXXX_PINCONF_UNPACK_RT(conf)	STIXXXX_PINCONF_UNPACK(conf, RT)
-+#define STIXXXX_PINCONF_PACK_RT(conf, val) STIXXXX_PINCONF_PACK(conf, val, RT)
++#define RT_MASK			0x1
++#define RT_SHIFT		23
++#define RT			(1 << RT_SHIFT)
 +
-+#define STIXXXX_PINCONF_RT_INVERTCLK_MASK	0x1
-+#define STIXXXX_PINCONF_RT_INVERTCLK_SHIFT	22
-+#define STIXXXX_PINCONF_RT_INVERTCLK		BIT(22)
-+#define STIXXXX_PINCONF_UNPACK_RT_INVERTCLK(conf) \
-+			STIXXXX_PINCONF_UNPACK(conf, RT_INVERTCLK)
-+#define STIXXXX_PINCONF_PACK_RT_INVERTCLK(conf, val) \
-+			STIXXXX_PINCONF_PACK(conf, val, RT_INVERTCLK)
++#define INVERTCLK_MASK		0x1
++#define INVERTCLK_SHIFT		22
++#define INVERTCLK		(1 << INVERTCLK_SHIFT)
 +
-+#define STIXXXX_PINCONF_RT_CLKNOTDATA_MASK	0x1
-+#define STIXXXX_PINCONF_RT_CLKNOTDATA_SHIFT	21
-+#define STIXXXX_PINCONF_RT_CLKNOTDATA		BIT(21)
-+#define STIXXXX_PINCONF_UNPACK_RT_CLKNOTDATA(conf)	\
-+				STIXXXX_PINCONF_UNPACK(conf, RT_CLKNOTDATA)
-+#define STIXXXX_PINCONF_PACK_RT_CLKNOTDATA(conf, val) \
-+				STIXXXX_PINCONF_PACK(conf, val, RT_CLKNOTDATA)
++#define CLKNOTDATA_MASK		0x1
++#define CLKNOTDATA_SHIFT	21
++#define CLKNOTDATA		(1 << CLKNOTDATA_SHIFT)
 +
-+#define STIXXXX_PINCONF_RT_DOUBLE_EDGE_MASK	0x1
-+#define STIXXXX_PINCONF_RT_DOUBLE_EDGE_SHIFT	20
-+#define STIXXXX_PINCONF_RT_DOUBLE_EDGE		BIT(20)
-+#define STIXXXX_PINCONF_UNPACK_RT_DOUBLE_EDGE(conf) \
-+				STIXXXX_PINCONF_UNPACK(conf, RT_DOUBLE_EDGE)
-+#define STIXXXX_PINCONF_PACK_RT_DOUBLE_EDGE(conf, val) \
-+				STIXXXX_PINCONF_PACK(conf, val, RT_DOUBLE_EDGE)
++#define DOUBLE_EDGE_MASK	 0x1
++#define DOUBLE_EDGE_SHIFT	 20
++#define DOUBLE_EDGE		(1 << DOUBLE_EDGE_SHIFT)
 +
-+#define STIXXXX_PINCONF_RT_CLK_MASK		0x3
-+#define STIXXXX_PINCONF_RT_CLK_SHIFT		18
-+#define STIXXXX_PINCONF_RT_CLK			BIT(18)
-+#define STIXXXX_PINCONF_UNPACK_RT_CLK(conf)	\
-+			STIXXXX_PINCONF_UNPACK(conf, RT_CLK)
-+#define STIXXXX_PINCONF_PACK_RT_CLK(conf, val) \
-+			STIXXXX_PINCONF_PACK(conf, val, RT_CLK)
++#define CLK_MASK		0x3
++#define CLK_SHIFT		18
++#define CLK_A			(0 << CLK_SHIFT)
++#define CLK_B			(1 << CLK_SHIFT)
++#define CLK_C			(2 << CLK_SHIFT)
++#define CLK_D			(3 << CLK_SHIFT)
 +
-+/* RETIME_DELAY in Pico Secs */
-+#define STIXXXX_PINCONF_RT_DELAY_MASK		0xffff
-+#define STIXXXX_PINCONF_RT_DELAY_SHIFT		0
-+#define STIXXXX_PINCONF_UNPACK_RT_DELAY(conf) \
-+				STIXXXX_PINCONF_UNPACK(conf, RT_DELAY)
-+#define STIXXXX_PINCONF_PACK_RT_DELAY(conf, val) \
-+				STIXXXX_PINCONF_PACK(conf, val, RT_DELAY)
++/* User-frendly defines for Pin Direction */
++		/* oe =3D 0, pu =3D 0, od =3D 0 */
++#define IN			(0)
++		/* oe =3D 0, pu =3D 1, od =3D 0 */
++#define IN_PU			(PU)
++		/* oe =3D 1, pu =3D 0, od =3D 0 */
++#define OUT			(OE)
++		/* oe =3D 1, pu =3D 0, od =3D 1 */
++#define BIDIR			(OE | OD)
++		/* oe =3D 1, pu =3D 1, od =3D 1 */
++#define BIDIR_PU		(OE | PU | OD)
 +
-+#endif /* __LINUX_DRIVERS_PINCTRL_STIXXXX_H */
--- 
++/* RETIME_TYPE */
++/*
++ * B Mode
++ * Bypass retime with optional delay parameter
++ */
++#define BYPASS		(0)
++/*
++ * R0, R1, R0D, R1D modes
++ * single-edge data non inverted clock, retime data with clk
++ */
++#define SE_NICLK_IO	(RT)
++/*
++ * RIV0, RIV1, RIV0D, RIV1D modes
++ * single-edge data inverted clock, retime data with clk
++ */
++#define SE_ICLK_IO	(RT | INVERTCLK)
++/*
++ * R0E, R1E, R0ED, R1ED modes
++ * double-edge data, retime data with clk
++ */
++#define DE_IO		(RT | DOUBLE_EDGE)
++/*
++ * CIV0, CIV1 modes with inverted clock
++ * Retiming the clk pins will park clock & reduce the noise within the=
+ core.
++ */
++#define ICLK		(RT | CLKNOTDATA | INVERTCLK)
++/*
++ * CLK0, CLK1 modes with non-inverted clock
++ * Retiming the clk pins will park clock & reduce the noise within the=
+ core.
++ */
++#define NICLK		(RT | CLKNOTDATA)
++#endif /* _STIXXXX_PINCFG_H_ */
+diff --git a/arch/arm/mach-stixxxx/Kconfig b/arch/arm/mach-stixxxx/Kcon=
+fig
+new file mode 100644
+index 0000000..278d938
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/Kconfig
+@@ -0,0 +1,45 @@
++menuconfig ARCH_STIXXXX
++	bool "STMicroelectronics Consumer Electronics SOCs with Device Trees"=
+ if ARCH_MULTI_V7
++	select GENERIC_CLOCKEVENTS
++	select CLKDEV_LOOKUP
++	select ARM_GIC
++	select ARM_GLOBAL_TIMER
++	select MFD_STIXXXX_SYSCFG
++	select PINCTRL
++	select PINCTRL_STIXXXX
++	select MIGHT_HAVE_CACHE_L2X0
++	select HAVE_SMP
++	select HAVE_ARM_SCU if SMP
++	select ARCH_REQUIRE_GPIOLIB
++	select ARM_ERRATA_720789
++	select ARM_ERRATA_754322
++	select PL310_ERRATA_753970
++	select PL310_ERRATA_769419
++	help
++	  Include support for STiH41x SOCs like STiH415/416 using the device =
+tree
++	  for discovery
++	  More information at Documentation/arm/STiH41x and
++	  at Documentation/devicetree
++
++
++if ARCH_STIXXXX
++
++config SOC_STIH415
++	bool "STiH415 STMicroelectronics Consumer Electronics family"
++	default y
++	help
++	  This enables support for STMicroelectronics Digital Consumer
++	  Electronics family StiH415 parts, primarily targetted at set-top-bo=
+x
++	  and other digital audio/video applications using Flattned Device
++	  Trees.
++
++config SOC_STIH416
++	bool "STiH416 STMicroelectronics Consumer Electronics family"
++	default y
++	help
++	  This enables support for STMicroelectronics Digital Consumer
++	  Electronics family StiH416 parts, primarily targetted at set-top-bo=
+x
++	  and other digital audio/video applications using Flattened Device
++	  Trees.
++
++endif
+diff --git a/arch/arm/mach-stixxxx/Makefile b/arch/arm/mach-stixxxx/Mak=
+efile
+new file mode 100644
+index 0000000..50bf128
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/Makefile
+@@ -0,0 +1,2 @@
++obj-$(CONFIG_SMP)		+=3D platsmp.o headsmp.o
++obj-$(CONFIG_ARCH_STIXXXX) 		+=3D board-dt.o
+diff --git a/arch/arm/mach-stixxxx/board-dt.c b/arch/arm/mach-stixxxx/b=
+oard-dt.c
+new file mode 100644
+index 0000000..52ce665
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/board-dt.c
+@@ -0,0 +1,47 @@
++/*
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Author(s): Srinivas Kandagatla <srinivas.kandagatla@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/clk-provider.h>
++#include <linux/clocksource.h>
++#include <linux/irq.h>
++#include <asm/hardware/cache-l2x0.h>
++#include <asm/mach/arch.h>
++
++#include "smp.h"
++
++void __init stih41x_l2x0_init(void)
++{
++	u32 way_size =3D 0x4;
++	u32 aux_ctrl;
++
++	aux_ctrl =3D (0x1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |
++		(0x1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |
++		(0x1 << L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT) |
++		(way_size << L2X0_AUX_CTRL_WAY_SIZE_SHIFT);
++
++	l2x0_of_init(aux_ctrl, L2X0_AUX_CTRL_MASK);
++}
++
++static void __init stih41x_timer_init(void)
++{
++	of_clk_init(NULL);
++	clocksource_of_init();
++	stih41x_l2x0_init();
++}
++
++static const char *stih41x_dt_match[] __initdata =3D {
++	"st,stih415",
++	NULL
++};
++
++DT_MACHINE_START(STM, "STiH415 SoC with Flattened Device Tree")
++	.init_time	=3D stih41x_timer_init,
++	.smp		=3D smp_ops(stixxxx_smp_ops),
++	.dt_compat	=3D stih41x_dt_match,
++MACHINE_END
+diff --git a/arch/arm/mach-stixxxx/headsmp.S b/arch/arm/mach-stixxxx/he=
+adsmp.S
+new file mode 100644
+index 0000000..3dd5c04
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/headsmp.S
+@@ -0,0 +1,44 @@
++/*
++ *  arch/arm/plat-stixxxx/headsmp.S
++ *
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ *		http://www.st.com
++ *
++ * Cloned from linux/arch/arm/mach-vexpress/headsmp.S
++ *
++ *  Copyright (c) 2003 ARM Limited
++ *  All Rights Reserved
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++#include <linux/linkage.h>
++#include <linux/init.h>
++
++	__INIT
++
++/*
++ * ST specific entry point for secondary CPUs.  This provides
++ * a "holding pen" into which all secondary cores are held until we're
++ * ready for them to initialise.
++ */
++ENTRY(stixxxx_secondary_startup)
++	mrc	p15, 0, r0, c0, c0, 5
++	and	r0, r0, #15
++	adr	r4, 1f
++	ldmia	r4, {r5, r6}
++	sub	r4, r4, r5
++	add	r6, r6, r4
++pen:	ldr	r7, [r6]
++	cmp	r7, r0
++	bne	pen
++
++	/*
++	 * we've been released from the holding pen: secondary_stack
++	 * should now contain the SVC stack for this core
++	 */
++	b	secondary_startup
++
++1:	.long	.
++	.long	pen_release
+diff --git a/arch/arm/mach-stixxxx/platsmp.c b/arch/arm/mach-stixxxx/pl=
+atsmp.c
+new file mode 100644
+index 0000000..ffc40c0
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/platsmp.c
+@@ -0,0 +1,117 @@
++/*
++ *  arch/arm/plat-stixxxx/platsmp.c
++ *
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ *		http://www.st.com
++ *
++ * Cloned from linux/arch/arm/mach-vexpress/platsmp.c
++ *
++ *  Copyright (C) 2002 ARM Ltd.
++ *  All Rights Reserved
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++#include <linux/init.h>
++#include <linux/errno.h>
++#include <linux/delay.h>
++#include <linux/smp.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/of_address.h>
++
++#include <asm/cacheflush.h>
++#include <asm/smp_plat.h>
++#include <asm/smp_scu.h>
++
++#include "smp.h"
++
++static void __cpuinit write_pen_release(int val)
++{
++	pen_release =3D val;
++	smp_wmb();
++	__cpuc_flush_dcache_area((void *)&pen_release, sizeof(pen_release));
++	outer_clean_range(__pa(&pen_release), __pa(&pen_release + 1));
++}
++
++static DEFINE_SPINLOCK(boot_lock);
++
++void __cpuinit stixxxx_secondary_init(unsigned int cpu)
++{
++	trace_hardirqs_off();
++
++	/*
++	 * let the primary processor know we're out of the
++	 * pen, then head off into the C entry point
++	 */
++	write_pen_release(-1);
++
++	/*
++	 * Synchronise with the boot thread.
++	 */
++	spin_lock(&boot_lock);
++	spin_unlock(&boot_lock);
++}
++
++int __cpuinit stixxxx_boot_secondary(unsigned int cpu, struct task_str=
+uct *idle)
++{
++	unsigned long timeout;
++
++	/*
++	 * set synchronisation state between this boot processor
++	 * and the secondary one
++	 */
++	spin_lock(&boot_lock);
++
++	/*
++	 * The secondary processor is waiting to be released from
++	 * the holding pen - release it, then wait for it to flag
++	 * that it has been released by resetting pen_release.
++	 *
++	 * Note that "pen_release" is the hardware CPU ID, whereas
++	 * "cpu" is Linux's internal ID.
++	 */
++	write_pen_release(cpu_logical_map(cpu));
++
++	/*
++	 * Send the secondary CPU a soft interrupt, thereby causing
++	 * it to jump to the secondary entrypoint.
++	 */
++	arch_send_wakeup_ipi_mask(cpumask_of(cpu));
++
++	timeout =3D jiffies + (1 * HZ);
++	while (time_before(jiffies, timeout)) {
++		smp_rmb();
++		if (pen_release =3D=3D -1)
++			break;
++
++		udelay(10);
++	}
++
++	/*
++	 * now the secondary core is starting up let it run its
++	 * calibrations, then wait for it to finish
++	 */
++	spin_unlock(&boot_lock);
++
++	return pen_release !=3D -1 ? -ENOSYS : 0;
++}
++
++void __init stixxxx_smp_prepare_cpus(unsigned int max_cpus)
++{
++	void __iomem *scu_base =3D NULL;
++	struct device_node *np =3D of_find_compatible_node(
++					NULL, NULL, "arm,cortex-a9-scu");
++	if (np) {
++		scu_base =3D of_iomap(np, 0);
++		scu_enable(scu_base);
++		of_node_put(np);
++	}
++}
++
++struct smp_operations __initdata stixxxx_smp_ops =3D {
++	.smp_prepare_cpus	=3D stixxxx_smp_prepare_cpus,
++	.smp_secondary_init	=3D stixxxx_secondary_init,
++	.smp_boot_secondary	=3D stixxxx_boot_secondary,
++};
+diff --git a/arch/arm/mach-stixxxx/smp.h b/arch/arm/mach-stixxxx/smp.h
+new file mode 100644
+index 0000000..c3e3d40
+--- /dev/null
++++ b/arch/arm/mach-stixxxx/smp.h
+@@ -0,0 +1,19 @@
++/*
++ *  arch/arm/plat-stixxxx/platsmp.c
++ *
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ *		http://www.st.com
++ *
++ * This program is free software; you can redistribute it and/or modif=
+y
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __PLAT_SMP_H
++#define __PLAT_SMP_H
++
++extern struct smp_operations	stixxxx_smp_ops;
++extern void __iomem *stixxxx_scu_base_addr;
++extern void stixxxx_secondary_startup(void);
++
++#endif
+--=20
 1.7.6.5
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
