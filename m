@@ -1,105 +1,90 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Subject: Re: [PATCH v2 02/11] clocksource:global_timer: Add ARM global timer
- support.
-Date: Mon, 10 Jun 2013 14:41:58 +0100
-Message-ID: <51B5D7A6.1020101@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856087-6452-1-git-send-email-srinivas.kandagatla@st.com>
- <CACRpkdbQCRKBzRF4HzNsXHwXCLJJcFZ9T36GPmmYsnX1OfgGRg@mail.gmail.com>
-Reply-To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 07/11] ARM:stixxxx: Add STiH416 SOC support
+Date: Mon, 10 Jun 2013 15:52:07 +0200
+Message-ID: <3733079.FxbR14kFrs@wuerfel>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856425-7135-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <CACRpkdbQCRKBzRF4HzNsXHwXCLJJcFZ9T36GPmmYsnX1OfgGRg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.10]:56214 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752979Ab3FJNwG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Jun 2013 09:52:06 -0400
+In-Reply-To: <1370856425-7135-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: linux-arm-kernel@lists.infradead.org, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, devicetree-discuss@lists.ozlabs.org, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stultz <john.stultz@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux@arm.linux.org.uk, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Thomas Gleixner <tglx@linutronix.de>, Tony Prisk <linux@prisktech.co.nz>
 
-On 10/06/13 14:13, Linus Walleij wrote:
-> On Mon, Jun 10, 2013 at 11:21 AM, Srinivas KANDAGATLA
-> <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
+On Monday 10 June 2013 10:27:05 Srinivas KANDAGATLA wrote:
 
->>
->> Signed-off-by: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
->> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
->> CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
->> CC: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> CC: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->> CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->> CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> 
-> This is starting to look very good!
-> 
-> (...)
-Thankyou.
->> +static int __cpuinit gt_clockevents_init(struct clock_event_device *clk)
->> +{
->> +       struct clock_event_device **this_cpu_clk;
->> +       int cpu = smp_processor_id();
->> +
->> +       clk->name = "ARM global timer clock event";
->> +       clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
->> +       clk->set_mode = gt_clockevent_set_mode;
->> +       clk->set_next_event = gt_clockevent_set_next_event;
->> +       this_cpu_clk = __this_cpu_ptr(gt_evt);
->> +       *this_cpu_clk = clk;
->> +       clk->cpumask = cpumask_of(cpu);
->> +       clk->irq = gt_ppi;
->> +       clockevents_config_and_register(clk, gt_clk_rate,
->> +                                       0, 0xffffffff);
-> 
-> What do you mean with being able to set event on
-> 0?
-Its a bit of over do from me.. I will change it to what you suggested...
+> +	soc {
+> +		pin-controller-sbc {
+> +			#address-cells	= <1>;
+> +			#size-cells	= <1>;
+> +			compatible	= "st,stih416-pinctrl", "simple-bus";
 
-> 
-> This should most probably be:
-> 
-> 
-> clockevents_config_and_register(clk, gt_clk_rate,
->                                       1, 0xffffffff);
-> 
-> (...)
->> +static struct clk *gt_get_clock(void)
->> +{
->> +       struct clk *clk;
->> +       int err;
->> +
->> +       clk = clk_get_sys("gt", NULL);
->> +       if (IS_ERR(clk)) {
->> +               pr_err("global-timer: clock not found: %ld\n", PTR_ERR(clk));
->> +               return clk;
->> +       }
-> (...)
->> +       clk = of_clk_get(np, 0);
->> +       if (!IS_ERR(clk))
->> +               clk_register_clkdev(clk, NULL, "gt");
-> 
-> Well that was clever.
-> 
-> Isn't it better to pass a struct device_node *np around and have that as
-> NULL in the non-DT boot path?
-I will try it and see how it will look.
+Why is this both its own device with a compatible string and a
+"simple-bus" at the same time? Wouldn't it be simpler to just
+scan the child device nodes from the "st,stih416-pinctrl"
+driver instead of having a separate platform_driver for them?
 
-Thanks,
-srini
-> 
-> (Maybe somebody in the community asked you to do this, then I
-> will live with it.)
+> +			st,retime-in-delay	= <0 300 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000 3250>;
+> +			st,retime-out-delay	= <0 300 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000 3250>;
+> +			st,syscfg		= <&syscfg_sbc>;
+> +			st,syscfg-offsets	= <0 40 50 60 100>;
+> +			ranges;
+> +			PIO0: pinctrl@fe610000 {
+> +				#gpio-cells = <1>;
+> +				compatible = "st,stixxxx-gpio";
+> +				gpio-controller;
+> +				reg = <0xfe610000 0x100>;
+> +				st,bank-name  = "PIO0";
+> +				st,retime-pin-mask = <0xff>;
+> +			};
+> +			PIO1: pinctrl@fe611000 {
+> +				#gpio-cells	= <1>;
+> +				compatible	= "st,stixxxx-gpio";
+> +				gpio-controller;
+> +				reg = <0xfe611000 0x100>;
+> +				st,bank-name  = "PIO1";
+> +				st,retime-pin-mask = <0xff>;
+> +			};
 
-> 
-> Yours,
-> Linus Walleij
-> 
-> 
+What is in the ranges between these registers? It seems you have
+256 bytes for each pinctrl node, with 4kb spacing. I wonder if
+it would make sense to declare the entire range to belong to a single
+pinctrl device. At least since all of the registers are in a single
+range, you could add a property like
+
+	ranges = <0 0xfe610000 0x10000>;
+
+and use relative addresses in the sub-nodes.
+
+Please don't use identifiers with 'xxx' in them. Instead use numbers
+of actual chips, ideally using the first one that this is compatible
+with.
+
+> +		syscfg_sbc:syscfg@fe600000{
+> +			compatible	= "st,stih416-syscfg";
+> +			reg		= <0xfe600000 0x1000>;
+> +			syscfg-range	= <0 999>;
+> +			syscfg-name	= "SYSCFG_SBC";
+> +		};
+> +		syscfg_front:syscfg@fee10000{
+> +			compatible	= "st,stih416-syscfg";
+> +			reg		= <0xfee10000 0x1000>;
+> +			syscfg-range	= <1000 999>;
+> +			syscfg-name	= "SYSCFG_FRONT";
+> +		};
+
+Did you mean to declare ranges excluding 1000 and 2000 here?
+Normally I would expect inclusive ranges like syscfg-range=<0 1000>;
+
+What is the idea of the 'syscfg-name'? If the nodes are all different,
+I would expect them to have distinct "compatible" values and not
+need them.
+
+	Arnd
