@@ -1,60 +1,94 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v2 04/11] mfd:stixxxx-syscfg: Add ST System Configuration
- support.
-Date: Mon, 10 Jun 2013 14:52:38 +0100
-Message-ID: <51B5DA26.6070707@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856147-6552-1-git-send-email-srinivas.kandagatla@st.com> <CACRpkdaW2ALTWCB7Rd8m=aAGQwh3T_dJVncxJn_eXer4X3J6_g@mail.gmail.com>
-Reply-To: srinivas.kandagatla@st.com
+From: Fabio Fumi <ffumi68@googlemail.com>
+Subject: Re: Connection to a 3G USB Module using USB-Serial
+Date: Mon, 10 Jun 2013 15:58:38 +0200
+Message-ID: <CA+y4WrRcrnYNHsFEZ2aTPGyPB1e9z508wzMp0Cf3-kxXPoNEBg@mail.gmail.com>
+References: <CA+y4WrSC0Z5hFodTDNL0KGu2_pZtu3WB98re-yQJOsFCo21nRw@mail.gmail.com>
+	<20130608182232.GB5918@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog125.obsmtp.com ([207.126.144.159]:44324 "EHLO
-	eu1sys200aog125.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752657Ab3FJNzK (ORCPT
+Received: from mail-qa0-f50.google.com ([209.85.216.50]:58200 "EHLO
+	mail-qa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751407Ab3FJN6j (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Jun 2013 09:55:10 -0400
-In-Reply-To: <CACRpkdaW2ALTWCB7Rd8m=aAGQwh3T_dJVncxJn_eXer4X3J6_g@mail.gmail.com>
+	Mon, 10 Jun 2013 09:58:39 -0400
+In-Reply-To: <20130608182232.GB5918@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
+To: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On 10/06/13 14:16, Linus Walleij wrote:
-> On Mon, Jun 10, 2013 at 11:22 AM, Srinivas KANDAGATLA
-> <srinivas.kandagatla@st.com> wrote:
-> 
->> This mfd driver provides higher level inialization routines for various
->> IPs like Ethernet, USB, PCIE, SATA and so on. Also it provides way to
->> get to syscfg registers via standard regmap api which is usefull for
->> drivers like pinctrl.
+Thanks Greg for taking som etime to answer.
+
+My kernel is an old 2.6.35.7 and migrating it entirely to 3+ one is a
+real mess (given the number of platfomr customization it includes). So
+probably the best is to try back-porting the ZTE usb-serial driver...
+I guess. Is it "drivers/usb/serial/zte_ev.c" what you're referring to?
+My device is a ZTE MF-210... does the same driver really apply for
+this device too?
+
+Does the same driver rely on some kernel 3.x-only features?
+I can always give it a *blind* try, of course... but better knowing in
+advance, if it won't work.
+
+On Sat, Jun 8, 2013 at 8:22 PM, Greg KH <greg@kroah.com> wrote:
+> On Thu, May 30, 2013 at 02:54:40PM +0200, Fabio Fumi wrote:
+>> I'm struggling with this issue since a while and as the author of the
+>> USB-Serial module I thought experts here might provide some help... As
+>> it's a USB-serail issue, I've posted on both USB and Serial lists.
+>> thanks in advance!
 >>
->> This patch adds support to ST System Configuration registers, which can
->> be configured by the drivers.
+>> The problem is about connecting with a 3G USB modem, a ZTE MF-210
+>> mini-pci board; plugged as a daughter board inside an Android tablet.
+>> I have posted already on a couple forums, but got no useful feedback
+>> yet.
 >>
->> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
->> CC: Stuart Menefy <stuart.menefy@st.com>
->> CC: Stephen Gallimore <stephen.gallimore@st.com>
->> CC: Linus Walleij <linus.walleij@linaro.org>
->> CC: Mark Brown <broonie@kernel.org>
-> 
-> What is this driver doing that drivers/mfd/syscon.c is not already
-> doing?
-As of now, the driver is very much similar to syscon + some additional
-functionality, but we are planning to use this file to add higher level
-functions to configure different IPs like ethernet, usb, power, reset
-and so on which are very much specific to ST System Configuration Registers.
-
-Thanks,
-srini
-> 
-> I just get the feeling that you're reinventing the wheel here.
-> 
-> Yours,
-> Linus Walleij
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss@lists.ozlabs.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
-> 
-
+>> As soon as I power up the module I get the expected /dev/ttyUSB0-3 and
+>> that's fine, so far:
+>>
+>> <6>usb 1-1.1: new high speed USB device using emxx-ehci-driver and address 3
+>> <6>option 1-1.1:1.0: GSM modem (1-port) converter detected
+>> <6>usb 1-1.1: GSM modem (1-port) converter now attached to ttyUSB0
+>> <6>option 1-1.1:1.1: GSM modem (1-port) converter detected
+>> <6>usb 1-1.1: GSM modem (1-port) converter now attached to ttyUSB1
+>> <6>option 1-1.1:1.2: GSM modem (1-port) converter detected
+>> <6>usb 1-1.1: GSM modem (1-port) converter now attached to ttyUSB2
+>> <6>option 1-1.1:1.3: GSM modem (1-port) converter detected
+>> <6>usb 1-1.1: GSM modem (1-port) converter now attached to ttyUSB3
+>>
+>> Issue is when I try to communicate with any of these ports. I can
+>> connect using picocom to all but can't receive any feedback from AT
+>> commands sent over to them. I made some partial progress only after
+>> using the "-i" option (i.e. "no port init"), but below you can find
+>> what I get if I simply type A + T + Z + <enter>, for example.
+>>
+>> As you can see, characters and commands are repeated several times.
+>> That's what I can't understand.
+>>
+>> Without the -i option, I don't even get any feedback from the modem
+>> and the same happens using other connection programs, e.g. busybox
+>> microcom. I'm using picocom as it's very small and I succesfully used
+>> it already in a similar case, though on a different Android platform
+>> and kernel.
+>>
+>> This Kernel is built including standard usb-serial options below:
+>>
+>> CONFIG_USB_SERIAL=y
+>> CONFIG_USB_SERIAL_WWAN=y
+>> CONFIG_USB_SERIAL_OPTION=y
+>
+> What kernel version are you using?
+>
+>> Is the kernel missing anything, or requiring some special ZTE-specific
+>> customizations in your opinion?
+>
+> There is a new zte-specific driver in the 3.9 kernel release that should
+> work for your device.  We just got some patches merged that moved the
+> device id from the option driver to the zte driver, which should resolve
+> issues like the one you are seeing here (i.e. the wrong driver
+> controlling the device.)  Can you test the 3.10-rc5 kernel that comes
+> out in a few days, or the next 3.9-stable release 3.9.6 should have the
+> proper patches)?
+>
+> thanks,
+>
+> greg k-h
