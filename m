@@ -1,58 +1,86 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH v2] serial: imx: enable the clocks for console
-Date: Mon, 10 Jun 2013 08:55:07 +0800
-Message-ID: <20130610005506.GB6381@S2101-09.ap.freescale.net>
-References: <CAOMZO5A4SPFv1NopdGrN9nX-XSpZy5Cw1CLp3E95mRP8O=rhLQ@mail.gmail.com>
- <1370743279-15941-1-git-send-email-b32955@freescale.com>
- <20130609083409.GA32485@S2101-09.ap.freescale.net>
- <20130609130544.GC20780@S2101-09.ap.freescale.net>
- <20130609172628.GA17829@kroah.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH 13/13] ARM: Exynos: extend soft-reset support for Exynos5420
+Date: Mon, 10 Jun 2013 17:54:59 +0900
+Message-ID: <0ea501ce65b8$3046d7a0$90d486e0$%kim@samsung.com>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+ <1370516488-25860-13-git-send-email-chander.kashyap@linaro.org>
+ <51B07631.2010802@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from am1ehsobe006.messaging.microsoft.com ([213.199.154.209]:44039
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752500Ab3FJAz6 (ORCPT
+Received: from mailout1.samsung.com ([203.254.224.24]:10961 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751388Ab3FJIzB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 9 Jun 2013 20:55:58 -0400
-Content-Disposition: inline
-In-Reply-To: <20130609172628.GA17829@kroah.com>
+	Mon, 10 Jun 2013 04:55:01 -0400
+In-reply-to: <51B07631.2010802@linaro.org>
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Huang Shijie <b32955@freescale.com>, shc_work@mail.ru, festevam@gmail.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: 'Tushar Behera' <tushar.behera@linaro.org>, 'Chander Kashyap' <chander.kashyap@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com
 
-On Sun, Jun 09, 2013 at 10:26:28AM -0700, Greg KH wrote:
-> On Sun, Jun 09, 2013 at 09:05:47PM +0800, Shawn Guo wrote:
-> > On Sun, Jun 09, 2013 at 04:34:11PM +0800, Shawn Guo wrote:
-> > > On Sun, Jun 09, 2013 at 10:01:19AM +0800, Huang Shijie wrote:
-> > > > The console's clocks are disabled after the uart driver is probed.
-> > > > It makes that we can see less log from the console now
-> > > > (though we still can get all the log by the `dmesg`).
-> > > > 
-> > > > So enable the clocks for console, and we can see all the log again.
-> > > > 
-> > > > This patch also disables the sport->clk_per when we fail to enable
-> > > > the sport->clk_ipg;
-> > > > 
-> > > > Signed-off-by: Huang Shijie <b32955@freescale.com>
-> > > 
-> > > Tested-by: Shawn Guo <shawn.guo@linaro.org>
-> > 
-> > Sorry.  I have to take that back.
-> > 
-> > Though it works fine with BusyBox, I'm getting the following warnings
-> > when booting with an Ubuntu 13.04 rootfs, in which case imx_startup()
-> > and imx_shutdown() will be called for a number of iterations.  That
-> > causes unbalanced clk_prepare_enable vs. clk_disable_unprepare, since
-> > the clk_prepare_enable is under condition if (!uart_console(port)) in
-> > imx_startup(), while clk_disable_unprepare in imx_shutdown() is not.
+Tushar Behera wrote:
 > 
-> I had just applied this to my tree, should I revert it because of this
-> problem?
+> On 06/06/2013 04:31 PM, Chander Kashyap wrote:
+> > Extend the soft reset support for Exynos5420 SoC.
+> >
+> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+> > ---
+> >  arch/arm/mach-exynos/common.c |    3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
+> > index fbe1aa7..dc7c134 100644
+> > --- a/arch/arm/mach-exynos/common.c
+> > +++ b/arch/arm/mach-exynos/common.c
+> > @@ -321,7 +321,8 @@ void exynos5_restart(char mode, const char *cmd)
+> >  	u32 val;
+> >  	void __iomem *addr;
+> >
+> > -	if (of_machine_is_compatible("samsung,exynos5250")) {
+> > +	if (of_machine_is_compatible("samsung,exynos5250") ||
+> > +		(of_machine_is_compatible("samsung,exynos5420"))) {
+> >  		val = 0x1;
+> >  		addr = EXYNOS_SWRESET;
+> >  	} else if (of_machine_is_compatible("samsung,exynos5440")) {
+> >
+> 
+> How about making 0x1 and EXYNOS_SWRESET as default values of val and
+> addr. That way we can remove this check for exynos5250 and exynos5420.
+> Also we can remove the trailing else statement as there are no non-DT
+> boards for EXYNOS5.
+> 
+>  void exynos5_restart(char mode, const char *cmd)
+>  {
+>         struct device_node *np;
+> -       u32 val;
+> -       void __iomem *addr;
+> +       u32 val = 0x1;
+> +       void __iomem *addr = EXYNOS_SWRESET;
+> 
+> -       if (of_machine_is_compatible("samsung,exynos5250")) {
+> -               val = 0x1;
+> -               addr = EXYNOS_SWRESET;
+> -       } else if (of_machine_is_compatible("samsung,exynos5440")) {
+> +       if (of_machine_is_compatible("samsung,exynos5440")) {
+>                 u32 status;
+>                 np = of_find_compatible_node(NULL, NULL,
+> "samsung,exynos5440-clock");
+> 
+> @@ -336,9 +333,6 @@ void exynos5_restart(char mode, const char *cmd)
+>                 val = __raw_readl(addr);
+> 
+>                 val = (val & 0xffff0000) | (status & 0xffff);
+> -       } else {
+> -               pr_err("%s: cannot support non-DT\n", __func__);
+> -               return;
+>         }
+> 
+> --
 
-Fabio just sent an incremental fix "serial: imx: Fix serial clock
-unbalance" for that.
+Yeah, looks better.
 
-Shawn
+- Kukjin
 
