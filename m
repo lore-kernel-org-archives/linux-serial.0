@@ -1,14 +1,15 @@
 From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
-Date: Mon, 10 Jun 2013 14:43:03 +0200
-Message-ID: <CACRpkdZ-xnDO+bte4tyKDWwY4A_qWUhLru3dUmuY9MQwseP3uQ@mail.gmail.com>
+Subject: Re: [PATCH v2 02/11] clocksource:global_timer: Add ARM global timer
+ support.
+Date: Mon, 10 Jun 2013 15:13:34 +0200
+Message-ID: <CACRpkdbQCRKBzRF4HzNsXHwXCLJJcFZ9T36GPmmYsnX1OfgGRg@mail.gmail.com>
 References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856087-6452-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1370856381-6644-1-git-send-email-srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+In-Reply-To: <1370856087-6452-1-git-send-email-srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
  <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
@@ -19,64 +20,91 @@ List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
 Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 Sender: "devicetree-discuss"
  <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David S.
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 10, 2013 at 11:26 AM, Srinivas KANDAGATLA
+On Mon, Jun 10, 2013 at 11:21 AM, Srinivas KANDAGATLA
 <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
 
-> The STiH415 is the next generation of HD, AVC set-top box processors for
-> satellite, cable, terrestrial and IP-STB markets. It is an ARM Cortex-A9
-> 1.0 GHz, dual-core CPU.
+> From: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
+>
+> This is a simple driver for the global timer module found in the Cortex
+> A9-MP cores from revision r1p0 onwards. This should be able to perform
+> the functions of the system timer and the local timer in an SMP system.
+>
+> The global timer has the following features:
+>     The global timer is a 64-bit incrementing counter with an
+> auto-incrementing feature. It continues incrementing after sending
+> interrupts. The global timer is memory mapped in the private memory
+> region.
+>     The global timer is accessible to all Cortex-A9 processors in the
+> cluster. Each Cortex-A9 processor has a private 64-bit comparator that
+> is used to assert a private interrupt when the global timer has reached
+> the comparator value. All the Cortex-A9 processors in a design use the
+> banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
+> Controller as a Private Peripheral Interrupt. The global timer is
+> clocked by PERIPHCLK.
+>
+> Signed-off-by: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+> CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> CC: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> CC: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+
+This is starting to look very good!
+
 (...)
-> +       soc {
-> +               pin-controller-sbc {
-> +                       #address-cells  = <1>;
-> +                       #size-cells     = <1>;
-> +                       compatible      = "st,stih415-pinctrl", "simple-bus";
-
-Why is the pin controller be a simple bus?
-
-Maybe obvious, I'm not 100% familiar with when we use this...
-
-> +               pin-controller-front {
-(...)
-> +               pin-controller-rear {
-(...)
-> +               pin-controller-left {
-(...)
-> +               pin-controller-right {
-
-Please explain these orientations in some comment in the device
-tree, I'm half-guessing that it's about the edges around the chip so
-the PIO* names are actually pad names.
-
-I would suggest you use the names north/south/west/east
-if this is the case since left and right etc are relative measures.
-(This terminology is used on e.g. dance mats for console games...)
-
-If these names are from the datasheets by all means keep them.
-
-> +++ b/arch/arm/boot/dts/stixxxx-pincfg.h
-> @@ -0,0 +1,94 @@
-> +#ifndef _STIXXXX_PINCFG_H_
-> +#define _STIXXXX_PINCFG_H_
+> +static int __cpuinit gt_clockevents_init(struct clock_event_device *clk)
+> +{
+> +       struct clock_event_device **this_cpu_clk;
+> +       int cpu = smp_processor_id();
 > +
-> +/* Alternate functions */
-> +#define ALT1   1
-> +#define ALT2   2
-> +#define ALT3   3
-> +#define ALT4   4
-> +#define ALT5   5
-> +#define ALT6   6
-> +#define ALT7   7
+> +       clk->name = "ARM global timer clock event";
+> +       clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
+> +       clk->set_mode = gt_clockevent_set_mode;
+> +       clk->set_next_event = gt_clockevent_set_next_event;
+> +       this_cpu_clk = __this_cpu_ptr(gt_evt);
+> +       *this_cpu_clk = clk;
+> +       clk->cpumask = cpumask_of(cpu);
+> +       clk->irq = gt_ppi;
+> +       clockevents_config_and_register(clk, gt_clk_rate,
+> +                                       0, 0xffffffff);
 
-Why is this part of the DT definitions? In the pinctrl world this
-is an intrinsic detail on how groups and functions are associated,
-not something that you hard-code into the device tree. The
-device tree should state how to combine functions with groups
-and those will be strings, not numerals.
+What do you mean with being able to set event on
+0?
+
+This should most probably be:
+
+
+clockevents_config_and_register(clk, gt_clk_rate,
+                                      1, 0xffffffff);
+
+(...)
+> +static struct clk *gt_get_clock(void)
+> +{
+> +       struct clk *clk;
+> +       int err;
+> +
+> +       clk = clk_get_sys("gt", NULL);
+> +       if (IS_ERR(clk)) {
+> +               pr_err("global-timer: clock not found: %ld\n", PTR_ERR(clk));
+> +               return clk;
+> +       }
+(...)
+> +       clk = of_clk_get(np, 0);
+> +       if (!IS_ERR(clk))
+> +               clk_register_clkdev(clk, NULL, "gt");
+
+Well that was clever.
+
+Isn't it better to pass a struct device_node *np around and have that as
+NULL in the non-DT boot path?
+
+(Maybe somebody in the community asked you to do this, then I
+will live with it.)
 
 Yours,
 Linus Walleij
