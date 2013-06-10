@@ -1,497 +1,315 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH v2 02/11] clocksource:global_timer: Add ARM global timer
- support.
-Date: Mon, 10 Jun 2013 10:21:27 +0100
-Message-ID: <1370856087-6452-1-git-send-email-srinivas.kandagatla@st.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: [PATCH v2 04/11] mfd:stixxxx-syscfg: Add ST System Configuration support.
+Date: Mon, 10 Jun 2013 10:22:27 +0100
+Message-ID: <1370856147-6552-1-git-send-email-srinivas.kandagatla@st.com>
 References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <1370855828-5318-1-git-send-email-srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, devicetree-discuss@lists.ozlabs.org, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stultz <john.stultz@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux@arm.linux.org.uk, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Samuel Ortiz <sameo@linux.intel.com>, Srinivas Kandagatla <srinivas.kandagatla@st.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Thomas Gleixner <tglx@linutronix.de>, Tony Prisk <linux@prisktech.co.nz>
 List-Id: linux-serial@vger.kernel.org
 
-From: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
+System configuration(aka syscfg) registers are very basic configuration
+registers arranged in groups across ST Settop Box parts.
 
-This is a simple driver for the global timer module found in the Cortex
-A9-MP cores from revision r1p0 onwards. This should be able to perform
-the functions of the system timer and the local timer in an SMP system.
+The SOCs are assembled from existing IP blocks, which don't change very
+often. However these blocks are assembled in different configurations to
+meet the device requirements. So most IP blocks as well as having a bus
+interface through which their own registers are accessible, will also
+have a number of bristles(wires) which are signals that are going in and
+out of the IP for configuration and status. To make these signals
+accessible to software they are wired to "System Configuration
+Registers".
 
-The global timer has the following features:
-    The global timer is a 64-bit incrementing counter with an
-auto-incrementing feature. It continues incrementing after sending
-interrupts. The global timer is memory mapped in the private memory
-region.
-    The global timer is accessible to all Cortex-A9 processors in the
-cluster. Each Cortex-A9 processor has a private 64-bit comparator that
-is used to assert a private interrupt when the global timer has reached
-the comparator value. All the Cortex-A9 processors in a design use the
-banked ID, ID27, for this interrupt. ID27 is sent to the Interrupt
-Controller as a Private Peripheral Interrupt. The global timer is
-clocked by PERIPHCLK.
+Drivers target the IP blocks, which don't change much. Where as the
+mapping of IP specific bristles(wires) to "System Configuration
+Registers" do change per each SOC, and therefore we do not want this
+information to be part of the driver.
 
-Signed-off-by: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-CC: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-CC: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Having a System Configuration infrastructure gives much flexibility and
+abstraction to drivers to configure them. Typically in a SOC there will
+be more than hundreds of these registers, which are again divided into
+groups. The IP related config registers tend to much regular in latest
+ST SOCs, so having a common place for configuring these registers makes
+sense and avoid lot of code duplication.
+
+This mfd driver provides higher level inialization routines for various
+IPs like Ethernet, USB, PCIE, SATA and so on. Also it provides way to
+get to syscfg registers via standard regmap api which is usefull for
+drivers like pinctrl.
+
+This patch adds support to ST System Configuration registers, which can
+be configured by the drivers.
+
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+CC: Stuart Menefy <stuart.menefy@st.com>
+CC: Stephen Gallimore <stephen.gallimore@st.com>
+CC: Linus Walleij <linus.walleij@linaro.org>
+CC: Mark Brown <broonie@kernel.org>
 ---
- .../devicetree/bindings/arm/global_timer.txt       |   21 ++
- drivers/clocksource/Kconfig                        |   13 +
- drivers/clocksource/Makefile                       |    1 +
- drivers/clocksource/arm_global_timer.c             |  368 ++++++++++++++++++++
- 4 files changed, 403 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/global_timer.txt
- create mode 100644 drivers/clocksource/arm_global_timer.c
+ .../devicetree/bindings/mfd/stixxxx-syscfg.txt     |   18 ++
+ drivers/mfd/Kconfig                                |   10 ++
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/stixxxx-syscfg.c                       |  168 ++++++++++++++++++++
+ include/linux/mfd/stixxxx-syscfg.h                 |   15 ++
+ 5 files changed, 212 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stixxxx-syscfg.txt
+ create mode 100644 drivers/mfd/stixxxx-syscfg.c
+ create mode 100644 include/linux/mfd/stixxxx-syscfg.h
 
-diff --git a/Documentation/devicetree/bindings/arm/global_timer.txt b/Documentation/devicetree/bindings/arm/global_timer.txt
+diff --git a/Documentation/devicetree/bindings/mfd/stixxxx-syscfg.txt b/Documentation/devicetree/bindings/mfd/stixxxx-syscfg.txt
 new file mode 100644
-index 0000000..b64abac
+index 0000000..428c751
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/global_timer.txt
-@@ -0,0 +1,21 @@
++++ b/Documentation/devicetree/bindings/mfd/stixxxx-syscfg.txt
+@@ -0,0 +1,18 @@
++*STixxxx SYSCFG
 +
-+* ARM Global Timer
-+	Cortex-A9 are often associated with a per-core Global timer.
++- compatible : should be "st,<SOC>-syscfg" like "st,stih415-syscfg"
++			or "st,stih416-syscfg".
++- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
++			resources with names. look in
++			Documentation/devicetree/bindings/resource-names.txt
++- syscfg-range <start size> : Should be syscfg number range for this bank.
++- syscfg-name		    : Should be name of the syscfg, will be used in debugfs.
 +
-+** Timer node required properties:
++Example of a SBC_SYSCFG bank node:
 +
-+- compatible : Should be "arm,cortex-a9-global-timer"
-+		Driver supports versions r2p0 and above.
-+
-+- interrupts : One interrupt to each core
-+
-+- reg : Specify the base address and the size of the GT timer
-+	register window.
-+
-+Example:
-+
-+	timer@2c000600 {
-+		compatible = "arm,cortex-a9-global-timer";
-+		reg = <0x2c000600 0x20>;
-+		interrupts = <1 13 0xf01>;
-+	};
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index f151c6c..b0c4c42 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -67,6 +67,19 @@ config ARM_ARCH_TIMER
- 	bool
- 	select CLKSRC_OF if OF
++syscfg_sbc: syscfg@fe600000{
++	compatible      = "st,stih415-syscfg";
++	reg		= <0xfe600000 0xb4>;
++	syscfg-range	= <0 44>;
++	syscfg-name	= "SYSCFG_SBC";
++};
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index d54e985..af49b58 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -649,6 +649,16 @@ config MFD_STA2X11
+ 	select MFD_CORE
+ 	select REGMAP_MMIO
  
-+config ARM_GLOBAL_TIMER
-+	bool
-+	select CLKSRC_OF if OF
++config MFD_STIXXXX_SYSCFG
++	bool "ST System Configuration Registers(aka syscfg) via regmap"
++	select REGMAP_MMIO
 +	help
-+	  This options enables support for the ARM global timer unit
++	  Select this option to enable accessing STMicroelectronics
++	  System Configuration Registers via standard regmap apis with
++	  lookup helper functions.
 +
-+config CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
-+	bool
-+	depends on ARM_GLOBAL_TIMER
-+	default y
-+	help
-+	 Use ARM global timer clock source as sched_clock
++	  If unsure, say N.
 +
- config CLKSRC_METAG_GENERIC
- 	def_bool y if METAG
- 	help
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index 8d979c7..b2363cb 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -28,4 +28,5 @@ obj-$(CONFIG_CLKSRC_EXYNOS_MCT)	+= exynos_mct.o
- obj-$(CONFIG_CLKSRC_SAMSUNG_PWM)	+= samsung_pwm_timer.o
- 
- obj-$(CONFIG_ARM_ARCH_TIMER)		+= arm_arch_timer.o
-+obj-$(CONFIG_ARM_GLOBAL_TIMER)		+= arm_global_timer.o
- obj-$(CONFIG_CLKSRC_METAG_GENERIC)	+= metag_generic.o
-diff --git a/drivers/clocksource/arm_global_timer.c b/drivers/clocksource/arm_global_timer.c
+ config MFD_SYSCON
+ 	bool "System Controller Register R/W Based on Regmap"
+ 	select REGMAP_MMIO
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 718e94a..c1f6570 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -150,6 +150,7 @@ obj-$(CONFIG_MFD_PALMAS)	+= palmas.o
+ obj-$(CONFIG_MFD_VIPERBOARD)    += viperboard.o
+ obj-$(CONFIG_MFD_RC5T583)	+= rc5t583.o rc5t583-irq.o
+ obj-$(CONFIG_MFD_SEC_CORE)	+= sec-core.o sec-irq.o
++obj-$(CONFIG_MFD_STIXXXX_SYSCFG)	+= stixxxx-syscfg.o
+ obj-$(CONFIG_MFD_SYSCON)	+= syscon.o
+ obj-$(CONFIG_MFD_LM3533)	+= lm3533-core.o lm3533-ctrlbank.o
+ obj-$(CONFIG_VEXPRESS_CONFIG)	+= vexpress-config.o vexpress-sysreg.o
+diff --git a/drivers/mfd/stixxxx-syscfg.c b/drivers/mfd/stixxxx-syscfg.c
 new file mode 100644
-index 0000000..e4bc4fe
+index 0000000..10ea4e4
 --- /dev/null
-+++ b/drivers/clocksource/arm_global_timer.c
-@@ -0,0 +1,368 @@
++++ b/drivers/mfd/stixxxx-syscfg.c
+@@ -0,0 +1,168 @@
 +/*
-+ * drivers/clocksource/arm_global_timer.c
++ * Copyright (C) 2013 STMicroelectronics Limited
++ * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 + *
-+ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
-+ * Author: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
 + *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * Syscfg driver is used to configure various devices like Ethernet,
++ * USB, PCIE, SATA and so on.
 + */
 +
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/clocksource.h>
-+#include <linux/clockchips.h>
-+#include <linux/clk.h>
-+#include <linux/clkdev.h>
-+#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
 +#include <linux/io.h>
 +#include <linux/of.h>
-+#include <linux/of_irq.h>
 +#include <linux/of_address.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++#include <linux/delay.h>
++#include <linux/slab.h>
++#include <linux/regmap.h>
++#include <linux/mfd/stixxxx-syscfg.h>
 +
-+#include <asm/sched_clock.h>
-+#include <asm/mach/irq.h>
-+#include <asm/cputype.h>
-+#include <asm/localtimer.h>
++#define DRIVER_NAME "stixxxx-syscfg"
 +
-+#define GT_COUNTER0	0x00
-+#define GT_COUNTER1	0x04
++static struct platform_driver syscfg_driver;
++struct syscfg {
++	void __iomem *base;
++	struct regmap *regmap;
++	int	start, end;
++	const char *name;
++	struct device_node *of_node;
++};
 +
-+#define GT_CONTROL	0x08
-+#define GT_CONTROL_TIMER_ENABLE		BIT(0)  /* this bit is NOT banked */
-+#define GT_CONTROL_COMP_ENABLE		BIT(1)	/* banked */
-+#define GT_CONTROL_IRQ_ENABLE		BIT(2)	/* banked */
-+#define GT_CONTROL_AUTO_INC		BIT(3)	/* banked */
-+
-+#define GT_INT_STATUS	0x0c
-+#define GT_INT_STATUS_EVENT_FLAG	BIT(0)
-+
-+#define GT_COMP0	0x10
-+#define GT_COMP1	0x14
-+#define GT_AUTO_INC	0x18
-+
-+/*
-+ * We are expecting to be clocked by the ARM peripheral clock.
-+ *
-+ * Note: it is assumed we are using a prescaler value of zero, so this is
-+ * the units for all operations.
-+ */
-+static void __iomem *gt_base;
-+static unsigned long gt_clk_rate;
-+static int gt_ppi;
-+static struct clock_event_device __percpu **gt_evt;
-+static DEFINE_PER_CPU(bool, percpu_init_called);
-+static DEFINE_PER_CPU(struct clock_event_device, gt_clockevent);
-+
-+/*
-+ * To get the value from the Global Timer Counter register proceed as follows:
-+ * 1. Read the upper 32-bit timer counter register
-+ * 2. Read the lower 32-bit timer counter register
-+ * 3. Read the upper 32-bit timer counter register again. If the value is
-+ *  different to the 32-bit upper value read previously, go back to step 2.
-+ *  Otherwise the 64-bit timer counter value is correct.
-+ */
-+static u64 gt_counter_read(void)
++static int syscfg_match_name(struct device *dev, void *data)
 +{
-+	u64 counter;
-+	u32 lower;
-+	u32 upper, old_upper;
++	struct syscfg *syscfg = dev_get_drvdata(dev);
 +
-+	upper = __raw_readl(gt_base + GT_COUNTER1);
-+	do {
-+		old_upper = upper;
-+		lower = __raw_readl(gt_base + GT_COUNTER0);
-+		upper = __raw_readl(gt_base + GT_COUNTER1);
-+	} while (upper != old_upper);
-+
-+	counter = upper;
-+	counter <<= 32;
-+	counter |= lower;
-+	return counter;
-+}
-+
-+/**
-+ * To ensure that updates to comparator value register do not set the
-+ * Interrupt Status Register proceed as follows:
-+ * 1. Clear the Comp Enable bit in the Timer Control Register.
-+ * 2. Write the lower 32-bit Comparator Value Register.
-+ * 3. Write the upper 32-bit Comparator Value Register.
-+ * 4. Set the Comp Enable bit and, if necessary, the IRQ enable bit.
-+ */
-+static void gt_compare_set(unsigned long delta, int periodic)
-+{
-+	u64 counter = gt_counter_read();
-+	unsigned long ctrl = __raw_readl(gt_base + GT_CONTROL);
-+
-+	counter += delta;
-+	ctrl &=  ~(GT_CONTROL_COMP_ENABLE | GT_CONTROL_IRQ_ENABLE);
-+
-+	__raw_writel(ctrl, gt_base + GT_CONTROL);
-+	__raw_writel(lower_32_bits(counter), gt_base + GT_COMP0);
-+	__raw_writel(upper_32_bits(counter), gt_base + GT_COMP1);
-+
-+	if (periodic) {
-+		__raw_writel(delta, gt_base + GT_AUTO_INC);
-+		ctrl |= GT_CONTROL_AUTO_INC;
-+	}
-+
-+	ctrl |= GT_CONTROL_COMP_ENABLE | GT_CONTROL_IRQ_ENABLE;
-+	__raw_writel(ctrl, gt_base + GT_CONTROL);
-+}
-+
-+static void gt_clockevent_set_mode(enum clock_event_mode mode,
-+				   struct clock_event_device *clk)
-+{
-+	unsigned long ctrl;
-+
-+	ctrl = __raw_readl(gt_base + GT_CONTROL);
-+	switch (mode) {
-+	case CLOCK_EVT_MODE_PERIODIC:
-+		gt_compare_set(DIV_ROUND_CLOSEST(gt_clk_rate, HZ), 1);
-+		break;
-+	case CLOCK_EVT_MODE_ONESHOT:
-+		ctrl &= ~(GT_CONTROL_AUTO_INC);
-+		__raw_writel(ctrl, gt_base + GT_CONTROL);
-+		break;
-+	/* Can not shut down it as enable bit is not banked */
-+	case CLOCK_EVT_MODE_UNUSED:
-+	case CLOCK_EVT_MODE_SHUTDOWN:
-+		ctrl &= ~(GT_CONTROL_COMP_ENABLE |
-+				GT_CONTROL_IRQ_ENABLE | GT_CONTROL_AUTO_INC);
-+		__raw_writel(ctrl, gt_base + GT_CONTROL);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+static int gt_clockevent_set_next_event(unsigned long evt,
-+					struct clock_event_device *unused)
-+{
-+	gt_compare_set(evt, 0);
++	if (syscfg)
++		if (!strcmp(syscfg->name, (const char *)data))
++			return 1;
 +	return 0;
 +}
 +
-+static irqreturn_t gt_clockevent_interrupt(int irq, void *dev_id)
++struct regmap *syscfg_regmap_lookup_by_name(const char *name)
 +{
-+	struct clock_event_device *evt = *(struct clock_event_device **)dev_id;
++	struct syscfg *syscfg;
++	struct device *dev;
 +
-+	if (__raw_readl(gt_base + GT_INT_STATUS) & GT_INT_STATUS_EVENT_FLAG) {
-+		/**
-+		 * ERRATA 740657( Global Timer can send 2 interrupts for
-+		 * the same event in single-shot mode)
-+		 * Workaround:
-+		 *	Either disable single-shot mode.
-+		 *	Or
-+		 *	Modify the Interrupt Handler to avoid the
-+		 *	offending sequence. This is achieved by clearing
-+		 *	the Global Timer flag _after_ having incremented
-+		 *	the Comparator register	value to a higher value.
-+		 */
-+		if (!(__raw_readl(gt_base + GT_CONTROL) & GT_CONTROL_AUTO_INC))
-+			gt_compare_set(ULONG_MAX, 0);
++	dev = driver_find_device(&syscfg_driver.driver, NULL, (void *)name,
++				 syscfg_match_name);
++	if (!dev)
++		return ERR_PTR(-EPROBE_DEFER);
 +
-+		__raw_writel(GT_INT_STATUS_EVENT_FLAG, gt_base + GT_INT_STATUS);
++	syscfg = dev_get_drvdata(dev);
 +
-+		evt->event_handler(evt);
-+		return IRQ_HANDLED;
-+	}
-+
-+	return IRQ_NONE;
++	return syscfg->regmap;
 +}
 +
-+static int __cpuinit gt_clockevents_init(struct clock_event_device *clk)
++static int syscfg_match_node(struct device *dev, void *data)
 +{
-+	struct clock_event_device **this_cpu_clk;
-+	int cpu = smp_processor_id();
++	struct device_node *dn = data;
 +
-+	clk->name = "ARM global timer clock event";
-+	clk->features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
-+	clk->set_mode = gt_clockevent_set_mode;
-+	clk->set_next_event = gt_clockevent_set_next_event;
-+	this_cpu_clk = __this_cpu_ptr(gt_evt);
-+	*this_cpu_clk = clk;
-+	clk->cpumask = cpumask_of(cpu);
-+	clk->irq = gt_ppi;
-+	clockevents_config_and_register(clk, gt_clk_rate,
-+					0, 0xffffffff);
-+	per_cpu(percpu_init_called, cpu) = true;
-+	enable_percpu_irq(clk->irq, IRQ_TYPE_NONE);
-+	return 0;
++	return (dev->of_node == dn) ? 1 : 0;
 +}
 +
-+static void gt_clockevents_stop(struct clock_event_device *clk)
++struct regmap *syscfg_node_to_regmap(struct device_node *np)
 +{
-+	gt_clockevent_set_mode(CLOCK_EVT_MODE_UNUSED, clk);
-+	disable_percpu_irq(clk->irq);
-+}
++	struct syscfg *syscfg;
++	struct device *dev;
 +
-+static int __cpuinit gt_clockevents_setup(struct clock_event_device *clk)
++	dev = driver_find_device(&syscfg_driver.driver, NULL, np,
++				 syscfg_match_node);
++	if (!dev)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	syscfg = dev_get_drvdata(dev);
++
++	return syscfg->regmap;
++}
++EXPORT_SYMBOL_GPL(syscfg_node_to_regmap);
++
++struct regmap *syscfg_regmap_lookup_by_phandle(struct device_node *np,
++					const char *property)
 +{
-+	/* Use existing clock_event for boot cpu */
-+	if (per_cpu(percpu_init_called, smp_processor_id()))
-+		return 0;
++	struct device_node *syscfg_np;
++	struct regmap *regmap;
 +
-+	/* already enabled in gt_clocksource_init. */
-+	return gt_clockevents_init(clk);
++	syscfg_np = of_parse_phandle(np, property, 0);
++	if (!syscfg_np)
++		return ERR_PTR(-ENODEV);
++
++	regmap = syscfg_node_to_regmap(syscfg_np);
++	of_node_put(syscfg_np);
++
++	return regmap;
 +}
++EXPORT_SYMBOL_GPL(syscfg_regmap_lookup_by_phandle);
 +
-+static cycle_t gt_clocksource_read(struct clocksource *cs)
-+{
-+	return gt_counter_read();
-+}
-+
-+static struct clocksource gt_clocksource = {
-+	.name	= "ARM global timer clock source",
-+	.rating	= 300,
-+	.read	= gt_clocksource_read,
-+	.mask	= CLOCKSOURCE_MASK(64),
-+	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
++static struct regmap_config syscfg_regmap_config = {
++	.reg_bits = 32,
++	.val_bits = 32,
++	.reg_stride = 4,
 +};
 +
-+#ifdef CONFIG_CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
-+static u32 gt_sched_clock_read(void)
++static int syscfg_probe(struct platform_device *pdev)
 +{
-+	if (!gt_base)
-+		return 0;
++	struct device_node *np = pdev->dev.of_node;
++	struct syscfg *syscfg;
++	struct resource *res;
++	u32 range[2];
 +
-+	return gt_counter_read();
-+}
-+#endif
-+
-+static void __init gt_clocksource_init(void)
-+{
-+	__raw_writel(0, gt_base + GT_CONTROL);
-+	__raw_writel(0, gt_base + GT_COUNTER0);
-+	__raw_writel(0, gt_base + GT_COUNTER1);
-+	/* enables timer on all the cores */
-+	__raw_writel(GT_CONTROL_TIMER_ENABLE, gt_base + GT_CONTROL);
-+
-+#ifdef CONFIG_CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
-+	setup_sched_clock(gt_sched_clock_read, 32, gt_clk_rate);
-+#endif
-+	clocksource_register_hz(&gt_clocksource, gt_clk_rate);
-+}
-+
-+static struct clk *gt_get_clock(void)
-+{
-+	struct clk *clk;
-+	int err;
-+
-+	clk = clk_get_sys("gt", NULL);
-+	if (IS_ERR(clk)) {
-+		pr_err("global-timer: clock not found: %ld\n", PTR_ERR(clk));
-+		return clk;
-+	}
-+
-+	err = clk_prepare_enable(clk);
-+	if (err) {
-+		pr_err("global-timer: clock prepare+enable failed: %d\n", err);
-+		clk_put(clk);
-+		return ERR_PTR(err);
-+	}
-+
-+	return clk;
-+}
-+
-+static struct local_timer_ops gt_lt_ops __cpuinitdata = {
-+	.setup	= gt_clockevents_setup,
-+	.stop	= gt_clockevents_stop,
-+};
-+
-+int __init global_timer_init(void __iomem *base, unsigned int timer_irq)
-+{
-+	unsigned int cpu = smp_processor_id();
-+	struct clock_event_device *evt = &per_cpu(gt_clockevent, cpu);
-+	int err = 0;
-+	struct clk *gt_clk;
-+
-+	if (gt_base) {
-+		pr_warn("global-timer: invalid base address\n");
++	if (!np)
 +		return -EINVAL;
-+	}
 +
-+	gt_clk = gt_get_clock();
-+	if (IS_ERR(gt_clk)) {
-+		pr_warn("global-timer: clk not found\n");
-+		return -EINVAL;
-+	}
-+
-+	gt_evt = alloc_percpu(struct clock_event_device *);
-+	if (!gt_evt) {
-+		pr_warn("global-timer: can't allocate memory\n");
++	syscfg = devm_kzalloc(&pdev->dev, sizeof(*syscfg), GFP_KERNEL);
++	if (!syscfg)
 +		return -ENOMEM;
++
++	syscfg->of_node = np;
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	syscfg->base = devm_request_and_ioremap(&pdev->dev, res);
++	if (!syscfg->base) {
++		dev_err(&pdev->dev, "Unable to ioremap registers|\n");
++		return -ENODATA;
 +	}
 +
-+	err = request_percpu_irq(timer_irq, gt_clockevent_interrupt,
-+				 "gt", gt_evt);
-+	if (err) {
-+		pr_warn("global-timer: can't register interrupt %d (%d)\n",
-+			timer_irq, err);
-+		goto out_free;
++	of_property_read_u32_array(np, "syscfg-range", (u32 *)&range, 2);
++	syscfg->start = range[0];
++	syscfg->end = range[0] + range[1];
++	of_property_read_string(np, "syscfg-name", &syscfg->name);
++
++	syscfg_regmap_config.name = kasprintf(GFP_KERNEL, "%s", syscfg->name);
++	syscfg_regmap_config.max_register = res->end - res->start - 3;
++	syscfg->regmap = devm_regmap_init_mmio(&pdev->dev, syscfg->base,
++					&syscfg_regmap_config);
++	if (IS_ERR(syscfg->regmap)) {
++		dev_err(&pdev->dev, "regmap init failed\n");
++		return PTR_ERR(syscfg->regmap);
 +	}
 +
-+	gt_base = base;
-+	gt_clk_rate = clk_get_rate(gt_clk);
-+	gt_ppi = timer_irq;
-+	gt_clocksource_init();
-+	gt_clockevents_init(evt);
-+#ifdef CONFIG_LOCAL_TIMERS
-+	err =  local_timer_register(&gt_lt_ops);
-+	if (err) {
-+		pr_warn("global-timer: unable to register local timer.\n");
-+		goto out_irq;
-+	}
-+#endif
++	platform_set_drvdata(pdev, syscfg);
++	dev_info(&pdev->dev,
++		"%s[%d - %d] sucessfully intialized\n",
++		syscfg->name, syscfg->start, syscfg->end);
 +	return 0;
-+
-+out_irq:
-+	free_percpu_irq(timer_irq, gt_evt);
-+out_free:
-+	free_percpu(gt_evt);
-+	return err;
 +}
 +
-+#ifdef CONFIG_OF
-+static void __init global_timer_of_register(struct device_node *np)
++static struct of_device_id syscfg_match[] = {
++	{ .compatible = "st,stih415-syscfg", },
++	{ .compatible = "st,stih416-syscfg", },
++	{},
++};
++
++static struct platform_driver syscfg_driver = {
++	.probe		= syscfg_probe,
++	.driver	= {
++		.name	= DRIVER_NAME,
++		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(syscfg_match),
++	},
++};
++
++static int __init syscfg_init(void)
 +{
-+	struct clk *clk;
-+	int err = 0;
-+	int gt_ppi;
-+	static void __iomem *gt_base;
-+
-+	/*
-+	 * In r2p0 the comparators for each processor with the global timer
-+	 * fire when the timer value is greater than or equal to. In previous
-+	 * revisions the comparators fired when the timer value was equal to.
-+	 */
-+	if ((read_cpuid_id() & 0xf0000f) < 0x200000)
-+		goto out;
-+
-+	gt_ppi = irq_of_parse_and_map(np, 0);
-+	if (!gt_ppi) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	gt_base = of_iomap(np, 0);
-+	if (!gt_base) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	clk = of_clk_get(np, 0);
-+	if (!IS_ERR(clk))
-+		clk_register_clkdev(clk, NULL, "gt");
-+
-+	global_timer_init(gt_base, gt_ppi);
-+
-+out:
-+	WARN(err, "Global timer register failed (%d)\n", err);
++	return platform_driver_register(&syscfg_driver);
 +}
++postcore_initcall(syscfg_init);
+diff --git a/include/linux/mfd/stixxxx-syscfg.h b/include/linux/mfd/stixxxx-syscfg.h
+new file mode 100644
+index 0000000..18ed6da7
+--- /dev/null
++++ b/include/linux/mfd/stixxxx-syscfg.h
+@@ -0,0 +1,15 @@
++/*
++ * Copyright (C) 2013 STMicroelectronics R&D Limited
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ */
 +
-+/* Only tested on r2p2 and r3p0  */
-+CLOCKSOURCE_OF_DECLARE(arm_gt, "arm,cortex-a9-global-timer",
-+			global_timer_of_register);
-+#endif
++#ifndef __LINUX_MFD_STIXXXX_SYSCFG_H
++#define __LINUX_MFD_STIXXXX_SYSCFG_H
++
++struct regmap *syscfg_regmap_lookup_by_phandle(struct device_node *np,
++					const char *property);
++struct regmap *syscfg_regmap_lookup_by_name(const char *name);
++
++#endif /* __LINUX_MFD_STIXXXX_SYSCFG_H */
 -- 
 1.7.6.5
+
