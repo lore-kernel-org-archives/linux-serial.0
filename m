@@ -1,72 +1,65 @@
-From: =?ISO-8859-1?Q?St=E9phane_Marchesin?= <marcheu@chromium.org>
-Subject: Re: [PATCH] drivers/tty: Don't hangup shared ttys
-Date: Tue, 11 Jun 2013 16:19:47 -0700
-Message-ID: <CADMs+9ZWnz4zFqa69QoHfbOLc7Yxn2Cvo-NTNdAhw8-uPm9M6A@mail.gmail.com>
-References: <1370991787-24141-1-git-send-email-marcheu@chromium.org> <20130611231518.GA28106@kroah.com>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH 01/13] ARM: Exynos: initialize l2x0 cache controller only
+ for cortex-a9 based SoCs
+Date: Tue, 11 Jun 2013 16:58:06 -0700
+Message-ID: <20130611235806.GI23774@quad.lixom.net>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+ <5595095.zmTGjttZIk@flatron>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f176.google.com ([209.85.223.176]:58848 "EHLO
-	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752140Ab3FKXUH convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Jun 2013 19:20:07 -0400
-Received: by mail-ie0-f176.google.com with SMTP id ar20so18938936iec.35
-        for <linux-serial@vger.kernel.org>; Tue, 11 Jun 2013 16:20:07 -0700 (PDT)
-In-Reply-To: <20130611231518.GA28106@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5595095.zmTGjttZIk@flatron>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: Chander Kashyap <chander.kashyap@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, thomas.ab@samsung.com, swarren@wwwdotorg.org, arnd@arndb.de
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.cz, olof@lixom.net, linux-serial@vger.kernel.org
 
-On Tue, Jun 11, 2013 at 4:15 PM, Greg KH <gregkh@linuxfoundation.org> w=
-rote:
-> On Tue, Jun 11, 2013 at 04:03:07PM -0700, St=E9phane Marchesin wrote:
->> When quickly restarting X servers, we can run into a situation where
->> one X server quits while another one starts on the same tty. For a
->> while, two X servers share the tty, and when the old X server
->> eventually quits, the tty layer hangs up the tty, which among other
->> things stubs out the tty's ioctl functions. Later on, the new X
->> server (which shares the tty functions) tries to call some ioctls
->> on the tty and fails because they have been replaced with the hungup
->> versions. This in turn causes the new X server to abort.
->>
->> This patch checks the tty->count to make sure we're the last
->> consumer before hanging up a tty.
->>
->> Signed-off-by: St=E9phane Marchesin <marcheu@chromium.org>
->> ---
->>  drivers/tty/tty_io.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
->> index 6464029..62a0f02 100644
->> --- a/drivers/tty/tty_io.c
->> +++ b/drivers/tty/tty_io.c
->> @@ -619,6 +619,9 @@ static void __tty_hangup(struct tty_struct *tty,=
- int exit_session)
->>       if (!tty)
->>               return;
->>
->> +     /* Don't hangup if there are other users */
->> +     if (tty->count > 1)
->> +             return;
->
-> What happens when you have a "real" tty that was hungup because it wa=
-s
-> disconnected physically from the system yet userspace had a tty open?
-> You want those ttys to be hungup properly, right?  Doesn't this chang=
-e
-> break that?
+On Sat, Jun 08, 2013 at 12:57:41PM +0200, Tomasz Figa wrote:
+> Hi Chander,
+> 
+> On Thursday 06 of June 2013 16:31:15 Chander Kashyap wrote:
+> > Only cortex-a9 based Exynos SoCs have l2x0 cache controller. Hence
+> > instead of checking for every SoC with soc_is_xxx, just check for cpu
+> > part number and initialize the cache controller for cortex-a9 based
+> > SoCs.
+> > 
+> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+> > ---
+> >  arch/arm/mach-exynos/common.c |    3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/arm/mach-exynos/common.c
+> > b/arch/arm/mach-exynos/common.c index 8ce2db4..bad000e 100644
+> > --- a/arch/arm/mach-exynos/common.c
+> > +++ b/arch/arm/mach-exynos/common.c
+> > @@ -35,6 +35,7 @@
+> >  #include <asm/mach/map.h>
+> >  #include <asm/mach/irq.h>
+> >  #include <asm/cacheflush.h>
+> > +#include <asm/cputype.h>
+> > 
+> >  #include <mach/regs-irq.h>
+> >  #include <mach/regs-pmu.h>
+> > @@ -520,7 +521,7 @@ static int __init exynos4_l2x0_cache_init(void)
+> 
+> I wonder if it shouldn't be done the other way around, i.e. this function 
+> being called only when running on SoCs for which it's appropriate, instead 
+> of checking for supported SoC in this function.
+> 
+> Keep in mind that we are going towards multiplatform support, so you would 
+> end up running this code on any non-Exynos SoC with Cortex A9 as well. 
+> IMHO we should drop most (if not all) of the initcalls around mach-
+> exynos/.
+> 
+> CCing people that might have some opinion on this topic as well.
 
-My understanding was that they'd have a different tty_struct. Is that
-not the case? If so how would you recommend fixing the problem I
-described?
+Looks like all other platforms instantiate the pl310 device node in the
+device tree. Since Exynos is going DT-only, there's no need to support
+non-DT boot any more, and that would be a much cleaner way forward.
 
-St=E9phane
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+That also moves the l2 init to be driven by device-tree data, this removing the
+need for the exynos-specific init alltogether. Code removal FTW!
+
+
+-Olof
