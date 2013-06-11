@@ -1,64 +1,69 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v2 02/11] clocksource:global_timer: Add ARM global timer
- support.
-Date: Tue, 11 Jun 2013 15:05:14 +0100
-Message-ID: <51B72E9A.6070006@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856087-6452-1-git-send-email-srinivas.kandagatla@st.com>
- <CACRpkdbQCRKBzRF4HzNsXHwXCLJJcFZ9T36GPmmYsnX1OfgGRg@mail.gmail.com>
- <51B5D7A6.1020101@st.com>
-Reply-To: srinivas.kandagatla@st.com
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 10/13] ARM: dts: Add initial device tree support for
+ Exynos5420
+Date: Tue, 11 Jun 2013 15:11:21 +0100
+Message-ID: <20130611141121.GC22334@e106331-lin.cambridge.arm.com>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
+ <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
+ <20130606163411.GA23311@e106331-lin.cambridge.arm.com>
+ <CANuQgHFndqWH5KYskuiqxWuVXEp+_=R=Tnfo5y_syreBFcGPbQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <51B5D7A6.1020101@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, srinivas.kandagatla@st.com, Will Deacon <will.deacon@arm.com>, Mike Turquette <mturquette@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Stephen Gallimore <stephen.gallimore@st.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CANuQgHFndqWH5KYskuiqxWuVXEp+_=R=Tnfo5y_syreBFcGPbQ@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Chander Kashyap <chander.kashyap@linaro.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/06/13 14:41, Srinivas Kandagatla wrote:
-> On 10/06/13 14:13, Linus Walleij wrote:
->> On Mon, Jun 10, 2013 at 11:21 AM, Srinivas KANDAGATLA
->> Isn't it better to pass a struct device_node *np around and have that as
->> NULL in the non-DT boot path?
-> I will try it and see how it will look.
+On Tue, Jun 11, 2013 at 02:35:38PM +0100, Chander Kashyap wrote:
+> On 6 June 2013 22:04, Mark Rutland <mark.rutland@arm.com> wrote:
+> > Hi,
+> >
+> >> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+> >> new file mode 100644
+> >> index 0000000..b14e775
+> >> --- /dev/null
+> >> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+> >> @@ -0,0 +1,40 @@
+> >> +/*
+> >> + * SAMSUNG SMDK5420 board device tree source
+> >> + *
+> >> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
+> >> + *           http://www.samsung.com
+> >> + *
+> >> + * This program is free software; you can redistribute it and/or modify
+> >> + * it under the terms of the GNU General Public License version 2 as
+> >> + * published by the Free Software Foundation.
+> >> +*/
+> >> +
+> >> +/dts-v1/;
+> >> +/include/ "exynos5420.dtsi"
+> >> +
+> >> +/ {
+> >> +     model = "Samsung SMDK5420 board based on EXYNOS5420";
+> >> +     compatible = "samsung,smdk5420", "samsung,exynos5420";
+> >> +
+> >> +     memory {
+> >> +             reg =   <0x20000000 0x10000000
+> >> +                      0x30000000 0x10000000
+> >> +                      0x40000000 0x10000000
+> >> +                      0x50000000 0x10000000
+> >> +                      0x60000000 0x10000000
+> >> +                      0x70000000 0x10000000
+> >> +                      0x80000000 0x10000000
+> >> +                      0x90000000 0x10000000>;
+> >> +     };
+> >
+> As there are only 28 bits for memory bank size in memory.h.
+> Hence each bank is split into 256MB.
 
-I did try the change you suggested regarding passing struct device_node
-*np around for both DT and non-DT boot paths.
+I don't think a kernel implementation choice should affect the dts.
 
-Doing this is not adding any value to the driver, because
- 1. Currently the driver only support DT boot paths, in my previous RFC
-patches, Arnd suggested to get rid of the header as all platforms are DT
-now.
- 2. Passing device_node around is not adding any value w.r.t reducing
-code or any thing.
-
-So, I think I will stay with what is there originally, unless you have a
-strong reason.
+If the kernel needs to carve up the memory, it should do it itself - it knows
+what it needs. Splitting the banks manually as above is papering over the
+problem.
 
 Thanks,
-srini
-
-> 
-> Thanks,
-> srini
->>
->> (Maybe somebody in the community asked you to do this, then I
->> will live with it.)
-> 
->>
->> Yours,
->> Linus Walleij
->>
->>
-> 
+Mark.
