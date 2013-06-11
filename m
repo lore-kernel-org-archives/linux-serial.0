@@ -1,86 +1,122 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: Re: [PATCH 13/13] ARM: Exynos: extend soft-reset support for Exynos5420
-Date: Tue, 11 Jun 2013 18:54:32 +0530
-Message-ID: <CANuQgHE3mM8kwftBL26t-V9gddF_+4K9+TwTmUL1fJTJ=rk9Uw@mail.gmail.com>
+Subject: Re: [PATCH 11/13] clocksource: exynos_mct: extend local timer support
+ for four cores
+Date: Tue, 11 Jun 2013 18:56:16 +0530
+Message-ID: <CANuQgHFYFOKaReN7KvU=xT=QP28d_Ox4pDC0K_mV5jy3HifDkQ@mail.gmail.com>
 References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
-	<1370516488-25860-13-git-send-email-chander.kashyap@linaro.org>
-	<51B07631.2010802@linaro.org>
-	<0ea501ce65b8$3046d7a0$90d486e0$%kim@samsung.com>
+	<1370516488-25860-11-git-send-email-chander.kashyap@linaro.org>
+	<20130606165040.GB23311@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <0ea501ce65b8$3046d7a0$90d486e0$%kim@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Kukjin Kim <kgene.kim@samsung.com>
-Cc: Tushar Behera <tushar.behera@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ob0-f169.google.com ([209.85.214.169]:37337 "EHLO
+	mail-ob0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751252Ab3FKN0Q (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Jun 2013 09:26:16 -0400
+Received: by mail-ob0-f169.google.com with SMTP id up14so11840989obb.0
+        for <linux-serial@vger.kernel.org>; Tue, 11 Jun 2013 06:26:16 -0700 (PDT)
+In-Reply-To: <20130606165040.GB23311@e106331-lin.cambridge.arm.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
 
-On 10 June 2013 14:24, Kukjin Kim <kgene.kim@samsung.com> wrote:
-> Tushar Behera wrote:
+On 6 June 2013 22:20, Mark Rutland <mark.rutland@arm.com> wrote:
+> Hi,
+>
+> I have a few comments.
+>
+> On Thu, Jun 06, 2013 at 12:01:25PM +0100, Chander Kashyap wrote:
+>> Extend the local timer interrupt support for handling four local timers.
+>
+> Is this the maximum number of CPUs the MCT could theoretically support?
+>
 >>
->> On 06/06/2013 04:31 PM, Chander Kashyap wrote:
->> > Extend the soft reset support for Exynos5420 SoC.
->> >
->> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
->> > ---
->> >  arch/arm/mach-exynos/common.c |    3 ++-
->> >  1 file changed, 2 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
->> > index fbe1aa7..dc7c134 100644
->> > --- a/arch/arm/mach-exynos/common.c
->> > +++ b/arch/arm/mach-exynos/common.c
->> > @@ -321,7 +321,8 @@ void exynos5_restart(char mode, const char *cmd)
->> >     u32 val;
->> >     void __iomem *addr;
->> >
->> > -   if (of_machine_is_compatible("samsung,exynos5250")) {
->> > +   if (of_machine_is_compatible("samsung,exynos5250") ||
->> > +           (of_machine_is_compatible("samsung,exynos5420"))) {
->> >             val = 0x1;
->> >             addr = EXYNOS_SWRESET;
->> >     } else if (of_machine_is_compatible("samsung,exynos5440")) {
->> >
+>> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+>> ---
+>>  drivers/clocksource/exynos_mct.c |   33 ++++++++++++++++++++++++++++++---
+>>  1 file changed, 30 insertions(+), 3 deletions(-)
 >>
->> How about making 0x1 and EXYNOS_SWRESET as default values of val and
->> addr. That way we can remove this check for exynos5250 and exynos5420.
->> Also we can remove the trailing else statement as there are no non-DT
->> boards for EXYNOS5.
+>> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+>> index 662fcc0..6af17d4 100644
+>> --- a/drivers/clocksource/exynos_mct.c
+>> +++ b/drivers/clocksource/exynos_mct.c
+>> @@ -412,6 +412,18 @@ static struct irqaction mct_tick1_event_irq = {
+>>       .handler        = exynos4_mct_tick_isr,
+>>  };
 >>
->>  void exynos5_restart(char mode, const char *cmd)
+>> +static struct irqaction mct_tick2_event_irq = {
+>> +     .name           = "mct_tick2_irq",
+>> +     .flags          = IRQF_TIMER | IRQF_NOBALANCING,
+>> +     .handler        = exynos4_mct_tick_isr,
+>> +};
+>> +
+>> +static struct irqaction mct_tick3_event_irq = {
+>> +     .name           = "mct_tick3_irq",
+>> +     .flags          = IRQF_TIMER | IRQF_NOBALANCING,
+>> +     .handler        = exynos4_mct_tick_isr,
+>> +};
+>> +
+>
+> Is there any reason you can't use {request,free}_irq?
+>
+>>  static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
 >>  {
->>         struct device_node *np;
->> -       u32 val;
->> -       void __iomem *addr;
->> +       u32 val = 0x1;
->> +       void __iomem *addr = EXYNOS_SWRESET;
->>
->> -       if (of_machine_is_compatible("samsung,exynos5250")) {
->> -               val = 0x1;
->> -               addr = EXYNOS_SWRESET;
->> -       } else if (of_machine_is_compatible("samsung,exynos5440")) {
->> +       if (of_machine_is_compatible("samsung,exynos5440")) {
->>                 u32 status;
->>                 np = of_find_compatible_node(NULL, NULL,
->> "samsung,exynos5440-clock");
->>
->> @@ -336,9 +333,6 @@ void exynos5_restart(char mode, const char *cmd)
->>                 val = __raw_readl(addr);
->>
->>                 val = (val & 0xffff0000) | (status & 0xffff);
->> -       } else {
->> -               pr_err("%s: cannot support non-DT\n", __func__);
->> -               return;
->>         }
->>
->> --
+>>       struct mct_clock_event_device *mevt;
+>> @@ -439,11 +451,21 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+>>                       mct_tick0_event_irq.dev_id = mevt;
+>>                       evt->irq = mct_irqs[MCT_L0_IRQ];
+>>                       setup_irq(evt->irq, &mct_tick0_event_irq);
+>> -             } else {
+>> +             } else if (cpu == 1) {
+>>                       mct_tick1_event_irq.dev_id = mevt;
+>>                       evt->irq = mct_irqs[MCT_L1_IRQ];
+>>                       setup_irq(evt->irq, &mct_tick1_event_irq);
+>>                       irq_set_affinity(evt->irq, cpumask_of(1));
+>> +             } else if (cpu == 2) {
+>> +                     mct_tick2_event_irq.dev_id = mevt;
+>> +                     evt->irq = mct_irqs[MCT_L2_IRQ];
+>> +                     setup_irq(evt->irq, &mct_tick2_event_irq);
+>> +                     irq_set_affinity(evt->irq, cpumask_of(2));
+>> +             } else if (cpu == 3) {
+>> +                     mct_tick3_event_irq.dev_id = mevt;
+>> +                     evt->irq = mct_irqs[MCT_L3_IRQ];
+>> +                     setup_irq(evt->irq, &mct_tick3_event_irq);
+>> +                     irq_set_affinity(evt->irq, cpumask_of(3));
 >
-> Yeah, looks better.
-
-Yes i will do the change. Thanks
+> This doesn't seem good to me. You're duplicating the logic for each CPU. Can
+> you not figure out which values you need based on the smp_processor_id (or even
+> better, the *evt) without requiring a separate branch for each CPU?
 >
-> - Kukjin
+>>               }
+>>       } else {
+>>               enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
+>> @@ -456,11 +478,16 @@ static void exynos4_local_timer_stop(struct clock_event_device *evt)
+>>  {
+>>       unsigned int cpu = smp_processor_id();
+>>       evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
+>> -     if (mct_int_type == MCT_INT_SPI)
+>> +     if (mct_int_type == MCT_INT_SPI) {
+>>               if (cpu == 0)
+>>                       remove_irq(evt->irq, &mct_tick0_event_irq);
+>> -             else
+>> +             else if (cpu == 1)
+>>                       remove_irq(evt->irq, &mct_tick1_event_irq);
+>> +             else if (cpu == 2)
+>> +                     remove_irq(evt->irq, &mct_tick2_event_irq);
+>> +             else if (cpu == 3)
+>> +                     remove_irq(evt->irq, &mct_tick3_event_irq);
+>> +     }
 >
+> Again, I don't think each CPU should be special-cased. If you used
+> {request,free}_irq this would be simpler.
+ I will convert the calls to {request,free}_irq. All problem will be
+taken care by that.
+Thanks for the review.
+>
+> Thanks,
+> Mark.
 
 
 
