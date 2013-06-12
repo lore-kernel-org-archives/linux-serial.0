@@ -1,93 +1,83 @@
-From: Subash Patel <subashrp@gmail.com>
-Subject: Re: [PATCH 10/13] ARM: dts: Add initial device tree support for Exynos5420
-Date: Wed, 12 Jun 2013 11:05:02 +0530
-Message-ID: <51B80886.9010004@gmail.com>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org> <20130606163411.GA23311@e106331-lin.cambridge.arm.com> <CANuQgHFndqWH5KYskuiqxWuVXEp+_=R=Tnfo5y_syreBFcGPbQ@mail.gmail.com> <20130611141121.GC22334@e106331-lin.cambridge.arm.com>
+From: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
+Subject: [PATCH] serial/mpc52xx_uart: fix kernel panic when system reboot
+Date: Wed, 12 Jun 2013 09:21:42 +0200
+Message-ID: <1371021702-3030-1-git-send-email-matteo.facchinetti@sirius-es.it>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20130611141121.GC22334@e106331-lin.cambridge.arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc: agust@denx.de, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Mark,
+This bug appear when a second PSC based driver appends an interrupt
+routine to the FIFO controller shared interrupt (like spi-mpc512x-psc).
+When reboot, uart_shutdown() remove the serial console interrupt handler
+while spi-mpc512x-psc isr is still activate and cause the following kernel
+panic:
 
-On 06/11/2013 07:41 PM, Mark Rutland wrote:
-> On Tue, Jun 11, 2013 at 02:35:38PM +0100, Chander Kashyap wrote:
->> On 6 June 2013 22:04, Mark Rutland <mark.rutland@arm.com> wrote:
->>> Hi,
->>>
->>>> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
->>>> new file mode 100644
->>>> index 0000000..b14e775
->>>> --- /dev/null
->>>> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
->>>> @@ -0,0 +1,40 @@
->>>> +/*
->>>> + * SAMSUNG SMDK5420 board device tree source
->>>> + *
->>>> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
->>>> + *           http://www.samsung.com
->>>> + *
->>>> + * This program is free software; you can redistribute it and/or modify
->>>> + * it under the terms of the GNU General Public License version 2 as
->>>> + * published by the Free Software Foundation.
->>>> +*/
->>>> +
->>>> +/dts-v1/;
->>>> +/include/ "exynos5420.dtsi"
->>>> +
->>>> +/ {
->>>> +     model = "Samsung SMDK5420 board based on EXYNOS5420";
->>>> +     compatible = "samsung,smdk5420", "samsung,exynos5420";
->>>> +
->>>> +     memory {
->>>> +             reg =   <0x20000000 0x10000000
->>>> +                      0x30000000 0x10000000
->>>> +                      0x40000000 0x10000000
->>>> +                      0x50000000 0x10000000
->>>> +                      0x60000000 0x10000000
->>>> +                      0x70000000 0x10000000
->>>> +                      0x80000000 0x10000000
->>>> +                      0x90000000 0x10000000>;
->>>> +     };
->>>
->> As there are only 28 bits for memory bank size in memory.h.
->> Hence each bank is split into 256MB.
->
-> I don't think a kernel implementation choice should affect the dts.
->
-> If the kernel needs to carve up the memory, it should do it itself - it knows
-> what it needs. Splitting the banks manually as above is papering over the
-> problem.
-
-I agree this looks a bit odd to split the memory regions into 256MiB 
-banks. But we have had legacy systems which had a hole in the memory 
-range, and we used sparse mem in the past for the same. If we modify 
-this bank size now, we will break the functionality of those systems.
-
-Also, with LPAE systems I changed this bank size to 2GiB in another 
-patch. I think someone was working on cleaning up sparse mem for 
-exynos(I was quite busy internally and didn't follow up much on mailing 
-list). So I would like to keep this bank size as 256MiB for non-LPAE 
-systems at the moment, until such a cleanup gets merged.
-
-Copy: kgene - exynos maintainer
-
-Mr. Kim, let us know your opinion on this.
-
-Regards,
-Subash
+The system is going down for reboot NOW!rpc (ttyPSC0) (Mon Jun 10 12:26:07 20
+INIT: Sending processirq 40: nobody cared (try booting with the "irqpoll" option)
+CPU: 0 PID: 0 Comm: swapper Not tainted 3.10.0-rc4-next-20130607-00001-ga0bceb3-dirty #5
+Call Trace:
+[cfff9f00] [c0007910] show_stack+0x48/0x150 (unreliable)
+[cfff9f40] [c005ae60] __report_bad_irq.isra.6+0x34/0xe0
+[cfff9f60] [c005b194] note_interrupt+0x214/0x26c
+[cfff9f90] [c00590fc] handle_irq_event_percpu+0xd0/0x1bc
+[cfff9fd0] [c005921c] handle_irq_event+0x34/0x54
+[cfff9fe0] [c005b8f4] handle_level_irq+0x90/0xf4
+[cfff9ff0] [c000cb98] call_handle_irq+0x18/0x28
+[c050dd60] [c000575c] do_IRQ+0xcc/0x124
+[c050dd90] [c000eb04] ret_from_except+0x0/0x14
+--- Exception: 501 at __do_softirq+0x84/0x17c
+    LR = __do_softirq+0x20/0x17c
+[c050de50] [c0045e7c] ktime_get+0x148/0x160 (unreliable)
+[c050dea0] [c001eccc] irq_exit+0x94/0xb8
+[c050deb0] [c00056e0] do_IRQ+0x50/0x124
+[c050dee0] [c000eb04] ret_from_except+0x0/0x14
+--- Exception: 501 at cpu_startup_entry+0x5c/0x134
+    LR = cpu_startup_entry+0xc0/0x134
+[c050dfa0] [c0045170] cpu_startup_entry+0xac/0x134 (unreliable)
+[c050dfc0] [c04b9d70] start_kernel+0x2d4/0x2e8
+[c050dff0] [00003438] 0x3438
+handlers:
+[<c02ae388>] mpc512x_psc_spi_isr
+Disabling IRQ #40
 
 
->
-> Thanks,
-> Mark.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Disabling serial console interrupt before free_irq()
+prevents this error.
+
+
+
+Signed-off-by: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
+---
+ drivers/tty/serial/mpc52xx_uart.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 9ba1945..e1280a2 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1058,6 +1058,9 @@ mpc52xx_uart_shutdown(struct uart_port *port)
+ 	if (psc_ops->clock)
+ 		psc_ops->clock(port, 0);
+ 
++	/* Disable interrupt */
++	psc_ops->cw_disable_ints(port);
++
+ 	/* Release interrupt */
+ 	free_irq(port->irq, port);
+ }
+-- 
+1.8.1.2
