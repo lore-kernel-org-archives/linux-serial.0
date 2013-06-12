@@ -1,99 +1,93 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] drivers/tty: Don't hangup shared ttys
-Date: Tue, 11 Jun 2013 17:05:01 -0700
-Message-ID: <20130612000501.GA2733@kroah.com>
-References: <1370991787-24141-1-git-send-email-marcheu@chromium.org>
- <20130611231518.GA28106@kroah.com>
- <CADMs+9ZWnz4zFqa69QoHfbOLc7Yxn2Cvo-NTNdAhw8-uPm9M6A@mail.gmail.com>
+From: Subash Patel <subashrp@gmail.com>
+Subject: Re: [PATCH 10/13] ARM: dts: Add initial device tree support for Exynos5420
+Date: Wed, 12 Jun 2013 11:05:02 +0530
+Message-ID: <51B80886.9010004@gmail.com>
+References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org> <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org> <20130606163411.GA23311@e106331-lin.cambridge.arm.com> <CANuQgHFndqWH5KYskuiqxWuVXEp+_=R=Tnfo5y_syreBFcGPbQ@mail.gmail.com> <20130611141121.GC22334@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:44104 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752573Ab3FLAE0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Jun 2013 20:04:26 -0400
-Content-Disposition: inline
-In-Reply-To: <CADMs+9ZWnz4zFqa69QoHfbOLc7Yxn2Cvo-NTNdAhw8-uPm9M6A@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20130611141121.GC22334@e106331-lin.cambridge.arm.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.cz, olof@lixom.net, linux-serial@vger.kernel.org
 
-On Tue, Jun 11, 2013 at 04:19:47PM -0700, St=E9phane Marchesin wrote:
-> On Tue, Jun 11, 2013 at 4:15 PM, Greg KH <gregkh@linuxfoundation.org>=
- wrote:
-> > On Tue, Jun 11, 2013 at 04:03:07PM -0700, St=E9phane Marchesin wrot=
-e:
-> >> When quickly restarting X servers, we can run into a situation whe=
-re
-> >> one X server quits while another one starts on the same tty. For a
-> >> while, two X servers share the tty, and when the old X server
-> >> eventually quits, the tty layer hangs up the tty, which among othe=
-r
-> >> things stubs out the tty's ioctl functions. Later on, the new X
-> >> server (which shares the tty functions) tries to call some ioctls
-> >> on the tty and fails because they have been replaced with the hung=
-up
-> >> versions. This in turn causes the new X server to abort.
-> >>
-> >> This patch checks the tty->count to make sure we're the last
-> >> consumer before hanging up a tty.
-> >>
-> >> Signed-off-by: St=E9phane Marchesin <marcheu@chromium.org>
-> >> ---
-> >>  drivers/tty/tty_io.c | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> >> index 6464029..62a0f02 100644
-> >> --- a/drivers/tty/tty_io.c
-> >> +++ b/drivers/tty/tty_io.c
-> >> @@ -619,6 +619,9 @@ static void __tty_hangup(struct tty_struct *tt=
-y, int exit_session)
-> >>       if (!tty)
-> >>               return;
-> >>
-> >> +     /* Don't hangup if there are other users */
-> >> +     if (tty->count > 1)
-> >> +             return;
-> >
-> > What happens when you have a "real" tty that was hungup because it =
-was
-> > disconnected physically from the system yet userspace had a tty ope=
-n?
-> > You want those ttys to be hungup properly, right?  Doesn't this cha=
-nge
-> > break that?
->=20
-> My understanding was that they'd have a different tty_struct. Is that
-> not the case?
+Hi Mark,
 
-No, it's the same case as you are seeing, the tty_struct is still the
-same, but we really need to hang it up as it's no longer there, no
-matter if there are users of it or not.
+On 06/11/2013 07:41 PM, Mark Rutland wrote:
+> On Tue, Jun 11, 2013 at 02:35:38PM +0100, Chander Kashyap wrote:
+>> On 6 June 2013 22:04, Mark Rutland <mark.rutland@arm.com> wrote:
+>>> Hi,
+>>>
+>>>> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+>>>> new file mode 100644
+>>>> index 0000000..b14e775
+>>>> --- /dev/null
+>>>> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+>>>> @@ -0,0 +1,40 @@
+>>>> +/*
+>>>> + * SAMSUNG SMDK5420 board device tree source
+>>>> + *
+>>>> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
+>>>> + *           http://www.samsung.com
+>>>> + *
+>>>> + * This program is free software; you can redistribute it and/or modify
+>>>> + * it under the terms of the GNU General Public License version 2 as
+>>>> + * published by the Free Software Foundation.
+>>>> +*/
+>>>> +
+>>>> +/dts-v1/;
+>>>> +/include/ "exynos5420.dtsi"
+>>>> +
+>>>> +/ {
+>>>> +     model = "Samsung SMDK5420 board based on EXYNOS5420";
+>>>> +     compatible = "samsung,smdk5420", "samsung,exynos5420";
+>>>> +
+>>>> +     memory {
+>>>> +             reg =   <0x20000000 0x10000000
+>>>> +                      0x30000000 0x10000000
+>>>> +                      0x40000000 0x10000000
+>>>> +                      0x50000000 0x10000000
+>>>> +                      0x60000000 0x10000000
+>>>> +                      0x70000000 0x10000000
+>>>> +                      0x80000000 0x10000000
+>>>> +                      0x90000000 0x10000000>;
+>>>> +     };
+>>>
+>> As there are only 28 bits for memory bank size in memory.h.
+>> Hence each bank is split into 256MB.
+>
+> I don't think a kernel implementation choice should affect the dts.
+>
+> If the kernel needs to carve up the memory, it should do it itself - it knows
+> what it needs. Splitting the banks manually as above is papering over the
+> problem.
 
-Try it with your change and any cheap usb-serial device (open a port,
-unplug it, try to write to the device node you still had open.)
+I agree this looks a bit odd to split the memory regions into 256MiB 
+banks. But we have had legacy systems which had a hole in the memory 
+range, and we used sparse mem in the past for the same. If we modify 
+this bank size now, we will break the functionality of those systems.
 
-> If so how would you recommend fixing the problem I described?
+Also, with LPAE systems I changed this bank size to 2GiB in another 
+patch. I think someone was working on cleaning up sparse mem for 
+exynos(I was quite busy internally and didn't follow up much on mailing 
+list). So I would like to keep this bank size as 256MiB for non-LPAE 
+systems at the moment, until such a cleanup gets merged.
 
-=46ix your system to:
-  - shut down X faster
-  - only start the new X when the first one is shutdown
-  - create the second version of X before the first one is shutdown, bu=
-t
-    handle it properly by giving userspace the full second instance
-    (i.e. handle it if 2 x servers are running at once.)
+Copy: kgene - exynos maintainer
 
-Have you tried any of these?
+Mr. Kim, let us know your opinion on this.
 
-thanks,
+Regards,
+Subash
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+>
+> Thanks,
+> Mark.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
