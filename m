@@ -1,58 +1,40 @@
-From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: Re: [PATCH 09/13] clk: exynos5420: register clocks using common clock framework
-Date: Thu, 13 Jun 2013 10:48:13 +0530
-Message-ID: <CANuQgHHxkK2UOWZBgTPzRN_vo02MFRmFYUn9KqJftJ17xrAMfg@mail.gmail.com>
-References: <1370516488-25860-1-git-send-email-chander.kashyap@linaro.org>
-	<1370516488-25860-9-git-send-email-chander.kashyap@linaro.org>
-	<1479353.W3tSzhFHaA@flatron>
-	<CAL1qeaE91S-sTLXBb7d3tbDP9M68py4PsLdHxxp2JqisGsP=ww@mail.gmail.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [PATCH v2 09/11] ARM:stixxxx: Add stixxxx options to multi_v7_defconfig
+Date: Thu, 13 Jun 2013 10:24:45 +0100
+Message-ID: <51B98FDD.4010401@st.com>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856477-7237-1-git-send-email-srinivas.kandagatla@st.com> <20130610104032.GA2513@e106331-lin.cambridge.arm.com> <51B5B15E.50901@st.com> <20130610131513.GB2513@e106331-lin.cambridge.arm.com>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAL1qeaE91S-sTLXBb7d3tbDP9M68py4PsLdHxxp2JqisGsP=ww@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Andrew Bresticker <abrestic@chromium.org>
-Cc: Tomasz Figa <tomasz.figa@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, "t.figa@samsung.com" <t.figa@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, Thomas Abraham <thomas.abraham@linaro.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20130610131513.GB2513@e106331-lin.cambridge.arm.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, Stephen Gallimore <stephen.gallimore@st.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mauro
 List-Id: linux-serial@vger.kernel.org
 
-On 13 June 2013 03:02, Andrew Bresticker <abrestic@chromium.org> wrote:
-> Tomasz,
->
->>> +     apll = samsung_clk_register_pll35xx("fout_apll", "oscclk",
->>> +                     reg_base + 0x100);
->>> +     bpll = samsung_clk_register_pll35xx("fout_bpll", "oscclk",
->>> +                     reg_base + 0x20110);
->>> +     cpll = samsung_clk_register_pll35xx("fout_cpll", "oscclk",
->>> +                     reg_base + 0x10120);
->>> +     dpll = samsung_clk_register_pll35xx("fout_dpll", "oscclk",
->>> +                     reg_base + 0x10128);
->>> +     epll = samsung_clk_register_pll35xx("fout_epll", "oscclk",
->>> +                     reg_base + 0x10130);
->>> +     ipll = samsung_clk_register_pll35xx("fout_ipll", "oscclk",
->>> +                     reg_base + 0x10150);
->>> +     kpll = samsung_clk_register_pll35xx("fout_kpll", "oscclk",
->>> +                     reg_base + 0x28100);
->>> +     mpll = samsung_clk_register_pll35xx("fout_mpll", "oscclk",
->>> +                     reg_base + 0x10180);
->>> +     rpll = samsung_clk_register_pll35xx("fout_rpll", "oscclk",
->>> +                     reg_base + 0x10140);
->>> +     spll = samsung_clk_register_pll35xx("fout_spll", "oscclk",
->>> +                     reg_base + 0x10160);
->>> +     vpll = samsung_clk_register_pll35xx("fout_vpll", "oscclk",
->>> +                     reg_base + 0x10170);
->>
->> Are all those PLLs really PLL35xx? At least for VPLL and EPLL a PLL
->> without the K factor looks a bit awkward.
->
-> No they are not...  EPLL and RPLL should be pll36xx, but the rest are pll35xx.
-Yes EPLL and RPLL are pll36xx.
-Thanks for pointing out.
->
-> Thanks,
-> Andrew
+On 10/06/13 14:15, Mark Rutland wrote:
+> CONFIG_EXPERIMENTAL's gone as of 3d374d09f1: "final removal of
+> CONFIG_EXPERIMENTAL", so that's fine to go. CONFIG_GPIO_PL061 and
+> CONFIG_MMC_WMT get selected elsewhere, so that's fine.
+> 
 
+Am planning to send a patch to clean this up, so that any new platform
+addition to the multi_v7_defconfig will not under go this discussion again..
 
+> It looks like the architected timer deselection is fallout of my own making,
+> the multi_v7_defconfig should now contain HAVE_ARM_ARCH_TIMER rather than
+> ARM_ARCH_TIMER.
+Why should it even contain HAVE_ARM_ARCH_TIMER/ARM_ARCH_TIMER?
+The only reason I see for de-selection is because none of the platforms
+in the multi_v7 defconfig selects it.
 
---
-with warm regards,
-Chander Kashyap
+Looks like there is no platform in mulit_v7 config which requires this
+support. If there is one I think it should select it.
+
+Am I correct?
+
+Thanks,
+srini
+
