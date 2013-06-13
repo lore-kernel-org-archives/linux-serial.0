@@ -1,40 +1,45 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v2 09/11] ARM:stixxxx: Add stixxxx options to multi_v7_defconfig
-Date: Thu, 13 Jun 2013 10:24:45 +0100
-Message-ID: <51B98FDD.4010401@st.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com> <1370856477-7237-1-git-send-email-srinivas.kandagatla@st.com> <20130610104032.GA2513@e106331-lin.cambridge.arm.com> <51B5B15E.50901@st.com> <20130610131513.GB2513@e106331-lin.cambridge.arm.com>
-Reply-To: srinivas.kandagatla@st.com
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
+Date: Thu, 13 Jun 2013 12:56:40 +0100
+Message-ID: <20130613115640.GC18614@n2100.arm.linux.org.uk>
+References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
+ <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
+ <CAHTX3d+dk3W_9b7SVUokWq4KYXnj=Z1=WPj5zJ-gUvJqqwE=+Q@mail.gmail.com>
+ <51B5BCB3.3060405@st.com> <20130610231934.GG18614@n2100.arm.linux.org.uk>
+ <51B6C8B7.50807@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20130610131513.GB2513@e106331-lin.cambridge.arm.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, Stephen Gallimore <stephen.gallimore@st.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mauro
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <51B6C8B7.50807@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: Mauro Carvalho Chehab <mchehab@redhat.com>, linux-doc@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Stephen Gallimore <stephen.gallimore@st.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>, Rob Herring <rob.herring@calxeda.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm <linux-arm-kernel@lists.infradead.org>, Michal Simek <monstr@monstr.eu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, Rob Landley <rob@landley.net>, Olof Johansson <olof@lixom.net>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/06/13 14:15, Mark Rutland wrote:
-> CONFIG_EXPERIMENTAL's gone as of 3d374d09f1: "final removal of
-> CONFIG_EXPERIMENTAL", so that's fine to go. CONFIG_GPIO_PL061 and
-> CONFIG_MMC_WMT get selected elsewhere, so that's fine.
-> 
+On Tue, Jun 11, 2013 at 07:50:31AM +0100, Srinivas KANDAGATLA wrote:
+> You are right, It does not make sense to use BIT() macro for field which
+> has more than 1 bit. I think using mix of both BIT() and the old style
+> will make code look bit confusing to reader, Also no other mach code in
+> the kernel use BIT while configuring L2 controller. So am going to drop
+> the idea of using BIT here and leave the code as it is.
 
-Am planning to send a patch to clean this up, so that any new platform
-addition to the multi_v7_defconfig will not under go this discussion again..
+I'd suggest putting a comment in the code to that effect.  With the way
+"cleanups" get done, I wouldn't be surprised if this attracts a lot of
+people wanting to do a trivial "1 << bit" -> "BIT(bit)" conversions.
 
-> It looks like the architected timer deselection is fallout of my own making,
-> the multi_v7_defconfig should now contain HAVE_ARM_ARCH_TIMER rather than
-> ARM_ARCH_TIMER.
-Why should it even contain HAVE_ARM_ARCH_TIMER/ARM_ARCH_TIMER?
-The only reason I see for de-selection is because none of the platforms
-in the multi_v7 defconfig selects it.
+One of the problems of open source is that you can say "no" to a patch
+like that until you're blue in the face, but it will eventually make
+its way in via some path.
 
-Looks like there is no platform in mulit_v7 config which requires this
-support. If there is one I think it should select it.
-
-Am I correct?
-
-Thanks,
-srini
-
+Just one of the reasons I consider BIT() to be evil and an inappropriate
+macro.
