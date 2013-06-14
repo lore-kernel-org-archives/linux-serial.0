@@ -1,73 +1,83 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH v2 00/10] ARM: Exynos: Add Exynos5420 SoC support
-Date: Fri, 14 Jun 2013 19:32:42 +0530
-Message-ID: <1371218572-8993-1-git-send-email-chander.kashyap@linaro.org>
+Subject: [PATCH v2 02/10] ARM: dts: list the CPU nodes for Exynos5250
+Date: Fri, 14 Jun 2013 19:32:44 +0530
+Message-ID: <1371218572-8993-3-git-send-email-chander.kashyap@linaro.org>
 References: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+ <1371218572-8993-1-git-send-email-chander.kashyap@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:34639 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753255Ab3FNOD0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Jun 2013 10:03:26 -0400
+Received: by mail-pd0-f170.google.com with SMTP id x11so605672pdj.29
+        for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2013 07:03:26 -0700 (PDT)
+In-Reply-To: <1371218572-8993-1-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
-List-Id: linux-serial@vger.kernel.org
 
-Exynos5420 is new SoC in Samsung's Exynos5 SoC series. This series adds
-initial support for this SoC.
+Instead of having to specify the number for CPUs in Exynos5250 in platsmp.c
+file, let the number of CPUs be determined by having this information listed
+in Exynos5250 device tree file.
 
-Changes since v1:
+Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+---
+ arch/arm/boot/dts/exynos5250.dtsi |   16 ++++++++++++++++
+ arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
+ 2 files changed, 23 insertions(+), 3 deletions(-)
 
-1. As not-dt platforms will not be supported from 3.11 onwards, following
-   patches from previous patch series are dropped:
-   "irqchip: exynos-combiner: set irq base as 256 for Exynos5420"
-   "ARM: Exynos: initialize l2x0 cache controller only for cortex-a9 based SoCs"
-2. Added device type property in cpu node in the following patch:
-   "ARM: dts: list the CPU nodes for Exynos5250
-3. Sorted out the nodes listed in based upon the physical addresses as suggested
-   by Tomasz Figa.
-4. As Tomasz is going to consolidate the secondary cpu power register address
-   calculation in all possible scnarios, hence dropped the following patch:
-  "ARM: Exynos: fix secondary cpu power control register address calculation"
-5. Replaced the setup/remove)_irq calls with (request/free)_irq calls as
-   suggested by Mark Rutland in patch: 
-   "clocksource: exynos_mct: use (request/free)_irq calls for local timer
-    registration"
-6. Changed the registration of epll and rpll from pll35xx to pl36xx.
-7. Changed driver data selection for serial port, based on ARCH_EXYNOS.
-8. Changed the interrupt cells from 2 to 1 as suggested by Tomasz Figa.
-
-Chander Kashyap (10):
-  ARM: dts: fork out common Exynos5 nodes
-  ARM: dts: list the CPU nodes for Exynos5250
-  ARM: Exynos: Add support for Exynos5420 SoC
-  serial: samsung: select Exynos specific driver data if ARCH_EXYNOS is defined
-  ARM: Exynos: use four additional chipid bits to identify Exynos family
-  clk: exynos5420: register clocks using common clock framework
-  ARM: dts: Add initial device tree support for Exynos5420
-  clocksource: exynos_mct: use (request/free)_irq calls for local timer registration
-  ARM: Exynos: add secondary CPU boot base location for Exynos5420
-  ARM: Exynos: extend soft-reset support for Exynos5420
-
- .../devicetree/bindings/clock/exynos5420-clock.txt |  201 ++++++
- arch/arm/boot/dts/Makefile                         |    1 +
- arch/arm/boot/dts/exynos5.dtsi                     |  111 +++
- arch/arm/boot/dts/exynos5250.dtsi                  |   80 +-
- arch/arm/boot/dts/exynos5420-smdk5420.dts          |   40 +
- arch/arm/boot/dts/exynos5420.dtsi                  |  104 +++
- arch/arm/mach-exynos/Kconfig                       |   10 +
- arch/arm/mach-exynos/common.c                      |   18 +-
- arch/arm/mach-exynos/include/mach/uncompress.h     |    7 +-
- arch/arm/mach-exynos/mach-exynos5-dt.c             |    1 +
- arch/arm/mach-exynos/platsmp.c                     |   12 +-
- arch/arm/plat-samsung/include/plat/cpu.h           |    8 +
- drivers/clk/samsung/Makefile                       |    1 +
- drivers/clk/samsung/clk-exynos5420.c               |  762 ++++++++++++++++++++
- drivers/clocksource/exynos_mct.c                   |   35 +-
- drivers/tty/serial/samsung.c                       |    4 +-
- 16 files changed, 1288 insertions(+), 107 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/exynos5420-clock.txt
- create mode 100644 arch/arm/boot/dts/exynos5.dtsi
- create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
- create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
- create mode 100644 drivers/clk/samsung/clk-exynos5420.c
-
+diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+index 2b59ea3..b4b808e 100644
+--- a/arch/arm/boot/dts/exynos5250.dtsi
++++ b/arch/arm/boot/dts/exynos5250.dtsi
+@@ -50,6 +50,22 @@
+ 		pinctrl3 = &pinctrl_3;
+ 	};
+ 
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a15";
++			reg = <0>;
++		};
++		cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a15";
++			reg = <1>;
++		};
++	};
++
+ 	pd_gsc: gsc-power-domain@0x10044000 {
+ 		compatible = "samsung,exynos4210-pd";
+ 		reg = <0x10044000 0x20>;
+diff --git a/arch/arm/mach-exynos/platsmp.c b/arch/arm/mach-exynos/platsmp.c
+index 1a4e4e5..85ea4ca 100644
+--- a/arch/arm/mach-exynos/platsmp.c
++++ b/arch/arm/mach-exynos/platsmp.c
+@@ -180,10 +180,14 @@ static void __init exynos_smp_init_cpus(void)
+ 	void __iomem *scu_base = scu_base_addr();
+ 	unsigned int i, ncores;
+ 
+-	if (soc_is_exynos5250())
+-		ncores = 2;
+-	else
++	if (read_cpuid_part_number() == ARM_CPU_PART_CORTEX_A9)
+ 		ncores = scu_base ? scu_get_core_count(scu_base) : 1;
++	else
++		/*
++		 * CPU Nodes are passed thru DT and set_cpu_possible
++		 * is set by "arm_dt_init_cpu_maps".
++		 */
++		return;
+ 
+ 	/* sanity check */
+ 	if (ncores > nr_cpu_ids) {
 -- 
 1.7.9.5
+
