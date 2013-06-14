@@ -1,143 +1,118 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: [PATCH 27/28] ARM: EXYNOS: Remove CONFIG_SOC_EXYNOS4412
-Date: Fri, 14 Jun 2013 21:33:03 +0200
-Message-ID: <1371238384-1504-28-git-send-email-t.figa@samsung.com>
-References: <1371238384-1504-1-git-send-email-t.figa@samsung.com>
-Return-path: <linux-media-owner@vger.kernel.org>
-In-reply-to: <1371238384-1504-1-git-send-email-t.figa@samsung.com>
-Sender: linux-media-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <t.figa@samsung.com>, "Rafael J. Wysocki" <rjw@sisk.pl>, Viresh Kumar <viresh.kumar@linaro.org>, Mauro Carvalho Chehab <mchehab@redhat.com>, Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, cpufreq@vger.kernel.org, linux-pm@vger.kernel.org, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: API to flush rx fifo?
+Date: Fri, 14 Jun 2013 16:19:58 -0400
+Message-ID: <51BB7AEE.70505@hurleysoftware.com>
+References: <kpak75$9ko$1@ger.gmane.org> <51BB2C2A.9050601@hurleysoftware.com> <kpfc5k$5u4$1@ger.gmane.org> <51BB3AD0.50201@hurleysoftware.com> <kpfgdu$nfb$1@ger.gmane.org> <51BB4E64.2000705@hurleysoftware.com> <20130614173941.GA15623@grante> <kpfo59$b6p$1@ger.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:40116 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753116Ab3FNUUA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Jun 2013 16:20:00 -0400
+In-Reply-To: <kpfo59$b6p$1@ger.gmane.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
-Exynos4212 and Exynos4412 SoCs differ only in number of ARM cores and
-there is no need to have separate Kconfig options for them, since they
-use the same code.
-
-This patch removes CONFIG_SOC_EXYNOS4412, leaving CONFIG_SOC_EXYNOS4212
-as the one supporting both SoCs from this series.
-
-Cc: "Rafael J. Wysocki" <rjw@sisk.pl>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: Eduardo Valentin <eduardo.valentin@ti.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: cpufreq@vger.kernel.org
-Cc: linux-pm@vger.kernel.org
-Cc: linux-media@vger.kernel.org
+To: Grant Edwards <grant.b.edwards@gmail.com>
 Cc: linux-serial@vger.kernel.org
-Signed-off-by: Tomasz Figa <t.figa@samsung.com>
-Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- arch/arm/mach-exynos/Kconfig              | 11 +----------
- arch/arm/plat-samsung/include/plat/cpu.h  |  6 +-----
- drivers/cpufreq/Kconfig.arm               |  2 +-
- drivers/media/platform/exynos4-is/Kconfig |  2 +-
- drivers/thermal/exynos_thermal.c          |  2 +-
- drivers/tty/serial/samsung.c              |  3 +--
- 6 files changed, 6 insertions(+), 20 deletions(-)
 
-diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfig
-index 47d8d9e..fe75a65 100644
---- a/arch/arm/mach-exynos/Kconfig
-+++ b/arch/arm/mach-exynos/Kconfig
-@@ -46,7 +46,7 @@ config CPU_EXYNOS4210
- 	  Enable EXYNOS4210 CPU support
- 
- config SOC_EXYNOS4212
--	bool "SAMSUNG EXYNOS4212"
-+	bool "SAMSUNG EXYNOS4212/4412"
- 	default y
- 	depends on ARCH_EXYNOS4
- 	select PINCTRL_EXYNOS
-@@ -56,15 +56,6 @@ config SOC_EXYNOS4212
- 	help
- 	  Enable EXYNOS4212 SoC support
- 
--config SOC_EXYNOS4412
--	bool "SAMSUNG EXYNOS4412"
--	default y
--	depends on ARCH_EXYNOS4
--	select PINCTRL_EXYNOS
--	select SAMSUNG_DMADEV
--	help
--	  Enable EXYNOS4412 SoC support
--
- config SOC_EXYNOS5250
- 	bool "SAMSUNG EXYNOS5250"
- 	default y
-diff --git a/arch/arm/plat-samsung/include/plat/cpu.h b/arch/arm/plat-samsung/include/plat/cpu.h
-index 989fefe..87b03bb 100644
---- a/arch/arm/plat-samsung/include/plat/cpu.h
-+++ b/arch/arm/plat-samsung/include/plat/cpu.h
-@@ -122,13 +122,9 @@ IS_SAMSUNG_CPU(exynos5440, EXYNOS5440_SOC_ID, EXYNOS5_SOC_MASK)
- 
- #if defined(CONFIG_SOC_EXYNOS4212)
- # define soc_is_exynos4212()	is_samsung_exynos4212()
--#else
--# define soc_is_exynos4212()	0
--#endif
--
--#if defined(CONFIG_SOC_EXYNOS4412)
- # define soc_is_exynos4412()	is_samsung_exynos4412()
- #else
-+# define soc_is_exynos4212()	0
- # define soc_is_exynos4412()	0
- #endif
- 
-diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
-index a924408..b214ad6 100644
---- a/drivers/cpufreq/Kconfig.arm
-+++ b/drivers/cpufreq/Kconfig.arm
-@@ -32,7 +32,7 @@ config ARM_EXYNOS4210_CPUFREQ
- 	  SoC (S5PV310 or S5PC210).
- 
- config ARM_EXYNOS4X12_CPUFREQ
--	def_bool (SOC_EXYNOS4212 || SOC_EXYNOS4412)
-+	def_bool SOC_EXYNOS4212
- 	help
- 	  This adds the CPUFreq driver for Samsung EXYNOS4X12
- 	  SoC (EXYNOS4212 or EXYNOS4412).
-diff --git a/drivers/media/platform/exynos4-is/Kconfig b/drivers/media/platform/exynos4-is/Kconfig
-index 6ff99b5..f483e11 100644
---- a/drivers/media/platform/exynos4-is/Kconfig
-+++ b/drivers/media/platform/exynos4-is/Kconfig
-@@ -32,7 +32,7 @@ config VIDEO_S5P_MIPI_CSIS
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called s5p-csis.
- 
--if SOC_EXYNOS4212 || SOC_EXYNOS4412 || SOC_EXYNOS5250
-+if SOC_EXYNOS4212 || SOC_EXYNOS5250
- 
- config VIDEO_EXYNOS_FIMC_LITE
- 	tristate "EXYNOS FIMC-LITE camera interface driver"
-diff --git a/drivers/thermal/exynos_thermal.c b/drivers/thermal/exynos_thermal.c
-index 788b1dd..f88a2ad 100644
---- a/drivers/thermal/exynos_thermal.c
-+++ b/drivers/thermal/exynos_thermal.c
-@@ -817,7 +817,7 @@ static struct exynos_tmu_platform_data const exynos4210_default_tmu_data = {
- #define EXYNOS4210_TMU_DRV_DATA (NULL)
- #endif
- 
--#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4412)
-+#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4212)
- static struct exynos_tmu_platform_data const exynos_default_tmu_data = {
- 	.threshold_falling = 10,
- 	.trigger_levels[0] = 85,
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 0c8a9fa..eeb8ecb 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1714,8 +1714,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) || \
--	defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) || \
--	defined(CONFIG_SOC_EXYNOS5440)
-+	defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS5440)
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
- 	.info = &(struct s3c24xx_uart_info) {
- 		.name		= "Samsung Exynos4 UART",
--- 
-1.8.2.1
+On 06/14/2013 02:41 PM, Grant Edwards wrote:
+> On 2013-06-14, Grant Edwards <grant.b.edwards@gmail.com> wrote:
+>
+>>> the serial core and other tty drivers continue to empty the rx fifo
+>>> -- throttle only shuts off the transmitter on the other end.
+>
+> Let's say that the tty layer fills up, and calls the uart driver's
+> throttle() callback.  Now, instead of stopping the unloading of the rx
+> FIFO (like my drivers do), we explicitly send an XOFF and continue to
+> unload the rx FIFO.  Will the tty layer accept the 1KB (or 4KB or 8KB)
+> of data that's already in the rx FIFO without any loss/overrun? AFAIK,
+> it can't.  That's why my drivers (and the USB drivers) do what they do.
+
+The tty flip buffers are 64KB+ deep. That should be more than enough
+for any rate <= 4Mbits/s or so.
+
+Also, those lockless patchsets (which I'm about to refresh for inclusion
+in 3.12) I think will dramatically improve the tty layer throughput,
+which in turn should mean much less throttling.
+
+I understand that the tty flow control design is anything but ideal.
+
+>  From another point of view: not reading the rx fifo is how one "shuts
+> off the transmitter on the other end" (eventually) when one is using
+> the UART's flow control support -- at least that's how all the
+> flow-control-supporting UARTs I've seen work.  Stopping the other end
+> just because the tty layer is full is also wasteful: some of my
+> "UARTs" can buffer up to 9KB of receive data in the rx fifo[1] after
+> the tty layer fills up. They'll tell the other end to stop when it
+> needs to be stopped. Aside from that, having the flow state controlled
+> from two places (serial_core and the UART itself) tends to be
+> error-prone.
+>
+> When you're dealing with high baud rates (e.g. 921K) and a bus like
+> USB or Ethernet, where there may be tens or hundreds of milliseconds
+> of latency between the serial_core and the physical UART chip, and
+> FIFO sizes are measured in KB.  In those situations there just isn't
+> any way for either the serial_core or tty layer to know when the
+> transmitter on the other end needs to be turned on or off.  You have
+> to let the UART handle it. All the tty/serial_core layer knows is
+> whether or not it has room for more receive data, and that's not the
+> same thing as knowing when the transmitter on other end of the serial
+> cable needs to be turned on/off.
+ >
+> So, when I add the UART-driver callbacks for throttle/unthrottle, what
+> they'll have to do is control whether we read data from the rx FIFO or
+> not.
+
+In this case, I would ignore the throttle and only use the unthrottle
+to restart rx (you would stop rx whenever tty_insert_flip_xxx()
+returns < requested and restart rx when you receive unthrottle()).
+
+The main problem with the throttle/unthrottle flow control right now
+is the wrong internal tty layer is initiating it. For drivers that use
+the flip buffer interface, that should be the layer that implements
+flow control with the driver, perhaps with settable high & low watermarks.
+
+Unfortunately, currently it's the line discipline that's communicating
+throttle and unthrottle to the driver (which doesn't make sense for high
+bandwidth devices because the read buffer is only 4KB).
+
+> So that implies that for tcflush(TCIFLUSH) to reliably do what a user
+> would expect, there needs to be an input_flush() callback so that the
+> uart driver can be told to flush the rx fifo.  [Yes, flushing the "rx
+> fifo" in some of these configurations isn't a simple task that takes a
+> negligible amount of time, but it can be done.]
+
+Yep. Plus the flip buffers need to be dumped as well.
+
+>>> Without handling throttle/unthrottle, how are you determining that the
+>>> tty layer is "full"?  Return code from tty_insert_flip_xxxx()?
+>>
+>> I check tty->receive_room.  What are you supposed to do for kernel
+>> versions that don't have the throttle()/unthrottle() callbacks?
+>
+> Actually, in another driver I check the return value from
+> tty_prepare_flip_string_flags().  For various (mostly historical)
+> reaons, one driver uses tty_prepare_flip_string_flags() and the other
+> uses uart_insert_char() [both followed later by a call to
+> tty_flip_buffer_push()].
+
+The flip buffer interface is the preferred method of pushing rx data
+to the line discipline, so this is ok.
+
+Checking the return value from tty_prepare_xxx() or tty_insert_xxx()
+is fine for self-throttling.
+
+> And in yet another driver (that talks to the tty layer instead of
+> using the serial_core), I call the line discipline's receive_room()
+> method -- but that's moot for this thread.
+>
+>
+> [1] For ethernet/usb attached UARTs the "rx fifo" includes (from
+>      serial_core's POV) not only the hardware fifo in the UART (up to
+>      1KB), but also software buffers at either end of the network
+>      "connection" (up to 4KB at each end).
+>
+
