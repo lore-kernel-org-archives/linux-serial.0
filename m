@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 20/24] n_tty: Move chars_in_buffer() to factor throttle/unthrottle
-Date: Sat, 15 Jun 2013 09:14:32 -0400
-Message-ID: <1371302076-4688-21-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 18/24] n_tty: Separate buffer indices to prevent cache-line sharing
+Date: Sat, 15 Jun 2013 09:14:30 -0400
+Message-ID: <1371302076-4688-19-git-send-email-peter@hurleysoftware.com>
 References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
  <1371302076-4688-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,55 +11,65 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Prepare to factor throttle and unthrottle into helper functions;
-relocate chars_in_buffer() to avoid forward declaration.
+If the read buffer indices are in the same cache-line, cpus will
+contended over the cache-line (so called 'false sharing').
+
+Separate the producer-published fields from the consumer-published
+fields; document the locks relevant to each field.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/n_tty.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index b78ee464..9ec0c68 100644
+index a6eea30..d0c8805 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -202,6 +202,18 @@ static void n_tty_set_room(struct tty_struct *tty)
- 	}
- }
+@@ -82,29 +82,38 @@
+ #endif
  
-+static ssize_t chars_in_buffer(struct tty_struct *tty)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+	ssize_t n = 0;
+ struct n_tty_data {
+-	unsigned int column;
++	/* producer-published */
++	size_t read_head;
++	size_t canon_head;
++	DECLARE_BITMAP(process_char_map, 256);
 +
-+	if (!ldata->icanon)
-+		n = read_cnt(ldata);
-+	else
-+		n = ldata->canon_head - ldata->read_tail;
-+	return n;
-+}
-+
- /**
-  *	put_tty_queue		-	add character to tty
-  *	@c: character
-@@ -285,18 +297,6 @@ static void n_tty_flush_buffer(struct tty_struct *tty)
- 	up_write(&tty->termios_rwsem);
- }
++	/* private to n_tty_receive_overrun (single-threaded) */
+ 	unsigned long overrun_time;
+ 	int num_overrun;
  
--static ssize_t chars_in_buffer(struct tty_struct *tty)
--{
--	struct n_tty_data *ldata = tty->disc_data;
--	ssize_t n = 0;
--
--	if (!ldata->icanon)
--		n = read_cnt(ldata);
--	else
--		n = ldata->canon_head - ldata->read_tail;
--	return n;
--}
--
- /**
-  *	n_tty_chars_in_buffer	-	report available bytes
-  *	@tty: tty device
+ 	/* non-atomic */
+ 	bool no_room;
+ 
++	/* must hold exclusive termios_rwsem to reset these */
+ 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+ 	unsigned char echo_overrun:1;
+ 
+-	DECLARE_BITMAP(process_char_map, 256);
++	/* shared by producer and consumer */
++	char *read_buf;
+ 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
+ 
+-	char *read_buf;
+-	size_t read_head;
+-	size_t read_tail;
+ 	int minimum_to_wake;
+ 
++	/* consumer-published */
++	size_t read_tail;
++
++	/* protected by echo_lock */
+ 	unsigned char *echo_buf;
+ 	unsigned int echo_pos;
+ 	unsigned int echo_cnt;
+ 
+-	size_t canon_head;
++	/* protected by output lock */
++	unsigned int column;
+ 	unsigned int canon_column;
+ 
+ 	struct mutex atomic_read_lock;
 -- 
 1.8.1.2
