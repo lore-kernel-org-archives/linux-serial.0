@@ -1,155 +1,54 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 14/20] n_tty: Split n_tty_receive_char()
-Date: Sat, 15 Jun 2013 10:21:30 -0400
-Message-ID: <1371306096-5571-15-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 20/20] tty: Remove extra wakeup from pty write() path
+Date: Sat, 15 Jun 2013 10:21:36 -0400
+Message-ID: <1371306096-5571-21-git-send-email-peter@hurleysoftware.com>
 References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
  <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40639 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754629Ab3FOO17 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 10:27:59 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Factor 'special' per-char processing into standalone fn,
-n_tty_receive_char_special(), which handles processing for chars
-marked in the char_map.
+Acquiring the write_wait queue spin lock now accounts for the largest
+slice of cpu time on the tty write path. Two factors contribute to
+this situation; a overly-pessimistic line discipline write loop which
+_always_ sets up a wait loop even if i/o will immediately succeed, and
+on ptys, a wakeup storm from reads and writes.
+
+Writer wakeup does not need to be performed by the pty driver.
+Firstly, since the actual i/o is performed within the write, the
+line discipline write loop will continue while space remains in
+the flip buffers. Secondly, when space becomes avail in the
+line discipline receive buffer (and thus also in the flip buffers),
+the pty unthrottle re-wakes the writer (non-flow-controlled line
+disciplines unconditionally unthrottle the driver when data is
+received). Thus, existing in-kernel i/o is guaranteed to advance.
+Finally, writer wakeup occurs at the conclusion of the line discipline
+write (in tty_write_unlock()). This guarantees that any user-space write
+waiters are woken to continue additional i/o.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 103 ++++++++++++++++++++++++++++------------------------
- 1 file changed, 56 insertions(+), 47 deletions(-)
+ drivers/tty/pty.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 1f21c97..3e96828 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1253,57 +1253,12 @@ n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
-  *		otherwise, publishes read_head via put_tty_queue()
-  */
- 
--static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
-+static void
-+n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	int parmrk;
- 
--	if (I_ISTRIP(tty))
--		c &= 0x7f;
--	if (I_IUCLC(tty) && L_IEXTEN(tty))
--		c = tolower(c);
--
--	if (L_EXTPROC(tty)) {
--		put_tty_queue(c, ldata);
--		return;
--	}
--
--	/*
--	 * If the previous character was LNEXT, or we know that this
--	 * character is not one of the characters that we'll have to
--	 * handle specially, do shortcut processing to speed things
--	 * up.
--	 */
--	if (!test_bit(c, ldata->char_map) || ldata->lnext) {
--		ldata->lnext = 0;
--
--		if (tty->stopped && !tty->flow_stopped && I_IXON(tty) &&
--		    I_IXANY(tty)) {
--			start_tty(tty);
--			process_echoes(tty);
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 0634dd9..b9bc5be 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -121,10 +121,8 @@ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
+ 		/* Stuff the data into the input queue of the other end */
+ 		c = tty_insert_flip_string(to->port, buf, c);
+ 		/* And shovel */
+-		if (c) {
++		if (c)
+ 			tty_flip_buffer_push(to->port);
+-			tty_wakeup(tty);
 -		}
--
--		parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
--		if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk - 1)) {
--			/* beep if no space */
--			if (L_ECHO(tty))
--				process_output('\a', tty);
--			return;
--		}
--		if (L_ECHO(tty)) {
--			finish_erasing(ldata);
--			/* Record the column of first canon char. */
--			if (ldata->canon_head == ldata->read_head)
--				echo_set_canon_col(ldata);
--			echo_char(c, tty);
--			commit_echoes(tty);
--		}
--		if (parmrk)
--			put_tty_queue(c, ldata);
--		put_tty_queue(c, ldata);
--		return;
--	}
--
- 	if (I_IXON(tty)) {
- 		if (c == START_CHAR(tty)) {
- 			start_tty(tty);
-@@ -1456,6 +1411,60 @@ handle_newline:
- 	put_tty_queue(c, ldata);
+ 	}
+ 	return c;
  }
- 
-+static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+	int parmrk;
-+
-+	if (I_ISTRIP(tty))
-+		c &= 0x7f;
-+	if (I_IUCLC(tty) && L_IEXTEN(tty))
-+		c = tolower(c);
-+
-+	if (L_EXTPROC(tty)) {
-+		put_tty_queue(c, ldata);
-+		return;
-+	}
-+
-+	/*
-+	 * If the previous character was LNEXT, or we know that this
-+	 * character is not one of the characters that we'll have to
-+	 * handle specially, do shortcut processing to speed things
-+	 * up.
-+	 */
-+	if (!test_bit(c, ldata->char_map) || ldata->lnext) {
-+		ldata->lnext = 0;
-+
-+		if (tty->stopped && !tty->flow_stopped && I_IXON(tty) &&
-+		    I_IXANY(tty)) {
-+			start_tty(tty);
-+			process_echoes(tty);
-+		}
-+
-+		parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
-+		if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - parmrk - 1)) {
-+			/* beep if no space */
-+			if (L_ECHO(tty))
-+				process_output('\a', tty);
-+			return;
-+		}
-+		if (L_ECHO(tty)) {
-+			finish_erasing(ldata);
-+			/* Record the column of first canon char. */
-+			if (ldata->canon_head == ldata->read_head)
-+				echo_set_canon_col(ldata);
-+			echo_char(c, tty);
-+			commit_echoes(tty);
-+		}
-+		if (parmrk)
-+			put_tty_queue(c, ldata);
-+		put_tty_queue(c, ldata);
-+		return;
-+	}
-+
-+	n_tty_receive_char_special(tty, c);
-+}
-+
- static inline void
- n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c)
- {
 -- 
 1.8.1.2
-
