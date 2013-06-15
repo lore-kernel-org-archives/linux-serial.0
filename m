@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 02/24] tty: Simplify tty buffer/ldisc interface with helper function
-Date: Sat, 15 Jun 2013 09:14:14 -0400
-Message-ID: <1371302076-4688-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 04/24] n_tty: Factor canonical mode copy from n_tty_read()
+Date: Sat, 15 Jun 2013 09:14:16 -0400
+Message-ID: <1371302076-4688-5-git-send-email-peter@hurleysoftware.com>
 References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
  <1371302076-4688-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,89 +11,126 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Ldisc interface functions must be called with interrupts enabled.
-Separating the ldisc calls into a helper function simplies the
-eventual removal of the spinlock.
-
-Note that access to the buf->head ptr outside the spinlock is
-safe here because;
-* __tty_buffer_flush() is prevented from running while buffer work
-  performs i/o,
-* tty_buffer_find() only assigns buf->head if the flip buffer list
-  is empty (which is never the case in flush_to_ldisc() since at
-  least one buffer is always left in the list after use)
-Access to the read index outside the spinlock is safe here for the
-same reasons.
-
-Update the buffer's read index _after_ the data has been received
-by the ldisc.
+Simplify n_tty_read(); extract complex copy algorithm
+into separate function, canon_copy_to_user().
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/tty/n_tty.c | 95 ++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 57 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index a42a028..6c7a1d0 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -403,6 +403,18 @@ int tty_prepare_flip_string_flags(struct tty_port *port,
- EXPORT_SYMBOL_GPL(tty_prepare_flip_string_flags);
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index eddeb78..7fd7774 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1747,6 +1747,62 @@ static int copy_from_read_buf(struct tty_struct *tty,
+ 	return retval;
+ }
  
- 
-+static int
-+receive_buf(struct tty_struct *tty, struct tty_buffer *head, int count)
++/**
++ *	canon_copy_to_user	-	copy read data in canonical mode
++ *	@tty: terminal device
++ *	@b: user data
++ *	@nr: size of data
++ *
++ *	Helper function for n_tty_read.  It is only called when ICANON is on;
++ *	it copies characters one at a time from the read buffer to the user
++ *	space buffer.
++ *
++ *	Called under the atomic_read_lock mutex
++ */
++
++static int canon_copy_to_user(struct tty_struct *tty,
++			      unsigned char __user **b,
++			      size_t *nr)
 +{
-+	struct tty_ldisc *disc = tty->ldisc;
++	struct n_tty_data *ldata = tty->disc_data;
++	unsigned long flags;
++	int eol, c;
 +
-+	count = min_t(int, count, tty->receive_room);
-+	if (count)
-+		disc->ops->receive_buf(tty, head->char_buf_ptr + head->read,
-+				       head->flag_buf_ptr + head->read, count);
-+	head->read += count;
-+	return count;
++	/* N.B. avoid overrun if nr == 0 */
++	raw_spin_lock_irqsave(&ldata->read_lock, flags);
++	while (*nr && ldata->read_cnt) {
++
++		eol = test_and_clear_bit(ldata->read_tail, ldata->read_flags);
++		c = ldata->read_buf[ldata->read_tail];
++		ldata->read_tail = (ldata->read_tail+1) & (N_TTY_BUF_SIZE-1);
++		ldata->read_cnt--;
++		if (eol) {
++			/* this test should be redundant:
++			 * we shouldn't be reading data if
++			 * canon_data is 0
++			 */
++			if (--ldata->canon_data < 0)
++				ldata->canon_data = 0;
++		}
++		raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++
++		if (!eol || (c != __DISABLED_CHAR)) {
++			if (tty_put_user(tty, c, *b))
++				return -EFAULT;
++			*b += 1;
++			*nr -= 1;
++		}
++		if (eol) {
++			tty_audit_push(tty);
++			return 0;
++		}
++		raw_spin_lock_irqsave(&ldata->read_lock, flags);
++	}
++	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++
++	return 0;
 +}
- 
- /**
-  *	flush_to_ldisc
-@@ -438,8 +450,6 @@ static void flush_to_ldisc(struct work_struct *work)
- 		struct tty_buffer *head;
- 		while ((head = buf->head) != NULL) {
- 			int count;
--			char *char_buf;
--			unsigned char *flag_buf;
- 
- 			count = head->commit - head->read;
- 			if (!count) {
-@@ -449,16 +459,10 @@ static void flush_to_ldisc(struct work_struct *work)
- 				tty_buffer_free(port, head);
- 				continue;
- 			}
--			if (!tty->receive_room)
--				break;
--			if (count > tty->receive_room)
--				count = tty->receive_room;
--			char_buf = head->char_buf_ptr + head->read;
--			flag_buf = head->flag_buf_ptr + head->read;
--			head->read += count;
- 			spin_unlock_irqrestore(&buf->lock, flags);
--			disc->ops->receive_buf(tty, char_buf,
--							flag_buf, count);
 +
-+			count = receive_buf(tty, head, count);
-+
- 			spin_lock_irqsave(&buf->lock, flags);
- 			/* Ldisc or user is trying to flush the buffers.
- 			   We may have a deferred request to flush the
-@@ -469,7 +473,8 @@ static void flush_to_ldisc(struct work_struct *work)
- 				clear_bit(TTYP_FLUSHPENDING, &port->iflags);
- 				wake_up(&tty->read_wait);
- 				break;
--			}
-+			} else if (!count)
-+				break;
+ extern ssize_t redirected_tty_write(struct file *, const char __user *,
+ 							size_t, loff_t *);
+ 
+@@ -1916,44 +1972,7 @@ do_it_again:
  		}
- 		clear_bit(TTYP_FLUSHING, &port->iflags);
- 	}
+ 
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+-			/* N.B. avoid overrun if nr == 0 */
+-			raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-			while (nr && ldata->read_cnt) {
+-				int eol;
+-
+-				eol = test_and_clear_bit(ldata->read_tail,
+-						ldata->read_flags);
+-				c = ldata->read_buf[ldata->read_tail];
+-				ldata->read_tail = ((ldata->read_tail+1) &
+-						  (N_TTY_BUF_SIZE-1));
+-				ldata->read_cnt--;
+-				if (eol) {
+-					/* this test should be redundant:
+-					 * we shouldn't be reading data if
+-					 * canon_data is 0
+-					 */
+-					if (--ldata->canon_data < 0)
+-						ldata->canon_data = 0;
+-				}
+-				raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
+-
+-				if (!eol || (c != __DISABLED_CHAR)) {
+-					if (tty_put_user(tty, c, b++)) {
+-						retval = -EFAULT;
+-						b--;
+-						raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-						break;
+-					}
+-					nr--;
+-				}
+-				if (eol) {
+-					tty_audit_push(tty);
+-					raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-					break;
+-				}
+-				raw_spin_lock_irqsave(&ldata->read_lock, flags);
+-			}
+-			raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
++			retval = canon_copy_to_user(tty, &b, &nr);
+ 			if (retval)
+ 				break;
+ 		} else {
 -- 
 1.8.1.2
