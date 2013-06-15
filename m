@@ -1,59 +1,73 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 0/9] mostly lockless tty echo
-Date: Sat, 15 Jun 2013 10:04:20 -0400
-Message-ID: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 1/9] n_tty: Remove unused echo_overrun field
+Date: Sat, 15 Jun 2013 10:04:21 -0400
+Message-ID: <1371305069-5366-2-git-send-email-peter@hurleysoftware.com>
 References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+ <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40183 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40189 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752263Ab3FOOEu (ORCPT
+	with ESMTP id S1754357Ab3FOOEw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 10:04:50 -0400
-In-Reply-To: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+	Sat, 15 Jun 2013 10:04:52 -0400
+In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-** v2 changes **
-- Rebased on v2 of 'lockless tty flip buffers'
+The echo_overrun field is only assigned and never tested; remove it.
 
-This 3rd of 4 patchsets implements a mostly-lockless tty echo output.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-Because echoing is performed solely by the single-threaded ldisc
-receive_buf() method, most of the lockless requirements are already
-in-place. The main existing complications were;
-1) Echoing could overrun itself. A fixed-size buffer is used to record
-   the operations necessary when outputting the echoes; the most recent
-   echo data is preserved.
-2) An attempt to push unprocessed echoes is made by the n_tty_write method
-   (on a different thread) before attempting write output.
-
-The overrun condition is solved by outputting the echoes in blocks and
-ensuring that at least that much space is available each time an echo
-operation is committed. At the conclusion of each flip buffer received,
-any remaining unprocessed echoes are output.
-
-This block output method is particularly effective when there is no reader
-(the tty is output-only) and termios is misconfigured with echo enabled.
-
-The concurrent access by the n_tty_write() method is already excluded
-by the existing output_lock mutex.
-
-Peter Hurley (9):
-  n_tty: Remove unused echo_overrun field
-  n_tty: Use separate head and tail indices for echo_buf
-  n_tty: Replace echo_cnt with computed value
-  n_tty: Remove echo_lock
-  n_tty: Eliminate echo_commit memory barrier
-  n_tty: Process echoes in blocks
-  n_tty: Only flush echo output if actually output
-  n_tty: Eliminate counter in __process_echoes
-  n_tty: Avoid false-sharing echo buffer indices
-
- drivers/tty/n_tty.c | 248 ++++++++++++++++++++++++----------------------------
- 1 file changed, 113 insertions(+), 135 deletions(-)
-
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 2321d6a..160d9d2 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -96,7 +96,6 @@ struct n_tty_data {
+ 
+ 	/* must hold exclusive termios_rwsem to reset these */
+ 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+-	unsigned char echo_overrun:1;
+ 
+ 	/* shared by producer and consumer */
+ 	char *read_buf;
+@@ -325,7 +324,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
+ 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 
+ 	mutex_lock(&ldata->echo_lock);
+-	ldata->echo_pos = ldata->echo_cnt = ldata->echo_overrun = 0;
++	ldata->echo_pos = ldata->echo_cnt = 0;
+ 	mutex_unlock(&ldata->echo_lock);
+ 
+ 	ldata->erasing = 0;
+@@ -781,14 +780,11 @@ static void process_echoes(struct tty_struct *tty)
+ 	if (nr == 0) {
+ 		ldata->echo_pos = 0;
+ 		ldata->echo_cnt = 0;
+-		ldata->echo_overrun = 0;
+ 	} else {
+ 		int num_processed = ldata->echo_cnt - nr;
+ 		ldata->echo_pos += num_processed;
+ 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
+ 		ldata->echo_cnt = nr;
+-		if (num_processed > 0)
+-			ldata->echo_overrun = 0;
+ 	}
+ 
+ 	mutex_unlock(&ldata->echo_lock);
+@@ -834,8 +830,6 @@ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
+ 			ldata->echo_pos++;
+ 		}
+ 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
+-
+-		ldata->echo_overrun = 1;
+ 	} else {
+ 		new_byte_pos = ldata->echo_pos + ldata->echo_cnt;
+ 		new_byte_pos &= N_TTY_BUF_SIZE - 1;
 -- 
 1.8.1.2
 
