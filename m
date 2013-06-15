@@ -1,84 +1,114 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 00/16] lockless tty flip buffers
-Date: Sat, 15 Jun 2013 09:36:00 -0400
-Message-ID: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 04/16] tty: Merge tty_buffer_find() into tty_buffer_alloc()
+Date: Sat, 15 Jun 2013 09:36:04 -0400
+Message-ID: <1371303376-5028-5-git-send-email-peter@hurleysoftware.com>
 References: <1371302076-4688-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:39750 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752009Ab3FONgc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 09:36:32 -0400
-In-Reply-To: <1371302076-4688-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+ <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-** v2 changes **
-- Rebased on v4 of 'lockless n_tty receive path'
+tty_buffer_find() implements a simple free list lookaside cache.
+Merge this functionality into tty_buffer_alloc() to reflect the
+more traditional alloc/free symmetry.
 
-This 2nd of 4 patchsets implements lockless receive from the tty driver.
-By lockless, I'm referring to the 'lock' spin lock formerly used to
-serialize access to the flip buffer list.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_buffer.c | 50 +++++++++++++++++-------------------------------
+ 1 file changed, 18 insertions(+), 32 deletions(-)
 
-Since the driver-side flip buffer usage is already single-threaded and
-line discipline receiving is already single-threaded, implementing
-a lockless flip buffer list was the primary hurdle. [The only 2 flip
-buffer consumers, flush_to_ldisc() and tty_buffer_flush() were already
-mutually exclusive and this exclusion remains although the mechanism
-is changed.]
-
-Since the flip buffer consumers, flush_to_ldisc() and tty_buffer_flush(),
-already leave the last-consumed flip buffer on the list, and since the
-existing flip buffer api is already divided into an add/commit interface,
-most of the requirement for a lockless algorithm was already
-in-place. The main differences are;
-1) the initial state of the flip buffer list points head and tail
-   to a 0-sized sentinel flip buffer. This eliminates head & tail NULL
-   testing and assigning the head ptr from the driver-side thread. This
-   sentinel is 'consumed' on the first iteration of ldisc receiving and
-   does not require special-case logic.
-2) the free list uses the atomic singly-linked llist interface. While
-   this guarantees safe concurrent usage by both producer and consumer,
-   it's not optimal. Both producer and consumer unnecessarily contend
-   over the free list head ptr; a better approach would be to maintain
-   an unconsumed buffer in the same way the flip buffer list works.
-   Light testing has shown this contention accounts for roughly 5% of
-   total cpu time in end-to-end copying.
-3) The mutual exclusion between consumers is reimplemented as a mutex;
-   this eliminates the need to drop the lock across the ldisc
-   receive_buf() method. This mutual exclusion is extended to a public
-   interface which the vt driver now uses to safely utilize the ldisc
-   receive_buf() interface when pasting a selection.
-
-Peter Hurley (16):
-  tty: Compute flip buffer ptrs
-  tty: Fix flip buffer free list
-  tty: Factor flip buffer initialization into helper function
-  tty: Merge tty_buffer_find() into tty_buffer_alloc()
-  tty: Use generic names for flip buffer list cursors
-  tty: Use lockless flip buffer free list
-  tty: Simplify flip buffer list with 0-sized sentinel
-  tty: Track flip buffer memory limit atomically
-  tty: Make driver-side flip buffers lockless
-  tty: Ensure single-threaded flip buffer consumer with mutex
-  tty: Only perform flip buffer flush from tty_buffer_flush()
-  tty: Avoid false-sharing flip buffer ptrs
-  tty: Use non-atomic state to signal flip buffer flush pending
-  tty: Merge __tty_flush_buffer() into lone call site
-  tty: Fix unsafe vt paste_selection()
-  tty: Remove private constant from global namespace
-
- drivers/staging/dgrp/dgrp_tty.c |   2 +
- drivers/tty/pty.c               |  10 +-
- drivers/tty/tty_buffer.c        | 395 +++++++++++++++++++---------------------
- drivers/tty/vt/selection.c      |   4 +-
- include/linux/llist.h           |  23 +++
- include/linux/tty.h             |  39 ++--
- include/linux/tty_flip.h        |   8 +-
- 7 files changed, 244 insertions(+), 237 deletions(-)
-
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 56d4602..a428fa2 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -64,6 +64,8 @@ void tty_buffer_free_all(struct tty_port *port)
+  *	@size: desired size (characters)
+  *
+  *	Allocate a new tty buffer to hold the desired number of characters.
++ *	We round our buffers off in 256 character chunks to get better
++ *	allocation behaviour.
+  *	Return NULL if out of memory or the allocation would exceed the
+  *	per device queue
+  *
+@@ -72,14 +74,29 @@ void tty_buffer_free_all(struct tty_port *port)
+ 
+ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
+ {
++	struct tty_buffer **tbh = &port->buf.free;
+ 	struct tty_buffer *p;
+ 
++	/* Round the buffer size out */
++	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
++
++	if (size <= MIN_TTYB_SIZE) {
++		if (*tbh) {
++			p = *tbh;
++			*tbh = p->next;
++			goto found;
++		}
++	}
++
++	/* Should possibly check if this fails for the largest buffer we
++	   have queued and recycle that ? */
+ 	if (port->buf.memory_used + size > 65536)
+ 		return NULL;
+ 	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
+ 	if (p == NULL)
+ 		return NULL;
+ 
++found:
+ 	tty_buffer_reset(p, size);
+ 	port->buf.memory_used += size;
+ 	return p;
+@@ -172,37 +189,6 @@ void tty_buffer_flush(struct tty_struct *tty)
+ }
+ 
+ /**
+- *	tty_buffer_find		-	find a free tty buffer
+- *	@tty: tty owning the buffer
+- *	@size: characters wanted
+- *
+- *	Locate an existing suitable tty buffer or if we are lacking one then
+- *	allocate a new one. We round our buffers off in 256 character chunks
+- *	to get better allocation behaviour.
+- *
+- *	Locking: Caller must hold tty->buf.lock
+- */
+-
+-static struct tty_buffer *tty_buffer_find(struct tty_port *port, size_t size)
+-{
+-	struct tty_buffer **tbh = &port->buf.free;
+-	if (size <= MIN_TTYB_SIZE) {
+-		if (*tbh) {
+-			struct tty_buffer *t = *tbh;
+-
+-			*tbh = t->next;
+-			tty_buffer_reset(t, t->size);
+-			port->buf.memory_used += t->size;
+-			return t;
+-		}
+-	}
+-	/* Round the buffer size out */
+-	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
+-	return tty_buffer_alloc(port, size);
+-	/* Should possibly check if this fails for the largest buffer we
+-	   have queued and recycle that ? */
+-}
+-/**
+  *	tty_buffer_request_room		-	grow tty buffer if needed
+  *	@tty: tty structure
+  *	@size: size desired
+@@ -230,7 +216,7 @@ int tty_buffer_request_room(struct tty_port *port, size_t size)
+ 
+ 	if (left < size) {
+ 		/* This is the slow path - looking for new buffers to use */
+-		if ((n = tty_buffer_find(port, size)) != NULL) {
++		if ((n = tty_buffer_alloc(port, size)) != NULL) {
+ 			if (b != NULL) {
+ 				b->next = n;
+ 				b->commit = b->used;
 -- 
 1.8.1.2
-
