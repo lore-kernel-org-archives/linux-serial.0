@@ -1,47 +1,79 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 10/20] n_tty: Special case EXTPROC receive_buf() as raw mode
-Date: Sat, 15 Jun 2013 10:21:26 -0400
-Message-ID: <1371306096-5571-11-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 18/20] n_tty: Un-inline single-use functions
+Date: Sat, 15 Jun 2013 10:21:34 -0400
+Message-ID: <1371306096-5571-19-git-send-email-peter@hurleysoftware.com>
 References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
  <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40618 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40627 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752337Ab3FOO1u (ORCPT
+	with ESMTP id S1752337Ab3FOO1y (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 10:27:50 -0400
+	Sat, 15 Jun 2013 10:27:54 -0400
 In-Reply-To: <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-When EXTPROC is set without ISTRIP or IUCLC, processing is
-identical to raw mode; handle this receiving mode as a special-case
-of raw mode.
+gcc will likely inline these single-use functions anyway; remove
+inline modifier.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/n_tty.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 40cc0a5..75af7f5 100644
+index 633cfcf..5e06aa1 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1545,10 +1545,11 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 			  char *fp, int count)
+@@ -263,7 +263,7 @@ static void n_tty_check_throttle(struct tty_struct *tty)
+ 	__tty_set_flow_change(tty, 0);
+ }
+ 
+-static inline void n_tty_check_unthrottle(struct tty_struct *tty)
++static void n_tty_check_unthrottle(struct tty_struct *tty)
+ {
+ 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY) {
+ 		if (chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
+@@ -1108,7 +1108,7 @@ static void eraser(unsigned char c, struct tty_struct *tty)
+  *	Locking: ctrl_lock
+  */
+ 
+-static inline void isig(int sig, struct tty_struct *tty)
++static void isig(int sig, struct tty_struct *tty)
+ {
+ 	struct pid *tty_pgrp = tty_get_pgrp(tty);
+ 	if (tty_pgrp) {
+@@ -1131,7 +1131,7 @@ static inline void isig(int sig, struct tty_struct *tty)
+  *	Note: may get exclusive termios_rwsem if flushing input buffer
+  */
+ 
+-static inline void n_tty_receive_break(struct tty_struct *tty)
++static void n_tty_receive_break(struct tty_struct *tty)
  {
  	struct n_tty_data *ldata = tty->disc_data;
-+	bool preops = I_ISTRIP(tty) || (I_IUCLC(tty) && L_IEXTEN(tty));
  
- 	if (ldata->real_raw)
- 		n_tty_receive_buf_real_raw(tty, cp, fp, count);
--	else if (ldata->raw)
-+	else if (ldata->raw || (L_EXTPROC(tty) && !preops))
- 		n_tty_receive_buf_raw(tty, cp, fp, count);
- 	else {
- 		char flag = TTY_NORMAL;
+@@ -1169,7 +1169,7 @@ static inline void n_tty_receive_break(struct tty_struct *tty)
+  *	private.
+  */
+ 
+-static inline void n_tty_receive_overrun(struct tty_struct *tty)
++static void n_tty_receive_overrun(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	char buf[64];
+@@ -1197,8 +1197,7 @@ static inline void n_tty_receive_overrun(struct tty_struct *tty)
+  *		caller holds non-exclusive termios_rwsem
+  *		publishes read_head via put_tty_queue()
+  */
+-static inline void n_tty_receive_parity_error(struct tty_struct *tty,
+-					      unsigned char c)
++static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
 -- 
 1.8.1.2
 
