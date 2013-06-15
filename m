@@ -1,231 +1,76 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 2/9] n_tty: Use separate head and tail indices for echo_buf
-Date: Sat, 15 Jun 2013 10:04:22 -0400
-Message-ID: <1371305069-5366-3-git-send-email-peter@hurleysoftware.com>
-References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
- <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Subject: [PATCH v2 00/20] tty: streamline per-char receiving
+Date: Sat, 15 Jun 2013 10:21:16 -0400
+Message-ID: <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
+References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40465 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752510Ab3FOOVw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 15 Jun 2013 10:21:52 -0400
 In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Instead of using a single index to track the current echo_buf position,
-use a head index when adding to the buffer and a tail index when
-consuming from the buffer. Allow these head and tail indices to wrap
-at max representable value; perform modulo reduction via helper
-functions when accessing the buffer.
+** v2 changes **
+- Rebase on v2 of 'mostly lockless tty echo'
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 88 +++++++++++++++++++++--------------------------------
- 1 file changed, 35 insertions(+), 53 deletions(-)
+This 4th of 4 patchsets implements efficient per-char receiving
+in the N_TTY line discipline. As mentioned in the initial patchset,
+'lockless n_tty receive path', casual performance measurements show
+a 9~15x speedup in end-to-end copying.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 160d9d2..f90e171 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -108,7 +108,8 @@ struct n_tty_data {
- 
- 	/* protected by echo_lock */
- 	unsigned char *echo_buf;
--	unsigned int echo_pos;
-+	size_t echo_head;
-+	size_t echo_tail;
- 	unsigned int echo_cnt;
- 
- 	/* protected by output lock */
-@@ -135,6 +136,16 @@ static inline unsigned char *read_buf_addr(struct n_tty_data *ldata, size_t i)
- 	return &ldata->read_buf[i & (N_TTY_BUF_SIZE - 1)];
- }
- 
-+static inline unsigned char echo_buf(struct n_tty_data *ldata, size_t i)
-+{
-+	return ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
-+}
-+
-+static inline unsigned char *echo_buf_addr(struct n_tty_data *ldata, size_t i)
-+{
-+	return &ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
-+}
-+
- static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
- 			       unsigned char __user *ptr)
- {
-@@ -324,7 +335,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
- 
- 	mutex_lock(&ldata->echo_lock);
--	ldata->echo_pos = ldata->echo_cnt = 0;
-+	ldata->echo_head = ldata->echo_tail = ldata->echo_cnt = 0;
- 	mutex_unlock(&ldata->echo_lock);
- 
- 	ldata->erasing = 0;
-@@ -639,8 +650,8 @@ static void process_echoes(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	int	space, nr;
-+	size_t tail;
- 	unsigned char c;
--	unsigned char *cp, *buf_end;
- 
- 	if (!ldata->echo_cnt)
- 		return;
-@@ -650,14 +661,12 @@ static void process_echoes(struct tty_struct *tty)
- 
- 	space = tty_write_room(tty);
- 
--	buf_end = ldata->echo_buf + N_TTY_BUF_SIZE;
--	cp = ldata->echo_buf + ldata->echo_pos;
-+	tail = ldata->echo_tail;
- 	nr = ldata->echo_cnt;
- 	while (nr > 0) {
--		c = *cp;
-+		c = echo_buf(ldata, tail);
- 		if (c == ECHO_OP_START) {
- 			unsigned char op;
--			unsigned char *opp;
- 			int no_space_left = 0;
- 
- 			/*
-@@ -665,18 +674,13 @@ static void process_echoes(struct tty_struct *tty)
- 			 * operation, get the next byte, which is either the
- 			 * op code or a control character value.
- 			 */
--			opp = cp + 1;
--			if (opp == buf_end)
--				opp -= N_TTY_BUF_SIZE;
--			op = *opp;
-+			op = echo_buf(ldata, tail + 1);
- 
- 			switch (op) {
- 				unsigned int num_chars, num_bs;
- 
- 			case ECHO_OP_ERASE_TAB:
--				if (++opp == buf_end)
--					opp -= N_TTY_BUF_SIZE;
--				num_chars = *opp;
-+				num_chars = echo_buf(ldata, tail + 2);
- 
- 				/*
- 				 * Determine how many columns to go back
-@@ -702,20 +706,20 @@ static void process_echoes(struct tty_struct *tty)
- 					if (ldata->column > 0)
- 						ldata->column--;
- 				}
--				cp += 3;
-+				tail += 3;
- 				nr -= 3;
- 				break;
- 
- 			case ECHO_OP_SET_CANON_COL:
- 				ldata->canon_column = ldata->column;
--				cp += 2;
-+				tail += 2;
- 				nr -= 2;
- 				break;
- 
- 			case ECHO_OP_MOVE_BACK_COL:
- 				if (ldata->column > 0)
- 					ldata->column--;
--				cp += 2;
-+				tail += 2;
- 				nr -= 2;
- 				break;
- 
-@@ -728,7 +732,7 @@ static void process_echoes(struct tty_struct *tty)
- 				tty_put_char(tty, ECHO_OP_START);
- 				ldata->column++;
- 				space--;
--				cp += 2;
-+				tail += 2;
- 				nr -= 2;
- 				break;
- 
-@@ -750,7 +754,7 @@ static void process_echoes(struct tty_struct *tty)
- 				tty_put_char(tty, op ^ 0100);
- 				ldata->column += 2;
- 				space -= 2;
--				cp += 2;
-+				tail += 2;
- 				nr -= 2;
- 			}
- 
-@@ -768,24 +772,13 @@ static void process_echoes(struct tty_struct *tty)
- 				tty_put_char(tty, c);
- 				space -= 1;
- 			}
--			cp += 1;
-+			tail += 1;
- 			nr -= 1;
- 		}
--
--		/* When end of circular buffer reached, wrap around */
--		if (cp >= buf_end)
--			cp -= N_TTY_BUF_SIZE;
- 	}
- 
--	if (nr == 0) {
--		ldata->echo_pos = 0;
--		ldata->echo_cnt = 0;
--	} else {
--		int num_processed = ldata->echo_cnt - nr;
--		ldata->echo_pos += num_processed;
--		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
--		ldata->echo_cnt = nr;
--	}
-+	ldata->echo_tail = tail;
-+	ldata->echo_cnt = nr;
- 
- 	mutex_unlock(&ldata->echo_lock);
- 	mutex_unlock(&ldata->output_lock);
-@@ -806,37 +799,26 @@ static void process_echoes(struct tty_struct *tty)
- 
- static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- {
--	int	new_byte_pos;
--
- 	if (ldata->echo_cnt == N_TTY_BUF_SIZE) {
--		/* Circular buffer is already at capacity */
--		new_byte_pos = ldata->echo_pos;
--
-+		size_t head = ldata->echo_head;
- 		/*
- 		 * Since the buffer start position needs to be advanced,
- 		 * be sure to step by a whole operation byte group.
- 		 */
--		if (ldata->echo_buf[ldata->echo_pos] == ECHO_OP_START) {
--			if (ldata->echo_buf[(ldata->echo_pos + 1) &
--					  (N_TTY_BUF_SIZE - 1)] ==
--						ECHO_OP_ERASE_TAB) {
--				ldata->echo_pos += 3;
-+		if (echo_buf(ldata, head) == ECHO_OP_START) {
-+			if (echo_buf(ldata, head + 1) == ECHO_OP_ERASE_TAB) {
-+				ldata->echo_tail += 3;
- 				ldata->echo_cnt -= 2;
- 			} else {
--				ldata->echo_pos += 2;
-+				ldata->echo_tail += 2;
- 				ldata->echo_cnt -= 1;
- 			}
--		} else {
--			ldata->echo_pos++;
--		}
--		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
--	} else {
--		new_byte_pos = ldata->echo_pos + ldata->echo_cnt;
--		new_byte_pos &= N_TTY_BUF_SIZE - 1;
-+		} else
-+			ldata->echo_tail++;
-+	} else
- 		ldata->echo_cnt++;
--	}
- 
--	ldata->echo_buf[new_byte_pos] = c;
-+	*echo_buf_addr(ldata, ldata->echo_head++) = c;
- }
- 
- /**
+Most of this patchset factors out modal conditions from the per-char
+i/o path. For example, regardless of if ISTRIP is set or not, the modal
+condition, I_ISTRIP(tty), was tested on every char received, despite
+that ISTRIP can only be set by termios changes.
+
+The modes handled by separate code paths are:
+1) 'real raw' mode (which was already handled separately)
+2) raw mode
+3) EXTPROC when ISTRIP and IUCLC are not selected
+4) tty closing mode
+5) LNEXT mode
+6) ISTRIP or IUCLC or IPARMRK set
+7) everything else
+
+The code duplication is kept to a minimum by carefully factoring out
+shared slow paths (such as specially handled chars in canonical mode
+or receiving PARITY or OVERRUN flags); only the per-char loops themselves
+are duplicated.
+
+
+Peter Hurley (20):
+  n_tty: Fix EOF push handling
+  n_tty: Remove alias ptrs in __receive_buf()
+  n_tty: Move buffers into n_tty_data
+  n_tty: Rename process_char_map to char_map
+  n_tty: Simplify __receive_buf loop count
+  n_tty: Factor 'real raw' receive_buf into standalone fn
+  n_tty: Factor signal char handling into separate fn
+  n_tty: Factor flagged char handling into separate fn
+  n_tty: Factor raw mode receive_buf() into separate fn
+  n_tty: Special case EXTPROC receive_buf() as raw mode
+  n_tty: Factor tty->closing receive_buf() into separate fn
+  n_tty: Factor standard per-char i/o into separate fn
+  n_tty: Eliminate char tests from IXANY restart test
+  n_tty: Split n_tty_receive_char()
+  n_tty: Factor ISTRIP and IUCLC receive_buf into separate fn
+  n_tty: Factor PARMRK from normal per-char i/o
+  n_tty: Remove overflow tests from receive_buf() path
+  n_tty: Un-inline single-use functions
+  n_tty: Factor LNEXT processing from per-char i/o path
+  tty: Remove extra wakeup from pty write() path
+
+ drivers/tty/n_tty.c  | 617 +++++++++++++++++++++++++++++++--------------------
+ drivers/tty/pty.c    |   4 +-
+ drivers/tty/tty_io.c |   1 -
+ include/linux/tty.h  |   1 -
+ 4 files changed, 381 insertions(+), 242 deletions(-)
+
 -- 
 1.8.1.2
+
