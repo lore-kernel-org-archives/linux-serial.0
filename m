@@ -1,341 +1,225 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 4/9] n_tty: Remove echo_lock
-Date: Sat, 15 Jun 2013 10:04:24 -0400
-Message-ID: <1371305069-5366-5-git-send-email-peter@hurleysoftware.com>
-References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
- <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+From: Eduardo Valentin <eduardo.valentin@ti.com>
+Subject: Re: [PATCH 27/28] ARM: EXYNOS: Remove CONFIG_SOC_EXYNOS4412
+Date: Sat, 15 Jun 2013 10:06:25 -0400
+Message-ID: <51BC74E1.5090504@ti.com>
+References: <1371238384-1504-1-git-send-email-t.figa@samsung.com>
+ <1371238384-1504-28-git-send-email-t.figa@samsung.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============5959158561452787425=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1371238384-1504-28-git-send-email-t.figa@samsung.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tomasz Figa <t.figa@samsung.com>
+Cc: Eduardo Valentin <eduardo.valentin@ti.com>, Kukjin Kim <kgene.kim@samsung.com>, Mauro Carvalho Chehab <mchehab@redhat.com>, Arnd Bergmann <arnd@arndb.de>, linux-pm@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, cpufreq@vger.kernel.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Kyungmin Park <kyungmin.park@samsung.com>, linux-samsung-soc@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Olof Johansson <olof@lixom.net>, Zhang Rui <rui.zhang@intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-Adding data to echo_buf (via add_echo_byte()) is guaranteed to be
-single-threaded, since all callers are from the n_tty_receive_buf()
-path. Processing the echo_buf can be called from either the
-n_tty_receive_buf() path or the n_tty_write() path; however, these
-callers are already serialized by output_lock.
+--===============5959158561452787425==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="----enig2SSRTOFTEOXSUNWFLTDDH"
 
-Publish cumulative echo_head changes to echo_commit; process echo_buf
-from echo_tail to echo_commit; remove echo_lock.
+------enig2SSRTOFTEOXSUNWFLTDDH
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-On echo_buf overrun, claim output_lock to serialize changes to
-echo_tail.
+Tomasz,
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 75 ++++++++++++++++++++---------------------------------
- 1 file changed, 28 insertions(+), 47 deletions(-)
+On 14-06-2013 15:33, Tomasz Figa wrote:
+> Exynos4212 and Exynos4412 SoCs differ only in number of ARM cores and
+> there is no need to have separate Kconfig options for them, since they
+> use the same code.
+>=20
+> This patch removes CONFIG_SOC_EXYNOS4412, leaving CONFIG_SOC_EXYNOS4212=
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 68dc9fd..d22c14c 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -106,10 +106,10 @@ struct n_tty_data {
- 	/* consumer-published */
- 	size_t read_tail;
- 
--	/* protected by echo_lock */
- 	unsigned char *echo_buf;
- 	size_t echo_head;
- 	size_t echo_tail;
-+	size_t echo_commit;
- 
- 	/* protected by output lock */
- 	unsigned int column;
-@@ -117,7 +117,6 @@ struct n_tty_data {
- 
- 	struct mutex atomic_read_lock;
- 	struct mutex output_lock;
--	struct mutex echo_lock;
- };
- 
- static inline size_t read_cnt(struct n_tty_data *ldata)
-@@ -332,10 +331,7 @@ static void put_tty_queue(unsigned char c, struct n_tty_data *ldata)
- static void reset_buffer_flags(struct n_tty_data *ldata)
+> as the one supporting both SoCs from this series.
+>=20
+> Cc: "Rafael J. Wysocki" <rjw@sisk.pl>
+> Cc: Viresh Kumar <viresh.kumar@linaro.org>
+> Cc: Mauro Carvalho Chehab <mchehab@redhat.com>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Eduardo Valentin <eduardo.valentin@ti.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: cpufreq@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Tomasz Figa <t.figa@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>  arch/arm/mach-exynos/Kconfig              | 11 +----------
+>  arch/arm/plat-samsung/include/plat/cpu.h  |  6 +-----
+>  drivers/cpufreq/Kconfig.arm               |  2 +-
+>  drivers/media/platform/exynos4-is/Kconfig |  2 +-
+>  drivers/thermal/exynos_thermal.c          |  2 +-
+>  drivers/tty/serial/samsung.c              |  3 +--
+>  6 files changed, 6 insertions(+), 20 deletions(-)
+
+
+Not for the matter of the change itself, but just for simplicity while
+merging when the change is agreed to be good, it is recommended that you
+split your changes in different smaller patches, specially because you
+are touching several parts of the kernel that belong to different trees.
+If one merges your change the way it is, it is likely to create merge
+conflicts.
+
+
+>=20
+> diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfi=
+g
+> index 47d8d9e..fe75a65 100644
+> --- a/arch/arm/mach-exynos/Kconfig
+> +++ b/arch/arm/mach-exynos/Kconfig
+> @@ -46,7 +46,7 @@ config CPU_EXYNOS4210
+>  	  Enable EXYNOS4210 CPU support
+> =20
+>  config SOC_EXYNOS4212
+> -	bool "SAMSUNG EXYNOS4212"
+> +	bool "SAMSUNG EXYNOS4212/4412"
+>  	default y
+>  	depends on ARCH_EXYNOS4
+>  	select PINCTRL_EXYNOS
+> @@ -56,15 +56,6 @@ config SOC_EXYNOS4212
+>  	help
+>  	  Enable EXYNOS4212 SoC support
+> =20
+> -config SOC_EXYNOS4412
+> -	bool "SAMSUNG EXYNOS4412"
+> -	default y
+> -	depends on ARCH_EXYNOS4
+> -	select PINCTRL_EXYNOS
+> -	select SAMSUNG_DMADEV
+> -	help
+> -	  Enable EXYNOS4412 SoC support
+> -
+>  config SOC_EXYNOS5250
+>  	bool "SAMSUNG EXYNOS5250"
+>  	default y
+> diff --git a/arch/arm/plat-samsung/include/plat/cpu.h b/arch/arm/plat-s=
+amsung/include/plat/cpu.h
+> index 989fefe..87b03bb 100644
+> --- a/arch/arm/plat-samsung/include/plat/cpu.h
+> +++ b/arch/arm/plat-samsung/include/plat/cpu.h
+> @@ -122,13 +122,9 @@ IS_SAMSUNG_CPU(exynos5440, EXYNOS5440_SOC_ID, EXYN=
+OS5_SOC_MASK)
+> =20
+>  #if defined(CONFIG_SOC_EXYNOS4212)
+>  # define soc_is_exynos4212()	is_samsung_exynos4212()
+> -#else
+> -# define soc_is_exynos4212()	0
+> -#endif
+> -
+> -#if defined(CONFIG_SOC_EXYNOS4412)
+>  # define soc_is_exynos4412()	is_samsung_exynos4412()
+>  #else
+> +# define soc_is_exynos4212()	0
+>  # define soc_is_exynos4412()	0
+>  #endif
+> =20
+> diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
+> index a924408..b214ad6 100644
+> --- a/drivers/cpufreq/Kconfig.arm
+> +++ b/drivers/cpufreq/Kconfig.arm
+> @@ -32,7 +32,7 @@ config ARM_EXYNOS4210_CPUFREQ
+>  	  SoC (S5PV310 or S5PC210).
+> =20
+>  config ARM_EXYNOS4X12_CPUFREQ
+> -	def_bool (SOC_EXYNOS4212 || SOC_EXYNOS4412)
+> +	def_bool SOC_EXYNOS4212
+>  	help
+>  	  This adds the CPUFreq driver for Samsung EXYNOS4X12
+>  	  SoC (EXYNOS4212 or EXYNOS4412).
+> diff --git a/drivers/media/platform/exynos4-is/Kconfig b/drivers/media/=
+platform/exynos4-is/Kconfig
+> index 6ff99b5..f483e11 100644
+> --- a/drivers/media/platform/exynos4-is/Kconfig
+> +++ b/drivers/media/platform/exynos4-is/Kconfig
+> @@ -32,7 +32,7 @@ config VIDEO_S5P_MIPI_CSIS
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called s5p-csis.
+> =20
+> -if SOC_EXYNOS4212 || SOC_EXYNOS4412 || SOC_EXYNOS5250
+> +if SOC_EXYNOS4212 || SOC_EXYNOS5250
+> =20
+>  config VIDEO_EXYNOS_FIMC_LITE
+>  	tristate "EXYNOS FIMC-LITE camera interface driver"
+> diff --git a/drivers/thermal/exynos_thermal.c b/drivers/thermal/exynos_=
+thermal.c
+> index 788b1dd..f88a2ad 100644
+> --- a/drivers/thermal/exynos_thermal.c
+> +++ b/drivers/thermal/exynos_thermal.c
+> @@ -817,7 +817,7 @@ static struct exynos_tmu_platform_data const exynos=
+4210_default_tmu_data =3D {
+>  #define EXYNOS4210_TMU_DRV_DATA (NULL)
+>  #endif
+> =20
+> -#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4412)
+> +#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4212)
+>  static struct exynos_tmu_platform_data const exynos_default_tmu_data =3D=
  {
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
--
--	mutex_lock(&ldata->echo_lock);
--	ldata->echo_head = ldata->echo_tail  = 0;
--	mutex_unlock(&ldata->echo_lock);
-+	ldata->echo_head = ldata->echo_tail = ldata->echo_commit = 0;
- 
- 	ldata->erasing = 0;
- 	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
-@@ -641,8 +637,7 @@ break_out:
-  *	are prioritized.  Also, when control characters are echoed with a
-  *	prefixed "^", the pair is treated atomically and thus not separated.
-  *
-- *	Locking: output_lock to protect column state and space left,
-- *		 echo_lock to protect the echo buffer
-+ *	Locking: output_lock to protect column state and space left
-  */
- 
- static void process_echoes(struct tty_struct *tty)
-@@ -652,16 +647,15 @@ static void process_echoes(struct tty_struct *tty)
- 	size_t tail;
- 	unsigned char c;
- 
--	if (ldata->echo_head == ldata->echo_tail)
-+	if (ldata->echo_commit == ldata->echo_tail)
- 		return;
- 
- 	mutex_lock(&ldata->output_lock);
--	mutex_lock(&ldata->echo_lock);
- 
- 	space = tty_write_room(tty);
- 
- 	tail = ldata->echo_tail;
--	nr = ldata->echo_head - ldata->echo_tail;
-+	nr = ldata->echo_commit - ldata->echo_tail;
- 	while (nr > 0) {
- 		c = echo_buf(ldata, tail);
- 		if (c == ECHO_OP_START) {
-@@ -778,13 +772,21 @@ static void process_echoes(struct tty_struct *tty)
- 
- 	ldata->echo_tail = tail;
- 
--	mutex_unlock(&ldata->echo_lock);
- 	mutex_unlock(&ldata->output_lock);
- 
- 	if (tty->ops->flush_chars)
- 		tty->ops->flush_chars(tty);
- }
- 
-+static void commit_echoes(struct tty_struct *tty)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+
-+	smp_mb();
-+	ldata->echo_commit = ldata->echo_head;
-+	process_echoes(tty);
-+}
-+
- /**
-  *	add_echo_byte	-	add a byte to the echo buffer
-  *	@c: unicode byte to echo
-@@ -792,13 +794,16 @@ static void process_echoes(struct tty_struct *tty)
-  *
-  *	Add a character or operation byte to the echo buffer.
-  *
-- *	Should be called under the echo lock to protect the echo buffer.
-+ *	Locks: may claim output_lock to prevent concurrent modify of
-+ *	       echo_tail by process_echoes().
-  */
- 
- static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- {
- 	if (ldata->echo_head - ldata->echo_tail == N_TTY_BUF_SIZE) {
- 		size_t head = ldata->echo_head;
-+
-+		mutex_lock(&ldata->output_lock);
- 		/*
- 		 * Since the buffer start position needs to be advanced,
- 		 * be sure to step by a whole operation byte group.
-@@ -810,6 +815,7 @@ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- 				ldata->echo_tail += 2;
- 		} else
- 			ldata->echo_tail++;
-+		mutex_unlock(&ldata->output_lock);
- 	}
- 
- 	*echo_buf_addr(ldata, ldata->echo_head++) = c;
-@@ -820,16 +826,12 @@ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
-  *	@ldata: n_tty data
-  *
-  *	Add an operation to the echo buffer to move back one column.
-- *
-- *	Locking: echo_lock to protect the echo buffer
-  */
- 
- static void echo_move_back_col(struct n_tty_data *ldata)
- {
--	mutex_lock(&ldata->echo_lock);
- 	add_echo_byte(ECHO_OP_START, ldata);
- 	add_echo_byte(ECHO_OP_MOVE_BACK_COL, ldata);
--	mutex_unlock(&ldata->echo_lock);
- }
- 
- /**
-@@ -838,16 +840,12 @@ static void echo_move_back_col(struct n_tty_data *ldata)
-  *
-  *	Add an operation to the echo buffer to set the canon column
-  *	to the current column.
-- *
-- *	Locking: echo_lock to protect the echo buffer
-  */
- 
- static void echo_set_canon_col(struct n_tty_data *ldata)
- {
--	mutex_lock(&ldata->echo_lock);
- 	add_echo_byte(ECHO_OP_START, ldata);
- 	add_echo_byte(ECHO_OP_SET_CANON_COL, ldata);
--	mutex_unlock(&ldata->echo_lock);
- }
- 
- /**
-@@ -863,15 +861,11 @@ static void echo_set_canon_col(struct n_tty_data *ldata)
-  *	of input.  This information will be used later, along with
-  *	canon column (if applicable), to go back the correct number
-  *	of columns.
-- *
-- *	Locking: echo_lock to protect the echo buffer
-  */
- 
- static void echo_erase_tab(unsigned int num_chars, int after_tab,
- 			   struct n_tty_data *ldata)
- {
--	mutex_lock(&ldata->echo_lock);
--
- 	add_echo_byte(ECHO_OP_START, ldata);
- 	add_echo_byte(ECHO_OP_ERASE_TAB, ldata);
- 
-@@ -883,8 +877,6 @@ static void echo_erase_tab(unsigned int num_chars, int after_tab,
- 		num_chars |= 0x80;
- 
- 	add_echo_byte(num_chars, ldata);
--
--	mutex_unlock(&ldata->echo_lock);
- }
- 
- /**
-@@ -896,20 +888,16 @@ static void echo_erase_tab(unsigned int num_chars, int after_tab,
-  *	L_ECHO(tty) is true. Called from the driver receive_buf path.
-  *
-  *	This variant does not treat control characters specially.
-- *
-- *	Locking: echo_lock to protect the echo buffer
-  */
- 
- static void echo_char_raw(unsigned char c, struct n_tty_data *ldata)
- {
--	mutex_lock(&ldata->echo_lock);
- 	if (c == ECHO_OP_START) {
- 		add_echo_byte(ECHO_OP_START, ldata);
- 		add_echo_byte(ECHO_OP_START, ldata);
- 	} else {
- 		add_echo_byte(c, ldata);
- 	}
--	mutex_unlock(&ldata->echo_lock);
- }
- 
- /**
-@@ -922,16 +910,12 @@ static void echo_char_raw(unsigned char c, struct n_tty_data *ldata)
-  *
-  *	This variant tags control characters to be echoed as "^X"
-  *	(where X is the letter representing the control char).
-- *
-- *	Locking: echo_lock to protect the echo buffer
-  */
- 
- static void echo_char(unsigned char c, struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
--	mutex_lock(&ldata->echo_lock);
--
- 	if (c == ECHO_OP_START) {
- 		add_echo_byte(ECHO_OP_START, ldata);
- 		add_echo_byte(ECHO_OP_START, ldata);
-@@ -940,8 +924,6 @@ static void echo_char(unsigned char c, struct tty_struct *tty)
- 			add_echo_byte(ECHO_OP_START, ldata);
- 		add_echo_byte(c, ldata);
- 	}
--
--	mutex_unlock(&ldata->echo_lock);
- }
- 
- /**
-@@ -1283,7 +1265,7 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 			if (ldata->canon_head == ldata->read_head)
- 				echo_set_canon_col(ldata);
- 			echo_char(c, tty);
--			process_echoes(tty);
-+			commit_echoes(tty);
- 		}
- 		if (parmrk)
- 			put_tty_queue(c, ldata);
-@@ -1294,7 +1276,7 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- 	if (I_IXON(tty)) {
- 		if (c == START_CHAR(tty)) {
- 			start_tty(tty);
--			process_echoes(tty);
-+			commit_echoes(tty);
- 			return;
- 		}
- 		if (c == STOP_CHAR(tty)) {
-@@ -1325,7 +1307,7 @@ send_signal:
- 				start_tty(tty);
- 			if (L_ECHO(tty)) {
- 				echo_char(c, tty);
--				process_echoes(tty);
-+				commit_echoes(tty);
- 			}
- 			isig(signal, tty);
- 			return;
-@@ -1344,7 +1326,7 @@ send_signal:
- 		if (c == ERASE_CHAR(tty) || c == KILL_CHAR(tty) ||
- 		    (c == WERASE_CHAR(tty) && L_IEXTEN(tty))) {
- 			eraser(c, tty);
--			process_echoes(tty);
-+			commit_echoes(tty);
- 			return;
- 		}
- 		if (c == LNEXT_CHAR(tty) && L_IEXTEN(tty)) {
-@@ -1354,7 +1336,7 @@ send_signal:
- 				if (L_ECHOCTL(tty)) {
- 					echo_char_raw('^', ldata);
- 					echo_char_raw('\b', ldata);
--					process_echoes(tty);
-+					commit_echoes(tty);
- 				}
- 			}
- 			return;
-@@ -1370,7 +1352,7 @@ send_signal:
- 				echo_char(read_buf(ldata, tail), tty);
- 				tail++;
- 			}
--			process_echoes(tty);
-+			commit_echoes(tty);
- 			return;
- 		}
- 		if (c == '\n') {
-@@ -1381,7 +1363,7 @@ send_signal:
- 			}
- 			if (L_ECHO(tty) || L_ECHONL(tty)) {
- 				echo_char_raw('\n', ldata);
--				process_echoes(tty);
-+				commit_echoes(tty);
- 			}
- 			goto handle_newline;
- 		}
-@@ -1410,7 +1392,7 @@ send_signal:
- 				if (ldata->canon_head == ldata->read_head)
- 					echo_set_canon_col(ldata);
- 				echo_char(c, tty);
--				process_echoes(tty);
-+				commit_echoes(tty);
- 			}
- 			/*
- 			 * XXX does PARMRK doubling happen for
-@@ -1447,7 +1429,7 @@ handle_newline:
- 				echo_set_canon_col(ldata);
- 			echo_char(c, tty);
- 		}
--		process_echoes(tty);
-+		commit_echoes(tty);
- 	}
- 
- 	if (parmrk)
-@@ -1712,7 +1694,6 @@ static int n_tty_open(struct tty_struct *tty)
- 	ldata->overrun_time = jiffies;
- 	mutex_init(&ldata->atomic_read_lock);
- 	mutex_init(&ldata->output_lock);
--	mutex_init(&ldata->echo_lock);
- 
- 	/* These are ugly. Currently a malloc failure here can panic */
- 	ldata->read_buf = kzalloc(N_TTY_BUF_SIZE, GFP_KERNEL);
--- 
-1.8.1.2
+>  	.threshold_falling =3D 10,
+>  	.trigger_levels[0] =3D 85,
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.=
+c
+> index 0c8a9fa..eeb8ecb 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1714,8 +1714,7 @@ static struct s3c24xx_serial_drv_data s5pv210_ser=
+ial_drv_data =3D {
+>  #endif
+> =20
+>  #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) |=
+| \
+> -	defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) || \=
+
+> -	defined(CONFIG_SOC_EXYNOS5440)
+> +	defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS5440)
+>  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data =3D {=
+
+>  	.info =3D &(struct s3c24xx_uart_info) {
+>  		.name		=3D "Samsung Exynos4 UART",
+>=20
+
+
+--=20
+You have got to be excited about what you are doing. (L. Lamport)
+
+Eduardo Valentin
+
+
+------enig2SSRTOFTEOXSUNWFLTDDH
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iF4EAREIAAYFAlG8dOEACgkQCXcVR3XQvP2QKAD+J7y7Bv3/UJX3SK83oMi+LCdA
+0uFlsouFH8H7bY2pbz4A/0b2odd6yLYEfzNHKNfqDzlM2guYIDDN9xnm3TOuBvFT
+=fur3
+-----END PGP SIGNATURE-----
+
+------enig2SSRTOFTEOXSUNWFLTDDH--
+
+
+--===============5959158561452787425==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============5959158561452787425==--
