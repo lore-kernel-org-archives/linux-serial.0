@@ -1,73 +1,89 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 1/9] n_tty: Remove unused echo_overrun field
-Date: Sat, 15 Jun 2013 10:04:21 -0400
-Message-ID: <1371305069-5366-2-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 8/9] n_tty: Eliminate counter in __process_echoes
+Date: Sat, 15 Jun 2013 10:04:28 -0400
+Message-ID: <1371305069-5366-9-git-send-email-peter@hurleysoftware.com>
 References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
  <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40189 "EHLO
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:40218 "EHLO
 	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754357Ab3FOOEw (ORCPT
+	with ESMTP id S1754466Ab3FOOFJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 10:04:52 -0400
+	Sat, 15 Jun 2013 10:05:09 -0400
 In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-The echo_overrun field is only assigned and never tested; remove it.
+Since neither echo_commit nor echo_tail can change for the duration
+of __process_echoes loop, substitute index comparison for the
+snapshot counter.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/tty/n_tty.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 2321d6a..160d9d2 100644
+index 4a2da9e..e689026 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -96,7 +96,6 @@ struct n_tty_data {
+@@ -655,8 +655,7 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 	old_space = space = tty_write_room(tty);
  
- 	/* must hold exclusive termios_rwsem to reset these */
- 	unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
--	unsigned char echo_overrun:1;
+ 	tail = ldata->echo_tail;
+-	nr = ldata->echo_commit - ldata->echo_tail;
+-	while (nr > 0) {
++	while (ldata->echo_commit != tail) {
+ 		c = echo_buf(ldata, tail);
+ 		if (c == ECHO_OP_START) {
+ 			unsigned char op;
+@@ -700,20 +699,17 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 						ldata->column--;
+ 				}
+ 				tail += 3;
+-				nr -= 3;
+ 				break;
  
- 	/* shared by producer and consumer */
- 	char *read_buf;
-@@ -325,7 +324,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 			case ECHO_OP_SET_CANON_COL:
+ 				ldata->canon_column = ldata->column;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
  
- 	mutex_lock(&ldata->echo_lock);
--	ldata->echo_pos = ldata->echo_cnt = ldata->echo_overrun = 0;
-+	ldata->echo_pos = ldata->echo_cnt = 0;
- 	mutex_unlock(&ldata->echo_lock);
+ 			case ECHO_OP_MOVE_BACK_COL:
+ 				if (ldata->column > 0)
+ 					ldata->column--;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
  
- 	ldata->erasing = 0;
-@@ -781,14 +780,11 @@ static void process_echoes(struct tty_struct *tty)
- 	if (nr == 0) {
- 		ldata->echo_pos = 0;
- 		ldata->echo_cnt = 0;
--		ldata->echo_overrun = 0;
- 	} else {
- 		int num_processed = ldata->echo_cnt - nr;
- 		ldata->echo_pos += num_processed;
- 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
- 		ldata->echo_cnt = nr;
--		if (num_processed > 0)
--			ldata->echo_overrun = 0;
+ 			case ECHO_OP_START:
+@@ -726,7 +722,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				ldata->column++;
+ 				space--;
+ 				tail += 2;
+-				nr -= 2;
+ 				break;
+ 
+ 			default:
+@@ -748,7 +743,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				ldata->column += 2;
+ 				space -= 2;
+ 				tail += 2;
+-				nr -= 2;
+ 			}
+ 
+ 			if (no_space_left)
+@@ -766,7 +760,6 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 				space -= 1;
+ 			}
+ 			tail += 1;
+-			nr -= 1;
+ 		}
  	}
  
- 	mutex_unlock(&ldata->echo_lock);
-@@ -834,8 +830,6 @@ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- 			ldata->echo_pos++;
- 		}
- 		ldata->echo_pos &= N_TTY_BUF_SIZE - 1;
--
--		ldata->echo_overrun = 1;
- 	} else {
- 		new_byte_pos = ldata->echo_pos + ldata->echo_cnt;
- 		new_byte_pos &= N_TTY_BUF_SIZE - 1;
 -- 
 1.8.1.2
 
