@@ -1,225 +1,99 @@
-From: Eduardo Valentin <eduardo.valentin@ti.com>
-Subject: Re: [PATCH 27/28] ARM: EXYNOS: Remove CONFIG_SOC_EXYNOS4412
-Date: Sat, 15 Jun 2013 10:06:25 -0400
-Message-ID: <51BC74E1.5090504@ti.com>
-References: <1371238384-1504-1-git-send-email-t.figa@samsung.com>
- <1371238384-1504-28-git-send-email-t.figa@samsung.com>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5959158561452787425=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1371238384-1504-28-git-send-email-t.figa@samsung.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: Eduardo Valentin <eduardo.valentin@ti.com>, Kukjin Kim <kgene.kim@samsung.com>, Mauro Carvalho Chehab <mchehab@redhat.com>, Arnd Bergmann <arnd@arndb.de>, linux-pm@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, cpufreq@vger.kernel.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Kyungmin Park <kyungmin.park@samsung.com>, linux-samsung-soc@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Olof Johansson <olof@lixom.net>, Zhang Rui <rui.zhang@intel.com>, linux-media@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 3/9] n_tty: Replace echo_cnt with computed value
+Date: Sat, 15 Jun 2013 10:04:23 -0400
+Message-ID: <1371305069-5366-4-git-send-email-peter@hurleysoftware.com>
+References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+ <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
---===============5959158561452787425==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="----enig2SSRTOFTEOXSUNWFLTDDH"
+Prepare for lockless echo_buf handling; compute current byte count
+of echo_buf from head and tail indices.
 
-------enig2SSRTOFTEOXSUNWFLTDDH
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-Tomasz,
-
-On 14-06-2013 15:33, Tomasz Figa wrote:
-> Exynos4212 and Exynos4412 SoCs differ only in number of ARM cores and
-> there is no need to have separate Kconfig options for them, since they
-> use the same code.
->=20
-> This patch removes CONFIG_SOC_EXYNOS4412, leaving CONFIG_SOC_EXYNOS4212=
-
-> as the one supporting both SoCs from this series.
->=20
-> Cc: "Rafael J. Wysocki" <rjw@sisk.pl>
-> Cc: Viresh Kumar <viresh.kumar@linaro.org>
-> Cc: Mauro Carvalho Chehab <mchehab@redhat.com>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Eduardo Valentin <eduardo.valentin@ti.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: cpufreq@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Tomasz Figa <t.figa@samsung.com>
-> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  arch/arm/mach-exynos/Kconfig              | 11 +----------
->  arch/arm/plat-samsung/include/plat/cpu.h  |  6 +-----
->  drivers/cpufreq/Kconfig.arm               |  2 +-
->  drivers/media/platform/exynos4-is/Kconfig |  2 +-
->  drivers/thermal/exynos_thermal.c          |  2 +-
->  drivers/tty/serial/samsung.c              |  3 +--
->  6 files changed, 6 insertions(+), 20 deletions(-)
-
-
-Not for the matter of the change itself, but just for simplicity while
-merging when the change is agreed to be good, it is recommended that you
-split your changes in different smaller patches, specially because you
-are touching several parts of the kernel that belong to different trees.
-If one merges your change the way it is, it is likely to create merge
-conflicts.
-
-
->=20
-> diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfi=
-g
-> index 47d8d9e..fe75a65 100644
-> --- a/arch/arm/mach-exynos/Kconfig
-> +++ b/arch/arm/mach-exynos/Kconfig
-> @@ -46,7 +46,7 @@ config CPU_EXYNOS4210
->  	  Enable EXYNOS4210 CPU support
-> =20
->  config SOC_EXYNOS4212
-> -	bool "SAMSUNG EXYNOS4212"
-> +	bool "SAMSUNG EXYNOS4212/4412"
->  	default y
->  	depends on ARCH_EXYNOS4
->  	select PINCTRL_EXYNOS
-> @@ -56,15 +56,6 @@ config SOC_EXYNOS4212
->  	help
->  	  Enable EXYNOS4212 SoC support
-> =20
-> -config SOC_EXYNOS4412
-> -	bool "SAMSUNG EXYNOS4412"
-> -	default y
-> -	depends on ARCH_EXYNOS4
-> -	select PINCTRL_EXYNOS
-> -	select SAMSUNG_DMADEV
-> -	help
-> -	  Enable EXYNOS4412 SoC support
-> -
->  config SOC_EXYNOS5250
->  	bool "SAMSUNG EXYNOS5250"
->  	default y
-> diff --git a/arch/arm/plat-samsung/include/plat/cpu.h b/arch/arm/plat-s=
-amsung/include/plat/cpu.h
-> index 989fefe..87b03bb 100644
-> --- a/arch/arm/plat-samsung/include/plat/cpu.h
-> +++ b/arch/arm/plat-samsung/include/plat/cpu.h
-> @@ -122,13 +122,9 @@ IS_SAMSUNG_CPU(exynos5440, EXYNOS5440_SOC_ID, EXYN=
-OS5_SOC_MASK)
-> =20
->  #if defined(CONFIG_SOC_EXYNOS4212)
->  # define soc_is_exynos4212()	is_samsung_exynos4212()
-> -#else
-> -# define soc_is_exynos4212()	0
-> -#endif
-> -
-> -#if defined(CONFIG_SOC_EXYNOS4412)
->  # define soc_is_exynos4412()	is_samsung_exynos4412()
->  #else
-> +# define soc_is_exynos4212()	0
->  # define soc_is_exynos4412()	0
->  #endif
-> =20
-> diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
-> index a924408..b214ad6 100644
-> --- a/drivers/cpufreq/Kconfig.arm
-> +++ b/drivers/cpufreq/Kconfig.arm
-> @@ -32,7 +32,7 @@ config ARM_EXYNOS4210_CPUFREQ
->  	  SoC (S5PV310 or S5PC210).
-> =20
->  config ARM_EXYNOS4X12_CPUFREQ
-> -	def_bool (SOC_EXYNOS4212 || SOC_EXYNOS4412)
-> +	def_bool SOC_EXYNOS4212
->  	help
->  	  This adds the CPUFreq driver for Samsung EXYNOS4X12
->  	  SoC (EXYNOS4212 or EXYNOS4412).
-> diff --git a/drivers/media/platform/exynos4-is/Kconfig b/drivers/media/=
-platform/exynos4-is/Kconfig
-> index 6ff99b5..f483e11 100644
-> --- a/drivers/media/platform/exynos4-is/Kconfig
-> +++ b/drivers/media/platform/exynos4-is/Kconfig
-> @@ -32,7 +32,7 @@ config VIDEO_S5P_MIPI_CSIS
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called s5p-csis.
-> =20
-> -if SOC_EXYNOS4212 || SOC_EXYNOS4412 || SOC_EXYNOS5250
-> +if SOC_EXYNOS4212 || SOC_EXYNOS5250
-> =20
->  config VIDEO_EXYNOS_FIMC_LITE
->  	tristate "EXYNOS FIMC-LITE camera interface driver"
-> diff --git a/drivers/thermal/exynos_thermal.c b/drivers/thermal/exynos_=
-thermal.c
-> index 788b1dd..f88a2ad 100644
-> --- a/drivers/thermal/exynos_thermal.c
-> +++ b/drivers/thermal/exynos_thermal.c
-> @@ -817,7 +817,7 @@ static struct exynos_tmu_platform_data const exynos=
-4210_default_tmu_data =3D {
->  #define EXYNOS4210_TMU_DRV_DATA (NULL)
->  #endif
-> =20
-> -#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4412)
-> +#if defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS4212)
->  static struct exynos_tmu_platform_data const exynos_default_tmu_data =3D=
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index f90e171..68dc9fd 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -110,7 +110,6 @@ struct n_tty_data {
+ 	unsigned char *echo_buf;
+ 	size_t echo_head;
+ 	size_t echo_tail;
+-	unsigned int echo_cnt;
+ 
+ 	/* protected by output lock */
+ 	unsigned int column;
+@@ -335,7 +334,7 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
+ 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
+ 
+ 	mutex_lock(&ldata->echo_lock);
+-	ldata->echo_head = ldata->echo_tail = ldata->echo_cnt = 0;
++	ldata->echo_head = ldata->echo_tail  = 0;
+ 	mutex_unlock(&ldata->echo_lock);
+ 
+ 	ldata->erasing = 0;
+@@ -653,7 +652,7 @@ static void process_echoes(struct tty_struct *tty)
+ 	size_t tail;
+ 	unsigned char c;
+ 
+-	if (!ldata->echo_cnt)
++	if (ldata->echo_head == ldata->echo_tail)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
+@@ -662,7 +661,7 @@ static void process_echoes(struct tty_struct *tty)
+ 	space = tty_write_room(tty);
+ 
+ 	tail = ldata->echo_tail;
+-	nr = ldata->echo_cnt;
++	nr = ldata->echo_head - ldata->echo_tail;
+ 	while (nr > 0) {
+ 		c = echo_buf(ldata, tail);
+ 		if (c == ECHO_OP_START) {
+@@ -778,7 +777,6 @@ static void process_echoes(struct tty_struct *tty)
+ 	}
+ 
+ 	ldata->echo_tail = tail;
+-	ldata->echo_cnt = nr;
+ 
+ 	mutex_unlock(&ldata->echo_lock);
+ 	mutex_unlock(&ldata->output_lock);
+@@ -799,24 +797,20 @@ static void process_echoes(struct tty_struct *tty)
+ 
+ static void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
  {
->  	.threshold_falling =3D 10,
->  	.trigger_levels[0] =3D 85,
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.=
-c
-> index 0c8a9fa..eeb8ecb 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1714,8 +1714,7 @@ static struct s3c24xx_serial_drv_data s5pv210_ser=
-ial_drv_data =3D {
->  #endif
-> =20
->  #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) |=
-| \
-> -	defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) || \=
-
-> -	defined(CONFIG_SOC_EXYNOS5440)
-> +	defined(CONFIG_SOC_EXYNOS5250) || defined(CONFIG_SOC_EXYNOS5440)
->  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data =3D {=
-
->  	.info =3D &(struct s3c24xx_uart_info) {
->  		.name		=3D "Samsung Exynos4 UART",
->=20
-
-
---=20
-You have got to be excited about what you are doing. (L. Lamport)
-
-Eduardo Valentin
-
-
-------enig2SSRTOFTEOXSUNWFLTDDH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iF4EAREIAAYFAlG8dOEACgkQCXcVR3XQvP2QKAD+J7y7Bv3/UJX3SK83oMi+LCdA
-0uFlsouFH8H7bY2pbz4A/0b2odd6yLYEfzNHKNfqDzlM2guYIDDN9xnm3TOuBvFT
-=fur3
------END PGP SIGNATURE-----
-
-------enig2SSRTOFTEOXSUNWFLTDDH--
-
-
---===============5959158561452787425==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============5959158561452787425==--
+-	if (ldata->echo_cnt == N_TTY_BUF_SIZE) {
++	if (ldata->echo_head - ldata->echo_tail == N_TTY_BUF_SIZE) {
+ 		size_t head = ldata->echo_head;
+ 		/*
+ 		 * Since the buffer start position needs to be advanced,
+ 		 * be sure to step by a whole operation byte group.
+ 		 */
+ 		if (echo_buf(ldata, head) == ECHO_OP_START) {
+-			if (echo_buf(ldata, head + 1) == ECHO_OP_ERASE_TAB) {
++			if (echo_buf(ldata, head + 1) == ECHO_OP_ERASE_TAB)
+ 				ldata->echo_tail += 3;
+-				ldata->echo_cnt -= 2;
+-			} else {
++			else
+ 				ldata->echo_tail += 2;
+-				ldata->echo_cnt -= 1;
+-			}
+ 		} else
+ 			ldata->echo_tail++;
+-	} else
+-		ldata->echo_cnt++;
++	}
+ 
+ 	*echo_buf_addr(ldata, ldata->echo_head++) = c;
+ }
+-- 
+1.8.1.2
