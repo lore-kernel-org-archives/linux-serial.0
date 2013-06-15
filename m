@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 9/9] n_tty: Avoid false-sharing echo buffer indices
-Date: Sat, 15 Jun 2013 10:04:29 -0400
-Message-ID: <1371305069-5366-10-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 7/9] n_tty: Only flush echo output if actually output
+Date: Sat, 15 Jun 2013 10:04:27 -0400
+Message-ID: <1371305069-5366-8-git-send-email-peter@hurleysoftware.com>
 References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
  <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,50 +11,81 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Separate the head & commit indices from the tail index to avoid
-cache-line contention (so called 'false-sharing') between concurrent
-threads.
+Don't have the driver flush received echoes if no echoes were
+actually output.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/tty/n_tty.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index e689026..b9ccb49 100644
+index f298890..4a2da9e 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -90,6 +90,8 @@ struct n_tty_data {
- 	/* producer-published */
- 	size_t read_head;
- 	size_t canon_head;
-+	size_t echo_head;
-+	size_t echo_commit;
- 	DECLARE_BITMAP(process_char_map, 256);
+@@ -645,14 +645,14 @@ break_out:
+  *	Locking: callers must hold output_lock
+  */
  
- 	/* private to n_tty_receive_overrun (single-threaded) */
-@@ -105,20 +107,17 @@ struct n_tty_data {
- 	/* shared by producer and consumer */
- 	char *read_buf;
- 	DECLARE_BITMAP(read_flags, N_TTY_BUF_SIZE);
-+	unsigned char *echo_buf;
+-static void __process_echoes(struct tty_struct *tty)
++static size_t __process_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int	space, nr;
++	int	space, old_space;
+ 	size_t tail;
+ 	unsigned char c;
  
- 	int minimum_to_wake;
+-	space = tty_write_room(tty);
++	old_space = space = tty_write_room(tty);
  
- 	/* consumer-published */
- 	size_t read_tail;
+ 	tail = ldata->echo_tail;
+ 	nr = ldata->echo_commit - ldata->echo_tail;
+@@ -784,12 +784,13 @@ static void __process_echoes(struct tty_struct *tty)
+ 	}
  
--	unsigned char *echo_buf;
--	size_t echo_head;
--	size_t echo_tail;
--	size_t echo_commit;
--
- 	/* protected by output lock */
- 	unsigned int column;
- 	unsigned int canon_column;
-+	size_t echo_tail;
+ 	ldata->echo_tail = tail;
++	return old_space - space;
+ }
  
- 	struct mutex atomic_read_lock;
- 	struct mutex output_lock;
+ static void commit_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	size_t nr, old;
++	size_t nr, old, echoed;
+ 	size_t head;
+ 
+ 	head = ldata->echo_head;
+@@ -804,25 +805,26 @@ static void commit_echoes(struct tty_struct *tty)
+ 
+ 	mutex_lock(&ldata->output_lock);
+ 	ldata->echo_commit = head;
+-	__process_echoes(tty);
++	echoed = __process_echoes(tty);
+ 	mutex_unlock(&ldata->output_lock);
+ 
+-	if (tty->ops->flush_chars)
++	if (echoed && tty->ops->flush_chars)
+ 		tty->ops->flush_chars(tty);
+ }
+ 
+ static void process_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
++	size_t echoed;
+ 
+ 	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_tail)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
+-	__process_echoes(tty);
++	echoed = __process_echoes(tty);
+ 	mutex_unlock(&ldata->output_lock);
+ 
+-	if (tty->ops->flush_chars)
++	if (echoed && tty->ops->flush_chars)
+ 		tty->ops->flush_chars(tty);
+ }
+ 
 -- 
 1.8.1.2
