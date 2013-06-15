@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 5/6] tty: Fix hangup race with TIOCSETD ioctl
-Date: Sat, 15 Jun 2013 07:04:50 -0400
-Message-ID: <1371294291-3807-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 4/6] tty: Clarify ldisc variable
+Date: Sat, 15 Jun 2013 07:04:49 -0400
+Message-ID: <1371294291-3807-5-git-send-email-peter@hurleysoftware.com>
 References: <20130603192436.GB22733@kroah.com>
  <1371294291-3807-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,29 +11,67 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The hangup may already have happened; check for that state also.
+Rename o_ldisc to avoid confusion with the ldisc of the
+'other' tty.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/tty_ldisc.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 6c63b73..08b8a1b 100644
+index a4fd3a1..6c63b73 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -546,10 +546,8 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	old_ldisc = tty->ldisc;
+@@ -517,7 +517,7 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ {
+ 	int retval;
+-	struct tty_ldisc *o_ldisc, *new_ldisc;
++	struct tty_ldisc *old_ldisc, *new_ldisc;
+ 	struct tty_struct *o_tty = tty->link;
+ 
+ 	new_ldisc = tty_ldisc_get(tty, ldisc);
+@@ -543,7 +543,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	/* FIXME: why 'shutoff' input if the ldisc is locked? */
+ 	tty->receive_room = 0;
+ 
+-	o_ldisc = tty->ldisc;
++	old_ldisc = tty->ldisc;
  	tty_lock(tty);
  
--	/* FIXME: for testing only */
--	WARN_ON(test_bit(TTY_HUPPED, &tty->flags));
--
--	if (test_bit(TTY_HUPPING, &tty->flags)) {
-+	if (test_bit(TTY_HUPPING, &tty->flags) ||
-+	    test_bit(TTY_HUPPED, &tty->flags)) {
- 		/* We were raced by the hangup method. It will have stomped
- 		   the ldisc data and closed the ldisc down */
- 		tty_ldisc_enable_pair(tty, o_tty);
+ 	/* FIXME: for testing only */
+@@ -558,8 +558,8 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 		return -EIO;
+ 	}
+ 
+-	/* Shutdown the current discipline. */
+-	tty_ldisc_close(tty, o_ldisc);
++	/* Shutdown the old discipline. */
++	tty_ldisc_close(tty, old_ldisc);
+ 
+ 	/* Now set up the new line discipline. */
+ 	tty->ldisc = new_ldisc;
+@@ -569,17 +569,17 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	if (retval < 0) {
+ 		/* Back to the old one or N_TTY if we can't */
+ 		tty_ldisc_put(new_ldisc);
+-		tty_ldisc_restore(tty, o_ldisc);
++		tty_ldisc_restore(tty, old_ldisc);
+ 	}
+ 
+ 	/* At this point we hold a reference to the new ldisc and a
+ 	   a reference to the old ldisc. If we ended up flipping back
+ 	   to the existing ldisc we have two references to it */
+ 
+-	if (tty->ldisc->ops->num != o_ldisc->ops->num && tty->ops->set_ldisc)
++	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
+ 		tty->ops->set_ldisc(tty);
+ 
+-	tty_ldisc_put(o_ldisc);
++	tty_ldisc_put(old_ldisc);
+ 
+ 	/*
+ 	 *	Allow ldisc referencing to occur again
 -- 
 1.8.1.2
