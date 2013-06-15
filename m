@@ -1,39 +1,84 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/vt: Return EBUSY if deallocating VT1 and it is busy
-Date: Fri, 14 Jun 2013 21:48:24 -0700
-Message-ID: <20130615044824.GA13946@kroah.com>
-References: <20130614213543.GA1896@kroah.com>
- <1371248665-1176-1-git-send-email-rosslagerwall@gmail.com>
- <51BBA0E4.6030602@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/6] ldsem patchset, reordered and rebased
+Date: Sat, 15 Jun 2013 07:04:45 -0400
+Message-ID: <1371294291-3807-1-git-send-email-peter@hurleysoftware.com>
+References: <20130603192436.GB22733@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:49144 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751600Ab3FOEru (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:37099 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752514Ab3FOLFL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 15 Jun 2013 00:47:50 -0400
-Content-Disposition: inline
-In-Reply-To: <51BBA0E4.6030602@hurleysoftware.com>
+	Sat, 15 Jun 2013 07:05:11 -0400
+In-Reply-To: <20130603192436.GB22733@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Ross Lagerwall <rosslagerwall@gmail.com>, linux-kernel@vger.kernel.org, Dave Jones <davej@redhat.com>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On Fri, Jun 14, 2013 at 07:01:56PM -0400, Peter Hurley wrote:
-> On 06/14/2013 06:24 PM, Ross Lagerwall wrote:
-> >Commit 421b40a6286e ("tty/vt: Fix vc_deallocate() lock order") changed
-> >the behavior when deallocating VT 1.  Previously if trying to
-> >deallocate VT1 and it is busy, we would return EBUSY.  The commit
-> >changed this to return 0 (success).
-> >
-> >This commit restores the old behavior.
-> >
-> >Signed-off-by: Ross Lagerwall <rosslagerwall@gmail.com>
+On 06/03/2013 03:24 PM, Greg Kroah-Hartman wrote:> On Mon, May 20, 2013 at 07:38:57PM -0400, Peter Hurley wrote:
+>> On 05/20/2013 07:06 PM, Greg Kroah-Hartman wrote:
+>>> On Mon, May 20, 2013 at 05:44:00PM -0400, Peter Hurley wrote:
+>>>> On 05/20/2013 03:34 PM, Greg Kroah-Hartman wrote:
+>>>>> On Tue, Apr 16, 2013 at 06:15:51AM -0400, Peter Hurley wrote:
+>>>>>> Just as the tty pair must be locked in a stable sequence
+>>>>>> (ie, independent of which is consider the 'other' tty), so must
+>>>>>> the ldisc pair be locked in a stable sequence as well.
+>>>>>>
+>>>>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>>>>>> ---
+>>>>>>   drivers/tty/tty_ldisc.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++
+>>>>>>   1 file changed, 87 insertions(+)
+>>>>>
+>>>>> This patch breaks the build :(
+>>>>
+>>>> Sorry about that.
+>>>>
+>>>>> I've taken the first one, care to mush this one with the 7/7 patch, so
+>>>>> there are no build breaks, and resend the 5 resulting patches so I can
+>>>>> apply these?
+>>>>
+>>>> Maybe it would be better to reorder 7/7 to be 1/6, if that's ok?
+>>>> More work for me but the history will be cleaner.
+>>>
+>>> Sure, that works for me as well, care to just resend them?  Or, I can
+>>> dig them out of my archive if needed.
+>>
+>> I'll resend them because the rebase will require some re-editing.
 > 
-> Thanks.
-> 
-> Acked-by: Peter Hurley <peter@hurleysoftware.com>
+> Did you ever resend these?  If so, I didn't see them :(
 
-Thanks for this, I'll queue it up for Linus soon.
+Greg,
 
-greg k-h
+Sorry for the delay here. In addition to the re-editing required,
+I merged in a couple of fixes and these needed re-testing.
+
+These apply cleanly to tty-next.
+
+Changes from previous 7-patch series:
+1. In tty_ldisc_ref(), snapshot tty->ldisc holding ldsem.
+   The conditions for this to be a fix cannot actually occur but
+   this is better anyway.
+2. In tty_set_ldisc(), the new ldisc needs to be released if
+   tty_ldisc_lock_pair_timeout() fails.
+
+Regards,
+Peter Hurley
+
+Peter Hurley (6):
+  tty: Fix tty_ldisc_lock name collision
+  tty: Add lock/unlock ldisc pair functions
+  tty: Replace ldisc locking with ldisc_sem
+  tty: Clarify ldisc variable
+  tty: Fix hangup race with TIOCSETD ioctl
+  tty: Clarify multiple-references comment in TIOCSETD ioctl
+
+ drivers/tty/tty_buffer.c  |   2 +-
+ drivers/tty/tty_io.c      |  11 +-
+ drivers/tty/tty_ldisc.c   | 450 ++++++++++++++++------------------------------
+ include/linux/tty.h       |   4 +-
+ include/linux/tty_ldisc.h |   3 +-
+ 5 files changed, 158 insertions(+), 312 deletions(-)
+
+-- 
+1.8.1.2
+
