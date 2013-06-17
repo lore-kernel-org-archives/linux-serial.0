@@ -1,48 +1,106 @@
 From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v2 09/11] ARM:stixxxx: Add stixxxx options to
- multi_v7_defconfig
-Date: Mon, 17 Jun 2013 10:32:48 +0100
-Message-ID: <20130617093248.GB6809@e106331-lin.cambridge.arm.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856477-7237-1-git-send-email-srinivas.kandagatla@st.com>
- <20130610104032.GA2513@e106331-lin.cambridge.arm.com>
- <51B5B15E.50901@st.com>
- <20130610131513.GB2513@e106331-lin.cambridge.arm.com>
- <51B98FDD.4010401@st.com>
+Subject: Re: [PATCH v2 08/10] clocksource: exynos_mct: use
+ (request/free)_irq calls for local timer registration
+Date: Mon, 17 Jun 2013 11:01:52 +0100
+Message-ID: <20130617100152.GC6809@e106331-lin.cambridge.arm.com>
+References: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
+ <1371218572-8993-1-git-send-email-chander.kashyap@linaro.org>
+ <1371218572-8993-9-git-send-email-chander.kashyap@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <51B98FDD.4010401@st.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, Stephen Gallimore <stephen.gallimore@st.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mauro
+In-Reply-To: <1371218572-8993-9-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Chander Kashyap <chander.kashyap@linaro.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "t.figa@samsung.com" <t.figa@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 13, 2013 at 10:24:45AM +0100, Srinivas KANDAGATLA wrote:
-> On 10/06/13 14:15, Mark Rutland wrote:
-> > CONFIG_EXPERIMENTAL's gone as of 3d374d09f1: "final removal of
-> > CONFIG_EXPERIMENTAL", so that's fine to go. CONFIG_GPIO_PL061 and
-> > CONFIG_MMC_WMT get selected elsewhere, so that's fine.
-> > 
+On Fri, Jun 14, 2013 at 03:02:50PM +0100, Chander Kashyap wrote:
+> Replace the (setup/remove)_irq calls for local timer registration with
+> (request/free)_irq calls. This generalizes the local timer registration API.
+> Suggested by Mark Rutland.
 > 
-> Am planning to send a patch to clean this up, so that any new platform
-> addition to the multi_v7_defconfig will not under go this discussion again..
+> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
 > 
-> > It looks like the architected timer deselection is fallout of my own making,
-> > the multi_v7_defconfig should now contain HAVE_ARM_ARCH_TIMER rather than
-> > ARM_ARCH_TIMER.
-> Why should it even contain HAVE_ARM_ARCH_TIMER/ARM_ARCH_TIMER?
-> The only reason I see for de-selection is because none of the platforms
-> in the multi_v7 defconfig selects it.
+> Replace the (setup/remove)_irq calls for local timer registration with
+> (request/free)_irq calls. This generalises the local timer registration API.
 > 
-> Looks like there is no platform in mulit_v7 config which requires this
-> support. If there is one I think it should select it.
-> 
-> Am I correct?
+> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
 
-You're right, I agree that the selection should be moved down into the
-platforms requiring it. I'll put together patches to fix up those platforms.
+This looks much nicer now.
 
-Thanks,
-Mark.
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+> ---
+>  drivers/clocksource/exynos_mct.c |   35 +++++++++--------------------------
+>  1 file changed, 9 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+> index 662fcc0..a704804 100644
+> --- a/drivers/clocksource/exynos_mct.c
+> +++ b/drivers/clocksource/exynos_mct.c
+> @@ -400,18 +400,6 @@ static irqreturn_t exynos4_mct_tick_isr(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static struct irqaction mct_tick0_event_irq = {
+> -	.name		= "mct_tick0_irq",
+> -	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+> -	.handler	= exynos4_mct_tick_isr,
+> -};
+> -
+> -static struct irqaction mct_tick1_event_irq = {
+> -	.name		= "mct_tick1_irq",
+> -	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+> -	.handler	= exynos4_mct_tick_isr,
+> -};
+> -
+>  static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+>  {
+>  	struct mct_clock_event_device *mevt;
+> @@ -435,16 +423,15 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+>  	exynos4_mct_write(TICK_BASE_CNT, mevt->base + MCT_L_TCNTB_OFFSET);
+>  
+>  	if (mct_int_type == MCT_INT_SPI) {
+> -		if (cpu == 0) {
+> -			mct_tick0_event_irq.dev_id = mevt;
+> -			evt->irq = mct_irqs[MCT_L0_IRQ];
+> -			setup_irq(evt->irq, &mct_tick0_event_irq);
+> -		} else {
+> -			mct_tick1_event_irq.dev_id = mevt;
+> -			evt->irq = mct_irqs[MCT_L1_IRQ];
+> -			setup_irq(evt->irq, &mct_tick1_event_irq);
+> -			irq_set_affinity(evt->irq, cpumask_of(1));
+> +		evt->irq = mct_irqs[MCT_L0_IRQ + cpu];
+> +		if (request_irq(evt->irq, exynos4_mct_tick_isr,
+> +				IRQF_TIMER | IRQF_NOBALANCING,
+> +				evt->name, mevt)) {
+> +			pr_err("exynos-mct: cannot register IRQ %d\n",
+> +				evt->irq);
+> +			return -EIO;
+>  		}
+> +		irq_set_affinity(evt->irq, cpumask_of(cpu));
+>  	} else {
+>  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
+>  	}
+> @@ -454,13 +441,9 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+>  
+>  static void exynos4_local_timer_stop(struct clock_event_device *evt)
+>  {
+> -	unsigned int cpu = smp_processor_id();
+>  	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
+>  	if (mct_int_type == MCT_INT_SPI)
+> -		if (cpu == 0)
+> -			remove_irq(evt->irq, &mct_tick0_event_irq);
+> -		else
+> -			remove_irq(evt->irq, &mct_tick1_event_irq);
+> +		free_irq(evt->irq, this_cpu_ptr(&percpu_mct_tick));
+>  	else
+>  		disable_percpu_irq(mct_irqs[MCT_L0_IRQ]);
+>  }
+> -- 
+> 1.7.9.5
+> 
+> 
