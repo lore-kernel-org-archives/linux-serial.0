@@ -1,78 +1,313 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH v3 00/10] ARM: Exynos: Add Exynos5420 SoC support
-Date: Mon, 17 Jun 2013 16:30:25 +0530
-Message-ID: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+Subject: [PATCH v3 01/10] ARM: dts: fork out common Exynos5 nodes
+Date: Mon, 17 Jun 2013 16:30:26 +0530
+Message-ID: <1371466836-4111-2-git-send-email-chander.kashyap@linaro.org>
+References: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:53343 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932639Ab3FQLAz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Jun 2013 07:00:55 -0400
+Received: by mail-pa0-f48.google.com with SMTP id kp12so2739213pab.35
+        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2013 04:00:55 -0700 (PDT)
+In-Reply-To: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
-List-Id: linux-serial@vger.kernel.org
 
-Exynos5420 is new SoC in Samsung's Exynos5 SoC series. This series adds
-initial support for this SoC.
-Changes since v2:
+In preparation of adding support for Exynos5420, which has many peripherals
+similar to Exynos5250, a new common Exynos5 device tree source file is
+created out of the exising Exynos5250 device tree source file. Only the
+common nodes required for basic boot up on Exynos5420 based boards are moved
+into this new file and the rest of the common nodes would be moved subsequently.
 
-1. Renamed oscclk to fin_pll, in order to keep it consistant with Exynos4/Exynos5
-2. Pass memory as single bank rather than splitting in 256MB size banks.
-
-Changes since v1:
-
-1. As not-dt platforms will not be supported from 3.11 onwards, following
-   patches from previous patch series are dropped:
-   "irqchip: exynos-combiner: set irq base as 256 for Exynos5420"
-   "ARM: Exynos: initialize l2x0 cache controller only for cortex-a9 based SoCs"
-2. Added device type property in cpu node in the following patch:
-   "ARM: dts: list the CPU nodes for Exynos5250
-3. Sorted out the nodes listed in based upon the physical addresses as suggested
-   by Tomasz Figa.
-4. As Tomasz is going to consolidate the secondary cpu power register address
-   calculation in all possible scnarios, hence dropped the following patch:
-  "ARM: Exynos: fix secondary cpu power control register address calculation"
-5. Replaced the setup/remove)_irq calls with (request/free)_irq calls as
-   suggested by Mark Rutland in patch: 
-   "clocksource: exynos_mct: use (request/free)_irq calls for local timer
-    registration"
-6. Changed the registration of epll and rpll from pll35xx to pl36xx.
-7. Changed driver data selection for serial port, based on ARCH_EXYNOS.
-8. Changed the interrupt cells from 2 to 1 as suggested by Tomasz Figa.
-
-Chander Kashyap (10):
-  ARM: dts: fork out common Exynos5 nodes
-  ARM: dts: list the CPU nodes for Exynos5250
-  ARM: Exynos: Add support for Exynos5420 SoC
-  serial: samsung: select Exynos specific driver data if ARCH_EXYNOS is
-    defined
-  ARM: Exynos: use four additional chipid bits to identify Exynos
-    family
-  clk: exynos5420: register clocks using common clock framework
-  ARM: dts: Add initial device tree support for Exynos5420
-  clocksource: exynos_mct: use (request/free)_irq calls for local timer
-    registration
-  ARM: Exynos: add secondary CPU boot base location for Exynos5420
-  ARM: Exynos: extend soft-reset support for Exynos5420
-
- .../devicetree/bindings/clock/exynos5420-clock.txt |  201 ++++++
- arch/arm/boot/dts/Makefile                         |    1 +
- arch/arm/boot/dts/exynos5.dtsi                     |  111 +++
- arch/arm/boot/dts/exynos5250.dtsi                  |   80 +-
- arch/arm/boot/dts/exynos5420-smdk5420.dts          |   33 +
- arch/arm/boot/dts/exynos5420.dtsi                  |  103 +++
- arch/arm/mach-exynos/Kconfig                       |   10 +
- arch/arm/mach-exynos/common.c                      |   18 +-
- arch/arm/mach-exynos/include/mach/uncompress.h     |    7 +-
- arch/arm/mach-exynos/mach-exynos5-dt.c             |    1 +
- arch/arm/mach-exynos/platsmp.c                     |   12 +-
- arch/arm/plat-samsung/include/plat/cpu.h           |    8 +
- drivers/clk/samsung/Makefile                       |    1 +
- drivers/clk/samsung/clk-exynos5420.c               |  762 ++++++++++++++++++++
- drivers/clocksource/exynos_mct.c                   |   35 +-
- drivers/tty/serial/samsung.c                       |    4 +-
- 16 files changed, 1280 insertions(+), 107 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/exynos5420-clock.txt
+Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+---
+ arch/arm/boot/dts/exynos5.dtsi    |  111 +++++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/exynos5250.dtsi |   68 +----------------------
+ 2 files changed, 113 insertions(+), 66 deletions(-)
  create mode 100644 arch/arm/boot/dts/exynos5.dtsi
- create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
- create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
- create mode 100644 drivers/clk/samsung/clk-exynos5420.c
 
+diff --git a/arch/arm/boot/dts/exynos5.dtsi b/arch/arm/boot/dts/exynos5.dtsi
+new file mode 100644
+index 0000000..5684f89
+--- /dev/null
++++ b/arch/arm/boot/dts/exynos5.dtsi
+@@ -0,0 +1,111 @@
++/*
++ * Samsung's Exynos5 SoC series common device tree source
++ *
++ * Copyright (c) 2012-2013 Samsung Electronics Co., Ltd.
++ *		http://www.samsung.com
++ *
++ * Samsung's Exynos5 SoC series device nodes are listed in this file. Particular
++ * SoCs from Exynos5 series can include this file and provide values for SoCs
++ * specfic bindings.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include "skeleton.dtsi"
++
++/ {
++	interrupt-parent = <&gic>;
++
++	chipid@10000000 {
++		compatible = "samsung,exynos4210-chipid";
++		reg = <0x10000000 0x100>;
++	};
++
++	watchdog {
++		compatible = "samsung,s3c2410-wdt";
++		reg = <0x101D0000 0x100>;
++		interrupts = <0 42 0>;
++		status = "disabled";
++	};
++
++	rtc {
++		compatible = "samsung,s3c6410-rtc";
++		reg = <0x101E0000 0x100>;
++		interrupts = <0 43 0>, <0 44 0>;
++		status = "disabled";
++	};
++
++	combiner:interrupt-controller@10440000 {
++		compatible = "samsung,exynos4210-combiner";
++		#interrupt-cells = <2>;
++		interrupt-controller;
++		samsung,combiner-nr = <32>;
++		reg = <0x10440000 0x1000>;
++		interrupts =	<0 0 0>, <0 1 0>, <0 2 0>, <0 3 0>,
++				<0 4 0>, <0 5 0>, <0 6 0>, <0 7 0>,
++				<0 8 0>, <0 9 0>, <0 10 0>, <0 11 0>,
++				<0 12 0>, <0 13 0>, <0 14 0>, <0 15 0>,
++				<0 16 0>, <0 17 0>, <0 18 0>, <0 19 0>,
++				<0 20 0>, <0 21 0>, <0 22 0>, <0 23 0>,
++				<0 24 0>, <0 25 0>, <0 26 0>, <0 27 0>,
++				<0 28 0>, <0 29 0>, <0 30 0>, <0 31 0>;
++	};
++
++	gic:interrupt-controller@10481000 {
++		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
++		#interrupt-cells = <3>;
++		interrupt-controller;
++		reg =	<0x10481000 0x1000>,
++			<0x10482000 0x1000>,
++			<0x10484000 0x2000>,
++			<0x10486000 0x2000>;
++		interrupts = <1 9 0xf04>;
++	};
++
++	dwmmc_0: dwmmc0@12200000 {
++		compatible = "samsung,exynos5250-dw-mshc";
++		interrupts = <0 75 0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	dwmmc_1: dwmmc1@12210000 {
++		compatible = "samsung,exynos5250-dw-mshc";
++		interrupts = <0 76 0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	dwmmc_2: dwmmc2@12220000 {
++		compatible = "samsung,exynos5250-dw-mshc";
++		interrupts = <0 77 0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	serial@12C00000 {
++		compatible = "samsung,exynos4210-uart";
++		reg = <0x12C00000 0x100>;
++		interrupts = <0 51 0>;
++	};
++
++	serial@12C10000 {
++		compatible = "samsung,exynos4210-uart";
++		reg = <0x12C10000 0x100>;
++		interrupts = <0 52 0>;
++	};
++
++	serial@12C20000 {
++		compatible = "samsung,exynos4210-uart";
++		reg = <0x12C20000 0x100>;
++		interrupts = <0 53 0>;
++	};
++
++	serial@12C30000 {
++		compatible = "samsung,exynos4210-uart";
++		reg = <0x12C30000 0x100>;
++		interrupts = <0 54 0>;
++	};
++};
+diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+index 0673524..2b59ea3 100644
+--- a/arch/arm/boot/dts/exynos5250.dtsi
++++ b/arch/arm/boot/dts/exynos5250.dtsi
+@@ -17,12 +17,11 @@
+  * published by the Free Software Foundation.
+ */
+ 
+-/include/ "skeleton.dtsi"
+-/include/ "exynos5250-pinctrl.dtsi"
++#include "exynos5.dtsi"
++#include "exynos5250-pinctrl.dtsi"
+ 
+ / {
+ 	compatible = "samsung,exynos5250";
+-	interrupt-parent = <&gic>;
+ 
+ 	aliases {
+ 		spi0 = &spi_0;
+@@ -51,11 +50,6 @@
+ 		pinctrl3 = &pinctrl_3;
+ 	};
+ 
+-	chipid@10000000 {
+-		compatible = "samsung,exynos4210-chipid";
+-		reg = <0x10000000 0x100>;
+-	};
+-
+ 	pd_gsc: gsc-power-domain@0x10044000 {
+ 		compatible = "samsung,exynos4210-pd";
+ 		reg = <0x10044000 0x20>;
+@@ -72,17 +66,6 @@
+ 		#clock-cells = <1>;
+ 	};
+ 
+-	gic:interrupt-controller@10481000 {
+-		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+-		#interrupt-cells = <3>;
+-		interrupt-controller;
+-		reg = <0x10481000 0x1000>,
+-		      <0x10482000 0x1000>,
+-		      <0x10484000 0x2000>,
+-		      <0x10486000 0x2000>;
+-		interrupts = <1 9 0xf04>;
+-	};
+-
+ 	timer {
+ 		compatible = "arm,armv7-timer";
+ 		interrupts = <1 13 0xf08>,
+@@ -91,22 +74,6 @@
+ 			     <1 10 0xf08>;
+ 	};
+ 
+-	combiner:interrupt-controller@10440000 {
+-		compatible = "samsung,exynos4210-combiner";
+-		#interrupt-cells = <2>;
+-		interrupt-controller;
+-		samsung,combiner-nr = <32>;
+-		reg = <0x10440000 0x1000>;
+-		interrupts = <0 0 0>, <0 1 0>, <0 2 0>, <0 3 0>,
+-			     <0 4 0>, <0 5 0>, <0 6 0>, <0 7 0>,
+-			     <0 8 0>, <0 9 0>, <0 10 0>, <0 11 0>,
+-			     <0 12 0>, <0 13 0>, <0 14 0>, <0 15 0>,
+-			     <0 16 0>, <0 17 0>, <0 18 0>, <0 19 0>,
+-			     <0 20 0>, <0 21 0>, <0 22 0>, <0 23 0>,
+-			     <0 24 0>, <0 25 0>, <0 26 0>, <0 27 0>,
+-			     <0 28 0>, <0 29 0>, <0 30 0>, <0 31 0>;
+-	};
+-
+ 	mct@101C0000 {
+ 		compatible = "samsung,exynos4210-mct";
+ 		reg = <0x101C0000 0x800>;
+@@ -168,9 +135,6 @@
+ 	};
+ 
+ 	watchdog {
+-		compatible = "samsung,s3c2410-wdt";
+-		reg = <0x101D0000 0x100>;
+-		interrupts = <0 42 0>;
+ 		clocks = <&clock 336>;
+ 		clock-names = "watchdog";
+ 	};
+@@ -183,12 +147,8 @@
+ 	};
+ 
+ 	rtc {
+-		compatible = "samsung,s3c6410-rtc";
+-		reg = <0x101E0000 0x100>;
+-		interrupts = <0 43 0>, <0 44 0>;
+ 		clocks = <&clock 337>;
+ 		clock-names = "rtc";
+-		status = "disabled";
+ 	};
+ 
+ 	tmu@10060000 {
+@@ -200,33 +160,21 @@
+ 	};
+ 
+ 	serial@12C00000 {
+-		compatible = "samsung,exynos4210-uart";
+-		reg = <0x12C00000 0x100>;
+-		interrupts = <0 51 0>;
+ 		clocks = <&clock 289>, <&clock 146>;
+ 		clock-names = "uart", "clk_uart_baud0";
+ 	};
+ 
+ 	serial@12C10000 {
+-		compatible = "samsung,exynos4210-uart";
+-		reg = <0x12C10000 0x100>;
+-		interrupts = <0 52 0>;
+ 		clocks = <&clock 290>, <&clock 147>;
+ 		clock-names = "uart", "clk_uart_baud0";
+ 	};
+ 
+ 	serial@12C20000 {
+-		compatible = "samsung,exynos4210-uart";
+-		reg = <0x12C20000 0x100>;
+-		interrupts = <0 53 0>;
+ 		clocks = <&clock 291>, <&clock 148>;
+ 		clock-names = "uart", "clk_uart_baud0";
+ 	};
+ 
+ 	serial@12C30000 {
+-		compatible = "samsung,exynos4210-uart";
+-		reg = <0x12C30000 0x100>;
+-		interrupts = <0 54 0>;
+ 		clocks = <&clock 292>, <&clock 149>;
+ 		clock-names = "uart", "clk_uart_baud0";
+ 	};
+@@ -405,31 +353,19 @@
+ 	};
+ 
+ 	dwmmc_0: dwmmc0@12200000 {
+-		compatible = "samsung,exynos5250-dw-mshc";
+ 		reg = <0x12200000 0x1000>;
+-		interrupts = <0 75 0>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+ 		clocks = <&clock 280>, <&clock 139>;
+ 		clock-names = "biu", "ciu";
+ 	};
+ 
+ 	dwmmc_1: dwmmc1@12210000 {
+-		compatible = "samsung,exynos5250-dw-mshc";
+ 		reg = <0x12210000 0x1000>;
+-		interrupts = <0 76 0>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+ 		clocks = <&clock 281>, <&clock 140>;
+ 		clock-names = "biu", "ciu";
+ 	};
+ 
+ 	dwmmc_2: dwmmc2@12220000 {
+-		compatible = "samsung,exynos5250-dw-mshc";
+ 		reg = <0x12220000 0x1000>;
+-		interrupts = <0 77 0>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+ 		clocks = <&clock 282>, <&clock 141>;
+ 		clock-names = "biu", "ciu";
+ 	};
 -- 
 1.7.9.5
+
