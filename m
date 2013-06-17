@@ -1,193 +1,101 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH v3 07/10] ARM: dts: Add initial device tree support for Exynos5420
-Date: Mon, 17 Jun 2013 16:30:32 +0530
-Message-ID: <1371466836-4111-8-git-send-email-chander.kashyap@linaro.org>
+Subject: [PATCH v3 08/10] clocksource: exynos_mct: use (request/free)_irq calls for local timer registration
+Date: Mon, 17 Jun 2013 16:30:33 +0530
+Message-ID: <1371466836-4111-9-git-send-email-chander.kashyap@linaro.org>
 References: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f180.google.com ([209.85.192.180]:40478 "EHLO
-	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932643Ab3FQLBZ (ORCPT
+Received: from mail-pb0-f41.google.com ([209.85.160.41]:53496 "EHLO
+	mail-pb0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932733Ab3FQLB2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Jun 2013 07:01:25 -0400
-Received: by mail-pd0-f180.google.com with SMTP id 10so2667859pdi.11
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2013 04:01:24 -0700 (PDT)
+	Mon, 17 Jun 2013 07:01:28 -0400
+Received: by mail-pb0-f41.google.com with SMTP id rp16so2660434pbb.14
+        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2013 04:01:27 -0700 (PDT)
 In-Reply-To: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
 
-Add initial device tree nodes for Exynos5420 SoC and SMDK5420 board.
+Replace the (setup/remove)_irq calls for local timer registration with
+(request/free)_irq calls. This generalizes the local timer registration API.
+Suggested by Mark Rutland.
 
 Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
----
- arch/arm/boot/dts/Makefile                |    1 +
- arch/arm/boot/dts/exynos5420-smdk5420.dts |   33 +++++++++
- arch/arm/boot/dts/exynos5420.dtsi         |  103 +++++++++++++++++++++++++++++
- 3 files changed, 137 insertions(+)
- create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
- create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
+Cc: Mark Rutland <mark.rutland@arm.com>
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index f0895c5..5efa7e0 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -57,6 +57,7 @@ dtb-$(CONFIG_ARCH_EXYNOS) += exynos4210-origen.dtb \
- 	exynos5440-sd5v1.dtb \
- 	exynos5250-smdk5250.dtb \
- 	exynos5250-snow.dtb \
-+	exynos5420-smdk5420.dtb \
- 	exynos5440-ssdk5440.dtb
- dtb-$(CONFIG_ARCH_HIGHBANK) += highbank.dtb \
- 	ecx-2000.dtb
-diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-new file mode 100644
-index 0000000..d14ece5
---- /dev/null
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -0,0 +1,33 @@
-+/*
-+ * SAMSUNG SMDK5420 board device tree source
-+ *
-+ * Copyright (c) 2013 Samsung Electronics Co., Ltd.
-+ *		http://www.samsung.com
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+*/
-+
-+/dts-v1/;
-+#include "exynos5420.dtsi"
-+
-+/ {
-+	model = "Samsung SMDK5420 board based on EXYNOS5420";
-+	compatible = "samsung,smdk5420", "samsung,exynos5420";
-+
-+	memory {
-+		reg =	<0x20000000 0x80000000>;
-+	};
-+
-+	chosen {
-+		bootargs = "console=ttySAC2,115200 init=/linuxrc";
-+	};
-+
-+	fixed-rate-clocks {
-+		oscclk {
-+			compatible = "samsung,exynos5420-oscclk";
-+			clock-frequency = <24000000>;
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/exynos5420.dtsi b/arch/arm/boot/dts/exynos5420.dtsi
-new file mode 100644
-index 0000000..e865be5
---- /dev/null
-+++ b/arch/arm/boot/dts/exynos5420.dtsi
-@@ -0,0 +1,103 @@
-+/*
-+ * SAMSUNG EXYNOS5420 SoC device tree source
-+ *
-+ * Copyright (c) 2013 Samsung Electronics Co., Ltd.
-+ *		http://www.samsung.com
-+ *
-+ * SAMSUNG EXYNOS54200 SoC device nodes are listed in this file.
-+ * EXYNOS5420 based board files can include this file and provide
-+ * values for board specfic bindings.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include "exynos5.dtsi"
-+/ {
-+	compatible = "samsung,exynos5420";
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a15";
-+			reg = <0x0>;
-+			clock-frequency = <800000000>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a15";
-+			reg = <0x1>;
-+			clock-frequency = <800000000>;
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a15";
-+			reg = <0x2>;
-+			clock-frequency = <800000000>;
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a15";
-+			reg = <0x3>;
-+			clock-frequency = <800000000>;
-+		};
-+	};
-+
-+	clock: clock-controller@0x10010000 {
-+		compatible = "samsung,exynos5420-clock";
-+		reg = <0x10010000 0x30000>;
-+		#clock-cells = <1>;
-+	};
-+
-+	mct@101C0000 {
-+		compatible = "samsung,exynos4210-mct";
-+		reg = <0x101C0000 0x800>;
-+		interrupt-controller;
-+		#interrups-cells = <1>;
-+		interrupt-parent = <&mct_map>;
-+		interrupts = <0>, <1>, <2>, <3>, <4>, <5>, <6>, <7>;
-+		clocks = <&clock 1>, <&clock 315>;
-+		clock-names = "fin_pll", "mct";
-+
-+		mct_map: mct-map {
-+			#interrupt-cells = <1>;
-+			#address-cells = <0>;
-+			#size-cells = <0>;
-+			interrupt-map = <0 &combiner 23 3>,
-+					<1 &combiner 23 4>,
-+					<2 &combiner 25 2>,
-+					<3 &combiner 25 3>,
-+					<4 &gic 0 120 0>,
-+					<5 &gic 0 121 0>,
-+					<6 &gic 0 122 0>,
-+					<7 &gic 0 123 0>;
-+		};
-+	};
-+
-+	serial@12C00000 {
-+		clocks = <&clock 257>, <&clock 128>;
-+		clock-names = "uart", "clk_uart_baud0";
-+	};
-+
-+	serial@12C10000 {
-+		clocks = <&clock 258>, <&clock 129>;
-+		clock-names = "uart", "clk_uart_baud0";
-+	};
-+
-+	serial@12C20000 {
-+		clocks = <&clock 259>, <&clock 130>;
-+		clock-names = "uart", "clk_uart_baud0";
-+	};
-+
-+	serial@12C30000 {
-+		clocks = <&clock 260>, <&clock 131>;
-+		clock-names = "uart", "clk_uart_baud0";
-+	};
-+};
+Replace the (setup/remove)_irq calls for local timer registration with
+(request/free)_irq calls. This generalises the local timer registration API.
+
+Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+---
+ drivers/clocksource/exynos_mct.c |   35 +++++++++--------------------------
+ 1 file changed, 9 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 662fcc0..a704804 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -400,18 +400,6 @@ static irqreturn_t exynos4_mct_tick_isr(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static struct irqaction mct_tick0_event_irq = {
+-	.name		= "mct_tick0_irq",
+-	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+-	.handler	= exynos4_mct_tick_isr,
+-};
+-
+-static struct irqaction mct_tick1_event_irq = {
+-	.name		= "mct_tick1_irq",
+-	.flags		= IRQF_TIMER | IRQF_NOBALANCING,
+-	.handler	= exynos4_mct_tick_isr,
+-};
+-
+ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+ {
+ 	struct mct_clock_event_device *mevt;
+@@ -435,16 +423,15 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+ 	exynos4_mct_write(TICK_BASE_CNT, mevt->base + MCT_L_TCNTB_OFFSET);
+ 
+ 	if (mct_int_type == MCT_INT_SPI) {
+-		if (cpu == 0) {
+-			mct_tick0_event_irq.dev_id = mevt;
+-			evt->irq = mct_irqs[MCT_L0_IRQ];
+-			setup_irq(evt->irq, &mct_tick0_event_irq);
+-		} else {
+-			mct_tick1_event_irq.dev_id = mevt;
+-			evt->irq = mct_irqs[MCT_L1_IRQ];
+-			setup_irq(evt->irq, &mct_tick1_event_irq);
+-			irq_set_affinity(evt->irq, cpumask_of(1));
++		evt->irq = mct_irqs[MCT_L0_IRQ + cpu];
++		if (request_irq(evt->irq, exynos4_mct_tick_isr,
++				IRQF_TIMER | IRQF_NOBALANCING,
++				evt->name, mevt)) {
++			pr_err("exynos-mct: cannot register IRQ %d\n",
++				evt->irq);
++			return -EIO;
+ 		}
++		irq_set_affinity(evt->irq, cpumask_of(cpu));
+ 	} else {
+ 		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
+ 	}
+@@ -454,13 +441,9 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
+ 
+ static void exynos4_local_timer_stop(struct clock_event_device *evt)
+ {
+-	unsigned int cpu = smp_processor_id();
+ 	evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
+ 	if (mct_int_type == MCT_INT_SPI)
+-		if (cpu == 0)
+-			remove_irq(evt->irq, &mct_tick0_event_irq);
+-		else
+-			remove_irq(evt->irq, &mct_tick1_event_irq);
++		free_irq(evt->irq, this_cpu_ptr(&percpu_mct_tick));
+ 	else
+ 		disable_percpu_irq(mct_irqs[MCT_L0_IRQ]);
+ }
 -- 
 1.7.9.5
 
