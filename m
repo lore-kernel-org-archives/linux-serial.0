@@ -1,74 +1,356 @@
 From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH 2/2] ARM: shmobile: r8a7790: don't use external clock for SCIFs
-Date: Mon, 17 Jun 2013 11:42:14 +0900
-Message-ID: <1371436934-27744-3-git-send-email-horms+renesas@verge.net.au>
+Subject: [PATCH 1/2] serial: sh-sci: HSCIF support
+Date: Mon, 17 Jun 2013 11:42:13 +0900
+Message-ID: <1371436934-27744-2-git-send-email-horms+renesas@verge.net.au>
 References: <1371436934-27744-1-git-send-email-horms+renesas@verge.net.au>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:51922 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755246Ab3FQClY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 16 Jun 2013 22:41:24 -0400
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1371436934-27744-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
 Cc: Jiri Slaby <jslaby@suse.cz>, Ulrich Hecht <ulrich.hecht@gmail.com>, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, linux-arm-kernel@lists.infradead.org
+List-Id: linux-serial@vger.kernel.org
 
 From: Ulrich Hecht <ulrich.hecht@gmail.com>
 
-This is an external component and may or may not be there, while the
-internal clock always works.
+Adds support for "High Speed Serial Communications Interface with FIFO",
+essentially a SCIF with 128-byte FIFOs and more accurate baud rate
+generator.
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht@gmail.com>
+Acked-by: Paul Mundt <lethal@linux-sh.org>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- arch/arm/mach-shmobile/setup-r8a7790.c |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sh-sci.c      |  102 +++++++++++++++++++++++++++++++++++---
+ include/linux/serial_sci.h       |   12 +++--
+ include/uapi/linux/serial_core.h |    3 ++
+ 3 files changed, 106 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7790.c b/arch/arm/mach-shmobile/setup-r8a7790.c
-index 49de2d5..6531f3d 100644
---- a/arch/arm/mach-shmobile/setup-r8a7790.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7790.c
-@@ -64,10 +64,18 @@ void __init r8a7790_pinmux_init(void)
- [index] = {						\
- 	SCIF_COMMON(PORT_SCIF, baseaddr, irq),		\
- 	.scbrr_algo_id	= SCBRR_ALGO_2,			\
--	.scscr = SCSCR_RE | SCSCR_TE | SCSCR_CKE1,	\
-+	.scscr = SCSCR_RE | SCSCR_TE,	\
- }
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 1564186..931d6c3 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -146,6 +146,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
  
--enum { SCIFA0, SCIFA1, SCIFB0, SCIFB1, SCIFB2, SCIFA2, SCIF0, SCIF1 };
-+#define HSCIF_DATA(index, baseaddr, irq)		\
-+[index] = {						\
-+	SCIF_COMMON(PORT_HSCIF, baseaddr, irq),		\
-+	.scbrr_algo_id	= SCBRR_ALGO_6,			\
-+	.scscr = SCSCR_RE | SCSCR_TE,	\
-+}
+ 	/*
+@@ -165,6 +166,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -183,6 +185,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -201,6 +204,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= { 0x3c, 16 },
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -220,6 +224,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -238,6 +243,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -256,6 +262,26 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
++		[HSSRR]		= sci_reg_invalid,
++	},
 +
-+enum { SCIFA0, SCIFA1, SCIFB0, SCIFB1, SCIFB2, SCIFA2, SCIF0, SCIF1,
-+       HSCIF0, HSCIF1 };
++	/*
++	 * Common HSCIF definitions.
++	 */
++	[SCIx_HSCIF_REGTYPE] = {
++		[SCSMR]		= { 0x00, 16 },
++		[SCBRR]		= { 0x04,  8 },
++		[SCSCR]		= { 0x08, 16 },
++		[SCxTDR]	= { 0x0c,  8 },
++		[SCxSR]		= { 0x10, 16 },
++		[SCxRDR]	= { 0x14,  8 },
++		[SCFCR]		= { 0x18, 16 },
++		[SCFDR]		= { 0x1c, 16 },
++		[SCTFDR]	= sci_reg_invalid,
++		[SCRFDR]	= sci_reg_invalid,
++		[SCSPTR]	= { 0x20, 16 },
++		[SCLSR]		= { 0x24, 16 },
++		[HSSRR]		= { 0x40, 16 },
+ 	},
  
- static const struct plat_sci_port scif[] = {
- 	SCIFA_DATA(SCIFA0, 0xe6c40000, gic_spi(144)), /* SCIFA0 */
-@@ -78,6 +86,8 @@ static const struct plat_sci_port scif[] = {
- 	SCIFA_DATA(SCIFA2, 0xe6c60000, gic_spi(151)), /* SCIFA2 */
- 	SCIF_DATA(SCIF0, 0xe6e60000, gic_spi(152)), /* SCIF0 */
- 	SCIF_DATA(SCIF1, 0xe6e68000, gic_spi(153)), /* SCIF1 */
-+	HSCIF_DATA(HSCIF0, 0xe62c0000, gic_spi(154)), /* HSCIF0 */
-+	HSCIF_DATA(HSCIF1, 0xe62c8000, gic_spi(155)), /* HSCIF1 */
+ 	/*
+@@ -275,6 +301,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= { 0x24, 16 },
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -294,6 +321,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= { 0x20, 16 },
+ 		[SCSPTR]	= { 0x24, 16 },
+ 		[SCLSR]		= { 0x28, 16 },
++		[HSSRR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -313,6 +341,7 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
++		[HSSRR]		= sci_reg_invalid,
+ 	},
  };
  
- static inline void r8a7790_register_scif(int idx)
-@@ -115,6 +125,8 @@ void __init r8a7790_add_standard_devices(void)
- 	r8a7790_register_scif(SCIFA2);
- 	r8a7790_register_scif(SCIF0);
- 	r8a7790_register_scif(SCIF1);
-+	r8a7790_register_scif(HSCIF0);
-+	r8a7790_register_scif(HSCIF1);
- 	r8a7790_register_irqc(0);
+@@ -374,6 +403,9 @@ static int sci_probe_regmap(struct plat_sci_port *cfg)
+ 		 */
+ 		cfg->regtype = SCIx_SH4_SCIF_REGTYPE;
+ 		break;
++	case PORT_HSCIF:
++		cfg->regtype = SCIx_HSCIF_REGTYPE;
++		break;
+ 	default:
+ 		printk(KERN_ERR "Can't probe register map for given port\n");
+ 		return -EINVAL;
+@@ -1798,6 +1830,42 @@ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
+ 	return ((freq + 16 * bps) / (32 * bps) - 1);
  }
  
++/* calculate sample rate, BRR, and clock select for HSCIF */
++static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
++				int *brr, unsigned int *srr,
++				unsigned int *cks)
++{
++	int sr, c, br, err;
++	int min_err = 1000; /* 100% */
++
++	/* Find the combination of sample rate and clock select with the
++	   smallest deviation from the desired baud rate. */
++	for (sr = 8; sr <= 32; sr++) {
++		for (c = 0; c <= 3; c++) {
++			/* integerized formulas from HSCIF documentation */
++			br = freq / (sr * (1 << (2 * c + 1)) * bps) - 1;
++			if (br < 0 || br > 255)
++				continue;
++			err = freq / ((br + 1) * bps * sr *
++			      (1 << (2 * c + 1)) / 1000) - 1000;
++			if (min_err > err) {
++				min_err = err;
++				*brr = br;
++				*srr = sr - 1;
++				*cks = c;
++			}
++		}
++	}
++
++	if (min_err == 1000) {
++		WARN_ON(1);
++		/* use defaults */
++		*brr = 255;
++		*srr = 15;
++		*cks = 0;
++	}
++}
++
+ static void sci_reset(struct uart_port *port)
+ {
+ 	struct plat_sci_reg *reg;
+@@ -1821,6 +1889,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	struct plat_sci_reg *reg;
+ 	unsigned int baud, smr_val, max_baud, cks;
+ 	int t = -1;
++	unsigned int srr;
+ 
+ 	/*
+ 	 * earlyprintk comes here early on with port->uartclk set to zero.
+@@ -1833,8 +1902,17 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	max_baud = port->uartclk ? port->uartclk / 16 : 115200;
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
+-	if (likely(baud && port->uartclk))
+-		t = sci_scbrr_calc(s->cfg->scbrr_algo_id, baud, port->uartclk);
++	if (likely(baud && port->uartclk)) {
++		if (s->cfg->scbrr_algo_id == SCBRR_ALGO_6) {
++			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
++					    &cks);
++		} else {
++			t = sci_scbrr_calc(s->cfg->scbrr_algo_id, baud,
++					   port->uartclk);
++			for (cks = 0; t >= 256 && cks <= 3; cks++)
++				t >>= 2;
++		}
++	}
+ 
+ 	sci_port_enable(s);
+ 
+@@ -1853,15 +1931,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+-	for (cks = 0; t >= 256 && cks <= 3; cks++)
+-		t >>= 2;
+-
+ 	dev_dbg(port->dev, "%s: SMR %x, cks %x, t %x, SCSCR %x\n",
+ 		__func__, smr_val, cks, t, s->cfg->scscr);
+ 
+ 	if (t >= 0) {
+ 		serial_port_out(port, SCSMR, (smr_val & ~3) | cks);
+ 		serial_port_out(port, SCBRR, t);
++		reg = sci_getreg(port, HSSRR);
++		if (reg->size)
++			serial_port_out(port, HSSRR, srr | HSCIF_SRE);
+ 		udelay((1000000+(baud-1)) / baud); /* Wait one bit interval */
+ 	} else
+ 		serial_port_out(port, SCSMR, smr_val);
+@@ -1947,6 +2025,8 @@ static const char *sci_type(struct uart_port *port)
+ 		return "scifa";
+ 	case PORT_SCIFB:
+ 		return "scifb";
++	case PORT_HSCIF:
++		return "hscif";
+ 	}
+ 
+ 	return NULL;
+@@ -1960,7 +2040,10 @@ static inline unsigned long sci_port_size(struct uart_port *port)
+ 	 * from platform resource data at such a time that ports begin to
+ 	 * behave more erratically.
+ 	 */
+-	return 64;
++	if (port->type == PORT_HSCIF)
++		return 96;
++	else
++		return 64;
+ }
+ 
+ static int sci_remap_port(struct uart_port *port)
+@@ -2085,6 +2168,9 @@ static int sci_init_single(struct platform_device *dev,
+ 	case PORT_SCIFB:
+ 		port->fifosize = 256;
+ 		break;
++	case PORT_HSCIF:
++		port->fifosize = 128;
++		break;
+ 	case PORT_SCIFA:
+ 		port->fifosize = 64;
+ 		break;
+@@ -2325,7 +2411,7 @@ static inline int sci_probe_earlyprintk(struct platform_device *pdev)
+ #endif /* CONFIG_SERIAL_SH_SCI_CONSOLE */
+ 
+ static char banner[] __initdata =
+-	KERN_INFO "SuperH SCI(F) driver initialized\n";
++	KERN_INFO "SuperH (H)SCI(F) driver initialized\n";
+ 
+ static struct uart_driver sci_uart_driver = {
+ 	.owner		= THIS_MODULE,
+@@ -2484,4 +2570,4 @@ module_exit(sci_exit);
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:sh-sci");
+ MODULE_AUTHOR("Paul Mundt");
+-MODULE_DESCRIPTION("SuperH SCI(F) serial driver");
++MODULE_DESCRIPTION("SuperH (H)SCI(F) serial driver");
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index eb763ad..d340497 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -5,7 +5,7 @@
+ #include <linux/sh_dma.h>
+ 
+ /*
+- * Generic header for SuperH SCI(F) (used by sh/sh64/h8300 and related parts)
++ * Generic header for SuperH (H)SCI(F) (used by sh/sh64/h8300 and related parts)
+  */
+ 
+ #define SCIx_NOT_SUPPORTED	(-1)
+@@ -16,6 +16,7 @@ enum {
+ 	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
+ 	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
+ 	SCBRR_ALGO_5,		/* (((clk * 1000 / 32) / bps) - 1) */
++	SCBRR_ALGO_6,		/* HSCIF variable sample rate algorithm */
+ };
+ 
+ #define SCSCR_TIE	(1 << 7)
+@@ -37,7 +38,7 @@ enum {
+ 
+ #define SCI_DEFAULT_ERROR_MASK (SCI_PER | SCI_FER)
+ 
+-/* SCxSR SCIF */
++/* SCxSR SCIF, HSCIF */
+ #define SCIF_ER    0x0080
+ #define SCIF_TEND  0x0040
+ #define SCIF_TDFE  0x0020
+@@ -55,6 +56,9 @@ enum {
+ #define SCSPTR_SPB2IO	(1 << 1)
+ #define SCSPTR_SPB2DT	(1 << 0)
+ 
++/* HSSRR HSCIF */
++#define HSCIF_SRE	0x8000
++
+ /* Offsets into the sci_port->irqs array */
+ enum {
+ 	SCIx_ERI_IRQ,
+@@ -90,6 +94,7 @@ enum {
+ 	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+ 	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ 	SCIx_SH7705_SCIF_REGTYPE,
++	SCIx_HSCIF_REGTYPE,
+ 
+ 	SCIx_NR_REGTYPES,
+ };
+@@ -115,6 +120,7 @@ enum {
+ 	SCSMR, SCBRR, SCSCR, SCxSR,
+ 	SCFCR, SCFDR, SCxTDR, SCxRDR,
+ 	SCLSR, SCTFDR, SCRFDR, SCSPTR,
++	HSSRR,
+ 
+ 	SCIx_NR_REGS,
+ };
+@@ -137,7 +143,7 @@ struct plat_sci_port {
+ 	unsigned long	mapbase;		/* resource base */
+ 	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
+ 	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
+-	unsigned int	type;			/* SCI / SCIF / IRDA */
++	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
+ 	upf_t		flags;			/* UPF_* flags */
+ 	unsigned long	capabilities;		/* Port features/capabilities */
+ 
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 74c2bf7..26eee07 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -226,4 +226,7 @@
+ /* Rocketport EXPRESS/INFINITY */
+ #define PORT_RP2	102
+ 
++/* SH-SCI */
++#define PORT_HSCIF	103
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
 1.7.10.4
 
