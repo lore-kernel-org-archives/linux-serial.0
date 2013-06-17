@@ -1,115 +1,78 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: Re: [PATCH v2 08/10] clocksource: exynos_mct: use (request/free)_irq
- calls for local timer registration
-Date: Mon, 17 Jun 2013 15:59:23 +0530
-Message-ID: <CANuQgHGAopvzomTkrNzzB6Xk-n9Ap9+VAPiEg9w8NLNFXJDn_A@mail.gmail.com>
-References: <1370516488-25860-10-git-send-email-chander.kashyap@linaro.org>
-	<1371218572-8993-1-git-send-email-chander.kashyap@linaro.org>
-	<1371218572-8993-9-git-send-email-chander.kashyap@linaro.org>
-	<20130617100152.GC6809@e106331-lin.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: [PATCH v3 00/10] ARM: Exynos: Add Exynos5420 SoC support
+Date: Mon, 17 Jun 2013 16:30:25 +0530
+Message-ID: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20130617100152.GC6809@e106331-lin.cambridge.arm.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "t.figa@samsung.com" <t.figa@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 17 June 2013 15:31, Mark Rutland <mark.rutland@arm.com> wrote:
-> On Fri, Jun 14, 2013 at 03:02:50PM +0100, Chander Kashyap wrote:
->> Replace the (setup/remove)_irq calls for local timer registration with
->> (request/free)_irq calls. This generalizes the local timer registration API.
->> Suggested by Mark Rutland.
->>
->> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
->> Cc: Mark Rutland <mark.rutland@arm.com>
->>
->> Replace the (setup/remove)_irq calls for local timer registration with
->> (request/free)_irq calls. This generalises the local timer registration API.
->>
->> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
->
-> This looks much nicer now.
->
-> Acked-by: Mark Rutland <mark.rutland@arm.com>
-Thanks Mark.
+Exynos5420 is new SoC in Samsung's Exynos5 SoC series. This series adds
+initial support for this SoC.
+Changes since v2:
 
->
->> ---
->>  drivers/clocksource/exynos_mct.c |   35 +++++++++--------------------------
->>  1 file changed, 9 insertions(+), 26 deletions(-)
->>
->> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
->> index 662fcc0..a704804 100644
->> --- a/drivers/clocksource/exynos_mct.c
->> +++ b/drivers/clocksource/exynos_mct.c
->> @@ -400,18 +400,6 @@ static irqreturn_t exynos4_mct_tick_isr(int irq, void *dev_id)
->>       return IRQ_HANDLED;
->>  }
->>
->> -static struct irqaction mct_tick0_event_irq = {
->> -     .name           = "mct_tick0_irq",
->> -     .flags          = IRQF_TIMER | IRQF_NOBALANCING,
->> -     .handler        = exynos4_mct_tick_isr,
->> -};
->> -
->> -static struct irqaction mct_tick1_event_irq = {
->> -     .name           = "mct_tick1_irq",
->> -     .flags          = IRQF_TIMER | IRQF_NOBALANCING,
->> -     .handler        = exynos4_mct_tick_isr,
->> -};
->> -
->>  static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
->>  {
->>       struct mct_clock_event_device *mevt;
->> @@ -435,16 +423,15 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
->>       exynos4_mct_write(TICK_BASE_CNT, mevt->base + MCT_L_TCNTB_OFFSET);
->>
->>       if (mct_int_type == MCT_INT_SPI) {
->> -             if (cpu == 0) {
->> -                     mct_tick0_event_irq.dev_id = mevt;
->> -                     evt->irq = mct_irqs[MCT_L0_IRQ];
->> -                     setup_irq(evt->irq, &mct_tick0_event_irq);
->> -             } else {
->> -                     mct_tick1_event_irq.dev_id = mevt;
->> -                     evt->irq = mct_irqs[MCT_L1_IRQ];
->> -                     setup_irq(evt->irq, &mct_tick1_event_irq);
->> -                     irq_set_affinity(evt->irq, cpumask_of(1));
->> +             evt->irq = mct_irqs[MCT_L0_IRQ + cpu];
->> +             if (request_irq(evt->irq, exynos4_mct_tick_isr,
->> +                             IRQF_TIMER | IRQF_NOBALANCING,
->> +                             evt->name, mevt)) {
->> +                     pr_err("exynos-mct: cannot register IRQ %d\n",
->> +                             evt->irq);
->> +                     return -EIO;
->>               }
->> +             irq_set_affinity(evt->irq, cpumask_of(cpu));
->>       } else {
->>               enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
->>       }
->> @@ -454,13 +441,9 @@ static int __cpuinit exynos4_local_timer_setup(struct clock_event_device *evt)
->>
->>  static void exynos4_local_timer_stop(struct clock_event_device *evt)
->>  {
->> -     unsigned int cpu = smp_processor_id();
->>       evt->set_mode(CLOCK_EVT_MODE_UNUSED, evt);
->>       if (mct_int_type == MCT_INT_SPI)
->> -             if (cpu == 0)
->> -                     remove_irq(evt->irq, &mct_tick0_event_irq);
->> -             else
->> -                     remove_irq(evt->irq, &mct_tick1_event_irq);
->> +             free_irq(evt->irq, this_cpu_ptr(&percpu_mct_tick));
->>       else
->>               disable_percpu_irq(mct_irqs[MCT_L0_IRQ]);
->>  }
->> --
->> 1.7.9.5
->>
->>
+1. Renamed oscclk to fin_pll, in order to keep it consistant with Exynos4/Exynos5
+2. Pass memory as single bank rather than splitting in 256MB size banks.
 
+Changes since v1:
 
+1. As not-dt platforms will not be supported from 3.11 onwards, following
+   patches from previous patch series are dropped:
+   "irqchip: exynos-combiner: set irq base as 256 for Exynos5420"
+   "ARM: Exynos: initialize l2x0 cache controller only for cortex-a9 based SoCs"
+2. Added device type property in cpu node in the following patch:
+   "ARM: dts: list the CPU nodes for Exynos5250
+3. Sorted out the nodes listed in based upon the physical addresses as suggested
+   by Tomasz Figa.
+4. As Tomasz is going to consolidate the secondary cpu power register address
+   calculation in all possible scnarios, hence dropped the following patch:
+  "ARM: Exynos: fix secondary cpu power control register address calculation"
+5. Replaced the setup/remove)_irq calls with (request/free)_irq calls as
+   suggested by Mark Rutland in patch: 
+   "clocksource: exynos_mct: use (request/free)_irq calls for local timer
+    registration"
+6. Changed the registration of epll and rpll from pll35xx to pl36xx.
+7. Changed driver data selection for serial port, based on ARCH_EXYNOS.
+8. Changed the interrupt cells from 2 to 1 as suggested by Tomasz Figa.
 
---
-with warm regards,
-Chander Kashyap
+Chander Kashyap (10):
+  ARM: dts: fork out common Exynos5 nodes
+  ARM: dts: list the CPU nodes for Exynos5250
+  ARM: Exynos: Add support for Exynos5420 SoC
+  serial: samsung: select Exynos specific driver data if ARCH_EXYNOS is
+    defined
+  ARM: Exynos: use four additional chipid bits to identify Exynos
+    family
+  clk: exynos5420: register clocks using common clock framework
+  ARM: dts: Add initial device tree support for Exynos5420
+  clocksource: exynos_mct: use (request/free)_irq calls for local timer
+    registration
+  ARM: Exynos: add secondary CPU boot base location for Exynos5420
+  ARM: Exynos: extend soft-reset support for Exynos5420
+
+ .../devicetree/bindings/clock/exynos5420-clock.txt |  201 ++++++
+ arch/arm/boot/dts/Makefile                         |    1 +
+ arch/arm/boot/dts/exynos5.dtsi                     |  111 +++
+ arch/arm/boot/dts/exynos5250.dtsi                  |   80 +-
+ arch/arm/boot/dts/exynos5420-smdk5420.dts          |   33 +
+ arch/arm/boot/dts/exynos5420.dtsi                  |  103 +++
+ arch/arm/mach-exynos/Kconfig                       |   10 +
+ arch/arm/mach-exynos/common.c                      |   18 +-
+ arch/arm/mach-exynos/include/mach/uncompress.h     |    7 +-
+ arch/arm/mach-exynos/mach-exynos5-dt.c             |    1 +
+ arch/arm/mach-exynos/platsmp.c                     |   12 +-
+ arch/arm/plat-samsung/include/plat/cpu.h           |    8 +
+ drivers/clk/samsung/Makefile                       |    1 +
+ drivers/clk/samsung/clk-exynos5420.c               |  762 ++++++++++++++++++++
+ drivers/clocksource/exynos_mct.c                   |   35 +-
+ drivers/tty/serial/samsung.c                       |    4 +-
+ 16 files changed, 1280 insertions(+), 107 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/exynos5420-clock.txt
+ create mode 100644 arch/arm/boot/dts/exynos5.dtsi
+ create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
+ create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
+ create mode 100644 drivers/clk/samsung/clk-exynos5420.c
+
+-- 
+1.7.9.5
