@@ -1,49 +1,62 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 05/11] pinctrl:stixxxx: Add pinctrl and pinconf support.
-Date: Mon, 17 Jun 2013 18:27:28 +0200
-Message-ID: <CACRpkdbJD=bgLizJkDV2eVNs-eOQ0LLo+PtqmhKCN47eH7=fkg@mail.gmail.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856161-6600-1-git-send-email-srinivas.kandagatla@st.com>
- <CACRpkdYN-6W8tvbWNVOdCKOWObm3PCtzXqZuUnvHddBtyw2pyQ@mail.gmail.com>
- <51BF0FC2.4000601@st.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/4] [resend] n_tty fixes
+Date: Mon, 17 Jun 2013 12:58:51 -0700
+Message-ID: <20130617195851.GA31669@kroah.com>
+References: <20130319141017.GB24900@kroah.com>
+ <1371295711-3963-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <51BF0FC2.4000601-qxv4g6HH51o@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:40433 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753242Ab3FQT6w (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Jun 2013 15:58:52 -0400
+Content-Disposition: inline
+In-Reply-To: <1371295711-3963-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Jun 17, 2013 at 3:31 PM, Srinivas KANDAGATLA
-<srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
+On Sat, Jun 15, 2013 at 07:28:27AM -0400, Peter Hurley wrote:
+> On 03/19/2013 10:10 AM, Greg Kroah-Hartman wrote:> On Tue, Mar 19, 2013 at 09:57:09AM -0400, Peter Hurley wrote:
+> >> On Mon, 2013-03-18 at 16:15 -0700, Greg Kroah-Hartman wrote:
+> >>> On Wed, Mar 06, 2013 at 08:38:22AM -0500, Peter Hurley wrote:
+> >>>> minimum_to_wake is unique to N_TTY processing, and belongs in
+> >>>> per-ldisc data.
+> >>>>
+> >>>> Add the ldisc method, ldisc_ops::fasync(), to notify line disciplines
+> >>>> when signal-driven I/O is enabled or disabled. When enabled for N_TTY
+> >>>> (by fcntl(F_SETFL, O_ASYNC)), blocking reader/polls will be woken
+> >>>> for any readable input. When disabled, blocking reader/polls are not
+> >>>> woken until the read buffer is full.
+> >>>>
+> >>>> Canonical mode (L_ICANON(tty), n_tty_data::icanon) is not affected by
+> >>>> the minimum_to_wake setting.
+> >>>>
+> >>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> >>>
+> >>> For some reason, this patch doesn't apply.  Care to refresh this one,
+> >>> and the rest in this series, and resend?
+> >>
+> >> Sorry. There was probably some accidental dependency on one of the other
+> >> patchsets of mine you did apply.
+> >>
+> >> This and patch 5 now apply without error to tty-next.
+> > 
+> > Ok, but they are now long gone from my queue.  Can you please resend
+> > what I haven't applied?
+> 
+> Greg,
+> 
+> I resent these back on 19 Mar but they never got applied. (maybe because
+> I resent them as 4,5,6 & 7/7 ??)
 
->>> +config PINCTRL_STIXXXX
->>
->> As mentioned elsewhere STIXXXX is a bit too much X:es in.
->> Please come up with some better naming if possible.
->
-> Are you OK if I use pinctrl-st.c?
+Yes, they were burried, sorry about that :)
 
-It seems to no be taken so OK :-)
+> Anyway, these apply cleanly to tty-next.
 
-The best choice is just the name of the IP block,
-something unique. I would consider trying to ask the
-hardware engineer writing that pinctrl block what name
-s/he prefer on it, if not possible just go with pinctrl-st.c.
+Now applied, thanks.
 
-The rest seems to be addressed nicely, waiting for the
-next iteration!
-
-Yours,
-Linus Walleij
+greg k-h
