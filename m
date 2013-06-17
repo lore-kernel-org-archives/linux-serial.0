@@ -1,70 +1,43 @@
-From: Mikael Pettersson <mikpe@it.uu.se>
-Subject: Re: [PATCH] tty/vt: Return EBUSY if deallocating VT1 and it is busy
-Date: Sun, 16 Jun 2013 19:35:08 +0200
-Message-ID: <20925.63308.865094.602537@pilspetsen.it.uu.se>
-References: <20130614213543.GA1896@kroah.com>
-	<1371248665-1176-1-git-send-email-rosslagerwall@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1371248665-1176-1-git-send-email-rosslagerwall@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ross Lagerwall <rosslagerwall@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Dave Jones <davej@redhat.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH 0/2] serial: sh-sci: HSCIF support
+Date: Mon, 17 Jun 2013 11:42:12 +0900
+Message-ID: <1371436934-27744-1-git-send-email-horms+renesas@verge.net.au>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kirsty.vergenet.net ([202.4.237.240]:51921 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755199Ab3FQClX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 16 Jun 2013 22:41:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, Ulrich Hecht <ulrich.hecht@gmail.com>, Magnus Damm <magnus.damm@gmail.com>, Paul Mundt <lethal@linux-sh.org>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, linux-arm-kernel@lists.infradead.org, Simon Horman <horms+renesas@verge.net.au>
 
-Ross Lagerwall writes:
- > Commit 421b40a6286e ("tty/vt: Fix vc_deallocate() lock order") changed
- > the behavior when deallocating VT 1.  Previously if trying to
- > deallocate VT1 and it is busy, we would return EBUSY.  The commit
- > changed this to return 0 (success).
- > 
- > This commit restores the old behavior.
- > 
- > Signed-off-by: Ross Lagerwall <rosslagerwall@gmail.com>
+Hi Greg, Hi All,
 
-This solves the VT blanking regression I've seen with the 3.10-rc
-kernels.
+this short series adds HSCIF support to the sh-sci driver
+and enhances the r8a7790 SoC to not use external clocks for SCIF.
 
-Tested-by: Mikael Pettersson <mikpe@it.uu.se>
+I have included these two patches in a single series as the second
+patch has a build-time dependency on the first.
 
- > ---
- > On 06/14/2013 05:35 PM, Greg KH wrote:
- > > p.s. In the future, please cc: the people who handled the patch you are
- > > asking about, otherwise stuff like this often gets missed in the noise
- > > of lkml.
- > 
- > Yes, sorry about that.  I only remembered after I sent the email.
- > 
- >  drivers/tty/vt/vt_ioctl.c | 5 +----
- >  1 file changed, 1 insertion(+), 4 deletions(-)
- > 
- > diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
- > index fc2c06c..2bd78e2 100644
- > --- a/drivers/tty/vt/vt_ioctl.c
- > +++ b/drivers/tty/vt/vt_ioctl.c
- > @@ -289,13 +289,10 @@ static int vt_disallocate(unsigned int vc_num)
- >  	struct vc_data *vc = NULL;
- >  	int ret = 0;
- >  
- > -	if (!vc_num)
- > -		return 0;
- > -
- >  	console_lock();
- >  	if (VT_BUSY(vc_num))
- >  		ret = -EBUSY;
- > -	else
- > +	else if (vc_num)
- >  		vc = vc_deallocate(vc_num);
- >  	console_unlock();
- >  
- > -- 
- > 1.8.3.1
- > 
- > --
- > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
- > the body of a message to majordomo@vger.kernel.org
- > More majordomo info at  http://vger.kernel.org/majordomo-info.html
- > Please read the FAQ at  http://www.tux.org/lkml/
- > 
+Greg, would it be possible for you to review at least the first patch and
+if it is ok either:
+* Ack the first patch so I can merge it through the renesas tree or;
+* Take both patches, I have supplied Acks.
+
+In the case of the latter I can supply a pull request if you like.
+
+Ulrich Hecht (2):
+  serial: sh-sci: HSCIF support
+  ARM: shmobile: r8a7790: don't use external clock for SCIFs
+
+ arch/arm/mach-shmobile/setup-r8a7790.c |   16 ++++-
+ drivers/tty/serial/sh-sci.c            |  102 +++++++++++++++++++++++++++++---
+ include/linux/serial_sci.h             |   12 +++-
+ include/uapi/linux/serial_core.h       |    3 +
+ 4 files changed, 120 insertions(+), 13 deletions(-)
+
+-- 
+1.7.10.4
+
