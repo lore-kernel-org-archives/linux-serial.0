@@ -1,213 +1,204 @@
 From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: Re: [PATCH v3 07/10] ARM: dts: Add initial device tree support for Exynos5420
-Date: Tue, 18 Jun 2013 09:51:14 +0530
-Message-ID: <CANuQgHEKCW5=_o6CUboQJ4B9PVCGe+3u5Nu1WA446YhSH6T79g@mail.gmail.com>
+Subject: Re: [PATCH v3 01/10] ARM: dts: fork out common Exynos5 nodes
+Date: Tue, 18 Jun 2013 09:54:49 +0530
+Message-ID: <CANuQgHEF_ec_OUhEVJ=GzWH8FqJq4edb10YQo7-ft4MxsjEKtA@mail.gmail.com>
 References: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
-	<1371466836-4111-8-git-send-email-chander.kashyap@linaro.org>
-	<3228621.2EHTYISgy0@amdc1227>
+	<1371466836-4111-2-git-send-email-chander.kashyap@linaro.org>
+	<1a0001ce6b4f$334cc260$99e64720$%kim@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <3228621.2EHTYISgy0@amdc1227>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-oa0-f48.google.com ([209.85.219.48]:51756 "EHLO
+	mail-oa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751836Ab3FREYt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Jun 2013 00:24:49 -0400
+Received: by mail-oa0-f48.google.com with SMTP id f4so4430729oah.35
+        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2013 21:24:49 -0700 (PDT)
+In-Reply-To: <1a0001ce6b4f$334cc260$99e64720$%kim@samsung.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kukjin Kim <kgene.kim@samsung.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>
 
-On 17 June 2013 17:14, Tomasz Figa <t.figa@samsung.com> wrote:
-> --
-> Tomasz Figa
-> Linux Kernel Developer
-> Samsung R&D Institute Poland
-> Samsung Electronics
->
-> On Monday 17 of June 2013 16:30:32 Chander Kashyap wrote:
->> Add initial device tree nodes for Exynos5420 SoC and SMDK5420 board.
+On 17 June 2013 17:08, Kukjin Kim <kgene.kim@samsung.com> wrote:
+> Chander Kashyap wrote:
 >>
+>> In preparation of adding support for Exynos5420, which has many
+>> peripherals
+>> similar to Exynos5250, a new common Exynos5 device tree source file is
+>> created out of the exising Exynos5250 device tree source file. Only the
+>> common nodes required for basic boot up on Exynos5420 based boards are
+>> moved
+>> into this new file and the rest of the common nodes would be moved
+>> subsequently.
+>>
+> Yeah, most of exynos5250 is used in exynos5420. Since created exynos5.dtsi
+> cannot support exynos5440 so that would be helpful if you could add some
+> comments in git log and codes about that.
+Sure, i will add comments regarding 5440.
+>
 >> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
 >> ---
->>  arch/arm/boot/dts/Makefile                |    1 +
->>  arch/arm/boot/dts/exynos5420-smdk5420.dts |   33 +++++++++
->>  arch/arm/boot/dts/exynos5420.dtsi         |  103
->> +++++++++++++++++++++++++++++ 3 files changed, 137 insertions(+)
->>  create mode 100644 arch/arm/boot/dts/exynos5420-smdk5420.dts
->>  create mode 100644 arch/arm/boot/dts/exynos5420.dtsi
+>>  arch/arm/boot/dts/exynos5.dtsi    |  111
+>> +++++++++++++++++++++++++++++++++++++
+>>  arch/arm/boot/dts/exynos5250.dtsi |   68 +----------------------
+>>  2 files changed, 113 insertions(+), 66 deletions(-)
+>>  create mode 100644 arch/arm/boot/dts/exynos5.dtsi
 >>
->> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
->> index f0895c5..5efa7e0 100644
->> --- a/arch/arm/boot/dts/Makefile
->> +++ b/arch/arm/boot/dts/Makefile
->> @@ -57,6 +57,7 @@ dtb-$(CONFIG_ARCH_EXYNOS) += exynos4210-origen.dtb \
->>       exynos5440-sd5v1.dtb \
->>       exynos5250-smdk5250.dtb \
->>       exynos5250-snow.dtb \
->> +     exynos5420-smdk5420.dtb \
->>       exynos5440-ssdk5440.dtb
->>  dtb-$(CONFIG_ARCH_HIGHBANK) += highbank.dtb \
->>       ecx-2000.dtb
->> diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts
->> b/arch/arm/boot/dts/exynos5420-smdk5420.dts new file mode 100644
->> index 0000000..d14ece5
+>> diff --git a/arch/arm/boot/dts/exynos5.dtsi
+>> b/arch/arm/boot/dts/exynos5.dtsi
+>> new file mode 100644
+>> index 0000000..5684f89
 >> --- /dev/null
->> +++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
->> @@ -0,0 +1,33 @@
+>> +++ b/arch/arm/boot/dts/exynos5.dtsi
+>> @@ -0,0 +1,111 @@
 >> +/*
->> + * SAMSUNG SMDK5420 board device tree source
+>> + * Samsung's Exynos5 SoC series common device tree source
 >> + *
->> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
+>> + * Copyright (c) 2012-2013 Samsung Electronics Co., Ltd.
 >> + *           http://www.samsung.com
 >> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> +*/
->> +
->> +/dts-v1/;
->> +#include "exynos5420.dtsi"
->> +
->> +/ {
->> +     model = "Samsung SMDK5420 board based on EXYNOS5420";
->> +     compatible = "samsung,smdk5420", "samsung,exynos5420";
->> +
->> +     memory {
->> +             reg =   <0x20000000 0x80000000>;
->> +     };
->> +
->> +     chosen {
->> +             bootargs = "console=ttySAC2,115200 init=/linuxrc";
->> +     };
->> +
->> +     fixed-rate-clocks {
->> +             oscclk {
->> +                     compatible = "samsung,exynos5420-oscclk";
->> +                     clock-frequency = <24000000>;
->> +             };
->> +     };
->> +};
->> diff --git a/arch/arm/boot/dts/exynos5420.dtsi
->> b/arch/arm/boot/dts/exynos5420.dtsi new file mode 100644
->> index 0000000..e865be5
->> --- /dev/null
->> +++ b/arch/arm/boot/dts/exynos5420.dtsi
->> @@ -0,0 +1,103 @@
->> +/*
->> + * SAMSUNG EXYNOS5420 SoC device tree source
->> + *
->> + * Copyright (c) 2013 Samsung Electronics Co., Ltd.
->> + *           http://www.samsung.com
->> + *
->> + * SAMSUNG EXYNOS54200 SoC device nodes are listed in this file.
->> + * EXYNOS5420 based board files can include this file and provide
->> + * values for board specfic bindings.
+>> + * Samsung's Exynos5 SoC series device nodes are listed in this file.
+>> Particular
+>> + * SoCs from Exynos5 series can include this file and provide values for
+>> SoCs
+>> + * specfic bindings.
 >> + *
 >> + * This program is free software; you can redistribute it and/or modify
 >> + * it under the terms of the GNU General Public License version 2 as
 >> + * published by the Free Software Foundation.
 >> + */
 >> +
->> +#include "exynos5.dtsi"
->> +/ {
->> +     compatible = "samsung,exynos5420";
+>> +#include "skeleton.dtsi"
 >> +
->> +     cpus {
+>> +/ {
+>> +     interrupt-parent = <&gic>;
+>> +
+>> +     chipid@10000000 {
+>> +             compatible = "samsung,exynos4210-chipid";
+>> +             reg = <0x10000000 0x100>;
+>> +     };
+>> +
+>> +     watchdog {
+>> +             compatible = "samsung,s3c2410-wdt";
+>> +             reg = <0x101D0000 0x100>;
+>> +             interrupts = <0 42 0>;
+>> +             status = "disabled";
+>> +     };
+>
+> I think, you put them by the address order. But as you know, some of them
+> are different with exynos5250 and exynos5420. So alphabetical ordering would
+> be helpful after putting core part.
+> So, chipid, gic, combiner and alphabetical ordering IPs...
+Ok i will re-order the nodes.
+
+>
+>> +
+>> +     rtc {
+>> +             compatible = "samsung,s3c6410-rtc";
+>> +             reg = <0x101E0000 0x100>;
+>> +             interrupts = <0 43 0>, <0 44 0>;
+>> +             status = "disabled";
+>> +     };
+>> +
+>> +     combiner:interrupt-controller@10440000 {
+>> +             compatible = "samsung,exynos4210-combiner";
+>> +             #interrupt-cells = <2>;
+>> +             interrupt-controller;
+>> +             samsung,combiner-nr = <32>;
+>> +             reg = <0x10440000 0x1000>;
+>> +             interrupts =    <0 0 0>, <0 1 0>, <0 2 0>, <0 3 0>,
+>> +                             <0 4 0>, <0 5 0>, <0 6 0>, <0 7 0>,
+>> +                             <0 8 0>, <0 9 0>, <0 10 0>, <0 11 0>,
+>> +                             <0 12 0>, <0 13 0>, <0 14 0>, <0 15 0>,
+>> +                             <0 16 0>, <0 17 0>, <0 18 0>, <0 19 0>,
+>> +                             <0 20 0>, <0 21 0>, <0 22 0>, <0 23 0>,
+>> +                             <0 24 0>, <0 25 0>, <0 26 0>, <0 27 0>,
+>> +                             <0 28 0>, <0 29 0>, <0 30 0>, <0 31 0>;
+>> +     };
+>> +
+>> +     gic:interrupt-controller@10481000 {
+>> +             compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+>> +             #interrupt-cells = <3>;
+>> +             interrupt-controller;
+>> +             reg =   <0x10481000 0x1000>,
+>> +                     <0x10482000 0x1000>,
+>> +                     <0x10484000 0x2000>,
+>> +                     <0x10486000 0x2000>;
+>> +             interrupts = <1 9 0xf04>;
+>> +     };
+>> +
+>> +     dwmmc_0: dwmmc0@12200000 {
+>> +             compatible = "samsung,exynos5250-dw-mshc";
+>> +             interrupts = <0 75 0>;
 >> +             #address-cells = <1>;
 >> +             #size-cells = <0>;
->> +
->> +             cpu0: cpu@0 {
->> +                     device_type = "cpu";
->> +                     compatible = "arm,cortex-a15";
->> +                     reg = <0x0>;
->> +                     clock-frequency = <800000000>;
->
-> It is the only frequency at which this SoC can run? What code does actually
-> use this property? Can't this frequency be read by calling clk_get_rate() on
-> armclk?
->
-This is the max cpu frequency.
-This property is used in "parse_dt_topology" in
-arch/arm/kernel/topology.c" to calculate cpu capacity.
-> Otherwise looks good:
->
-> Reviewed-by: Tomasz Figa <t.figa@samsung.com>
->
-> Best regards,
-> Tomasz
->
->> +             };
->> +
->> +             cpu1: cpu@1 {
->> +                     device_type = "cpu";
->> +                     compatible = "arm,cortex-a15";
->> +                     reg = <0x1>;
->> +                     clock-frequency = <800000000>;
->> +             };
->> +
->> +             cpu2: cpu@2 {
->> +                     device_type = "cpu";
->> +                     compatible = "arm,cortex-a15";
->> +                     reg = <0x2>;
->> +                     clock-frequency = <800000000>;
->> +             };
->> +
->> +             cpu3: cpu@3 {
->> +                     device_type = "cpu";
->> +                     compatible = "arm,cortex-a15";
->> +                     reg = <0x3>;
->> +                     clock-frequency = <800000000>;
->> +             };
 >> +     };
 >> +
->> +     clock: clock-controller@0x10010000 {
->> +             compatible = "samsung,exynos5420-clock";
->> +             reg = <0x10010000 0x30000>;
->> +             #clock-cells = <1>;
+>> +     dwmmc_1: dwmmc1@12210000 {
+>> +             compatible = "samsung,exynos5250-dw-mshc";
+>> +             interrupts = <0 76 0>;
+>> +             #address-cells = <1>;
+>> +             #size-cells = <0>;
 >> +     };
 >> +
->> +     mct@101C0000 {
->> +             compatible = "samsung,exynos4210-mct";
->> +             reg = <0x101C0000 0x800>;
->> +             interrupt-controller;
->> +             #interrups-cells = <1>;
->> +             interrupt-parent = <&mct_map>;
->> +             interrupts = <0>, <1>, <2>, <3>, <4>, <5>, <6>, <7>;
->> +             clocks = <&clock 1>, <&clock 315>;
->> +             clock-names = "fin_pll", "mct";
->> +
->> +             mct_map: mct-map {
->> +                     #interrupt-cells = <1>;
->> +                     #address-cells = <0>;
->> +                     #size-cells = <0>;
->> +                     interrupt-map = <0 &combiner 23 3>,
->> +                                     <1 &combiner 23 4>,
->> +                                     <2 &combiner 25 2>,
->> +                                     <3 &combiner 25 3>,
->> +                                     <4 &gic 0 120 0>,
->> +                                     <5 &gic 0 121 0>,
->> +                                     <6 &gic 0 122 0>,
->> +                                     <7 &gic 0 123 0>;
->> +             };
+>> +     dwmmc_2: dwmmc2@12220000 {
+>> +             compatible = "samsung,exynos5250-dw-mshc";
+>> +             interrupts = <0 77 0>;
+>> +             #address-cells = <1>;
+>> +             #size-cells = <0>;
 >> +     };
 >> +
 >> +     serial@12C00000 {
->> +             clocks = <&clock 257>, <&clock 128>;
->> +             clock-names = "uart", "clk_uart_baud0";
+>> +             compatible = "samsung,exynos4210-uart";
+>> +             reg = <0x12C00000 0x100>;
+>> +             interrupts = <0 51 0>;
 >> +     };
 >> +
 >> +     serial@12C10000 {
->> +             clocks = <&clock 258>, <&clock 129>;
->> +             clock-names = "uart", "clk_uart_baud0";
+>> +             compatible = "samsung,exynos4210-uart";
+>> +             reg = <0x12C10000 0x100>;
+>> +             interrupts = <0 52 0>;
 >> +     };
 >> +
 >> +     serial@12C20000 {
->> +             clocks = <&clock 259>, <&clock 130>;
->> +             clock-names = "uart", "clk_uart_baud0";
+>> +             compatible = "samsung,exynos4210-uart";
+>> +             reg = <0x12C20000 0x100>;
+>> +             interrupts = <0 53 0>;
 >> +     };
 >> +
 >> +     serial@12C30000 {
->> +             clocks = <&clock 260>, <&clock 131>;
->> +             clock-names = "uart", "clk_uart_baud0";
+>> +             compatible = "samsung,exynos4210-uart";
+>> +             reg = <0x12C30000 0x100>;
+>> +             interrupts = <0 54 0>;
 >> +     };
 >> +};
+>> diff --git a/arch/arm/boot/dts/exynos5250.dtsi
+>> b/arch/arm/boot/dts/exynos5250.dtsi
+>> index 0673524..2b59ea3 100644
+>> --- a/arch/arm/boot/dts/exynos5250.dtsi
+>> +++ b/arch/arm/boot/dts/exynos5250.dtsi
+>> @@ -17,12 +17,11 @@
+>>   * published by the Free Software Foundation.
+>>  */
+>>
+>> -/include/ "skeleton.dtsi"
+>> -/include/ "exynos5250-pinctrl.dtsi"
+>> +#include "exynos5.dtsi"
+>> +#include "exynos5250-pinctrl.dtsi"
+>>
+> I remember, to use #include is in Padma's patch and I've applied in my
+> local. So don't change it and just adding inclusion exynos5 is enough.
+Sure i will change it and use #include in exynos5.dtsi only.
+>
+> Others look good to me.
+
+Thanks for the review.
+>
+> Thanks,
+> - Kukjin
+>
 
 
 
