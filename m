@@ -1,36 +1,46 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 06/10] clk: exynos5420: register clocks using common clock framework
-Date: Tue, 18 Jun 2013 19:13:45 +0200
-Message-ID: <201306181913.45484.arnd@arndb.de>
-References: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org> <201306181601.16795.arnd@arndb.de> <9285029.CIld1HyBWB@amdc1227>
-Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <9285029.CIld1HyBWB@amdc1227>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mark Rutland <mark.rutland@arm.com>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+From: David Daney <ddaney.cavm@gmail.com>
+Subject: [PATCH 1/5] Revert "MIPS: Octeon: Fix build error if CONFIG_SERIAL_8250=n"
+Date: Tue, 18 Jun 2013 12:12:51 -0700
+Message-ID: <1371582775-12141-2-git-send-email-ddaney.cavm@gmail.com>
+References: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f43.google.com ([209.85.160.43]:59188 "EHLO
+	mail-pb0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756307Ab3FRTNG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Jun 2013 15:13:06 -0400
+In-Reply-To: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
 
-On Tuesday 18 June 2013, Tomasz Figa wrote:
-> This is a binding that has been defined for Samsung Common Clock Framework 
-> drivers. Exynos4 and Exynos5250 use the same convention. The numbers are 
-> defined in a way that should allow adding further clocks of particular types in 
-> future as need for such shows up.
+From: David Daney <david.daney@cavium.com>
 
-I see, it's probably too late to change that then. Maybe if there is an Exynos6
-this should be done differently though.
+This reverts commit fc0fcde2ea9740944acf6134d2c84983d1297bc1.
+---
+ arch/mips/cavium-octeon/Makefile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Physically there is one clock controller (CMU) which has a lot of dividers, 
-> muxes and gates and so it is represented as a single device node.
+diff --git a/arch/mips/cavium-octeon/Makefile b/arch/mips/cavium-octeon/Makefile
+index 643809f..e3fd50c 100644
+--- a/arch/mips/cavium-octeon/Makefile
++++ b/arch/mips/cavium-octeon/Makefile
+@@ -12,13 +12,12 @@
+ CFLAGS_octeon-platform.o = -I$(src)/../../../scripts/dtc/libfdt
+ CFLAGS_setup.o = -I$(src)/../../../scripts/dtc/libfdt
+ 
+-obj-y := cpu.o setup.o octeon-platform.o octeon-irq.o csrc-octeon.o
++obj-y := cpu.o setup.o serial.o octeon-platform.o octeon-irq.o csrc-octeon.o
+ obj-y += dma-octeon.o
+ obj-y += octeon-memcpy.o
+ obj-y += executive/
+ 
+ obj-$(CONFIG_MTD)		      += flash_setup.o
+-obj-$(CONFIG_SERIAL_8250)	      += serial.o
+ obj-$(CONFIG_SMP)		      += smp.o
+ obj-$(CONFIG_OCTEON_ILM)	      += oct_ilm.o
+ 
+-- 
+1.7.11.7
 
-Some platforms just put device nodes for their clocks under the clock controller
-node, which would have helped here. Another option would be to use #clock-cells=<2>
-and make the first cell the type of the clock, and the second one the number.
-
-Also, if I understand things correctly, simple fixed rate clocks would normally
-not go into the clock driver at all when they are not controller by it.
-
-	Arnd
