@@ -1,59 +1,53 @@
-From: Chander Kashyap <chander.kashyap@linaro.org>
-Subject: [PATCH v4 10/10] ARM: Exynos: extend soft-reset support for Exynos5420
-Date: Tue, 18 Jun 2013 11:59:22 +0530
-Message-ID: <1371536962-13322-11-git-send-email-chander.kashyap@linaro.org>
+From: Girish KS <girishks2000@gmail.com>
+Subject: Re: [PATCH v4 04/10] serial: samsung: select Exynos specific driver
+ data if ARCH_EXYNOS is defined
+Date: Tue, 18 Jun 2013 12:20:54 +0530
+Message-ID: <CAKrE-KcvV5dQz0vUb-1y1msoron2Z=RjSnH1uxy8rzMtn8iChA@mail.gmail.com>
 References: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:38118 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752280Ab3FRGaV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Jun 2013 02:30:21 -0400
-Received: by mail-pa0-f52.google.com with SMTP id kq13so3623934pab.25
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2013 23:30:21 -0700 (PDT)
-In-Reply-To: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+	<1371536962-13322-5-git-send-email-chander.kashyap@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1371536962-13322-5-git-send-email-chander.kashyap@linaro.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Chander Kashyap <chander.kashyap@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, mark.rutland@arm.com, kgene.kim@samsung.com, linux-serial@vger.kernel.org, t.figa@samsung.com, linux-samsung-soc@vger.kernel.org, thomas.ab@samsung.com, s.nawrocki@samsung.com
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, kgene.kim@samsung.com, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, Chander Kashyap <chander.kashyap@linaro.org>
 
-Extend the soft reset support for Exynos5420 SoC.
-Reviewed-by: Tomasz Figa <t.figa@samsung.com>
-
-Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
----
- arch/arm/mach-exynos/common.c |   11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm/mach-exynos/common.c b/arch/arm/mach-exynos/common.c
-index 6f435da..4e6c227 100644
---- a/arch/arm/mach-exynos/common.c
-+++ b/arch/arm/mach-exynos/common.c
-@@ -330,10 +330,10 @@ void exynos5_restart(char mode, const char *cmd)
- 	u32 val;
- 	void __iomem *addr;
- 
--	if (of_machine_is_compatible("samsung,exynos5250")) {
--		val = 0x1;
--		addr = EXYNOS_SWRESET;
--	} else if (of_machine_is_compatible("samsung,exynos5440")) {
-+	val = 0x1;
-+	addr = EXYNOS_SWRESET;
-+
-+	if (of_machine_is_compatible("samsung,exynos5440")) {
- 		u32 status;
- 		np = of_find_compatible_node(NULL, NULL, "samsung,exynos5440-clock");
- 
-@@ -344,9 +344,6 @@ void exynos5_restart(char mode, const char *cmd)
- 		val = __raw_readl(addr);
- 
- 		val = (val & 0xffff0000) | (status & 0xffff);
--	} else {
--		pr_err("%s: cannot support non-DT\n", __func__);
--		return;
- 	}
- 
- 	__raw_writel(val, addr);
--- 
-1.7.9.5
-
+On Tue, Jun 18, 2013 at 11:59 AM, Chander Kashyap
+<chander.kashyap@linaro.org> wrote:
+> All Exynos4/5 SoCs share a common driver data in the samsung serial
+> driver. Hence, let the driver data inclusion be based on ARCH_EXYNOS
+> instead of SOC specific definition.
+>
+> Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+> Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+> ---
+>  drivers/tty/serial/samsung.c |    4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index 2552c7f..e70d19a 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1703,9 +1703,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+>  #define S5PV210_SERIAL_DRV_DATA        (kernel_ulong_t)NULL
+>  #endif
+>
+> -#if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) || \
+> -       defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) || \
+> -       defined(CONFIG_SOC_EXYNOS5440)
+> +#if defined(CONFIG_ARCH_EXYNOS)
+>  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+>         .info = &(struct s3c24xx_uart_info) {
+>                 .name           = "Samsung Exynos4 UART",
+Looks good to me
+Reviewed by: Girish K S <ks.giri@samsung.com>
+> --
+> 1.7.9.5
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
