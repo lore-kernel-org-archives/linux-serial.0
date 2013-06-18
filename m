@@ -1,82 +1,67 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH v3 06/10] clk: exynos5420: register clocks using common
- clock framework
-Date: Tue, 18 Jun 2013 16:26:56 +0200
-Message-ID: <9285029.CIld1HyBWB@amdc1227>
+From: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 04/10] serial: samsung: select Exynos specific driver
+ data if ARCH_EXYNOS is defined
+Date: Tue, 18 Jun 2013 08:19:48 -0700
+Message-ID: <20130618151948.GC27677@kroah.com>
 References: <1371466836-4111-1-git-send-email-chander.kashyap@linaro.org>
- <CANuQgHHoUyE5e+MnnpzWLxcFNcD11FjYwx76pucw7peV4qmFkQ@mail.gmail.com>
- <201306181601.16795.arnd@arndb.de>
+ <1371466836-4111-5-git-send-email-chander.kashyap@linaro.org>
+ <1c0e01ce6c0e$f0baf7d0$d230e770$%kim@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <201306181601.16795.arnd@arndb.de>
+Content-Disposition: inline
+In-Reply-To: <1c0e01ce6c0e$f0baf7d0$d230e770$%kim@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mark Rutland <mark.rutland@arm.com>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
+To: Kukjin Kim <kgene.kim@samsung.com>
+Cc: 'Chander Kashyap' <chander.kashyap@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, t.figa@samsung.com, s.nawrocki@samsung.com, mark.rutland@arm.com, thomas.ab@samsung.com, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-
-On Tuesday 18 of June 2013 16:01:16 Arnd Bergmann wrote:
-> On Tuesday 18 June 2013, Chander Kashyap wrote:
-> > >> +       [Core Clocks]
-> > >> +
-> > >> +  Clock                      ID
-> > >> +  ----------------------------
-> > >> +
-> > >> +  fin_pll            1
-> > >> +
-> > >> +  [Clock Gate for Special Clocks]
-> > >> +
-> > >> +  Clock                      ID
-> > >> +  ----------------------------
-> > >> +  sclk_uart0         128
-> > >> +  sclk_uart1         129
-> > >> +  sclk_uart2         130
-> > >> 
-> > >> +
-> > >> +   [Peripheral Clock Gates]
-> > >> +
-> > >> +  Clock                      ID
-> > >> +  ----------------------------
-> > >> +
-> > >> +  aclk66_peric               256
-> > >> +  uart0                      257
-> > >> +  uart1                      258
-> > > 
-> > > It looks like these are actually separate things. Wouldn't it be more
-> > > sensible to have separate device nodes for each of the lists and use a
-> > > local index?> 
-> > I have listed the parent clock first, then the child clocks, to
-> > maintain  readability.
+On Tue, Jun 18, 2013 at 07:31:06PM +0900, Kukjin Kim wrote:
+> Kukjin Kim wrote:
 > > 
-> > > What numbers are used in the data sheet?
+> > Chander Kashyap wrote:
+> > >
+> > > All Exynos4/5 SoCs share a common driver data in the samsung serial
+> > > driver. Hence, let the driver data inclusion be based on ARCH_EXYNOS
+> > > instead of SOC specific definition.
+> > >
+> > > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
 > > 
-> > I didn't get your point?
+> > (+ Greg, Jiri)
+> > 
+> > Acked-by: Kukjin Kim <kgene.kim@samsung.com>
+> > 
+> > Greg, Jiri, please take this in your tree with my ack if no problem on
+> > this.
+> > 
+> Greg, Jiri, since there are other changes for this in samsung tree so would
+> be nice if this could be sent to upstream with others via samsung tree. If
+> you have any concerns, please kindly let me know.
 > 
-> I would have expected three clock device nodes, one for fin_pll (presumably
-> a fixed-rate clock?), one for "special clocks" and one for "peripheral
-> clock gates", and a number space starting at '1' for each of them, rather
-> than having a shared node and numbers starting at '1', '128' and '256',
-> which looks a bit clumsy.
-> 
-> Did you take the ID number definitions from a data sheet, or did you make up
-> the numbers yourself for the purpose of defining a binding?
+> Thanks,
+> - Kukjin
+> > 
+> > > ---
+> > >  drivers/tty/serial/samsung.c |    4 +---
+> > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> > > index 2552c7f..e70d19a 100644
+> > > --- a/drivers/tty/serial/samsung.c
+> > > +++ b/drivers/tty/serial/samsung.c
+> > > @@ -1703,9 +1703,7 @@ static struct s3c24xx_serial_drv_data
+> > > s5pv210_serial_drv_data = {
+> > >  #define S5PV210_SERIAL_DRV_DATA	(kernel_ulong_t)NULL
+> > >  #endif
+> > >
+> > > -#if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SOC_EXYNOS4212) ||
+> > \
+> > > -	defined(CONFIG_SOC_EXYNOS4412) || defined(CONFIG_SOC_EXYNOS5250) ||
+> > > \
+> > > -	defined(CONFIG_SOC_EXYNOS5440)
+> > > +#if defined(CONFIG_ARCH_EXYNOS)
+> > >  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+> > >  	.info = &(struct s3c24xx_uart_info) {
+> > >  		.name		= "Samsung Exynos4 UART",
 
-This is a binding that has been defined for Samsung Common Clock Framework 
-drivers. Exynos4 and Exynos5250 use the same convention. The numbers are 
-defined in a way that should allow adding further clocks of particular types in 
-future as need for such shows up.
-
-Physically there is one clock controller (CMU) which has a lot of dividers, 
-muxes and gates and so it is represented as a single device node.
-
-Best regards,
-Tomasz
-
-> 	Arnd
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc"
-> in the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
