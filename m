@@ -1,68 +1,55 @@
-From: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v3 3/5] ARM: davinci: da850: do not specify clock_frequency
-	for UART DT node
-Date: Wed, 19 Jun 2013 14:45:40 +0530
-Message-ID: <1371633342-1210-4-git-send-email-prakash.pm@ti.com>
+From: "Manjunathappa, Prakash" <prakash.pm@ti.com>
+Subject: [PATCH v3 4/5] ARM: davinci: da8xx: remove da8xx_uart_clk_enable
+Date: Wed, 19 Jun 2013 14:45:41 +0530
+Message-ID: <1371633342-1210-5-git-send-email-prakash.pm@ti.com>
 References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <1371633342-1210-1-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
-List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
-List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
-Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
-To: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:33266 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934410Ab3FSJPH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Jun 2013 05:15:07 -0400
+In-Reply-To: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: davinci-linux-open-source@linux.davincidsp.com, linux-serial@vger.kernel.org
+Cc: nsekhar@ti.com, grant.likely@secretlab.ca, rob.herring@calxeda.com, linux@arm.linux.org.uk, hs@denx.de, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, "Manjunathappa, Prakash" <prakash.pm@ti.com>
 
-DT kernel on da850-evm comes up with garbled UART logs. This is because
-of mismatch in actual module clock rate and rate specified(clock-frequency)
-in DT blob. kernel should not assume or depend on bootloaders clock
-configuration, instead let it find the clock rate at runtime.
+Serial clocks are enabled from of_platform_serial_setup:of_serial.c,
+so remove davinci_serial_setup_clk from here.
 
-Issue discussed here before arriving on this implementation:
-"ARM: davinci: da850 evm: update clock rate for UART 1/2 DT nodes"
-https://patchwork.kernel.org/patch/2162271/
-
-Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
+Signed-off-by: Manjunathappa, Prakash <prakash.pm@ti.com>
 ---
- arch/arm/boot/dts/da850.dtsi |    3 ---
- 1 files changed, 0 insertions(+), 3 deletions(-)
+ arch/arm/mach-davinci/da8xx-dt.c |    8 --------
+ 1 files changed, 0 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/da850.dtsi b/arch/arm/boot/dts/da850.dtsi
-index 2c88313..4d43046 100644
---- a/arch/arm/boot/dts/da850.dtsi
-+++ b/arch/arm/boot/dts/da850.dtsi
-@@ -129,7 +129,6 @@
- 		serial0: serial@1c42000 {
- 			compatible = "ns16550a";
- 			reg = <0x42000 0x100>;
--			clock-frequency = <150000000>;
- 			reg-shift = <2>;
- 			interrupts = <25>;
- 			status = "disabled";
-@@ -137,7 +136,6 @@
- 		serial1: serial@1d0c000 {
- 			compatible = "ns16550a";
- 			reg = <0x10c000 0x100>;
--			clock-frequency = <150000000>;
- 			reg-shift = <2>;
- 			interrupts = <53>;
- 			status = "disabled";
-@@ -145,7 +143,6 @@
- 		serial2: serial@1d0d000 {
- 			compatible = "ns16550a";
- 			reg = <0x10d000 0x100>;
--			clock-frequency = <150000000>;
- 			reg-shift = <2>;
- 			interrupts = <61>;
- 			status = "disabled";
+diff --git a/arch/arm/mach-davinci/da8xx-dt.c b/arch/arm/mach-davinci/da8xx-dt.c
+index e429945..9683cbd 100644
+--- a/arch/arm/mach-davinci/da8xx-dt.c
++++ b/arch/arm/mach-davinci/da8xx-dt.c
+@@ -20,13 +20,6 @@
+ 
+ #define DA8XX_NUM_UARTS	3
+ 
+-static void __init da8xx_uart_clk_enable(void)
+-{
+-	int i;
+-	for (i = 0; i < DA8XX_NUM_UARTS; i++)
+-		davinci_serial_setup_clk(i, NULL);
+-}
+-
+ static struct of_device_id da8xx_irq_match[] __initdata = {
+ 	{ .compatible = "ti,cp-intc", .data = cp_intc_of_init, },
+ 	{ }
+@@ -60,7 +53,6 @@ static void __init da850_init_machine(void)
+ 	of_platform_populate(NULL, of_default_bus_match_table,
+ 			     da850_auxdata_lookup, NULL);
+ 
+-	da8xx_uart_clk_enable();
+ }
+ 
+ static const char *da850_boards_compat[] __initdata = {
 -- 
 1.7.4.1
+
