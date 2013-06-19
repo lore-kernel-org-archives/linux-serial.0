@@ -1,84 +1,64 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 06/11] ARM:stixxxx: Add STiH415 SOC support
-Date: Wed, 19 Jun 2013 20:59:34 +0200
-Message-ID: <CACRpkdZDhR88Ezx0qVOk8bFtukSNsOtwQuQaFdn4u25OUYs+vA@mail.gmail.com>
-References: <1370855828-5318-1-git-send-email-srinivas.kandagatla@st.com>
- <1370856381-6644-1-git-send-email-srinivas.kandagatla@st.com>
- <CACRpkdZ-xnDO+bte4tyKDWwY4A_qWUhLru3dUmuY9MQwseP3uQ@mail.gmail.com>
- <51B6011E.1060909@st.com> <51BAC6EC.8000703@st.com>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: Re: [PATCH 3/5] tty/8250_dw: Add support for OCTEON UARTS.
+Date: Wed, 19 Jun 2013 12:12:09 -0700
+Message-ID: <51C20289.1060303@caviumnetworks.com>
+References: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com> <2302882.NVjP8DdXWY@wuerfel> <51C1E028.2040700@caviumnetworks.com> <201306192052.09575.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <51BAC6EC.8000703-qxv4g6HH51o@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: "devicetree-discuss"
- <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-by2lp0236.outbound.protection.outlook.com ([207.46.163.236]:18782
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1757435Ab3FSTMP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Jun 2013 15:12:15 -0400
+In-Reply-To: <201306192052.09575.arnd@arndb.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: David Daney <ddaney.cavm@gmail.com>, linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
 
-On Fri, Jun 14, 2013 at 9:31 AM, Srinivas KANDAGATLA
-<srinivas.kandagatla-qxv4g6HH51o@public.gmane.org> wrote:
-> On 10/06/13 17:38, Srinivas Kandagatla wrote:
->>> +++ b/arch/arm/boot/dts/stixxxx-pincfg.h
->>> >> @@ -0,0 +1,94 @@
->>> >> +#ifndef _STIXXXX_PINCFG_H_
->>> >> +#define _STIXXXX_PINCFG_H_
->>> >> +
->>> >> +/* Alternate functions */
->>> >> +#define ALT1   1
->>> >> +#define ALT2   2
->>> >> +#define ALT3   3
->>> >> +#define ALT4   4
->>> >> +#define ALT5   5
->>> >> +#define ALT6   6
->>> >> +#define ALT7   7
->>>
->>> Why is this part of the DT definitions? In the pinctrl world this
->>> is an intrinsic detail on how groups and functions are associated,
->>> not something that you hard-code into the device tree. The
->>> device tree should state how to combine functions with groups
->>> and those will be strings, not numerals.
+On 06/19/2013 11:52 AM, Arnd Bergmann wrote:
+> On Wednesday 19 June 2013, David Daney wrote:
+>> On 06/19/2013 03:01 AM, Arnd Bergmann wrote:
 >
-> Hi Linus,
-> I would like to get correct understanding of the point your raised here.
-> I use these ALT function values in "st,function" property for pinctrl
-> group as shown in this simple example:
+>>> It's also wrong to use the
+>>> __raw_* variant, which is not guaranteed to be atomic and is not
+>>> endian-safe.
+>>
+>> We do runtime probing and only use this function on platforms where it
+>> is appropriate, so atomicity is not an issue.  As for endianess, I used
+>> the __raw_ variant precisely because it is correct for both big and
+>> little endian kernels.
 >
-> pinctrl_sbc_serial1:sbc_serial1 {
->        st,function = <ALT3>;
->        st,pins {
->               tx      = <&PIO2 6 OUT>;
->               rx      = <&PIO2 7 IN>;
->        };
-> };
->
-> If I do something like what rockchip pinctrl did the pinctrl group will
-> look like.
->
-> pinctrl_sbc_serial1:sbc_serial1 {
->        st,pins {
->               tx      = <&PIO2 6 OUT ALT3>;
->               rx      = <&PIO2 7 IN ALT3>;
->        };
-> };
->
-> Is this the right way to do it?
+> You don't know what the compiler turns a __raw_writeq into, it could
+> always to eight byte wise stores, that's why typically writeq is
+> an inline assembly while __raw_writeq is just a pointer dereference.
 
-Basically there is no right way to do it since we haven't been able
-to agree on a common way to represent pin controllers in the
-device tree.
+Well, I do know that for the cases of interest, it will be a single load 
+or store, but it is moot, as I rewrote that part.
 
-Those I have looked closer at tend to encode the selected
-function/group as a string rather than a numeral though.
+>
+> __raw_* never do endian swaps,
 
-Yours,
-Linus Walleij
+Yes, I know that.
+
+> so it will be wrong on either big-endian
+> CPUs or on little-endian CPUs, depending on what the MMIO register
+> needs.
+
+Please see the instruction set reference manual 
+(MD00087-2B-MIPS64BIS-AFP-03.51 or similar) available at:
+
+http://www.mips.com/products/architectures/mips64/#specifications
+
+... for why you are mistaken.  Pay particular attention to the low order 
+address bit scrambling on narrow loads and stores and how this results 
+in uniform (not affected by processor endian mode) load and store 
+results for aligned 64-bit accesses.  In effect, it is magic, and 
+__raw_writeq yields correct results in both big and little endian modes 
+of operation.
+
+David Daney.
+
+
