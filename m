@@ -1,49 +1,64 @@
 From: David Daney <ddaney.cavm@gmail.com>
-Subject: [PATCH v2 0/4] MIPS/tty/8250: Use standard 8250 drivers for OCTEON
-Date: Wed, 19 Jun 2013 14:37:25 -0700
-Message-ID: <1371677849-23912-1-git-send-email-ddaney.cavm@gmail.com>
-Return-path: <linux-mips-bounce@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Subject: [PATCH v2 4/4] MIPS: Update cavium_octeon_defconfig
+Date: Wed, 19 Jun 2013 14:37:29 -0700
+Message-ID: <1371677849-23912-5-git-send-email-ddaney.cavm@gmail.com>
+References: <1371677849-23912-1-git-send-email-ddaney.cavm@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:45356 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S935063Ab3FSVhi (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Jun 2013 17:37:38 -0400
+In-Reply-To: <1371677849-23912-1-git-send-email-ddaney.cavm@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
-List-Id: linux-serial@vger.kernel.org
 
 From: David Daney <david.daney@cavium.com>
 
-Changes from v1: Fix breakage in non-OCTEON builds of 8250_dw.c
+The serial port changes make it advisable to enable the proper UART
+drivers.
 
-1) Fix OCTEON's UART clock rate.
+Signed-off-by: David Daney <david.daney@cavium.com>
+---
+ arch/mips/configs/cavium_octeon_defconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-2) Make minor patches to 8250_dw so it can be used by OCTEON
-
-3) Rip out the OCTEON serial code.
-
-4) Update defconfig so we default to having a usable serial port.
-
-Since the patches are all interdependent, we might want to merge them
-via a single tree (perhaps Ralf's MIPS tree as OKed by Greg K-H).
-
-David Daney (4):
-  MIPS: OCTEON: Set proper UART clock in internal device trees.
-  tty/8250_dw: Add support for OCTEON UARTS.
-  MIPS: OCTEON: Remove custom serial setup code.
-  MIPS: Update cavium_octeon_defconfig
-
- arch/mips/cavium-octeon/Makefile          |   2 +-
- arch/mips/cavium-octeon/octeon-platform.c |   9 ++-
- arch/mips/cavium-octeon/serial.c          | 109 ------------------------------
- arch/mips/configs/cavium_octeon_defconfig |   4 +-
- drivers/tty/serial/8250/8250_dw.c         | 108 ++++++++++++++++++-----------
- 5 files changed, 79 insertions(+), 153 deletions(-)
- delete mode 100644 arch/mips/cavium-octeon/serial.c
-
+diff --git a/arch/mips/configs/cavium_octeon_defconfig b/arch/mips/configs/cavium_octeon_defconfig
+index 1888e5f..dace582 100644
+--- a/arch/mips/configs/cavium_octeon_defconfig
++++ b/arch/mips/configs/cavium_octeon_defconfig
+@@ -1,13 +1,11 @@
+ CONFIG_CAVIUM_OCTEON_SOC=y
+ CONFIG_CAVIUM_CN63XXP1=y
+ CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE=2
+-CONFIG_SPARSEMEM_MANUAL=y
+ CONFIG_TRANSPARENT_HUGEPAGE=y
+ CONFIG_SMP=y
+ CONFIG_NR_CPUS=32
+ CONFIG_HZ_100=y
+ CONFIG_PREEMPT=y
+-CONFIG_EXPERIMENTAL=y
+ CONFIG_SYSVIPC=y
+ CONFIG_POSIX_MQUEUE=y
+ CONFIG_BSD_PROCESS_ACCT=y
+@@ -50,7 +48,6 @@ CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+ # CONFIG_FW_LOADER is not set
+ CONFIG_MTD=y
+ # CONFIG_MTD_OF_PARTS is not set
+-CONFIG_MTD_CHAR=y
+ CONFIG_MTD_BLOCK=y
+ CONFIG_MTD_CFI=y
+ CONFIG_MTD_CFI_AMDSTD=y
+@@ -114,6 +111,7 @@ CONFIG_SERIAL_8250=y
+ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_8250_NR_UARTS=2
+ CONFIG_SERIAL_8250_RUNTIME_UARTS=2
++CONFIG_SERIAL_8250_DW=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_I2C=y
+ CONFIG_I2C_OCTEON=y
 -- 
 1.7.11.7
+
