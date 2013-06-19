@@ -1,68 +1,60 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: David Daney <ddaney@caviumnetworks.com>
 Subject: Re: [PATCH 3/5] tty/8250_dw: Add support for OCTEON UARTS.
-Date: Wed, 19 Jun 2013 17:10:08 +0300
-Message-ID: <20130619141008.GA32331@xps8300>
-References: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com>
- <1371582775-12141-4-git-send-email-ddaney.cavm@gmail.com>
+Date: Wed, 19 Jun 2013 09:45:28 -0700
+Message-ID: <51C1E028.2040700@caviumnetworks.com>
+References: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com> <1371582775-12141-4-git-send-email-ddaney.cavm@gmail.com> <2302882.NVjP8DdXWY@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <1371582775-12141-4-git-send-email-ddaney.cavm@gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: David Daney <ddaney.cavm@gmail.com>
-Cc: linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-by2lp0235.outbound.protection.outlook.com ([207.46.163.235]:1574
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1756707Ab3FSQpd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Jun 2013 12:45:33 -0400
+In-Reply-To: <2302882.NVjP8DdXWY@wuerfel>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: David Daney <ddaney.cavm@gmail.com>, linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
 
-On Tue, Jun 18, 2013 at 12:12:53PM -0700, David Daney wrote:
-> A few differences needed by OCTEON:
-> 
-> o These are DWC UARTS, but have USR at a different offset.
-> 
-> o OCTEON must have 64-bit wide register accesses, so we have OCTEON
->   specific register accessors.
-> 
-> o No UCV register, so we hard code some properties.
-> 
-> Signed-off-by: David Daney <david.daney@cavium.com>
+On 06/19/2013 03:01 AM, Arnd Bergmann wrote:
+> On Tuesday 18 June 2013 12:12:53 David Daney wrote:
+>> +static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
+>> +{
+>> +       offset <<= p->regshift;
+>> +
+>> +       return (u8)__raw_readq(p->membase + offset);
+>> +}
+>> +
+>> +static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
+>> +{
+>> +       struct dw8250_data *d = p->private_data;
+>> +
+>> +       if (offset == UART_LCR)
+>> +               d->last_lcr = value;
+>> +
+>> +       offset <<= p->regshift;
+>> +       __raw_writeq(value, p->membase + offset);
+>> +       dw8250_serial_inq(p, UART_LCR);
+>> +}
+>
+> This breaks building on 32 bit architectures as I found on my daily ARM
+> builds: __raw_writeq cannot be defined on architectures that don't have
+> native 64 bit data access instructions.
 
-<snip>
+I will rework the patch to avoid this problem.
 
-> @@ -270,10 +301,8 @@ static int dw8250_probe(struct platform_device *pdev)
->  	uart.port.serial_out = dw8250_serial_out;
->  	uart.port.private_data = data;
->  
-> -	dw8250_setup_port(&uart);
-> -
->  	if (pdev->dev.of_node) {
-> -		err = dw8250_probe_of(&uart.port);
-> +		err = dw8250_probe_of(&uart.port, data);
->  		if (err)
->  			return err;
->  	} else if (ACPI_HANDLE(&pdev->dev)) {
-> @@ -284,6 +313,9 @@ static int dw8250_probe(struct platform_device *pdev)
->  		return -ENODEV;
->  	}
->  
-> +	if (!data->no_ucv)
-> +		dw8250_setup_port(&uart);
 
-Moving the dw8250_setup_port() call here breaks dw8250_probe_acpi(). It
-expects values from the CPR register for the DMA burst size calculation.
+> It's also wrong to use the
+> __raw_* variant, which is not guaranteed to be atomic and is not
+> endian-safe.
 
-The DMA support can be moved to a separate function. This way it can
-be called after this point, and it will then be available for both DT
-and ACPI. I can make a patch tomorrow. That should solve this issue.
+We do runtime probing and only use this function on platforms where it 
+is appropriate, so atomicity is not an issue.  As for endianess, I used 
+the __raw_ variant precisely because it is correct for both big and 
+little endian kernels.
 
-Thanks,
+David Daney
 
--- 
-heikki
+
