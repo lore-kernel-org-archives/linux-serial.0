@@ -1,159 +1,68 @@
-From: Boris BREZILLON <b.brezillon@overkiz.com>
-Subject: [PATCH 4/8] tty: atmel_serial: prepare clk before calling enable
-Date: Wed, 19 Jun 2013 13:17:30 +0200
-Message-ID: <1371640650-9625-1-git-send-email-b.brezillon@overkiz.com>
-References: <1371640263-9268-1-git-send-email-b.brezillon@overkiz.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 3/5] tty/8250_dw: Add support for OCTEON UARTS.
+Date: Wed, 19 Jun 2013 17:10:08 +0300
+Message-ID: <20130619141008.GA32331@xps8300>
+References: <1371582775-12141-1-git-send-email-ddaney.cavm@gmail.com>
+ <1371582775-12141-4-git-send-email-ddaney.cavm@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1371640263-9268-1-git-send-email-b.brezillon@overkiz.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Boris BREZILLON <b.brezillon@overkiz.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <1371582775-12141-4-git-send-email-ddaney.cavm@gmail.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: David Daney <ddaney.cavm@gmail.com>
+Cc: linux-mips@linux-mips.org, ralf@linux-mips.org, Jamie Iles <jamie@jamieiles.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, David Daney <david.daney@cavium.com>
 List-Id: linux-serial@vger.kernel.org
 
-Replace clk_enable/disable with clk_prepare_enable/disable_unprepare to
-avoid common clk framework warnings.
+On Tue, Jun 18, 2013 at 12:12:53PM -0700, David Daney wrote:
+> A few differences needed by OCTEON:
+> 
+> o These are DWC UARTS, but have USR at a different offset.
+> 
+> o OCTEON must have 64-bit wide register accesses, so we have OCTEON
+>   specific register accessors.
+> 
+> o No UCV register, so we hard code some properties.
+> 
+> Signed-off-by: David Daney <david.daney@cavium.com>
 
-Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
----
- drivers/tty/serial/atmel_serial.c |   41 ++++++++++++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 10 deletions(-)
+<snip>
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 3467462..691265f 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1100,7 +1100,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
- 		 * Enable the peripheral clock for this serial port.
- 		 * This is called on uart_open() or a resume event.
- 		 */
--		clk_enable(atmel_port->clk);
-+		clk_prepare_enable(atmel_port->clk);
- 
- 		/* re-enable interrupts if we disabled some on suspend */
- 		UART_PUT_IER(port, atmel_port->backup_imr);
-@@ -1114,7 +1114,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
- 		 * Disable the peripheral clock for this serial port.
- 		 * This is called on uart_close() or a suspend event.
- 		 */
--		clk_disable(atmel_port->clk);
-+		clk_disable_unprepare(atmel_port->clk);
- 		break;
- 	default:
- 		printk(KERN_ERR "atmel_serial: unknown pm %d\n", state);
-@@ -1458,9 +1458,10 @@ static void atmel_of_init_port(struct atmel_uart_port *atmel_port,
- /*
-  * Configure the port from the platform device resource info.
-  */
--static void atmel_init_port(struct atmel_uart_port *atmel_port,
-+static int atmel_init_port(struct atmel_uart_port *atmel_port,
- 				      struct platform_device *pdev)
- {
-+	int ret;
- 	struct uart_port *port = &atmel_port->uart;
- 	struct atmel_uart_data *pdata = pdev->dev.platform_data;
- 
-@@ -1496,9 +1497,19 @@ static void atmel_init_port(struct atmel_uart_port *atmel_port,
- 	/* for console, the clock could already be configured */
- 	if (!atmel_port->clk) {
- 		atmel_port->clk = clk_get(&pdev->dev, "usart");
--		clk_enable(atmel_port->clk);
-+		if (IS_ERR(atmel_port->clk)) {
-+			ret = PTR_ERR(atmel_port->clk);
-+			atmel_port->clk = NULL;
-+			return ret;
-+		}
-+		ret = clk_prepare_enable(atmel_port->clk);
-+		if (ret) {
-+			clk_put(atmel_port->clk);
-+			atmel_port->clk = NULL;
-+			return ret;
-+		}
- 		port->uartclk = clk_get_rate(atmel_port->clk);
--		clk_disable(atmel_port->clk);
-+		clk_disable_unprepare(atmel_port->clk);
- 		/* only enable clock when USART is in use */
- 	}
- 
-@@ -1511,6 +1522,8 @@ static void atmel_init_port(struct atmel_uart_port *atmel_port,
- 	} else {
- 		atmel_port->tx_done_mask = ATMEL_US_TXRDY;
- 	}
-+
-+	return 0;
- }
- 
- struct platform_device *atmel_default_console_device;	/* the serial console device */
-@@ -1601,6 +1614,7 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
- 
- static int __init atmel_console_setup(struct console *co, char *options)
- {
-+	int ret;
- 	struct uart_port *port = &atmel_ports[co->index].uart;
- 	int baud = 115200;
- 	int bits = 8;
-@@ -1612,7 +1626,9 @@ static int __init atmel_console_setup(struct console *co, char *options)
- 		return -ENODEV;
- 	}
- 
--	clk_enable(atmel_ports[co->index].clk);
-+	ret = clk_prepare_enable(atmel_ports[co->index].clk);
-+	if (ret)
-+		return ret;
- 
- 	UART_PUT_IDR(port, -1);
- 	UART_PUT_CR(port, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
-@@ -1645,6 +1661,7 @@ static struct console atmel_console = {
-  */
- static int __init atmel_console_init(void)
- {
-+	int ret;
- 	if (atmel_default_console_device) {
- 		struct atmel_uart_data *pdata =
- 			atmel_default_console_device->dev.platform_data;
-@@ -1655,7 +1672,9 @@ static int __init atmel_console_init(void)
- 		port->uart.line = id;
- 
- 		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
--		atmel_init_port(port, atmel_default_console_device);
-+		ret = atmel_init_port(port, atmel_default_console_device);
-+		if (ret)
-+			return ret;
- 		register_console(&atmel_console);
- 	}
- 
-@@ -1786,7 +1805,9 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	port->backup_imr = 0;
- 	port->uart.line = ret;
- 
--	atmel_init_port(port, pdev);
-+	ret = atmel_init_port(port, pdev);
-+	if (ret)
-+		goto err;
- 
- 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
- 	if (IS_ERR(pinctrl)) {
-@@ -1812,9 +1833,9 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
- 		/*
- 		 * The serial core enabled the clock for us, so undo
--		 * the clk_enable() in atmel_console_setup()
-+		 * the clk_prepare_enable() in atmel_console_setup()
- 		 */
--		clk_disable(port->clk);
-+		clk_disable_unprepare(port->clk);
- 	}
- #endif
- 
+> @@ -270,10 +301,8 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	uart.port.serial_out = dw8250_serial_out;
+>  	uart.port.private_data = data;
+>  
+> -	dw8250_setup_port(&uart);
+> -
+>  	if (pdev->dev.of_node) {
+> -		err = dw8250_probe_of(&uart.port);
+> +		err = dw8250_probe_of(&uart.port, data);
+>  		if (err)
+>  			return err;
+>  	} else if (ACPI_HANDLE(&pdev->dev)) {
+> @@ -284,6 +313,9 @@ static int dw8250_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+>  
+> +	if (!data->no_ucv)
+> +		dw8250_setup_port(&uart);
+
+Moving the dw8250_setup_port() call here breaks dw8250_probe_acpi(). It
+expects values from the CPR register for the DMA burst size calculation.
+
+The DMA support can be moved to a separate function. This way it can
+be called after this point, and it will then be available for both DT
+and ACPI. I can make a patch tomorrow. That should solve this issue.
+
+Thanks,
+
 -- 
-1.7.9.5
+heikki
