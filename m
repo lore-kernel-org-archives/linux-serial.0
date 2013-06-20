@@ -1,7 +1,7 @@
 From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH v3 01/10] serial:st-asc: Add ST ASC driver.
-Date: Thu, 20 Jun 2013 15:05:03 +0100
-Message-ID: <1371737103-8871-1-git-send-email-srinivas.kandagatla@st.com>
+Subject: [PATCH v3 03/10] pinctrl:st: Add pinctrl and pinconf support.
+Date: Thu, 20 Jun 2013 15:05:38 +0100
+Message-ID: <1371737138-9340-1-git-send-email-srinivas.kandagatla@st.com>
 References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,1047 +22,1592 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds support to ASC (asynchronous serial controller)
-driver, which is basically a standard serial driver. This IP is common
-across all the ST parts for settop box platforms.
+This patch add pinctrl support to ST SoCs.
 
-ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
-It support all industry standard baud rates.
+About hardware:
+ST Set-Top-Box parts have two blocks called PIO and PIO-mux which handle
+pin configurations.
+
+Each multi-function pin is controlled, driven and routed through the PIO
+multiplexing block. Each pin supports GPIO functionality (ALT0) and
+multiple alternate functions(ALT1 - ALTx) that directly connect the pin
+to different hardware blocks. When a pin is in GPIO mode, Output Enable
+(OE), Open Drain(OD), and Pull Up (PU) are driven by the related PIO
+block. Otherwise the PIO multiplexing block configures these parameters
+and retiming the signal.
+
+About driver:
+This pinctrl driver manages both PIO and PIO-mux block using pinctrl,
+pinconf, pinmux, gpio subsystems. All the pinctrl related config
+information can only come from device trees.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 CC: Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>
 CC: Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>
 CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-CC: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+CC: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- .../devicetree/bindings/tty/serial/st-asc.txt      |   18 +
- drivers/tty/serial/Kconfig                         |   16 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/st-asc.c                        |  939 ++++++++++++++++++++
- include/uapi/linux/serial_core.h                   |    3 +
- 5 files changed, 977 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/st-asc.txt
- create mode 100644 drivers/tty/serial/st-asc.c
+ .../devicetree/bindings/pinctrl/pinctrl-st.txt     |  110 ++
+ drivers/pinctrl/Kconfig                            |    6 +
+ drivers/pinctrl/Makefile                           |    1 +
+ drivers/pinctrl/pinctrl-st.c                       | 1403 ++++++++++++++++++++
+ 4 files changed, 1520 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-st.txt
+ create mode 100644 drivers/pinctrl/pinctrl-st.c
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/st-asc.txt b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
+diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-st.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-st.txt
 new file mode 100644
-index 0000000..75d877f
+index 0000000..05bf82a
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/st-asc.txt
-@@ -0,0 +1,18 @@
-+*st-asc(Serial Port)
++++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-st.txt
+@@ -0,0 +1,110 @@
++*ST pin controller.
 +
-+Required properties:
-+- compatible : Should be "st,asc".
-+- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
-+			resources with names. look in
-+			Documentation/devicetree/bindings/resource-names.txt
++Each multi-function pin is controlled, driven and routed through the
++PIO multiplexing block. Each pin supports GPIO functionality (ALT0)
++and multiple alternate functions(ALT1 - ALTx) that directly connect
++the pin to different hardware blocks.
 +
-+Optional properties:
-+- st,hw-flow-ctrl	bool flag to enable hardware flow control.
-+- st,force-m1		bool flat to force asc to be in Mode-1 recommeded
-+			for high bit rates (above 19.2K)
++When a pin is in GPIO mode, Output Enable (OE), Open Drain(OD), and
++Pull Up (PU) are driven by the related PIO block.
++
++ST pinctrl driver controls PIO multiplexing block and also interacts with
++gpio driver to configure a pin.
++
++Required properties: (PIO multiplexing block)
++- compatible	: should be "st,<SOC>-<pio-block>-pinctrl"
++	like st,stih415-sbc-pinctrl, st,stih415-front-pinctrl and so on.
++- gpio-controller : Indicates this device is a GPIO controller
++- #gpio-cells	  : Should be one. The first cell is the pin number.
++- st,retime-pin-mask	: Should be mask to specify which pins can be retimed.
++	If the property is not present, it is assumed that all the pins in the
++	bank are capable of retiming. Retiming is mainly used to improve the
++	IO timing margins of external synchronous interfaces.
++- st,bank-name		: Should be a name string for this bank as
++			specified in datasheet.
++- st,syscfg		: Should be a phandle of the syscfg node.
++
 +Example:
-+serial@fe440000{
-+    compatible    = "st,asc";
-+    reg         = <0xfe440000 0x2c>;
-+    interrupts     =  <0 209 0>;
++	pin-controller-sbc {
++		#address-cells	= <1>;
++		#size-cells	= <1>;
++		compatible	= "st,stih415-sbc-pinctrl";
++		st,syscfg	= <&syscfg_sbc>;
++		ranges 		= <0 0xfe610000 0x5000>;
++		PIO0: gpio@fe610000 {
++			gpio-controller;
++			#gpio-cells	= <1>;
++			reg		= <0 0x100>;
++			st,bank-name	= "PIO0";
++		};
++		...
++		pin-functions nodes follow...
++	};
++
++
++Contents of function subnode node:
++----------------------
++Required properties for pin configuration node:
++- st,pins	: Child node with list of pins with configuration.
++
++Below is the format of how each pin conf should look like.
++
++<bank offset mux mode rt_type rt_delay rt_clk>
++
++Every PIO is represented with 4-7 parameters depending on retime configuration.
++Each parameter is explained as below.
++
++-bank		: Should be bank phandle to which this PIO belongs.
++-offset		: Offset in the PIO bank.
++-mux		: Should be alternate function number associated this pin.
++		Use same numbers from datasheet.
++-mode		:pin configuration is selected from one of the below values.
++		IN
++		IN_PU
++		OUT
++		BIDIR
++		BIDIR_PU
++
++-rt_type	Retiming Configuration for the pin.
++		Possible retime configuration are:
++
++		-------		-------------
++		value		args
++		-------		-------------
++		NICLK		<delay> <clk>
++		ICLK_IO		<delay> <clk>
++		BYPASS		<delay>
++		DE_IO		<delay> <clk>
++		SE_ICLK_IO	<delay> <clk>
++		SE_NICLK_IO	<delay> <clk>
++
++- delay	is retime delay in pico seconds as mentioned in data sheet.
++
++- rt_clk	:clk to be use for retime.
++		Possible values are:
++		CLK_A
++		CLK_B
++		CLK_C
++		CLK_D
++
++Example of mmcclk pin which is a bi-direction pull pu with retime config
++as non inverted clock retimed with CLK_B and delay of 0 pico seconds:
++
++pin-controller {
++	...
++	mmc0 {
++		pinctrl_mmc: mmc {
++			st,pins {
++				mmcclk = <&PIO13 4 ALT4 BIDIR_PU NICLK 0 CLK_B>;
++				...
++			};
++		};
++	...
++	};
 +};
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 7e7006f..0c6ddf6 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1484,6 +1484,22 @@ config SERIAL_RP2_NR_UARTS
- 	  If multiple cards are present, the default limit of 32 ports may
- 	  need to be increased.
++
++sdhci0:sdhci@fe810000{
++	...
++	pinctrl-names = "default";
++	pinctrl-0	= <&pinctrl_mmc>;
++};
+diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+index 8f66924..1a147cf 100644
+--- a/drivers/pinctrl/Kconfig
++++ b/drivers/pinctrl/Kconfig
+@@ -169,6 +169,12 @@ config PINCTRL_SUNXI
+ 	select PINMUX
+ 	select GENERIC_PINCONF
  
-+config SERIAL_ST_ASC
-+	tristate "ST ASC serial port support"
-+	select SERIAL_CORE
-+	help
-+	  This driver is for the on-chip Asychronous Serial Controller on
-+	  STMicroelectronics STixxxx SoCs.
-+	  ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
-+	  It support all industry standard baud rates.
++config PINCTRL_ST
++	bool
++	depends on OF
++	select PINMUX
++	select PINCONF
 +
-+	  If unsure, say N.
-+
-+config SERIAL_ST_ASC_CONSOLE
-+	bool "Support for console on ST ASC"
-+	depends on SERIAL_ST_ASC=y
-+	select SERIAL_CORE_CONSOLE
-+
- endmenu
+ config PINCTRL_TEGRA
+ 	bool
+ 	select PINMUX
+diff --git a/drivers/pinctrl/Makefile b/drivers/pinctrl/Makefile
+index 9bdaeb8..6fc7844 100644
+--- a/drivers/pinctrl/Makefile
++++ b/drivers/pinctrl/Makefile
+@@ -45,6 +45,7 @@ obj-$(CONFIG_PINCTRL_EXYNOS5440)	+= pinctrl-exynos5440.o
+ obj-$(CONFIG_PINCTRL_S3C64XX)	+= pinctrl-s3c64xx.o
+ obj-$(CONFIG_PINCTRL_XWAY)	+= pinctrl-xway.o
+ obj-$(CONFIG_PINCTRL_LANTIQ)	+= pinctrl-lantiq.o
++obj-$(CONFIG_PINCTRL_ST) 	+= pinctrl-st.o
  
- endif # TTY
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index eedfec4..536ccc7 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -65,6 +65,7 @@ obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
- obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
- obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
- obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
-+obj-$(CONFIG_SERIAL_ST_ASC) += st-asc.o
- obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
- obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
- obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+ obj-$(CONFIG_PLAT_ORION)        += mvebu/
+ obj-$(CONFIG_ARCH_SHMOBILE)	+= sh-pfc/
+diff --git a/drivers/pinctrl/pinctrl-st.c b/drivers/pinctrl/pinctrl-st.c
 new file mode 100644
-index 0000000..5edf82f
+index 0000000..7effedf
 --- /dev/null
-+++ b/drivers/tty/serial/st-asc.c
-@@ -0,0 +1,939 @@
++++ b/drivers/pinctrl/pinctrl-st.c
+@@ -0,0 +1,1403 @@
 +/*
-+ * st-asc.c: ST Asynchronous serial controller (ASC) driver
-+ *
-+ * Copyright (C) 2003-2013 STMicroelectronics (R&D) Limited
++ * Copyright (C) 2013 STMicroelectronics (R&D) Limited.
++ * Authors:
++ *	Srinivas Kandagatla <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
-+#if defined(CONFIG_SERIAL_ST_ASC_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#define SUPPORT_SYSRQ
-+#endif
-+
++#include <linux/init.h>
 +#include <linux/module.h>
-+#include <linux/serial.h>
-+#include <linux/console.h>
-+#include <linux/sysrq.h>
-+#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/err.h>
 +#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+#include <linux/delay.h>
-+#include <linux/spinlock.h>
-+#include <linux/pm_runtime.h>
 +#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/serial_core.h>
-+#include <linux/clk.h>
++#include <linux/of_gpio.h>
++#include <linux/of_address.h>
++#include <linux/regmap.h>
++#include <linux/mfd/syscon.h>
++#include <linux/pinctrl/pinctrl.h>
++#include <linux/pinctrl/pinmux.h>
++#include <linux/pinctrl/pinconf.h>
++#include <linux/platform_device.h>
++#include "core.h"
 +
-+#define DRIVER_NAME "st-asc"
-+#define ASC_SERIAL_NAME "ttyAS"
-+#define ASC_FIFO_SIZE 16
-+#define ASC_MAX_PORTS 8
++/* PIO Block registers */
++/* PIO output */
++#define REG_PIO_POUT			0x00
++/* Set bits of POUT */
++#define REG_PIO_SET_POUT		0x04
++/* Clear bits of POUT */
++#define REG_PIO_CLR_POUT		0x08
++/* PIO input */
++#define REG_PIO_PIN			0x10
++/* PIO configuration */
++#define REG_PIO_PC(n)			(0x20 + (n) * 0x10)
++/* Set bits of PC[2:0] */
++#define REG_PIO_SET_PC(n)		(0x24 + (n) * 0x10)
++/* Clear bits of PC[2:0] */
++#define REG_PIO_CLR_PC(n)		(0x28 + (n) * 0x10)
++/* PIO input comparison */
++#define REG_PIO_PCOMP			0x50
++/* Set bits of PCOMP */
++#define REG_PIO_SET_PCOMP		0x54
++/* Clear bits of PCOMP */
++#define REG_PIO_CLR_PCOMP		0x58
++/* PIO input comparison mask */
++#define REG_PIO_PMASK			0x60
++/* Set bits of PMASK */
++#define REG_PIO_SET_PMASK		0x64
++/* Clear bits of PMASK */
++#define REG_PIO_CLR_PMASK		0x68
 +
-+struct asc_port {
-+	struct uart_port port;
-+	struct clk *clk;
-+	unsigned int hw_flow_control:1;
-+	unsigned int force_m1:1;
++#define ST_GPIO_DIRECTION_BIDIR	0x1
++#define ST_GPIO_DIRECTION_OUT	0x2
++#define ST_GPIO_DIRECTION_IN	0x4
++
++/**
++ *  Packed style retime configuration.
++ *  There are two registers cfg0 and cfg1 in this style for each bank.
++ *  Each field in this register is 8 bit corresponding to 8 pins in the bank.
++ */
++#define RT_P_CFGS_PER_BANK			2
++#define RT_P_CFG0_CLK1NOTCLK0_FIELD(reg)	REG_FIELD(reg, 0, 7)
++#define RT_P_CFG0_DELAY_0_FIELD(reg)		REG_FIELD(reg, 16, 23)
++#define RT_P_CFG0_DELAY_1_FIELD(reg)		REG_FIELD(reg, 24, 31)
++#define RT_P_CFG1_INVERTCLK_FIELD(reg)		REG_FIELD(reg, 0, 7)
++#define RT_P_CFG1_RETIME_FIELD(reg)		REG_FIELD(reg, 8, 15)
++#define RT_P_CFG1_CLKNOTDATA_FIELD(reg)		REG_FIELD(reg, 16, 23)
++#define RT_P_CFG1_DOUBLE_EDGE_FIELD(reg)	REG_FIELD(reg, 24, 31)
++
++/**
++ * Dedicated style retime Configuration register
++ * each register is dedicated per pin.
++ */
++#define RT_D_CFGS_PER_BANK		8
++#define RT_D_CFG_CLK_SHIFT		0
++#define RT_D_CFG_CLK_MASK		(0x3 << 0)
++#define RT_D_CFG_CLKNOTDATA_SHIFT	2
++#define RT_D_CFG_CLKNOTDATA_MASK	BIT(2)
++#define RT_D_CFG_DELAY_SHIFT		3
++#define RT_D_CFG_DELAY_MASK		(0xf << 3)
++#define RT_D_CFG_DELAY_INNOTOUT_SHIFT	7
++#define RT_D_CFG_DELAY_INNOTOUT_MASK	BIT(7)
++#define RT_D_CFG_DOUBLE_EDGE_SHIFT	8
++#define RT_D_CFG_DOUBLE_EDGE_MASK	BIT(8)
++#define RT_D_CFG_INVERTCLK_SHIFT	9
++#define RT_D_CFG_INVERTCLK_MASK		BIT(9)
++#define RT_D_CFG_RETIME_SHIFT		10
++#define RT_D_CFG_RETIME_MASK		BIT(10)
++
++/*
++ * Pinconf is represented in an opaque unsigned long variable.
++ * Below is the bit allocation details for each possible configuration.
++ * All the bit fields can be encapsulated into four variables
++ * (direction, retime-type, retime-clk, retime-delay)
++ *
++ *	 +----------------+
++ *[31:28]| reserved-3     |
++ *	 +----------------+-------------
++ *[27]   |	oe	  |		|
++ *	 +----------------+		v
++ *[26]   |	pu	  |	[Direction	]
++ *	 +----------------+		^
++ *[25]   |	od	  |		|
++ *	 +----------------+-------------
++ *[24]   | reserved-2     |
++ *	 +----------------+-------------
++ *[23]   |    retime      |		|
++ *	 +----------------+		|
++ *[22]   | retime-invclk  |		|
++ *	 +----------------+		v
++ *[21]   |retime-clknotdat|	[Retime-type	]
++ *	 +----------------+		^
++ *[20]   | retime-de      |		|
++ *	 +----------------+-------------
++ *[19:18]| retime-clk     |------>[Retime-Clk	]
++ *	 +----------------+
++ *[17:16]|  reserved-1    |
++ *	 +----------------+
++ *[15..0]| retime-delay   |------>[Retime Delay]
++ *	 +----------------+
++ */
++
++#define ST_PINCONF_UNPACK(conf, param)\
++				((conf >> ST_PINCONF_ ##param ##_SHIFT) \
++				& ST_PINCONF_ ##param ##_MASK)
++
++#define ST_PINCONF_PACK(conf, val, param)	(conf |=\
++				((val & ST_PINCONF_ ##param ##_MASK) << \
++					ST_PINCONF_ ##param ##_SHIFT))
++
++/* Output enable */
++#define ST_PINCONF_OE_MASK		0x1
++#define ST_PINCONF_OE_SHIFT		27
++#define ST_PINCONF_OE			BIT(27)
++#define ST_PINCONF_UNPACK_OE(conf)	ST_PINCONF_UNPACK(conf, OE)
++#define ST_PINCONF_PACK_OE(conf)	ST_PINCONF_PACK(conf, 1, OE)
++
++/* Pull Up */
++#define ST_PINCONF_PU_MASK		0x1
++#define ST_PINCONF_PU_SHIFT		26
++#define ST_PINCONF_PU			BIT(26)
++#define ST_PINCONF_UNPACK_PU(conf)	ST_PINCONF_UNPACK(conf, PU)
++#define ST_PINCONF_PACK_PU(conf)	ST_PINCONF_PACK(conf, 1, PU)
++
++/* Open Drain */
++#define ST_PINCONF_OD_MASK		0x1
++#define ST_PINCONF_OD_SHIFT		25
++#define ST_PINCONF_OD			BIT(25)
++#define ST_PINCONF_UNPACK_OD(conf)	ST_PINCONF_UNPACK(conf, OD)
++#define ST_PINCONF_PACK_OD(conf)	ST_PINCONF_PACK(conf, 1, OD)
++
++#define ST_PINCONF_RT_MASK		0x1
++#define ST_PINCONF_RT_SHIFT		23
++#define ST_PINCONF_RT			BIT(23)
++#define ST_PINCONF_UNPACK_RT(conf)	ST_PINCONF_UNPACK(conf, RT)
++#define ST_PINCONF_PACK_RT(conf)	ST_PINCONF_PACK(conf, 1, RT)
++
++#define ST_PINCONF_RT_INVERTCLK_MASK	0x1
++#define ST_PINCONF_RT_INVERTCLK_SHIFT	22
++#define ST_PINCONF_RT_INVERTCLK		BIT(22)
++#define ST_PINCONF_UNPACK_RT_INVERTCLK(conf) \
++			ST_PINCONF_UNPACK(conf, RT_INVERTCLK)
++#define ST_PINCONF_PACK_RT_INVERTCLK(conf) \
++			ST_PINCONF_PACK(conf, 1, RT_INVERTCLK)
++
++#define ST_PINCONF_RT_CLKNOTDATA_MASK	0x1
++#define ST_PINCONF_RT_CLKNOTDATA_SHIFT	21
++#define ST_PINCONF_RT_CLKNOTDATA	BIT(21)
++#define ST_PINCONF_UNPACK_RT_CLKNOTDATA(conf)	\
++				ST_PINCONF_UNPACK(conf, RT_CLKNOTDATA)
++#define ST_PINCONF_PACK_RT_CLKNOTDATA(conf) \
++				ST_PINCONF_PACK(conf, 1, RT_CLKNOTDATA)
++
++#define ST_PINCONF_RT_DOUBLE_EDGE_MASK	0x1
++#define ST_PINCONF_RT_DOUBLE_EDGE_SHIFT	20
++#define ST_PINCONF_RT_DOUBLE_EDGE	BIT(20)
++#define ST_PINCONF_UNPACK_RT_DOUBLE_EDGE(conf) \
++				ST_PINCONF_UNPACK(conf, RT_DOUBLE_EDGE)
++#define ST_PINCONF_PACK_RT_DOUBLE_EDGE(conf) \
++				ST_PINCONF_PACK(conf, 1, RT_DOUBLE_EDGE)
++
++#define ST_PINCONF_RT_CLK_MASK		0x3
++#define ST_PINCONF_RT_CLK_SHIFT		18
++#define ST_PINCONF_RT_CLK		BIT(18)
++#define ST_PINCONF_UNPACK_RT_CLK(conf)	ST_PINCONF_UNPACK(conf, RT_CLK)
++#define ST_PINCONF_PACK_RT_CLK(conf, val) ST_PINCONF_PACK(conf, val, RT_CLK)
++
++/* RETIME_DELAY in Pico Secs */
++#define ST_PINCONF_RT_DELAY_MASK	0xffff
++#define ST_PINCONF_RT_DELAY_SHIFT	0
++#define ST_PINCONF_UNPACK_RT_DELAY(conf) ST_PINCONF_UNPACK(conf, RT_DELAY)
++#define ST_PINCONF_PACK_RT_DELAY(conf, val) \
++				ST_PINCONF_PACK(conf, val, RT_DELAY)
++
++#define ST_GPIO_PINS_PER_BANK	(8)
++#define OF_GPIO_ARGS_MIN	(4)
++#define OF_RT_ARGS_MIN		(2)
++
++#define gpio_range_to_bank(chip) \
++		container_of(chip, struct st_gpio_bank, range)
++
++#define gpio_chip_to_bank(chip) \
++		container_of(chip, struct st_gpio_bank, gpio_chip)
++
++
++enum st_retime_style {
++	st_retime_style_none,
++	st_retime_style_packed,
++	st_retime_style_dedicated,
 +};
 +
-+static struct asc_port asc_ports[ASC_MAX_PORTS];
-+static struct uart_driver asc_uart_driver;
++struct st_retime_dedicated {
++	struct regmap_field *rt[ST_GPIO_PINS_PER_BANK];
++};
 +
-+/*---- UART Register definitions ------------------------------*/
++struct st_retime_packed {
++	struct regmap_field *clk1notclk0;
++	struct regmap_field *delay_0;
++	struct regmap_field *delay_1;
++	struct regmap_field *invertclk;
++	struct regmap_field *retime;
++	struct regmap_field *clknotdata;
++	struct regmap_field *double_edge;
++};
 +
-+/* Register offsets */
++struct st_pio_control {
++	u32 rt_pin_mask;
++	struct regmap_field *alt, *oe, *pu, *od;
++	/* retiming */
++	union {
++		struct st_retime_packed		rt_p;
++		struct st_retime_dedicated	rt_d;
++	} rt;
++};
 +
-+#define ASC_BAUDRATE			0x00
-+#define ASC_TXBUF			0x04
-+#define ASC_RXBUF			0x08
-+#define ASC_CTL				0x0C
-+#define ASC_INTEN			0x10
-+#define ASC_STA				0x14
-+#define ASC_GUARDTIME			0x18
-+#define ASC_TIMEOUT			0x1C
-+#define ASC_TXRESET			0x20
-+#define ASC_RXRESET			0x24
-+#define ASC_RETRIES			0x28
++struct st_pctl_data {
++	enum st_retime_style rt_style;
++	unsigned int	*input_delays;
++	int		ninput_delays;
++	unsigned int	*output_delays;
++	int		noutput_delays;
++	/* register offset information */
++	int alt, oe, pu, od, rt;
++};
 +
-+/* ASC_RXBUF */
-+#define ASC_RXBUF_PE			0x100
-+#define ASC_RXBUF_FE			0x200
-+/**
-+ * Some of status comes from higher bits of the character and some come from
-+ * the status register. Combining both of them in to single status using dummy
-+ * bits.
-+ */
-+#define ASC_RXBUF_DUMMY_RX		0x10000
-+#define ASC_RXBUF_DUMMY_BE		0x20000
-+#define ASC_RXBUF_DUMMY_OE		0x40000
++struct st_pinconf {
++	int		pin;
++	const char	*name;
++	unsigned long	config;
++	int		altfunc;
++};
 +
-+/* ASC_CTL */
++struct st_pmx_func {
++	const char	*name;
++	const char	**groups;
++	unsigned	ngroups;
++};
 +
-+#define ASC_CTL_MODE_MSK		0x0007
-+#define  ASC_CTL_MODE_8BIT		0x0001
-+#define  ASC_CTL_MODE_7BIT_PAR		0x0003
-+#define  ASC_CTL_MODE_9BIT		0x0004
-+#define  ASC_CTL_MODE_8BIT_WKUP		0x0005
-+#define  ASC_CTL_MODE_8BIT_PAR		0x0007
-+#define ASC_CTL_STOP_MSK		0x0018
-+#define  ASC_CTL_STOP_HALFBIT		0x0000
-+#define  ASC_CTL_STOP_1BIT		0x0008
-+#define  ASC_CTL_STOP_1_HALFBIT		0x0010
-+#define  ASC_CTL_STOP_2BIT		0x0018
-+#define ASC_CTL_PARITYODD		0x0020
-+#define ASC_CTL_LOOPBACK		0x0040
-+#define ASC_CTL_RUN			0x0080
-+#define ASC_CTL_RXENABLE		0x0100
-+#define ASC_CTL_SCENABLE		0x0200
-+#define ASC_CTL_FIFOENABLE		0x0400
-+#define ASC_CTL_CTSENABLE		0x0800
-+#define ASC_CTL_BAUDMODE		0x1000
++struct st_pctl_group {
++	const char		*name;
++	unsigned int		*pins;
++	unsigned		npins;
++	struct st_pinconf	*pin_conf;
++};
 +
-+/* ASC_GUARDTIME */
++struct st_gpio_bank {
++	struct gpio_chip		gpio_chip;
++	struct pinctrl_gpio_range	range;
++	void __iomem			*base;
++	struct st_pio_control		pc;
++};
 +
-+#define ASC_GUARDTIME_MSK		0x00FF
++struct st_pinctrl {
++	struct device			*dev;
++	struct pinctrl_dev		*pctl;
++	struct st_gpio_bank		*banks;
++	int				nbanks;
++	struct st_pmx_func		*functions;
++	int				nfunctions;
++	struct st_pctl_group		*groups;
++	int				ngroups;
++	struct regmap			*regmap;
++	const struct st_pctl_data	*data;
++};
 +
-+/* ASC_INTEN */
++/* SOC specific data */
++/* STiH415 data */
++unsigned int stih415_input_delays[] = {0, 500, 1000, 1500};
++unsigned int stih415_output_delays[] = {0, 1000, 2000, 3000};
 +
-+#define ASC_INTEN_RBE			0x0001
-+#define ASC_INTEN_TE			0x0002
-+#define ASC_INTEN_THE			0x0004
-+#define ASC_INTEN_PE			0x0008
-+#define ASC_INTEN_FE			0x0010
-+#define ASC_INTEN_OE			0x0020
-+#define ASC_INTEN_TNE			0x0040
-+#define ASC_INTEN_TOI			0x0080
-+#define ASC_INTEN_RHF			0x0100
++#define STIH415_PCTRL_COMMON_DATA				\
++	.rt_style	= st_retime_style_packed,		\
++	.input_delays	= stih415_input_delays,			\
++	.ninput_delays	= 4,					\
++	.output_delays = stih415_output_delays,			\
++	.noutput_delays = 4
 +
-+/* ASC_RETRIES */
++static const struct st_pctl_data  stih415_sbc_data = {
++	STIH415_PCTRL_COMMON_DATA,
++	.alt = 0, .oe = 5, .pu = 7, .od = 9, .rt = 16,
++};
 +
-+#define ASC_RETRIES_MSK			0x00FF
++static const struct st_pctl_data  stih415_front_data = {
++	STIH415_PCTRL_COMMON_DATA,
++	.alt = 0, .oe = 8, .pu = 10, .od = 12, .rt = 16,
++};
 +
-+/* ASC_RXBUF */
++static const struct st_pctl_data  stih415_rear_data = {
++	STIH415_PCTRL_COMMON_DATA,
++	.alt = 0, .oe = 6, .pu = 8, .od = 10, .rt = 38,
++};
 +
-+#define ASC_RXBUF_MSK			0x03FF
++static const struct st_pctl_data  stih415_left_data = {
++	STIH415_PCTRL_COMMON_DATA,
++	.alt = 0, .oe = 3, .pu = 4, .od = 5, .rt = 6,
++};
 +
-+/* ASC_STA */
++static const struct st_pctl_data  stih415_right_data = {
++	STIH415_PCTRL_COMMON_DATA,
++	.alt = 0, .oe = 5, .pu = 7, .od = 9, .rt = 11,
++};
 +
-+#define ASC_STA_RBF			0x0001
-+#define ASC_STA_TE			0x0002
-+#define ASC_STA_THE			0x0004
-+#define ASC_STA_PE			0x0008
-+#define ASC_STA_FE			0x0010
-+#define ASC_STA_OE			0x0020
-+#define ASC_STA_TNE			0x0040
-+#define ASC_STA_TOI			0x0080
-+#define ASC_STA_RHF			0x0100
-+#define ASC_STA_TF			0x0200
-+#define ASC_STA_NKD			0x0400
++/* STiH416 data */
++unsigned int stih416_delays[] = {0, 300, 500, 750, 1000, 1250, 1500,
++			1750, 2000, 2250, 2500, 2750, 3000, 3250 };
 +
-+/* ASC_TIMEOUT */
++static const struct st_pctl_data  stih416_data = {
++	.rt_style	= st_retime_style_dedicated,
++	.input_delays	= stih416_delays,
++	.ninput_delays	= 14,
++	.output_delays	= stih416_delays,
++	.noutput_delays = 14,
++	.alt = 0, .oe = 40, .pu = 50, .od = 60, .rt = 100,
++};
 +
-+#define ASC_TIMEOUT_MSK			0x00FF
-+
-+/* ASC_TXBUF */
-+
-+#define ASC_TXBUF_MSK			0x01FF
-+
-+/*---- Inline function definitions ---------------------------*/
-+
-+static inline struct asc_port *to_asc_port(struct uart_port *port)
++/* Low level functions.. */
++static inline int st_gpio_bank(int gpio)
 +{
-+	return container_of(port, struct asc_port, port);
++	return gpio/ST_GPIO_PINS_PER_BANK;
 +}
 +
-+static inline u32 asc_in(struct uart_port *port, u32 offset)
++static inline int st_gpio_pin(int gpio)
 +{
-+	return readl(port->membase + offset);
++	return gpio%ST_GPIO_PINS_PER_BANK;
 +}
 +
-+static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
++static void st_pinconf_set_config(struct st_pio_control *pc,
++				int pin, unsigned long config)
 +{
-+	writel(value, port->membase + offset);
++	struct regmap_field *output_enable = pc->oe;
++	struct regmap_field *pull_up = pc->pu;
++	struct regmap_field *open_drain = pc->od;
++	unsigned int oe_value, pu_value, od_value;
++	unsigned long mask = BIT(pin);
++
++	regmap_field_read(output_enable, &oe_value);
++	regmap_field_read(pull_up, &pu_value);
++	regmap_field_read(open_drain, &od_value);
++
++	/* Clear old values */
++	oe_value &= ~mask;
++	pu_value &= ~mask;
++	od_value &= ~mask;
++
++	if (config & ST_PINCONF_OE)
++		oe_value |= mask;
++	if (config & ST_PINCONF_PU)
++		pu_value |= mask;
++	if (config & ST_PINCONF_OD)
++		od_value |= mask;
++
++	regmap_field_write(output_enable, oe_value);
++	regmap_field_write(pull_up, pu_value);
++	regmap_field_write(open_drain, od_value);
 +}
 +
-+/*
-+ * Some simple utility functions to enable and disable interrupts.
-+ * Note that these need to be called with interrupts disabled.
-+ */
-+static inline void asc_disable_tx_interrupts(struct uart_port *port)
++static void st_pctl_set_function(struct st_pio_control *pc,
++				int pin_id, int function)
 +{
-+	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_THE;
-+	asc_out(port, ASC_INTEN, intenable);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
++	struct regmap_field *alt = pc->alt;
++	unsigned int val;
++	int pin = st_gpio_pin(pin_id);
++	int offset = pin * 4;
++
++	regmap_field_read(alt, &val);
++	val &= ~(0xf << offset);
++	val |= function << offset;
++	regmap_field_write(alt, val);
 +}
 +
-+static inline void asc_enable_tx_interrupts(struct uart_port *port)
++static unsigned long st_pinconf_delay_to_bit(unsigned int delay,
++	const struct st_pctl_data *data, unsigned long config)
 +{
-+	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_THE;
-+	asc_out(port, ASC_INTEN, intenable);
-+}
++	unsigned int *delay_times;
++	int num_delay_times, i, closest_index = -1;
++	unsigned int closest_divergence = UINT_MAX;
 +
-+static inline void asc_disable_rx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) & ~ASC_INTEN_RBE;
-+	asc_out(port, ASC_INTEN, intenable);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
-+}
-+
-+static inline void asc_enable_rx_interrupts(struct uart_port *port)
-+{
-+	u32 intenable = asc_in(port, ASC_INTEN) | ASC_INTEN_RBE;
-+	asc_out(port, ASC_INTEN, intenable);
-+}
-+
-+static inline u32 asc_txfifo_is_empty(struct uart_port *port)
-+{
-+	return asc_in(port, ASC_STA) & ASC_STA_TE;
-+}
-+
-+static inline int asc_txfifo_is_full(struct uart_port *port)
-+{
-+	return asc_in(port, ASC_STA) & ASC_STA_TF;
-+}
-+
-+static inline const char *asc_port_name(struct uart_port *port)
-+{
-+	return to_platform_device(port->dev)->name;
-+}
-+
-+/*----------------------------------------------------------------------*/
-+
-+/*
-+ * This section contains code to support the use of the ASC as a
-+ * generic serial port.
-+ */
-+
-+static inline unsigned asc_hw_txroom(struct uart_port *port)
-+{
-+	u32 status = asc_in(port, ASC_STA);
-+
-+	if (status & ASC_STA_THE)
-+		return port->fifosize / 2;
-+	else if (!(status & ASC_STA_TF))
-+		return 1;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Start transmitting chars.
-+ * This is called from both interrupt and task level.
-+ * Either way interrupts are disabled.
-+ */
-+static void asc_transmit_chars(struct uart_port *port)
-+{
-+	struct circ_buf *xmit = &port->state->xmit;
-+	int txroom;
-+	unsigned char c;
-+
-+	txroom = asc_hw_txroom(port);
-+
-+	if ((txroom != 0) && port->x_char) {
-+		c = port->x_char;
-+		port->x_char = 0;
-+		asc_out(port, ASC_TXBUF, c);
-+		port->icount.tx++;
-+		txroom = asc_hw_txroom(port);
++	if (ST_PINCONF_UNPACK_OE(config)) {
++		delay_times = data->output_delays;
++		num_delay_times = data->noutput_delays;
++	} else {
++		delay_times = data->input_delays;
++		num_delay_times = data->ninput_delays;
 +	}
 +
-+	if (uart_tx_stopped(port)) {
-+		/*
-+		 * We should try and stop the hardware here, but I
-+		 * don't think the ASC has any way to do that.
-+		 */
-+		asc_disable_tx_interrupts(port);
-+		return;
-+	}
++	for (i = 0; i < num_delay_times; i++) {
++		unsigned int divergence = abs(delay - delay_times[i]);
 +
-+	if (uart_circ_empty(xmit)) {
-+		asc_disable_tx_interrupts(port);
-+		return;
-+	}
++		if (divergence == 0)
++			return i;
 +
-+	if (txroom == 0)
-+		return;
-+
-+	do {
-+		c = xmit->buf[xmit->tail];
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		asc_out(port, ASC_TXBUF, c);
-+		port->icount.tx++;
-+		txroom--;
-+	} while ((txroom > 0) && (!uart_circ_empty(xmit)));
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (uart_circ_empty(xmit))
-+		asc_disable_tx_interrupts(port);
-+}
-+
-+static void asc_receive_chars(struct uart_port *port)
-+{
-+	struct tty_port *tport = &port->state->port;
-+	unsigned long status;
-+	unsigned long c = 0;
-+	char flag;
-+
-+	if (port->irq_wake)
-+		pm_wakeup_event(tport->tty->dev, 0);
-+
-+	while ((status = asc_in(port, ASC_STA)) & ASC_STA_RBF) {
-+		c = asc_in(port, ASC_RXBUF) | ASC_RXBUF_DUMMY_RX;
-+		flag = TTY_NORMAL;
-+		port->icount.rx++;
-+
-+		if ((c & (ASC_RXBUF_FE | ASC_RXBUF_PE)) ||
-+			status & ASC_STA_OE) {
-+
-+			if (c & ASC_RXBUF_FE) {
-+				if (c == ASC_RXBUF_FE) {
-+					port->icount.brk++;
-+					if (uart_handle_break(port))
-+						continue;
-+					c |= ASC_RXBUF_DUMMY_BE;
-+				} else {
-+					port->icount.frame++;
-+				}
-+			} else if (c & ASC_RXBUF_PE) {
-+				port->icount.parity++;
-+			}
-+			/*
-+			 * Reading any data from the RX FIFO clears the
-+			 * overflow error condition.
-+			 */
-+			if (status & ASC_STA_OE) {
-+				port->icount.overrun++;
-+				c |= ASC_RXBUF_DUMMY_OE;
-+			}
-+
-+			c &= port->read_status_mask;
-+
-+			if (c & ASC_RXBUF_DUMMY_BE)
-+				flag = TTY_BREAK;
-+			else if (c & ASC_RXBUF_PE)
-+				flag = TTY_PARITY;
-+			else if (c & ASC_RXBUF_FE)
-+				flag = TTY_FRAME;
++		if (divergence < closest_divergence) {
++			closest_divergence = divergence;
++			closest_index = i;
 +		}
-+
-+		if (uart_handle_sysrq_char(port, c))
-+			continue;
-+
-+		uart_insert_char(port, c, ASC_RXBUF_DUMMY_OE, c & 0xff, flag);
 +	}
 +
-+	/* Tell the rest of the system the news. New characters! */
-+	tty_flip_buffer_push(tport);
++	pr_warn("Attempt to set delay %d, closest available %d\n",
++	     delay, delay_times[closest_index]);
++
++	return closest_index;
 +}
 +
-+static irqreturn_t asc_interrupt(int irq, void *ptr)
++static unsigned long st_pinconf_bit_to_delay(unsigned int index,
++	const struct st_pctl_data *data, unsigned long output)
 +{
-+	struct uart_port *port = ptr;
-+	u32 status;
++	unsigned int *delay_times;
++	int num_delay_times;
 +
-+	spin_lock(&port->lock);
-+
-+	status = asc_in(port, ASC_STA);
-+
-+	if (status & ASC_STA_RBF) {
-+		/* Receive FIFO not empty */
-+		asc_receive_chars(port);
++	if (output) {
++		delay_times = data->output_delays;
++		num_delay_times = data->noutput_delays;
++	} else {
++		delay_times = data->input_delays;
++		num_delay_times = data->ninput_delays;
 +	}
 +
-+	if ((status & ASC_STA_THE) &&
-+	    (asc_in(port, ASC_INTEN) & ASC_INTEN_THE)) {
-+		/* Transmitter FIFO at least half empty */
-+		asc_transmit_chars(port);
++	if (index < num_delay_times) {
++		return delay_times[index];
++	} else {
++		pr_warn("Delay not found in/out delay list\n");
++		return 0;
 +	}
-+
-+	spin_unlock(&port->lock);
-+
-+	return IRQ_HANDLED;
 +}
 +
-+/*----------------------------------------------------------------------*/
-+
-+/*
-+ * UART Functions
-+ */
-+
-+static unsigned int asc_tx_empty(struct uart_port *port)
++static void st_regmap_field_bit_set_clear_pin(struct regmap_field *field,
++	int enable, int pin)
 +{
-+	return asc_txfifo_is_empty(port) ? TIOCSER_TEMT : 0;
++	unsigned int val = 0;
++
++	regmap_field_read(field, &val);
++	if (enable)
++		val |= BIT(pin);
++	else
++		val &= ~BIT(pin);
++	regmap_field_write(field, val);
 +}
 +
-+static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
++static void st_pinconf_set_retime_packed(struct st_pinctrl *info,
++	struct st_pio_control *pc,	unsigned long config, int pin)
 +{
-+	/*
-+	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
-+	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
-+	 * Some boards have DTR and DCD implemented using PIO pins,
-+	 * code to do this should be hooked in here.
-+	 */
++	const struct st_pctl_data *data = info->data;
++	struct st_retime_packed *rt_p = &pc->rt.rt_p;
++	unsigned int delay;
++
++	st_regmap_field_bit_set_clear_pin(rt_p->clk1notclk0,
++				ST_PINCONF_UNPACK_RT_CLK(config), pin);
++
++	st_regmap_field_bit_set_clear_pin(rt_p->clknotdata,
++				ST_PINCONF_UNPACK_RT_CLKNOTDATA(config), pin);
++
++	st_regmap_field_bit_set_clear_pin(rt_p->double_edge,
++				ST_PINCONF_UNPACK_RT_DOUBLE_EDGE(config), pin);
++
++	st_regmap_field_bit_set_clear_pin(rt_p->invertclk,
++				ST_PINCONF_UNPACK_RT_INVERTCLK(config), pin);
++
++	st_regmap_field_bit_set_clear_pin(rt_p->retime,
++				ST_PINCONF_UNPACK_RT(config), pin);
++
++	delay = st_pinconf_delay_to_bit(ST_PINCONF_UNPACK_RT_DELAY(config),
++					data, config);
++	/* 2 bit delay, lsb */
++	st_regmap_field_bit_set_clear_pin(rt_p->delay_0, delay & 0x1, pin);
++	/* 2 bit delay, msb */
++	st_regmap_field_bit_set_clear_pin(rt_p->delay_1, delay & 0x2, pin);
++
 +}
 +
-+static unsigned int asc_get_mctrl(struct uart_port *port)
++static void st_pinconf_set_retime_dedicated(struct st_pinctrl *info,
++	struct st_pio_control *pc, unsigned long config, int pin)
 +{
-+	/*
-+	 * This routine is used for geting signals of: DTR, DCD, DSR, RI,
-+	 * and CTS/RTS
-+	 */
-+	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
++	int input	= ST_PINCONF_UNPACK_OE(config) ? 0 : 1;
++	int clk		= ST_PINCONF_UNPACK_RT_CLK(config);
++	int clknotdata	= ST_PINCONF_UNPACK_RT_CLKNOTDATA(config);
++	int double_edge	= ST_PINCONF_UNPACK_RT_DOUBLE_EDGE(config);
++	int invertclk	= ST_PINCONF_UNPACK_RT_INVERTCLK(config);
++	int retime	= ST_PINCONF_UNPACK_RT(config);
++
++	unsigned long delay = st_pinconf_delay_to_bit(
++			ST_PINCONF_UNPACK_RT_DELAY(config),
++			info->data, config);
++	struct st_retime_dedicated *rt_d = &pc->rt.rt_d;
++
++	unsigned long retime_config =
++		((clk) << RT_D_CFG_CLK_SHIFT) |
++		((delay) << RT_D_CFG_DELAY_SHIFT) |
++		((input) << RT_D_CFG_DELAY_INNOTOUT_SHIFT) |
++		((retime) << RT_D_CFG_RETIME_SHIFT) |
++		((clknotdata) << RT_D_CFG_CLKNOTDATA_SHIFT) |
++		((invertclk) << RT_D_CFG_INVERTCLK_SHIFT) |
++		((double_edge) << RT_D_CFG_DOUBLE_EDGE_SHIFT);
++
++	regmap_field_write(rt_d->rt[pin], retime_config);
 +}
 +
-+/* There are probably characters waiting to be transmitted. */
-+static void asc_start_tx(struct uart_port *port)
++static void st_pinconf_get_direction(struct st_pio_control *pc,
++	int pin, unsigned long *config)
 +{
-+	struct circ_buf *xmit = &port->state->xmit;
++	unsigned int oe_value, pu_value, od_value;
 +
-+	if (!uart_circ_empty(xmit))
-+		asc_enable_tx_interrupts(port);
++	regmap_field_read(pc->oe, &oe_value);
++	regmap_field_read(pc->pu, &pu_value);
++	regmap_field_read(pc->od, &od_value);
++
++	if (oe_value & BIT(pin))
++		ST_PINCONF_PACK_OE(*config);
++	if (pu_value & BIT(pin))
++		ST_PINCONF_PACK_PU(*config);
++	if (od_value & BIT(pin))
++		ST_PINCONF_PACK_OD(*config);
++
 +}
 +
-+/* Transmit stop */
-+static void asc_stop_tx(struct uart_port *port)
++static int st_pinconf_get_retime_packed(struct st_pinctrl *info,
++	struct st_pio_control *pc,	int pin, unsigned long *config)
 +{
-+	asc_disable_tx_interrupts(port);
-+}
++	const struct st_pctl_data *data = info->data;
++	struct st_retime_packed *rt_p = &pc->rt.rt_p;
++	unsigned int delay_bits, delay, delay0, delay1, val;
++	int output = ST_PINCONF_UNPACK_OE(*config);
 +
-+/* Receive stop */
-+static void asc_stop_rx(struct uart_port *port)
-+{
-+	asc_disable_rx_interrupts(port);
-+}
++	if (!regmap_field_read(rt_p->retime, &val) && (val & BIT(pin)))
++		ST_PINCONF_PACK_RT(*config);
 +
-+/* Force modem status interrupts on */
-+static void asc_enable_ms(struct uart_port *port)
-+{
-+	/* Nothing here yet .. */
-+}
++	if (!regmap_field_read(rt_p->clk1notclk0, &val) && (val & BIT(pin)))
++		ST_PINCONF_PACK_RT_CLK(*config, 1);
 +
-+/* Handle breaks - ignored by us */
-+static void asc_break_ctl(struct uart_port *port, int break_state)
-+{
-+	/* Nothing here yet .. */
-+}
++	if (!regmap_field_read(rt_p->clknotdata, &val) && (val & BIT(pin)))
++		ST_PINCONF_PACK_RT_CLKNOTDATA(*config);
 +
-+/*
-+ * Enable port for reception.
-+ */
-+static int asc_startup(struct uart_port *port)
-+{
-+	if (request_irq(port->irq, asc_interrupt, IRQF_NO_SUSPEND,
-+			asc_port_name(port), port)) {
-+		dev_err(port->dev, "cannot allocate irq.\n");
-+		return -ENODEV;
-+	}
++	if (!regmap_field_read(rt_p->double_edge, &val) && (val & BIT(pin)))
++		ST_PINCONF_PACK_RT_DOUBLE_EDGE(*config);
 +
-+	asc_transmit_chars(port);
-+	asc_enable_rx_interrupts(port);
++	if (!regmap_field_read(rt_p->invertclk, &val) && (val & BIT(pin)))
++		ST_PINCONF_PACK_RT_INVERTCLK(*config);
++
++	regmap_field_read(rt_p->delay_0, &delay0);
++	regmap_field_read(rt_p->delay_1, &delay1);
++	delay_bits = (((delay1 & BIT(pin)) ? 1 : 0) << 1) |
++			(((delay0 & BIT(pin)) ? 1 : 0));
++	delay =  st_pinconf_bit_to_delay(delay_bits, data, output);
++	ST_PINCONF_PACK_RT_DELAY(*config, delay);
 +
 +	return 0;
 +}
 +
-+static void asc_shutdown(struct uart_port *port)
++static int st_pinconf_get_retime_dedicated(struct st_pinctrl *info,
++	struct st_pio_control *pc,	int pin, unsigned long *config)
 +{
-+	asc_disable_tx_interrupts(port);
-+	asc_disable_rx_interrupts(port);
-+	free_irq(port->irq, port);
-+}
++	unsigned int value;
++	unsigned long delay_bits, delay, rt_clk;
++	int output = ST_PINCONF_UNPACK_OE(*config);
++	struct st_retime_dedicated *rt_d = &pc->rt.rt_d;
 +
-+static void asc_pm(struct uart_port *port, unsigned int state,
-+		unsigned int oldstate)
-+{
-+	struct asc_port *ascport = to_asc_port(port);
-+	unsigned long flags = 0;
-+	u32 ctl;
++	regmap_field_read(rt_d->rt[pin], &value);
 +
-+	switch (state) {
-+	case UART_PM_STATE_ON:
-+		clk_prepare_enable(ascport->clk);
-+		break;
-+	case UART_PM_STATE_OFF:
-+		/*
-+		 * Disable the ASC baud rate generator, which is as close as
-+		 * we can come to turning it off. Note this is not called with
-+		 * the port spinlock held.
-+		 */
-+		spin_lock_irqsave(&port->lock, flags);
-+		ctl = asc_in(port, ASC_CTL) & ~ASC_CTL_RUN;
-+		asc_out(port, ASC_CTL, ctl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+		clk_disable_unprepare(ascport->clk);
-+		break;
-+	}
-+}
++	rt_clk = (value & RT_D_CFG_CLK_MASK) >> RT_D_CFG_CLK_SHIFT;
++	ST_PINCONF_PACK_RT_CLK(*config, rt_clk);
 +
-+static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
-+			    struct ktermios *old)
-+{
-+	struct asc_port *ascport = to_asc_port(port);
-+	unsigned int baud;
-+	u32 ctrl_val;
-+	tcflag_t cflag;
-+	unsigned long flags;
++	delay_bits = (value & RT_D_CFG_DELAY_MASK) >> RT_D_CFG_DELAY_SHIFT;
++	delay =  st_pinconf_bit_to_delay(delay_bits, info->data, output);
++	ST_PINCONF_PACK_RT_DELAY(*config, delay);
 +
-+	/* Update termios to reflect hardware capabilities */
-+	termios->c_cflag &= ~(CMSPAR |
-+			 (ascport->hw_flow_control ? 0 : CRTSCTS));
++	if (value & RT_D_CFG_CLKNOTDATA_MASK)
++		ST_PINCONF_PACK_RT_CLKNOTDATA(*config);
 +
-+	port->uartclk = clk_get_rate(ascport->clk);
++	if (value & RT_D_CFG_DOUBLE_EDGE_MASK)
++		ST_PINCONF_PACK_RT_DOUBLE_EDGE(*config);
 +
-+	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
-+	cflag = termios->c_cflag;
++	if (value & RT_D_CFG_INVERTCLK_MASK)
++		ST_PINCONF_PACK_RT_INVERTCLK(*config);
 +
-+	spin_lock_irqsave(&port->lock, flags);
++	if (value & RT_D_CFG_RETIME_MASK)
++		ST_PINCONF_PACK_RT(*config);
 +
-+	/* read control register */
-+	ctrl_val = asc_in(port, ASC_CTL);
-+
-+	/* stop serial port and reset value */
-+	asc_out(port, ASC_CTL, (ctrl_val & ~ASC_CTL_RUN));
-+	ctrl_val = ASC_CTL_RXENABLE | ASC_CTL_FIFOENABLE;
-+
-+	/* reset fifo rx & tx */
-+	asc_out(port, ASC_TXRESET, 1);
-+	asc_out(port, ASC_RXRESET, 1);
-+
-+	/* set character length */
-+	if ((cflag & CSIZE) == CS7) {
-+		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
-+	} else {
-+		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
-+						ASC_CTL_MODE_8BIT;
-+	}
-+
-+	/* set stop bit */
-+	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
-+
-+	/* odd parity */
-+	if (cflag & PARODD)
-+		ctrl_val |= ASC_CTL_PARITYODD;
-+
-+	/* hardware flow control */
-+	if ((cflag & CRTSCTS))
-+		ctrl_val |= ASC_CTL_CTSENABLE;
-+
-+	if ((baud < 19200) && !ascport->force_m1) {
-+		asc_out(port, ASC_BAUDRATE, (port->uartclk / (16 * baud)));
-+	} else {
-+		/*
-+		 * MODE 1: recommended for high bit rates (above 19.2K)
-+		 *
-+		 *                   baudrate * 16 * 2^16
-+		 * ASCBaudRate =   ------------------------
-+		 *                          inputclock
-+		 *
-+		 * However to keep the maths inside 32bits we divide top and
-+		 * bottom by 64. The +1 is to avoid a divide by zero if the
-+		 * input clock rate is something unexpected.
-+		 */
-+		u32 counter = (baud * 16384) / ((port->uartclk / 64) + 1);
-+		asc_out(port, ASC_BAUDRATE, counter);
-+		ctrl_val |= ASC_CTL_BAUDMODE;
-+	}
-+
-+	uart_update_timeout(port, cflag, baud);
-+
-+	ascport->port.read_status_mask = ASC_RXBUF_DUMMY_OE;
-+	if (termios->c_iflag & INPCK)
-+		ascport->port.read_status_mask |= ASC_RXBUF_FE | ASC_RXBUF_PE;
-+	if (termios->c_iflag & (BRKINT | PARMRK))
-+		ascport->port.read_status_mask |= ASC_RXBUF_DUMMY_BE;
-+
-+	/*
-+	 * Characters to ignore
-+	 */
-+	ascport->port.ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		ascport->port.ignore_status_mask |= ASC_RXBUF_FE | ASC_RXBUF_PE;
-+	if (termios->c_iflag & IGNBRK) {
-+		ascport->port.ignore_status_mask |= ASC_RXBUF_DUMMY_BE;
-+		/*
-+		 * If we're ignoring parity and break indicators,
-+		 * ignore overruns too (for real raw support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			ascport->port.ignore_status_mask |= ASC_RXBUF_DUMMY_OE;
-+	}
-+
-+	/*
-+	 * Ignore all characters if CREAD is not set.
-+	 */
-+	if (!(termios->c_cflag & CREAD))
-+		ascport->port.ignore_status_mask |= ASC_RXBUF_DUMMY_RX;
-+
-+	/* Set the timeout */
-+	asc_out(port, ASC_TIMEOUT, 20);
-+
-+	/* write final value and enable port */
-+	asc_out(port, ASC_CTL, (ctrl_val | ASC_CTL_RUN));
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static const char *asc_type(struct uart_port *port)
-+{
-+	return (port->type == PORT_ASC) ? DRIVER_NAME : NULL;
-+}
-+
-+static void asc_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int asc_request_port(struct uart_port *port)
-+{
 +	return 0;
 +}
 +
-+/*
-+ * Called when the port is opened, and UPF_BOOT_AUTOCONF flag is set
-+ * Set type field if successful
-+ */
-+static void asc_config_port(struct uart_port *port, int flags)
++/* GPIO related functions */
++
++static inline void __st_gpio_set(struct st_gpio_bank *bank,
++	unsigned offset, int value)
 +{
-+	if ((flags & UART_CONFIG_TYPE))
-+		port->type = PORT_ASC;
++	if (value)
++		writel(BIT(offset), bank->base + REG_PIO_SET_POUT);
++	else
++		writel(BIT(offset), bank->base + REG_PIO_CLR_POUT);
 +}
 +
-+static int
-+asc_verify_port(struct uart_port *port, struct serial_struct *ser)
++static void st_gpio_direction(struct st_gpio_bank *bank,
++		unsigned int gpio, unsigned int direction)
 +{
-+	/* No user changeable parameters */
++	int offset = st_gpio_pin(gpio);
++	int i = 0;
++	/**
++	 * There are three configuration registers (PIOn_PC0, PIOn_PC1
++	 * and PIOn_PC2) for each port. These are used to configure the
++	 * PIO port pins. Each pin can be configured as an input, output,
++	 * bidirectional, or alternative function pin. Three bits, one bit
++	 * from each of the three registers, configure the corresponding bit of
++	 * the port. Valid bit settings is:
++	 *
++	 * PC2		PC1		PC0	Direction.
++	 * 0		0		0	[Input Weak pull-up]
++	 * 0		0 or 1		1	[Bidirection]
++	 * 0		1		0	[Output]
++	 * 1		0		0	[Input]
++	 *
++	 * PIOn_SET_PC and PIOn_CLR_PC registers are used to set and clear bits
++	 * individually.
++	 */
++	for (i = 0; i <= 2; i++) {
++		if (direction & BIT(i))
++			writel(BIT(offset), bank->base + REG_PIO_SET_PC(i));
++		else
++			writel(BIT(offset), bank->base + REG_PIO_CLR_PC(i));
++	}
++}
++
++static int st_gpio_request(struct gpio_chip *chip, unsigned offset)
++{
++	return pinctrl_request_gpio(chip->base + offset);
++}
++
++static void st_gpio_free(struct gpio_chip *chip, unsigned offset)
++{
++	pinctrl_free_gpio(chip->base + offset);
++}
++
++static int st_gpio_get(struct gpio_chip *chip, unsigned offset)
++{
++	struct st_gpio_bank *bank = gpio_chip_to_bank(chip);
++
++	return !!(readl(bank->base + REG_PIO_PIN) & BIT(offset));
++}
++
++static void st_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
++{
++	struct st_gpio_bank *bank = gpio_chip_to_bank(chip);
++	__st_gpio_set(bank, offset, value);
++}
++
++static int st_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
++{
++	pinctrl_gpio_direction_input(chip->base + offset);
++
++	return 0;
++}
++
++static int st_gpio_direction_output(struct gpio_chip *chip,
++	unsigned offset, int value)
++{
++	struct st_gpio_bank *bank = gpio_chip_to_bank(chip);
++
++	__st_gpio_set(bank, offset, value);
++	pinctrl_gpio_direction_output(chip->base + offset);
++
++	return 0;
++}
++
++static int st_gpio_xlate(struct gpio_chip *gc,
++			const struct of_phandle_args *gpiospec, u32 *flags)
++{
++	if (WARN_ON(gc->of_gpio_n_cells < 1))
++		return -EINVAL;
++
++	if (WARN_ON(gpiospec->args_count < gc->of_gpio_n_cells))
++		return -EINVAL;
++
++	if (gpiospec->args[0] > gc->ngpio)
++		return -EINVAL;
++
++	return gpiospec->args[0];
++}
++
++/* Pinctrl Groups */
++static int st_pctl_get_groups_count(struct pinctrl_dev *pctldev)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++
++	return info->ngroups;
++}
++
++static const char *st_pctl_get_group_name(struct pinctrl_dev *pctldev,
++				       unsigned selector)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++
++	return info->groups[selector].name;
++}
++
++static int st_pctl_get_group_pins(struct pinctrl_dev *pctldev,
++	unsigned selector, const unsigned **pins, unsigned *npins)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++
++	if (selector >= info->ngroups)
++		return -EINVAL;
++
++	*pins = info->groups[selector].pins;
++	*npins = info->groups[selector].npins;
++
++	return 0;
++}
++
++static const inline struct st_pctl_group *st_pctl_find_group_by_name(
++	const struct st_pinctrl *info, const char *name)
++{
++	int i;
++
++	for (i = 0; i < info->ngroups; i++) {
++		if (!strcmp(info->groups[i].name, name))
++			return &info->groups[i];
++	}
++
++	return NULL;
++}
++
++static int st_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
++	struct device_node *np, struct pinctrl_map **map, unsigned *num_maps)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	const struct st_pctl_group *grp;
++	struct pinctrl_map *new_map;
++	struct device_node *parent;
++	int map_num, i;
++
++	grp = st_pctl_find_group_by_name(info, np->name);
++	if (!grp) {
++		dev_err(info->dev, "unable to find group for node %s\n",
++			np->name);
++		return -EINVAL;
++	}
++
++	map_num = grp->npins + 1;
++	new_map = devm_kzalloc(pctldev->dev,
++				sizeof(*new_map) * map_num, GFP_KERNEL);
++	if (!new_map)
++		return -ENOMEM;
++
++	parent = of_get_parent(np);
++	if (!parent) {
++		devm_kfree(pctldev->dev, new_map);
++		return -EINVAL;
++	}
++
++	*map = new_map;
++	*num_maps = map_num;
++	new_map[0].type = PIN_MAP_TYPE_MUX_GROUP;
++	new_map[0].data.mux.function = parent->name;
++	new_map[0].data.mux.group = np->name;
++	of_node_put(parent);
++
++	/* create config map per pin */
++	new_map++;
++	for (i = 0; i < grp->npins; i++) {
++		new_map[i].type = PIN_MAP_TYPE_CONFIGS_PIN;
++		new_map[i].data.configs.group_or_pin =
++				pin_get_name(pctldev, grp->pins[i]);
++		new_map[i].data.configs.configs = &grp->pin_conf[i].config;
++		new_map[i].data.configs.num_configs = 1;
++	}
++	dev_info(pctldev->dev, "maps: function %s group %s num %d\n",
++		(*map)->data.mux.function, grp->name, map_num);
++
++	return 0;
++}
++
++static void st_pctl_dt_free_map(struct pinctrl_dev *pctldev,
++			struct pinctrl_map *map, unsigned num_maps)
++{
++}
++
++static struct pinctrl_ops st_pctlops = {
++	.get_groups_count	= st_pctl_get_groups_count,
++	.get_group_pins		= st_pctl_get_group_pins,
++	.get_group_name		= st_pctl_get_group_name,
++	.dt_node_to_map		= st_pctl_dt_node_to_map,
++	.dt_free_map		= st_pctl_dt_free_map,
++};
++
++/* Pinmux */
++static int st_pmx_get_funcs_count(struct pinctrl_dev *pctldev)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++
++	return info->nfunctions;
++}
++
++const char *st_pmx_get_fname(struct pinctrl_dev *pctldev,
++	unsigned selector)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++
++	return info->functions[selector].name;
++}
++
++static int st_pmx_get_groups(struct pinctrl_dev *pctldev,
++	unsigned selector, const char * const **grps, unsigned * const ngrps)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	*grps = info->functions[selector].groups;
++	*ngrps = info->functions[selector].ngroups;
++
++	return 0;
++}
++
++static struct st_pio_control *st_get_pio_control(
++			struct pinctrl_dev *pctldev, int pin)
++{
++	struct pinctrl_gpio_range *range =
++			 pinctrl_find_gpio_range_from_pin(pctldev, pin);
++	struct st_gpio_bank *bank = gpio_range_to_bank(range);
++
++	return &bank->pc;
++}
++
++static int st_pmx_enable(struct pinctrl_dev *pctldev, unsigned fselector,
++		unsigned group)
++{
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	struct st_pinconf *conf = info->groups[group].pin_conf;
++	struct st_pio_control *pc;
++	int i;
++
++	for (i = 0; i < info->groups[group].npins; i++) {
++		pc = st_get_pio_control(pctldev, conf[i].pin);
++		st_pctl_set_function(pc, conf[i].pin, conf[i].altfunc);
++	}
++
++	return 0;
++}
++
++static void st_pmx_disable(struct pinctrl_dev *pctldev, unsigned selector,
++		unsigned group)
++{
++}
++
++static int st_pmx_set_gpio_direction(struct pinctrl_dev *pctldev,
++			struct pinctrl_gpio_range *range, unsigned gpio,
++			bool input)
++{
++	struct st_gpio_bank *bank = gpio_range_to_bank(range);
++	/*
++	 * When a PIO bank is used in its primary function mode (altfunc = 0)
++	 * Output Enable (OE), Open Drain(OD), and Pull Up (PU)
++	 * for the primary PIO functions are driven by the related PIO block
++	 */
++	st_pctl_set_function(&bank->pc, gpio, 0);
++	st_gpio_direction(bank, gpio, input ?
++		ST_GPIO_DIRECTION_IN : ST_GPIO_DIRECTION_OUT);
++
++	return 0;
++}
++
++static struct pinmux_ops st_pmxops = {
++	.get_functions_count	= st_pmx_get_funcs_count,
++	.get_function_name	= st_pmx_get_fname,
++	.get_function_groups	= st_pmx_get_groups,
++	.enable			= st_pmx_enable,
++	.disable		= st_pmx_disable,
++	.gpio_set_direction	= st_pmx_set_gpio_direction,
++};
++
++/* Pinconf  */
++static void st_pinconf_get_retime(struct st_pinctrl *info,
++	struct st_pio_control *pc, int pin, unsigned long *config)
++{
++	if (info->data->rt_style == st_retime_style_packed)
++		st_pinconf_get_retime_packed(info, pc, pin, config);
++	else if (info->data->rt_style == st_retime_style_dedicated)
++		if ((BIT(pin) & pc->rt_pin_mask))
++			st_pinconf_get_retime_dedicated(info, pc,
++					pin, config);
++}
++
++static void st_pinconf_set_retime(struct st_pinctrl *info,
++	struct st_pio_control *pc, int pin, unsigned long config)
++{
++	if (info->data->rt_style == st_retime_style_packed)
++		st_pinconf_set_retime_packed(info, pc, config, pin);
++	else if (info->data->rt_style == st_retime_style_dedicated)
++		if ((BIT(pin) & pc->rt_pin_mask))
++			st_pinconf_set_retime_dedicated(info, pc,
++							config, pin);
++}
++
++static int st_pinconf_set(struct pinctrl_dev *pctldev,
++			     unsigned pin_id, unsigned long config)
++{
++	int pin = st_gpio_pin(pin_id);
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	struct st_pio_control *pc = st_get_pio_control(pctldev, pin_id);
++
++	st_pinconf_set_config(pc, pin, config);
++	st_pinconf_set_retime(info, pc, pin, config);
++
++	return 0;
++}
++
++static int st_pinconf_get(struct pinctrl_dev *pctldev,
++			     unsigned pin_id, unsigned long *config)
++{
++	int pin = st_gpio_pin(pin_id);
++	struct st_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	struct st_pio_control *pc = st_get_pio_control(pctldev, pin_id);
++
++	*config = 0;
++	st_pinconf_get_direction(pc, pin, config);
++	st_pinconf_get_retime(info, pc, pin, config);
++
++	return 0;
++}
++
++static void st_pinconf_dbg_show(struct pinctrl_dev *pctldev,
++				   struct seq_file *s, unsigned pin_id)
++{
++	unsigned long config;
++	st_pinconf_get(pctldev, pin_id, &config);
++
++	seq_printf(s, "[OE:%ld,PU:%ld,OD:%ld]\n"
++		"\t\t[retime:%ld,invclk:%ld,clknotdat:%ld,"
++		"de:%ld,rt-clk:%ld,rt-delay:%ld]",
++		ST_PINCONF_UNPACK_OE(config),
++		ST_PINCONF_UNPACK_PU(config),
++		ST_PINCONF_UNPACK_OD(config),
++		ST_PINCONF_UNPACK_RT(config),
++		ST_PINCONF_UNPACK_RT_INVERTCLK(config),
++		ST_PINCONF_UNPACK_RT_CLKNOTDATA(config),
++		ST_PINCONF_UNPACK_RT_DOUBLE_EDGE(config),
++		ST_PINCONF_UNPACK_RT_CLK(config),
++		ST_PINCONF_UNPACK_RT_DELAY(config));
++}
++
++static struct pinconf_ops st_confops = {
++	.pin_config_get		= st_pinconf_get,
++	.pin_config_set		= st_pinconf_set,
++	.pin_config_dbg_show	= st_pinconf_dbg_show,
++};
++
++static void st_pctl_dt_child_count(struct st_pinctrl *info,
++				     struct device_node *np)
++{
++	struct device_node *child;
++	for_each_child_of_node(np, child) {
++		if (of_property_read_bool(child, "gpio-controller")) {
++			info->nbanks++;
++		} else {
++			info->nfunctions++;
++			info->ngroups += of_get_child_count(child);
++		}
++	}
++}
++
++static int st_pctl_dt_setup_retime_packed(struct st_pinctrl *info,
++	int bank, struct st_pio_control *pc)
++{
++	struct device *dev = info->dev;
++	struct regmap *rm = info->regmap;
++	const struct st_pctl_data *data = info->data;
++	/* 2 registers per bank */
++	int reg = (data->rt + bank * RT_P_CFGS_PER_BANK) * 4;
++	struct st_retime_packed *rt_p = &pc->rt.rt_p;
++	/* cfg0 */
++	struct reg_field clk1notclk0 = RT_P_CFG0_CLK1NOTCLK0_FIELD(reg);
++	struct reg_field delay_0 = RT_P_CFG0_DELAY_0_FIELD(reg);
++	struct reg_field delay_1 = RT_P_CFG0_DELAY_1_FIELD(reg);
++	/* cfg1 */
++	struct reg_field invertclk = RT_P_CFG1_INVERTCLK_FIELD(reg + 4);
++	struct reg_field retime = RT_P_CFG1_RETIME_FIELD(reg + 4);
++	struct reg_field clknotdata = RT_P_CFG1_CLKNOTDATA_FIELD(reg + 4);
++	struct reg_field double_edge = RT_P_CFG1_DOUBLE_EDGE_FIELD(reg + 4);
++
++	rt_p->clk1notclk0 = devm_regmap_field_alloc(dev, rm, clk1notclk0);
++	rt_p->delay_0	= devm_regmap_field_alloc(dev, rm, delay_0);
++	rt_p->delay_1 = devm_regmap_field_alloc(dev, rm, delay_1);
++	rt_p->invertclk = devm_regmap_field_alloc(dev, rm, invertclk);
++	rt_p->retime = devm_regmap_field_alloc(dev, rm, retime);
++	rt_p->clknotdata = devm_regmap_field_alloc(dev, rm, clknotdata);
++	rt_p->double_edge = devm_regmap_field_alloc(dev, rm, double_edge);
++
++	if (IS_ERR(rt_p->clk1notclk0) || IS_ERR(rt_p->delay_0) ||
++		 IS_ERR(rt_p->delay_1) || IS_ERR(rt_p->invertclk) ||
++		 IS_ERR(rt_p->retime) || IS_ERR(rt_p->clknotdata) ||
++		 IS_ERR(rt_p->double_edge))
++		return -EINVAL;
++
++	return 0;
++}
++
++static int st_pctl_dt_setup_retime_dedicated(struct st_pinctrl *info,
++	int bank, struct st_pio_control *pc)
++{
++	struct device *dev = info->dev;
++	struct regmap *rm = info->regmap;
++	const struct st_pctl_data *data = info->data;
++	/* 8 registers per bank */
++	int reg_offset = (data->rt + bank * RT_D_CFGS_PER_BANK) * 4;
++	struct st_retime_dedicated *rt_d = &pc->rt.rt_d;
++	unsigned int j;
++	u32 pin_mask = pc->rt_pin_mask;
++
++	for (j = 0; j < RT_D_CFGS_PER_BANK; j++) {
++		if (BIT(j) & pin_mask) {
++			struct reg_field reg = REG_FIELD(reg_offset, 0, 31);
++			rt_d->rt[j] = devm_regmap_field_alloc(dev, rm, reg);
++			if (IS_ERR(rt_d->rt[j]))
++				return -EINVAL;
++			reg_offset += 4;
++		}
++	}
++	return 0;
++}
++
++static int st_pctl_dt_setup_retime(struct st_pinctrl *info,
++	int bank, struct st_pio_control *pc)
++{
++	const struct st_pctl_data *data = info->data;
++	if (data->rt_style  == st_retime_style_packed)
++		return st_pctl_dt_setup_retime_packed(info, bank, pc);
++	else if (data->rt_style == st_retime_style_dedicated)
++		return st_pctl_dt_setup_retime_dedicated(info, bank, pc);
++
 +	return -EINVAL;
 +}
 +
-+#ifdef CONFIG_CONSOLE_POLL
-+/*
-+ * Console polling routines for writing and reading from the uart while
-+ * in an interrupt or debug context (i.e. kgdb).
-+ */
-+
-+static int asc_get_poll_char(struct uart_port *port)
++static int st_parse_syscfgs(struct st_pinctrl *info,
++		int bank, struct device_node *np)
 +{
-+	if (!(asc_in(port, ASC_STA) & ASC_STA_RBF))
-+		return NO_POLL_CHAR;
++	const struct st_pctl_data *data = info->data;
++	/**
++	 * For a given shared register like OE/PU/OD, there are 8 bits per bank
++	 * 0:7 belongs to bank0, 8:15 belongs to bank1 ...
++	 * So each register is shared across 4 banks.
++	 */
++	int lsb = (bank%4) * ST_GPIO_PINS_PER_BANK;
++	int msb = lsb + ST_GPIO_PINS_PER_BANK - 1;
++	struct reg_field alt_reg = REG_FIELD((data->alt + bank) * 4, 0, 31);
++	struct reg_field oe_reg = REG_FIELD((data->oe + bank/4) * 4, lsb, msb);
++	struct reg_field pu_reg = REG_FIELD((data->pu + bank/4) * 4, lsb, msb);
++	struct reg_field od_reg = REG_FIELD((data->od + bank/4) * 4, lsb, msb);
++	struct st_pio_control *pc = &info->banks[bank].pc;
++	struct device *dev = info->dev;
++	struct regmap *regmap  = info->regmap;
 +
-+	return asc_in(port, ASC_RXBUF);
-+}
++	pc->alt = devm_regmap_field_alloc(dev, regmap, alt_reg);
++	pc->oe = devm_regmap_field_alloc(dev, regmap, oe_reg);
++	pc->pu = devm_regmap_field_alloc(dev, regmap, pu_reg);
++	pc->od = devm_regmap_field_alloc(dev, regmap, od_reg);
 +
-+static void asc_put_poll_char(struct uart_port *port, unsigned char c)
-+{
-+	while (asc_txfifo_is_full(port))
-+		cpu_relax();
-+	asc_out(port, ASC_TXBUF, c);
-+}
-+
-+#endif /* CONFIG_CONSOLE_POLL */
-+
-+/*---------------------------------------------------------------------*/
-+
-+static struct uart_ops asc_uart_ops = {
-+	.tx_empty	= asc_tx_empty,
-+	.set_mctrl	= asc_set_mctrl,
-+	.get_mctrl	= asc_get_mctrl,
-+	.start_tx	= asc_start_tx,
-+	.stop_tx	= asc_stop_tx,
-+	.stop_rx	= asc_stop_rx,
-+	.enable_ms	= asc_enable_ms,
-+	.break_ctl	= asc_break_ctl,
-+	.startup	= asc_startup,
-+	.shutdown	= asc_shutdown,
-+	.set_termios	= asc_set_termios,
-+	.type		= asc_type,
-+	.release_port	= asc_release_port,
-+	.request_port	= asc_request_port,
-+	.config_port	= asc_config_port,
-+	.verify_port	= asc_verify_port,
-+	.pm		= asc_pm,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char = asc_get_poll_char,
-+	.poll_put_char = asc_put_poll_char,
-+#endif /* CONFIG_CONSOLE_POLL */
-+};
-+
-+static int asc_init_port(struct asc_port *ascport,
-+			  struct platform_device *pdev)
-+{
-+	struct uart_port *port = &ascport->port;
-+	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	if (!res) {
-+		dev_err(&pdev->dev, "Unable to get io resource\n");
-+		return -ENODEV;
-+	}
-+
-+	port->iotype	= UPIO_MEM;
-+	port->flags	= UPF_BOOT_AUTOCONF;
-+	port->ops	= &asc_uart_ops;
-+	port->fifosize	= ASC_FIFO_SIZE;
-+	port->dev	= &pdev->dev;
-+	port->mapbase	= res->start;
-+	port->irq	= platform_get_irq(pdev, 0);
-+
-+	port->membase = devm_request_and_ioremap(&pdev->dev, res);
-+	if (!port->membase) {
-+		dev_err(&pdev->dev, "Unable to request io memory\n");
-+		return -ENODEV;
-+	}
-+
-+	spin_lock_init(&port->lock);
-+
-+	ascport->clk = devm_clk_get(&pdev->dev, NULL);
-+
-+	if (WARN_ON(IS_ERR(ascport->clk)))
++	if (IS_ERR(pc->alt) || IS_ERR(pc->oe) ||
++			IS_ERR(pc->pu) || IS_ERR(pc->od))
 +		return -EINVAL;
-+	/* ensure that clk rate is correct by enabling the clk */
-+	clk_prepare_enable(ascport->clk);
-+	ascport->port.uartclk = clk_get_rate(ascport->clk);
-+	WARN_ON(ascport->port.uartclk == 0);
-+	clk_disable_unprepare(ascport->clk);
++
++	/* retime avaiable for all pins by default */
++	pc->rt_pin_mask = 0xff;
++	of_property_read_u32(np, "st,retime-pin-mask", &pc->rt_pin_mask);
++	st_pctl_dt_setup_retime(info, bank, pc);
 +
 +	return 0;
-+}
-+
-+static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	int id;
-+
-+	if (!np)
-+		return NULL;
-+
-+	id = of_alias_get_id(np, ASC_SERIAL_NAME);
-+	if (WARN_ON(id >= ASC_MAX_PORTS))
-+		return NULL;
-+
-+	asc_ports[id].hw_flow_control = of_property_read_bool(np,
-+							"st,hw-flow-control");
-+	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
-+	asc_ports[id].port.line = id;
-+	return &asc_ports[id];
-+}
-+
-+static struct of_device_id asc_match[] = {
-+	{ .compatible = "st,asc", },
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(of, asc_match);
-+
-+static int asc_serial_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	struct asc_port *ascport;
-+
-+	ascport = asc_of_get_asc_port(pdev);
-+	if (!ascport)
-+		return -ENODEV;
-+
-+	ret = asc_init_port(ascport, pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = uart_add_one_port(&asc_uart_driver, &ascport->port);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, &ascport->port);
-+
-+	return 0;
-+}
-+
-+static int asc_serial_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	platform_set_drvdata(pdev, NULL);
-+	return uart_remove_one_port(&asc_uart_driver, port);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int asc_serial_suspend(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	return uart_suspend_port(&asc_uart_driver, port);
-+}
-+
-+static int asc_serial_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	if (pdev->dev.pins->default_state) {
-+		if (pinctrl_select_state(pdev->dev.pins->p,
-+					 pdev->dev.pins->default_state) < 0)
-+			return -EBUSY;
-+	}
-+
-+	return uart_resume_port(&asc_uart_driver, port);
-+}
-+
-+#endif /* CONFIG_PM_SLEEP */
-+
-+/*----------------------------------------------------------------------*/
-+
-+#ifdef CONFIG_SERIAL_ST_ASC_CONSOLE
-+static void asc_console_putchar(struct uart_port *port, int ch)
-+{
-+	unsigned int timeout = 1000000;
-+
-+	/* Wait for upto 1 second in case flow control is stopping us. */
-+	while (--timeout && asc_txfifo_is_full(port))
-+		udelay(1);
-+
-+	asc_out(port, ASC_TXBUF, ch);
 +}
 +
 +/*
-+ *  Print a string to the serial port trying not to disturb
-+ *  any possible real use of the port...
++ * Each pin is represented in of the below forms.
++ * <bank offset mux direction rt_type rt_delay rt_clk>
 + */
-+
-+static void asc_console_write(struct console *co, const char *s, unsigned count)
++static int st_pctl_dt_parse_groups(struct device_node *np,
++	struct st_pctl_group *grp, struct st_pinctrl *info, int idx)
 +{
-+	struct uart_port *port = &asc_ports[co->index].port;
-+	unsigned long flags;
-+	unsigned long timeout = 1000000;
-+	int locked = 1;
-+	u32 intenable;
++	/* bank pad direction val altfunction */
++	const __be32 *list;
++	struct property *pp;
++	struct st_pinconf *conf;
++	phandle phandle;
++	struct device_node *pins;
++	u32 pin;
++	int i = 0, npins = 0, nr_props;
 +
-+	local_irq_save(flags);
-+	if (port->sysrq)
-+		locked = 0; /* asc_interrupt has already claimed the lock */
-+	else if (oops_in_progress)
-+		locked = spin_trylock(&port->lock);
-+	else
-+		spin_lock(&port->lock);
++	pins = of_get_child_by_name(np, "st,pins");
++	if (!pins)
++		return -ENODATA;
 +
-+	/*
-+	 * Disable interrupts so we don't get the IRQ line bouncing
-+	 * up and down while interrupts are disabled.
-+	 */
-+	intenable = asc_in(port, ASC_INTEN);
-+	asc_out(port, ASC_INTEN, 0);
-+	(void)asc_in(port, ASC_INTEN);	/* Defeat bus write posting */
++	for_each_property_of_node(pins, pp) {
++		/* Skip those we do not want to proceed */
++		if (!strcmp(pp->name, "name"))
++			continue;
 +
-+	uart_console_write(port, s, count, asc_console_putchar);
++		if (pp  && (pp->length/sizeof(__be32)) >= OF_GPIO_ARGS_MIN) {
++			npins++;
++		} else {
++			pr_warn("Invalid st,pins in %s node\n", np->name);
++			return -EINVAL;
++		}
++	}
 +
-+	while (--timeout && !asc_txfifo_is_empty(port))
-+		udelay(1);
++	grp->npins = npins;
++	grp->name = np->name;
++	grp->pins = devm_kzalloc(info->dev, npins * sizeof(u32), GFP_KERNEL);
++	grp->pin_conf = devm_kzalloc(info->dev,
++					npins * sizeof(*conf), GFP_KERNEL);
 +
-+	asc_out(port, ASC_INTEN, intenable);
++	if (!grp->pins || !grp->pin_conf)
++		return -ENOMEM;
 +
-+	if (locked)
-+		spin_unlock(&port->lock);
-+	local_irq_restore(flags);
++	/* <bank offset mux direction rt_type rt_delay rt_clk> */
++	for_each_property_of_node(pins, pp) {
++		if (!strcmp(pp->name, "name"))
++			continue;
++		nr_props = pp->length/sizeof(u32);
++		list = pp->value;
++		conf = &grp->pin_conf[i];
++
++		/* bank & offset */
++		phandle = be32_to_cpup(list++);
++		pin = be32_to_cpup(list++);
++		conf->pin = of_get_named_gpio(pins, pp->name, 0);
++		conf->name = pp->name;
++		grp->pins[i] = conf->pin;
++		/* mux */
++		conf->altfunc = be32_to_cpup(list++);
++		conf->config = 0;
++		/* direction */
++		conf->config |= be32_to_cpup(list++);
++		/* rt_type rt_delay rt_clk */
++		if (nr_props >= OF_GPIO_ARGS_MIN + OF_RT_ARGS_MIN) {
++			/* rt_type */
++			conf->config |= be32_to_cpup(list++);
++			/* rt_delay */
++			conf->config |= be32_to_cpup(list++);
++			/* rt_clk */
++			if (nr_props > OF_GPIO_ARGS_MIN + OF_RT_ARGS_MIN)
++				conf->config |= be32_to_cpup(list++);
++		}
++		i++;
++	}
++	of_node_put(pins);
++
++	return 0;
 +}
 +
-+static int asc_console_setup(struct console *co, char *options)
++static int st_pctl_parse_functions(struct device_node *np,
++			struct st_pinctrl *info, u32 index, int *grp_index)
 +{
-+	struct asc_port *ascport;
-+	int baud = 9600;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
++	struct device_node *child;
++	struct st_pmx_func *func;
++	struct st_pctl_group *grp;
++	int ret, i;
 +
-+	if (co->index >= ASC_MAX_PORTS)
++	func = &info->functions[index];
++	func->name = np->name;
++	func->ngroups = of_get_child_count(np);
++	if (func->ngroups <= 0) {
++		dev_err(info->dev, "No groups defined\n");
++		return -EINVAL;
++	}
++	func->groups = devm_kzalloc(info->dev,
++			func->ngroups * sizeof(char *), GFP_KERNEL);
++	if (!func->groups)
++		return -ENOMEM;
++
++	i = 0;
++	for_each_child_of_node(np, child) {
++		func->groups[i] = child->name;
++		grp = &info->groups[*grp_index];
++		*grp_index += 1;
++		ret = st_pctl_dt_parse_groups(child, grp, info, i++);
++		if (ret)
++			return ret;
++	}
++	dev_info(info->dev, "Function[%d\t name:%s,\tgroups:%d]\n",
++				index, func->name, func->ngroups);
++
++	return 0;
++}
++
++static struct gpio_chip st_gpio_template = {
++	.request		= st_gpio_request,
++	.free			= st_gpio_free,
++	.get			= st_gpio_get,
++	.set			= st_gpio_set,
++	.direction_input	= st_gpio_direction_input,
++	.direction_output	= st_gpio_direction_output,
++	.ngpio			= ST_GPIO_PINS_PER_BANK,
++	.of_gpio_n_cells	= 1,
++	.of_xlate		= st_gpio_xlate,
++};
++
++static int st_gpiolib_register_bank(struct st_pinctrl *info,
++	int bank_nr, struct device_node *np)
++{
++	struct st_gpio_bank *bank = &info->banks[bank_nr];
++	struct pinctrl_gpio_range *range = &bank->range;
++	struct device *dev = info->dev;
++	int bank_num = of_alias_get_id(np, "gpio");
++	struct resource res;
++	int err;
++
++	if (of_address_to_resource(np, 0, &res))
 +		return -ENODEV;
 +
-+	ascport = &asc_ports[co->index];
++	bank->base = devm_request_and_ioremap(dev, &res);
++	if (!bank->base) {
++		dev_err(dev, "Can't get IO memory mapping!\n");
++		return -ENODEV;
++	}
 +
-+	/*
-+	 * This driver does not support early console initialization
-+	 * (use ARM early printk support instead), so we only expect
-+	 * this to be called during the uart port registration when the
-+	 * driver gets probed and the port should be mapped at that point.
-+	 */
-+	BUG_ON(ascport->port.mapbase == 0 || ascport->port.membase == NULL);
++	bank->gpio_chip = st_gpio_template;
++	bank->gpio_chip.base = bank_num * ST_GPIO_PINS_PER_BANK;
++	bank->gpio_chip.ngpio = ST_GPIO_PINS_PER_BANK;
++	bank->gpio_chip.of_node = np;
 +
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
++	of_property_read_string(np, "st,bank-name", &range->name);
++	bank->gpio_chip.label = range->name;
 +
-+	return uart_set_options(&ascport->port, co, baud, parity, bits, flow);
++	range->id = bank_num;
++	range->pin_base = range->base = range->id * ST_GPIO_PINS_PER_BANK;
++	range->npins = bank->gpio_chip.ngpio;
++	range->gc = &bank->gpio_chip;
++	err  = gpiochip_add(&bank->gpio_chip);
++	if (err) {
++		dev_err(dev, "Failed to add gpiochip(%d)!\n", bank_num);
++		return err;
++	}
++	dev_info(dev, "%s bank added.\n", range->name);
++
++	return 0;
 +}
 +
-+static struct console asc_console = {
-+	.name		= ASC_SERIAL_NAME,
-+	.device		= uart_console_device,
-+	.write		= asc_console_write,
-+	.setup		= asc_console_setup,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &asc_uart_driver,
++static struct of_device_id st_pctl_of_match[] = {
++	{ .compatible = "st,stih415-sbc-pinctrl", .data = &stih415_sbc_data },
++	{ .compatible = "st,stih415-rear-pinctrl", .data = &stih415_rear_data },
++	{ .compatible = "st,stih415-left-pinctrl", .data = &stih415_left_data },
++	{ .compatible = "st,stih415-right-pinctrl",
++		.data = &stih415_right_data },
++	{ .compatible = "st,stih415-front-pinctrl",
++		.data = &stih415_front_data },
++	{ .compatible = "st,stih416-sbc-pinctrl", .data = &stih416_data},
++	{ .compatible = "st,stih416-front-pinctrl", .data = &stih416_data},
++	{ .compatible = "st,stih416-rear-pinctrl", .data = &stih416_data},
++	{ .compatible = "st,stih416-fvdp-fe-pinctrl", .data = &stih416_data},
++	{ .compatible = "st,stih416-fvdp-lite-pinctrl", .data = &stih416_data},
++	{ /* sentinel */ }
 +};
 +
-+#define ASC_SERIAL_CONSOLE (&asc_console)
-+
-+#else
-+#define ASC_SERIAL_CONSOLE NULL
-+#endif /* CONFIG_SERIAL_ST_ASC_CONSOLE */
-+
-+static struct uart_driver asc_uart_driver = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= DRIVER_NAME,
-+	.dev_name	= ASC_SERIAL_NAME,
-+	.major		= 0,
-+	.minor		= 0,
-+	.nr		= ASC_MAX_PORTS,
-+	.cons		= ASC_SERIAL_CONSOLE,
-+};
-+
-+static const struct dev_pm_ops asc_serial_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
-+};
-+
-+static struct platform_driver asc_serial_driver = {
-+	.probe		= asc_serial_probe,
-+	.remove		= asc_serial_remove,
-+	.driver	= {
-+		.name	= DRIVER_NAME,
-+		.pm	= &asc_serial_pm_ops,
-+		.owner	= THIS_MODULE,
-+		.of_match_table = of_match_ptr(asc_match),
-+	},
-+};
-+
-+static int __init asc_init(void)
++static int st_pctl_probe_dt(struct platform_device *pdev,
++	struct pinctrl_desc *pctl_desc, struct st_pinctrl *info)
 +{
-+	int ret;
-+	static char banner[] __initdata =
-+		KERN_INFO "STMicroelectronics ASC driver initialized\n";
++	int ret = 0;
++	int i = 0, j = 0, k = 0, bank;
++	struct pinctrl_pin_desc *pdesc;
++	struct device_node *np = pdev->dev.of_node;
++	struct device_node *child;
++	int grp_index = 0;
 +
-+	printk(banner);
++	st_pctl_dt_child_count(info, np);
++	if (!info->nbanks) {
++		dev_err(&pdev->dev, "you need atleast one gpio bank\n");
++		return -EINVAL;
++	}
 +
-+	ret = uart_register_driver(&asc_uart_driver);
++	dev_info(&pdev->dev, "nbanks = %d\n", info->nbanks);
++	dev_info(&pdev->dev, "nfunctions = %d\n", info->nfunctions);
++	dev_info(&pdev->dev, "ngroups = %d\n", info->ngroups);
++
++	info->functions = devm_kzalloc(&pdev->dev,
++		info->nfunctions * sizeof(*info->functions), GFP_KERNEL);
++
++	info->groups = devm_kzalloc(&pdev->dev,
++			info->ngroups * sizeof(*info->groups) ,	GFP_KERNEL);
++
++	info->banks = devm_kzalloc(&pdev->dev,
++			info->nbanks * sizeof(*info->banks), GFP_KERNEL);
++
++	if (!info->functions || !info->groups || !info->banks)
++		return -ENOMEM;
++
++	info->regmap = syscon_regmap_lookup_by_phandle(np, "st,syscfg");
++	if (!info->regmap) {
++		dev_err(info->dev, "No syscfg phandle specified\n");
++		return -ENOMEM;
++	}
++	info->data = of_match_node(st_pctl_of_match, np)->data;
++
++	pctl_desc->npins = info->nbanks * ST_GPIO_PINS_PER_BANK;
++	pdesc =	devm_kzalloc(&pdev->dev,
++			sizeof(*pdesc) * pctl_desc->npins, GFP_KERNEL);
++	if (!pdesc)
++		return -ENOMEM;
++
++	pctl_desc->pins = pdesc;
++
++	bank = 0;
++	for_each_child_of_node(np, child) {
++		if (of_property_read_bool(child, "gpio-controller")) {
++			const char *bank_name = NULL;
++			ret = st_gpiolib_register_bank(info, bank, child);
++			if (ret)
++				return ret;
++
++			k = info->banks[bank].range.pin_base;
++			bank_name = info->banks[bank].range.name;
++			for (j = 0; j < ST_GPIO_PINS_PER_BANK; j++, k++) {
++				pdesc->number = k;
++				pdesc->name = kasprintf(GFP_KERNEL, "%s[%d]",
++							bank_name, j);
++				pdesc++;
++			}
++			st_parse_syscfgs(info, bank, child);
++			bank++;
++		} else {
++			ret = st_pctl_parse_functions(child, info,
++							i++, &grp_index);
++			if (ret) {
++				dev_err(&pdev->dev, "No functions found.\n");
++				return ret;
++			}
++		}
++	}
++
++	return 0;
++}
++
++static int st_pctl_probe(struct platform_device *pdev)
++{
++	struct st_pinctrl *info;
++	struct pinctrl_desc *pctl_desc;
++	int ret, i;
++
++	if (!pdev->dev.of_node) {
++		dev_err(&pdev->dev, "device node not found.\n");
++		return -EINVAL;
++	}
++
++	pctl_desc = devm_kzalloc(&pdev->dev, sizeof(*pctl_desc), GFP_KERNEL);
++	if (!pctl_desc)
++		return -ENOMEM;
++
++	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return -ENOMEM;
++
++	info->dev = &pdev->dev;
++	platform_set_drvdata(pdev, info);
++	ret = st_pctl_probe_dt(pdev, pctl_desc, info);
 +	if (ret)
 +		return ret;
 +
-+	ret = platform_driver_register(&asc_serial_driver);
-+	if (ret)
-+		uart_unregister_driver(&asc_uart_driver);
++	pctl_desc->owner	= THIS_MODULE,
++	pctl_desc->pctlops	= &st_pctlops,
++	pctl_desc->pmxops	= &st_pmxops,
++	pctl_desc->confops	= &st_confops,
++	pctl_desc->name		= dev_name(&pdev->dev);
 +
-+	return ret;
++	info->pctl = pinctrl_register(pctl_desc, &pdev->dev, info);
++	if (IS_ERR(info->pctl)) {
++		dev_err(&pdev->dev, "Failed pinctrl registration\n");
++		return PTR_ERR(info->pctl);
++	}
++
++	for (i = 0; i < info->nbanks; i++)
++		pinctrl_add_gpio_range(info->pctl, &info->banks[i].range);
++
++	return 0;
 +}
 +
-+static void __exit asc_exit(void)
++static struct platform_driver st_pctl_driver = {
++	.driver = {
++		.name = "st-pinctrl",
++		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(st_pctl_of_match),
++	},
++	.probe = st_pctl_probe,
++};
++
++static int __init st_pctl_init(void)
 +{
-+	platform_driver_unregister(&asc_serial_driver);
-+	uart_unregister_driver(&asc_uart_driver);
++	return platform_driver_register(&st_pctl_driver);
 +}
-+
-+module_init(asc_init);
-+module_exit(asc_exit);
-+
-+MODULE_ALIAS("platform:" DRIVER_NAME);
-+MODULE_AUTHOR("STMicroelectronics (R&D) Limited");
-+MODULE_DESCRIPTION("STMicroelectronics ASC serial port driver");
-+MODULE_LICENSE("GPL");
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 74c2bf7..ec80e01 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -226,4 +226,7 @@
- /* Rocketport EXPRESS/INFINITY */
- #define PORT_RP2	102
- 
-+/* ST ASC type numbers */
-+#define PORT_ASC       103
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
++arch_initcall(st_pctl_init);
 -- 
 1.7.6.5
