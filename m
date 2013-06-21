@@ -1,55 +1,57 @@
 From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v3 06/10] ARM:stixxxx: Add DEBUG_LL console support
-Date: Fri, 21 Jun 2013 07:50:51 +0100
-Message-ID: <51C3F7CB.70703@st.com>
-References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com> <1371737176-9473-1-git-send-email-srinivas.kandagatla@st.com> <201306202055.43189.arnd@arndb.de>
+Subject: Re: [PATCH v3 02/10] clocksource:arm_global_timer: Add ARM global
+ timer support.
+Date: Fri, 21 Jun 2013 08:15:28 +0100
+Message-ID: <51C3FD90.8010505@st.com>
+References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com> <1371737121-9295-1-git-send-email-srinivas.kandagatla@st.com> <201306202102.30478.arnd@arndb.de>
 Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <201306202055.43189.arnd@arndb.de>
+In-Reply-To: <201306202102.30478.arnd@arndb.de>
 Sender: linux-doc-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Stuart Menefy <stuart.menefy@st.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, kernel@stlinux.com, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Stephen Gallimore <stephen.gallimore@st.com>
+Cc: linux-arm-kernel@lists.infradead.org, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Stuart Menefy <stuart.menefy@st.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, kernel@stlinux.com, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Stephen Gallimore <stephen.gallimore@st.com>, Rob Herring <robherring2@gmail.com>, Will Deacon <will.deacon@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 20/06/13 19:55, Arnd Bergmann wrote:
+On 20/06/13 20:02, Arnd Bergmann wrote:
 > On Thursday 20 June 2013, Srinivas KANDAGATLA wrote:
->> --- a/arch/arm/mach-stixxxx/board-dt.c
->> +++ b/arch/arm/mach-stixxxx/board-dt.c
->> @@ -11,6 +11,7 @@
->>  #include <linux/clocksource.h>
->>  #include <linux/irq.h>
->>  #include <asm/hardware/cache-l2x0.h>
->> +#include <asm/mach/map.h>
->>  #include <asm/mach/arch.h>
->>  
->>  #include "smp.h"
->> @@ -42,6 +43,7 @@ static const char *stih41x_dt_match[] __initdata = {
->>  };
->>  
->>  DT_MACHINE_START(STM, "STiH415/416 SoC with Flattened Device Tree")
->> +       .map_io         = debug_ll_io_init,
->>         .init_time      = stih41x_timer_init,
->>         .smp            = smp_ops(stixxxx_smp_ops),
->>         .dt_compat      = stih41x_dt_match,
+>> +static u64 gt_counter_read(void)
+>> +{
+>> +       u64 counter;
+>> +       u32 lower;
+>> +       u32 upper, old_upper;
+>> +
+>> +       upper = __raw_readl(gt_base + GT_COUNTER1);
+>> +       do {
+>> +               old_upper = upper;
+>> +               lower = __raw_readl(gt_base + GT_COUNTER0);
+>> +               upper = __raw_readl(gt_base + GT_COUNTER1);
+>> +       } while (upper != old_upper);
+>> +
+>> +       counter = upper;
+>> +       counter <<= 32;
+>> +       counter |= lower;
+>> +       return counter;
+>> +}
 > 
-> This part of the patch is no longer needed, we do the same when .map_io
-> is not set.
+> Please replace __raw_readl etc with the non-__raw variants
+> throughout the code.
+> 
+> The __raw accessors are not endian safe and are not meant
+> for device drivers. If you are worried about latency from
+> extra barriers, use readl_relaxed().
+Endian safe is good point. I will move to using readl/writel which does
+both ordering and byteswapping.
+And use relaxed versions in gt_counter_read to reduce the latency.
 
-I can see the commit bc37324e "ARM: mmu: Call debug_ll_io_init if no
-map_io function is specified" in arm-soc.git:for-next branch.
-
-That makes sense to take care of this before this patch gets merged. I
-will remove this line in next spin hopefully very soon.
+looks like smp_twd.c too needs this type of change.
 
 Thanks,
 srini
 
-
 > 
 > 	Arnd
-> 
 > 
 
