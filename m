@@ -1,57 +1,60 @@
 From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [PATCH v3 02/10] clocksource:arm_global_timer: Add ARM global
- timer support.
-Date: Fri, 21 Jun 2013 08:15:28 +0100
-Message-ID: <51C3FD90.8010505@st.com>
-References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com> <1371737121-9295-1-git-send-email-srinivas.kandagatla@st.com> <201306202102.30478.arnd@arndb.de>
+Subject: Re: [PATCH v3 01/10] serial:st-asc: Add ST ASC driver.
+Date: Fri, 21 Jun 2013 10:17:25 +0100
+Message-ID: <51C41A25.20508@st.com>
+References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com> <1371737103-8871-1-git-send-email-srinivas.kandagatla@st.com> <201306202101.11261.arnd@arndb.de>
 Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <201306202102.30478.arnd@arndb.de>
+In-Reply-To: <201306202101.11261.arnd@arndb.de>
 Sender: linux-doc-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Russell King <linux@arm.linux.org.uk>, Stuart Menefy <stuart.menefy@st.com>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, kernel@stlinux.com, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Stephen Gallimore <stephen.gallimore@st.com>, Rob Herring <robherring2@gmail.com>, Will Deacon <will.deacon@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, kernel@stlinux.com, linux-doc@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Mark Brown <broonie@kernel.org>, John Stultz <john.stultz@linaro.org>, Rob Landley <rob@landley.net>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 20/06/13 20:02, Arnd Bergmann wrote:
+On 20/06/13 20:01, Arnd Bergmann wrote:
 > On Thursday 20 June 2013, Srinivas KANDAGATLA wrote:
->> +static u64 gt_counter_read(void)
->> +{
->> +       u64 counter;
->> +       u32 lower;
->> +       u32 upper, old_upper;
->> +
->> +       upper = __raw_readl(gt_base + GT_COUNTER1);
->> +       do {
->> +               old_upper = upper;
->> +               lower = __raw_readl(gt_base + GT_COUNTER0);
->> +               upper = __raw_readl(gt_base + GT_COUNTER1);
->> +       } while (upper != old_upper);
->> +
->> +       counter = upper;
->> +       counter <<= 32;
->> +       counter |= lower;
->> +       return counter;
->> +}
+>> This patch adds support to ASC (asynchronous serial controller)
+>> driver, which is basically a standard serial driver. This IP is common
+>> across all the ST parts for settop box platforms.
+>>
+>> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
+>> It support all industry standard baud rates.
+>>
+>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+>> CC: Stephen Gallimore <stephen.gallimore@st.com>
+>> CC: Stuart Menefy <stuart.menefy@st.com>
+>> CC: Arnd Bergmann <arnd@arndb.de>
+>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > 
-> Please replace __raw_readl etc with the non-__raw variants
-> throughout the code.
+>>From my point of view the series is ready for merging in 3.11,
+> I only had a few final comments. I would prefer the first three
+> patches to go through the respective serial/clocksource/pinctrl
+> trees, since there are no direct build dependencies to the
+> platform parts.
 > 
-> The __raw accessors are not endian safe and are not meant
-> for device drivers. If you are worried about latency from
-> extra barriers, use readl_relaxed().
-Endian safe is good point. I will move to using readl/writel which does
-both ordering and byteswapping.
-And use relaxed versions in gt_counter_read to reduce the latency.
+Thankyou Arnd,
 
-looks like smp_twd.c too needs this type of change.
+There are no build dependencies on serial/clocksource/pinctrl.
+
+I will re-spin SOC support patches 4-10 for arm-soc inclusion and wait
+for comments on serial/clocksource/pinctrl driver v3 patches.
+
 
 Thanks,
 srini
 
+> If there is a reason to take those through arm-soc, I would
+> insist on getting Acked-by's from the subsystem maintainers.
 > 
 > 	Arnd
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
 > 
 
