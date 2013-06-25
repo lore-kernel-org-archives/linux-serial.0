@@ -1,47 +1,65 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: Re: [STLinux Kernel] [PATCH v3 03/10] pinctrl:st: Add pinctrl and
- pinconf support.
-Date: Tue, 25 Jun 2013 10:39:06 +0100
-Message-ID: <51C9653A.4050500@st.com>
-References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com> <1371737138-9340-1-git-send-email-srinivas.kandagatla@st.com> <51C45816.5010207@st.com> <CACRpkdb-H2=GdF54Fay+PQVdXLTs++L5+QYe_vFPuzpa+E4ZMg@mail.gmail.com> <20130624141257.GM27646@sirena.org.uk>
-Reply-To: srinivas.kandagatla@st.com
+From: Srinivas KANDAGATLA <srinivas.kandagatla-qxv4g6HH51o@public.gmane.org>
+Subject: Re: [PATCH v5] serial:st-asc: Add ST ASC driver.
+Date: Tue, 25 Jun 2013 11:14:29 +0100
+Message-ID: <51C96D85.7080507@st.com>
+References: <1372058503-30505-1-git-send-email-srinivas.kandagatla@gmail.com>
+ <20130624233813.GA4108@kroah.com>
+Reply-To: srinivas.kandagatla-qxv4g6HH51o@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20130624141257.GM27646@sirena.org.uk>
-Sender: linux-doc-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@arm.linux.org.uk>, kernel@stlinux.com, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <rob.herring@calxeda.com>, Stephen Gallimore <stephen.gallimore@st.com>, John Stultz <john.stultz@linaro.org>, Rob Landley <rob@landley.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <20130624233813.GA4108-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Stephen Gallimore <stephen.gallimore-qxv4g6HH51o@public.gmane.org>, Stuart Menefy <stuart.menefy-qxv4g6HH51o@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 24/06/13 15:12, Mark Brown wrote:
-> On Mon, Jun 24, 2013 at 01:57:56PM +0200, Linus Walleij wrote:
-> 
->> This seems fairly complete, but I cannot have such a basic dependency onto
->> the regmap tree this late in the merge window, i.e. I'm not ready to pull
->> all of regmap into the pinctrl tree. I'd consider this for merging
->> for the next kernel cycle so it's more orthogonal.
-> 
-> I've got the patch on a topic branch in regmap to allow for this sort of
-> stuff - I can readily provide a signed tag for you to get just that
-> patch if that'd help?  Alternatively I'm happy to carry the pinctrl
-> patch in regmap?
-Thanks Mark,
-
-Am Ok with either way, it is required that these 2 patches to go together.
-
-Linus W, if you are happy with the patch can Mark take it via regmap repo?
-
-Thanks,
-srini
-
-> 
-> 
-> 
-> _______________________________________________
-> Kernel mailing list
-> Kernel@stlinux.com
-> http://www.stlinux.com/mailman/listinfo/kernel
-> 
-
+T24gMjUvMDYvMTMgMDA6MzgsIEdyZWcgS3JvYWgtSGFydG1hbiB3cm90ZToKPiBPbiBNb24sIEp1
+biAyNCwgMjAxMyBhdCAwODoyMTo0M0FNICswMTAwLCBTcmluaXZhcyBLQU5EQUdBVExBIHdyb3Rl
+Ogo+PiBGcm9tOiBTcmluaXZhcyBLYW5kYWdhdGxhIDxzcmluaXZhcy5rYW5kYWdhdGxhQHN0LmNv
+bT4KPj4KPj4gVGhpcyBwYXRjaCBhZGRzIHN1cHBvcnQgdG8gQVNDIChhc3luY2hyb25vdXMgc2Vy
+aWFsIGNvbnRyb2xsZXIpCj4+IGRyaXZlciwgd2hpY2ggaXMgYmFzaWNhbGx5IGEgc3RhbmRhcmQg
+c2VyaWFsIGRyaXZlci4gVGhpcyBJUCBpcyBjb21tb24KPj4gYWNyb3NzIGFsbCB0aGUgU1QgcGFy
+dHMgZm9yIHNldHRvcCBib3ggcGxhdGZvcm1zLgo+Pgo+PiBBU0MgaXMgZW1iZWRkZWQgaW4gU1Qg
+Q09NTVMgSVAgYmxvY2suIEl0IHN1cHBvcnRzIFJ4ICYgVHggZnVuY3Rpb25hbGl0eS4KPj4gSXQg
+c3VwcG9ydCBhbGwgaW5kdXN0cnkgc3RhbmRhcmQgYmF1ZCByYXRlcy4KPj4KPj4gU2lnbmVkLW9m
+Zi1ieTogU3Jpbml2YXMgS2FuZGFnYXRsYSA8c3Jpbml2YXMua2FuZGFnYXRsYUBzdC5jb20+Cj4+
+IENDOiBTdGVwaGVuIEdhbGxpbW9yZSA8c3RlcGhlbi5nYWxsaW1vcmVAc3QuY29tPgo+PiBDQzog
+U3R1YXJ0IE1lbmVmeSA8c3R1YXJ0Lm1lbmVmeUBzdC5jb20+Cj4+IENDOiBBcm5kIEJlcmdtYW5u
+IDxhcm5kQGFybmRiLmRlPgo+PiAtLS0KPj4gSGkgR3JlZywKPj4KPj4gVGhpcyBwYXRjaCBpcyB0
+aGUgcGFydCBvZiB0aGUgZHJpdmVyIHN1cHBvcnQgZm9yIFN0aXh4eHggU09Dcy4KPj4gVGhpcyBw
+YXRjaCB1bmRlcmdvbmUgMy00IGN5Y2xlcyBvZiByZXZpZXcgaW4gYXJtLWtlcm5lbCBtYWlsaW5n
+IGxpc3QuCj4+IEFzIEFybmQgcHJlZmVyZWQgdG8gdGFrZSBvbmx5IFNPQyBzdXBwb3J0IHBhdGNo
+ZXMgdmlhIGFybS1zb2MsIEFtIAo+PiBzZW5kaW5nIHRoaXMgcGF0Y2ggc2VwZXJhdGVseS4KPj4K
+Pj4gSWYgaXRzIG5vdCB0b28gbGF0ZSwgY2FuIHlvdSBjb25zaWRlciB0aGlzIHBhdGNoIGZvciAz
+LjExIHZpYSB0dHkgdHJlZT8KPiAKPiBJIHdvdWxkIGhhdmUgdGFrZW4gaXQsIGJ1dCBpdCBicmVh
+a3MgdGhlIGJ1aWxkIG9uIG15IG1hY2hpbmU6ClRoYW5rcyBHcmVnLAoKSSBrbm93IHRoZSBwcm9i
+bGVtLCBzb21lIG9mIHRoZSBtZW1iZXJzIGluIHN0cnVjdCBkZXZpY2UgYXJlIGNvbmRpdGlvbmFs
+CndpdGggUElOQ1RSTCBzdXBwb3J0LgpJIHRoaW5rIHRoYXQncyBicmVha2luZyBidWlsZCBvbiB5
+b3VyIG1hY2hpbmUuCgpJIHdpbGwgZml4IGl0IGFuZCByZXNlbmQgYXMgeW91IHN1Z2dlc3RlZC4K
+ClRoYW5rcywKc3JpbmkKPiAKPiBkcml2ZXJzL3R0eS9zZXJpYWwvc3QtYXNjLmM6IEluIGZ1bmN0
+aW9uIOKAmGFzY19zZXJpYWxfcmVzdW1l4oCZOgo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2Mu
+Yzo3NzQ6MTU6IGVycm9yOiDigJhzdHJ1Y3QgZGV2aWNl4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg
+4oCYcGluc+KAmQo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYzo3NzU6MzogZXJyb3I6IGlt
+cGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmHBpbmN0cmxfc2VsZWN0X3N0YXRl4oCZ
+IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQo+IGRyaXZlcnMvdHR5L3Nl
+cmlhbC9zdC1hc2MuYzo3NzU6Mzc6IGVycm9yOiDigJhzdHJ1Y3QgZGV2aWNl4oCZIGhhcyBubyBt
+ZW1iZXIgbmFtZWQg4oCYcGluc+KAmQo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYzo3NzY6
+MTY6IGVycm9yOiDigJhzdHJ1Y3QgZGV2aWNl4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYcGlu
+c+KAmQo+IAo+IFBsZWFzZSB0ZXN0IHlvdXIgcGF0Y2hlcyBvdXQgb24gYSAibm9ybWFsIiBMaW51
+eCBzeXN0ZW0uCgo+IAo+IFBsZWFzZSBmZWVsIGZyZWUgdG8gcmVzZW5kIHRoaXMgYWZ0ZXIgMy4x
+MS1yYzEgaXMgb3V0LCBmb3IgaW5jbHVzaW9uIGluCj4gMy4xMiwgYWZ0ZXIgeW91IGhhdmUgZml4
+ZWQgdGhlIGJ1aWxkIHByb2JsZW1zLgo+IAo+IGdyZWcgay1oCj4gCj4gCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkZXZpY2V0cmVlLWRpc2N1c3MgbWFp
+bGluZyBsaXN0CmRldmljZXRyZWUtZGlzY3Vzc0BsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlz
+dHMub3psYWJzLm9yZy9saXN0aW5mby9kZXZpY2V0cmVlLWRpc2N1c3MK
