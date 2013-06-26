@@ -1,81 +1,54 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 03/10] pinctrl:st: Add pinctrl and pinconf support.
-Date: Tue, 25 Jun 2013 16:35:31 +0100
-Message-ID: <20130625153531.GE27646@sirena.org.uk>
-References: <1371736996-8770-1-git-send-email-srinivas.kandagatla@st.com>
- <1371737138-9340-1-git-send-email-srinivas.kandagatla@st.com>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4579074815304669893=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1371737138-9340-1-git-send-email-srinivas.kandagatla@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: Russell King <linux@arm.linux.org.uk>, kernel@stlinux.com, Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, John Stultz <john.stultz@linaro.org>, Rob Landley <rob@landley.net>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+From: Darren Hart <dvhart@linux.intel.com>
+Subject: [PATCH 2/8] pch_uart: Add uart_clk selection for the MinnowBoard
+Date: Tue, 25 Jun 2013 18:53:22 -0700
+Message-ID: <6cc125b9eb85dd3cae4a2496fdb7f0d17b18f930.1372211451.git.dvhart@linux.intel.com>
+References: <cover.1372211451.git.dvhart@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1372211451.git.dvhart@linux.intel.com>
+In-Reply-To: <cover.1372211451.git.dvhart@linux.intel.com>
+References: <cover.1372211451.git.dvhart@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, peter.p.waskiewicz.jr@intel.com, andriy.shevchenko@linux.intel.com, danders@circuitco.com, vishal.l.verma@intel.com, dvhart@linux.intel.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Use DMI_BOARD_NAME to determine if we are running on a MinnowBoard and
+set the uart clock to 50MHz if so. This removes the need to pass the
+user_uartclk to the kernel at boot time.
 
---===============4579074815304669893==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="W0CfcDg401mapelP"
-Content-Disposition: inline
+Signed-off-by: Darren Hart <dvhart@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Peter Waskiewicz <peter.p.waskiewicz.jr@intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/pch_uart.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-
---W0CfcDg401mapelP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Jun 20, 2013 at 03:05:38PM +0100, Srinivas KANDAGATLA wrote:
-> This patch add pinctrl support to ST SoCs.
->=20
-> About hardware:
-> ST Set-Top-Box parts have two blocks called PIO and PIO-mux which handle
-> pin configurations.
-
-Applied, thanks.
-
---W0CfcDg401mapelP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRybi7AAoJELSic+t+oim9FA0P/0iJa8Ju5H5xK5kh6NeaP84x
-CFrXACgHv/BG8cNtzc7q/o337dssp64KyMn5c7jLdExigYKyU9Uc3OJu0SSDwecu
-gOh4SES6QQs1B704eDmc1Gf4I6pSHxx7sLdFvH/UAGkeL20Clkh/KU+QhxUZKrjX
-CqUlP89VsRU21NaKKHLTMGH3oJO+pvU8e3B0kf7RjrsSuA8Pr9K3VZxQM/Z7NvLy
-MAX5tw05yt2dPCbJBXK5jQUEkXPSbMKkad4HGlLKPGgXhNC/hSGwPpWo0G84IBIZ
-SI/hLoFlGnPtPqHuQebTi7kaSR04eB8zcwBEEQprdZhrys6ARhY6iwoIcohM5yh9
-bu5nI5+J7KUamJ9G/QMHJCpprPJqOkhTk8hP06pgu9sBs0dE0T/qW9obz1cMNDN0
-lJlDI1z4KFoc2PoorKsi/JBujfENjijMOECG6rWt/TTieInRE8Fh+JQmE81LiQef
-qqRduNxOCAWnj9upB0qy8AdmrUmJ4gnnu4D9R9MahItrF1ivtZySUpfCRikE+abT
-XlxBdGxMtexgPJY2CIdW1ymEW4ls+BDMvBQHtMqeG8AN9xOWXJ6Ovm4iCK1Iv6Tk
-CgeB0A1NvquhXi8nkbeQJQjCogEUxKq4oq5zODSk/OuYUnx1XhdwQ/U1CyUMomSF
-55bc5vbU507t7lL1LxYE
-=R48h
------END PGP SIGNATURE-----
-
---W0CfcDg401mapelP--
-
-
---===============4579074815304669893==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============4579074815304669893==--
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 21a7e17..572d481 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -217,6 +217,7 @@ enum {
+ #define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
+ #define FRI2_48_UARTCLK  48000000 /*  48.0000 MHz */
+ #define NTC1_UARTCLK     64000000 /*  64.0000 MHz */
++#define MINNOW_UARTCLK   50000000 /*  50.0000 MHz */
+ 
+ struct pch_uart_buffer {
+ 	unsigned char *buf;
+@@ -398,6 +399,10 @@ static int pch_uart_get_uartclk(void)
+ 		    strstr(cmp, "nanoETXexpress-TT")))
+ 		return NTC1_UARTCLK;
+ 
++	cmp = dmi_get_system_info(DMI_BOARD_NAME);
++	if (cmp && strstr(cmp, "MinnowBoard"))
++		return MINNOW_UARTCLK;
++
+ 	return DEFAULT_UARTCLK;
+ }
+ 
+-- 
+1.8.1.2
