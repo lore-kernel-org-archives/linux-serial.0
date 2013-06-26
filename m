@@ -1,63 +1,60 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Darren Hart <dvhart@linux.intel.com>
 Subject: Re: [PATCH 2/8] pch_uart: Add uart_clk selection for the MinnowBoard
-Date: Tue, 25 Jun 2013 19:31:43 -0700
-Message-ID: <20130626023143.GB23320@kroah.com>
+Date: Tue, 25 Jun 2013 20:16:18 -0700
+Message-ID: <1372216578.8177.9.camel@envy.home>
 References: <cover.1372211451.git.dvhart@linux.intel.com>
- <6cc125b9eb85dd3cae4a2496fdb7f0d17b18f930.1372211451.git.dvhart@linux.intel.com>
+	 <6cc125b9eb85dd3cae4a2496fdb7f0d17b18f930.1372211451.git.dvhart@linux.intel.com>
+	 <20130626023143.GB23320@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:44912 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751251Ab3FZCa6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Jun 2013 22:30:58 -0400
-Content-Disposition: inline
-In-Reply-To: <6cc125b9eb85dd3cae4a2496fdb7f0d17b18f930.1372211451.git.dvhart@linux.intel.com>
+Received: from mga11.intel.com ([192.55.52.93]:3560 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751518Ab3FZDQT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Jun 2013 23:16:19 -0400
+In-Reply-To: <20130626023143.GB23320@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Darren Hart <dvhart@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, peter.p.waskiewicz.jr@intel.com, andriy.shevchenko@linux.intel.com, danders@circuitco.com, vishal.l.verma@intel.com, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Tue, Jun 25, 2013 at 06:53:22PM -0700, Darren Hart wrote:
-> Use DMI_BOARD_NAME to determine if we are running on a MinnowBoard and
-> set the uart clock to 50MHz if so. This removes the need to pass the
-> user_uartclk to the kernel at boot time.
+On Tue, 2013-06-25 at 19:31 -0700, Greg Kroah-Hartman wrote:
+> On Tue, Jun 25, 2013 at 06:53:22PM -0700, Darren Hart wrote:
+>   
+> >  struct pch_uart_buffer {
+> >  	unsigned char *buf;
+> > @@ -398,6 +399,10 @@ static int pch_uart_get_uartclk(void)
+> >  		    strstr(cmp, "nanoETXexpress-TT")))
+> >  		return NTC1_UARTCLK;
+> >  
+> > +	cmp = dmi_get_system_info(DMI_BOARD_NAME);
+> > +	if (cmp && strstr(cmp, "MinnowBoard"))
+> > +		return MINNOW_UARTCLK;
+> > +
 > 
-> Signed-off-by: Darren Hart <dvhart@linux.intel.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: "H. Peter Anvin" <hpa@zytor.com>
-> Cc: Peter Waskiewicz <peter.p.waskiewicz.jr@intel.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/pch_uart.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 21a7e17..572d481 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -217,6 +217,7 @@ enum {
->  #define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
->  #define FRI2_48_UARTCLK  48000000 /*  48.0000 MHz */
->  #define NTC1_UARTCLK     64000000 /*  64.0000 MHz */
-> +#define MINNOW_UARTCLK   50000000 /*  50.0000 MHz */
->  
->  struct pch_uart_buffer {
->  	unsigned char *buf;
-> @@ -398,6 +399,10 @@ static int pch_uart_get_uartclk(void)
->  		    strstr(cmp, "nanoETXexpress-TT")))
->  		return NTC1_UARTCLK;
->  
-> +	cmp = dmi_get_system_info(DMI_BOARD_NAME);
-> +	if (cmp && strstr(cmp, "MinnowBoard"))
-> +		return MINNOW_UARTCLK;
-> +
+> You know, we do have the DMI interface to handle this in a much nicer
+> way instead of just randomly trying different strings over and over
+> until we find one that matches...
 
-You know, we do have the DMI interface to handle this in a much nicer
-way instead of just randomly trying different strings over and over
-until we find one that matches...
+I was aiming for minimal change. Partly because I'm lazy. Partly
+because I don't have all of the impacted hardware to test. Partly
+because I wanted to keep it simple so I could push this to 3.8 stable.
 
-greg k-h
+I can rewrite this detection to use the DMI interface. Would you allow
+it as a follow-on, to keep the changes to stable minimal?
+
+Also, I do have a PCI subsystem ID for this particular board which I
+could trigger on, but since that mechanism didn't exist in the driver
+already and the other boards don't do it, I just followed what was
+already there (yeah, so I wrote most of what was already there...
+but.... anyway) :-)
+
+What do you prefer? Rewrite, then add Minnow, or use this, then
+rewrite?
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
+Yocto Project - Technical Lead - Linux Kernel
+
