@@ -1,84 +1,88 @@
 From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 3/3] serial: max310x: Add MAX14830 support
-Date: Sat, 29 Jun 2013 09:24:19 +0400
-Message-ID: <1372483459-11836-4-git-send-email-shc_work@mail.ru>
-References: <1372483459-11836-1-git-send-email-shc_work@mail.ru>
+Subject: [PATCH RESEND 2/3] serial: max310x: Add MAX3109 support
+Date: Sat, 29 Jun 2013 10:44:18 +0400
+Message-ID: <1372488259-14539-2-git-send-email-shc_work@mail.ru>
+References: <1372488259-14539-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback5.mail.ru ([94.100.176.59]:58032 "EHLO
-	fallback5.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751688Ab3F2FZM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 29 Jun 2013 01:25:12 -0400
-Received: from smtp29.i.mail.ru (smtp29.i.mail.ru [94.100.177.89])
-	by fallback5.mail.ru (mPOP.Fallback_MX) with ESMTP id 8F3C9E9DDE27
-	for <linux-serial@vger.kernel.org>; Sat, 29 Jun 2013 09:25:08 +0400 (MSK)
-In-Reply-To: <1372483459-11836-1-git-send-email-shc_work@mail.ru>
+Received: from smtp33.i.mail.ru ([94.100.177.93]:57298 "EHLO smtp33.i.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751632Ab3F2Go2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 29 Jun 2013 02:44:28 -0400
+In-Reply-To: <1372488259-14539-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-This patch adds support for MAX14830 (advanced quad universal asynchronous
+This patch adds support for MAX3109 (advanced dual universal asynchronous
 receiver-transmitter) into max310x driver.
+
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
  drivers/tty/serial/Kconfig            |  2 +-
- drivers/tty/serial/max310x.c          | 45 ++++++++++++++++++++++++++++++++++-
+ drivers/tty/serial/max310x.c          | 35 +++++++++++++++++++++++++++++++----
  include/linux/platform_data/max310x.h |  4 ++--
- 3 files changed, 47 insertions(+), 4 deletions(-)
+ 3 files changed, 34 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8e1a9c5..bc486de 100644
+index 25772c1..8e1a9c5 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
 @@ -297,7 +297,7 @@ config SERIAL_MAX310X
  	default n
  	help
  	  This selects support for an advanced UART from Maxim (Dallas).
--	  Supported ICs are MAX3107, MAX3108, MAX3109.
-+	  Supported ICs are MAX3107, MAX3108, MAX3109, MAX14830.
+-	  Supported ICs are MAX3107, MAX3108.
++	  Supported ICs are MAX3107, MAX3108, MAX3109.
  	  Each IC contains 128 words each of receive and transmit FIFO
  	  that can be controlled through I2C or high-speed SPI.
  
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index a6c4642..4ab5b27 100644
+index 4620289..a6c4642 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
 @@ -1,5 +1,5 @@
  /*
-- *  Maxim (Dallas) MAX3107/8/9 serial driver
-+ *  Maxim (Dallas) MAX3107/8/9, MAX14830 serial driver
+- *  Maxim (Dallas) MAX3107/8 serial driver
++ *  Maxim (Dallas) MAX3107/8/9 serial driver
   *
   *  Copyright (C) 2012-2013 Alexander Shiyan <shc_work@mail.ru>
   *
-@@ -269,6 +269,10 @@
- /* MAX3109 specific */
- #define MAX3109_REV_ID			(0xc0)
+@@ -13,9 +13,6 @@
+  *  (at your option) any later version.
+  */
  
-+/* MAX14830 specific */
-+#define MAX14830_BRGCFG_CLKDIS_BIT	(1 << 6) /* Clock Disable */
-+#define MAX14830_REV_ID			(0xb0)
+-/* TODO: MAX3109 support (Dual) */
+-/* TODO: MAX14830 support (Quad) */
+-
+ #include <linux/module.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+@@ -269,6 +266,9 @@
+ /* MAX3107 specific */
+ #define MAX3107_REV_ID			(0xa0)
+ 
++/* MAX3109 specific */
++#define MAX3109_REV_ID			(0xc0)
 +
  struct max310x_devtype {
  	char	name[9];
  	int	nr;
-@@ -387,6 +391,37 @@ static void max310x_power(struct uart_port *port, int on)
- 		msleep(50);
+@@ -359,6 +359,25 @@ static int max3108_detect(struct device *dev)
+ 	return 0;
  }
  
-+static int max14830_detect(struct device *dev)
++static int max3109_detect(struct device *dev)
 +{
 +	struct max310x_port *s = dev_get_drvdata(dev);
 +	unsigned int val = 0;
 +	int ret;
 +
-+	ret = regmap_write(s->regmap, MAX310X_GLOBALCMD_REG,
-+			   MAX310X_EXTREG_ENBL);
++	ret = regmap_read(s->regmap, MAX310X_REVID_REG, &val);
 +	if (ret)
 +		return ret;
-+	
-+	regmap_read(s->regmap, MAX310X_REVID_EXTREG, &val);
-+	regmap_write(s->regmap, MAX310X_GLOBALCMD_REG, MAX310X_EXTREG_DSBL);
-+	if (((val & MAX310x_REV_MASK) != MAX14830_REV_ID)) {
++
++	if (((val & MAX310x_REV_MASK) != MAX3109_REV_ID)) {
 +		dev_err(dev,
 +			"%s ID 0x%02x does not match\n", s->devtype->name, val);
 +		return -ENODEV;
@@ -87,48 +91,39 @@ index a6c4642..4ab5b27 100644
 +	return 0;
 +}
 +
-+static void max14830_power(struct uart_port *port, int on)
-+{
-+	max310x_port_update(port, MAX310X_BRGCFG_REG,
-+			    MAX14830_BRGCFG_CLKDIS_BIT,
-+			    on ? 0 : MAX14830_BRGCFG_CLKDIS_BIT);
-+	if (on)
-+		msleep(50);
-+}
-+
- static const struct max310x_devtype max3107_devtype = {
- 	.name	= "MAX3107",
- 	.nr	= 1,
-@@ -408,6 +443,13 @@ static const struct max310x_devtype max3109_devtype = {
+ static void max310x_power(struct uart_port *port, int on)
+ {
+ 	max310x_port_update(port, MAX310X_MODE1_REG,
+@@ -382,6 +401,13 @@ static const struct max310x_devtype max3108_devtype = {
  	.power	= max310x_power,
  };
  
-+static const struct max310x_devtype max14830_devtype = {
-+	.name	= "MAX14830",
-+	.nr	= 4,
-+	.detect	= max14830_detect,
-+	.power	= max14830_power,
++static const struct max310x_devtype max3109_devtype = {
++	.name	= "MAX3109",
++	.nr	= 2,
++	.detect	= max3109_detect,
++	.power	= max310x_power,
 +};
 +
  static bool max310x_reg_writeable(struct device *dev, unsigned int reg)
  {
  	switch (reg & 0x1f) {
-@@ -1253,6 +1295,7 @@ static const struct spi_device_id max310x_id_table[] = {
+@@ -1226,6 +1252,7 @@ static SIMPLE_DEV_PM_OPS(max310x_pm_ops, max310x_suspend, max310x_resume);
+ static const struct spi_device_id max310x_id_table[] = {
  	{ "max3107",	(kernel_ulong_t)&max3107_devtype, },
  	{ "max3108",	(kernel_ulong_t)&max3108_devtype, },
- 	{ "max3109",	(kernel_ulong_t)&max3109_devtype, },
-+	{ "max14830",	(kernel_ulong_t)&max14830_devtype, },
++	{ "max3109",	(kernel_ulong_t)&max3109_devtype, },
  	{ }
  };
  MODULE_DEVICE_TABLE(spi, max310x_id_table);
 diff --git a/include/linux/platform_data/max310x.h b/include/linux/platform_data/max310x.h
-index 4c128ed..dd11dcd 100644
+index 1aec0b6..4c128ed 100644
 --- a/include/linux/platform_data/max310x.h
 +++ b/include/linux/platform_data/max310x.h
 @@ -1,5 +1,5 @@
  /*
-- *  Maxim (Dallas) MAX3107/8/9 serial driver
-+ *  Maxim (Dallas) MAX3107/8/9, MAX14830 serial driver
+- *  Maxim (Dallas) MAX3107/8 serial driver
++ *  Maxim (Dallas) MAX3107/8/9 serial driver
   *
   *  Copyright (C) 2012 Alexander Shiyan <shc_work@mail.ru>
   *
@@ -136,8 +131,8 @@ index 4c128ed..dd11dcd 100644
   * };
   */
  
--#define MAX310X_MAX_UARTS	2
-+#define MAX310X_MAX_UARTS	4
+-#define MAX310X_MAX_UARTS	1
++#define MAX310X_MAX_UARTS	2
  
  /* MAX310X platform data structure */
  struct max310x_pdata {
