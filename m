@@ -1,85 +1,62 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH v2 3/5] ARM: dts: imx6sl: add "fsl,imx6q-uart" for uart compatible
-Date: Wed, 3 Jul 2013 17:42:35 +0800
-Message-ID: <1372844557-3078-4-git-send-email-b32955@freescale.com>
-References: <1372844557-3078-1-git-send-email-b32955@freescale.com>
+From: Alexander Savchenko <oleksandr.savchenko@ti.com>
+Subject: [PATCH] OMAP: UART: Keep the TX fifo full when possible
+Date: Wed, 3 Jul 2013 13:40:21 +0300
+Message-ID: <1372848021-7800-1-git-send-email-oleksandr.savchenko@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [213.199.154.252] ([213.199.154.252]:11385 "EHLO
-	db9outboundpool.messaging.microsoft.com" rhost-flags-FAIL-FAIL-OK-OK)
-	by vger.kernel.org with ESMTP id S1755352Ab3GCKKn (ORCPT
+Received: from devils.ext.ti.com ([198.47.26.153]:50653 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751512Ab3GCKlK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Jul 2013 06:10:43 -0400
-In-Reply-To: <1372844557-3078-1-git-send-email-b32955@freescale.com>
+	Wed, 3 Jul 2013 06:41:10 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.cz, matts@commtech-fastcom.com, paulmck@linux.vnet.ibm.com, santosh.shilimkar@ti.com, dhowells@redhat.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ti-linux-patch-review@globallogic.com
 
-In order to enable the DMA for some uart port in imx6sl, we add the
-"fsl,imx6q-uart" to the uart's compatible property.
+From: Dmitry Fink <finik@ti.com>
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
+Current logic results in interrupt storm since the fifo
+is constantly below the threshold level. Change the logic
+to fill all the available spaces in the fifo as long as
+we have data to minimize the possibilty of underflow and
+elimiate excessive interrupts.
+
+Signed-off-by: Dmitry Fink <finik@ti.com>
+Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
 ---
- arch/arm/boot/dts/imx6sl.dtsi |   15 ++++++++++-----
- 1 files changed, 10 insertions(+), 5 deletions(-)
+[rebased according to 3.10]
+ drivers/tty/serial/omap-serial.c |    3 ++-
+ include/uapi/linux/serial_reg.h  |    1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6sl.dtsi b/arch/arm/boot/dts/imx6sl.dtsi
-index 9138c67..0a297af 100644
---- a/arch/arm/boot/dts/imx6sl.dtsi
-+++ b/arch/arm/boot/dts/imx6sl.dtsi
-@@ -152,7 +152,8 @@
- 				};
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index fe50375..6a07a9b 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -316,7 +316,8 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 		serial_omap_stop_tx(&up->port);
+ 		return;
+ 	}
+-	count = up->port.fifosize / 4;
++	count = up->port.fifosize -
++		(serial_in(up, UART_OMAP_TXFIFO_LVL) & 0xFF);
+ 	do {
+ 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index e632260..97c26be 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -366,6 +366,7 @@
+ #define UART_OMAP_MDR1_FIR_MODE		0x05	/* FIR mode */
+ #define UART_OMAP_MDR1_CIR_MODE		0x06	/* CIR mode */
+ #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
++#define UART_OMAP_TXFIFO_LVL		0x1A	/* TX FIFO fullness */
  
- 				uart5: serial@02018000 {
--					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
-+					compatible = "fsl,imx6sl-uart",
-+						   "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02018000 0x4000>;
- 					interrupts = <0 30 0x04>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -162,7 +163,8 @@
- 				};
- 
- 				uart1: serial@02020000 {
--					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
-+					compatible = "fsl,imx6sl-uart",
-+						   "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02020000 0x4000>;
- 					interrupts = <0 26 0x04>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -172,7 +174,8 @@
- 				};
- 
- 				uart2: serial@02024000 {
--					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
-+					compatible = "fsl,imx6sl-uart",
-+						   "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02024000 0x4000>;
- 					interrupts = <0 27 0x04>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -209,7 +212,8 @@
- 				};
- 
- 				uart3: serial@02034000 {
--					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
-+					compatible = "fsl,imx6sl-uart",
-+						   "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02034000 0x4000>;
- 					interrupts = <0 28 0x04>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -219,7 +223,8 @@
- 				};
- 
- 				uart4: serial@02038000 {
--					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
-+					compatible = "fsl,imx6sl-uart",
-+						   "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02038000 0x4000>;
- 					interrupts = <0 29 0x04>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
+ /*
+  * These are definitions for the Exar XR17V35X and XR17(C|D)15X
 -- 
-1.7.1
-
+1.7.9.5
 
