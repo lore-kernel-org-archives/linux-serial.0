@@ -1,62 +1,43 @@
-From: Alexander Savchenko <oleksandr.savchenko@ti.com>
-Subject: [PATCH] OMAP: UART: Keep the TX fifo full when possible
-Date: Wed, 3 Jul 2013 13:40:21 +0300
-Message-ID: <1372848021-7800-1-git-send-email-oleksandr.savchenko@ti.com>
+From: Mark Jackson <mpfj-list@newflow.co.uk>
+Subject: AM335x: is AUTORTS mode supported ?
+Date: Wed, 03 Jul 2013 17:02:44 +0100
+Message-ID: <51D44B24.3050407@newflow.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:50653 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751512Ab3GCKlK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Jul 2013 06:41:10 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Cc: lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, matts@commtech-fastcom.com, paulmck@linux.vnet.ibm.com, santosh.shilimkar@ti.com, dhowells@redhat.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ti-linux-patch-review@globallogic.com
 
-From: Dmitry Fink <finik@ti.com>
+I'm struggling to determine if AUTORTS mode is currently supported in 3.10 ?
 
-Current logic results in interrupt storm since the fifo
-is constantly below the threshold level. Change the logic
-to fill all the available spaces in the fifo as long as
-we have data to minimize the possibilty of underflow and
-elimiate excessive interrupts.
+I have dug into the source code, and can see various references to the relevant bits
+in the various UART registers, but I'm at a lose as to how to actually *enable* the
+mode !!
 
-Signed-off-by: Dmitry Fink <finik@ti.com>
-Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
----
-[rebased according to 3.10]
- drivers/tty/serial/omap-serial.c |    3 ++-
- include/uapi/linux/serial_reg.h  |    1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+In drivers/tty/omap-serial.c serial_omap_set_termios() we have:-
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index fe50375..6a07a9b 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -316,7 +316,8 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
- 		serial_omap_stop_tx(&up->port);
- 		return;
- 	}
--	count = up->port.fifosize / 4;
-+	count = up->port.fifosize -
-+		(serial_in(up, UART_OMAP_TXFIFO_LVL) & 0xFF);
- 	do {
- 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index e632260..97c26be 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -366,6 +366,7 @@
- #define UART_OMAP_MDR1_FIR_MODE		0x05	/* FIR mode */
- #define UART_OMAP_MDR1_CIR_MODE		0x06	/* CIR mode */
- #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
-+#define UART_OMAP_TXFIFO_LVL		0x1A	/* TX FIFO fullness */
- 
- /*
-  * These are definitions for the Exar XR17V35X and XR17(C|D)15X
--- 
-1.7.9.5
+	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
+		/* Enable AUTORTS and AUTOCTS */
+		up->efr |= UART_EFR_CTS | UART_EFR_RTS;
 
+		/* Ensure MCR RTS is asserted */
+		up->mcr |= UART_MCR_RTS;
+	} else {
+		...
+	}
+
+So it looks like I need to set the CRTSCTS and UPF_HARD_FLOW flags.
+
+>From userspace, I've tried:-
+
+$ stty -F /dev/ttyO2 crtscts
+
+But I've not idea how to enable UPF_HARD_FLOW !?!
+
+Can anyone point me in the right direction ?
+
+Cheers
+Mark J.
