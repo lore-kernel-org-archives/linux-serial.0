@@ -1,50 +1,65 @@
-From: Henrik =?ISO-8859-1?Q?Nordstr=F6m?= <henrik@henriknordstrom.net>
-Subject: [PATCH] tty/8250_early: Don't truncate last character of options
-Date: Thu, 04 Jul 2013 03:51:39 +0200
-Message-ID: <1372902699.12955.6.camel@localhost>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v2 4/5] ARM: dts: imx6q: add dte pinctrl for uart2
+Date: Thu, 4 Jul 2013 15:23:45 +0800
+Message-ID: <20130704072344.GB11046@S2101-09.ap.freescale.net>
+References: <1372844557-3078-1-git-send-email-b32955@freescale.com>
+ <1372844557-3078-5-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-db8lp0185.outbound.messaging.microsoft.com ([213.199.154.185]:40982
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933586Ab3GDHX0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Jul 2013 03:23:26 -0400
+Content-Disposition: inline
+In-Reply-To: <1372844557-3078-5-git-send-email-b32955@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Huang Shijie <b32955@freescale.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
->From 8b278828cb439b3b9b723a1de28ae10ce3e0cc44 Mon Sep 17 00:00:00 2001
-From: Henrik Nordstrom <henrik@henriknordstrom.net>
-Date: Thu, 4 Jul 2013 03:24:41 +0200
-Subject: [PATCH] tty/8250_early: Don't truncate last character of options
+On Wed, Jul 03, 2013 at 05:42:36PM +0800, Huang Shijie wrote:
+> In imx6q-arm2 board, the UART2 works in the dte mode.
+> So add a pinctrl for it.
+> 
+> Signed-off-by: Huang Shijie <b32955@freescale.com>
+> ---
+>  arch/arm/boot/dts/imx6q.dtsi |    9 +++++++++
+>  1 files changed, 9 insertions(+), 0 deletions(-)
 
-the 3,9 change to use strlcpy to save options uncovered a bug in the
-options argument length calculation causing last character of the
-string to be truncated by strlcpy. This caused the actual console
-to be configured with bad parameters when specifying the console
-using console=uart,... syntax.
+Since imx6q and imx6dl are pin-to-pin compatible, from now on I would
+require the same pin group be added for these two SoC together, so that
+we can enforce the same label name.
 
-Example:
+> 
+> diff --git a/arch/arm/boot/dts/imx6q.dtsi b/arch/arm/boot/dts/imx6q.dtsi
+> index 9a69891..8a518c6 100644
+> --- a/arch/arm/boot/dts/imx6q.dtsi
+> +++ b/arch/arm/boot/dts/imx6q.dtsi
+> @@ -266,6 +266,15 @@
+>  							MX6Q_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
+>  						>;
+>  					};
+> +
+> +					pinctrl_uart2_dte: uart2grp-2 {
+> +						fsl,pins = <
+> +							MX6Q_PAD_EIM_D26__UART2_RX_DATA 0x1b0b1
+> +							MX6Q_PAD_EIM_D27__UART2_TX_DATA 0x1b0b1
+> +							MX6Q_PAD_EIM_D28__UART2_CTS_B	0x1b0b1
+> +							MX6Q_PAD_EIM_D29__UART2_CTS_B	0x1b0b1
 
-Kernel command line: console=uart,mmio,0x90000000,115200
-Early serial console at MMIO 0x90000000 (options '11520')
+Why do you have two pads mux-ed on one function?
 
-Signed-off-by: Henrik Nordstrom <henrik@henriknordstrom.net>
----
- drivers/tty/serial/8250/8250_early.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Shawn
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 721904f..946ddd2 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -193,7 +193,8 @@ static int __init parse_options(struct early_serial8250_device *device,
- 	if (options) {
- 		options++;
- 		device->baud = simple_strtoul(options, NULL, 0);
--		length = min(strcspn(options, " "), sizeof(device->options));
-+		length = min(strcspn(options, " ") + 1,
-+			     sizeof(device->options));
- 		strlcpy(device->options, options, length);
- 	} else {
- 		device->baud = probe_baud(port);
--- 
-1.8.3.1
+> +						>;
+> +					};
+>  				};
+>  
+>  				uart4 {
+> -- 
+> 1.7.1
+> 
+> 
+
