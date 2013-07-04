@@ -1,43 +1,50 @@
-From: Mark Jackson <mpfj-list@newflow.co.uk>
-Subject: AM335x: is AUTORTS mode supported ?
-Date: Wed, 03 Jul 2013 17:02:44 +0100
-Message-ID: <51D44B24.3050407@newflow.co.uk>
+From: Henrik =?ISO-8859-1?Q?Nordstr=F6m?= <henrik@henriknordstrom.net>
+Subject: [PATCH] tty/8250_early: Don't truncate last character of options
+Date: Thu, 04 Jul 2013 03:51:39 +0200
+Message-ID: <1372902699.12955.6.camel@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-Cc: lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-I'm struggling to determine if AUTORTS mode is currently supported in 3.10 ?
+>From 8b278828cb439b3b9b723a1de28ae10ce3e0cc44 Mon Sep 17 00:00:00 2001
+From: Henrik Nordstrom <henrik@henriknordstrom.net>
+Date: Thu, 4 Jul 2013 03:24:41 +0200
+Subject: [PATCH] tty/8250_early: Don't truncate last character of options
 
-I have dug into the source code, and can see various references to the relevant bits
-in the various UART registers, but I'm at a lose as to how to actually *enable* the
-mode !!
+the 3,9 change to use strlcpy to save options uncovered a bug in the
+options argument length calculation causing last character of the
+string to be truncated by strlcpy. This caused the actual console
+to be configured with bad parameters when specifying the console
+using console=uart,... syntax.
 
-In drivers/tty/omap-serial.c serial_omap_set_termios() we have:-
+Example:
 
-	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
-		/* Enable AUTORTS and AUTOCTS */
-		up->efr |= UART_EFR_CTS | UART_EFR_RTS;
+Kernel command line: console=uart,mmio,0x90000000,115200
+Early serial console at MMIO 0x90000000 (options '11520')
 
-		/* Ensure MCR RTS is asserted */
-		up->mcr |= UART_MCR_RTS;
-	} else {
-		...
-	}
+Signed-off-by: Henrik Nordstrom <henrik@henriknordstrom.net>
+---
+ drivers/tty/serial/8250/8250_early.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-So it looks like I need to set the CRTSCTS and UPF_HARD_FLOW flags.
-
->From userspace, I've tried:-
-
-$ stty -F /dev/ttyO2 crtscts
-
-But I've not idea how to enable UPF_HARD_FLOW !?!
-
-Can anyone point me in the right direction ?
-
-Cheers
-Mark J.
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 721904f..946ddd2 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -193,7 +193,8 @@ static int __init parse_options(struct early_serial8250_device *device,
+ 	if (options) {
+ 		options++;
+ 		device->baud = simple_strtoul(options, NULL, 0);
+-		length = min(strcspn(options, " "), sizeof(device->options));
++		length = min(strcspn(options, " ") + 1,
++			     sizeof(device->options));
+ 		strlcpy(device->options, options, length);
+ 	} else {
+ 		device->baud = probe_baud(port);
+-- 
+1.8.3.1
