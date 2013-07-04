@@ -1,66 +1,120 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH v2 4/5] ARM: dts: imx6q: add dte pinctrl for uart2
-Date: Thu, 4 Jul 2013 17:06:37 +0800
-Message-ID: <51D53B1D.6000404@freescale.com>
-References: <1372844557-3078-1-git-send-email-b32955@freescale.com> <1372844557-3078-5-git-send-email-b32955@freescale.com> <20130704072344.GB11046@S2101-09.ap.freescale.net> <51D5357F.8040609@freescale.com> <20130704085623.GA11209@S2101-09.ap.freescale.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial/mxs-auart: increase time to wait for transmitter
+ to become idle
+Date: Thu, 4 Jul 2013 11:27:16 +0200
+Message-ID: <20130704092716.GC17454@pengutronix.de>
+References: <1372413017-23252-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe002.messaging.microsoft.com ([65.55.88.12]:56080 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751895Ab3GDJCv convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Jul 2013 05:02:51 -0400
-In-Reply-To: <20130704085623.GA11209@S2101-09.ap.freescale.net>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:46427 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750976Ab3GDJ1W (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Jul 2013 05:27:22 -0400
+Content-Disposition: inline
+In-Reply-To: <1372413017-23252-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel@pengutronix.de, stable@vger.kernel.org
 
-=E4=BA=8E 2013=E5=B9=B407=E6=9C=8804=E6=97=A5 16:56, Shawn Guo =E5=86=99=
-=E9=81=93:
-> On Thu, Jul 04, 2013 at 04:42:39PM +0800, Huang Shijie wrote:
->> But this pinctrl is only used in imx6q-arm2 board which uses a big
->> armdillo board,
->> so i did not add the same label to imx6dl.
->>
->> Do we have a imx6dl-arm2 board? if we have , i can add it.
-> It does not matter whether or not the pin group is used on an imx6dl
-> board.  We have to add it for both SoCs, because it's the only way to
-> keep use same label for same pin group on two SoCs.
->
->>>> diff --git a/arch/arm/boot/dts/imx6q.dtsi b/arch/arm/boot/dts/imx6=
-q.dtsi
->>>> index 9a69891..8a518c6 100644
->>>> --- a/arch/arm/boot/dts/imx6q.dtsi
->>>> +++ b/arch/arm/boot/dts/imx6q.dtsi
->>>> @@ -266,6 +266,15 @@
->>>>   							MX6Q_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
->>>>   						>;
->>>>   					};
->>>> +
->>>> +					pinctrl_uart2_dte: uart2grp-2 {
-> Forgot mentioning that in imx dts we generally do not encode function
-> name like "dte" in the label but just number.
->
->>>> +						fsl,pins =3D<
->>>> +							MX6Q_PAD_EIM_D26__UART2_RX_DATA 0x1b0b1
->>>> +							MX6Q_PAD_EIM_D27__UART2_TX_DATA 0x1b0b1
->>>> +							MX6Q_PAD_EIM_D28__UART2_CTS_B	0x1b0b1
->>>> +							MX6Q_PAD_EIM_D29__UART2_CTS_B	0x1b0b1
->>> Why do you have two pads mux-ed on one function?
->> I think the name of the PAD is wrong.
-> Fix the name first, then.
-ok.
+Hi Greg,
 
-i will fix them in the next version.
+On Fri, Jun 28, 2013 at 11:49:41AM +0200, Uwe Kleine-K=F6nig wrote:
+> Without this patch the driver waits ~1 ms for the UART to become idle=
+=2E At
+> 115200n8 this time is (theoretically) enough to transfer 11.5 charact=
+ers
+> (=3D 115200 bits/s / (10 Bits/char) * 1ms). As the mxs-auart has a fi=
+fo size
+> of 16 characters the clock is gated too early. The problem is worse f=
+or
+> lower baud rates.
+>=20
+> This only happens to really shut down the transmitter in the middle o=
+f a
+> transfer if /dev/ttyAPPx isn't opened in userspace (e.g. by a getty) =
+but
+> was at least once (because the bootloader doesn't disable the transmi=
+tter).
+>=20
+> So increase the timeout to 20 ms which should be enough for 9600n8, t=
+oo.
+> Moreover skip gating the clock if the timeout is elapsed.
+>=20
+> Cc: stable@vger.kernel.org # v2.6.39+
+> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+Any comments on this. I hoped this patch would make it in for 3.10 :-(
 
+Best regards
+Uwe
 
-thanks
-Huang Shijie
+> ---
+>  drivers/tty/serial/mxs-auart.c | 21 +++++++++++++--------
+>  1 file changed, 13 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-=
+auart.c
+> index 4f5f161..7645079 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -850,7 +850,7 @@ auart_console_write(struct console *co, const cha=
+r *str, unsigned int count)
+>  	struct mxs_auart_port *s;
+>  	struct uart_port *port;
+>  	unsigned int old_ctrl0, old_ctrl2;
+> -	unsigned int to =3D 1000;
+> +	unsigned int to =3D 20000;
+> =20
+>  	if (co->index >=3D MXS_AUART_PORTS || co->index < 0)
+>  		return;
+> @@ -871,18 +871,23 @@ auart_console_write(struct console *co, const c=
+har *str, unsigned int count)
+> =20
+>  	uart_console_write(port, str, count, mxs_auart_console_putchar);
+> =20
+> -	/*
+> -	 * Finally, wait for transmitter to become empty
+> -	 * and restore the TCR
+> -	 */
+> +	/* Finally, wait for transmitter to become empty ... */
+>  	while (readl(port->membase + AUART_STAT) & AUART_STAT_BUSY) {
+> +		udelay(1);
+>  		if (!to--)
+>  			break;
+> -		udelay(1);
+>  	}
+> =20
+> -	writel(old_ctrl0, port->membase + AUART_CTRL0);
+> -	writel(old_ctrl2, port->membase + AUART_CTRL2);
+> +	/*
+> +	 * ... and restore the TCR if we waited long enough for the transmi=
+tter
+> +	 * to be idle. This might keep the transmitter enabled although it =
+is
+> +	 * unused, but that is better than to disable it while it is still
+> +	 * transmitting.
+> +	 */
+> +	if (!(readl(port->membase + AUART_STAT) & AUART_STAT_BUSY)) {
+> +		writel(old_ctrl0, port->membase + AUART_CTRL0);
+> +		writel(old_ctrl2, port->membase + AUART_CTRL2);
+> +	}
+> =20
+>  	clk_disable(s->clk);
+>  }
+> --=20
+> 1.8.3.1
+>=20
+>=20
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
