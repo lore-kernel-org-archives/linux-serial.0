@@ -1,72 +1,48 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH v3 5/6] ARM: dts: imx6q{dl}: add a DTE uart pinctrl for uart2
-Date: Fri, 5 Jul 2013 14:12:31 +0800
-Message-ID: <1373004752-21302-6-git-send-email-b32955@freescale.com>
-References: <1373004752-21302-1-git-send-email-b32955@freescale.com>
+From: gianluca <gianluca@sottospazio.it>
+Subject: question about tty_port.c
+Date: Fri, 5 Jul 2013 08:58:34 +0200
+Message-ID: <20130705065834.GA3548@debian.seek.priv>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe006.messaging.microsoft.com ([216.32.181.186]:16706
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755792Ab3GEGjg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Jul 2013 02:39:36 -0400
-In-Reply-To: <1373004752-21302-1-git-send-email-b32955@freescale.com>
+Received: from smtp209.alice.it ([82.57.200.105]:53481 "EHLO smtp209.alice.it"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751534Ab3GEG6j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 5 Jul 2013 02:58:39 -0400
+Received: from mail.seek.priv (87.4.110.188) by smtp209.alice.it (8.6.060.15)
+        id 51CD43980183731D for linux-serial@vger.kernel.org; Fri, 5 Jul 2013 08:58:35 +0200
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
+To: linux-serial@vger.kernel.org
 
-In the arm2 board, the UART2 works in the dte mode.
-So add a pinctrl for both the imx6q{dl} boards.
+Hi,
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- arch/arm/boot/dts/imx6dl.dtsi |    9 +++++++++
- arch/arm/boot/dts/imx6q.dtsi  |    9 +++++++++
- 2 files changed, 18 insertions(+), 0 deletions(-)
+I was getting kernel panics using an rfcomm bluetooth serial port with the
+kernel 3.10 and searching the web I stumbled upon the following issue, which
+seems to be exactly the problem I have:
 
-diff --git a/arch/arm/boot/dts/imx6dl.dtsi b/arch/arm/boot/dts/imx6dl.dtsi
-index 2b5628d..5f61722 100644
---- a/arch/arm/boot/dts/imx6dl.dtsi
-+++ b/arch/arm/boot/dts/imx6dl.dtsi
-@@ -223,6 +223,15 @@
- 							MX6DL_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
- 						>;
- 					};
-+
-+					pinctrl_uart2_2: uart2grp-2 { /* DTE mode */
-+						fsl,pins = <
-+							MX6DL_PAD_EIM_D26__UART2_RX_DATA 0x1b0b1
-+							MX6DL_PAD_EIM_D27__UART2_TX_DATA 0x1b0b1
-+							MX6DL_PAD_EIM_D28__UART2_CTS_B   0x1b0b1
-+							MX6DL_PAD_EIM_D29__UART2_RTS_B	 0x1b0b1
-+						>;
-+					};
- 				};
- 
- 				uart4 {
-diff --git a/arch/arm/boot/dts/imx6q.dtsi b/arch/arm/boot/dts/imx6q.dtsi
-index 6f4d6ab..4ac3df5 100644
---- a/arch/arm/boot/dts/imx6q.dtsi
-+++ b/arch/arm/boot/dts/imx6q.dtsi
-@@ -266,6 +266,15 @@
- 							MX6Q_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
- 						>;
- 					};
-+
-+					pinctrl_uart2_2: uart2grp-2 { /* DTE mode */
-+						fsl,pins = <
-+							MX6Q_PAD_EIM_D26__UART2_RX_DATA 0x1b0b1
-+							MX6Q_PAD_EIM_D27__UART2_TX_DATA 0x1b0b1
-+							MX6Q_PAD_EIM_D28__UART2_CTS_B	0x1b0b1
-+							MX6Q_PAD_EIM_D29__UART2_RTS_B	0x1b0b1
-+						>;
-+					};
- 				};
- 
- 				uart4 {
--- 
-1.7.1
+http://marc.info/?t=136868685500006&r=1&w=2
 
+So I went to look tty_port.c to understand the lifetime of the tty_port objects
+and fix rfcomm/tty.c
 
+This is unrelated to the issue I have but it seems to me that in
+tty_port_tty_hangup we could leak a tty object:
+
+        if (tty && (!check_clocal || !C_CLOCAL(tty))) {
+                tty_hangup(tty);
+                tty_kref_put(tty);
+        }
+
+If the first condition is true (tty != NULL) and the second is false we never
+call tty_kref_put.
+
+However I could be wrong and in this case I apologize.
+
+I don't understand the inner working of this code, I was just trying to fix
+the oops I get, without luck unfortunately.
+
+Ciao,
+
+Gianluca
