@@ -1,106 +1,44 @@
-From: Alexander Savchenko <oleksandr.savchenko@ti.com>
-Subject: [RESEND][PATCH v2] OMAP2+: UART: enable tx wakeup bit for wer reg
-Date: Fri, 5 Jul 2013 18:25:59 +0300
-Message-ID: <1373037959-22139-1-git-send-email-oleksandr.savchenko@ti.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v3 4/6] ARM: dts: imx6q{dl}: fix the wrong RTS/CTS pad
+ name
+Date: Sat, 6 Jul 2013 13:08:05 +0800
+Message-ID: <20130706050803.GC30164@S2101-09.ap.freescale.net>
+References: <1373004752-21302-1-git-send-email-b32955@freescale.com>
+ <1373004752-21302-5-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:56977 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757377Ab3GEP0K (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Jul 2013 11:26:10 -0400
+Received: from co9ehsobe001.messaging.microsoft.com ([207.46.163.24]:54823
+	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751229Ab3GFFH0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 6 Jul 2013 01:07:26 -0400
+Content-Disposition: inline
+In-Reply-To: <1373004752-21302-5-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, slaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Felipe Balbi <balbi@ti.com>, Kevin Hilman <kevin.hilman@linaro.org>
+To: Huang Shijie <b32955@freescale.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-From: "Govindraj.R" <govindraj.raja@ti.com>
+On Fri, Jul 05, 2013 at 02:12:30PM +0800, Huang Shijie wrote:
+> There is something wrong with the RTS/CTS pads:
+>   The RTS pad is assigned with the CTS's value;
+>   while the CTS pad is assigned with the RTS's value.
+> 
 
->From omap36xx onwards the module wakeup enable reg
-wer has TX wakeup bit available enable the same
-by populating the necessary tx wakeup flag for the
-applicable module ip blocks and use the same
-while configuaring wer reg.
+So basically, you are saying that select_input should be set up for CTS
+rather than RTS.  It seems that the people who generated the macro got
+the wrong input from developer.
 
-Also wer is not context restored, restore wer when
-context is lost.
+So imx6sl-pinfunc.h also needs to be fixed up.
 
-Cc: Paul Walmsley <paul@pwsan.com>
-Cc: Felipe Balbi <balbi@ti.com>
-Cc: Kevin Hilman <kevin.hilman@linaro.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-(for drivers/tty changes)
-Signed-off-by: Govindraj.R <govindraj.raja@ti.com>
----
-[rebased to k3.10]
- drivers/tty/serial/omap-serial.c |   16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+Shawn
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index e42b4c9..fa30d0a 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -52,6 +52,11 @@
- #define OMAP_UART_REV_52 0x0502
- #define OMAP_UART_REV_63 0x0603
- 
-+#define OMAP_UART_TX_WAKEUP_EN		BIT(7)
-+
-+/* Feature flags */
-+#define OMAP_UART_WER_HAS_TX_WAKEUP	BIT(0)
-+
- #define UART_ERRATA_i202_MDR1_ACCESS	BIT(0)
- #define UART_ERRATA_i291_DMA_FORCEIDLE	BIT(1)
- 
-@@ -137,6 +142,7 @@ struct uart_omap_port {
- 	unsigned char		dlh;
- 	unsigned char		mdr1;
- 	unsigned char		scr;
-+	unsigned char		wer;
- 
- 	int			use_dma;
- 	/*
-@@ -151,6 +157,7 @@ struct uart_omap_port {
- 	int			context_loss_cnt;
- 	u32			errata;
- 	u8			wakeups_enabled;
-+	u32			features;
- 
- 	int			DTR_gpio;
- 	int			DTR_inverted;
-@@ -683,7 +690,11 @@ static int serial_omap_startup(struct uart_port *port)
- 	serial_out(up, UART_IER, up->ier);
- 
- 	/* Enable module level wake up */
--	serial_out(up, UART_OMAP_WER, OMAP_UART_WER_MOD_WKUP);
-+	up->wer = OMAP_UART_WER_MOD_WKUP;
-+	if (up->features & OMAP_UART_WER_HAS_TX_WAKEUP)
-+		up->wer |= OMAP_UART_TX_WAKEUP_EN;
-+
-+	serial_out(up, UART_OMAP_WER, up->wer);
- 
- 	pm_runtime_mark_last_busy(up->dev);
- 	pm_runtime_put_autosuspend(up->dev);
-@@ -1373,9 +1384,11 @@ static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
- 	case OMAP_UART_REV_52:
- 		up->errata |= (UART_ERRATA_i202_MDR1_ACCESS |
- 				UART_ERRATA_i291_DMA_FORCEIDLE);
-+		up->features |= OMAP_UART_WER_HAS_TX_WAKEUP;
- 		break;
- 	case OMAP_UART_REV_63:
- 		up->errata |= UART_ERRATA_i202_MDR1_ACCESS;
-+		up->features |= OMAP_UART_WER_HAS_TX_WAKEUP;
- 		break;
- 	default:
- 		break;
-@@ -1611,6 +1624,7 @@ static void serial_omap_restore_context(struct uart_omap_port *up)
- 		serial_omap_mdr1_errataset(up, up->mdr1);
- 	else
- 		serial_out(up, UART_OMAP_MDR1, up->mdr1);
-+	serial_out(up, UART_OMAP_WER, up->wer);
- }
- 
- static int serial_omap_runtime_suspend(struct device *dev)
--- 
-1.7.9.5
+> In order to fix it, this patch exchanges the RTS/CTS pad name.
+> 
+> Signed-off-by: Huang Shijie <b32955@freescale.com>
+> ---
+>  arch/arm/boot/dts/imx6dl-pinfunc.h |   88 ++++++++++++++++++------------------
+>  arch/arm/boot/dts/imx6q-pinfunc.h  |   88 ++++++++++++++++++------------------
+>  2 files changed, 88 insertions(+), 88 deletions(-)
 
