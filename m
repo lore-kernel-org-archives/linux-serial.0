@@ -1,172 +1,46 @@
-From: Gianluca Anzolin <gianluca@sottospazio.it>
-Subject: [RFC] PATCH: rfcomm tty refcount fixes
-Date: Sat, 6 Jul 2013 10:43:43 +0200
-Message-ID: <20130706084343.GA10500@debian.seek.priv>
+From: =?utf-8?Q?Lothar_Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH v3 4/6] ARM: dts: imx6q{dl}: fix the wrong RTS/CTS pad name
+Date: Sun, 7 Jul 2013 13:51:14 +0200
+Message-ID: <20953.22066.706534.773272@ipc1.ka-ro>
+References: <1373004752-21302-1-git-send-email-b32955@freescale.com>
+ <1373004752-21302-5-git-send-email-b32955@freescale.com>
+ <20130706050803.GC30164@S2101-09.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="qDbXVdCdHGoSgWSk"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp207.alice.it ([82.57.200.103]:47426 "EHLO smtp207.alice.it"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752106Ab3GFInz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Jul 2013 04:43:55 -0400
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20130706050803.GC30164@S2101-09.ap.freescale.net>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: Huang Shijie <b32955@freescale.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-bluetooth@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, holler@ahsoftware.de, peter@hurleysoftware.com
 
-
---qDbXVdCdHGoSgWSk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi,
-
-I'm getting panics and OOPS with the vanilla kernel 3.10 using rfcomm with a
-bluetooth module connected to a microcontroller: this occurs when I poweroff
-the microcontroller without closing first the rfcomm device.
-
-Searching the web I found that I'm not alone with this issue:
-
-http://marc.info/?l=linux-bluetooth&m=136868678418771&w=2
-
-In the thread the issue seems to be a refcounting problem.
-
-Indeed looking at the source there are places where dev->port.tty is accessed
-directly without taking references of the tty_struct.
-
-So I inspected every dev->port.tty access and changed the code to use
-tty_port_tty_get which gets the references properly.
-
-In other places I used directly the tty_port_* helpers already in place.
-
-I the process I changed also the tty_port_hangup helper because it seems to me
-that it could leak references in some cases (I sent another email for that).
-
-I attach the patch against net/bluetooth/rfcomm/tty.c and
-drivers/tty/tty_port.c
-
-With this patch I cannot reproduce the oopses I was getting before: I was able
-to trigger the panics very easily and now I cannot trigger them anymore.
-
-I cannot tell however if the problem is really fixed so I'm here request for
-comments from people who know this code better than me.
-
-To them I'd like also to have a look at rfcomm_tty_close: in some situations
-tty_port_put could be called two times: is that right?
-
-Thank you,
-
-Gianluca
-
---qDbXVdCdHGoSgWSk
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="rfcomm.patch"
-
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 121aeb9..2198f7d 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -256,8 +256,9 @@ void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
- {
- 	struct tty_struct *tty = tty_port_tty_get(port);
- 
--	if (tty && (!check_clocal || !C_CLOCAL(tty))) {
--		tty_hangup(tty);
-+	if (tty) {
-+		if (!check_clocal || !C_CLOCAL(tty))
-+			tty_hangup(tty);
- 		tty_kref_put(tty);
- 	}
- }
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index b6e44ad..f657aa2 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -333,10 +333,11 @@ static inline unsigned int rfcomm_room(struct rfcomm_dlc *dlc)
- static void rfcomm_wfree(struct sk_buff *skb)
- {
- 	struct rfcomm_dev *dev = (void *) skb->sk;
--	struct tty_struct *tty = dev->port.tty;
-+
- 	atomic_sub(skb->truesize, &dev->wmem_alloc);
--	if (test_bit(RFCOMM_TTY_ATTACHED, &dev->flags) && tty)
--		tty_wakeup(tty);
-+	if (test_bit(RFCOMM_TTY_ATTACHED, &dev->flags))
-+		tty_port_tty_wakeup(&dev->port);
-+
- 	tty_port_put(&dev->port);
- }
- 
-@@ -410,6 +411,7 @@ static int rfcomm_release_dev(void __user *arg)
- {
- 	struct rfcomm_dev_req req;
- 	struct rfcomm_dev *dev;
-+	struct tty_struct *tty;
- 
- 	if (copy_from_user(&req, arg, sizeof(req)))
- 		return -EFAULT;
-@@ -429,11 +431,15 @@ static int rfcomm_release_dev(void __user *arg)
- 		rfcomm_dlc_close(dev->dlc, 0);
- 
- 	/* Shut down TTY synchronously before freeing rfcomm_dev */
--	if (dev->port.tty)
--		tty_vhangup(dev->port.tty);
-+	tty = tty_port_tty_get(&dev->port);
-+	if (tty) {
-+		tty_vhangup(tty);
-+		tty_kref_put(tty);
-+	}
- 
- 	if (!test_bit(RFCOMM_RELEASE_ONHUP, &dev->flags))
- 		rfcomm_dev_del(dev);
-+
- 	tty_port_put(&dev->port);
- 	return 0;
- }
-@@ -563,6 +569,7 @@ static void rfcomm_dev_data_ready(struct rfcomm_dlc *dlc, struct sk_buff *skb)
- static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err)
- {
- 	struct rfcomm_dev *dev = dlc->owner;
-+	struct tty_struct *tty;
- 	if (!dev)
- 		return;
- 
-@@ -572,7 +579,8 @@ static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err)
- 	wake_up_interruptible(&dev->wait);
- 
- 	if (dlc->state == BT_CLOSED) {
--		if (!dev->port.tty) {
-+		tty = tty_port_tty_get(&dev->port);
-+		if (!tty) {
- 			if (test_bit(RFCOMM_RELEASE_ONHUP, &dev->flags)) {
- 				/* Drop DLC lock here to avoid deadlock
- 				 * 1. rfcomm_dev_get will take rfcomm_dev_lock
-@@ -591,8 +599,10 @@ static void rfcomm_dev_state_change(struct rfcomm_dlc *dlc, int err)
- 				tty_port_put(&dev->port);
- 				rfcomm_dlc_lock(dlc);
- 			}
--		} else
--			tty_hangup(dev->port.tty);
-+		} else {
-+			tty_hangup(tty);
-+			tty_kref_put(tty);
-+		}
- 	}
- }
- 
-@@ -604,10 +614,8 @@ static void rfcomm_dev_modem_status(struct rfcomm_dlc *dlc, u8 v24_sig)
- 
- 	BT_DBG("dlc %p dev %p v24_sig 0x%02x", dlc, dev, v24_sig);
- 
--	if ((dev->modem_status & TIOCM_CD) && !(v24_sig & RFCOMM_V24_DV)) {
--		if (dev->port.tty && !C_CLOCAL(dev->port.tty))
--			tty_hangup(dev->port.tty);
--	}
-+	if ((dev->modem_status & TIOCM_CD) && !(v24_sig & RFCOMM_V24_DV))
-+		tty_port_tty_hangup(&dev->port, true);
- 
- 	dev->modem_status =
- 		((v24_sig & RFCOMM_V24_RTC) ? (TIOCM_DSR | TIOCM_DTR) : 0) |
-
---qDbXVdCdHGoSgWSk--
+SGksCgpTaGF3biBHdW8gd3JpdGVzOgo+IE9uIEZyaSwgSnVsIDA1LCAyMDEzIGF0IDAyOjEyOjMw
+UE0gKzA4MDAsIEh1YW5nIFNoaWppZSB3cm90ZToKPiA+IFRoZXJlIGlzIHNvbWV0aGluZyB3cm9u
+ZyB3aXRoIHRoZSBSVFMvQ1RTIHBhZHM6Cj4gPiAgIFRoZSBSVFMgcGFkIGlzIGFzc2lnbmVkIHdp
+dGggdGhlIENUUydzIHZhbHVlOwo+ID4gICB3aGlsZSB0aGUgQ1RTIHBhZCBpcyBhc3NpZ25lZCB3
+aXRoIHRoZSBSVFMncyB2YWx1ZS4KPiA+IAo+IAo+IFNvIGJhc2ljYWxseSwgeW91IGFyZSBzYXlp
+bmcgdGhhdCBzZWxlY3RfaW5wdXQgc2hvdWxkIGJlIHNldCB1cCBmb3IgQ1RTCj4gcmF0aGVyIHRo
+YW4gUlRTLiAgSXQgc2VlbXMgdGhhdCB0aGUgcGVvcGxlIHdobyBnZW5lcmF0ZWQgdGhlIG1hY3Jv
+IGdvdAo+IHRoZSB3cm9uZyBpbnB1dCBmcm9tIGRldmVsb3Blci4KPiAKcHJvZ3JhbW1pbmcgJ3Nl
+bGVjdF9pbnB1dCcgb25seSBtYWtlcyBzZW5zZSBmb3IgaW5wdXRzLCBub3Qgb3V0cHV0cy4KU2lu
+Y2UgQ1RTIGlzIGFuIG91dHB1dCBzaWduYWwsIHNlbGVjdF9pbnB1dCBvbmx5IG1ha2VzIHNlbnNl
+IGZvciB0aGUKUlRTIGZ1bmN0aW9uIG9mIHRoZSBwYWRzLgoKCkxvdGhhciBXYcOfbWFubgotLSAK
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KCkthLVJvIGVsZWN0cm9uaWNzIEdtYkggfCBQYXNjYWxzdHJhw59lIDIyIHwgRCAtIDUyMDc2
+IEFhY2hlbgpQaG9uZTogKzQ5IDI0MDggMTQwMi0wIHwgRmF4OiArNDkgMjQwOCAxNDAyLTEwCkdl
+c2Now6RmdHNmw7xocmVyOiBNYXR0aGlhcyBLYXVzc2VuCkhhbmRlbHNyZWdpc3RlcmVpbnRyYWc6
+IEFtdHNnZXJpY2h0IEFhY2hlbiwgSFJCIDQ5OTYKCnd3dy5rYXJvLWVsZWN0cm9uaWNzLmRlIHwg
+aW5mb0BrYXJvLWVsZWN0cm9uaWNzLmRlCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1h
+cm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
