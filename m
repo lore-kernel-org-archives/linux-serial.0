@@ -1,75 +1,84 @@
 From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH v4 4/6] ARM: dts: imx6q{dl}: add DTE pads for uart
-Date: Mon, 8 Jul 2013 17:14:20 +0800
-Message-ID: <1373274862-2695-5-git-send-email-b32955@freescale.com>
+Subject: [PATCH v4 3/6] ARM: dts: imx6sl: add "fsl,imx6q-uart" for uart compatible
+Date: Mon, 8 Jul 2013 17:14:19 +0800
+Message-ID: <1373274862-2695-4-git-send-email-b32955@freescale.com>
 References: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-db9lp0251.outbound.messaging.microsoft.com ([213.199.154.251]:32506
+Received: from mail-db9lp0248.outbound.messaging.microsoft.com ([213.199.154.248]:40017
 	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751120Ab3GHJmx (ORCPT
+	by vger.kernel.org with ESMTP id S1751120Ab3GHJnx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 05:42:53 -0400
+	Mon, 8 Jul 2013 05:43:53 -0400
 In-Reply-To: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
 
-The uart2 in the imx6q-arm2 board is used as a DTE uart,
-this patch adds the necessary DTE pads for uart2.
+In order to enable the DMA for some uart port in imx6sl, we add the
+"fsl,imx6q-uart" to the uart's compatible property.
 
 Signed-off-by: Huang Shijie <b32955@freescale.com>
 ---
- arch/arm/boot/dts/imx6dl-pinfunc.h |    4 ++++
- arch/arm/boot/dts/imx6q-pinfunc.h  |    4 ++++
- 2 files changed, 8 insertions(+), 0 deletions(-)
+ arch/arm/boot/dts/imx6sl.dtsi |   15 ++++++++++-----
+ 1 files changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-pinfunc.h b/arch/arm/boot/dts/imx6dl-pinfunc.h
-index 9aab950..dc44d0a 100644
---- a/arch/arm/boot/dts/imx6dl-pinfunc.h
-+++ b/arch/arm/boot/dts/imx6dl-pinfunc.h
-@@ -461,6 +461,8 @@
- #define MX6DL_PAD_EIM_D28__IPU1_CSI1_DATA12        0x174 0x544 0x890 0x3 0x1
- #define MX6DL_PAD_EIM_D28__UART2_CTS_B             0x174 0x544 0x000 0x4 0x0
- #define MX6DL_PAD_EIM_D28__UART2_RTS_B             0x174 0x544 0x900 0x4 0x0
-+#define MX6DL_PAD_EIM_D28__UART2_DTE_CTS_B         0x174 0x544 0x900 0x4 0x0
-+#define MX6DL_PAD_EIM_D28__UART2_DTE_RTS_B         0x174 0x544 0x000 0x4 0x0
- #define MX6DL_PAD_EIM_D28__GPIO3_IO28              0x174 0x544 0x000 0x5 0x0
- #define MX6DL_PAD_EIM_D28__IPU1_EXT_TRIG           0x174 0x544 0x000 0x6 0x0
- #define MX6DL_PAD_EIM_D28__IPU1_DI0_PIN13          0x174 0x544 0x000 0x7 0x0
-@@ -470,6 +472,8 @@
- #define MX6DL_PAD_EIM_D29__ECSPI4_SS0              0x178 0x548 0x808 0x2 0x1
- #define MX6DL_PAD_EIM_D29__UART2_RTS_B             0x178 0x548 0x900 0x4 0x1
- #define MX6DL_PAD_EIM_D29__UART2_CTS_B             0x178 0x548 0x000 0x4 0x0
-+#define MX6DL_PAD_EIM_D29__UART2_DTE_RTS_B         0x178 0x548 0x000 0x4 0x0
-+#define MX6DL_PAD_EIM_D29__UART2_DTE_CTS_B         0x178 0x548 0x900 0x4 0x1
- #define MX6DL_PAD_EIM_D29__GPIO3_IO29              0x178 0x548 0x000 0x5 0x0
- #define MX6DL_PAD_EIM_D29__IPU1_CSI1_VSYNC         0x178 0x548 0x8bc 0x6 0x0
- #define MX6DL_PAD_EIM_D29__IPU1_DI0_PIN14          0x178 0x548 0x000 0x7 0x0
-diff --git a/arch/arm/boot/dts/imx6q-pinfunc.h b/arch/arm/boot/dts/imx6q-pinfunc.h
-index faea6e1..01365f7 100644
---- a/arch/arm/boot/dts/imx6q-pinfunc.h
-+++ b/arch/arm/boot/dts/imx6q-pinfunc.h
-@@ -197,6 +197,8 @@
- #define MX6Q_PAD_EIM_D28__IPU2_CSI1_DATA12        0x0c4 0x3d8 0x8b8 0x3 0x0
- #define MX6Q_PAD_EIM_D28__UART2_CTS_B             0x0c4 0x3d8 0x000 0x4 0x0
- #define MX6Q_PAD_EIM_D28__UART2_RTS_B             0x0c4 0x3d8 0x924 0x4 0x0
-+#define MX6Q_PAD_EIM_D28__UART2_DTE_CTS_B         0x0c4 0x3d8 0x924 0x4 0x0
-+#define MX6Q_PAD_EIM_D28__UART2_DTE_RTS_B         0x0c4 0x3d8 0x000 0x4 0x0
- #define MX6Q_PAD_EIM_D28__GPIO3_IO28              0x0c4 0x3d8 0x000 0x5 0x0
- #define MX6Q_PAD_EIM_D28__IPU1_EXT_TRIG           0x0c4 0x3d8 0x000 0x6 0x0
- #define MX6Q_PAD_EIM_D28__IPU1_DI0_PIN13          0x0c4 0x3d8 0x000 0x7 0x0
-@@ -205,6 +207,8 @@
- #define MX6Q_PAD_EIM_D29__ECSPI4_SS0              0x0c8 0x3dc 0x824 0x2 0x1
- #define MX6Q_PAD_EIM_D29__UART2_RTS_B             0x0c8 0x3dc 0x924 0x4 0x1
- #define MX6Q_PAD_EIM_D29__UART2_CTS_B             0x0c8 0x3dc 0x000 0x4 0x0
-+#define MX6Q_PAD_EIM_D29__UART2_DTE_RTS_B         0x0c4 0x3dc 0x000 0x4 0x0
-+#define MX6Q_PAD_EIM_D29__UART2_DTE_CTS_B         0x0c4 0x3dc 0x924 0x4 0x1
- #define MX6Q_PAD_EIM_D29__GPIO3_IO29              0x0c8 0x3dc 0x000 0x5 0x0
- #define MX6Q_PAD_EIM_D29__IPU2_CSI1_VSYNC         0x0c8 0x3dc 0x8e4 0x6 0x0
- #define MX6Q_PAD_EIM_D29__IPU1_DI0_PIN14          0x0c8 0x3dc 0x000 0x7 0x0
+diff --git a/arch/arm/boot/dts/imx6sl.dtsi b/arch/arm/boot/dts/imx6sl.dtsi
+index 9138c67..0a297af 100644
+--- a/arch/arm/boot/dts/imx6sl.dtsi
++++ b/arch/arm/boot/dts/imx6sl.dtsi
+@@ -152,7 +152,8 @@
+ 				};
+ 
+ 				uart5: serial@02018000 {
+-					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
++					compatible = "fsl,imx6sl-uart",
++						   "fsl,imx6q-uart", "fsl,imx21-uart";
+ 					reg = <0x02018000 0x4000>;
+ 					interrupts = <0 30 0x04>;
+ 					clocks = <&clks IMX6SL_CLK_UART>,
+@@ -162,7 +163,8 @@
+ 				};
+ 
+ 				uart1: serial@02020000 {
+-					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
++					compatible = "fsl,imx6sl-uart",
++						   "fsl,imx6q-uart", "fsl,imx21-uart";
+ 					reg = <0x02020000 0x4000>;
+ 					interrupts = <0 26 0x04>;
+ 					clocks = <&clks IMX6SL_CLK_UART>,
+@@ -172,7 +174,8 @@
+ 				};
+ 
+ 				uart2: serial@02024000 {
+-					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
++					compatible = "fsl,imx6sl-uart",
++						   "fsl,imx6q-uart", "fsl,imx21-uart";
+ 					reg = <0x02024000 0x4000>;
+ 					interrupts = <0 27 0x04>;
+ 					clocks = <&clks IMX6SL_CLK_UART>,
+@@ -209,7 +212,8 @@
+ 				};
+ 
+ 				uart3: serial@02034000 {
+-					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
++					compatible = "fsl,imx6sl-uart",
++						   "fsl,imx6q-uart", "fsl,imx21-uart";
+ 					reg = <0x02034000 0x4000>;
+ 					interrupts = <0 28 0x04>;
+ 					clocks = <&clks IMX6SL_CLK_UART>,
+@@ -219,7 +223,8 @@
+ 				};
+ 
+ 				uart4: serial@02038000 {
+-					compatible = "fsl,imx6sl-uart", "fsl,imx21-uart";
++					compatible = "fsl,imx6sl-uart",
++						   "fsl,imx6q-uart", "fsl,imx21-uart";
+ 					reg = <0x02038000 0x4000>;
+ 					interrupts = <0 29 0x04>;
+ 					clocks = <&clks IMX6SL_CLK_UART>,
 -- 
 1.7.1
 
