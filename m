@@ -1,54 +1,54 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH v3 4/6] ARM: dts: imx6q{dl}: fix the wrong RTS/CTS pad
- name
-Date: Mon, 8 Jul 2013 10:42:15 +0800
-Message-ID: <20130708024214.GB22636@S2101-09.ap.freescale.net>
-References: <1373004752-21302-1-git-send-email-b32955@freescale.com>
- <1373004752-21302-5-git-send-email-b32955@freescale.com>
- <20130706050803.GC30164@S2101-09.ap.freescale.net>
- <20953.22066.706534.773272@ipc1.ka-ro>
+From: Lu Jingchang-B35083 <B35083@freescale.com>
+Subject: RE: [PATCH v4] tty: serial: add Freescale lpuart driver support
+Date: Mon, 8 Jul 2013 02:51:30 +0000
+Message-ID: <B56CDBE15CE27145A4B77D2D24263E851EA368@039-SN1MPN1-005.039d.mgd.msft.net>
+References: <1369733161-19168-1-git-send-email-b35083@freescale.com>
+ <20130705091449.GA20040@S2101-09.ap.freescale.net>
+ <B56CDBE15CE27145A4B77D2D24263E851E5AFC@039-SN1MPN1-005.039d.mgd.msft.net>
+ <20130705123541.GB20040@S2101-09.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe006.messaging.microsoft.com ([216.32.180.189]:46995
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753375Ab3GHCl0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 7 Jul 2013 22:41:26 -0400
-Content-Disposition: inline
-In-Reply-To: <20953.22066.706534.773272@ipc1.ka-ro>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20130705123541.GB20040@S2101-09.ap.freescale.net>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Huang Shijie <b32955@freescale.com>, gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Sun, Jul 07, 2013 at 01:51:14PM +0200, Lothar Wa=DFmann wrote:
-> Hi,
->=20
-> Shawn Guo writes:
-> > On Fri, Jul 05, 2013 at 02:12:30PM +0800, Huang Shijie wrote:
-> > > There is something wrong with the RTS/CTS pads:
-> > >   The RTS pad is assigned with the CTS's value;
-> > >   while the CTS pad is assigned with the RTS's value.
-> > >=20
-> >=20
-> > So basically, you are saying that select_input should be set up for=
- CTS
-> > rather than RTS.  It seems that the people who generated the macro =
-got
-> > the wrong input from developer.
-> >=20
-> programming 'select_input' only makes sense for inputs, not outputs.
-> Since CTS is an output signal, select_input only makes sense for the
-> RTS function of the pads.
+>-----Original Message-----
+>From: Shawn Guo [mailto:shawn.guo@linaro.org]
+>Sent: Friday, July 05, 2013 8:36 PM
+>To: Lu Jingchang-B35083
+>Cc: linux-serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+>gregkh@linuxfoundation.org; s.hauer@pengutronix.de
+>Subject: Re: [PATCH v4] tty: serial: add Freescale lpuart driver support
+>
+>On Fri, Jul 05, 2013 at 09:39:03AM +0000, Lu Jingchang-B35083 wrote:
+>> I explicitly removed the cr2 restore code on cleaning up the redundant
+>code, and find it work well on normal operation.
+>> Low level debug is not supported on Vybrid so I didn't notice that
+>problem.
+>> Will you fixing it? Or I submit a fix on it?
+>
+>I can send a fix for that.  But before doing that, I would need your help
+>to understand why we need to clear those UARTCR2 bits for setting up FIFO
+>stuff at all.  From my quick testing, at least console still works fine
+>after removing all those UARTCR2 operations from lpuart_setup_watermark().
+[Lu Jingchang-B35083] 
+The FIFO registers description in the RM says "This register must be written only when C2[RE] and
+C2[TE] are cleared/not set and when the data buffer/FIFO is empty." So the code is added.
 
-I'm disregarding the patch, as it looks wrong.
 
-Shawn
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Best Regards,
+Jingchang
