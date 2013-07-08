@@ -1,71 +1,75 @@
 From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH v4 5/6] ARM: dts: imx6q{dl}: add a DTE uart pinctrl for uart2
-Date: Mon, 8 Jul 2013 17:14:21 +0800
-Message-ID: <1373274862-2695-6-git-send-email-b32955@freescale.com>
+Subject: [PATCH v4 4/6] ARM: dts: imx6q{dl}: add DTE pads for uart
+Date: Mon, 8 Jul 2013 17:14:20 +0800
+Message-ID: <1373274862-2695-5-git-send-email-b32955@freescale.com>
 References: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:33622
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751134Ab3GHJmI (ORCPT
+Received: from mail-db9lp0251.outbound.messaging.microsoft.com ([213.199.154.251]:32506
+	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751120Ab3GHJmx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 05:42:08 -0400
+	Mon, 8 Jul 2013 05:42:53 -0400
 In-Reply-To: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
 
-In the arm2 board, the UART2 works in the dte mode.
-So add a pinctrl for both the imx6q{dl} boards.
+The uart2 in the imx6q-arm2 board is used as a DTE uart,
+this patch adds the necessary DTE pads for uart2.
 
 Signed-off-by: Huang Shijie <b32955@freescale.com>
 ---
- arch/arm/boot/dts/imx6dl.dtsi |    9 +++++++++
- arch/arm/boot/dts/imx6q.dtsi  |    9 +++++++++
- 2 files changed, 18 insertions(+), 0 deletions(-)
+ arch/arm/boot/dts/imx6dl-pinfunc.h |    4 ++++
+ arch/arm/boot/dts/imx6q-pinfunc.h  |    4 ++++
+ 2 files changed, 8 insertions(+), 0 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl.dtsi b/arch/arm/boot/dts/imx6dl.dtsi
-index 2b5628d..a1302ed 100644
---- a/arch/arm/boot/dts/imx6dl.dtsi
-+++ b/arch/arm/boot/dts/imx6dl.dtsi
-@@ -223,6 +223,15 @@
- 							MX6DL_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
- 						>;
- 					};
-+
-+					pinctrl_uart2_2: uart2grp-2 { /* DTE mode */
-+						fsl,pins = <
-+							MX6DL_PAD_EIM_D26__UART2_RX_DATA   0x1b0b1
-+							MX6DL_PAD_EIM_D27__UART2_TX_DATA   0x1b0b1
-+							MX6DL_PAD_EIM_D28__UART2_DTE_CTS_B 0x1b0b1
-+							MX6DL_PAD_EIM_D29__UART2_DTE_RTS_B 0x1b0b1
-+						>;
-+					};
- 				};
- 
- 				uart4 {
-diff --git a/arch/arm/boot/dts/imx6q.dtsi b/arch/arm/boot/dts/imx6q.dtsi
-index 6f4d6ab..e0b7bad 100644
---- a/arch/arm/boot/dts/imx6q.dtsi
-+++ b/arch/arm/boot/dts/imx6q.dtsi
-@@ -266,6 +266,15 @@
- 							MX6Q_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
- 						>;
- 					};
-+
-+					pinctrl_uart2_2: uart2grp-2 { /* DTE mode */
-+						fsl,pins = <
-+							MX6Q_PAD_EIM_D26__UART2_RX_DATA   0x1b0b1
-+							MX6Q_PAD_EIM_D27__UART2_TX_DATA   0x1b0b1
-+							MX6Q_PAD_EIM_D28__UART2_DTE_CTS_B 0x1b0b1
-+							MX6Q_PAD_EIM_D29__UART2_DTE_RTS_B 0x1b0b1
-+						>;
-+					};
- 				};
- 
- 				uart4 {
+diff --git a/arch/arm/boot/dts/imx6dl-pinfunc.h b/arch/arm/boot/dts/imx6dl-pinfunc.h
+index 9aab950..dc44d0a 100644
+--- a/arch/arm/boot/dts/imx6dl-pinfunc.h
++++ b/arch/arm/boot/dts/imx6dl-pinfunc.h
+@@ -461,6 +461,8 @@
+ #define MX6DL_PAD_EIM_D28__IPU1_CSI1_DATA12        0x174 0x544 0x890 0x3 0x1
+ #define MX6DL_PAD_EIM_D28__UART2_CTS_B             0x174 0x544 0x000 0x4 0x0
+ #define MX6DL_PAD_EIM_D28__UART2_RTS_B             0x174 0x544 0x900 0x4 0x0
++#define MX6DL_PAD_EIM_D28__UART2_DTE_CTS_B         0x174 0x544 0x900 0x4 0x0
++#define MX6DL_PAD_EIM_D28__UART2_DTE_RTS_B         0x174 0x544 0x000 0x4 0x0
+ #define MX6DL_PAD_EIM_D28__GPIO3_IO28              0x174 0x544 0x000 0x5 0x0
+ #define MX6DL_PAD_EIM_D28__IPU1_EXT_TRIG           0x174 0x544 0x000 0x6 0x0
+ #define MX6DL_PAD_EIM_D28__IPU1_DI0_PIN13          0x174 0x544 0x000 0x7 0x0
+@@ -470,6 +472,8 @@
+ #define MX6DL_PAD_EIM_D29__ECSPI4_SS0              0x178 0x548 0x808 0x2 0x1
+ #define MX6DL_PAD_EIM_D29__UART2_RTS_B             0x178 0x548 0x900 0x4 0x1
+ #define MX6DL_PAD_EIM_D29__UART2_CTS_B             0x178 0x548 0x000 0x4 0x0
++#define MX6DL_PAD_EIM_D29__UART2_DTE_RTS_B         0x178 0x548 0x000 0x4 0x0
++#define MX6DL_PAD_EIM_D29__UART2_DTE_CTS_B         0x178 0x548 0x900 0x4 0x1
+ #define MX6DL_PAD_EIM_D29__GPIO3_IO29              0x178 0x548 0x000 0x5 0x0
+ #define MX6DL_PAD_EIM_D29__IPU1_CSI1_VSYNC         0x178 0x548 0x8bc 0x6 0x0
+ #define MX6DL_PAD_EIM_D29__IPU1_DI0_PIN14          0x178 0x548 0x000 0x7 0x0
+diff --git a/arch/arm/boot/dts/imx6q-pinfunc.h b/arch/arm/boot/dts/imx6q-pinfunc.h
+index faea6e1..01365f7 100644
+--- a/arch/arm/boot/dts/imx6q-pinfunc.h
++++ b/arch/arm/boot/dts/imx6q-pinfunc.h
+@@ -197,6 +197,8 @@
+ #define MX6Q_PAD_EIM_D28__IPU2_CSI1_DATA12        0x0c4 0x3d8 0x8b8 0x3 0x0
+ #define MX6Q_PAD_EIM_D28__UART2_CTS_B             0x0c4 0x3d8 0x000 0x4 0x0
+ #define MX6Q_PAD_EIM_D28__UART2_RTS_B             0x0c4 0x3d8 0x924 0x4 0x0
++#define MX6Q_PAD_EIM_D28__UART2_DTE_CTS_B         0x0c4 0x3d8 0x924 0x4 0x0
++#define MX6Q_PAD_EIM_D28__UART2_DTE_RTS_B         0x0c4 0x3d8 0x000 0x4 0x0
+ #define MX6Q_PAD_EIM_D28__GPIO3_IO28              0x0c4 0x3d8 0x000 0x5 0x0
+ #define MX6Q_PAD_EIM_D28__IPU1_EXT_TRIG           0x0c4 0x3d8 0x000 0x6 0x0
+ #define MX6Q_PAD_EIM_D28__IPU1_DI0_PIN13          0x0c4 0x3d8 0x000 0x7 0x0
+@@ -205,6 +207,8 @@
+ #define MX6Q_PAD_EIM_D29__ECSPI4_SS0              0x0c8 0x3dc 0x824 0x2 0x1
+ #define MX6Q_PAD_EIM_D29__UART2_RTS_B             0x0c8 0x3dc 0x924 0x4 0x1
+ #define MX6Q_PAD_EIM_D29__UART2_CTS_B             0x0c8 0x3dc 0x000 0x4 0x0
++#define MX6Q_PAD_EIM_D29__UART2_DTE_RTS_B         0x0c4 0x3dc 0x000 0x4 0x0
++#define MX6Q_PAD_EIM_D29__UART2_DTE_CTS_B         0x0c4 0x3dc 0x924 0x4 0x1
+ #define MX6Q_PAD_EIM_D29__GPIO3_IO29              0x0c8 0x3dc 0x000 0x5 0x0
+ #define MX6Q_PAD_EIM_D29__IPU2_CSI1_VSYNC         0x0c8 0x3dc 0x8e4 0x6 0x0
+ #define MX6Q_PAD_EIM_D29__IPU1_DI0_PIN14          0x0c8 0x3dc 0x000 0x7 0x0
 -- 
 1.7.1
 
