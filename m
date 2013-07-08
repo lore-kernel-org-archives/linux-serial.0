@@ -1,62 +1,77 @@
 From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH v3 4/6] ARM: dts: imx6q{dl}: fix the wrong RTS/CTS pad
- name
-Date: Mon, 8 Jul 2013 16:54:36 +0800
-Message-ID: <51DA7E4C.4050507@freescale.com>
-References: <1373004752-21302-1-git-send-email-b32955@freescale.com> <1373004752-21302-5-git-send-email-b32955@freescale.com> <20130706050803.GC30164@S2101-09.ap.freescale.net> <20953.22066.706534.773272@ipc1.ka-ro> <20130708075004.GR24642@n2100.arm.linux
+Subject: [PATCH v4 0/6] serial: imx: add DMA support for imx6
+Date: Mon, 8 Jul 2013 17:14:16 +0800
+Message-ID: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:28843 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751719Ab3GHIup convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 04:50:45 -0400
-In-Reply-To: <20130708075004.GR24642@n2100.arm.linux.org.uk>
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:21886
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750754Ab3GHJl4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 8 Jul 2013 05:41:56 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: =?UTF-8?B?TG90aGFyIFdhw59tYW5u?= <LW@KARO-electronics.de>, Shawn Guo <shawn.guo@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
 
-=E4=BA=8E 2013=E5=B9=B407=E6=9C=8808=E6=97=A5 15:50, Russell King - ARM=
- Linux =E5=86=99=E9=81=93:
-> On Sun, Jul 07, 2013 at 01:51:14PM +0200, Lothar Wa=C3=9Fmann wrote:
->> Hi,
->>
->> Shawn Guo writes:
->>> On Fri, Jul 05, 2013 at 02:12:30PM +0800, Huang Shijie wrote:
->>>> There is something wrong with the RTS/CTS pads:
->>>>    The RTS pad is assigned with the CTS's value;
->>>>    while the CTS pad is assigned with the RTS's value.
->>>>
->>> So basically, you are saying that select_input should be set up for=
- CTS
->>> rather than RTS.  It seems that the people who generated the macro =
-got
->>> the wrong input from developer.
->>>
->> programming 'select_input' only makes sense for inputs, not outputs.
->> Since CTS is an output signal, select_input only makes sense for the
->> RTS function of the pads.
-> Note: If you are a DTE, then RTS is an output, CTS is an input.  If y=
-ou
-> are a DCE, then RTS is an input and CTS is an output (normally on a
-> standard UART, you just swap the wiring for RTS and CTS but really th=
-at's
-> all that is going on.)  So swapping them in software should be accept=
-able
-> too, provided you're not having to disable any auto flow control faci=
-lities.
->
-thanks for explanation.
+(1) This patch set adds the DMA support for the imx serial driver.
+    The uart with the dma support is usually used by the Bluetooth.
+
+    For the firmware's limit, i only enable the DMA for imx6 serials.
+    If we have proper firmware for imx53 (or other chips), we can also
+    enable the DMA for it.
+
+(2) We only enable the DMA support when the following are meet:
+
+    [1] The uart port supports the hardware flow control(CTS/RTS).
+      (Some uart port does not support the CTS/RTS.)
+
+    [2] The application enables the CTS/RTS.
+
+    [3] The Soc is imx6 serials.
+      For the sdma's firmware limit, we do not support the DMA except
+      the imx6 platform.
+
+    [4] The uart is not used as a console.
 
 
-Huang Shijie
+(3) Tested this patch set by:
+	connecting a imx6q-arm2 board(DTE) with a imx53 board(DCE).
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v3 --> v4:
+	[0] add DTE pad for uart2
+
+v2 --> v3:
+	[0] add a new patch to fix the RTS/CTS pad name issue.
+	[1] rename the uart DTE pinctrl, remove the "dte" from the pinctrl.
+	[2] add a similar UART DTE pinctrl for IMX6DL.
+	[3] move the "fsl,imx6q-uart" to the first of the compatible table.
+
+v1 --> v2:
+	[0] use the "fsl,imx6q-uart" as the new compatible value.
+	[1] move dma_is_inited to imx_uart_dma_init();
+	    move dma_is_enabled to imx_enable_dma();
+	[2] move imx_disable_dma() to the front place of the imx_shutdown(),
+	    just before calls the imx_uart_dma_exit().
+	[3] misc    
+	
+
+Huang Shijie (6):
+  serial: imx: distinguish the imx6q uart from the others
+  serial: imx: add DMA support for imx6q
+  ARM: dts: imx6sl: add "fsl,imx6q-uart" for uart compatible
+  ARM: dts: imx6q{dl}: add DTE pads for uart
+  ARM: dts: imx6q{dl}: add a DTE uart pinctrl for uart2
+  ARM: dts: enable the uart2 for imx6q-arm2
+
+ arch/arm/boot/dts/imx6dl-pinfunc.h |    4 +
+ arch/arm/boot/dts/imx6dl.dtsi      |    9 +
+ arch/arm/boot/dts/imx6q-arm2.dts   |   10 +
+ arch/arm/boot/dts/imx6q-pinfunc.h  |    4 +
+ arch/arm/boot/dts/imx6q.dtsi       |    9 +
+ arch/arm/boot/dts/imx6sl.dtsi      |   15 +-
+ drivers/tty/serial/imx.c           |  422 +++++++++++++++++++++++++++++++++++-
+ 7 files changed, 461 insertions(+), 12 deletions(-)
+
+
