@@ -1,52 +1,45 @@
 From: Alexander Savchenko <oleksandr.savchenko@ti.com>
-Subject: [PATCH] serial: omap: Initialize platform_data
-Date: Mon, 8 Jul 2013 10:25:43 +0300
-Message-ID: <1373268343-2981-1-git-send-email-oleksandr.savchenko@ti.com>
+Subject: [PATCH] OMAP: UART: Fix the revision register read.
+Date: Mon, 8 Jul 2013 10:28:57 +0300
+Message-ID: <1373268537-3198-1-git-send-email-oleksandr.savchenko@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:44963 "EHLO arroyo.ext.ti.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:55323 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751392Ab3GHHZu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 03:25:50 -0400
+	id S1751036Ab3GHH3P (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 8 Jul 2013 03:29:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Savchenko <oleksandr.savchenko@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ruchika Kharwar <ruchika@ti.com>, Alexander Savchenko <oleksandr.savchenko@ti.com>
 
-From: Vikram Pandita <vikram.pandita@ti.com>
+From: Ruchika Kharwar <ruchika@ti.com>
 
-Otherwise serial driver would crash accessing platform_data that was
-not initialized in functions like:
+The revision register is a 32 bit register. The serial_in() function reads
+only the lower 16 bits of the register. This leads to an incorrect computation
+of the Module revision.
 
-        serial_omap_pm(...)
-        ...
-        if (!state && pdata->enable_wakeup)
-                   ^^^^^^^
-        ...
-
-Signed-off-by: Vikram Pandita <vikram.pandita@ti.com>
+Signed-off-by: Ruchika Kharwar <ruchika@ti.com>
+[oleksandr.savchenko@ti.com: add some whitespaces]
 Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
 ---
- drivers/tty/serial/omap-serial.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/omap-serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index b6d1728..e42b4c9 100644
+index ad7b366..a23bbdb 100644
 --- a/drivers/tty/serial/omap-serial.c
 +++ b/drivers/tty/serial/omap-serial.c
-@@ -1402,8 +1402,10 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	struct omap_uart_port_info *omap_up_info = pdev->dev.platform_data;
- 	int ret;
+@@ -1335,7 +1335,7 @@ static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
+ 	u32 mvr, scheme;
+ 	u16 revision, major, minor;
  
--	if (pdev->dev.of_node)
-+	if (pdev->dev.of_node) {
- 		omap_up_info = of_get_uart_port_info(&pdev->dev);
-+		pdev->dev.platform_data = omap_up_info;
-+	}
+-	mvr = serial_in(up, UART_OMAP_MVER);
++	mvr = readl(up->port.membase + (UART_OMAP_MVER << up->port.regshift));
  
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!mem) {
+ 	/* Check revision register scheme */
+ 	scheme = mvr >> OMAP_UART_MVR_SCHEME_SHIFT;
 -- 
 1.7.9.5
 
