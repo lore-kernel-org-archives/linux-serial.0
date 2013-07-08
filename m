@@ -1,55 +1,61 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH v3 4/6] ARM: dts: imx6q{dl}: fix the wrong RTS/CTS pad
-	name
-Date: Mon, 8 Jul 2013 08:50:04 +0100
-Message-ID: <20130708075004.GR24642@n2100.arm.linux.org.uk>
-References: <1373004752-21302-1-git-send-email-b32955@freescale.com> <1373004752-21302-5-git-send-email-b32955@freescale.com> <20130706050803.GC30164@S2101-09.ap.freescale.net> <20953.22066.706534.773272@ipc1.ka-ro>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH] serial: fsl_lpuart: restore UARTCR2 after watermark setup is done
+Date: Mon, 8 Jul 2013 15:53:38 +0800
+Message-ID: <1373270018-3705-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from caramon.arm.linux.org.uk ([78.32.30.218]:36070 "EHLO
-	caramon.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751301Ab3GHHvN (ORCPT
+Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:51706
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751118Ab3GHHwy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 03:51:13 -0400
-Content-Disposition: inline
-In-Reply-To: <20953.22066.706534.773272@ipc1.ka-ro>
+	Mon, 8 Jul 2013 03:52:54 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Shawn Guo <shawn.guo@linaro.org>, Huang Shijie <b32955@freescale.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jingchang Lu <b35083@freescale.com>, Shawn Guo <shawn.guo@linaro.org>
 
-On Sun, Jul 07, 2013 at 01:51:14PM +0200, Lothar Wa=DFmann wrote:
-> Hi,
->=20
-> Shawn Guo writes:
-> > On Fri, Jul 05, 2013 at 02:12:30PM +0800, Huang Shijie wrote:
-> > > There is something wrong with the RTS/CTS pads:
-> > >   The RTS pad is assigned with the CTS's value;
-> > >   while the CTS pad is assigned with the RTS's value.
-> > >=20
-> >=20
-> > So basically, you are saying that select_input should be set up for=
- CTS
-> > rather than RTS.  It seems that the people who generated the macro =
-got
-> > the wrong input from developer.
-> >=20
-> programming 'select_input' only makes sense for inputs, not outputs.
-> Since CTS is an output signal, select_input only makes sense for the
-> RTS function of the pads.
+Function lpuart_setup_watermark() clears some bits in register UARTCR2
+before writing FIFO configuration registers as required by hardware.
+But it should restore UARTCR2 after that.  Otherwise, we end up changing
+UARTCR2 register when setting up watermark, and that is not really
+desirable.  At least, when low-level debug and earlyprint is enabled,
+serial console is broken due to it.
 
-Note: If you are a DTE, then RTS is an output, CTS is an input.  If you
-are a DCE, then RTS is an input and CTS is an output (normally on a
-standard UART, you just swap the wiring for RTS and CTS but really that=
-'s
-all that is going on.)  So swapping them in software should be acceptab=
-le
-too, provided you're not having to disable any auto flow control facili=
-ties.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Fix the problem by restoring UARTCR2 register at the end of function
+lpuart_setup_watermark().
+
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/tty/serial/fsl_lpuart.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 263cfaa..7bc17f2 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -342,8 +342,10 @@ static void lpuart_break_ctl(struct uart_port *port, int break_state)
+ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ {
+ 	unsigned char val, cr2;
++	unsigned char cr2_saved;
+ 
+ 	cr2 = readb(sport->port.membase + UARTCR2);
++	cr2_saved = cr2;
+ 	cr2 &= ~(UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_TE |
+ 			UARTCR2_RIE | UARTCR2_RE);
+ 	writeb(cr2, sport->port.membase + UARTCR2);
+@@ -366,6 +368,9 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ 
+ 	writeb(2, sport->port.membase + UARTTWFIFO);
+ 	writeb(1, sport->port.membase + UARTRWFIFO);
++
++	/* Restore cr2 */
++	writeb(cr2_saved, sport->port.membase + UARTCR2);
+ }
+ 
+ static int lpuart_startup(struct uart_port *port)
+-- 
+1.7.9.5
+
+
