@@ -1,61 +1,28 @@
-From: Alexander Savchenko <oleksandr.savchenko@ti.com>
-Subject: [PATCH] OMAP: UART: Keep the TX fifo full when possible
-Date: Mon, 8 Jul 2013 13:04:44 +0300
-Message-ID: <1373277884-3006-1-git-send-email-oleksandr.savchenko@ti.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v4 0/6] serial: imx: add DMA support for imx6
+Date: Tue, 9 Jul 2013 14:12:21 +0800
+Message-ID: <20130709061219.GE16656@S2101-09.ap.freescale.net>
+References: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:46682 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751534Ab3GHKFl (ORCPT
+Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:12383 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752121Ab3GIGLe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Jul 2013 06:05:41 -0400
+	Tue, 9 Jul 2013 02:11:34 -0400
+Content-Disposition: inline
+In-Reply-To: <1373274862-2695-1-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, matts@commtech-fastcom.com, paulmck@linux.vnet.ibm.com, santosh.shilimkar@ti.com, dhowells@redhat.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Savchenko <oleksandr.savchenko@ti.com>
+To: Huang Shijie <b32955@freescale.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-From: Dmitry Fink <finik@ti.com>
+On Mon, Jul 08, 2013 at 05:14:16PM +0800, Huang Shijie wrote:
+>   ARM: dts: imx6sl: add "fsl,imx6q-uart" for uart compatible
+>   ARM: dts: imx6q{dl}: add DTE pads for uart
+>   ARM: dts: imx6q{dl}: add a DTE uart pinctrl for uart2
+>   ARM: dts: enable the uart2 for imx6q-arm2
 
-Current logic results in interrupt storm since the fifo
-is constantly below the threshold level. Change the logic
-to fill all the available spaces in the fifo as long as
-we have data to minimize the possibilty of underflow and
-elimiate excessive interrupts.
-
-Signed-off-by: Dmitry Fink <finik@ti.com>
-Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
----
- drivers/tty/serial/omap-serial.c |    3 ++-
- include/uapi/linux/serial_reg.h  |    1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index b6d1728..5c9b074 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -310,7 +310,8 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
- 		serial_omap_stop_tx(&up->port);
- 		return;
- 	}
--	count = up->port.fifosize / 4;
-+	count = up->port.fifosize -
-+		(serial_in(up, UART_OMAP_TXFIFO_LVL) & 0xFF);
- 	do {
- 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index e632260..97c26be 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -366,6 +366,7 @@
- #define UART_OMAP_MDR1_FIR_MODE		0x05	/* FIR mode */
- #define UART_OMAP_MDR1_CIR_MODE		0x06	/* CIR mode */
- #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
-+#define UART_OMAP_TXFIFO_LVL		0x1A	/* TX FIFO fullness */
- 
- /*
-  * These are definitions for the Exar XR17V35X and XR17(C|D)15X
--- 
-1.7.9.5
+Applied these 4, thanks.
 
