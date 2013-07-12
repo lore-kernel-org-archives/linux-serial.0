@@ -1,59 +1,47 @@
-From: "George Daniels" <gdsdangeoreg1@outlook.com>
-Subject: It's private
-Date: Thu, 11 Jul 2013 13:58:51 +0300 (EEST)
-Message-ID: <59258.88.23.117.54.1373540331.squirrel__27898.8151498654$1373549643$gmane$org@mail1.centrum-group.com>
-Reply-To: gdsdangeoreg1@outlook.com
+From: voady4cool <voady4cool@libero.it>
+Subject: hi
+Date: Fri, 12 Jul 2013 10:22:09 +0200 (CEST)
+Message-ID: <27265293.22038721373617329151.JavaMail.defaultUser__27268.7639728703$1373617370$gmane$org@defaultHost>
+Reply-To: vera.matine@yahoo.com
 Mime-Version: 1.0
-Content-Type: text/plain;charset=WINDOWS-1251
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.centrum-group.com ([194.12.254.133]:39461 "EHLO
-	mail1.centrum-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755883Ab3GKNd3 (ORCPT
+Received: from outrelay01.libero.it ([212.52.84.101]:51685 "EHLO
+	outrelay01.libero.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757283Ab3GLIWL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Jul 2013 09:33:29 -0400
+	Fri, 12 Jul 2013 04:22:11 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
-It's private
-
-I am George Daniels, a Banker and credit system programmer (HSBC bank).
-I saw your email address while browsing through  the bank D.T.C Screen in
-my office yesterday so I decided to use this very chance to know you. I
-believe we should use every opportunity to know each other better.
-However, I am contacting you for obvious reason which you will understand.
-
-I am sending this mail just to know if this email address is OK,
-reply me back so that I will send  more details to you.
-I have a very important thing to discuss with you, I look forward to
-receiving your response at
-georgedaniels@postino.net. Have a pleasant day.
-
-George Daniels
+To: vera.matine@yahoo.com
 
 
+Ciao
+il mio nome =C3=A8 vera devo dire che scintilla il mio interesse per un=
+ buon=20
+partner, mi piacerebbe sapere di pi=C3=B9 per lo scambio di amore e di =
+amicizia, non=20
+esitate a inviarmi una e-mail attraverso il mio id mail (vera.matine @ =
+yahoo.
+com) Please in modo che io vi mander=C3=B2 la mia foto e ti dir=C3=A0 d=
+i pi=C3=B9 su myself.
+awaiting tua mail in modo che si pu=C3=B2 qui passare da qui, Prenditi =
+cura.
 
+Hello
+my name is vera i must say it spark my interest for a good partner,i wi=
+ll like=20
+to know you more to exchange love and friendship, Please feel free to s=
+end me a=20
+mail through my mail id ( vera.matine@yahoo.com ) so that i will send y=
+ou my=20
+picture and tell you more about myself.awaiting your mail so that can h=
+ere move=20
+on from here,Take care.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
