@@ -1,47 +1,75 @@
-From: voady4cool <voady4cool@libero.it>
-Subject: hi
-Date: Fri, 12 Jul 2013 10:22:09 +0200 (CEST)
-Message-ID: <27265293.22038721373617329151.JavaMail.defaultUser__27268.7639728703$1373617370$gmane$org@defaultHost>
-Reply-To: vera.matine@yahoo.com
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH 1/2] serial: omap: enable PM runtime only when its fully configured
+Date: Fri, 12 Jul 2013 14:55:41 +0300
+Message-ID: <1373630142-21765-1-git-send-email-grygorii.strashko@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outrelay01.libero.it ([212.52.84.101]:51685 "EHLO
-	outrelay01.libero.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757283Ab3GLIWL convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Jul 2013 04:22:11 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Grygorii Strashko <grygorii.strashko@ti.com>, Tony Lindgren <tony@atomide.com>, Rajendra Nayak <rnayak@ti.com>, Felipe Balbi <balbi@ti.com>, Kevin Hilman <khilman@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: vera.matine@yahoo.com
 
+If earlyprintk is enabled and current UART is console port the platform
+code can mark it as RPM_ACTIVE to sync real IP state with PM Runtime and
+avoid resuming of already active device, but now, driver initialization
+will be performed in the wrong way:
 
-Ciao
-il mio nome =C3=A8 vera devo dire che scintilla il mio interesse per un=
- buon=20
-partner, mi piacerebbe sapere di pi=C3=B9 per lo scambio di amore e di =
-amicizia, non=20
-esitate a inviarmi una e-mail attraverso il mio id mail (vera.matine @ =
-yahoo.
-com) Please in modo che io vi mander=C3=B2 la mia foto e ti dir=C3=A0 d=
-i pi=C3=B9 su myself.
-awaiting tua mail in modo che si pu=C3=B2 qui passare da qui, Prenditi =
-cura.
+	pm_runtime_enable(&pdev->dev);
+    <-- PM runtime alowed (device state RPM_ACTIVE)
+	if (omap_up_info->autosuspend_timeout == 0)
+		omap_up_info->autosuspend_timeout = -1;
+	device_init_wakeup(up->dev, true);
+	pm_runtime_use_autosuspend(&pdev->dev);
+	<-- update_autosuspend() will be called and it will disable device
+        (device state RPM_SUSPENDED)
+	pm_runtime_set_autosuspend_delay(&pdev->dev,
+			omap_up_info->autosuspend_timeout);
+	<-- update_autosuspend() will be called which will re-enable device
+        (device state RPM_ACTIVE), because autosuspend_timeout < 0
 
-Hello
-my name is vera i must say it spark my interest for a good partner,i wi=
-ll like=20
-to know you more to exchange love and friendship, Please feel free to s=
-end me a=20
-mail through my mail id ( vera.matine@yahoo.com ) so that i will send y=
-ou my=20
-picture and tell you more about myself.awaiting your mail so that can h=
-ere move=20
-on from here,Take care.
+	pm_runtime_irq_safe(&pdev->dev);
+	pm_runtime_get_sync(&pdev->dev);
+	<-- will do nothing
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Such behavior isn't expected by OMAP serial drivers and causes
+unpredictable calls of serial_omap_runtime_suspend() and
+serial_omap_runtime_resume().
+
+Hence, fix it by allowing PM runtime only after all its parameters are
+configured.
+
+CC: Tony Lindgren <tony@atomide.com>
+CC: Rajendra Nayak <rnayak@ti.com>
+CC: Felipe Balbi <balbi@ti.com>
+CC: Kevin Hilman <khilman@linaro.org>
+
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+tested on OMAP4 SDP with and without earlyprintk enabled.
+ drivers/tty/serial/omap-serial.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index b6d1728..f39bf0c 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1501,7 +1501,6 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 	INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
+ 
+ 	platform_set_drvdata(pdev, up);
+-	pm_runtime_enable(&pdev->dev);
+ 	if (omap_up_info->autosuspend_timeout == 0)
+ 		omap_up_info->autosuspend_timeout = -1;
+ 	device_init_wakeup(up->dev, true);
+@@ -1510,6 +1509,8 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 			omap_up_info->autosuspend_timeout);
+ 
+ 	pm_runtime_irq_safe(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	omap_serial_fill_features_erratas(up);
+-- 
+1.7.9.5
