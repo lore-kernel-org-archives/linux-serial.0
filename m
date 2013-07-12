@@ -1,27 +1,31 @@
-From: Kees Cook <keescook@chromium.org>
+From: "H. Peter Anvin" <hpa@zytor.com>
 Subject: Re: [PATCH 1/3] x86, boot: add mmio serial during compressed boot
-Date: Fri, 12 Jul 2013 13:17:21 -0700
-Message-ID: <CAGXu5jK8fb-wJGbQdM=2iPR=qwY30U--yATjgdwDtfJOhFK8dw@mail.gmail.com>
-References: <1373659660-31123-1-git-send-email-keescook@chromium.org>
-	<CAGXu5jL=oSkWTGEbYLxAU1PwGbgoyeiOgFV31Gd4yj1JkDECBg@mail.gmail.com>
+Date: Fri, 12 Jul 2013 13:20:13 -0700
+Message-ID: <b37c0f48-36b1-41c8-a8b1-b313009e4cdd@email.android.com>
+References: <1373659660-31123-1-git-send-email-keescook@chromium.org> <CAGXu5jL=oSkWTGEbYLxAU1PwGbgoyeiOgFV31Gd4yj1JkDECBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <CAGXu5jL=oSkWTGEbYLxAU1PwGbgoyeiOgFV31Gd4yj1JkDECBg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Landley <rob@landley.net>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Kees Cook <keescook@chromium.org>, LKML <linux-kernel@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Landley <rob@landley.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-[resend, gmail tricked me into HTML mode...]
+Can you fix & resend the patch?
 
-On Fri, Jul 12, 2013 at 1:15 PM, Kees Cook <keescook@chromium.org> wrote:
-> On Fri, Jul 12, 2013 at 1:07 PM, Kees Cook <keescook@chromium.org> wrote:
->>
+Kees Cook <keescook@chromium.org> wrote:
+
+>On Fri, Jul 12, 2013 at 1:07 PM, Kees Cook <keescook@chromium.org>
+>wrote:
+>
 >> Allows "console=uart[8250],mmio[32],0xADDR[,BAUDn8[,BASE_BAUD]]" to
 >> be recognized during compressed boot early console setup, and during
 >> boot console setup. Replaces defines with common serial defines. Adds
->> suport for mmio-based serial devices to compressed-boot early console,
+>> suport for mmio-based serial devices to compressed-boot early
+>console,
 >> and plumbs support for defining the base baud rate for UART clock
 >> calculations (since mmio serial cards may not have the standard rate,
 >> resulting in incorrect baud rates for mmio devices).
@@ -46,20 +50,14 @@ On Fri, Jul 12, 2013 at 1:15 PM, Kees Cook <keescook@chromium.org> wrote:
 >> -#define SERIAL_RSA_BAUD_BASE_LO (SERIAL_RSA_BAUD_BASE / 8)
 >> +#define SERIAL_RSA_BAUD_BASE_LO SERIAL_BAUD_BASE
 >> +#define SERIAL_RSA_BAUD_BASE (SERIAL_RSA_BAUD_BASE * 8)
+>>
 >
+>Argh, just found this typo during an allyesconfig build. Above should
+>be:
 >
-> Argh, just found this typo during an allyesconfig build. Above should be:
+>#define SERIAL_RSA_BAUD_BASE (SERIAL_BAUD_BASE * 8)
 >
-> #define SERIAL_RSA_BAUD_BASE (SERIAL_BAUD_BASE * 8)
->
-> -Kees
->
-> --
-> Kees Cook
-> Chrome OS Security
+>-Kees
 
-
-
---
-Kees Cook
-Chrome OS Security
+-- 
+Sent from my mobile phone. Please excuse brevity and lack of formatting.
