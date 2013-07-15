@@ -1,94 +1,73 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/3] serial: mxs: enable the DMA only when the rts/cts is
- enabled
-Date: Mon, 15 Jul 2013 11:07:55 +0200
-Message-ID: <20130715090755.GN12139@pengutronix.de>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH 2/3] serial: mxs: enable the DMA only when the rts/cts
+ is enabled
+Date: Mon, 15 Jul 2013 18:53:13 +0800
+Message-ID: <51E3D499.3060902@freescale.com>
 References: <1373857736-30108-1-git-send-email-b32955@freescale.com>
  <1373857736-30108-2-git-send-email-b32955@freescale.com>
- <20130715082716.GM12139@pengutronix.de>
- <51E3B5B5.1030706@freescale.com>
+ <20130715082716.GM12139@pengutronix.de> <51E3B5B5.1030706@freescale.com>
+ <20130715090755.GN12139@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:49029 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754459Ab3GOJH6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 15 Jul 2013 05:07:58 -0400
-Content-Disposition: inline
-In-Reply-To: <51E3B5B5.1030706@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20130715090755.GN12139@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hello,
-
-On Mon, Jul 15, 2013 at 04:41:25PM +0800, Huang Shijie wrote:
-> =E4=BA=8E 2013=E5=B9=B407=E6=9C=8815=E6=97=A5 16:27, Uwe Kleine-K=C3=B6=
-nig =E5=86=99=E9=81=93:
-> >do you want to say that the driver fails to only enable DMA when RTS=
-/CTS
-> >are available; or that today the driver can handle DMA just fine eve=
-n
-> >without RTS/CTS? I interpret your commit log as the latter, your pat=
-ch
-> >implements the former however.
-> in the mxs-auart, if the RTS/CTS is not invalid, the DMA should be
-> not enabled.
->=20
-> But current code lost the limit, a uart without the RTS/CTS may also
-> enables the DMA in which case the uart
-> may does not run or run in a abnormal way.
-So this sounds like a fix that should go into stable and so preferably
-should be the first patch in your series.
-
-Something like:
-
-	serial: mxs-auart: DMA unreliable without RTS/CTS
-
-	According to [add some document name here] DMA doesn't work
-	reliable without hardware handshaking. So make DMA dependant on
-	a newly introdused property "fsl,uart-has-rtscts".
-
-	Cc: stable@kernel.org # [first affected version]
-
-The flag is only used to decide if dma should be enabled. So I think an
-in-code comment would be nice, too. Is it still correct to set
-AUART_CTRL2_RTSEN and AUART_CTRL2_RTS and read AUART_STAT_CTS when
-fsl,uart-has-rtscts is not provided?
-(BTW, mxs_auart_set_mctrl has:
-
-	u32 ctrl =3D readl(u->membase + AUART_CTRL2);
-
-	ctrl &=3D ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
-        if (mctrl & TIOCM_RTS) {
-                if (tty_port_cts_enabled(&u->state->port))
-                        ctrl |=3D AUART_CTRL2_RTSEN;
-                else
-                        ctrl |=3D AUART_CTRL2_RTS;
-        }
-
-	s->ctrl =3D mctrl;
-
-A comment for the diligent reader about the difference between RTSEN an=
-d
-RTS would be nice. Also I wonder if shadowing mctrl is sensible and use=
-d
-correctly here.)
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig     =
-       |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+5LqOIDIwMTPlubQwN+aciDE15pelIDE3OjA3LCBVd2UgS2xlaW5lLUvDtm5pZyDlhpnpgZM6Cj4g
+SGVsbG8sCj4KPiBPbiBNb24sIEp1bCAxNSwgMjAxMyBhdCAwNDo0MToyNVBNICswODAwLCBIdWFu
+ZyBTaGlqaWUgd3JvdGU6Cj4+IOS6jiAyMDEz5bm0MDfmnIgxNeaXpSAxNjoyNywgVXdlIEtsZWlu
+ZS1Lw7ZuaWcg5YaZ6YGTOgo+Pj4gZG8geW91IHdhbnQgdG8gc2F5IHRoYXQgdGhlIGRyaXZlciBm
+YWlscyB0byBvbmx5IGVuYWJsZSBETUEgd2hlbiBSVFMvQ1RTCj4+PiBhcmUgYXZhaWxhYmxlOyBv
+ciB0aGF0IHRvZGF5IHRoZSBkcml2ZXIgY2FuIGhhbmRsZSBETUEganVzdCBmaW5lIGV2ZW4KPj4+
+IHdpdGhvdXQgUlRTL0NUUz8gSSBpbnRlcnByZXQgeW91ciBjb21taXQgbG9nIGFzIHRoZSBsYXR0
+ZXIsIHlvdXIgcGF0Y2gKPj4+IGltcGxlbWVudHMgdGhlIGZvcm1lciBob3dldmVyLgo+PiBpbiB0
+aGUgbXhzLWF1YXJ0LCBpZiB0aGUgUlRTL0NUUyBpcyBub3QgaW52YWxpZCwgdGhlIERNQSBzaG91
+bGQgYmUKPj4gbm90IGVuYWJsZWQuCj4+Cj4+IEJ1dCBjdXJyZW50IGNvZGUgbG9zdCB0aGUgbGlt
+aXQsIGEgdWFydCB3aXRob3V0IHRoZSBSVFMvQ1RTIG1heSBhbHNvCj4+IGVuYWJsZXMgdGhlIERN
+QSBpbiB3aGljaCBjYXNlIHRoZSB1YXJ0Cj4+IG1heSBkb2VzIG5vdCBydW4gb3IgcnVuIGluIGEg
+YWJub3JtYWwgd2F5Lgo+IFNvIHRoaXMgc291bmRzIGxpa2UgYSBmaXggdGhhdCBzaG91bGQgZ28g
+aW50byBzdGFibGUgYW5kIHNvIHByZWZlcmFibHkKPiBzaG91bGQgYmUgdGhlIGZpcnN0IHBhdGNo
+IGluIHlvdXIgc2VyaWVzLgpUaGlzIHBhdGNoIGRlcGVuZHMgb24gdGhlIGZpcnN0IHBhdGNoLiA6
+KQo+IFNvbWV0aGluZyBsaWtlOgo+Cj4gCXNlcmlhbDogbXhzLWF1YXJ0OiBETUEgdW5yZWxpYWJs
+ZSB3aXRob3V0IFJUUy9DVFMKPgo+IAlBY2NvcmRpbmcgdG8gW2FkZCBzb21lIGRvY3VtZW50IG5h
+bWUgaGVyZV0gRE1BIGRvZXNuJ3Qgd29yawo+IAlyZWxpYWJsZSB3aXRob3V0IGhhcmR3YXJlIGhh
+bmRzaGFraW5nLiBTbyBtYWtlIERNQSBkZXBlbmRhbnQgb24KPiAJYSBuZXdseSBpbnRyb2R1c2Vk
+IHByb3BlcnR5ICJmc2wsdWFydC1oYXMtcnRzY3RzIi4KPgo+IAlDYzogc3RhYmxlQGtlcm5lbC5v
+cmcgIyBbZmlyc3QgYWZmZWN0ZWQgdmVyc2lvbl0KPgo+IFRoZSBmbGFnIGlzIG9ubHkgdXNlZCB0
+byBkZWNpZGUgaWYgZG1hIHNob3VsZCBiZSBlbmFibGVkLiBTbyBJIHRoaW5rIGFuCj4gaW4tY29k
+ZSBjb21tZW50IHdvdWxkIGJlIG5pY2UsIHRvby4gSXMgaXQgc3RpbGwgY29ycmVjdCB0byBzZXQK
+b2suCj4gQVVBUlRfQ1RSTDJfUlRTRU4gYW5kIEFVQVJUX0NUUkwyX1JUUyBhbmQgcmVhZCBBVUFS
+VF9TVEFUX0NUUyB3aGVuCj4gZnNsLHVhcnQtaGFzLXJ0c2N0cyBpcyBub3QgcHJvdmlkZWQ/Cmkg
+dGhpbmsgaXQncyBjb3JyZWN0LiAoaWYgaSBoYXZlIGEgaW14MjgtZXZrIGJvYXJkLCBpIGNhbiB0
+ZXN0IGl0LikKCklmIHlvdSBlbmFibGUgdGhlIFJUUy9DVFMgZnJvbSB0aGUgYXBwbGljYXRpb24s
+IHRoZSAKdHR5X3BvcnRfY3RzX2VuYWJsZWQoKSB3aWxsIGJlIHRydWUuCndlIHdpbGwgc2V0IHRo
+ZSBBVUFSVF9DVFJMMl9SVFNFTiBpbiB0aGUgZW5kIHdoZW4gdGhlIAoiZnNsLHVhcnQtaGFzLXJ0
+c2N0cyIgaXMgZW5hYmxlZC4KCgo+IChCVFcsIG14c19hdWFydF9zZXRfbWN0cmwgaGFzOgo+Cj4g
+CXUzMiBjdHJsID0gcmVhZGwodS0+bWVtYmFzZSArIEFVQVJUX0NUUkwyKTsKPgo+IAljdHJsJj0g
+fihBVUFSVF9DVFJMMl9SVFNFTiB8IEFVQVJUX0NUUkwyX1JUUyk7Cj4gICAgICAgICAgaWYgKG1j
+dHJsJiAgVElPQ01fUlRTKSB7Cj4gICAgICAgICAgICAgICAgICBpZiAodHR5X3BvcnRfY3RzX2Vu
+YWJsZWQoJnUtPnN0YXRlLT5wb3J0KSkKPiAgICAgICAgICAgICAgICAgICAgICAgICAgY3RybCB8
+PSBBVUFSVF9DVFJMMl9SVFNFTjsKPiAgICAgICAgICAgICAgICAgIGVsc2UKPiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgY3RybCB8PSBBVUFSVF9DVFJMMl9SVFM7Cj4gICAgICAgICAgfQo+Cj4g
+CXMtPmN0cmwgPSBtY3RybDsKPgo+IEEgY29tbWVudCBmb3IgdGhlIGRpbGlnZW50IHJlYWRlciBh
+Ym91dCB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIFJUU0VOIGFuZAo+IFJUUyB3b3VsZCBiZSBuaWNl
+LiBBbHNvIEkgd29uZGVyIGlmIHNoYWRvd2luZyBtY3RybCBpcyBzZW5zaWJsZSBhbmQgdXNlZApQ
+bGVhc2Ugc2VlIHRoZSBzcGVjIGFib3V0IHRoZSBSVFNFTiBhbmQgUlRTLgoKUlRTRU4gZW5hYmxl
+IHRoZSBmbG93IGNvbnRyb2wgYnkgdGhlIGhhcmR3YXJlOwpSVFMgZW5hYmxlIHRoZSBmbG93IGNv
+bnRyb2wgYnkgdGhlIHNvZnR3YXJlLgoKdGhhbmtzCkh1YW5nIFNoaWppZQo+IGNvcnJlY3RseSBo
+ZXJlLikKPgo+IEJlc3QgcmVnYXJkcwo+IFV3ZQo+CgoKCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0Cmxp
+bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
