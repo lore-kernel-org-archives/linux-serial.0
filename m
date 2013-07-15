@@ -1,43 +1,43 @@
-From: "George Daniels" <dangeorg121@live.com>
-Subject: It is Private
-Date: Sun, 14 Jul 2013 03:26:24 +0300 (EEST)
-Message-ID: <65031.83.49.169.117.1373761584.squirrel__12023.2524270707$1373835776$gmane$org@mail1.centrum-group.com>
-Reply-To: dangeorg121@live.com
+From: Huang Shijie <b32955@freescale.com>
+Subject: [PATCH 3/3] ARM: dts: imx28-evk: add the rts/cts property for auart0
+Date: Mon, 15 Jul 2013 11:08:56 +0800
+Message-ID: <1373857736-30108-3-git-send-email-b32955@freescale.com>
+References: <1373857736-30108-1-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain;charset=WINDOWS-1251
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.centrum-group.com ([194.12.254.133]:45310 "EHLO
-	mail1.centrum-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753284Ab3GNVCY (ORCPT
+Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:34348 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753909Ab3GODip (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 14 Jul 2013 17:02:24 -0400
+	Sun, 14 Jul 2013 23:38:45 -0400
+In-Reply-To: <1373857736-30108-1-git-send-email-b32955@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
 
-It is Private
+Add the rts/cts property for auart0 which means we enable the
+DMA support for it.
 
-I am George Daniels, a Banker and credit system programmer (HSBC bank).
-I saw your email address while browsing through  the bank D.T.C Screen in
-my office yesterday so I decided to use this very chance to know you. I
-believe we should use every opportunity to know each other better.
-However, I am contacting you for obvious reason which you will understand.
+Signed-off-by: Huang Shijie <b32955@freescale.com>
+---
+ arch/arm/boot/dts/imx28-evk.dts |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-I am sending this mail just to know if this email address is OK,
-reply me back so that I will send  more details to you.
-I have a very important thing to discuss with you, I look forward to
-receiving your response at
-georgedaniels@postino.net. Have a pleasant day.
-
-George Daniels
-
-
-
-
-
-
-
-
-
+diff --git a/arch/arm/boot/dts/imx28-evk.dts b/arch/arm/boot/dts/imx28-evk.dts
+index e035f46..15715d9 100644
+--- a/arch/arm/boot/dts/imx28-evk.dts
++++ b/arch/arm/boot/dts/imx28-evk.dts
+@@ -220,6 +220,7 @@
+ 			auart0: serial@8006a000 {
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&auart0_pins_a>;
++				fsl,uart-has-rtscts;
+ 				status = "okay";
+ 			};
+ 
+-- 
+1.7.1
 
 
