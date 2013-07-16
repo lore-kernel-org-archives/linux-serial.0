@@ -1,8 +1,8 @@
 From: Ian Abbott <abbotti@mev.co.uk>
-Subject: [PATCH 3/4] serial: 8250_pci: use local device ID for ADDI-DATA
- APCI-7800
-Date: Tue, 16 Jul 2013 16:14:40 +0100
-Message-ID: <1373987681-18245-4-git-send-email-abbotti@mev.co.uk>
+Subject: [PATCH 4/4] pci_ids.h: remove PCI_VENDOR_ID_ADDIDATA_OLD and
+ PCI_DEVICE_ID_ADDIDATA_APCI7800
+Date: Tue, 16 Jul 2013 16:14:41 +0100
+Message-ID: <1373987681-18245-5-git-send-email-abbotti@mev.co.uk>
 References: <1373987681-18245-1-git-send-email-abbotti@mev.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,46 +22,34 @@ To: linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, driverdev-devel@lin
 Cc: Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Abbott <abbotti@mev.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-The quirks and PCI ID table entries for the original ADDI-DATA APCI-7800
-(not the newer APCI-7800-3) use PCI_DEVICE_ID_ADDIDATA_APCI7800 from
-<linux/pci_ids.h> but the device ID was actually assigned to ADDI-DATA
-by Applied Micro Circuits Corporation (PCI_VENDOR_ID_AMCC).  Replace it
-locally with #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800.
+These two defines are no longer used.  They were only used by the PCI
+serial driver "8250_pci" to support the original ADDI-DATA APCI-7800
+card.  In that driver, PCI_VENDOR_ID_ADDIDATA_OLD has been replaced with
+PCI_VENDOR_ID_AMCC which has the same value (0x10e8), and
+PCI_DEVICE_ID_ADDIDATA_APCI7800 has been replaced with a local #define
+PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 with the same value (0x818e).
 
 Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
 ---
- drivers/tty/serial/8250/8250_pci.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/linux/pci_ids.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 3e3d59b..e9b915c 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1565,6 +1565,7 @@ pci_wch_ch353_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
-+#define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
- 
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
-@@ -1588,7 +1589,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 	*/
- 	{
- 		.vendor         = PCI_VENDOR_ID_AMCC,
--		.device         = PCI_DEVICE_ID_ADDIDATA_APCI7800,
-+		.device         = PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800,
- 		.subvendor      = PCI_ANY_ID,
- 		.subdevice      = PCI_ANY_ID,
- 		.setup          = addidata_apci7800_setup,
-@@ -4698,7 +4699,7 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_b0_1_115200 },
- 
- 	{	PCI_VENDOR_ID_AMCC,
--		PCI_DEVICE_ID_ADDIDATA_APCI7800,
-+		PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800,
- 		PCI_ANY_ID,
- 		PCI_ANY_ID,
- 		0,
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 9d99119..6dec3d6 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2258,12 +2258,10 @@
+ /*
+  * ADDI-DATA GmbH communication cards <info@addi-data.com>
+  */
+-#define PCI_VENDOR_ID_ADDIDATA_OLD             0x10E8	/* actually AMCC */
+ #define PCI_VENDOR_ID_ADDIDATA                 0x15B8
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7500        0x7000
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7420        0x7001
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7300        0x7002
+-#define PCI_DEVICE_ID_ADDIDATA_APCI7800        0x818E
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7500_2      0x7009
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7420_2      0x700A
+ #define PCI_DEVICE_ID_ADDIDATA_APCI7300_2      0x700B
 -- 
 1.8.2.1
