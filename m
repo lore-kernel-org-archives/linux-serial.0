@@ -1,34 +1,44 @@
-From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH v2 1/3] x86, boot: add mmio serial during compressed boot
-Date: Tue, 16 Jul 2013 15:05:01 -0700
-Message-ID: <51E5C38D.1090201@zytor.com>
-References: <1373659660-31123-1-git-send-email-keescook@chromium.org> <20130712203802.GA14702@www.outflux.net> <CAE9FiQWJin8-hXsodo46vhYPMrWiiboEVQySPO-LgXtebYmUzw@mail.gmail.com> <CAGXu5jJs5ve-31AYKbv6EaV5PKCf5cOEeWTRsYsi_kBbLWj5uQ@mail.gmail.com> <51E5A0A9.90108@zytor.com> <CAGXu5jJJXgnJxuvc851UZ4Du10HSBJnDWc7rKgRb4_=ojMmtug@mail.gmail.com> <CAE9FiQUAGPgqU3vOOjKJva=nN71CKoOEdpyjg_23-OfgFSkG=A@mail.gmail.com>
+From: Wei Yongjun <weiyj.lk@gmail.com>
+Subject: [PATCH] msm_serial: add missing iounmap() on error in msm_request_port()
+Date: Wed, 17 Jul 2013 13:34:09 +0800
+Message-ID: <CAPgLHd_LGRtkqcPbm=snHOsFOzX6vfafw3EnZtcJmDGCHKHq=Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQUAGPgqU3vOOjKJva=nN71CKoOEdpyjg_23-OfgFSkG=A@mail.gmail.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Landley <rob@landley.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, the arch/x86 maintainers <x86@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: davidb@codeaurora.org, dwalker@fifo99.com, bryanh@codeaurora.org, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On 07/16/2013 02:03 PM, Yinghai Lu wrote:
-> 
-> Other way could be:
-> 
-> Detect if it get into misc.c directly from
-> arch/x86/boot/compressed/head_64.S::startup_64. that is from 64bit
-> bootloader.
-> 
-> others go through startup_32 should be 32bit bootloader.
-> 
-> If it with 64bit boot loader path, You can skip parsing mmio in
-> misc.c::console_init() calling.
-> 
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-Don't hack around it when we can do it right.
+Add the missing iounmap() before return from msm_request_port()
+in the error handling case.
 
-	-hpa
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/tty/serial/msm_serial.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 2c6cfb3..0b38b28 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -637,7 +637,7 @@ static int msm_request_port(struct uart_port *port)
+ 		if (!request_mem_region(gsbi_resource->start, size,
+ 						 "msm_serial")) {
+ 			ret = -EBUSY;
+-			goto fail_release_port;
++			goto fail_release_port_membase;
+ 		}
+ 
+ 		msm_port->gsbi_base = ioremap(gsbi_resource->start, size);
+@@ -651,6 +651,8 @@ static int msm_request_port(struct uart_port *port)
+ 
+ fail_release_gsbi:
+ 	release_mem_region(gsbi_resource->start, size);
++fail_release_port_membase:
++	iounmap(port->membase);
+ fail_release_port:
+ 	release_mem_region(port->mapbase, size);
+ 	return ret;
