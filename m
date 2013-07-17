@@ -1,87 +1,45 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/2] serial/efm32-uart: don't use pdev->id to determine the port's line
-Date: Wed, 17 Jul 2013 08:48:40 +0200
-Message-ID: <1374043721-30677-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH v2] serial: imx: remove the uart_console() check
+Date: Wed, 17 Jul 2013 15:28:48 +0800
+Message-ID: <51E647B0.7010509@freescale.com>
+References: <1372397982-19017-1-git-send-email-b32955@freescale.com> <20130701160833.GC14172@S2101-09.ap.freescale.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38561 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752268Ab3GQGsx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Jul 2013 02:48:53 -0400
+Received: from co1ehsobe002.messaging.microsoft.com ([216.32.180.185]:42114
+	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750727Ab3GQHYo convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Jul 2013 03:24:44 -0400
+In-Reply-To: <20130701160833.GC14172@S2101-09.ap.freescale.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabio.estevam@freescale.com
 
-pdev->id is not a valid choice for device-tree probed devices. So use
-the (properly determined) line from efm32_uart_probe consistenly.
+=E4=BA=8E 2013=E5=B9=B407=E6=9C=8802=E6=97=A5 00:08, Shawn Guo =E5=86=99=
+=E9=81=93:
+> On Fri, Jun 28, 2013 at 01:39:42PM +0800, Huang Shijie wrote:
+>> The uart_console() check makes the clocks(clk_per and clk_ipg) opene=
+d
+>> even when we close the console uart.
+>>
+>> This patch enable/disable the clocks in imx_console_write(),
+>> so we can keep the clocks closed when the console uart is closed.
+>>
+>> Also remove the clock enable/disable oprations in the probe, we do n=
+ot
+>> need them any more.
+>>
+>> Signed-off-by: Huang Shijie<b32955@freescale.com>
+> Acked-by: Shawn Guo<shawn.guo@linaro.org>
+Hi Greg:
+could you merge this patch?
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/efm32-uart.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
--uart.c
-index 7d199c8..cc77970 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -698,6 +698,7 @@ static int efm32_uart_probe(struct platform_device =
-*pdev)
- {
- 	struct efm32_uart_port *efm_port;
- 	struct resource *res;
-+	unsigned int line;
- 	int ret;
-=20
- 	efm_port =3D kzalloc(sizeof(*efm_port), GFP_KERNEL);
-@@ -752,16 +753,17 @@ static int efm32_uart_probe(struct platform_devic=
-e *pdev)
- 			efm_port->pdata =3D *pdata;
- 	}
-=20
--	if (efm_port->port.line >=3D 0 &&
--			efm_port->port.line < ARRAY_SIZE(efm32_uart_ports))
--		efm32_uart_ports[efm_port->port.line] =3D efm_port;
-+	line =3D efm_port->port.line;
-+
-+	if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
-+		efm32_uart_ports[line] =3D efm_port;
-=20
- 	ret =3D uart_add_one_port(&efm32_uart_reg, &efm_port->port);
- 	if (ret) {
- 		dev_dbg(&pdev->dev, "failed to add port: %d\n", ret);
-=20
--		if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
--			efm32_uart_ports[pdev->id] =3D NULL;
-+		if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
-+			efm32_uart_ports[line] =3D NULL;
- err_get_rxirq:
- err_too_small:
- err_get_base:
-@@ -777,13 +779,14 @@ err_get_base:
- static int efm32_uart_remove(struct platform_device *pdev)
- {
- 	struct efm32_uart_port *efm_port =3D platform_get_drvdata(pdev);
-+	unsigned int line =3D efm_port->port.line;
-=20
- 	platform_set_drvdata(pdev, NULL);
-=20
- 	uart_remove_one_port(&efm32_uart_reg, &efm_port->port);
-=20
--	if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
--		efm32_uart_ports[pdev->id] =3D NULL;
-+	if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
-+		efm32_uart_ports[line] =3D NULL;
-=20
- 	kfree(efm_port);
-=20
---=20
-1.8.3.2
+thanks
+Huang Shijie
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
