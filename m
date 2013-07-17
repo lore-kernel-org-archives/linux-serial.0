@@ -1,61 +1,59 @@
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH] msm_serial: add missing iounmap() on error in
- msm_request_port()
-Date: Wed, 17 Jul 2013 14:28:42 +0300
-Message-ID: <1374060522.2657.30.camel@iivanov-dev>
-References: <CAPgLHd_LGRtkqcPbm=snHOsFOzX6vfafw3EnZtcJmDGCHKHq=Q@mail.gmail.com>
+From: Alexander Savchenko <oleksandr.savchenko@ti.com>
+Subject: [PATCH] serial: omap: Fix IRQ handling return value
+Date: Wed, 17 Jul 2013 16:29:13 +0300
+Message-ID: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <CAPgLHd_LGRtkqcPbm=snHOsFOzX6vfafw3EnZtcJmDGCHKHq=Q@mail.gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Wei Yongjun <weiyj.lk@gmail.com>
-Cc: davidb@codeaurora.org, dwalker@fifo99.com, bryanh@codeaurora.org, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, rob.herring@calxeda.com, yongjun_wei@trendmicro.com.cn, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:47268 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753892Ab3GQN3a (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Jul 2013 09:29:30 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ruchika Kharwar <ruchika@ti.com>, Alexander Savchenko <oleksandr.savchenko@ti.com>
 
-On Wed, 2013-07-17 at 13:34 +0800, Wei Yongjun wrote:
-> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> 
-> Add the missing iounmap() before return from msm_request_port()
-> in the error handling case.
-> 
+From: Ruchika Kharwar <ruchika@ti.com>
 
-Reviewed-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+Ensure the Interrupt handling routine return IRQ_HANDLED vs
+IRQ_NONE.
 
-Regards,
-Ivan
+Signed-off-by: Ruchika Kharwar <ruchika@ti.com>
+Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
+---
+ drivers/tty/serial/omap-serial.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index b6d1728..70feeb3 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -479,7 +479,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 	struct uart_omap_port *up = dev_id;
+ 	unsigned int iir, lsr;
+ 	unsigned int type;
+-	irqreturn_t ret = IRQ_NONE;
+ 	int max_count = 256;
+ 
+ 	spin_lock(&up->port.lock);
+@@ -490,7 +489,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 		if (iir & UART_IIR_NO_INT)
+ 			break;
+ 
+-		ret = IRQ_HANDLED;
+ 		lsr = serial_in(up, UART_LSR);
+ 
+ 		/* extract IRQ type from IIR register */
+@@ -529,7 +527,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 	pm_runtime_put_autosuspend(up->dev);
+ 	up->port_activity = jiffies;
+ 
+-	return ret;
++	return IRQ_HANDLED;
+ }
+ 
+ static unsigned int serial_omap_tx_empty(struct uart_port *port)
+-- 
+1.7.9.5
 
-> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> ---
->  drivers/tty/serial/msm_serial.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 2c6cfb3..0b38b28 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -637,7 +637,7 @@ static int msm_request_port(struct uart_port *port)
->  		if (!request_mem_region(gsbi_resource->start, size,
->  						 "msm_serial")) {
->  			ret = -EBUSY;
-> -			goto fail_release_port;
-> +			goto fail_release_port_membase;
->  		}
->  
->  		msm_port->gsbi_base = ioremap(gsbi_resource->start, size);
-> @@ -651,6 +651,8 @@ static int msm_request_port(struct uart_port *port)
->  
->  fail_release_gsbi:
->  	release_mem_region(gsbi_resource->start, size);
-> +fail_release_port_membase:
-> +	iounmap(port->membase);
->  fail_release_port:
->  	release_mem_region(port->mapbase, size);
->  	return ret;
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
