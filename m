@@ -1,59 +1,47 @@
-From: Alexander Savchenko <oleksandr.savchenko@ti.com>
-Subject: [PATCH] serial: omap: Fix IRQ handling return value
-Date: Wed, 17 Jul 2013 16:29:13 +0300
-Message-ID: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] serial/efm32-uart: make of_device_id array const
+Date: Thu, 18 Jul 2013 14:51:04 +0200
+Message-ID: <1374151864-11341-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:47268 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753892Ab3GQN3a (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 17 Jul 2013 09:29:30 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40722 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758179Ab3GRMvK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 18 Jul 2013 08:51:10 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ruchika Kharwar <ruchika@ti.com>, Alexander Savchenko <oleksandr.savchenko@ti.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
 
-From: Ruchika Kharwar <ruchika@ti.com>
-
-Ensure the Interrupt handling routine return IRQ_HANDLED vs
-IRQ_NONE.
-
-Signed-off-by: Ruchika Kharwar <ruchika@ti.com>
-Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 ---
- drivers/tty/serial/omap-serial.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/tty/serial/efm32-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index b6d1728..70feeb3 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -479,7 +479,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 	struct uart_omap_port *up = dev_id;
- 	unsigned int iir, lsr;
- 	unsigned int type;
--	irqreturn_t ret = IRQ_NONE;
- 	int max_count = 256;
- 
- 	spin_lock(&up->port.lock);
-@@ -490,7 +489,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 		if (iir & UART_IIR_NO_INT)
- 			break;
- 
--		ret = IRQ_HANDLED;
- 		lsr = serial_in(up, UART_LSR);
- 
- 		/* extract IRQ type from IIR register */
-@@ -529,7 +527,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 	pm_runtime_put_autosuspend(up->dev);
- 	up->port_activity = jiffies;
- 
--	return ret;
-+	return IRQ_HANDLED;
+diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
+-uart.c
+index cc77970..0d38034 100644
+--- a/drivers/tty/serial/efm32-uart.c
++++ b/drivers/tty/serial/efm32-uart.c
+@@ -793,7 +793,7 @@ static int efm32_uart_remove(struct platform_device=
+ *pdev)
+ 	return 0;
  }
- 
- static unsigned int serial_omap_tx_empty(struct uart_port *port)
--- 
-1.7.9.5
+=20
+-static struct of_device_id efm32_uart_dt_ids[] =3D {
++static const struct of_device_id efm32_uart_dt_ids[] =3D {
+ 	{
+ 		.compatible =3D "efm32,uart",
+ 	}, {
+--=20
+1.8.3.2
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
