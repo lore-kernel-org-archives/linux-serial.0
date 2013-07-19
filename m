@@ -1,42 +1,89 @@
-From: Richard Zhao <rizhao@nvidia.com>
-Subject: [PATCH] serial: tegra: correct help message in Kconfig from 'ttyHS' to 'ttyTHS'
-Date: Sun, 21 Jul 2013 10:43:27 +0800
-Message-ID: <1374374607-31183-2-git-send-email-rizhao@nvidia.com>
-References: <1374374607-31183-1-git-send-email-rizhao@nvidia.com>
+From: "MICROSOFT IBERICA SL" <ibericaslmic@outlook.es>
+Subject: Yon've won a Prize
+Date: Sat, 20 Jul 2013 00:44:20 +0300 (EEST)
+Message-ID: <59773.83.46.143.199.1374270260.squirrel__36574.1891590462$1374377271$gmane$org@mail1.centrum-group.com>
+Reply-To: payingroll446@yahoo.com.hk
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:6351 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754844Ab3GUCnm (ORCPT
+Received: from mail1.centrum-group.com ([194.12.254.133]:47086 "EHLO
+	mail1.centrum-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755419Ab3GUD1H (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Jul 2013 22:43:42 -0400
-In-Reply-To: <1374374607-31183-1-git-send-email-rizhao@nvidia.com>
+	Sat, 20 Jul 2013 23:27:07 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, swarren@wwwdotorg.org, ldewangan@nvidia.com, Richard Zhao <rizhao@nvidia.com>
 
-ttyTHS is consistent with the name used in driver.
+Yon've won a Prize
+MICROSOFT IBERICA SL"
+YOU 'VE WON.
+ATTN:MICROSOFT IBERICA SL
+Your email has won (EUR244,000,00)
+(TWO HUNDRED AND FOURTY FOUR THOUSAND EURO)
+Batch number:XL73276498AM
+Ref number:QR352899526KC
+This is a millennium scientific computer game in which
+email addresses were used.It is a promotional program aimed at
+encouraging internet users,therefore you do not need to buy ticket to enter
+for it.
+For further development,clarification and procedure please
+Contact:Dr Eduardo Sanchez,
+Email contact:payingroll446@yahoo.com.hk
 
-Signed-off-by: Richard Zhao <rizhao@nvidia.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 5e3d689..1456673 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -277,7 +277,7 @@ config SERIAL_TEGRA
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
--	  providing /dev/ttyHS0, 1, 2, 3 and 4 (note, some machines may not
-+	  providing /dev/ttyTHS0, 1, 2, 3 and 4 (note, some machines may not
- 	  provide all of these ports, depending on how the serial port
- 	  are enabled). This driver uses the APB DMA to achieve higher baudrate
- 	  and better performance.
--- 
-1.8.1.5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
