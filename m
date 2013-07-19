@@ -1,33 +1,52 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v3 2/5] ARM: davinci: da850: override device name of UART
-	in DT kernel
-Date: Fri, 19 Jul 2013 20:20:11 +0530
-Message-ID: <51E95223.30704@ti.com>
-References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
-	<1371633342-1210-3-git-send-email-prakash.pm@ti.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 0/4] pci_ids, 8250_pci: remove PCI_VENDOR_ID_ADDIDATA_OLD
+Date: Fri, 19 Jul 2013 15:37:26 -0600
+Message-ID: <CAErSpo4daNsF0BTJhqdZ0hrBpS+EQ3Z1_-C_LN=ec9fLafNkog@mail.gmail.com>
+References: <1373987681-18245-1-git-send-email-abbotti@mev.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <1371633342-1210-3-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
-List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
-List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
-Sender: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-Errors-To: davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
-To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
-Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ie0-f173.google.com ([209.85.223.173]:43925 "EHLO
+	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752042Ab3GSVhq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Jul 2013 17:37:46 -0400
+Received: by mail-ie0-f173.google.com with SMTP id k13so10450560iea.18
+        for <linux-serial@vger.kernel.org>; Fri, 19 Jul 2013 14:37:46 -0700 (PDT)
+In-Reply-To: <1373987681-18245-1-git-send-email-abbotti@mev.co.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Ian Abbott <abbotti@mev.co.uk>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, linux-serial@vger.kernel.org, driverdev-devel@linuxdriverproject.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, H Hartley Sweeten <hsweeten@visionengravers.com>
 
-On Wednesday 19 June 2013 02:45 PM, Manjunathappa, Prakash wrote:
-> Populate OF_DEV_AUXDATA with desired device name so as to prevent
-> clk_get failures.
+On Tue, Jul 16, 2013 at 9:14 AM, Ian Abbott <abbotti@mev.co.uk> wrote:
+> The 8250_pci driver uses PCI_VENDOR_ID_ADDIDATA_OLD (0x10e8),
+> PCI_DEVICE_ID_ADDIDATA_APCI7800 (0x818e) to recognize the original
+> ADDI-DATA APCI-7800 PCI serial card.  However vendor ID 0x10e8 was
+> assigned by PCI-SIG to Applied Micro Circuits Corporation (AMCC) and the
+> associated device ID 0x818e was assigned by AMCC to ADDI-DATA.
+>
+> Comedi already defines PCI_VENDOR_ID_AMCC as 0x10e8 in one of its header
+> files, so that definition can be moved into pci_ids.h and the 8250_pci
+> driver changed to use it.  The PCI_DEVICE_ID_ADDIDATA_APCI7800 define
+> seems out of place in pci_ids.h since it isn't associated with
+> ADDI-DATA's vendor ID but with AMCC's vendor ID.  It's only used in
+> 8250_pci.c so it can be moved there and renamed to something more
+> sensible.
+>
+> 1) pci_ids.h: move PCI_VENDOR_ID_AMCC here
+> 2) serial: 8250_pci: replace PCI_VENDOR_ID_ADDIDATA_OLD
+> 3) serial: 8250_pci: use local device ID for ADDI-DATA APCI-7800
+> 4) pci_ids.h: remove PCI_VENDOR_ID_ADDIDATA_OLD and
+>    PCI_DEVICE_ID_ADDIDATA_APCI7800
+>
+>  drivers/staging/comedi/comedidev.h | 1 -
+>  drivers/tty/serial/8250/8250_pci.c | 9 +++++----
+>  include/linux/pci_ids.h            | 4 ++--
+>  3 files changed, 7 insertions(+), 7 deletions(-)
 
-This can be folded into 1/5 itself.
+For patches 1 & 4 (the ones that touch pci_ids.h):
 
-Thanks,
-Sekhar
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+Please merge them along with the 8250 changes.
