@@ -1,52 +1,84 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 0/4] pci_ids, 8250_pci: remove PCI_VENDOR_ID_ADDIDATA_OLD
-Date: Fri, 19 Jul 2013 15:37:26 -0600
-Message-ID: <CAErSpo4daNsF0BTJhqdZ0hrBpS+EQ3Z1_-C_LN=ec9fLafNkog@mail.gmail.com>
-References: <1373987681-18245-1-git-send-email-abbotti@mev.co.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 20/20] tty: Remove extra wakeup from pty write() path
+Date: Sat, 20 Jul 2013 13:00:47 -0400
+Message-ID: <51EAC23F.9050101@hurleysoftware.com>
+References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-21-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f173.google.com ([209.85.223.173]:43925 "EHLO
-	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752042Ab3GSVhq (ORCPT
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:47398 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754442Ab3GTRAv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Jul 2013 17:37:46 -0400
-Received: by mail-ie0-f173.google.com with SMTP id k13so10450560iea.18
-        for <linux-serial@vger.kernel.org>; Fri, 19 Jul 2013 14:37:46 -0700 (PDT)
-In-Reply-To: <1373987681-18245-1-git-send-email-abbotti@mev.co.uk>
+	Sat, 20 Jul 2013 13:00:51 -0400
+In-Reply-To: <1371306096-5571-21-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ian Abbott <abbotti@mev.co.uk>
-Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, linux-serial@vger.kernel.org, driverdev-devel@linuxdriverproject.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, H Hartley Sweeten <hsweeten@visionengravers.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Andre Naujoks <nautsch2@gmail.com>, Dean Jenkins <Dean_Jenkins@mentor.com>
 
-On Tue, Jul 16, 2013 at 9:14 AM, Ian Abbott <abbotti@mev.co.uk> wrote:
-> The 8250_pci driver uses PCI_VENDOR_ID_ADDIDATA_OLD (0x10e8),
-> PCI_DEVICE_ID_ADDIDATA_APCI7800 (0x818e) to recognize the original
-> ADDI-DATA APCI-7800 PCI serial card.  However vendor ID 0x10e8 was
-> assigned by PCI-SIG to Applied Micro Circuits Corporation (AMCC) and the
-> associated device ID 0x818e was assigned by AMCC to ADDI-DATA.
+On 06/15/2013 10:21 AM, Peter Hurley wrote:
+> Acquiring the write_wait queue spin lock now accounts for the largest
+> slice of cpu time on the tty write path. Two factors contribute to
+> this situation; a overly-pessimistic line discipline write loop which
+> _always_ sets up a wait loop even if i/o will immediately succeed, and
+> on ptys, a wakeup storm from reads and writes.
 >
-> Comedi already defines PCI_VENDOR_ID_AMCC as 0x10e8 in one of its header
-> files, so that definition can be moved into pci_ids.h and the 8250_pci
-> driver changed to use it.  The PCI_DEVICE_ID_ADDIDATA_APCI7800 define
-> seems out of place in pci_ids.h since it isn't associated with
-> ADDI-DATA's vendor ID but with AMCC's vendor ID.  It's only used in
-> 8250_pci.c so it can be moved there and renamed to something more
-> sensible.
+> Writer wakeup does not need to be performed by the pty driver.
+> Firstly, since the actual i/o is performed within the write, the
+> line discipline write loop will continue while space remains in
+> the flip buffers. Secondly, when space becomes avail in the
+> line discipline receive buffer (and thus also in the flip buffers),
+> the pty unthrottle re-wakes the writer (non-flow-controlled line
+> disciplines unconditionally unthrottle the driver when data is
+> received). Thus, existing in-kernel i/o is guaranteed to advance.
+> Finally, writer wakeup occurs at the conclusion of the line discipline
+> write (in tty_write_unlock()). This guarantees that any user-space write
+> waiters are woken to continue additional i/o.
+
+Greg,
+
+I thought I should let you know I'm tracking down a bug/regression
+related to this patch.
+
+In certain unusual pty/ldisc configurations, i/o fails to make
+forward progress. I still stand by my commit message above, so I'm
+in the process of instrumenting the i/o path so I can uncover the
+cause of the failure.
+
+I would still recommend applying this patch to tty-next, as it
+resolves a much more critical bug discussed here [1].
+
+Doing a write_wakeup() from a driver .write() method is a no-no;
+recursion is possible and results in a thread stack overrun.
+
+Regards,
+Peter Hurley
+
+[1]
+https://lkml.org/lkml/2013/7/1/308
+
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>   drivers/tty/pty.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
 >
-> 1) pci_ids.h: move PCI_VENDOR_ID_AMCC here
-> 2) serial: 8250_pci: replace PCI_VENDOR_ID_ADDIDATA_OLD
-> 3) serial: 8250_pci: use local device ID for ADDI-DATA APCI-7800
-> 4) pci_ids.h: remove PCI_VENDOR_ID_ADDIDATA_OLD and
->    PCI_DEVICE_ID_ADDIDATA_APCI7800
+> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+> index 0634dd9..b9bc5be 100644
+> --- a/drivers/tty/pty.c
+> +++ b/drivers/tty/pty.c
+> @@ -121,10 +121,8 @@ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
+>   		/* Stuff the data into the input queue of the other end */
+>   		c = tty_insert_flip_string(to->port, buf, c);
+>   		/* And shovel */
+> -		if (c) {
+> +		if (c)
+>   			tty_flip_buffer_push(to->port);
+> -			tty_wakeup(tty);
+> -		}
+>   	}
+>   	return c;
+>   }
 >
->  drivers/staging/comedi/comedidev.h | 1 -
->  drivers/tty/serial/8250/8250_pci.c | 9 +++++----
->  include/linux/pci_ids.h            | 4 ++--
->  3 files changed, 7 insertions(+), 7 deletions(-)
 
-For patches 1 & 4 (the ones that touch pci_ids.h):
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
-Please merge them along with the 8250 changes.
