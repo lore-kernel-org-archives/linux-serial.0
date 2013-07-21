@@ -1,45 +1,34 @@
-From: Axel Lin <axel.lin@ingics.com>
-Subject: [PATCH] serial: arc_uart: Fix module alias
-Date: Sun, 21 Jul 2013 10:14:15 +0800
-Message-ID: <1374372855.5167.0.camel@phoenix>
+From: Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] serial: tegra: correct help message in Kconfig from 'ttyHS' to 'ttyTHS'
+Date: Sun, 21 Jul 2013 10:43:26 +0800
+Message-ID: <1374374607-31183-1-git-send-email-rizhao@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:51588 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753631Ab3GUCOV (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 20 Jul 2013 22:14:21 -0400
-Received: by mail-pa0-f47.google.com with SMTP id kl14so5732314pab.20
-        for <linux-serial@vger.kernel.org>; Sat, 20 Jul 2013 19:14:20 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-Platform drivers use "platform:" prefix in module alias.
-Also use DRIVER_NAME in MODULE_ALIAS to make module autoloading work.
+ttyTHS is consistent with the name used in driver.
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Signed-off-by: Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/tty/serial/arc_uart.c | 2 +-
+ drivers/tty/serial/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index cbf1d15..22f280a 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -773,6 +773,6 @@ module_init(arc_serial_init);
- module_exit(arc_serial_exit);
- 
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("plat-arcfpga/uart");
-+MODULE_ALIAS("platform:" DRIVER_NAME);
- MODULE_AUTHOR("Vineet Gupta");
- MODULE_DESCRIPTION("ARC(Synopsys) On-Chip(fpga) serial driver");
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 5e3d689..1456673 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -277,7 +277,7 @@ config SERIAL_TEGRA
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
+-	  providing /dev/ttyHS0, 1, 2, 3 and 4 (note, some machines may not
++	  providing /dev/ttyTHS0, 1, 2, 3 and 4 (note, some machines may not
+ 	  provide all of these ports, depending on how the serial port
+ 	  are enabled). This driver uses the APB DMA to achieve higher baudrate
+ 	  and better performance.
 -- 
-1.8.1.2
-
-
-
+1.8.1.5
