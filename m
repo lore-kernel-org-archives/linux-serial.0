@@ -1,44 +1,45 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 11/12] drivers/tty/serial: don't use
- devm_pinctrl_get_select_default() in probe
-Date: Sat, 20 Jul 2013 10:50:49 -0700
-Message-ID: <20130720175049.GB5697@kroah.com>
-References: <1373471889-18107-1-git-send-email-wsa@the-dreams.de>
- <1373471889-18107-11-git-send-email-wsa@the-dreams.de>
- <51DE617E.3060908@atmel.com>
- <CACRpkdYnPN3sm8x9B02bkTuR3oufrng60YU-XeG4fA28J_B_ww@mail.gmail.com>
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] serial: arc_uart: Fix module alias
+Date: Sun, 21 Jul 2013 10:14:15 +0800
+Message-ID: <1374372855.5167.0.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdYnPN3sm8x9B02bkTuR3oufrng60YU-XeG4fA28J_B_ww@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:51588 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753631Ab3GUCOV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 20 Jul 2013 22:14:21 -0400
+Received: by mail-pa0-f47.google.com with SMTP id kl14so5732314pab.20
+        for <linux-serial@vger.kernel.org>; Sat, 20 Jul 2013 19:14:20 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Sat, Jul 20, 2013 at 07:46:48PM +0200, Linus Walleij wrote:
-> On Thu, Jul 11, 2013 at 9:40 AM, Nicolas Ferre <nicolas.ferre@atmel.com> wrote:
-> > On 10/07/2013 17:57, Wolfram Sang :
-> >
-> >> Since commit ab78029 (drivers/pinctrl: grab default handles from device
-> >> core),
-> >> we can rely on device core for setting the default pins. Compile tested
-> >> only.
-> >>
-> >> Acked-by: Linus Walleij <linus.walleij@linaro.org> (personally at LCE13)
-> >> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
-> >> ---
-> >>   drivers/tty/serial/atmel_serial.c |    8 --------
-> >
-> >
-> > For atmel_serial.c:
-> >
-> > Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> 
-> Greg can you please apply this to the TTY tree if it looks
-> OK to you?
+Platform drivers use "platform:" prefix in module alias.
+Also use DRIVER_NAME in MODULE_ALIAS to make module autoloading work.
 
-Will do, thanks.
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/tty/serial/arc_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index cbf1d15..22f280a 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -773,6 +773,6 @@ module_init(arc_serial_init);
+ module_exit(arc_serial_exit);
+ 
+ MODULE_LICENSE("GPL");
+-MODULE_ALIAS("plat-arcfpga/uart");
++MODULE_ALIAS("platform:" DRIVER_NAME);
+ MODULE_AUTHOR("Vineet Gupta");
+ MODULE_DESCRIPTION("ARC(Synopsys) On-Chip(fpga) serial driver");
+-- 
+1.8.1.2
+
+
+
