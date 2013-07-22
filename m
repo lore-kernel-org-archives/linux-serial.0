@@ -1,43 +1,59 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v3 5/5] ARM: davinci: serial: platform code cleanup
-Date: Mon, 22 Jul 2013 15:41:00 +0530
-Message-ID: <51ED0534.2080408@ti.com>
-References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
-	<1371633342-1210-6-git-send-email-prakash.pm@ti.com>
+From: Mark Jackson <mpfj-list@newflow.co.uk>
+Subject: Re: [PATCH 0/4] OMAP2+: Fix boot hang with earlycon enabled
+Date: Mon, 22 Jul 2013 15:52:41 +0100
+Message-ID: <51ED4739.1090305@newflow.co.uk>
+References: <1374487277-26099-1-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <1371633342-1210-6-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
-List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
-List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
-Sender: <davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-Errors-To: davinci-linux-open-source-bounces+gld-davinci-linux-open-source=gmane.org-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
-To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
-Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1374487277-26099-1-git-send-email-rnayak@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: tony@atomide.com, linux-omap@vger.kernel.org, paul@pwsan.com, balbi@ti.com, vaibhav.bedia@ti.com, khilman@linaro.org, sourav.poddar@ti.com, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, grygorii.strashko@ti.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 19 June 2013 02:45 PM, Manjunathappa, Prakash wrote:
-> 1) "struct davinci_uart_config" is introduced to specify
->    UART ports brought out or enabled on the board. But
->    none of the boards use them for that purpose, so clean
->    it up.
-> 2) Have pointer to platform device as a argument for
->    davinci_serial_init(), no need of serial_dev in
->    struct soc_info now.
-> 3) No need of davinci_serial_setup_clk(), not called from
->    multiple places, hence reduce function call overhead.
+On 22/07/13 11:01, Rajendra Nayak wrote:
+> Boot on all OMAP2+ devices is broken with earlycon enabled
+> as discussed here [1]
+> 
+> There were 2 issues which were rootcaused
+> 1. Issue caused due to hwmod doing a reset of console uart while
+> earlycon was using it (seen only on am335x devices)
+> 
+> 2. omap serial causing a NULL context restore with context loss
+> count missing.
+> 
+> This patch set attempts to fix both the issues and is one of the
+> different approaches discussed [1] on how to fix these issues.
+> 
+> Boot tested on omap4 panda es with and without earlycon (DT boot)
+> Boot tested on am335x bone black with and without earlycon (DT boot)
+> Boot tested on OMAP3 beagle XM with and without earlycon (non-DT boot)
+> 
+> [1] http://www.mail-archive.com/linux-omap@vger.kernel.org/msg91662.html
+> 
+> Grygorii Strashko (1):
+>   serial: omap: enable PM runtime only when its fully configured
+> 
+> Rajendra Nayak (3):
+>   ARM: OMAP2+: hwmod: Fix a crash in _setup_reset() with DEBUG_LL
+>   ARM: OMAP2+: Avoid idling memory controllers with no drivers
+>   ARM: OMAP2+: Sync hwmod state with the pm_runtime and omap_device
+>     state
+> 
+>  arch/arm/mach-omap2/omap_device.c                  |   18 ++++++++
+>  arch/arm/mach-omap2/omap_hwmod.h                   |   48 ++++++++++++++++++++
+>  arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c |    6 +--
+>  arch/arm/mach-omap2/omap_hwmod_33xx_data.c         |    2 +-
+>  arch/arm/mach-omap2/omap_hwmod_3xxx_data.c         |    9 ++--
+>  arch/arm/mach-omap2/omap_hwmod_44xx_data.c         |    5 +-
+>  arch/arm/mach-omap2/omap_hwmod_54xx_data.c         |    3 +-
+>  arch/arm/mach-omap2/serial.c                       |   11 -----
+>  drivers/tty/serial/omap-serial.c                   |    3 +-
+>  9 files changed, 81 insertions(+), 24 deletions(-)
+ 
+This now fixes the boot hang for me so ...
 
-1) and 2) are related but 3) can be moved into a different patch - this
-patch will otherwise be doing too many things (hint for that is a vague
-headline and too many items to list in description)
+Tested-by: Mark Jackson <mpfj-list@newflow.co.uk>
 
-Can you respin just this patch based on v3.12/soc branch of my tree?
-
-Thanks,
-Sekhar
