@@ -1,15 +1,14 @@
 From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v3 3/5] ARM: davinci: da850: do not specify clock_frequency
-	for UART DT node
-Date: Mon, 22 Jul 2013 15:33:13 +0530
-Message-ID: <51ED0361.9020604@ti.com>
+Subject: Re: [PATCH v3 4/5] ARM: davinci: da8xx: remove da8xx_uart_clk_enable
+Date: Mon, 22 Jul 2013 15:33:54 +0530
+Message-ID: <51ED038A.6000009@ti.com>
 References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
-	<1371633342-1210-4-git-send-email-prakash.pm@ti.com>
+	<1371633342-1210-5-git-send-email-prakash.pm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <1371633342-1210-4-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <1371633342-1210-5-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
 	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
@@ -24,18 +23,12 @@ Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org,
 List-Id: linux-serial@vger.kernel.org
 
 On Wednesday 19 June 2013 02:45 PM, Manjunathappa, Prakash wrote:
-> DT kernel on da850-evm comes up with garbled UART logs. This is because
-> of mismatch in actual module clock rate and rate specified(clock-frequency)
-> in DT blob. kernel should not assume or depend on bootloaders clock
-> configuration, instead let it find the clock rate at runtime.
-> 
-> Issue discussed here before arriving on this implementation:
-> "ARM: davinci: da850 evm: update clock rate for UART 1/2 DT nodes"
-> https://patchwork.kernel.org/patch/2162271/
+> Serial clocks are enabled from of_platform_serial_setup:of_serial.c,
+> so remove davinci_serial_setup_clk from here.
 > 
 > Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
 
-Adding to v3.12/soc branch of my tree.
+Adding to v3.12/soc branch.
 
 Thanks,
 Sekhar
