@@ -1,79 +1,41 @@
-From: Rajendra Nayak <rnayak@ti.com>
-Subject: [PATCH 2/4] serial: omap: enable PM runtime only when its fully configured
-Date: Mon, 22 Jul 2013 15:31:15 +0530
-Message-ID: <1374487277-26099-3-git-send-email-rnayak@ti.com>
-References: <1374487277-26099-1-git-send-email-rnayak@ti.com>
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v3 3/5] ARM: davinci: da850: do not specify clock_frequency
+	for UART DT node
+Date: Mon, 22 Jul 2013 15:33:13 +0530
+Message-ID: <51ED0361.9020604@ti.com>
+References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
+	<1371633342-1210-4-git-send-email-prakash.pm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1374487277-26099-1-git-send-email-rnayak@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: tony@atomide.com, linux-omap@vger.kernel.org
-Cc: paul@pwsan.com, balbi@ti.com, mpfj-list@newflow.co.uk, vaibhav.bedia@ti.com, khilman@linaro.org, sourav.poddar@ti.com, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, grygorii.strashko@ti.com, Rajendra Nayak <rnayak@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+In-Reply-To: <1371633342-1210-4-git-send-email-prakash.pm-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
+List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
+List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
+	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
+Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
+Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
+To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
+Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+On Wednesday 19 June 2013 02:45 PM, Manjunathappa, Prakash wrote:
+> DT kernel on da850-evm comes up with garbled UART logs. This is because
+> of mismatch in actual module clock rate and rate specified(clock-frequency)
+> in DT blob. kernel should not assume or depend on bootloaders clock
+> configuration, instead let it find the clock rate at runtime.
+> 
+> Issue discussed here before arriving on this implementation:
+> "ARM: davinci: da850 evm: update clock rate for UART 1/2 DT nodes"
+> https://patchwork.kernel.org/patch/2162271/
+> 
+> Signed-off-by: Manjunathappa, Prakash <prakash.pm-l0cyMroinI0@public.gmane.org>
 
-If earlyprintk is enabled and current UART is console port the platform
-code can mark it as RPM_ACTIVE to sync real IP state with PM Runtime and
-avoid resuming of already active device, but now, driver initialization
-will be performed in the wrong way:
+Adding to v3.12/soc branch of my tree.
 
-	pm_runtime_enable(&pdev->dev);
-    <-- PM runtime alowed (device state RPM_ACTIVE)
-	if (omap_up_info->autosuspend_timeout == 0)
-		omap_up_info->autosuspend_timeout = -1;
-	device_init_wakeup(up->dev, true);
-	pm_runtime_use_autosuspend(&pdev->dev);
-	<-- update_autosuspend() will be called and it will disable device
-        (device state RPM_SUSPENDED)
-	pm_runtime_set_autosuspend_delay(&pdev->dev,
-			omap_up_info->autosuspend_timeout);
-	<-- update_autosuspend() will be called which will re-enable device
-        (device state RPM_ACTIVE), because autosuspend_timeout < 0
-
-	pm_runtime_irq_safe(&pdev->dev);
-	pm_runtime_get_sync(&pdev->dev);
-	<-- will do nothing
-
-Such behavior isn't expected by OMAP serial drivers and causes
-unpredictable calls of serial_omap_runtime_suspend() and
-serial_omap_runtime_resume().
-
-Hence, fix it by allowing PM runtime only after all its parameters are
-configured.
-
-CC: Tony Lindgren <tony@atomide.com>
-CC: Rajendra Nayak <rnayak@ti.com>
-CC: Felipe Balbi <balbi@ti.com>
-CC: Kevin Hilman <khilman@linaro.org>
-
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/tty/serial/omap-serial.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index b6d1728..f39bf0c 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1501,7 +1501,6 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
- 
- 	platform_set_drvdata(pdev, up);
--	pm_runtime_enable(&pdev->dev);
- 	if (omap_up_info->autosuspend_timeout == 0)
- 		omap_up_info->autosuspend_timeout = -1;
- 	device_init_wakeup(up->dev, true);
-@@ -1510,6 +1509,8 @@ static int serial_omap_probe(struct platform_device *pdev)
- 			omap_up_info->autosuspend_timeout);
- 
- 	pm_runtime_irq_safe(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	omap_serial_fill_features_erratas(up);
--- 
-1.7.9.5
-
+Thanks,
+Sekhar
