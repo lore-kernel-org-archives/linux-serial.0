@@ -1,58 +1,64 @@
-From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH] ARM: S3C24XX: Add missing clkdev entries for
-	s3c2440 UART
-Date: Tue, 23 Jul 2013 09:57:17 +0200
-Message-ID: <201307230957.17329.jbe@pengutronix.de>
-References: <1374435765-6747-1-git-send-email-sylvester.nawrocki@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 20/20] tty: Remove extra wakeup from pty write() path
+Date: Tue, 23 Jul 2013 08:57:44 -0400
+Message-ID: <51EE7DC8.3060004@hurleysoftware.com>
+References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-21-git-send-email-peter@hurleysoftware.com> <51EAC23F.9050101@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <oselas-bounces+gcepoc-oselas=m.gmane.org-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org>
-In-Reply-To: <1374435765-6747-1-git-send-email-sylvester.nawrocki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/oselas>,
-	<mailto:oselas-request-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/pipermail/oselas>
-List-Post: <mailto:oselas-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org>
-List-Help: <mailto:oselas-request-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/oselas>,
-	<mailto:oselas-request-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org?subject=subscribe>
-Sender: oselas-bounces-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org
-Errors-To: oselas-bounces+gcepoc-oselas=m.gmane.org-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, oselas-/6JGXy0y6WNX4V3MAk3apN53zsg1cpMQ@public.gmane.org, Chander Kashyap <chander.kashyap-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sylwester Nawrocki <sylvester.nawrocki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:45934 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932168Ab3GWM5s (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Jul 2013 08:57:48 -0400
+In-Reply-To: <51EAC23F.9050101@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Andre Naujoks <nautsch2@gmail.com>, Dean Jenkins <Dean_Jenkins@mentor.com>
 
-On Sunday 21 July 2013 21:42:45 Sylwester Nawrocki wrote:
-> This patch restores serial port operation which has been broken since
-> commit 60e93575476f90a72146b51283f514da655410a7
-> serial: samsung: enable clock before clearing pending interrupts during
-> init
+On 07/20/2013 01:00 PM, Peter Hurley wrote:
+> On 06/15/2013 10:21 AM, Peter Hurley wrote:
+>> Acquiring the write_wait queue spin lock now accounts for the largest
+>> slice of cpu time on the tty write path. Two factors contribute to
+>> this situation; a overly-pessimistic line discipline write loop which
+>> _always_ sets up a wait loop even if i/o will immediately succeed, and
+>> on ptys, a wakeup storm from reads and writes.
+>>
+>> Writer wakeup does not need to be performed by the pty driver.
+>> Firstly, since the actual i/o is performed within the write, the
+>> line discipline write loop will continue while space remains in
+>> the flip buffers. Secondly, when space becomes avail in the
+>> line discipline receive buffer (and thus also in the flip buffers),
+>> the pty unthrottle re-wakes the writer (non-flow-controlled line
+>> disciplines unconditionally unthrottle the driver when data is
+>> received). Thus, existing in-kernel i/o is guaranteed to advance.
+>> Finally, writer wakeup occurs at the conclusion of the line discipline
+>> write (in tty_write_unlock()). This guarantees that any user-space write
+>> waiters are woken to continue additional i/o.
 >
-> That commit only uncovered the real issue which was missing clkdev
-> entries for the "uart" clocks on S3C2440. It went unnoticed so far
-> because return value of clk API calls were not being checked at all
-> in the samsung serial port driver.
+> Greg,
 >
-> This patch should be backported to at least 3.10 stable kernel, since
-> the serial port has not been working on s3c2440 since 3.10-rc5.
+> I thought I should let you know I'm tracking down a bug/regression
+> related to this patch.
 >
-> Cc: Chander Kashyap <chander.kashyap-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Sylwester Nawrocki <sylvester.nawrocki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> [on S3C2440 SoC based Mini2440 board]
-> Tested-by: Sylwester Nawrocki <sylvester.nawrocki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->
-> [...]
+> In certain unusual pty/ldisc configurations, i/o fails to make
+> forward progress. I still stand by my commit message above, so I'm
+> in the process of instrumenting the i/o path so I can uncover the
+> cause of the failure.
 
-Tested-by: Juergen Beisert <jbe-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Mystery solved.
 
-=2D-=20
-Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0| Juergen Beisert =A0 =A0 =A0 =A0 =A0 =A0 |
-Linux Solutions for Science and Industry =A0 =A0 =A0| Phone: +49-5121-20691=
-7-5128 |
-Peiner Str. 6-8, 31137 Hildesheim, Germany =A0 =A0| Fax: =A0 +49-5121-20691=
-7-5555 |
-Amtsgericht Hildesheim, HRA 2686 =A0 =A0 =A0 =A0 =A0 =A0 =A0| http://www.pe=
-ngutronix.de/ =A0|
+[PATCH v4 23/24] n_tty: Special case pty flow control
+from the lockless n_tty receive path series introduced a regression
+in which i/o failed to advance.
+
+This only occurred when one end of a pty pair was set to an ldisc
+other than N_TTY. The special case optimization which that patch
+introduces failed to address that configuration.
+
+I've sent a v5 of that patch to resolve the regression.
+
+Regards,
+Peter Hurley
