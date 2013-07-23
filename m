@@ -1,64 +1,71 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 20/20] tty: Remove extra wakeup from pty write() path
-Date: Tue, 23 Jul 2013 08:57:44 -0400
-Message-ID: <51EE7DC8.3060004@hurleysoftware.com>
-References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-1-git-send-email-peter@hurleysoftware.com> <1371306096-5571-21-git-send-email-peter@hurleysoftware.com> <51EAC23F.9050101@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v5 23/24] n_tty: Special case pty flow control
+Date: Tue, 23 Jul 2013 08:47:30 -0400
+Message-ID: <1374583650-3853-1-git-send-email-peter@hurleysoftware.com>
+References: <1371302076-4688-24-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:45934 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932168Ab3GWM5s (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:47701 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932148Ab3GWNPg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Jul 2013 08:57:48 -0400
-In-Reply-To: <51EAC23F.9050101@hurleysoftware.com>
+	Tue, 23 Jul 2013 09:15:36 -0400
+In-Reply-To: <1371302076-4688-24-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Andre Naujoks <nautsch2@gmail.com>, Dean Jenkins <Dean_Jenkins@mentor.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-On 07/20/2013 01:00 PM, Peter Hurley wrote:
-> On 06/15/2013 10:21 AM, Peter Hurley wrote:
->> Acquiring the write_wait queue spin lock now accounts for the largest
->> slice of cpu time on the tty write path. Two factors contribute to
->> this situation; a overly-pessimistic line discipline write loop which
->> _always_ sets up a wait loop even if i/o will immediately succeed, and
->> on ptys, a wakeup storm from reads and writes.
->>
->> Writer wakeup does not need to be performed by the pty driver.
->> Firstly, since the actual i/o is performed within the write, the
->> line discipline write loop will continue while space remains in
->> the flip buffers. Secondly, when space becomes avail in the
->> line discipline receive buffer (and thus also in the flip buffers),
->> the pty unthrottle re-wakes the writer (non-flow-controlled line
->> disciplines unconditionally unthrottle the driver when data is
->> received). Thus, existing in-kernel i/o is guaranteed to advance.
->> Finally, writer wakeup occurs at the conclusion of the line discipline
->> write (in tty_write_unlock()). This guarantees that any user-space write
->> waiters are woken to continue additional i/o.
->
-> Greg,
->
-> I thought I should let you know I'm tracking down a bug/regression
-> related to this patch.
->
-> In certain unusual pty/ldisc configurations, i/o fails to make
-> forward progress. I still stand by my commit message above, so I'm
-> in the process of instrumenting the i/o path so I can uncover the
-> cause of the failure.
+The pty driver forces ldisc flow control on, regardless of available
+receive buffer space, so the writer can be woken whenever unthrottle
+is called. However, this 'forced throttle' has performance
+consequences, as multiple atomic operations are necessary to
+unthrottle and perform the write wakeup for every input line (in
+canonical mode).
 
-Mystery solved.
+Instead, short-circuit the unthrottle if the tty is a pty and perform
+the write wakeup directly.
 
-[PATCH v4 23/24] n_tty: Special case pty flow control
-from the lockless n_tty receive path series introduced a regression
-in which i/o failed to advance.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
 
-This only occurred when one end of a pty pair was set to an ldisc
-other than N_TTY. The special case optimization which that patch
-introduces failed to address that configuration.
+v5: fix regression in unusual pty/ldisc configurations where
+    i/o fails to make forward progress
 
-I've sent a v5 of that patch to resolve the regression.
+ drivers/tty/n_tty.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 0e3efc1..59eb444 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -231,6 +231,8 @@ static void n_tty_write_wakeup(struct tty_struct *tty)
+ 
+ static inline void n_tty_check_throttle(struct tty_struct *tty)
+ {
++	if (tty->driver->type == TTY_DRIVER_TYPE_PTY)
++		return;
+ 	/*
+ 	 * Check the remaining room for the input canonicalization
+ 	 * mode.  We don't want to throttle the driver if we're in
+@@ -250,6 +252,18 @@ static inline void n_tty_check_throttle(struct tty_struct *tty)
+ 
+ static inline void n_tty_check_unthrottle(struct tty_struct *tty)
+ {
++	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
++	    tty->link->ldisc->ops->write_wakeup == n_tty_write_wakeup) {
++		if (chars_in_buffer(tty) > TTY_THRESHOLD_UNTHROTTLE)
++			return;
++		if (!tty->count)
++			return;
++		n_tty_set_room(tty);
++		n_tty_write_wakeup(tty->link);
++		wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
++		return;
++	}
++
+ 	/* If there is enough space in the read buffer now, let the
+ 	 * low-level driver know. We use chars_in_buffer() to
+ 	 * check the buffer, as it now knows about canonical mode.
+-- 
+1.8.1.2
+
