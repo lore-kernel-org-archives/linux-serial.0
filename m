@@ -1,48 +1,42 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 00/24] lockless n_tty receive path
-Date: Tue, 23 Jul 2013 16:44:52 -0700
-Message-ID: <20130723234452.GB27433@kroah.com>
-References: <1366039168-8510-1-git-send-email-peter@hurleysoftware.com>
- <1371302076-4688-1-git-send-email-peter@hurleysoftware.com>
- <20130617200138.GA8199@kroah.com>
- <51BF724A.505@hurleysoftware.com>
+Subject: Re: [PATCH v2 6/9] n_tty: Process echoes in blocks
+Date: Tue, 23 Jul 2013 16:53:29 -0700
+Message-ID: <20130723235329.GA14499@kroah.com>
+References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
+ <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+ <1371305069-5366-7-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42655 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:42667 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933968Ab3GWXox (ORCPT
+	with ESMTP id S934085Ab3GWXxa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Jul 2013 19:44:53 -0400
+	Tue, 23 Jul 2013 19:53:30 -0400
 Content-Disposition: inline
-In-Reply-To: <51BF724A.505@hurleysoftware.com>
+In-Reply-To: <1371305069-5366-7-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Mon, Jun 17, 2013 at 04:32:10PM -0400, Peter Hurley wrote:
-> On 06/17/2013 04:01 PM, Greg Kroah-Hartman wrote:
-> >On Sat, Jun 15, 2013 at 09:14:12AM -0400, Peter Hurley wrote:
-> >>Greg,
-> >>
-> >>As before, this patchset is dependent on the 'ldsem patchset'.
-> >>The reason is that this series abandons tty->receive_room as
-> >>a flow control mechanism (because that requires locking),
-> >>and the TIOCSETD ioctl _without ldsem_ uses tty->receive_room
-> >>to shutoff i/o.
-> >>
-> >>It is also dependent on 'n_tty fixes' which I recently resent
-> >>to you.
-> >
-> >Thanks for rebasing all of this, and resending it.  It's late in the
-> >3.11 development cycle, so I'm going to wait unto 3.11-rc1 is out to
-> >queue it up for 3.12, to get it lots of testing in linux-next.
+On Sat, Jun 15, 2013 at 10:04:26AM -0400, Peter Hurley wrote:
+> Byte-by-byte echo output is painfully slow, requiring a lock/unlock
+> cycle for every input byte.
 > 
-> Thanks Greg. I actually meant to suggest these be held until after
-> the merge window but I got distracted by the VT1 deallocation bug
-> report.
+> Instead, perform the echo output in blocks of 256 characters, and
+> at least once per flip buffer receive. Enough space is reserved in
+> the echo buffer to guarantee a full block can be saved without
+> overrunning the echo output. Overrun is prevented by discarding
+> the oldest echoes until enough space exists in the echo buffer
+> to receive at least a full block of new echoes.
 
-Now applied, thanks.
+I'm a bit worried about this, I wonder if anything is expecting the
+echos to not come in "bursts" like this, but I really can't think of why
+they would want that.
+
+So let's apply it and see what breaks!  :)
+
+thanks,
 
 greg k-h
