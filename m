@@ -1,34 +1,71 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH v5] linux,stdout-path helper
-Date: Tue, 23 Jul 2013 16:17:27 +0200
-Message-ID: <20130723141727.GA6807@pengutronix.de>
-References: <20121121155312.GX4398@game.jcrosoft.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 20/20] tty: Remove extra wakeup from pty write() path
+Date: Tue, 23 Jul 2013 08:02:45 -0700
+Message-ID: <20130723150245.GB12292@kroah.com>
+References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+ <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
+ <1371306096-5571-21-git-send-email-peter@hurleysoftware.com>
+ <51EAC23F.9050101@hurleysoftware.com>
+ <51EE7DC8.3060004@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57726 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932972Ab3GWORf (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:35089 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757714Ab3GWPBe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Jul 2013 10:17:35 -0400
+	Tue, 23 Jul 2013 11:01:34 -0400
 Content-Disposition: inline
-In-Reply-To: <20121121155312.GX4398@game.jcrosoft.org>
+In-Reply-To: <51EE7DC8.3060004@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree-discuss@lists.ozlabs.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Andre Naujoks <nautsch2@gmail.com>, Dean Jenkins <Dean_Jenkins@mentor.com>
 
-On Wed, Nov 21, 2012 at 04:53:12PM +0100, Jean-Christophe PLAGNIOL-VILLARD wrote:
-> The following adds a helper for matching the linux,stdout-path property
-> in the chosen node and makes use of it in the i.MX serial and Atmel serial driver.
+On Tue, Jul 23, 2013 at 08:57:44AM -0400, Peter Hurley wrote:
+> On 07/20/2013 01:00 PM, Peter Hurley wrote:
+> >On 06/15/2013 10:21 AM, Peter Hurley wrote:
+> >>Acquiring the write_wait queue spin lock now accounts for the largest
+> >>slice of cpu time on the tty write path. Two factors contribute to
+> >>this situation; a overly-pessimistic line discipline write loop which
+> >>_always_ sets up a wait loop even if i/o will immediately succeed, and
+> >>on ptys, a wakeup storm from reads and writes.
+> >>
+> >>Writer wakeup does not need to be performed by the pty driver.
+> >>Firstly, since the actual i/o is performed within the write, the
+> >>line discipline write loop will continue while space remains in
+> >>the flip buffers. Secondly, when space becomes avail in the
+> >>line discipline receive buffer (and thus also in the flip buffers),
+> >>the pty unthrottle re-wakes the writer (non-flow-controlled line
+> >>disciplines unconditionally unthrottle the driver when data is
+> >>received). Thus, existing in-kernel i/o is guaranteed to advance.
+> >>Finally, writer wakeup occurs at the conclusion of the line discipline
+> >>write (in tty_write_unlock()). This guarantees that any user-space write
+> >>waiters are woken to continue additional i/o.
+> >
+> >Greg,
+> >
+> >I thought I should let you know I'm tracking down a bug/regression
+> >related to this patch.
+> >
+> >In certain unusual pty/ldisc configurations, i/o fails to make
+> >forward progress. I still stand by my commit message above, so I'm
+> >in the process of instrumenting the i/o path so I can uncover the
+> >cause of the failure.
+> 
+> Mystery solved.
+> 
+> [PATCH v4 23/24] n_tty: Special case pty flow control
+> from the lockless n_tty receive path series introduced a regression
+> in which i/o failed to advance.
+> 
+> This only occurred when one end of a pty pair was set to an ldisc
+> other than N_TTY. The special case optimization which that patch
+> introduces failed to address that configuration.
+> 
+> I've sent a v5 of that patch to resolve the regression.
 
-Seems this got stuck. Jean-Christophe, will you update this series? I
-could really make use of this.
+Thanks for that, I'll work to queue all of your tty patches up today, as
+they have been sitting out of the tree for too long :)
 
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+greg k-h
