@@ -1,56 +1,71 @@
-From: Henrik =?ISO-8859-1?Q?Nordstr=F6m?= <henrik@henriknordstrom.net>
-Subject: [PATCH RESEND #1] tty/8250_early: Don't truncate last character of
- options
-Date: Tue, 23 Jul 2013 21:06:07 +0200
-Message-ID: <1374606367.5864.4.camel@localhost>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/6] ldsem patchset, reordered and rebased
+Date: Tue, 23 Jul 2013 16:44:43 -0700
+Message-ID: <20130723234442.GA27433@kroah.com>
+References: <20130603192436.GB22733@kroah.com>
+ <1371294291-3807-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from vps1.hno.se ([31.192.227.87]:37425 "EHLO vps1.hno.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933129Ab3GWTHF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Jul 2013 15:07:05 -0400
+Received: from mail.linuxfoundation.org ([140.211.169.12]:42651 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933968Ab3GWXon (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Jul 2013 19:44:43 -0400
+Content-Disposition: inline
+In-Reply-To: <1371294291-3807-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-The earlier change to use strlcpy uncovered a bug in the options
-argument length calculation causing last character to be truncated.
-This makes the actual console to be configured with incorrect
-baudrate when specifying the console using console=uart,... syntax.
+On Sat, Jun 15, 2013 at 07:04:45AM -0400, Peter Hurley wrote:
+> On 06/03/2013 03:24 PM, Greg Kroah-Hartman wrote:> On Mon, May 20, 2013 at 07:38:57PM -0400, Peter Hurley wrote:
+> >> On 05/20/2013 07:06 PM, Greg Kroah-Hartman wrote:
+> >>> On Mon, May 20, 2013 at 05:44:00PM -0400, Peter Hurley wrote:
+> >>>> On 05/20/2013 03:34 PM, Greg Kroah-Hartman wrote:
+> >>>>> On Tue, Apr 16, 2013 at 06:15:51AM -0400, Peter Hurley wrote:
+> >>>>>> Just as the tty pair must be locked in a stable sequence
+> >>>>>> (ie, independent of which is consider the 'other' tty), so must
+> >>>>>> the ldisc pair be locked in a stable sequence as well.
+> >>>>>>
+> >>>>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> >>>>>> ---
+> >>>>>>   drivers/tty/tty_ldisc.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++
+> >>>>>>   1 file changed, 87 insertions(+)
+> >>>>>
+> >>>>> This patch breaks the build :(
+> >>>>
+> >>>> Sorry about that.
+> >>>>
+> >>>>> I've taken the first one, care to mush this one with the 7/7 patch, so
+> >>>>> there are no build breaks, and resend the 5 resulting patches so I can
+> >>>>> apply these?
+> >>>>
+> >>>> Maybe it would be better to reorder 7/7 to be 1/6, if that's ok?
+> >>>> More work for me but the history will be cleaner.
+> >>>
+> >>> Sure, that works for me as well, care to just resend them?  Or, I can
+> >>> dig them out of my archive if needed.
+> >>
+> >> I'll resend them because the rebase will require some re-editing.
+> > 
+> > Did you ever resend these?  If so, I didn't see them :(
+> 
+> Greg,
+> 
+> Sorry for the delay here. In addition to the re-editing required,
+> I merged in a couple of fixes and these needed re-testing.
+> 
+> These apply cleanly to tty-next.
+> 
+> Changes from previous 7-patch series:
+> 1. In tty_ldisc_ref(), snapshot tty->ldisc holding ldsem.
+>    The conditions for this to be a fix cannot actually occur but
+>    this is better anyway.
+> 2. In tty_set_ldisc(), the new ldisc needs to be released if
+>    tty_ldisc_lock_pair_timeout() fails.
 
-Bug symptom seen in kernel log output:
+Now applied, thanks.
 
-Kernel command line: console=uart,mmio,0x90000000,115200
-Early serial console at MMIO 0x90000000 (options '11520')
-
-which then results in a invalid baud rate 11520 instead of the
-expected 115200 when the console is switched to ttyS0 later
-in the boot process.
-
-Signed-off-by: Henrik Nordstrom <henrik@henriknordstrom.net>
----
- drivers/tty/serial/8250/8250_early.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 721904f..946ddd2 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -193,7 +193,8 @@ static int __init parse_options(struct early_serial8250_device *device,
- 	if (options) {
- 		options++;
- 		device->baud = simple_strtoul(options, NULL, 0);
--		length = min(strcspn(options, " "), sizeof(device->options));
-+		length = min(strcspn(options, " ") + 1,
-+			     sizeof(device->options));
- 		strlcpy(device->options, options, length);
- 	} else {
- 		device->baud = probe_baud(port);
--- 
-1.8.3.1
-
-
-
+greg k-h
