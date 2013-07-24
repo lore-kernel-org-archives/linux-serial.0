@@ -1,7 +1,7 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 1/4] msm_serial: Fix NUL byte output on UARTDM
-Date: Wed, 24 Jul 2013 11:37:28 -0700
-Message-ID: <1374691051-28544-2-git-send-email-sboyd@codeaurora.org>
+Subject: [PATCH 4/4] msm_serial: Send more than 1 character at a time on UARTDM
+Date: Wed, 24 Jul 2013 11:37:31 -0700
+Message-ID: <1374691051-28544-5-git-send-email-sboyd@codeaurora.org>
 References: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
@@ -10,70 +10,111 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-UARTDM serial devices require us to wait for the entire TX fifo
-to drain before we can change the contents of the NCF_TX
-register. Furthermore, if we write any characters to the TX fifo
-within the same clock cycle of changing the NCF_TX register the
-NCF_TX register won't latch properly.
-
-To fix these issues we should read back the NCF_TX register to
-delay any TX fifo accesses by a clock cycle and we should wait
-for the TX fifo to drain (instead of just waiting for the fifo to
-be ready to receive more characters). Failure to do so leads to
-random NUL bytes interspersed in the output.
+UARTDM cores have a TX fifo that can accept more than one
+character per register write, but the msm_serial driver currently
+only supports 1 character mode. Add support for this mode of operation
+to speed up the transmit path on DM devices.
 
 Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 ---
- drivers/tty/serial/msm_serial.c | 14 +++++++++-----
- drivers/tty/serial/msm_serial.h |  1 +
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ drivers/tty/serial/msm_serial.c | 51 ++++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 2c6cfb3..fa3fc67 100644
+index cef8f40..97642ec 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -50,11 +50,14 @@ struct msm_port {
- 	unsigned int		old_snap_state;
- };
- 
--static inline void wait_for_xmitr(struct uart_port *port, int bits)
-+static inline void wait_for_xmitr(struct uart_port *port)
- {
--	if (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY))
--		while ((msm_read(port, UART_ISR) & bits) != bits)
--			cpu_relax();
-+	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
-+		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
-+			break;
-+		udelay(1);
-+	}
-+	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
+@@ -195,10 +195,10 @@ static void handle_rx(struct uart_port *port)
+ 	tty_flip_buffer_push(tport);
  }
  
- static void msm_stop_tx(struct uart_port *port)
-@@ -194,8 +197,9 @@ static void handle_rx(struct uart_port *port)
- 
- static void reset_dm_count(struct uart_port *port)
+-static void reset_dm_count(struct uart_port *port)
++static void reset_dm_count(struct uart_port *port, int count)
  {
--	wait_for_xmitr(port, UART_ISR_TX_READY);
-+	wait_for_xmitr(port);
- 	msm_write(port, 1, UARTDM_NCF_TX);
-+	msm_read(port, UARTDM_NCF_TX);
+ 	wait_for_xmitr(port);
+-	msm_write(port, 1, UARTDM_NCF_TX);
++	msm_write(port, count, UARTDM_NCF_TX);
+ 	msm_read(port, UARTDM_NCF_TX);
  }
  
- static void handle_tx(struct uart_port *port)
-diff --git a/drivers/tty/serial/msm_serial.h b/drivers/tty/serial/msm_serial.h
-index e4acef5..15c186e 100644
---- a/drivers/tty/serial/msm_serial.h
-+++ b/drivers/tty/serial/msm_serial.h
-@@ -71,6 +71,7 @@
- #define UART_CR_CMD_RESET_RFR		(14 << 4)
- #define UART_CR_CMD_PROTECTION_EN	(16 << 4)
- #define UART_CR_CMD_STALE_EVENT_ENABLE	(80 << 4)
-+#define UART_CR_CMD_RESET_TX_READY	(3 << 8)
- #define UART_CR_TX_DISABLE		(1 << 3)
- #define UART_CR_TX_ENABLE		(1 << 2)
- #define UART_CR_RX_DISABLE		(1 << 1)
+@@ -206,39 +206,52 @@ static void handle_tx(struct uart_port *port)
+ {
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+-	int sent_tx;
++	unsigned int tx_count, num_chars;
++	unsigned int tf_pointer = 0;
++
++	tx_count = uart_circ_chars_pending(xmit);
++	tx_count = min3(tx_count, (unsigned int)UART_XMIT_SIZE - xmit->tail,
++			port->fifosize);
+ 
+ 	if (port->x_char) {
+ 		if (msm_port->is_uartdm)
+-			reset_dm_count(port);
++			reset_dm_count(port, tx_count + 1);
+ 
+ 		msm_write(port, port->x_char,
+ 			  msm_port->is_uartdm ? UARTDM_TF : UART_TF);
+ 		port->icount.tx++;
+ 		port->x_char = 0;
++	} else if (tx_count && msm_port->is_uartdm) {
++		reset_dm_count(port, tx_count);
+ 	}
+ 
+-	if (msm_port->is_uartdm)
+-		reset_dm_count(port);
++	while (tf_pointer < tx_count) {
++		int i;
++		char buf[4] = { 0 };
++		unsigned int *bf = (unsigned int *)&buf;
+ 
+-	while (msm_read(port, UART_SR) & UART_SR_TX_READY) {
+-		if (uart_circ_empty(xmit)) {
+-			/* disable tx interrupts */
+-			msm_port->imr &= ~UART_IMR_TXLEV;
+-			msm_write(port, msm_port->imr, UART_IMR);
++		if (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
+ 			break;
+-		}
+-		msm_write(port, xmit->buf[xmit->tail],
+-			  msm_port->is_uartdm ? UARTDM_TF : UART_TF);
+ 
+ 		if (msm_port->is_uartdm)
+-			reset_dm_count(port);
++			num_chars = min(tx_count - tf_pointer, sizeof(buf));
++		else
++			num_chars = 1;
+ 
+-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+-		port->icount.tx++;
+-		sent_tx = 1;
++		for (i = 0; i < num_chars; i++) {
++			buf[i] = xmit->buf[xmit->tail + i];
++			port->icount.tx++;
++		}
++
++		msm_write(port, *bf, msm_port->is_uartdm ? UARTDM_TF : UART_TF);
++		xmit->tail = (xmit->tail + num_chars) & (UART_XMIT_SIZE - 1);
++		tf_pointer += num_chars;
+ 	}
+ 
++	/* disable tx interrupts if nothing more to send */
++	if (uart_circ_empty(xmit))
++		msm_stop_tx(port);
++
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ }
+@@ -757,7 +770,7 @@ static void msm_console_putchar(struct uart_port *port, int c)
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+ 
+ 	if (msm_port->is_uartdm)
+-		reset_dm_count(port);
++		reset_dm_count(port, 1);
+ 
+ 	while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
+ 		;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
