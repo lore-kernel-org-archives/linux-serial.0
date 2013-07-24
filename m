@@ -1,50 +1,54 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/9] mostly lockless tty echo
-Date: Tue, 23 Jul 2013 17:04:33 -0700
-Message-ID: <20130724000433.GA27651@kroah.com>
-References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com>
- <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 12/20] n_tty: Factor standard per-char i/o into
+ separate fn
+Date: Tue, 23 Jul 2013 17:12:59 -0700
+Message-ID: <20130724001259.GA9239@kroah.com>
+References: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+ <1371306096-5571-1-git-send-email-peter@hurleysoftware.com>
+ <1371306096-5571-13-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42815 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:42869 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757959Ab3GXAEe (ORCPT
+	with ESMTP id S1757765Ab3GXANA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Jul 2013 20:04:34 -0400
+	Tue, 23 Jul 2013 20:13:00 -0400
 Content-Disposition: inline
-In-Reply-To: <1371305069-5366-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1371306096-5571-13-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Sat, Jun 15, 2013 at 10:04:20AM -0400, Peter Hurley wrote:
-> ** v2 changes **
-> - Rebased on v2 of 'lockless tty flip buffers'
-> 
-> This 3rd of 4 patchsets implements a mostly-lockless tty echo output.
-> 
-> Because echoing is performed solely by the single-threaded ldisc
-> receive_buf() method, most of the lockless requirements are already
-> in-place. The main existing complications were;
-> 1) Echoing could overrun itself. A fixed-size buffer is used to record
->    the operations necessary when outputting the echoes; the most recent
->    echo data is preserved.
-> 2) An attempt to push unprocessed echoes is made by the n_tty_write method
->    (on a different thread) before attempting write output.
-> 
-> The overrun condition is solved by outputting the echoes in blocks and
-> ensuring that at least that much space is available each time an echo
-> operation is committed. At the conclusion of each flip buffer received,
-> any remaining unprocessed echoes are output.
-> 
-> This block output method is particularly effective when there is no reader
-> (the tty is output-only) and termios is misconfigured with echo enabled.
-> 
-> The concurrent access by the n_tty_write() method is already excluded
-> by the existing output_lock mutex.
+On Sat, Jun 15, 2013 at 10:21:28AM -0400, Peter Hurley wrote:
+> Simplify __receive_buf() into a dispatch function; perform per-char
+> processing for all other modes not already handled.
+>=20
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 28 ++++++++++++++++++----------
+>  1 file changed, 18 insertions(+), 10 deletions(-)
 
-Applied, thanks.
+This patch causes the warning:
+	drivers/tty/n_tty.c: In function =E2=80=98n_tty_receive_buf_standard=E2=
+=80=99:
+	drivers/tty/n_tty.c:1575:21: warning: unused variable =E2=80=98ldata=E2=
+=80=99 [-Wunused-variable]
+to happen.
+
+Care to fix it up, and refresh the rest of the series (something fails
+later on), and resend these so that I can apply them?
+
+Everything before this was applied to my tree, you should have gotten
+emails about them.
+
+thanks,
 
 greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
