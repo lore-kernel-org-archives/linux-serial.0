@@ -1,70 +1,411 @@
 From: Richard Zhao <rizhao@nvidia.com>
-Subject: [PATCH 0/9] ARM: tegra: move to generic DMA DT binding
-Date: Wed, 24 Jul 2013 12:09:53 +0800
-Message-ID: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
+Subject: [PATCH 1/9] ARM: dts: add generic DMA DT binding for tegra apbdma
+Date: Wed, 24 Jul 2013 12:09:54 +0800
+Message-ID: <1374639002-16753-2-git-send-email-rizhao@nvidia.com>
+References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
+Sender: linux-doc-owner@vger.kernel.org
 To: devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: dev@lynxeye.de, swarren@wwwdotorg.org, vinod.koul@intel.com, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rob.herring@calxeda.com, broonie@kernel.org, ldewangan@nvidia.com, rob@landley.net, djbw@fb.com, grant.likely@linaro.org, rizhao@nvidia.com, linuxzsc@gmail.com
+Cc: grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net, swarren@wwwdotorg.org, vinod.koul@intel.com, djbw@fb.com, broonie@kernel.org, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rizhao@nvidia.com, linuxzsc@gmail.com, ldewangan@nvidia.com, dev@lynxeye.de
 List-Id: linux-serial@vger.kernel.org
 
-The patch series aim to move apbdma to generic DT binding.
+All Tegra device drivers will soon move to generic DMA device tree bindings.
+Add the required properties to the Tegra DT files to support that. The legacy
+property nvidia,dma-request-selector will be removed after all drivers have
+been converted, in order to maintain bisectability.
 
 Changes:
-- It add dmas/dma-names properties while leave
-  nvidia,dma-request-selector to be compatible.
-- update apbdma driver and dma client drivers
-- ASoC tegra adds a new struct to pass device and dma-name.
-- at last, remove legacy nvidia,dma-request-selector
+ - Add '#dma-cells' for apbdma nodes
+ - And properties 'dmas' and 'dma-names' for apbdma client nodes
+ - update apbdma DT binding doc
 
-Richard Zhao (9):
-  ARM: dts: add generic DMA DT binding for tegra apbdma
-  dma: tegra20-apbdma: move to generic device tree bindings
-  spi: tegra114: move to generic dma DT binding
-  spi: tegra20-slink: move to generic dma DT binding
-  spi: tegra20-sflash: move to generic dma DT binding
-  serial: tegra: move to generic dma DT binding
-  ASoC: tegra: move to generic DMA DT binding
-  ARM: dts: tegra: remove legacy nvidia,dma-request-selector properties
-  dma: tegra20-apbdma: remove legacy nvidia,dma-request-selector support
-
+Signed-off-by: Richard Zhao <rizhao@nvidia.com>
+---
  .../devicetree/bindings/dma/tegra20-apbdma.txt     |  1 +
- .../bindings/serial/nvidia,tegra20-hsuart.txt      |  8 ++--
- .../bindings/sound/nvidia,tegra20-ac97.txt         |  8 ++--
- .../bindings/sound/nvidia,tegra20-i2s.txt          |  8 ++--
- .../bindings/sound/nvidia,tegra30-ahub.txt         | 12 +++---
- .../bindings/spi/nvidia,tegra114-spi.txt           | 10 +++--
- .../bindings/spi/nvidia,tegra20-sflash.txt         | 10 +++--
- .../bindings/spi/nvidia,tegra20-slink.txt          | 10 +++--
- arch/arm/boot/dts/tegra114.dtsi                    | 41 +++++++++++++-------
- arch/arm/boot/dts/tegra20.dtsi                     | 40 +++++++++++++-------
- arch/arm/boot/dts/tegra30.dtsi                     | 37 ++++++++++++------
- drivers/dma/tegra20-apb-dma.c                      | 38 ++++++++++++++++++-
- drivers/spi/spi-tegra114.c                         | 16 +++-----
- drivers/spi/spi-tegra20-slink.c                    | 16 +++-----
- drivers/tty/serial/serial-tegra.c                  | 16 +-------
- sound/soc/tegra/tegra20_ac97.c                     | 17 +++------
- sound/soc/tegra/tegra20_ac97.h                     |  2 +
- sound/soc/tegra/tegra20_i2s.c                      | 26 ++++---------
- sound/soc/tegra/tegra20_i2s.h                      |  2 +
- sound/soc/tegra/tegra30_ahub.c                     | 25 +++++-------
- sound/soc/tegra/tegra30_ahub.h                     | 11 +++---
- sound/soc/tegra/tegra30_i2s.c                      | 44 +++++++++++++++-------
- sound/soc/tegra/tegra30_i2s.h                      |  2 +
- sound/soc/tegra/tegra_pcm.c                        | 14 +++++++
- sound/soc/tegra/tegra_pcm.h                        | 13 +++++++
- 25 files changed, 260 insertions(+), 167 deletions(-)
+ arch/arm/boot/dts/tegra114.dtsi                    | 27 ++++++++++++++++++++++
+ arch/arm/boot/dts/tegra20.dtsi                     | 27 ++++++++++++++++++++++
+ arch/arm/boot/dts/tegra30.dtsi                     | 25 ++++++++++++++++++++
+ 4 files changed, 80 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
+index 90fa7da..e4fc695 100644
+--- a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
++++ b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
+@@ -5,6 +5,7 @@ Required properties:
+ - reg: Should contain DMA registers location and length. This shuld include
+   all of the per-channel registers.
+ - interrupts: Should contain all of the per-channel DMA interrupts.
++- #dma-cells: Must be <1>, which specifies the dma request.
+ 
+ Examples:
+ 
+diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
+index abf6c40..b133c62 100644
+--- a/arch/arm/boot/dts/tegra114.dtsi
++++ b/arch/arm/boot/dts/tegra114.dtsi
+@@ -81,6 +81,7 @@
+ 			     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&tegra_car TEGRA114_CLK_APBDMA>;
++		#dma-cells = <1>;
+ 	};
+ 
+ 	ahb: ahb {
+@@ -125,6 +126,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 8>;
++		dmas = <&apbdma 8>;
++		dma-names = "rx-tx";
+ 		status = "disabled";
+ 		clocks = <&tegra_car TEGRA114_CLK_UARTA>;
+ 	};
+@@ -135,6 +138,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 9>;
++		dmas = <&apbdma 9>;
++		dma-names = "rx-tx";
+ 		status = "disabled";
+ 		clocks = <&tegra_car TEGRA114_CLK_UARTB>;
+ 	};
+@@ -145,6 +150,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 10>;
++		dmas = <&apbdma 10>;
++		dma-names = "rx-tx";
+ 		status = "disabled";
+ 		clocks = <&tegra_car TEGRA114_CLK_UARTC>;
+ 	};
+@@ -155,6 +162,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 19>;
++		dmas = <&apbdma 19>;
++		dma-names = "rx-tx";
+ 		status = "disabled";
+ 		clocks = <&tegra_car TEGRA114_CLK_UARTD>;
+ 	};
+@@ -227,6 +236,8 @@
+ 		reg = <0x7000d400 0x200>;
+ 		interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 15>;
++		dmas = <&apbdma 15>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC1>;
+@@ -239,6 +250,8 @@
+ 		reg = <0x7000d600 0x200>;
+ 		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 16>;
++		dmas = <&apbdma 16>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC2>;
+@@ -251,6 +264,8 @@
+ 		reg = <0x7000d800 0x200>;
+ 		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 17>;
++		dmas = <&apbdma 17>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC3>;
+@@ -263,6 +278,8 @@
+ 		reg = <0x7000da00 0x200>;
+ 		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 18>;
++		dmas = <&apbdma 18>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC4>;
+@@ -275,6 +292,8 @@
+ 		reg = <0x7000dc00 0x200>;
+ 		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 27>;
++		dmas = <&apbdma 27>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC5>;
+@@ -287,6 +306,8 @@
+ 		reg = <0x7000de00 0x200>;
+ 		interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 28>;
++		dmas = <&apbdma 28>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA114_CLK_SBC6>;
+@@ -337,6 +358,12 @@
+ 			<&apbdma 3>, <&apbdma 4>, <&apbdma 6>, <&apbdma 7>,
+ 			<&apbdma 12>, <&apbdma 13>, <&apbdma 14>,
+ 			<&apbdma 29>;
++		dmas = <&apbdma 1>, <&apbdma 2>, <&apbdma 3>, <&apbdma 4>,
++			<&apbdma 6>, <&apbdma 7>, <&apbdma 12>, <&apbdma 13>,
++			<&apbdma 14>, <&apbdma 29>;
++		dma-names = "channel0", "channel1", "channel2", "channel3",
++			"channel4", "channel5", "channel6", "channel7",
++			"channel8", "channel9";
+ 		clocks = <&tegra_car TEGRA114_CLK_D_AUDIO>,
+ 			 <&tegra_car TEGRA114_CLK_APBIF>,
+ 			 <&tegra_car TEGRA114_CLK_I2S0>,
+diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
+index 9653fd8..0fe7f37 100644
+--- a/arch/arm/boot/dts/tegra20.dtsi
++++ b/arch/arm/boot/dts/tegra20.dtsi
+@@ -182,6 +182,7 @@
+ 			     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&tegra_car TEGRA20_CLK_APBDMA>;
++		#dma-cells = <1>;
+ 	};
+ 
+ 	ahb {
+@@ -223,6 +224,8 @@
+ 		reg = <0x70002000 0x200>;
+ 		interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 12>;
++		dmas = <&apbdma 12>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_AC97>;
+ 		status = "disabled";
+ 	};
+@@ -232,6 +235,8 @@
+ 		reg = <0x70002800 0x200>;
+ 		interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 2>;
++		dmas = <&apbdma 2>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_I2S1>;
+ 		status = "disabled";
+ 	};
+@@ -241,6 +246,8 @@
+ 		reg = <0x70002a00 0x200>;
+ 		interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 1>;
++		dmas = <&apbdma 1>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_I2S2>;
+ 		status = "disabled";
+ 	};
+@@ -258,6 +265,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 8>;
++		dmas = <&apbdma 8>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_UARTA>;
+ 		status = "disabled";
+ 	};
+@@ -268,6 +277,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 9>;
++		dmas = <&apbdma 9>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_UARTB>;
+ 		status = "disabled";
+ 	};
+@@ -278,6 +289,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 10>;
++		dmas = <&apbdma 10>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_UARTC>;
+ 		status = "disabled";
+ 	};
+@@ -288,6 +301,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 19>;
++		dmas = <&apbdma 19>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_UARTD>;
+ 		status = "disabled";
+ 	};
+@@ -298,6 +313,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 20>;
++		dmas = <&apbdma 20>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA20_CLK_UARTE>;
+ 		status = "disabled";
+ 	};
+@@ -334,6 +351,8 @@
+ 		reg = <0x7000c380 0x80>;
+ 		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 11>;
++		dmas = <&apbdma 11>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA20_CLK_SPI>;
+@@ -381,6 +400,8 @@
+ 		reg = <0x7000d400 0x200>;
+ 		interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 15>;
++		dmas = <&apbdma 15>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA20_CLK_SBC1>;
+@@ -392,6 +413,8 @@
+ 		reg = <0x7000d600 0x200>;
+ 		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 16>;
++		dmas = <&apbdma 16>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA20_CLK_SBC2>;
+@@ -403,6 +426,8 @@
+ 		reg = <0x7000d800 0x200>;
+ 		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 17>;
++		dmas = <&apbdma 17>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA20_CLK_SBC3>;
+@@ -414,6 +439,8 @@
+ 		reg = <0x7000da00 0x200>;
+ 		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 18>;
++		dmas = <&apbdma 18>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA20_CLK_SBC4>;
+diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
+index d8783f0..c266316 100644
+--- a/arch/arm/boot/dts/tegra30.dtsi
++++ b/arch/arm/boot/dts/tegra30.dtsi
+@@ -201,6 +201,7 @@
+ 			     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&tegra_car TEGRA30_CLK_APBDMA>;
++		#dma-cells = <1>;
+ 	};
+ 
+ 	ahb: ahb {
+@@ -245,6 +246,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 8>;
++		dmas = <&apbdma 8>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA30_CLK_UARTA>;
+ 		status = "disabled";
+ 	};
+@@ -255,6 +258,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 9>;
++		dmas = <&apbdma 9>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA30_CLK_UARTB>;
+ 		status = "disabled";
+ 	};
+@@ -265,6 +270,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 10>;
++		dmas = <&apbdma 10>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA30_CLK_UARTC>;
+ 		status = "disabled";
+ 	};
+@@ -275,6 +282,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 19>;
++		dmas = <&apbdma 19>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA30_CLK_UARTD>;
+ 		status = "disabled";
+ 	};
+@@ -285,6 +294,8 @@
+ 		reg-shift = <2>;
+ 		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 20>;
++		dmas = <&apbdma 20>;
++		dma-names = "rx-tx";
+ 		clocks = <&tegra_car TEGRA30_CLK_UARTE>;
+ 		status = "disabled";
+ 	};
+@@ -369,6 +380,8 @@
+ 		reg = <0x7000d400 0x200>;
+ 		interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 15>;
++		dmas = <&apbdma 15>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC1>;
+@@ -380,6 +393,8 @@
+ 		reg = <0x7000d600 0x200>;
+ 		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 16>;
++		dmas = <&apbdma 16>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC2>;
+@@ -391,6 +406,8 @@
+ 		reg = <0x7000d800 0x200>;
+ 		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 17>;
++		dmas = <&apbdma 17>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC3>;
+@@ -402,6 +419,8 @@
+ 		reg = <0x7000da00 0x200>;
+ 		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 18>;
++		dmas = <&apbdma 18>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC4>;
+@@ -413,6 +432,8 @@
+ 		reg = <0x7000dc00 0x200>;
+ 		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 27>;
++		dmas = <&apbdma 27>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC5>;
+@@ -424,6 +445,8 @@
+ 		reg = <0x7000de00 0x200>;
+ 		interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 28>;
++		dmas = <&apbdma 28>;
++		dma-names = "rx-tx";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		clocks = <&tegra_car TEGRA30_CLK_SBC6>;
+@@ -470,6 +493,8 @@
+ 		       0x70080200 0x100>;
+ 		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
+ 		nvidia,dma-request-selector = <&apbdma 1>;
++		dmas = <&apbdma 1>, <&apbdma 2>, <&apbdma 3>, <&apbdma 4>;
++		dma-names = "channel0", "channel1", "channel2", "channel3";
+ 		clocks = <&tegra_car TEGRA30_CLK_D_AUDIO>,
+ 			 <&tegra_car TEGRA30_CLK_APBIF>,
+ 			 <&tegra_car TEGRA30_CLK_I2S0>,
 -- 
 1.8.1.5
+
