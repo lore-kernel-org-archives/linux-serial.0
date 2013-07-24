@@ -1,112 +1,65 @@
-From: Richard Zhao <rizhao@nvidia.com>
-Subject: [PATCH 4/9] spi: tegra20-slink: move to generic dma DT binding
-Date: Wed, 24 Jul 2013 12:09:57 +0800
-Message-ID: <1374639002-16753-5-git-send-email-rizhao@nvidia.com>
-References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: Re: request for stable inclusion
+Date: Wed, 24 Jul 2013 05:34:35 +0100
+Message-ID: <1374640475.18653.16.camel@deadeye.wl.decadent.org.uk>
+References: <51CD518B.2050106@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net, swarren@wwwdotorg.org, vinod.koul@intel.com, djbw@fb.com, broonie@kernel.org, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rizhao@nvidia.com, linuxzsc@gmail.com, ldewangan@nvidia.com, dev@lynxeye.de
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="=-arsbCk4Iqh15r2Ffq/+8"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:44661 "EHLO
+	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750743Ab3GXEel (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Jul 2013 00:34:41 -0400
+In-Reply-To: <51CD518B.2050106@huawei.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org, Liang Li <liang.li@windriver.com>, Li Zefan <lizefan@huawei.com>
 
-- driver: remove use of nvidia,dma-request-selector
-	  use dma_request_slave_channel to request channel
-- if dmas/dma-names are missing, it still supports cpu based transfer
-- update binding doc and specify dmas/dma-names properties as optional
 
-Signed-off-by: Richard Zhao <rizhao@nvidia.com>
----
- .../devicetree/bindings/spi/nvidia,tegra20-slink.txt     | 10 +++++++---
- drivers/spi/spi-tegra20-slink.c                          | 16 +++++-----------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+--=-arsbCk4Iqh15r2Ffq/+8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra20-slink.txt b/Documentation/devicetree/bindings/spi/nvidia,tegra20-slink.txt
-index eefe15e..ae43bd1 100644
---- a/Documentation/devicetree/bindings/spi/nvidia,tegra20-slink.txt
-+++ b/Documentation/devicetree/bindings/spi/nvidia,tegra20-slink.txt
-@@ -4,8 +4,11 @@ Required properties:
- - compatible : should be "nvidia,tegra20-slink", "nvidia,tegra30-slink".
- - reg: Should contain SLINK registers location and length.
- - interrupts: Should contain SLINK interrupts.
--- nvidia,dma-request-selector : The Tegra DMA controller's phandle and
--  request selector for this SLINK controller.
-+
-+Optional properties:
-+- dmas : The Tegra DMA controller's phandle and request selector for
-+  this SLINK controller.
-+- dma-names : Should be "rx-tx".
- 
- Recommended properties:
- - spi-max-frequency: Definition as per
-@@ -17,7 +20,8 @@ spi@7000d600 {
- 	compatible = "nvidia,tegra20-slink";
- 	reg = <0x7000d600 0x200>;
- 	interrupts = <0 82 0x04>;
--	nvidia,dma-request-selector = <&apbdma 16>;
-+	dmas = <&apbdma 16>;
-+	dma-names = "rx-tx";
- 	spi-max-frequency = <25000000>;
- 	#address-cells = <1>;
- 	#size-cells = <0>;
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index 80490cc..278fb04 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -170,7 +170,7 @@ struct tegra_slink_data {
- 	void __iomem				*base;
- 	phys_addr_t				phys;
- 	unsigned				irq;
--	int					dma_req_sel;
-+	bool					use_dma;
- 	u32					spi_max_frequency;
- 	u32					cur_speed;
- 
-@@ -629,11 +629,8 @@ static int tegra_slink_init_dma_param(struct tegra_slink_data *tspi,
- 	dma_addr_t dma_phys;
- 	int ret;
- 	struct dma_slave_config dma_sconfig;
--	dma_cap_mask_t mask;
- 
--	dma_cap_zero(mask);
--	dma_cap_set(DMA_SLAVE, mask);
--	dma_chan = dma_request_channel(mask, NULL, NULL);
-+	dma_chan = dma_request_slave_channel(tspi->dev, "rx-tx");
- 	if (!dma_chan) {
- 		dev_err(tspi->dev,
- 			"Dma channel is not available, will try later\n");
-@@ -648,7 +645,6 @@ static int tegra_slink_init_dma_param(struct tegra_slink_data *tspi,
- 		return -ENOMEM;
- 	}
- 
--	dma_sconfig.slave_id = tspi->dma_req_sel;
- 	if (dma_to_memory) {
- 		dma_sconfig.src_addr = tspi->phys + SLINK_RX_FIFO;
- 		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-@@ -1034,11 +1030,9 @@ static irqreturn_t tegra_slink_isr(int irq, void *context_data)
- static void tegra_slink_parse_dt(struct tegra_slink_data *tspi)
- {
- 	struct device_node *np = tspi->dev->of_node;
--	u32 of_dma[2];
- 
--	if (of_property_read_u32_array(np, "nvidia,dma-request-selector",
--				of_dma, 2) >= 0)
--		tspi->dma_req_sel = of_dma[1];
-+	if (of_find_property(np, "dmas", NULL))
-+		tspi->use_dma = true;
- 
- 	if (of_property_read_u32(np, "spi-max-frequency",
- 					&tspi->spi_max_frequency))
-@@ -1132,7 +1126,7 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 	tspi->max_buf_size = SLINK_FIFO_DEPTH << 2;
- 	tspi->dma_buf_size = DEFAULT_SPI_DMA_BUF_LEN;
- 
--	if (tspi->dma_req_sel) {
-+	if (tspi->use_dma) {
- 		ret = tegra_slink_init_dma_param(tspi, true);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev, "RxDma Init failed, err %d\n", ret);
--- 
-1.8.1.5
+On Fri, 2013-06-28 at 17:04 +0800, Yijing Wang wrote:
+> Hi Greg, Jiri or Liang Li
+>=20
+> 384e301e3519599b000c1a2ecd938b533fc15d85
+> pch_uart: fix a deadlock when pch_uart as console
+>=20
+> This looks applicable to stable-3.4, and it
+> was built successful for me. What do you think?
+
+I've queued this up for 3.2 as well, thanks.
+
+Ben.
+
+--=20
+Ben Hutchings
+Once a job is fouled up, anything done to improve it makes it worse.
+
+--=-arsbCk4Iqh15r2Ffq/+8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIVAwUAUe9ZW+e/yOyVhhEJAQpspg//UdXL76i6pXD2iae4kyFKQLc1XXqE5Wgf
+ESsw80FyAbKYO1vadtgEknPMBqSkI5wO3V6251h4i0duqGKYCb9r0OPTtVTudYn8
+bBe/EEJhHjxMAcuqMTtJ/4v/8iP39haq4Vz/I2evs1cl7Zbx7df3ueeIbJ6CKA2h
+doqWfwbCIzRfKBW6heWHEuCe+iU02DsBHCmisABH30+3g/dBqTOyDqcuoHtSkfcN
+f2kNf28EDSsbyHK1QM6VtB39p88PmAQ+rF9/4gls58yHbn5j6DwV4WjWVjqQ0xmE
+Q5zLRhEIADcAVLI5v++RaA/0pYnjHpzDUAHVd/iJJWkcd+a56bqaNrtfDHL2X47n
+2FyamEFvZJ6B2hRzyiswi+wEMpSD8m8dAPwBsPDgPM0HzjHlSprbmVi89YlupjVv
+s+zp9lpL4f4rzTOBx/1f1ePc4VYthgkaN6B0u1Ikz5kGVtcDtzcXK3rLBx5oVxlf
+NF61F+ND3Fo2K4fMqNoWPPwswwt0+Oh5tfH3DZ8DklH2zKIPJuB2MytjbBfvypV+
+IfJcM/gY2HXhBhdL22C6qnYWbZufSHlTcFPvotkeGmPIP2Cjk/B3et9jCrOfL8Kq
+2XY2mzEGTmDj1p59U8rAvG8adquFMq36uS5ceOs6lkz3PbsmMqDcqvTiK5BVmPlf
+EjI2H3isjjk=
+=tLJO
+-----END PGP SIGNATURE-----
+
+--=-arsbCk4Iqh15r2Ffq/+8--
