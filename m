@@ -1,163 +1,103 @@
 From: Richard Zhao <rizhao@nvidia.com>
-Subject: [PATCH 2/9] dma: tegra20-apbdma: move to generic device tree bindings
-Date: Wed, 24 Jul 2013 12:09:55 +0800
-Message-ID: <1374639002-16753-3-git-send-email-rizhao@nvidia.com>
+Subject: [PATCH 6/9] serial: tegra: move to generic dma DT binding
+Date: Wed, 24 Jul 2013 12:09:59 +0800
+Message-ID: <1374639002-16753-7-git-send-email-rizhao@nvidia.com>
 References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: dev@lynxeye.de, swarren@wwwdotorg.org, vinod.koul@intel.com, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rob.herring@calxeda.com, broonie@kernel.org, ldewangan@nvidia.com, rob@landley.net, djbw@fb.com, grant.likely@linaro.org, rizhao@nvidia.com, linuxzsc@gmail.com
+Cc: grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net, swarren@wwwdotorg.org, vinod.koul@intel.com, djbw@fb.com, broonie@kernel.org, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rizhao@nvidia.com, linuxzsc@gmail.com, ldewangan@nvidia.com, dev@lynxeye.de
 List-Id: linux-serial@vger.kernel.org
 
-Update tegra20-apbdma driver to adopt generic DMA device tree bindings.
-It calls of_dma_controller_register() with of_dma_simple_xlate to get
-the generic DMA device tree helper support. The #dma-cells for apbdma
-must be 1, which is slave ID.
-
-The existing nvidia,dma-request-selector still works there, and the
-support will be removed after all clients get converted to generic DMA
-device tree helper.
+- driver: remove use of nvidia,dma-request-selector
+	  use dma_request_slave_channel to request channel
+- update binding doc
 
 Signed-off-by: Richard Zhao <rizhao@nvidia.com>
 ---
- drivers/dma/tegra20-apb-dma.c | 46 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 44 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/serial/nvidia,tegra20-hsuart.txt |  8 +++++---
+ drivers/tty/serial/serial-tegra.c                        | 16 +---------------
+ 2 files changed, 6 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/dma/tegra20-apb-dma.c b/drivers/dma/tegra20-apb-dma.c
-index f137914..0e12f78 100644
---- a/drivers/dma/tegra20-apb-dma.c
-+++ b/drivers/dma/tegra20-apb-dma.c
-@@ -29,6 +29,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/of_dma.h>
- #include <linux/platform_device.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-@@ -199,6 +200,7 @@ struct tegra_dma_channel {
- 	void			*callback_param;
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+index 392a449..1ed2f48 100644
+--- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+@@ -4,8 +4,9 @@ Required properties:
+ - compatible : should be "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart".
+ - reg: Should contain UART controller registers location and length.
+ - interrupts: Should contain UART controller interrupts.
+-- nvidia,dma-request-selector : The Tegra DMA controller's phandle and
+-  request selector for this UART controller.
++- dmas : The Tegra DMA controller's phandle and request selector for
++  this UART controller.
++- dma-names : Should be "rx-tx";
  
- 	/* Channel-slave specific configuration */
-+	int slave_id;
+ Optional properties:
+ - nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
+@@ -18,7 +19,8 @@ serial@70006000 {
+ 	reg = <0x70006000 0x40>;
+ 	reg-shift = <2>;
+ 	interrupts = <0 36 0x04>;
+-	nvidia,dma-request-selector = <&apbdma 8>;
++	dmas = <&apbdma 8>;
++	dma-names = "rx-tx";
+ 	nvidia,enable-modem-interrupt;
+ 	status = "disabled";
+ };
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index ee7c812..c8a7828 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -120,7 +120,6 @@ struct tegra_uart_port {
+ 	bool					rx_timeout;
+ 	int					rx_in_progress;
+ 	int					symb_bit;
+-	int					dma_req_sel;
+ 
+ 	struct dma_chan				*rx_dma_chan;
+ 	struct dma_chan				*tx_dma_chan;
+@@ -902,11 +901,8 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 	dma_addr_t dma_phys;
+ 	int ret;
  	struct dma_slave_config dma_sconfig;
- 	struct tegra_dma_channel_regs	channel_reg;
- };
-@@ -219,6 +221,8 @@ struct tegra_dma {
- 	struct tegra_dma_channel channels[0];
- };
+-	dma_cap_mask_t mask;
  
-+static struct platform_driver tegra_dmac_driver;
-+
- static inline void tdma_write(struct tegra_dma *tdma, u32 reg, u32 val)
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-	dma_chan = dma_request_channel(mask, NULL, NULL);
++	dma_chan = dma_request_slave_channel(tup->uport.dev, "rx-tx");
+ 	if (!dma_chan) {
+ 		dev_err(tup->uport.dev,
+ 			"Dma channel is not available, will try later\n");
+@@ -930,7 +926,6 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 		dma_buf = tup->uport.state->xmit.buf;
+ 	}
+ 
+-	dma_sconfig.slave_id = tup->dma_req_sel;
+ 	if (dma_to_memory) {
+ 		dma_sconfig.src_addr = tup->uport.mapbase;
+ 		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+@@ -1214,17 +1209,8 @@ static int tegra_uart_parse_dt(struct platform_device *pdev,
+ 	struct tegra_uart_port *tup)
  {
- 	writel(val, tdma->base_addr + reg);
-@@ -339,6 +343,14 @@ static int tegra_dma_slave_config(struct dma_chan *dc,
- 	}
+ 	struct device_node *np = pdev->dev.of_node;
+-	u32 of_dma[2];
+ 	int port;
  
- 	memcpy(&tdc->dma_sconfig, sconfig, sizeof(*sconfig));
-+
-+	/* If we didn't get slave_id from DT when request channel, use the one
-+	 * passed here.
-+	 * It makes compatible with legacy nvidia,dma-request-selector.
-+	 */
-+	if (tdc->slave_id == -EINVAL)
-+		tdc->slave_id = sconfig->slave_id;
-+
- 	tdc->config_init = true;
- 	return 0;
- }
-@@ -943,7 +955,7 @@ static struct dma_async_tx_descriptor *tegra_dma_prep_slave_sg(
- 	ahb_seq |= TEGRA_APBDMA_AHBSEQ_BUS_WIDTH_32;
- 
- 	csr |= TEGRA_APBDMA_CSR_ONCE | TEGRA_APBDMA_CSR_FLOW;
--	csr |= tdc->dma_sconfig.slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
-+	csr |= tdc->slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
- 	if (flags & DMA_PREP_INTERRUPT)
- 		csr |= TEGRA_APBDMA_CSR_IE_EOC;
- 
-@@ -1087,7 +1099,7 @@ struct dma_async_tx_descriptor *tegra_dma_prep_dma_cyclic(
- 	csr |= TEGRA_APBDMA_CSR_FLOW;
- 	if (flags & DMA_PREP_INTERRUPT)
- 		csr |= TEGRA_APBDMA_CSR_IE_EOC;
--	csr |= tdc->dma_sconfig.slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
-+	csr |= tdc->slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
- 
- 	apb_seq |= TEGRA_APBDMA_APBSEQ_WRAP_WORD_1;
- 
-@@ -1209,6 +1221,23 @@ static void tegra_dma_free_chan_resources(struct dma_chan *dc)
- 	clk_disable_unprepare(tdma->dma_clk);
- }
- 
-+static bool tegra_dma_filter_fn(struct dma_chan *dc, void *param)
-+{
-+	if (dc->device->dev->driver == &tegra_dmac_driver.driver) {
-+		struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+		unsigned req = *(unsigned *)param;
-+
-+		tdc->slave_id = req;
-+
-+		return true;
-+	}
-+	return false;
-+}
-+
-+static struct of_dma_filter_info tegra_dma_info = {
-+	.filter_fn = tegra_dma_filter_fn,
-+};
-+
- /* Tegra20 specific DMA controller information */
- static const struct tegra_dma_chip_data tegra20_dma_chip_data = {
- 	.nr_channels		= 16,
-@@ -1345,6 +1374,7 @@ static int tegra_dma_probe(struct platform_device *pdev)
- 				&tdma->dma_dev.channels);
- 		tdc->tdma = tdma;
- 		tdc->id = i;
-+		tdc->slave_id = -EINVAL;
- 
- 		tasklet_init(&tdc->tasklet, tegra_dma_tasklet,
- 				(unsigned long)tdc);
-@@ -1378,10 +1408,21 @@ static int tegra_dma_probe(struct platform_device *pdev)
- 		goto err_irq;
- 	}
- 
-+	ret = of_dma_controller_register(pdev->dev.of_node,
-+					of_dma_simple_xlate, &tegra_dma_info);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"Tegra20 APB DMA controller registration failed %d\n",
-+			ret);
-+		goto err_of_dma;
-+	}
-+
- 	dev_info(&pdev->dev, "Tegra20 APB DMA driver register %d channels\n",
- 			cdata->nr_channels);
- 	return 0;
- 
-+err_of_dma:
-+	dma_async_device_unregister(&tdma->dma_dev);
- err_irq:
- 	while (--i >= 0) {
- 		struct tegra_dma_channel *tdc = &tdma->channels[i];
-@@ -1401,6 +1442,7 @@ static int tegra_dma_remove(struct platform_device *pdev)
- 	int i;
- 	struct tegra_dma_channel *tdc;
- 
-+	of_dma_controller_free(pdev->dev.of_node);
- 	dma_async_device_unregister(&tdma->dma_dev);
- 
- 	for (i = 0; i < tdma->chip_data->nr_channels; ++i) {
+-	if (of_property_read_u32_array(np, "nvidia,dma-request-selector",
+-				of_dma, 2) >= 0) {
+-		tup->dma_req_sel = of_dma[1];
+-	} else {
+-		dev_err(&pdev->dev, "missing dma requestor in device tree\n");
+-		return -EINVAL;
+-	}
+-
+ 	port = of_alias_get_id(np, "serial");
+ 	if (port < 0) {
+ 		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", port);
 -- 
 1.8.1.5
