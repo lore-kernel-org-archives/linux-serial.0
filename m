@@ -1,27 +1,73 @@
-From: Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 7/9] ASoC: tegra: move to generic DMA DT binding
-Date: Wed, 24 Jul 2013 08:58:27 +0200
-Message-ID: <51EF7B13.4050207@metafoo.de>
-References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com> <1374639002-16753-8-git-send-email-rizhao@nvidia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1374639002-16753-8-git-send-email-rizhao@nvidia.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Richard Zhao <rizhao@nvidia.com>
-Cc: devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org, grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net, swarren@wwwdotorg.org, vinod.koul@intel.com, djbw@fb.com, broonie@kernel.org, gregkh@linuxfoundation.org, lgirdwood@gmail.com, linuxzsc@gmail.com, ldewangan@nvidia.com, dev@lynxeye.de
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v3 7/9] n_tty: Un-inline single-use functions
+Date: Wed, 24 Jul 2013 08:29:55 -0400
+Message-ID: <1374668997-29726-7-git-send-email-peter@hurleysoftware.com>
+References: <20130724001259.GA9239@kroah.com>
+ <1374668997-29726-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1374668997-29726-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/24/2013 06:10 AM, Richard Zhao wrote:
-> - add tegra_dma_filter_data to specify dma info
->    DMA DT binding needs the device that raise dma request and dma name
->    to request a dma channel. tegra30_i2s is a special case. It should be ahub
->    device and it also has dma name that cannot handled by ASoC dmaengine code.
->    So we pass the info using filter data in snd_dmaengine_dai_dma_data.
+gcc will likely inline these single-use functions anyway; remove
+inline modifier.
 
-How about extending the generic dmaengine PCM driver so that it is possible to 
-specify the the DMA channel names? I think that will make the code a bit 
-simpler and also allow you to remove tegra_pcm.c completely eventually.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-- Lars
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 0f33e0c..f516247 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -263,7 +263,7 @@ static void n_tty_check_throttle(struct tty_struct *tty)
+ 	__tty_set_flow_change(tty, 0);
+ }
+ 
+-static inline void n_tty_check_unthrottle(struct tty_struct *tty)
++static void n_tty_check_unthrottle(struct tty_struct *tty)
+ {
+ 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+ 	    tty->link->ldisc->ops->write_wakeup == n_tty_write_wakeup) {
+@@ -1109,7 +1109,7 @@ static void eraser(unsigned char c, struct tty_struct *tty)
+  *	Locking: ctrl_lock
+  */
+ 
+-static inline void isig(int sig, struct tty_struct *tty)
++static void isig(int sig, struct tty_struct *tty)
+ {
+ 	struct pid *tty_pgrp = tty_get_pgrp(tty);
+ 	if (tty_pgrp) {
+@@ -1132,7 +1132,7 @@ static inline void isig(int sig, struct tty_struct *tty)
+  *	Note: may get exclusive termios_rwsem if flushing input buffer
+  */
+ 
+-static inline void n_tty_receive_break(struct tty_struct *tty)
++static void n_tty_receive_break(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+@@ -1170,7 +1170,7 @@ static inline void n_tty_receive_break(struct tty_struct *tty)
+  *	private.
+  */
+ 
+-static inline void n_tty_receive_overrun(struct tty_struct *tty)
++static void n_tty_receive_overrun(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	char buf[64];
+@@ -1198,8 +1198,7 @@ static inline void n_tty_receive_overrun(struct tty_struct *tty)
+  *		caller holds non-exclusive termios_rwsem
+  *		publishes read_head via put_tty_queue()
+  */
+-static inline void n_tty_receive_parity_error(struct tty_struct *tty,
+-					      unsigned char c)
++static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+-- 
+1.8.1.2
