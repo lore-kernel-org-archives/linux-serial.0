@@ -1,121 +1,163 @@
 From: Richard Zhao <rizhao@nvidia.com>
-Subject: [PATCH 3/9] spi: tegra114: move to generic dma DT binding
-Date: Wed, 24 Jul 2013 12:09:56 +0800
-Message-ID: <1374639002-16753-4-git-send-email-rizhao@nvidia.com>
+Subject: [PATCH 2/9] dma: tegra20-apbdma: move to generic device tree bindings
+Date: Wed, 24 Jul 2013 12:09:55 +0800
+Message-ID: <1374639002-16753-3-git-send-email-rizhao@nvidia.com>
 References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:16305 "EHLO
-	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750888Ab3GXEKO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Jul 2013 00:10:14 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net, swarren@wwwdotorg.org, vinod.koul@intel.com, djbw@fb.com, broonie@kernel.org, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rizhao@nvidia.com, linuxzsc@gmail.com, ldewangan@nvidia.com, dev@lynxeye.de
+Cc: dev@lynxeye.de, swarren@wwwdotorg.org, vinod.koul@intel.com, gregkh@linuxfoundation.org, lgirdwood@gmail.com, rob.herring@calxeda.com, broonie@kernel.org, ldewangan@nvidia.com, rob@landley.net, djbw@fb.com, grant.likely@linaro.org, rizhao@nvidia.com, linuxzsc@gmail.com
+List-Id: linux-serial@vger.kernel.org
 
-- driver: remove use of nvidia,dma-request-selector
-	  use dma_request_slave_channel to request channel
-- if dmas/dma-names are missing, it still supports cpu based transfer
-- update binding doc and specify dmas/dma-names properties as optional
+Update tegra20-apbdma driver to adopt generic DMA device tree bindings.
+It calls of_dma_controller_register() with of_dma_simple_xlate to get
+the generic DMA device tree helper support. The #dma-cells for apbdma
+must be 1, which is slave ID.
+
+The existing nvidia,dma-request-selector still works there, and the
+support will be removed after all clients get converted to generic DMA
+device tree helper.
 
 Signed-off-by: Richard Zhao <rizhao@nvidia.com>
 ---
- .../devicetree/bindings/spi/nvidia,tegra114-spi.txt      | 10 +++++++---
- drivers/spi/spi-tegra114.c                               | 16 +++++-----------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+ drivers/dma/tegra20-apb-dma.c | 46 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 44 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt b/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt
-index 91ff771..92e1a9a 100644
---- a/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt
-+++ b/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt
-@@ -4,11 +4,14 @@ Required properties:
- - compatible : should be "nvidia,tegra114-spi".
- - reg: Should contain SPI registers location and length.
- - interrupts: Should contain SPI interrupts.
--- nvidia,dma-request-selector : The Tegra DMA controller's phandle and
--  request selector for this SPI controller.
- - This is also require clock named "spi" as per binding document
-   Documentation/devicetree/bindings/clock/clock-bindings.txt
+diff --git a/drivers/dma/tegra20-apb-dma.c b/drivers/dma/tegra20-apb-dma.c
+index f137914..0e12f78 100644
+--- a/drivers/dma/tegra20-apb-dma.c
++++ b/drivers/dma/tegra20-apb-dma.c
+@@ -29,6 +29,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/of_dma.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+@@ -199,6 +200,7 @@ struct tegra_dma_channel {
+ 	void			*callback_param;
  
-+Optional properties:
-+- dmas : The Tegra DMA controller's phandle and request selector for
-+  this SPI controller.
-+- dma-names : Should be "rx-tx".
-+
- Recommended properties:
- - spi-max-frequency: Definition as per
-                      Documentation/devicetree/bindings/spi/spi-bus.txt
-@@ -18,7 +21,8 @@ spi@7000d600 {
- 	compatible = "nvidia,tegra114-spi";
- 	reg = <0x7000d600 0x200>;
- 	interrupts = <0 82 0x04>;
--	nvidia,dma-request-selector = <&apbdma 16>;
-+	dmas = <&apbdma 16>;
-+	dma-names = "rx-tx";
- 	spi-max-frequency = <25000000>;
- 	#address-cells = <1>;
- 	#size-cells = <0>;
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index e8f542a..baff559 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -177,7 +177,7 @@ struct tegra_spi_data {
- 	void __iomem				*base;
- 	phys_addr_t				phys;
- 	unsigned				irq;
--	int					dma_req_sel;
-+	bool					use_dma;
- 	u32					spi_max_frequency;
- 	u32					cur_speed;
- 
-@@ -599,11 +599,8 @@ static int tegra_spi_init_dma_param(struct tegra_spi_data *tspi,
- 	dma_addr_t dma_phys;
- 	int ret;
+ 	/* Channel-slave specific configuration */
++	int slave_id;
  	struct dma_slave_config dma_sconfig;
--	dma_cap_mask_t mask;
+ 	struct tegra_dma_channel_regs	channel_reg;
+ };
+@@ -219,6 +221,8 @@ struct tegra_dma {
+ 	struct tegra_dma_channel channels[0];
+ };
  
--	dma_cap_zero(mask);
--	dma_cap_set(DMA_SLAVE, mask);
--	dma_chan = dma_request_channel(mask, NULL, NULL);
-+	dma_chan = dma_request_slave_channel(tspi->dev, "rx-tx");
- 	if (!dma_chan) {
- 		dev_err(tspi->dev,
- 			"Dma channel is not available, will try later\n");
-@@ -618,7 +615,6 @@ static int tegra_spi_init_dma_param(struct tegra_spi_data *tspi,
- 		return -ENOMEM;
++static struct platform_driver tegra_dmac_driver;
++
+ static inline void tdma_write(struct tegra_dma *tdma, u32 reg, u32 val)
+ {
+ 	writel(val, tdma->base_addr + reg);
+@@ -339,6 +343,14 @@ static int tegra_dma_slave_config(struct dma_chan *dc,
  	}
  
--	dma_sconfig.slave_id = tspi->dma_req_sel;
- 	if (dma_to_memory) {
- 		dma_sconfig.src_addr = tspi->phys + SPI_RX_FIFO;
- 		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-@@ -1012,11 +1008,9 @@ static void tegra_spi_parse_dt(struct platform_device *pdev,
- 	struct tegra_spi_data *tspi)
- {
- 	struct device_node *np = pdev->dev.of_node;
--	u32 of_dma[2];
+ 	memcpy(&tdc->dma_sconfig, sconfig, sizeof(*sconfig));
++
++	/* If we didn't get slave_id from DT when request channel, use the one
++	 * passed here.
++	 * It makes compatible with legacy nvidia,dma-request-selector.
++	 */
++	if (tdc->slave_id == -EINVAL)
++		tdc->slave_id = sconfig->slave_id;
++
+ 	tdc->config_init = true;
+ 	return 0;
+ }
+@@ -943,7 +955,7 @@ static struct dma_async_tx_descriptor *tegra_dma_prep_slave_sg(
+ 	ahb_seq |= TEGRA_APBDMA_AHBSEQ_BUS_WIDTH_32;
  
--	if (of_property_read_u32_array(np, "nvidia,dma-request-selector",
--				of_dma, 2) >= 0)
--		tspi->dma_req_sel = of_dma[1];
-+	if (of_find_property(np, "dmas", NULL))
-+		tspi->use_dma = true;
+ 	csr |= TEGRA_APBDMA_CSR_ONCE | TEGRA_APBDMA_CSR_FLOW;
+-	csr |= tdc->dma_sconfig.slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
++	csr |= tdc->slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
+ 	if (flags & DMA_PREP_INTERRUPT)
+ 		csr |= TEGRA_APBDMA_CSR_IE_EOC;
  
- 	if (of_property_read_u32(np, "spi-max-frequency",
- 				&tspi->spi_max_frequency))
-@@ -1093,7 +1087,7 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 	tspi->max_buf_size = SPI_FIFO_DEPTH << 2;
- 	tspi->dma_buf_size = DEFAULT_SPI_DMA_BUF_LEN;
+@@ -1087,7 +1099,7 @@ struct dma_async_tx_descriptor *tegra_dma_prep_dma_cyclic(
+ 	csr |= TEGRA_APBDMA_CSR_FLOW;
+ 	if (flags & DMA_PREP_INTERRUPT)
+ 		csr |= TEGRA_APBDMA_CSR_IE_EOC;
+-	csr |= tdc->dma_sconfig.slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
++	csr |= tdc->slave_id << TEGRA_APBDMA_CSR_REQ_SEL_SHIFT;
  
--	if (tspi->dma_req_sel) {
-+	if (tspi->use_dma) {
- 		ret = tegra_spi_init_dma_param(tspi, true);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev, "RxDma Init failed, err %d\n", ret);
+ 	apb_seq |= TEGRA_APBDMA_APBSEQ_WRAP_WORD_1;
+ 
+@@ -1209,6 +1221,23 @@ static void tegra_dma_free_chan_resources(struct dma_chan *dc)
+ 	clk_disable_unprepare(tdma->dma_clk);
+ }
+ 
++static bool tegra_dma_filter_fn(struct dma_chan *dc, void *param)
++{
++	if (dc->device->dev->driver == &tegra_dmac_driver.driver) {
++		struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++		unsigned req = *(unsigned *)param;
++
++		tdc->slave_id = req;
++
++		return true;
++	}
++	return false;
++}
++
++static struct of_dma_filter_info tegra_dma_info = {
++	.filter_fn = tegra_dma_filter_fn,
++};
++
+ /* Tegra20 specific DMA controller information */
+ static const struct tegra_dma_chip_data tegra20_dma_chip_data = {
+ 	.nr_channels		= 16,
+@@ -1345,6 +1374,7 @@ static int tegra_dma_probe(struct platform_device *pdev)
+ 				&tdma->dma_dev.channels);
+ 		tdc->tdma = tdma;
+ 		tdc->id = i;
++		tdc->slave_id = -EINVAL;
+ 
+ 		tasklet_init(&tdc->tasklet, tegra_dma_tasklet,
+ 				(unsigned long)tdc);
+@@ -1378,10 +1408,21 @@ static int tegra_dma_probe(struct platform_device *pdev)
+ 		goto err_irq;
+ 	}
+ 
++	ret = of_dma_controller_register(pdev->dev.of_node,
++					of_dma_simple_xlate, &tegra_dma_info);
++	if (ret) {
++		dev_err(&pdev->dev,
++			"Tegra20 APB DMA controller registration failed %d\n",
++			ret);
++		goto err_of_dma;
++	}
++
+ 	dev_info(&pdev->dev, "Tegra20 APB DMA driver register %d channels\n",
+ 			cdata->nr_channels);
+ 	return 0;
+ 
++err_of_dma:
++	dma_async_device_unregister(&tdma->dma_dev);
+ err_irq:
+ 	while (--i >= 0) {
+ 		struct tegra_dma_channel *tdc = &tdma->channels[i];
+@@ -1401,6 +1442,7 @@ static int tegra_dma_remove(struct platform_device *pdev)
+ 	int i;
+ 	struct tegra_dma_channel *tdc;
+ 
++	of_dma_controller_free(pdev->dev.of_node);
+ 	dma_async_device_unregister(&tdma->dma_dev);
+ 
+ 	for (i = 0; i < tdma->chip_data->nr_channels; ++i) {
 -- 
 1.8.1.5
-
