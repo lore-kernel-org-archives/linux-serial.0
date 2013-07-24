@@ -1,92 +1,37 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 5/9] n_tty: Factor PARMRK from normal per-char i/o
-Date: Wed, 24 Jul 2013 08:29:53 -0400
-Message-ID: <1374668997-29726-5-git-send-email-peter@hurleysoftware.com>
-References: <20130724001259.GA9239@kroah.com>
- <1374668997-29726-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1374668997-29726-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH 0/4] msm_serial fixes and improvements
+Date: Wed, 24 Jul 2013 11:37:27 -0700
+Message-ID: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.codeaurora.org ([198.145.11.231]:44504 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750933Ab3GXShf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Jul 2013 14:37:35 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, linux-serial@vger.kernel.org
 
-Handle PARMRK processing on the slow per-char i/o path.
+Here are a couple fixes and improvements to the msm_serial
+driver. The first two patches fix a bug on UARTDM devices and
+silence sparse warnings. The last two patches improve the baud
+code detection and increase the throughput on UARTDM devices.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 45 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 43 insertions(+), 2 deletions(-)
+After this it is rather trivial to add support for newer UARTDM
+devices via new compatible fields.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 99bbee4..aed1e94 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1457,6 +1457,47 @@ static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- }
- 
- static inline void
-+n_tty_receive_char_fast(struct tty_struct *tty, unsigned char c)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+
-+	/*
-+	 * If the previous character was LNEXT, or we know that this
-+	 * character is not one of the characters that we'll have to
-+	 * handle specially, do shortcut processing to speed things
-+	 * up.
-+	 */
-+	if (!test_bit(c, ldata->char_map) || ldata->lnext) {
-+		ldata->lnext = 0;
-+
-+		if (tty->stopped && !tty->flow_stopped && I_IXON(tty) &&
-+		    I_IXANY(tty)) {
-+			start_tty(tty);
-+			process_echoes(tty);
-+		}
-+
-+		if (read_cnt(ldata) >= (N_TTY_BUF_SIZE - 1)) {
-+			/* beep if no space */
-+			if (L_ECHO(tty))
-+				process_output('\a', tty);
-+			return;
-+		}
-+		if (L_ECHO(tty)) {
-+			finish_erasing(ldata);
-+			/* Record the column of first canon char. */
-+			if (ldata->canon_head == ldata->read_head)
-+				echo_set_canon_col(ldata);
-+			echo_char(c, tty);
-+			commit_echoes(tty);
-+		}
-+		put_tty_queue(c, ldata);
-+		return;
-+	}
-+
-+	n_tty_receive_char_special(tty, c);
-+}
-+
-+static inline void
- n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c)
- {
- 	if (I_ISTRIP(tty))
-@@ -1609,7 +1650,7 @@ n_tty_receive_buf_fast(struct tty_struct *tty, const unsigned char *cp,
- 		if (fp)
- 			flag = *fp++;
- 		if (likely(flag == TTY_NORMAL))
--			n_tty_receive_char(tty, *cp++);
-+			n_tty_receive_char_fast(tty, *cp++);
- 		else
- 			n_tty_receive_char_flagged(tty, *cp++, flag);
- 	}
-@@ -1628,7 +1669,7 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	else if (tty->closing && !L_EXTPROC(tty))
- 		n_tty_receive_buf_closing(tty, cp, fp, count);
- 	else {
--		if (!preops)
-+		if (!preops && !I_PARMRK(tty))
- 			n_tty_receive_buf_fast(tty, cp, fp, count);
- 		else
- 			n_tty_receive_buf_standard(tty, cp, fp, count);
+Stephen Boyd (4):
+  msm_serial: Fix NUL byte output on UARTDM
+  msm_serial: Fix sparse warnings
+  msm_serial: Make baud_code detection more dynamic
+  msm_serial: Send more than 1 character at a time on UARTDM
+
+ drivers/tty/serial/msm_serial.c | 180 ++++++++++++++++++++--------------------
+ drivers/tty/serial/msm_serial.h |  19 ++---
+ 2 files changed, 97 insertions(+), 102 deletions(-)
+
 -- 
-1.8.1.2
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
+
