@@ -1,7 +1,7 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 4/4] msm_serial: Send more than 1 character at a time on UARTDM
-Date: Wed, 24 Jul 2013 11:37:31 -0700
-Message-ID: <1374691051-28544-5-git-send-email-sboyd@codeaurora.org>
+Subject: [PATCH 3/4] msm_serial: Make baud_code detection more dynamic
+Date: Wed, 24 Jul 2013 11:37:30 -0700
+Message-ID: <1374691051-28544-4-git-send-email-sboyd@codeaurora.org>
 References: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
@@ -10,111 +10,188 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-UARTDM cores have a TX fifo that can accept more than one
-character per register write, but the msm_serial driver currently
-only supports 1 character mode. Add support for this mode of operation
-to speed up the transmit path on DM devices.
+Currently msm_set_baud_rate() assumes the uart clock rate is
+1.8432 MHz. This is not always true, and limits our options to
+program the baud rate. Instead of assuming the rate and
+hard-coding the baud_code based on it, calculate the divider that
+we want and try to find the closest baud_code that matches. This
+allows us to support uarts with faster clock speeds.
 
 Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 ---
- drivers/tty/serial/msm_serial.c | 51 ++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 19 deletions(-)
+ drivers/tty/serial/msm_serial.c | 98 ++++++++++++++++++-----------------------
+ drivers/tty/serial/msm_serial.h | 18 ++------
+ 2 files changed, 48 insertions(+), 68 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index cef8f40..97642ec 100644
+index cab4105..cef8f40 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -195,10 +195,10 @@ static void handle_rx(struct uart_port *port)
- 	tty_flip_buffer_push(tport);
+@@ -322,70 +322,60 @@ static void msm_break_ctl(struct uart_port *port, int break_ctl)
+ 		msm_write(port, UART_CR_CMD_STOP_BREAK, UART_CR);
  }
  
--static void reset_dm_count(struct uart_port *port)
-+static void reset_dm_count(struct uart_port *port, int count)
++struct msm_baud_map {
++	u16	divisor;
++	u8	code;
++	u8	rxstale;
++};
++
++static const struct msm_baud_map *
++msm_find_best_baud(struct uart_port *port, unsigned int baud)
++{
++	unsigned int i, divisor;
++	const struct msm_baud_map *entry;
++	static const struct msm_baud_map table[] = {
++		{ 1536, 0x00,  1 },
++		{  768, 0x11,  1 },
++		{  384, 0x22,  1 },
++		{  192, 0x33,  1 },
++		{   96, 0x44,  1 },
++		{   48, 0x55,  1 },
++		{   32, 0x66,  1 },
++		{   24, 0x77,  1 },
++		{   16, 0x88,  1 },
++		{   12, 0x99,  6 },
++		{    8, 0xaa,  6 },
++		{    6, 0xbb,  6 },
++		{    4, 0xcc,  6 },
++		{    3, 0xdd,  8 },
++		{    2, 0xee, 16 },
++		{    1, 0xff, 31 },
++	};
++
++	divisor = uart_get_divisor(port, baud);
++
++	for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
++		if (entry->divisor <= divisor)
++			break;
++
++	return entry; /* Default to smallest divider */
++}
++
+ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
  {
- 	wait_for_xmitr(port);
--	msm_write(port, 1, UARTDM_NCF_TX);
-+	msm_write(port, count, UARTDM_NCF_TX);
- 	msm_read(port, UARTDM_NCF_TX);
- }
- 
-@@ -206,39 +206,52 @@ static void handle_tx(struct uart_port *port)
- {
- 	struct circ_buf *xmit = &port->state->xmit;
+-	unsigned int baud_code, rxstale, watermark;
++	unsigned int rxstale, watermark;
  	struct msm_port *msm_port = UART_TO_MSM(port);
--	int sent_tx;
-+	unsigned int tx_count, num_chars;
-+	unsigned int tf_pointer = 0;
-+
-+	tx_count = uart_circ_chars_pending(xmit);
-+	tx_count = min3(tx_count, (unsigned int)UART_XMIT_SIZE - xmit->tail,
-+			port->fifosize);
++	const struct msm_baud_map *entry;
  
- 	if (port->x_char) {
- 		if (msm_port->is_uartdm)
--			reset_dm_count(port);
-+			reset_dm_count(port, tx_count + 1);
- 
- 		msm_write(port, port->x_char,
- 			  msm_port->is_uartdm ? UARTDM_TF : UART_TF);
- 		port->icount.tx++;
- 		port->x_char = 0;
-+	} else if (tx_count && msm_port->is_uartdm) {
-+		reset_dm_count(port, tx_count);
- 	}
- 
--	if (msm_port->is_uartdm)
--		reset_dm_count(port);
-+	while (tf_pointer < tx_count) {
-+		int i;
-+		char buf[4] = { 0 };
-+		unsigned int *bf = (unsigned int *)&buf;
- 
--	while (msm_read(port, UART_SR) & UART_SR_TX_READY) {
--		if (uart_circ_empty(xmit)) {
--			/* disable tx interrupts */
--			msm_port->imr &= ~UART_IMR_TXLEV;
--			msm_write(port, msm_port->imr, UART_IMR);
-+		if (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
- 			break;
--		}
--		msm_write(port, xmit->buf[xmit->tail],
--			  msm_port->is_uartdm ? UARTDM_TF : UART_TF);
- 
- 		if (msm_port->is_uartdm)
--			reset_dm_count(port);
-+			num_chars = min(tx_count - tf_pointer, sizeof(buf));
-+		else
-+			num_chars = 1;
- 
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		port->icount.tx++;
--		sent_tx = 1;
-+		for (i = 0; i < num_chars; i++) {
-+			buf[i] = xmit->buf[xmit->tail + i];
-+			port->icount.tx++;
-+		}
-+
-+		msm_write(port, *bf, msm_port->is_uartdm ? UARTDM_TF : UART_TF);
-+		xmit->tail = (xmit->tail + num_chars) & (UART_XMIT_SIZE - 1);
-+		tf_pointer += num_chars;
- 	}
- 
-+	/* disable tx interrupts if nothing more to send */
-+	if (uart_circ_empty(xmit))
-+		msm_stop_tx(port);
-+
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- }
-@@ -757,7 +770,7 @@ static void msm_console_putchar(struct uart_port *port, int c)
- 	struct msm_port *msm_port = UART_TO_MSM(port);
+-	switch (baud) {
+-	case 300:
+-		baud_code = UART_CSR_300;
+-		rxstale = 1;
+-		break;
+-	case 600:
+-		baud_code = UART_CSR_600;
+-		rxstale = 1;
+-		break;
+-	case 1200:
+-		baud_code = UART_CSR_1200;
+-		rxstale = 1;
+-		break;
+-	case 2400:
+-		baud_code = UART_CSR_2400;
+-		rxstale = 1;
+-		break;
+-	case 4800:
+-		baud_code = UART_CSR_4800;
+-		rxstale = 1;
+-		break;
+-	case 9600:
+-		baud_code = UART_CSR_9600;
+-		rxstale = 2;
+-		break;
+-	case 14400:
+-		baud_code = UART_CSR_14400;
+-		rxstale = 3;
+-		break;
+-	case 19200:
+-		baud_code = UART_CSR_19200;
+-		rxstale = 4;
+-		break;
+-	case 28800:
+-		baud_code = UART_CSR_28800;
+-		rxstale = 6;
+-		break;
+-	case 38400:
+-		baud_code = UART_CSR_38400;
+-		rxstale = 8;
+-		break;
+-	case 57600:
+-		baud_code = UART_CSR_57600;
+-		rxstale = 16;
+-		break;
+-	case 115200:
+-	default:
+-		baud_code = UART_CSR_115200;
+-		baud = 115200;
+-		rxstale = 31;
+-		break;
+-	}
++	entry = msm_find_best_baud(port, baud);
  
  	if (msm_port->is_uartdm)
--		reset_dm_count(port);
-+		reset_dm_count(port, 1);
+ 		msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
  
- 	while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
- 		;
+-	msm_write(port, baud_code, UART_CSR);
++	msm_write(port, entry->code, UART_CSR);
+ 
+ 	/* RX stale watermark */
++	rxstale = entry->rxstale;
+ 	watermark = UART_IPR_STALE_LSB & rxstale;
+ 	watermark |= UART_IPR_RXSTALE_LAST;
+ 	watermark |= UART_IPR_STALE_TIMEOUT_MSB & (rxstale << 2);
+diff --git a/drivers/tty/serial/msm_serial.h b/drivers/tty/serial/msm_serial.h
+index 15c186e..469fda5 100644
+--- a/drivers/tty/serial/msm_serial.h
++++ b/drivers/tty/serial/msm_serial.h
+@@ -38,19 +38,7 @@
+ #define UART_MR2_PARITY_MODE_SPACE	0x3
+ #define UART_MR2_PARITY_MODE		0x3
+ 
+-#define UART_CSR	0x0008
+-#define UART_CSR_115200	0xFF
+-#define UART_CSR_57600	0xEE
+-#define UART_CSR_38400	0xDD
+-#define UART_CSR_28800	0xCC
+-#define UART_CSR_19200	0xBB
+-#define UART_CSR_14400	0xAA
+-#define UART_CSR_9600	0x99
+-#define UART_CSR_4800	0x77
+-#define UART_CSR_2400	0x55
+-#define UART_CSR_1200	0x44
+-#define UART_CSR_600	0x33
+-#define UART_CSR_300	0x22
++#define UART_CSR			0x0008
+ 
+ #define UART_TF		0x000C
+ #define UARTDM_TF	0x0070
+@@ -152,6 +140,7 @@ static inline void msm_serial_set_mnd_regs_tcxo(struct uart_port *port)
+ 	msm_write(port, 0xF1, UART_NREG);
+ 	msm_write(port, 0x0F, UART_DREG);
+ 	msm_write(port, 0x1A, UART_MNDREG);
++	port->uartclk = 1843200;
+ }
+ 
+ /*
+@@ -163,6 +152,7 @@ static inline void msm_serial_set_mnd_regs_tcxoby4(struct uart_port *port)
+ 	msm_write(port, 0xF6, UART_NREG);
+ 	msm_write(port, 0x0F, UART_DREG);
+ 	msm_write(port, 0x0A, UART_MNDREG);
++	port->uartclk = 1843200;
+ }
+ 
+ static inline
+@@ -170,7 +160,7 @@ void msm_serial_set_mnd_regs_from_uartclk(struct uart_port *port)
+ {
+ 	if (port->uartclk == 19200000)
+ 		msm_serial_set_mnd_regs_tcxo(port);
+-	else
++	else if (port->uartclk == 4800000)
+ 		msm_serial_set_mnd_regs_tcxoby4(port);
+ }
+ 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
