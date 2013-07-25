@@ -1,311 +1,52 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH linux-next] tty: Fix lock order in tty_do_resize()
-Date: Wed, 24 Jul 2013 16:43:51 -0400
-Message-ID: <1374698631-3586-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-next-owner@vger.kernel.org>
-Sender: linux-next-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-next@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 6/9] n_tty: Process echoes in blocks
+Date: Wed, 24 Jul 2013 21:33:04 -0400
+Message-ID: <51F08050.40207@hurleysoftware.com>
+References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com> <1371305069-5366-1-git-send-email-peter@hurleysoftware.com> <1371305069-5366-7-git-send-email-peter@hurleysoftware.com> <20130723235329.GA14499@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:45504 "EHLO
+	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753484Ab3GYBdI (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Jul 2013 21:33:08 -0400
+In-Reply-To: <20130723235329.GA14499@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-Commits 6a1c0680cf3ba94356ecd58833e1540c93472a57 and
-9356b535fcb71db494fc434acceb79f56d15bda2, respectively
-  'tty: Convert termios_mutex to termios_rwsem' and
-  'n_tty: Access termios values safely'
-introduced a circular lock dependency with console_lock and
-termios_rwsem.
+On 07/23/2013 07:53 PM, Greg Kroah-Hartman wrote:
+> On Sat, Jun 15, 2013 at 10:04:26AM -0400, Peter Hurley wrote:
+>> Byte-by-byte echo output is painfully slow, requiring a lock/unlock
+>> cycle for every input byte.
+>>
+>> Instead, perform the echo output in blocks of 256 characters, and
+>> at least once per flip buffer receive. Enough space is reserved in
+>> the echo buffer to guarantee a full block can be saved without
+>> overrunning the echo output. Overrun is prevented by discarding
+>> the oldest echoes until enough space exists in the echo buffer
+>> to receive at least a full block of new echoes.
+>
+> I'm a bit worried about this, I wonder if anything is expecting the
+> echos to not come in "bursts" like this, but I really can't think of why
+> they would want that.
 
-The lockdep report [1] shows that n_tty_write() will attempt
-to claim console_lock while holding the termios_rwsem, whereas
-tty_do_resize() may already hold the console_lock while
-claiming the termios_rwsem.
+The block size for echoes is trivially settable so if you'd prefer a
+smaller value than every 256 chars, I could send a patch for a value
+you are more comfortable with - 64 chars, 32 chars, whatever.
 
-Since n_tty_write() and tty_do_resize() do not contend
-over the same data -- the tty->winsize structure -- correct
-the lock dependency by introducing a new lock which
-specifically serializes access to tty->winsize only.
+I picked that value from casual performance testing and that it
+coincides with the smallest possible flip buffer; ie., echo blocks are
+retired at the same rate as flip buffers when receiving is not
+saturated.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> So let's apply it and see what breaks!  :)
 
-[1] Lockdep report
+I'm ready :)
 
-======================================================
-[ INFO: possible circular locking dependency detected ]
-3.10.0-0+tip-xeon+lockdep #0+tip Not tainted
--------------------------------------------------------
-modprobe/277 is trying to acquire lock:
- (&tty->termios_rwsem){++++..}, at: [<ffffffff81452656>] tty_do_resize+0x36/0xe0
+Regards,
+Peter Hurley
 
-but task is already holding lock:
- ((fb_notifier_list).rwsem){.+.+.+}, at: [<ffffffff8107aac6>] __blocking_notifier_call_chain+0x56/0xc0
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #2 ((fb_notifier_list).rwsem){.+.+.+}:
-       [<ffffffff810b6d62>] lock_acquire+0x92/0x1f0
-       [<ffffffff8175b797>] down_read+0x47/0x5c
-       [<ffffffff8107aac6>] __blocking_notifier_call_chain+0x56/0xc0
-       [<ffffffff8107ab46>] blocking_notifier_call_chain+0x16/0x20
-       [<ffffffff813d7c0b>] fb_notifier_call_chain+0x1b/0x20
-       [<ffffffff813d95b2>] register_framebuffer+0x1e2/0x320
-       [<ffffffffa01043e1>] drm_fb_helper_initial_config+0x371/0x540 [drm_kms_helper]
-       [<ffffffffa01bcb05>] nouveau_fbcon_init+0x105/0x140 [nouveau]
-       [<ffffffffa01ad0af>] nouveau_drm_load+0x43f/0x610 [nouveau]
-       [<ffffffffa008a79e>] drm_get_pci_dev+0x17e/0x2a0 [drm]
-       [<ffffffffa01ad4da>] nouveau_drm_probe+0x25a/0x2a0 [nouveau]
-       [<ffffffff813b13db>] local_pci_probe+0x4b/0x80
-       [<ffffffff813b1701>] pci_device_probe+0x111/0x120
-       [<ffffffff814977eb>] driver_probe_device+0x8b/0x3a0
-       [<ffffffff81497bab>] __driver_attach+0xab/0xb0
-       [<ffffffff814956ad>] bus_for_each_dev+0x5d/0xa0
-       [<ffffffff814971fe>] driver_attach+0x1e/0x20
-       [<ffffffff81496cc1>] bus_add_driver+0x111/0x290
-       [<ffffffff814982b7>] driver_register+0x77/0x170
-       [<ffffffff813b0454>] __pci_register_driver+0x64/0x70
-       [<ffffffffa008a9da>] drm_pci_init+0x11a/0x130 [drm]
-       [<ffffffffa022a04d>] nouveau_drm_init+0x4d/0x1000 [nouveau]
-       [<ffffffff810002ea>] do_one_initcall+0xea/0x1a0
-       [<ffffffff810c54cb>] load_module+0x123b/0x1bf0
-       [<ffffffff810c5f57>] SyS_init_module+0xd7/0x120
-       [<ffffffff817677c2>] system_call_fastpath+0x16/0x1b
-
--> #1 (console_lock){+.+.+.}:
-       [<ffffffff810b6d62>] lock_acquire+0x92/0x1f0
-       [<ffffffff810430a7>] console_lock+0x77/0x80
-       [<ffffffff8146b2a1>] con_flush_chars+0x31/0x50
-       [<ffffffff8145780c>] n_tty_write+0x1ec/0x4d0
-       [<ffffffff814541b9>] tty_write+0x159/0x2e0
-       [<ffffffff814543f5>] redirected_tty_write+0xb5/0xc0
-       [<ffffffff811ab9d5>] vfs_write+0xc5/0x1f0
-       [<ffffffff811abec5>] SyS_write+0x55/0xa0
-       [<ffffffff817677c2>] system_call_fastpath+0x16/0x1b
-
--> #0 (&tty->termios_rwsem){++++..}:
-       [<ffffffff810b65c3>] __lock_acquire+0x1c43/0x1d30
-       [<ffffffff810b6d62>] lock_acquire+0x92/0x1f0
-       [<ffffffff8175b724>] down_write+0x44/0x70
-       [<ffffffff81452656>] tty_do_resize+0x36/0xe0
-       [<ffffffff8146c841>] vc_do_resize+0x3e1/0x4c0
-       [<ffffffff8146c99f>] vc_resize+0x1f/0x30
-       [<ffffffff813e4535>] fbcon_init+0x385/0x5a0
-       [<ffffffff8146a4bc>] visual_init+0xbc/0x120
-       [<ffffffff8146cd13>] do_bind_con_driver+0x163/0x320
-       [<ffffffff8146cfa1>] do_take_over_console+0x61/0x70
-       [<ffffffff813e2b93>] do_fbcon_takeover+0x63/0xc0
-       [<ffffffff813e67a5>] fbcon_event_notify+0x715/0x820
-       [<ffffffff81762f9d>] notifier_call_chain+0x5d/0x110
-       [<ffffffff8107aadc>] __blocking_notifier_call_chain+0x6c/0xc0
-       [<ffffffff8107ab46>] blocking_notifier_call_chain+0x16/0x20
-       [<ffffffff813d7c0b>] fb_notifier_call_chain+0x1b/0x20
-       [<ffffffff813d95b2>] register_framebuffer+0x1e2/0x320
-       [<ffffffffa01043e1>] drm_fb_helper_initial_config+0x371/0x540 [drm_kms_helper]
-       [<ffffffffa01bcb05>] nouveau_fbcon_init+0x105/0x140 [nouveau]
-       [<ffffffffa01ad0af>] nouveau_drm_load+0x43f/0x610 [nouveau]
-       [<ffffffffa008a79e>] drm_get_pci_dev+0x17e/0x2a0 [drm]
-       [<ffffffffa01ad4da>] nouveau_drm_probe+0x25a/0x2a0 [nouveau]
-       [<ffffffff813b13db>] local_pci_probe+0x4b/0x80
-       [<ffffffff813b1701>] pci_device_probe+0x111/0x120
-       [<ffffffff814977eb>] driver_probe_device+0x8b/0x3a0
-       [<ffffffff81497bab>] __driver_attach+0xab/0xb0
-       [<ffffffff814956ad>] bus_for_each_dev+0x5d/0xa0
-       [<ffffffff814971fe>] driver_attach+0x1e/0x20
-       [<ffffffff81496cc1>] bus_add_driver+0x111/0x290
-       [<ffffffff814982b7>] driver_register+0x77/0x170
-       [<ffffffff813b0454>] __pci_register_driver+0x64/0x70
-       [<ffffffffa008a9da>] drm_pci_init+0x11a/0x130 [drm]
-       [<ffffffffa022a04d>] nouveau_drm_init+0x4d/0x1000 [nouveau]
-       [<ffffffff810002ea>] do_one_initcall+0xea/0x1a0
-       [<ffffffff810c54cb>] load_module+0x123b/0x1bf0
-       [<ffffffff810c5f57>] SyS_init_module+0xd7/0x120
-       [<ffffffff817677c2>] system_call_fastpath+0x16/0x1b
-
-other info that might help us debug this:
-
-Chain exists of:
-  &tty->termios_rwsem --> console_lock --> (fb_notifier_list).rwsem
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock((fb_notifier_list).rwsem);
-                               lock(console_lock);
-                               lock((fb_notifier_list).rwsem);
-  lock(&tty->termios_rwsem);
-
- *** DEADLOCK ***
-
-7 locks held by modprobe/277:
- #0:  (&__lockdep_no_validate__){......}, at: [<ffffffff81497b5b>] __driver_attach+0x5b/0xb0
- #1:  (&__lockdep_no_validate__){......}, at: [<ffffffff81497b69>] __driver_attach+0x69/0xb0
- #2:  (drm_global_mutex){+.+.+.}, at: [<ffffffffa008a6dd>] drm_get_pci_dev+0xbd/0x2a0 [drm]
- #3:  (registration_lock){+.+.+.}, at: [<ffffffff813d93f5>] register_framebuffer+0x25/0x320
- #4:  (&fb_info->lock){+.+.+.}, at: [<ffffffff813d8116>] lock_fb_info+0x26/0x60
- #5:  (console_lock){+.+.+.}, at: [<ffffffff813d95a4>] register_framebuffer+0x1d4/0x320
- #6:  ((fb_notifier_list).rwsem){.+.+.+}, at: [<ffffffff8107aac6>] __blocking_notifier_call_chain+0x56/0xc0
-
-stack backtrace:
-CPU: 0 PID: 277 Comm: modprobe Not tainted 3.10.0-0+tip-xeon+lockdep #0+tip
-Hardware name: Dell Inc. Precision WorkStation T5400  /0RW203, BIOS A11 04/30/2012
- ffffffff8213e5e0 ffff8802aa2fb298 ffffffff81755f19 ffff8802aa2fb2e8
- ffffffff8174f506 ffff8802aa2fa000 ffff8802aa2fb378 ffff8802aa2ea8e8
- ffff8802aa2ea910 ffff8802aa2ea8e8 0000000000000006 0000000000000007
-Call Trace:
- [<ffffffff81755f19>] dump_stack+0x19/0x1b
- [<ffffffff8174f506>] print_circular_bug+0x1fb/0x20c
- [<ffffffff810b65c3>] __lock_acquire+0x1c43/0x1d30
- [<ffffffff810b775e>] ? mark_held_locks+0xae/0x120
- [<ffffffff810b78d5>] ? trace_hardirqs_on_caller+0x105/0x1d0
- [<ffffffff810b6d62>] lock_acquire+0x92/0x1f0
- [<ffffffff81452656>] ? tty_do_resize+0x36/0xe0
- [<ffffffff8175b724>] down_write+0x44/0x70
- [<ffffffff81452656>] ? tty_do_resize+0x36/0xe0
- [<ffffffff81452656>] tty_do_resize+0x36/0xe0
- [<ffffffff8146c841>] vc_do_resize+0x3e1/0x4c0
- [<ffffffff8146c99f>] vc_resize+0x1f/0x30
- [<ffffffff813e4535>] fbcon_init+0x385/0x5a0
- [<ffffffff8146a4bc>] visual_init+0xbc/0x120
- [<ffffffff8146cd13>] do_bind_con_driver+0x163/0x320
- [<ffffffff8146cfa1>] do_take_over_console+0x61/0x70
- [<ffffffff813e2b93>] do_fbcon_takeover+0x63/0xc0
- [<ffffffff813e67a5>] fbcon_event_notify+0x715/0x820
- [<ffffffff81762f9d>] notifier_call_chain+0x5d/0x110
- [<ffffffff8107aadc>] __blocking_notifier_call_chain+0x6c/0xc0
- [<ffffffff8107ab46>] blocking_notifier_call_chain+0x16/0x20
- [<ffffffff813d7c0b>] fb_notifier_call_chain+0x1b/0x20
- [<ffffffff813d95b2>] register_framebuffer+0x1e2/0x320
- [<ffffffffa01043e1>] drm_fb_helper_initial_config+0x371/0x540 [drm_kms_helper]
- [<ffffffff8173cbcb>] ? kmemleak_alloc+0x5b/0xc0
- [<ffffffff81198874>] ? kmem_cache_alloc_trace+0x104/0x290
- [<ffffffffa01035e1>] ? drm_fb_helper_single_add_all_connectors+0x81/0xf0 [drm_kms_helper]
- [<ffffffffa01bcb05>] nouveau_fbcon_init+0x105/0x140 [nouveau]
- [<ffffffffa01ad0af>] nouveau_drm_load+0x43f/0x610 [nouveau]
- [<ffffffffa008a79e>] drm_get_pci_dev+0x17e/0x2a0 [drm]
- [<ffffffffa01ad4da>] nouveau_drm_probe+0x25a/0x2a0 [nouveau]
- [<ffffffff8175f162>] ? _raw_spin_unlock_irqrestore+0x42/0x80
- [<ffffffff813b13db>] local_pci_probe+0x4b/0x80
- [<ffffffff813b1701>] pci_device_probe+0x111/0x120
- [<ffffffff814977eb>] driver_probe_device+0x8b/0x3a0
- [<ffffffff81497bab>] __driver_attach+0xab/0xb0
- [<ffffffff81497b00>] ? driver_probe_device+0x3a0/0x3a0
- [<ffffffff814956ad>] bus_for_each_dev+0x5d/0xa0
- [<ffffffff814971fe>] driver_attach+0x1e/0x20
- [<ffffffff81496cc1>] bus_add_driver+0x111/0x290
- [<ffffffffa022a000>] ? 0xffffffffa0229fff
- [<ffffffff814982b7>] driver_register+0x77/0x170
- [<ffffffffa022a000>] ? 0xffffffffa0229fff
- [<ffffffff813b0454>] __pci_register_driver+0x64/0x70
- [<ffffffffa008a9da>] drm_pci_init+0x11a/0x130 [drm]
- [<ffffffffa022a000>] ? 0xffffffffa0229fff
- [<ffffffffa022a000>] ? 0xffffffffa0229fff
- [<ffffffffa022a04d>] nouveau_drm_init+0x4d/0x1000 [nouveau]
- [<ffffffff810002ea>] do_one_initcall+0xea/0x1a0
- [<ffffffff810c54cb>] load_module+0x123b/0x1bf0
- [<ffffffff81399a50>] ? ddebug_proc_open+0xb0/0xb0
- [<ffffffff813855ae>] ? trace_hardirqs_on_thunk+0x3a/0x3f
- [<ffffffff810c5f57>] SyS_init_module+0xd7/0x120
- [<ffffffff817677c2>] system_call_fastpath+0x16/0x1b
----
- drivers/tty/pty.c    |  4 ++--
- drivers/tty/tty_io.c | 11 ++++++-----
- include/linux/tty.h  |  3 ++-
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index b940127..25c9bc7 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -281,7 +281,7 @@ static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
- 	struct tty_struct *pty = tty->link;
- 
- 	/* For a PTY we need to lock the tty side */
--	down_write(&tty->termios_rwsem);
-+	mutex_lock(&tty->winsize_mutex);
- 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
- 		goto done;
- 
-@@ -308,7 +308,7 @@ static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
- 	tty->winsize = *ws;
- 	pty->winsize = *ws;	/* Never used so will go away soon */
- done:
--	up_write(&tty->termios_rwsem);
-+	mutex_unlock(&tty->winsize_mutex);
- 	return 0;
- }
- 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 2174698..26bb78c 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2229,7 +2229,7 @@ static int tiocsti(struct tty_struct *tty, char __user *p)
-  *
-  *	Copies the kernel idea of the window size into the user buffer.
-  *
-- *	Locking: tty->termios_rwsem is taken to ensure the winsize data
-+ *	Locking: tty->winsize_mutex is taken to ensure the winsize data
-  *		is consistent.
-  */
- 
-@@ -2237,9 +2237,9 @@ static int tiocgwinsz(struct tty_struct *tty, struct winsize __user *arg)
- {
- 	int err;
- 
--	down_read(&tty->termios_rwsem);
-+	mutex_lock(&tty->winsize_mutex);
- 	err = copy_to_user(arg, &tty->winsize, sizeof(*arg));
--	up_read(&tty->termios_rwsem);
-+	mutex_unlock(&tty->winsize_mutex);
- 
- 	return err ? -EFAULT: 0;
- }
-@@ -2260,7 +2260,7 @@ int tty_do_resize(struct tty_struct *tty, struct winsize *ws)
- 	unsigned long flags;
- 
- 	/* Lock the tty */
--	down_write(&tty->termios_rwsem);
-+	mutex_lock(&tty->winsize_mutex);
- 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
- 		goto done;
- 	/* Get the PID values and reference them so we can
-@@ -2275,7 +2275,7 @@ int tty_do_resize(struct tty_struct *tty, struct winsize *ws)
- 
- 	tty->winsize = *ws;
- done:
--	up_write(&tty->termios_rwsem);
-+	mutex_unlock(&tty->winsize_mutex);
- 	return 0;
- }
- EXPORT_SYMBOL(tty_do_resize);
-@@ -3016,6 +3016,7 @@ void initialize_tty_struct(struct tty_struct *tty,
- 	mutex_init(&tty->legacy_mutex);
- 	mutex_init(&tty->throttle_mutex);
- 	init_rwsem(&tty->termios_rwsem);
-+	mutex_init(&tty->winsize_mutex);
- 	init_ldsem(&tty->ldisc_sem);
- 	init_waitqueue_head(&tty->write_wait);
- 	init_waitqueue_head(&tty->read_wait);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 8f671b2..5c99f9d 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -245,6 +245,7 @@ struct tty_struct {
- 	struct mutex legacy_mutex;
- 	struct mutex throttle_mutex;
- 	struct rw_semaphore termios_rwsem;
-+	struct mutex winsize_mutex;
- 	spinlock_t ctrl_lock;
- 	/* Termios values are protected by the termios rwsem */
- 	struct ktermios termios, termios_locked;
-@@ -254,7 +255,7 @@ struct tty_struct {
- 	struct pid *session;
- 	unsigned long flags;
- 	int count;
--	struct winsize winsize;		/* termios rwsem */
-+	struct winsize winsize;		/* winsize_mutex */
- 	unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
- 	unsigned char ctrl_status;	/* ctrl_lock */
- 	unsigned int receive_room;	/* Bytes free for queue */
--- 
-1.8.1.2
