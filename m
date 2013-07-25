@@ -1,52 +1,53 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 6/9] n_tty: Process echoes in blocks
-Date: Wed, 24 Jul 2013 21:33:04 -0400
-Message-ID: <51F08050.40207@hurleysoftware.com>
-References: <1371303376-5028-1-git-send-email-peter@hurleysoftware.com> <1371305069-5366-1-git-send-email-peter@hurleysoftware.com> <1371305069-5366-7-git-send-email-peter@hurleysoftware.com> <20130723235329.GA14499@kroah.com>
+From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Subject: Re: [PATCH v6] serial:st-asc: Add ST ASC driver.
+Date: Thu, 25 Jul 2013 09:29:26 +0100
+Message-ID: <51F0E1E6.4010601@st.com>
+References: <1373888363-10169-1-git-send-email-srinivas.kandagatla@st.com>
+Reply-To: srinivas.kandagatla@st.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:45504 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753484Ab3GYBdI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 24 Jul 2013 21:33:08 -0400
-In-Reply-To: <20130723235329.GA14499@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1373888363-10169-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On 07/23/2013 07:53 PM, Greg Kroah-Hartman wrote:
-> On Sat, Jun 15, 2013 at 10:04:26AM -0400, Peter Hurley wrote:
->> Byte-by-byte echo output is painfully slow, requiring a lock/unlock
->> cycle for every input byte.
->>
->> Instead, perform the echo output in blocks of 256 characters, and
->> at least once per flip buffer receive. Enough space is reserved in
->> the echo buffer to guarantee a full block can be saved without
->> overrunning the echo output. Overrun is prevented by discarding
->> the oldest echoes until enough space exists in the echo buffer
->> to receive at least a full block of new echoes.
->
-> I'm a bit worried about this, I wonder if anything is expecting the
-> echos to not come in "bursts" like this, but I really can't think of why
-> they would want that.
+Hi Greg,
+Am not sure if you missed this patch.
+Can you please consider this for 3.12.
 
-The block size for echoes is trivially settable so if you'd prefer a
-smaller value than every 256 chars, I could send a patch for a value
-you are more comfortable with - 64 chars, 32 chars, whatever.
+Thanks,
+srini
 
-I picked that value from casual performance testing and that it
-coincides with the smallest possible flip buffer; ie., echo blocks are
-retired at the same rate as flip buffers when receiving is not
-saturated.
-
-> So let's apply it and see what breaks!  :)
-
-I'm ready :)
-
-Regards,
-Peter Hurley
+On 15/07/13 12:39, Srinivas KANDAGATLA wrote:
+> From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> 
+> This patch adds support to ASC (asynchronous serial controller)
+> driver, which is basically a standard serial driver. This IP is common
+> across all the ST parts for settop box platforms.
+> 
+> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
+> It support all industry standard baud rates.
+> 
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> CC: Stephen Gallimore <stephen.gallimore@st.com>
+> CC: Stuart Menefy <stuart.menefy@st.com>
+> CC: Arnd Bergmann <arnd@arndb.de>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+> 
+> Hi Greg,
+> 
+> This patch is the part of the driver support for Sti ARM SOCs.
+> This patch undergone 3-4 cycles of review in arm-kernel mailing list.
+> All the patches in that series went into 3.11.
+> This patch is based on 3.11-rc1.
+> 
+> Am resending this patch, as it missed 3.11 window.
+> Can you please consider this patch for 3.12.
+> 
+> Thanks,
+> srini
 
