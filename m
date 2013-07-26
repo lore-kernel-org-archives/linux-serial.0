@@ -1,63 +1,72 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.11-rc3
-Date: Fri, 26 Jul 2013 09:57:45 -0700
-Message-ID: <20130726165745.GA22891@kroah.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 3/4] msm_serial: Make baud_code detection more dynamic
+Date: Fri, 26 Jul 2013 10:05:21 -0700
+Message-ID: <20130726170521.GA11922@codeaurora.org>
+References: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
+ <1374691051-28544-4-git-send-email-sboyd@codeaurora.org>
+ <CAJAp7Og1jwyAn0sGbb_1Bk5_fvBWa1AuDNsRV1b17S0Tijk9kg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:48615 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758033Ab3GZQ5q (ORCPT
+Received: from smtp.codeaurora.org ([198.145.11.231]:42978 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758651Ab3GZRFX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Jul 2013 12:57:46 -0400
+	Fri, 26 Jul 2013 13:05:23 -0400
 Content-Disposition: inline
+In-Reply-To: <CAJAp7Og1jwyAn0sGbb_1Bk5_fvBWa1AuDNsRV1b17S0Tijk9kg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Bjorn Andersson <bjorn@kryo.se>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, linux-serial@vger.kernel.org
 
-The following changes since commit 3b2f64d00c46e1e4e9bd0bb9bb12619adac2=
-7a4b:
+On 07/25, Bjorn Andersson wrote:
+> On Wed, Jul 24, 2013 at 10:37 AM, Stephen Boyd <sboyd@codeaurora.org> wrote:
+> > [snip]
+> > +       unsigned int i, divisor;
+> > +       const struct msm_baud_map *entry;
+> > +       static const struct msm_baud_map table[] = {
+> > +               { 1536, 0x00,  1 },
+> > +               {  768, 0x11,  1 },
+> > +               {  384, 0x22,  1 },
+> > +               {  192, 0x33,  1 },
+> > +               {   96, 0x44,  1 },
+> > +               {   48, 0x55,  1 },
+> > +               {   32, 0x66,  1 },
+> > +               {   24, 0x77,  1 },
+> > +               {   16, 0x88,  1 },
+> > +               {   12, 0x99,  6 },
+> > +               {    8, 0xaa,  6 },
+> > +               {    6, 0xbb,  6 },
+> > +               {    4, 0xcc,  6 },
+> > +               {    3, 0xdd,  8 },
+> > +               {    2, 0xee, 16 },
+> > +               {    1, 0xff, 31 },
+> > +       };
+> > +
+> > +       divisor = uart_get_divisor(port, baud);
+> > +
+> > +       for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
+> > +               if (entry->divisor <= divisor)
+> > +                       break;
+> > +
+> > +       return entry; /* Default to smallest divider */
+> 
+> Shouldn't matter, but you're not defaulting to the smallest divider.
+> Your are defaulting to an undefined value, as `entry` will be off the
+> array once i == ARRAY_SIZE().
+> 
 
-  Linux 3.11-rc2 (2013-07-21 12:05:29 -0700)
+Yes because the if condition will always be true. Perhaps that's
+too confusing? We could add a subtraction by 1 to make it more
+obvious.
 
-are available in the git repository at:
+ for (i = 0; entry = table; i < ARRAY_SIZE(table) - 1; i++, entry++)
+ 	if (entry->divisor <= divisor)
+		break;
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
-y-3.11-rc3
+ return entry; /* Default to smallest divider*/
 
-for you to fetch changes up to 3bf5d350586d98eb28ab7f86ffbd66518ffd95d8=
-:
-
-  serial: tegra: correct help message in Kconfig from 'ttyHS' to 'ttyTH=
-S' (2013-07-24 15:23:38 -0700)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 3.11-rc3
-
-Here are 3 fixes for TTY and serial issues that have been reported.
-Nothing huge, but nice to get fixed.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      TTY: snyclinkmp: calculating wrong addresses
-
-Henrik Nordstr=F6m (1):
-      tty/8250_early: Don't truncate last character of options
-
-Richard Zhao (1):
-      serial: tegra: correct help message in Kconfig from 'ttyHS' to 't=
-tyTHS'
-
- drivers/tty/serial/8250/8250_early.c | 3 ++-
- drivers/tty/serial/Kconfig           | 2 +-
- drivers/tty/synclinkmp.c             | 2 +-
- 3 files changed, 4 insertions(+), 3 deletions(-)
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
