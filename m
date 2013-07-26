@@ -1,72 +1,48 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH 3/4] msm_serial: Make baud_code detection more dynamic
-Date: Fri, 26 Jul 2013 10:05:21 -0700
-Message-ID: <20130726170521.GA11922@codeaurora.org>
-References: <1374691051-28544-1-git-send-email-sboyd@codeaurora.org>
- <1374691051-28544-4-git-send-email-sboyd@codeaurora.org>
- <CAJAp7Og1jwyAn0sGbb_1Bk5_fvBWa1AuDNsRV1b17S0Tijk9kg@mail.gmail.com>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: Re: [PATCH 0/3] serial: max310x: Add support for MAX3109 & MAX14830
+Date: Fri, 26 Jul 2013 21:05:23 +0400
+Message-ID: <20130726210523.08bcb38b1589a67ba9bae6d1@mail.ru>
+References: <1372483459-11836-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.11.231]:42978 "EHLO
-	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758651Ab3GZRFX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 26 Jul 2013 13:05:23 -0400
-Content-Disposition: inline
-In-Reply-To: <CAJAp7Og1jwyAn0sGbb_1Bk5_fvBWa1AuDNsRV1b17S0Tijk9kg@mail.gmail.com>
+Received: from smtp50.i.mail.ru ([94.100.177.110]:56409 "EHLO smtp50.i.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758651Ab3GZRFe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Jul 2013 13:05:34 -0400
+In-Reply-To: <1372483459-11836-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bjorn Andersson <bjorn@kryo.se>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, linux-serial@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-On 07/25, Bjorn Andersson wrote:
-> On Wed, Jul 24, 2013 at 10:37 AM, Stephen Boyd <sboyd@codeaurora.org> wrote:
-> > [snip]
-> > +       unsigned int i, divisor;
-> > +       const struct msm_baud_map *entry;
-> > +       static const struct msm_baud_map table[] = {
-> > +               { 1536, 0x00,  1 },
-> > +               {  768, 0x11,  1 },
-> > +               {  384, 0x22,  1 },
-> > +               {  192, 0x33,  1 },
-> > +               {   96, 0x44,  1 },
-> > +               {   48, 0x55,  1 },
-> > +               {   32, 0x66,  1 },
-> > +               {   24, 0x77,  1 },
-> > +               {   16, 0x88,  1 },
-> > +               {   12, 0x99,  6 },
-> > +               {    8, 0xaa,  6 },
-> > +               {    6, 0xbb,  6 },
-> > +               {    4, 0xcc,  6 },
-> > +               {    3, 0xdd,  8 },
-> > +               {    2, 0xee, 16 },
-> > +               {    1, 0xff, 31 },
-> > +       };
-> > +
-> > +       divisor = uart_get_divisor(port, baud);
-> > +
-> > +       for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
-> > +               if (entry->divisor <= divisor)
-> > +                       break;
-> > +
-> > +       return entry; /* Default to smallest divider */
+On Sat, 29 Jun 2013 09:24:16 +0400
+Alexander Shiyan <shc_work@mail.ru> wrote:
+
+> This series adds support for dual (MAX3109) and quad (MAX14830) ICs
+> into the max310x driver.
+> There are lot of changes in the code, as we had to change almost every
+> function to achieve the required functionality. Because of this
+> the first part of the patch can not be divided into smaller parts.
+> Result was checked for a long time:
+> MAX3107 with SPI on Cirrus Logic EP7312,
+> MAX14830 with SPI on Freescale i.MX51 (two ports simultaneously).
 > 
-> Shouldn't matter, but you're not defaulting to the smallest divider.
-> Your are defaulting to an undefined value, as `entry` will be off the
-> array once i == ARRAY_SIZE().
+> Alexander Shiyan (3):
+>   serial: max310x: Driver rework
+>   serial: max310x: Add MAX3109 support
+>   serial: max310x: Add MAX14830 support
 > 
+>  drivers/tty/serial/Kconfig            |   6 +-
+>  drivers/tty/serial/max310x.c          | 996 ++++++++++++++++++----------------
+>  include/linux/platform_data/max310x.h |   9 +-
+>  3 files changed, 531 insertions(+), 480 deletions(-)
+> 
+> -- 
+> 1.8.1.5
 
-Yes because the if condition will always be true. Perhaps that's
-too confusing? We could add a subtraction by 1 to make it more
-obvious.
-
- for (i = 0; entry = table; i < ARRAY_SIZE(table) - 1; i++, entry++)
- 	if (entry->divisor <= divisor)
-		break;
-
- return entry; /* Default to smallest divider*/
+Ping.
 
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+Alexander Shiyan <shc_work@mail.ru>
