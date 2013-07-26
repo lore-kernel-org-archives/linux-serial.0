@@ -1,91 +1,63 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH] serial8250-em: Convert to devm_* managed helpers
-Date: Fri, 26 Jul 2013 16:22:02 +0200
-Message-ID: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-sh@vger.kernel.org, Magnus Damm <damm@opensource.se>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.11-rc3
+Date: Fri, 26 Jul 2013 09:57:45 -0700
+Message-ID: <20130726165745.GA22891@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:48615 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758033Ab3GZQ5q (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Jul 2013 12:57:46 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Replace kzalloc and clk_get by their managed counterparts to simplify
-error and cleanup paths.
+The following changes since commit 3b2f64d00c46e1e4e9bd0bb9bb12619adac2=
+7a4b:
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- drivers/tty/serial/8250/8250_em.c | 27 ++++++++-------------------
- 1 file changed, 8 insertions(+), 19 deletions(-)
+  Linux 3.11-rc2 (2013-07-21 12:05:29 -0700)
 
-diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 916cc19..5f3bba1 100644
---- a/drivers/tty/serial/8250/8250_em.c
-+++ b/drivers/tty/serial/8250/8250_em.c
-@@ -95,25 +95,23 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct serial8250_em_priv *priv;
- 	struct uart_8250_port up;
--	int ret = -EINVAL;
-+	int ret;
- 
- 	if (!regs || !irq) {
- 		dev_err(&pdev->dev, "missing registers or irq\n");
--		goto err0;
-+		return -EINVAL;
- 	}
- 
--	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv) {
- 		dev_err(&pdev->dev, "unable to allocate private data\n");
--		ret = -ENOMEM;
--		goto err0;
-+		return -ENOMEM;
- 	}
- 
--	priv->sclk = clk_get(&pdev->dev, "sclk");
-+	priv->sclk = devm_clk_get(&pdev->dev, "sclk");
- 	if (IS_ERR(priv->sclk)) {
- 		dev_err(&pdev->dev, "unable to get clock\n");
--		ret = PTR_ERR(priv->sclk);
--		goto err1;
-+		return PTR_ERR(priv->sclk);
- 	}
- 
- 	memset(&up, 0, sizeof(up));
-@@ -136,20 +134,13 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 	ret = serial8250_register_8250_port(&up);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "unable to register 8250 port\n");
--		goto err2;
-+		clk_disable(priv->sclk);
-+		return ret;
- 	}
- 
- 	priv->line = ret;
- 	platform_set_drvdata(pdev, priv);
- 	return 0;
--
-- err2:
--	clk_disable(priv->sclk);
--	clk_put(priv->sclk);
-- err1:
--	kfree(priv);
-- err0:
--	return ret;
- }
- 
- static int serial8250_em_remove(struct platform_device *pdev)
-@@ -158,8 +149,6 @@ static int serial8250_em_remove(struct platform_device *pdev)
- 
- 	serial8250_unregister_port(priv->line);
- 	clk_disable(priv->sclk);
--	clk_put(priv->sclk);
--	kfree(priv);
- 	return 0;
- }
- 
--- 
-Regards,
+are available in the git repository at:
 
-Laurent Pinchart
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-3.11-rc3
 
+for you to fetch changes up to 3bf5d350586d98eb28ab7f86ffbd66518ffd95d8=
+:
+
+  serial: tegra: correct help message in Kconfig from 'ttyHS' to 'ttyTH=
+S' (2013-07-24 15:23:38 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.11-rc3
+
+Here are 3 fixes for TTY and serial issues that have been reported.
+Nothing huge, but nice to get fixed.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      TTY: snyclinkmp: calculating wrong addresses
+
+Henrik Nordstr=F6m (1):
+      tty/8250_early: Don't truncate last character of options
+
+Richard Zhao (1):
+      serial: tegra: correct help message in Kconfig from 'ttyHS' to 't=
+tyTHS'
+
+ drivers/tty/serial/8250/8250_early.c | 3 ++-
+ drivers/tty/serial/Kconfig           | 2 +-
+ drivers/tty/synclinkmp.c             | 2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
