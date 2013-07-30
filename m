@@ -1,76 +1,43 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/2] serial/efm32-uart: don't use pdev->id to determine
- the port's line
-Date: Tue, 30 Jul 2013 07:51:09 -0700
-Message-ID: <20130730145109.GA29971@kroah.com>
-References: <20130730082146.GP1754@pengutronix.de>
- <1375172593-24345-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20130730083441.GQ1754@pengutronix.de>
- <20130730140250.GG27962@kroah.com>
- <20130730143739.GV1754@pengutronix.de>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH 3/9] spi: tegra114: move to generic dma DT binding
+Date: Tue, 30 Jul 2013 10:44:46 -0600
+Message-ID: <51F7ED7E.5070000@wwwdotorg.org>
+References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com> <1374639002-16753-4-git-send-email-rizhao@nvidia.com> <51F2CF53.30002@wwwdotorg.org> <20130730031536.GK15855@rizhao-lap>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:40880 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751551Ab3G3Otx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Jul 2013 10:49:53 -0400
-Content-Disposition: inline
-In-Reply-To: <20130730143739.GV1754@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130730031536.GK15855@rizhao-lap>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Brown <broonie-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ian Campbell <ian.campbell-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "djbw-b10kYP2dOMg@public.gmane.org" <djbw-b10kYP2dOMg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org
 
-On Tue, Jul 30, 2013 at 04:37:39PM +0200, Uwe Kleine-K=F6nig wrote:
-> Hi Greg,
->=20
-> On Tue, Jul 30, 2013 at 07:02:50AM -0700, Greg Kroah-Hartman wrote:
-> > On Tue, Jul 30, 2013 at 10:34:41AM +0200, Uwe Kleine-K=F6nig wrote:
-> > > On Tue, Jul 30, 2013 at 10:23:12AM +0200, Uwe Kleine-K=F6nig wrot=
-e:
-> > > > pdev->id is not a valid choice for device-tree probed devices. =
-So use
-> > > > the (properly determined) line from efm32_uart_probe consistenl=
-y
-> > > >=20
-> > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.=
-de>
-> > > > Forwarded: id:1374043721-30677-1-git-send-email-u.kleine-koenig=
-@pengutronix.de
-> > > I forgot to drop these lines that I use for tracking which patche=
-s were
-> > > sent for inclusion into mainline. I don't care much, but you migh=
-t want
-> > > to drop them.
-> >=20
-> > Please resend so I don't have to hand-edit the messages.  I handle
-> > thousands of patches a month, hand-editing is a pain and slows me
-> > down...
-> ok, just resent to you only after doing
->=20
-> 	git filter-branch -f --msg-filter 'grep -v "^Forwarded:"' next/maste=
-r..
->=20
-> (Maybe this is even easier than replying about your pain? No offense
-> intended, just wondering.)
+On 07/29/2013 09:15 PM, Richard Zhao wrote:
+> On Sat, Jul 27, 2013 at 03:34:43AM +0800, Stephen Warren wrote:
+>> (Stripping CC list a bit)
+>>
+>> On 07/23/2013 10:09 PM, Richard Zhao wrote:
+>>> - driver: remove use of nvidia,dma-request-selector
+>>> 	  use dma_request_slave_channel to request channel
+>>> - if dmas/dma-names are missing, it still supports cpu based transfer
+>>> - update binding doc and specify dmas/dma-names properties as optional
 
-Easier for you, yes :)
+>>> diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt b/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt
+>>
+>>> +Optional properties:
+>>> +- dmas : The Tegra DMA controller's phandle and request selector for
+>>> +  this SPI controller.
+>>> +- dma-names : Should be "rx-tx".
+>>
+>> This should reference dma.txt which defines the DMA DT bindings. How about:
+>>
+>> ----------
+>> Optional properties:
+>> - dmas, dma-names : The DMA channel to use for DMA-mode operation. See
+>>   dma.txt for the definition of these properties. A single entry named
+>>   "rx-tx" must be specified.
+>> ----------
+> Ok. but how about replace "DMA channel" with "DMA request"?
 
-But I don't see how that would help me out when applying patches in a
-mbox format to a git tree, do you?  What am I missing?
-
-Having to craft a custom grep -v pattern for every message would be a
-pain, as people do lots of silly things in patches that need to be
-edited out at times...
-
-thanks,
-
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Sure.
