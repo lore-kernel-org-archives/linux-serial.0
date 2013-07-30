@@ -1,46 +1,90 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
 	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial/efm32-uart: don't slur over failure in probe_dt
-Date: Tue, 30 Jul 2013 10:21:46 +0200
-Message-ID: <20130730082146.GP1754@pengutronix.de>
-References: <1374177342-23129-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20130726230629.GA15987@kroah.com>
+Subject: [PATCH 1/2] serial/efm32-uart: don't use pdev->id to determine the port's line
+Date: Tue, 30 Jul 2013 10:23:12 +0200
+Message-ID: <1375172593-24345-1-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <20130730082146.GP1754@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:39006 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:43749 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758042Ab3G3IVu (ORCPT
+	with ESMTP id S1758028Ab3G3IXk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Jul 2013 04:21:50 -0400
-Content-Disposition: inline
-In-Reply-To: <20130726230629.GA15987@kroah.com>
+	Tue, 30 Jul 2013 04:23:40 -0400
+In-Reply-To: <20130730082146.GP1754@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org
 
-On Fri, Jul 26, 2013 at 04:06:29PM -0700, Greg Kroah-Hartman wrote:
-> On Thu, Jul 18, 2013 at 09:55:42PM +0200, Uwe Kleine-K=F6nig wrote:
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> >  drivers/tty/serial/efm32-uart.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> This doesn't apply either :(
-If you take my other patch "serial/efm32-uart: don't use pdev->id to
-determine the port's line" first, it should apply well. I'll reply to
-this mail with the two patches based on next-20130730.
+pdev->id is not a valid choice for device-tree probed devices. So use
+the (properly determined) line from efm32_uart_probe consistenly
 
-Best regards
-Uwe
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+=46orwarded: id:1374043721-30677-1-git-send-email-u.kleine-koenig@pengu=
+tronix.de
+---
+ drivers/tty/serial/efm32-uart.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
+-uart.c
+index 868dbfb..ce1ebbb 100644
+--- a/drivers/tty/serial/efm32-uart.c
++++ b/drivers/tty/serial/efm32-uart.c
+@@ -698,6 +698,7 @@ static int efm32_uart_probe(struct platform_device =
+*pdev)
+ {
+ 	struct efm32_uart_port *efm_port;
+ 	struct resource *res;
++	unsigned int line;
+ 	int ret;
+=20
+ 	efm_port =3D kzalloc(sizeof(*efm_port), GFP_KERNEL);
+@@ -752,16 +753,17 @@ static int efm32_uart_probe(struct platform_devic=
+e *pdev)
+ 			efm_port->pdata =3D *pdata;
+ 	}
+=20
+-	if (efm_port->port.line >=3D 0 &&
+-			efm_port->port.line < ARRAY_SIZE(efm32_uart_ports))
+-		efm32_uart_ports[efm_port->port.line] =3D efm_port;
++	line =3D efm_port->port.line;
++
++	if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
++		efm32_uart_ports[line] =3D efm_port;
+=20
+ 	ret =3D uart_add_one_port(&efm32_uart_reg, &efm_port->port);
+ 	if (ret) {
+ 		dev_dbg(&pdev->dev, "failed to add port: %d\n", ret);
+=20
+-		if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
+-			efm32_uart_ports[pdev->id] =3D NULL;
++		if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
++			efm32_uart_ports[line] =3D NULL;
+ err_get_rxirq:
+ err_too_small:
+ err_get_base:
+@@ -777,11 +779,12 @@ err_get_base:
+ static int efm32_uart_remove(struct platform_device *pdev)
+ {
+ 	struct efm32_uart_port *efm_port =3D platform_get_drvdata(pdev);
++	unsigned int line =3D efm_port->port.line;
+=20
+ 	uart_remove_one_port(&efm32_uart_reg, &efm_port->port);
+=20
+-	if (pdev->id >=3D 0 && pdev->id < ARRAY_SIZE(efm32_uart_ports))
+-		efm32_uart_ports[pdev->id] =3D NULL;
++	if (line >=3D 0 && line < ARRAY_SIZE(efm32_uart_ports))
++		efm32_uart_ports[line] =3D NULL;
+=20
+ 	kfree(efm_port);
+=20
 --=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+1.8.3.2
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
