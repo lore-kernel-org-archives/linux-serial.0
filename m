@@ -1,96 +1,120 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: [PATCH] pch_uart: Fix signed-ness and casting of uartclk related fields
-Date: Mon, 29 Jul 2013 15:15:07 -0700
-Message-ID: <ffa173ec15e8f7fcce6cf9f988110448a4dcf072.1375136107.git.dvhart@linux.intel.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH] serial8250-em: Convert to devm_* managed helpers
+Date: Tue, 30 Jul 2013 11:08:59 +0900
+Message-ID: <20130730020859.GB27724@verge.net.au>
+References: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:49587 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754671Ab3G2WP1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Jul 2013 18:15:27 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:32863 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756522Ab3G3CJB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Jul 2013 22:09:01 -0400
+Content-Disposition: inline
+In-Reply-To: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Darren Hart <dvhart@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <damm@opensource.se>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Storing one struct per known board would be overkill. Pre-cast the
-driver_data pointer to an unsigned long to avoid the pointer to int
-compiler warning:
+[ CC Greg Kroah-Hartman, linux-serial@vger.kernel.org,
+  linux-arm-kernel@lists.infradead.org ]
 
-drivers/tty/serial/pch_uart.c:431:10: warning: cast from pointer to
-integer of different size [-Wpointer-to-int-cast]
+On Fri, Jul 26, 2013 at 04:22:02PM +0200, Laurent Pinchart wrote:
+> Replace kzalloc and clk_get by their managed counterparts to simplify
+> error and cleanup paths.
 
-Unify the signed-ness of the baud and uartclk types throughout the
-driver.
+Hi Laurent,
 
-Signed-off-by: Darren Hart <dvhart@linux.intel.com>
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/pch_uart.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+I was recently asked for shmobile clocksource patches to be reviewed
+by the clocksource maintainers. I believe that means Greg Kroah-Hartman
+and linux-serial@vger.kernel.org who I have CCed on this email accordingly.
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index bc0aa08..5040c51 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -232,7 +232,7 @@ struct eg20t_port {
- 	unsigned int iobase;
- 	struct pci_dev *pdev;
- 	int fifo_size;
--	int uartclk;
-+	unsigned int uartclk;
- 	int start_tx;
- 	int start_rx;
- 	int tx_empty;
-@@ -419,7 +419,7 @@ static struct dmi_system_id pch_uart_dmi_table[] = {
- };
- 
- /* Return UART clock, checking for board specific clocks. */
--static int pch_uart_get_uartclk(void)
-+static unsigned int pch_uart_get_uartclk(void)
- {
- 	const struct dmi_system_id *d;
- 
-@@ -428,7 +428,7 @@ static int pch_uart_get_uartclk(void)
- 
- 	d = dmi_first_match(pch_uart_dmi_table);
- 	if (d)
--		return (int)d->driver_data;
-+		return (unsigned long)d->driver_data;
- 
- 	return DEFAULT_UARTCLK;
- }
-@@ -449,7 +449,7 @@ static void pch_uart_hal_disable_interrupt(struct eg20t_port *priv,
- 	iowrite8(ier, priv->membase + UART_IER);
- }
- 
--static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
-+static int pch_uart_hal_set_line(struct eg20t_port *priv, unsigned int baud,
- 				 unsigned int parity, unsigned int bits,
- 				 unsigned int stb)
- {
-@@ -484,7 +484,7 @@ static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
- 	lcr |= bits;
- 	lcr |= stb;
- 
--	dev_dbg(priv->port.dev, "%s:baud = %d, div = %04x, lcr = %02x (%lu)\n",
-+	dev_dbg(priv->port.dev, "%s:baud = %u, div = %04x, lcr = %02x (%lu)\n",
- 		 __func__, baud, div, lcr, jiffies);
- 	iowrite8(PCH_UART_LCR_DLAB, priv->membase + UART_LCR);
- 	iowrite8(dll, priv->membase + PCH_UART_DLL);
-@@ -1390,9 +1390,8 @@ static void pch_uart_shutdown(struct uart_port *port)
- static void pch_uart_set_termios(struct uart_port *port,
- 				 struct ktermios *termios, struct ktermios *old)
- {
--	int baud;
- 	int rtn;
--	unsigned int parity, bits, stb;
-+	unsigned int baud, parity, bits, stb;
- 	struct eg20t_port *priv;
- 	unsigned long flags;
- 
--- 
-1.8.3.1
+I have also CCed linux-arm-kernel@lists.infradead.org as many moons ago
+I was asked for all patches that will go through my tree and on to arm-soc
+to be sent there.
 
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> ---
+>  drivers/tty/serial/8250/8250_em.c | 27 ++++++++-------------------
+>  1 file changed, 8 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
+> index 916cc19..5f3bba1 100644
+> --- a/drivers/tty/serial/8250/8250_em.c
+> +++ b/drivers/tty/serial/8250/8250_em.c
+> @@ -95,25 +95,23 @@ static int serial8250_em_probe(struct platform_device *pdev)
+>  	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+>  	struct serial8250_em_priv *priv;
+>  	struct uart_8250_port up;
+> -	int ret = -EINVAL;
+> +	int ret;
+>  
+>  	if (!regs || !irq) {
+>  		dev_err(&pdev->dev, "missing registers or irq\n");
+> -		goto err0;
+> +		return -EINVAL;
+>  	}
+>  
+> -	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+>  	if (!priv) {
+>  		dev_err(&pdev->dev, "unable to allocate private data\n");
+> -		ret = -ENOMEM;
+> -		goto err0;
+> +		return -ENOMEM;
+>  	}
+>  
+> -	priv->sclk = clk_get(&pdev->dev, "sclk");
+> +	priv->sclk = devm_clk_get(&pdev->dev, "sclk");
+>  	if (IS_ERR(priv->sclk)) {
+>  		dev_err(&pdev->dev, "unable to get clock\n");
+> -		ret = PTR_ERR(priv->sclk);
+> -		goto err1;
+> +		return PTR_ERR(priv->sclk);
+>  	}
+>  
+>  	memset(&up, 0, sizeof(up));
+> @@ -136,20 +134,13 @@ static int serial8250_em_probe(struct platform_device *pdev)
+>  	ret = serial8250_register_8250_port(&up);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "unable to register 8250 port\n");
+> -		goto err2;
+> +		clk_disable(priv->sclk);
+> +		return ret;
+>  	}
+>  
+>  	priv->line = ret;
+>  	platform_set_drvdata(pdev, priv);
+>  	return 0;
+> -
+> - err2:
+> -	clk_disable(priv->sclk);
+> -	clk_put(priv->sclk);
+> - err1:
+> -	kfree(priv);
+> - err0:
+> -	return ret;
+>  }
+>  
+>  static int serial8250_em_remove(struct platform_device *pdev)
+> @@ -158,8 +149,6 @@ static int serial8250_em_remove(struct platform_device *pdev)
+>  
+>  	serial8250_unregister_port(priv->line);
+>  	clk_disable(priv->sclk);
+> -	clk_put(priv->sclk);
+> -	kfree(priv);
+>  	return 0;
+>  }
+>  
+> -- 
+> Regards,
+> 
+> Laurent Pinchart
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
