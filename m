@@ -1,120 +1,65 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH] serial8250-em: Convert to devm_* managed helpers
-Date: Tue, 30 Jul 2013 11:08:59 +0900
-Message-ID: <20130730020859.GB27724@verge.net.au>
-References: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Richard Zhao <rizhao@nvidia.com>
+Subject: Re: [PATCH 3/9] spi: tegra114: move to generic dma DT binding
+Date: Tue, 30 Jul 2013 11:15:36 +0800
+Message-ID: <20130730031536.GK15855@rizhao-lap>
+References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
+ <1374639002-16753-4-git-send-email-rizhao@nvidia.com>
+ <51F2CF53.30002@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:32863 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756522Ab3G3CJB (ORCPT
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:19919 "EHLO
+	hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754037Ab3G3DPw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Jul 2013 22:09:01 -0400
+	Mon, 29 Jul 2013 23:15:52 -0400
+In-Reply-To: <51F2CF53.30002@wwwdotorg.org>
 Content-Disposition: inline
-In-Reply-To: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <damm@opensource.se>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Ian Campbell <ian.campbell@citrix.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mark Rutland <Mark.Rutland@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Pawel Moll <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "vinod.koul@intel.com" <vinod.koul@intel.com>, "djbw@fb.com" <djbw@fb.com>
 
-[ CC Greg Kroah-Hartman, linux-serial@vger.kernel.org,
-  linux-arm-kernel@lists.infradead.org ]
-
-On Fri, Jul 26, 2013 at 04:22:02PM +0200, Laurent Pinchart wrote:
-> Replace kzalloc and clk_get by their managed counterparts to simplify
-> error and cleanup paths.
-
-Hi Laurent,
-
-I was recently asked for shmobile clocksource patches to be reviewed
-by the clocksource maintainers. I believe that means Greg Kroah-Hartman
-and linux-serial@vger.kernel.org who I have CCed on this email accordingly.
-
-I have also CCed linux-arm-kernel@lists.infradead.org as many moons ago
-I was asked for all patches that will go through my tree and on to arm-soc
-to be sent there.
-
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> ---
->  drivers/tty/serial/8250/8250_em.c | 27 ++++++++-------------------
->  1 file changed, 8 insertions(+), 19 deletions(-)
+On Sat, Jul 27, 2013 at 03:34:43AM +0800, Stephen Warren wrote:
+> (Stripping CC list a bit)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-> index 916cc19..5f3bba1 100644
-> --- a/drivers/tty/serial/8250/8250_em.c
-> +++ b/drivers/tty/serial/8250/8250_em.c
-> @@ -95,25 +95,23 @@ static int serial8250_em_probe(struct platform_device *pdev)
->  	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
->  	struct serial8250_em_priv *priv;
->  	struct uart_8250_port up;
-> -	int ret = -EINVAL;
-> +	int ret;
->  
->  	if (!regs || !irq) {
->  		dev_err(&pdev->dev, "missing registers or irq\n");
-> -		goto err0;
-> +		return -EINVAL;
->  	}
->  
-> -	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->  	if (!priv) {
->  		dev_err(&pdev->dev, "unable to allocate private data\n");
-> -		ret = -ENOMEM;
-> -		goto err0;
-> +		return -ENOMEM;
->  	}
->  
-> -	priv->sclk = clk_get(&pdev->dev, "sclk");
-> +	priv->sclk = devm_clk_get(&pdev->dev, "sclk");
->  	if (IS_ERR(priv->sclk)) {
->  		dev_err(&pdev->dev, "unable to get clock\n");
-> -		ret = PTR_ERR(priv->sclk);
-> -		goto err1;
-> +		return PTR_ERR(priv->sclk);
->  	}
->  
->  	memset(&up, 0, sizeof(up));
-> @@ -136,20 +134,13 @@ static int serial8250_em_probe(struct platform_device *pdev)
->  	ret = serial8250_register_8250_port(&up);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "unable to register 8250 port\n");
-> -		goto err2;
-> +		clk_disable(priv->sclk);
-> +		return ret;
->  	}
->  
->  	priv->line = ret;
->  	platform_set_drvdata(pdev, priv);
->  	return 0;
-> -
-> - err2:
-> -	clk_disable(priv->sclk);
-> -	clk_put(priv->sclk);
-> - err1:
-> -	kfree(priv);
-> - err0:
-> -	return ret;
->  }
->  
->  static int serial8250_em_remove(struct platform_device *pdev)
-> @@ -158,8 +149,6 @@ static int serial8250_em_remove(struct platform_device *pdev)
->  
->  	serial8250_unregister_port(priv->line);
->  	clk_disable(priv->sclk);
-> -	clk_put(priv->sclk);
-> -	kfree(priv);
->  	return 0;
->  }
->  
-> -- 
-> Regards,
+> On 07/23/2013 10:09 PM, Richard Zhao wrote:
+> > - driver: remove use of nvidia,dma-request-selector
+> > 	  use dma_request_slave_channel to request channel
+> > - if dmas/dma-names are missing, it still supports cpu based transfer
+> > - update binding doc and specify dmas/dma-names properties as optional
 > 
-> Laurent Pinchart
+> I'll simply repeat the comments I already made downstream:
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Most commit messages aren't written as bullet points. 
+Alright, I'll change it. (Personally I like bullet points).
+> This might be
+> better written as:
 > 
+> ----------
+> Convert the Tegra114 SPI driver to support the standard DMA device-tree
+> bindings.
+> 
+> Note that DMA mode is optional; if the DT properties required to support
+> DMA are missing, then the driver will fall back to pure CPU operation.
+> ----------
+> 
+> > diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt b/Documentation/devicetree/bindings/spi/nvidia,tegra114-spi.txt
+> 
+> > +Optional properties:
+> > +- dmas : The Tegra DMA controller's phandle and request selector for
+> > +  this SPI controller.
+> > +- dma-names : Should be "rx-tx".
+> 
+> This should reference dma.txt which defines the DMA DT bindings. How about:
+> 
+> ----------
+> Optional properties:
+> - dmas, dma-names : The DMA channel to use for DMA-mode operation. See
+>   dma.txt for the definition of these properties. A single entry named
+>   "rx-tx" must be specified.
+> ----------
+Ok. but how about replace "DMA channel" with "DMA request"?
+
+Thanks
+Richard
