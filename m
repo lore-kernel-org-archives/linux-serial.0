@@ -1,48 +1,138 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/2] serial/efm32-uart: don't use pdev->id to determine
- the port's line
-Date: Tue, 30 Jul 2013 10:34:41 +0200
-Message-ID: <20130730083441.GQ1754@pengutronix.de>
-References: <20130730082146.GP1754@pengutronix.de>
- <1375172593-24345-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] serial8250-em: Convert to devm_* managed helpers
+Date: Tue, 30 Jul 2013 12:00:37 +0200
+Message-ID: <1693887.iFDQbH8OZ5@avalon>
+References: <1374848522-13125-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20130730020859.GB27724@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:49471 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754760Ab3G3Iep (ORCPT
+Received: from perceval.ideasonboard.com ([95.142.166.194]:37382 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758729Ab3G3J7i (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Jul 2013 04:34:45 -0400
-Content-Disposition: inline
-In-Reply-To: <1375172593-24345-1-git-send-email-u.kleine-koenig@pengutronix.de>
+	Tue, 30 Jul 2013 05:59:38 -0400
+In-Reply-To: <20130730020859.GB27724@verge.net.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Magnus Damm <damm@opensource.se>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Tue, Jul 30, 2013 at 10:23:12AM +0200, Uwe Kleine-K=F6nig wrote:
-> pdev->id is not a valid choice for device-tree probed devices. So use
-> the (properly determined) line from efm32_uart_probe consistenly
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Forwarded: id:1374043721-30677-1-git-send-email-u.kleine-koenig@pengu=
-tronix.de
-I forgot to drop these lines that I use for tracking which patches were
-sent for inclusion into mainline. I don't care much, but you might want
-to drop them.
+Hi Simon,
 
-Best regards
-Uwe
+On Tuesday 30 July 2013 11:08:59 Simon Horman wrote:
+> [ CC Greg Kroah-Hartman, linux-serial@vger.kernel.org,
+>   linux-arm-kernel@lists.infradead.org ]
+> 
+> On Fri, Jul 26, 2013 at 04:22:02PM +0200, Laurent Pinchart wrote:
+> > Replace kzalloc and clk_get by their managed counterparts to simplify
+> > error and cleanup paths.
+> 
+> Hi Laurent,
+> 
+> I was recently asked for shmobile clocksource patches to be reviewed by the
+> clocksource maintainers.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I suppose you mean serial port, not clock source.
+
+> I believe that means Greg Kroah-Hartman and linux-serial@vger.kernel.org who
+> I have CCed on this email accordingly.
+
+linux-serial@vger.kernel.org was already CC'ed in my original e-mail. 
+
+> I have also CCed linux-arm-kernel@lists.infradead.org
+
+Actually you haven't ;-)
+
+> as many moons ago I was asked for all patches that will go through my tree
+> and on to arm-soc to be sent there.
+
+This patch will likely go through the serial tree, which is why I hadn't CC'ed 
+LAKML.
+
+> > Signed-off-by: Laurent Pinchart
+> > <laurent.pinchart+renesas@ideasonboard.com>
+> > ---
+> > 
+> >  drivers/tty/serial/8250/8250_em.c | 27 ++++++++-------------------
+> >  1 file changed, 8 insertions(+), 19 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_em.c
+> > b/drivers/tty/serial/8250/8250_em.c index 916cc19..5f3bba1 100644
+> > --- a/drivers/tty/serial/8250/8250_em.c
+> > +++ b/drivers/tty/serial/8250/8250_em.c
+> > @@ -95,25 +95,23 @@ static int serial8250_em_probe(struct platform_device
+> > *pdev)> 
+> >  	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ,
+> >  	0);
+> >  	struct serial8250_em_priv *priv;
+> >  	struct uart_8250_port up;
+> > -	int ret = -EINVAL;
+> > +	int ret;
+> > 
+> >  	if (!regs || !irq) {
+> >  		dev_err(&pdev->dev, "missing registers or irq\n");
+> > -		goto err0;
+> > +		return -EINVAL;
+> >  	}
+> > 
+> > -	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> > +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> >  	if (!priv) {
+> >  		dev_err(&pdev->dev, "unable to allocate private data\n");
+> > -		ret = -ENOMEM;
+> > -		goto err0;
+> > +		return -ENOMEM;
+> >  	}
+> > 
+> > -	priv->sclk = clk_get(&pdev->dev, "sclk");
+> > +	priv->sclk = devm_clk_get(&pdev->dev, "sclk");
+> >  	if (IS_ERR(priv->sclk)) {
+> >  		dev_err(&pdev->dev, "unable to get clock\n");
+> > -		ret = PTR_ERR(priv->sclk);
+> > -		goto err1;
+> > +		return PTR_ERR(priv->sclk);
+> >  	}
+> >  	
+> >  	memset(&up, 0, sizeof(up));
+> > @@ -136,20 +134,13 @@ static int serial8250_em_probe(struct
+> > platform_device *pdev)> 
+> >  	ret = serial8250_register_8250_port(&up);
+> >  	if (ret < 0) {
+> >  		dev_err(&pdev->dev, "unable to register 8250 port\n");
+> > -		goto err2;
+> > +		clk_disable(priv->sclk);
+> > +		return ret;
+> >  	}
+> >  	
+> >  	priv->line = ret;
+> >  	platform_set_drvdata(pdev, priv);
+> >  	return 0;
+> > -
+> > - err2:
+> > -	clk_disable(priv->sclk);
+> > -	clk_put(priv->sclk);
+> > - err1:
+> > -	kfree(priv);
+> > - err0:
+> > -	return ret;
+> >  }
+> >  
+> >  static int serial8250_em_remove(struct platform_device *pdev)
+> > 
+> > @@ -158,8 +149,6 @@ static int serial8250_em_remove(struct platform_device
+> > *pdev)> 
+> >  	serial8250_unregister_port(priv->line);
+> >  	clk_disable(priv->sclk);
+> > 
+> > -	clk_put(priv->sclk);
+> > -	kfree(priv);
+> > 
+> >  	return 0;
+> >  
+> >  }
+-- 
+Regards,
+
+Laurent Pinchart
+
