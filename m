@@ -1,34 +1,67 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 6/9] serial: tegra: move to generic dma DT binding
-Date: Tue, 30 Jul 2013 10:46:42 -0600
-Message-ID: <51F7EDF2.60700@wwwdotorg.org>
-References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com> <1374639002-16753-7-git-send-email-rizhao@nvidia.com> <51F2D063.5010505@wwwdotorg.org> <20130730033134.GM15855@rizhao-lap>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.11-rc4
+Date: Tue, 30 Jul 2013 12:17:17 -0700
+Message-ID: <20130730191717.GA26474@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130730033134.GM15855@rizhao-lap>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:46036 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750957Ab3G3TRT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Jul 2013 15:17:19 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 07/29/2013 09:31 PM, Richard Zhao wrote:
-> On Sat, Jul 27, 2013 at 03:39:15AM +0800, Stephen Warren wrote:
->> On 07/23/2013 10:09 PM, Richard Zhao wrote:
->>> - driver: remove use of nvidia,dma-request-selector
->>> 	  use dma_request_slave_channel to request channel
->>> - update binding doc
->>
->> This patch needs to be amended so that the DMA channel is looked up
->> during probe() rather than open(), to guarantee that deferred probe
->> works. It's possible to hold off probe, but not possible AFAIK to hold
->> off opening the port.
->
-> How about avoid return -EPROBE_DEFER at open() time? It can be in
-> another patch.
+The following changes since commit 3bf5d350586d98eb28ab7f86ffbd66518ffd=
+95d8:
 
-I don't really understand what you mean. -EPROBE_DEFER is something that
-only makes sense for probe() to return (or functions used by probe()).
-It doesn't make sense to return it anywhere else, since probe deferral
-is something that can only happen for probe().
+  serial: tegra: correct help message in Kconfig from 'ttyHS' to 'ttyTH=
+S' (2013-07-24 15:23:38 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-3.11-rc4
+
+for you to fetch changes up to d5a12ea7a9e58d9e5c19d25cb668aadb396423ec=
+:
+
+  serial: arc_uart: Fix module alias (2013-07-26 16:34:00 -0700)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 3.11-rc4
+
+Here are 4 tiny tty and serial driver fixes for 3.11-rc4.
+
+Nothing big, a refcount leak, a module alias fix, and two fixes to the
+mxs-auart serial driver.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Axel Lin (1):
+      serial: arc_uart: Fix module alias
+
+Gianluca Anzolin (1):
+      tty_port: Fix refcounting leak in tty_port_tty_hangup()
+
+Uwe Kleine-K=F6nig (2):
+      serial/mxs-auart: fix race condition in interrupt handler
+      serial/mxs-auart: increase time to wait for transmitter to become=
+ idle
+
+ drivers/tty/serial/arc_uart.c  |  2 +-
+ drivers/tty/serial/mxs-auart.c | 38 ++++++++++++++++++++++------------=
+----
+ drivers/tty/tty_port.c         |  5 ++---
+ 3 files changed, 25 insertions(+), 20 deletions(-)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
