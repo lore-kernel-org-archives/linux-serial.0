@@ -1,32 +1,63 @@
-From: Richard Zhao <rizhao-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 6/9] serial: tegra: move to generic dma DT binding
-Date: Tue, 30 Jul 2013 11:31:35 +0800
-Message-ID: <20130730033134.GM15855@rizhao-lap>
-References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com>
- <1374639002-16753-7-git-send-email-rizhao@nvidia.com>
- <51F2D063.5010505@wwwdotorg.org>
+From: Rajendra Nayak <rnayak@ti.com>
+Subject: Re: [PATCH 2/4] serial: omap: enable PM runtime only when its fully
+ configured
+Date: Tue, 30 Jul 2013 10:46:01 +0530
+Message-ID: <51F74C11.2000306@ti.com>
+References: <1374487277-26099-1-git-send-email-rnayak@ti.com> <1374487277-26099-3-git-send-email-rnayak@ti.com> <alpine.DEB.2.02.1307290843090.30864@utopia.booyaka.com> <51F62CEB.2090502@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <51F2D063.5010505-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Content-Disposition: inline
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:49588 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754216Ab3G3FQe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Jul 2013 01:16:34 -0400
+In-Reply-To: <51F62CEB.2090502@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: tony@atomide.com, linux-omap@vger.kernel.org, balbi@ti.com, mpfj-list@newflow.co.uk, vaibhav.bedia@ti.com, khilman@linaro.org, sourav.poddar@ti.com, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, grygorii.strashko@ti.com
 
-On Sat, Jul 27, 2013 at 03:39:15AM +0800, Stephen Warren wrote:
-> On 07/23/2013 10:09 PM, Richard Zhao wrote:
-> > - driver: remove use of nvidia,dma-request-selector
-> > 	  use dma_request_slave_channel to request channel
-> > - update binding doc
+On Monday 29 July 2013 02:20 PM, Rajendra Nayak wrote:
+> On Monday 29 July 2013 02:14 PM, Paul Walmsley wrote:
+>> Rajendra,
+>>
+>> On Mon, 22 Jul 2013, Rajendra Nayak wrote:
+>>
+>>> From: Grygorii Strashko <grygorii.strashko@ti.com>
+>>>
+>>> If earlyprintk is enabled and current UART is console port the platform
+>>> code can mark it as RPM_ACTIVE to sync real IP state with PM Runtime and
+>>> avoid resuming of already active device, but now, driver initialization
+>>> will be performed in the wrong way:
+>>
+>> ...
+>>
+>>> CC: Tony Lindgren <tony@atomide.com>
+>>> CC: Rajendra Nayak <rnayak@ti.com>
+>>> CC: Felipe Balbi <balbi@ti.com>
+>>> CC: Kevin Hilman <khilman@linaro.org>
+>>>
+>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>
+>> Did you intend to add your Signed-off-by: to this patch?  Since you're 
+>> formally submitting it, it needs to have your Signed-off-by: for me to 
+>> take it.  Let me know and I'll add it if needed -
 > 
-> This patch needs to be amended so that the DMA channel is looked up
-> during probe() rather than open(), to guarantee that deferred probe
-> works. It's possible to hold off probe, but not possible AFAIK to hold
-> off opening the port.
-How about avoid return -EPROBE_DEFER at open() time? It can be in
-another patch.
+> Sorry about that Paul. I indeed missed adding my SoB for this one.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
 
-Thanks
-Richard
+Paul,
+
+Looks like this one is already been queued by Greg.
+
+regards,
+Rajendra
+
+> 
+>>
+>> - Paul
+>>
+> 
+
