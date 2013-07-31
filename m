@@ -1,68 +1,70 @@
 From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 6/9] serial: tegra: move to generic dma DT binding
-Date: Wed, 31 Jul 2013 15:32:37 -0600
-Message-ID: <51F98275.6020906@wwwdotorg.org>
-References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com> <1374639002-16753-7-git-send-email-rizhao@nvidia.com> <51F2D063.5010505@wwwdotorg.org> <20130730033134.GM15855@rizhao-lap> <51F7EDF2.60700@wwwdotorg.org> <20130731034541.GQ15855@rizhao-lap>
+Subject: Re: [PATCH 4/4] serial: sccnxp: Add DT support
+Date: Wed, 31 Jul 2013 15:45:06 -0600
+Message-ID: <51F98562.9080307@wwwdotorg.org>
+References: <1375268145-13393-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:34333 "EHLO
+Received: from avon.wwwdotorg.org ([70.85.31.133]:41685 "EHLO
 	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752830Ab3GaVck (ORCPT
+	with ESMTP id S1751835Ab3GaVpL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 31 Jul 2013 17:32:40 -0400
-In-Reply-To: <20130731034541.GQ15855@rizhao-lap>
+	Wed, 31 Jul 2013 17:45:11 -0400
+In-Reply-To: <1375268145-13393-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Zhao <rizhao@nvidia.com>
-Cc: "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>, Grant Likely <grant.likely@linaro.org>
 
-On 07/30/2013 09:45 PM, Richard Zhao wrote:
-> On Wed, Jul 31, 2013 at 12:46:42AM +0800, Stephen Warren wrote:
->> On 07/29/2013 09:31 PM, Richard Zhao wrote:
->>> On Sat, Jul 27, 2013 at 03:39:15AM +0800, Stephen Warren wrote:
->>>> On 07/23/2013 10:09 PM, Richard Zhao wrote:
->>>>> - driver: remove use of nvidia,dma-request-selector
->>>>> 	  use dma_request_slave_channel to request channel
->>>>> - update binding doc
->>>>
->>>> This patch needs to be amended so that the DMA channel is looked up
->>>> during probe() rather than open(), to guarantee that deferred probe
->>>> works. It's possible to hold off probe, but not possible AFAIK to hold
->>>> off opening the port.
->>>
->>> How about avoid return -EPROBE_DEFER at open() time? It can be in
->>> another patch.
->>
->> I don't really understand what you mean. -EPROBE_DEFER is something that
->> only makes sense for probe() to return (or functions used by probe()).
->> It doesn't make sense to return it anywhere else, since probe deferral
->> is something that can only happen for probe().
->
-> What I meant is, it might not worth to move request channel to probe
-> only because we need to check error and return -EPROBE_DEFER.
+On 07/31/2013 04:55 AM, Alexander Shiyan wrote:
+> Add DT support to the SCCNCP serial driver.
 
-If probe() doesn't attempt to validate that the/a DMA channel provider
-exists, then there's no guarantee that the DMA provider has probed
-before the DMA client driver either probes or executes any later code.
-So, you could quite easily end up with a situation where the serial
-driver's open fails because the DMA provider has not yet probed. This is
-exactly what deferred probe was intended to avoid. This reason alone is
-enough to make it worth fixing this.
+> diff --git a/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt b/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt
 
-> dma_request_slave_channel is better to be called as late as possible to
-> make better dynamic use of dma channels.
 
-probe() could validate that the provider exists in a way that doesn't
-permanently hold ownership of the DMA channel. For example, request it
-then immediately release it, in the absence of a dedicated "validate my
-DMA providers exist" API.
+> +Optional properties:
 
-> Actually, I searched the kernel code, most drivers don't return EPROBE_DEFER
-> when dma_request_slave_channel failed. dma_request_slave_channel can
-> fail in many cases, and dma device not probed is only one case.
+> +- poll-interval: Poll interval time in nanoseconds.
 
-That sounds like a bug. If a DMA channel /is/ specified, it should be
-possible to acquire it. If no DMA channel is specified, and if the
-device can do PIO, then it's reasonable to continue.
+Is this a standard/common property? If not, then it'd be best if the
+property name included the vendor-prefix "nxp,".
+
+> +- nxp,sccnxp-io-cfg: Array contains values for the emulated modem signals.
+> +  The number of values depends on the UART-number in the selected chip.
+> +  Each value should be composed according to the following rules:
+> +  (LINE1 << SIGNAL1) | ... | (LINEX << SIGNALX), where:
+> +   LINE - VALUE:
+> +    OP0 - 1
+...
+> +    IP6 - 15
+> +   SIGNAL - VALUE:
+> +    DTR - 0
+...
+> +    DIR - 24
+
+I wonder that shouldn't be implemented using standard pinctrl bindings.
+I could see someone wanting to create a pinmuxing-based serial port
+multiplexing device, which would then need to rely on this node acting
+as a standard pin controller...
+
+> +Example (Dual UART with direction control on OP0 & OP1):
+> +sc2892@10100000 {
+> +	compatible = "nxp,sc2892";
+> +	reg = <0x10100000 0x10>;
+> +	poll-interval = <10000>;
+> +	clocks = <&sc2892_clk>;
+> +	vcc-supply = <&sc2892_reg>;
+> +	nxp,sccnxp-io-cfg = <0x01000000 0x02000000>;
+
+Why two cells for io-cfg when the shifts above imply everything fits
+into a single cell?
+
+Oh I guess that "The number of values depends on the UART-number" means
+"number of UARTs in the chip", whereas I read it as "the ID of the UART
+within the chip"..
+
+When there are multiple UARTs in the chip, should each UART have its own
+separate DT node? If not, how could you refer to each individual UART
+e.g. in order to set up the /aliases node?
