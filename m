@@ -1,94 +1,68 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] tty: Only hangup once
-Date: Wed, 31 Jul 2013 14:05:45 -0400
-Message-ID: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH 6/9] serial: tegra: move to generic dma DT binding
+Date: Wed, 31 Jul 2013 15:32:37 -0600
+Message-ID: <51F98275.6020906@wwwdotorg.org>
+References: <1374639002-16753-1-git-send-email-rizhao@nvidia.com> <1374639002-16753-7-git-send-email-rizhao@nvidia.com> <51F2D063.5010505@wwwdotorg.org> <20130730033134.GM15855@rizhao-lap> <51F7EDF2.60700@wwwdotorg.org> <20130731034541.GQ15855@rizhao-lap>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:36931 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751894Ab3GaSH2 (ORCPT
+Received: from avon.wwwdotorg.org ([70.85.31.133]:34333 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752830Ab3GaVck (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 31 Jul 2013 14:07:28 -0400
+	Wed, 31 Jul 2013 17:32:40 -0400
+In-Reply-To: <20130731034541.GQ15855@rizhao-lap>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: Richard Zhao <rizhao@nvidia.com>
+Cc: "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 
-Instrumented testing shows a tty can be hungup multiple times [1].
-Although concurrent hangups are properly serialized, multiple
-hangups for the same tty should be prevented.
+On 07/30/2013 09:45 PM, Richard Zhao wrote:
+> On Wed, Jul 31, 2013 at 12:46:42AM +0800, Stephen Warren wrote:
+>> On 07/29/2013 09:31 PM, Richard Zhao wrote:
+>>> On Sat, Jul 27, 2013 at 03:39:15AM +0800, Stephen Warren wrote:
+>>>> On 07/23/2013 10:09 PM, Richard Zhao wrote:
+>>>>> - driver: remove use of nvidia,dma-request-selector
+>>>>> 	  use dma_request_slave_channel to request channel
+>>>>> - update binding doc
+>>>>
+>>>> This patch needs to be amended so that the DMA channel is looked up
+>>>> during probe() rather than open(), to guarantee that deferred probe
+>>>> works. It's possible to hold off probe, but not possible AFAIK to hold
+>>>> off opening the port.
+>>>
+>>> How about avoid return -EPROBE_DEFER at open() time? It can be in
+>>> another patch.
+>>
+>> I don't really understand what you mean. -EPROBE_DEFER is something that
+>> only makes sense for probe() to return (or functions used by probe()).
+>> It doesn't make sense to return it anywhere else, since probe deferral
+>> is something that can only happen for probe().
+>
+> What I meant is, it might not worth to move request channel to probe
+> only because we need to check error and return -EPROBE_DEFER.
 
-If tty has already been HUPPED, abort hangup. Note it is not
-necessary to cleanup file *redirect on subsequent hangups,
-as only TIOCCONS can set that value and ioctls are disabled
-after hangup.
+If probe() doesn't attempt to validate that the/a DMA channel provider
+exists, then there's no guarantee that the DMA provider has probed
+before the DMA client driver either probes or executes any later code.
+So, you could quite easily end up with a situation where the serial
+driver's open fails because the DMA provider has not yet probed. This is
+exactly what deferred probe was intended to avoid. This reason alone is
+enough to make it worth fixing this.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> dma_request_slave_channel is better to be called as late as possible to
+> make better dynamic use of dma channels.
 
-[1]
-Test performed by simulating a concurrent async hangup via
-tty_hangup() with a sync hangup via tty_vhangup(), while
-__tty_hangup() was instrumented with:
+probe() could validate that the provider exists in a way that doesn't
+permanently hold ownership of the DMA channel. For example, request it
+then immediately release it, in the absence of a dedicated "validate my
+DMA providers exist" API.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 26bb78c..fe8b061 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -629,6 +629,8 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
+> Actually, I searched the kernel code, most drivers don't return EPROBE_DEFER
+> when dma_request_slave_channel failed. dma_request_slave_channel can
+> fail in many cases, and dma device not probed is only one case.
 
- 	tty_lock(tty);
-
-+	WARN_ON(test_bit(TTY_HUPPED, &tty->flags));
-+
- 	/* some functions below drop BTM, so we need this bit */
- 	set_bit(TTY_HUPPING, &tty->flags);
-
-Test result:
-
-WARNING: at /home/peter/src/kernels/mainline/drivers/tty/tty_io.c:632 __tty_hangup+0x459/0x460()
-Modules linked in: ip6table_filter ip6_tables ebtable_nat <...snip...>
-CPU: 6 PID: 1197 Comm: kworker/6:2 Not tainted 3.10.0-0+rfcomm-xeon #0+rfcomm
-Hardware name: Dell Inc. Precision WorkStation T5400  /0RW203, BIOS A11 04/30/2012
-Workqueue: events do_tty_hangup
- 0000000000000009 ffff8802b16d7d18 ffffffff816b553e ffff8802b16d7d58
- ffffffff810407e0 ffff880254f95c00 ffff880254f95c00 ffff8802bfd92b00
- ffff8802bfd96b00 ffff880254f95e40 0000000000000180 ffff8802b16d7d68
-Call Trace:
- [<ffffffff816b553e>] dump_stack+0x19/0x1b
- [<ffffffff810407e0>] warn_slowpath_common+0x70/0xa0
- [<ffffffff8104082a>] warn_slowpath_null+0x1a/0x20
- [<ffffffff813fb279>] __tty_hangup+0x459/0x460
- [<ffffffff8107409c>] ? finish_task_switch+0xbc/0xe0
- [<ffffffff813fb297>] do_tty_hangup+0x17/0x20
- [<ffffffff8105fd6f>] process_one_work+0x16f/0x450
- [<ffffffff8106007c>] process_scheduled_works+0x2c/0x40
- [<ffffffff8106060a>] worker_thread+0x26a/0x380
- [<ffffffff810603a0>] ? rescuer_thread+0x310/0x310
- [<ffffffff810698a0>] kthread+0xc0/0xd0
- [<ffffffff816b0000>] ? destroy_compound_page+0x65/0x92
- [<ffffffff810697e0>] ? kthread_create_on_node+0x130/0x130
- [<ffffffff816c495c>] ret_from_fork+0x7c/0xb0
- [<ffffffff810697e0>] ? kthread_create_on_node+0x130/0x130
----[ end trace 98d9f01536cf411e ]---
----
- drivers/tty/tty_io.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 26bb78c..a9355ce 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -629,6 +629,11 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
- 
- 	tty_lock(tty);
- 
-+	if (test_bit(TTY_HUPPED, &tty->flags)) {
-+		tty_unlock(tty);
-+		return;
-+	}
-+
- 	/* some functions below drop BTM, so we need this bit */
- 	set_bit(TTY_HUPPING, &tty->flags);
- 
--- 
-1.8.1.2
-
+That sounds like a bug. If a DMA channel /is/ specified, it should be
+possible to acquire it. If no DMA channel is specified, and if the
+device can do PIO, then it's reasonable to continue.
