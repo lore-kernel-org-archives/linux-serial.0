@@ -1,32 +1,44 @@
-From: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 14/35] serial: use dev_get_platdata()
-Date: Wed, 31 Jul 2013 17:55:29 -0700
-Message-ID: <20130801005529.GA23602@kroah.com>
-References: <003f01ce8cfb$c334cb20$499e6160$@samsung.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v7] serial:st-asc: Add ST ASC driver.
+Date: Wed, 31 Jul 2013 18:11:50 -0700
+Message-ID: <20130801011150.GA11704@kroah.com>
+References: <1375263408-12834-1-git-send-email-srinivas.kandagatla@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:41696 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751108Ab3HAHaI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Aug 2013 03:30:08 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <003f01ce8cfb$c334cb20$499e6160$@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1375263408-12834-1-git-send-email-srinivas.kandagatla@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
+Cc: linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Tue, Jul 30, 2013 at 05:06:57PM +0900, Jingoo Han wrote:
-> Use the wrapper function for retrieving the platform data instead of
-> accessing dev->platform_data directly.
+On Wed, Jul 31, 2013 at 10:36:48AM +0100, Srinivas KANDAGATLA wrote:
+> From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 > 
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> This patch adds support to ASC (asynchronous serial controller)
+> driver, which is basically a standard serial driver. This IP is common
+> across all the ST parts for settop box platforms.
+> 
+> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
+> It support all industry standard baud rates.
+> 
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> CC: Stephen Gallimore <stephen.gallimore@st.com>
+> CC: Stuart Menefy <stuart.menefy@st.com>
+> CC: Arnd Bergmann <arnd@arndb.de>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+> Hi Greg,
+> 
+> This patch is the part of the driver support for Sti ARM SOCs.
+> This patch undergone 3-4 cycles of review in arm-kernel mailing list.
+> All the patches in that series went into 3.11.
+> This patch is based on 3.11-rc1.
 
-This didn't fully apply to my tree, so I took all of the chunks that
-did.  Care to resend just the one driver that I missed as an add-on
-patch?
+This patch doesn't apply to my tree at all, can you please refresh it
+against my tty-next tree and resend it so that I can have the chance to
+apply it?
 
 thanks,
 
