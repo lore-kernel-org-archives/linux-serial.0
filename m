@@ -1,45 +1,70 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v7] serial:st-asc: Add ST ASC driver.
-Date: Wed, 31 Jul 2013 18:11:50 -0700
-Message-ID: <20130801011150.GA11704@kroah.com>
-References: <1375263408-12834-1-git-send-email-srinivas.kandagatla@st.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCA0LzRdIHNlcmlhbDogc2NjbnhwOiBBZGQgRFQgc3VwcG9y?=
+ =?UTF-8?B?dA==?=
+Date: Thu, 01 Aug 2013 11:51:13 +0400
+Message-ID: <1375343473.135835596@f377.i.mail.ru>
+References: <1375268145-13393-1-git-send-email-shc_work@mail.ru>
+ <51F98562.9080307@wwwdotorg.org>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1375263408-12834-1-git-send-email-srinivas.kandagatla@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Cc: linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Rob Landley <rob@landley.net>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Stephen Gallimore <stephen.gallimore@st.com>, Stuart Menefy <stuart.menefy@st.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback2.mail.ru ([94.100.176.87]:58106 "EHLO
+	fallback2.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750848Ab3HAHvm (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 1 Aug 2013 03:51:42 -0400
+In-Reply-To: <51F98562.9080307@wwwdotorg.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?UTF-8?B?U3RlcGhlbiBXYXJyZW4=?= <swarren@wwwdotorg.org>
+Cc: linux-serial@vger.kernel.org, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>, devicetree@vger.kernel.org, =?UTF-8?B?Um9iIEhlcnJpbmc=?= <rob.herring@calxeda.com>, =?UTF-8?B?UGF3ZWwgTW9sbA==?= <pawel.moll@arm.com>, =?UTF-8?B?TWFyayBSdXRsYW5k?= <mark.rutland@arm.com>, =?UTF-8?B?SWFuIENhbXBiZWxs?= <ian.campbell@citrix.com>, =?UTF-8?B?R3JhbnQgTGlrZWx5?= <grant.likely@linaro.org>
 
-On Wed, Jul 31, 2013 at 10:36:48AM +0100, Srinivas KANDAGATLA wrote:
-> From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-> 
-> This patch adds support to ASC (asynchronous serial controller)
-> driver, which is basically a standard serial driver. This IP is common
-> across all the ST parts for settop box platforms.
-> 
-> ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
-> It support all industry standard baud rates.
-> 
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-> CC: Stephen Gallimore <stephen.gallimore@st.com>
-> CC: Stuart Menefy <stuart.menefy@st.com>
-> CC: Arnd Bergmann <arnd@arndb.de>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
-> Hi Greg,
-> 
-> This patch is the part of the driver support for Sti ARM SOCs.
-> This patch undergone 3-4 cycles of review in arm-kernel mailing list.
-> All the patches in that series went into 3.11.
-> This patch is based on 3.11-rc1.
-
-This patch doesn't apply to my tree at all, can you please refresh it
-against my tty-next tree and resend it so that I can have the chance to
-apply it?
-
-thanks,
-
-greg k-h
+PiBPbiAwNy8zMS8yMDEzIDA0OjU1IEFNLCBBbGV4YW5kZXIgU2hpeWFuIHdyb3RlOgo+ID4gQWRk
+IERUIHN1cHBvcnQgdG8gdGhlIFNDQ05DUCBzZXJpYWwgZHJpdmVyLgo+IAo+ID4gZGlmZiAtLWdp
+dCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy90dHkvc2VyaWFsL3NjY254cC1z
+ZXJpYWwudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3R0eS9zZXJpYWwv
+c2NjbnhwLXNlcmlhbC50eHQKPiAKPiA+ICtPcHRpb25hbCBwcm9wZXJ0aWVzOgo+IAo+ID4gKy0g
+cG9sbC1pbnRlcnZhbDogUG9sbCBpbnRlcnZhbCB0aW1lIGluIG5hbm9zZWNvbmRzLgo+IAo+IElz
+IHRoaXMgYSBzdGFuZGFyZC9jb21tb24gcHJvcGVydHk/IElmIG5vdCwgdGhlbiBpdCdkIGJlIGJl
+c3QgaWYgdGhlCj4gcHJvcGVydHkgbmFtZSBpbmNsdWRlZCB0aGUgdmVuZG9yLXByZWZpeCAibnhw
+LCIuCgpJIGFtIG5vdCBzdXJlIGFib3V0IHRoaXMsIEF0IGxlYXN0IHRoaXMgcHJvcGVydHkgaXMg
+dXNlZCBpbiBncGlvLWtleXMtcG9sbGVkLgoKPiA+ICstIG54cCxzY2NueHAtaW8tY2ZnOiBBcnJh
+eSBjb250YWlucyB2YWx1ZXMgZm9yIHRoZSBlbXVsYXRlZCBtb2RlbSBzaWduYWxzLgo+ID4gKyAg
+VGhlIG51bWJlciBvZiB2YWx1ZXMgZGVwZW5kcyBvbiB0aGUgVUFSVC1udW1iZXIgaW4gdGhlIHNl
+bGVjdGVkIGNoaXAuCj4gPiArICBFYWNoIHZhbHVlIHNob3VsZCBiZSBjb21wb3NlZCBhY2NvcmRp
+bmcgdG8gdGhlIGZvbGxvd2luZyBydWxlczoKPiA+ICsgIChMSU5FMSA8PCBTSUdOQUwxKSB8IC4u
+LiB8IChMSU5FWCA8PCBTSUdOQUxYKSwgd2hlcmU6Cj4gPiArICAgTElORSAtIFZBTFVFOgo+ID4g
+KyAgICBPUDAgLSAxCj4gLi4uCj4gPiArICAgIElQNiAtIDE1Cj4gPiArICAgU0lHTkFMIC0gVkFM
+VUU6Cj4gPiArICAgIERUUiAtIDAKPiAuLi4KPiA+ICsgICAgRElSIC0gMjQKPiAKPiBJIHdvbmRl
+ciB0aGF0IHNob3VsZG4ndCBiZSBpbXBsZW1lbnRlZCB1c2luZyBzdGFuZGFyZCBwaW5jdHJsIGJp
+bmRpbmdzLgo+IEkgY291bGQgc2VlIHNvbWVvbmUgd2FudGluZyB0byBjcmVhdGUgYSBwaW5tdXhp
+bmctYmFzZWQgc2VyaWFsIHBvcnQKPiBtdWx0aXBsZXhpbmcgZGV2aWNlLCB3aGljaCB3b3VsZCB0
+aGVuIG5lZWQgdG8gcmVseSBvbiB0aGlzIG5vZGUgYWN0aW5nCj4gYXMgYSBzdGFuZGFyZCBwaW4g
+Y29udHJvbGxlci4uLgoKSW4gdGhpcyBjYXNlIHBpbi1jb250cm9sbGVyIGNhbm5vdCBiZSBhcHBs
+aWVkIGhlcmUuClRoZSBkZXZpY2UgaGFzIHNldmVyYWwgbGluZXMgb2YgZ2VuZXJhbCBwdXJwb3Nl
+IGlucHV0cyBhbmQgb3V0cHV0cywgdGhlcmUgaXMKbm8gZnVuY3Rpb25hbCBwdXJwb3NlIG9mIHRo
+ZXNlIGxpbmVzIGFzIGEgbW9kZW0gc2lnbmFscy4gSW4gdGhlIGRyaXZlciByZWFsaXplZApvbmx5
+IGFuIGVtdWxhdGlvbiBvZiB0aGVzZSBzaWduYWxzLiBUaGF0IGlzLCB0aGlzIHByb3BlcnR5IGRl
+c2NyaWJlcyB0aGUgdHJpY2suCkkgaGF2ZSBubyBpZGVhIGhvdyB0byBkbyB0aGlzIHRyaWNrIGlu
+IGFub3RoZXIgd2F5LgoKPiA+ICtFeGFtcGxlIChEdWFsIFVBUlQgd2l0aCBkaXJlY3Rpb24gY29u
+dHJvbCBvbiBPUDAgJiBPUDEpOgo+ID4gK3NjMjg5MkAxMDEwMDAwMCB7Cj4gPiArCWNvbXBhdGli
+bGUgPSAibnhwLHNjMjg5MiI7Cj4gPiArCXJlZyA9IDwweDEwMTAwMDAwIDB4MTA+Owo+ID4gKwlw
+b2xsLWludGVydmFsID0gPDEwMDAwPjsKPiA+ICsJY2xvY2tzID0gPCZzYzI4OTJfY2xrPjsKPiA+
+ICsJdmNjLXN1cHBseSA9IDwmc2MyODkyX3JlZz47Cj4gPiArCW54cCxzY2NueHAtaW8tY2ZnID0g
+PDB4MDEwMDAwMDAgMHgwMjAwMDAwMD47Cj4gCj4gV2h5IHR3byBjZWxscyBmb3IgaW8tY2ZnIHdo
+ZW4gdGhlIHNoaWZ0cyBhYm92ZSBpbXBseSBldmVyeXRoaW5nIGZpdHMKPiBpbnRvIGEgc2luZ2xl
+IGNlbGw/Cj4gCj4gT2ggSSBndWVzcyB0aGF0ICJUaGUgbnVtYmVyIG9mIHZhbHVlcyBkZXBlbmRz
+IG9uIHRoZSBVQVJULW51bWJlciIgbWVhbnMKPiAibnVtYmVyIG9mIFVBUlRzIGluIHRoZSBjaGlw
+Iiwgd2hlcmVhcyBJIHJlYWQgaXQgYXMgInRoZSBJRCBvZiB0aGUgVUFSVAo+IHdpdGhpbiB0aGUg
+Y2hpcCIuLgo+IAo+IFdoZW4gdGhlcmUgYXJlIG11bHRpcGxlIFVBUlRzIGluIHRoZSBjaGlwLCBz
+aG91bGQgZWFjaCBVQVJUIGhhdmUgaXRzIG93bgo+IHNlcGFyYXRlIERUIG5vZGU/IElmIG5vdCwg
+aG93IGNvdWxkIHlvdSByZWZlciB0byBlYWNoIGluZGl2aWR1YWwgVUFSVAo+IGUuZy4gaW4gb3Jk
+ZXIgdG8gc2V0IHVwIHRoZSAvYWxpYXNlcyBub2RlPwoKVGhpcyBpcyBteSB0cmFuc2xhdGlvbiBp
+bmFjY3VyYWNpZXM6IGlvLWNmZyBjb3VudCBzaG91bGQgYmUgPT0gVUFSVCBjb3VudC4KRHJpdmVy
+IGluaXRpYWxpemVzIGFsbCBwb3J0cyBzaW11bHRhbmVvdXNseSAoMSBvciAyKS4gSSBjYW5ub3Qg
+c2VwYXJhdGUgcG9ydHMsCmJlY2F1c2UgSUMgcmVnaXN0ZXJzIG1peGVkIGluIG9uZSBhZGRyZXNz
+IHNwYWNlLgoKQXMgdmFyaWFudCwgSSBjYW4gbWFrZSB0aGUgaW8tY29uZmlndXJhdGlvbiBvZiBh
+IHNpbmdsZSB2YXJpYWJsZSB1NjQuCk9yLCBhdCB0aGlzIHN0YWdlLCByZW1vdmUgdGhpcyBvcHRp
+b24gdG8gYWRkIGxhdGVyLgpUaGFua3MuCgotLS0K
