@@ -1,53 +1,73 @@
-From: Srinivas KANDAGATLA <srinivas.kandagatla@st.com>
-Subject: [PATCH-tty-next v2] serial: st-asc: Fix unused variable warning for non DT.
-Date: Fri,  2 Aug 2013 10:23:51 +0100
-Message-ID: <1375435431-7980-1-git-send-email-srinivas.kandagatla@st.com>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: Re: [PATCH 4/4] serial: sccnxp: Add DT support
+Date: Fri, 2 Aug 2013 14:14:00 +0400
+Message-ID: <20130802141400.8bf8fac5693ed315023a5af2@mail.ru>
+References: <1375268145-13393-1-git-send-email-shc_work@mail.ru>
+	<51F98562.9080307@wwwdotorg.org>
+	<1375343473.135835596@f377.i.mail.ru>
+	<51FA8D51.8030301@wwwdotorg.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eu1sys200aog104.obsmtp.com ([207.126.144.117]:46172 "EHLO
-	eu1sys200aog104.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758440Ab3HBJff (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Aug 2013 05:35:35 -0400
+Received: from smtp45.i.mail.ru ([94.100.177.105]:41446 "EHLO smtp45.i.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1030600Ab3HBKOf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 Aug 2013 06:14:35 -0400
+In-Reply-To: <51FA8D51.8030301@wwwdotorg.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, srinivas.kandagatla@st.com
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>, Grant Likely <grant.likely@linaro.org>
 
-From: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+On Thu, 01 Aug 2013 10:31:13 -0600
+Stephen Warren <swarren@wwwdotorg.org> wrote:
 
-This patch fixes a below warning reported by kbuild test robot.
+> On 08/01/2013 01:51 AM, Alexander Shiyan wrote:
+> >> On 07/31/2013 04:55 AM, Alexander Shiyan wrote:
+> >>> Add DT support to the SCCNCP serial driver.
+> >>
+> >>> diff --git a/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt b/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt
+[...]
+> >>> +- nxp,sccnxp-io-cfg: Array contains values for the emulated modem signals.
+> >>> +  The number of values depends on the UART-number in the selected chip.
+> >>> +  Each value should be composed according to the following rules:
+> >>> +  (LINE1 << SIGNAL1) | ... | (LINEX << SIGNALX), where:
+> >>> +   LINE - VALUE:
+> >>> +    OP0 - 1
+> >> ...
+> >>> +    IP6 - 15
+> >>> +   SIGNAL - VALUE:
+> >>> +    DTR - 0
+> >> ...
+> >>> +    DIR - 24
+> >>
+> >> I wonder that shouldn't be implemented using standard pinctrl bindings.
+> >> I could see someone wanting to create a pinmuxing-based serial port
+> >> multiplexing device, which would then need to rely on this node acting
+> >> as a standard pin controller...
+> > 
+> > In this case pin-controller cannot be applied here.
+> 
+> Why not?
+> 
+> > The device has several lines of general purpose inputs and outputs, there is
+> > no functional purpose of these lines as a modem signals. In the driver realized
+> > only an emulation of these signals. That is, this property describes the trick.
+> > I have no idea how to do this trick in another way.
+> 
+> I assume the HW design is that there are 15 pins, and there is a
+> register or are multiple registers that define which pins are used for
+> which purpose.
+> 
+> If so, that's exactly what the pinctrl bindings are for.
+> 
+> However, you're talking about emulation... Is this property really
+> describing HW? If not, it isn't appropriate for DT.
 
-drivers/tty/serial/st-asc.c:727:28: warning: 'asc_match' defined but
- not used [-Wunused-variable]
+What your opinion about replace this property by "quirk" property and hardcode
+these values into the driver?
+Thanks.
 
-The code used in DT case is now ifdefed under CONFIG_OF to fix this
-warning.
-
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-Reported-by: Kbuild Test Robot <fengguang.wu@intel.com>
----
- drivers/tty/serial/st-asc.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 1c1ecbd..81eb126 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -727,12 +727,14 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
- 	return &asc_ports[id];
- }
- 
-+#ifdef CONFIG_OF
- static struct of_device_id asc_match[] = {
- 	{ .compatible = "st,asc", },
- 	{},
- };
- 
- MODULE_DEVICE_TABLE(of, asc_match);
-+#endif
- 
- static int asc_serial_probe(struct platform_device *pdev)
- {
 -- 
-1.7.6.5
-
+Alexander Shiyan <shc_work@mail.ru>
