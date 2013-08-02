@@ -1,107 +1,103 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 4/4] serial: sccnxp: Add DT support
-Date: Thu, 01 Aug 2013 10:31:13 -0600
-Message-ID: <51FA8D51.8030301@wwwdotorg.org>
-References: <1375268145-13393-1-git-send-email-shc_work@mail.ru> <51F98562.9080307@wwwdotorg.org> <1375343473.135835596@f377.i.mail.ru>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH 1/2] serial/arc-uart: Handle Rx Error Interrupts w/o any data
+Date: Thu, 1 Aug 2013 21:49:19 -0700
+Message-ID: <1375418960-21491-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:41693 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752838Ab3HAQbR (ORCPT
+Received: from us01smtp3.synopsys.com ([198.182.44.81]:59417 "EHLO
+	hermes.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754046Ab3HAQtP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 Aug 2013 12:31:17 -0400
-In-Reply-To: <1375343473.135835596@f377.i.mail.ru>
+	Thu, 1 Aug 2013 12:49:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>, Grant Likely <grant.likely@linaro.org>
+To: linux-serial@vger.kernel.org
+Cc: Mischa Jonker <Mischa.Jonker@synopsys.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
-On 08/01/2013 01:51 AM, Alexander Shiyan wrote:
->> On 07/31/2013 04:55 AM, Alexander Shiyan wrote:
->>> Add DT support to the SCCNCP serial driver.
->>
->>> diff --git a/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt b/Documentation/devicetree/bindings/tty/serial/sccnxp-serial.txt
->>
->>> +Optional properties:
->>
->>> +- poll-interval: Poll interval time in nanoseconds.
->>
->> Is this a standard/common property? If not, then it'd be best if the
->> property name included the vendor-prefix "nxp,".
-> 
-> I am not sure about this, At least this property is used in gpio-keys-polled.
-> 
->>> +- nxp,sccnxp-io-cfg: Array contains values for the emulated modem signals.
->>> +  The number of values depends on the UART-number in the selected chip.
->>> +  Each value should be composed according to the following rules:
->>> +  (LINE1 << SIGNAL1) | ... | (LINEX << SIGNALX), where:
->>> +   LINE - VALUE:
->>> +    OP0 - 1
->> ...
->>> +    IP6 - 15
->>> +   SIGNAL - VALUE:
->>> +    DTR - 0
->> ...
->>> +    DIR - 24
->>
->> I wonder that shouldn't be implemented using standard pinctrl bindings.
->> I could see someone wanting to create a pinmuxing-based serial port
->> multiplexing device, which would then need to rely on this node acting
->> as a standard pin controller...
-> 
-> In this case pin-controller cannot be applied here.
+Currently, Rx error handling only triggers if there is some Rx data.
+Fix that by checking for error - before the data handling.
 
-Why not?
+Reported-by: Mischa Jonker <mjonker@synopsys.com>
+Tested-by: Mischa Jonker <mjonker@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/tty/serial/arc_uart.c | 26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
 
-> The device has several lines of general purpose inputs and outputs, there is
-> no functional purpose of these lines as a modem signals. In the driver realized
-> only an emulation of these signals. That is, this property describes the trick.
-> I have no idea how to do this trick in another way.
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 22f280a..10f981b 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -209,9 +209,9 @@ static void arc_serial_start_tx(struct uart_port *port)
+ 	arc_serial_tx_chars(uart);
+ }
+ 
+-static void arc_serial_rx_chars(struct arc_uart_port *uart)
++static void arc_serial_rx_chars(struct arc_uart_port *uart, unsigned int status)
+ {
+-	unsigned int status, ch, flg = 0;
++	unsigned int ch, flg = 0;
+ 
+ 	/*
+ 	 * UART has 4 deep RX-FIFO. Driver's recongnition of this fact
+@@ -222,11 +222,11 @@ static void arc_serial_rx_chars(struct arc_uart_port *uart)
+ 	 * before RX-EMPTY=0, implies some sort of buffering going on in the
+ 	 * controller, which is indeed the Rx-FIFO.
+ 	 */
+-	while (!((status = UART_GET_STATUS(uart)) & RXEMPTY)) {
+-
+-		ch = UART_GET_DATA(uart);
+-		uart->port.icount.rx++;
+-
++	do {
++		/*
++		 * This could be an Rx Intr for err (no data),
++		 * so check err and clear that Intr first
++		 */
+ 		if (unlikely(status & (RXOERR | RXFERR))) {
+ 			if (status & RXOERR) {
+ 				uart->port.icount.overrun++;
+@@ -242,6 +242,12 @@ static void arc_serial_rx_chars(struct arc_uart_port *uart)
+ 		} else
+ 			flg = TTY_NORMAL;
+ 
++		if (status & RXEMPTY)
++			continue;
++
++		ch = UART_GET_DATA(uart);
++		uart->port.icount.rx++;
++
+ 		if (unlikely(uart_handle_sysrq_char(&uart->port, ch)))
+ 			goto done;
+ 
+@@ -249,7 +255,7 @@ static void arc_serial_rx_chars(struct arc_uart_port *uart)
+ 
+ done:
+ 		tty_flip_buffer_push(&uart->port.state->port);
+-	}
++	} while (!((status = UART_GET_STATUS(uart)) & RXEMPTY));
+ }
+ 
+ /*
+@@ -292,11 +298,11 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
+ 	 * notifications from the UART Controller.
+ 	 * To demultiplex between the two, we check the relevant bits
+ 	 */
+-	if ((status & RXIENB) && !(status & RXEMPTY)) {
++	if (status & RXIENB) {
+ 
+ 		/* already in ISR, no need of xx_irqsave */
+ 		spin_lock(&uart->port.lock);
+-		arc_serial_rx_chars(uart);
++		arc_serial_rx_chars(uart, status);
+ 		spin_unlock(&uart->port.lock);
+ 	}
+ 
+-- 
+1.8.1.2
 
-I assume the HW design is that there are 15 pins, and there is a
-register or are multiple registers that define which pins are used for
-which purpose.
-
-If so, that's exactly what the pinctrl bindings are for.
-
-However, you're talking about emulation... Is this property really
-describing HW? If not, it isn't appropriate for DT.
-
->>> +Example (Dual UART with direction control on OP0 & OP1):
->>> +sc2892@10100000 {
->>> +	compatible = "nxp,sc2892";
->>> +	reg = <0x10100000 0x10>;
->>> +	poll-interval = <10000>;
->>> +	clocks = <&sc2892_clk>;
->>> +	vcc-supply = <&sc2892_reg>;
->>> +	nxp,sccnxp-io-cfg = <0x01000000 0x02000000>;
->>
->> Why two cells for io-cfg when the shifts above imply everything fits
->> into a single cell?
->>
->> Oh I guess that "The number of values depends on the UART-number" means
->> "number of UARTs in the chip", whereas I read it as "the ID of the UART
->> within the chip"..
->>
->> When there are multiple UARTs in the chip, should each UART have its own
->> separate DT node? If not, how could you refer to each individual UART
->> e.g. in order to set up the /aliases node?
-> 
-> This is my translation inaccuracies: io-cfg count should be == UART count.
-> Driver initializes all ports simultaneously (1 or 2). I cannot separate ports,
-> because IC registers mixed in one address space.
-
-If there really are multiple ports, I think there have to be multiple DT
-nodes, given the way /aliases works.
-
-> As variant, I can make the io-configuration of a single variable u64.
-
-In DT, cells are U32.
-
-> Or, at this stage, remove this option to add later.
-> Thanks.
-
-The binding should be as complete as possible up-front. Adding stuff
-later only increases the likelihood of wanting to make incompatible changes.
