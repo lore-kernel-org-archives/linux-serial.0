@@ -1,56 +1,86 @@
 From: Huang Shijie <shijie8@gmail.com>
-Subject: [PATCH v3 0/3] serial: mxs-auart: add RTS/CTS check for DMA support
-Date: Sat,  3 Aug 2013 10:09:13 -0400
-Message-ID: <1375538956-15862-1-git-send-email-shijie8@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:35305 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751636Ab3HCCFA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 Aug 2013 22:05:00 -0400
-Received: by mail-pa0-f42.google.com with SMTP id lj1so1278291pab.15
-        for <linux-serial@vger.kernel.org>; Fri, 02 Aug 2013 19:04:59 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH v3 1/3] serial: mxs: enable the DMA only when the RTS/CTS is valid
+Date: Sat,  3 Aug 2013 10:09:14 -0400
+Message-ID: <1375538956-15862-2-git-send-email-shijie8@gmail.com>
+References: <1375538956-15862-1-git-send-email-shijie8@gmail.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1375538956-15862-1-git-send-email-shijie8@gmail.com>
+Sender: stable-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, Huang Shijie <shijie8@gmail.com>
+Cc: linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, Huang Shijie <b32955@freescale.com>, stable@vger.kernel.org, Huang Shijie <shijie8@gmail.com>
+List-Id: linux-serial@vger.kernel.org
+
+From: Huang Shijie <b32955@freescale.com>
 
 The original DMA support works only when RTS/CTS is enabled.
 (see the "e800163 serial: mxs-auart: add the DMA support for mx28")
 But after several patches, DMA support has lost this limit.
 (see the "bcc20f9 serial: mxs-auart: move to use generic DMA helper")
 
-So a UART without the RTS/CTS lines may also enables the DMA support
-for it, but it may does not work or works abnormally (since without the
-RTS/CTS signals, the TX/RX may not works)		
+So an UART without the RTS/CTS lines may also enables the DMA support,
+in which case the UART may gets unpredictable results.
 
-This patch set remove the unnecessary macro MXS_AUART_DMA_CONFIG,
-and adds an optional property "fsl,uart-has-rtscts" for the UART DT node
-which indicates the UART has RTS and CTS lines.
+This patch adds an optional property for the UART DT node
+which indicates the UART has RTS and CTS lines, and it also means you
+enable the DMA support for this UART.
 
-This patch set also adds a macro MXS_AUART_RTSCTS, and uses it to check
+This patch also adds a macro MXS_AUART_RTSCTS, and uses it to check
 RTS/CTS before we enable the DMA for the UART.
 
-At last, enable the DMA support for auart0 in the imx28-evk boards.
-
-v2 --> v3:
-	[0] make the patch 2 as the first patch.
-	[1] add more comments.
-
-v1 --> v2:
-	[0] changed the comments.
-	[1] fix the typos.
-
-Huang Shijie (3):
-  serial: mxs: enable the DMA only when the RTS/CTS is valid
-  serial: mxs: remove the MXS_AUART_DMA_CONFIG
-  ARM: dts: imx28-evk: add the RTS/CTS property for auart0
-
+Cc: stable@vger.kernel.org
+Signed-off-by: Huang Shijie <b32955@freescale.com>
+Signed-off-by: Huang Shijie <shijie8@gmail.com>
+---
  .../bindings/tty/serial/fsl-mxs-auart.txt          |    4 ++++
- arch/arm/boot/dts/imx28-evk.dts                    |    1 +
- drivers/tty/serial/mxs-auart.c                     |    8 +++++---
- 3 files changed, 10 insertions(+), 3 deletions(-)
+ drivers/tty/serial/mxs-auart.c                     |    7 ++++++-
+ 2 files changed, 10 insertions(+), 1 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+index 2c00ec6..59a40f1 100644
+--- a/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
++++ b/Documentation/devicetree/bindings/tty/serial/fsl-mxs-auart.txt
+@@ -10,6 +10,10 @@ Required properties:
+   Refer to dma.txt and fsl-mxs-dma.txt for details.
+ - dma-names: "rx" for RX channel, "tx" for TX channel.
+ 
++Optional properties:
++- fsl,uart-has-rtscts : Indicate the UART has RTS and CTS lines,
++	it also means you enable the DMA support for this UART.
++
+ Example:
+ auart0: serial@8006a000 {
+ 	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 736e95c..eac7b58 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -137,6 +137,7 @@ struct mxs_auart_port {
+ #define MXS_AUART_DMA_ENABLED	0x2
+ #define MXS_AUART_DMA_TX_SYNC	2  /* bit 2 */
+ #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
++#define MXS_AUART_RTSCTS	4  /* bit 4 */
+ 	unsigned long flags;
+ 	unsigned int ctrl;
+ 	enum mxs_auart_type devtype;
+@@ -639,7 +640,8 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 		 * we can only implement the DMA support for auart
+ 		 * in mx28.
+ 		 */
+-		if (is_imx28_auart(s) && (s->flags & MXS_AUART_DMA_CONFIG)) {
++		if (is_imx28_auart(s) && (s->flags & MXS_AUART_DMA_CONFIG)
++				&& test_bit(MXS_AUART_RTSCTS, &s->flags)) {
+ 			if (!mxs_auart_dma_init(s))
+ 				/* enable DMA tranfer */
+ 				ctrl2 |= AUART_CTRL2_TXDMAE | AUART_CTRL2_RXDMAE
+@@ -1009,6 +1011,9 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
+ 
+ 	s->flags |= MXS_AUART_DMA_CONFIG;
+ 
++	if (of_get_property(np, "fsl,uart-has-rtscts", NULL))
++		set_bit(MXS_AUART_RTSCTS, &s->flags);
++
+ 	return 0;
+ }
+ 
 -- 
 1.7.4.4
-
