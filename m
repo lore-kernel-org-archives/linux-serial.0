@@ -1,46 +1,29 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/2] OF: Add helper for matching against
- linux,stdout-path
-Date: Mon, 5 Aug 2013 15:16:15 +0200
-Message-ID: <20130805131615.GV26614@pengutronix.de>
-References: <1375706445-15375-1-git-send-email-s.hauer@pengutronix.de>
- <1375706445-15375-2-git-send-email-s.hauer@pengutronix.de>
- <51FFA195.6080903@gmail.com>
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCH 4/4] ARM: OMAP2+: Sync hwmod state with the pm_runtime and omap_device state
+Date: Mon, 05 Aug 2013 08:43:22 -0700
+Message-ID: <87iozkkusl.fsf@linaro.org>
+References: <1374487277-26099-1-git-send-email-rnayak@ti.com>
+	<1374487277-26099-5-git-send-email-rnayak@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <51FFA195.6080903@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, devicetree@vger.kernel.org, grant.likely@linaro.org
+Content-Type: text/plain
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1374487277-26099-5-git-send-email-rnayak@ti.com> (Rajendra
+	Nayak's message of "Mon, 22 Jul 2013 15:31:17 +0530")
+Sender: linux-omap-owner@vger.kernel.org
+To: Rajendra Nayak <rnayak@ti.com>
+Cc: tony@atomide.com, linux-omap@vger.kernel.org, paul@pwsan.com, balbi@ti.com, mpfj-list@newflow.co.uk, vaibhav.bedia@ti.com, sourav.poddar@ti.com, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, grygorii.strashko@ti.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 05, 2013 at 07:59:01AM -0500, Rob Herring wrote:
-> On 08/05/2013 07:40 AM, Sascha Hauer wrote:
-> > devicetrees may have a linux,stdout-path property in the chosen
-> > node describing the console device. This adds a helper function
-> > to match a device against this property so a driver can call
-> > add_preferred_console for a matching device.
-> > 
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> 
-> Acked-by: Rob Herring <rob.herring@calxeda.com>
-> 
-> There are no existing users that could take advantage of this?
+Rajendra Nayak <rnayak@ti.com> writes:
 
-The existing users do not register the console in the drivers probe
-function but instead have initcalls which parse the linux,stdout-path
-property manually and register whatever they find there. The better
-implementations at least check whether the node they find actually is
-compatible to the driver.
+> Some hwmods which are marked with HWMOD_INIT_NO_IDLE are left in enabled
+> state post setup(). When a omap_device gets created for such hwmods
+> make sure the omap_device and pm_runtime states are also in sync for such
+> hwmods by doing a omap_device_enable() and pm_runtime_set_active() for the
+> device.
+>
+> Signed-off-by: Rajendra Nayak <rnayak@ti.com>
 
-Sorry, no users to change here without having access to the hardware.
+This looks like the right fix to me.
 
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Acked-by: Kevin Hilman <khilman@linaro.org>
