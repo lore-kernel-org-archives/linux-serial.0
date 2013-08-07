@@ -1,201 +1,39 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH] serial: sirf: add support for Marco chip
-Date: Wed,  7 Aug 2013 13:35:38 +0800
-Message-ID: <1375853738-2062-1-git-send-email-21cnbao@gmail.com>
+From: Craig McQueen <craig.mcqueen@beamcommunications.com>
+Subject: Where is TX buffer in driver based on struct uart_port
+Date: Wed, 7 Aug 2013 12:01:06 +0000
+Message-ID: <DB8F1B3EEF94C3439BFFE674EB05E3CC2409A892@SINPRD0211MB405.apcprd02.prod.outlook.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f41.google.com ([209.85.160.41]:56047 "EHLO
-	mail-pb0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754739Ab3HGFgT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 7 Aug 2013 01:36:19 -0400
-Received: by mail-pb0-f41.google.com with SMTP id rp2so1454705pbb.0
-        for <linux-serial@vger.kernel.org>; Tue, 06 Aug 2013 22:36:19 -0700 (PDT)
+Received: from ch1ehsobe006.messaging.microsoft.com ([216.32.181.186]:14241
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932544Ab3HGMBS convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 7 Aug 2013 08:01:18 -0400
+Received: from mail17-ch1 (localhost [127.0.0.1])	by mail17-ch1-R.bigfish.com
+ (Postfix) with ESMTP id 43F2430030D	for <linux-serial@vger.kernel.org>; Wed,
+  7 Aug 2013 12:01:16 +0000 (UTC)
+Received: from CH1EHSMHS025.bigfish.com (snatpool2.int.messaging.microsoft.com
+ [10.43.68.231])	by mail17-ch1.bigfish.com (Postfix) with ESMTP id 36DE448004D
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2013 12:01:14 +0000 (UTC)
+Content-Language: en-AU
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-From: Barry Song <Baohua.Song@csr.com>
+I'm running a Freescale ARM i.MX28, with a UART driver "mxs-auart.c" based on struct uart_port in Linux kernel 2.6.35.
 
-the marco and coming new CSR multiple SoCs have SET/CLR pair for
-INTEN registers to avoid some read-modify-write.
+I'm using it in a radio communications application that operates at 2400 bps.
 
-this patch adds support for this and make the driver support current
-up and coming mp SoCs.
+I'm finding that when transmitting data, the TX data is being buffered somewhere in the drivers, and the buffer size appears to be something like 4000 bytes. At 2400 bps, that works out to be something like 17 seconds of buffering, which causes too much end-to-end delay in the pipeline when the buffer is full.
 
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
----
- drivers/tty/serial/sirfsoc_uart.c |   76 ++++++++++++++++++++++++++++++-------
- drivers/tty/serial/sirfsoc_uart.h |    3 +
- 2 files changed, 65 insertions(+), 14 deletions(-)
+So I'd like to find where this 4000 byte buffer is, with the goal of reducing its size to reduce the maximum end-to-end delay. But looking through the code for the driver, it's not obvious to me so far where this buffering might be happening. Can anyone point me in the general direction?
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 1fd564b..2c991d6 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -139,40 +139,66 @@ static void sirfsoc_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- static void sirfsoc_uart_stop_tx(struct uart_port *port)
- {
-+	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	unsigned int regv;
--	regv = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, regv & ~SIRFUART_TX_INT_EN);
-+
-+	if (!sirfport->is_marco) {
-+		regv = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, regv & ~SIRFUART_TX_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN_CLR, SIRFUART_TX_INT_EN);
-+	}
- }
- 
- void sirfsoc_uart_start_tx(struct uart_port *port)
- {
- 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	unsigned long regv;
-+
- 	sirfsoc_uart_pio_tx_chars(sirfport, 1);
- 	wr_regl(port, SIRFUART_TX_FIFO_OP, SIRFUART_TX_FIFO_START);
--	regv = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, regv | SIRFUART_TX_INT_EN);
-+
-+	if (!sirfport->is_marco) {
-+		regv = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, regv | SIRFUART_TX_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN, SIRFUART_TX_INT_EN);
-+	}
- }
- 
- static void sirfsoc_uart_stop_rx(struct uart_port *port)
- {
-+	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	unsigned long regv;
-+
- 	wr_regl(port, SIRFUART_RX_FIFO_OP, 0);
--	regv = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, regv & ~SIRFUART_RX_IO_INT_EN);
-+
-+	if (!sirfport->is_marco) {
-+		regv = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, regv & ~SIRFUART_RX_IO_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN_CLR, SIRFUART_RX_IO_INT_EN);
-+	}
- }
- 
- static void sirfsoc_uart_disable_ms(struct uart_port *port)
- {
- 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	unsigned long reg;
-+
- 	sirfport->ms_enabled = 0;
- 	if (!sirfport->hw_flow_ctrl)
- 		return;
-+
- 	reg = rd_regl(port, SIRFUART_AFC_CTRL);
- 	wr_regl(port, SIRFUART_AFC_CTRL, reg & ~0x3FF);
--	reg = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, reg & ~SIRFUART_CTS_INT_EN);
-+
-+	if (!sirfport->is_marco) {
-+		reg = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, reg & ~SIRFUART_CTS_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN_CLR, SIRFUART_CTS_INT_EN);
-+	}
- }
- 
- static void sirfsoc_uart_enable_ms(struct uart_port *port)
-@@ -180,13 +206,20 @@ static void sirfsoc_uart_enable_ms(struct uart_port *port)
- 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	unsigned long reg;
- 	unsigned long flg;
-+
- 	if (!sirfport->hw_flow_ctrl)
- 		return;
- 	flg = SIRFUART_AFC_RX_EN | SIRFUART_AFC_TX_EN;
- 	reg = rd_regl(port, SIRFUART_AFC_CTRL);
- 	wr_regl(port, SIRFUART_AFC_CTRL, reg | flg);
--	reg = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, reg | SIRFUART_CTS_INT_EN);
-+
-+	if (!sirfport->is_marco) {
-+		reg = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, reg | SIRFUART_CTS_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN, SIRFUART_CTS_INT_EN);
-+	}
-+
- 	uart_handle_cts_change(port,
- 		!(rd_regl(port, SIRFUART_AFC_CTRL) & SIRFUART_CTS_IN_STATUS));
- 	sirfport->ms_enabled = 1;
-@@ -313,9 +346,16 @@ recv_char:
- 
- static void sirfsoc_uart_start_rx(struct uart_port *port)
- {
--	unsigned long regv;
--	regv = rd_regl(port, SIRFUART_INT_EN);
--	wr_regl(port, SIRFUART_INT_EN, regv | SIRFUART_RX_IO_INT_EN);
-+	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
-+
-+	if (!sirfport->is_marco) {
-+		unsigned long regv;
-+		regv = rd_regl(port, SIRFUART_INT_EN);
-+		wr_regl(port, SIRFUART_INT_EN, regv | SIRFUART_RX_IO_INT_EN);
-+	} else {
-+		wr_regl(port, SIRFUART_INT_EN, SIRFUART_RX_IO_INT_EN);
-+	}
-+
- 	wr_regl(port, SIRFUART_RX_FIFO_OP, SIRFUART_RX_FIFO_RESET);
- 	wr_regl(port, SIRFUART_RX_FIFO_OP, 0);
- 	wr_regl(port, SIRFUART_RX_FIFO_OP, SIRFUART_RX_FIFO_START);
-@@ -513,7 +553,12 @@ irq_err:
- static void sirfsoc_uart_shutdown(struct uart_port *port)
- {
- 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
--	wr_regl(port, SIRFUART_INT_EN, 0);
-+
-+	if (!sirfport->is_marco)
-+		wr_regl(port, SIRFUART_INT_EN, 0);
-+	else
-+		wr_regl(port, SIRFUART_INT_EN_CLR, ~0UL);
-+
- 	free_irq(port->irq, sirfport);
- 	if (sirfport->ms_enabled) {
- 		sirfsoc_uart_disable_ms(port);
-@@ -652,6 +697,9 @@ int sirfsoc_uart_probe(struct platform_device *pdev)
- 	port->dev = &pdev->dev;
- 	port->private_data = sirfport;
- 
-+	if (of_device_is_compatible(pdev->dev.of_node, "sirf,marco-uart"))
-+		sirfport->is_marco = true;
-+
- 	if (of_find_property(pdev->dev.of_node, "hw_flow_ctrl", NULL))
- 		sirfport->hw_flow_ctrl = 1;
- 
-diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
-index 85328ba..6216660 100644
---- a/drivers/tty/serial/sirfsoc_uart.h
-+++ b/drivers/tty/serial/sirfsoc_uart.h
-@@ -13,6 +13,7 @@
- #define SIRFUART_DIVISOR			0x0050
- #define SIRFUART_INT_EN				0x0054
- #define SIRFUART_INT_STATUS			0x0058
-+#define SIRFUART_INT_EN_CLR			0x0060
- #define SIRFUART_TX_DMA_IO_CTRL			0x0100
- #define SIRFUART_TX_DMA_IO_LEN			0x0104
- #define SIRFUART_TX_FIFO_CTRL			0x0108
-@@ -164,6 +165,8 @@ struct sirfsoc_uart_port {
- 	struct uart_port		port;
- 	struct pinctrl			*p;
- 	struct clk			*clk;
-+	/* for SiRFmarco, there are SET/CLR for UART_INT_EN */
-+	bool				is_marco;
- };
- 
- /* Hardware Flow Control */
--- 
-1.7.5.4
+Ultimately I want to do PPP through this serial device. Would this 4000 byte buffer also apply in a PPP line discipline scenario?
+
+(I've previously experimented with modifications to another serial driver "tty0tty" based on struct tty_driver, and I could control TX buffering in the struct tty_operations -> write and write_room functions. But this driver using struct uart_port doesn't seem such easy to understand write operations.)
+
+Thanks,
+Craig McQueen
 
