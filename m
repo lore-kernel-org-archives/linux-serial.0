@@ -1,51 +1,51 @@
 From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 06/10] serial: ioc4_serial: Staticize ioc4_serial_attach_one()
-Date: Thu, 08 Aug 2013 17:36:27 +0900
-Message-ID: <006101ce9412$5f9eae00$1edc0a00$@samsung.com>
+Subject: [PATCH 07/10] serial: msm_serial: fix comparison of different types
+Date: Thu, 08 Aug 2013 17:38:20 +0900
+Message-ID: <006201ce9412$a2f3c550$e8db4ff0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout4.samsung.com ([203.254.224.34]:39346 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756787Ab3HHIiW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Aug 2013 04:38:22 -0400
+Received: from epcpsbgr4.samsung.com
+ (u144.gpu120.samsung.co.kr [203.254.230.144])
+ by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0MR700D5GENOKEH0@mailout4.samsung.com> for
+ linux-serial@vger.kernel.org; Thu, 08 Aug 2013 17:38:20 +0900 (KST)
 Content-language: ko
-Sender: linux-ia64-owner@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, 'Pat Gefre' <pfg@sgi.com>, linux-ia64@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, 'David Brown' <davidb@codeaurora.org>, 'Daniel Walker' <dwalker@fifo99.com>, 'Bryan Huntsman' <bryanh@codeaurora.org>, Jingoo Han <jg1.han@samsung.com>
 
-ioc4_serial_attach_one() is used only in this file.
-Also, ioc4_serial is not used; it can be removed.
-Fix the following sparse warnings:
+Fix the following sparse warning:
 
-drivers/tty/serial/ioc4_serial.c:300:3: warning: symbol 'ioc4_serial' was not declared. Should it be static?
-drivers/tty/serial/ioc4_serial.c:2771:1: warning: symbol 'ioc4_serial_attach_one' was not declared. Should it be static?
+drivers/tty/serial/msm_serial.c:237:37: error: incompatible types in comparison expression (different type sizes)
 
 Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/tty/serial/ioc4_serial.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/msm_serial.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index e2520ab..1274499 100644
---- a/drivers/tty/serial/ioc4_serial.c
-+++ b/drivers/tty/serial/ioc4_serial.c
-@@ -297,7 +297,7 @@ struct ioc4_serial {
- 	struct ioc4_uartregs uart_1;
- 	struct ioc4_uartregs uart_2;
- 	struct ioc4_uartregs uart_3;
--} ioc4_serial;
-+};
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 252d514..8f58540 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -234,7 +234,8 @@ static void handle_tx(struct uart_port *port)
+ 			break;
  
- /* UART clock speed */
- #define IOC4_SER_XIN_CLK_66     66666667
-@@ -2767,7 +2767,7 @@ ioc4_serial_core_attach(struct pci_dev *pdev, int port_type)
-  *		called per card found from IOC4 master module.
-  * @idd: Master module data for this IOC4
-  */
--int
-+static int
- ioc4_serial_attach_one(struct ioc4_driver_data *idd)
- {
- 	unsigned long tmp_addr1;
+ 		if (msm_port->is_uartdm)
+-			num_chars = min(tx_count - tf_pointer, sizeof(buf));
++			num_chars = min(tx_count - tf_pointer,
++					(unsigned int)sizeof(buf));
+ 		else
+ 			num_chars = 1;
+ 
 -- 
 1.7.10.4
 
