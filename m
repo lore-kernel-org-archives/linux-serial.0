@@ -1,48 +1,58 @@
-From: Craig McQueen <craig.mcqueen@beamcommunications.com>
-Subject: Re: Where is TX buffer in driver based on struct uart_port
-Date: Thu, 8 Aug 2013 14:14:10 +1000
-Message-ID: <52031B12.8090204@beamcommunications.com>
-References: <DB8F1B3EEF94C3439BFFE674EB05E3CC2409A892@SINPRD0211MB405.apcprd02.prod.outlook.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: [PATCH 01/10] serial: samsung: fix casting warning
+Date: Thu, 08 Aug 2013 17:29:48 +0900
+Message-ID: <005901ce9411$7201ab70$56050250$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co9ehsobe005.messaging.microsoft.com ([207.46.163.28]:23402
-	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751899Ab3HHEOS (ORCPT
+Received: from mailout2.samsung.com ([203.254.224.25]:15119 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756416Ab3HHI3u (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Aug 2013 00:14:18 -0400
-Received: from mail117-co9 (localhost [127.0.0.1])	by
- mail117-co9-R.bigfish.com (Postfix) with ESMTP id 3B99AC400C7	for
- <linux-serial@vger.kernel.org>; Thu,  8 Aug 2013 04:14:17 +0000 (UTC)
-Received: from CO9EHSMHS005.bigfish.com (unknown [10.236.132.245])	by
- mail117-co9.bigfish.com (Postfix) with ESMTP id 720F5440049	for
- <linux-serial@vger.kernel.org>; Thu,  8 Aug 2013 04:14:15 +0000 (UTC)
-In-Reply-To: <DB8F1B3EEF94C3439BFFE674EB05E3CC2409A892@SINPRD0211MB405.apcprd02.prod.outlook.com>
+	Thu, 8 Aug 2013 04:29:50 -0400
+Received: from epcpsbgr4.samsung.com
+ (u144.gpu120.samsung.co.kr [203.254.230.144])
+ by mailout2.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0MR700EVEE9M4980@mailout2.samsung.com> for
+ linux-serial@vger.kernel.org; Thu, 08 Aug 2013 17:29:49 +0900 (KST)
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: 'Jiri Slaby' <jslaby@suse.cz>, linux-serial@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>
 
-On 07/08/13 22:01, Craig McQueen wrote:
-> I'm running a Freescale ARM i.MX28, with a UART driver "mxs-auart.c" based on struct uart_port in Linux kernel 2.6.35.
->
-> I'm using it in a radio communications application that operates at 2400 bps.
->
-> I'm finding that when transmitting data, the TX data is being buffered somewhere in the drivers, and the buffer size appears to be something like 4000 bytes. At 2400 bps, that works out to be something like 17 seconds of buffering, which causes too much end-to-end delay in the pipeline when the buffer is full.
->
-> So I'd like to find where this 4000 byte buffer is, with the goal of reducing its size to reduce the maximum end-to-end delay. But looking through the code for the driver, it's not obvious to me so far where this buffering might be happening. Can anyone point me in the general direction?
->
-> Ultimately I want to do PPP through this serial device. Would this 4000 byte buffer also apply in a PPP line discipline scenario?
->
-> (I've previously experimented with modifications to another serial driver "tty0tty" based on struct tty_driver, and I could control TX buffering in the struct tty_operations -> write and write_room functions. But this driver using struct uart_port doesn't seem such easy to understand write operations.)
+port->membase is (unsigned char __iomem *), not (unsigned long *)
+__set_bit() uses (unsigned long *) as the second argument.
+Thus, casting (unsigned long *)(unsigned long) is necessary
+to fix the following sparse warnings.
 
-I realised that the driver has several references to PAGE_SIZE, which is 
-4096 for ARM. Also several of UART_XMIT_SIZE which is defined as 
-PAGE_SIZE in serial_core.h. (Some of the references to PAGE_SIZE are 
-relating to DMA; I am not using DMA currently.)
+drivers/tty/serial/samsung.c:142:33: warning: cast removes address space of expression
+drivers/tty/serial/samsung.c:161:33: warning: cast removes address space of expression
+drivers/tty/serial/samsung.c:176:33: warning: cast removes address space of expression
+drivers/tty/serial/samsung.c:526:40: warning: cast removes address space of expression
 
-Is it easy to change these values, or override them in serial_core? I'm 
-fairly inexperienced with Linux serial architecture.
+Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+---
+ drivers/tty/serial/samsung.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Craig McQueen
+diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+index 00a499e..aaa617a 100644
+--- a/drivers/tty/serial/samsung.h
++++ b/drivers/tty/serial/samsung.h
+@@ -68,7 +68,8 @@ struct s3c24xx_uart_port {
+ /* register access controls */
+ 
+ #define portaddr(port, reg) ((port)->membase + (reg))
+-#define portaddrl(port, reg) ((unsigned long *)((port)->membase + (reg)))
++#define portaddrl(port, reg) \
++	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+ 
+ #define rd_regb(port, reg) (__raw_readb(portaddr(port, reg)))
+ #define rd_regl(port, reg) (__raw_readl(portaddr(port, reg)))
+-- 
+1.7.10.4
+
 
