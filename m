@@ -1,44 +1,54 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: [PATCH V2 1/2] serial: MIPS: lantiq: add clk_enable() call to driver
-Date: Fri,  9 Aug 2013 20:54:30 +0200
-Message-ID: <1376074471-29404-1-git-send-email-blogic@openwrt.org>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] serial: amba-pl011: Use __releases/__acquires annotations
+Date: Fri,  9 Aug 2013 17:58:51 -0300
+Message-ID: <1376081931-19491-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:33307 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1030740Ab3HITBl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Aug 2013 15:01:41 -0400
+Received: from mail-yh0-f53.google.com ([209.85.213.53]:41992 "EHLO
+	mail-yh0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1031117Ab3HIU7Z (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Aug 2013 16:59:25 -0400
+Received: by mail-yh0-f53.google.com with SMTP id v1so1606848yhn.26
+        for <linux-serial@vger.kernel.org>; Fri, 09 Aug 2013 13:59:25 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Thomas Langer <thomas.langer@lantiq.com>
+To: gregkh@linuxfoundation.org
+Cc: linux@arm.linux.org.uk, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Thomas Langer <thomas.langer@lantiq.com>
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Enable the clock if one is present when setting up the console.
+Fix the following sparse warnings:
 
-Signed-off-by: Thomas Langer <thomas.langer@lantiq.com>
-Acked-by: John Crispin <blogic@openwrt.org>
+drivers/tty/serial/amba-pl011.c:687:20: warning: context imbalance in 'pl011_dma_flush_buffer' - unexpected unlock
+drivers/tty/serial/amba-pl011.c:1200:13: warning: context imbalance in 'pl011_rx_chars' - unexpected unlock
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
-Changes in V2:
-* make use of IS_ERR()
+ drivers/tty/serial/amba-pl011.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- drivers/tty/serial/lantiq.c |    3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 15733da..93ac046 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -636,6 +636,9 @@ lqasc_console_setup(struct console *co, char *options)
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index eb38fb8..aaa2286 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -677,6 +677,8 @@ static inline bool pl011_dma_tx_start(struct uart_amba_port *uap)
+  * Locking: called with port lock held and IRQs disabled.
+  */
+ static void pl011_dma_flush_buffer(struct uart_port *port)
++__releases(&uap->port.lock)
++__acquires(&uap->port.lock)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
  
- 	port = &ltq_port->port;
+@@ -1198,6 +1200,8 @@ static void pl011_enable_ms(struct uart_port *port)
+ }
  
-+	if (!IS_ERR(ltq_port->clk))
-+		clk_enable(ltq_port->clk);
-+
- 	port->uartclk = clk_get_rate(ltq_port->fpiclk);
+ static void pl011_rx_chars(struct uart_amba_port *uap)
++__releases(&uap->port.lock)
++__acquires(&uap->port.lock)
+ {
+ 	pl011_fifo_to_tty(uap);
  
- 	if (options)
 -- 
-1.7.10.4
+1.8.1.2
 
