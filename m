@@ -1,51 +1,59 @@
-From: John Crispin <blogic@openwrt.org>
-Subject: Re: [PATCH 1/2] serial: MIPS: lantiq: add clk_enable() call to driver
-Date: Thu, 08 Aug 2013 16:56:51 +0200
-Message-ID: <5203B1B3.3010304@openwrt.org>
-References: <1375968687-8704-1-git-send-email-blogic@openwrt.org> <5203AF83.30101@imgtec.com>
+From: "Zhang, Sonic" <Sonic.Zhang@analog.com>
+Subject: RE: [PATCH 1/2] serial: bfin_sport_uart: Fix incorrect placement of
+ __initdata
+Date: Fri, 9 Aug 2013 01:46:04 +0000
+Message-ID: <B168F8A49F4BCF4C84FD23DA5F6363EE31BC15DB@NWD2MBX7.ad.analog.com>
+References: <1375962051-31873-1-git-send-email-sachin.kamat@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:45548 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S965294Ab3HHPDz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Aug 2013 11:03:55 -0400
-In-Reply-To: <5203AF83.30101@imgtec.com>
+Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:34676
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S967342Ab3HIBra convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 8 Aug 2013 21:47:30 -0400
+In-Reply-To: <1375962051-31873-1-git-send-email-sachin.kamat@linaro.org>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: James Hogan <james.hogan@imgtec.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Thomas Langer <thomas.langer@lantiq.com>
+To: Sachin Kamat <sachin.kamat@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: "uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>
 
-On 08/08/13 16:47, James Hogan wrote:
-> On 08/08/13 14:31, John Crispin wrote:
->> From: Thomas Langer<thomas.langer@lantiq.com>
->>
->> Enable the clock if one is present when setting up the console.
->>
->> Signed-off-by: Thomas Langer<thomas.langer@lantiq.com>
->> Acked-by: John Crispin<blogic@openwrt.org>
->> ---
->>   drivers/tty/serial/lantiq.c |    3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
->> index 15733da..ce1ea35 100644
->> --- a/drivers/tty/serial/lantiq.c
->> +++ b/drivers/tty/serial/lantiq.c
->> @@ -636,6 +636,9 @@ lqasc_console_setup(struct console *co, char *options)
->>
->>   	port =&ltq_port->port;
->>
->> +	if (ltq_port->clk)
-> I think that should be !IS_ERR(ltq_port->clk)? The same problem appears
-> to be elsewhere in that file too.
+Acked-by: Sonic Zhang<sonic.zhang@analog.com>
+
+>-----Original Message-----
+>From: Sachin Kamat [mailto:sachin.kamat@linaro.org]
+>Sent: Thursday, August 08, 2013 7:41 PM
+>To: linux-serial@vger.kernel.org
+>Cc: uclinux-dist-devel@blackfin.uclinux.org; gregkh@linuxfoundation.org;
+>jslaby@suse.cz; sachin.kamat@linaro.org; Zhang, Sonic
+>Subject: [PATCH 1/2] serial: bfin_sport_uart: Fix incorrect placement of __initdata
 >
-> Cheers
-> James
+>__initdata should be placed between the variable name and equal sign for the
+>variable to be placed in the intended section.
 >
+>Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+>Cc: Sonic Zhang <sonic.zhang@analog.com>
+>---
+> drivers/tty/serial/bfin_sport_uart.c |    2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
+>index 424ed36..016c3e9 100644
+>--- a/drivers/tty/serial/bfin_sport_uart.c
+>+++ b/drivers/tty/serial/bfin_sport_uart.c
+>@@ -884,7 +884,7 @@ static struct platform_driver sport_uart_driver = {  };
+>
+> #ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE -static __initdata struct
+>early_platform_driver early_sport_uart_driver = {
+>+static struct early_platform_driver early_sport_uart_driver __initdata
+>+= {
+>       .class_str = CLASS_BFIN_SPORT_CONSOLE,
+>       .pdrv = &sport_uart_driver,
+>       .requested_id = EARLY_PLATFORM_ID_UNSET,
+>--
+>1.7.9.5
 >
 
-
-Thanks, i will send an updated series
 
