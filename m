@@ -1,54 +1,43 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] serial: amba-pl011: Use __releases/__acquires annotations
-Date: Fri,  9 Aug 2013 17:58:51 -0300
-Message-ID: <1376081931-19491-1-git-send-email-festevam@gmail.com>
+From: Karthik Manamcheri <karthik.manamcheri@gmail.com>
+Subject: Buffer overflow concerns when TTY_THRESHOLD_THROTTLE <= Uart FIFO
+ size of the sending side
+Date: Fri, 9 Aug 2013 16:08:31 -0500
+Message-ID: <CAES2cWzqgKmCT7Uy-4dqrgNeq1W0LeBH5A=y7D+OX8cnBuM-rw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yh0-f53.google.com ([209.85.213.53]:41992 "EHLO
-	mail-yh0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1031117Ab3HIU7Z (ORCPT
+Received: from mail-ob0-f177.google.com ([209.85.214.177]:40901 "EHLO
+	mail-ob0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1031125Ab3HIVIv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Aug 2013 16:59:25 -0400
-Received: by mail-yh0-f53.google.com with SMTP id v1so1606848yhn.26
-        for <linux-serial@vger.kernel.org>; Fri, 09 Aug 2013 13:59:25 -0700 (PDT)
+	Fri, 9 Aug 2013 17:08:51 -0400
+Received: by mail-ob0-f177.google.com with SMTP id f8so2732711obp.36
+        for <linux-serial@vger.kernel.org>; Fri, 09 Aug 2013 14:08:51 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux@arm.linux.org.uk, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: linux-serial@vger.kernel.org
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+When using software-level RTS/CTS flow control (or Xon/Xoff), we could
+leak at most the UART FIFO size of bytes after getting the flow
+control signal. This is because the bytes might be loaded in the FIFO
+when the flow control signal comes through and the UART will send them
+out the wire.
 
-Fix the following sparse warnings:
+Consider a case where I have a UART with a 128 byte FIFO. The
+TTY_THRESHOLD_THROTTLE is set at 128 bytes in n_tty.c. So, isn't it
+possible that potentially we lose bytes when moving data to the TTY
+line discipline buffer? If the line discipline buffer is almost full
+(say the receiving room is 120 bytes), it calls throttle and even if
+the other end gets the throttle in time, it could potentially send 128
+bytes (but there is only 120 bytes of space in the buffer). So when we
+are flushing to ldisc, we will transfer only the receive_room amount
+of data and discard the rest? Is there any way of avoiding this?
 
-drivers/tty/serial/amba-pl011.c:687:20: warning: context imbalance in 'pl011_dma_flush_buffer' - unexpected unlock
-drivers/tty/serial/amba-pl011.c:1200:13: warning: context imbalance in 'pl011_rx_chars' - unexpected unlock
+I know there is no way of knowing what the FIFO size of the other side
+might be! I was wondering if this happens, could we potentially flag a
+buffer overflow error? We know how many bytes are coming in from the
+UART and when we are trying to flush to ldisc, if the count is more
+than the throttle level, can we return an error?
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/amba-pl011.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index eb38fb8..aaa2286 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -677,6 +677,8 @@ static inline bool pl011_dma_tx_start(struct uart_amba_port *uap)
-  * Locking: called with port lock held and IRQs disabled.
-  */
- static void pl011_dma_flush_buffer(struct uart_port *port)
-+__releases(&uap->port.lock)
-+__acquires(&uap->port.lock)
- {
- 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
- 
-@@ -1198,6 +1200,8 @@ static void pl011_enable_ms(struct uart_port *port)
- }
- 
- static void pl011_rx_chars(struct uart_amba_port *uap)
-+__releases(&uap->port.lock)
-+__acquires(&uap->port.lock)
- {
- 	pl011_fifo_to_tty(uap);
- 
--- 
-1.8.1.2
-
+Thanks,
+Karthik
