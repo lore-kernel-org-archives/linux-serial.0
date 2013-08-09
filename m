@@ -1,59 +1,48 @@
-From: "Zhang, Sonic" <Sonic.Zhang@analog.com>
-Subject: RE: [PATCH 1/2] serial: bfin_sport_uart: Fix incorrect placement of
- __initdata
-Date: Fri, 9 Aug 2013 01:46:04 +0000
-Message-ID: <B168F8A49F4BCF4C84FD23DA5F6363EE31BC15DB@NWD2MBX7.ad.analog.com>
-References: <1375962051-31873-1-git-send-email-sachin.kamat@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: John Crispin <blogic@openwrt.org>
+Subject: [PATCH V2 2/2] serial: MIPS: lantiq: fix clock error check
+Date: Fri,  9 Aug 2013 20:54:31 +0200
+Message-ID: <1376074471-29404-2-git-send-email-blogic@openwrt.org>
+References: <1376074471-29404-1-git-send-email-blogic@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:34676
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S967342Ab3HIBra convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 8 Aug 2013 21:47:30 -0400
-In-Reply-To: <1375962051-31873-1-git-send-email-sachin.kamat@linaro.org>
-Content-Language: en-US
+Received: from nbd.name ([46.4.11.11]:33309 "EHLO nbd.name"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1030743Ab3HITBl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 9 Aug 2013 15:01:41 -0400
+In-Reply-To: <1376074471-29404-1-git-send-email-blogic@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sachin Kamat <sachin.kamat@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: "uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-mips@linux-mips.org, John Crispin <blogic@openwrt.org>
 
-Acked-by: Sonic Zhang<sonic.zhang@analog.com>
+The clock should be checked with the proper IS_ERR() api before using it.
 
->-----Original Message-----
->From: Sachin Kamat [mailto:sachin.kamat@linaro.org]
->Sent: Thursday, August 08, 2013 7:41 PM
->To: linux-serial@vger.kernel.org
->Cc: uclinux-dist-devel@blackfin.uclinux.org; gregkh@linuxfoundation.org;
->jslaby@suse.cz; sachin.kamat@linaro.org; Zhang, Sonic
->Subject: [PATCH 1/2] serial: bfin_sport_uart: Fix incorrect placement of __initdata
->
->__initdata should be placed between the variable name and equal sign for the
->variable to be placed in the intended section.
->
->Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->Cc: Sonic Zhang <sonic.zhang@analog.com>
->---
-> drivers/tty/serial/bfin_sport_uart.c |    2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
->index 424ed36..016c3e9 100644
->--- a/drivers/tty/serial/bfin_sport_uart.c
->+++ b/drivers/tty/serial/bfin_sport_uart.c
->@@ -884,7 +884,7 @@ static struct platform_driver sport_uart_driver = {  };
->
-> #ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE -static __initdata struct
->early_platform_driver early_sport_uart_driver = {
->+static struct early_platform_driver early_sport_uart_driver __initdata
->+= {
->       .class_str = CLASS_BFIN_SPORT_CONSOLE,
->       .pdrv = &sport_uart_driver,
->       .requested_id = EARLY_PLATFORM_ID_UNSET,
->--
->1.7.9.5
->
+Signed-off-by: John Crispin <blogic@openwrt.org>
+---
+ drivers/tty/serial/lantiq.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 93ac046..88d01e0 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -318,7 +318,7 @@ lqasc_startup(struct uart_port *port)
+ 	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
+ 	int retval;
+ 
+-	if (ltq_port->clk)
++	if (!IS_ERR(ltq_port->clk))
+ 		clk_enable(ltq_port->clk);
+ 	port->uartclk = clk_get_rate(ltq_port->fpiclk);
+ 
+@@ -386,7 +386,7 @@ lqasc_shutdown(struct uart_port *port)
+ 		port->membase + LTQ_ASC_RXFCON);
+ 	ltq_w32_mask(ASCTXFCON_TXFEN, ASCTXFCON_TXFFLU,
+ 		port->membase + LTQ_ASC_TXFCON);
+-	if (ltq_port->clk)
++	if (!IS_ERR(ltq_port->clk))
+ 		clk_disable(ltq_port->clk);
+ }
+ 
+-- 
+1.7.10.4
 
