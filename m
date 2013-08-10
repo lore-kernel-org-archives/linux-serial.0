@@ -1,43 +1,85 @@
-From: Karthik Manamcheri <karthik.manamcheri@gmail.com>
-Subject: Buffer overflow concerns when TTY_THRESHOLD_THROTTLE <= Uart FIFO
- size of the sending side
-Date: Fri, 9 Aug 2013 16:08:31 -0500
-Message-ID: <CAES2cWzqgKmCT7Uy-4dqrgNeq1W0LeBH5A=y7D+OX8cnBuM-rw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Gabor Juhos <juhosg@openwrt.org>
+Subject: [PATCH] tty: ar933x_uart: convert to use devm_* functions
+Date: Sat, 10 Aug 2013 09:32:15 +0200
+Message-ID: <1376119935-2509-1-git-send-email-juhosg@openwrt.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f177.google.com ([209.85.214.177]:40901 "EHLO
-	mail-ob0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1031125Ab3HIVIv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 Aug 2013 17:08:51 -0400
-Received: by mail-ob0-f177.google.com with SMTP id f8so2732711obp.36
-        for <linux-serial@vger.kernel.org>; Fri, 09 Aug 2013 14:08:51 -0700 (PDT)
+Received: from arrakis.dune.hu ([78.24.191.176]:34735 "EHLO arrakis.dune.hu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932323Ab3HJHcT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 10 Aug 2013 03:32:19 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>
 
-When using software-level RTS/CTS flow control (or Xon/Xoff), we could
-leak at most the UART FIFO size of bytes after getting the flow
-control signal. This is because the bytes might be loaded in the FIFO
-when the flow control signal comes through and the UART will send them
-out the wire.
+Use devm_* functions in order to simplify cleanup
+paths.
 
-Consider a case where I have a UART with a 128 byte FIFO. The
-TTY_THRESHOLD_THROTTLE is set at 128 bytes in n_tty.c. So, isn't it
-possible that potentially we lose bytes when moving data to the TTY
-line discipline buffer? If the line discipline buffer is almost full
-(say the receiving room is 120 bytes), it calls throttle and even if
-the other end gets the throttle in time, it could potentially send 128
-bytes (but there is only 120 bytes of space in the buffer). So when we
-are flushing to ldisc, we will transfer only the receive_room amount
-of data and discard the rest? Is there any way of avoiding this?
+Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
+---
+ drivers/tty/serial/ar933x_uart.c |   26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-I know there is no way of knowing what the FIFO size of the other side
-might be! I was wondering if this happens, could we potentially flag a
-buffer overflow error? We know how many bytes are coming in from the
-UART and when we are trying to flush to ldisc, if the count is more
-than the throttle level, can we return an error?
-
-Thanks,
-Karthik
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index 27f20c5..470993e 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -652,19 +652,18 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	up = kzalloc(sizeof(struct ar933x_uart_port), GFP_KERNEL);
++	up = devm_kzalloc(&pdev->dev, sizeof(struct ar933x_uart_port),
++			  GFP_KERNEL);
+ 	if (!up)
+ 		return -ENOMEM;
+ 
+ 	port = &up->port;
+-	port->mapbase = mem_res->start;
+ 
+-	port->membase = ioremap(mem_res->start, AR933X_UART_REGS_SIZE);
+-	if (!port->membase) {
+-		ret = -ENOMEM;
+-		goto err_free_up;
+-	}
++	port->membase = devm_ioremap_resource(&pdev->dev, mem_res);
++	if (IS_ERR(port->membase))
++		return PTR_ERR(port->membase);
+ 
++	port->mapbase = mem_res->start;
+ 	port->line = id;
+ 	port->irq = irq_res->start;
+ 	port->dev = &pdev->dev;
+@@ -686,16 +685,10 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 
+ 	ret = uart_add_one_port(&ar933x_uart_driver, &up->port);
+ 	if (ret)
+-		goto err_unmap;
++		return ret;
+ 
+ 	platform_set_drvdata(pdev, up);
+ 	return 0;
+-
+-err_unmap:
+-	iounmap(up->port.membase);
+-err_free_up:
+-	kfree(up);
+-	return ret;
+ }
+ 
+ static int ar933x_uart_remove(struct platform_device *pdev)
+@@ -705,11 +698,8 @@ static int ar933x_uart_remove(struct platform_device *pdev)
+ 	up = platform_get_drvdata(pdev);
+ 	platform_set_drvdata(pdev, NULL);
+ 
+-	if (up) {
++	if (up)
+ 		uart_remove_one_port(&ar933x_uart_driver, &up->port);
+-		iounmap(up->port.membase);
+-		kfree(up);
+-	}
+ 
+ 	return 0;
+ }
+-- 
+1.7.10
