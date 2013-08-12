@@ -1,66 +1,59 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH 10/10] serial: sirf: Staticize local symbols
-Date: Mon, 12 Aug 2013 10:07:49 +0800
-Message-ID: <CAGsJ_4xxcL8PNmWTM9a5GUhhHafj29HD-W-hPKSF4bmZfrNdBQ@mail.gmail.com>
-References: <006601ce9413$1bd386e0$537a94a0$@samsung.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH v6] linux,stdout-path helper
+Date: Mon, 12 Aug 2013 08:04:44 +0200
+Message-ID: <20130812060444.GI26614@pengutronix.de>
+References: <1375706445-15375-1-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f179.google.com ([209.85.216.179]:33770 "EHLO
-	mail-qc0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755268Ab3HLCIK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 11 Aug 2013 22:08:10 -0400
-Received: by mail-qc0-f179.google.com with SMTP id n10so1299099qcx.38
-        for <linux-serial@vger.kernel.org>; Sun, 11 Aug 2013 19:08:09 -0700 (PDT)
-In-Reply-To: <006601ce9413$1bd386e0$537a94a0$@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1375706445-15375-1-git-send-email-s.hauer@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Cc: devicetree@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, rob.herring@calxeda.com, linux-serial@vger.kernel.org, grant.likely@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Barry Song <baohua.song@csr.com>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>
 
-2013/8/8 Jingoo Han <jg1.han@samsung.com>:
-> From 0170294084877d365fbd1b369cd4dedfc3749ee5 Mon Sep 17 00:00:00 2001
-> From: Jingoo Han <jg1.han@samsung.com>
-> Date: Thu, 8 Aug 2013 17:24:38 +0900
-> Subject: [PATCH 10/10] serial: sirf: Staticize local symbols
->
-> These local symbols are used only in this file.
-> Fix the following sparse warnings:
->
-> drivers/tty/serial/sirfsoc_uart.c:147:6: warning: symbol 'sirfsoc_uart_start_tx' was not declared. Should it be static?
-> drivers/tty/serial/sirfsoc_uart.c:636:5: warning: symbol 'sirfsoc_uart_probe' was not declared. Should it be static?
->
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-> ---
+Greg,
 
-Acked-by: Barry Song <Baohua.Song@csr.com>
+Given that we have Robs Ack, can you take this series?
 
->  drivers/tty/serial/sirfsoc_uart.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-> index 67a0d1b..3b38137 100644
-> --- a/drivers/tty/serial/sirfsoc_uart.c
-> +++ b/drivers/tty/serial/sirfsoc_uart.c
-> @@ -144,7 +144,7 @@ static void sirfsoc_uart_stop_tx(struct uart_port *port)
->         wr_regl(port, SIRFUART_INT_EN, regv & ~SIRFUART_TX_INT_EN);
->  }
->
-> -void sirfsoc_uart_start_tx(struct uart_port *port)
-> +static void sirfsoc_uart_start_tx(struct uart_port *port)
->  {
->         struct sirfsoc_uart_port *sirfport = to_sirfport(port);
->         unsigned long regv;
-> @@ -633,7 +633,7 @@ static struct uart_driver sirfsoc_uart_drv = {
->  #endif
->  };
->
-> -int sirfsoc_uart_probe(struct platform_device *pdev)
-> +static int sirfsoc_uart_probe(struct platform_device *pdev)
->  {
->         struct sirfsoc_uart_port *sirfport;
->         struct uart_port *port;
-> --
-> 1.7.10.4
->
+Sascha
+
+On Mon, Aug 05, 2013 at 02:40:43PM +0200, Sascha Hauer wrote:
+> The following adds a helper for matching the linux,stdout-path property
+> in the chosen node and makes use of it in the i.MX serial
+> 
+> This is a series originally created by me. It was hijacked and then abandoned
+> by Jean-Christophe for v5. I reverted the changes by Jean-Christophe since
+> they introduced changes to the devicetree binding. Instead I'd like to have
+> the existing binding implemented first before changing it.
+> 
+> Sascha
+> 
+> changes since v5:
+> - reverted changes from v4
+> - parse linux,stdoutpath property in of_alias_scan as suggested by Grant
+> changes since v4:
+> - add option support and check stdout-path too
+> changes since v3:
+> - move code from separate files to drivers/of/base.c and include/linux/of.h
+> changes since v2:
+> - move helper to OF core and make it independent of serial devices
+> changes since v1:
+> - move it out of the i.MX serial driver and make it generic for serial devices.
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
