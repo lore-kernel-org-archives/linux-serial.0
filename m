@@ -1,74 +1,85 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH 3/3] serial: sirf: add DT-binding document to describle detailed properties
-Date: Tue, 13 Aug 2013 19:18:17 +0800
-Message-ID: <1376392697-20664-3-git-send-email-Baohua.Song@csr.com>
-References: <1376392697-20664-1-git-send-email-Baohua.Song@csr.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] serial: OMAP: add RS485 support
+Date: Tue, 13 Aug 2013 11:50:36 -0700
+Message-ID: <20130813185036.GB8909@kroah.com>
+References: <52079822.9020103@newflow.co.uk>
+ <20130812225638.GA30919@kroah.com>
+ <520A08FE.5070804@newflow.co.uk>
+ <CAAwP0s1QyNjQb+0zhK_UeHraTW+R6Mefq1E4HyV-XJ4fV42w+g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f173.google.com ([209.85.192.173]:38860 "EHLO
-	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757287Ab3HMLSg (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39443 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757602Ab3HMSuh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Aug 2013 07:18:36 -0400
-Received: by mail-pd0-f173.google.com with SMTP id p10so4743326pdj.18
-        for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2013 04:18:36 -0700 (PDT)
-In-Reply-To: <1376392697-20664-1-git-send-email-Baohua.Song@csr.com>
+	Tue, 13 Aug 2013 14:50:37 -0400
+Content-Disposition: inline
+In-Reply-To: <CAAwP0s1QyNjQb+0zhK_UeHraTW+R6Mefq1E4HyV-XJ4fV42w+g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Javier Martinez Canillas <martinez.javier@gmail.com>
+Cc: Mark Jackson <mpfj-list@newflow.co.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, jslaby@suse.cz
 
-From: Qipan Li <Qipan.Li@csr.com>
+On Tue, Aug 13, 2013 at 12:54:47PM +0200, Javier Martinez Canillas wrote:
+> On Tue, Aug 13, 2013 at 12:22 PM, Mark Jackson <mpfj-list@newflow.co.uk> wrote:
+> > On 12/08/13 23:56, Greg KH wrote:
+> >> On Sun, Aug 11, 2013 at 02:56:50PM +0100, Mark Jackson wrote:
+> >>> This patch adds RS485 support to the OMAP serial driver, as
+> >>> defined in:-
+> >>>
+> >>> Documentation/devicetree/bindings/serial/rs485.txt
+> >>>
+> >>> When a UART transmitter is connected to (eg) a RS485 driver, it is
+> >>> necessary to turn the driver on/off as quickly as possible.  This is
+> >>> best achieved in the serial driver itself (rather than in userspace
+> >>> where the latency can be quite large).
+> >>>
+> >>> This patch allows a GPIO pin to be defined (via DT) that controls
+> >>> the enabling of the driver at the start of a message, and disables
+> >>> the driver when the message has been completed.
+> >>>
+> >>> When RS485 is disabled, the RTS pin is set to on.
+> >>>
+> >>> Signed-off-by: Mark Jackson <mpfj@newflow.co.uk>
+> >>> ---
+> >>> Changes in v2:
+> >>> - Fix incorrect logic in serial_omap_config_rs485()
+> >>>
+> >>>  drivers/tty/serial/omap-serial.c |  178 ++++++++++++++++++++++++++++++++++++++
+> >>>  1 file changed, 178 insertions(+)
+> >>
+> >> This doesn't apply to my tty-next branch:
+> >>       checking file drivers/tty/serial/omap-serial.c
+> >>       Hunk #1 FAILED at 40.
+> >>       Hunk #2 succeeded at 162 (offset 6 lines).
+> >>       Hunk #3 succeeded at 280 (offset 5 lines).
+> >>       Hunk #4 succeeded at 378 (offset 6 lines).
+> >>       Hunk #5 succeeded at 1312 (offset 8 lines).
+> >>       Hunk #6 succeeded at 1405 (offset 8 lines).
+> >>       Hunk #7 succeeded at 1528 (offset 10 lines).
+> >>       Hunk #8 FAILED at 1638.
+> >>       Hunk #9 succeeded at 1705 (offset 6 lines).
+> >>       2 out of 9 hunks FAILED
+> >>
+> >> so I can't apply it, sorry.
+> >
+> > It was applied on top of Linus' tree, if that makes any difference.
+> >
+> > I'll rebase onto yours and re-post the patch.
+> > --
+> 
+> Hi Mark,
+> 
+> I've seen several attempts to add RS485 support to the omap serial
+> driver and it is always nack-ed. There seems to be concerns about
+> controlling the RTS by software when RS485 is not supported by the
+> UART hardware. Please refer to [1] and [2] for more information.
 
-we defined some special properties for hardware flow control, document them
-for DT-binding.
+Hm, but we do support RS485 now in the kernel, look at
+Documentation/serial/serial-rs485.txt.  Why can't this driver support it
+as well if the serial core already does?
 
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
----
- .../devicetree/bindings/tty/serial/sirf-uart.txt   | 34 ++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
+thanks,
 
-diff --git a/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt b/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
-new file mode 100644
-index 0000000..97dfd59
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
-@@ -0,0 +1,34 @@
-+* CSR SiRFprimaII/atlasVI Universal Synchronous Asynchronous Receiver/Transmitter *
-+
-+Required properties:
-+- compatible : Should be "sirf,prima2-uart" or "sirf, prima2-usp-uart"
-+- reg : Offset and length of the register set for the device
-+- interrupts : Should contain uart interrupt
-+- fifosize : Should define hardware rx/tx fifo size
-+- clocks : Should contain uart clock number
-+
-+Optional properties:
-+- sirf,uart-has-rtscts: we have hardware flow controller pins in hardware
-+- rts-gpios: RTS pin for USP-based UART if sirf,uart-has-rtscts is true
-+- cts-gpios: CTS pin for USP-based UART if sirf,uart-has-rtscts is true
-+
-+Example:
-+
-+uart0: uart@b0050000 {
-+	cell-index = <0>;
-+	compatible = "sirf,prima2-uart";
-+	reg = <0xb0050000 0x1000>;
-+	interrupts = <17>;
-+	fifosize = <128>;
-+	clocks = <&clks 13>;
-+};
-+
-+On the board-specific dts, we can put rts-gpios and cts-gpios like
-+
-+usp@b0090000 {
-+	compatible = "sirf,prima2-usp-uart";
-+	sirf,uart-has-rtscts;
-+	rts-gpios = <&gpio 15 0>;
-+	cts-gpios = <&gpio 46 0>;
-+};
-+
--- 
-1.8.2.3
-
+greg k-h
