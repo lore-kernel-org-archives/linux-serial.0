@@ -1,102 +1,54 @@
-From: Javier Martinez Canillas <martinez.javier@gmail.com>
-Subject: Re: [PATCH v2] serial: OMAP: add RS485 support
-Date: Tue, 13 Aug 2013 23:16:49 +0200
-Message-ID: <CAAwP0s2B_UkCGdvK1ZiYgM4w+u+nwNAtZuo=nzmP7nsrTV2rGA@mail.gmail.com>
-References: <52079822.9020103@newflow.co.uk> <20130812225638.GA30919@kroah.com>
- <520A08FE.5070804@newflow.co.uk> <CAAwP0s1QyNjQb+0zhK_UeHraTW+R6Mefq1E4HyV-XJ4fV42w+g@mail.gmail.com>
- <20130813185036.GB8909@kroah.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 0/29] simplify use of devm_ioremap_resource
+Date: Wed, 14 Aug 2013 11:11:04 +0200
+Message-ID: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f181.google.com ([209.85.128.181]:50415 "EHLO
-	mail-ve0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759012Ab3HMVRK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 Aug 2013 17:17:10 -0400
-In-Reply-To: <20130813185036.GB8909@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: dri-devel@lists.freedesktop.org
+Cc: alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, rtc-linux@googlegroups.com, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Mark Jackson <mpfj-list@newflow.co.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, jslaby@suse.cz
 
-On Tue, Aug 13, 2013 at 8:50 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Aug 13, 2013 at 12:54:47PM +0200, Javier Martinez Canillas wrote:
-> > On Tue, Aug 13, 2013 at 12:22 PM, Mark Jackson <mpfj-list@newflow.co.uk> wrote:
-> > > On 12/08/13 23:56, Greg KH wrote:
-> > >> On Sun, Aug 11, 2013 at 02:56:50PM +0100, Mark Jackson wrote:
-> > >>> This patch adds RS485 support to the OMAP serial driver, as
-> > >>> defined in:-
-> > >>>
-> > >>> Documentation/devicetree/bindings/serial/rs485.txt
-> > >>>
-> > >>> When a UART transmitter is connected to (eg) a RS485 driver, it is
-> > >>> necessary to turn the driver on/off as quickly as possible.  This is
-> > >>> best achieved in the serial driver itself (rather than in userspace
-> > >>> where the latency can be quite large).
-> > >>>
-> > >>> This patch allows a GPIO pin to be defined (via DT) that controls
-> > >>> the enabling of the driver at the start of a message, and disables
-> > >>> the driver when the message has been completed.
-> > >>>
-> > >>> When RS485 is disabled, the RTS pin is set to on.
-> > >>>
-> > >>> Signed-off-by: Mark Jackson <mpfj@newflow.co.uk>
-> > >>> ---
-> > >>> Changes in v2:
-> > >>> - Fix incorrect logic in serial_omap_config_rs485()
-> > >>>
-> > >>>  drivers/tty/serial/omap-serial.c |  178 ++++++++++++++++++++++++++++++++++++++
-> > >>>  1 file changed, 178 insertions(+)
-> > >>
-> > >> This doesn't apply to my tty-next branch:
-> > >>       checking file drivers/tty/serial/omap-serial.c
-> > >>       Hunk #1 FAILED at 40.
-> > >>       Hunk #2 succeeded at 162 (offset 6 lines).
-> > >>       Hunk #3 succeeded at 280 (offset 5 lines).
-> > >>       Hunk #4 succeeded at 378 (offset 6 lines).
-> > >>       Hunk #5 succeeded at 1312 (offset 8 lines).
-> > >>       Hunk #6 succeeded at 1405 (offset 8 lines).
-> > >>       Hunk #7 succeeded at 1528 (offset 10 lines).
-> > >>       Hunk #8 FAILED at 1638.
-> > >>       Hunk #9 succeeded at 1705 (offset 6 lines).
-> > >>       2 out of 9 hunks FAILED
-> > >>
-> > >> so I can't apply it, sorry.
-> > >
-> > > It was applied on top of Linus' tree, if that makes any difference.
-> > >
-> > > I'll rebase onto yours and re-post the patch.
-> > > --
-> >
-> > Hi Mark,
-> >
-> > I've seen several attempts to add RS485 support to the omap serial
-> > driver and it is always nack-ed. There seems to be concerns about
-> > controlling the RTS by software when RS485 is not supported by the
-> > UART hardware. Please refer to [1] and [2] for more information.
->
-> Hm, but we do support RS485 now in the kernel, look at
-> Documentation/serial/serial-rs485.txt.  Why can't this driver support it
-> as well if the serial core already does?
->
+devm_ioremap_resource often uses the result of a call to
+platform_get_resource as its last argument.  devm_ioremap_resource does
+appropriate error handling on this argument, so error handling can be
+removed from the call site.  To make the connection between the call to
+platform_get_resource and the call to devm_ioremap_resource more clear, the
+former is also moved down to be adjacent to the latter.
 
-Hi Greg,
+In many cases, this patch changes the specific error value that is
+returned on failure of platform_get_resource.
 
-Please don't shoot the messenger :-)
+The semantic patch that makes this change is as follows:
+(http://coccinelle.lip6.fr/)
 
-In fact I was one of those who needed RS485 support in the OMAP serial
-driver a couple of years ago and we were told that "software RS485 is
-not mainlinable" [1].
+// <smpl>
+@@
+expression pdev,res,n,e,e1;
+expression ret != 0;
+identifier l;
+@@
 
-I just wanted to warn Mark that he could be losing time pushing this
-but I'm glad to learn that this seems not to be true anymore.
-
-> thanks,
->
-> greg k-h
-
-Thanks a lot and best regards,
-Javier
-
-[1]: http://comments.gmane.org/gmane.linux.serial/6770
+(
+  res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+- if (res == NULL) { ... \(goto l;\|return ret;\) }
+  e = devm_ioremap_resource(e1, res);
+|
+- res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+  ... when != res
+- if (res == NULL) { ... \(goto l;\|return ret;\) }
+  ... when != res
++ res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+  e = devm_ioremap_resource(e1, res);
+)
+// </smpl>
