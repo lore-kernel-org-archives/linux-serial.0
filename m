@@ -1,52 +1,47 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v3 5/5] ARM: davinci: serial: platform code cleanup
-Date: Wed, 14 Aug 2013 11:27:09 +0000
-Message-ID: <520B698D.60203@ti.com>
-References: <1371633342-1210-1-git-send-email-prakash.pm@ti.com>
-	<1371633342-1210-6-git-send-email-prakash.pm@ti.com>
-	<51ED0534.2080408@ti.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/3] serial: sirf: drop redundant
+ pinctrl_get_select_default as pinctrl core does it
+Date: Wed, 14 Aug 2013 12:11:18 -0700
+Message-ID: <20130814191118.GA17612@kroah.com>
+References: <1376392697-20664-1-git-send-email-Baohua.Song@csr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-In-Reply-To: <51ED0534.2080408-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <http://linux.davincidsp.com/mailman/options/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://linux.davincidsp.com/pipermail/davinci-linux-open-source>
-List-Post: <mailto:davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-List-Help: <mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=help>
-List-Subscribe: <http://linux.davincidsp.com/mailman/listinfo/davinci-linux-open-source>,
-	<mailto:davinci-linux-open-source-request-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org?subject=subscribe>
-Sender: <davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org>
-Errors-To: davinci-linux-open-source-bounces-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org
-To: "Manjunathappa, Prakash" <prakash.pm-l0cyMroinI0@public.gmane.org>
-Cc: davinci-linux-open-source-VycZQUHpC/PFrsHnngEfi1aTQe2KTcn/@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hs-ynQEQJNshbs@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53778 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933065Ab3HNTLT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 14 Aug 2013 15:11:19 -0400
+Content-Disposition: inline
+In-Reply-To: <1376392697-20664-1-git-send-email-Baohua.Song@csr.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Barry Song <21cnbao@gmail.com>
+Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>, Linus Walleij <linus.walleij@linaro.org>
 
-Hi Prakash,
-
-On Monday 22 July 2013 10:11 AM, Sekhar Nori wrote:
-> On Wednesday 19 June 2013 02:45 PM, Manjunathappa, Prakash wrote:
->> 1) "struct davinci_uart_config" is introduced to specify
->>    UART ports brought out or enabled on the board. But
->>    none of the boards use them for that purpose, so clean
->>    it up.
->> 2) Have pointer to platform device as a argument for
->>    davinci_serial_init(), no need of serial_dev in
->>    struct soc_info now.
->> 3) No need of davinci_serial_setup_clk(), not called from
->>    multiple places, hence reduce function call overhead.
+On Tue, Aug 13, 2013 at 07:18:15PM +0800, Barry Song wrote:
+> pinctrl core will get default pinmux, so drop it in the sirfsoc serial driver.
 > 
-> 1) and 2) are related but 3) can be moved into a different patch - this
-> patch will otherwise be doing too many things (hint for that is a vague
-> headline and too many items to list in description)
-> 
-> Can you respin just this patch based on v3.12/soc branch of my tree?
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Barry Song <Baohua.Song@csr.com>
+> ---
+>  drivers/tty/serial/sirfsoc_uart.c | 12 ------------
+>  drivers/tty/serial/sirfsoc_uart.h |  1 -
+>  2 files changed, 13 deletions(-)
 
-Since I did not get a response to this and the window for v3.12 is
-closing fast, I went ahead and did the split myself. Here is the result:
+This patch fails to apply to my tree:
 
-https://git.kernel.org/cgit/linux/kernel/git/nsekhar/linux-davinci.git/log/?h=v3.12/soc
+checking file drivers/tty/serial/sirfsoc_uart.c
+Hunk #3 FAILED at 917.
+Hunk #4 FAILED at 928.
+2 out of 4 hunks FAILED
+checking file drivers/tty/serial/sirfsoc_uart.h
 
-Thanks,
-Sekhar
+And as such, I can't take any of the patches in this series :(
+
+Care to redo them against my tty-next branch if you wish to have them
+applied?
+
+thanks,
+
+greg k-h
