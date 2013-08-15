@@ -1,75 +1,40 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH V2 3/3] serial: sirf: add DT-binding document to describle detailed properties
-Date: Thu, 15 Aug 2013 06:52:16 +0800
-Message-ID: <1376520736-3838-3-git-send-email-Baohua.Song@csr.com>
-References: <1376520736-3838-1-git-send-email-Baohua.Song@csr.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:48458 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933149Ab3HNWwl (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 Aug 2013 18:52:41 -0400
-Received: by mail-pd0-f169.google.com with SMTP id r10so75294pdi.0
-        for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2013 15:52:40 -0700 (PDT)
-In-Reply-To: <1376520736-3838-1-git-send-email-Baohua.Song@csr.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Mark Jackson <mpfj-list@newflow.co.uk>
+Subject: [PATCH] OMAP: serial: Remove incorrect disabling of IER interrupt
+Date: Thu, 15 Aug 2013 08:53:44 +0100
+Message-ID: <520C8908.4050006@newflow.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-From: Qipan Li <Qipan.Li@csr.com>
+The recent patch to add RS485 contained a bug whereby the IER
+interrupt was cleared down incorrectly.
 
-we defined some special properties for hardware flow control, document them
-for DT-binding.
+This patch fixes the problem.
 
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
+Signed-off-by: Mark Jackson <mpfj@newflow.co.uk>
 ---
- -v2: rebase to tty-next
+ drivers/tty/serial/omap-serial.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
- .../devicetree/bindings/tty/serial/sirf-uart.txt   | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
-
-diff --git a/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt b/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
-new file mode 100644
-index 0000000..a2dfc65
---- /dev/null
-+++ b/Documentation/devicetree/bindings/tty/serial/sirf-uart.txt
-@@ -0,0 +1,33 @@
-+* CSR SiRFprimaII/atlasVI Universal Synchronous Asynchronous Receiver/Transmitter *
-+
-+Required properties:
-+- compatible : Should be "sirf,prima2-uart" or "sirf, prima2-usp-uart"
-+- reg : Offset and length of the register set for the device
-+- interrupts : Should contain uart interrupt
-+- fifosize : Should define hardware rx/tx fifo size
-+- clocks : Should contain uart clock number
-+
-+Optional properties:
-+- sirf,uart-has-rtscts: we have hardware flow controller pins in hardware
-+- rts-gpios: RTS pin for USP-based UART if sirf,uart-has-rtscts is true
-+- cts-gpios: CTS pin for USP-based UART if sirf,uart-has-rtscts is true
-+
-+Example:
-+
-+uart0: uart@b0050000 {
-+	cell-index = <0>;
-+	compatible = "sirf,prima2-uart";
-+	reg = <0xb0050000 0x1000>;
-+	interrupts = <17>;
-+	fifosize = <128>;
-+	clocks = <&clks 13>;
-+};
-+
-+On the board-specific dts, we can put rts-gpios and cts-gpios like
-+
-+usp@b0090000 {
-+	compatible = "sirf,prima2-usp-uart";
-+	sirf,uart-has-rtscts;
-+	rts-gpios = <&gpio 15 0>;
-+	cts-gpios = <&gpio 46 0>;
-+};
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 2706c11..2fa7b5c 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1327,9 +1327,6 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	pm_runtime_get_sync(up->dev);
+ 	spin_lock_irqsave(&up->port.lock, flags);
+ 
+-	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
+-	serial_out(up, UART_IER, up->ier);
+-
+ 	/* Disable interrupts from this port */
+ 	mode = up->ier;
+ 	up->ier = 0;
 -- 
-1.8.2.3
+1.7.9.5
 
