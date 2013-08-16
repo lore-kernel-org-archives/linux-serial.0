@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 11/25] tty: serial: lpc32xx_hs: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:12 +0530
-Message-ID: <91cd5fec75d8cbd56a60e105c4252d8589e8fe26.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 12/25] tty: serial: m32r_sio: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:13 +0530
+Message-ID: <6559c8ca2cb34030276b7af62b37d5b321d276f1.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f45.google.com ([209.85.160.45]:57058 "EHLO
-	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755230Ab3HPLot (ORCPT
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:45847 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755230Ab3HPLoz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:44:49 -0400
-Received: by mail-pb0-f45.google.com with SMTP id mc17so1902145pbc.18
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:44:49 -0700 (PDT)
+	Fri, 16 Aug 2013 07:44:55 -0400
+Received: by mail-pa0-f53.google.com with SMTP id lb1so1793711pab.12
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:44:55 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -36,24 +36,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 3 +++
+ drivers/tty/serial/m32r_sio.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index 8fdf6a8..701644f 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -279,7 +279,10 @@ static void __serial_lpc32xx_rx(struct uart_port *port)
- 
- 		tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
- 	}
+diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
+index bb1afa0..9cd9b4e 100644
+--- a/drivers/tty/serial/m32r_sio.c
++++ b/drivers/tty/serial/m32r_sio.c
+@@ -368,7 +368,10 @@ static void receive_chars(struct uart_sio_port *up, int *status)
+ 	ignore_char:
+ 		*status = serial_in(up, UART_LSR);
+ 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
 +
-+	spin_unlock(&port->lock);
- 	tty_flip_buffer_push(tport);
-+	spin_lock(&port->lock);
++	spin_unlock(&up->port.lock);
+ 	tty_flip_buffer_push(port);
++	spin_lock(&up->port.lock);
  }
  
- static void __serial_lpc32xx_tx(struct uart_port *port)
+ static void transmit_chars(struct uart_sio_port *up)
 -- 
 1.7.12.rc2.18.g61b472e
 
