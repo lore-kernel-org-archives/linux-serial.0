@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 20/25] tty: serial: rp2: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:21 +0530
-Message-ID: <0bbd6cf46f9aae6a35559aac70f3b012802d7031.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 21/25] tty: serial: sa1100: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:22 +0530
+Message-ID: <671359265468f44ee9fe9fc263ba737a918508d4.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f181.google.com ([209.85.192.181]:55812 "EHLO
-	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755399Ab3HPLpu (ORCPT
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:58589 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755399Ab3HPLp5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:45:50 -0400
-Received: by mail-pd0-f181.google.com with SMTP id g10so2135502pdj.40
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:50 -0700 (PDT)
+	Fri, 16 Aug 2013 07:45:57 -0400
+Received: by mail-pa0-f43.google.com with SMTP id hz10so1781153pad.30
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:56 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -36,23 +36,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/rp2.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/sa1100.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
-index a314a94..328d6de 100644
---- a/drivers/tty/serial/rp2.c
-+++ b/drivers/tty/serial/rp2.c
-@@ -427,7 +427,9 @@ static void rp2_rx_chars(struct rp2_uart_port *up)
- 		up->port.icount.rx++;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index af6b3e3..28d60ef 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -232,7 +232,10 @@ sa1100_rx_chars(struct sa1100_port *sport)
+ 		status = UTSR1_TO_SM(UART_GET_UTSR1(sport)) |
+ 			 UTSR0_TO_SM(UART_GET_UTSR0(sport));
  	}
- 
-+	spin_unlock(&up->port.lock);
- 	tty_flip_buffer_push(port);
-+	spin_lock(&up->port.lock);
++
++	spin_unlock(&sport->port.lock);
+ 	tty_flip_buffer_push(&sport->port.state->port);
++	spin_lock(&sport->port.lock);
  }
  
- static void rp2_tx_chars(struct rp2_uart_port *up)
+ static void sa1100_tx_chars(struct sa1100_port *sport)
 -- 
 1.7.12.rc2.18.g61b472e
 
