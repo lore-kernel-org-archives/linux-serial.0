@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 09/25] tty: serial: icom: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:10 +0530
-Message-ID: <b7821cdba5d1c093a168812ec51cd940eb46513e.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 10/25] tty: serial: lpc32xx_hs: don't call tty_flip_buffer_push() twice
+Date: Fri, 16 Aug 2013 17:13:11 +0530
+Message-ID: <a2cd09578a7df937dbe4ebc7d0dfbe24a441efc3.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:52597 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755230Ab3HPLof (ORCPT
+Received: from mail-pb0-f52.google.com ([209.85.160.52]:59028 "EHLO
+	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755230Ab3HPLom (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:44:35 -0400
-Received: by mail-pa0-f48.google.com with SMTP id kp13so1776086pab.21
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:44:35 -0700 (PDT)
+	Fri, 16 Aug 2013 07:44:42 -0400
+Received: by mail-pb0-f52.google.com with SMTP id wz12so1903592pbc.11
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:44:41 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -19,41 +19,33 @@ List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
 
-The -rt patch triggers a lockdep warning for serial drivers if
-tty_flip_buffer_push() is called with uart_port->lock locked. This never shows
-up on UP kernels.
+serial_lpc32xx_interrupt() calls __serial_lpc32xx_rx() first and then
+tty_flip_buffer_push() immediately after that. But last statement of
+__serial_lpc32xx_rx() already called tty_flip_buffer_push()..
 
-Release the port lock before calling tty_flip_buffer_push() and reacquire it
-after the call.
-
-Similar stuff was already done for few other drivers in the past, like:
-
-commit 2389b272168ceec056ca1d8a870a97fa9c26e11a
-Author: Thomas Gleixner <tglx@linutronix.de>
-Date:   Tue May 29 21:53:50 2007 +0100
-
-    [ARM] 4417/1: Serial: Fix AMBA drivers locking
+So, probably its not required to be called twice. Lets remove one of them.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/icom.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/lpc32xx_hs.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 18ed5ae..46cb597 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -834,7 +834,10 @@ ignore_char:
- 		status = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].flags);
+diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
+index dffea6b..8fdf6a8 100644
+--- a/drivers/tty/serial/lpc32xx_hs.c
++++ b/drivers/tty/serial/lpc32xx_hs.c
+@@ -351,10 +351,8 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
  	}
- 	icom_port->next_rcv = rcv_buff;
-+
-+	spin_unlock(&icom_port->uart_port.lock);
- 	tty_flip_buffer_push(port);
-+	spin_lock(&icom_port->uart_port.lock);
- }
  
- static void process_interrupt(u16 port_int_reg,
+ 	/* Data received? */
+-	if (status & (LPC32XX_HSU_RX_TIMEOUT_INT | LPC32XX_HSU_RX_TRIG_INT)) {
++	if (status & (LPC32XX_HSU_RX_TIMEOUT_INT | LPC32XX_HSU_RX_TRIG_INT))
+ 		__serial_lpc32xx_rx(port);
+-		tty_flip_buffer_push(tport);
+-	}
+ 
+ 	/* Transmit data request? */
+ 	if ((status & LPC32XX_HSU_TX_INT) && (!uart_tx_stopped(port))) {
 -- 
 1.7.12.rc2.18.g61b472e
 
