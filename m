@@ -1,58 +1,118 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH 00/25] tty: serial: drop uart_port->lock before calling
-Date: Fri, 16 Aug 2013 23:14:52 +0530
-Message-ID: <CAKohpomFJprUfTOXrPpkp0LYgy_9WJBSHuRC49dJ7_X1=untUg@mail.gmail.com>
-References: <cover.1376651114.git.viresh.kumar@linaro.org>
-	<20130816122753.GA24550@kroah.com>
+From: "Tim Kryger" <tim.kryger@linaro.org>
+Subject: [PATCH] serial: 8250_dw: Report CTS asserted for auto flow
+Date: Fri, 16 Aug 2013 13:50:15 -0700
+Message-ID: <1376686215-25686-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:57756 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752381Ab3HPRow (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 13:44:52 -0400
-Received: by mail-ob0-f174.google.com with SMTP id wd6so2358738obb.19
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 10:44:52 -0700 (PDT)
-In-Reply-To: <20130816122753.GA24550@kroah.com>
+Received: from mms3.broadcom.com ([216.31.210.19]:4950 "EHLO mms3.broadcom.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754057Ab3HPWXT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Aug 2013 18:23:19 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Tim Kryger <tim.kryger@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
 
-On 16 August 2013 17:57, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Fri, Aug 16, 2013 at 05:13:01PM +0530, Viresh Kumar wrote:
->> The -rt patch triggers a lockdep warning for serial drivers if
->> tty_flip_buffer_push() is called with uart_port->lock locked. This never shows
->> up on UP kernels.
->
-> What about SMP kernels?  linux-next?
+When a serial port is configured for RTS/CTS flow control, serial core
+will disable the transmitter if it observes CTS is de-asserted. This is
+perfectly reasonable and appropriate when the UART lacks the ability to
+automatically perform CTS flow control.
 
-As per Thomas Gleixner initial patch, it must break for SMP too. But we
-have tested it only for 3.10 stable merged with RT Kernel patchset..
+However, if the UART hardware can manage flow control automatically, it
+is important that software not get involved.  When the DesignWare UART
+enables 16C750 style auto-RTS/CTS it stops generating interrupts for
+changes in CTS state so software mostly stays out of the way.  However,
+it does report the true state of CTS in the MSR so software may notice
+it is de-asserted and respond by improperly disabling the transmitter.
+Once this happens the transmitter will be blocked forever.
 
-Haven't tried it on linux-next..
+To avoid this situation, we simply lie to the 8250 and serial core by
+reporting that CTS is asserted whenever auto-RTS/CTS mode is enabled.
 
->> This is neither tested nor compiled.
->
-> So I'm guessing you don't want it to be applied, if you can't take the
-> time to at least test-build it, why should we?
->
-> {sigh}
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Matt Porter <matt.porter@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+---
+ drivers/tty/serial/8250/8250_dw.c | 34 ++++++++++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
-:( ..
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 76a8daa..daf710f 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -57,11 +57,25 @@
+ 
+ struct dw8250_data {
+ 	int		last_lcr;
++	int		last_mcr;
+ 	int		line;
+ 	struct clk	*clk;
+ 	u8		usr_reg;
+ };
+ 
++static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
++{
++	struct dw8250_data *d = p->private_data;
++
++	/* If reading MSR, report CTS asserted when auto-CTS/RTS enabled */
++	if (offset == UART_MSR && d->last_mcr & UART_MCR_AFE) {
++		value |= UART_MSR_CTS;
++		value &= ~UART_MSR_DCTS;
++	}
++
++	return value;
++}
++
+ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+@@ -69,15 +83,17 @@ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ 	if (offset == UART_LCR)
+ 		d->last_lcr = value;
+ 
+-	offset <<= p->regshift;
+-	writeb(value, p->membase + offset);
++	if (offset == UART_MCR)
++		d->last_mcr = value;
++
++	writeb(value, p->membase + (offset << p->regshift));
+ }
+ 
+ static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
+ {
+-	offset <<= p->regshift;
++	unsigned int value = readb(p->membase + (offset << p->regshift));
+ 
+-	return readb(p->membase + offset);
++	return dw8250_modify_msr(p, offset, value);
+ }
+ 
+ /* Read Back (rb) version to ensure register access ording. */
+@@ -94,15 +110,17 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+ 	if (offset == UART_LCR)
+ 		d->last_lcr = value;
+ 
+-	offset <<= p->regshift;
+-	writel(value, p->membase + offset);
++	if (offset == UART_MCR)
++		d->last_mcr = value;
++
++	writel(value, p->membase + (offset << p->regshift));
+ }
+ 
+ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
+ {
+-	offset <<= p->regshift;
++	unsigned int value = readl(p->membase + (offset << p->regshift));
+ 
+-	return readl(p->membase + offset);
++	return dw8250_modify_msr(p, offset, value);
+ }
+ 
+ static int dw8250_handle_irq(struct uart_port *p)
+-- 
+1.8.0.1
 
-Actually I build tested it for few ARM platforms but not for others.. Now
-its build tested for all platforms that are modified here..
 
-> Lots of tty and serial changes have happened since -rc5 in linux-next,
-> can you please rebase, and test, these against that tree and resend them
-> if they are still needed?
-
-I have rebased them over latest linux-next and they applied cleanly..
-Haven't tested it though.. Will try that next week.
-
-Sorry for the noise :(
-
---
-viresh
