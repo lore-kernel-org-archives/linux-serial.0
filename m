@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 19/25] tty: serial: pnx8xxx: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:20 +0530
-Message-ID: <4de8e95b2a8289b4f9556bb0a663fb6b967b98d2.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 20/25] tty: serial: rp2: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:21 +0530
+Message-ID: <0bbd6cf46f9aae6a35559aac70f3b012802d7031.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f170.google.com ([209.85.192.170]:63818 "EHLO
-	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754258Ab3HPLpl (ORCPT
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:55812 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755399Ab3HPLpu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:45:41 -0400
-Received: by mail-pd0-f170.google.com with SMTP id x10so2159565pdj.15
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:41 -0700 (PDT)
+	Fri, 16 Aug 2013 07:45:50 -0400
+Received: by mail-pd0-f181.google.com with SMTP id g10so2135502pdj.40
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:50 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -36,24 +36,23 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/pnx8xxx_uart.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/rp2.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
-index 7e277a5..8db7482 100644
---- a/drivers/tty/serial/pnx8xxx_uart.c
-+++ b/drivers/tty/serial/pnx8xxx_uart.c
-@@ -237,7 +237,10 @@ static void pnx8xxx_rx_chars(struct pnx8xxx_port *sport)
- 		status = FIFO_TO_SM(serial_in(sport, PNX8XXX_FIFO)) |
- 			 ISTAT_TO_SM(serial_in(sport, PNX8XXX_ISTAT));
+diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
+index a314a94..328d6de 100644
+--- a/drivers/tty/serial/rp2.c
++++ b/drivers/tty/serial/rp2.c
+@@ -427,7 +427,9 @@ static void rp2_rx_chars(struct rp2_uart_port *up)
+ 		up->port.icount.rx++;
  	}
-+
-+	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(&sport->port.state->port);
-+	spin_lock(&sport->port.lock);
+ 
++	spin_unlock(&up->port.lock);
+ 	tty_flip_buffer_push(port);
++	spin_lock(&up->port.lock);
  }
  
- static void pnx8xxx_tx_chars(struct pnx8xxx_port *sport)
+ static void rp2_tx_chars(struct rp2_uart_port *up)
 -- 
 1.7.12.rc2.18.g61b472e
 
