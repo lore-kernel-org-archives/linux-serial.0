@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 01/25] tty: serial: altera_jtag: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:02 +0530
-Message-ID: <b57aa015f0c91ba2ab6e2f1b18f46df4e71cdad7.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 02/25] tty: serial: altera: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:03 +0530
+Message-ID: <d0d66740ef66a9ffaed67c2bac45581ed545924d.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:55706 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753957Ab3HPLnn (ORCPT
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:60975 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753957Ab3HPLnt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:43:43 -0400
-Received: by mail-pa0-f54.google.com with SMTP id kx10so1787133pab.13
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:43:42 -0700 (PDT)
+	Fri, 16 Aug 2013 07:43:49 -0400
+Received: by mail-pd0-f181.google.com with SMTP id g10so2133623pdj.40
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:43:49 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -37,15 +37,15 @@ Date:   Tue May 29 21:53:50 2007 +0100
 Cc: Tobias Klauser <tklauser@distanz.ch>
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/altera_jtaguart.c | 2 ++
+ drivers/tty/serial/altera_uart.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index c6bdb94..46c25ff 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -139,7 +139,9 @@ static void altera_jtaguart_rx_chars(struct altera_jtaguart *pp)
- 		uart_insert_char(port, 0, 0, ch, flag);
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 1d46966..77641e7 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -231,7 +231,9 @@ static void altera_uart_rx_chars(struct altera_uart *pp)
+ 				 flag);
  	}
  
 +	spin_unlock(&port->lock);
@@ -53,7 +53,7 @@ index c6bdb94..46c25ff 100644
 +	spin_lock(&port->lock);
  }
  
- static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
+ static void altera_uart_tx_chars(struct altera_uart *pp)
 -- 
 1.7.12.rc2.18.g61b472e
 
