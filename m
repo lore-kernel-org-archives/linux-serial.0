@@ -1,28 +1,35 @@
-From: "Roussel, Daniel" <droussel@olhcc.edu>
-Subject: It is Private
-Date: Fri, 16 Aug 2013 13:44:41 +0000
-Message-ID: <5F01BFF2D455C0448CD3A8E018CC7FAFB47E8224__32086.1668013551$1376661042$gmane$org@VSP-3.hcc.local>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH V2 1/3] serial: sirf: drop redundant pinctrl_get_select_default
+ as pinctrl core does it
+Date: Fri, 16 Aug 2013 17:40:32 +0200
+Message-ID: <CACRpkdYYRVROSO3DWDqpdomBbwPD7wL9GTGr8-xKEiLmm=cgeA@mail.gmail.com>
+References: <1376520736-3838-1-git-send-email-Baohua.Song@csr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailman.olhcc.edu ([66.210.239.126]:42583 "EHLO
-	mailman.olhcc.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751737Ab3HPNuL convert rfc822-to-8bit (ORCPT
+Received: from mail-ob0-f173.google.com ([209.85.214.173]:40391 "EHLO
+	mail-ob0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752540Ab3HPPkc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 09:50:11 -0400
-Content-Language: en-US
+	Fri, 16 Aug 2013 11:40:32 -0400
+Received: by mail-ob0-f173.google.com with SMTP id ta17so2214294obb.32
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 08:40:32 -0700 (PDT)
+In-Reply-To: <1376520736-3838-1-git-send-email-Baohua.Song@csr.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Barry Song <21cnbao@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-It is Private
+On Thu, Aug 15, 2013 at 12:52 AM, Barry Song <21cnbao@gmail.com> wrote:
 
-I am George Daniels, a Banker and credit system programmer (HSBC bank).
-I saw your email address while browsing through  the bank D.T.C Screen in my office yesterday so I decided to use this very chance to know you. I believe we should use every opportunity to know each other better. However, I am contacting you for obvious reason which you will understand.
+> pinctrl core will get default pinmux, so drop it in the sirfsoc serial driver.
+>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Barry Song <Baohua.Song@csr.com>
+> ---
+>  -v2: rebase to tty-next
 
-I am sending this mail just to know if this email address is OK,
-reply me back so that I will send  more details to you.
-I have a very important thing to discuss with you, I look forward to receiving your response at
-georgedaniels@postino.net<mailto:georgedaniels@postino.net>. Have a pleasant day.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-George Daniels
+Yours,
+Linus Walleij
