@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 17/25] tty: serial: netx: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:18 +0530
-Message-ID: <3fbf56a800733879938f09f7e95eadf3d7e19401.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 18/25] tty: serial: nwpserial: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:19 +0530
+Message-ID: <31dc81fa5810c8362038e71ec8f9c1b73cc84b1d.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:41809 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754258Ab3HPLp3 (ORCPT
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:52842 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754258Ab3HPLpf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:45:29 -0400
-Received: by mail-pa0-f46.google.com with SMTP id fa1so1791363pad.33
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:28 -0700 (PDT)
+	Fri, 16 Aug 2013 07:45:35 -0400
+Received: by mail-pa0-f52.google.com with SMTP id kq13so1772414pab.39
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:35 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -36,41 +36,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/netx-serial.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/nwpserial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/netx-serial.c b/drivers/tty/serial/netx-serial.c
-index b9a40ed..4f59c4d 100644
---- a/drivers/tty/serial/netx-serial.c
-+++ b/drivers/tty/serial/netx-serial.c
-@@ -196,7 +196,7 @@ static void netx_txint(struct uart_port *port)
- 		uart_write_wakeup(port);
- }
+diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
+index 549c70a..693bc6c 100644
+--- a/drivers/tty/serial/nwpserial.c
++++ b/drivers/tty/serial/nwpserial.c
+@@ -149,7 +149,10 @@ static irqreturn_t nwpserial_interrupt(int irq, void *dev_id)
+ 			tty_insert_flip_char(port, ch, TTY_NORMAL);
+ 	} while (dcr_read(up->dcr_host, UART_LSR) & UART_LSR_DR);
  
--static void netx_rxint(struct uart_port *port)
-+static void netx_rxint(struct uart_port *port, unsigned long *flags)
- {
- 	unsigned char rx, flg, status;
++	spin_unlock(&up->port.lock);
+ 	tty_flip_buffer_push(port);
++	spin_lock(&up->port.lock);
++
+ 	ret = IRQ_HANDLED;
  
-@@ -236,7 +236,9 @@ static void netx_rxint(struct uart_port *port)
- 		uart_insert_char(port, status, SR_OE, rx, flg);
- 	}
- 
-+	spin_unlock_irqrestore(&port->lock, *flags);
- 	tty_flip_buffer_push(&port->state->port);
-+	spin_lock_irqsave(&port->lock, *flags);
- }
- 
- static irqreturn_t netx_int(int irq, void *dev_id)
-@@ -250,7 +252,7 @@ static irqreturn_t netx_int(int irq, void *dev_id)
- 	status = readl(port->membase + UART_IIR) & IIR_MASK;
- 	while (status) {
- 		if (status & IIR_RIS)
--			netx_rxint(port);
-+			netx_rxint(port, &flags);
- 		if (status & IIR_TIS)
- 			netx_txint(port);
- 		if (status & IIR_MIS) {
+ 	/* clear interrupt */
 -- 
 1.7.12.rc2.18.g61b472e
 
