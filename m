@@ -1,118 +1,41 @@
-From: "Tim Kryger" <tim.kryger@linaro.org>
-Subject: [PATCH] serial: 8250_dw: Report CTS asserted for auto flow
-Date: Fri, 16 Aug 2013 13:50:15 -0700
-Message-ID: <1376686215-25686-1-git-send-email-tim.kryger@linaro.org>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH V2 1/3] serial: sirf: drop redundant pinctrl_get_select_default
+ as pinctrl core does it
+Date: Sat, 17 Aug 2013 06:41:19 +0800
+Message-ID: <CAGsJ_4wNx1NYZo3nK11PfnCRuPPT5zXoRGCquzbnMfyn0LGtkw@mail.gmail.com>
+References: <1376520736-3838-1-git-send-email-Baohua.Song@csr.com> <CACRpkdYYRVROSO3DWDqpdomBbwPD7wL9GTGr8-xKEiLmm=cgeA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mms3.broadcom.com ([216.31.210.19]:4950 "EHLO mms3.broadcom.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754057Ab3HPWXT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 18:23:19 -0400
+Received: from mail-qc0-f176.google.com ([209.85.216.176]:40653 "EHLO
+	mail-qc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754938Ab3HPWll (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 Aug 2013 18:41:41 -0400
+Received: by mail-qc0-f176.google.com with SMTP id u12so1405432qcx.35
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 15:41:39 -0700 (PDT)
+In-Reply-To: <CACRpkdYYRVROSO3DWDqpdomBbwPD7wL9GTGr8-xKEiLmm=cgeA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Tim Kryger <tim.kryger@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-When a serial port is configured for RTS/CTS flow control, serial core
-will disable the transmitter if it observes CTS is de-asserted. This is
-perfectly reasonable and appropriate when the UART lacks the ability to
-automatically perform CTS flow control.
+2013/8/16 Linus Walleij <linus.walleij@linaro.org>:
+> On Thu, Aug 15, 2013 at 12:52 AM, Barry Song <21cnbao@gmail.com> wrote:
+>
+>> pinctrl core will get default pinmux, so drop it in the sirfsoc serial driver.
+>>
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Signed-off-by: Barry Song <Baohua.Song@csr.com>
+>> ---
+>>  -v2: rebase to tty-next
+>
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-However, if the UART hardware can manage flow control automatically, it
-is important that software not get involved.  When the DesignWare UART
-enables 16C750 style auto-RTS/CTS it stops generating interrupts for
-changes in CTS state so software mostly stays out of the way.  However,
-it does report the true state of CTS in the MSR so software may notice
-it is de-asserted and respond by improperly disabling the transmitter.
-Once this happens the transmitter will be blocked forever.
+Hi Linus, this has been applied, so i am not sure your ack can be added:
+https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git/commit/?h=tty-next&id=a343756e07884e4cecd3a4297de7f121e5bb8829
+>
+> Yours,
+> Linus Walleij
 
-To avoid this situation, we simply lie to the 8250 and serial core by
-reporting that CTS is asserted whenever auto-RTS/CTS mode is enabled.
-
-Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
-Reviewed-by: Matt Porter <matt.porter@linaro.org>
-Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
----
- drivers/tty/serial/8250/8250_dw.c | 34 ++++++++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 76a8daa..daf710f 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -57,11 +57,25 @@
- 
- struct dw8250_data {
- 	int		last_lcr;
-+	int		last_mcr;
- 	int		line;
- 	struct clk	*clk;
- 	u8		usr_reg;
- };
- 
-+static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
-+{
-+	struct dw8250_data *d = p->private_data;
-+
-+	/* If reading MSR, report CTS asserted when auto-CTS/RTS enabled */
-+	if (offset == UART_MSR && d->last_mcr & UART_MCR_AFE) {
-+		value |= UART_MSR_CTS;
-+		value &= ~UART_MSR_DCTS;
-+	}
-+
-+	return value;
-+}
-+
- static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- {
- 	struct dw8250_data *d = p->private_data;
-@@ -69,15 +83,17 @@ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- 	if (offset == UART_LCR)
- 		d->last_lcr = value;
- 
--	offset <<= p->regshift;
--	writeb(value, p->membase + offset);
-+	if (offset == UART_MCR)
-+		d->last_mcr = value;
-+
-+	writeb(value, p->membase + (offset << p->regshift));
- }
- 
- static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
- {
--	offset <<= p->regshift;
-+	unsigned int value = readb(p->membase + (offset << p->regshift));
- 
--	return readb(p->membase + offset);
-+	return dw8250_modify_msr(p, offset, value);
- }
- 
- /* Read Back (rb) version to ensure register access ording. */
-@@ -94,15 +110,17 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
- 	if (offset == UART_LCR)
- 		d->last_lcr = value;
- 
--	offset <<= p->regshift;
--	writel(value, p->membase + offset);
-+	if (offset == UART_MCR)
-+		d->last_mcr = value;
-+
-+	writel(value, p->membase + (offset << p->regshift));
- }
- 
- static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
- {
--	offset <<= p->regshift;
-+	unsigned int value = readl(p->membase + (offset << p->regshift));
- 
--	return readl(p->membase + offset);
-+	return dw8250_modify_msr(p, offset, value);
- }
- 
- static int dw8250_handle_irq(struct uart_port *p)
--- 
-1.8.0.1
-
-
+-barry
