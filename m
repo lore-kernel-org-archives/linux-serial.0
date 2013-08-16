@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 21/25] tty: serial: sa1100: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Fri, 16 Aug 2013 17:13:22 +0530
-Message-ID: <671359265468f44ee9fe9fc263ba737a918508d4.1376651114.git.viresh.kumar@linaro.org>
+Subject: [PATCH 22/25] tty: serial: samsung: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Fri, 16 Aug 2013 17:13:23 +0530
+Message-ID: <c0035ba4d796786514d8efe3d0cc04ea6d88e330.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:58589 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755399Ab3HPLp5 (ORCPT
+Received: from mail-pd0-f180.google.com ([209.85.192.180]:55790 "EHLO
+	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755399Ab3HPLqD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 16 Aug 2013 07:45:57 -0400
-Received: by mail-pa0-f43.google.com with SMTP id hz10so1781153pad.30
-        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:45:56 -0700 (PDT)
+	Fri, 16 Aug 2013 07:46:03 -0400
+Received: by mail-pd0-f180.google.com with SMTP id y10so2137419pdj.25
+        for <linux-serial@vger.kernel.org>; Fri, 16 Aug 2013 04:46:02 -0700 (PDT)
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376651114.git.viresh.kumar@linaro.org>
 References: <cover.1376651114.git.viresh.kumar@linaro.org>
@@ -36,24 +36,35 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/sa1100.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/samsung.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index af6b3e3..28d60ef 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -232,7 +232,10 @@ sa1100_rx_chars(struct sa1100_port *sport)
- 		status = UTSR1_TO_SM(UART_GET_UTSR1(sport)) |
- 			 UTSR0_TO_SM(UART_GET_UTSR0(sport));
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 376079b..275e3e0 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -249,6 +249,8 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ 					ufcon |= S3C2410_UFCON_RESETRX;
+ 					wr_regl(port, S3C2410_UFCON, ufcon);
+ 					rx_enabled(port) = 1;
++					spin_unlock_irqrestore(&port->lock,
++							flags);
+ 					goto out;
+ 				}
+ 				continue;
+@@ -297,10 +299,11 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
+  ignore_char:
+ 		continue;
  	}
 +
-+	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(&sport->port.state->port);
-+	spin_lock(&sport->port.lock);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	tty_flip_buffer_push(&port->state->port);
+ 
+  out:
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 	return IRQ_HANDLED;
  }
  
- static void sa1100_tx_chars(struct sa1100_port *sport)
 -- 
 1.7.12.rc2.18.g61b472e
 
