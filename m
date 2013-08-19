@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 18/25] tty: serial: nwpserial: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:22 +0530
-Message-ID: <31f2da2cbb1b17d6cd225313362115091605aa2b.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 19/25] tty: serial: pnx8xxx: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:23 +0530
+Message-ID: <3cba84201b21685bfa998e771fb68c2aed864dc2.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:54131 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751044Ab3HSOqs (ORCPT
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:55406 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750786Ab3HSOqz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:46:48 -0400
-Received: by mail-pa0-f44.google.com with SMTP id fz6so721214pac.17
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:47 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:55 -0400
+Received: by mail-pd0-f170.google.com with SMTP id x10so5328915pdj.15
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:55 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,24 +77,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/nwpserial.c | 3 +++
+ drivers/tty/serial/pnx8xxx_uart.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
-index 549c70a..693bc6c 100644
---- a/drivers/tty/serial/nwpserial.c
-+++ b/drivers/tty/serial/nwpserial.c
-@@ -149,7 +149,10 @@ static irqreturn_t nwpserial_interrupt(int irq, void *dev_id)
- 			tty_insert_flip_char(port, ch, TTY_NORMAL);
- 	} while (dcr_read(up->dcr_host, UART_LSR) & UART_LSR_DR);
- 
-+	spin_unlock(&up->port.lock);
- 	tty_flip_buffer_push(port);
-+	spin_lock(&up->port.lock);
+diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
+index b6b7aca..de6c05c 100644
+--- a/drivers/tty/serial/pnx8xxx_uart.c
++++ b/drivers/tty/serial/pnx8xxx_uart.c
+@@ -237,7 +237,10 @@ static void pnx8xxx_rx_chars(struct pnx8xxx_port *sport)
+ 		status = FIFO_TO_SM(serial_in(sport, PNX8XXX_FIFO)) |
+ 			 ISTAT_TO_SM(serial_in(sport, PNX8XXX_ISTAT));
+ 	}
 +
- 	ret = IRQ_HANDLED;
++	spin_unlock(&sport->port.lock);
+ 	tty_flip_buffer_push(&sport->port.state->port);
++	spin_lock(&sport->port.lock);
+ }
  
- 	/* clear interrupt */
+ static void pnx8xxx_tx_chars(struct pnx8xxx_port *sport)
 -- 
 1.7.12.rc2.18.g61b472e
 
