@@ -1,23 +1,23 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 24/25] tty: serial: sirfsoc: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:28 +0530
-Message-ID: <d8689151bd286c60e8aded40efac93791cc93f8f.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 25/25] tty: serial: vt8500: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:29 +0530
+Message-ID: <c427c88cfe0952f2eef9a4ab6f1d804effa69015.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f45.google.com ([209.85.160.45]:46524 "EHLO
-	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751126Ab3HSOrb (ORCPT
+Received: from mail-pd0-f182.google.com ([209.85.192.182]:54077 "EHLO
+	mail-pd0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751437Ab3HSOri (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:47:31 -0400
-Received: by mail-pb0-f45.google.com with SMTP id mc17so5049564pbc.32
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:47:31 -0700 (PDT)
+	Mon, 19 Aug 2013 10:47:38 -0400
+Received: by mail-pd0-f182.google.com with SMTP id r10so5332659pdi.13
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:47:38 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
+Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Tony Prisk <linux@prisktech.co.nz>
 
 The current driver triggers a lockdep warning for if tty_flip_buffer_push() is
 called with uart_port->lock locked. This never shows up on UP kernels and comes
@@ -75,26 +75,26 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
     [ARM] 4417/1: Serial: Fix AMBA drivers locking
 
+Cc: Tony Prisk <linux@prisktech.co.nz>
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/sirfsoc_uart.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/vt8500_serial.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index ed3b890..54f6b4d 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -299,7 +299,10 @@ sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int max_rx_count)
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index a90bf04..93b697a 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -170,7 +170,9 @@ static void handle_rx(struct uart_port *port)
+ 			tty_insert_flip_char(tport, c, flag);
  	}
  
- 	port->icount.rx += rx_count;
-+
 +	spin_unlock(&port->lock);
- 	tty_flip_buffer_push(&port->state->port);
+ 	tty_flip_buffer_push(tport);
 +	spin_lock(&port->lock);
- 
- 	return rx_count;
  }
+ 
+ static void handle_tx(struct uart_port *port)
 -- 
 1.7.12.rc2.18.g61b472e
 
