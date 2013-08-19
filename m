@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 12/25] tty: serial: m32r_sio: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:16 +0530
-Message-ID: <1758d0394891c75b7f77d76d8d8c557859a34167.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 13/25] tty: serial: mcf: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:17 +0530
+Message-ID: <ff91128314d84a5a3c2056b7e7264d8d13bcde21.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:40904 "EHLO
-	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750987Ab3HSOqE (ORCPT
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:63228 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751364Ab3HSOqL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:46:04 -0400
-Received: by mail-pd0-f172.google.com with SMTP id z10so5313227pdj.31
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:04 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:11 -0400
+Received: by mail-pd0-f175.google.com with SMTP id q10so5273352pdj.6
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:11 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,24 +77,23 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/m32r_sio.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/mcf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index bb1afa0..9cd9b4e 100644
---- a/drivers/tty/serial/m32r_sio.c
-+++ b/drivers/tty/serial/m32r_sio.c
-@@ -368,7 +368,10 @@ static void receive_chars(struct uart_sio_port *up, int *status)
- 	ignore_char:
- 		*status = serial_in(up, UART_LSR);
- 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
-+
-+	spin_unlock(&up->port.lock);
- 	tty_flip_buffer_push(port);
-+	spin_lock(&up->port.lock);
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index a2e97c9..0edfaf8 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -325,7 +325,9 @@ static void mcf_rx_chars(struct mcf_uart *pp)
+ 		uart_insert_char(port, status, MCFUART_USR_RXOVERRUN, ch, flag);
+ 	}
+ 
++	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(&port->state->port);
++	spin_lock(&port->lock);
  }
  
- static void transmit_chars(struct uart_sio_port *up)
+ /****************************************************************************/
 -- 
 1.7.12.rc2.18.g61b472e
 
