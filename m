@@ -1,119 +1,78 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 2/4] devicetree: serial: Document msm_serial bindings
-Date: Mon, 19 Aug 2013 14:39:55 -0700
-Message-ID: <1376948397-6882-3-git-send-email-sboyd@codeaurora.org>
+Subject: [PATCH 3/4] msm_serial: Add support for non-GSBI UARTDM devices
+Date: Mon, 19 Aug 2013 14:39:56 -0700
+Message-ID: <1376948397-6882-4-git-send-email-sboyd@codeaurora.org>
 References: <1376948397-6882-1-git-send-email-sboyd@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1376948397-6882-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org
+Cc: linux-arm-msm@vger.kernel.org, David Brown <davidb@codeaurora.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The msm serial device bindings were added to the DTS files but
-never documented. Let's document them now and also fix things up
-so that it's clearer what hardware is supported. Instead of using
-hsuart (for high speed uart), let's use uartdm because that
-matches the actual name of the hardware. Also, let's add the
-version information in case we need to differentiate between
-different versions of the hardware in the future.
+Not all UARTDM hardware is part of a GSBI complex. Add support
+for these devices and fix a bug where we assumed uartdm meant the
+hardware was part of a GSBI complex.
 
 Cc: David Brown <davidb@codeaurora.org>
-Cc: <devicetree@vger.kernel.org>
 Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 ---
- .../devicetree/bindings/serial/msm_serial.txt      | 82 ++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/msm_serial.txt
+ drivers/tty/serial/msm_serial.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/msm_serial.txt b/Documentation/devicetree/bindings/serial/msm_serial.txt
-new file mode 100644
-index 0000000..a6efac3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/msm_serial.txt
-@@ -0,0 +1,82 @@
-+* MSM Serial UART and UARTDM
-+
-+There are two MSM serial hardware designs. UARTDM is designed for use with a
-+dma engine in high-speed use cases and the non-DM design is for lower speed use
-+cases. The two designs are mostly compatible from a software perspective except
-+the non-DM design can only read and write one character at a time and so the
-+register layout differs slightly.
-+
-+UART
-+----
-+Required properties:
-+- compatible: Should contain "qcom,msm-uart"
-+- reg: Should contain UART register location and length. The first
-+       register shall specify the main control registers
-+- interrupts: Should contain UART interrupt.
-+- clocks: Should contain the core clock.
-+- clock-names: Should be "core_clk".
-+
-+Optional properties:
-+- dmas: Should contain dma specifiers for transmit and receive
-+- dma-names: Should contain "tx" for transmit and "rx" for receive
-+
-+Example:
-+
-+A uart device with dma capabilities.
-+
-+serial@a9c00000 {
-+	compatible = "qcom,msm-uart";
-+	reg = <0xa9c00000 0x1000>;
-+	interrupts = <11>;
-+	clocks = <&uart_cxc>;
-+	clock-names = "core_clk";
-+	dmas = <&dma0 0>, <&dma0 1>;
-+	dma-names = "tx", "rx";
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 7631313..f42c805 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -670,7 +670,7 @@ static void msm_config_port(struct uart_port *port, int flags)
+ 		if (ret)
+ 			return;
+ 	}
+-	if (msm_port->is_uartdm)
++	if (msm_port->gsbi_base)
+ 		writel_relaxed(GSBI_PROTOCOL_UART,
+ 				msm_port->gsbi_base + GSBI_CONTROL);
+ }
+@@ -860,6 +860,11 @@ static struct uart_driver msm_uart_driver = {
+ 
+ static atomic_t msm_uart_next_id = ATOMIC_INIT(0);
+ 
++static const struct of_device_id msm_uartdm_table[] = {
++	{ .compatible = "qcom,msm-uartdm" },
++	{ }
 +};
 +
-+UARTDM
-+------
-+Required properties:
-+- compatible: Should contain at least "qcom,msm-uartdm".
-+              A more specific property should be specified as follows depending
-+	      on the version:
-+		"qcom,msm-uartdm-v1.1"
-+		"qcom,msm-uartdm-v1.2"
-+		"qcom,msm-uartdm-v1.3"
-+		"qcom,msm-uartdm-v1.4"
-+- reg: Should contain UART register locations and lengths. The first
-+       register shall specify the main control registers. An optional second
-+       register location shall specify the GSBI control region.
-+- interrupts: Should contain UART interrupt.
-+- clocks: Should contain the core clock and the ahb clock.
-+- clock-names: Should be "core_clk" for the core clock and "iface_clk" for the
-+	       ahb clock.
-+
-+Optional properties:
-+- dmas: Should contain dma specifiers for transmit and receive channels
-+- dma-names: Should contain "tx" for transmit and "rx" for receive channels
-+
-+Examples:
-+
-+A uartdm v1.4 device with dma capabilities.
-+
-+serial@f991e000 {
-+	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
-+	reg = <0xf991e000 0x1000>;
-+	interrupts = <0 108 0x0>;
-+	clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
-+	clock-names = "core_clk", "iface_clk";
-+	dmas = <&dma0 0>, <&dma0 1>;
-+	dma-names = "tx", "rx";
-+};
-+
-+A uartdm v1.3 device without dma capabilities.
-+
-+serial@19c40000 {
-+	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
-+	reg = <0x19c40000 0x1000>,
-+	      <0x19c00000 0x1000>;
-+	interrupts = <0 195 0x0>;
-+	clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
-+	clock-names = "core_clk", "iface_clk";
-+};
+ static int __init msm_serial_probe(struct platform_device *pdev)
+ {
+ 	struct msm_port *msm_port;
+@@ -879,7 +884,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
+ 	port->dev = &pdev->dev;
+ 	msm_port = UART_TO_MSM(port);
+ 
+-	if (platform_get_resource(pdev, IORESOURCE_MEM, 1))
++	if (of_match_device(msm_uartdm_table, &pdev->dev))
+ 		msm_port->is_uartdm = 1;
+ 	else
+ 		msm_port->is_uartdm = 0;
+@@ -926,6 +931,7 @@ static int msm_serial_remove(struct platform_device *pdev)
+ 
+ static struct of_device_id msm_match_table[] = {
+ 	{ .compatible = "qcom,msm-uart" },
++	{ .compatible = "qcom,msm-uartdm" },
+ 	{}
+ };
+ 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
