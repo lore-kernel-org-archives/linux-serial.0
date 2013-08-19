@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 11/25] tty: serial: lpc32xx_hs: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:15 +0530
-Message-ID: <41d3188f80f05ac3e8f1eb7073412e930eb9f380.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 14/25] tty: serial: mfd: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:18 +0530
+Message-ID: <2cabe7e222cb0b322face31767ed0f4321697862.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:41565 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751364Ab3HSOp5 (ORCPT
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:56725 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751044Ab3HSOqS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:45:57 -0400
-Received: by mail-pd0-f178.google.com with SMTP id w10so2143176pde.23
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:57 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:18 -0400
+Received: by mail-pa0-f54.google.com with SMTP id kx10so4685815pab.13
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:18 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,24 +77,71 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/mfd.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index 8fdf6a8..701644f 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -279,7 +279,10 @@ static void __serial_lpc32xx_rx(struct uart_port *port)
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index 4a82267..d3db042 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -386,7 +386,7 @@ static void serial_hsu_stop_tx(struct uart_port *port)
  
- 		tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
- 	}
-+
-+	spin_unlock(&port->lock);
+ /* This is always called in spinlock protected mode, so
+  * modify timeout timer is safe here */
+-void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
++void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts, unsigned long *flags)
+ {
+ 	struct hsu_dma_buffer *dbuf = &up->rxbuf;
+ 	struct hsu_dma_chan *chan = up->rxc;
+@@ -438,7 +438,9 @@ void hsu_dma_rx(struct uart_hsu_port *up, u32 int_sts)
+ 					 | (0x1 << 16)
+ 					 | (0x1 << 24)	/* timeout bit, see HSU Errata 1 */
+ 					 );
++	spin_unlock_irqrestore(&up->port.lock, *flags);
  	tty_flip_buffer_push(tport);
-+	spin_lock(&port->lock);
++	spin_lock_irqsave(&up->port.lock, *flags);
+ 
+ 	chan_writel(chan, HSU_CH_CR, 0x3);
+ 
+@@ -459,7 +461,8 @@ static void serial_hsu_stop_rx(struct uart_port *port)
+ 	}
  }
  
- static void __serial_lpc32xx_tx(struct uart_port *port)
+-static inline void receive_chars(struct uart_hsu_port *up, int *status)
++static inline void receive_chars(struct uart_hsu_port *up, int *status,
++		unsigned long *flags)
+ {
+ 	unsigned int ch, flag;
+ 	unsigned int max_count = 256;
+@@ -519,7 +522,10 @@ static inline void receive_chars(struct uart_hsu_port *up, int *status)
+ 	ignore_char:
+ 		*status = serial_in(up, UART_LSR);
+ 	} while ((*status & UART_LSR_DR) && max_count--);
++
++	spin_unlock_irqrestore(&up->port.lock, *flags);
+ 	tty_flip_buffer_push(&up->port.state->port);
++	spin_lock_irqsave(&up->port.lock, *flags);
+ }
+ 
+ static void transmit_chars(struct uart_hsu_port *up)
+@@ -613,7 +619,7 @@ static irqreturn_t port_irq(int irq, void *dev_id)
+ 
+ 	lsr = serial_in(up, UART_LSR);
+ 	if (lsr & UART_LSR_DR)
+-		receive_chars(up, &lsr);
++		receive_chars(up, &lsr, &flags);
+ 	check_modem_status(up);
+ 
+ 	/* lsr will be renewed during the receive_chars */
+@@ -643,7 +649,7 @@ static inline void dma_chan_irq(struct hsu_dma_chan *chan)
+ 
+ 	/* Rx channel */
+ 	if (chan->dirt == DMA_FROM_DEVICE)
+-		hsu_dma_rx(up, int_sts);
++		hsu_dma_rx(up, int_sts, &flags);
+ 
+ 	/* Tx channel */
+ 	if (chan->dirt == DMA_TO_DEVICE) {
 -- 
 1.7.12.rc2.18.g61b472e
 
