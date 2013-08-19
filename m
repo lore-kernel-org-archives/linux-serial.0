@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 03/25] tty: serial: apbuart: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:07 +0530
-Message-ID: <492a48767eab5f7f7ffbe8a1dd1941a82f004e8b.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 07/25] tty: serial: bfin_sport: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:11 +0530
+Message-ID: <e91aa8311ecf0cef5c244acabb9a01f59944fe31.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:63690 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750783Ab3HSOpC (ORCPT
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:39593 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750821Ab3HSOpa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:45:02 -0400
-Received: by mail-pa0-f47.google.com with SMTP id kl13so1753703pab.34
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:01 -0700 (PDT)
+	Mon, 19 Aug 2013 10:45:30 -0400
+Received: by mail-pa0-f53.google.com with SMTP id lb1so4691099pab.12
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:29 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,23 +77,28 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/apbuart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/bfin_sport_uart.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 6331464d..de11ab8 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -125,7 +125,9 @@ static void apbuart_rx_chars(struct uart_port *port)
- 		status = UART_GET_STATUS(port);
+diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
+index 016c3e9..87636cc 100644
+--- a/drivers/tty/serial/bfin_sport_uart.c
++++ b/drivers/tty/serial/bfin_sport_uart.c
+@@ -161,11 +161,12 @@ static irqreturn_t sport_uart_rx_irq(int irq, void *dev_id)
+ 		if (!uart_handle_sysrq_char(&up->port, ch))
+ 			tty_insert_flip_char(port, ch, TTY_NORMAL);
  	}
+-	/* XXX this won't deadlock with lowlat? */
+-	tty_flip_buffer_push(port);
  
-+	spin_unlock(&port->lock);
- 	tty_flip_buffer_push(&port->state->port);
-+	spin_lock(&port->lock);
+ 	spin_unlock(&up->port.lock);
+ 
++	/* XXX this won't deadlock with lowlat? */
++	tty_flip_buffer_push(port);
++
+ 	return IRQ_HANDLED;
  }
  
- static void apbuart_tx_chars(struct uart_port *port)
 -- 
 1.7.12.rc2.18.g61b472e
 
