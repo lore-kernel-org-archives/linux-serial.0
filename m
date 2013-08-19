@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 07/25] tty: serial: bfin_sport: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:11 +0530
-Message-ID: <e91aa8311ecf0cef5c244acabb9a01f59944fe31.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 09/25] tty: serial: icom: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:13 +0530
+Message-ID: <f24db0b38707ef0cb4c59e1111fdad491f196bfa.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:39593 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750821Ab3HSOpa (ORCPT
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:62035 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751336Ab3HSOpn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:45:30 -0400
-Received: by mail-pa0-f53.google.com with SMTP id lb1so4691099pab.12
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:29 -0700 (PDT)
+	Mon, 19 Aug 2013 10:45:43 -0400
+Received: by mail-pa0-f50.google.com with SMTP id fb10so4633680pad.23
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:43 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,28 +77,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/bfin_sport_uart.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/icom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
-index 016c3e9..87636cc 100644
---- a/drivers/tty/serial/bfin_sport_uart.c
-+++ b/drivers/tty/serial/bfin_sport_uart.c
-@@ -161,11 +161,12 @@ static irqreturn_t sport_uart_rx_irq(int irq, void *dev_id)
- 		if (!uart_handle_sysrq_char(&up->port, ch))
- 			tty_insert_flip_char(port, ch, TTY_NORMAL);
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 06555dd..7c9a067 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -834,7 +834,10 @@ ignore_char:
+ 		status = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].flags);
  	}
--	/* XXX this won't deadlock with lowlat? */
--	tty_flip_buffer_push(port);
- 
- 	spin_unlock(&up->port.lock);
- 
-+	/* XXX this won't deadlock with lowlat? */
-+	tty_flip_buffer_push(port);
+ 	icom_port->next_rcv = rcv_buff;
 +
- 	return IRQ_HANDLED;
++	spin_unlock(&icom_port->uart_port.lock);
+ 	tty_flip_buffer_push(port);
++	spin_lock(&icom_port->uart_port.lock);
  }
  
+ static void process_interrupt(u16 port_int_reg,
 -- 
 1.7.12.rc2.18.g61b472e
 
