@@ -1,23 +1,23 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 23/25] tty: serial: tegra: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:27 +0530
-Message-ID: <a8c8ca9fe7091f5db33817bc4d9722153f618a4e.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 24/25] tty: serial: sirfsoc: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:28 +0530
+Message-ID: <d8689151bd286c60e8aded40efac93791cc93f8f.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:64800 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751126Ab3HSOrY (ORCPT
+Received: from mail-pb0-f45.google.com ([209.85.160.45]:46524 "EHLO
+	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751126Ab3HSOrb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:47:24 -0400
-Received: by mail-pa0-f47.google.com with SMTP id kl13so4651031pab.20
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:47:23 -0700 (PDT)
+	Mon, 19 Aug 2013 10:47:31 -0400
+Received: by mail-pb0-f45.google.com with SMTP id mc17so5049564pbc.32
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:47:31 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>
+Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
 
 The current driver triggers a lockdep warning for if tty_flip_buffer_push() is
 called with uart_port->lock locked. This never shows up on UP kernels and comes
@@ -75,60 +75,26 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
     [ARM] 4417/1: Serial: Fix AMBA drivers locking
 
-Cc: Stephen Warren <swarren@wwwdotorg.org>
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/serial-tegra.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sirfsoc_uart.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 94a2484..d0d972f 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -571,7 +571,9 @@ static void tegra_uart_rx_dma_complete(void *args)
- 
- 	tegra_uart_handle_rx_pio(tup, port);
- 	if (tty) {
-+		spin_unlock_irqrestore(&u->lock, flags);
- 		tty_flip_buffer_push(port);
-+		spin_lock_irqsave(&u->lock, flags);
- 		tty_kref_put(tty);
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index ed3b890..54f6b4d 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -299,7 +299,10 @@ sirfsoc_uart_pio_rx_chars(struct uart_port *port, unsigned int max_rx_count)
  	}
- 	tegra_uart_start_rx_dma(tup);
-@@ -583,11 +585,13 @@ static void tegra_uart_rx_dma_complete(void *args)
- 	spin_unlock_irqrestore(&u->lock, flags);
+ 
+ 	port->icount.rx += rx_count;
++
++	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(&port->state->port);
++	spin_lock(&port->lock);
+ 
+ 	return rx_count;
  }
- 
--static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
-+static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup,
-+		unsigned long *flags)
- {
- 	struct dma_tx_state state;
- 	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
- 	struct tty_port *port = &tup->uport.state->port;
-+	struct uart_port *u = &tup->uport;
- 	int count;
- 
- 	/* Deactivate flow control to stop sender */
-@@ -604,7 +608,9 @@ static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
- 
- 	tegra_uart_handle_rx_pio(tup, port);
- 	if (tty) {
-+		spin_unlock_irqrestore(&u->lock, *flags);
- 		tty_flip_buffer_push(port);
-+		spin_lock_irqsave(&u->lock, *flags);
- 		tty_kref_put(tty);
- 	}
- 	tegra_uart_start_rx_dma(tup);
-@@ -671,7 +677,7 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
- 		iir = tegra_uart_read(tup, UART_IIR);
- 		if (iir & UART_IIR_NO_INT) {
- 			if (is_rx_int) {
--				tegra_uart_handle_rx_dma(tup);
-+				tegra_uart_handle_rx_dma(tup, &flags);
- 				if (tup->rx_in_progress) {
- 					ier = tup->ier_shadow;
- 					ier |= (UART_IER_RLSI | UART_IER_RTOIE |
 -- 
 1.7.12.rc2.18.g61b472e
 
