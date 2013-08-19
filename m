@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 15/25] tty: serial: mpsc: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:19 +0530
-Message-ID: <6b12e1d04a9ff4cb43f7a44930da87aa4b44e6a4.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 18/25] tty: serial: nwpserial: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:22 +0530
+Message-ID: <31f2da2cbb1b17d6cd225313362115091605aa2b.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:61028 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751044Ab3HSOq0 (ORCPT
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:54131 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751044Ab3HSOqs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:46:26 -0400
-Received: by mail-pa0-f48.google.com with SMTP id kp13so4624682pab.7
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:25 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:48 -0400
+Received: by mail-pa0-f44.google.com with SMTP id fz6so721214pac.17
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:47 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,54 +77,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/mpsc.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/tty/serial/nwpserial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/mpsc.c b/drivers/tty/serial/mpsc.c
-index fba5257..8d70267 100644
---- a/drivers/tty/serial/mpsc.c
-+++ b/drivers/tty/serial/mpsc.c
-@@ -934,7 +934,7 @@ static int serial_polled;
-  ******************************************************************************
-  */
+diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
+index 549c70a..693bc6c 100644
+--- a/drivers/tty/serial/nwpserial.c
++++ b/drivers/tty/serial/nwpserial.c
+@@ -149,7 +149,10 @@ static irqreturn_t nwpserial_interrupt(int irq, void *dev_id)
+ 			tty_insert_flip_char(port, ch, TTY_NORMAL);
+ 	} while (dcr_read(up->dcr_host, UART_LSR) & UART_LSR_DR);
  
--static int mpsc_rx_intr(struct mpsc_port_info *pi)
-+static int mpsc_rx_intr(struct mpsc_port_info *pi, unsigned long *flags)
- {
- 	struct mpsc_rx_desc *rxre;
- 	struct tty_port *port = &pi->port.state->port;
-@@ -969,8 +969,11 @@ static int mpsc_rx_intr(struct mpsc_port_info *pi)
- #endif
- 		/* Following use of tty struct directly is deprecated */
- 		if (tty_buffer_request_room(port, bytes_in) < bytes_in) {
--			if (port->low_latency)
-+			if (port->low_latency) {
-+				spin_unlock_irqrestore(&pi->port.lock, *flags);
- 				tty_flip_buffer_push(port);
-+				spin_lock_irqsave(&pi->port.lock, *flags);
-+			}
- 			/*
- 			 * If this failed then we will throw away the bytes
- 			 * but must do so to clear interrupts.
-@@ -1080,7 +1083,9 @@ next_frame:
- 	if ((readl(pi->sdma_base + SDMA_SDCM) & SDMA_SDCM_ERD) == 0)
- 		mpsc_start_rx(pi);
- 
-+	spin_unlock_irqrestore(&pi->port.lock, *flags);
++	spin_unlock(&up->port.lock);
  	tty_flip_buffer_push(port);
-+	spin_lock_irqsave(&pi->port.lock, *flags);
- 	return rc;
- }
++	spin_lock(&up->port.lock);
++
+ 	ret = IRQ_HANDLED;
  
-@@ -1222,7 +1227,7 @@ static irqreturn_t mpsc_sdma_intr(int irq, void *dev_id)
- 
- 	spin_lock_irqsave(&pi->port.lock, iflags);
- 	mpsc_sdma_intr_ack(pi);
--	if (mpsc_rx_intr(pi))
-+	if (mpsc_rx_intr(pi, &iflags))
- 		rc = IRQ_HANDLED;
- 	if (mpsc_tx_intr(pi))
- 		rc = IRQ_HANDLED;
+ 	/* clear interrupt */
 -- 
 1.7.12.rc2.18.g61b472e
 
