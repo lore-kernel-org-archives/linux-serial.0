@@ -1,27 +1,61 @@
-From: "Webmail Upgrade Alert!\"" <as3229@singnet.com.sg>
-Subject: Upgrade Your Mailbox Now!
-Date: Sat, 17 Aug 2013 05:00:07 +0800 (SGT)
-Message-ID: <1376686807.520e92d789859__35568.34359556$1376725518$gmane$org@discus.singnet.com.sg>
-Reply-To: as3229@singnet.com.sg
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH 1/3] serial: sirf: fix the typo for rts/cts gpio
+Date: Mon, 19 Aug 2013 11:47:51 +0800
+Message-ID: <1376884073-22375-1-git-send-email-Baohua.Song@csr.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comsmtp1.singnet.com.sg ([165.21.101.74]:52629 "EHLO
-	comsmtp1.singnet.com.sg" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752066Ab3HQHpE (ORCPT
+Received: from mail-pb0-f44.google.com ([209.85.160.44]:43092 "EHLO
+	mail-pb0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750728Ab3HSDsH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 17 Aug 2013 03:45:04 -0400
+	Sun, 18 Aug 2013 23:48:07 -0400
+Received: by mail-pb0-f44.google.com with SMTP id xa7so4454998pbc.31
+        for <linux-serial@vger.kernel.org>; Sun, 18 Aug 2013 20:48:06 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: email@webupgrade.com
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
+From: Qipan Li <Qipan.Li@csr.com>
 
+fix the typo in commit 2eb5618de87927e54 which uses two
+gpios for rts/cts.
 
-You have exceeded the storage limit on your 
-mailbox.You will not be able to send or 
-receive new mail until you upgrade your 
-email quota.Click on the upgrade link below 
-and fill the form to upgrade your account.
-http://tinyurl.com/kp57dek . You can also 
-copy and past the link on your web browser.
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/tty/serial/sirfsoc_uart.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index ed3b890..10718c0 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -915,20 +915,20 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 			 !gpio_is_valid(sirfport->rts_gpio))) {
+ 			ret = -EINVAL;
+ 			dev_err(&pdev->dev,
+-				"Usp flow control must have rfs and tfs gpio");
++				"Usp flow control must have cts and rts gpio");
+ 			goto err;
+ 		}
+ 		ret = devm_gpio_request(&pdev->dev, sirfport->cts_gpio,
+-				"usp-rfs-gpio");
++				"usp-cts-gpio");
+ 		if (ret) {
+-			dev_err(&pdev->dev, "Unable request rfs gpio");
++			dev_err(&pdev->dev, "Unable request cts gpio");
+ 			goto err;
+ 		}
+ 		gpio_direction_input(sirfport->cts_gpio);
+ 		ret = devm_gpio_request(&pdev->dev, sirfport->rts_gpio,
+-				"usp-tfs-gpio");
++				"usp-rts-gpio");
+ 		if (ret) {
+-			dev_err(&pdev->dev, "Unable request tfs gpio");
++			dev_err(&pdev->dev, "Unable request rts gpio");
+ 			goto err;
+ 		}
+ 		gpio_direction_output(sirfport->rts_gpio, 1);
+-- 
+1.8.2.3
+
