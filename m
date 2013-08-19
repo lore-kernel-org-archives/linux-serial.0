@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 05/25] tty: serial: arc: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:09 +0530
-Message-ID: <715aa0cb542fe4b927943442e80b6d35065e682b.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 06/25] tty: serial: bcm63xx: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:10 +0530
+Message-ID: <b7d14ff760f8693224d2e6b29675e5a508343c8a.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:46447 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750809Ab3HSOpQ (ORCPT
+Received: from mail-pa0-f41.google.com ([209.85.220.41]:53835 "EHLO
+	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750809Ab3HSOpX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:45:16 -0400
-Received: by mail-pa0-f45.google.com with SMTP id bg4so4669045pad.18
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:15 -0700 (PDT)
+	Mon, 19 Aug 2013 10:45:23 -0400
+Received: by mail-pa0-f41.google.com with SMTP id bj1so4708566pad.28
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:22 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,23 +77,23 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/arc_uart.c | 2 ++
+ drivers/tty/serial/bcm63xx_uart.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 37abf6c..569872f 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -251,7 +251,9 @@ static void arc_serial_rx_chars(struct arc_uart_port *uart, unsigned int status)
- 		if (!(uart_handle_sysrq_char(&uart->port, ch)))
- 			uart_insert_char(&uart->port, status, RXOERR, ch, flg);
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index d14ba5a..649d512 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -302,7 +302,9 @@ static void bcm_uart_do_rx(struct uart_port *port)
  
-+		spin_unlock(&uart->port.lock);
- 		tty_flip_buffer_push(&uart->port.state->port);
-+		spin_lock(&uart->port.lock);
- 	} while (!((status = UART_GET_STATUS(uart)) & RXEMPTY));
+ 	} while (--max_count);
+ 
++	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(tty_port);
++	spin_lock(&port->lock);
  }
  
+ /*
 -- 
 1.7.12.rc2.18.g61b472e
 
