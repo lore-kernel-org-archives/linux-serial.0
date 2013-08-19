@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 17/25] tty: serial: netx: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:21 +0530
-Message-ID: <11935d0be9aba5b33d05f1f779eb7dbf61bf2f8c.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 15/25] tty: serial: mpsc: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:19 +0530
+Message-ID: <6b12e1d04a9ff4cb43f7a44930da87aa4b44e6a4.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:39628 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751008Ab3HSOql (ORCPT
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:61028 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751044Ab3HSOq0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:46:41 -0400
-Received: by mail-pd0-f178.google.com with SMTP id w10so5351267pde.9
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:40 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:26 -0400
+Received: by mail-pa0-f48.google.com with SMTP id kp13so4624682pab.7
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:25 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,41 +77,54 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/netx-serial.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/mpsc.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/netx-serial.c b/drivers/tty/serial/netx-serial.c
-index ce04f3f..0a4dd70 100644
---- a/drivers/tty/serial/netx-serial.c
-+++ b/drivers/tty/serial/netx-serial.c
-@@ -196,7 +196,7 @@ static void netx_txint(struct uart_port *port)
- 		uart_write_wakeup(port);
- }
+diff --git a/drivers/tty/serial/mpsc.c b/drivers/tty/serial/mpsc.c
+index fba5257..8d70267 100644
+--- a/drivers/tty/serial/mpsc.c
++++ b/drivers/tty/serial/mpsc.c
+@@ -934,7 +934,7 @@ static int serial_polled;
+  ******************************************************************************
+  */
  
--static void netx_rxint(struct uart_port *port)
-+static void netx_rxint(struct uart_port *port, unsigned long *flags)
+-static int mpsc_rx_intr(struct mpsc_port_info *pi)
++static int mpsc_rx_intr(struct mpsc_port_info *pi, unsigned long *flags)
  {
- 	unsigned char rx, flg, status;
+ 	struct mpsc_rx_desc *rxre;
+ 	struct tty_port *port = &pi->port.state->port;
+@@ -969,8 +969,11 @@ static int mpsc_rx_intr(struct mpsc_port_info *pi)
+ #endif
+ 		/* Following use of tty struct directly is deprecated */
+ 		if (tty_buffer_request_room(port, bytes_in) < bytes_in) {
+-			if (port->low_latency)
++			if (port->low_latency) {
++				spin_unlock_irqrestore(&pi->port.lock, *flags);
+ 				tty_flip_buffer_push(port);
++				spin_lock_irqsave(&pi->port.lock, *flags);
++			}
+ 			/*
+ 			 * If this failed then we will throw away the bytes
+ 			 * but must do so to clear interrupts.
+@@ -1080,7 +1083,9 @@ next_frame:
+ 	if ((readl(pi->sdma_base + SDMA_SDCM) & SDMA_SDCM_ERD) == 0)
+ 		mpsc_start_rx(pi);
  
-@@ -236,7 +236,9 @@ static void netx_rxint(struct uart_port *port)
- 		uart_insert_char(port, status, SR_OE, rx, flg);
- 	}
- 
-+	spin_unlock_irqrestore(&port->lock, *flags);
- 	tty_flip_buffer_push(&port->state->port);
-+	spin_lock_irqsave(&port->lock, *flags);
++	spin_unlock_irqrestore(&pi->port.lock, *flags);
+ 	tty_flip_buffer_push(port);
++	spin_lock_irqsave(&pi->port.lock, *flags);
+ 	return rc;
  }
  
- static irqreturn_t netx_int(int irq, void *dev_id)
-@@ -250,7 +252,7 @@ static irqreturn_t netx_int(int irq, void *dev_id)
- 	status = readl(port->membase + UART_IIR) & IIR_MASK;
- 	while (status) {
- 		if (status & IIR_RIS)
--			netx_rxint(port);
-+			netx_rxint(port, &flags);
- 		if (status & IIR_TIS)
- 			netx_txint(port);
- 		if (status & IIR_MIS) {
+@@ -1222,7 +1227,7 @@ static irqreturn_t mpsc_sdma_intr(int irq, void *dev_id)
+ 
+ 	spin_lock_irqsave(&pi->port.lock, iflags);
+ 	mpsc_sdma_intr_ack(pi);
+-	if (mpsc_rx_intr(pi))
++	if (mpsc_rx_intr(pi, &iflags))
+ 		rc = IRQ_HANDLED;
+ 	if (mpsc_tx_intr(pi))
+ 		rc = IRQ_HANDLED;
 -- 
 1.7.12.rc2.18.g61b472e
 
