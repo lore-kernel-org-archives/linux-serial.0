@@ -1,16 +1,16 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 08/25] tty: serial: efm32: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:12 +0530
-Message-ID: <491c2603024d6649fa9cc2fc7b356473ff7c8aba.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 12/25] tty: serial: m32r_sio: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:16 +0530
+Message-ID: <1758d0394891c75b7f77d76d8d8c557859a34167.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:60100 "EHLO
+Received: from mail-pd0-f172.google.com ([209.85.192.172]:40904 "EHLO
 	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750864Ab3HSOpg (ORCPT
+	with ESMTP id S1750987Ab3HSOqE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:45:36 -0400
-Received: by mail-pd0-f172.google.com with SMTP id z10so5331574pdj.3
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:45:36 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:04 -0400
+Received: by mail-pd0-f172.google.com with SMTP id z10so5313227pdj.31
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:04 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
@@ -77,26 +77,24 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/efm32-uart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/m32r_sio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32-uart.c
-index 98adaa1..0eb5b56 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -268,10 +268,10 @@ static irqreturn_t efm32_uart_rxirq(int irq, void *data)
- 		handled = IRQ_HANDLED;
- 	}
- 
--	tty_flip_buffer_push(tport);
--
- 	spin_unlock(&port->lock);
- 
-+	tty_flip_buffer_push(tport);
+diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
+index bb1afa0..9cd9b4e 100644
+--- a/drivers/tty/serial/m32r_sio.c
++++ b/drivers/tty/serial/m32r_sio.c
+@@ -368,7 +368,10 @@ static void receive_chars(struct uart_sio_port *up, int *status)
+ 	ignore_char:
+ 		*status = serial_in(up, UART_LSR);
+ 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
 +
- 	return handled;
++	spin_unlock(&up->port.lock);
+ 	tty_flip_buffer_push(port);
++	spin_lock(&up->port.lock);
  }
  
+ static void transmit_chars(struct uart_sio_port *up)
 -- 
 1.7.12.rc2.18.g61b472e
 
