@@ -1,23 +1,23 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 16/25] tty: serial: msm: drop uart_port->lock before calling tty_flip_buffer_push()
-Date: Mon, 19 Aug 2013 20:14:20 +0530
-Message-ID: <38cbda94229cb20974f11a0c8b4fa87fdafa73cf.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 17/25] tty: serial: netx: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:21 +0530
+Message-ID: <11935d0be9aba5b33d05f1f779eb7dbf61bf2f8c.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f47.google.com ([209.85.160.47]:64461 "EHLO
-	mail-pb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751008Ab3HSOqe (ORCPT
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:39628 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751008Ab3HSOql (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:46:34 -0400
-Received: by mail-pb0-f47.google.com with SMTP id rr4so5053405pbb.34
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:33 -0700 (PDT)
+	Mon, 19 Aug 2013 10:46:41 -0400
+Received: by mail-pd0-f178.google.com with SMTP id w10so5351267pde.9
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:46:40 -0700 (PDT)
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
 References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>
+Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
 
 The current driver triggers a lockdep warning for if tty_flip_buffer_push() is
 called with uart_port->lock locked. This never shows up on UP kernels and comes
@@ -75,39 +75,43 @@ Date:   Tue May 29 21:53:50 2007 +0100
 
     [ARM] 4417/1: Serial: Fix AMBA drivers locking
 
-Cc: David Brown <davidb@codeaurora.org> (maintainer:ARM/QUALCOMM MSM...)
-Cc: Daniel Walker <dwalker@fifo99.com> (maintainer:ARM/QUALCOMM MSM...)
-Cc: Bryan Huntsman <bryanh@codeaurora.org> (maintainer:ARM/QUALCOMM MSM...)
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/netx-serial.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 8f58540..cc44ef4 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -140,7 +140,10 @@ static void handle_rx_dm(struct uart_port *port, unsigned int misr)
- 		count -= 4;
- 	}
- 
-+	spin_unlock(&port->lock);
- 	tty_flip_buffer_push(tport);
-+	spin_lock(&port->lock);
-+
- 	if (misr & (UART_IMR_RXSTALE))
- 		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
- 	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-@@ -192,7 +195,9 @@ static void handle_rx(struct uart_port *port)
- 			tty_insert_flip_char(tport, c, flag);
- 	}
- 
-+	spin_unlock(&port->lock);
- 	tty_flip_buffer_push(tport);
-+	spin_lock(&port->lock);
+diff --git a/drivers/tty/serial/netx-serial.c b/drivers/tty/serial/netx-serial.c
+index ce04f3f..0a4dd70 100644
+--- a/drivers/tty/serial/netx-serial.c
++++ b/drivers/tty/serial/netx-serial.c
+@@ -196,7 +196,7 @@ static void netx_txint(struct uart_port *port)
+ 		uart_write_wakeup(port);
  }
  
- static void reset_dm_count(struct uart_port *port, int count)
+-static void netx_rxint(struct uart_port *port)
++static void netx_rxint(struct uart_port *port, unsigned long *flags)
+ {
+ 	unsigned char rx, flg, status;
+ 
+@@ -236,7 +236,9 @@ static void netx_rxint(struct uart_port *port)
+ 		uart_insert_char(port, status, SR_OE, rx, flg);
+ 	}
+ 
++	spin_unlock_irqrestore(&port->lock, *flags);
+ 	tty_flip_buffer_push(&port->state->port);
++	spin_lock_irqsave(&port->lock, *flags);
+ }
+ 
+ static irqreturn_t netx_int(int irq, void *dev_id)
+@@ -250,7 +252,7 @@ static irqreturn_t netx_int(int irq, void *dev_id)
+ 	status = readl(port->membase + UART_IIR) & IIR_MASK;
+ 	while (status) {
+ 		if (status & IIR_RIS)
+-			netx_rxint(port);
++			netx_rxint(port, &flags);
+ 		if (status & IIR_TIS)
+ 			netx_txint(port);
+ 		if (status & IIR_MIS) {
 -- 
 1.7.12.rc2.18.g61b472e
 
