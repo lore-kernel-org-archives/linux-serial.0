@@ -1,21 +1,25 @@
 From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V2 00/25] tty: serial: drop uart_port->lock before calling
-Date: Mon, 19 Aug 2013 20:14:04 +0530
-Message-ID: <cover.1376923198.git.viresh.kumar@linaro.org>
+Subject: [PATCH V2 02/25] tty: serial: altera: drop uart_port->lock before calling tty_flip_buffer_push()
+Date: Mon, 19 Aug 2013 20:14:06 +0530
+Message-ID: <d4a13af7e38b94626f897cc62ab47c0c3184a040.1376923198.git.viresh.kumar@linaro.org>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f43.google.com ([209.85.160.43]:53457 "EHLO
-	mail-pb0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751061Ab3HSOoj (ORCPT
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:54682 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751278Ab3HSOoy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 10:44:39 -0400
-Received: by mail-pb0-f43.google.com with SMTP id md4so5043249pbc.16
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:44:39 -0700 (PDT)
+	Mon, 19 Aug 2013 10:44:54 -0400
+Received: by mail-pa0-f50.google.com with SMTP id fb10so4701805pad.9
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 07:44:54 -0700 (PDT)
+In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
+In-Reply-To: <cover.1376923198.git.viresh.kumar@linaro.org>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>
+Cc: linaro-kernel@lists.linaro.org, patches@linaro.org, linux-serial@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Tobias Klauser <tklauser@distanz.ch>
 
-Many serial driver triggers a lockdep warning for if tty_flip_buffer_push() is
+The current driver triggers a lockdep warning for if tty_flip_buffer_push() is
 called with uart_port->lock locked. This never shows up on UP kernels and comes
 up only on SMP kernels.
 
@@ -60,113 +64,37 @@ Workqueue: events flush_to_ldisc
 [<c0037a7c>] (kthread+0xa4/0xb0) from [<c000e5f8>] (ret_from_fork+0x14/0x3c)
 -----
 
-This patchset modifies these drivers to release the port lock before calling
-tty_flip_buffer_push() and reacquire it after the call.
+Release the port lock before calling tty_flip_buffer_push() and reacquire it
+after the call.
 
 Similar stuff was already done for few other drivers in the past, like:
 
-	commit 2389b272168ceec056ca1d8a870a97fa9c26e11a
-	Author: Thomas Gleixner <tglx@linutronix.de>
-	Date:   Tue May 29 21:53:50 2007 +0100
-	
-	    [ARM] 4417/1: Serial: Fix AMBA drivers locking
-	
-This is build tested for all drivers and tested on Samsung's Arndale board for
-samsung.c driver. Rebased over linux-next (Problem was reproduced on this
-branch):
+commit 2389b272168ceec056ca1d8a870a97fa9c26e11a
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Tue May 29 21:53:50 2007 +0100
 
-	commit 1e712b0818569846d6b926ecb6bf32b3dea73609
-	Author: Stephen Rothwell <sfr@canb.auug.org.au>
-	Date:   Fri Aug 16 17:06:26 2013 +1000
-	
-	    Add linux-next specific files for 20130816
-	    
-	    Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+    [ARM] 4417/1: Serial: Fix AMBA drivers locking
 
-Cc: Bryan Huntsman <bryanh@codeaurora.org>
-Cc: Daniel Walker <dwalker@fifo99.com>
-Cc: David Brown <davidb@codeaurora.org>
-Cc: Stephen Warren <swarren@wwwdotorg.org>
 Cc: Tobias Klauser <tklauser@distanz.ch>
-Cc: Tony Prisk <linux@prisktech.co.nz>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ drivers/tty/serial/altera_uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Viresh Kumar (25):
-  tty: serial: altera_jtag: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: altera: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: apbuart: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: ar933x: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: arc: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: bcm63xx: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: bfin_sport: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: efm32: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: icom: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: lpc32xx_hs: don't call tty_flip_buffer_push() twice
-  tty: serial: lpc32xx_hs: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: m32r_sio: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: mcf: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: mfd: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: mpsc: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: msm: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: netx: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: nwpserial: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: pnx8xxx: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: rp2: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: sa1100: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: samsung: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: tegra: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: sirfsoc: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-  tty: serial: vt8500: drop uart_port->lock before calling
-    tty_flip_buffer_push()
-
- drivers/tty/serial/altera_jtaguart.c |  2 ++
- drivers/tty/serial/altera_uart.c     |  2 ++
- drivers/tty/serial/apbuart.c         |  2 ++
- drivers/tty/serial/ar933x_uart.c     |  2 ++
- drivers/tty/serial/arc_uart.c        |  2 ++
- drivers/tty/serial/bcm63xx_uart.c    |  2 ++
- drivers/tty/serial/bfin_sport_uart.c |  5 +++--
- drivers/tty/serial/efm32-uart.c      |  4 ++--
- drivers/tty/serial/icom.c            |  3 +++
- drivers/tty/serial/lpc32xx_hs.c      |  7 ++++---
- drivers/tty/serial/m32r_sio.c        |  3 +++
- drivers/tty/serial/mcf.c             |  2 ++
- drivers/tty/serial/mfd.c             | 14 ++++++++++----
- drivers/tty/serial/mpsc.c            | 11 ++++++++---
- drivers/tty/serial/msm_serial.c      |  5 +++++
- drivers/tty/serial/netx-serial.c     |  6 ++++--
- drivers/tty/serial/nwpserial.c       |  3 +++
- drivers/tty/serial/pnx8xxx_uart.c    |  3 +++
- drivers/tty/serial/rp2.c             |  2 ++
- drivers/tty/serial/sa1100.c          |  3 +++
- drivers/tty/serial/samsung.c         |  5 ++++-
- drivers/tty/serial/serial-tegra.c    | 10 ++++++++--
- drivers/tty/serial/sirfsoc_uart.c    |  3 +++
- drivers/tty/serial/vt8500_serial.c   |  2 ++
- 24 files changed, 84 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index fa638db..6431472 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -231,7 +231,9 @@ static void altera_uart_rx_chars(struct altera_uart *pp)
+ 				 flag);
+ 	}
+ 
++	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(&port->state->port);
++	spin_lock(&port->lock);
+ }
+ 
+ static void altera_uart_tx_chars(struct altera_uart *pp)
 -- 
 1.7.12.rc2.18.g61b472e
 
