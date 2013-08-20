@@ -1,54 +1,47 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 4/4] ARM: dts: msm: Update uartdm compatible strings
-Date: Mon, 19 Aug 2013 14:39:57 -0700
-Message-ID: <1376948397-6882-5-git-send-email-sboyd@codeaurora.org>
-References: <1376948397-6882-1-git-send-email-sboyd@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1376948397-6882-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH V2 00/25] tty: serial: drop uart_port->lock before calling
+Date: Tue, 20 Aug 2013 05:48:54 +0530
+Message-ID: <CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
+	<52123A44.9090608@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-oa0-f46.google.com ([209.85.219.46]:39473 "EHLO
+	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751333Ab3HTASz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 19 Aug 2013 20:18:55 -0400
+Received: by mail-oa0-f46.google.com with SMTP id l10so2111663oag.19
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2013 17:18:55 -0700 (PDT)
+In-Reply-To: <52123A44.9090608@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>
 
-Let's follow the ratified DT binding and use uartdm instead of
-hsuart. This does break backwards compatibility but this
-shouldn't be a problem because the uart driver isn't probing on
-these devices without adding clock support (which isn't merged so
-far).
+Hi Peter,
 
-Cc: David Brown <davidb@codeaurora.org>
-Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
----
- arch/arm/boot/dts/msm8660-surf.dts | 2 +-
- arch/arm/boot/dts/msm8960-cdp.dts  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On 19 August 2013 21:01, Peter Hurley <peter@hurleysoftware.com> wrote:
 
-diff --git a/arch/arm/boot/dts/msm8660-surf.dts b/arch/arm/boot/dts/msm8660-surf.dts
-index cdc010e..386d428 100644
---- a/arch/arm/boot/dts/msm8660-surf.dts
-+++ b/arch/arm/boot/dts/msm8660-surf.dts
-@@ -38,7 +38,7 @@
- 	};
- 
- 	serial@19c40000 {
--		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-+		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 		reg = <0x19c40000 0x1000>,
- 		      <0x19c00000 0x1000>;
- 		interrupts = <0 195 0x0>;
-diff --git a/arch/arm/boot/dts/msm8960-cdp.dts b/arch/arm/boot/dts/msm8960-cdp.dts
-index db2060c..532050b 100644
---- a/arch/arm/boot/dts/msm8960-cdp.dts
-+++ b/arch/arm/boot/dts/msm8960-cdp.dts
-@@ -38,7 +38,7 @@
- 	};
- 
- 	serial@16440000 {
--		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-+		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 		reg = <0x16440000 0x1000>,
- 		      <0x16400000 0x1000>;
- 		interrupts = <0 154 0x0>;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+> Please review commit 677fe555cbfb188af58cce105f4dae9505e58c31
+> 'serial: imx: Fix recursive locking bug' to see if that is actually the
+> problem
+> you're having with the samsung serial driver.
+
+No, this doesn't seem to be the same issue... The issue here is:
+
+s3c24xx_serial_rx_chars()
+-> spin_lock_irqsave(&port->lock, flags);
+-> tty_flip_buffer_push()
+  -> flush_to_ldisc()
+    -> n_tty_receive_buf2()
+      -> __receive_buf()
+         -> uart_start()
+            -> spin_lock_irqsave(&port->lock, flags);
+
+This seems to be a generic enough problem as many drivers are already
+doing the right thing. They release lock before calling
+tty_flip_buffer_push()..
+
+And that's why my patchset had only 25 patches :)
