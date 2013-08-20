@@ -1,151 +1,87 @@
-From: Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH 2/4] devicetree: serial: Document msm_serial bindings
-Date: Tue, 20 Aug 2013 09:41:25 -0500
-Message-ID: <543F6671-8317-446A-B14A-147373BCA9B6@codeaurora.org>
-References: <1376948397-6882-1-git-send-email-sboyd@codeaurora.org> <1376948397-6882-3-git-send-email-sboyd@codeaurora.org>
-Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1376948397-6882-3-git-send-email-sboyd@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCH] serial: omap: Fix IRQ handling return value
+Date: Tue, 20 Aug 2013 08:44:50 -0700
+Message-ID: <CAGa+x84dE_RwN2G1y_9OJFxnq3JKq5g0YZd+mFueOjjvMzyyew@mail.gmail.com>
+References: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:48373 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751278Ab3HTPov (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 Aug 2013 11:44:51 -0400
+Received: by mail-wi0-f171.google.com with SMTP id hr7so4505231wib.16
+        for <linux-serial@vger.kernel.org>; Tue, 20 Aug 2013 08:44:50 -0700 (PDT)
+In-Reply-To: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alexander Savchenko <oleksandr.savchenko@ti.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ruchika Kharwar <ruchika@ti.com>, balbi@ti.com
 
++Felipe
 
-On Aug 19, 2013, at 4:39 PM, Stephen Boyd wrote:
+On Wed, Jul 17, 2013 at 6:29 AM, Alexander Savchenko
+<oleksandr.savchenko@ti.com> wrote:
+> From: Ruchika Kharwar <ruchika@ti.com>
+>
+> Ensure the Interrupt handling routine return IRQ_HANDLED vs
+> IRQ_NONE.
 
-> The msm serial device bindings were added to the DTS files but
-> never documented. Let's document them now and also fix things up
-> so that it's clearer what hardware is supported. Instead of using
-> hsuart (for high speed uart), let's use uartdm because that
-> matches the actual name of the hardware. Also, let's add the
-> version information in case we need to differentiate between
-> different versions of the hardware in the future.
-> 
-> Cc: David Brown <davidb@codeaurora.org>
-> Cc: <devicetree@vger.kernel.org>
-> Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+Why?
+
+By unconditionally returning IRQ_HANDLED, this patch will surely break
+systems where the UART IRQ is shared with other platforms.
+
+I just noticed this patch when bisecting a related problem.  Why
+wasn't this Cc'd to linux-omap where OMAP users might have been more
+likely to see it?
+
+Greg, without a better justification in the changelog, I think this
+patch should be dropped from tty-next.
+
+Kevin
+
+> Signed-off-by: Ruchika Kharwar <ruchika@ti.com>
+> Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
 > ---
-> .../devicetree/bindings/serial/msm_serial.txt      | 82 ++++++++++++++++++++++
-> 1 file changed, 82 insertions(+)
-> create mode 100644 Documentation/devicetree/bindings/serial/msm_serial.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/msm_serial.txt b/Documentation/devicetree/bindings/serial/msm_serial.txt
-> new file mode 100644
-> index 0000000..a6efac3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/msm_serial.txt
-> @@ -0,0 +1,82 @@
-> +* MSM Serial UART and UARTDM
-> +
-> +There are two MSM serial hardware designs. UARTDM is designed for use with a
-> +dma engine in high-speed use cases and the non-DM design is for lower speed use
-> +cases. The two designs are mostly compatible from a software perspective except
-> +the non-DM design can only read and write one character at a time and so the
-> +register layout differs slightly.
-
-I think you split this into two binding spec docs, one for each type of uart.
-
-> +
-> +UART
-> +----
-> +Required properties:
-> +- compatible: Should contain "qcom,msm-uart"
-> +- reg: Should contain UART register location and length. The first
-
-first? is there more than one reg region?
-
-> +       register shall specify the main control registers
-> +- interrupts: Should contain UART interrupt.
-> +- clocks: Should contain the core clock.
-> +- clock-names: Should be "core_clk".
-> +
-> +Optional properties:
-> +- dmas: Should contain dma specifiers for transmit and receive
-> +- dma-names: Should contain "tx" for transmit and "rx" for receive
-
-confused, above you say the non-DM doesn't support DMA so, why the optional props?
-
-> +
-> +Example:
-> +
-> +A uart device with dma capabilities.
-> +
-> +serial@a9c00000 {
-> +	compatible = "qcom,msm-uart";
-> +	reg = <0xa9c00000 0x1000>;
-> +	interrupts = <11>;
-> +	clocks = <&uart_cxc>;
-> +	clock-names = "core_clk";
-> +	dmas = <&dma0 0>, <&dma0 1>;
-> +	dma-names = "tx", "rx";
-> +};
-> +
-> +UARTDM
-> +------
-> +Required properties:
-> +- compatible: Should contain at least "qcom,msm-uartdm".
-> +              A more specific property should be specified as follows depending
-> +	      on the version:
-> +		"qcom,msm-uartdm-v1.1"
-> +		"qcom,msm-uartdm-v1.2"
-> +		"qcom,msm-uartdm-v1.3"
-> +		"qcom,msm-uartdm-v1.4"
-> +- reg: Should contain UART register locations and lengths. The first
-> +       register shall specify the main control registers. An optional second
-> +       register location shall specify the GSBI control region.
-
-Is GSBI region existing tied to particular versions (if so can we say that)
-
-reg-names?
-
-> +- interrupts: Should contain UART interrupt.
-> +- clocks: Should contain the core clock and the ahb clock.
-
-nit, ahb in caps?
-
-> +- clock-names: Should be "core_clk" for the core clock and "iface_clk" for the
-> +	       ahb clock.
-> +
-> +Optional properties:
-> +- dmas: Should contain dma specifiers for transmit and receive channels
-> +- dma-names: Should contain "tx" for transmit and "rx" for receive channels
-> +
-> +Examples:
-> +
-> +A uartdm v1.4 device with dma capabilities.
-> +
-> +serial@f991e000 {
-> +	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
-> +	reg = <0xf991e000 0x1000>;
-> +	interrupts = <0 108 0x0>;
-> +	clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
-> +	clock-names = "core_clk", "iface_clk";
-> +	dmas = <&dma0 0>, <&dma0 1>;
-> +	dma-names = "tx", "rx";
-> +};
-> +
-> +A uartdm v1.3 device without dma capabilities.
-> +
-> +serial@19c40000 {
-> +	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
-> +	reg = <0x19c40000 0x1000>,
-> +	      <0x19c00000 0x1000>;
-> +	interrupts = <0 195 0x0>;
-> +	clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
-> +	clock-names = "core_clk", "iface_clk";
-> +};
-> -- 
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> hosted by The Linux Foundation
-> 
+>  drivers/tty/serial/omap-serial.c |    4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index b6d1728..70feeb3 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -479,7 +479,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>         struct uart_omap_port *up = dev_id;
+>         unsigned int iir, lsr;
+>         unsigned int type;
+> -       irqreturn_t ret = IRQ_NONE;
+>         int max_count = 256;
+>
+>         spin_lock(&up->port.lock);
+> @@ -490,7 +489,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>                 if (iir & UART_IIR_NO_INT)
+>                         break;
+>
+> -               ret = IRQ_HANDLED;
+>                 lsr = serial_in(up, UART_LSR);
+>
+>                 /* extract IRQ type from IIR register */
+> @@ -529,7 +527,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>         pm_runtime_put_autosuspend(up->dev);
+>         up->port_activity = jiffies;
+>
+> -       return ret;
+> +       return IRQ_HANDLED;
+>  }
+>
+>  static unsigned int serial_omap_tx_empty(struct uart_port *port)
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> 1.7.9.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+> Please read the FAQ at  http://www.tux.org/lkml/
