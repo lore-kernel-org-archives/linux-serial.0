@@ -1,97 +1,536 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 Subject: Re: [PATCH V2 00/25] tty: serial: drop uart_port->lock before calling
-Date: Mon, 19 Aug 2013 22:35:46 -0400
-Message-ID: <5212D602.2000005@hurleysoftware.com>
-References: <cover.1376923198.git.viresh.kumar@linaro.org> <52123A44.9090608@hurleysoftware.com> <CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+Date: Tue, 20 Aug 2013 16:22:38 +0530
+Message-ID: <CAKohpomE+6fxwF4JsDUDCzf+LsWZ_deBsRzF_XYjQHZTPvp_jw@mail.gmail.com>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
+	<52123A44.9090608@hurleysoftware.com>
+	<CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+	<5212D602.2000005@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary=089e01161b46f4ae0904e45eda9e
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout39.mail01.mtsvc.net ([216.70.64.83]:50164 "EHLO
-	n12.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751401Ab3HTCfw (ORCPT
+Received: from mail-ob0-f172.google.com ([209.85.214.172]:51188 "EHLO
+	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750926Ab3HTKwj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 19 Aug 2013 22:35:52 -0400
-In-Reply-To: <CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+	Tue, 20 Aug 2013 06:52:39 -0400
+Received: by mail-ob0-f172.google.com with SMTP id er7so320111obc.3
+        for <linux-serial@vger.kernel.org>; Tue, 20 Aug 2013 03:52:38 -0700 (PDT)
+In-Reply-To: <5212D602.2000005@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>, Linaro Networking <linaro-networking@linaro.org>
 
-On 08/19/2013 08:18 PM, Viresh Kumar wrote:
-> Hi Peter,
+--089e01161b46f4ae0904e45eda9e
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi Peter,
+
+On 20 August 2013 08:05, Peter Hurley <peter@hurleysoftware.com> wrote:
+> The key to why the flush_to_disc() worker thread cannot acquire the
+> uart_port spinlock is in the first stack trace:
 >
-> On 19 August 2013 21:01, Peter Hurley <peter@hurleysoftware.com> wrote:
+> s3c24xx_serial_rx_chars
+>   raw_spin_unlock_irqrestore
+>     do_raw_spin_unlock
+>       dump_stack
 >
->> Please review commit 677fe555cbfb188af58cce105f4dae9505e58c31
->> 'serial: imx: Fix recursive locking bug' to see if that is actually the
->> problem
->> you're having with the samsung serial driver.
->
-> No, this doesn't seem to be the same issue... The issue here is:
->
-> s3c24xx_serial_rx_chars()
-> -> spin_lock_irqsave(&port->lock, flags);
-> -> tty_flip_buffer_push()
->    -> flush_to_ldisc()
->      -> n_tty_receive_buf2()
->        -> __receive_buf()
->           -> uart_start()
->              -> spin_lock_irqsave(&port->lock, flags);
+> So the real question here is why do_raw_spin_unlock() is doing
+> a dump_stack()?  Is one of the SPIN_BUG_ON() asserts in debug_spin_unlock()
+> triggering?
 
-Nope.
+Ahh, you are right and SPIN_BUG_ON() is indeed getting asserted.
 
-First, you have two stack traces from your previous message.
-The BUG report is the second stack trace:
+I am embarrassed to say this but it happened due to my stupid mistake :(
 
-worker_thread
-   process_one_work
-     flush_to_ldisc
-       n_tty_receive_buf2
-         __receive_buf
-           uart_start
-             raw_spin_lock_irqsave(&port->lock)
+And yes, non-rt kernels doesn't see this crash as we simply schedule
+work from our interrupt handlers instead of calling flush_to_ldisc()
 
-IOW, no lock recursion because it's running on a separate
-kworker thread, and did not arrive from s3c24xx_serial_rx_chars()
-(other than indirectly via schedule_work()).
+This is how I got the wrong crash dump:
+- Applied my patch over latest linux-next
+- Some more debug messages
 
-It's BUGing because the uart_port spinlock cannot be acquired
-_even though apparently there is no owning CPU_.
+Tested: No crashes found..
 
-The key to why the flush_to_disc() worker thread cannot acquire the
-uart_port spinlock is in the first stack trace:
+Thought maybe I should try without my patch first, if it really crashes
+or not.
 
-s3c24xx_serial_rx_chars
-   raw_spin_unlock_irqrestore
-     do_raw_spin_unlock
-       dump_stack
+- Reverted my patch and got some conflicts due the "debug patch"..
+and ended up resolving them in the wrong way:
 
-So the real question here is why do_raw_spin_unlock() is doing
-a dump_stack()?  Is one of the SPIN_BUG_ON() asserts in debug_spin_unlock()
-triggering?
+-       spin_unlock_irqrestore(&port->lock, flags);
+        pr_info("%s\n", __func__);
+        tty_flip_buffer_push(&port->state->port);
++       spin_unlock_irqrestore(&port->lock, flags);
 
-> This seems to be a generic enough problem as many drivers are already
-> doing the right thing. They release lock before calling
-> tty_flip_buffer_push()..
+  out:
++       spin_unlock_irqrestore(&port->lock, flags);
 
-No. Those drivers are carrying vestige code from the original 2.6
-tree import.
+Got two unlocks and so the dump..
+Sorry for the incorrect information :(
 
-As documented in tty_flip_buffer_push():
+But yes there are some issues with the RT kernel, which are going to
+stay without this patchset.. Here are the logs with 3.10.6 + rt kernel
+(attached as well, in case lines are wrapped by gmail :( ):
 
-  *	Queue a push of the terminal flip buffers to the line discipline. This
-  *	function must not be called from IRQ context if port->low_latency is
-  *	set.
+root@localhost:~# [  128.771800] ------------[ cut here ]------------
+[  128.771815] kernel BUG at
+/home/arm/work/kernel/linaro/lng/lng.git/kernel/rtmutex.c:738!
+[  128.771829] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP THUMB2
+[  128.771844] Modules linked in:
+[  128.771868] CPU: 0 PID: 1895 Comm: irq/85-12c20000 Not tainted 3.10.6-rt3+ #7
+[  128.771885] task: ef2d9cc0 ti: ee2b0000 task.ti: ee2b0000
+[  128.771915] PC is at rt_spin_lock_slowlock+0x18c/0x1a0
+[  128.771933] LR is at rt_spin_lock_slowlock+0x3f/0x1a0
+[  128.771956] pc : [<80406b9c>]    lr : [<80406a4f>]    psr: 60070033
+[  128.771956] sp : ee2b1d68  ip : 00000000  fp : 00000000
+[  128.771968] r10: ee6e641e  r9 : ef2d9cc0  r8 : 00000000
+[  128.771982] r7 : ee6e7800  r6 : 00000000  r5 : ee2b0000  r4 : 806a9ccc
+[  128.771995] r3 : ef2d9cc0  r2 : 00000000  r1 : ef2d9cc0  r0 : 00000000
+[  128.772011] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA Thumb
+Segment kernel
+[  128.772026] Control: 50c5387d  Table: aeac406a  DAC: 00000015
+[  128.772041] Process irq/85-12c20000 (pid: 1895, stack limit = 0xee2b0238)
+[  128.772054] Stack: (0xee2b1d68 to 0xee2b2000)
+[  128.772080] 1d60:                   00000000 00000000 00000000
+00000000 00000400 80654380
+[  128.772105] 1d80: ef07d800 00000002 ef07d800 81767800 00000002
+00000000 00000001 80043101
+[  128.772128] 1da0: 00000002 806a9ccc eea47400 0000002e ee6e7800
+00000000 ee6e7800 ee6e641e
+[  128.772150] 1dc0: 00000000 80288639 8028864d eea47400 ee6e651d
+80278af5 81767380 800451c9
+[  128.772173] 1de0: 00000064 ef2d9e18 81767380 80654380 ef2d9cc0
+80406a4f ef2d9e18 80037a0d
+[  128.772195] 1e00: eea11250 ee2b0000 eea11240 eea11250 eea11240
+80406a4f 00000000 ffffffff
+[  128.772216] 1e20: ef33a000 80037be5 00000000 80406a4f 00000100
+00000001 eea11250 ee2b0000
+[  128.772238] 1e40: eea11250 806582c0 ee75a500 80406a4f eea11250
+ee2b0000 00000000 806582c0
+[  128.772260] 1e60: 0000003f 80406a4f eea11240 eea11250 00000000
+8027bcdd 00000001 00000000
+[  128.772282] 1e80: ee2b1ebc 271ae71a eea11240 eea11240 eea47400
+eea11250 80278a59 ee75a500
+[  128.772304] 1ea0: eea11308 00000001 ee6e651c 8027bbe5 00000000
+806a9cac 806a9ccc 00000000
+[  128.772325] 1ec0: 806582c0 0000003f 00000000 ee75a300 00000000
+8028d4db 00000000 8003ca2b
+[  128.772347] 1ee0: 00000001 ee2b0000 806a9cac 00000001 00000055
+00000000 ee75a320 80067da1
+[  128.772368] 1f00: ee75a300 8028dbdd ee75a300 8065c800 ee2b0000
+80067db9 00000001 8067b750
+[  128.772390] 1f20: ee2b0000 80067e91 ee75a300 8065c800 ee75a300
+00000000 00000000 80067cfd
+[  128.772411] 1f40: ee2b1f58 ee6bdcd0 ee2b1f88 ee75a300 80067dd9
+00000000 00000000 00000000
+[  128.772432] 1f60: 00000000 80033561 00000000 00000000 000000f8
+ee75a300 00000000 00000000
+[  128.772453] 1f80: ee2b1f80 ee2b1f80 00000000 00000000 ee2b1f90
+ee2b1f90 00000000 ee6bdcd0
+[  128.772473] 1fa0: 800334f5 00000000 00000000 8000cf3d 00000000
+00000000 00000000 00000000
+[  128.772492] 1fc0: 00000000 00000000 00000000 00000000 00000000
+00000000 00000000 00000000
+[  128.772512] 1fe0: 00000000 00000000 00000000 00000000 00000013
+00000000 00000000 00000000
+[  128.772564] [<80406b9c>] (rt_spin_lock_slowlock+0x18c/0x1a0) from
+[<80288639>] (uart_start+0x1d/0x30)
+[  128.772608] [<80288639>] (uart_start+0x1d/0x30) from [<80278af5>]
+(n_tty_receive_buf+0x9d/0xbf0)
+[  128.772650] [<80278af5>] (n_tty_receive_buf+0x9d/0xbf0) from
+[<8027bbe5>] (flush_to_ldisc+0xb5/0xe8)
+[  128.772697] [<8027bbe5>] (flush_to_ldisc+0xb5/0xe8) from
+[<8028d4db>] (s3c24xx_serial_rx_chars+0xbf/0x19c)
+[  128.772742] [<8028d4db>] (s3c24xx_serial_rx_chars+0xbf/0x19c) from
+[<8028dbdd>] (s3c64xx_serial_handle_irq+0x31/0x38)
+[  128.772793] [<8028dbdd>] (s3c64xx_serial_handle_irq+0x31/0x38) from
+[<80067db9>] (irq_forced_thread_fn+0x19/0x38)
+[  128.772837] [<80067db9>] (irq_forced_thread_fn+0x19/0x38) from
+[<80067e91>] (irq_thread+0xb9/0x118)
+[  128.772884] [<80067e91>] (irq_thread+0xb9/0x118) from [<80033561>]
+(kthread+0x6d/0x74)
+[  128.772932] [<80033561>] (kthread+0x6d/0x74) from [<8000cf3d>]
+(ret_from_fork+0x11/0x20)
+[  128.772962] Code: f7ff fae4 e7ac de02 (de02) 1d23
+[  129.122974] ---[ end trace 0000000000000002 ]---
+[  129.122994] note: irq/85-12c20000[1895] exited with preempt_count 1
+[  129.123041] Unable to handle kernel paging request at virtual
+address ffffffec
+[  129.123049] pgd = 80004000
+[  129.123077] [ffffffec] *pgd=af7fd821, *pte=00000000, *ppte=00000000
+[  129.123095] Internal error: Oops: 17 [#2] PREEMPT SMP THUMB2
+[  129.123108] Modules linked in:
+[  129.123131] CPU: 0 PID: 1895 Comm: irq/85-12c20000 Tainted: G
+D      3.10.6-rt3+ #7
+[  129.123144] task: ef2d9cc0 ti: ee2b0000 task.ti: ee2b0000
+[  129.123173] PC is at kthread_data+0xa/0x10
+[  129.123196] LR is at irq_thread_dtor+0x21/0x80
+[  129.123218] pc : [<80033886>]    lr : [<80067d1d>]    psr: 800700b3
+[  129.123218] sp : ee2b1bd8  ip : 00000031  fp : 20070093
+[  129.123231] r10: ef2d9cc0  r9 : 80680008  r8 : ee2b0000
+[  129.123243] r7 : ef2d9cc0  r6 : 806d8c88  r5 : 00000000  r4 : ef2d9cc0
+[  129.123254] r3 : 00000000  r2 : 80000000  r1 : ee2b1f38  r0 : ef2d9cc0
+[  129.123269] Flags: Nzcv  IRQs off  FIQs on  Mode SVC_32  ISA Thumb
+Segment user
+[  129.123283] Control: 50c5387d  Table: aeac406a  DAC: 00000015
+[  129.123297] Process irq/85-12c20000 (pid: 1895, stack limit = 0xee2b0238)
+[  129.123307] Stack: (0xee2b1bd8 to 0xee2b2000)
+[  129.123324] 1bc0:
+    80067cfd ef2da124
+[  129.123348] 1be0: 00000000 8003136f ee2b0000 002f002f 00000000
+0000000b 00000000 00000000
+[  129.123370] 1c00: ee2b1d20 8001f619 20070093 00000001 8053407c
+8001dccf 002f002f 806855ec
+[  129.123392] 1c20: ee2b0000 806c5f84 0000000b ee2b0000 ee2b1d20
+8052fd08 80680008 00000000
+[  129.123413] 1c40: 20070093 8000fcf1 ee2b0238 0000000b 8176f34c
+00000000 00030001 00000004
+[  129.123434] 1c60: 0000de02 ee2b1d20 80406b9c ee6e641e 00000000
+80008235 00000006 00000002
+[  129.123456] 1c80: 00000004 00000000 00030001 80406b9c 00000193
+80651d84 0111c000 80021859
+[  129.123477] 1ca0: 00000001 80021c2b 8176dd84 8006dd4f 00000000
+81770380 00000001 00000001
+[  129.123498] 1cc0: 00000001 00000000 00000400 80042a73 0000041d
+000003e3 00000400 00000000
+[  129.123519] 1ce0: 80654380 ef07e950 80654380 ef07e8c0 00000000
+80654380 ffffffff 00000000
+[  129.123540] 1d00: ee2b1d0c 80406b9e 60070033 ffffffff ee2b1d54
+00000000 ef2d9cc0 8000cac1
+[  129.123561] 1d20: 00000000 ef2d9cc0 00000000 ef2d9cc0 806a9ccc
+ee2b0000 00000000 ee6e7800
+[  129.123581] 1d40: 00000000 ef2d9cc0 ee6e641e 00000000 00000000
+ee2b1d68 80406a4f 80406b9c
+[  129.123601] 1d60: 60070033 ffffffff 00000000 00000000 00000000
+00000000 00000400 80654380
+[  129.123622] 1d80: ef07d800 00000002 ef07d800 81767800 00000002
+00000000 00000001 80043101
+[  129.123643] 1da0: 00000002 806a9ccc eea47400 0000002e ee6e7800
+00000000 ee6e7800 ee6e641e
+[  129.123664] 1dc0: 00000000 80288639 8028864d eea47400 ee6e651d
+80278af5 81767380 800451c9
+[  129.123686] 1de0: 00000064 ef2d9e18 81767380 80654380 ef2d9cc0
+80406a4f ef2d9e18 80037a0d
+[  129.123708] 1e00: eea11250 ee2b0000 eea11240 eea11250 eea11240
+80406a4f 00000000 ffffffff
+[  129.123729] 1e20: ef33a000 80037be5 00000000 80406a4f 00000100
+00000001 eea11250 ee2b0000
+[  129.123750] 1e40: eea11250 806582c0 ee75a500 80406a4f eea11250
+ee2b0000 00000000 806582c0
+[  129.123770] 1e60: 0000003f 80406a4f eea11240 eea11250 00000000
+8027bcdd 00000001 00000000
+[  129.123792] 1e80: ee2b1ebc 271ae71a eea11240 eea11240 eea47400
+eea11250 80278a59 ee75a500
+[  129.123813] 1ea0: eea11308 00000001 ee6e651c 8027bbe5 00000000
+806a9cac 806a9ccc 00000000
+[  129.123834] 1ec0: 806582c0 0000003f 00000000 ee75a300 00000000
+8028d4db 00000000 8003ca2b
+[  129.123855] 1ee0: 00000001 ee2b0000 806a9cac 00000001 00000055
+00000000 ee75a320 80067da1
+[  129.123876] 1f00: ee75a300 8028dbdd ee75a300 8065c800 ee2b0000
+80067db9 00000001 8067b750
+[  129.123897] 1f20: ee2b0000 80067e91 ee75a300 8065c800 ee75a300
+00000000 00000000 80067cfd
+[  129.123918] 1f40: ee2b1f58 ee6bdcd0 ee2b1f88 ee75a300 80067dd9
+00000000 00000000 00000000
+[  129.123938] 1f60: 00000000 80033561 00000000 00000000 000000f8
+ee75a300 00000000 00000000
+[  129.123959] 1f80: ee2b1f80 ee2b1f80 00000001 00010001 ee2b1f90
+ee2b1f90 00000000 ee6bdcd0
+[  129.123979] 1fa0: 800334f5 00000000 00000000 8000cf3d 00000000
+00000000 00000000 00000000
+[  129.123998] 1fc0: 00000000 00000000 00000000 00000000 00000000
+00000000 00000000 00000000
+[  129.124017] 1fe0: 00000000 00000000 00000000 00000000 00000013
+00000000 00000000 00000000
+[  129.124070] [<80033886>] (kthread_data+0xa/0x10) from [<80067d1d>]
+(irq_thread_dtor+0x21/0x80)
+[  129.124116] [<80067d1d>] (irq_thread_dtor+0x21/0x80) from
+[<8003136f>] (task_work_run+0x73/0xac)
+[  129.124156] [<8003136f>] (task_work_run+0x73/0xac) from
+[<8001f619>] (do_exit+0x215/0x6fc)
+[  129.124189] [<8001f619>] (do_exit+0x215/0x6fc) from [<8000fcf1>]
+(die+0x155/0x1e8)
+[  129.124221] [<8000fcf1>] (die+0x155/0x1e8) from [<80008235>]
+(do_undefinstr+0x69/0x14c)
+[  129.124261] [<80008235>] (do_undefinstr+0x69/0x14c) from
+[<8000cac1>] (__und_svc_finish+0x1/0x40)
+[  129.124272] Exception stack(0xee2b1d20 to 0xee2b1d68)
+[  129.124296] 1d20: 00000000 ef2d9cc0 00000000 ef2d9cc0 806a9ccc
+ee2b0000 00000000 ee6e7800
+[  129.124318] 1d40: 00000000 ef2d9cc0 ee6e641e 00000000 00000000
+ee2b1d68 80406a4f 80406b9c
+[  129.124329] 1d60: 60070033 ffffffff
+[  129.124372] [<8000cac1>] (__und_svc_finish+0x1/0x40) from
+[<80406b9c>] (rt_spin_lock_slowlock+0x18c/0x1a0)
+[  129.124408] [<80406b9c>] (rt_spin_lock_slowlock+0x18c/0x1a0) from
+[<80288639>] (uart_start+0x1d/0x30)
+[  129.124445] [<80288639>] (uart_start+0x1d/0x30) from [<80278af5>]
+(n_tty_receive_buf+0x9d/0xbf0)
+[  129.124484] [<80278af5>] (n_tty_receive_buf+0x9d/0xbf0) from
+[<8027bbe5>] (flush_to_ldisc+0xb5/0xe8)
+[  129.124527] [<8027bbe5>] (flush_to_ldisc+0xb5/0xe8) from
+[<8028d4db>] (s3c24xx_serial_rx_chars+0xbf/0x19c)
+[  129.124569] [<8028d4db>] (s3c24xx_serial_rx_chars+0xbf/0x19c) from
+[<8028dbdd>] (s3c64xx_serial_handle_irq+0x31/0x38)
+[  129.124615] [<8028dbdd>] (s3c64xx_serial_handle_irq+0x31/0x38) from
+[<80067db9>] (irq_forced_thread_fn+0x19/0x38)
+[  129.124657] [<80067db9>] (irq_forced_thread_fn+0x19/0x38) from
+[<80067e91>] (irq_thread+0xb9/0x118)
+[  129.124700] [<80067e91>] (irq_thread+0xb9/0x118) from [<80033561>]
+(kthread+0x6d/0x74)
+[  129.124745] [<80033561>] (kthread+0x6d/0x74) from [<8000cf3d>]
+(ret_from_fork+0x11/0x20)
+[  129.124775] Code: f85d eb04 f8d0 3264 (f853) 0c14
 
-IOW, s3c24xx_serial_rx_chars() executing in IRQ context cannot call
-flush_to_ldisc() -- the work must be scheduled instead. Since flush_to_ldisc()
-will be scheduled on a separate kworker thread, the uart_port spin lock will
-not be recursively claimed.
+---------x-----------------x------------
 
-So, recursive locking of the uart_port lock is not the problem
-(at least, not wrt the flush_to_ldisc() call chain).
+Here we haven't scheduled work from tty_flip_buffer_push() because of
+following change in RT kernel:
 
-Regards,
-Peter Hurley
+commit 714cc6dc551136b8f88b53361b504a5f624308b9
+Author: Ingo Molnar <mingo@elte.hu>
+Date:   Fri Jul 3 08:30:01 2009 -0500
 
+    serial: 8250: Call flush_to_ldisc when the irq is threaded
+
+    Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ drivers/tty/tty_buffer.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 9121c1f..94d3215 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -517,10 +517,15 @@ void tty_flip_buffer_push(struct tty_port *port)
+                buf->tail->commit = buf->tail->used;
+        spin_unlock_irqrestore(&buf->lock, flags);
+
++#ifndef CONFIG_PREEMPT_RT_FULL
+        if (port->low_latency)
+                flush_to_ldisc(&buf->work);
+        else
+                schedule_work(&buf->work);
++#else
++       flush_to_ldisc(&buf->work);
++#endif
++
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
+
+@@ -545,4 +550,3 @@ void tty_buffer_init(struct tty_port *port)
+        buf->memory_used = 0;
+        INIT_WORK(&buf->work, flush_to_ldisc);
+ }
+
+---------x------------------x-------------------
+
+How do you guys suggest me to fix this problem now? The fix I suggested?
+Or something specific to the RT kernel only? Or maybe send these patches
+for RT kernel only.
+
+One more thing: We are calling tty_flip_buffer_push() with (from interrupt
+context) and without (from process context) port->lock held.. Shouldn't we
+make this flat, like don't acquire port->lock while calling
+tty_flip_buffer_push()
+as that may cause recursive locking?
+
+Thanks for your help and patience.
+
+--
+viresh
+
+--089e01161b46f4ae0904e45eda9e
+Content-Type: text/plain; charset=US-ASCII; name="serial-crash-dump.txt"
+Content-Disposition: attachment; filename="serial-crash-dump.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hkkzgwcn0
+
+cm9vdEBsb2NhbGhvc3Q6fiMgWyAgMTI4Ljc3MTgwMF0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBd
+LS0tLS0tLS0tLS0tClsgIDEyOC43NzE4MTVdIGtlcm5lbCBCVUcgYXQgL2hvbWUvYXJtL3dvcmsv
+a2VybmVsL2xpbmFyby9sbmcvbG5nLmdpdC9rZXJuZWwvcnRtdXRleC5jOjczOCEKWyAgMTI4Ljc3
+MTgyOV0gSW50ZXJuYWwgZXJyb3I6IE9vcHMgLSBCVUc6IDAgWyMxXSBQUkVFTVBUIFNNUCBUSFVN
+QjIKWyAgMTI4Ljc3MTg0NF0gTW9kdWxlcyBsaW5rZWQgaW46ClsgIDEyOC43NzE4NjhdIENQVTog
+MCBQSUQ6IDE4OTUgQ29tbTogaXJxLzg1LTEyYzIwMDAwIE5vdCB0YWludGVkIDMuMTAuNi1ydDMr
+ICM3ClsgIDEyOC43NzE4ODVdIHRhc2s6IGVmMmQ5Y2MwIHRpOiBlZTJiMDAwMCB0YXNrLnRpOiBl
+ZTJiMDAwMApbICAxMjguNzcxOTE1XSBQQyBpcyBhdCBydF9zcGluX2xvY2tfc2xvd2xvY2srMHgx
+OGMvMHgxYTAKWyAgMTI4Ljc3MTkzM10gTFIgaXMgYXQgcnRfc3Bpbl9sb2NrX3Nsb3dsb2NrKzB4
+M2YvMHgxYTAKWyAgMTI4Ljc3MTk1Nl0gcGMgOiBbPDgwNDA2YjljPl0gICAgbHIgOiBbPDgwNDA2
+YTRmPl0gICAgcHNyOiA2MDA3MDAzMwpbICAxMjguNzcxOTU2XSBzcCA6IGVlMmIxZDY4ICBpcCA6
+IDAwMDAwMDAwICBmcCA6IDAwMDAwMDAwClsgIDEyOC43NzE5NjhdIHIxMDogZWU2ZTY0MWUgIHI5
+IDogZWYyZDljYzAgIHI4IDogMDAwMDAwMDAKWyAgMTI4Ljc3MTk4Ml0gcjcgOiBlZTZlNzgwMCAg
+cjYgOiAwMDAwMDAwMCAgcjUgOiBlZTJiMDAwMCAgcjQgOiA4MDZhOWNjYwpbICAxMjguNzcxOTk1
+XSByMyA6IGVmMmQ5Y2MwICByMiA6IDAwMDAwMDAwICByMSA6IGVmMmQ5Y2MwICByMCA6IDAwMDAw
+MDAwClsgIDEyOC43NzIwMTFdIEZsYWdzOiBuWkN2ICBJUlFzIG9uICBGSVFzIG9uICBNb2RlIFNW
+Q18zMiAgSVNBIFRodW1iICBTZWdtZW50IGtlcm5lbApbICAxMjguNzcyMDI2XSBDb250cm9sOiA1
+MGM1Mzg3ZCAgVGFibGU6IGFlYWM0MDZhICBEQUM6IDAwMDAwMDE1ClsgIDEyOC43NzIwNDFdIFBy
+b2Nlc3MgaXJxLzg1LTEyYzIwMDAwIChwaWQ6IDE4OTUsIHN0YWNrIGxpbWl0ID0gMHhlZTJiMDIz
+OCkKWyAgMTI4Ljc3MjA1NF0gU3RhY2s6ICgweGVlMmIxZDY4IHRvIDB4ZWUyYjIwMDApClsgIDEy
+OC43NzIwODBdIDFkNjA6ICAgICAgICAgICAgICAgICAgIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
+MDAwIDAwMDAwMDAwIDAwMDAwNDAwIDgwNjU0MzgwClsgIDEyOC43NzIxMDVdIDFkODA6IGVmMDdk
+ODAwIDAwMDAwMDAyIGVmMDdkODAwIDgxNzY3ODAwIDAwMDAwMDAyIDAwMDAwMDAwIDAwMDAwMDAx
+IDgwMDQzMTAxClsgIDEyOC43NzIxMjhdIDFkYTA6IDAwMDAwMDAyIDgwNmE5Y2NjIGVlYTQ3NDAw
+IDAwMDAwMDJlIGVlNmU3ODAwIDAwMDAwMDAwIGVlNmU3ODAwIGVlNmU2NDFlClsgIDEyOC43NzIx
+NTBdIDFkYzA6IDAwMDAwMDAwIDgwMjg4NjM5IDgwMjg4NjRkIGVlYTQ3NDAwIGVlNmU2NTFkIDgw
+Mjc4YWY1IDgxNzY3MzgwIDgwMDQ1MWM5ClsgIDEyOC43NzIxNzNdIDFkZTA6IDAwMDAwMDY0IGVm
+MmQ5ZTE4IDgxNzY3MzgwIDgwNjU0MzgwIGVmMmQ5Y2MwIDgwNDA2YTRmIGVmMmQ5ZTE4IDgwMDM3
+YTBkClsgIDEyOC43NzIxOTVdIDFlMDA6IGVlYTExMjUwIGVlMmIwMDAwIGVlYTExMjQwIGVlYTEx
+MjUwIGVlYTExMjQwIDgwNDA2YTRmIDAwMDAwMDAwIGZmZmZmZmZmClsgIDEyOC43NzIyMTZdIDFl
+MjA6IGVmMzNhMDAwIDgwMDM3YmU1IDAwMDAwMDAwIDgwNDA2YTRmIDAwMDAwMTAwIDAwMDAwMDAx
+IGVlYTExMjUwIGVlMmIwMDAwClsgIDEyOC43NzIyMzhdIDFlNDA6IGVlYTExMjUwIDgwNjU4MmMw
+IGVlNzVhNTAwIDgwNDA2YTRmIGVlYTExMjUwIGVlMmIwMDAwIDAwMDAwMDAwIDgwNjU4MmMwClsg
+IDEyOC43NzIyNjBdIDFlNjA6IDAwMDAwMDNmIDgwNDA2YTRmIGVlYTExMjQwIGVlYTExMjUwIDAw
+MDAwMDAwIDgwMjdiY2RkIDAwMDAwMDAxIDAwMDAwMDAwClsgIDEyOC43NzIyODJdIDFlODA6IGVl
+MmIxZWJjIDI3MWFlNzFhIGVlYTExMjQwIGVlYTExMjQwIGVlYTQ3NDAwIGVlYTExMjUwIDgwMjc4
+YTU5IGVlNzVhNTAwClsgIDEyOC43NzIzMDRdIDFlYTA6IGVlYTExMzA4IDAwMDAwMDAxIGVlNmU2
+NTFjIDgwMjdiYmU1IDAwMDAwMDAwIDgwNmE5Y2FjIDgwNmE5Y2NjIDAwMDAwMDAwClsgIDEyOC43
+NzIzMjVdIDFlYzA6IDgwNjU4MmMwIDAwMDAwMDNmIDAwMDAwMDAwIGVlNzVhMzAwIDAwMDAwMDAw
+IDgwMjhkNGRiIDAwMDAwMDAwIDgwMDNjYTJiClsgIDEyOC43NzIzNDddIDFlZTA6IDAwMDAwMDAx
+IGVlMmIwMDAwIDgwNmE5Y2FjIDAwMDAwMDAxIDAwMDAwMDU1IDAwMDAwMDAwIGVlNzVhMzIwIDgw
+MDY3ZGExClsgIDEyOC43NzIzNjhdIDFmMDA6IGVlNzVhMzAwIDgwMjhkYmRkIGVlNzVhMzAwIDgw
+NjVjODAwIGVlMmIwMDAwIDgwMDY3ZGI5IDAwMDAwMDAxIDgwNjdiNzUwClsgIDEyOC43NzIzOTBd
+IDFmMjA6IGVlMmIwMDAwIDgwMDY3ZTkxIGVlNzVhMzAwIDgwNjVjODAwIGVlNzVhMzAwIDAwMDAw
+MDAwIDAwMDAwMDAwIDgwMDY3Y2ZkClsgIDEyOC43NzI0MTFdIDFmNDA6IGVlMmIxZjU4IGVlNmJk
+Y2QwIGVlMmIxZjg4IGVlNzVhMzAwIDgwMDY3ZGQ5IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
+ClsgIDEyOC43NzI0MzJdIDFmNjA6IDAwMDAwMDAwIDgwMDMzNTYxIDAwMDAwMDAwIDAwMDAwMDAw
+IDAwMDAwMGY4IGVlNzVhMzAwIDAwMDAwMDAwIDAwMDAwMDAwClsgIDEyOC43NzI0NTNdIDFmODA6
+IGVlMmIxZjgwIGVlMmIxZjgwIDAwMDAwMDAwIDAwMDAwMDAwIGVlMmIxZjkwIGVlMmIxZjkwIDAw
+MDAwMDAwIGVlNmJkY2QwClsgIDEyOC43NzI0NzNdIDFmYTA6IDgwMDMzNGY1IDAwMDAwMDAwIDAw
+MDAwMDAwIDgwMDBjZjNkIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwClsgIDEy
+OC43NzI0OTJdIDFmYzA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
+MDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwClsgIDEyOC43NzI1MTJdIDFmZTA6IDAwMDAw
+MDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDEzIDAwMDAwMDAwIDAwMDAwMDAw
+IDAwMDAwMDAwClsgIDEyOC43NzI1NjRdIFs8ODA0MDZiOWM+XSAocnRfc3Bpbl9sb2NrX3Nsb3ds
+b2NrKzB4MThjLzB4MWEwKSBmcm9tIFs8ODAyODg2Mzk+XSAodWFydF9zdGFydCsweDFkLzB4MzAp
+ClsgIDEyOC43NzI2MDhdIFs8ODAyODg2Mzk+XSAodWFydF9zdGFydCsweDFkLzB4MzApIGZyb20g
+Wzw4MDI3OGFmNT5dIChuX3R0eV9yZWNlaXZlX2J1ZisweDlkLzB4YmYwKQpbICAxMjguNzcyNjUw
+XSBbPDgwMjc4YWY1Pl0gKG5fdHR5X3JlY2VpdmVfYnVmKzB4OWQvMHhiZjApIGZyb20gWzw4MDI3
+YmJlNT5dIChmbHVzaF90b19sZGlzYysweGI1LzB4ZTgpClsgIDEyOC43NzI2OTddIFs8ODAyN2Ji
+ZTU+XSAoZmx1c2hfdG9fbGRpc2MrMHhiNS8weGU4KSBmcm9tIFs8ODAyOGQ0ZGI+XSAoczNjMjR4
+eF9zZXJpYWxfcnhfY2hhcnMrMHhiZi8weDE5YykKWyAgMTI4Ljc3Mjc0Ml0gWzw4MDI4ZDRkYj5d
+IChzM2MyNHh4X3NlcmlhbF9yeF9jaGFycysweGJmLzB4MTljKSBmcm9tIFs8ODAyOGRiZGQ+XSAo
+czNjNjR4eF9zZXJpYWxfaGFuZGxlX2lycSsweDMxLzB4MzgpClsgIDEyOC43NzI3OTNdIFs8ODAy
+OGRiZGQ+XSAoczNjNjR4eF9zZXJpYWxfaGFuZGxlX2lycSsweDMxLzB4MzgpIGZyb20gWzw4MDA2
+N2RiOT5dIChpcnFfZm9yY2VkX3RocmVhZF9mbisweDE5LzB4MzgpClsgIDEyOC43NzI4MzddIFs8
+ODAwNjdkYjk+XSAoaXJxX2ZvcmNlZF90aHJlYWRfZm4rMHgxOS8weDM4KSBmcm9tIFs8ODAwNjdl
+OTE+XSAoaXJxX3RocmVhZCsweGI5LzB4MTE4KQpbICAxMjguNzcyODg0XSBbPDgwMDY3ZTkxPl0g
+KGlycV90aHJlYWQrMHhiOS8weDExOCkgZnJvbSBbPDgwMDMzNTYxPl0gKGt0aHJlYWQrMHg2ZC8w
+eDc0KQpbICAxMjguNzcyOTMyXSBbPDgwMDMzNTYxPl0gKGt0aHJlYWQrMHg2ZC8weDc0KSBmcm9t
+IFs8ODAwMGNmM2Q+XSAocmV0X2Zyb21fZm9yaysweDExLzB4MjApClsgIDEyOC43NzI5NjJdIENv
+ZGU6IGY3ZmYgZmFlNCBlN2FjIGRlMDIgKGRlMDIpIDFkMjMgClsgIDEyOS4xMjI5NzRdIC0tLVsg
+ZW5kIHRyYWNlIDAwMDAwMDAwMDAwMDAwMDIgXS0tLQpbICAxMjkuMTIyOTk0XSBub3RlOiBpcnEv
+ODUtMTJjMjAwMDBbMTg5NV0gZXhpdGVkIHdpdGggcHJlZW1wdF9jb3VudCAxClsgIDEyOS4xMjMw
+NDFdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IHZpcnR1YWwgYWRk
+cmVzcyBmZmZmZmZlYwpbICAxMjkuMTIzMDQ5XSBwZ2QgPSA4MDAwNDAwMApbICAxMjkuMTIzMDc3
+XSBbZmZmZmZmZWNdICpwZ2Q9YWY3ZmQ4MjEsICpwdGU9MDAwMDAwMDAsICpwcHRlPTAwMDAwMDAw
+ClsgIDEyOS4xMjMwOTVdIEludGVybmFsIGVycm9yOiBPb3BzOiAxNyBbIzJdIFBSRUVNUFQgU01Q
+IFRIVU1CMgpbICAxMjkuMTIzMTA4XSBNb2R1bGVzIGxpbmtlZCBpbjoKWyAgMTI5LjEyMzEzMV0g
+Q1BVOiAwIFBJRDogMTg5NSBDb21tOiBpcnEvODUtMTJjMjAwMDAgVGFpbnRlZDogRyAgICAgIEQg
+ICAgICAzLjEwLjYtcnQzKyAjNwpbICAxMjkuMTIzMTQ0XSB0YXNrOiBlZjJkOWNjMCB0aTogZWUy
+YjAwMDAgdGFzay50aTogZWUyYjAwMDAKWyAgMTI5LjEyMzE3M10gUEMgaXMgYXQga3RocmVhZF9k
+YXRhKzB4YS8weDEwClsgIDEyOS4xMjMxOTZdIExSIGlzIGF0IGlycV90aHJlYWRfZHRvcisweDIx
+LzB4ODAKWyAgMTI5LjEyMzIxOF0gcGMgOiBbPDgwMDMzODg2Pl0gICAgbHIgOiBbPDgwMDY3ZDFk
+Pl0gICAgcHNyOiA4MDA3MDBiMwpbICAxMjkuMTIzMjE4XSBzcCA6IGVlMmIxYmQ4ICBpcCA6IDAw
+MDAwMDMxICBmcCA6IDIwMDcwMDkzClsgIDEyOS4xMjMyMzFdIHIxMDogZWYyZDljYzAgIHI5IDog
+ODA2ODAwMDggIHI4IDogZWUyYjAwMDAKWyAgMTI5LjEyMzI0M10gcjcgOiBlZjJkOWNjMCAgcjYg
+OiA4MDZkOGM4OCAgcjUgOiAwMDAwMDAwMCAgcjQgOiBlZjJkOWNjMApbICAxMjkuMTIzMjU0XSBy
+MyA6IDAwMDAwMDAwICByMiA6IDgwMDAwMDAwICByMSA6IGVlMmIxZjM4ICByMCA6IGVmMmQ5Y2Mw
+ClsgIDEyOS4xMjMyNjldIEZsYWdzOiBOemN2ICBJUlFzIG9mZiAgRklRcyBvbiAgTW9kZSBTVkNf
+MzIgIElTQSBUaHVtYiAgU2VnbWVudCB1c2VyClsgIDEyOS4xMjMyODNdIENvbnRyb2w6IDUwYzUz
+ODdkICBUYWJsZTogYWVhYzQwNmEgIERBQzogMDAwMDAwMTUKWyAgMTI5LjEyMzI5N10gUHJvY2Vz
+cyBpcnEvODUtMTJjMjAwMDAgKHBpZDogMTg5NSwgc3RhY2sgbGltaXQgPSAweGVlMmIwMjM4KQpb
+ICAxMjkuMTIzMzA3XSBTdGFjazogKDB4ZWUyYjFiZDggdG8gMHhlZTJiMjAwMCkKWyAgMTI5LjEy
+MzMyNF0gMWJjMDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgODAwNjdjZmQgZWYyZGExMjQKWyAgMTI5LjEyMzM0OF0gMWJlMDogMDAwMDAwMDAg
+ODAwMzEzNmYgZWUyYjAwMDAgMDAyZjAwMmYgMDAwMDAwMDAgMDAwMDAwMGIgMDAwMDAwMDAgMDAw
+MDAwMDAKWyAgMTI5LjEyMzM3MF0gMWMwMDogZWUyYjFkMjAgODAwMWY2MTkgMjAwNzAwOTMgMDAw
+MDAwMDEgODA1MzQwN2MgODAwMWRjY2YgMDAyZjAwMmYgODA2ODU1ZWMKWyAgMTI5LjEyMzM5Ml0g
+MWMyMDogZWUyYjAwMDAgODA2YzVmODQgMDAwMDAwMGIgZWUyYjAwMDAgZWUyYjFkMjAgODA1MmZk
+MDggODA2ODAwMDggMDAwMDAwMDAKWyAgMTI5LjEyMzQxM10gMWM0MDogMjAwNzAwOTMgODAwMGZj
+ZjEgZWUyYjAyMzggMDAwMDAwMGIgODE3NmYzNGMgMDAwMDAwMDAgMDAwMzAwMDEgMDAwMDAwMDQK
+WyAgMTI5LjEyMzQzNF0gMWM2MDogMDAwMGRlMDIgZWUyYjFkMjAgODA0MDZiOWMgZWU2ZTY0MWUg
+MDAwMDAwMDAgODAwMDgyMzUgMDAwMDAwMDYgMDAwMDAwMDIKWyAgMTI5LjEyMzQ1Nl0gMWM4MDog
+MDAwMDAwMDQgMDAwMDAwMDAgMDAwMzAwMDEgODA0MDZiOWMgMDAwMDAxOTMgODA2NTFkODQgMDEx
+MWMwMDAgODAwMjE4NTkKWyAgMTI5LjEyMzQ3N10gMWNhMDogMDAwMDAwMDEgODAwMjFjMmIgODE3
+NmRkODQgODAwNmRkNGYgMDAwMDAwMDAgODE3NzAzODAgMDAwMDAwMDEgMDAwMDAwMDEKWyAgMTI5
+LjEyMzQ5OF0gMWNjMDogMDAwMDAwMDEgMDAwMDAwMDAgMDAwMDA0MDAgODAwNDJhNzMgMDAwMDA0
+MWQgMDAwMDAzZTMgMDAwMDA0MDAgMDAwMDAwMDAKWyAgMTI5LjEyMzUxOV0gMWNlMDogODA2NTQz
+ODAgZWYwN2U5NTAgODA2NTQzODAgZWYwN2U4YzAgMDAwMDAwMDAgODA2NTQzODAgZmZmZmZmZmYg
+MDAwMDAwMDAKWyAgMTI5LjEyMzU0MF0gMWQwMDogZWUyYjFkMGMgODA0MDZiOWUgNjAwNzAwMzMg
+ZmZmZmZmZmYgZWUyYjFkNTQgMDAwMDAwMDAgZWYyZDljYzAgODAwMGNhYzEKWyAgMTI5LjEyMzU2
+MV0gMWQyMDogMDAwMDAwMDAgZWYyZDljYzAgMDAwMDAwMDAgZWYyZDljYzAgODA2YTljY2MgZWUy
+YjAwMDAgMDAwMDAwMDAgZWU2ZTc4MDAKWyAgMTI5LjEyMzU4MV0gMWQ0MDogMDAwMDAwMDAgZWYy
+ZDljYzAgZWU2ZTY0MWUgMDAwMDAwMDAgMDAwMDAwMDAgZWUyYjFkNjggODA0MDZhNGYgODA0MDZi
+OWMKWyAgMTI5LjEyMzYwMV0gMWQ2MDogNjAwNzAwMzMgZmZmZmZmZmYgMDAwMDAwMDAgMDAwMDAw
+MDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDA0MDAgODA2NTQzODAKWyAgMTI5LjEyMzYyMl0gMWQ4
+MDogZWYwN2Q4MDAgMDAwMDAwMDIgZWYwN2Q4MDAgODE3Njc4MDAgMDAwMDAwMDIgMDAwMDAwMDAg
+MDAwMDAwMDEgODAwNDMxMDEKWyAgMTI5LjEyMzY0M10gMWRhMDogMDAwMDAwMDIgODA2YTljY2Mg
+ZWVhNDc0MDAgMDAwMDAwMmUgZWU2ZTc4MDAgMDAwMDAwMDAgZWU2ZTc4MDAgZWU2ZTY0MWUKWyAg
+MTI5LjEyMzY2NF0gMWRjMDogMDAwMDAwMDAgODAyODg2MzkgODAyODg2NGQgZWVhNDc0MDAgZWU2
+ZTY1MWQgODAyNzhhZjUgODE3NjczODAgODAwNDUxYzkKWyAgMTI5LjEyMzY4Nl0gMWRlMDogMDAw
+MDAwNjQgZWYyZDllMTggODE3NjczODAgODA2NTQzODAgZWYyZDljYzAgODA0MDZhNGYgZWYyZDll
+MTggODAwMzdhMGQKWyAgMTI5LjEyMzcwOF0gMWUwMDogZWVhMTEyNTAgZWUyYjAwMDAgZWVhMTEy
+NDAgZWVhMTEyNTAgZWVhMTEyNDAgODA0MDZhNGYgMDAwMDAwMDAgZmZmZmZmZmYKWyAgMTI5LjEy
+MzcyOV0gMWUyMDogZWYzM2EwMDAgODAwMzdiZTUgMDAwMDAwMDAgODA0MDZhNGYgMDAwMDAxMDAg
+MDAwMDAwMDEgZWVhMTEyNTAgZWUyYjAwMDAKWyAgMTI5LjEyMzc1MF0gMWU0MDogZWVhMTEyNTAg
+ODA2NTgyYzAgZWU3NWE1MDAgODA0MDZhNGYgZWVhMTEyNTAgZWUyYjAwMDAgMDAwMDAwMDAgODA2
+NTgyYzAKWyAgMTI5LjEyMzc3MF0gMWU2MDogMDAwMDAwM2YgODA0MDZhNGYgZWVhMTEyNDAgZWVh
+MTEyNTAgMDAwMDAwMDAgODAyN2JjZGQgMDAwMDAwMDEgMDAwMDAwMDAKWyAgMTI5LjEyMzc5Ml0g
+MWU4MDogZWUyYjFlYmMgMjcxYWU3MWEgZWVhMTEyNDAgZWVhMTEyNDAgZWVhNDc0MDAgZWVhMTEy
+NTAgODAyNzhhNTkgZWU3NWE1MDAKWyAgMTI5LjEyMzgxM10gMWVhMDogZWVhMTEzMDggMDAwMDAw
+MDEgZWU2ZTY1MWMgODAyN2JiZTUgMDAwMDAwMDAgODA2YTljYWMgODA2YTljY2MgMDAwMDAwMDAK
+WyAgMTI5LjEyMzgzNF0gMWVjMDogODA2NTgyYzAgMDAwMDAwM2YgMDAwMDAwMDAgZWU3NWEzMDAg
+MDAwMDAwMDAgODAyOGQ0ZGIgMDAwMDAwMDAgODAwM2NhMmIKWyAgMTI5LjEyMzg1NV0gMWVlMDog
+MDAwMDAwMDEgZWUyYjAwMDAgODA2YTljYWMgMDAwMDAwMDEgMDAwMDAwNTUgMDAwMDAwMDAgZWU3
+NWEzMjAgODAwNjdkYTEKWyAgMTI5LjEyMzg3Nl0gMWYwMDogZWU3NWEzMDAgODAyOGRiZGQgZWU3
+NWEzMDAgODA2NWM4MDAgZWUyYjAwMDAgODAwNjdkYjkgMDAwMDAwMDEgODA2N2I3NTAKWyAgMTI5
+LjEyMzg5N10gMWYyMDogZWUyYjAwMDAgODAwNjdlOTEgZWU3NWEzMDAgODA2NWM4MDAgZWU3NWEz
+MDAgMDAwMDAwMDAgMDAwMDAwMDAgODAwNjdjZmQKWyAgMTI5LjEyMzkxOF0gMWY0MDogZWUyYjFm
+NTggZWU2YmRjZDAgZWUyYjFmODggZWU3NWEzMDAgODAwNjdkZDkgMDAwMDAwMDAgMDAwMDAwMDAg
+MDAwMDAwMDAKWyAgMTI5LjEyMzkzOF0gMWY2MDogMDAwMDAwMDAgODAwMzM1NjEgMDAwMDAwMDAg
+MDAwMDAwMDAgMDAwMDAwZjggZWU3NWEzMDAgMDAwMDAwMDAgMDAwMDAwMDAKWyAgMTI5LjEyMzk1
+OV0gMWY4MDogZWUyYjFmODAgZWUyYjFmODAgMDAwMDAwMDEgMDAwMTAwMDEgZWUyYjFmOTAgZWUy
+YjFmOTAgMDAwMDAwMDAgZWU2YmRjZDAKWyAgMTI5LjEyMzk3OV0gMWZhMDogODAwMzM0ZjUgMDAw
+MDAwMDAgMDAwMDAwMDAgODAwMGNmM2QgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAw
+MDAKWyAgMTI5LjEyMzk5OF0gMWZjMDogMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAw
+MDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAKWyAgMTI5LjEyNDAxN10gMWZl
+MDogMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMTMgMDAwMDAwMDAg
+MDAwMDAwMDAgMDAwMDAwMDAKWyAgMTI5LjEyNDA3MF0gWzw4MDAzMzg4Nj5dIChrdGhyZWFkX2Rh
+dGErMHhhLzB4MTApIGZyb20gWzw4MDA2N2QxZD5dIChpcnFfdGhyZWFkX2R0b3IrMHgyMS8weDgw
+KQpbICAxMjkuMTI0MTE2XSBbPDgwMDY3ZDFkPl0gKGlycV90aHJlYWRfZHRvcisweDIxLzB4ODAp
+IGZyb20gWzw4MDAzMTM2Zj5dICh0YXNrX3dvcmtfcnVuKzB4NzMvMHhhYykKWyAgMTI5LjEyNDE1
+Nl0gWzw4MDAzMTM2Zj5dICh0YXNrX3dvcmtfcnVuKzB4NzMvMHhhYykgZnJvbSBbPDgwMDFmNjE5
+Pl0gKGRvX2V4aXQrMHgyMTUvMHg2ZmMpClsgIDEyOS4xMjQxODldIFs8ODAwMWY2MTk+XSAoZG9f
+ZXhpdCsweDIxNS8weDZmYykgZnJvbSBbPDgwMDBmY2YxPl0gKGRpZSsweDE1NS8weDFlOCkKWyAg
+MTI5LjEyNDIyMV0gWzw4MDAwZmNmMT5dIChkaWUrMHgxNTUvMHgxZTgpIGZyb20gWzw4MDAwODIz
+NT5dIChkb191bmRlZmluc3RyKzB4NjkvMHgxNGMpClsgIDEyOS4xMjQyNjFdIFs8ODAwMDgyMzU+
+XSAoZG9fdW5kZWZpbnN0cisweDY5LzB4MTRjKSBmcm9tIFs8ODAwMGNhYzE+XSAoX191bmRfc3Zj
+X2ZpbmlzaCsweDEvMHg0MCkKWyAgMTI5LjEyNDI3Ml0gRXhjZXB0aW9uIHN0YWNrKDB4ZWUyYjFk
+MjAgdG8gMHhlZTJiMWQ2OCkKWyAgMTI5LjEyNDI5Nl0gMWQyMDogMDAwMDAwMDAgZWYyZDljYzAg
+MDAwMDAwMDAgZWYyZDljYzAgODA2YTljY2MgZWUyYjAwMDAgMDAwMDAwMDAgZWU2ZTc4MDAKWyAg
+MTI5LjEyNDMxOF0gMWQ0MDogMDAwMDAwMDAgZWYyZDljYzAgZWU2ZTY0MWUgMDAwMDAwMDAgMDAw
+MDAwMDAgZWUyYjFkNjggODA0MDZhNGYgODA0MDZiOWMKWyAgMTI5LjEyNDMyOV0gMWQ2MDogNjAw
+NzAwMzMgZmZmZmZmZmYKWyAgMTI5LjEyNDM3Ml0gWzw4MDAwY2FjMT5dIChfX3VuZF9zdmNfZmlu
+aXNoKzB4MS8weDQwKSBmcm9tIFs8ODA0MDZiOWM+XSAocnRfc3Bpbl9sb2NrX3Nsb3dsb2NrKzB4
+MThjLzB4MWEwKQpbICAxMjkuMTI0NDA4XSBbPDgwNDA2YjljPl0gKHJ0X3NwaW5fbG9ja19zbG93
+bG9jaysweDE4Yy8weDFhMCkgZnJvbSBbPDgwMjg4NjM5Pl0gKHVhcnRfc3RhcnQrMHgxZC8weDMw
+KQpbICAxMjkuMTI0NDQ1XSBbPDgwMjg4NjM5Pl0gKHVhcnRfc3RhcnQrMHgxZC8weDMwKSBmcm9t
+IFs8ODAyNzhhZjU+XSAobl90dHlfcmVjZWl2ZV9idWYrMHg5ZC8weGJmMCkKWyAgMTI5LjEyNDQ4
+NF0gWzw4MDI3OGFmNT5dIChuX3R0eV9yZWNlaXZlX2J1ZisweDlkLzB4YmYwKSBmcm9tIFs8ODAy
+N2JiZTU+XSAoZmx1c2hfdG9fbGRpc2MrMHhiNS8weGU4KQpbICAxMjkuMTI0NTI3XSBbPDgwMjdi
+YmU1Pl0gKGZsdXNoX3RvX2xkaXNjKzB4YjUvMHhlOCkgZnJvbSBbPDgwMjhkNGRiPl0gKHMzYzI0
+eHhfc2VyaWFsX3J4X2NoYXJzKzB4YmYvMHgxOWMpClsgIDEyOS4xMjQ1NjldIFs8ODAyOGQ0ZGI+
+XSAoczNjMjR4eF9zZXJpYWxfcnhfY2hhcnMrMHhiZi8weDE5YykgZnJvbSBbPDgwMjhkYmRkPl0g
+KHMzYzY0eHhfc2VyaWFsX2hhbmRsZV9pcnErMHgzMS8weDM4KQpbICAxMjkuMTI0NjE1XSBbPDgw
+MjhkYmRkPl0gKHMzYzY0eHhfc2VyaWFsX2hhbmRsZV9pcnErMHgzMS8weDM4KSBmcm9tIFs8ODAw
+NjdkYjk+XSAoaXJxX2ZvcmNlZF90aHJlYWRfZm4rMHgxOS8weDM4KQpbICAxMjkuMTI0NjU3XSBb
+PDgwMDY3ZGI5Pl0gKGlycV9mb3JjZWRfdGhyZWFkX2ZuKzB4MTkvMHgzOCkgZnJvbSBbPDgwMDY3
+ZTkxPl0gKGlycV90aHJlYWQrMHhiOS8weDExOCkKWyAgMTI5LjEyNDcwMF0gWzw4MDA2N2U5MT5d
+IChpcnFfdGhyZWFkKzB4YjkvMHgxMTgpIGZyb20gWzw4MDAzMzU2MT5dIChrdGhyZWFkKzB4NmQv
+MHg3NCkKWyAgMTI5LjEyNDc0NV0gWzw4MDAzMzU2MT5dIChrdGhyZWFkKzB4NmQvMHg3NCkgZnJv
+bSBbPDgwMDBjZjNkPl0gKHJldF9mcm9tX2ZvcmsrMHgxMS8weDIwKQpbICAxMjkuMTI0Nzc1XSBD
+b2RlOiBmODVkIGViMDQgZjhkMCAzMjY0IChmODUzKSAwYzE0IAoK
+--089e01161b46f4ae0904e45eda9e--
