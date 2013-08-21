@@ -1,128 +1,107 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH v2 1/5] msm_serial: Switch clock consumer strings and simplify code
-Date: Tue, 20 Aug 2013 23:48:02 -0700
-Message-ID: <1377067686-31957-2-git-send-email-sboyd@codeaurora.org>
+Subject: [PATCH v2 5/5] msm_serial: Send more than 1 character on the console w/ UARTDM
+Date: Tue, 20 Aug 2013 23:48:06 -0700
+Message-ID: <1377067686-31957-6-git-send-email-sboyd@codeaurora.org>
 References: <1377067686-31957-1-git-send-email-sboyd@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <1377067686-31957-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-arm-msm-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-In downstream kernel we've standardized the clock consumer names
-that MSM device drivers use. Replace the uart specific clock
-names in this driver with the more standard 'core' and 'iface'
-names. Also simplify the code by assuming that clk_prepare_enable
-and clk_disable_unprepare() will properly check for NULL pointers
-(it will because MSM uses the common clock framework).
+We recently added support to send more than one character at a
+time for UARTDM hardware but we didn't add the same support in
+the console code path. Add support here to speed up console
+messages on UARTDM hardware.
 
 Cc: David Brown <davidb@codeaurora.org>
 Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 ---
- arch/arm/mach-msm/devices-msm7x00.c |  6 +++---
- arch/arm/mach-msm/devices-msm7x30.c |  2 +-
- arch/arm/mach-msm/devices-qsd8x50.c |  6 +++---
- drivers/tty/serial/msm_serial.c     | 19 +++++--------------
- 4 files changed, 12 insertions(+), 21 deletions(-)
+ drivers/tty/serial/msm_serial.c | 59 +++++++++++++++++++++++++++++++----------
+ 1 file changed, 45 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm/mach-msm/devices-msm7x00.c b/arch/arm/mach-msm/devices-msm7x00.c
-index 6d50fb9..d83404d 100644
---- a/arch/arm/mach-msm/devices-msm7x00.c
-+++ b/arch/arm/mach-msm/devices-msm7x00.c
-@@ -456,9 +456,9 @@ static struct clk_pcom_desc msm_clocks_7x01a[] = {
- 	CLK_PCOM("tsif_ref_clk",	TSIF_REF_CLK,	NULL, 0),
- 	CLK_PCOM("tv_dac_clk",	TV_DAC_CLK,	NULL, 0),
- 	CLK_PCOM("tv_enc_clk",	TV_ENC_CLK,	NULL, 0),
--	CLK_PCOM("uart_clk",	UART1_CLK,	"msm_serial.0", OFF),
--	CLK_PCOM("uart_clk",	UART2_CLK,	"msm_serial.1", 0),
--	CLK_PCOM("uart_clk",	UART3_CLK,	"msm_serial.2", OFF),
-+	CLK_PCOM("core",	UART1_CLK,	"msm_serial.0", OFF),
-+	CLK_PCOM("core",	UART2_CLK,	"msm_serial.1", 0),
-+	CLK_PCOM("core",	UART3_CLK,	"msm_serial.2", OFF),
- 	CLK_PCOM("uart1dm_clk",	UART1DM_CLK,	NULL, OFF),
- 	CLK_PCOM("uart2dm_clk",	UART2DM_CLK,	NULL, 0),
- 	CLK_PCOM("usb_hs_clk",	USB_HS_CLK,	"msm_hsusb", OFF),
-diff --git a/arch/arm/mach-msm/devices-msm7x30.c b/arch/arm/mach-msm/devices-msm7x30.c
-index d4db75a..14e2869 100644
---- a/arch/arm/mach-msm/devices-msm7x30.c
-+++ b/arch/arm/mach-msm/devices-msm7x30.c
-@@ -211,7 +211,7 @@ static struct clk_pcom_desc msm_clocks_7x30[] = {
- 	CLK_PCOM("spi_pclk",	SPI_P_CLK,	NULL, 0),
- 	CLK_PCOM("tv_dac_clk",	TV_DAC_CLK,	NULL, 0),
- 	CLK_PCOM("tv_enc_clk",	TV_ENC_CLK,	NULL, 0),
--	CLK_PCOM("uart_clk",	UART2_CLK,	"msm_serial.1", 0),
-+	CLK_PCOM("core",	UART2_CLK,	"msm_serial.1", 0),
- 	CLK_PCOM("usb_phy_clk",	USB_PHY_CLK,	NULL, 0),
- 	CLK_PCOM("usb_hs_clk",		USB_HS_CLK,		NULL, OFF),
- 	CLK_PCOM("usb_hs_pclk",		USB_HS_P_CLK,		NULL, OFF),
-diff --git a/arch/arm/mach-msm/devices-qsd8x50.c b/arch/arm/mach-msm/devices-qsd8x50.c
-index f551811..2ed89b2 100644
---- a/arch/arm/mach-msm/devices-qsd8x50.c
-+++ b/arch/arm/mach-msm/devices-qsd8x50.c
-@@ -358,9 +358,9 @@ static struct clk_pcom_desc msm_clocks_8x50[] = {
- 	CLK_PCOM("tsif_ref_clk",	TSIF_REF_CLK,	NULL, 0),
- 	CLK_PCOM("tv_dac_clk",	TV_DAC_CLK,	NULL, 0),
- 	CLK_PCOM("tv_enc_clk",	TV_ENC_CLK,	NULL, 0),
--	CLK_PCOM("uart_clk",	UART1_CLK,	NULL, OFF),
--	CLK_PCOM("uart_clk",	UART2_CLK,	NULL, 0),
--	CLK_PCOM("uart_clk",	UART3_CLK,	"msm_serial.2", OFF),
-+	CLK_PCOM("core",	UART1_CLK,	NULL, OFF),
-+	CLK_PCOM("core",	UART2_CLK,	NULL, 0),
-+	CLK_PCOM("core",	UART3_CLK,	"msm_serial.2", OFF),
- 	CLK_PCOM("uartdm_clk",	UART1DM_CLK,	NULL, OFF),
- 	CLK_PCOM("uartdm_clk",	UART2DM_CLK,	NULL, 0),
- 	CLK_PCOM("usb_hs_clk",	USB_HS_CLK,	NULL, OFF),
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 97642ec..23651cc 100644
+index 2094eb5..128b222 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -416,8 +416,7 @@ static void msm_init_clock(struct uart_port *port)
- 	struct msm_port *msm_port = UART_TO_MSM(port);
- 
- 	clk_prepare_enable(msm_port->clk);
--	if (!IS_ERR(msm_port->pclk))
--		clk_prepare_enable(msm_port->pclk);
-+	clk_prepare_enable(msm_port->pclk);
- 	msm_serial_set_mnd_regs(port);
+@@ -761,32 +761,63 @@ static inline struct uart_port *get_port_from_line(unsigned int line)
  }
  
-@@ -693,13 +692,11 @@ static void msm_power(struct uart_port *port, unsigned int state,
- 	switch (state) {
- 	case 0:
- 		clk_prepare_enable(msm_port->clk);
--		if (!IS_ERR(msm_port->pclk))
--			clk_prepare_enable(msm_port->pclk);
-+		clk_prepare_enable(msm_port->pclk);
- 		break;
- 	case 3:
- 		clk_disable_unprepare(msm_port->clk);
--		if (!IS_ERR(msm_port->pclk))
--			clk_disable_unprepare(msm_port->pclk);
-+		clk_disable_unprepare(msm_port->pclk);
- 		break;
- 	default:
- 		printk(KERN_ERR "msm_serial: Unknown PM state %d\n", state);
-@@ -887,18 +884,12 @@ static int __init msm_serial_probe(struct platform_device *pdev)
- 	else
- 		msm_port->is_uartdm = 0;
- 
--	if (msm_port->is_uartdm) {
--		msm_port->clk = devm_clk_get(&pdev->dev, "gsbi_uart_clk");
--		msm_port->pclk = devm_clk_get(&pdev->dev, "gsbi_pclk");
--	} else {
--		msm_port->clk = devm_clk_get(&pdev->dev, "uart_clk");
--		msm_port->pclk = ERR_PTR(-ENOENT);
--	}
+ #ifdef CONFIG_SERIAL_MSM_CONSOLE
 -
-+	msm_port->clk = devm_clk_get(&pdev->dev, "core");
- 	if (IS_ERR(msm_port->clk))
- 		return PTR_ERR(msm_port->clk);
+-static void msm_console_putchar(struct uart_port *port, int c)
+-{
+-	struct msm_port *msm_port = UART_TO_MSM(port);
+-
+-	if (msm_port->is_uartdm)
+-		reset_dm_count(port, 1);
+-
+-	while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
+-		;
+-	msm_write(port, c, msm_port->is_uartdm ? UARTDM_TF : UART_TF);
+-}
+-
+ static void msm_console_write(struct console *co, const char *s,
+ 			      unsigned int count)
+ {
++	int i;
+ 	struct uart_port *port;
+ 	struct msm_port *msm_port;
++	int num_newlines = 0;
++	bool replaced = false;
  
- 	if (msm_port->is_uartdm) {
-+		msm_port->pclk = devm_clk_get(&pdev->dev, "iface");
- 		if (IS_ERR(msm_port->pclk))
- 			return PTR_ERR(msm_port->pclk);
+ 	BUG_ON(co->index < 0 || co->index >= UART_NR);
+ 
+ 	port = get_port_from_line(co->index);
+ 	msm_port = UART_TO_MSM(port);
+ 
++	/* Account for newlines that will get a carriage return added */
++	for (i = 0; i < count; i++)
++		if (s[i] == '\n')
++			num_newlines++;
++	count += num_newlines;
++
+ 	spin_lock(&port->lock);
+-	uart_console_write(port, s, count, msm_console_putchar);
++	if (msm_port->is_uartdm)
++		reset_dm_count(port, count);
++
++	i = 0;
++	while (i < count) {
++		int j;
++		unsigned int num_chars;
++		char buf[4] = { 0 };
++		unsigned int *bf = (unsigned int *)&buf;
++
++		if (msm_port->is_uartdm)
++			num_chars = min(count - i, (unsigned int)sizeof(buf));
++		else
++			num_chars = 1;
++
++		for (j = 0; j < num_chars; j++) {
++			char c = *s;
++
++			if (c == '\n' && !replaced) {
++				buf[j] = '\r';
++				j++;
++				replaced = true;
++			}
++			if (j < num_chars) {
++				buf[j] = c;
++				s++;
++				replaced = false;
++			}
++		}
++
++		while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
++			cpu_relax();
++
++		msm_write(port, *bf, msm_port->is_uartdm ? UARTDM_TF : UART_TF);
++		i += num_chars;
++	}
+ 	spin_unlock(&port->lock);
+ }
  
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
