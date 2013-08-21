@@ -1,45 +1,54 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH v2 0/5] Document msm_serial bindings and support newer uartdms
-Date: Tue, 20 Aug 2013 23:48:01 -0700
-Message-ID: <1377067686-31957-1-git-send-email-sboyd@codeaurora.org>
+Subject: [PATCH v2 4/5] ARM: dts: msm: Update uartdm compatible strings
+Date: Tue, 20 Aug 2013 23:48:05 -0700
+Message-ID: <1377067686-31957-5-git-send-email-sboyd@codeaurora.org>
+References: <1377067686-31957-1-git-send-email-sboyd@codeaurora.org>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1377067686-31957-1-git-send-email-sboyd@codeaurora.org>
 Sender: linux-arm-msm-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patchset aligns the msm_serial driver more with downstream usage and
-also documents the msm_serial driver's DT binding. Along the way we
-update the clock names and add support for newer UARTDM hardware that
-isn't part of a GSBI and make the console layer use the extra registers in
-UARTDM.
+Let's follow the ratified DT binding and use uartdm instead of
+hsuart. This does break backwards compatibility but this
+shouldn't be a problem because the uart driver isn't probing on
+these devices without adding clock support (which isn't merged so
+far).
 
-Changes since v1:
- * Dropped _clk postfix from {core,iface}_clk
- * Split DT binding into two files
- * Renamed DT binding files to match compatible strings
- * Fixed up DT review comments
- * Added new patch 5/5 (more than 1 char for UARTDM)
+Cc: David Brown <davidb@codeaurora.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+---
+ arch/arm/boot/dts/msm8660-surf.dts | 2 +-
+ arch/arm/boot/dts/msm8960-cdp.dts  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Stephen Boyd (5):
-  msm_serial: Switch clock consumer strings and simplify code
-  devicetree: serial: Document msm_serial bindings
-  msm_serial: Add support for non-GSBI UARTDM devices
-  ARM: dts: msm: Update uartdm compatible strings
-  msm_serial: Send more than 1 character on the console w/ UARTDM
-
- .../devicetree/bindings/serial/qcom,msm-uart.txt   | 25 ++++++
- .../devicetree/bindings/serial/qcom,msm-uartdm.txt | 52 +++++++++++++
- arch/arm/boot/dts/msm8660-surf.dts                 |  2 +-
- arch/arm/boot/dts/msm8960-cdp.dts                  |  2 +-
- arch/arm/mach-msm/devices-msm7x00.c                |  6 +-
- arch/arm/mach-msm/devices-msm7x30.c                |  2 +-
- arch/arm/mach-msm/devices-qsd8x50.c                |  6 +-
- drivers/tty/serial/msm_serial.c                    | 88 ++++++++++++++--------
- 8 files changed, 144 insertions(+), 39 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-
+diff --git a/arch/arm/boot/dts/msm8660-surf.dts b/arch/arm/boot/dts/msm8660-surf.dts
+index cdc010e..386d428 100644
+--- a/arch/arm/boot/dts/msm8660-surf.dts
++++ b/arch/arm/boot/dts/msm8660-surf.dts
+@@ -38,7 +38,7 @@
+ 	};
+ 
+ 	serial@19c40000 {
+-		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
++		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 		reg = <0x19c40000 0x1000>,
+ 		      <0x19c00000 0x1000>;
+ 		interrupts = <0 195 0x0>;
+diff --git a/arch/arm/boot/dts/msm8960-cdp.dts b/arch/arm/boot/dts/msm8960-cdp.dts
+index db2060c..532050b 100644
+--- a/arch/arm/boot/dts/msm8960-cdp.dts
++++ b/arch/arm/boot/dts/msm8960-cdp.dts
+@@ -38,7 +38,7 @@
+ 	};
+ 
+ 	serial@16440000 {
+-		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
++		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 		reg = <0x16440000 0x1000>,
+ 		      <0x16400000 0x1000>;
+ 		interrupts = <0 154 0x0>;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
