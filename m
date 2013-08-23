@@ -1,53 +1,43 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 2/2] TTY: amiserial, remove unnecessary platform_set_drvdata()
-Date: Thu, 22 Aug 2013 11:08:04 +0900
-Message-ID: <002001ce9edc$6feb5310$4fc1f930$%han@samsung.com>
-References: <001f01ce9edc$421b1d30$c6515790$%han@samsung.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH V2 00/25] tty: serial: drop uart_port->lock before calling
+Date: Fri, 23 Aug 2013 13:56:08 +0530
+Message-ID: <CAKohpokL4_RZ7s=yyn8S5jKh5zpW_DaUK4ni5_x_qN2+0Bv-Uw@mail.gmail.com>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
+	<52123A44.9090608@hurleysoftware.com>
+	<CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+	<5212D602.2000005@hurleysoftware.com>
+	<CAKohpomE+6fxwF4JsDUDCzf+LsWZ_deBsRzF_XYjQHZTPvp_jw@mail.gmail.com>
+	<5213C5CA.7060206@hurleysoftware.com>
+	<CAKohpo=rZn-0FwcK5gzyYXufpVvfFHXSz_bK0=EqJbTDNcxqMQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:11964 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751836Ab3HVCIF (ORCPT
+Received: from mail-oa0-f54.google.com ([209.85.219.54]:50934 "EHLO
+	mail-oa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754726Ab3HWI0I (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 21 Aug 2013 22:08:05 -0400
-Received: from epcpsbgr2.samsung.com
- (u142.gpu120.samsung.co.kr [203.254.230.142])
- by mailout2.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MRW007OATX6AWD0@mailout2.samsung.com> for
- linux-serial@vger.kernel.org; Thu, 22 Aug 2013 11:08:05 +0900 (KST)
-In-reply-to: <001f01ce9edc$421b1d30$c6515790$%han@samsung.com>
-Content-language: ko
+	Fri, 23 Aug 2013 04:26:08 -0400
+Received: by mail-oa0-f54.google.com with SMTP id o6so412352oag.41
+        for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2013 01:26:08 -0700 (PDT)
+In-Reply-To: <CAKohpo=rZn-0FwcK5gzyYXufpVvfFHXSz_bK0=EqJbTDNcxqMQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>, Linaro Networking <linaro-networking@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
 
-The driver core clears the driver data to NULL after device_release
-or on probe failure. Thus, it is not needed to manually clear the
-device driver data to NULL.
+On 21 August 2013 10:05, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> On 21 August 2013 01:08, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> On 08/20/2013 06:52 AM, Viresh Kumar wrote:
+>
+>> That's really Greg's call whether he wants to take up RT-specific patches
+>> into the regular tree.
+>
+> Yeah.. Lets wait for Greg..
 
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/tty/amiserial.c |    2 --
- 1 file changed, 2 deletions(-)
+Hi Greg,
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 083710e..2b86f8e 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -1785,8 +1785,6 @@ static int __exit amiga_serial_remove(struct platform_device *pdev)
- 	free_irq(IRQ_AMIGA_TBE, state);
- 	free_irq(IRQ_AMIGA_RBF, state);
- 
--	platform_set_drvdata(pdev, NULL);
--
- 	return error;
- }
- 
--- 
-1.7.10.4
+Should I resend my patches with better commit logs if you are going to
+take these patches?
 
-
+--
+viresh
