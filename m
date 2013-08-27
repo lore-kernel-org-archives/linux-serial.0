@@ -1,168 +1,99 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [patch] serial: icom: move array overflow checks earlier
-Date: Mon, 26 Aug 2013 18:10:01 +0300
-Message-ID: <20130826151001.GC12428@elgon.mountain>
+From: Kevin Hilman <khilman@linaro.org>
+Subject: Re: [PATCH] serial: omap: Fix IRQ handling return value
+Date: Tue, 27 Aug 2013 07:30:19 -0700
+Message-ID: <CAGa+x859+7H3pjZfTFcECe4qMt4=SE_kmToZBt9zoVt0=sUcvA@mail.gmail.com>
+References: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
+	<CAGa+x84dE_RwN2G1y_9OJFxnq3JKq5g0YZd+mFueOjjvMzyyew@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f179.google.com ([209.85.212.179]:43705 "EHLO
+	mail-wi0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752881Ab3H0OaV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 Aug 2013 10:30:21 -0400
+Received: by mail-wi0-f179.google.com with SMTP id ez12so679474wid.12
+        for <linux-serial@vger.kernel.org>; Tue, 27 Aug 2013 07:30:20 -0700 (PDT)
+In-Reply-To: <CAGa+x84dE_RwN2G1y_9OJFxnq3JKq5g0YZd+mFueOjjvMzyyew@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: Alexander Savchenko <oleksandr.savchenko@ti.com>, jslaby@suse.cz, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, balbi@ti.com, linux-omap <linux-omap@vger.kernel.org>
 
-This code does an annoying thing where it writes to the array and then
-checks later for array overflows.  I don't know if it's actually
-possible to overflow but let's check before using the array index.
+Greg,
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 06555dd..c5ed86a 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -297,25 +297,25 @@ static void stop_processor(struct icom_port *icom_port)
- 	spin_lock_irqsave(&icom_lock, flags);
- 
- 	port = icom_port->port;
-+	if (port >= ARRAY_SIZE(stop_proc)) {
-+		dev_err(&icom_port->adapter->pci_dev->dev,
-+			"Invalid port assignment\n");
-+		goto unlock;
-+	}
-+
- 	if (port == 0 || port == 1)
- 		stop_proc[port].global_control_reg = &icom_port->global_reg->control;
- 	else
- 		stop_proc[port].global_control_reg = &icom_port->global_reg->control_2;
- 
-+	temp = readl(stop_proc[port].global_control_reg);
-+	temp = (temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
-+	writel(temp, stop_proc[port].global_control_reg);
- 
--	if (port < 4) {
--		temp = readl(stop_proc[port].global_control_reg);
--		temp =
--			(temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
--		writel(temp, stop_proc[port].global_control_reg);
--
--		/* write flush */
--		readl(stop_proc[port].global_control_reg);
--	} else {
--		dev_err(&icom_port->adapter->pci_dev->dev,
--                        "Invalid port assignment\n");
--	}
-+	/* write flush */
-+	readl(stop_proc[port].global_control_reg);
- 
-+unlock:
- 	spin_unlock_irqrestore(&icom_lock, flags);
- }
- 
-@@ -328,23 +328,25 @@ static void start_processor(struct icom_port *icom_port)
- 	spin_lock_irqsave(&icom_lock, flags);
- 
- 	port = icom_port->port;
-+	if (port >= ARRAY_SIZE(start_proc)) {
-+		dev_err(&icom_port->adapter->pci_dev->dev,
-+			"Invalid port assignment\n");
-+		goto unlock;
-+	}
-+
- 	if (port == 0 || port == 1)
- 		start_proc[port].global_control_reg = &icom_port->global_reg->control;
- 	else
- 		start_proc[port].global_control_reg = &icom_port->global_reg->control_2;
--	if (port < 4) {
--		temp = readl(start_proc[port].global_control_reg);
--		temp =
--			(temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
--		writel(temp, start_proc[port].global_control_reg);
- 
--		/* write flush */
--		readl(start_proc[port].global_control_reg);
--	} else {
--		dev_err(&icom_port->adapter->pci_dev->dev,
--                        "Invalid port assignment\n");
--	}
-+	temp = readl(start_proc[port].global_control_reg);
-+	temp = (temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
-+	writel(temp, start_proc[port].global_control_reg);
-+
-+	/* write flush */
-+	readl(start_proc[port].global_control_reg);
- 
-+unlock:
- 	spin_unlock_irqrestore(&icom_lock, flags);
- }
- 
-@@ -557,6 +559,12 @@ static int startup(struct icom_port *icom_port)
- 	 */
- 	spin_lock_irqsave(&icom_lock, flags);
- 	port = icom_port->port;
-+	if (port >= ARRAY_SIZE(int_mask_tbl)) {
-+		dev_err(&icom_port->adapter->pci_dev->dev,
-+			"Invalid port assignment\n");
-+		goto unlock;
-+	}
-+
- 	if (port == 0 || port == 1)
- 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
- 	else
-@@ -566,17 +574,14 @@ static int startup(struct icom_port *icom_port)
- 		writew(0x00FF, icom_port->int_reg);
- 	else
- 		writew(0x3F00, icom_port->int_reg);
--	if (port < 4) {
--		temp = readl(int_mask_tbl[port].global_int_mask);
--		writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
- 
--		/* write flush */
--		readl(int_mask_tbl[port].global_int_mask);
--	} else {
--		dev_err(&icom_port->adapter->pci_dev->dev,
--                        "Invalid port assignment\n");
--	}
-+	temp = readl(int_mask_tbl[port].global_int_mask);
-+	writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
-+
-+	/* write flush */
-+	readl(int_mask_tbl[port].global_int_mask);
- 
-+unlock:
- 	spin_unlock_irqrestore(&icom_lock, flags);
- 	return 0;
- }
-@@ -595,21 +600,23 @@ static void shutdown(struct icom_port *icom_port)
- 	 * disable all interrupts
- 	 */
- 	port = icom_port->port;
-+	if (port >= ARRAY_SIZE(int_mask_tbl)) {
-+		dev_err(&icom_port->adapter->pci_dev->dev,
-+			"Invalid port assignment\n");
-+		goto unlock;
-+	}
- 	if (port == 0 || port == 1)
- 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
- 	else
- 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask_2;
- 
--	if (port < 4) {
--		temp = readl(int_mask_tbl[port].global_int_mask);
--		writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
-+	temp = readl(int_mask_tbl[port].global_int_mask);
-+	writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
- 
--		/* write flush */
--		readl(int_mask_tbl[port].global_int_mask);
--	} else {
--		dev_err(&icom_port->adapter->pci_dev->dev,
--                        "Invalid port assignment\n");
--	}
-+	/* write flush */
-+	readl(int_mask_tbl[port].global_int_mask);
-+
-+unlock:
- 	spin_unlock_irqrestore(&icom_lock, flags);
- 
- 	/*
+On Tue, Aug 20, 2013 at 8:44 AM, Kevin Hilman <khilman@linaro.org> wrote:
+> +Felipe
+>
+> On Wed, Jul 17, 2013 at 6:29 AM, Alexander Savchenko
+> <oleksandr.savchenko@ti.com> wrote:
+>> From: Ruchika Kharwar <ruchika@ti.com>
+>>
+>> Ensure the Interrupt handling routine return IRQ_HANDLED vs
+>> IRQ_NONE.
+>
+> Why?
+>
+> By unconditionally returning IRQ_HANDLED, this patch will surely break
+> systems where the UART IRQ is shared with other platforms.
+>
+> I just noticed this patch when bisecting a related problem.  Why
+> wasn't this Cc'd to linux-omap where OMAP users might have been more
+> likely to see it?
+>
+> Greg, without a better justification in the changelog, I think this
+> patch should be dropped from tty-next.
+
+Can you drop this from tty-next please?
+
+The authors aren't responding (one of the ti.com addresses bounced)
+and this "fix" is most is not correct.
+
+Kevin
+
+> Kevin
+>
+>> Signed-off-by: Ruchika Kharwar <ruchika@ti.com>
+>> Signed-off-by: Alexander Savchenko <oleksandr.savchenko@ti.com>
+>> ---
+>>  drivers/tty/serial/omap-serial.c |    4 +---
+>>  1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index b6d1728..70feeb3 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -479,7 +479,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>>         struct uart_omap_port *up = dev_id;
+>>         unsigned int iir, lsr;
+>>         unsigned int type;
+>> -       irqreturn_t ret = IRQ_NONE;
+>>         int max_count = 256;
+>>
+>>         spin_lock(&up->port.lock);
+>> @@ -490,7 +489,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>>                 if (iir & UART_IIR_NO_INT)
+>>                         break;
+>>
+>> -               ret = IRQ_HANDLED;
+>>                 lsr = serial_in(up, UART_LSR);
+>>
+>>                 /* extract IRQ type from IIR register */
+>> @@ -529,7 +527,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+>>         pm_runtime_put_autosuspend(up->dev);
+>>         up->port_activity = jiffies;
+>>
+>> -       return ret;
+>> +       return IRQ_HANDLED;
+>>  }
+>>
+>>  static unsigned int serial_omap_tx_empty(struct uart_port *port)
+>> --
+>> 1.7.9.5
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
