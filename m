@@ -1,46 +1,45 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: omap: Fix IRQ handling return value
-Date: Tue, 27 Aug 2013 16:04:07 -0700
-Message-ID: <20130827230407.GA30462@kroah.com>
-References: <1374067753-29560-1-git-send-email-oleksandr.savchenko@ti.com>
- <CAGa+x84dE_RwN2G1y_9OJFxnq3JKq5g0YZd+mFueOjjvMzyyew@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH V2 00/25] tty: serial: drop uart_port->lock before calling
+Date: Tue, 27 Aug 2013 16:19:46 -0700
+Message-ID: <20130827231946.GA18233@kroah.com>
+References: <cover.1376923198.git.viresh.kumar@linaro.org>
+ <52123A44.9090608@hurleysoftware.com>
+ <CAKohpon2k6SNUzJ0u0EqGZRPnMwyUk0QcWb-XVRc1PU8yW4PNg@mail.gmail.com>
+ <5212D602.2000005@hurleysoftware.com>
+ <CAKohpomE+6fxwF4JsDUDCzf+LsWZ_deBsRzF_XYjQHZTPvp_jw@mail.gmail.com>
+ <5213C5CA.7060206@hurleysoftware.com>
+ <CAKohpo=rZn-0FwcK5gzyYXufpVvfFHXSz_bK0=EqJbTDNcxqMQ@mail.gmail.com>
+ <CAKohpokL4_RZ7s=yyn8S5jKh5zpW_DaUK4ni5_x_qN2+0Bv-Uw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42953 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:43020 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752756Ab3H0XBs (ORCPT
+	with ESMTP id S1753513Ab3H0XR2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 Aug 2013 19:01:48 -0400
+	Tue, 27 Aug 2013 19:17:28 -0400
 Content-Disposition: inline
-In-Reply-To: <CAGa+x84dE_RwN2G1y_9OJFxnq3JKq5g0YZd+mFueOjjvMzyyew@mail.gmail.com>
+In-Reply-To: <CAKohpokL4_RZ7s=yyn8S5jKh5zpW_DaUK4ni5_x_qN2+0Bv-Uw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@linaro.org>
-Cc: Alexander Savchenko <oleksandr.savchenko@ti.com>, jslaby@suse.cz, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ruchika Kharwar <ruchika@ti.com>, balbi@ti.com
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: jslaby@suse.cz, Lists linaro-kernel <linaro-kernel@lists.linaro.org>, Patch Tracking <patches@linaro.org>, linux-serial@vger.kernel.org, Bryan Huntsman <bryanh@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, David Brown <davidb@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Tobias Klauser <tklauser@distanz.ch>, Tony Prisk <linux@prisktech.co.nz>, Linaro Networking <linaro-networking@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
 
-On Tue, Aug 20, 2013 at 08:44:50AM -0700, Kevin Hilman wrote:
-> +Felipe
-> 
-> On Wed, Jul 17, 2013 at 6:29 AM, Alexander Savchenko
-> <oleksandr.savchenko@ti.com> wrote:
-> > From: Ruchika Kharwar <ruchika@ti.com>
+On Fri, Aug 23, 2013 at 01:56:08PM +0530, Viresh Kumar wrote:
+> On 21 August 2013 10:05, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> > On 21 August 2013 01:08, Peter Hurley <peter@hurleysoftware.com> wrote:
+> >> On 08/20/2013 06:52 AM, Viresh Kumar wrote:
 > >
-> > Ensure the Interrupt handling routine return IRQ_HANDLED vs
-> > IRQ_NONE.
+> >> That's really Greg's call whether he wants to take up RT-specific patches
+> >> into the regular tree.
+> >
+> > Yeah.. Lets wait for Greg..
 > 
-> Why?
+> Hi Greg,
 > 
-> By unconditionally returning IRQ_HANDLED, this patch will surely break
-> systems where the UART IRQ is shared with other platforms.
-> 
-> I just noticed this patch when bisecting a related problem.  Why
-> wasn't this Cc'd to linux-omap where OMAP users might have been more
-> likely to see it?
-> 
-> Greg, without a better justification in the changelog, I think this
-> patch should be dropped from tty-next.
+> Should I resend my patches with better commit logs if you are going to
+> take these patches?
 
-Now reverted, sorry for the delay.
+No need, I took them as-is, thanks for doing this work.
 
 greg k-h
