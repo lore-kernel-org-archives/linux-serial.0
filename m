@@ -1,53 +1,94 @@
 From: Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v3 0/2] Document msm_serial bindings and support newer uartdms
-Date: Wed, 28 Aug 2013 13:49:39 -0500
-Message-ID: <89FFB174-E076-4309-BE9C-7DB24B31599F@codeaurora.org>
-References: <1377648764-23453-1-git-send-email-sboyd@codeaurora.org>
-Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1377648764-23453-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org
+Subject: [PATCH 1/2] serial: fsl-imx-uart: Cleanup duplicate device tree binding
+Date: Wed, 28 Aug 2013 14:08:22 -0500
+Message-ID: <1377716903-19699-1-git-send-email-galak@codeaurora.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.codeaurora.org ([198.145.11.231]:48476 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752510Ab3H1TI2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 28 Aug 2013 15:08:28 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>, gregkh@linuxfoundation.org
+Cc: Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, fabio.estevam@freescale.com, s.hauer@pengutronix.de, shawn.guo@linaro.org
 
+We had two bindings for the same serial device, it looks like the one in
+tty/serial/fsl-imx-uart.txt is the more up to date one so go with it and
+merge a few things about the use/need for aliases in from
+serial/fsl-imx-uart.txt.
 
-On Aug 27, 2013, at 7:12 PM, Stephen Boyd wrote:
+Signed-off-by: Kumar Gala <galak@codeaurora.org>
+---
+ .../devicetree/bindings/serial/fsl-imx-uart.txt    | 35 ----------------------
+ .../bindings/tty/serial/fsl-imx-uart.txt           |  9 +++++-
+ 2 files changed, 8 insertions(+), 36 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
 
-> This patchset aligns the msm_serial driver more with downstream usage and
-> updates the driver's DT bindings.
-> 
-> Changes since v2:
-> * Fixed up DT review comments
-> * Dropped patches that were picked up in tty tree
-> 
-> Changes since v1:
-> * Dropped _clk postfix from {core,iface}_clk
-> * Split DT binding into two files
-> * Renamed DT binding files to match compatible strings
-> * Fixed up DT review comments
-> * Added new patch 5/5 (more than 1 char for UARTDM)
-> 
-> Stephen Boyd (2):
->  devicetree: serial: Document msm_serial bindings
->  ARM: dts: msm: Update uartdm compatible strings
-> 
-> .../devicetree/bindings/tty/serial/msm_serial.txt  | 27 -----------
-> .../bindings/tty/serial/qcom,msm-uart.txt          | 25 ++++++++++
-> .../bindings/tty/serial/qcom,msm-uartdm.txt        | 53 ++++++++++++++++++++++
-> arch/arm/boot/dts/msm8660-surf.dts                 |  2 +-
-> arch/arm/boot/dts/msm8960-cdp.dts                  |  2 +-
-> 5 files changed, 80 insertions(+), 29 deletions(-)
-> delete mode 100644 Documentation/devicetree/bindings/tty/serial/msm_serial.txt
-> create mode 100644 Documentation/devicetree/bindings/tty/serial/qcom,msm-uart.txt
-> create mode 100644 Documentation/devicetree/bindings/tty/serial/qcom,msm-uartdm.txt
-
-We are going with bindings/serial as one location, can you update this so the bindings are in bindings/serial/qcom...
-
-- k
-
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+deleted file mode 100644
+index c58573b..0000000
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
++++ /dev/null
+@@ -1,35 +0,0 @@
+-* Freescale i.MX UART controller
+-
+-Required properties:
+-- compatible : should be "fsl,imx21-uart"
+-- reg : Address and length of the register set for the device
+-- interrupts : Should contain UART interrupt number
+-
+-Optional properties:
+-- fsl,uart-has-rtscts: indicate that RTS/CTS signals are used
+-
+-Note: Each uart controller should have an alias correctly numbered
+-in "aliases" node.
+-
+-Example:
+-
+-- From imx51.dtsi:
+-aliases {
+-	serial0 = &uart1;
+-	serial1 = &uart2;
+-	serial2 = &uart3;
+-};
+-
+-uart1: serial@73fbc000 {
+-	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+-	reg = <0x73fbc000 0x4000>;
+-	interrupts = <31>;
+-	status = "disabled";
+-}
+-
+-- From imx51-babbage.dts:
+-uart1: serial@73fbc000 {
+-	fsl,uart-has-rtscts;
+-	status = "okay";
+-};
+-
+diff --git a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+index c662eb3..35ae1fb 100644
+--- a/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
++++ b/Documentation/devicetree/bindings/tty/serial/fsl-imx-uart.txt
+@@ -11,9 +11,16 @@ Optional properties:
+ - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+                   is DCE mode by default.
+ 
++Note: Each uart controller should have an alias correctly numbered
++in "aliases" node.
++
+ Example:
+ 
+-serial@73fbc000 {
++aliases {
++	serial0 = &uart1;
++};
++
++uart1: serial@73fbc000 {
+ 	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+ 	reg = <0x73fbc000 0x4000>;
+ 	interrupts = <31>;
 -- 
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
+
