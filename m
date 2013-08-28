@@ -1,69 +1,162 @@
-From: Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v3 0/2] Document msm_serial bindings and support newer uartdms
-Date: Wed, 28 Aug 2013 14:21:21 -0500
-Message-ID: <795F01B3-6225-4FBB-AB8B-ECCDF5703AA7@codeaurora.org>
-References: <1377648764-23453-1-git-send-email-sboyd@codeaurora.org> <89FFB174-E076-4309-BE9C-7DB24B31599F@codeaurora.org> <20130828191952.GC19754@codeaurora.org>
-Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.11.231]:49562 "EHLO
-	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753340Ab3H1TVT convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 Aug 2013 15:21:19 -0400
-In-Reply-To: <20130828191952.GC19754@codeaurora.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH v4 1/2] devicetree: serial: Document msm_serial bindings
+Date: Wed, 28 Aug 2013 13:32:40 -0700
+Message-ID: <1377721961-3508-2-git-send-email-sboyd@codeaurora.org>
+References: <1377721961-3508-1-git-send-email-sboyd@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1377721961-3508-1-git-send-email-sboyd@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>, devicetree@vger.kernel.org
 
+Let's fix up the msm serial device bindings so that it's clearer
+what hardware is supported. Instead of using hsuart (for high
+speed uart) let's use uartdm because that matches the actual name
+of the hardware. Also, let's add the version information in case
+we need to differentiate between different versions of the
+hardware in the future. Finally, lets specify that clocks are
+required (the clock bindings didn't exist when the original
+binding was written) and also specify dma bindings just in case
+we want to use it in software. We split the binding into two
+files to make it clearer what's required and not required.
 
-On Aug 28, 2013, at 2:19 PM, Stephen Boyd wrote:
+Cc: David Brown <davidb@codeaurora.org>
+Cc: <devicetree@vger.kernel.org>
+Acked-by: Kumar Gala <galak@codeaurora.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+---
+ .../devicetree/bindings/serial/qcom,msm-uart.txt   | 25 ++++++++++
+ .../devicetree/bindings/serial/qcom,msm-uartdm.txt | 53 ++++++++++++++++++++++
+ .../devicetree/bindings/tty/serial/msm_serial.txt  | 27 -----------
+ 3 files changed, 78 insertions(+), 27 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+ delete mode 100644 Documentation/devicetree/bindings/tty/serial/msm_serial.txt
 
-> On 08/28, Kumar Gala wrote:
->> 
->> On Aug 27, 2013, at 7:12 PM, Stephen Boyd wrote:
->> 
->>> This patchset aligns the msm_serial driver more with downstream usage and
->>> updates the driver's DT bindings.
->>> 
->>> Changes since v2:
->>> * Fixed up DT review comments
->>> * Dropped patches that were picked up in tty tree
->>> 
->>> Changes since v1:
->>> * Dropped _clk postfix from {core,iface}_clk
->>> * Split DT binding into two files
->>> * Renamed DT binding files to match compatible strings
->>> * Fixed up DT review comments
->>> * Added new patch 5/5 (more than 1 char for UARTDM)
->>> 
->>> Stephen Boyd (2):
->>> devicetree: serial: Document msm_serial bindings
->>> ARM: dts: msm: Update uartdm compatible strings
->>> 
->>> .../devicetree/bindings/tty/serial/msm_serial.txt  | 27 -----------
->>> .../bindings/tty/serial/qcom,msm-uart.txt          | 25 ++++++++++
->>> .../bindings/tty/serial/qcom,msm-uartdm.txt        | 53 ++++++++++++++++++++++
->>> arch/arm/boot/dts/msm8660-surf.dts                 |  2 +-
->>> arch/arm/boot/dts/msm8960-cdp.dts                  |  2 +-
->>> 5 files changed, 80 insertions(+), 29 deletions(-)
->>> delete mode 100644 Documentation/devicetree/bindings/tty/serial/msm_serial.txt
->>> create mode 100644 Documentation/devicetree/bindings/tty/serial/qcom,msm-uart.txt
->>> create mode 100644 Documentation/devicetree/bindings/tty/serial/qcom,msm-uartdm.txt
->> 
->> We are going with bindings/serial as one location, can you update this so the bindings are in bindings/serial/qcom...
->> 
-> 
-> Ok I can move it. Do I have your ack on patch 2?
-
-
-Yes, I thought I sent it.
-
-- k
-
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
+new file mode 100644
+index 0000000..ce8c901
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
+@@ -0,0 +1,25 @@
++* MSM Serial UART
++
++The MSM serial UART hardware is designed for low-speed use cases where a
++dma-engine isn't needed. From a software perspective it's mostly compatible
++with the MSM serial UARTDM except that it only supports reading and writing one
++character at a time.
++
++Required properties:
++- compatible: Should contain "qcom,msm-uart"
++- reg: Should contain UART register location and length.
++- interrupts: Should contain UART interrupt.
++- clocks: Should contain the core clock.
++- clock-names: Should be "core".
++
++Example:
++
++A uart device at 0xa9c00000 with interrupt 11.
++
++serial@a9c00000 {
++	compatible = "qcom,msm-uart";
++	reg = <0xa9c00000 0x1000>;
++	interrupts = <11>;
++	clocks = <&uart_cxc>;
++	clock-names = "core";
++};
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+new file mode 100644
+index 0000000..ffa5b78
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+@@ -0,0 +1,53 @@
++* MSM Serial UARTDM
++
++The MSM serial UARTDM hardware is designed for high-speed use cases where the
++transmit and/or receive channels can be offloaded to a dma-engine. From a
++software perspective it's mostly compatible with the MSM serial UART except
++that it supports reading and writing multiple characters at a time.
++
++Required properties:
++- compatible: Should contain at least "qcom,msm-uartdm".
++              A more specific property should be specified as follows depending
++	      on the version:
++		"qcom,msm-uartdm-v1.1"
++		"qcom,msm-uartdm-v1.2"
++		"qcom,msm-uartdm-v1.3"
++		"qcom,msm-uartdm-v1.4"
++- reg: Should contain UART register locations and lengths. The first
++       register shall specify the main control registers. An optional second
++       register location shall specify the GSBI control region.
++       "qcom,msm-uartdm-v1.3" is the only compatible value that might
++       need the GSBI control region.
++- interrupts: Should contain UART interrupt.
++- clocks: Should contain the core clock and the AHB clock.
++- clock-names: Should be "core" for the core clock and "iface" for the
++	       AHB clock.
++
++Optional properties:
++- dmas: Should contain dma specifiers for transmit and receive channels
++- dma-names: Should contain "tx" for transmit and "rx" for receive channels
++
++Examples:
++
++A uartdm v1.4 device with dma capabilities.
++
++serial@f991e000 {
++	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
++	reg = <0xf991e000 0x1000>;
++	interrupts = <0 108 0x0>;
++	clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
++	clock-names = "core", "iface";
++	dmas = <&dma0 0>, <&dma0 1>;
++	dma-names = "tx", "rx";
++};
++
++A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
++
++serial@19c40000 {
++	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
++	reg = <0x19c40000 0x1000>,
++	      <0x19c00000 0x1000>;
++	interrupts = <0 195 0x0>;
++	clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
++	clock-names = "core", "iface";
++};
+diff --git a/Documentation/devicetree/bindings/tty/serial/msm_serial.txt b/Documentation/devicetree/bindings/tty/serial/msm_serial.txt
+deleted file mode 100644
+index aef383e..0000000
+--- a/Documentation/devicetree/bindings/tty/serial/msm_serial.txt
++++ /dev/null
+@@ -1,27 +0,0 @@
+-* Qualcomm MSM UART
+-
+-Required properties:
+-- compatible :
+-	- "qcom,msm-uart", and one of "qcom,msm-hsuart" or
+-	  "qcom,msm-lsuart".
+-- reg : offset and length of the register set for the device
+-	for the hsuart operating in compatible mode, there should be a
+-	second pair describing the gsbi registers.
+-- interrupts : should contain the uart interrupt.
+-
+-There are two different UART blocks used in MSM devices,
+-"qcom,msm-hsuart" and "qcom,msm-lsuart".  The msm-serial driver is
+-able to handle both of these, and matches against the "qcom,msm-uart"
+-as the compatibility.
+-
+-The registers for the "qcom,msm-hsuart" device need to specify both
+-register blocks, even for the common driver.
+-
+-Example:
+-
+-	uart@19c400000 {
+-		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
+-		reg = <0x19c40000 0x1000>,
+-		      <0x19c00000 0x1000>;
+-		interrupts = <195>;
+-	};
 -- 
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
