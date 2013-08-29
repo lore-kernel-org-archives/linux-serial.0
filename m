@@ -1,106 +1,25 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH v4 02/10] ARM: dts: list the CPU nodes for Exynos5250
-Date: Thu, 29 Aug 2013 13:51:47 +0200
-Message-ID: <1440260.Z9PFmnVfM0@amdc1227>
-References: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
- <1371536962-13322-3-git-send-email-chander.kashyap@linaro.org>
- <CAOh2x=nsQ5paiMHSH8z9drsqr7_+TvMtNefczf8QNQNbYo0y=Q@mail.gmail.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/2] serial: fsl-imx-uart: Cleanup duplicate device tree
+ binding
+Date: Thu, 29 Aug 2013 20:55:19 +0800
+Message-ID: <20130829125517.GJ18729@S2101-09.ap.freescale.net>
+References: <1377716903-19699-1-git-send-email-galak@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CAOh2x=nsQ5paiMHSH8z9drsqr7_+TvMtNefczf8QNQNbYo0y=Q@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Chander Kashyap <chander.kashyap@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-serial@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, mark.rutland@arm.com, thomas.ab@samsung.com, Lists linaro-kernel <linaro-kernel@lists.linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1377716903-19699-1-git-send-email-galak@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kumar Gala <galak@codeaurora.org>
+Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>, gregkh@linuxfoundation.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, fabio.estevam@freescale.com, s.hauer@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Hi Viresh,
-
-On Thursday 29 of August 2013 13:45:56 Viresh Kumar wrote:
-> On Tue, Jun 18, 2013 at 11:59 AM, Chander Kashyap
+On Wed, Aug 28, 2013 at 02:08:22PM -0500, Kumar Gala wrote:
+> We had two bindings for the same serial device, it looks like the one in
+> tty/serial/fsl-imx-uart.txt is the more up to date one so go with it and
+> merge a few things about the use/need for aliases in from
+> serial/fsl-imx-uart.txt.
 > 
-> <chander.kashyap@linaro.org> wrote:
-> > Instead of having to specify the number for CPUs in Exynos5250 in
-> > platsmp.c file, let the number of CPUs be determined by having this
-> > information listed in Exynos5250 device tree file.
-> > 
-> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-> > Reviewed-by: Tomasz Figa <t.figa@samsung.com>
-> > ---
-> > 
-> >  arch/arm/boot/dts/exynos5250.dtsi |   16 ++++++++++++++++
-> >  arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
-> >  2 files changed, 23 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/exynos5250.dtsi
-> > b/arch/arm/boot/dts/exynos5250.dtsi index 63ca03d..1aeef98 100644
-> > --- a/arch/arm/boot/dts/exynos5250.dtsi
-> > +++ b/arch/arm/boot/dts/exynos5250.dtsi
-> > @@ -50,6 +50,22 @@
-> > 
-> >                 pinctrl3 = &pinctrl_3;
-> >         
-> >         };
-> > 
-> > +       cpus {
-> > +               #address-cells = <1>;
-> > +               #size-cells = <0>;
-> > +
-> > +               cpu@0 {
-> > +                       device_type = "cpu";
-> > +                       compatible = "arm,cortex-a15";
-> > +                       reg = <0>;
-> > +               };
-> > +               cpu@1 {
-> > +                       device_type = "cpu";
-> > +                       compatible = "arm,cortex-a15";
-> > +                       reg = <1>;
-> > +               };
-> > +       };
-> > +
-> > 
-> >         pd_gsc: gsc-power-domain@0x10044000 {
-> >         
-> >                 compatible = "samsung,exynos4210-pd";
-> >                 reg = <0x10044000 0x20>;
-> > 
-> > diff --git a/arch/arm/mach-exynos/platsmp.c
-> > b/arch/arm/mach-exynos/platsmp.c index 1a4e4e5..85ea4ca 100644
-> > --- a/arch/arm/mach-exynos/platsmp.c
-> > +++ b/arch/arm/mach-exynos/platsmp.c
-> > @@ -180,10 +180,14 @@ static void __init exynos_smp_init_cpus(void)
-> > 
-> >         void __iomem *scu_base = scu_base_addr();
-> >         unsigned int i, ncores;
-> > 
-> > -       if (soc_is_exynos5250())
-> > -               ncores = 2;
-> > -       else
-> > +       if (read_cpuid_part_number() == ARM_CPU_PART_CORTEX_A9)
-> > 
-> >                 ncores = scu_base ? scu_get_core_count(scu_base) : 1;
-> > 
-> > +       else
-> > +               /*
-> > +                * CPU Nodes are passed thru DT and set_cpu_possible
-> > +                * is set by "arm_dt_init_cpu_maps".
-> > +                */
-> > +               return;
-> > 
-> >         /* sanity check */
-> >         if (ncores > nr_cpu_ids) {
-> 
-> After this patch only one cpu is coming up for me on my Arndale board..
-> Revert of this one fixes the issue though (Tested over v3.11-rc7)
+> Signed-off-by: Kumar Gala <galak@codeaurora.org>
 
-It is quite likely that 0 and 1 are not real MPIDR values for CPU cores on 
-Exynos5250, because cluster ID might not be 0, as one could expect.
-
-This is what I found out on Exynos4210 and 4x12, when trying to add CPU 
-nodes in DT for them, leading in turn to a series of regressions, for which 
-it was to late to do all the necessary code rework to fix them for 3.12, so 
-I had to defer this work for next release.
-
-Best regards,
-Tomasz
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
