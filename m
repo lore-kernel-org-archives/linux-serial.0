@@ -1,55 +1,139 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH v4 2/2] ARM: dts: msm: Update uartdm compatible strings
-Date: Wed, 28 Aug 2013 13:32:41 -0700
-Message-ID: <1377721961-3508-3-git-send-email-sboyd@codeaurora.org>
-References: <1377721961-3508-1-git-send-email-sboyd@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1377721961-3508-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>
+From: Gabor Juhos <juhosg@openwrt.org>
+Subject: [PATCH] tty: ar933x_uart: add device tree support and binding documentation
+Date: Thu, 29 Aug 2013 08:44:01 +0200
+Message-ID: <1377758641-4078-1-git-send-email-juhosg@openwrt.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from arrakis.dune.hu ([78.24.191.176]:58547 "EHLO arrakis.dune.hu"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753554Ab3H2GoI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 29 Aug 2013 02:44:08 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>, devicetree@vger.kernel.org
 
-Let's follow the ratified DT binding and use uartdm instead of
-hsuart. This does break backwards compatibility but this
-shouldn't be a problem because the uart driver isn't probing on
-these devices without adding clock support (which isn't merged so
-far).
+Modify the probe routine to get the port line number
+from device tree if the 'of_node' is populated in the
+platform device. The driver can be built as module,
+thus add an OF specific module device table as well
+to support module auto loading.
 
-Cc: David Brown <davidb@codeaurora.org>
-Acked-by: Kumar Gala <galak@codeaurora.org>
-Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+This makes it possible to use the driver for AR9330
+UART devices specified in device tree.
+
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
 ---
- arch/arm/boot/dts/msm8660-surf.dts | 2 +-
- arch/arm/boot/dts/msm8960-cdp.dts  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+The patch is agains the 'tty-next' branch of the
+git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tree
+---
+ .../bindings/tty/serial/qca,ar9330-uart.txt        |   34 ++++++++++++++++++++
+ drivers/tty/serial/ar933x_uart.c                   |   28 ++++++++++++++--
+ 2 files changed, 59 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt
 
-diff --git a/arch/arm/boot/dts/msm8660-surf.dts b/arch/arm/boot/dts/msm8660-surf.dts
-index cdc010e..386d428 100644
---- a/arch/arm/boot/dts/msm8660-surf.dts
-+++ b/arch/arm/boot/dts/msm8660-surf.dts
-@@ -38,7 +38,7 @@
- 	};
+diff --git a/Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt b/Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt
+new file mode 100644
+index 0000000..c5e032c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt
+@@ -0,0 +1,34 @@
++* Qualcomm Atheros AR9330 High-Speed UART
++
++Required properties:
++
++- compatible: Must be "qca,ar9330-uart"
++
++- reg: Specifies the physical base address of the controller and
++  the length of the memory mapped region.
++
++- interrupt-parent: The phandle for the interrupt controller that
++  services interrupts for this device.
++
++- interrupts: Specifies the interrupt source of the parent interrupt
++  controller. The format of the interrupt specifier depends on the
++  parent interrupt controller.
++
++Additional requirements:
++
++  Each UART port must have an alias correctly numbered in "aliases"
++  node.
++
++Example:
++
++	aliases {
++		serial0 = &uart0;
++	};
++
++	uart0: uart@18020000 {
++		compatible = "qca,ar9330-uart";
++		reg = <0x18020000 0x14>;
++
++		interrupt-parent = <&intc>;
++		interrupts = <3>;
++	};
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index 0437a9e..acd03af 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -17,6 +17,8 @@
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
+ #include <linux/platform_device.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/serial_core.h>
+@@ -623,13 +625,24 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	struct uart_port *port;
+ 	struct resource *mem_res;
+ 	struct resource *irq_res;
++	struct device_node *np;
+ 	unsigned int baud;
+ 	int id;
+ 	int ret;
  
- 	serial@19c40000 {
--		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-+		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 		reg = <0x19c40000 0x1000>,
- 		      <0x19c00000 0x1000>;
- 		interrupts = <0 195 0x0>;
-diff --git a/arch/arm/boot/dts/msm8960-cdp.dts b/arch/arm/boot/dts/msm8960-cdp.dts
-index db2060c..532050b 100644
---- a/arch/arm/boot/dts/msm8960-cdp.dts
-+++ b/arch/arm/boot/dts/msm8960-cdp.dts
-@@ -38,7 +38,7 @@
- 	};
+-	id = pdev->id;
+-	if (id == -1)
+-		id = 0;
++	np = pdev->dev.of_node;
++	if (config_enabled(CONFIG_OF) && np) {
++		id = of_alias_get_id(np, "serial");
++		if (id < 0) {
++			dev_err(&pdev->dev, "unable to get alias id, err=%d\n",
++				id);
++			return id;
++		}
++	} else {
++		id = pdev->id;
++		if (id == -1)
++			id = 0;
++	}
  
- 	serial@16440000 {
--		compatible = "qcom,msm-hsuart", "qcom,msm-uart";
-+		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 		reg = <0x16440000 0x1000>,
- 		      <0x16400000 0x1000>;
- 		interrupts = <0 154 0x0>;
+ 	if (id > CONFIG_SERIAL_AR933X_NR_UARTS)
+ 		return -EINVAL;
+@@ -713,12 +726,21 @@ static int ar933x_uart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id ar933x_uart_of_ids[] = {
++	{ .compatible = "qca,ar9330-uart" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, ar933x_uart_of_ids);
++#endif
++
+ static struct platform_driver ar933x_uart_platform_driver = {
+ 	.probe		= ar933x_uart_probe,
+ 	.remove		= ar933x_uart_remove,
+ 	.driver		= {
+ 		.name		= DRIVER_NAME,
+ 		.owner		= THIS_MODULE,
++		.of_match_table = of_match_ptr(ar933x_uart_of_ids),
+ 	},
+ };
+ 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+1.7.10
