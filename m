@@ -1,43 +1,42 @@
 From: Gabor Juhos <juhosg@openwrt.org>
-Subject: [PATCH] tty: ar933x_uart: move devicetree binding documentation
-Date: Sat, 31 Aug 2013 09:15:44 +0200
-Message-ID: <1377933344-10910-1-git-send-email-juhosg@openwrt.org>
+Subject: Re: [PATCH v2] tty: ar933x_uart: add device tree support and binding
+ documentation
+Date: Sat, 31 Aug 2013 09:19:55 +0200
+Message-ID: <5221991B.1060505@openwrt.org>
+References: <1377769695-27397-1-git-send-email-juhosg@openwrt.org> <20130830211327.GA30138@kroah.com> <52211375.8040609@openwrt.org> <20130831013106.GE1457@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arrakis.dune.hu ([78.24.191.176]:42165 "EHLO arrakis.dune.hu"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753745Ab3HaHQO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sat, 31 Aug 2013 03:16:14 -0400
+Received: from phoenix3.szarvasnet.hu ([87.101.127.16]:40732 "EHLO
+	mail.szarvasnet.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752956Ab3HaHTV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 31 Aug 2013 03:19:21 -0400
+In-Reply-To: <20130831013106.GE1457@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Gabor Juhos <juhosg@openwrt.org>, devicetree@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-Commit 'tty: ar933x_uart: add device tree support
-and binding documentation' introduced a new doc in
-bindins/tty/serial.
+2013.08.31. 3:31 keltez=E9ssel, Greg Kroah-Hartman =EDrta:
 
-According to a recent thread [1] on the linux-serial
-list, the binding documentation of serial drivers
-should be added into bindings/serial.
+<snip>
 
-Move the documentation of qca,ar9330-uart to the
-correct place.
+>>
+>> What should I do now? Should I send a follow-up patch which moves th=
+e
+>> documentation from 'bindings/tty/serial' to bindings/serial?
+>=20
+> As I can't apply this one, I guess a new patch that I can apply will =
+be
+> the best, right?  :)
 
-  1. http://marc.info/?l=linux-serial&m=137771295411517
+Right. Sent a new one. :)
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
----
-The patch is agains the 'tty-next' branch of the
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tree
----
- Documentation/devicetree/bindings/{tty => }/serial/qca,ar9330-uart.txt |    0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/{tty => }/serial/qca,ar9330-uart.txt (100%)
-
-diff --git a/Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
-similarity index 100%
-rename from Documentation/devicetree/bindings/tty/serial/qca,ar9330-uart.txt
-rename to Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
--- 
-1.7.10
+-Gabor
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
