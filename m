@@ -1,73 +1,72 @@
 From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH] serial: pch_uart: Add MODULE_DEVICE_TABLE
-Date: Sun, 01 Sep 2013 19:26:37 +0100
-Message-ID: <1378059997.25743.37.camel@deadeye.wl.decadent.org.uk>
+Subject: [PATCH] serial: mfd: Replace MODULE_ALIAS with MODULE_DEVICE_TABLE
+Date: Sun, 01 Sep 2013 19:34:06 +0100
+Message-ID: <1378060446.25743.40.camel@deadeye.wl.decadent.org.uk>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-JncwDUS9Pcpv7vubXDQK"
+	protocol="application/pgp-signature"; boundary="=-cf1wXo7mcH0s0MPIZ5Gm"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:59587 "EHLO
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:59607 "EHLO
 	shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756170Ab3IAS0q (ORCPT
+	by vger.kernel.org with ESMTP id S1756360Ab3IASeR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 1 Sep 2013 14:26:46 -0400
+	Sun, 1 Sep 2013 14:34:17 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org
 
 
---=-JncwDUS9Pcpv7vubXDQK
+--=-cf1wXo7mcH0s0MPIZ5Gm
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-pch_uart currently isn't auto-loaded if built as a module.
+This is a PCI driver and should be auto-loaded based on PCI ID.
 
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 ---
 Compile-tested only.
 
+By the way, this module name is a bit confusing as there is now an mfd
+subsystem.  Perhaps it's time to rename it?
+
 Ben.
 
- drivers/tty/serial/pch_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/mfd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 572d481..bead25c 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1975,6 +1975,8 @@ module_exit(pch_uart_module_exit);
+diff --git a/drivers/tty/serial/mfd.c b/drivers/tty/serial/mfd.c
+index 4a82267..47ec080 100644
+--- a/drivers/tty/serial/mfd.c
++++ b/drivers/tty/serial/mfd.c
+@@ -1498,4 +1498,4 @@ module_init(hsu_pci_init);
+ module_exit(hsu_pci_exit);
 =20
  MODULE_LICENSE("GPL v2");
- MODULE_DESCRIPTION("Intel EG20T PCH UART PCI Driver");
-+MODULE_DEVICE_TABLE(pci, pch_uart_pci_id);
-+
- module_param(default_baud, uint, S_IRUGO);
- MODULE_PARM_DESC(default_baud,
-                  "Default BAUD for initial driver state and console (defau=
-lt 9600)");
+-MODULE_ALIAS("platform:medfield-hsu");
++MODULE_DEVICE_TABLE(pci, pci_ids);
 
 
---=-JncwDUS9Pcpv7vubXDQK
+--=-cf1wXo7mcH0s0MPIZ5Gm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.14 (GNU/Linux)
 
-iQIVAwUAUiOG3ee/yOyVhhEJAQoPuhAAxPkA9hDvDdZ17xtS1PQOEw0Uu/RXt0Cz
-kzWO8tf9/2D4td6XCDXPNe3rMNwuzcdJQZ6nFiSgW44Re+mad5P/XB6kvlMMRoev
-gNyBsrxzW/Xipz50qna5okKqZzhMuP9Wf8w5KtBLzlJYAaInjqYLmkRvfnIy5ELy
-b/KEPgDfTbQ3PXToZK44GgR1qVnGTjLXrjHItLsL+a5Uw9vjLNgQko84RvxW5IeK
-TO192vKGN5wyT+dMMBcMiLtNxiYuVhar3zE7ECeqMk6Z/4Vs75XvDjEheh2ojig7
-WqS8q+ANhEvi+vR2iXTMja4MIm8ABTzBjw5YVdmSQI8LwKgqKND0y8Y2igpKjYCD
-hT2YitBh+g3gUcqVlaxtW1zy7s4ZFCacXIj554hCu+9UdRMT5FQL+zkI5HzZok8L
-kN+1ba28JKgzTpMpaObfCCgICYzT1mC+QQOHIikgH9MQLDU7AUeaTZBqtM9sXIRC
-RbzJIDrcPZYcEXJtQMyEEi7vjaVXA+TSsdq1JRYFg3AUwj+h50csquHp0VRIq0Zz
-YKFdpl7hKONgqpa7wTIY6qaBoz5XTsWSnXZqvvRFXWUO5+lwx32OxD4awmi78Pr+
-P26pZR1RhuR1xvdK3sZee0iPYs+y+iPSkG6wPFU5dAl42OD8IqJwbscNjU1KEeV1
-jrJ4CWMZJZY=
-=GQJr
+iQIVAwUAUiOInue/yOyVhhEJAQoqcA//dhjycQ3tH3dCZwTpT4ixwztdLJfaWBFo
+7FIbMAEFXd9MRDmj+ymD+9foq/O4a82fDIQBw62RZgt1gjyiPSsZgaCvku+eZu50
+gBmGUA89DBGspRSLJ43crGjGO+jPuhXRJULzhTgartmYRM/Wqd6h6ydJPxv/+Byr
+1Ff0xEZD3L4aO6yycfN/GNFBCt7Pn3MkHcUatMwoIskoa9Jakgo5B3jzxPj2S8zm
+Jszwh/83xXZ0dzpVysykOlm0RnqTko8FmNOhcSDJuKXU+zDvOlWWflrzBI/Scf9Z
+PtshAh1zScqjVxC/PPEtejKj+FMv0Bm6Qv0Ap2eT3/Q7ukFvh/jL0+9CfAWaJc2S
+5ge+ZRRPWfRGBFgQ4W2NbZEb0KB30Sm/6fgwPG8GGNCQm8KJqPbUkFtj4/XNAmG6
+sXVJWlLrdn4EZHDacxOKq2XgEEkqGSNJzgsLxqx+O+kiP47EfaQnu7HeazH41b5n
+3FlxAgpU5C8NiIS3if5IXBnruefOy5+0Z4NbIsarFEvHAQt/R65SnYl7NlEX22vb
+ddbEpxz8uSU+dBWuWD2SS9Yg6CzywUJKQvyrJwZUDFwsGww2lhj+djAto9wuRQDt
+pzR56niYP1IC/aYnfWIF0q1lY9RM9XbXyyfr9+SpxvF1TeTwV20wcxPNV+1e8VpB
+NnQ7D1ENhP8=
+=6PBP
 -----END PGP SIGNATURE-----
 
---=-JncwDUS9Pcpv7vubXDQK--
+--=-cf1wXo7mcH0s0MPIZ5Gm--
