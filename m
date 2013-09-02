@@ -1,48 +1,127 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] serial: imx: Use NULL as the last argument of add_preferred_console()
-Date: Sun,  1 Sep 2013 22:24:35 -0300
-Message-ID: <1378085075-25227-1-git-send-email-festevam@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ye0-f176.google.com ([209.85.213.176]:64188 "EHLO
-	mail-ye0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754117Ab3IBBYu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 1 Sep 2013 21:24:50 -0400
-Received: by mail-ye0-f176.google.com with SMTP id m13so977286yen.35
-        for <linux-serial@vger.kernel.org>; Sun, 01 Sep 2013 18:24:50 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+From: Chander Kashyap <chander.kashyap@linaro.org>
+Subject: Re: [PATCH v4 02/10] ARM: dts: list the CPU nodes for Exynos5250
+Date: Mon, 2 Sep 2013 12:07:43 +0530
+Message-ID: <CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
+References: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
+	<1371536962-13322-3-git-send-email-chander.kashyap@linaro.org>
+	<CAOh2x=nsQ5paiMHSH8z9drsqr7_+TvMtNefczf8QNQNbYo0y=Q@mail.gmail.com>
+	<1440260.Z9PFmnVfM0@amdc1227>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1440260.Z9PFmnVfM0@amdc1227>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Tomasz Figa <t.figa@samsung.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, Lists linaro-kernel <linaro-kernel@lists.linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: s.hauer@pengutronix.de, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+Hi Viresh,
 
-Commit f7d2c0bbd (serial: i.MX: evaluate linux,stdout-path property) introduced
-the following sparse warning:
+On 29 August 2013 17:21, Tomasz Figa <t.figa@samsung.com> wrote:
+> Hi Viresh,
+>
+> On Thursday 29 of August 2013 13:45:56 Viresh Kumar wrote:
+>> On Tue, Jun 18, 2013 at 11:59 AM, Chander Kashyap
+>>
+>> <chander.kashyap@linaro.org> wrote:
+>> > Instead of having to specify the number for CPUs in Exynos5250 in
+>> > platsmp.c file, let the number of CPUs be determined by having this
+>> > information listed in Exynos5250 device tree file.
+>> >
+>> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
+>> > Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+>> > ---
+>> >
+>> >  arch/arm/boot/dts/exynos5250.dtsi |   16 ++++++++++++++++
+>> >  arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
+>> >  2 files changed, 23 insertions(+), 3 deletions(-)
+>> >
+>> > diff --git a/arch/arm/boot/dts/exynos5250.dtsi
+>> > b/arch/arm/boot/dts/exynos5250.dtsi index 63ca03d..1aeef98 100644
+>> > --- a/arch/arm/boot/dts/exynos5250.dtsi
+>> > +++ b/arch/arm/boot/dts/exynos5250.dtsi
+>> > @@ -50,6 +50,22 @@
+>> >
+>> >                 pinctrl3 = &pinctrl_3;
+>> >
+>> >         };
+>> >
+>> > +       cpus {
+>> > +               #address-cells = <1>;
+>> > +               #size-cells = <0>;
+>> > +
+>> > +               cpu@0 {
+>> > +                       device_type = "cpu";
+>> > +                       compatible = "arm,cortex-a15";
+>> > +                       reg = <0>;
+>> > +               };
+>> > +               cpu@1 {
+>> > +                       device_type = "cpu";
+>> > +                       compatible = "arm,cortex-a15";
+>> > +                       reg = <1>;
+>> > +               };
+>> > +       };
+>> > +
+>> >
+>> >         pd_gsc: gsc-power-domain@0x10044000 {
+>> >
+>> >                 compatible = "samsung,exynos4210-pd";
+>> >                 reg = <0x10044000 0x20>;
+>> >
+>> > diff --git a/arch/arm/mach-exynos/platsmp.c
+>> > b/arch/arm/mach-exynos/platsmp.c index 1a4e4e5..85ea4ca 100644
+>> > --- a/arch/arm/mach-exynos/platsmp.c
+>> > +++ b/arch/arm/mach-exynos/platsmp.c
+>> > @@ -180,10 +180,14 @@ static void __init exynos_smp_init_cpus(void)
+>> >
+>> >         void __iomem *scu_base = scu_base_addr();
+>> >         unsigned int i, ncores;
+>> >
+>> > -       if (soc_is_exynos5250())
+>> > -               ncores = 2;
+>> > -       else
+>> > +       if (read_cpuid_part_number() == ARM_CPU_PART_CORTEX_A9)
+>> >
+>> >                 ncores = scu_base ? scu_get_core_count(scu_base) : 1;
+>> >
+>> > +       else
+>> > +               /*
+>> > +                * CPU Nodes are passed thru DT and set_cpu_possible
+>> > +                * is set by "arm_dt_init_cpu_maps".
+>> > +                */
+>> > +               return;
+>> >
+>> >         /* sanity check */
+>> >         if (ncores > nr_cpu_ids) {
+>>
+>> After this patch only one cpu is coming up for me on my Arndale board..
+>> Revert of this one fixes the issue though (Tested over v3.11-rc7)
+>
+I tested on 3.11-rc7.
+Both the cpu's are booting. I didnet see any issue.
 
-drivers/tty/serial/imx.c:1916:77: warning: Using plain integer as NULL pointer
+> It is quite likely that 0 and 1 are not real MPIDR values for CPU cores on
+> Exynos5250, because cluster ID might not be 0, as one could expect.
+>
+@Tomasz:
+Mpidr values are correct.
 
-Pass NULL as the last argument of add_preferred_console() instead of zero.
+> This is what I found out on Exynos4210 and 4x12, when trying to add CPU
+> nodes in DT for them, leading in turn to a series of regressions, for which
+> it was to late to do all the necessary code rework to fix them for 3.12, so
+> I had to defer this work for next release.
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/imx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Exynos4210 and 4x12 mpidr values have issue. They do start from
+cluster ID 9, which breaks the gic init code.
+But that is not the case with exynos 5250.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2c13155..9a66dc5 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1913,7 +1913,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
- 	sport->devdata = of_id->data;
- 
- 	if (of_device_is_stdout_path(np))
--		add_preferred_console(imx_reg.cons->name, sport->port.line, 0);
-+		add_preferred_console(imx_reg.cons->name, sport->port.line,
-+				      NULL);
- 
- 	return 0;
- }
+>
+> Best regards,
+> Tomasz
+>
+
+
+
 -- 
-1.8.1.2
-
+with warm regards,
+Chander Kashyap
