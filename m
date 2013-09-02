@@ -1,31 +1,66 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH v4 02/10] ARM: dts: list the CPU nodes for Exynos5250
-Date: Mon, 2 Sep 2013 12:40:39 +0530
-Message-ID: <CAKohpokHBRc7b3aahaWtug3S5EzVgCOFdXdF3s8gq9TsvnYgKQ@mail.gmail.com>
-References: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
-	<1371536962-13322-3-git-send-email-chander.kashyap@linaro.org>
-	<CAOh2x=nsQ5paiMHSH8z9drsqr7_+TvMtNefczf8QNQNbYo0y=Q@mail.gmail.com>
-	<1440260.Z9PFmnVfM0@amdc1227>
-	<CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: Use NULL as the last argument of
+ add_preferred_console()
+Date: Mon, 2 Sep 2013 10:18:13 +0200
+Message-ID: <20130902081813.GM30088@pengutronix.de>
+References: <1378085075-25227-1-git-send-email-festevam@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f41.google.com ([209.85.219.41]:60768 "EHLO
-	mail-oa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755350Ab3IBHKk (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:50068 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755481Ab3IBISU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Sep 2013 03:10:40 -0400
-Received: by mail-oa0-f41.google.com with SMTP id j17so3801742oag.14
-        for <linux-serial@vger.kernel.org>; Mon, 02 Sep 2013 00:10:39 -0700 (PDT)
-In-Reply-To: <CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
+	Mon, 2 Sep 2013 04:18:20 -0400
+Content-Disposition: inline
+In-Reply-To: <1378085075-25227-1-git-send-email-festevam@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Chander Kashyap <chander.kashyap@linaro.org>
-Cc: Tomasz Figa <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, Lists linaro-kernel <linaro-kernel@lists.linaro.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On 2 September 2013 12:07, Chander Kashyap <chander.kashyap@linaro.org> wrote:
-> I tested on 3.11-rc7.
-> Both the cpu's are booting. I didnet see any issue.
+On Sun, Sep 01, 2013 at 10:24:35PM -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> Commit f7d2c0bbd (serial: i.MX: evaluate linux,stdout-path property) introduced
+> the following sparse warning:
+> 
+> drivers/tty/serial/imx.c:1916:77: warning: Using plain integer as NULL pointer
+> 
+> Pass NULL as the last argument of add_preferred_console() instead of zero.
+> 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 
-Strange.. I am sure about the problem I reported.. Please share your .config
-and I will give it a try..
+
+Acked-by: Sascha Hauer <s.hauer@pengutronix.de>
+
+Sascha
+
+> ---
+>  drivers/tty/serial/imx.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 2c13155..9a66dc5 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1913,7 +1913,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
+>  	sport->devdata = of_id->data;
+>  
+>  	if (of_device_is_stdout_path(np))
+> -		add_preferred_console(imx_reg.cons->name, sport->port.line, 0);
+> +		add_preferred_console(imx_reg.cons->name, sport->port.line,
+> +				      NULL);
+>  
+>  	return 0;
+>  }
+> -- 
+> 1.8.1.2
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
