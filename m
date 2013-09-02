@@ -1,127 +1,31 @@
-From: Chander Kashyap <chander.kashyap@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 Subject: Re: [PATCH v4 02/10] ARM: dts: list the CPU nodes for Exynos5250
-Date: Mon, 2 Sep 2013 12:07:43 +0530
-Message-ID: <CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
+Date: Mon, 2 Sep 2013 12:40:39 +0530
+Message-ID: <CAKohpokHBRc7b3aahaWtug3S5EzVgCOFdXdF3s8gq9TsvnYgKQ@mail.gmail.com>
 References: <1371536962-13322-1-git-send-email-chander.kashyap@linaro.org>
 	<1371536962-13322-3-git-send-email-chander.kashyap@linaro.org>
 	<CAOh2x=nsQ5paiMHSH8z9drsqr7_+TvMtNefczf8QNQNbYo0y=Q@mail.gmail.com>
 	<1440260.Z9PFmnVfM0@amdc1227>
+	<CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1440260.Z9PFmnVfM0@amdc1227>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, Lists linaro-kernel <linaro-kernel@lists.linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-oa0-f41.google.com ([209.85.219.41]:60768 "EHLO
+	mail-oa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755350Ab3IBHKk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Sep 2013 03:10:40 -0400
+Received: by mail-oa0-f41.google.com with SMTP id j17so3801742oag.14
+        for <linux-serial@vger.kernel.org>; Mon, 02 Sep 2013 00:10:39 -0700 (PDT)
+In-Reply-To: <CANuQgHE8Z5P0BpP0jtRjqPGOSxT07DF-pVNjnwbcpTSjxQ8dZg@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chander Kashyap <chander.kashyap@linaro.org>
+Cc: Tomasz Figa <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Mark Rutland <mark.rutland@arm.com>, "thomas.ab@samsung.com" <thomas.ab@samsung.com>, Lists linaro-kernel <linaro-kernel@lists.linaro.org>
 
-Hi Viresh,
+On 2 September 2013 12:07, Chander Kashyap <chander.kashyap@linaro.org> wrote:
+> I tested on 3.11-rc7.
+> Both the cpu's are booting. I didnet see any issue.
 
-On 29 August 2013 17:21, Tomasz Figa <t.figa@samsung.com> wrote:
-> Hi Viresh,
->
-> On Thursday 29 of August 2013 13:45:56 Viresh Kumar wrote:
->> On Tue, Jun 18, 2013 at 11:59 AM, Chander Kashyap
->>
->> <chander.kashyap@linaro.org> wrote:
->> > Instead of having to specify the number for CPUs in Exynos5250 in
->> > platsmp.c file, let the number of CPUs be determined by having this
->> > information listed in Exynos5250 device tree file.
->> >
->> > Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
->> > Reviewed-by: Tomasz Figa <t.figa@samsung.com>
->> > ---
->> >
->> >  arch/arm/boot/dts/exynos5250.dtsi |   16 ++++++++++++++++
->> >  arch/arm/mach-exynos/platsmp.c    |   10 +++++++---
->> >  2 files changed, 23 insertions(+), 3 deletions(-)
->> >
->> > diff --git a/arch/arm/boot/dts/exynos5250.dtsi
->> > b/arch/arm/boot/dts/exynos5250.dtsi index 63ca03d..1aeef98 100644
->> > --- a/arch/arm/boot/dts/exynos5250.dtsi
->> > +++ b/arch/arm/boot/dts/exynos5250.dtsi
->> > @@ -50,6 +50,22 @@
->> >
->> >                 pinctrl3 = &pinctrl_3;
->> >
->> >         };
->> >
->> > +       cpus {
->> > +               #address-cells = <1>;
->> > +               #size-cells = <0>;
->> > +
->> > +               cpu@0 {
->> > +                       device_type = "cpu";
->> > +                       compatible = "arm,cortex-a15";
->> > +                       reg = <0>;
->> > +               };
->> > +               cpu@1 {
->> > +                       device_type = "cpu";
->> > +                       compatible = "arm,cortex-a15";
->> > +                       reg = <1>;
->> > +               };
->> > +       };
->> > +
->> >
->> >         pd_gsc: gsc-power-domain@0x10044000 {
->> >
->> >                 compatible = "samsung,exynos4210-pd";
->> >                 reg = <0x10044000 0x20>;
->> >
->> > diff --git a/arch/arm/mach-exynos/platsmp.c
->> > b/arch/arm/mach-exynos/platsmp.c index 1a4e4e5..85ea4ca 100644
->> > --- a/arch/arm/mach-exynos/platsmp.c
->> > +++ b/arch/arm/mach-exynos/platsmp.c
->> > @@ -180,10 +180,14 @@ static void __init exynos_smp_init_cpus(void)
->> >
->> >         void __iomem *scu_base = scu_base_addr();
->> >         unsigned int i, ncores;
->> >
->> > -       if (soc_is_exynos5250())
->> > -               ncores = 2;
->> > -       else
->> > +       if (read_cpuid_part_number() == ARM_CPU_PART_CORTEX_A9)
->> >
->> >                 ncores = scu_base ? scu_get_core_count(scu_base) : 1;
->> >
->> > +       else
->> > +               /*
->> > +                * CPU Nodes are passed thru DT and set_cpu_possible
->> > +                * is set by "arm_dt_init_cpu_maps".
->> > +                */
->> > +               return;
->> >
->> >         /* sanity check */
->> >         if (ncores > nr_cpu_ids) {
->>
->> After this patch only one cpu is coming up for me on my Arndale board..
->> Revert of this one fixes the issue though (Tested over v3.11-rc7)
->
-I tested on 3.11-rc7.
-Both the cpu's are booting. I didnet see any issue.
-
-> It is quite likely that 0 and 1 are not real MPIDR values for CPU cores on
-> Exynos5250, because cluster ID might not be 0, as one could expect.
->
-@Tomasz:
-Mpidr values are correct.
-
-> This is what I found out on Exynos4210 and 4x12, when trying to add CPU
-> nodes in DT for them, leading in turn to a series of regressions, for which
-> it was to late to do all the necessary code rework to fix them for 3.12, so
-> I had to defer this work for next release.
-
-Exynos4210 and 4x12 mpidr values have issue. They do start from
-cluster ID 9, which breaks the gic init code.
-But that is not the case with exynos 5250.
-
->
-> Best regards,
-> Tomasz
->
-
-
-
--- 
-with warm regards,
-Chander Kashyap
+Strange.. I am sure about the problem I reported.. Please share your .config
+and I will give it a try..
