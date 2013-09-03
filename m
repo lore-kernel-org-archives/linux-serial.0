@@ -1,54 +1,163 @@
 From: Kumar Gala <galak@codeaurora.org>
 Subject: Re: [PATCH v2] tty: ar933x_uart: add device tree support and binding documentation
-Date: Tue, 3 Sep 2013 17:15:26 -0500
-Message-ID: <E3BBE204-014E-4430-967D-C4C0D23336D3@codeaurora.org>
-References: <1377769695-27397-1-git-send-email-juhosg@openwrt.org> <20130830211327.GA30138@kroah.com> <52211375.8040609@openwrt.org> <20130831013106.GE1457@kroah.com> <5221991B.1060505@openwrt.org>
+Date: Tue, 3 Sep 2013 17:16:10 -0500
+Message-ID: <80D7C583-FF16-4789-B8D1-2D0881DAD8F0@codeaurora.org>
+References: <1377769695-27397-1-git-send-email-juhosg@openwrt.org>
 Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.11.231]:46066 "EHLO
+Received: from smtp.codeaurora.org ([198.145.11.231]:46104 "EHLO
 	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754129Ab3ICWP2 convert rfc822-to-8bit (ORCPT
+	with ESMTP id S1754567Ab3ICWQL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Sep 2013 18:15:28 -0400
-In-Reply-To: <5221991B.1060505@openwrt.org>
+	Tue, 3 Sep 2013 18:16:11 -0400
+In-Reply-To: <1377769695-27397-1-git-send-email-juhosg@openwrt.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Gabor Juhos <juhosg@openwrt.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
 
-On Aug 31, 2013, at 2:19 AM, Gabor Juhos wrote:
+On Aug 29, 2013, at 4:48 AM, Gabor Juhos wrote:
 
-> 2013.08.31. 3:31 keltez=E9ssel, Greg Kroah-Hartman =EDrta:
->=20
-> <snip>
->=20
->>>=20
->>> What should I do now? Should I send a follow-up patch which moves t=
-he
->>> documentation from 'bindings/tty/serial' to bindings/serial?
->>=20
->> As I can't apply this one, I guess a new patch that I can apply will=
- be
->> the best, right?  :)
->=20
-> Right. Sent a new one. :)
->=20
-> -Gabor
+> Modify the probe routine to get the port line number
+> from device tree if the 'of_node' is populated in the
+> platform device. The driver can be built as module,
+> thus add an OF specific module device table as well
+> to support module auto loading.
+> 
+> This makes it possible to use the driver for AR9330
+> UART devices specified in device tree.
+> 
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
+> ---
+> Changes since v1:
+>  - move the doc from bindings/tty/serial to bindings/serial
+> 
+> The patch is agains the 'tty-next' branch of the
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tree
+> ---
+> .../devicetree/bindings/serial/qca,ar9330-uart.txt |   34 ++++++++++++++++++++
+> drivers/tty/serial/ar933x_uart.c                   |   28 ++++++++++++++--
+> 2 files changed, 59 insertions(+), 3 deletions(-)
+> create mode 100644 Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
+> new file mode 100644
+> index 0000000..c5e032c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
+> @@ -0,0 +1,34 @@
+> +* Qualcomm Atheros AR9330 High-Speed UART
+> +
+> +Required properties:
+> +
+> +- compatible: Must be "qca,ar9330-uart"
 
-Did I miss a DT maintainer ACK on the binding?
+If the driver is called ar933x, is there a reason not to do so with the compatible and binding spec?
 
-- k
+> +
+> +- reg: Specifies the physical base address of the controller and
+> +  the length of the memory mapped region.
+> +
+> +- interrupt-parent: The phandle for the interrupt controller that
+> +  services interrupts for this device.
+> +
+> +- interrupts: Specifies the interrupt source of the parent interrupt
+> +  controller. The format of the interrupt specifier depends on the
+> +  parent interrupt controller.
+> +
+> +Additional requirements:
+> +
+> +  Each UART port must have an alias correctly numbered in "aliases"
+> +  node.
+> +
+> +Example:
+> +
+> +	aliases {
+> +		serial0 = &uart0;
+> +	};
+> +
+> +	uart0: uart@18020000 {
+> +		compatible = "qca,ar9330-uart";
+> +		reg = <0x18020000 0x14>;
+> +
+> +		interrupt-parent = <&intc>;
+> +		interrupts = <3>;
+> +	};
+> diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+> index 0437a9e..acd03af 100644
+> --- a/drivers/tty/serial/ar933x_uart.c
+> +++ b/drivers/tty/serial/ar933x_uart.c
+> @@ -17,6 +17,8 @@
+> #include <linux/sysrq.h>
+> #include <linux/delay.h>
+> #include <linux/platform_device.h>
+> +#include <linux/of.h>
+> +#include <linux/of_platform.h>
+> #include <linux/tty.h>
+> #include <linux/tty_flip.h>
+> #include <linux/serial_core.h>
+> @@ -623,13 +625,24 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+> 	struct uart_port *port;
+> 	struct resource *mem_res;
+> 	struct resource *irq_res;
+> +	struct device_node *np;
+> 	unsigned int baud;
+> 	int id;
+> 	int ret;
+> 
+> -	id = pdev->id;
+> -	if (id == -1)
+> -		id = 0;
+> +	np = pdev->dev.of_node;
+> +	if (config_enabled(CONFIG_OF) && np) {
+> +		id = of_alias_get_id(np, "serial");
+> +		if (id < 0) {
+> +			dev_err(&pdev->dev, "unable to get alias id, err=%d\n",
+> +				id);
+> +			return id;
+> +		}
+> +	} else {
+> +		id = pdev->id;
+> +		if (id == -1)
+> +			id = 0;
+> +	}
+> 
+> 	if (id > CONFIG_SERIAL_AR933X_NR_UARTS)
+> 		return -EINVAL;
+> @@ -713,12 +726,21 @@ static int ar933x_uart_remove(struct platform_device *pdev)
+> 	return 0;
+> }
+> 
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id ar933x_uart_of_ids[] = {
+> +	{ .compatible = "qca,ar9330-uart" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, ar933x_uart_of_ids);
+> +#endif
+> +
+> static struct platform_driver ar933x_uart_platform_driver = {
+> 	.probe		= ar933x_uart_probe,
+> 	.remove		= ar933x_uart_remove,
+> 	.driver		= {
+> 		.name		= DRIVER_NAME,
+> 		.owner		= THIS_MODULE,
+> +		.of_match_table = of_match_ptr(ar933x_uart_of_ids),
+> 	},
+> };
+> 
+> -- 
+> 1.7.10
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
---=20
+-- 
 Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, host=
-ed by The Linux Foundation
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
