@@ -1,95 +1,45 @@
-From: Gabor Juhos <juhosg@openwrt.org>
-Subject: Re: [PATCH v2] tty: ar933x_uart: add device tree support and binding
- documentation
-Date: Sat, 24 Aug 2013 13:53:45 +0200
-Message-ID: <52189EC9.5040906@openwrt.org>
-References: <1377769695-27397-1-git-send-email-juhosg@openwrt.org> <80D7C583-FF16-4789-B8D1-2D0881DAD8F0@codeaurora.org>
+From: Roger Davis <rogerdavis@verizon.net>
+Subject: Re: Linux Serial Code Problems
+Date: Thu, 05 Sep 2013 02:57:51 -0500 (CDT)
+Message-ID: <13948377.218867.1378367871551.JavaMail.root@vznit170080>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from phoenix3.szarvasnet.hu ([87.101.127.16]:60580 "EHLO
-	mail.szarvasnet.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756186Ab3IEHxf (ORCPT
+Received: from vms173001pub.verizon.net ([206.46.173.1]:53755 "EHLO
+	vms173001pub.verizon.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1763222Ab3IEH6K (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Sep 2013 03:53:35 -0400
-In-Reply-To: <80D7C583-FF16-4789-B8D1-2D0881DAD8F0@codeaurora.org>
+	Thu, 5 Sep 2013 03:58:10 -0400
+Received: from vznit170080pub.verizon.net ([unknown] [192.168.1.50])
+ by vms173001.mailsrvcs.net
+ (Sun Java(tm) System Messaging Server 7u2-7.02 32bit (built Apr 16 2009))
+ with ESMTP id <0MSN00HP87GFGY20@vms173001.mailsrvcs.net> for
+ linux-serial@vger.kernel.org; Thu, 05 Sep 2013 02:57:51 -0500 (CDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kumar Gala <galak@codeaurora.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-2013.09.04. 0:16 keltez=E9ssel, Kumar Gala =EDrta:
->=20
-> On Aug 29, 2013, at 4:48 AM, Gabor Juhos wrote:
->=20
->> Modify the probe routine to get the port line number
->> from device tree if the 'of_node' is populated in the
->> platform device. The driver can be built as module,
->> thus add an OF specific module device table as well
->> to support module auto loading.
->>
->> This makes it possible to use the driver for AR9330
->> UART devices specified in device tree.
->>
->> Cc: devicetree@vger.kernel.org
->> Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
->> ---
->> Changes since v1:
->>  - move the doc from bindings/tty/serial to bindings/serial
->>
->> The patch is agains the 'tty-next' branch of the
->> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tree
->> ---
->> .../devicetree/bindings/serial/qca,ar9330-uart.txt |   34 ++++++++++=
-++++++++++
->> drivers/tty/serial/ar933x_uart.c                   |   28 ++++++++++=
-++++--
->> 2 files changed, 59 insertions(+), 3 deletions(-)
->> create mode 100644 Documentation/devicetree/bindings/serial/qca,ar93=
-30-uart.txt
->>
->> diff --git a/Documentation/devicetree/bindings/serial/qca,ar9330-uar=
-t.txt b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
->> new file mode 100644
->> index 0000000..c5e032c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
->> @@ -0,0 +1,34 @@
->> +* Qualcomm Atheros AR9330 High-Speed UART
->> +
->> +Required properties:
->> +
->> +- compatible: Must be "qca,ar9330-uart"
->=20
-> If the driver is called ar933x, is there a reason not to do so with t=
-he compatible and binding spec?
+RE: Linux Serial Code Problems 
 
-Yes, there is a reason, the compatible string should not contain wildca=
-rds. At
-least the devicetree.org wiki [1] says the following:
+I recently found the following info.  Perhaps I'm confused, but it seems apparent to me that there is a known basic deficiency in the code causing this problem from the following quote found at :       http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CC4QFjAA&url=http%3A%2F%2Fserial.sourceforge.net%2F&ei=8DUoUo_pL6mGiQL50oCQDg&usg=AFQjCNEM7PQaUtOlie3UHz1fotvbTgPLNg&sig2=sM8-xwyv7dYtcJQ-k8aelg    
+===============================
+ "Periodically, I will release testing serial drivers with my guessesas to how to let the serial driver talk to a particular PCI serialboard. As you may have gathered by now, there is no standard PCIserial interface. (The PCI consoritium which is in charge ofstandardizing the PCI bus must have been   ASLEEP AT THE SWITCH  ." (my caps),   found at :       http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CC4QFjAA&url=http%3A%2F%2Fserial.sourceforge.net%2F&ei=8DUoUo_pL6mGiQL50oCQDg&usg=AFQjCNEM7PQaUtOlie3UHz1fotvbTgPLNg&sig2=sM8-xwyv7dYtcJQ-k8aelg
 
-  Warning: Don't use wildcard compatible values, like "fsl,mpc83xx-uart=
-" or
-  similar. Silicon vendors will invariably make a change that breaks yo=
-ur wildcard
-  assumptions the moment it is too late to change it. Instead, choose a=
- specific
-  silicon implementations and make all subsequent silicon compatible wi=
-th it.
+also...
 
-Additionally, Grant Likely wrote the same thing here basically:
+PCI Modem support
 
-http://lists.infradead.org/pipermail/linux-arm-kernel/2012-January/0822=
-65.html
+I am getting a lot of e-mail messages about supporting PCI modems,so here's the scoop concerning supporting PCI serial/modem devices.Right now *NO* PCI modems are supported, although support for some arein testing. If you have some PCI modem, please read on below; if youhave a PCI serial board which is not a modem, please skip to the next section....
 
--Gabor
+First of all, the serial driver does not, and will never support,controller-less modems, which are somtimes called winmodems.(n.b. Winmodem(tm) is a trademark of 3COM corporation, and refers to aspecific brand of controller-less modems. However, people havestarted using "winmodems", without the capital letter, to refer tothe generic class of modems which require a windows specific driverbecause they do not implement a full modem in hardware.) If you havea PCI-based modem, the odds are about even as to whether or not it isa winmodem or not. The following site, "Winmodems are notmodems". Before you send me e-mail, please check yourmodem against the listing found in the above web site; if it is awinmodem, or controller-less modem, I can't help you.
 
-1. http://devicetree.org/Device_Tree_Usage#Understanding_the_compatible=
-_Property
+If your modem isn't listed on the "Winmodems are not modems" website, there are some other ways you can tell if your PCI modem is acontroller-less modem. If the packaging on the box states thatWindows 95 or 98 is a requirement, that's a pretty good hint. Modemswhich are labeled as "HCF" modems (Host Controller Family) fromRockwell are controller-less modems. If you've installed the softwareon a Windows box, you can check and see how big are the drivers thatthey've installed. If the driver (typically a .VXD file) is large,that's another tipoff. If the modem is extremely cheap (20 or 30 USdollars), that's another hint. Fundamentally, you get what you payfor.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+If you are unfortunate enough to own a winmodem and desire to useit under Linux, there is a project which is trying to develop a driverfor some controller-less modem chipsets. But because of thecomplexities associated with the modem protocol standards (V.90 V.34,and their ilk), they have a long road ahead of them. If you areinterested in more information, please refer to the Linmodem Web Site. (Update:There is now an Alpha driver for the Lucent winmodems, and PC-TEL hasreleased a binary-only driver.)
+===========================
+
+Is the above "ASLEEP AT THE SWITCH" still current info, and if so, is there any plan to rectify the lack of PCI bus serial interface situation?
+
+Thanks!
+
