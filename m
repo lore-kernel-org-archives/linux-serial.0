@@ -1,62 +1,52 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 3/3] serial: 8250_dw: provide a filter for DMA channel detection
-Date: Thu,  5 Sep 2013 17:34:54 +0300
-Message-ID: <1378391694-28725-4-git-send-email-heikki.krogerus@linux.intel.com>
-References: <1378391694-28725-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: [PATCH 1/7] serial: arc_uart: Remove casting the return value which is
+ a void pointer
+Date: Mon, 09 Sep 2013 14:06:45 +0900
+Message-ID: <003a01cead1a$61749bb0$245dd310$%han@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:59118 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753227Ab3IEOfA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Sep 2013 10:35:00 -0400
-In-Reply-To: <1378391694-28725-1-git-send-email-heikki.krogerus@linux.intel.com>
+Received: from mailout3.samsung.com ([203.254.224.33]:55009 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752368Ab3IIFGr (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 9 Sep 2013 01:06:47 -0400
+Received: from epcpsbgr3.samsung.com
+ (u143.gpu120.samsung.co.kr [203.254.230.143])
+ by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0MSU00KRLE78V8M0@mailout3.samsung.com> for
+ linux-serial@vger.kernel.org; Mon, 09 Sep 2013 14:06:45 +0900 (KST)
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, 'Vineet Gupta' <vgupta@synopsys.com>, 'Jingoo Han' <jg1.han@samsung.com>
 
-The channel IDs are set to -1 by default. It will prevent
-dmaengine from trying to provide the first free channel if
-it fails to allocate exclusive channel. This will fix an
-issue with ACPI enumerated UARTs that do not support DMA
-but still end up getting a DMA channel incorrectly.
+Casting the return value which is a void pointer is redundant.
+The conversion from void pointer to any other pointer type is
+guaranteed by the C programming language.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/arc_uart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index d7a405b..8edf769 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -154,6 +154,14 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- 		pm_runtime_put_sync_suspend(port->dev);
- }
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 569872f..c9f5c9d 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -533,7 +533,7 @@ arc_uart_init_one(struct platform_device *pdev, int dev_id)
+ 	unsigned long *plat_data;
+ 	struct arc_uart_port *uart = &arc_uart_ports[dev_id];
  
-+static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
-+{
-+	struct dw8250_data *data = param;
-+
-+	return chan->chan_id == data->dma.tx_chan_id ||
-+	       chan->chan_id == data->dma.rx_chan_id;
-+}
-+
- static void dw8250_setup_port(struct uart_8250_port *up)
- {
- 	struct uart_port	*p = &up->port;
-@@ -314,6 +322,12 @@ static int dw8250_probe(struct platform_device *pdev)
- 		uart.port.uartclk = clk_get_rate(data->clk);
- 	}
+-	plat_data = (unsigned long *)dev_get_platdata(&pdev->dev);
++	plat_data = dev_get_platdata(&pdev->dev);
+ 	if (!plat_data)
+ 		return -ENODEV;
  
-+	data->dma.rx_chan_id = -1;
-+	data->dma.tx_chan_id = -1;
-+	data->dma.rx_param = data;
-+	data->dma.tx_param = data;
-+	data->dma.fn = dw8250_dma_filter;
-+
- 	uart.port.iotype = UPIO_MEM;
- 	uart.port.serial_in = dw8250_serial_in;
- 	uart.port.serial_out = dw8250_serial_out;
 -- 
-1.8.4.rc3
+1.7.10.4
+
 
