@@ -1,254 +1,180 @@
-From: Christian Jann <christian.jann@ymail.com>
-Subject: Re: Need some help with auart on imx23
-Date: Tue, 10 Sep 2013 19:58:01 +0200
-Message-ID: <1485573.VUJ6COcddm@thinkpad>
-References: <3205717.NO7EKVN077@thinkpad>
+From: Felipe Balbi <balbi@ti.com>
+Subject: commit 5fe212364 causes division by zero with large bauds
+Date: Tue, 10 Sep 2013 14:09:01 -0500
+Message-ID: <20130910190901.GA10105@radagast>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm23-vm3.bullet.mail.ird.yahoo.com ([212.82.109.232]:38278 "EHLO
-	nm23-vm3.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752971Ab3IJSE4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Sep 2013 14:04:56 -0400
-In-Reply-To: <3205717.NO7EKVN077@thinkpad>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexey Pelykh <alexey.pelykh@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Greg KH <gregkh@linuxfoundation.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On Tuesday 10 September 2013 12:26:32 you wrote:
-> Hi, I could really need some help to get the second application uart working
-> on my imx23 based board.
-> 
-> I can use GDB to debug the kernel but I don't really know where to start,
-> maybe something is broken in drivers/tty/serial/mxs-auart.c. Hopefully
-> somebody could give me a hint what to do.
-> 
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-OK, receiving works, below you can see that I've received "Hello" one char at 
-a time.
+Hi Alexey,
 
-> [chris@thinkpad linux-stable]$ arm-none-eabi-gdb vmlinux
-> GNU gdb (GNU Tools for ARM Embedded Processors) 7.4.1.20130312-cvs
-> Copyright (C) 2012 Free Software Foundation, Inc.
-> License GPLv3+: GNU GPL version 3 or later
-> <http://gnu.org/licenses/gpl.html>
-> This is free software: you are free to change and redistribute it.
-> There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-> and "show warranty" for details.
-> This GDB was configured as "--host=i686-linux-gnu --target=arm-none-eabi".
-> For bug reporting instructions, please see:
-> <http://www.gnu.org/software/gdb/bugs/>...
-> Reading symbols from
-> /home/chris/local/OLinuXino/imx23-olinuxino/kernel/linux-stable/vmlinux...d
-> one. (gdb) c
-> The program is not being run.
-> (gdb) target remote :3333
-> Remote debugging using :3333
-> ?? () at arch/arm/kernel/entry-armv.S:1132
-> 1132            W(b)    vector_rst
-> (gdb) c
-> Continuing.
-> WARNING! The target is already running. All changes GDB did to registers
-> will be discarded! Waiting for target to halt. ^C
-> Program received signal SIGINT, Interrupt.
-> 0xc0814728 in start_kernel () at init/main.c:480
-> 480       while(wait_for_debugger);
-> (gdb) break mxs_auart_rx_char
-> Function "mxs_auart_rx_char" not defined.
-> Make breakpoint pending on future shared library load? (y or [n]) n
-> (gdb) break drivers/tty/serial/mxs-auart.c:mxs_auart_rx_char
-> Function "mxs_auart_rx_char" not defined in
-> "drivers/tty/serial/mxs-auart.c".
-> Make breakpoint pending on future shared library load? (y or [n]) n
-> (gdb) break drivers/tty/serial/mxs-auart.c:703
-> Breakpoint 1 at 0xc02d7be0: file drivers/tty/serial/mxs-auart.c, line 703.
-> (gdb) set var wait_for_debugger=0
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 1, mxs_auart_irq_handle (irq=<optimized out>, context=0xc3a27a00)
-> at drivers/tty/serial/mxs-auart.c:704 704                     istat &=
-> ~(AUART_INTR_RTIS | AUART_INTR_RXIS); (gdb) s
-> 707             if (istat & AUART_INTR_TXIS) {
-> (gdb) s
-> 708                     mxs_auart_tx_chars(s);
-> (gdb) s
-> mxs_auart_tx_chars (s=s@entry=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:249 249             if
-> (auart_dma_enabled(s)) {
-> (gdb) s
-> auart_dma_enabled (s=<optimized out>) at drivers/tty/serial/mxs-auart.c:184
-> 184             return s->flags & MXS_AUART_DMA_ENABLED;
-> (gdb) s
-> mxs_auart_tx_chars (s=s@entry=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:246 246     {
-> (gdb) delete breakpoints 1
-> (gdb) break drivers/tty/serial/mxs-auart.c:320
-> Breakpoint 2 at 0xc02d7c4c: file drivers/tty/serial/mxs-auart.c, line 320.
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 2, mxs_auart_rx_chars (s=<optimized out>) at
-> drivers/tty/serial/mxs-auart.c:367 367                    
-> mxs_auart_rx_char(s);
-> (gdb) delete breakpoints
-> Delete all breakpoints? (y or n) y
-> (gdb) break drivers/tty/serial/mxs-auart.c:321
-> Breakpoint 3 at 0xc02d7c54: file drivers/tty/serial/mxs-auart.c, line 321.
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 3, mxs_auart_rx_char (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:321 321             stat =
-> readl(s->port.membase + AUART_STAT);
-> (gdb) list
-> 316             int flag;
-> 317             u32 stat;
-> 318             u8 c;
-> 319
-> 320             c = readl(s->port.membase + AUART_DATA);
-> 321             stat = readl(s->port.membase + AUART_STAT);
-> 322
-> 323             flag = TTY_NORMAL;
-> 324             s->port.icount.rx++;
-> 325
-> (gdb) p c
-> $3 = 72 'H'
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 3, mxs_auart_rx_char (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:321 321             stat =
-> readl(s->port.membase + AUART_STAT);
-> (gdb) p c
-> $4 = 101 'e'
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 3, mxs_auart_rx_char (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:321 321             stat =
-> readl(s->port.membase + AUART_STAT);
-> (gdb) p c
-> $5 = 108 'l'
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 3, mxs_auart_rx_char (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:321 321             stat =
-> readl(s->port.membase + AUART_STAT);
-> (gdb) p c
-> $6 = 108 'l'
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 3, mxs_auart_rx_char (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:321 321             stat =
-> readl(s->port.membase + AUART_STAT);
-> (gdb) p c
-> $7 = 111 'o'
-> (gdb)
+your commit 5fe212364 causes division by zero with any baud rate larger
+than 3 Mbaud (IP supports up to 3686400).
 
-All my sent characters and the login prompt (\r\r\nArch Linux 3.11.0-
-next-20130910-dirty (ttyAPP1)\r\n\r\nolinuxino login: ddHHe[AHelloWW) are in 
-the tx buffer:
+Maybe this patch is all we need to get it fixed ? (untested)
 
-> (gdb) delete breakpoints
-> Delete all breakpoints? (y or n) y
-> (gdb) break drivers/tty/serial/mxs-auart.c:285
-> Breakpoint 5 at 0xc02d7308: file drivers/tty/serial/mxs-auart.c, line 285.
-> (gdb) c
-> Continuing.
-> 
-> Breakpoint 5, mxs_auart_tx_chars (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:285 285                     if
-> (s->port.x_char) {
-> (gdb) p s->port.x_char
-> $8 = 0 '\000'
-> (gdb) list
-> 280             }
-> 281
-> 282
-> 283             while (!(readl(s->port.membase + AUART_STAT) &
-> 284                      AUART_STAT_TXFF)) {
-> 285                     if (s->port.x_char) {
-> 286                             s->port.icount.tx++;
-> 287                             writel(s->port.x_char,
-> 288                                          s->port.membase + AUART_DATA);
-> 289                             s->port.x_char = 0;
-> (gdb) break drivers/tty/serial/mxs-auart.c:294
-> Breakpoint 6 at 0xc02d72c8: file drivers/tty/serial/mxs-auart.c, line 294.
-> (gdb) n
-> 292                     if (!uart_circ_empty(xmit) &&
-> !uart_tx_stopped(&s->port)) { (gdb) n
-> 293                             s->port.icount.tx++;
-> (gdb) n
-> 
-> Breakpoint 6, mxs_auart_tx_chars (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:294 294                            
-> writel(xmit->buf[xmit->tail],
-> (gdb) p xmit->buf[xmit->tail]
-> $10 = 87 'W'
-> (gdb) p xmit->buf
-> $9 = 0xc29cb000 "\r\r\nArch Linux 3.11.0-next-20130910-dirty
-> (ttyAPP1)\r\n\r\nolinuxino login: ddHHe[AHelloWW" 
-> (gdb)
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-ser=
+ial.c
+index 816d1a2..b50327f 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -240,8 +240,14 @@ serial_omap_baud_is_mode16(struct uart_port *port, uns=
+igned int baud)
+ {
+ 	unsigned int n13 =3D port->uartclk / (13 * baud);
+ 	unsigned int n16 =3D port->uartclk / (16 * baud);
+-	int baudAbsDiff13 =3D baud - (port->uartclk / (13 * n13));
+-	int baudAbsDiff16 =3D baud - (port->uartclk / (16 * n16));
++	int baudAbsDiff13 =3D 0;
++	int baudAbsDiff16 =3D 0;
++
++	if (n13)
++		baudAbsDiff13 =3D baud - (port->uartclk / (13 * n13));
++	if (n16)
++		baudAbsDiff16 =3D baud - (port->uartclk / (16 * n16));
++
+ 	if(baudAbsDiff13 < 0)
+ 		baudAbsDiff13 =3D -baudAbsDiff13;
+ 	if(baudAbsDiff16 < 0)
 
-But I don't receive them:
+Another possibility would be to convert this into a lookup table (also
+untested):
 
-> (gdb) list
-> 289                             s->port.x_char = 0;
-> 290                             continue;
-> 291                     }
-> 292                     if (!uart_circ_empty(xmit) &&
-> !uart_tx_stopped(&s->port)) { 293                            
-> s->port.icount.tx++;
-> 294                             writel(xmit->buf[xmit->tail],
-> 295                                          s->port.membase + AUART_DATA);
-> 296                             xmit->tail = (xmit->tail + 1) &
-> (UART_XMIT_SIZE - 1); 297                     } else
-> 298                             break;
-> (gdb) n
-> 293                             s->port.icount.tx++;
-> (gdb) n
-> 294                             writel(xmit->buf[xmit->tail],
-> (gdb) n
-> 296                             xmit->tail = (xmit->tail + 1) &
-> (UART_XMIT_SIZE - 1); (gdb) n
-> 283             while (!(readl(s->port.membase + AUART_STAT) &
-> (gdb) n
-> 
-> Breakpoint 5, mxs_auart_tx_chars (s=0xc3a27a00) at
-> drivers/tty/serial/mxs-auart.c:285 285                     if
-> (s->port.x_char) {
-> (gdb) n
-> 292                     if (!uart_circ_empty(xmit) &&
-> !uart_tx_stopped(&s->port)) { (gdb) n
-> 301                     uart_write_wakeup(&s->port);
-> (gdb) n
-> 303             if (uart_circ_empty(&(s->port.state->xmit)))
-> (gdb) n
-> 304                     writel(AUART_INTR_TXIEN,
-> (gdb) n
-> 303             if (uart_circ_empty(&(s->port.state->xmit)))
-> (gdb) n
-> 304                     writel(AUART_INTR_TXIEN,
-> (gdb) n
-> 310             if (uart_tx_stopped(&s->port))
-> (gdb) n
-> 312     }
-> (gdb) n
-> uart_start (tty=tty@entry=0xc3b90000) at
-> drivers/tty/serial/serial_core.c:105
-> 105             spin_unlock_irqrestore(&port->lock, flags);
-> (gdb) c
-> Continuing.
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-ser=
+ial.c
+index 816d1a2..942d68e 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -224,6 +224,48 @@ static void serial_omap_enable_wakeup(struct uart_omap=
+_port *up, bool enable)
+ 	pdata->enable_wakeup(up->dev, enable);
+ }
+=20
++struct uart_omap_config {
++	unsigned int baud;
++	unsigned int oversampling;
++	unsigned int divisor;
++};
++
++static struct uart_omap_config omap_port_configs[] =3D {
++	{ .baud =3D 300,		.oversampling =3D 16,	.divisor =3D 10000, },
++	{ .baud =3D 300,		.oversampling =3D 16,	.divisor =3D 10000, },
++	{ .baud =3D 600,		.oversampling =3D 16,	.divisor =3D 5000, },
++	{ .baud =3D 1200,		.oversampling =3D 16,	.divisor =3D 2500, },
++	{ .baud =3D 2400,		.oversampling =3D 16,	.divisor =3D 1250, },
++	{ .baud =3D 4800,		.oversampling =3D 16,	.divisor =3D 625, },
++	{ .baud =3D 9600,		.oversampling =3D 16,	.divisor =3D 312, },
++	{ .baud =3D 14400,	.oversampling =3D 16,	.divisor =3D 208, },
++	{ .baud =3D 19200,	.oversampling =3D 16,	.divisor =3D 156, },
++	{ .baud =3D 28800,	.oversampling =3D 16,	.divisor =3D 704, },
++	{ .baud =3D 38400,	.oversampling =3D 16,	.divisor =3D 78, },
++	{ .baud =3D 57600,	.oversampling =3D 16,	.divisor =3D 52, },
++	{ .baud =3D 115200,	.oversampling =3D 16,	.divisor =3D 26, },
++	{ .baud =3D 230400,	.oversampling =3D 16,	.divisor =3D 13, },
++	{ .baud =3D 460800,	.oversampling =3D 13,	.divisor =3D 8, },
++	{ .baud =3D 921600,	.oversampling =3D 13,	.divisor =3D 4, },
++	{ .baud =3D 1843200,	.oversampling =3D 13,	.divisor =3D 2, },
++	{ .baud =3D 3000000,	.oversampling =3D 16,	.divisor =3D 1, },
++	{ .baud =3D 3686400,	.oversampling =3D 13,	.divisor =3D 1, },
++	{  } /* Terminating Entry */
++};
++
++static struct uart_omap_config *
++__serial_omap_get_config(struct uart_port *port, unsigned int baud)
++{
++	struct uart_omap_config *cfg =3D omap_port_configs;
++
++	while (cfg++) {
++		if (cfg->baud =3D=3D baud)
++			return cfg;
++	}
++
++	return NULL;
++}
++
+ /*
+  * serial_omap_baud_is_mode16 - check if baud rate is MODE16X
+  * @port: uart port info
+@@ -238,16 +280,12 @@ static void serial_omap_enable_wakeup(struct uart_oma=
+p_port *up, bool enable)
+ static bool
+ serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
+ {
+-	unsigned int n13 =3D port->uartclk / (13 * baud);
+-	unsigned int n16 =3D port->uartclk / (16 * baud);
+-	int baudAbsDiff13 =3D baud - (port->uartclk / (13 * n13));
+-	int baudAbsDiff16 =3D baud - (port->uartclk / (16 * n16));
+-	if(baudAbsDiff13 < 0)
+-		baudAbsDiff13 =3D -baudAbsDiff13;
+-	if(baudAbsDiff16 < 0)
+-		baudAbsDiff16 =3D -baudAbsDiff16;
+-
+-	return (baudAbsDiff13 > baudAbsDiff16);
++	struct uart_omap_config *cfg =3D __serial_omap_get_config(port, baud);
++
++	if (!cfg)
++		return -EINVAL;
++
++	return (cfg->oversampling =3D=3D 16);
+ }
+=20
+ /*
+@@ -258,13 +296,12 @@ serial_omap_baud_is_mode16(struct uart_port *port, un=
+signed int baud)
+ static unsigned int
+ serial_omap_get_divisor(struct uart_port *port, unsigned int baud)
+ {
+-	unsigned int divisor;
++	struct uart_omap_config *cfg =3D __serial_omap_get_config(port, baud);
+=20
+-	if (!serial_omap_baud_is_mode16(port, baud))
+-		divisor =3D 13;
+-	else
+-		divisor =3D 16;
+-	return port->uartclk/(baud * divisor);
++	if (!cfg)
++		return -EINVAL;
++
++	return cfg->divisor;
+ }
+=20
+ static void serial_omap_enable_ms(struct uart_port *port)
 
-The line numbers are from next-20130910. Does somebody has an idea what could 
-be broken?
+--=20
+balbi
 
---
-chris
+--uAKRQypu60I7Lcqm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
 
+iQIcBAEBAgAGBQJSL25NAAoJEIaOsuA1yqRER9YP/1wEp+k9f6Bxf2rma9pANpA3
+iuDa6IlsxptppBP2/cLcuXuG1fVVuSAxuDasLM5MRihKbhtZInwqNBcabcfmE5/K
+NakUw2GW6G4j+Mf8I52p4cKIoJD1dXCkwP2BZ+qeYaJKJiiZqY+hecB8LkCRCeOx
+hdd5EVadZpKsJcAv0VlN6jy4bI7GP9YPbrjOhGMkhqkvnDS2gLCdQaW5epY01TQW
+/C1MXtwxiulE/hwViSLwJsFSWrDd6PhzkMuLYMXr3VsoZRuJRElaP5sTB5HIBJ+X
+nqK3a/dqTOpqUslsixPJbOfRQIIvhvnG2VQ8KstVwDVjgkmXQYLB4Vwsfe5vhE0G
+jTD1LaN6gtju7B7A3A2jSEBKGOL+yDe8NOWC8NfaVHBTyg5x96VNe1EqgoyBAtED
+sJQGUWr3DW6JI1pIU1ogaDw6hEpJIWoRNbG3auyjyk45ABAiOT9E79f5rEWneIdk
+hbVUszxmBtyrSqOCvQN1jADn6rFmaeXkniPTeJOMAYgs7Xt/DGi+b43foECqbDiL
+Xx8DdO3vDB1DyNDEi6/Z9tYNyATTdXqXgnQ+kvJvz0xTUdabnylorFti+meprF/X
+rcrrmyTtmsndW4hoLZL3tr+5NPhSiUgcafmDag7Wbftnvu/0eMDxJ73rwLf4v37Y
++SAW1a9UhdJm6umHStGb
+=kzrb
+-----END PGP SIGNATURE-----
+
+--uAKRQypu60I7Lcqm--
