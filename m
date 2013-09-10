@@ -1,38 +1,44 @@
 From: Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH 0/4] serial: fix tty-kref leaks
-Date: Tue, 10 Sep 2013 12:50:47 +0200
-Message-ID: <1378810251-28499-1-git-send-email-jhovold@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f51.google.com ([209.85.215.51]:43732 "EHLO
-	mail-la0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751011Ab3IJKvE (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Sep 2013 06:51:04 -0400
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH 3/4] serial: pch_uart: fix tty-kref leak in dma-rx path
+Date: Tue, 10 Sep 2013 12:50:50 +0200
+Message-ID: <1378810251-28499-4-git-send-email-jhovold@gmail.com>
+References: <1378810251-28499-1-git-send-email-jhovold@gmail.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1378810251-28499-1-git-send-email-jhovold@gmail.com>
+Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Warren <swarren@wwwdotorg.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Johan Hovold <jhovold@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Warren <swarren@wwwdotorg.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Johan Hovold <jhovold@gmail.com>, stable@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-These patches fix a few tty-kref leaks in the tegra and pch_uart
-drivers.
+Fix tty_kref leak when tty_buffer_request room fails in dma-rx path.
 
-Note that the tegra patch is completely untested, whereas the pch_uart
-ones are compile-tested only.
+Note that the tty ref isn't really needed anymore, but as the leak has
+always been there, fixing it before removing should makes it easier to
+backport the fix.
 
-Thanks,
-Johan
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <jhovold@gmail.com>
+---
+ drivers/tty/serial/pch_uart.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-Johan Hovold (4):
-  serial: tegra: fix tty-kref leak
-  serial: pch_uart: fix tty-kref leak in rx-error path
-  serial: pch_uart: fix tty-kref leak in dma-rx path
-  serial: pch_uart: remove unnecessary tty_port_tty_get
-
- drivers/tty/serial/pch_uart.c     | 13 +++----------
- drivers/tty/serial/serial-tegra.c |  4 +++-
- 2 files changed, 6 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index f0161d6..2c5a3e4 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -685,11 +685,12 @@ static int dma_push_rx(struct eg20t_port *priv, int size)
+ 		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
+ 			 size - room);
+ 	if (!room)
+-		return room;
++		goto out;
+ 
+ 	tty_insert_flip_string(tport, sg_virt(&priv->sg_rx), size);
+ 
+ 	port->icount.rx += room;
++out:
+ 	tty_kref_put(tty);
+ 
+ 	return room;
 -- 
 1.8.3.2
-
