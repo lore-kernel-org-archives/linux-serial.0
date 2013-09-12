@@ -1,226 +1,309 @@
-From: Alexey Pelykh <alexey.pelykh@gmail.com>
-Subject: Re: commit 5fe212364 causes division by zero with large bauds
-Date: Thu, 12 Sep 2013 07:37:07 +0300
-Message-ID: <CAOmKuSpRpb0mRnORvK-q1MMV3BHZaY8_yTyQV-iE+=gj1hqK7Q@mail.gmail.com>
-References: <20130910190901.GA10105@radagast> <CAOmKuSrbaLqaYiJFwonHzC-S003vgg2x0xUG4TGKDpMgvCCGHQ@mail.gmail.com>
- <20130911183825.GC10105@radagast> <CAOmKuSpJ4rX0p0a1gGvc3fVazTg=+43tDfTFiJSrxmAxXihf-A@mail.gmail.com>
- <20130911190033.GD10105@radagast> <CAOmKuSoZQ=uDAD7P94EPfKEp97to3DqwWk=GW7OZ-98+S6nTBA@mail.gmail.com>
- <20130911204714.GH10105@radagast> <CAOmKuSpgwGcTaQTEdtH+9g-6WwNwseVU6X+hhntK31EOTM=WRA@mail.gmail.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [RFC PATCH] amba: Ensure drvdata is NULL
+Date: Thu, 12 Sep 2013 07:57:54 +0200
+Message-ID: <523157E2.4090707@monstr.eu>
+References: <346db238d6c8c418bddb1e8a166e9818b5074c06.1378305864.git.michal.simek@xilinx.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:36811 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752842Ab3ILEh2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Sep 2013 00:37:28 -0400
-In-Reply-To: <CAOmKuSpgwGcTaQTEdtH+9g-6WwNwseVU6X+hhntK31EOTM=WRA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="bIniuQhkFibj80X14rlEFb50ECVjD17KV"
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <346db238d6c8c418bddb1e8a166e9818b5074c06.1378305864.git.michal.simek@xilinx.com>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>, Russell King <linux@arm.linux.org.uk>
+Cc: linux-kernel@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Dan Williams <djbw@fb.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chris Ball <cjb@laptop.org>, Alessandro Zummo <a.zummo@towertech.it>, Linus Walleij <linus.walleij@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Wim Van Sebroeck <wim@iguana.be>, Andrew Morton <akpm@linux-foundation.org>, "zhangwei(Jovi)" <jovi.zhangwei@huawei.com>, Randy Dunlap <rdunlap@infradead.org>, linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org, linux-mmc@vger.kernel.org, rtc-linux@googlegroups.com, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: Tony Lindgren <tony@atomide.com>, Greg KH <gregkh@linuxfoundation.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Actually, here it is, but not formatted properly
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--bIniuQhkFibj80X14rlEFb50ECVjD17KV
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 816d1a2..146e712 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -240,14 +240,14 @@ serial_omap_baud_is_mode16(struct uart_port
-*port, unsigned int baud)
- {
-  unsigned int n13 = port->uartclk / (13 * baud);
-  unsigned int n16 = port->uartclk / (16 * baud);
-- int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
-- int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
-+ int baudAbsDiff13 = n13 ? (baud - (port->uartclk / (13 * n13))) : INT_MAX;
-+ int baudAbsDiff16 = n16 ? (baud - (port->uartclk / (16 * n16))) : INT_MAX;
-  if(baudAbsDiff13 < 0)
-  baudAbsDiff13 = -baudAbsDiff13;
-  if(baudAbsDiff16 < 0)
-  baudAbsDiff16 = -baudAbsDiff16;
+Hi Russell,
 
-- return (baudAbsDiff13 > baudAbsDiff16);
-+ return (baudAbsDiff13 >= baudAbsDiff16);
- }
+any comment on this one?
 
- /*
-@@ -258,13 +258,13 @@ serial_omap_baud_is_mode16(struct uart_port
-*port, unsigned int baud)
- static unsigned int
- serial_omap_get_divisor(struct uart_port *port, unsigned int baud)
- {
-- unsigned int divisor;
-+ unsigned int mode;
+Thanks,
+Michal
 
-  if (!serial_omap_baud_is_mode16(port, baud))
-- divisor = 13;
-+ mode = 13;
-  else
-- divisor = 16;
-- return port->uartclk/(baud * divisor);
-+ mode = 16;
-+ return port->uartclk/(mode * baud);
- }
 
- static void serial_omap_enable_ms(struct uart_port *port)
+On 09/04/2013 04:44 PM, Michal Simek wrote:
+> This patch is inpired by the patch for drvdata
+> "device-core: Ensure drvdata =3D NULL when no driver is bound"
+> (sha1: 0998d0631001288a5974afc0b2a5f568bcdecb4d)
+>=20
+> Also it fixes all occurences in drivers.
+>=20
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+>  arch/arm/kernel/etm.c           | 6 ------
+>  drivers/amba/bus.c              | 2 ++
+>  drivers/dma/pl330.c             | 3 ---
+>  drivers/input/serio/ambakmi.c   | 2 --
+>  drivers/mmc/host/mmci.c         | 2 --
+>  drivers/rtc/rtc-pl030.c         | 2 --
+>  drivers/rtc/rtc-pl031.c         | 2 --
+>  drivers/spi/spi-pl022.c         | 1 -
+>  drivers/tty/serial/amba-pl010.c | 3 ---
+>  drivers/tty/serial/amba-pl011.c | 3 ---
+>  drivers/video/amba-clcd.c       | 2 --
+>  drivers/watchdog/sp805_wdt.c    | 1 -
+>  12 files changed, 2 insertions(+), 27 deletions(-)
+>=20
+> diff --git a/arch/arm/kernel/etm.c b/arch/arm/kernel/etm.c
+> index 8ff0ecd..131a6ab 100644
+> --- a/arch/arm/kernel/etm.c
+> +++ b/arch/arm/kernel/etm.c
+> @@ -385,7 +385,6 @@ out:
+>  	return ret;
+>=20
+>  out_unmap:
+> -	amba_set_drvdata(dev, NULL);
+>  	iounmap(t->etb_regs);
+>=20
+>  out_release:
+> @@ -398,8 +397,6 @@ static int etb_remove(struct amba_device *dev)
+>  {
+>  	struct tracectx *t =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	iounmap(t->etb_regs);
+>  	t->etb_regs =3D NULL;
+>=20
+> @@ -588,7 +585,6 @@ out:
+>  	return ret;
+>=20
+>  out_unmap:
+> -	amba_set_drvdata(dev, NULL);
+>  	iounmap(t->etm_regs);
+>=20
+>  out_release:
+> @@ -601,8 +597,6 @@ static int etm_remove(struct amba_device *dev)
+>  {
+>  	struct tracectx *t =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	iounmap(t->etm_regs);
+>  	t->etm_regs =3D NULL;
+>=20
+> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+> index c670727..9762090 100644
+> --- a/drivers/amba/bus.c
+> +++ b/drivers/amba/bus.c
+> @@ -373,6 +373,7 @@ static int amba_probe(struct device *dev)
+>  		if (ret =3D=3D 0)
+>  			break;
+>=20
+> +		amba_set_drvdata(pcdev, NULL);
+>  		pm_runtime_disable(dev);
+>  		pm_runtime_set_suspended(dev);
+>  		pm_runtime_put_noidle(dev);
+> @@ -391,6 +392,7 @@ static int amba_remove(struct device *dev)
+>=20
+>  	pm_runtime_get_sync(dev);
+>  	ret =3D drv->remove(pcdev);
+> +	amba_set_drvdata(pcdev, NULL);
+>  	pm_runtime_put_noidle(dev);
+>=20
+>  	/* Undo the runtime PM settings in amba_probe() */
+> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> index fa645d8..626f99e 100644
+> --- a/drivers/dma/pl330.c
+> +++ b/drivers/dma/pl330.c
+> @@ -3026,8 +3026,6 @@ pl330_probe(struct amba_device *adev, const struc=
+t amba_id *id)
+>=20
+>  	return 0;
+>  probe_err3:
+> -	amba_set_drvdata(adev, NULL);
+> -
+>  	/* Idle the DMAC */
+>  	list_for_each_entry_safe(pch, _p, &pdmac->ddma.channels,
+>  			chan.device_node) {
+> @@ -3061,7 +3059,6 @@ static int pl330_remove(struct amba_device *adev)=
 
-On Thu, Sep 12, 2013 at 7:32 AM, Alexey Pelykh <alexey.pelykh@gmail.com> wrote:
-> On Wed, Sep 11, 2013 at 11:47 PM, Felipe Balbi <balbi@ti.com> wrote:
->> Hi,
->>
->> On Wed, Sep 11, 2013 at 10:19:47PM +0300, Alexey Pelykh wrote:
->>> On Wed, Sep 11, 2013 at 10:00 PM, Felipe Balbi <balbi@ti.com> wrote:
->>> > On Wed, Sep 11, 2013 at 09:48:13PM +0300, Alexey Pelykh wrote:
->>> >> On Wed, Sep 11, 2013 at 9:38 PM, Felipe Balbi <balbi@ti.com> wrote:
->>> >> > Hi,
->>> >> >
->>> >> > On Wed, Sep 11, 2013 at 09:22:26AM +0300, Alexey Pelykh wrote:
->>> >> >> Hi Felipe,
->>> >> >>
->>> >> >> Thanks for finding this issue. Indeed, there is a bug on 3M+ baud
->>> >> >> rates. First patch is close to a complete fix, but still contains
->>> >> >> div-by-zero issue. Here is my version:
->>> >> >>
->>> >> >> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->>> >> >> index 816d1a2..808a880 100644
->>> >> >> --- a/drivers/tty/serial/omap-serial.c
->>> >> >> +++ b/drivers/tty/serial/omap-serial.c
->>> >> >> @@ -240,8 +240,8 @@ serial_omap_baud_is_mode16(struct uart_port *port,
->>> >> >> unsigned int baud)
->>> >> >>  {
->>> >> >>         unsigned int n13 = port->uartclk / (13 * baud);
->>> >> >>         unsigned int n16 = port->uartclk / (16 * baud);
->>> >> >> -       int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
->>> >> >> -       int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
->>> >> >> +       int baudAbsDiff13 = n13 ? (baud - (port->uartclk / (13 * n13))) : INT_MAX;
->>> >> >> +       int baudAbsDiff16 = n16 ? (baud - (port->uartclk / (16 * n16))) : INT_MAX;
->>> >> >
->>> >> > IOW:
->>> >> >
->>> >> > int baudAbsDiff13 = 0;
->>> >> >
->>> >> > if (n13)
->>> >> >         baudAbsDiff13 = (baud - (port->uartclk / (13 * n13)));
->>> >>
->>> >> Not quite same code, INT_MAX instead of 0. With 0 a div-by-zero
->>> >> exception will still occur on 3686400.
->>> >
->>> > why, there's no division after that point, right ? Besides,
->>> > serial_omap_baud_is_mode16() is supposed to return a boolean value.
->>> >
->>> > Setting baudAbsDiff1[36] to 0 will cause no problems, you're only using
->>> > that value with a boolean expression, no divisions whatsoever. Division
->>> > is done after using serial_omap_baud_is_mode16() to initialize divisor
->>> > to 13 or 16 (which is a misnamer, since that's the oversampling
->>> > parameter).
->>> >
->>>
->>> Yes, variables are a bit misnamed, that should be fixed someday.
->>> Regarding 0 vs INT_MAX, in case of 0 values will be
->>> 300: divisor = 12307 (13)
->>> 600: divisor = 6153 (13)
->>> 1200: divisor = 3076 (13)
->>> 2400: divisor = 1538 (13)
->>> 4800: divisor = 625 (16)
->>> 9600: divisor = 384 (13)
->>> 14400: divisor = 256 (13)
->>> 19200: divisor = 192 (13)
->>> 28800: divisor = 128 (13)
->>> 38400: divisor = 96 (13)
->>> 57600: divisor = 64 (13)
->>> 115200: divisor = 32 (13)
->>> 230400: divisor = 16 (13)
->>> 460800: divisor = 8 (13)
->>> 921600: divisor = 4 (13)
->>> 1000000: divisor = 3 (16)
->>> 1843200: divisor = 2 (13)
->>> 3000000: divisor = 1 (16)
->>> 3686400: divisor = 0 (16) << error here, should be 1 (13), as it is with INT_MAX
->>
->> I get it now... your boolean check wants to use the closer baud to
->> requested baud, so it's mode16 if the delta between baudAbsDiff16 and
->> requested rate is less than delta between baudAbsDiff13 and requested
->> baud.
->>
->>> >> > which is exactly what my patch did. I fail to see where division by zero
->>> >> > would be coming from.
->>> >> >
->>> >> >>         if(baudAbsDiff13 < 0)
->>> >> >>                 baudAbsDiff13 = -baudAbsDiff13;
->>> >> >>         if(baudAbsDiff16 < 0)
->>> >> >>
->>> >> >>
->>> >> >> With 48MHz UART clock, it will give
->>> >> >> 300: divisor = 12307 (13), real rate 300 (0.000000%)
->>> >> >> 600: divisor = 6153 (13), real rate 600 (0.000000%)
->>> >> >> 1200: divisor = 3076 (13), real rate 1200 (0.000000%)
->>> >> >> 2400: divisor = 1538 (13), real rate 2400 (0.000000%)
->>> >> >
->>> >> > TRM has these all set with oversampling of 16. In fact only 460800,
->>> >> > 921600, 1843200 and 3686400 should be using oversampling of 13.
->>> >> >
->>> >>
->>> >> That's true, but TRM anyways does not contain all possible baud rates
->>> >> (1M e.g.). IMO, as long as error rate is the same as in TRM,
->>> >> it makes no difference what combination of (mode, divisor) to use.
->>> >>
->>> >> > --
->>> >> > balbi
->>> >>
->>> >> A complex solution may be implemented: use LUT for baud rates that TRM
->>> >> defines explicitly, and use calculation if lookup failed.
->>> >
->>> > why would you try calculating anything if there is nothing in the table
->>> > which can support it ? Whatever is in the lookup table, are the only
->>> > baud rates the SoC supports, right ?
->>> >
->>>
->>> Actually, I haven't found any statement in TRM, which would mention
->>> that listed baudrates in referenced table are the only supported baud
->>> rates,
->>> and all others are illegal.
->>
->> "The UART clocks are connected to produce a baud rate of up to 3.6 Mbps.
->> Table 24-122 lists the *supported* baud rates, requested divisor, and
->> corresponding error versus the standard baud rate."
->>
->>> At least 1M which I use extensively works perfectly, and I can not
->>> figure out any idea why it would not do so.
->>
->> it might very well work, but it's not officially *supported* by the IP.
->
-> That's true, but I don't see any reason why driver should disallow
-> usage of baud rates that are not supported, but possible by hardware:
-> "The UART clocks are connected to produce a baud rate of up to 3.6M bits/s."
->
->>
->> --
->> balbi
->
-> I've changed calculation a bit to give priority to mode16, and now it
-> gives TRM table as-is + extra baud rates
-> 300: divisor = 10000 (16), real rate 300 (0.000000%)
-> 600: divisor = 5000 (16), real rate 600 (0.000000%)
-> 1200: divisor = 2500 (16), real rate 1200 (0.000000%)
-> 2400: divisor = 1250 (16), real rate 2400 (0.000000%)
-> 4800: divisor = 625 (16), real rate 4800 (0.000000%)
-> 9600: divisor = 312 (16), real rate 9615 (0.156250%)
-> 14400: divisor = 208 (16), real rate 14423 (0.159722%)
-> 19200: divisor = 156 (16), real rate 19230 (0.156250%)
-> 28800: divisor = 104 (16), real rate 28846 (0.159722%)
-> 38400: divisor = 78 (16), real rate 38461 (0.158854%)
-> 57600: divisor = 52 (16), real rate 57692 (0.159722%)
-> 115200: divisor = 26 (16), real rate 115384 (0.159722%)
-> 230400: divisor = 13 (16), real rate 230769 (0.160156%)
-> 460800: divisor = 8 (13), real rate 461538 (0.160156%)
-> 921600: divisor = 4 (13), real rate 923076 (0.160156%)
-> 1000000: divisor = 3 (16), real rate 1000000 (0.000000%)
-> 1843200: divisor = 2 (13), real rate 1846153 (0.160211%)
-> 3000000: divisor = 1 (16), real rate 3000000 (0.000000%)
-> 3686400: divisor = 1 (13), real rate 3692307 (0.160238%)
->
-> If that's acceptable behavior, I'll prepare a patch.
->
-> Thanks,
-> Alexey
+>  		of_dma_controller_free(adev->dev.of_node);
+>=20
+>  	dma_async_device_unregister(&pdmac->ddma);
+> -	amba_set_drvdata(adev, NULL);
+>=20
+>  	/* Idle the DMAC */
+>  	list_for_each_entry_safe(pch, _p, &pdmac->ddma.channels,
+> diff --git a/drivers/input/serio/ambakmi.c b/drivers/input/serio/ambakm=
+i.c
+> index 4e2fd44..b7c206d 100644
+> --- a/drivers/input/serio/ambakmi.c
+> +++ b/drivers/input/serio/ambakmi.c
+> @@ -167,8 +167,6 @@ static int amba_kmi_remove(struct amba_device *dev)=
+
+>  {
+>  	struct amba_kmi_port *kmi =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	serio_unregister_port(kmi->io);
+>  	clk_put(kmi->clk);
+>  	iounmap(kmi->base);
+> diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+> index c3785ed..07e17f1 100644
+> --- a/drivers/mmc/host/mmci.c
+> +++ b/drivers/mmc/host/mmci.c
+> @@ -1678,8 +1678,6 @@ static int mmci_remove(struct amba_device *dev)
+>  {
+>  	struct mmc_host *mmc =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	if (mmc) {
+>  		struct mmci_host *host =3D mmc_priv(mmc);
+>=20
+> diff --git a/drivers/rtc/rtc-pl030.c b/drivers/rtc/rtc-pl030.c
+> index 22bacdb..a804f75 100644
+> --- a/drivers/rtc/rtc-pl030.c
+> +++ b/drivers/rtc/rtc-pl030.c
+> @@ -153,8 +153,6 @@ static int pl030_remove(struct amba_device *dev)
+>  {
+>  	struct pl030_rtc *rtc =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	writel(0, rtc->base + RTC_CR);
+>=20
+>  	free_irq(dev->irq[0], rtc);
+> diff --git a/drivers/rtc/rtc-pl031.c b/drivers/rtc/rtc-pl031.c
+> index 0f0609b..c9ca86e 100644
+> --- a/drivers/rtc/rtc-pl031.c
+> +++ b/drivers/rtc/rtc-pl031.c
+> @@ -305,7 +305,6 @@ static int pl031_remove(struct amba_device *adev)
+>  {
+>  	struct pl031_local *ldata =3D dev_get_drvdata(&adev->dev);
+>=20
+> -	amba_set_drvdata(adev, NULL);
+>  	free_irq(adev->irq[0], ldata);
+>  	rtc_device_unregister(ldata->rtc);
+>  	iounmap(ldata->base);
+> @@ -392,7 +391,6 @@ out_no_irq:
+>  	rtc_device_unregister(ldata->rtc);
+>  out_no_rtc:
+>  	iounmap(ldata->base);
+> -	amba_set_drvdata(adev, NULL);
+>  out_no_remap:
+>  	kfree(ldata);
+>  out:
+> diff --git a/drivers/spi/spi-pl022.c b/drivers/spi/spi-pl022.c
+> index abef061..e12813e 100644
+> --- a/drivers/spi/spi-pl022.c
+> +++ b/drivers/spi/spi-pl022.c
+> @@ -2306,7 +2306,6 @@ pl022_remove(struct amba_device *adev)
+>  	amba_release_regions(adev);
+>  	tasklet_disable(&pl022->pump_transfers);
+>  	spi_unregister_master(pl022->master);
+> -	amba_set_drvdata(adev, NULL);
+>  	return 0;
+>  }
+>=20
+> diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-=
+pl010.c
+> index c368405..f630b78 100644
+> --- a/drivers/tty/serial/amba-pl010.c
+> +++ b/drivers/tty/serial/amba-pl010.c
+> @@ -728,7 +728,6 @@ static int pl010_probe(struct amba_device *dev, con=
+st struct amba_id *id)
+>  	amba_set_drvdata(dev, uap);
+>  	ret =3D uart_add_one_port(&amba_reg, &uap->port);
+>  	if (ret) {
+> -		amba_set_drvdata(dev, NULL);
+>  		amba_ports[i] =3D NULL;
+>  		clk_put(uap->clk);
+>   unmap:
+> @@ -745,8 +744,6 @@ static int pl010_remove(struct amba_device *dev)
+>  	struct uart_amba_port *uap =3D amba_get_drvdata(dev);
+>  	int i;
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	uart_remove_one_port(&amba_reg, &uap->port);
+>=20
+>  	for (i =3D 0; i < ARRAY_SIZE(amba_ports); i++)
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-=
+pl011.c
+> index 28b35ad..2a1efe0 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2143,7 +2143,6 @@ static int pl011_probe(struct amba_device *dev, c=
+onst struct amba_id *id)
+>  	amba_set_drvdata(dev, uap);
+>  	ret =3D uart_add_one_port(&amba_reg, &uap->port);
+>  	if (ret) {
+> -		amba_set_drvdata(dev, NULL);
+>  		amba_ports[i] =3D NULL;
+>  		pl011_dma_remove(uap);
+>  	}
+> @@ -2156,8 +2155,6 @@ static int pl011_remove(struct amba_device *dev)
+>  	struct uart_amba_port *uap =3D amba_get_drvdata(dev);
+>  	int i;
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	uart_remove_one_port(&amba_reg, &uap->port);
+>=20
+>  	for (i =3D 0; i < ARRAY_SIZE(amba_ports); i++)
+> diff --git a/drivers/video/amba-clcd.c b/drivers/video/amba-clcd.c
+> index 0a2cce7..0bab6ab 100644
+> --- a/drivers/video/amba-clcd.c
+> +++ b/drivers/video/amba-clcd.c
+> @@ -594,8 +594,6 @@ static int clcdfb_remove(struct amba_device *dev)
+>  {
+>  	struct clcd_fb *fb =3D amba_get_drvdata(dev);
+>=20
+> -	amba_set_drvdata(dev, NULL);
+> -
+>  	clcdfb_disable(fb);
+>  	unregister_framebuffer(&fb->fb);
+>  	if (fb->fb.cmap.len)
+> diff --git a/drivers/watchdog/sp805_wdt.c b/drivers/watchdog/sp805_wdt.=
+c
+> index 58df98a..3f786ce 100644
+> --- a/drivers/watchdog/sp805_wdt.c
+> +++ b/drivers/watchdog/sp805_wdt.c
+> @@ -268,7 +268,6 @@ static int sp805_wdt_remove(struct amba_device *ade=
+v)
+>  	struct sp805_wdt *wdt =3D amba_get_drvdata(adev);
+>=20
+>  	watchdog_unregister_device(&wdt->wdd);
+> -	amba_set_drvdata(adev, NULL);
+>  	watchdog_set_drvdata(&wdt->wdd, NULL);
+>=20
+>  	return 0;
+> --
+> 1.8.2.3
+>=20
+
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--bIniuQhkFibj80X14rlEFb50ECVjD17KV
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlIxV+IACgkQykllyylKDCG+6ACeIhGU2N7vWeSAf38mc0uHP6w4
+7AUAn0sVkV4sqjIRdjzGgvleKuI7k+w3
+=lw5O
+-----END PGP SIGNATURE-----
+
+--bIniuQhkFibj80X14rlEFb50ECVjD17KV--
