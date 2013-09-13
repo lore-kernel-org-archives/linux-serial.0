@@ -1,79 +1,70 @@
-From: Wang YanQing <udknight@gmail.com>
-Subject: Re: [PATCH 2/3] serial: 8250_pci: remove unnecessary
- pci_set_drvdata()
-Date: Thu, 12 Sep 2013 22:47:08 +0800
-Message-ID: <20130912144708.GA2887@udknight>
-References: <000d01ceaf81$a9910aa0$fcb31fe0$%han@samsung.com>
- <000e01ceaf82$0a2fff10$1e8ffd30$%han@samsung.com>
+From: Christian Jann <christian.jann@ymail.com>
+Subject: Re: Need some help with auart on imx23
+Date: Fri, 13 Sep 2013 21:28:58 +0200
+Message-ID: <1523739.AE3jKYTuqA@thinkpad>
+References: <3205717.NO7EKVN077@thinkpad> <1485573.VUJ6COcddm@thinkpad>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:52654 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752828Ab3ILOrj (ORCPT
+Received: from nm10-vm1.bullet.mail.ird.yahoo.com ([77.238.189.93]:23878 "HELO
+	nm10-vm1.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1754421Ab3IMT3B (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Sep 2013 10:47:39 -0400
-Received: by mail-pa0-f47.google.com with SMTP id kl13so1189387pab.6
-        for <linux-serial@vger.kernel.org>; Thu, 12 Sep 2013 07:47:37 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <000e01ceaf82$0a2fff10$1e8ffd30$%han@samsung.com>
+	Fri, 13 Sep 2013 15:29:01 -0400
+In-Reply-To: <1485573.VUJ6COcddm@thinkpad>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 'Ian Abbott' <abbotti@mev.co.uk>, 'Stephen Chivers' <schivers@csc.com>, 'Stephen Hurd' <shurd@broadcom.com>
+To: linux-serial@vger.kernel.org
 
-On Thu, Sep 12, 2013 at 03:33:48PM +0900, Jingoo Han wrote:
-> The driver core clears the driver data to NULL after device_release
-> or on probe failure. Thus, it is not needed to manually clear the
-> device driver data to NULL.
-> 
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c |    2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index c810da7..515fd0f 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -3520,8 +3520,6 @@ static void pciserial_remove_one(struct pci_dev *dev)
->  {
->  	struct serial_private *priv = pci_get_drvdata(dev);
->  
-> -	pci_set_drvdata(dev, NULL);
-> -
->  	pciserial_remove_ports(priv);
->  
->  	pci_disable_device(dev);
-> -- 
-> 1.7.10.4
-> 
-Hi All
-Below shell give me 1267 result for 3.10.11:
+On Tuesday 10 September 2013 19:58:01 you wrote:
+> On Tuesday 10 September 2013 12:26:32 you wrote:
+> > Hi, I could really need some help to get the second application uart
+> > working on my imx23 based board.
+> > 
 
-"find drivers/ -name "*.[ch]" | xargs grep set_drvdata | grep NULL"
+So I've finally solved the issue after reading 
+Documentation/devicetree/bindings/pinctrl/fsl,mxs-pinctrl.txt again, the 
+pinmux-ids were wrong.
 
-The results include somethings look like below:
-drivers/net/wan/dscc4.c:        pci_set_drvdata(pdev, NULL);
-drivers/net/wan/wanxl.c:        pci_set_drvdata(pdev, NULL);
-drivers/net/wan/lmc/lmc_main.c: pci_set_drvdata(pdev, NULL);
-drivers/net/wan/lmc/lmc_main.c:         pci_set_drvdata(pdev, NULL);
-drivers/net/wan/ixp4xx_hss.c:   platform_set_drvdata(pdev, NULL);
-drivers/net/xen-netback/xenbus.c:       dev_set_drvdata(&dev->dev, NULL);
-drivers/net/xen-netfront.c:     dev_set_drvdata(&dev->dev, NULL);
-drivers/net/ieee802154/at86rf230.c:     spi_set_drvdata(spi, NULL);
-drivers/net/ieee802154/at86rf230.c:     spi_set_drvdata(spi, NULL);
-drivers/net/ieee802154/mrf24j40.c:      spi_set_drvdata(spi, NULL);
-drivers/net/vmxnet3/vmxnet3_drv.c:      pci_set_drvdata(pdev, NULL);
+Required subnode-properties:
+- fsl,pinmux-ids: An integer array.  Each integer in the array specify a pin
+  with given mux function, with bank, pin and mux packed as below.
 
-After a quick search platform_set_drvdata|spi_set_drvdata|pci_set_drvdata,
-I found they are just a wrapper for drv_set_drvdata, and almost all drivers
-use them in the .remove function in the same pattern *_set_drvdata(DEV, NULL).
+    [15..12] : bank number
+    [11..4]  : pin number
+    [3..0]   : mux selection
 
-Yes, I find driver core in dd.c will call drv_set_drvdata(dev, NULL) after
-.remove function. So if all guys think this patch is acceptable, maybe we
-could dig into deeper.
+0000000000000000
+[  ][      ][  ]
+bank  pin    mux
 
-Note: I don't say this patch is right or wrong, I hope someone could tell me :)
+0000000011100000 0x00e0 /* MX23_PAD_GPMI_D14__GPMI_D14 */
+0000000011110000 0x00f0 /* MX23_PAD_GPMI_D15__GPMI_D15 */
+  0b00001110 = 14
+  0b00001111 = 15
 
-Thanks.
+Looking at the datasheet, mux for auart should be 01:
+
+0000000011100001 0x00e1 /* MX23_PAD_GPMI_D14__AUART2_TX */
+0000000011110001 0x00f1 /* MX23_PAD_GPMI_D15__AUART2_RX */
+
+
+Before I haven't understood the exact functioning of fsl,pinmux-ids but now 
+I've corrected arch/arm/boot/dts/imx23.dtsi:
+
+auart1_2pins_a: auart1-2pins@0 {
+  reg = <0>;
+  fsl,pinmux-ids = <
+    0x00e1 /* MX23_PAD_GPMI_D14__AUART2_TX */
+    0x00f1 /* MX23_PAD_GPMI_D15__AUART2_RX */
+  >;
+  fsl,drive-strength = <0>;
+  fsl,voltage = <1>;
+  fsl,pull-up = <0>;
+};
+
+--
+chris
+
+
