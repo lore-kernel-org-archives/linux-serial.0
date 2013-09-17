@@ -1,70 +1,110 @@
-From: Christian Jann <christian.jann@ymail.com>
-Subject: Re: Need some help with auart on imx23
-Date: Fri, 13 Sep 2013 21:28:58 +0200
-Message-ID: <1523739.AE3jKYTuqA@thinkpad>
-References: <3205717.NO7EKVN077@thinkpad> <1485573.VUJ6COcddm@thinkpad>
+From: Tomasz Figa <t.figa@samsung.com>
+Subject: Re: [PATCH] serial: samsung: add support for manual RTS setting
+Date: Tue, 17 Sep 2013 12:18:50 +0200
+Message-ID: <35383907.gKXZyKLrYq@amdc1227>
+References: <1378894107-7904-1-git-send-email-jose.goncalves@inov.pt>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nm10-vm1.bullet.mail.ird.yahoo.com ([77.238.189.93]:23878 "HELO
-	nm10-vm1.bullet.mail.ird.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1754421Ab3IMT3B (ORCPT
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:54689 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752145Ab3IQKTA convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Sep 2013 15:29:01 -0400
-In-Reply-To: <1485573.VUJ6COcddm@thinkpad>
+	Tue, 17 Sep 2013 06:19:00 -0400
+In-reply-to: <1378894107-7904-1-git-send-email-jose.goncalves@inov.pt>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: =?ISO-8859-1?Q?Jos=E9_Miguel_Gon=E7alves?= <jose.goncalves@inov.pt>
+Cc: linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tuesday 10 September 2013 19:58:01 you wrote:
-> On Tuesday 10 September 2013 12:26:32 you wrote:
-> > Hi, I could really need some help to get the second application uart
-> > working on my imx23 based board.
-> > 
+Hi Jos=E9,
 
-So I've finally solved the issue after reading 
-Documentation/devicetree/bindings/pinctrl/fsl,mxs-pinctrl.txt again, the 
-pinmux-ids were wrong.
+Please see my comments below.
 
-Required subnode-properties:
-- fsl,pinmux-ids: An integer array.  Each integer in the array specify a pin
-  with given mux function, with bank, pin and mux packed as below.
+On Wednesday 11 of September 2013 11:08:27 Jos=E9 Miguel Gon=E7alves wr=
+ote:
+> The Samsung serial driver currently does not support setting the
+> RTS pin with an ioctl(TIOCMSET) call. This patch adds this support.
+>=20
+> Signed-off-by: Jos=E9 Miguel Gon=E7alves <jose.goncalves@inov.pt>
+> ---
+>  drivers/tty/serial/samsung.c |   17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsun=
+g.c
+> index f3dfa19..e5dd808 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -407,7 +407,14 @@ static unsigned int s3c24xx_serial_get_mctrl(str=
+uct
+> uart_port *port)
+>=20
+>  static void s3c24xx_serial_set_mctrl(struct uart_port *port, unsigne=
+d
+> int mctrl) {
+> -	/* todo - possibly remove AFC and do manual CTS */
+> +	unsigned int umcon =3D rd_regl(port, S3C2410_UMCON);
+> +
+> +	if (mctrl & TIOCM_RTS)
+> +		umcon |=3D S3C2410_UMCOM_RTS_LOW;
+> +	else
+> +		umcon &=3D ~S3C2410_UMCOM_RTS_LOW;
+> +
+> +	wr_regl(port, S3C2410_UMCON, umcon);
 
-    [15..12] : bank number
-    [11..4]  : pin number
-    [3..0]   : mux selection
+I wonder if port capability shouldn't be considered here. Depending on =
+SoC,=20
+only selected ports provide modem control capability.
 
-0000000000000000
-[  ][      ][  ]
-bank  pin    mux
+=46or example on S3C64xx only ports 0 and 1 support modem control, whil=
+e=20
+ports 2 and 3 don't.
 
-0000000011100000 0x00e0 /* MX23_PAD_GPMI_D14__GPMI_D14 */
-0000000011110000 0x00f0 /* MX23_PAD_GPMI_D15__GPMI_D15 */
-  0b00001110 = 14
-  0b00001111 = 15
+>  }
+>=20
+>  static void s3c24xx_serial_break_ctl(struct uart_port *port, int
+> break_state) @@ -774,8 +781,6 @@ static void
+> s3c24xx_serial_set_termios(struct uart_port *port, if (termios->c_cfl=
+ag
+> & CSTOPB)
+>  		ulcon |=3D S3C2410_LCON_STOPB;
+>=20
+> -	umcon =3D (termios->c_cflag & CRTSCTS) ? S3C2410_UMCOM_AFC : 0;
+> -
+>  	if (termios->c_cflag & PARENB) {
+>  		if (termios->c_cflag & PARODD)
+>  			ulcon |=3D S3C2410_LCON_PODD;
+> @@ -792,6 +797,12 @@ static void s3c24xx_serial_set_termios(struct
+> uart_port *port,
+>=20
+>  	wr_regl(port, S3C2410_ULCON, ulcon);
+>  	wr_regl(port, S3C2410_UBRDIV, quot);
+> +
+> +	if (termios->c_cflag & CRTSCTS)
+> +		umcon =3D S3C2410_UMCOM_AFC;
 
-Looking at the datasheet, mux for auart should be 01:
+Is it correct to override the last manual RTS value set to this registe=
+r=20
+when activating manual flow control?
 
-0000000011100001 0x00e1 /* MX23_PAD_GPMI_D14__AUART2_TX */
-0000000011110001 0x00f1 /* MX23_PAD_GPMI_D15__AUART2_RX */
+Shouldn't the code be more like the following:
 
+	umcon =3D rd_regb(port, S3C2410_UMCON);
+	if (termios->c_cflag & CRTSCTS)
+		umcon |=3D S3C2410_UMCOM_AFC;
+	else
+		umcon &=3D ~S3C2410_UMCOM_AFC;
+	wr_regl(port, S3C2410_UMCON, umcon);
 
-Before I haven't understood the exact functioning of fsl,pinmux-ids but now 
-I've corrected arch/arm/boot/dts/imx23.dtsi:
+Probably port capability should be considered here as well.
 
-auart1_2pins_a: auart1-2pins@0 {
-  reg = <0>;
-  fsl,pinmux-ids = <
-    0x00e1 /* MX23_PAD_GPMI_D14__AUART2_TX */
-    0x00f1 /* MX23_PAD_GPMI_D15__AUART2_RX */
-  >;
-  fsl,drive-strength = <0>;
-  fsl,voltage = <1>;
-  fsl,pull-up = <0>;
-};
+Best regards,
+Tomasz
 
 --
-chris
-
-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
