@@ -1,48 +1,47 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH v2] serial: samsung: add support for manual RTS setting
-Date: Wed, 18 Sep 2013 19:17:30 +0200
-Message-ID: <1396773.mUrBgMlKxN@flatron>
-References: <1379519569-7266-1-git-send-email-jose.goncalves@inov.pt>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH tty-next 1/1] tty: Prevent tty_port destruction if tty not released
+Date: Wed, 18 Sep 2013 20:42:39 -0400
+Message-ID: <1379551359-15000-2-git-send-email-peter@hurleysoftware.com>
+References: <1379551359-15000-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f41.google.com ([74.125.83.41]:63416 "EHLO
-	mail-ee0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752598Ab3IRRRd convert rfc822-to-8bit (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:34114 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751737Ab3ISAnK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Sep 2013 13:17:33 -0400
-In-Reply-To: <1379519569-7266-1-git-send-email-jose.goncalves@inov.pt>
+	Wed, 18 Sep 2013 20:43:10 -0400
+In-Reply-To: <1379551359-15000-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-1?Q?Jos=E9_Miguel_Gon=E7alves?= <jose.goncalves@inov.pt>
-Cc: t.figa@samsung.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, heiko@sntech.de, s.nawrocki@samsung.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Hi Jos=E9,
+If the tty driver mistakenly drops the last port reference
+before the tty has been released, issue a diagnostic and
+abort the port destruction.
 
-On Wednesday 18 of September 2013 16:52:49 Jos=E9 Miguel Gon=E7alves wr=
-ote:
-> The Samsung serial driver currently does not support setting the
-> RTS pin with an ioctl(TIOCMSET) call. This patch adds this support.
->=20
-> Changes in v2:
->  - Preserve the RTS pin's manual setting  in set_termios() also when
->    enabling CRTSCTS.
->=20
-> Signed-off-by: Jos=E9 Miguel Gon=E7alves <jose.goncalves@inov.pt>
-> ---
->  drivers/tty/serial/samsung.c |   20 +++++++++++++++++---
->  1 file changed, 17 insertions(+), 3 deletions(-)
+This will leak memory and may zombify the port, but might
+otherwise keep the machine in runnable state.
 
-Looks good.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_port.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 9857f7e..c94d234 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -140,6 +140,10 @@ EXPORT_SYMBOL(tty_port_destroy);
+ static void tty_port_destructor(struct kref *kref)
+ {
+ 	struct tty_port *port = container_of(kref, struct tty_port, kref);
++
++	/* check if last port ref was dropped before tty release */
++	if (WARN_ON(port->itty))
++		return;
+ 	if (port->xmit_buf)
+ 		free_page((unsigned long)port->xmit_buf);
+ 	tty_port_destroy(port);
+-- 
+1.8.1.2
 
-Best regards,
-Tomasz
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
