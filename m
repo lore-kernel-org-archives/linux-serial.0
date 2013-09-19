@@ -1,32 +1,63 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next 0/1] premature tty_port destruction diagnostic
-Date: Wed, 18 Sep 2013 20:42:38 -0400
-Message-ID: <1379551359-15000-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH tty-next] tty: Remove unused drop() method from tty_port interface
+Date: Wed, 18 Sep 2013 20:47:06 -0400
+Message-ID: <1379551626-15063-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:35468 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751632Ab3ISAri (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Sep 2013 20:47:38 -0400
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+Although originally conceived as a hook for port drivers to know
+when a port reference is dropped, no driver uses this method.
 
-Now that the bluetooth rfcomm tty refcounting is fixed in linux-next,
-I'd like to add this patch which aborts tty_port destruction if the
-tty has not yet been released. At least this problem won't show up
-as some random memory corruption (as was happening with rfcomm).
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_port.c | 6 +-----
+ include/linux/tty.h    | 1 -
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-Even though this only WARNs, the machine is likely to crash anyway
-because the port indexes will not be in sync; the tty layer will
-assume the port has been destructed while the tty_port obviously
-has not.
-
-Regards,
-
-Peter Hurley (1):
-  tty: Prevent tty_port destruction if tty not released
-
- drivers/tty/tty_port.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index f597e88..9857f7e 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -480,8 +480,6 @@ int tty_port_close_start(struct tty_port *port,
+ 
+ 	if (port->count) {
+ 		spin_unlock_irqrestore(&port->lock, flags);
+-		if (port->ops->drop)
+-			port->ops->drop(port);
+ 		return 0;
+ 	}
+ 	set_bit(ASYNCB_CLOSING, &port->flags);
+@@ -500,9 +498,7 @@ int tty_port_close_start(struct tty_port *port,
+ 	/* Flush the ldisc buffering */
+ 	tty_ldisc_flush(tty);
+ 
+-	/* Don't call port->drop for the last reference. Callers will want
+-	   to drop the last active reference in ->shutdown() or the tty
+-	   shutdown path */
++	/* Report to caller this is the last port reference */
+ 	return 1;
+ }
+ EXPORT_SYMBOL(tty_port_close_start);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 64f8646..2f47989 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -180,7 +180,6 @@ struct tty_port_operations {
+ 	   IFF the port was initialized. Do not use to free resources. Called
+ 	   under the port mutex to serialize against activate/shutdowns */
+ 	void (*shutdown)(struct tty_port *port);
+-	void (*drop)(struct tty_port *port);
+ 	/* Called under the port mutex from tty_port_open, serialized using
+ 	   the port mutex */
+         /* FIXME: long term getting the tty argument *out* of this would be
 -- 
 1.8.1.2
+
