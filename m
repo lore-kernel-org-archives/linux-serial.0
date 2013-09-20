@@ -1,63 +1,50 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next] tty: Remove unused drop() method from tty_port interface
-Date: Wed, 18 Sep 2013 20:47:06 -0400
-Message-ID: <1379551626-15063-1-git-send-email-peter@hurleysoftware.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] serial: imx: Fix build warning when CONFIG_LPAE=y
+Date: Fri, 20 Sep 2013 20:47:45 -0300
+Message-ID: <1379720865-6951-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:35468 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751632Ab3ISAri (ORCPT
+Received: from mail-yh0-f46.google.com ([209.85.213.46]:39013 "EHLO
+	mail-yh0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752132Ab3ITXsT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 18 Sep 2013 20:47:38 -0400
+	Fri, 20 Sep 2013 19:48:19 -0400
+Received: by mail-yh0-f46.google.com with SMTP id c41so477060yho.5
+        for <linux-serial@vger.kernel.org>; Fri, 20 Sep 2013 16:48:19 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: gregkh@linuxfoundation.org
+Cc: khilman@linaro.org, olof@lixom.net, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-Although originally conceived as a hook for port drivers to know
-when a port reference is dropped, no driver uses this method.
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Building multi_v7_defconfig with CONFIG_LPAE=y leads to the following build 
+warning:
+
+drivers/tty/serial/imx.c: In function 'imx_verify_port':
+drivers/tty/serial/imx.c:1542:6: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+
+Fix the casting to get rid of the warning.
+
+Reported-by: Kevin Hilman <khilman@linaro.org>
+Reported-by: Olof Johansson <olof@lixom.net>
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
- drivers/tty/tty_port.c | 6 +-----
- include/linux/tty.h    | 1 -
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ drivers/tty/serial/imx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index f597e88..9857f7e 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -480,8 +480,6 @@ int tty_port_close_start(struct tty_port *port,
- 
- 	if (port->count) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		if (port->ops->drop)
--			port->ops->drop(port);
- 		return 0;
- 	}
- 	set_bit(ASYNCB_CLOSING, &port->flags);
-@@ -500,9 +498,7 @@ int tty_port_close_start(struct tty_port *port,
- 	/* Flush the ldisc buffering */
- 	tty_ldisc_flush(tty);
- 
--	/* Don't call port->drop for the last reference. Callers will want
--	   to drop the last active reference in ->shutdown() or the tty
--	   shutdown path */
-+	/* Report to caller this is the last port reference */
- 	return 1;
- }
- EXPORT_SYMBOL(tty_port_close_start);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 64f8646..2f47989 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -180,7 +180,6 @@ struct tty_port_operations {
- 	   IFF the port was initialized. Do not use to free resources. Called
- 	   under the port mutex to serialize against activate/shutdowns */
- 	void (*shutdown)(struct tty_port *port);
--	void (*drop)(struct tty_port *port);
- 	/* Called under the port mutex from tty_port_open, serialized using
- 	   the port mutex */
-         /* FIXME: long term getting the tty argument *out* of this would be
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index a0ebbc9..dd5e583 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1539,7 +1539,7 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 		ret = -EINVAL;
+ 	if (sport->port.uartclk / 16 != ser->baud_base)
+ 		ret = -EINVAL;
+-	if ((void *)sport->port.mapbase != ser->iomem_base)
++	if (sport->port.mapbase != (unsigned long)ser->iomem_base)
+ 		ret = -EINVAL;
+ 	if (sport->port.iobase != ser->port)
+ 		ret = -EINVAL;
 -- 
 1.8.1.2
 
