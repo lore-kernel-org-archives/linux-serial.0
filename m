@@ -1,65 +1,49 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH] serial: sirf: don't submit dma desc after timeout irqs occur
-Date: Sat, 21 Sep 2013 09:02:10 +0800
-Message-ID: <1379725330-5579-1-git-send-email-Baohua.Song@csr.com>
+From: Alexey Pelykh <alexey.pelykh@gmail.com>
+Subject: [PATCH] OMAP/serial: Fix division by zero exception on 3M+ baud rates
+Date: Sat, 21 Sep 2013 03:43:44 -0400
+Message-ID: <20130921074344.GA15524@inertiallabs-linux64>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:55634 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751702Ab3IUBCc (ORCPT
+Received: from mail-wi0-f178.google.com ([209.85.212.178]:42370 "EHLO
+	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752235Ab3IUHnx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 20 Sep 2013 21:02:32 -0400
-Received: by mail-pa0-f44.google.com with SMTP id lf10so68971pab.3
-        for <linux-serial@vger.kernel.org>; Fri, 20 Sep 2013 18:02:31 -0700 (PDT)
+	Sat, 21 Sep 2013 03:43:53 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Qipan Li <Qipan.Li@csr.com>
+From: Alexey Pelykh <alexey.pelykh@gmail.com>
 
-In rx timeout ISR and tasklet, we don't issue new dma desc as rx_done ISR
-will do that.
+Fixes issue with division-by-zero exception, that occurred when a baud rate higher than 3Mbaud was requested.
 
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
+Signed-off-by: Alexey Pelykh <alexey.pelykh@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-omap@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
 ---
- drivers/tty/serial/sirfsoc_uart.c |   11 +++++++++--
- 1 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 61c1ad0..f186a8f 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -529,7 +529,7 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
- 	while (sirfport->rx_completed != sirfport->rx_issued) {
- 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
- 					SIRFSOC_RX_DMA_BUF_SIZE);
--		sirfsoc_rx_submit_one_dma_desc(port, sirfport->rx_completed++);
-+		sirfport->rx_completed++;
- 		sirfport->rx_completed %= SIRFSOC_RX_LOOP_BUF_CNT;
- 	}
- 	count = CIRC_CNT(sirfport->rx_dma_items[sirfport->rx_issued].xmit.head,
-@@ -706,12 +706,19 @@ static void sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 816d1a2..808a880 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -240,8 +240,8 @@ serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
  {
- 	struct sirfsoc_uart_port *sirfport = (struct sirfsoc_uart_port *)param;
- 	struct uart_port *port = &sirfport->port;
-+	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
-+	struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
- 	unsigned long flags;
- 	spin_lock_irqsave(&sirfport->rx_lock, flags);
- 	while (sirfport->rx_completed != sirfport->rx_issued) {
- 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
- 					SIRFSOC_RX_DMA_BUF_SIZE);
--		sirfsoc_rx_submit_one_dma_desc(port, sirfport->rx_completed++);
-+		if (rd_regl(port, ureg->sirfsoc_int_en_reg) &
-+				uint_en->sirfsoc_rx_timeout_en)
-+			sirfsoc_rx_submit_one_dma_desc(port,
-+					sirfport->rx_completed++);
-+		else
-+			sirfport->rx_completed++;
- 		sirfport->rx_completed %= SIRFSOC_RX_LOOP_BUF_CNT;
- 	}
- 	spin_unlock_irqrestore(&sirfport->rx_lock, flags);
--- 
-1.7.5.4
+ 	unsigned int n13 = port->uartclk / (13 * baud);
+ 	unsigned int n16 = port->uartclk / (16 * baud);
+-	int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
+-	int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
++	int baudAbsDiff13 = n13 ? (baud - (port->uartclk / (13 * n13))) : INT_MAX;
++	int baudAbsDiff16 = n16 ? (baud - (port->uartclk / (16 * n16))) : INT_MAX;
+ 	if(baudAbsDiff13 < 0)
+ 		baudAbsDiff13 = -baudAbsDiff13;
+ 	if(baudAbsDiff16 < 0)
 
