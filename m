@@ -1,15 +1,15 @@
 From: Alexey Pelykh <alexey.pelykh@gmail.com>
-Subject: [PATCH] OMAP/serial: Fix division by zero exception on 3M+ baud rates
-Date: Sat, 21 Sep 2013 03:43:44 -0400
-Message-ID: <20130921074344.GA15524@inertiallabs-linux64>
+Subject: [PATCH] OMAP/serial: Fix misnamed variable
+Date: Sat, 21 Sep 2013 04:04:35 -0400
+Message-ID: <20130921080435.GA15678@inertiallabs-linux64>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:42370 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752235Ab3IUHnx (ORCPT
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:58670 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752264Ab3IUIEo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 21 Sep 2013 03:43:53 -0400
+	Sat, 21 Sep 2013 04:04:44 -0400
 Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -18,7 +18,7 @@ Cc: Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-serial@
 
 From: Alexey Pelykh <alexey.pelykh@gmail.com>
 
-Fixes issue with division-by-zero exception, that occurred when a baud rate higher than 3Mbaud was requested.
+Fix misnamed variable to eliminate confusion.
 
 Signed-off-by: Alexey Pelykh <alexey.pelykh@gmail.com>
 Cc: Tony Lindgren <tony@atomide.com>
@@ -32,18 +32,25 @@ Cc: linux-kernel@vger.kernel.org
 ---
 
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 816d1a2..808a880 100644
+index 808a880..7d348c8 100644
 --- a/drivers/tty/serial/omap-serial.c
 +++ b/drivers/tty/serial/omap-serial.c
-@@ -240,8 +240,8 @@ serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
+@@ -258,13 +258,13 @@ serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
+ static unsigned int
+ serial_omap_get_divisor(struct uart_port *port, unsigned int baud)
  {
- 	unsigned int n13 = port->uartclk / (13 * baud);
- 	unsigned int n16 = port->uartclk / (16 * baud);
--	int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
--	int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
-+	int baudAbsDiff13 = n13 ? (baud - (port->uartclk / (13 * n13))) : INT_MAX;
-+	int baudAbsDiff16 = n16 ? (baud - (port->uartclk / (16 * n16))) : INT_MAX;
- 	if(baudAbsDiff13 < 0)
- 		baudAbsDiff13 = -baudAbsDiff13;
- 	if(baudAbsDiff16 < 0)
+-	unsigned int divisor;
++	unsigned int mode;
+ 
+ 	if (!serial_omap_baud_is_mode16(port, baud))
+-		divisor = 13;
++		mode = 13;
+ 	else
+-		divisor = 16;
+-	return port->uartclk/(baud * divisor);
++		mode = 16;
++	return port->uartclk/(mode * baud);
+ }
+ 
+ static void serial_omap_enable_ms(struct uart_port *port)
 
