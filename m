@@ -1,60 +1,70 @@
 From: takasi-y@ops.dti.ne.jp
-Subject: [PATCH 2/6] serial8250-em: convert to clk_prepare/unprepare
-Date: Tue, 24 Sep 2013 13:10:39 +0900
-Message-ID: <20130924131039.3c871cad7acb2a068a988d0f@ops.dti.ne.jp>
+Subject: [PATCH 3/6] sh: clkfwk: Select sh-/common- clkfwk alternatively
+Date: Tue, 24 Sep 2013 13:12:06 +0900
+Message-ID: <20130924131206.d57d07f5faa5cb0773fc328c@ops.dti.ne.jp>
 References: <52410F86.4040301@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gw.cm.dream.jp ([59.157.128.2]:53086 "EHLO vsmtp02.cm.dti.ne.jp"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750708Ab3IXEdu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Sep 2013 00:33:50 -0400
 In-Reply-To: <52410F86.4040301@renesas.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: SH-Linux <linux-sh@vger.kernel.org>
 Cc: Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
+Make sh clock framework core depend on HAVE_MACH_CLKDEV, and
+set it
+- y on sh for backward compatibility
+- !CONFIG_COMMON_CLK on sh-mobile
+This is a preparation for migration to common clock framework
+from sh clock framework on sh-mobile.
 
-Add calls to clk_prepare and unprepare so that EMMA Mobile EV2 can
-migrate to the common clock framework.
-
-Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-[takashi.yoshii.ze@renesas.com: edited for conflicts]
 Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
 ---
- drivers/tty/serial/8250/8250_em.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/Kconfig        | 2 +-
+ arch/sh/Kconfig         | 1 +
+ drivers/sh/clk/Makefile | 3 +--
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 5f3bba1..d1a9078 100644
---- a/drivers/tty/serial/8250/8250_em.c
-+++ b/drivers/tty/serial/8250/8250_em.c
-@@ -122,7 +122,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 	up.port.dev = &pdev->dev;
- 	up.port.private_data = priv;
- 
--	clk_enable(priv->sclk);
-+	clk_prepare_enable(priv->sclk);
- 	up.port.uartclk = clk_get_rate(priv->sclk);
- 
- 	up.port.iotype = UPIO_MEM32;
-@@ -134,7 +134,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 	ret = serial8250_register_8250_port(&up);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "unable to register 8250 port\n");
--		clk_disable(priv->sclk);
-+		clk_disable_unprepare(priv->sclk);
- 		return ret;
- 	}
- 
-@@ -148,7 +148,7 @@ static int serial8250_em_remove(struct platform_device *pdev)
- 	struct serial8250_em_priv *priv = platform_get_drvdata(pdev);
- 
- 	serial8250_unregister_port(priv->line);
--	clk_disable(priv->sclk);
-+	clk_disable_unprepare(priv->sclk);
- 	return 0;
- }
- 
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 3f7714d..53044ca 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -650,7 +650,7 @@ config ARCH_SHMOBILE
+ 	select HAVE_ARM_SCU if SMP
+ 	select HAVE_ARM_TWD if SMP
+ 	select HAVE_CLK
+-	select HAVE_MACH_CLKDEV
++	select HAVE_MACH_CLKDEV if !COMMON_CLK
+ 	select HAVE_SMP
+ 	select MIGHT_HAVE_CACHE_L2X0
+ 	select MULTI_IRQ_HANDLER
+diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+index 224f4bc..f57e47f 100644
+--- a/arch/sh/Kconfig
++++ b/arch/sh/Kconfig
+@@ -41,6 +41,7 @@ config SUPERH
+ 	select MODULES_USE_ELF_RELA
+ 	select OLD_SIGSUSPEND
+ 	select OLD_SIGACTION
++	select HAVE_MACH_CLKDEV
+ 	help
+ 	  The SuperH is a RISC processor targeted for use in embedded systems
+ 	  and consumer electronics; it was also used in the Sega Dreamcast
+diff --git a/drivers/sh/clk/Makefile b/drivers/sh/clk/Makefile
+index 5d15ebf..e73b031 100644
+--- a/drivers/sh/clk/Makefile
++++ b/drivers/sh/clk/Makefile
+@@ -1,3 +1,2 @@
+-obj-y	:= core.o
+-
++obj-$(CONFIG_HAVE_MACH_CLKDEV)	+= core.o
+ obj-$(CONFIG_SH_CLK_CPG)	+= cpg.o
 -- 
 1.8.1.5
+
