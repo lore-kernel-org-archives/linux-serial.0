@@ -1,66 +1,79 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] serial: clps711x: drop needless devm_clk_put
-Date: Mon, 23 Sep 2013 17:53:32 +0200
-Message-ID: <1379951612-2471-1-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1379951159-8294-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
+Subject: [PATCH 0/6] ARM: shmobile: kzm9d-reference:  migrate to common clock
+ framework with DT
+Date: Tue, 24 Sep 2013 13:05:26 +0900
+Message-ID: <52410F86.4040301@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:41813 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752776Ab3IWPxm (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Sep 2013 11:53:42 -0400
-In-Reply-To: <1379951159-8294-1-git-send-email-u.kleine-koenig@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: SH-Linux <linux-sh@vger.kernel.org>
+Cc: Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Alexander Shiyan <shc_work@mail.ru>, Russell King <linux@arm.linux.org.uk>
 
-The nice thing about devm_* is that the driver doesn't need to free the
-resources but the driver core takes care about that.
+This patch series makes kzm9d-reference to move to new clk implementation
+ based on the common clock framework and device tree.
 
-These calls were introduced in commit c08f015 (serial: clps711x: Using
-CPU clock subsystem for getting base UART speed).
+First three are for preparation.
+[PATCH 1/6] clocksource: em_sti: convert to clk_prepare/unprepare
+[PATCH 2/6] serial8250-em: convert to clk_prepare/unprepare
+[PATCH 3/6] sh: clkfwk: Select sh-/common- clkfwk alternatively
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
-Cc: Alexander Shiyan <shc_work@mail.ru>
-Cc: Russell King <linux@arm.linux.org.uk>
----
- drivers/tty/serial/clps711x.c | 2 --
- 1 file changed, 2 deletions(-)
+Next one is a proposal document of DT bindings.
+[PATCH 4/6] ARM: shmobile: emev2: Define SMU clock DT bindings
 
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711=
-x.c
-index 7e4e408..8d0b994 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -459,7 +459,6 @@ static int uart_clps711x_probe(struct platform_devi=
-ce *pdev)
- 	ret =3D uart_register_driver(&s->uart);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Registering UART driver failed\n");
--		devm_clk_put(&pdev->dev, s->uart_clk);
- 		return ret;
- 	}
-=20
-@@ -487,7 +486,6 @@ static int uart_clps711x_remove(struct platform_dev=
-ice *pdev)
- 	for (i =3D 0; i < UART_CLPS711X_NR; i++)
- 		uart_remove_one_port(&s->uart, &s->port[i]);
-=20
--	devm_clk_put(&pdev->dev, s->uart_clk);
- 	uart_unregister_driver(&s->uart);
-=20
- 	return 0;
---=20
-1.8.4.rc3
+This is the implementation, and dts which carries clock tree description.
+[PATCH 5/6] clk: emev2: Add support for emev2 SMU clocks with DT
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Last one is small modification needed for migration.
+[PATCH 6/6] ARM: shmobile: kzm9d-reference: Use common clock
+
+These patches do not remove sh-clkfwk version, even on emev2.
+kzm9d(without -reference) target still uses sh-clkfwk.
+I believe this method encourages step-by-step migration on other sh-mobile
+ targets, too.
+
+Patches should be applied and compiled both on
+ v3.12-rc2 and
+ kernel/git/horms/renesas.git tag:renesas-devel-20130922 
+
+Confirmed on kernel/git/horms/renesas.git tag:renesas-devel-20130922 
+for boot up to command prompt.
+- kzm9d board / multiplatform + kzm9d-reference configuration
+- kzm9d board / kzm9d-reference configuration
+- kzm9d board / kzm9d (with sh-clkfwk) configuration for regression.
+- ape6evm (with sh-clkfwk) for regression.
+for compile only
+- sh7757lcr (in arch/sh with sh-clkfwk) for regression.
+
+
+Shinya Kuribayashi (2):
+  clocksource: em_sti: convert to clk_prepare/unprepare
+  serial8250-em: convert to clk_prepare/unprepare
+
+Takashi YOSHII (4):
+  sh: clkfwk: Select sh-/common- clkfwk alternatively
+  ARM: shmobile: emev2: Define SMU clock DT bindings
+  clk: emev2: Add support for emev2 SMU clocks with DT
+  ARM: shmobile: kzm9d-reference: Use common clock framework
+
+ .../devicetree/bindings/clock/emev2-clock.txt      |  99 ++++++++++++++++++++
+ arch/arm/Kconfig                                   |   2 +-
+ arch/arm/boot/dts/emev2.dtsi                       |  84 +++++++++++++++++
+ arch/arm/mach-shmobile/Kconfig                     |   1 +
+ arch/arm/mach-shmobile/board-kzm9d-reference.c     |   5 +-
+ arch/sh/Kconfig                                    |   1 +
+ drivers/clk/Makefile                               |   2 +
+ drivers/clk/shmobile/Makefile                      |   5 +
+ drivers/clk/shmobile/clk-emev2.c                   | 104 +++++++++++++++++++++
+ drivers/clocksource/em_sti.c                       |   4 +-
+ drivers/sh/clk/Makefile                            |   3 +-
+ drivers/tty/serial/8250/8250_em.c                  |   6 +-
+ 12 files changed, 305 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/emev2-clock.txt
+ create mode 100644 drivers/clk/shmobile/Makefile
+ create mode 100644 drivers/clk/shmobile/clk-emev2.c
+
+-- 
+1.8.1.5
