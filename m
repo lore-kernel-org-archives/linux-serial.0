@@ -1,75 +1,54 @@
-From: takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org
-Subject: [PATCH 6/6] ARM: shmobile: kzm9d-reference: Use common clock
- framework
-Date: Tue, 24 Sep 2013 13:17:03 +0900
-Message-ID: <20130924131703.4834a055892285858338003c@ops.dti.ne.jp>
+From: takasi-y@ops.dti.ne.jp
+Subject: [PATCH 1/6] clocksource: em_sti: convert to clk_prepare/unprepare
+Date: Tue, 24 Sep 2013 13:09:24 +0900
+Message-ID: <20130924130924.61d4ecedf3d4fca5952d55fc@ops.dti.ne.jp>
 References: <52410F86.4040301@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <52410F86.4040301-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Paul Mundt <lethal-M7jkjyW5wf5g9hUCZPvPmw@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gw.cm.dream.jp ([59.157.128.2]:32120 "EHLO vsmtp02.cm.dti.ne.jp"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750706Ab3IXESt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Sep 2013 00:18:49 -0400
+In-Reply-To: <52410F86.4040301@renesas.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: SH-Linux <linux-sh@vger.kernel.org>
+Cc: Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
 
-Use common clock framework version of clock
- drivers/clk/shmobile/clk-emev2.c
-instead of sh-clkfwk version
- arch/arm/mach-shmobile/clock-emev2.c
+From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 
-kzm9d(without -reference) still uses sh-clkfwk version.
+Add calls to clk_prepare and unprepare so that EMMA Mobile EV2 can
+migrate to the common clock framework.
 
-Because two of that framework can not live in one kernel binary,
-there will be SoCs and Boards that can not be in one binary as
-multiplatform binary or so.
-For example, kzm9d and kzm9d-reference is now exclusive.
-
-Signed-off-by: Takashi Yoshii <takashi.yoshii.zj-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 ---
- arch/arm/mach-shmobile/Kconfig                 | 1 +
- arch/arm/mach-shmobile/board-kzm9d-reference.c | 5 ++---
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/clocksource/em_sti.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/Kconfig b/arch/arm/mach-shmobile/Kconfig
-index 50bab8d..d20d4ce 100644
---- a/arch/arm/mach-shmobile/Kconfig
-+++ b/arch/arm/mach-shmobile/Kconfig
-@@ -237,6 +237,7 @@ config MACH_KZM9D_REFERENCE
- 	depends on ARCH_EMEV2
- 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
- 	select USE_OF
-+	select COMMON_CLK
- 	---help---
- 	   Use reference implementation of KZM9D board support
- 	   which makes a greater use of device tree at the expense
-diff --git a/arch/arm/mach-shmobile/board-kzm9d-reference.c b/arch/arm/mach-shmobile/board-kzm9d-reference.c
-index 8f8bb2f..e0b8317 100644
---- a/arch/arm/mach-shmobile/board-kzm9d-reference.c
-+++ b/arch/arm/mach-shmobile/board-kzm9d-reference.c
-@@ -20,15 +20,14 @@
+diff --git a/drivers/clocksource/em_sti.c b/drivers/clocksource/em_sti.c
+index 3a5909c..9d17083 100644
+--- a/drivers/clocksource/em_sti.c
++++ b/drivers/clocksource/em_sti.c
+@@ -78,7 +78,7 @@ static int em_sti_enable(struct em_sti_priv *p)
+ 	int ret;
  
- #include <linux/init.h>
- #include <linux/of_platform.h>
-+#include <linux/clk-provider.h>
- #include <mach/emev2.h>
- #include <mach/common.h>
- #include <asm/mach/arch.h>
+ 	/* enable clock */
+-	ret = clk_enable(p->clk);
++	ret = clk_prepare_enable(p->clk);
+ 	if (ret) {
+ 		dev_err(&p->pdev->dev, "cannot enable clock\n");
+ 		return ret;
+@@ -107,7 +107,7 @@ static void em_sti_disable(struct em_sti_priv *p)
+ 	em_sti_write(p, STI_INTENCLR, 3);
  
- static void __init kzm9d_add_standard_devices(void)
- {
--	if (!IS_ENABLED(CONFIG_COMMON_CLK))
--		emev2_clock_init();
--
-+	of_clk_init(NULL);
- 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+ 	/* stop clock */
+-	clk_disable(p->clk);
++	clk_disable_unprepare(p->clk);
  }
  
+ static cycle_t em_sti_count(struct em_sti_priv *p)
 -- 
 1.8.1.5
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
