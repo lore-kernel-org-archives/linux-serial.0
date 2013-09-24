@@ -1,37 +1,44 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/6] serial8250-em: convert to clk_prepare/unprepare
-Date: Tue, 24 Sep 2013 06:41:13 -0700
-Message-ID: <20130924134113.GA7246@kroah.com>
-References: <52410F86.4040301@renesas.com>
- <20130924131039.3c871cad7acb2a068a988d0f@ops.dti.ne.jp>
- <20130924044432.GD3619@verge.net.au>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Adding a serial device
+Date: Tue, 24 Sep 2013 06:44:52 -0700
+Message-ID: <20130924134452.GB7246@kroah.com>
+References: <loom.20130924T092704-635@post.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:33230 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:33244 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753162Ab3IXNkQ (ORCPT
+	with ESMTP id S1751138Ab3IXNny (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Sep 2013 09:40:16 -0400
+	Tue, 24 Sep 2013 09:43:54 -0400
 Content-Disposition: inline
-In-Reply-To: <20130924044432.GD3619@verge.net.au>
+In-Reply-To: <loom.20130924T092704-635@post.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: takasi-y@ops.dti.ne.jp, SH-Linux <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
+To: Federico Natali <federico.natali@selex-es.com>
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Sep 24, 2013 at 01:44:32PM +0900, Simon Horman wrote:
-> [ CCed Greg Kroah-Hartman, the serial maintainer for his review ]
+On Tue, Sep 24, 2013 at 08:49:48AM +0000, Federico Natali wrote:
 > 
-> On Tue, Sep 24, 2013 at 01:10:39PM +0900, takasi-y@ops.dti.ne.jp wrote:
-> > From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-> > 
-> > Add calls to clk_prepare and unprepare so that EMMA Mobile EV2 can
-> > migrate to the common clock framework.
-> > 
-> > Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
-> > [takashi.yoshii.ze@renesas.com: edited for conflicts]
-> > Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
+> Hi to everyone, 
+> 
+> I'm quite new at kernel hacking and I'm having problems trying to make a 
+> serial device work on a custom board.
+> 
+> I hope this is the right place for asking support, if not I'd be grateful 
+> if could you point me to the right place.
+> 
+> My situation is as follows:
+> 
+> I'm working on a custom board based on the ARM SoC DM8168 by Texas 
+> Instruments and I'm using a Linux distribution from TI based on 2.6.37 
+> kernel
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As you are stuck on a really old, and obsolete kernel, that was provided
+by a vendor, there's almost nothing we can do here to help with this.  I
+suggest you contact the vendor as they are the best ones to help out,
+especially as you are paying for support from them for this codebase.
 
+Best of luck,
+
+greg k-h
