@@ -1,44 +1,169 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Adding a serial device
-Date: Tue, 24 Sep 2013 06:44:52 -0700
-Message-ID: <20130924134452.GB7246@kroah.com>
-References: <loom.20130924T092704-635@post.gmane.org>
+From: "Tim Kryger" <tim.kryger@linaro.org>
+Subject: [PATCH] serial: 8250_dw: Improve unwritable LCR workaround
+Date: Tue, 24 Sep 2013 17:39:09 -0700
+Message-ID: <1380069549-9176-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:33244 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751138Ab3IXNny (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 24 Sep 2013 09:43:54 -0400
-Content-Disposition: inline
-In-Reply-To: <loom.20130924T092704-635@post.gmane.org>
+Received: from mms1.broadcom.com ([216.31.210.17]:1911 "EHLO mms1.broadcom.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755597Ab3IYAkY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Sep 2013 20:40:24 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Federico Natali <federico.natali@selex-es.com>
-Cc: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Tim Kryger <tim.kryger@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
 
-On Tue, Sep 24, 2013 at 08:49:48AM +0000, Federico Natali wrote:
-> 
-> Hi to everyone, 
-> 
-> I'm quite new at kernel hacking and I'm having problems trying to make a 
-> serial device work on a custom board.
-> 
-> I hope this is the right place for asking support, if not I'd be grateful 
-> if could you point me to the right place.
-> 
-> My situation is as follows:
-> 
-> I'm working on a custom board based on the ARM SoC DM8168 by Texas 
-> Instruments and I'm using a Linux distribution from TI based on 2.6.37 
-> kernel
+The Designware UART has a limitation where it ignores writes into the
+LCR if the UART is busy.  The current workaround stashes a copy of the
+last written LCR and writes it back down to the hardware if it receives
+a special busy interrupt which is raised when a write was ignored.
 
-As you are stuck on a really old, and obsolete kernel, that was provided
-by a vendor, there's almost nothing we can do here to help with this.  I
-suggest you contact the vendor as they are the best ones to help out,
-especially as you are paying for support from them for this codebase.
+Unfortunately, interrupts are typically disabled prior to performing a
+sequence of register writes that include the LCR so the point at which
+the retry occurs is too late.  An example is serial8250_do_set_termios()
+where an ignored LCR write results in the baud divisor not being set and
+instead a garbage character is sent out the transmitter.
 
-Best of luck,
+Furthermore, since serial_port_out() offers no way to indicate failure,
+a serious effort must be made to ensure that the LCR is actually updated
+before returning back to the caller.  This is difficult, however, as a
+UART that was busy during the first attempt is likely to still be busy
+when a subsequent attempt is made unless some extra action is taken.
 
-greg k-h
+This updated workaround takes the extreme action of clearing the TX/RX
+FIFOs and reading the receive buffer before writing down the LCR in the
+hope that doing so will force the UART into an idle state.  While this
+may seem unnecessarily aggressive, writes to the LCR are used to change
+the baud rate, parity, stop bit, or data length so the data that may be
+lost is likely not important.  Admittedly, this is far from ideal but it
+seems to be the best that can be done given the hardware limitations.
+
+Lastly, the revised workaround doesn't touch the LCR in the ISR, so it
+avoids the possibility of a "serial8250: too much work for irq" lock up.
+This problem is rare in real situations but can be reproduced easily by
+wiring up two UARTs and running the following commands.
+
+  # stty -F /dev/ttyS1 echo
+  # stty -F /dev/ttyS2 echo
+  # cat /dev/ttyS1 &
+  [1] 375
+  # echo asdf > /dev/ttyS1
+  asdf
+
+  [   27.700000] serial8250: too much work for irq96
+  [   27.700000] serial8250: too much work for irq96
+  [   27.710000] serial8250: too much work for irq96
+  [   27.710000] serial8250: too much work for irq96
+  [   27.720000] serial8250: too much work for irq96
+  [   27.720000] serial8250: too much work for irq96
+  [   27.730000] serial8250: too much work for irq96
+  [   27.730000] serial8250: too much work for irq96
+  [   27.740000] serial8250: too much work for irq96
+
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Matt Porter <matt.porter@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+---
+ drivers/tty/serial/8250/8250_dw.c | 57 +++++++++++++++++++++++++++------------
+ 1 file changed, 40 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index daf710f..ffbb69c 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -56,7 +56,6 @@
+ 
+ 
+ struct dw8250_data {
+-	int		last_lcr;
+ 	int		last_mcr;
+ 	int		line;
+ 	struct clk	*clk;
+@@ -76,17 +75,35 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+ 	return value;
+ }
+ 
++/* The UART will ignore writes to LCR when busy we take aggressive steps
++ * to ensure that it is idle before attempting to write to LCR */
++static void dw8250_force_idle(struct uart_port *p)
++{
++	serial8250_clear_and_reinit_fifos(container_of
++					  (p, struct uart_8250_port, port));
++	(void)p->serial_in(p, UART_LSR);
++	(void)p->serial_in(p, UART_MSR);
++	(void)p->serial_in(p, UART_RX);
++}
++
+ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+ 
+-	if (offset == UART_LCR)
+-		d->last_lcr = value;
+-
+-	if (offset == UART_MCR)
+-		d->last_mcr = value;
+-
+-	writeb(value, p->membase + (offset << p->regshift));
++	if (offset == UART_LCR) {
++		int tries = 1000;
++		while (tries--) {
++			if (value == p->serial_in(p, UART_LCR))
++				return;
++			dw8250_force_idle(p);
++			writeb(value, p->membase + (UART_LCR << p->regshift));
++		}
++		dev_err(p->dev, "Couldn't set LCR to %d\n", value);
++	} else {
++		if (offset == UART_MCR)
++			d->last_mcr = value;
++		writeb(value, p->membase + (offset << p->regshift));
++	}
+ }
+ 
+ static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
+@@ -107,13 +124,20 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+ 
+-	if (offset == UART_LCR)
+-		d->last_lcr = value;
+-
+-	if (offset == UART_MCR)
+-		d->last_mcr = value;
+-
+-	writel(value, p->membase + (offset << p->regshift));
++	if (offset == UART_LCR) {
++		int tries = 1000;
++		while (tries--) {
++			if (value == p->serial_in(p, UART_LCR))
++				return;
++			dw8250_force_idle(p);
++			writel(value, p->membase + (UART_LCR << p->regshift));
++		}
++		dev_err(p->dev, "Couldn't set LCR to %d\n", value);
++	} else {
++		if (offset == UART_MCR)
++			d->last_mcr = value;
++		writel(value, p->membase + (offset << p->regshift));
++	}
+ }
+ 
+ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
+@@ -131,9 +155,8 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	if (serial8250_handle_irq(p, iir)) {
+ 		return 1;
+ 	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+-		/* Clear the USR and write the LCR again. */
++		/* Clear the USR */
+ 		(void)p->serial_in(p, d->usr_reg);
+-		p->serial_out(p, UART_LCR, d->last_lcr);
+ 
+ 		return 1;
+ 	}
+-- 
+1.8.0.1
+
+
