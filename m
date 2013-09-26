@@ -1,112 +1,75 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Wed, 25 Sep 2013 15:47:14 -0700
-Message-ID: <CAAYSxhpXNj4Jo9puhc56EkaXKEg=XjNYG_iwX0FDgpLyySWiZg@mail.gmail.com>
-References: <1380069549-9176-1-git-send-email-tim.kryger@linaro.org>
-	<20130925114232.GA26259@xps8300>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH 1/6] clocksource: em_sti: convert to clk_prepare/unprepare
+Date: Thu, 26 Sep 2013 12:18:47 +0200
+Message-ID: <52440A07.4050101@linaro.org>
+References: <52410F86.4040301@renesas.com> <20130924130924.61d4ecedf3d4fca5952d55fc@ops.dti.ne.jp> <20130924044236.GC3619@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f177.google.com ([209.85.223.177]:34457 "EHLO
-	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752399Ab3IYWrP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 25 Sep 2013 18:47:15 -0400
-Received: by mail-ie0-f177.google.com with SMTP id qd12so413082ieb.8
-        for <linux-serial@vger.kernel.org>; Wed, 25 Sep 2013 15:47:14 -0700 (PDT)
-In-Reply-To: <20130925114232.GA26259@xps8300>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20130924044236.GC3619@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, takasi-y@ops.dti.ne.jp
+Cc: SH-Linux <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Patch Tracking <patches@linaro.org>
 
-On Wed, Sep 25, 2013 at 4:42 AM, Heikki Krogerus
-<heikki.krogerus@linux.intel.com> wrote:
-> Hi Tim,
+On 09/24/2013 06:42 AM, Simon Horman wrote:
+> [ CCed Daniel Lezcano and Thomas Gleixner, the clocksource maintainer=
+s ]
 >
-> On Tue, Sep 24, 2013 at 05:39:09PM -0700, Tim Kryger wrote:
->> The Designware UART has a limitation where it ignores writes into the
->> LCR if the UART is busy.  The current workaround stashes a copy of the
->> last written LCR and writes it back down to the hardware if it receives
->> a special busy interrupt which is raised when a write was ignored.
+> On Tue, Sep 24, 2013 at 01:09:24PM +0900, takasi-y@ops.dti.ne.jp wrot=
+e:
+>> From: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 >>
->> Unfortunately, interrupts are typically disabled prior to performing a
->> sequence of register writes that include the LCR so the point at which
->> the retry occurs is too late.  An example is serial8250_do_set_termios()
->> where an ignored LCR write results in the baud divisor not being set and
->> instead a garbage character is sent out the transmitter.
+>> Add calls to clk_prepare and unprepare so that EMMA Mobile EV2 can
+>> migrate to the common clock framework.
 >>
->> Furthermore, since serial_port_out() offers no way to indicate failure,
->> a serious effort must be made to ensure that the LCR is actually updated
->> before returning back to the caller.  This is difficult, however, as a
->> UART that was busy during the first attempt is likely to still be busy
->> when a subsequent attempt is made unless some extra action is taken.
->>
->> This updated workaround takes the extreme action of clearing the TX/RX
->> FIFOs and reading the receive buffer before writing down the LCR in the
->> hope that doing so will force the UART into an idle state.  While this
->> may seem unnecessarily aggressive, writes to the LCR are used to change
->> the baud rate, parity, stop bit, or data length so the data that may be
->> lost is likely not important.  Admittedly, this is far from ideal but it
->> seems to be the best that can be done given the hardware limitations.
+>> Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com=
 >
-> <snip>
->
->> @@ -76,17 +75,35 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
->>       return value;
->>  }
+
+I am not a clk framework expert but at the first glance sounds correct.
+
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+
+>> ---
+>>   drivers/clocksource/em_sti.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> +/* The UART will ignore writes to LCR when busy we take aggressive steps
->> + * to ensure that it is idle before attempting to write to LCR */
->> +static void dw8250_force_idle(struct uart_port *p)
->> +{
->> +     serial8250_clear_and_reinit_fifos(container_of
->> +                                       (p, struct uart_8250_port, port));
->> +     (void)p->serial_in(p, UART_LSR);
->> +     (void)p->serial_in(p, UART_MSR);
->> +     (void)p->serial_in(p, UART_RX);
->> +}
->
-> This looks pretty brutal. Is it really necessary?
-
-Clearing the RX FIFO and receive buffer are necessary.  The hardware
-reports a busy status if there are any unread characters waiting.
-
-Reading the LSR and MSR may not be essential.  I suspect some
-interrupts that are cleared with these reads could trigger a busy
-status but the documentation is vague.
-
->>  static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->>  {
->>       struct dw8250_data *d = p->private_data;
+>> diff --git a/drivers/clocksource/em_sti.c b/drivers/clocksource/em_s=
+ti.c
+>> index 3a5909c..9d17083 100644
+>> --- a/drivers/clocksource/em_sti.c
+>> +++ b/drivers/clocksource/em_sti.c
+>> @@ -78,7 +78,7 @@ static int em_sti_enable(struct em_sti_priv *p)
+>>   	int ret;
 >>
->> -     if (offset == UART_LCR)
->> -             d->last_lcr = value;
->> -
->> -     if (offset == UART_MCR)
->> -             d->last_mcr = value;
->> -
->> -     writeb(value, p->membase + (offset << p->regshift));
->> +     if (offset == UART_LCR) {
->> +             int tries = 1000;
->> +             while (tries--) {
->> +                     if (value == p->serial_in(p, UART_LCR))
->> +                             return;
->> +                     dw8250_force_idle(p);
->> +                     writeb(value, p->membase + (UART_LCR << p->regshift));
->> +             }
->> +             dev_err(p->dev, "Couldn't set LCR to %d\n", value);
->
-> Is it not enough to simply poll USR[0] to see when the UART becomes
-> free?
+>>   	/* enable clock */
+>> -	ret =3D clk_enable(p->clk);
+>> +	ret =3D clk_prepare_enable(p->clk);
+>>   	if (ret) {
+>>   		dev_err(&p->pdev->dev, "cannot enable clock\n");
+>>   		return ret;
+>> @@ -107,7 +107,7 @@ static void em_sti_disable(struct em_sti_priv *p=
+)
+>>   	em_sti_write(p, STI_INTENCLR, 3);
+>>
+>>   	/* stop clock */
+>> -	clk_disable(p->clk);
+>> +	clk_disable_unprepare(p->clk);
+>>   }
+>>
+>>   static cycle_t em_sti_count(struct em_sti_priv *p)
+>> --
+>> 1.8.1.5
+>>
 
-Unfortunately not.  The LCR is modified while holding the spinlock
-with local interrupts disabled so the ISR is deprived of the
-opportunity to empty the FIFO.
 
-Given that the hardware will never become idle so long as there are
-characters in the RX FIFO, the only option is to forcibly empty it
-here.
+--=20
+  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
+r ARM SoCs
 
-> --
-> heikki
+=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
+
