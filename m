@@ -1,209 +1,122 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] serial: 8250_pci: add support for Intel BayTrail
-Date: Fri, 27 Sep 2013 10:52:59 +0300
-Message-ID: <1380268379-23513-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: Alexey Pelykh <alexey.pelykh@gmail.com>
+Subject: Re: [PATCH] OMAP/serial: Fix division by zero exception on 3M+ baud rates
+Date: Fri, 27 Sep 2013 15:41:58 +0300
+Message-ID: <CAOmKuSpFcy8g9yPasWngtHqpurJrqLeyB5ppt33TodpsU_DzqQ@mail.gmail.com>
+References: <20130921074344.GA15524@inertiallabs-linux64> <20130921104202.GR25647@n2100.arm.linux.org.uk>
+ <CAOmKuSo6tNoMKB_-H9Z-PEBGpZCmOZ9EdfSbyy2ymP+Wvhy_3Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:44078 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751878Ab3I0HxF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Sep 2013 03:53:05 -0400
+Received: from mail-vb0-f47.google.com ([209.85.212.47]:47810 "EHLO
+	mail-vb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752561Ab3I0MmT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 27 Sep 2013 08:42:19 -0400
+In-Reply-To: <CAOmKuSo6tNoMKB_-H9Z-PEBGpZCmOZ9EdfSbyy2ymP+Wvhy_3Q@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Felipe Balbi <balbi@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Intel BayTrail has two HS-UARTs with 64 byte fifo, support
-for DMA and support for 16750 compatible Auto Flow Control.
+Sorry for HTML mail, resend
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_pci.c | 145 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 145 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 515fd0f..d917bbb 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1324,6 +1324,120 @@ ce4100_serial_setup(struct serial_private *priv,
- 	return ret;
- }
- 
-+#define PCI_DEVICE_ID_INTEL_BYT_UART1	0x0f0a
-+#define PCI_DEVICE_ID_INTEL_BYT_UART2	0x0f0c
-+
-+#define BYT_PRV_CLK			0x800
-+#define BYT_PRV_CLK_EN			(1 << 0)
-+#define BYT_PRV_CLK_M_VAL_SHIFT		1
-+#define BYT_PRV_CLK_N_VAL_SHIFT		16
-+#define BYT_PRV_CLK_UPDATE		(1 << 31)
-+
-+#define BYT_GENERAL_REG			0x808
-+#define BYT_GENERAL_DIS_RTS_N_OVERRIDE	(1 << 3)
-+
-+#define BYT_TX_OVF_INT			0x820
-+#define BYT_TX_OVF_INT_MASK		(1 << 1)
-+
-+static void
-+byt_set_termios(struct uart_port *p, struct ktermios *termios,
-+		struct ktermios *old)
-+{
-+	unsigned int baud = tty_termios_baud_rate(termios);
-+	unsigned int m = 6912;
-+	unsigned int n = 15625;
-+	u32 reg;
-+
-+	/* For baud rates 1M, 2M, 3M and 4M the dividers must be adjusted. */
-+	if (baud == 1000000 || baud == 2000000 || baud == 4000000) {
-+		m = 64;
-+		n = 100;
-+
-+		p->uartclk = 64000000;
-+	} else if (baud == 3000000) {
-+		m = 48;
-+		n = 100;
-+
-+		p->uartclk = 48000000;
-+	} else {
-+		p->uartclk = 44236800;
-+	}
-+
-+	/* Reset the clock */
-+	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
-+	writel(reg, p->membase + BYT_PRV_CLK);
-+	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
-+	writel(reg, p->membase + BYT_PRV_CLK);
-+
-+	/*
-+	 * If auto-handshake mechanism is not enabled,
-+	 * disable rts_n override
-+	 */
-+	reg = readl(p->membase + BYT_GENERAL_REG);
-+	reg &= ~BYT_GENERAL_DIS_RTS_N_OVERRIDE;
-+	if (termios->c_cflag & CRTSCTS)
-+		reg |= BYT_GENERAL_DIS_RTS_N_OVERRIDE;
-+	writel(reg, p->membase + BYT_GENERAL_REG);
-+
-+	serial8250_do_set_termios(p, termios, old);
-+}
-+
-+static bool byt_dma_filter(struct dma_chan *chan, void *param)
-+{
-+	return chan->chan_id == *(int *)param;
-+}
-+
-+static int
-+byt_serial_setup(struct serial_private *priv,
-+		 const struct pciserial_board *board,
-+		 struct uart_8250_port *port, int idx)
-+{
-+	struct uart_8250_dma *dma;
-+	int ret;
-+
-+	dma = devm_kzalloc(port->port.dev, sizeof(*dma), GFP_KERNEL);
-+	if (!dma)
-+		return -ENOMEM;
-+
-+	switch (priv->dev->device) {
-+	case PCI_DEVICE_ID_INTEL_BYT_UART1:
-+		dma->rx_chan_id = 3;
-+		dma->tx_chan_id = 2;
-+		break;
-+	case PCI_DEVICE_ID_INTEL_BYT_UART2:
-+		dma->rx_chan_id = 5;
-+		dma->tx_chan_id = 4;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	dma->rxconf.slave_id = dma->rx_chan_id;
-+	dma->rxconf.src_maxburst = 16;
-+
-+	dma->txconf.slave_id = dma->tx_chan_id;
-+	dma->txconf.dst_maxburst = 16;
-+
-+	dma->fn = byt_dma_filter;
-+	dma->rx_param = &dma->rx_chan_id;
-+	dma->tx_param = &dma->tx_chan_id;
-+
-+	ret = pci_default_setup(priv, board, port, idx);
-+	port->port.iotype = UPIO_MEM;
-+	port->port.type = PORT_16550A;
-+	port->port.flags = (port->port.flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
-+	port->port.set_termios = byt_set_termios;
-+	port->port.fifosize = 64;
-+	port->tx_loadsz = 64;
-+	port->dma = dma;
-+	port->capabilities = UART_CAP_FIFO | UART_CAP_AFE;
-+
-+	/* Disable Tx counter interrupts */
-+	writel(BYT_TX_OVF_INT_MASK, port->port.membase + BYT_TX_OVF_INT);
-+
-+	return ret;
-+}
-+
- static int
- pci_omegapci_setup(struct serial_private *priv,
- 		      const struct pciserial_board *board,
-@@ -1662,6 +1776,20 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= kt_serial_setup,
- 	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_BYT_UART1,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= byt_serial_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_BYT_UART2,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= byt_serial_setup,
-+	},
- 	/*
- 	 * ITE
- 	 */
-@@ -2449,6 +2577,7 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_4_3906250,
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
-+	pbn_byt,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3185,6 +3314,13 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
-+	[pbn_byt] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 1,
-+		.base_baud	= 2764800,
-+		.uart_offset	= 0x80,
-+		.reg_shift      = 2,
-+	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -4846,6 +4982,15 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CE4100_UART,
- 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
- 		pbn_ce4100_1_115200 },
-+	/* Intel BayTrail */
-+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_UART1,
-+		PCI_ANY_ID,  PCI_ANY_ID,
-+		PCI_CLASS_COMMUNICATION_SERIAL << 8, 0xff0000,
-+		pbn_byt },
-+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_UART2,
-+		PCI_ANY_ID,  PCI_ANY_ID,
-+		PCI_CLASS_COMMUNICATION_SERIAL << 8, 0xff0000,
-+		pbn_byt },
- 
- 	/*
- 	 * Cronyx Omega PCI
--- 
-1.8.4.rc3
-
+On Fri, Sep 27, 2013 at 3:37 PM, Alexey Pelykh <alexey.pelykh@gmail.com> wrote:
+> Hi Russel,
+>
+> Probably then it would be great if you could summarize that in a patch to
+> replace mine, since basically mine is totally improper.
+>
+> Thanks,
+> Alexey
+>
+>
+>
+> On Sat, Sep 21, 2013 at 1:42 PM, Russell King - ARM Linux
+> <linux@arm.linux.org.uk> wrote:
+>>
+>> On Sat, Sep 21, 2013 at 03:43:44AM -0400, Alexey Pelykh wrote:
+>> > diff --git a/drivers/tty/serial/omap-serial.c
+>> > b/drivers/tty/serial/omap-serial.c
+>> > index 816d1a2..808a880 100644
+>> > --- a/drivers/tty/serial/omap-serial.c
+>> > +++ b/drivers/tty/serial/omap-serial.c
+>> > @@ -240,8 +240,8 @@ serial_omap_baud_is_mode16(struct uart_port *port,
+>> > unsigned int baud)
+>> >  {
+>> >       unsigned int n13 = port->uartclk / (13 * baud);
+>> >       unsigned int n16 = port->uartclk / (16 * baud);
+>> > -     int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
+>> > -     int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
+>> > +     int baudAbsDiff13 = n13 ? (baud - (port->uartclk / (13 * n13))) :
+>> > INT_MAX;
+>> > +     int baudAbsDiff16 = n16 ? (baud - (port->uartclk / (16 * n16))) :
+>> > INT_MAX;
+>> >       if(baudAbsDiff13 < 0)
+>> >               baudAbsDiff13 = -baudAbsDiff13;
+>> >       if(baudAbsDiff16 < 0)
+>>
+>> So, this code is trying to work out whether it's better to use a prescaler
+>> of 13 or 16?  In which case, the above code is rather buggy in many ways.
+>> Let's take an example - what if port->uartclk is 19MHz?
+>>
+>> n13 = 19M / 13 * 115200 = 1
+>> n16 = 19M / 16 * 115200 = 1
+>> baudAbsDiff13 = 115200 - (19M / 13 * 1) = 115200 - 146153 = -30953 ->
+>> 30953
+>> baudAbsDiff16 = 115200 - (19M / 16 * 1) = 115200 - 118750 = -3550 -> 3350
+>>
+>> return (baudAbsDiff13 > baudAbsDiff16); -> 1
+>>
+>> That seems like it's right.
+>>
+>> Now, what if it's 18MHz?
+>>
+>> n13 = 18M / 13 * 115200 = 1
+>> n16 = 18M / 16 * 115200 = 0
+>> baudAbsDiff13 = 115200 - (18M / 13 * 1) = 115200 - 146153 = -23261 ->
+>> 23261
+>> baudAbsDiff16 = 115200 - (18M / 16 * 0) = 115200 - 118750 = INT_MAX
+>>
+>> return (baudAbsDiff13 > baudAbsDiff16); -> 0
+>>
+>> Now, consider the question: with a 18MHz clock, which produces a more
+>> accurate 115200 baud rate - a prescaler of 16 or 13?  Let's go back to
+>> the math.
+>>
+>>         115200 * 13 => 1497600
+>>         115200 * 16 => 1843200
+>>
+>> So, choosing a prescaler of 16 will give a slower baud rate, but it's
+>> a lot closer to 115200 than using the prescaler of 13.  Yet, the code
+>> will select the latter.
+>>
+>> I'd suggest that this code gets rewritten to do "what it says on the tin"
+>> a bit better:
+>>
+>>         unsigned n13 = DIV_ROUND_CLOSEST(port->uartclk, 13 * baud);
+>>         unsigned n16 = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
+>>         int delta_clk_13 = 13 * baud * n13 - port->uartclk;
+>>         int delta_clk_16 = 16 * baud * n16 - port->uartclk;
+>>
+>>         if (delta_clk_13 < 0)
+>>                 delta_clk_13 = -delta_clk_13;
+>>         if (delta_clk_16 < 0)
+>>                 delta_clk_16 = -delta_clk_16;
+>>
+>>         return delta_clk_13 > delta_clk_16;
+>>
+>> Note that baud will never be larger than port->uartclk / 13, so n13
+>> will always be greater than 1.  n16 may be zero though, and in this
+>> case, at the point of the test, delta_clk_16 becomes much larger than
+>> delta_clk_13, so the above calculation returns false, meaning we
+>> correctly use a prescaler of 13.
+>>
+>> Not only does this avoid the problem with the divider being zero, but
+>> it also selects the prescaler which gives us the closest baud rate to
+>> the one which is being requested.
+>>
+>> Finally, serial_omap_get_divisor should also use DIV_ROUND_CLOSEST() -
+>> or for extra points, integrate this into serial_omap_get_divisor(),
+>> and have it also return the prescaler too.
+>>
+>
