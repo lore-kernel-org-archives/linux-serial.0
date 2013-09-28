@@ -1,33 +1,51 @@
-From: "Microsoft Iberica SL" <ibericaslmic@outlook.es>
-Subject: You've won a Prize
-Date: Sat, 28 Sep 2013 14:34:30 +0300 (EEST)
-Message-ID: <64481.79.157.33.64.1380368070.squirrel@mail1.centrum-group.com>
-Reply-To: payingroll446@yahoo.com.hk
-Mime-Version: 1.0
-Content-Type: text/plain;charset=WINDOWS-1251
-Content-Transfer-Encoding: 8bit
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: tty loop-back device
+Date: Sat, 28 Sep 2013 16:03:20 +0000 (UTC)
+Message-ID: <l26uk7$id2$2@ger.gmane.org>
+References: <l26jrq$48d$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.centrum-group.com ([194.12.254.133]:57895 "EHLO
-	mail1.centrum-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754146Ab3I1OOd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Sep 2013 10:14:33 -0400
+Received: from plane.gmane.org ([80.91.229.3]:39471 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754339Ab3I1QDk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 28 Sep 2013 12:03:40 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1VPwza-0004nz-QM
+	for linux-serial@vger.kernel.org; Sat, 28 Sep 2013 18:03:38 +0200
+Received: from c-24-118-110-103.hsd1.mn.comcast.net ([24.118.110.103])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sat, 28 Sep 2013 18:03:38 +0200
+Received: from grant.b.edwards by c-24-118-110-103.hsd1.mn.comcast.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sat, 28 Sep 2013 18:03:38 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-You've won a Prize
-MICROSOFT IBERICA SL"
-YOU 'VE WON.
-ATTN:MICROSOFT IBERICA SL
-Your email has won (EUR244,000,00)
-(TWO HUNDRED AND FOURTY FOUR THOUSAND EURO)
-Batch number:XL73276498AM
-Ref number:QR352899526KC
-This is a millennium scientific computer game in which
-email addresses were used.It is a promotional program aimed at
-encouraging internet users,therefore you do not need to buy ticket to enter
-for it.
-For further development,clarification and procedure please
-Contact:Dr Eduardo Sanchez,
-Email contact:payingroll446@yahoo.com.hk
+On 2013-09-28, Matwey V. Kornilov <matwey.kornilov@gmail.com> wrote:
+
+> Not sure whether here is the right place to ask. Do the kernel already 
+> has (or, would it be great to have) the tty loop-back support? At least 
+> I've not found something appropriate. I mean, imagine kind of /dev/tty 
+> device, supporting read/write and termios interface and transferring 
+> your read/write/ioctl calls to another user-space application listening, 
+> for instance, /dev/tty_loopback_master. Like a named pipe device.
+
+What you're talking about is pretty much the existing pty device.
+
+Unfortunately, Linux pty's only support a subset of the serial port
+API, so they can't be used for applications like network-connected
+serial ports.  So people like me have to write kernel-mode drivers for
+such devices.
+
+I've suggested extending the Linux pty so that it _does_ support the
+rest of the serial port API.  I even offered to work on it if the
+results would likely be accepted into the kernel tree, but my
+questions/offers have never gotten any response.
+
+-- 
+Grant
+
+
 
