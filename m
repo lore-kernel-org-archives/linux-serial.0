@@ -1,154 +1,52 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH] serial: 8250_pci: clean up printk() calls
-Date: Sat, 28 Sep 2013 13:01:59 -0700
-Message-ID: <20130928200159.GA19968@kroah.com>
+From: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Subject: Re: tty loop-back device
+Date: Sun, 29 Sep 2013 00:41:04 +0400
+Message-ID: <l27esn$cn6$1@ger.gmane.org>
+References: <l26jrq$48d$1@ger.gmane.org> <l26uk7$id2$2@ger.gmane.org> <l2736h$db0$1@ger.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1251;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52975 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752987Ab3I1UCC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 28 Sep 2013 16:02:02 -0400
-Content-Disposition: inline
+Received: from plane.gmane.org ([80.91.229.3]:43104 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754733Ab3I1UlP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 28 Sep 2013 16:41:15 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1VQ1KE-0006EO-SH
+	for linux-serial@vger.kernel.org; Sat, 28 Sep 2013 22:41:14 +0200
+Received: from 92.243.181.209 ([92.243.181.209])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sat, 28 Sep 2013 22:41:14 +0200
+Received: from matwey.kornilov by 92.243.181.209 with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sat, 28 Sep 2013 22:41:14 +0200
+In-Reply-To: <l2736h$db0$1@ger.gmane.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
 
-Move the printk() calls to to dev_*() instead, to tie into the dynamic
-debugging infrastructure.
+28.09.2013 21:21, Matwey V. Kornilov =EF=E8=F8=E5=F2:
+> It seems that BSD and Unix98 pty's may coexist in pty.c. So, there is=
+ a
+> chance that it is possible to add support of Extended pty not breakin=
+g
+> existing things. One need to be a brave to change something in pty.c,=
+ It
+> is quite critical part.
 
-Also change some "raw" printk() calls to dev_err() to provide a better
-error message to userspace so it can properly identify the device and
-not just have to guess.
+It seems that we need new line discipline to allow async notification o=
+f=20
+master tty when the client changes tty->termios. poll() has to be=20
+reimplemented to generate POLLPRI, when tty->termios handling required=20
+on the master side, then master may use special ioctl to read=20
+tty->termios requested.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
----
- drivers/tty/serial/8250/8250_pci.c |   40 +++++++++++++++++--------------------
- 1 file changed, 19 insertions(+), 21 deletions(-)
-
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -9,6 +9,7 @@
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation; either version 2 of the License.
-  */
-+#undef DEBUG
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/pci.h>
-@@ -27,8 +28,6 @@
- 
- #include "8250.h"
- 
--#undef SERIAL_DEBUG_PCI
--
- /*
-  * init function returns:
-  *  > 0 - number of ports
-@@ -63,7 +62,7 @@ static int pci_default_setup(struct seri
- 
- static void moan_device(const char *str, struct pci_dev *dev)
- {
--	printk(KERN_WARNING
-+	dev_err(&dev->dev,
- 	       "%s: %s\n"
- 	       "Please send the output of lspci -vv, this\n"
- 	       "message (0x%04x,0x%04x,0x%04x,0x%04x), the\n"
-@@ -233,7 +232,7 @@ static int pci_inteli960ni_init(struct p
- 	/* is firmware started? */
- 	pci_read_config_dword(dev, 0x44, (void *)&oldval);
- 	if (oldval == 0x00001000L) { /* RESET value */
--		printk(KERN_DEBUG "Local i960 firmware missing");
-+		dev_dbg(&dev->dev, "Local i960 firmware missing\n");
- 		return -ENODEV;
- 	}
- 	return 0;
-@@ -827,7 +826,7 @@ static int pci_netmos_9900_numports(stru
- 		if (sub_serports > 0) {
- 			return sub_serports;
- 		} else {
--			printk(KERN_NOTICE "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
-+			dev_err(&dev->dev, "NetMos/Mostech serial driver ignoring port on ambiguous config.\n");
- 			return 0;
- 		}
- 	}
-@@ -931,7 +930,7 @@ static int pci_ite887x_init(struct pci_d
- 	}
- 
- 	if (!inta_addr[i]) {
--		printk(KERN_ERR "ite887x: could not find iobase\n");
-+		dev_err(&dev->dev, "ite887x: could not find iobase\n");
- 		return -ENODEV;
- 	}
- 
-@@ -1024,9 +1023,9 @@ static int pci_oxsemi_tornado_init(struc
- 	/* Tornado device */
- 	if (deviceID == 0x07000200) {
- 		number_uarts = ioread8(p + 4);
--		printk(KERN_DEBUG
-+		dev_dbg(&dev->dev,
- 			"%d ports detected on Oxford PCI Express device\n",
--								number_uarts);
-+			number_uarts);
- 	}
- 	pci_iounmap(dev, p);
- 	return number_uarts;
-@@ -1349,12 +1348,10 @@ static int skip_tx_en_setup(struct seria
- 			struct uart_8250_port *port, int idx)
- {
- 	port->port.flags |= UPF_NO_TXEN_TEST;
--	printk(KERN_DEBUG "serial8250: skipping TxEn test for device "
--			  "[%04x:%04x] subsystem [%04x:%04x]\n",
--			  priv->dev->vendor,
--			  priv->dev->device,
--			  priv->dev->subsystem_vendor,
--			  priv->dev->subsystem_device);
-+	dev_dbg(&priv->dev->dev,
-+		"serial8250: skipping TxEn test for device [%04x:%04x] subsystem [%04x:%04x]\n",
-+		priv->dev->vendor, priv->dev->device,
-+		priv->dev->subsystem_vendor, priv->dev->subsystem_device);
- 
- 	return pci_default_setup(priv, board, port, idx);
- }
-@@ -3361,14 +3358,15 @@ pciserial_init_ports(struct pci_dev *dev
- 		if (quirk->setup(priv, board, &uart, i))
- 			break;
- 
--#ifdef SERIAL_DEBUG_PCI
--		printk(KERN_DEBUG "Setup PCI port: port %lx, irq %d, type %d\n",
--		       uart.port.iobase, uart.port.irq, uart.port.iotype);
--#endif
-+		dev_dbg(&dev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
-+			uart.port.iobase, uart.port.irq, uart.port.iotype);
- 
- 		priv->line[i] = serial8250_register_8250_port(&uart);
- 		if (priv->line[i] < 0) {
--			printk(KERN_WARNING "Couldn't register serial port %s: %d\n", pci_name(dev), priv->line[i]);
-+			dev_err(&dev->dev,
-+				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
-+				uart.port.iobase, uart.port.irq,
-+				uart.port.iotype, priv->line[i]);
- 			break;
- 		}
- 	}
-@@ -3461,7 +3459,7 @@ pciserial_init_one(struct pci_dev *dev,
- 	}
- 
- 	if (ent->driver_data >= ARRAY_SIZE(pci_boards)) {
--		printk(KERN_ERR "pci_init_one: invalid driver_data: %ld\n",
-+		dev_err(&dev->dev, "invalid driver_data: %ld\n",
- 			ent->driver_data);
- 		return -EINVAL;
- 	}
-@@ -3554,7 +3552,7 @@ static int pciserial_resume_one(struct p
- 		err = pci_enable_device(dev);
- 		/* FIXME: We cannot simply error out here */
- 		if (err)
--			printk(KERN_ERR "pciserial: Unable to re-enable ports, trying to continue.\n");
-+			dev_err(&dev->dev, "Unable to re-enable ports, trying to continue.\n");
- 		pciserial_resume_ports(priv);
- 	}
- 	return 0;
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
