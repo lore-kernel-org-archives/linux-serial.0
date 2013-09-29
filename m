@@ -1,69 +1,58 @@
-From: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
-Subject: Re: tty loop-back device
-Date: Sun, 29 Sep 2013 11:09:58 +0400
-Message-ID: <l28jnt$j67$1@ger.gmane.org>
-References: <l26jrq$48d$1@ger.gmane.org> <l26uk7$id2$2@ger.gmane.org> <l2736h$db0$1@ger.gmane.org> <l27esn$cn6$1@ger.gmane.org> <l286bm$239$1@ger.gmane.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixess for 3.12-rc3
+Date: Sun, 29 Sep 2013 13:02:30 -0700
+Message-ID: <20130929200230.GA31185@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1251;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:48155 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751342Ab3I2HKN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 29 Sep 2013 03:10:13 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1VQB8u-0008KP-EV
-	for linux-serial@vger.kernel.org; Sun, 29 Sep 2013 09:10:12 +0200
-Received: from 92.243.181.209 ([92.243.181.209])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Sun, 29 Sep 2013 09:10:12 +0200
-Received: from matwey.kornilov by 92.243.181.209 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Sun, 29 Sep 2013 09:10:12 +0200
-In-Reply-To: <l286bm$239$1@ger.gmane.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-29.09.2013 07:21, Grant Edwards =EF=E8=F8=E5=F2:
-> I was thinking about initially just creating a blocking ioctl() call
-> that the master can use to wait for either a termios configuration
-> change or a modem control line change.  I admit that's not as elegent=
-:
-> it would mean a master would need multiple threads in most cases (one
-> for data and one for config and modem status).  But, it may be a less
-> intrusive change [I haven't looked at the poll implementation in any
-> detail, so perhaps the poll change isn't as bad as I fear.]
+The following changes since commit 272b98c6455f00884f0350f775c5342358ebb73f:
 
-The simplier way is to use master in 'packet mode' (see TIOCPKT). Then=20
-we can distinguish stream data from termios notification for every=20
-master's read. It either starts with '\0' and the following is the data=
-=20
-to transmit or with control symbol and then master have to use ioctl to=
-=20
-read new tty->termios.
+  Linux 3.12-rc1 (2013-09-16 16:17:51 -0400)
 
-> Having to use multiple threads in a master sounds ugly at first, but
-> it's still orders of magnitude easier than implementing a serial
-> driver in kernel space that uses network I/O to communicate with the
-> physical UART.
+are available in the git repository at:
 
-=46or sure.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.12-rc3
 
-We need way more ioctls. Since every new slave pty is enumerated almost=
-=20
-randomly (depends on how many sessions is opened, opening order, etc),=20
-we have to mark somehow the pty when the daemon creates it, then udev=20
-should be able to create appropriate symbolic link for client user-spac=
-e=20
-application. Then user-space client may be configured to work with=20
-/dev/tty/by-name/uniqname for instance.
+for you to fetch changes up to 2332575ef10a1bcf5ca485a6bf043831be11c7a0:
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  tty: ar933x_uart: move devicetree binding documentation (2013-09-26 12:33:49 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.12-rc3
+
+Here are some serial at tty driver fixes for 3.12-rc3
+
+The serial driver fixes some kref leaks, documentation is moved to the proper
+places, and the tty and n_tty fixes resolve some reported regressions.  There
+is still one outstanding tty regression fix that isn't in here yet, as I want
+to test it out some more, it will be sent for 3.12-rc4 if it checks out.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Gabor Juhos (1):
+      tty: ar933x_uart: move devicetree binding documentation
+
+Johan Hovold (4):
+      serial: tegra: fix tty-kref leak
+      serial: pch_uart: fix tty-kref leak in rx-error path
+      serial: pch_uart: fix tty-kref leak in dma-rx path
+      serial: pch_uart: remove unnecessary tty_port_tty_get
+
+Peter Hurley (2):
+      n_tty: Fix EOF push index when termios changes
+      tty: Fix SIGTTOU not sent with tcflush()
+
+ .../bindings/{tty => }/serial/qca,ar9330-uart.txt           |  0
+ drivers/tty/n_tty.c                                         |  3 +--
+ drivers/tty/serial/pch_uart.c                               | 13 +++----------
+ drivers/tty/serial/serial-tegra.c                           |  4 +++-
+ drivers/tty/tty_ioctl.c                                     |  3 +++
+ 5 files changed, 10 insertions(+), 13 deletions(-)
+ rename Documentation/devicetree/bindings/{tty => }/serial/qca,ar9330-uart.txt (100%)
