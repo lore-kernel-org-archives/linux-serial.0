@@ -1,88 +1,63 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 3/6] sh: clkfwk: Select sh-/common- clkfwk alternatively
-Date: Mon, 30 Sep 2013 20:40:08 +0200
-Message-ID: <1663688.MHxO4ng5PY@avalon>
-References: <52410F86.4040301@renesas.com> <20130924131206.d57d07f5faa5cb0773fc328c@ops.dti.ne.jp>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: tty loop-back device
+Date: Mon, 30 Sep 2013 22:28:59 +0000 (UTC)
+Message-ID: <l2ctvb$nd3$1@ger.gmane.org>
+References: <l26jrq$48d$1@ger.gmane.org> <l26uk7$id2$2@ger.gmane.org>
+ <l2736h$db0$1@ger.gmane.org> <l27esn$cn6$1@ger.gmane.org>
+ <l286bm$239$1@ger.gmane.org> <l28jnt$j67$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:53703 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755244Ab3I3SkC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Sep 2013 14:40:02 -0400
-In-Reply-To: <20130924131206.d57d07f5faa5cb0773fc328c@ops.dti.ne.jp>
+Received: from plane.gmane.org ([80.91.229.3]:59838 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754561Ab3I3W3X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 30 Sep 2013 18:29:23 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1VQlxt-000330-Pm
+	for linux-serial@vger.kernel.org; Tue, 01 Oct 2013 00:29:17 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2013 00:29:17 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2013 00:29:17 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: takasi-y@ops.dti.ne.jp
-Cc: SH-Linux <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-Hi Yoshii-san,
+On 2013-09-29, Matwey V. Kornilov <matwey.kornilov@gmail.com> wrote:
+> 29.09.2013 07:21, Grant Edwards ?????:
+>> I was thinking about initially just creating a blocking ioctl() call
+>> that the master can use to wait for either a termios configuration
+>> change or a modem control line change.  I admit that's not as elegent:
+>> it would mean a master would need multiple threads in most cases (one
+>> for data and one for config and modem status).  But, it may be a less
+>> intrusive change [I haven't looked at the poll implementation in any
+>> detail, so perhaps the poll change isn't as bad as I fear.]
+>
+> The simplier way is to use master in 'packet mode' (see TIOCPKT). Then 
+> we can distinguish stream data from termios notification for every 
+> master's read. It either starts with '\0' and the following is the data 
+> to transmit or with control symbol and then master have to use ioctl to 
+> read new tty->termios.
 
-Thank you for the patch.
+I can't believe I didn't know about packet mode.  That's exactly what
+is needed.  Defining two new bits (e.g. TIOCPKT_TERMIOS, TIOCPKT_MSET)
+would pretty much take care of things.  Just a single new bit to
+notify of changes to either termios or modem lines would be good
+enough.
 
-On Tuesday 24 September 2013 13:12:06 takasi-y@ops.dti.ne.jp wrote:
-> Make sh clock framework core depend on HAVE_MACH_CLKDEV, and
-> set it
-> - y on sh for backward compatibility
-> - !CONFIG_COMMON_CLK on sh-mobile
-> This is a preparation for migration to common clock framework
-> from sh clock framework on sh-mobile.
+> We need way more ioctls. Since every new slave pty is enumerated
+> almost randomly (depends on how many sessions is opened, opening
+> order, etc), we have to mark somehow the pty when the daemon creates
+> it, then udev should be able to create appropriate symbolic link for
+> client user-space application. Then user-space client may be
+> configured to work with /dev/tty/by-name/uniqname for instance.
 
-While I agree with this patch, I believe the use of the HAVE_MACH_CLKDEV 
-configuration option to select whether to compile core.o in is a bit of an 
-abuse. I would have created a new configuration option (SH_CLK_CORE in 
-drivers/sh/Kconfig for instance) as 'def_bool y' that depends on SH || (ARM && 
-!COMMON_CLK).
+I've never looked at how pty slave side device nodes get named...
 
-However, as all ARCH_SHMOBILE platforms should be converted to the common 
-clock framework, this is only temporary and could be revisited later, so I'm 
-fine with keeping the patch as-is.
-
-> Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
-> ---
->  arch/arm/Kconfig        | 2 +-
->  arch/sh/Kconfig         | 1 +
->  drivers/sh/clk/Makefile | 3 +--
->  3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index 3f7714d..53044ca 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -650,7 +650,7 @@ config ARCH_SHMOBILE
->  	select HAVE_ARM_SCU if SMP
->  	select HAVE_ARM_TWD if SMP
->  	select HAVE_CLK
-> -	select HAVE_MACH_CLKDEV
-> +	select HAVE_MACH_CLKDEV if !COMMON_CLK
->  	select HAVE_SMP
->  	select MIGHT_HAVE_CACHE_L2X0
->  	select MULTI_IRQ_HANDLER
-> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-> index 224f4bc..f57e47f 100644
-> --- a/arch/sh/Kconfig
-> +++ b/arch/sh/Kconfig
-> @@ -41,6 +41,7 @@ config SUPERH
->  	select MODULES_USE_ELF_RELA
->  	select OLD_SIGSUSPEND
->  	select OLD_SIGACTION
-> +	select HAVE_MACH_CLKDEV
->  	help
->  	  The SuperH is a RISC processor targeted for use in embedded systems
->  	  and consumer electronics; it was also used in the Sega Dreamcast
-> diff --git a/drivers/sh/clk/Makefile b/drivers/sh/clk/Makefile
-> index 5d15ebf..e73b031 100644
-> --- a/drivers/sh/clk/Makefile
-> +++ b/drivers/sh/clk/Makefile
-> @@ -1,3 +1,2 @@
-> -obj-y	:= core.o
-> -
-> +obj-$(CONFIG_HAVE_MACH_CLKDEV)	+= core.o
->  obj-$(CONFIG_SH_CLK_CPG)	+= cpg.o
 -- 
-Regards,
-
-Laurent Pinchart
+Grant Edwards               grant.b.edwards        Yow! I just forgot my whole
+                                  at               philosophy of life!!!
+                              gmail.com            
 
