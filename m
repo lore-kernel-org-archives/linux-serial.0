@@ -1,83 +1,88 @@
-From: Hector Palacios <hector.palacios@digi.com>
-Subject: Re: mxs auart timeout waiting for transmission with hw flow control
-Date: Mon, 30 Sep 2013 18:41:25 +0200
-Message-ID: <5249A9B5.2080903@digi.com>
-References: <5249A1B7.4000404@digi.com> <20130930162044.GG2548@pengutronix.de>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 3/6] sh: clkfwk: Select sh-/common- clkfwk alternatively
+Date: Mon, 30 Sep 2013 20:40:08 +0200
+Message-ID: <1663688.MHxO4ng5PY@avalon>
+References: <52410F86.4040301@renesas.com> <20130924131206.d57d07f5faa5cb0773fc328c@ops.dti.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta7.messagelabs.com ([216.82.254.105]:8681 "EHLO
-	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755362Ab3I3Qs3 (ORCPT
+Received: from perceval.ideasonboard.com ([95.142.166.194]:53703 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755244Ab3I3SkC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Sep 2013 12:48:29 -0400
-In-Reply-To: <20130930162044.GG2548@pengutronix.de>
+	Mon, 30 Sep 2013 14:40:02 -0400
+In-Reply-To: <20130924131206.d57d07f5faa5cb0773fc328c@ops.dti.ne.jp>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Huang Shijie <b32955@freescale.com>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, Marek Vasut <marex@denx.de>
+To: takasi-y@ops.dti.ne.jp
+Cc: SH-Linux <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
 
-Hi Uwe,
+Hi Yoshii-san,
 
-On 09/30/2013 06:20 PM, Uwe Kleine-K=F6nig wrote:
-> Hi Hector,
->
-> On Mon, Sep 30, 2013 at 06:07:19PM +0200, Hector Palacios wrote:
->> I saw your patch at
->> http://www.spinics.net/lists/stable/msg12952.html and I believe I'm
->> having a similar issue when not using the port as console.
->>
->> With hardware flow control enabled transmission fails at low
->> baudrates (9600,38400). Apparently the transmitter closes the port
-> Which kernel are you using? I think there were some other fixes
-> concering flow control some time ago.
+Thank you for the patch.
 
-v3.10. The driver is pretty close to current status.
+On Tuesday 24 September 2013 13:12:06 takasi-y@ops.dti.ne.jp wrote:
+> Make sh clock framework core depend on HAVE_MACH_CLKDEV, and
+> set it
+> - y on sh for backward compatibility
+> - !CONFIG_COMMON_CLK on sh-mobile
+> This is a preparation for migration to common clock framework
+> from sh clock framework on sh-mobile.
 
->> before the data has been really shifted out (or even transferred by
->> the DMA). While the console functions check the status of
->> AUART_STAT_BUSY, the standard functions don't, and the AUART is busy
->> when shutdown is called at low baudrates.
->>
->> I also see the function uart_wait_until_sent() of serial_core.c
->> getting out with timeout expired. At 9600 baud, this function waits
->> 2 or 4 jiffies. Increasing (a lot) the timeout of this function
->> solves the problem. I monitored the time it takes for TX to be empty
->> and it resulted in sometimes around 200 jiffies (@9600).
-> Again with flow control and another imx28 on the opposite side? Does =
-it
-> work without flow control? Is CTS busy for some time? In that case a
-> simple timeout isn't appropriate. Using console and flow control on t=
-he
-> same port might be hairy, not sure though.
+While I agree with this patch, I believe the use of the HAVE_MACH_CLKDEV 
+configuration option to select whether to compile core.o in is a bit of an 
+abuse. I would have created a new configuration option (SH_CLK_CORE in 
+drivers/sh/Kconfig for instance) as 'def_bool y' that depends on SH || (ARM && 
+!COMMON_CLK).
 
-Yes, two imx28 devices with hw flow control enabled. Without flow contr=
-ol it works.
-CTS is not busy. At these low baudrates the CPU is fast enough to proce=
-ss the received=20
-data in time.
-I'm not using the AUART as console but as a standard port.
+However, as all ARCH_SHMOBILE platforms should be converted to the common 
+clock framework, this is only temporary and could be revisited later, so I'm 
+fine with keeping the patch as-is.
 
->> The issue can be reproduced using two iMX28 devices (transmitting
->> between two ports on the same platform usually works fine),
->> configuring a low baudrate (9600) and hardware flow enabled, and
->> sending a file of 40K, for example. The last ~200 bytes or so are
->> typically not sent over the line.
-> I currently don't have the time and machines to test, but maybe the
-> freescale guys (added Fabio to Cc, too) might want to test it.
->
-> Best regards from Freiburg
+> Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
+> ---
+>  arch/arm/Kconfig        | 2 +-
+>  arch/sh/Kconfig         | 1 +
+>  drivers/sh/clk/Makefile | 3 +--
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 3f7714d..53044ca 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -650,7 +650,7 @@ config ARCH_SHMOBILE
+>  	select HAVE_ARM_SCU if SMP
+>  	select HAVE_ARM_TWD if SMP
+>  	select HAVE_CLK
+> -	select HAVE_MACH_CLKDEV
+> +	select HAVE_MACH_CLKDEV if !COMMON_CLK
+>  	select HAVE_SMP
+>  	select MIGHT_HAVE_CACHE_L2X0
+>  	select MULTI_IRQ_HANDLER
+> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+> index 224f4bc..f57e47f 100644
+> --- a/arch/sh/Kconfig
+> +++ b/arch/sh/Kconfig
+> @@ -41,6 +41,7 @@ config SUPERH
+>  	select MODULES_USE_ELF_RELA
+>  	select OLD_SIGSUSPEND
+>  	select OLD_SIGACTION
+> +	select HAVE_MACH_CLKDEV
+>  	help
+>  	  The SuperH is a RISC processor targeted for use in embedded systems
+>  	  and consumer electronics; it was also used in the Sega Dreamcast
+> diff --git a/drivers/sh/clk/Makefile b/drivers/sh/clk/Makefile
+> index 5d15ebf..e73b031 100644
+> --- a/drivers/sh/clk/Makefile
+> +++ b/drivers/sh/clk/Makefile
+> @@ -1,3 +1,2 @@
+> -obj-y	:= core.o
+> -
+> +obj-$(CONFIG_HAVE_MACH_CLKDEV)	+= core.o
+>  obj-$(CONFIG_SH_CLK_CPG)	+= cpg.o
+-- 
+Regards,
 
-I wish I could drop by Freiburg one of these days! Love the city (and t=
-he beer).
+Laurent Pinchart
 
-Best regards,
---
-Hector Palacios
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
