@@ -1,63 +1,33 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: tty loop-back device
-Date: Mon, 30 Sep 2013 22:28:59 +0000 (UTC)
-Message-ID: <l2ctvb$nd3$1@ger.gmane.org>
-References: <l26jrq$48d$1@ger.gmane.org> <l26uk7$id2$2@ger.gmane.org>
- <l2736h$db0$1@ger.gmane.org> <l27esn$cn6$1@ger.gmane.org>
- <l286bm$239$1@ger.gmane.org> <l28jnt$j67$1@ger.gmane.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:59838 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754561Ab3I3W3X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 30 Sep 2013 18:29:23 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1VQlxt-000330-Pm
-	for linux-serial@vger.kernel.org; Tue, 01 Oct 2013 00:29:17 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2013 00:29:17 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2013 00:29:17 +0200
-Sender: linux-serial-owner@vger.kernel.org
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/6] clocksource: em_sti: convert to clk_prepare/unprepare
+Date: Tue, 1 Oct 2013 18:05:50 +0900
+Message-ID: <CANqRtoRUy=Fi3-YeMLpiCinOw+0bkVUbjUMYUo7Lv85+b8=UPg@mail.gmail.com>
+References: <52410F86.4040301@renesas.com>
+	<20130924130924.61d4ecedf3d4fca5952d55fc@ops.dti.ne.jp>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130924130924.61d4ecedf3d4fca5952d55fc-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org
+Cc: SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ben Dooks <ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org>, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Paul Mundt <lethal-M7jkjyW5wf5g9hUCZPvPmw@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On 2013-09-29, Matwey V. Kornilov <matwey.kornilov@gmail.com> wrote:
-> 29.09.2013 07:21, Grant Edwards ?????:
->> I was thinking about initially just creating a blocking ioctl() call
->> that the master can use to wait for either a termios configuration
->> change or a modem control line change.  I admit that's not as elegent:
->> it would mean a master would need multiple threads in most cases (one
->> for data and one for config and modem status).  But, it may be a less
->> intrusive change [I haven't looked at the poll implementation in any
->> detail, so perhaps the poll change isn't as bad as I fear.]
+On Tue, Sep 24, 2013 at 1:09 PM,  <takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org> wrote:
+> From: Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 >
-> The simplier way is to use master in 'packet mode' (see TIOCPKT). Then 
-> we can distinguish stream data from termios notification for every 
-> master's read. It either starts with '\0' and the following is the data 
-> to transmit or with control symbol and then master have to use ioctl to 
-> read new tty->termios.
+> Add calls to clk_prepare and unprepare so that EMMA Mobile EV2 can
+> migrate to the common clock framework.
+>
+> Signed-off-by: Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/clocksource/em_sti.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-I can't believe I didn't know about packet mode.  That's exactly what
-is needed.  Defining two new bits (e.g. TIOCPKT_TERMIOS, TIOCPKT_MSET)
-would pretty much take care of things.  Just a single new bit to
-notify of changes to either termios or modem lines would be good
-enough.
+Looking good, thanks!
 
-> We need way more ioctls. Since every new slave pty is enumerated
-> almost randomly (depends on how many sessions is opened, opening
-> order, etc), we have to mark somehow the pty when the daemon creates
-> it, then udev should be able to create appropriate symbolic link for
-> client user-space application. Then user-space client may be
-> configured to work with /dev/tty/by-name/uniqname for instance.
-
-I've never looked at how pty slave side device nodes get named...
-
--- 
-Grant Edwards               grant.b.edwards        Yow! I just forgot my whole
-                                  at               philosophy of life!!!
-                              gmail.com            
-
+Acked-by: Magnus Damm <damm-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
