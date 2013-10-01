@@ -1,65 +1,39 @@
-From: Hector Palacios <hector.palacios@digi.com>
-Subject: [PATCH] serial: mxs-auart: wait for DMA buffer to flush before shutdown
-Date: Tue, 1 Oct 2013 18:18:35 +0200
-Message-ID: <1380644315-31581-1-git-send-email-hector.palacios@digi.com>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: Re: [PATCH] serial: 8250_dw: Improve unwritable LCR workaround
+Date: Tue, 1 Oct 2013 10:13:11 -0700
+Message-ID: <CAAYSxhqMGOspc7Y1QEa68W2ADpf-k33SOH4nHWhnis_71cyKsQ@mail.gmail.com>
+References: <1380069549-9176-1-git-send-email-tim.kryger@linaro.org>
+	<20130925114232.GA26259@xps8300>
+	<CAAYSxhpXNj4Jo9puhc56EkaXKEg=XjNYG_iwX0FDgpLyySWiZg@mail.gmail.com>
+	<20130927074950.GA25098@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta7.messagelabs.com ([216.82.254.113]:57917 "EHLO
-	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750960Ab3JAQU2 (ORCPT
+Received: from mail-ie0-f170.google.com ([209.85.223.170]:33008 "EHLO
+	mail-ie0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752262Ab3JARNM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Oct 2013 12:20:28 -0400
+	Tue, 1 Oct 2013 13:13:12 -0400
+Received: by mail-ie0-f170.google.com with SMTP id x13so14931449ief.29
+        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2013 10:13:11 -0700 (PDT)
+In-Reply-To: <20130927074950.GA25098@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: u.kleine-koenig@pengutronix.de, b32955@freescale.com, gregkh@linuxfoundation.org, shawn.guo@linaro.org, fabio.estevam@freescale.com, marex@denx.de, hector.palacios@digi.com
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Patch Tracking <patches@linaro.org>
 
-The shutdown function was not waiting for the DMA buffer to flush
-before disabling the AUART. This lead to many bytes not being
-transferred (specially at low baudrates), as they were still in the
-DMA buffer when the AUART was shutdown.
-This patch also adds the check for the BUSY flag.
+On Fri, Sep 27, 2013 at 12:49 AM, Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
 
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> OK. The LCR issue is only a problem when the UART is configured with
+> the busy functionality (UART_16550_COMPATIBLE == NO). Otherwise LRC is
+> always accessible and this is not necessary.
 
-https://jira.digi.com/browse/DEL-616
----
- drivers/tty/serial/mxs-auart.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+Reading through the latest DW databook, I believe you are correct.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index f85b8e6..0d8b2ca 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -750,12 +750,26 @@ static int mxs_auart_startup(struct uart_port *u)
- 	return 0;
- }
- 
-+static unsigned int mxs_auart_tx_empty(struct uart_port *u);
-+
- static void mxs_auart_shutdown(struct uart_port *u)
- {
- 	struct mxs_auart_port *s = to_auart_port(u);
-+	unsigned int to;
-+
-+	if (auart_dma_enabled(s)) {
-+		/* Wait enough time to flush DMA buffer completely */
-+		to = u->timeout * UART_XMIT_SIZE / u->fifosize;
-+		while (!mxs_auart_tx_empty(u) && to--)
-+			mdelay(1);
- 
--	if (auart_dma_enabled(s))
- 		mxs_auart_dma_exit(s);
-+	}
-+
-+	/* Wait for transmitter to become empty ... */
-+	to = u->timeout;
-+	while ((readl(port->membase + AUART_STAT) & AUART_STAT_BUSY) && to--)
-+		mdelay(1);
- 
- 	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
- 
--- 
-1.8.4
+> We need a flag for the UART_16550_COMPATIBLE configuration, and
+> use this WA based on that.
 
+If I adjust the workaround to force the UART idle only when an LCR
+write was ignored rather than doing it prior to any LCR write, would
+that address your concerns?
