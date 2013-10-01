@@ -1,103 +1,85 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 5/6] clk: emev2: Add support for emev2 SMU clocks with DT
-Date: Tue, 01 Oct 2013 14:27:51 +0200
-Message-ID: <690317658.gaTDz3TliP@avalon>
-References: <52410F86.4040301@renesas.com> <20130924131542.f865fad4dec98e024c0d4676@ops.dti.ne.jp> <CANqRtoRD35Ei31PK8a_TOp=2uiYPCoaJuDb6tyZtQL8s0PavNw@mail.gmail.com>
+From: Hector Palacios <hector.palacios@digi.com>
+Subject: Re: mxs auart timeout waiting for transmission with hw flow control
+Date: Tue, 1 Oct 2013 17:37:26 +0200
+Message-ID: <524AEC36.3030409@digi.com>
+References: <5249A1B7.4000404@digi.com> <20130930162044.GG2548@pengutronix.de> <5249A9B5.2080903@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:59095 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751861Ab3JAM1x (ORCPT
+Received: from mail1.bemta7.messagelabs.com ([216.82.254.113]:34098 "EHLO
+	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752092Ab3JAPhu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Oct 2013 08:27:53 -0400
-In-Reply-To: <CANqRtoRD35Ei31PK8a_TOp=2uiYPCoaJuDb6tyZtQL8s0PavNw@mail.gmail.com>
+	Tue, 1 Oct 2013 11:37:50 -0400
+In-Reply-To: <5249A9B5.2080903@digi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: takasi-y@ops.dti.ne.jp, SH-Linux <linux-sh@vger.kernel.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
+To: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Huang Shijie <b32955@freescale.com>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, Marek Vasut <marex@denx.de>
 
-Hi Yoshii-san,
+Hello,
 
-Thank you for the patch.
+On 09/30/2013 06:41 PM, Hector Palacios wrote:
+> Hi Uwe,
+>
+> On 09/30/2013 06:20 PM, Uwe Kleine-K=F6nig wrote:
+>> Hi Hector,
+>>
+>> On Mon, Sep 30, 2013 at 06:07:19PM +0200, Hector Palacios wrote:
+>>> I saw your patch at
+>>> http://www.spinics.net/lists/stable/msg12952.html and I believe I'm
+>>> having a similar issue when not using the port as console.
+>>>
+>>> With hardware flow control enabled transmission fails at low
+>>> baudrates (9600,38400). Apparently the transmitter closes the port
+>> Which kernel are you using? I think there were some other fixes
+>> concering flow control some time ago.
+>
+> v3.10. The driver is pretty close to current status.
+>
+>>> before the data has been really shifted out (or even transferred by
+>>> the DMA). While the console functions check the status of
+>>> AUART_STAT_BUSY, the standard functions don't, and the AUART is bus=
+y
+>>> when shutdown is called at low baudrates.
+>>>
+>>> I also see the function uart_wait_until_sent() of serial_core.c
+>>> getting out with timeout expired. At 9600 baud, this function waits
+>>> 2 or 4 jiffies. Increasing (a lot) the timeout of this function
+>>> solves the problem. I monitored the time it takes for TX to be empt=
+y
+>>> and it resulted in sometimes around 200 jiffies (@9600).
 
-(CC'ing LAMK as a generic CCF question follows)
+The problem is that the shutdown callback does not wait for the DMA buf=
+fer to flush.
+I will submit a patch that fixes it.
 
-On Tuesday 01 October 2013 18:15:26 Magnus Damm wrote:
-> On Tue, Sep 24, 2013 at 1:15 PM,  <takasi-y@ops.dti.ne.jp> wrote:
-> > Common clock framework version of emev2 clock support.
-> > smu_clkdiv and smu_gclk are handled.
-> > So far, reparent is not implemented, and is fixed to index #0.
-> > SMU and small numbers of clocks are described in emev2.dtsi.
-> > 
-> > That function and numbers of clocks are equivalent to current
-> > sh-clkfwk version. It is just enough to run kzm9d-reference.
-> > 
-> > Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
-> > ---
-> > 
-> >  arch/arm/boot/dts/emev2.dtsi     |  84 +++++++++++++++++++++++++++++++
-> >  drivers/clk/Makefile             |   2 +
-> >  drivers/clk/shmobile/Makefile    |   5 ++
-> >  drivers/clk/shmobile/clk-emev2.c | 104 ++++++++++++++++++++++++++++++++++
-> >  4 files changed, 195 insertions(+)
-> >  create mode 100644 drivers/clk/shmobile/Makefile
-> >  create mode 100644 drivers/clk/shmobile/clk-emev2.c
-> 
-> Hi Yoshii-san,
-> 
-> Thanks for your efforts on this. I'm very pleased to see that you describe
-> the clock topology using DT.
+>> Again with flow control and another imx28 on the opposite side? Does=
+ it
+>> work without flow control? Is CTS busy for some time? In that case a
+>> simple timeout isn't appropriate. Using console and flow control on =
+the
+>> same port might be hairy, not sure though.
+>
+> Yes, two imx28 devices with hw flow control enabled. Without flow con=
+trol it works.
 
-What is the generally accepted practice when an IP core provides a large 
-number of clocks, with either one register or one register bit dedicated to 
-each clock ? Should each clock be described as one DT node, or should the IP 
-core be described by a single DT node ?
+The reason why it works without hardware flow control is that in this d=
+river the DMA=20
+is only activated when hardware flow control is enabled.
 
-I also see both platforms using CLK_OF_DECLARE and platforms calling a clock 
-init function provided by drivers/clk/<platform>.c in the SoC setup code in 
-arch/arm/. What is the preferred practice there ?
+By the way, where did the spinlocks go in this driver?
+Ocasionally I saw unhandled NULL pointer exception in uart_write_wakeup=
+(). Maybe my=20
+patch will make it even hardware to hit, but still...
 
-> In general I think your patch looks fine, but I have some comment related to
-> the multiplatform integration, please see below.
-> 
-> > diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
-> > index 7b11106..3e64ac4 100644
-> > --- a/drivers/clk/Makefile
-> > +++ b/drivers/clk/Makefile
-> > @@ -32,6 +32,8 @@ obj-$(CONFIG_ARCH_VT8500)     += clk-vt8500.o
-> > 
-> >  obj-$(CONFIG_ARCH_ZYNQ)                += zynq/
-> >  obj-$(CONFIG_ARCH_TEGRA)       += tegra/
-> >  obj-$(CONFIG_PLAT_SAMSUNG)     += samsung/
-> > 
-> > +obj-$(CONFIG_ARCH_SHMOBILE)    += shmobile/
-> > +obj-$(CONFIG_ARCH_SHMOBILE_MULTI)      += shmobile/
-> 
-> Here I believe it is enough that you only use
-> CONFIG_ARCH_SHMOBILE_MULTI. Building common clocks to coexist with the
-> old legacy board code does not make any sense IMO. If you think it
-> makes sense for some reason, please explain why. =)
-> 
-> > diff --git a/drivers/clk/shmobile/Makefile b/drivers/clk/shmobile/Makefile
-> > new file mode 100644
-> > index 0000000..6a26eb6
-> > --- /dev/null
-> > +++ b/drivers/clk/shmobile/Makefile
-> > @@ -0,0 +1,5 @@
-> > +ifeq ($(CONFIG_COMMON_CLK), y)
-> > +obj-$(CONFIG_ARCH_EMEV2)       += clk-emev2.o
-> > +endif
-> 
-> I don't think you would need the above ifeq/endif wrapper if you only
-> used CONFIG_ARCH_SHMOBILE_MULTI above.
-> 
-> Apart from that it looks good to me. And, yes, I have tested this on
-> my KZM9D board together with multiplatform and it works very well!
-
--- 
-Regards,
-
-Laurent Pinchart
-
+Best regards,
+--
+Hector Palacios
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
