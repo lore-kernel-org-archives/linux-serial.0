@@ -1,80 +1,107 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 5/6] clk: emev2: Add support for emev2 SMU clocks with DT
-Date: Tue, 1 Oct 2013 18:15:26 +0900
-Message-ID: <CANqRtoRD35Ei31PK8a_TOp=2uiYPCoaJuDb6tyZtQL8s0PavNw@mail.gmail.com>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH 6/6] ARM: shmobile: kzm9d-reference: Use common clock framework
+Date: Tue, 1 Oct 2013 18:23:38 +0900
+Message-ID: <CANqRtoQdwyjX8Mr8+NRah_F=yUM81xZmPQJ_1Z-xdzVqedbMGQ@mail.gmail.com>
 References: <52410F86.4040301@renesas.com>
-	<20130924131542.f865fad4dec98e024c0d4676@ops.dti.ne.jp>
+	<20130924131703.4834a055892285858338003c@ops.dti.ne.jp>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130924131542.f865fad4dec98e024c0d4676-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org
-Cc: SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ben Dooks <ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org>, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Paul Mundt <lethal-M7jkjyW5wf5g9hUCZPvPmw@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20130924131703.4834a055892285858338003c@ops.dti.ne.jp>
+Sender: linux-kernel-owner@vger.kernel.org
+To: takasi-y@ops.dti.ne.jp
+Cc: SH-Linux <linux-sh@vger.kernel.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 24, 2013 at 1:15 PM,  <takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org> wrote:
-> Common clock framework version of emev2 clock support.
-> smu_clkdiv and smu_gclk are handled.
-> So far, reparent is not implemented, and is fixed to index #0.
-> SMU and small numbers of clocks are described in emev2.dtsi.
+On Tue, Sep 24, 2013 at 1:17 PM,  <takasi-y@ops.dti.ne.jp> wrote:
+> Use common clock framework version of clock
+>  drivers/clk/shmobile/clk-emev2.c
+> instead of sh-clkfwk version
+>  arch/arm/mach-shmobile/clock-emev2.c
 >
-> That function and numbers of clocks are equivalent to current
-> sh-clkfwk version. It is just enough to run kzm9d-reference.
+> kzm9d(without -reference) still uses sh-clkfwk version.
 >
-> Signed-off-by: Takashi Yoshii <takashi.yoshii.zj-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> Because two of that framework can not live in one kernel binary,
+> there will be SoCs and Boards that can not be in one binary as
+> multiplatform binary or so.
+> For example, kzm9d and kzm9d-reference is now exclusive.
+>
+> Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
 > ---
->  arch/arm/boot/dts/emev2.dtsi     |  84 +++++++++++++++++++++++++++++++
->  drivers/clk/Makefile             |   2 +
->  drivers/clk/shmobile/Makefile    |   5 ++
->  drivers/clk/shmobile/clk-emev2.c | 104 +++++++++++++++++++++++++++++++++++++++
->  4 files changed, 195 insertions(+)
->  create mode 100644 drivers/clk/shmobile/Makefile
->  create mode 100644 drivers/clk/shmobile/clk-emev2.c
+>  arch/arm/mach-shmobile/Kconfig                 | 1 +
+>  arch/arm/mach-shmobile/board-kzm9d-reference.c | 5 ++---
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
 Hi Yoshii-san,
 
-Thanks for your efforts on this. I'm very pleased to see that you
-describe the clock topology using DT. In general I think your patch
-looks fine, but I have some comment related to the multiplatform
-integration, please see below.
+Thanks for your patch. I have some comments on this portion to try to
+simplify things, please see below.
 
-> diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
-> index 7b11106..3e64ac4 100644
-> --- a/drivers/clk/Makefile
-> +++ b/drivers/clk/Makefile
-> @@ -32,6 +32,8 @@ obj-$(CONFIG_ARCH_VT8500)     += clk-vt8500.o
->  obj-$(CONFIG_ARCH_ZYNQ)                += zynq/
->  obj-$(CONFIG_ARCH_TEGRA)       += tegra/
->  obj-$(CONFIG_PLAT_SAMSUNG)     += samsung/
-> +obj-$(CONFIG_ARCH_SHMOBILE)    += shmobile/
-> +obj-$(CONFIG_ARCH_SHMOBILE_MULTI)      += shmobile/
+> diff --git a/arch/arm/mach-shmobile/Kconfig b/arch/arm/mach-shmobile/Kconfig
+> index 50bab8d..d20d4ce 100644
+> --- a/arch/arm/mach-shmobile/Kconfig
+> +++ b/arch/arm/mach-shmobile/Kconfig
+> @@ -237,6 +237,7 @@ config MACH_KZM9D_REFERENCE
+>         depends on ARCH_EMEV2
+>         select REGULATOR_FIXED_VOLTAGE if REGULATOR
+>         select USE_OF
+> +       select COMMON_CLK
 
-Here I believe it is enough that you only use
-CONFIG_ARCH_SHMOBILE_MULTI. Building common clocks to coexist with the
-old legacy board code does not make any sense IMO. If you think it
-makes sense for some reason, please explain why. =)
+I don't think this hunk is needed. This is probably the
+ARCH_SHMOBILE_MULTI case, and if so then ARCH_MULTIPLATFORM in
+arch/arm/Kconfig already selects COMMON_CLK. And if it's the
+ARCH_SHMOBILE case you're aiming at then I recommend you to only focus
+on ARCH_SHMOBILE_MULTI instead.
 
-> diff --git a/drivers/clk/shmobile/Makefile b/drivers/clk/shmobile/Makefile
-> new file mode 100644
-> index 0000000..6a26eb6
-> --- /dev/null
-> +++ b/drivers/clk/shmobile/Makefile
-> @@ -0,0 +1,5 @@
-> +ifeq ($(CONFIG_COMMON_CLK), y)
-> +obj-$(CONFIG_ARCH_EMEV2)       += clk-emev2.o
-> +endif
+> diff --git a/arch/arm/mach-shmobile/board-kzm9d-reference.c b/arch/arm/mach-shmobile/board-kzm9d-reference.c
+> index 8f8bb2f..e0b8317 100644
+> --- a/arch/arm/mach-shmobile/board-kzm9d-reference.c
+> +++ b/arch/arm/mach-shmobile/board-kzm9d-reference.c
+> @@ -20,15 +20,14 @@
+>
+>  #include <linux/init.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/clk-provider.h>
+>  #include <mach/emev2.h>
+>  #include <mach/common.h>
+>  #include <asm/mach/arch.h>
+>
+>  static void __init kzm9d_add_standard_devices(void)
+>  {
+> -       if (!IS_ENABLED(CONFIG_COMMON_CLK))
+> -               emev2_clock_init();
+> -
+> +       of_clk_init(NULL);
+>         of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+>  }
 
-I don't think you would need the above ifeq/endif wrapper if you only
-used CONFIG_ARCH_SHMOBILE_MULTI above.
+To keep on allowing build of board-kzm9d-reference.c for both
+ARCH_SHMOBILE_MULTI and ARCH_SHMOBILE I recommend you to adjust your
+code into something liket this instead:
 
-Apart from that it looks good to me. And, yes, I have tested this on
-my KZM9D board together with multiplatform and it works very well!
+@@ -18,6 +18,7 @@
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  */
+
++#include <linux/clk-provider.h>
+ #include <linux/init.h>
+ #include <linux/of_platform.h>
+ #include <mach/emev2.h>
+@@ -26,9 +27,11 @@
+
+ static void __init kzm9d_add_standard_devices(void)
+ {
+-       if (!IS_ENABLED(CONFIG_COMMON_CLK))
+-               emev2_clock_init();
+-
++#ifdef CONFIG_COMMON_CLK
++       of_clk_init(NULL);
++#else
++       emev2_clock_init();
++#endif
+        of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+ }
 
 Cheers,
 
 / magnus
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
