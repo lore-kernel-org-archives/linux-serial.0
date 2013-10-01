@@ -1,181 +1,103 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 4/6] ARM: shmobile: emev2: Define SMU clock DT bindings
-Date: Tue, 01 Oct 2013 13:36:33 +0200
-Message-ID: <21574726.tiJa6Opb1k@avalon>
-References: <52410F86.4040301@renesas.com> <20130924131331.0e9a5f830f531655b2ea0ebe@ops.dti.ne.jp> <20130924045215.GE3619@verge.net.au>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 5/6] clk: emev2: Add support for emev2 SMU clocks with DT
+Date: Tue, 01 Oct 2013 14:27:51 +0200
+Message-ID: <690317658.gaTDz3TliP@avalon>
+References: <52410F86.4040301@renesas.com> <20130924131542.f865fad4dec98e024c0d4676@ops.dti.ne.jp> <CANqRtoRD35Ei31PK8a_TOp=2uiYPCoaJuDb6tyZtQL8s0PavNw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130924045215.GE3619-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Cc: takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org, SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Mundt <lethal-M7jkjyW5wf5g9hUCZPvPmw@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:59095 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751861Ab3JAM1x (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Oct 2013 08:27:53 -0400
+In-Reply-To: <CANqRtoRD35Ei31PK8a_TOp=2uiYPCoaJuDb6tyZtQL8s0PavNw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: takasi-y@ops.dti.ne.jp, SH-Linux <linux-sh@vger.kernel.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
 
-Hi Yoshii-san and Simon,
+Hi Yoshii-san,
 
-On Tuesday 24 September 2013 13:52:15 Simon Horman wrote:
-> [ Cc Laurent ]
-> 
-> On Tue, Sep 24, 2013 at 01:13:31PM +0900, takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org wrote:
-> > Device tree clock binding document for EMMA Mobile EV2 SMU.
-> > Following nodes are defined to describe clock tree.
-> > - renesas,emev2-smu
-> > - renesas,emev2-smu-clkdiv
-> > - renesas,emev2-smu-gclk
-> 
-> I realise this has been entirely consistent in the past and
-> even as recently as Linus' pre v3.12-rc2 master branch.
-> However, after some recent discussion we are now trying to make our
-> compatibility strings consistently of the form renesas,<unit>-<soc>.
-> 
-> With this in mind I believe the strings should be:
-> 
-> - renesas,smu-emev2
-> - renesas,smu-clkdiv-emev2
-> - renesas,smu-gclk-emev2
-> 
-> To be honest I am not quite sure about the "-clkdiv" and "-gclk"
-> bits and I would appreciate some review from others.
+Thank you for the patch.
 
-I don't have access to the EMEV2 datasheet so my ability to comment on this is 
-somehow limited. However, given that the clock hardware is very SoC-specific, 
-it might make sense to keep the names proposed by Yoshii-san. This would be 
-consistent with the other clock bindings.
+(CC'ing LAMK as a generic CCF question follows)
 
-> I have CCed Laurent as he may have some advice to offer here.
-> 
-> > These bindings are designed manually based on
+On Tuesday 01 October 2013 18:15:26 Magnus Damm wrote:
+> On Tue, Sep 24, 2013 at 1:15 PM,  <takasi-y@ops.dti.ne.jp> wrote:
+> > Common clock framework version of emev2 clock support.
+> > smu_clkdiv and smu_gclk are handled.
+> > So far, reparent is not implemented, and is fixed to index #0.
+> > SMU and small numbers of clocks are described in emev2.dtsi.
 > > 
-> >  19UH0037EJ1000_SMU : System Management Unit User's Manual
+> > That function and numbers of clocks are equivalent to current
+> > sh-clkfwk version. It is just enough to run kzm9d-reference.
 > > 
-> > Signed-off-by: Takashi Yoshii <takashi.yoshii.zj-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> > Signed-off-by: Takashi Yoshii <takashi.yoshii.zj@renesas.com>
 > > ---
 > > 
-> >  .../devicetree/bindings/clock/emev2-clock.txt      | 99 +++++++++++++++++
-> >  1 file changed, 99 insertions(+)
-> >  create mode 100644
-> >  Documentation/devicetree/bindings/clock/emev2-clock.txt
+> >  arch/arm/boot/dts/emev2.dtsi     |  84 +++++++++++++++++++++++++++++++
+> >  drivers/clk/Makefile             |   2 +
+> >  drivers/clk/shmobile/Makefile    |   5 ++
+> >  drivers/clk/shmobile/clk-emev2.c | 104 ++++++++++++++++++++++++++++++++++
+> >  4 files changed, 195 insertions(+)
+> >  create mode 100644 drivers/clk/shmobile/Makefile
+> >  create mode 100644 drivers/clk/shmobile/clk-emev2.c
+> 
+> Hi Yoshii-san,
+> 
+> Thanks for your efforts on this. I'm very pleased to see that you describe
+> the clock topology using DT.
+
+What is the generally accepted practice when an IP core provides a large 
+number of clocks, with either one register or one register bit dedicated to 
+each clock ? Should each clock be described as one DT node, or should the IP 
+core be described by a single DT node ?
+
+I also see both platforms using CLK_OF_DECLARE and platforms calling a clock 
+init function provided by drivers/clk/<platform>.c in the SoC setup code in 
+arch/arm/. What is the preferred practice there ?
+
+> In general I think your patch looks fine, but I have some comment related to
+> the multiplatform integration, please see below.
+> 
+> > diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+> > index 7b11106..3e64ac4 100644
+> > --- a/drivers/clk/Makefile
+> > +++ b/drivers/clk/Makefile
+> > @@ -32,6 +32,8 @@ obj-$(CONFIG_ARCH_VT8500)     += clk-vt8500.o
 > > 
-> > diff --git a/Documentation/devicetree/bindings/clock/emev2-clock.txt
-> > b/Documentation/devicetree/bindings/clock/emev2-clock.txt new file mode
-> > 100644
-> > index 0000000..f8649eb
+> >  obj-$(CONFIG_ARCH_ZYNQ)                += zynq/
+> >  obj-$(CONFIG_ARCH_TEGRA)       += tegra/
+> >  obj-$(CONFIG_PLAT_SAMSUNG)     += samsung/
+> > 
+> > +obj-$(CONFIG_ARCH_SHMOBILE)    += shmobile/
+> > +obj-$(CONFIG_ARCH_SHMOBILE_MULTI)      += shmobile/
+> 
+> Here I believe it is enough that you only use
+> CONFIG_ARCH_SHMOBILE_MULTI. Building common clocks to coexist with the
+> old legacy board code does not make any sense IMO. If you think it
+> makes sense for some reason, please explain why. =)
+> 
+> > diff --git a/drivers/clk/shmobile/Makefile b/drivers/clk/shmobile/Makefile
+> > new file mode 100644
+> > index 0000000..6a26eb6
 > > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/clock/emev2-clock.txt
-> > @@ -0,0 +1,99 @@
-> > +Device tree Clock bindings for Renesas EMMA Mobile EV2
-> > +
-> > +This binding uses the common clock binding.
-> > +
-> > +* SMU
-> > +System Management Unit described in user's manual R19UH0037EJ1000_SMU.
-> > +This is not a clock provider, but clocks under SMU depend on it.
-> > +
-> > +Required properties:
-> > +- compatible: Should be "renesas,emev2-smu"
-> > +- reg: Address and Size of SMU registers
-> > +
-> > +* SMU_CLKDIV
-> > +Function block with an input mux and a divider, which corresponds to
-> > +"Serial clock generator" in fig."Clock System Overview" of the manual,
-> > +and "xxx frequency division setting register" (XXXCLKDIV) registers.
-> > +This makes internal (neither input nor output) clock that is provided
-> > +to input of xxxGCLK block.
-> > +
-> > +Required properties:
-> > +- compatible: Should be "renesas,emev2-smu-clkdiv"
-> > +- reg: Byte offset from SMU base and Bit position in the register
-> > +- clocks: Parent clocks. Input clocks as described in clock-bindings.txt
-> > +- #clock-cells: Should be <0>
-> > +
-> > +* SMU_GCLK
-> > +Clock gating node shown as "Clock stop processing block" in the
-> > +fig."Clock System Overview" of the manual.
-> > +Registers are "xxx clock gate control register" (XXXGCLKCTRL).
-> > +
-> > +Required properties:
-> > +- compatible: Should be "renesas,emev2-smu-gclk"
-> > +- reg: Byte offset from SMU base and Bit position in the register
-> > +- clocks: Input clock as described in clock-bindings.txt
-> > +- #clock-cells: Should be <0>
-> > +
-> > +Example of provider:
-> > +
-> > +usia_u0_sclkdiv: usia_u0_sclkdiv {
-> > +	compatible = "renesas,emev2-smu-clkdiv";
-> > +	reg = <0x610 0>;
-
-Is the registers space really 0 bytes long ?
-
-> > +	clocks = <&pll3_fo>, <&pll4_fo>, <&pll1_fo>, <&osc1_fo>;
-> > +	#clock-cells = <0>;
-> > +};
-> > +
-> > +usia_u0_sclk: usia_u0_sclk {
-> > +	compatible = "renesas,emev2-smu-gclk";
-> > +	reg = <0x4a0 1>;
-> > +	clocks = <&usia_u0_sclkdiv>;
-> > +	#clock-cells = <0>;
-> > +};
-> > +
-> > +Example of consumer:
-> > +
-> > +uart@e1020000 {
-> > +	compatible = "renesas,em-uart";
-> > +	reg = <0xe1020000 0x38>;
-> > +	interrupts = <0 8 0>;
-> > +	clocks = <&usia_u0_sclk>;
-> > +	clock-names = "sclk";
-> > +};
-> > +
-> > +Example of clock-tree description:
-> > +
-> > + This describes a clock path in the clock tree
-> > +  c32ki -> pll3_fo -> usia_u0_sclkdiv -> usia_u0_sclk
-> > +
-> > +smu {
-> > +	compatible = "renesas,emev2-smu";
-> > +	reg = <0xe0110000 0x10000>;
-> > +	#address-cells = <2>;
-> > +	#size-cells = <0>;
-> > +
-> > +	c32ki: c32ki {
-> > +		compatible = "fixed-clock";
-> > +		clock-frequency = <32768>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +	pll3_fo: pll3_fo {
-> > +		compatible = "fixed-factor-clock";
-> > +		clocks = <&c32ki>;
-> > +		clock-div = <1>;
-> > +		clock-mult = <7000>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +	usia_u0_sclkdiv: usia_u0_sclkdiv {
-> > +		compatible = "renesas,emev2-smu-clkdiv";
-> > +		reg = <0x610 0>;
-> > +		clocks = <&pll3_fo>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +	usia_u0_sclk: usia_u0_sclk {
-> > +		compatible = "renesas,emev2-smu-gclk";
-> > +		reg = <0x4a0 1>;
-> > +		clocks = <&usia_u0_sclkdiv>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +};
-> > +
-
-There's an extra blank line at the end of the file.
+> > +++ b/drivers/clk/shmobile/Makefile
+> > @@ -0,0 +1,5 @@
+> > +ifeq ($(CONFIG_COMMON_CLK), y)
+> > +obj-$(CONFIG_ARCH_EMEV2)       += clk-emev2.o
+> > +endif
+> 
+> I don't think you would need the above ifeq/endif wrapper if you only
+> used CONFIG_ARCH_SHMOBILE_MULTI above.
+> 
+> Apart from that it looks good to me. And, yes, I have tested this on
+> my KZM9D board together with multiplatform and it works very well!
 
 -- 
 Regards,
 
 Laurent Pinchart
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
