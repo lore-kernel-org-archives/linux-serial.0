@@ -1,101 +1,92 @@
-From: Hector Palacios <hector.palacios@digi.com>
-Subject: Re: [PATCH] serial: mxs-auart: wait for DMA buffer to flush before
- shutdown
-Date: Wed, 2 Oct 2013 10:53:33 +0200
-Message-ID: <524BDF0D.4040701@digi.com>
-References: <1380644315-31581-1-git-send-email-hector.palacios@digi.com> <20131001194800.GL2548@pengutronix.de> <524BCBC4.5050708@digi.com> <20131002083608.GO2548@pengutronix.de>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
+Date: Wed, 2 Oct 2013 12:47:07 +0300
+Message-ID: <20131002094707.GA10383@xps8300>
+References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta7.messagelabs.com ([216.82.254.112]:59468 "EHLO
-	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753069Ab3JBIxn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Oct 2013 04:53:43 -0400
-In-Reply-To: <20131002083608.GO2548@pengutronix.de>
+Received: from mga02.intel.com ([134.134.136.20]:21796 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752916Ab3JBJrM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Oct 2013 05:47:12 -0400
+Content-Disposition: inline
+In-Reply-To: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "b32955@freescale.com" <b32955@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, "marex@denx.de" <marex@denx.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Tim Kryger <tim.kryger@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
 
-On 10/02/2013 10:36 AM, Uwe Kleine-K=F6nig wrote:
-> Hello Hector,
->
-> On Wed, Oct 02, 2013 at 09:31:16AM +0200, Hector Palacios wrote:
->> On 10/01/2013 09:48 PM, Uwe Kleine-K=F6nig wrote:
->>> Hello Hector,
->>>
->>> On Tue, Oct 01, 2013 at 06:18:35PM +0200, Hector Palacios wrote:
->>>> The shutdown function was not waiting for the DMA buffer to flush
->>>> before disabling the AUART. This lead to many bytes not being
->>>> transferred (specially at low baudrates), as they were still in th=
-e
->>>> DMA buffer when the AUART was shutdown.
->>>> This patch also adds the check for the BUSY flag.
->>>>
->>>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
->>>> ---
->>>>   drivers/tty/serial/mxs-auart.c | 16 +++++++++++++++-
->>>>   1 file changed, 15 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/m=
-xs-auart.c
->>>> index f85b8e6..0d8b2ca 100644
->>>> --- a/drivers/tty/serial/mxs-auart.c
->>>> +++ b/drivers/tty/serial/mxs-auart.c
->>>> @@ -750,12 +750,26 @@ static int mxs_auart_startup(struct uart_por=
-t *u)
->>>>   	return 0;
->>>>   }
->>>>
->>>> +static unsigned int mxs_auart_tx_empty(struct uart_port *u);
->>>> +
->>>>   static void mxs_auart_shutdown(struct uart_port *u)
->>>>   {
->>>>   	struct mxs_auart_port *s =3D to_auart_port(u);
->>>> +	unsigned int to;
->>>> +
->>>> +	if (auart_dma_enabled(s)) {
->>>> +		/* Wait enough time to flush DMA buffer completely */
->>>> +		to =3D u->timeout * UART_XMIT_SIZE / u->fifosize;
->>> u->timeout is the time needed to send one char, right? UART_XMIT_SI=
-ZE is
->>> the size of the circular buffer, fifosize is the size of the fifo. =
-I
->>> don't get what you get by dividing by the fifosize. I would have
->>> expected something like:
->>>
->>> 	u->timeout * min(UART_XMIT_SIZE, u->fifosize)
->>>
->>> Can you explain, maybe in a comment along the code for the next per=
-son
->>> not understanding?
->>
->> u->timeout is *not* the time needed to send one char but the time
->> needed to flush the complete port fifo (see uart_update_timeout() in
->> serial_core.c where it is set).
->> UART_XMIT_SIZE is the number of bytes in the DMA buffer, so I divide
->> the max number of bytes in the FIFO by the FIFO size and multiply by
->> the FIFO timeout.
-> Another thought: Does that mean that from the framework's POV the
-> fifosize is UART_XMIT_SIZE instead in the DMA case? That would enable
-> you to just use u->timeout.
+Hi,
 
-Hum, I think you hit the point.
-I just saw they do this in amba_pl011.c driver:
+On Tue, Oct 01, 2013 at 10:18:08AM -0700, Tim Kryger wrote:
+> When configured with UART_16550_COMPATIBLE=NO or in versions prior to
+> the introduction of this option, the Designware UART will ignore writes
+> to the LCR if the UART is busy.  The current workaround saves a copy of
+> the last written LCR and re-writes it in the ISR for a special interrupt
+> that is raised when a write was ignored.
+> 
+> Unfortunately, interrupts are typically disabled prior to performing a
+> sequence of register writes that include the LCR so the point at which
+> the retry occurs is too late.  An example is serial8250_do_set_termios()
+> where an ignored LCR write results in the baud divisor not being set and
+> instead a garbage character is sent out the transmitter.
+> 
+> Furthermore, since serial_port_out() offers no way to indicate failure,
+> a serious effort must be made to ensure that the LCR is actually updated
+> before returning back to the caller.  This is difficult, however, as a
+> UART that was busy during the first attempt is likely to still be busy
+> when a subsequent attempt is made unless some extra action is taken.
+> 
+> This updated workaround reads back the LCR after each write to confirm
+> that the new value was accepted by the hardware.  Should the hardware
+> ignore a write, the TX/RX FIFOs are cleared and the receive buffer read
+> before attempting to rewrite the LCR out of the hope that doing so will
+> force the UART into an idle state.  While this may seem unnecessarily
+> aggressive, writes to the LCR are used to change the baud rate, parity,
+> stop bit, or data length so the data that may be lost is likely not
+> important.  Admittedly, this is far from ideal but it seems to be the
+> best that can be done given the hardware limitations.
+> 
+> Lastly, the revised workaround doesn't touch the LCR in the ISR, so it
+> avoids the possibility of a "serial8250: too much work for irq" lock up.
+> This problem is rare in real situations but can be reproduced easily by
+> wiring up two UARTs and running the following commands.
+> 
+>   # stty -F /dev/ttyS1 echo
+>   # stty -F /dev/ttyS2 echo
+>   # cat /dev/ttyS1 &
+>   [1] 375
+>   # echo asdf > /dev/ttyS1
+>   asdf
+> 
+>   [   27.700000] serial8250: too much work for irq96
+>   [   27.700000] serial8250: too much work for irq96
+>   [   27.710000] serial8250: too much work for irq96
+>   [   27.710000] serial8250: too much work for irq96
+>   [   27.720000] serial8250: too much work for irq96
+>   [   27.720000] serial8250: too much work for irq96
+>   [   27.730000] serial8250: too much work for irq96
+>   [   27.730000] serial8250: too much work for irq96
+>   [   27.740000] serial8250: too much work for irq96
+> 
+> Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+> Reviewed-by: Matt Porter <matt.porter@linaro.org>
+> Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+> ---
+> 
+> Changes in v2:
+>   - Rebased on tty-next
+>   - Updated commit messsage to mention UART_16550_COMPATIBLE
+>   - Removed potentially unnecessary read of LSR and MSR
+>   - Only attempt workaround when LCR write is ignored
 
-	/* The DMA buffer is now the FIFO the TTY subsystem can use */
-	uap->port.fifosize =3D PL011_DMA_BUFFER_SIZE;
+I'm OK with this.
 
-I'll rework the patch and try.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-Best regards,
---
-Hector Palacios
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Br,
+
+-- 
+heikki
