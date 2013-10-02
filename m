@@ -1,92 +1,87 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Wed, 2 Oct 2013 12:47:07 +0300
-Message-ID: <20131002094707.GA10383@xps8300>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: mxs-auart: wait for DMA buffer to flush before
+ shutdown
+Date: Wed, 2 Oct 2013 11:59:21 +0200
+Message-ID: <20131002095921.GP2548@pengutronix.de>
+References: <1380644315-31581-1-git-send-email-hector.palacios@digi.com>
+ <20131001194800.GL2548@pengutronix.de>
+ <524BCBC4.5050708@digi.com>
+ <20131002074436.GM2548@pengutronix.de>
+ <524BD4A6.5060208@digi.com>
+ <20131002083014.GN2548@pengutronix.de>
+ <524BDD64.70309@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:21796 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752916Ab3JBJrM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Oct 2013 05:47:12 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:56283 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752938Ab3JBJ72 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Oct 2013 05:59:28 -0400
 Content-Disposition: inline
-In-Reply-To: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
+In-Reply-To: <524BDD64.70309@digi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tim Kryger <tim.kryger@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
+To: Hector Palacios <hector.palacios@digi.com>
+Cc: "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, "marex@denx.de" <marex@denx.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "b32955@freescale.com" <b32955@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Hi,
+Hi Hector,
 
-On Tue, Oct 01, 2013 at 10:18:08AM -0700, Tim Kryger wrote:
-> When configured with UART_16550_COMPATIBLE=NO or in versions prior to
-> the introduction of this option, the Designware UART will ignore writes
-> to the LCR if the UART is busy.  The current workaround saves a copy of
-> the last written LCR and re-writes it in the ISR for a special interrupt
-> that is raised when a write was ignored.
-> 
-> Unfortunately, interrupts are typically disabled prior to performing a
-> sequence of register writes that include the LCR so the point at which
-> the retry occurs is too late.  An example is serial8250_do_set_termios()
-> where an ignored LCR write results in the baud divisor not being set and
-> instead a garbage character is sent out the transmitter.
-> 
-> Furthermore, since serial_port_out() offers no way to indicate failure,
-> a serious effort must be made to ensure that the LCR is actually updated
-> before returning back to the caller.  This is difficult, however, as a
-> UART that was busy during the first attempt is likely to still be busy
-> when a subsequent attempt is made unless some extra action is taken.
-> 
-> This updated workaround reads back the LCR after each write to confirm
-> that the new value was accepted by the hardware.  Should the hardware
-> ignore a write, the TX/RX FIFOs are cleared and the receive buffer read
-> before attempting to rewrite the LCR out of the hope that doing so will
-> force the UART into an idle state.  While this may seem unnecessarily
-> aggressive, writes to the LCR are used to change the baud rate, parity,
-> stop bit, or data length so the data that may be lost is likely not
-> important.  Admittedly, this is far from ideal but it seems to be the
-> best that can be done given the hardware limitations.
-> 
-> Lastly, the revised workaround doesn't touch the LCR in the ISR, so it
-> avoids the possibility of a "serial8250: too much work for irq" lock up.
-> This problem is rare in real situations but can be reproduced easily by
-> wiring up two UARTs and running the following commands.
-> 
->   # stty -F /dev/ttyS1 echo
->   # stty -F /dev/ttyS2 echo
->   # cat /dev/ttyS1 &
->   [1] 375
->   # echo asdf > /dev/ttyS1
->   asdf
-> 
->   [   27.700000] serial8250: too much work for irq96
->   [   27.700000] serial8250: too much work for irq96
->   [   27.710000] serial8250: too much work for irq96
->   [   27.710000] serial8250: too much work for irq96
->   [   27.720000] serial8250: too much work for irq96
->   [   27.720000] serial8250: too much work for irq96
->   [   27.730000] serial8250: too much work for irq96
->   [   27.730000] serial8250: too much work for irq96
->   [   27.740000] serial8250: too much work for irq96
-> 
-> Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
-> Reviewed-by: Matt Porter <matt.porter@linaro.org>
-> Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
-> ---
-> 
-> Changes in v2:
->   - Rebased on tty-next
->   - Updated commit messsage to mention UART_16550_COMPATIBLE
->   - Removed potentially unnecessary read of LSR and MSR
->   - Only attempt workaround when LCR write is ignored
+On Wed, Oct 02, 2013 at 10:46:28AM +0200, Hector Palacios wrote:
+> On 10/02/2013 10:30 AM, Uwe Kleine-K=F6nig wrote:
+> >On Wed, Oct 02, 2013 at 10:09:10AM +0200, Hector Palacios wrote:
+> >>On 10/02/2013 09:44 AM, Uwe Kleine-K=F6nig wrote:
+> >>>Ah, right. (BTW, uart_update_timeout should better round up instea=
+d of
+> >>>round down, i.e.
+> >>>-	port->timeout =3D (HZ * bits) / baud + HZ/50;
+> >>>+	port->timeout =3D DIV_ROUND_UP(HZ * bits, baud) + HZ/50;
+> >>>)
+> >>>
+> >>>>UART_XMIT_SIZE is the number of bytes in the DMA buffer, so I div=
+ide
+> >>>>the max number of bytes in the FIFO by the FIFO size and multiply=
+ by
+> >>>>the FIFO timeout.
+> >>>ditto here, better round up. Although I think using a completion c=
+ould
+> >>>shorten the timeout considerably because there are often less than
+> >>>UART_XMIT_SIZE chars in the buffer?!
+> >>
+> >>I'm not really waiting the full timeout. I'm checking for TX fifo
+> >>empty every 1ms and for a maximum of 'to' ms.
+> >Correct. Still using DIV_ROUND_UP would be better, right?
+>=20
+> I think it is not really needed, after all the code is adding HZ/50
+> of slop which acts like a round up, doesn't it?
+>=20
+> 	/*
+> 	 * Figure the timeout to send the above number of bits.
+> 	 * Add .02 seconds of slop
+> 	 */
+> 	port->timeout =3D (HZ * bits) / baud + HZ/50;
+According to my understanding (which could well be wrong) the slop of
+HZ/50 isn't there to fix rounding issues in the previous division. But
+yes, if it's calculated generously there is no technical need to fix th=
+e
+rounding issue.
 
-I'm OK with this.
+Still it might be worth to fix it to be a better reference. I don't car=
+e
+much.
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Best regards
+Uwe
 
-
-Br,
-
--- 
-heikki
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
