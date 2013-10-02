@@ -1,51 +1,103 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 4/6] ARM: shmobile: emev2: Define SMU clock DT bindings
-Date: Wed, 2 Oct 2013 10:28:37 +0900
-Message-ID: <20131002012837.GA29457@verge.net.au>
-References: <52410F86.4040301@renesas.com>
- <20130924131331.0e9a5f830f531655b2ea0ebe@ops.dti.ne.jp>
- <20130924045215.GE3619@verge.net.au>
- <21574726.tiJa6Opb1k@avalon>
+From: Hector Palacios <hector.palacios@digi.com>
+Subject: Re: [PATCH] serial: mxs-auart: wait for DMA buffer to flush before
+ shutdown
+Date: Wed, 2 Oct 2013 09:31:16 +0200
+Message-ID: <524BCBC4.5050708@digi.com>
+References: <1380644315-31581-1-git-send-email-hector.palacios@digi.com> <20131001194800.GL2548@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <21574726.tiJa6Opb1k@avalon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: takasi-y@ops.dti.ne.jp, SH-Linux <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, ben.dooks@codethink.co.uk, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail1.bemta7.messagelabs.com ([216.82.254.108]:56224 "EHLO
+	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752784Ab3JBHb3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Oct 2013 03:31:29 -0400
+In-Reply-To: <20131001194800.GL2548@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "b32955@freescale.com" <b32955@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, "marex@denx.de" <marex@denx.de>
 
-On Tue, Oct 01, 2013 at 01:36:33PM +0200, Laurent Pinchart wrote:
-> Hi Yoshii-san and Simon,
-> 
-> On Tuesday 24 September 2013 13:52:15 Simon Horman wrote:
-> > [ Cc Laurent ]
-> > 
-> > On Tue, Sep 24, 2013 at 01:13:31PM +0900, takasi-y@ops.dti.ne.jp wrote:
-> > > Device tree clock binding document for EMMA Mobile EV2 SMU.
-> > > Following nodes are defined to describe clock tree.
-> > > - renesas,emev2-smu
-> > > - renesas,emev2-smu-clkdiv
-> > > - renesas,emev2-smu-gclk
-> > 
-> > I realise this has been entirely consistent in the past and
-> > even as recently as Linus' pre v3.12-rc2 master branch.
-> > However, after some recent discussion we are now trying to make our
-> > compatibility strings consistently of the form renesas,<unit>-<soc>.
-> > 
-> > With this in mind I believe the strings should be:
-> > 
-> > - renesas,smu-emev2
-> > - renesas,smu-clkdiv-emev2
-> > - renesas,smu-gclk-emev2
-> > 
-> > To be honest I am not quite sure about the "-clkdiv" and "-gclk"
-> > bits and I would appreciate some review from others.
-> 
-> I don't have access to the EMEV2 datasheet so my ability to comment on this is 
-> somehow limited. However, given that the clock hardware is very SoC-specific, 
-> it might make sense to keep the names proposed by Yoshii-san. This would be 
-> consistent with the other clock bindings.
+Hello Uwe,
 
-Thanks Laurent. If that seems fine by you then it is fine by me.
+On 10/01/2013 09:48 PM, Uwe Kleine-K=F6nig wrote:
+> Hello Hector,
+>
+> On Tue, Oct 01, 2013 at 06:18:35PM +0200, Hector Palacios wrote:
+>> The shutdown function was not waiting for the DMA buffer to flush
+>> before disabling the AUART. This lead to many bytes not being
+>> transferred (specially at low baudrates), as they were still in the
+>> DMA buffer when the AUART was shutdown.
+>> This patch also adds the check for the BUSY flag.
+>>
+>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+>>
+>> https://jira.digi.com/browse/DEL-616
+> What is this? This isn't available in public DNS.
+
+Sorry, copy&paste error. I'll remove it.
+
+
+>> ---
+>>   drivers/tty/serial/mxs-auart.c | 16 +++++++++++++++-
+>>   1 file changed, 15 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs=
+-auart.c
+>> index f85b8e6..0d8b2ca 100644
+>> --- a/drivers/tty/serial/mxs-auart.c
+>> +++ b/drivers/tty/serial/mxs-auart.c
+>> @@ -750,12 +750,26 @@ static int mxs_auart_startup(struct uart_port =
+*u)
+>>   	return 0;
+>>   }
+>>
+>> +static unsigned int mxs_auart_tx_empty(struct uart_port *u);
+>> +
+>>   static void mxs_auart_shutdown(struct uart_port *u)
+>>   {
+>>   	struct mxs_auart_port *s =3D to_auart_port(u);
+>> +	unsigned int to;
+>> +
+>> +	if (auart_dma_enabled(s)) {
+>> +		/* Wait enough time to flush DMA buffer completely */
+>> +		to =3D u->timeout * UART_XMIT_SIZE / u->fifosize;
+> u->timeout is the time needed to send one char, right? UART_XMIT_SIZE=
+ is
+> the size of the circular buffer, fifosize is the size of the fifo. I
+> don't get what you get by dividing by the fifosize. I would have
+> expected something like:
+>
+> 	u->timeout * min(UART_XMIT_SIZE, u->fifosize)
+>
+> Can you explain, maybe in a comment along the code for the next perso=
+n
+> not understanding?
+
+u->timeout is *not* the time needed to send one char but the time neede=
+d to flush the=20
+complete port fifo (see uart_update_timeout() in serial_core.c where it=
+ is set).
+UART_XMIT_SIZE is the number of bytes in the DMA buffer, so I divide th=
+e max number of=20
+bytes in the FIFO by the FIFO size and multiply by the FIFO timeout.
+
+
+> I wonder if the individual driver is the right place this must be fix=
+ed
+> in or if there should be (or even exists) some help form the serial
+> framework?!
+
+Good question, the issue should exit in other DMA drivers as well.
+
+
+Best regards,
+--
+Hector Palacios
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
