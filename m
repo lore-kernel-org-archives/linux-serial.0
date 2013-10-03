@@ -1,37 +1,30 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Commit f7d2c0bb (serial: i.MX: evaluate linux,stdout-path
- property) and resulting build errors
-Date: Thu, 3 Oct 2013 11:44:45 -0700
-Message-ID: <20131003184445.GH8901@kroah.com>
-References: <20131003045611.GA17921@roeck-us.net>
+From: Aijaz Lending <yin01@aijaz527.onmicrosoft.com>
+Subject: looking for loan
+Date: Fri, 4 Oct 2013 01:35:02 +0530
+Message-ID: <d35c1b24-c10e-453b-a063-3c4c44fb3dd1@HKXPR02MB213.apcprd02.prod.outlook.com>
+Reply-To: <sg.loan.sg@outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:56283 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754593Ab3JCSo2 (ORCPT
+Received: from emea01-db3-ndr.ptr.protection.outlook.com ([157.56.120.103]:20953
+	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1754894Ab3JCUFf convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Oct 2013 14:44:28 -0400
-Content-Disposition: inline
-In-Reply-To: <20131003045611.GA17921@roeck-us.net>
+	Thu, 3 Oct 2013 16:05:35 -0400
+Content-Description: Mail message body
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: linux-serial@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Jiri Slaby <jslaby@suse.cz>
+To: Recipients <yin01@aijaz527.onmicrosoft.com>
 
-On Wed, Oct 02, 2013 at 09:56:11PM -0700, Guenter Roeck wrote:
-> Hi all,
-> 
-> Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
-> call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
-> built as module, yet add_preferred_console() is not exported on any platform.
-> This is one reason why arm:allmodconfig fails to build on the upstream kernel.
-> 
-> What is the best solution ? Should imx.c not be buildable as module anymore ?
+Do you have a firm or company that need loan to start up a business or need,personal loan, Debt consolidation? For more information,Contact us now for a guarantee loan with low interest rate. We will provide you with loan to meet your needs. For more information contact us with the following information's.
+Full name:
+country:
+Address:
+Phone Number:
+Amount needed:
+Duration of loan:
 
-Sascha, I'll have to revert this patch unless you wish to fix it in a
-different way?
-
-thanks,
-
-greg k-h
+sg.loan.sg@outlook.com
+Kind regards
