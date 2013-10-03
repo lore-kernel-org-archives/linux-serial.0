@@ -1,13 +1,14 @@
-From: Hector Palacios <hector.palacios@digi.com>
-Subject: [PATCH v3 1/2] serial: mxs-auart: set the FIFO size to DMA buffer size
-Date: Thu, 3 Oct 2013 09:32:03 +0200
-Message-ID: <1380785524-20490-2-git-send-email-hector.palacios@digi.com>
-References: <1380785524-20490-1-git-send-email-hector.palacios@digi.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH] amba: Ensure drvdata is NULL
+Date: Thu, 3 Oct 2013 11:13:05 +0200
+Message-ID: <d5a0aab9-f023-4464-b4a1-f7055e6c82d5@CO9EHSMHS010.ehs.local>
+References: <1b2479137287fa8dfda3089ca0cb9fba8c4b1f1d.1380524337.git.michal.simek@xilinx.com>
+ <20131002202521.GU12758@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1380785524-20490-1-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <20131002202521.GU12758@n2100.arm.linux.org.uk>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,43 +18,31 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: marex@denx.de, fabio.estevam@freescale.com, gregkh@linuxfoundation.org, b32955@freescale.com, hector.palacios@digi.com, u.kleine-koenig@pengutronix.de, shawn.guo@linaro.org, jslaby@suse.cz, linux-arm-kernel@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: linux-fbdev@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wim Van Sebroeck <wim@iguana.be>, Jiri Slaby <jslaby@suse.cz>, "zhangwei(Jovi)" <jovi.zhangwei@huawei.com>, Vinod Koul <vinod.koul@intel.com>, Michal Simek <michal.simek@xilinx.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-watchdog@vger.kernel.org, rtc-linux@googlegroups.com, Mark Brown <broonie@kernel.org>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org, Alessandro Zummo <a.zummo@towertech.it>, monstr@monstr.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.
 List-Id: linux-serial@vger.kernel.org
 
-V2hlbiBETUEgaXMgZW5hYmxlZCAod2l0aCBoYXJkd2FyZSBmbG93IGNvbnRyb2wgZW5hYmxlZCkg
-dGhlIEZJRk8gc2l6ZQptdXN0IGJlIHNldCB0byB0aGUgc2l6ZSBvZiB0aGUgRE1BIGJ1ZmZlciwg
-YXMgdGhpcyBpcyB0aGUgc2l6ZSB0aGUgdHR5CnN1YnN5c3RlbSBjYW4gdXNlLgoKU2lnbmVkLW9m
-Zi1ieTogSGVjdG9yIFBhbGFjaW9zIDxoZWN0b3IucGFsYWNpb3NAZGlnaS5jb20+ClJldmlld2Vk
-LWJ5OiBNYXJlayBWYXN1dCA8bWFyZXhAZGVueC5kZT4KQWNrZWQtYnk6IFV3ZSBLbGVpbmUtS8O2
-bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Ci0tLQogZHJpdmVycy90dHkvc2Vy
-aWFsL214cy1hdWFydC5jIHwgOSArKysrKysrKy0KIDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlv
-bnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvbXhz
-LWF1YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbXhzLWF1YXJ0LmMKaW5kZXggZjg1YjhlNi4u
-OWYwNDYxNzcgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9teHMtYXVhcnQuYworKysg
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvbXhzLWF1YXJ0LmMKQEAgLTQwLDYgKzQwLDcgQEAKICNpbmNs
-dWRlIDxhc20vY2FjaGVmbHVzaC5oPgogCiAjZGVmaW5lIE1YU19BVUFSVF9QT1JUUyA1CisjZGVm
-aW5lIE1YU19BVUFSVF9GSUZPX1NJWkUJCTE2CiAKICNkZWZpbmUgQVVBUlRfQ1RSTDAJCQkweDAw
-MDAwMDAwCiAjZGVmaW5lIEFVQVJUX0NUUkwwX1NFVAkJCTB4MDAwMDAwMDQKQEAgLTU0OSw2ICs1
-NTAsOSBAQCBzdGF0aWMgaW50IG14c19hdWFydF9kbWFfaW5pdChzdHJ1Y3QgbXhzX2F1YXJ0X3Bv
-cnQgKnMpCiAJcy0+ZmxhZ3MgfD0gTVhTX0FVQVJUX0RNQV9FTkFCTEVEOwogCWRldl9kYmcocy0+
-ZGV2LCAiZW5hYmxlZCB0aGUgRE1BIHN1cHBvcnQuIik7CiAKKwkvKiBUaGUgRE1BIGJ1ZmZlciBp
-cyBub3cgdGhlIEZJRk8gdGhlIFRUWSBzdWJzeXN0ZW0gY2FuIHVzZSAqLworCXMtPnBvcnQuZmlm
-b3NpemUgPSBVQVJUX1hNSVRfU0laRTsKKwogCXJldHVybiAwOwogCiBlcnJfb3V0OgpAQCAtNzQx
-LDYgKzc0NSw5IEBAIHN0YXRpYyBpbnQgbXhzX2F1YXJ0X3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9y
-dCAqdSkKIAl3cml0ZWwoQVVBUlRfSU5UUl9SWElFTiB8IEFVQVJUX0lOVFJfUlRJRU4gfCBBVUFS
-VF9JTlRSX0NUU01JRU4sCiAJCQl1LT5tZW1iYXNlICsgQVVBUlRfSU5UUik7CiAKKwkvKiBSZXNl
-dCBGSUZPIHNpemUgKGl0IGNvdWxkIGhhdmUgY2hhbmdlZCBpZiBETUEgd2FzIGVuYWJsZWQpICov
-CisJdS0+Zmlmb3NpemUgPSBNWFNfQVVBUlRfRklGT19TSVpFOworCiAJLyoKIAkgKiBFbmFibGUg
-ZmlmbyBzbyBhbGwgZm91ciBieXRlcyBvZiBhIERNQSB3b3JkIGFyZSB3cml0dGVuIHRvCiAJICog
-b3V0cHV0IChvdGhlcndpc2UsIG9ubHkgdGhlIExTQiBpcyB3cml0dGVuLCBpZS4gMSBpbiA0IGJ5
-dGVzKQpAQCAtMTA2Miw3ICsxMDY5LDcgQEAgc3RhdGljIGludCBteHNfYXVhcnRfcHJvYmUoc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKIAlzLT5wb3J0Lm1lbWJhc2UgPSBpb3JlbWFwKHIt
-PnN0YXJ0LCByZXNvdXJjZV9zaXplKHIpKTsKIAlzLT5wb3J0Lm9wcyA9ICZteHNfYXVhcnRfb3Bz
-OwogCXMtPnBvcnQuaW90eXBlID0gVVBJT19NRU07Ci0Jcy0+cG9ydC5maWZvc2l6ZSA9IDE2Owor
-CXMtPnBvcnQuZmlmb3NpemUgPSBNWFNfQVVBUlRfRklGT19TSVpFOwogCXMtPnBvcnQudWFydGNs
-ayA9IGNsa19nZXRfcmF0ZShzLT5jbGspOwogCXMtPnBvcnQudHlwZSA9IFBPUlRfSU1YOwogCXMt
-PnBvcnQuZGV2ID0gcy0+ZGV2ID0gJnBkZXYtPmRldjsKLS0gCjEuOC40CgoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWls
-aW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
-cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On 10/02/2013 10:25 PM, Russell King - ARM Linux wrote:
+> On Mon, Sep 30, 2013 at 08:59:06AM +0200, Michal Simek wrote:
+>> This patch is inpired by the patch for drvdata
+>> "device-core: Ensure drvdata = NULL when no driver is bound"
+>> (sha1: 0998d0631001288a5974afc0b2a5f568bcdecb4d)
+>>
+>> Also it fixes all occurences in drivers.
+>>
+>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+>> ---
+>> This patch has been sent as RFC in this thread.
+>> http://lkml.org/lkml/2013/9/4/393
+> 
+> Why not have the driver core do this?  Then it gets applied to all bus
+> types uniformly.
+
+ok - I have checked that path and it should be already done
+in really_probe function which calls amba_probe() and then driver probe function.
+
+It means that the patch should contain just "amba_set_drvdata(dev, NULL);"
+removal and not touching bus.c file.
+
+Thanks,
+Michal
