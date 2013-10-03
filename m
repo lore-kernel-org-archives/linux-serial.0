@@ -1,97 +1,117 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 6/9] serial: Remove unnecessary amba_set_drvdata()
-Date: Thu,  3 Oct 2013 11:46:28 +0200
-Message-ID: <5af83e9d6daf21f1caf26e49eaec3fcafd22a882.1380793579.git.michal.simek@xilinx.com>
-References: <27e289763bbcb7d10f84081543cfc3a4dc770398.1380793579.git.michal.simek@xilinx.com>
-Content-Type: multipart/signed;
-    boundary="=_mimegpg-monstr-desktop-4126-1380793617-0001";
-    micalg=pgp-sha1; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <27e289763bbcb7d10f84081543cfc3a4dc770398.1380793579.git.michal.simek@xilinx.com>
-In-Reply-To: <27e289763bbcb7d10f84081543cfc3a4dc770398.1380793579.git.michal.simek@xilinx.com>
-References: <27e289763bbcb7d10f84081543cfc3a4dc770398.1380793579.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 2/2] serial: mxs-auart: wait for FIFO to flush before
+ shutdown
+Date: Thu, 3 Oct 2013 20:17:40 +0200
+Message-ID: <20131003181740.GB10079@pengutronix.de>
+References: <1380785524-20490-1-git-send-email-hector.palacios@digi.com>
+ <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:36688 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754359Ab3JCSRn (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Oct 2013 14:17:43 -0400
+Content-Disposition: inline
+In-Reply-To: <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Hector Palacios <hector.palacios@digi.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, b32955@freescale.com, marex@denx.de, fabio.estevam@freescale.com, shawn.guo@linaro.org, jslaby@suse.cz
 
-This is a MIME GnuPG-signed message.  If you see this text, it means that
-your E-mail or Usenet software does not support MIME signed messages.
-The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
-To open this message correctly you will need to install E-mail or Usenet
-software that supports modern Internet standards.
+Hello,
 
---=_mimegpg-monstr-desktop-4126-1380793617-0001
+there is only a single concern left and probably only the Freescale guy=
+s
+can comment here ...
+On Thu, Oct 03, 2013 at 09:32:04AM +0200, Hector Palacios wrote:
+> The shutdown function was not waiting for the FIFO (which may be the
+> real 16 byte FIFO or the DMA buffer, if DMA is enabled) to flush
+> before disabling the AUART.
+> This lead to many bytes not being transferred (specially at low
+> baudrates), as they were still in the DMA buffer when the AUART was
+> shutdown.
+> This patch also adds the check for the BUSY flag on the tx_empty
+> callback.
+>=20
+> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> ---
+>  drivers/tty/serial/mxs-auart.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-=
+auart.c
+> index 9f046177..30edb91 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -757,9 +757,26 @@ static int mxs_auart_startup(struct uart_port *u=
+)
+>  	return 0;
+>  }
+> =20
+> +static unsigned int mxs_auart_tx_empty(struct uart_port *u)
+> +{
+> +	unsigned long stat;
+> +
+> +	stat =3D readl(u->membase + AUART_STAT);
+> +	if ((stat & (AUART_STAT_BUSY | AUART_STAT_TXFE)) =3D=3D AUART_STAT_=
+TXFE)
+> +		return TIOCSER_TEMT;
+Can it happen that both the fifo and the shifter are empty but there ar=
+e
+still some chars pending to be transfered via DMA? If you were checking
+if dma is still setup you'd be on the safe side.
 
-Driver core clears the driver data to NULL after device_release
-or on probe failure, so just remove it from here.
+Best regards
+Uwe
 
-Driver core change:
-"device-core: Ensure drvdata = NULL when no driver is bound"
-(sha1: 0998d0631001288a5974afc0b2a5f568bcdecb4d)
+> +
+> +	return 0;
+> +}
+> +
+>  static void mxs_auart_shutdown(struct uart_port *u)
+>  {
+>  	struct mxs_auart_port *s =3D to_auart_port(u);
+> +	unsigned int to;
+> +
+> +	/* Wait for the FIFO to flush */
+> +	to =3D u->timeout;
+> +	while (!mxs_auart_tx_empty(u) && to--)
+> +		mdelay(1);
+> =20
+>  	if (auart_dma_enabled(s))
+>  		mxs_auart_dma_exit(s);
+> @@ -774,14 +791,6 @@ static void mxs_auart_shutdown(struct uart_port =
+*u)
+>  	clk_disable_unprepare(s->clk);
+>  }
+> =20
+> -static unsigned int mxs_auart_tx_empty(struct uart_port *u)
+> -{
+> -	if (readl(u->membase + AUART_STAT) & AUART_STAT_TXFE)
+> -		return TIOCSER_TEMT;
+> -	else
+> -		return 0;
+> -}
+> -
+>  static void mxs_auart_start_tx(struct uart_port *u)
+>  {
+>  	struct mxs_auart_port *s =3D to_auart_port(u);
+> --=20
+> 1.8.4
+>=20
+>=20
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
- drivers/tty/serial/amba-pl010.c | 3 ---
- drivers/tty/serial/amba-pl011.c | 3 ---
- 2 files changed, 6 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 8b90f0b..33bd860 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -728,7 +728,6 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
- 	amba_set_drvdata(dev, uap);
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
- 	if (ret) {
--		amba_set_drvdata(dev, NULL);
- 		amba_ports[i] = NULL;
- 		clk_put(uap->clk);
-  unmap:
-@@ -745,8 +744,6 @@ static int pl010_remove(struct amba_device *dev)
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
- 	int i;
-
--	amba_set_drvdata(dev, NULL);
--
- 	uart_remove_one_port(&amba_reg, &uap->port);
-
- 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index aaa2286..7203864 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2147,7 +2147,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	amba_set_drvdata(dev, uap);
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
- 	if (ret) {
--		amba_set_drvdata(dev, NULL);
- 		amba_ports[i] = NULL;
- 		pl011_dma_remove(uap);
- 	}
-@@ -2160,8 +2159,6 @@ static int pl011_remove(struct amba_device *dev)
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
- 	int i;
-
--	amba_set_drvdata(dev, NULL);
--
- 	uart_remove_one_port(&amba_reg, &uap->port);
-
- 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
 --
-1.8.2.3
-
-
---=_mimegpg-monstr-desktop-4126-1380793617-0001
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEABECAAYFAlJNPREACgkQykllyylKDCGrywCfVjn0d8ARGy58alxUDVWyHlNn
-g48An1mcoZX+m/JVafQEInR/nAfoCF5Q
-=C76P
------END PGP SIGNATURE-----
-
---=_mimegpg-monstr-desktop-4126-1380793617-0001--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
