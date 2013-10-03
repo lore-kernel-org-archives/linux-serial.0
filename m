@@ -1,31 +1,47 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Commit f7d2c0bb (serial: i.MX: evaluate linux,stdout-path property)
- and resulting build errors
-Date: Wed, 2 Oct 2013 21:56:11 -0700
-Message-ID: <20131003045611.GA17921@roeck-us.net>
+From: Hector Palacios <hector.palacios@digi.com>
+Subject: [PATCH v3 0/2] serial: mxs-auart: wait for DMA buffer to flush before shutdown
+Date: Thu, 3 Oct 2013 09:32:02 +0200
+Message-ID: <1380785524-20490-1-git-send-email-hector.palacios@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:64979 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756727Ab3JCE4R (ORCPT
+Received: from mail1.bemta7.messagelabs.com ([216.82.254.98]:36466 "EHLO
+	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752754Ab3JCHcd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Oct 2013 00:56:17 -0400
-Received: by mail-pa0-f49.google.com with SMTP id ld10so2038567pab.22
-        for <linux-serial@vger.kernel.org>; Wed, 02 Oct 2013 21:56:17 -0700 (PDT)
-Content-Disposition: inline
+	Thu, 3 Oct 2013 03:32:33 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Jiri Slaby <jslaby@suse.cz>
+Cc: hector.palacios@digi.com, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, gregkh@linuxfoundation.org, b32955@freescale.com, marex@denx.de, fabio.estevam@freescale.com, shawn.guo@linaro.org, jslaby@suse.cz
 
-Hi all,
+This fixes a bug whereby the AUART was shutdown while bytes
+were still waiting in the DMA buffer to be transmistted.
 
-Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
-call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
-built as module, yet add_preferred_console() is not exported on any platform.
-This is one reason why arm:allmodconfig fails to build on the upstream kernel.
+Changes since v2:
+ * Added Reviewed/Acked-by tags to first commit.
+ * Move tx_empty callback up to avoid forward declaration.
+ * Move BUSY flag check to tx_empty callback to avoid check
+   on shutdown call.
 
-What is the best solution ? Should imx.c not be buildable as module anymore ?
+Changes since v1:
+ * Split the patch in two: one to set the fifosize to the
+   DMA buffer size, and another to wait for the FIFO to empty
+   before disabling the AUART.
+ * The wait for the fifo to empty is now independent of DMA
+   being enabled.
+ * Fix bug on readl() call
+ * Remove bad URL in commit log
 
-Guenter
+
+Hector Palacios (2):
+  serial: mxs-auart: set the FIFO size to DMA buffer size
+  serial: mxs-auart: wait for FIFO to flush before shutdown
+
+ drivers/tty/serial/mxs-auart.c | 34 +++++++++++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
+
+-- 
+1.8.4
+
