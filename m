@@ -1,30 +1,33 @@
-From: Aijaz Lending <yin01@aijaz527.onmicrosoft.com>
-Subject: looking for loan
-Date: Fri, 4 Oct 2013 01:35:02 +0530
-Message-ID: <d35c1b24-c10e-453b-a063-3c4c44fb3dd1@HKXPR02MB213.apcprd02.prod.outlook.com>
-Reply-To: <sg.loan.sg@outlook.com>
+From: takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org
+Subject: Re: [PATCH 0/6] ARM: shmobile: kzm9d-reference:  migrate to common
+ clock framework with DT
+Date: Fri, 4 Oct 2013 10:12:16 +0900
+Message-ID: <20131004101216.5dd1327a1a03171968a09232@ops.dti.ne.jp>
+References: <52410F86.4040301@renesas.com>
+	<87siwtl69z.wl%kuninori.morimoto.gx@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from emea01-db3-ndr.ptr.protection.outlook.com ([157.56.120.103]:20953
-	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754894Ab3JCUFf convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Oct 2013 16:05:35 -0400
-Content-Description: Mail message body
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <87siwtl69z.wl%kuninori.morimoto.gx-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kuninori Morimoto <kuninori.morimoto.gx-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Cc: SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Paul Mundt <lethal-M7jkjyW5wf5g9hUCZPvPmw@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <yin01@aijaz527.onmicrosoft.com>
 
-Do you have a firm or company that need loan to start up a business or need,personal loan, Debt consolidation? For more information,Contact us now for a guarantee loan with low interest rate. We will provide you with loan to meet your needs. For more information contact us with the following information's.
-Full name:
-country:
-Address:
-Phone Number:
-Amount needed:
-Duration of loan:
+Hi,
+ 
+> Documentation and implementation in one patch,
+> and dts in other patch, are normal style IMO
 
-sg.loan.sg@outlook.com
-Kind regards
+That's strange! Considering the nature of DT, it must be wrong.
+... was what I thought at first, but you are right.
+I found 3/4 (1021 in 1365) of commits (new + change - typo fix)
+under Documentation/devicetree/bindings/ has come with .c code.
+
+Thank you for let me know.
+/yoshii
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
