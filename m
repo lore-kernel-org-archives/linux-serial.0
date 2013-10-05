@@ -1,37 +1,46 @@
-From: "Microsoft Iberica SL" <miciberisl@outlook.es>
-Subject: You've won a Prize
-Date: Sat, 5 Oct 2013 20:40:20 +0300 (EEST)
-Message-ID: <53496.84.120.64.153.1380994820.squirrel__12159.1790150434$1380993750$gmane$org@mail1.centrum-group.com>
-Reply-To: payingroll446@yahoo.com.hk
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PATCH] TTY/Serial fixes for 3.12-rc4
+Date: Sat, 5 Oct 2013 10:34:03 -0700
+Message-ID: <20131005173403.GA4811@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain;charset=WINDOWS-1251
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.centrum-group.com ([194.12.254.133]:55238 "EHLO
-	mail1.centrum-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752524Ab3JERVY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 5 Oct 2013 13:21:24 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-You've won a Prize
-MICROSOFT IBERICA SL"
-YOU 'VE WON.
-ATTN:MICROSOFT IBERICA SL
-Your email has won (EUR244,000,00)
-(TWO HUNDRED AND FOURTY FOUR THOUSAND EURO)
-Batch number:XL73276498AM
-Ref number:QR352899526KC
-This is a millennium scientific computer game in which
-email addresses were used.It is a promotional program aimed at
-encouraging internet users,therefore you do not need to buy ticket to enter
-for it.
-For further development,clarification and procedure please
-Contact:Dr Eduardo Sanchez,
-Email contact:payingroll446@yahoo.com.hk
+The following changes since commit 15c03dd4859ab16f9212238f29dd315654aa94f6:
 
+  Linux 3.12-rc3 (2013-09-29 15:02:38 -0700)
 
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.12-rc4
 
+for you to fetch changes up to a9fbf4d591da6cd1d3eaab826c7c15f77fc8f6a3:
 
+  xen/hvc: allow xenboot console to be used again (2013-10-03 16:12:58 -0700)
+
+----------------------------------------------------------------
+TTY fixes for 3.12-rc4
+
+Here are 2 tty driver fixes for 3.12-rc4.
+
+One fixes the reported regression in the n_tty code that a number of
+people found recently, and the other one fixes an issue with xen
+consoles that broke in 3.10.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+David Vrabel (1):
+      xen/hvc: allow xenboot console to be used again
+
+Peter Hurley (1):
+      tty: Fix pty master read() after slave closes
+
+ drivers/tty/hvc/hvc_xen.c |  1 +
+ drivers/tty/n_tty.c       | 46 ++++++++++++++++++++++++++--------------------
+ 2 files changed, 27 insertions(+), 20 deletions(-)
