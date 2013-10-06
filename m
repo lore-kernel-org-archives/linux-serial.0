@@ -1,34 +1,46 @@
-From: Michael Opdenacker <michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH] serial: tegra: remove deprecated IRQF_DISABLED
-Date: Sun,  6 Oct 2013 08:30:17 +0200
-Message-ID: <1381041017-12806-1-git-send-email-michael.opdenacker@free-electrons.com>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Michael Opdenacker <michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: Commit f7d2c0bb (serial: i.MX: evaluate linux,stdout-path
+ property) and resulting build errors
+Date: Sun, 6 Oct 2013 13:09:56 +0200
+Message-ID: <20131006110956.GM30088@pengutronix.de>
+References: <20131003045611.GA17921@roeck-us.net>
+ <20131003184445.GH8901@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:45055 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751618Ab3JFLKC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 6 Oct 2013 07:10:02 -0400
+Content-Disposition: inline
+In-Reply-To: <20131003184445.GH8901@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Guenter Roeck <linux@roeck-us.net>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-This patch proposes to remove the use of the IRQF_DISABLED flag
+On Thu, Oct 03, 2013 at 11:44:45AM -0700, Greg Kroah-Hartman wrote:
+> On Wed, Oct 02, 2013 at 09:56:11PM -0700, Guenter Roeck wrote:
+> > Hi all,
+> > 
+> > Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
+> > call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
+> > built as module, yet add_preferred_console() is not exported on any platform.
+> > This is one reason why arm:allmodconfig fails to build on the upstream kernel.
+> > 
+> > What is the best solution ? Should imx.c not be buildable as module anymore ?
+> 
+> Sascha, I'll have to revert this patch unless you wish to fix it in a
+> different way?
 
-It's a NOOP since 2.6.35 and it will be removed one day.
+Do you think exporting add_preferred_console() would be acceptable? If
+yes, that would be my preferred solution.
 
-Signed-off-by: Michael Opdenacker <michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
----
- drivers/tty/serial/serial-tegra.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sascha
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 0489a2b..dfe79cc 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1018,7 +1018,7 @@ static int tegra_uart_startup(struct uart_port *u)
- 		goto fail_hw_init;
- 	}
- 
--	ret = request_irq(u->irq, tegra_uart_isr, IRQF_DISABLED,
-+	ret = request_irq(u->irq, tegra_uart_isr, 0,
- 				dev_name(u->dev), tup);
- 	if (ret < 0) {
- 		dev_err(u->dev, "Failed to register ISR for IRQ %d\n", u->irq);
 -- 
-1.8.1.2
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
