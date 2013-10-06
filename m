@@ -1,51 +1,98 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: Commit f7d2c0bb (serial: i.MX: evaluate linux,stdout-path
- property) and resulting build errors
-Date: Sun, 6 Oct 2013 07:37:43 -0700
-Message-ID: <20131006143743.GA23787@roeck-us.net>
-References: <20131003045611.GA17921@roeck-us.net>
- <20131003184445.GH8901@kroah.com>
- <20131006110956.GM30088@pengutronix.de>
+From: Takashi YOSHII <takasi-y-nDL5PR/MsHhHfZP73Gtkiw@public.gmane.org>
+Subject: Re: [PATCH 4/6] ARM: shmobile: emev2: Define SMU clock DT bindings
+Date: Mon, 7 Oct 2013 02:16:52 +0900
+Message-ID: <20131007021652.ced3167a4d03eec809d0b6ee@ops.dti.ne.jp>
+References: <52410F86.4040301@renesas.com>
+	<20130924131331.0e9a5f830f531655b2ea0ebe@ops.dti.ne.jp>
+	<20130924045215.GE3619@verge.net.au>
+	<21574726.tiJa6Opb1k@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:39813 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752661Ab3JFOhu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Oct 2013 10:37:50 -0400
-Received: by mail-pa0-f45.google.com with SMTP id rd3so6192712pab.32
-        for <linux-serial@vger.kernel.org>; Sun, 06 Oct 2013 07:37:50 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20131006110956.GM30088@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <21574726.tiJa6Opb1k@avalon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ben.dooks-4yDnlxn2s6sWdaTGBSpHTA@public.gmane.org, Shinya Kuribayashi <shinya.kuribayashi.px-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Sun, Oct 06, 2013 at 01:09:56PM +0200, Sascha Hauer wrote:
-> On Thu, Oct 03, 2013 at 11:44:45AM -0700, Greg Kroah-Hartman wrote:
-> > On Wed, Oct 02, 2013 at 09:56:11PM -0700, Guenter Roeck wrote:
-> > > Hi all,
-> > > 
-> > > Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
-> > > call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
-> > > built as module, yet add_preferred_console() is not exported on any platform.
-> > > This is one reason why arm:allmodconfig fails to build on the upstream kernel.
-> > > 
-> > > What is the best solution ? Should imx.c not be buildable as module anymore ?
+Hi Laurent,
+
+> > > Device tree clock binding document for EMMA Mobile EV2 SMU.
+> > > Following nodes are defined to describe clock tree.
+> > > - renesas,emev2-smu
+> > > - renesas,emev2-smu-clkdiv
+> > > - renesas,emev2-smu-gclk
 > > 
-> > Sascha, I'll have to revert this patch unless you wish to fix it in a
-> > different way?
+> > I realise this has been entirely consistent in the past and
+> > even as recently as Linus' pre v3.12-rc2 master branch.
+> > However, after some recent discussion we are now trying to make our
+> > compatibility strings consistently of the form renesas,<unit>-<soc>.
+> > 
+> > With this in mind I believe the strings should be:
+> > 
+> > - renesas,smu-emev2
+> > - renesas,smu-clkdiv-emev2
+> > - renesas,smu-gclk-emev2
+> > 
+> > To be honest I am not quite sure about the "-clkdiv" and "-gclk"
+> > bits and I would appreciate some review from others.
 > 
-> Do you think exporting add_preferred_console() would be acceptable? If
-> yes, that would be my preferred solution.
+> I don't have access to the EMEV2 datasheet so my ability to comment on this is 
+> somehow limited. However, given that the clock hardware is very SoC-specific, 
+> it might make sense to keep the names proposed by Yoshii-san. This would be 
+> consistent with the other clock bindings.
+
+Just for explanation:
+EM/EV2(there is "/" according to its Users Manual) might be a little difficult
+ one for general discussion. It stands for "EMMA Mobile EV2", and is a SoC of
+"EMMA Mobile" series, they say. So, possibly, the string was
+ emmamobile-smu or emmamobile-smu-ev2 if it is EV2 specific variant.
+
+But, EMEV2 is the only SoC known in EMMA Mobile series, and no document found
+ to tell if some other one(if any. there used to be, they say) has SMU or not. 
+That's why I choose "emev2-smu". This is <unit> part, and no <soc> portion.
+
+> > > +++ b/Documentation/devicetree/bindings/clock/emev2-clock.txt
+...
+> > > +Example of provider:
+> > > +
+> > > +usia_u0_sclkdiv: usia_u0_sclkdiv {
+> > > +	compatible = "renesas,emev2-smu-clkdiv";
+> > > +	reg = <0x610 0>;
 > 
-Difficult to imagine that a console driver can be a loadable module.
-Unload it while the system is running and then what ?
+> Is the registers space really 0 bytes long ?
 
-Why does this driver have to be buildable as module anyway ? If that is really
-a MUST, an alternative might be to only call add_preferred_console() if it is not
-built as module.
+Both those are address. as
+> > +- reg: Byte offset from SMU base and Bit position in the register
 
-Guenter
+The outer unit (smu) does
+> > > +	#address-cells = <2>;
+> > > +	#size-cells = <0>;
+and no "ranges".
+These clock node is defined not as memory-mapped.
+
+Looks strange? I think so.
+This _was introduced_ to comply ePAPR that requires the node name to consist
+of generic name and @address to make it unique.
+So, the first version was like this.
+| usia_u0_sclkdiv: clock@610,0 {
+| 	compatible = "renesas,emev2-smu-clkdiv";
+| 	reg = <0x610 0>;
+
+But later, I trashed it for the consistency with clock nodes without <reg>, say
+> > > +	c32ki: c32ki {
+> > > +		compatible = "fixed-clock";
+
+I am still not sure what the clock nodes should be. But, I think what we are
+ discussing is out of the scope of current ePAPR, which does not give the answer.
+
+> > > +
+> 
+> There's an extra blank line at the end of the file.
+Oops. Thank you.
+/yoshii
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
