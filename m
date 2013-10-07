@@ -1,49 +1,44 @@
-From: Fabio Estevam <fabio.estevam@freescale.com>
-Subject: [PATCH] serial: i.MX: do not allow to build as module
-Date: Mon, 7 Oct 2013 09:44:32 -0300
-Message-ID: <1381149872-13646-1-git-send-email-fabio.estevam@freescale.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH] serial: tegra: remove deprecated IRQF_DISABLED
+Date: Mon, 07 Oct 2013 11:07:11 -0600
+Message-ID: <5252EA3F.9090101@wwwdotorg.org>
+References: <1381041017-12806-1-git-send-email-michael.opdenacker@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co9ehsobe002.messaging.microsoft.com ([207.46.163.25]:53953
-	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752764Ab3JGMsk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Oct 2013 08:48:40 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1381041017-12806-1-git-send-email-michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Opdenacker <michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: s.hauer@pengutronix.de, linux@roeck-us.net, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+On 10/06/2013 12:30 AM, Michael Opdenacker wrote:
+> This patch proposes to remove the use of the IRQF_DISABLED flag
+> 
+> It's a NOOP since 2.6.35 and it will be removed one day.
 
-Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
-call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
-built as module, yet add_preferred_console() is not exported.
+Laxman, care to comment? I'm not sure why the code explicitly specifies
+IRQF_DISABLED if it's already a no-op. Perhaps the code expects
+IRQF_DISABLED to do something, and hence there's some bug that needs to
+be fixed because of it doesn't?
 
-Fix the build failure by disabling module build for the i.MX driver.
-
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 701ca60..47a05fd 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -551,7 +551,7 @@ config BFIN_UART3_CTSRTS
- 	  Enable hardware flow control in the driver.
- 
- config SERIAL_IMX
--	tristate "IMX serial port support"
-+	bool "IMX serial port support"
- 	depends on ARCH_MXC
- 	select SERIAL_CORE
- 	select RATIONAL
--- 
-1.8.1.2
-
-
+> Signed-off-by: Michael Opdenacker <michael.opdenacker-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> ---
+>  drivers/tty/serial/serial-tegra.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+> index 0489a2b..dfe79cc 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -1018,7 +1018,7 @@ static int tegra_uart_startup(struct uart_port *u)
+>  		goto fail_hw_init;
+>  	}
+>  
+> -	ret = request_irq(u->irq, tegra_uart_isr, IRQF_DISABLED,
+> +	ret = request_irq(u->irq, tegra_uart_isr, 0,
+>  				dev_name(u->dev), tup);
+>  	if (ret < 0) {
+>  		dev_err(u->dev, "Failed to register ISR for IRQ %d\n", u->irq);
+> 
