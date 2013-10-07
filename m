@@ -1,37 +1,49 @@
 From: Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: Commit f7d2c0bb (serial: i.MX: evaluate linux,stdout-path property)
- and resulting build errors
-Date: Mon, 7 Oct 2013 09:31:29 -0300
-Message-ID: <5252A9A1.9050504@freescale.com>
-References: <20131003045611.GA17921@roeck-us.net> <20131003184445.GH8901@kroah.com> <20131006110956.GM30088@pengutronix.de> <20131006143743.GA23787@roeck-us.net> <20131006191546.GA27140@kroah.com> <20131007064932.GU30088@pengutronix.de>
+Subject: [PATCH] serial: i.MX: do not allow to build as module
+Date: Mon, 7 Oct 2013 09:44:32 -0300
+Message-ID: <1381149872-13646-1-git-send-email-fabio.estevam@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe003.messaging.microsoft.com ([216.32.180.186]:39688
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751520Ab3JGMfl (ORCPT
+Received: from co9ehsobe002.messaging.microsoft.com ([207.46.163.25]:53953
+	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752764Ab3JGMsk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Oct 2013 08:35:41 -0400
-In-Reply-To: <20131007064932.GU30088@pengutronix.de>
+	Mon, 7 Oct 2013 08:48:40 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Guenter Roeck <linux@roeck-us.net>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: gregkh@linuxfoundation.org
+Cc: s.hauer@pengutronix.de, linux@roeck-us.net, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-Hi Sascha,
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-On 10/07/2013 03:49 AM, Sascha Hauer wrote:
+Commit f7d2c0bbdb (serial: i.MX: evaluate linux,stdout-path property) adds a
+call to add_preferred_console() into drivers/tty/serial/imx.c. The file can be
+built as module, yet add_preferred_console() is not exported.
 
-> Fabio, I'm not available until the beginning of next week. Could you
-> keep an eye on this?
+Fix the build failure by disabling module build for the i.MX driver.
 
-Yes, I will submit your patch (changing 'boot' to 'bool' - as pointed 
-out by Guenter).
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Enjoy your holidays.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 701ca60..47a05fd 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -551,7 +551,7 @@ config BFIN_UART3_CTSRTS
+ 	  Enable hardware flow control in the driver.
+ 
+ config SERIAL_IMX
+-	tristate "IMX serial port support"
++	bool "IMX serial port support"
+ 	depends on ARCH_MXC
+ 	select SERIAL_CORE
+ 	select RATIONAL
+-- 
+1.8.1.2
 
-Regards,
-
-Fabio Estevam
 
