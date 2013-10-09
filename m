@@ -1,68 +1,44 @@
-From: Feng Tang <feng.tang@intel.com>
-Subject: [PATCH 2/2] serial: mrst_max3110: Fix race condition between spi transfers
-Date: Wed,  9 Oct 2013 10:39:17 +0800
-Message-ID: <1381286357-13346-2-git-send-email-feng.tang@intel.com>
-References: <1381286357-13346-1-git-send-email-feng.tang@intel.com>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH v3 2/2] serial: mxs-auart: wait for FIFO to flush before
+ shutdown
+Date: Wed, 9 Oct 2013 15:55:08 +0800
+Message-ID: <52550BDC.70204@freescale.com>
+References: <1380785524-20490-1-git-send-email-hector.palacios@digi.com> <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:37949 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756204Ab3JICrQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 8 Oct 2013 22:47:16 -0400
-In-Reply-To: <1381286357-13346-1-git-send-email-feng.tang@intel.com>
+Received: from mail-db9lp0253.outbound.messaging.microsoft.com ([213.199.154.253]:51072
+	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756593Ab3JIHwq convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Oct 2013 03:52:46 -0400
+In-Reply-To: <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: Bin Gao <bin.gao@intel.com>, Feng Tang <feng.tang@intel.com>
+To: Hector Palacios <hector.palacios@digi.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, gregkh@linuxfoundation.org, marex@denx.de, fabio.estevam@freescale.com, shawn.guo@linaro.org, jslaby@suse.cz
 
-From: Bin Gao <bin.gao@intel.com>
+=D3=DA 2013=C4=EA10=D4=C203=C8=D5 15:32, Hector Palacios =D0=B4=B5=C0:
+> This lead to many bytes not being transferred (specially at low
+> baudrates), as they were still in the DMA buffer when the AUART was
+> shutdown.
+I meet a similar bug with the imx.c which is used for the I.MX.
 
-There is a race between termios configuration and xmit that can cause the
-intel_mid_ssp_spi driver to stall.
+I did not implement the uart_ops->flush_buffer() hook, so the DMA may f=
+ails.
 
-Serializing spi transactions fixes the problem.
+So could we add a new flush_buffer hook for mxs-auart?
 
-Signed-off-by: Bin Gao <bin.gao@intel.com>
-Signed-off-by: Feng Tang <feng.tang@intel.com>
----
- drivers/tty/serial/mrst_max3110.c |    4 ++++
- 1 files changed, 4 insertions(+), 0 deletions(-)
+Please see the Documentation/serail/driver.
 
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index ee77e73..565779d 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -61,6 +61,7 @@ struct uart_max3110 {
- 	struct task_struct *main_thread;
- 	struct task_struct *read_thread;
- 	struct mutex thread_mutex;
-+	struct mutex io_mutex;
- 
- 	u32 baud;
- 	u16 cur_conf;
-@@ -90,6 +91,7 @@ static int max3110_write_then_read(struct uart_max3110 *max,
- 	struct spi_transfer	x;
- 	int ret;
- 
-+	mutex_lock(&max->io_mutex);
- 	spi_message_init(&message);
- 	memset(&x, 0, sizeof x);
- 	x.len = len;
-@@ -104,6 +106,7 @@ static int max3110_write_then_read(struct uart_max3110 *max,
- 
- 	/* Do the i/o */
- 	ret = spi_sync(spi, &message);
-+	mutex_unlock(&max->io_mutex);
- 	return ret;
- }
- 
-@@ -805,6 +808,7 @@ static int serial_m3110_probe(struct spi_device *spi)
- 	max->irq = (u16)spi->irq;
- 
- 	mutex_init(&max->thread_mutex);
-+	mutex_init(&max->io_mutex);
- 
- 	max->word_7bits = 0;
- 	max->parity = 0;
--- 
-1.7.0.4
+thanks
+Huang Shijie
 
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
