@@ -1,42 +1,55 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH v3 2/2] serial: mxs-auart: wait for FIFO to flush before
- shutdown
-Date: Wed, 9 Oct 2013 15:55:08 +0800
-Message-ID: <52550BDC.70204@freescale.com>
-References: <1380785524-20490-1-git-send-email-hector.palacios@digi.com> <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
+From: "Mr. Alpha Isoko" <mralphaisoko@sify.com>
+Subject: =?utf-8?B?WW914oCZcmUgQVRNIENBUkQgQ29tcGVuc2F0aW9uIEdpZnQ=?=
+Date: Wed, 9 Oct 2013 09:51:40 -0700 (PDT)
+Message-ID: <1381337500.11520.YahooMailBasic@web141204.mail.bf1.yahoo.com>
+Reply-To: mrmark_john01@yahoo.fr
 Mime-Version: 1.0
-Content-Type: text/plain; charset=GB2312
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-db9lp0253.outbound.messaging.microsoft.com ([213.199.154.253]:51072
-	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756593Ab3JIHwq convert rfc822-to-8bit
+Received: from nm13-vm0.bullet.mail.bf1.yahoo.com ([98.139.213.79]:36763 "EHLO
+	nm13-vm0.bullet.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753713Ab3JIQvn convert rfc822-to-8bit
 	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Oct 2013 03:52:46 -0400
-In-Reply-To: <1380785524-20490-3-git-send-email-hector.palacios@digi.com>
+	Wed, 9 Oct 2013 12:51:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Hector Palacios <hector.palacios@digi.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, gregkh@linuxfoundation.org, marex@denx.de, fabio.estevam@freescale.com, shawn.guo@linaro.org, jslaby@suse.cz
-
-=D3=DA 2013=C4=EA10=D4=C203=C8=D5 15:32, Hector Palacios =D0=B4=B5=C0:
-> This lead to many bytes not being transferred (specially at low
-> baudrates), as they were still in the DMA buffer when the AUART was
-> shutdown.
-I meet a similar bug with the imx.c which is used for the I.MX.
-
-I did not implement the uart_ops->flush_buffer() hook, so the DMA may f=
-ails.
-
-So could we add a new flush_buffer hook for mxs-auart?
-
-Please see the Documentation/serail/driver.
-
-thanks
-Huang Shijie
 
 
+You=E2=80=99re ATM CARD Compensation Gift
+Dear,
 
+I am ( Mr Alpha Isoko ) glad to inform you that I have successfully con=
+cluded the transaction. The money/fund has been transferred to China th=
+rough the assistance of Mr.Pong Euge, who is a business man base in Chi=
+na Currently I am in China righty now with him.
+
+However, I did not forget you assists/helps because of your passed effo=
+rts also you are the source of my success to achieve the fund.
+
+In appreciate of your effort/assistance I already mapped out/deposited =
+ATM CARD sum of Four Hundred And Fifty Thousand United States Dollars (=
+ US$ 450,000.00 ) as a Compensation and wrote on your favour) I left th=
+e ATM CARD sum of ( US$ 450,000.00 ) with my Secretary mr.John Mark in =
+country Burkina Faso, on my departure to China. I would like you to con=
+tact him in Burkina Faso with the below information and instruct him wh=
+ere to send the ATM CARD sum of Four Hundred And Fifty Thousand United =
+States Dollars ( US$ 450,000.00 ) to you.
+
+Post Office Burkina Faso
+Name: mr.John Mark
+CONTACT HIM THROUGH EMAIL ADDRESS ON THE ABOVE SUBJECT.
+( mrmark_john01@yahoo.fr )
+His Direct telephone number in Burkina Faso: +22676302353
+
+You should follow up his instructions, so that he will send the ATM CAR=
+D to you immediately, to avoid any delay / mistake.
+
+Note: I can not check my email any more; because I am very much busy he=
+re in china investing many projects with my new partner Mr.Pong Euge,
+
+Best Regards,
+Mr Alpha Isoko.
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
