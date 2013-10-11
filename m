@@ -1,63 +1,40 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH 2/4] serial: imx: check the DMA for imx_tx_empty
-Date: Fri, 11 Oct 2013 18:30:59 +0800
-Message-ID: <1381487461-12850-3-git-send-email-b32955@freescale.com>
-References: <1381487461-12850-1-git-send-email-b32955@freescale.com>
+From: =?UTF-8?B?SmnFmcOtIFByY2hhbA==?= <jiri.prchal@aksignal.cz>
+Subject: Re: [PATCH] serial: prepare for 9bit data
+Date: Fri, 11 Oct 2013 13:59:00 +0200
+Message-ID: <5257E804.6020800@aksignal.cz>
+References: <1379938052-6026-1-git-send-email-jiri.prchal@aksignal.cz> <20130926224755.GA15399@kroah.com>
+Reply-To: jiri.prchal@aksignal.cz
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe002.messaging.microsoft.com ([65.55.88.12]:6075 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932471Ab3JKKpy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Oct 2013 06:45:54 -0400
-In-Reply-To: <1381487461-12850-1-git-send-email-b32955@freescale.com>
+Received: from port.iol.cz ([194.228.1.9]:8711 "EHLO port.iol.cz"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755764Ab3JKL7E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 11 Oct 2013 07:59:04 -0400
+In-Reply-To: <20130926224755.GA15399@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, shawn.guo@linaro.org, Huang Shijie <b32955@freescale.com>
-
-Assume the following situation:
-
-  If the DMA is enabled, and the a TX DMA operation is working,
-But we have not issued the TX DMA operation (or we have issued the
-TX DMA operation with dma_async_issue_pending(), but the DMA has not
-started to move the data from the memory to the TXFIFO).
-
-At this time, we may get the wrong status of the transmitter when we
-call the imx_tx_empty. In such situation, only check the USR2_TXDC
-does not enough for us.
-
-This patch checks the DMA's situation, and return 0 when the TX DMA is
-working.
-
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- drivers/tty/serial/imx.c |    9 ++++++++-
- 1 files changed, 8 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 708ba89..c6c3b16 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -795,8 +795,15 @@ static irqreturn_t imx_int(int irq, void *dev_id)
- static unsigned int imx_tx_empty(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
-+	unsigned int ret;
- 
--	return (readl(sport->port.membase + USR2) & USR2_TXDC) ?  TIOCSER_TEMT : 0;
-+	ret = (readl(sport->port.membase + USR2) & USR2_TXDC) ?  TIOCSER_TEMT : 0;
-+
-+	/* If the TX DMA is working, return 0. */
-+	if (sport->dma_is_enabled && sport->dma_is_txing)
-+		ret = 0;
-+
-+	return ret;
- }
- 
- /*
--- 
-1.7.2.rc3
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, nicolas.ferre@atmel.com
 
 
+
+Dne 27.9.2013 00:47, Greg KH napsal(a):
+> On Mon, Sep 23, 2013 at 02:07:32PM +0200, Jiri Prchal wrote:
+>> This patch adds 9bit data possibility for serial_core. Please confirm that I did it right way at right place. I'll make atmel_serial driver for 9bit data later.
+>
+> Please wrap your lines properly.
+>
+> I'd rather wait to add this type of patch _after_ you have tested it and
+> verified that your driver works, and take that patch at the same time.
+>
+> Otherwise, this is just added cruft that no one is using, and I'd have
+> to remove it :)
+No one is using it because it is NOT implemented.
+Try to search internet for "9bit serial" to see how many people like to use it.
+But I probably not bother to do it and I'll try some tricks with parity.
+As many others.
+
+Best regard
+Jiri
