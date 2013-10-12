@@ -1,66 +1,44 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: prepare for 9bit data
-Date: Fri, 11 Oct 2013 08:36:40 -0700
-Message-ID: <20131011153640.GB14715@kroah.com>
-References: <1379938052-6026-1-git-send-email-jiri.prchal@aksignal.cz>
- <20130926224755.GA15399@kroah.com>
- <5257E804.6020800@aksignal.cz>
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Subject: Re: [PATCH 2/2] tty/serial: at91: add a fallback option to
+ determine uart/usart property
+Date: Sat, 12 Oct 2013 17:00:10 +0200
+Message-ID: <20131012170010.537982fb@skate>
+References: <a58fe8bc7fdd128a2f9cf60785f81ebde4c0c247.1381394411.git.nicolas.ferre@atmel.com>
+	<64f8f1db6f888456be8ee410a7e9bb9851d070a5.1381394411.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:43734 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754807Ab3JKPgl (ORCPT
+Received: from top.free-electrons.com ([176.31.233.9]:55214 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751543Ab3JLPAT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Oct 2013 11:36:41 -0400
-Content-Disposition: inline
-In-Reply-To: <5257E804.6020800@aksignal.cz>
+	Sat, 12 Oct 2013 11:00:19 -0400
+In-Reply-To: <64f8f1db6f888456be8ee410a7e9bb9851d070a5.1381394411.git.nicolas.ferre@atmel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?utf-8?B?SmnFmcOt?= Prchal <jiri.prchal@aksignal.cz>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, nicolas.ferre@atmel.com
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Josh Wu <josh.wu@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Ludovic Desroches <ludovic.desroches@atmel.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, linux-kernel@vger.kernel.org
 
-On Fri, Oct 11, 2013 at 01:59:00PM +0200, Ji=C5=99=C3=AD Prchal wrote:
->=20
->=20
-> Dne 27.9.2013 00:47, Greg KH napsal(a):
-> >On Mon, Sep 23, 2013 at 02:07:32PM +0200, Jiri Prchal wrote:
-> >>This patch adds 9bit data possibility for serial_core. Please confi=
-rm that I did it right way at right place. I'll make atmel_serial drive=
-r for 9bit data later.
-> >
-> >Please wrap your lines properly.
-> >
-> >I'd rather wait to add this type of patch _after_ you have tested it=
- and
-> >verified that your driver works, and take that patch at the same tim=
-e.
-> >
-> >Otherwise, this is just added cruft that no one is using, and I'd ha=
-ve
-> >to remove it :)
-> No one is using it because it is NOT implemented.
+Dear Nicolas Ferre,
 
-Then implement it.
+On Thu, 10 Oct 2013 10:43:32 +0200, Nicolas Ferre wrote:
+> On older SoC, the "name" field is not filled in the register map.
+> Fix the way to figure out if the serial port is an uart or an usart for these
+> older products (with corresponding properties).
+> 
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-> Try to search internet for "9bit serial" to see how many people like =
-to use it.
+Tested-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 
-Again, then implement it, I can't add code to the kernel that no one
-uses, that would be cruft and be deleted, right?
+On a Calao USB-A9263 board. Without this patch, 3.12-rc4 doesn't
+boot properly on this board, it 'hangs' while configuring the serial
+port.
 
-> But I probably not bother to do it and I'll try some tricks with pari=
-ty.
-> As many others.
+Best regards,
 
-Why not just implement it, then it can stay, right?
-
-thanks,
-
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thomas
+-- 
+Thomas Petazzoni, CTO, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
