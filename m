@@ -1,81 +1,109 @@
 From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 1/2] tty/serial: at91: fix uart/usart selection for older
- products
-Date: Tue, 15 Oct 2013 11:10:51 +0200
-Message-ID: <525D069B.6000908@atmel.com>
-References: <a58fe8bc7fdd128a2f9cf60785f81ebde4c0c247.1381394411.git.nicolas.ferre@atmel.com> <20131014135809.GF11420@ns203013.ovh.net>
+Subject: Re: [PATCH 2/2] tty/serial: at91: add a fallback option to determine
+ uart/usart property
+Date: Tue, 15 Oct 2013 11:19:18 +0200
+Message-ID: <525D0896.6020907@atmel.com>
+References: <a58fe8bc7fdd128a2f9cf60785f81ebde4c0c247.1381394411.git.nicolas.ferre@atmel.com> <64f8f1db6f888456be8ee410a7e9bb9851d070a5.1381394411.git.nicolas.ferre@atmel.com> <20131014135921.GG11420@ns203013.ovh.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:28095 "EHLO
+Received: from eusmtp01.atmel.com ([212.144.249.242]:16156 "EHLO
 	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752276Ab3JOJKy (ORCPT
+	with ESMTP id S1751219Ab3JOJTV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Oct 2013 05:10:54 -0400
-In-Reply-To: <20131014135809.GF11420@ns203013.ovh.net>
+	Tue, 15 Oct 2013 05:19:21 -0400
+In-Reply-To: <20131014135921.GG11420@ns203013.ovh.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Josh Wu <josh.wu@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Ludovic Desroches <ludovic.desroches@atmel.com>, linux-kernel@vger.kernel.org
+To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Josh Wu <josh.wu@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Ludovic Desroches <ludovic.desroches@atmel.com>, linux-kernel@vger.kernel.org
 
-On 14/10/2013 15:58, Jean-Christophe PLAGNIOL-VILLARD :
+On 14/10/2013 15:59, Jean-Christophe PLAGNIOL-VILLARD :
 > On 10:43 Thu 10 Oct     , Nicolas Ferre wrote:
->> Since commit 055560b04a8cd063aea916fd083b7aec02c2adb8 (serial: at91:
->> distinguish usart and uart) the older products which do not have a
->> name field in their register map are unable to use their serial output.
->> As the main console output is usually the serial interface (aka DBGU) it
->> is pretty unfortunate.
->> So, instead of failing during probe() we just silently configure the serial
->> peripheral as an uart. It allows us to use these serial outputs.
->> The proper solution is proposed in another patch.
+>> On older SoC, the "name" field is not filled in the register map.
+>> Fix the way to figure out if the serial port is an uart or an usart for these
+>> older products (with corresponding properties).
 >>
 >> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 >> ---
->>   drivers/tty/serial/atmel_serial.c | 9 ++-------
->>   1 file changed, 2 insertions(+), 7 deletions(-)
+>>   drivers/tty/serial/atmel_serial.c | 19 ++++++++++++++++++-
+>>   include/linux/atmel_serial.h      |  1 +
+>>   2 files changed, 19 insertions(+), 1 deletion(-)
 >>
 >> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->> index d067285..6b0f75e 100644
+>> index 6b0f75e..c7d99af 100644
 >> --- a/drivers/tty/serial/atmel_serial.c
 >> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -1499,7 +1499,7 @@ static void atmel_set_ops(struct uart_port *port)
->>   /*
->>    * Get ip name usart or uart
->>    */
->> -static int atmel_get_ip_name(struct uart_port *port)
->> +static void atmel_get_ip_name(struct uart_port *port)
+>> @@ -99,6 +99,7 @@ static void atmel_stop_rx(struct uart_port *port);
+>>   #define UART_PUT_RTOR(port,v)	__raw_writel(v, (port)->membase + ATMEL_US_RTOR)
+>>   #define UART_PUT_TTGR(port, v)	__raw_writel(v, (port)->membase + ATMEL_US_TTGR)
+>>   #define UART_GET_IP_NAME(port)	__raw_readl((port)->membase + ATMEL_US_NAME)
+>> +#define UART_GET_IP_VERSION(port) __raw_readl((port)->membase + ATMEL_US_VERSION)
+>>
+>>    /* PDC registers */
+>>   #define UART_PUT_PTCR(port,v)	__raw_writel(v, (port)->membase + ATMEL_PDC_PTCR)
+>> @@ -1503,6 +1504,7 @@ static void atmel_get_ip_name(struct uart_port *port)
 >>   {
 >>   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 >>   	int name = UART_GET_IP_NAME(port);
->> @@ -1518,10 +1518,7 @@ static int atmel_get_ip_name(struct uart_port *port)
+>> +	u32 version;
+>>   	int usart, uart;
+>>   	/* usart and uart ascii */
+>>   	usart = 0x55534152;
+>> @@ -1517,7 +1519,22 @@ static void atmel_get_ip_name(struct uart_port *port)
+>>   		dev_dbg(port->dev, "This is uart\n");
 >>   		atmel_port->is_usart = false;
 >>   	} else {
-> 		a dev_warn here maybe
+>> -		dev_err(port->dev, "Not supported ip name, set to uart\n");
+>> +		/* fallback for older SoCs: use version field */
+>> +		version = UART_GET_IP_VERSION(port);
+>> +		switch (version) {
+>> +		case 0x302:
+>> +		case 0x10213:
+>> +			dev_dbg(port->dev, "This version is usart\n");
+>> +			atmel_port->is_usart = true;
+>> +			break;
+>> +		case 0x203:
+>> +		case 0x10202:
+>> +			dev_dbg(port->dev, "This version is uart\n");
+>> +			atmel_port->is_usart = false;
+>> +			break;
+>> +		default:
+>> +			dev_err(port->dev, "Not supported ip name nor version, set to uart\n");
 >
-> usefull to known when we will have a new ip name and not yet wupported
+> it's not really an error a dev_warn is more oppropriate
 
-No, not here: next patch is oveloading this if/else directive.
+As we are already in -rc5 and that these fixes are critical for at91 
+platforms, I will not re-spin another patch just for this.
 
->>   		dev_err(port->dev, "Not supported ip name, set to uart\n");
->> -		return -EINVAL;
+Moreover, I have the feeling that if we end up in this case, it means 
+that we are in big troubles because the usart/uart included in the 
+product triggering this log is not known (I recall that newer products 
+do not have to hit these lines of code).
+
+With these 2 reasons, I prefer to keep my patch like it is.
+
+Greg, can you consider taking these two patches as regression fixes for 
+3.12 (with Tested-by tag from Thomas)?
+
+Thanks, bye,
+
+>> +		}
 >>   	}
->> -
->> -	return 0;
 >>   }
 >>
->>   /*
->> @@ -2405,9 +2402,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
->>   	/*
->>   	 * Get port name of usart or uart
->>   	 */
->> -	ret = atmel_get_ip_name(&port->uart);
->> -	if (ret < 0)
->> -		goto err_add_port;
->> +	atmel_get_ip_name(&port->uart);
+>> diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
+>> index be201ca..00beddf 100644
+>> --- a/include/linux/atmel_serial.h
+>> +++ b/include/linux/atmel_serial.h
+>> @@ -125,5 +125,6 @@
+>>   #define ATMEL_US_IF		0x4c			/* IrDA Filter Register */
 >>
->>   	return 0;
+>>   #define ATMEL_US_NAME		0xf0			/* Ip Name */
+>> +#define ATMEL_US_VERSION	0xfc			/* Ip Version */
 >>
+>>   #endif
 >> --
 >> 1.8.2.2
 >>
