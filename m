@@ -1,115 +1,133 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 2/2] tty/serial: at91: add a fallback option to determine
- uart/usart property
-Date: Tue, 15 Oct 2013 11:19:18 +0200
-Message-ID: <525D0896.6020907@atmel.com>
-References: <a58fe8bc7fdd128a2f9cf60785f81ebde4c0c247.1381394411.git.nicolas.ferre@atmel.com> <64f8f1db6f888456be8ee410a7e9bb9851d070a5.1381394411.git.nicolas.ferre@atmel.com> <20131014135921.GG11420@ns203013.ovh.net>
+From: Angelo Butti <buttiangelo@gmail.com>
+Subject: Re: Pericom PCIe Serial board Support (12d8:7952/4/8) - Chip PI7C9X7952/4/8
+Date: Tue, 15 Oct 2013 15:48:55 +0200
+Message-ID: <CAO5Y4f0jtcZP2ScWxt2X7On3W1PzuvZnMG3+2uZ5puvrFbmMvA@mail.gmail.com>
+References: <CAO5Y4f2pszuzTYewAwzJ91BHeoNeSJsMynscyY7CjFTspeaYzg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:16156 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751219Ab3JOJTV (ORCPT
+Received: from mail-ve0-f169.google.com ([209.85.128.169]:41520 "EHLO
+	mail-ve0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759121Ab3JONs4 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Oct 2013 05:19:21 -0400
-In-Reply-To: <20131014135921.GG11420@ns203013.ovh.net>
+	Tue, 15 Oct 2013 09:48:56 -0400
+Received: by mail-ve0-f169.google.com with SMTP id oy12so691746veb.14
+        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2013 06:48:55 -0700 (PDT)
+In-Reply-To: <CAO5Y4f2pszuzTYewAwzJ91BHeoNeSJsMynscyY7CjFTspeaYzg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Josh Wu <josh.wu@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Ludovic Desroches <ludovic.desroches@atmel.com>, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 14/10/2013 15:59, Jean-Christophe PLAGNIOL-VILLARD :
-> On 10:43 Thu 10 Oct     , Nicolas Ferre wrote:
->> On older SoC, the "name" field is not filled in the register map.
->> Fix the way to figure out if the serial port is an uart or an usart for these
->> older products (with corresponding properties).
->>
->> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
->> ---
->>   drivers/tty/serial/atmel_serial.c | 19 ++++++++++++++++++-
->>   include/linux/atmel_serial.h      |  1 +
->>   2 files changed, 19 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->> index 6b0f75e..c7d99af 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -99,6 +99,7 @@ static void atmel_stop_rx(struct uart_port *port);
->>   #define UART_PUT_RTOR(port,v)	__raw_writel(v, (port)->membase + ATMEL_US_RTOR)
->>   #define UART_PUT_TTGR(port, v)	__raw_writel(v, (port)->membase + ATMEL_US_TTGR)
->>   #define UART_GET_IP_NAME(port)	__raw_readl((port)->membase + ATMEL_US_NAME)
->> +#define UART_GET_IP_VERSION(port) __raw_readl((port)->membase + ATMEL_US_VERSION)
->>
->>    /* PDC registers */
->>   #define UART_PUT_PTCR(port,v)	__raw_writel(v, (port)->membase + ATMEL_PDC_PTCR)
->> @@ -1503,6 +1504,7 @@ static void atmel_get_ip_name(struct uart_port *port)
->>   {
->>   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->>   	int name = UART_GET_IP_NAME(port);
->> +	u32 version;
->>   	int usart, uart;
->>   	/* usart and uart ascii */
->>   	usart = 0x55534152;
->> @@ -1517,7 +1519,22 @@ static void atmel_get_ip_name(struct uart_port *port)
->>   		dev_dbg(port->dev, "This is uart\n");
->>   		atmel_port->is_usart = false;
->>   	} else {
->> -		dev_err(port->dev, "Not supported ip name, set to uart\n");
->> +		/* fallback for older SoCs: use version field */
->> +		version = UART_GET_IP_VERSION(port);
->> +		switch (version) {
->> +		case 0x302:
->> +		case 0x10213:
->> +			dev_dbg(port->dev, "This version is usart\n");
->> +			atmel_port->is_usart = true;
->> +			break;
->> +		case 0x203:
->> +		case 0x10202:
->> +			dev_dbg(port->dev, "This version is uart\n");
->> +			atmel_port->is_usart = false;
->> +			break;
->> +		default:
->> +			dev_err(port->dev, "Not supported ip name nor version, set to uart\n");
+Hi all,
+I'm here again to try to solve and add support to Pericom serial devices.
+
+To solve is really simple, but I don't know if I make the correct
+procedure. The solution is change the clock value from 1.8432 to
+14.7456.
+To do this I add a new setup specific for pericom devices, and I add
+this 3 devices inside the Master list of serial port.
+
+Now, is possible add this to the standard linux kernel, so also the
+Pericom device will be ok ?
+
+Below the patch for the 3.10.11 kernel ....
+
+1311,1333d1310
+< static int pci_pericom_setup(struct serial_private *priv,
+<  const struct pciserial_board *board,
+<  struct uart_8250_port *port, int idx)
+< {
+< unsigned int bar, offset = board->first_offset, maxnr;
+<
+< bar = FL_GET_BASE(board->flags);
+< if (board->flags & FL_BASE_BARS)
+< bar += idx;
+< else
+< offset += idx * board->uart_offset;
+<
+< maxnr = (pci_resource_len(priv->dev, bar) - board->first_offset) >>
+< (board->reg_shift + 3);
+<
+< if (board->flags & FL_REGION_SZ_CAP && idx >= maxnr)
+< return 1;
+<
+< port->port.uartclk = 14745600;
+<
+< return setup_port(priv, port, bar, offset, board->reg_shift);
+< }
+<
+1850,1874d1826
+< /*
+< * Pericom
+< */
+< {
+< .vendor = 0x12d8,
+< .device = 0x7952,
+< .subvendor = PCI_ANY_ID,
+< .subdevice = PCI_ANY_ID,
+< .setup = pci_pericom_setup,
+< },
+< {
+< .vendor = 0x12d8,
+< .device = 0x7954,
+< .subvendor = PCI_ANY_ID,
+< .subdevice = PCI_ANY_ID,
+< .setup = pci_pericom_setup,
+< },
+< {
+< .vendor = 0x12d8,
+< .device = 0x7958,
+< .subvendor = PCI_ANY_ID,
+< .subdevice = PCI_ANY_ID,
+< .setup = pci_pericom_setup,
+< },
+<
+
+Regards,
+Angelo
+
+2013/6/26 Angelo Butti <buttiangelo@alice.it>:
+> Hi all,
+> my name is Angelo and I have a problem with some Pericom Serial boards.
+> This hardware is compatible to 16C550 but is not working good.
 >
-> it's not really an error a dev_warn is more oppropriate
-
-As we are already in -rc5 and that these fixes are critical for at91 
-platforms, I will not re-spin another patch just for this.
-
-Moreover, I have the feeling that if we end up in this case, it means 
-that we are in big troubles because the usart/uart included in the 
-product triggering this log is not known (I recall that newer products 
-do not have to hit these lines of code).
-
-With these 2 reasons, I prefer to keep my patch like it is.
-
-Greg, can you consider taking these two patches as regression fixes for 
-3.12 (with Tested-by tag from Thomas)?
-
-Thanks, bye,
-
->> +		}
->>   	}
->>   }
->>
->> diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
->> index be201ca..00beddf 100644
->> --- a/include/linux/atmel_serial.h
->> +++ b/include/linux/atmel_serial.h
->> @@ -125,5 +125,6 @@
->>   #define ATMEL_US_IF		0x4c			/* IrDA Filter Register */
->>
->>   #define ATMEL_US_NAME		0xf0			/* Ip Name */
->> +#define ATMEL_US_VERSION	0xfc			/* Ip Version */
->>
->>   #endif
->> --
->> 1.8.2.2
->>
+> Now I can workaround the problem, I understand it but I'm not able to make some
+> patch for the serial driver inside the linux kernel. So, now I want
+> try to explain the
+> problems and if you can adjust the driver also for this device will be
+> great; or if you can
+> explain me with some example how I can do it and send to you the patch .....
 >
+> Anyway, the problem is related to Pericom serial boards, pci-id:
+> 12d8:7952 (2 serials)
+> 12d8:7954 (4 serials)
+> 12d8:7958 (8 serials)
 >
-
-
--- 
-Nicolas Ferre
+> The first problem is related to the kind of the serial ports. This
+> hardware can be
+> 232-422-4852W-4854W mode, and must be set inside the PCI express
+> registers at the offset b4h.
+> For example if you have a 2 serial port 485-2W board, before use it
+> you must set that
+> register to 0xFF ( I make this with setpci command and all is ok)
+>
+> Te second problem, more critical for me, is the bps setting. The board
+> that I want use have
+> on board a 14.7456 Mhz, and there are a table inside datasheet with
+> the configuration example
+> and the formula to set proper bps settings. The problem is related to
+> the standard linux driver that use the clock equal to  1.8432 MHz.
+> So every time that I open the serial, this bps isn't correct. I must
+> adjust it writing inside the registers (after open) to fix the
+> problem.
+> Is possible add this kind of board inside the standard linux driver to
+> have a good bps setting ?
+>
+> En example, to set 115200bps:
+> Standard linux driver: DLL:0x1 DLH:0x0
+> Pericom formula: DLL:0x8 DLH:0x0
+>
+> (Ref. PI7C9X7952/4/8 (Datasheet))
+>
+> Thanks, best regards
+> Angelo
