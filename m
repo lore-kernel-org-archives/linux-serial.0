@@ -1,65 +1,42 @@
-From: Roel Kluin <roel.kluin@gmail.com>
-Subject: Re: [PATCH] In absence of braces, port and NULL are missed
-Date: Mon, 14 Oct 2013 23:21:15 +0200 (CEST)
-Message-ID: <alpine.DEB.2.02.1310142027370.11060@Z>
-References: <1381703376-31380-1-git-send-email-roel.kluin@gmail.com> <20131014125449.GB31708@e106331-lin.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/5] tty: serial: get rid of .set_wake()
+Date: Tue, 15 Oct 2013 09:19:29 +0200
+Message-ID: <1381821569-19343-1-git-send-email-linus.walleij@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f49.google.com ([74.125.83.49]:34683 "EHLO
-	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753884Ab3JNVVU (ORCPT
+Received: from mail-wg0-f48.google.com ([74.125.82.48]:62145 "EHLO
+	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751304Ab3JOHUF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Oct 2013 17:21:20 -0400
-In-Reply-To: <20131014125449.GB31708@e106331-lin.cambridge.arm.com>
+	Tue, 15 Oct 2013 03:20:05 -0400
+Received: by mail-wg0-f48.google.com with SMTP id b13so7131005wgh.27
+        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2013 00:20:03 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Roel Kluin <roel.kluin@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Tony Prisk <linux@prisktech.co.nz>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 
-Hi Mark,
+The .set_wake() vtable entry in struct uart_ops appear to have
+been unused since kernel 2.5 times. It has since been superceded
+by struct dev_pm_ops in struct device and this will likely never
+be resurrected, so delete this dead entry.
 
-On Mon, 14 Oct 2013, Mark Rutland wrote:
+More details in patch 5/5.
 
-> While this looks like a good fix, the commit message is a bit confusing.
+Linus Walleij (5):
+  serial: omap: delete .set_wake callback
+  serial: sa1100: delete .set_wake callback
+  serial: mpc52xx: remove reference to .set_wake()
+  serial: pch_uart: remove reference to .set_wake()
+  serial: core: delete .set_wake() callback
 
-I like your suggestion, however I feel the commit message fails to 
-appreciate the error path this patch addresses as well, so I adapted your 
-suggested commit message to the following:
+ Documentation/serial/driver       |  4 ----
+ drivers/tty/serial/mpc52xx_uart.c |  1 -
+ drivers/tty/serial/omap-serial.c  | 10 ----------
+ drivers/tty/serial/pch_uart.c     |  1 -
+ drivers/tty/serial/sa1100.c       |  5 ++++-
+ include/linux/serial_core.h       |  1 -
+ 6 files changed, 4 insertions(+), 18 deletions(-)
 
----
-[PATCH] serial: vt8500: add missing braces
-
-    Due to missing braces on an if statement, in presence of a device_node
-    a port was always assigned -1, regardless of any alias entries in the 
-    device tree. Conversely, if device_node was NULL, an unitialized port
-    ended up being used.
-
-    This patch adds the missing braces, fixing the issues.
-
-    Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
-    Acked-by: Tony Prisk <linux@prisktech.co.nz>
-
-diff --git a/drivers/tty/serial/vt8500_serial.c 
-b/drivers/tty/serial/vt8500_serial.c
-index 93b697a..4cf71c0 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -561,12 +561,13 @@ static int vt8500_serial_probe(struct 
-platform_device *pdev)
- 	if (!mmres || !irqres)
- 		return -ENODEV;
- 
--	if (np)
-+	if (np) {
- 		port = of_alias_get_id(np, "serial");
- 		if (port >= VT8500_MAX_PORTS)
- 			port = -1;
--	else
-+        } else {
- 		port = -1;
-+        }
- 
- 	if (port < 0) {
- 		/* calculate the port id */
+-- 
+1.8.3.1
 
