@@ -1,117 +1,96 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 03/10] tty: xuartps: Implement BREAK detection, add SYSRQ support
-Date: Thu, 17 Oct 2013 14:08:06 -0700
-Message-ID: <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 05/10] tty: xuartps: support 64 byte FIFO size
+Date: Thu, 17 Oct 2013 14:08:08 -0700
+Message-ID: <1382044093-29905-6-git-send-email-soren.brinkmann@xilinx.com>
 References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vlad Lungu <vlad.lungu@windriver.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Suneel <suneelg@xilinx.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Vlad Lungu <vlad.lungu@windriver.com>
+From: Suneel <suneelg@xilinx.com>
 
-The Cadence UART does not do break detection, even if the
-datasheet says it does. This patch adds break detection in
-software (tested in 8N1 mode only) and enables SYSRQ,
-allowing for Break-g to enter KDB and all the other goodies.
+Changes to use the 64 byte FIFO depth and fix the issue
+by clearing the txempty interrupt in isr status for tx
+after filling in data in start_tx function
 
-Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
+Signed-off-by: Suneel Garapati <suneelg@xilinx.com>
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
-I ported this patch to 3.12 and fixed some style issues
+I fixed some style issues of the original patch.
 ---
- drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 49 insertions(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 8c0745951605..5d5557af4d22 100644
+index 62259f37ddda..6e8ec6e9d5a2 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -11,13 +11,17 @@
-  *
-  */
+@@ -33,12 +33,22 @@
+ #define XUARTPS_MAJOR		0	/* use dynamic node allocation */
+ #define XUARTPS_MINOR		0	/* works best with devtmpfs */
+ #define XUARTPS_NR_PORTS	2
+-#define XUARTPS_FIFO_SIZE	16	/* FIFO size */
++#define XUARTPS_FIFO_SIZE	64	/* FIFO size */
+ #define XUARTPS_REGISTER_SPACE	0xFFF
  
-+#if defined(CONFIG_SERIAL_XILINX_PS_UART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#define SUPPORT_SYSRQ
-+#endif
+ #define xuartps_readl(offset)		ioread32(port->membase + offset)
+ #define xuartps_writel(val, offset)	iowrite32(val, port->membase + offset)
+ 
++/* Rx Trigger level */
++static int rx_trigger_level = 56;
++module_param(rx_trigger_level, uint, S_IRUGO);
++MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
 +
- #include <linux/platform_device.h>
- #include <linux/serial.h>
-+#include <linux/console.h>
- #include <linux/serial_core.h>
- #include <linux/slab.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
--#include <linux/console.h>
- #include <linux/clk.h>
- #include <linux/irq.h>
- #include <linux/io.h>
-@@ -128,6 +132,9 @@
- #define XUARTPS_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
- #define XUARTPS_IXR_MASK	0x00001FFF /* Valid bit mask */
- 
-+/* Goes in read_status_mask for break detection as the HW doesn't do it*/
-+#define XUARTPS_IXR_BRK		0x80000000
++/* Rx Timeout */
++static int rx_timeout = 10;
++module_param(rx_timeout, uint, S_IRUGO);
++MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
 +
- /** Channel Status Register
+ /********************************Register Map********************************/
+ /** UART
   *
-  * The channel status register (CSR) is provided to enable the control logic
-@@ -171,6 +178,23 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
- 	 */
- 	isrstatus = xuartps_readl(XUARTPS_ISR_OFFSET);
+@@ -394,7 +404,7 @@ static void xuartps_start_tx(struct uart_port *port)
+ 		port->state->xmit.tail = (port->state->xmit.tail + 1) &
+ 					(UART_XMIT_SIZE - 1);
+ 	}
+-
++	xuartps_writel(XUARTPS_IXR_TXEMPTY, XUARTPS_ISR_OFFSET);
+ 	/* Enable the TX Empty interrupt */
+ 	xuartps_writel(XUARTPS_IXR_TXEMPTY, XUARTPS_IER_OFFSET);
  
+@@ -528,7 +538,7 @@ static void xuartps_set_termios(struct uart_port *port,
+ 			| (XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
+ 			XUARTPS_CR_OFFSET);
+ 
+-	xuartps_writel(10, XUARTPS_RXTOUT_OFFSET);
++	xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
+ 
+ 	port->read_status_mask = XUARTPS_IXR_TXEMPTY | XUARTPS_IXR_RXTRIG |
+ 			XUARTPS_IXR_OVERRUN | XUARTPS_IXR_TOUT;
+@@ -631,11 +641,17 @@ static int xuartps_startup(struct uart_port *port)
+ 		| XUARTPS_MR_PARITY_NONE | XUARTPS_MR_CHARLEN_8_BIT,
+ 		 XUARTPS_MR_OFFSET);
+ 
+-	/* Set the RX FIFO Trigger level to 14 assuming FIFO size as 16 */
+-	xuartps_writel(14, XUARTPS_RXWM_OFFSET);
 +	/*
-+	 * There is no hardware break detection, so we interpret framing
-+	 * error with all-zeros data as a break sequence. Most of the time,
-+	 * there's another non-zero byte at the end of the sequence.
++	 * Set the RX FIFO Trigger level to use most of the FIFO, but it
++	 * can be tuned with a module parameter
 +	 */
-+
-+	if (isrstatus & XUARTPS_IXR_FRAMING) {
-+		while (!(xuartps_readl(XUARTPS_SR_OFFSET) &
-+					XUARTPS_SR_RXEMPTY)) {
-+			if (!xuartps_readl(XUARTPS_FIFO_OFFSET)) {
-+				port->read_status_mask |= XUARTPS_IXR_BRK;
-+				isrstatus &= ~XUARTPS_IXR_FRAMING;
-+			}
-+		}
-+		xuartps_writel(XUARTPS_IXR_FRAMING, XUARTPS_ISR_OFFSET);
-+	}
-+
- 	/* drop byte with parity error if IGNPAR specified */
- 	if (isrstatus & port->ignore_status_mask & XUARTPS_IXR_PARITY)
- 		isrstatus &= ~(XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT);
-@@ -184,6 +208,30 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
- 		while ((xuartps_readl(XUARTPS_SR_OFFSET) &
- 			XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
- 			data = xuartps_readl(XUARTPS_FIFO_OFFSET);
-+
-+			/* Non-NULL byte after BREAK is garbage (99%) */
-+			if (data && (port->read_status_mask &
-+						XUARTPS_IXR_BRK)) {
-+				port->read_status_mask &= ~XUARTPS_IXR_BRK;
-+				port->icount.brk++;
-+				if (uart_handle_break(port))
-+					continue;
-+			}
-+
-+			/*
-+			 * uart_handle_sysrq_char() doesn't work if
-+			 * spinlocked, for some reason
-+			 */
-+			 if (port->sysrq) {
-+				spin_unlock(&port->lock);
-+				if (uart_handle_sysrq_char(port,
-+							(unsigned char)data)) {
-+					spin_lock(&port->lock);
-+					continue;
-+				}
-+				spin_lock(&port->lock);
-+			}
-+
- 			port->icount.rx++;
++	xuartps_writel(rx_trigger_level, XUARTPS_RXWM_OFFSET);
  
- 			if (isrstatus & XUARTPS_IXR_PARITY) {
+-	/* Receive Timeout register is enabled with value of 10 */
+-	xuartps_writel(10, XUARTPS_RXTOUT_OFFSET);
++	/*
++	 * Receive Timeout register is enabled but it
++	 * can be tuned with a module parameter
++	 */
++	xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
+ 
+ 	/* Clear out any pending interrupts before enabling them */
+ 	xuartps_writel(xuartps_readl(XUARTPS_ISR_OFFSET), XUARTPS_ISR_OFFSET);
 -- 
 1.8.4.1
