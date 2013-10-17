@@ -1,220 +1,117 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 07/10] tty: xuartps: Updating set_baud_rate()
-Date: Thu, 17 Oct 2013 14:08:10 -0700
-Message-ID: <1382044093-29905-8-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 03/10] tty: xuartps: Implement BREAK detection, add SYSRQ support
+Date: Thu, 17 Oct 2013 14:08:06 -0700
+Message-ID: <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
 References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vlad Lungu <vlad.lungu@windriver.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-The original algorithm to find the best baud rate dividers does not necessarily
-find the best set of dividers. And in the worst case may even write illegal
-values to the hardware.
-The new function should make better use of the hardware capabilities and be able
-to provide valid settings for a wider range of baud rates and also input clocks.
+From: Vlad Lungu <vlad.lungu@windriver.com>
 
+The Cadence UART does not do break detection, even if the
+datasheet says it does. This patch adds break detection in
+software (tested in 8N1 mode only) and enables SYSRQ,
+allowing for Break-g to enter KDB and all the other goodies.
+
+Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 136 +++++++++++++++++++++++++------------
- 1 file changed, 93 insertions(+), 43 deletions(-)
+I ported this patch to 3.12 and fixed some style issues
+---
+ drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index fdc739b55eb3..95e12c216984 100644
+index 8c0745951605..5d5557af4d22 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -156,6 +156,11 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
- #define XUARTPS_SR_TXFULL	0x00000010 /* TX FIFO full */
- #define XUARTPS_SR_RXTRIG	0x00000001 /* Rx Trigger */
+@@ -11,13 +11,17 @@
+  *
+  */
  
-+/* baud dividers min/max values */
-+#define XUARTPS_BDIV_MIN	4
-+#define XUARTPS_BDIV_MAX	255
-+#define XUARTPS_CD_MAX		65535
++#if defined(CONFIG_SERIAL_XILINX_PS_UART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
 +
- /**
-  * struct xuartps - device data
-  * @refclk	Reference clock
-@@ -305,59 +310,94 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
- }
+ #include <linux/platform_device.h>
+ #include <linux/serial.h>
++#include <linux/console.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+-#include <linux/console.h>
+ #include <linux/clk.h>
+ #include <linux/irq.h>
+ #include <linux/io.h>
+@@ -128,6 +132,9 @@
+ #define XUARTPS_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
+ #define XUARTPS_IXR_MASK	0x00001FFF /* Valid bit mask */
  
- /**
-- * xuartps_set_baud_rate - Calculate and set the baud rate
-- * @port: Handle to the uart port structure
-- * @baud: Baud rate to set
-- *
-+ * xuartps_calc_baud_divs - Calculate baud rate divisors
-+ * @clk: UART module input clock
-+ * @baud: Desired baud rate
-+ * @rbdiv: BDIV value (return value)
-+ * @rcd: CD value (return value)
-+ * @div8: Value for clk_sel bit in mod (return value)
-  * Returns baud rate, requested baud when possible, or actual baud when there
-- *	was too much error
-- **/
--static unsigned int xuartps_set_baud_rate(struct uart_port *port,
--						unsigned int baud)
-+ *	was too much error, zero if no valid divisors are found.
-+ *
-+ * Formula to obtain baud rate is
-+ *	baud_tx/rx rate = clk/CD * (BDIV + 1)
-+ *	input_clk = (Uart User Defined Clock or Apb Clock)
-+ *		depends on UCLKEN in MR Reg
-+ *	clk = input_clk or input_clk/8;
-+ *		depends on CLKS in MR reg
-+ *	CD and BDIV depends on values in
-+ *			baud rate generate register
-+ *			baud rate clock divisor register
-+ */
-+static unsigned int xuartps_calc_baud_divs(unsigned int clk, unsigned int baud,
-+		u32 *rbdiv, u32 *rcd, int *div8)
- {
--	unsigned int sel_clk;
--	unsigned int calc_baud = 0;
--	unsigned int brgr_val, brdiv_val;
-+	u32 cd, bdiv;
-+	unsigned int calc_baud;
-+	unsigned int bestbaud = 0;
- 	unsigned int bauderror;
-+	unsigned int besterror = ~0;
- 
--	/* Formula to obtain baud rate is
--	 *	baud_tx/rx rate = sel_clk/CD * (BDIV + 1)
--	 *	input_clk = (Uart User Defined Clock or Apb Clock)
--	 *		depends on UCLKEN in MR Reg
--	 *	sel_clk = input_clk or input_clk/8;
--	 *		depends on CLKS in MR reg
--	 *	CD and BDIV depends on values in
--	 *			baud rate generate register
--	 *			baud rate clock divisor register
--	 */
--	sel_clk = port->uartclk;
--	if (xuartps_readl(XUARTPS_MR_OFFSET) & XUARTPS_MR_CLKSEL)
--		sel_clk = sel_clk / 8;
--
--	/* Find the best values for baud generation */
--	for (brdiv_val = 4; brdiv_val < 255; brdiv_val++) {
-+	if (baud < clk / ((XUARTPS_BDIV_MAX + 1) * XUARTPS_CD_MAX)) {
-+		*div8 = 1;
-+		clk /= 8;
-+	} else {
-+		*div8 = 0;
-+	}
- 
--		brgr_val = sel_clk / (baud * (brdiv_val + 1));
--		if (brgr_val < 2 || brgr_val > 65535)
-+	for (bdiv = XUARTPS_BDIV_MIN; bdiv <= XUARTPS_BDIV_MAX; bdiv++) {
-+		cd = DIV_ROUND_CLOSEST(clk, baud * (bdiv + 1));
-+		if (cd < 1 || cd > XUARTPS_CD_MAX)
- 			continue;
- 
--		calc_baud = sel_clk / (brgr_val * (brdiv_val + 1));
-+		calc_baud = clk / (cd * (bdiv + 1));
- 
- 		if (baud > calc_baud)
- 			bauderror = baud - calc_baud;
- 		else
- 			bauderror = calc_baud - baud;
- 
--		/* use the values when percent error is acceptable */
--		if (((bauderror * 100) / baud) < 3) {
--			calc_baud = baud;
--			break;
-+		if (besterror > bauderror) {
-+			*rbdiv = bdiv;
-+			*rcd = cd;
-+			bestbaud = calc_baud;
-+			besterror = bauderror;
- 		}
- 	}
-+	/* use the values when percent error is acceptable */
-+	if (((besterror * 100) / baud) < 3)
-+		bestbaud = baud;
++/* Goes in read_status_mask for break detection as the HW doesn't do it*/
++#define XUARTPS_IXR_BRK		0x80000000
 +
-+	return bestbaud;
-+}
+ /** Channel Status Register
+  *
+  * The channel status register (CSR) is provided to enable the control logic
+@@ -171,6 +178,23 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+ 	 */
+ 	isrstatus = xuartps_readl(XUARTPS_ISR_OFFSET);
  
--	/* Set the values for the new baud rate */
--	xuartps_writel(brgr_val, XUARTPS_BAUDGEN_OFFSET);
--	xuartps_writel(brdiv_val, XUARTPS_BAUDDIV_OFFSET);
-+/**
-+ * xuartps_set_baud_rate - Calculate and set the baud rate
-+ * @port: Handle to the uart port structure
-+ * @baud: Baud rate to set
-+ * Returns baud rate, requested baud when possible, or actual baud when there
-+ *	   was too much error, zero if no valid divisors are found.
-+ */
-+static unsigned int xuartps_set_baud_rate(struct uart_port *port,
-+		unsigned int baud)
-+{
-+	unsigned int calc_baud;
-+	u32 cd, bdiv;
-+	u32 mreg;
-+	int div8;
-+
-+	calc_baud = xuartps_calc_baud_divs(port->uartclk, baud, &bdiv, &cd,
-+			&div8);
-+
-+	/* Write new divisors to hardware */
-+	mreg = xuartps_readl(XUARTPS_MR_OFFSET);
-+	if (div8)
-+		mreg |= XUARTPS_MR_CLKSEL;
-+	else
-+		mreg &= ~XUARTPS_MR_CLKSEL;
-+	xuartps_writel(mreg, XUARTPS_MR_OFFSET);
-+	xuartps_writel(cd, XUARTPS_BAUDGEN_OFFSET);
-+	xuartps_writel(bdiv, XUARTPS_BAUDDIV_OFFSET);
- 
- 	return calc_baud;
- }
-@@ -495,7 +535,7 @@ static void xuartps_set_termios(struct uart_port *port,
- 				struct ktermios *termios, struct ktermios *old)
- {
- 	unsigned int cval = 0;
--	unsigned int baud;
-+	unsigned int baud, minbaud, maxbaud;
- 	unsigned long flags;
- 	unsigned int ctrl_reg, mode_reg;
- 
-@@ -512,8 +552,14 @@ static void xuartps_set_termios(struct uart_port *port,
- 			(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS),
- 			XUARTPS_CR_OFFSET);
- 
--	/* Min baud rate = 6bps and Max Baud Rate is 10Mbps for 100Mhz clk */
--	baud = uart_get_baud_rate(port, termios, old, 0, 10000000);
 +	/*
-+	 * Min baud rate = 6bps and Max Baud Rate is 10Mbps for 100Mhz clk
-+	 * min and max baud should be calculated here based on port->uartclk.
-+	 * this way we get a valid baud and can safely call set_baud()
++	 * There is no hardware break detection, so we interpret framing
++	 * error with all-zeros data as a break sequence. Most of the time,
++	 * there's another non-zero byte at the end of the sequence.
 +	 */
-+	minbaud = port->uartclk / ((XUARTPS_BDIV_MAX + 1) * XUARTPS_CD_MAX * 8);
-+	maxbaud = port->uartclk / (XUARTPS_BDIV_MIN + 1);
-+	baud = uart_get_baud_rate(port, termios, old, minbaud, maxbaud);
- 	baud = xuartps_set_baud_rate(port, baud);
- 	if (tty_termios_baud_rate(termios))
- 		tty_termios_encode_baud_rate(termios, baud, baud);
-@@ -589,13 +635,17 @@ static void xuartps_set_termios(struct uart_port *port,
- 				cval |= XUARTPS_MR_PARITY_MARK;
- 			else
- 				cval |= XUARTPS_MR_PARITY_SPACE;
--		} else if (termios->c_cflag & PARODD)
-+		} else {
-+			if (termios->c_cflag & PARODD)
- 				cval |= XUARTPS_MR_PARITY_ODD;
- 			else
- 				cval |= XUARTPS_MR_PARITY_EVEN;
--	} else
++
++	if (isrstatus & XUARTPS_IXR_FRAMING) {
++		while (!(xuartps_readl(XUARTPS_SR_OFFSET) &
++					XUARTPS_SR_RXEMPTY)) {
++			if (!xuartps_readl(XUARTPS_FIFO_OFFSET)) {
++				port->read_status_mask |= XUARTPS_IXR_BRK;
++				isrstatus &= ~XUARTPS_IXR_FRAMING;
++			}
 +		}
-+	} else {
- 		cval |= XUARTPS_MR_PARITY_NONE;
--	xuartps_writel(cval , XUARTPS_MR_OFFSET);
++		xuartps_writel(XUARTPS_IXR_FRAMING, XUARTPS_ISR_OFFSET);
 +	}
-+	cval |= mode_reg & 1;
-+	xuartps_writel(cval, XUARTPS_MR_OFFSET);
++
+ 	/* drop byte with parity error if IGNPAR specified */
+ 	if (isrstatus & port->ignore_status_mask & XUARTPS_IXR_PARITY)
+ 		isrstatus &= ~(XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT);
+@@ -184,6 +208,30 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+ 		while ((xuartps_readl(XUARTPS_SR_OFFSET) &
+ 			XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
+ 			data = xuartps_readl(XUARTPS_FIFO_OFFSET);
++
++			/* Non-NULL byte after BREAK is garbage (99%) */
++			if (data && (port->read_status_mask &
++						XUARTPS_IXR_BRK)) {
++				port->read_status_mask &= ~XUARTPS_IXR_BRK;
++				port->icount.brk++;
++				if (uart_handle_break(port))
++					continue;
++			}
++
++			/*
++			 * uart_handle_sysrq_char() doesn't work if
++			 * spinlocked, for some reason
++			 */
++			 if (port->sysrq) {
++				spin_unlock(&port->lock);
++				if (uart_handle_sysrq_char(port,
++							(unsigned char)data)) {
++					spin_lock(&port->lock);
++					continue;
++				}
++				spin_lock(&port->lock);
++			}
++
+ 			port->icount.rx++;
  
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
+ 			if (isrstatus & XUARTPS_IXR_PARITY) {
 -- 
 1.8.4.1
