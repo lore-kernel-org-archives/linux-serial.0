@@ -1,141 +1,120 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PATCH] TTY/Serial fixes for 3.12-rc4
-Date: Thu, 17 Oct 2013 14:12:36 -0700
-Message-ID: <20131017211236.GA6155@kroah.com>
-References: <20131005173403.GA4811@kroah.com>
- <CA+55aFzEtnOOB4yPbWg4tmvWTPjQL1_YsZks6wgpGimaQdOEtA@mail.gmail.com>
- <5250A74E.4070805@hurleysoftware.com>
- <5250C6CD.1040803@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5250C6CD.1040803@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Mikael Pettersson <mikpelinux@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH 04/10] tty: xuartps: Add polled mode support for xuartps
+Date: Thu, 17 Oct 2013 14:08:07 -0700
+Message-ID: <1382044093-29905-5-git-send-email-soren.brinkmann@xilinx.com>
+References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:55314 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753298Ab3JQVQj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Oct 2013 17:16:39 -0400
+In-Reply-To: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vlad Lungu <vlad.lungu@windriver.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 
-On Sat, Oct 05, 2013 at 10:11:25PM -0400, Peter Hurley wrote:
-> On 10/05/2013 07:57 PM, Peter Hurley wrote:
-> >On 10/05/2013 02:53 PM, Linus Torvalds wrote:
-> >>On Sat, Oct 5, 2013 at 10:34 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >>>
-> >>>One fixes the reported regression in the n_tty code that a number of
-> >>>people found recently
-> >>
-> >>That one looks broken.
-> >>
-> >>Well, it looks like it might "work", but do so by hiding the issue for
-> >>one case, while leaving it in the more general case.
-> >>
-> >>Why does it do that
-> >>
-> >>     up_read(&tty->termios_rwsem);
-> >>     tty_flush_to_ldisc(tty);
-> >>     down_read(&tty->termios_rwsem);
-> >>
-> >>only if TTY_OTHER_CLOSED is set? If flushing the ldisc can generate
-> >>more data, then we should do it *unconditionally* when we see that we
-> >>currently have no data to read.
-> >>
-> >>As it is, it looks like the patch fixes the TTY_OTHER_CLOSED case
-> >>("read all pending data before returning -EIO"), but it leaves the
-> >>same broken case for the O_NONBLOCK case and for a hung up tty.
-> >>
-> >>The O_NONBLOCK case is presumably just a performance problem (the data
-> >>will come at _some_ point later), but it just looks bad in general.
-> >>And the tty_hung_up_p() looks actiely buggy, with the same bug as the
-> >>TTY_OTHER_CLOSED case that the patch tried to fix.
-> >>
-> >>Hmm? Am I missing something?
-> 
-> Apologies, I realized I didn't address the O_NONBLOCK case.
-> 
-> My reasoning for excluding O_NONBLOCK is that tty_flush_to_ldisc()
-> _waits_ for flush_to_ldisc() to complete. In the worst (admittedly
-> contrived) case, this could be unbounded running time: a sufficiently
-> fast source could keep flush_to_ldisc() running forever by writing
-> 4K chars and then 4k backspaces, ad infinitum.
-> 
-> 
-> >When a slave pty is closed, it's not hung up specifically so the
-> >master pty can be read.
-> >
-> >The same is not true for a regular tty; when a regular tty is hung up,
-> >all the pending data is vaporized (ie., what the tty layer refers
-> >to as 'flushed'). So checking for more data when tty_hung_up_p() is
-> >true is pointless.
-> >
-> >The distinction is clearer when you consider that even after the slave
-> >pty is closed, the master pty can still be read() even if it wasn't
-> >waiting in n_tty_read() at the time; this is not true of a regular tty, which
-> >cannot be read() after a hangup [tty_hung_up_p() tests if the
-> >file_operations pointer is set to non-operational read/write/ioctl functions].
-> >
-> >The patch fixes a race condition which is peculiar to ptys only.
-> >
-> >>The code is a bit confusing in *other* ways too: if you look later, it
-> >>does this:
-> >>
-> >>     n_tty_set_room(tty);
-> >>
-> >>which is documented to have to happen inside the termios_rwsem.
-> >>HOWEVER, what does that do? It actually does an _asynchronous_
-> >>queue_work() of &tty->port->buf.work, in case there is now more room,
-> >>and the previous one was blocked. And guess what that workqueue is all
-> >>about? Right: it's flush_to_ldisc() - which is the work that
-> >>tty_flush_to_ldisc() is trying to flush. So we're actually basically
-> >>making sure we've flush the previous pending work.
-> >
-> >The flush_to_ldisc() worker no longer re-schedules itself.
-> >
-> >The flush_to_ldisc() worker is scheduled when one of two events
-> >happen; 1) the driver has just written received data to the tty
-> >buffers, or 2) space has just become available in the N_TTY line
-> >discipline's read buffer when it was previously full.
-> >
-> >The flush_to_ldisc() worker continues to run as long as space
-> >is available in the line discipline's read buffer or until the
-> >tty buffers are empty.
-> >
-> >Concurrently with the flush_to_ldisc() worker, a reader may have
-> >an empty read buffer; the flush_to_ldisc() worker may or may not
-> >generate more input to be read.
-> >
-> >Generally when a reader has an empty read buffer, it will sleep unless
-> >one of the other conditions is met (TTY_OTHER_CLOSED, tty_hung_up_p,
-> >non-blocking, etc).
-> >
-> >Before sleeping, the reader will (re-)schedule the flush_to_ldisc()
-> >worker in case it read some input on the previous loop iteration
-> >(thus creating space in the read buffer when there was none previously).
-> >
-> >(That doesn't preclude that flush_to_ldisc() may already be running
-> >but isn't processing as fast as the reader is reading.)
-> >
-> >
-> >>So even the tty_flush_to_ldisc(tty) that gets done in that patch is
-> >>not necessarily sufficient, because the work might not have been
-> >>scheduled because the flip buffer used to be full. Then flushing the
-> >>work won't do anything, even though there is actually more data. Now,
-> >>that is a very unlikely situation (I think it requires two concurrent
-> >>readers), but it looks like it might be real.
-> >
-> >I don't think this condition is possible for a single reader (because
-> >the read condition will be satisfied and the reader will return).
-> >Multiple concurrent readers are excluded by the atomic_read_lock mutex
-> >at the the top of n_tty_read().
-> 
-> However, the atomic_read_lock exclusion needs to cover the
-> unconditional n_tty_set_room() when leaving n_tty_read() and
-> it doesn't. Thus, the departing reader fails to ensure the subsequent
-> reader has a running flush_to_ldisc() worker.
-> 
-> Patch forthcoming.
+From: Vlad Lungu <vlad.lungu@windriver.com>
 
-Did I miss this patch, or did it not come forth?
+This allows KDB/KGDB to run.
 
-thanks,
+Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+This is squashed from these original patches:
+	tty: xuartps: Add polled mode support for xuartps
 
-greg k-h
+	This allows KDB/KGDB to run.
+	There is a bug somewhere that blocks KDB when paging;
+	set the LINES environment variable to a big value and
+	scroll in your terminal.
+
+	Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
+
+and
+
+	tty: xuartps: Fix poll read
+
+	This fixes the KDB paging issue.
+
+	Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
+
+Additionally I fixed a few style issues.
+---
+ drivers/tty/serial/xilinx_uartps.c | 52 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 5d5557af4d22..62259f37ddda 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -775,6 +775,54 @@ static void xuartps_enable_ms(struct uart_port *port)
+ 	/* N/A */
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int xuartps_poll_get_char(struct uart_port *port)
++{
++	u32 imr;
++	int c;
++
++	/* Disable all interrupts */
++	imr = xuartps_readl(XUARTPS_IMR_OFFSET);
++	xuartps_writel(imr, XUARTPS_IDR_OFFSET);
++
++	/* Check if FIFO is empty */
++	if (xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_RXEMPTY)
++		c = NO_POLL_CHAR;
++	else /* Read a character */
++		c = (unsigned char) xuartps_readl(XUARTPS_FIFO_OFFSET);
++
++	/* Enable interrupts */
++	xuartps_writel(imr, XUARTPS_IER_OFFSET);
++
++	return c;
++}
++
++static void xuartps_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	u32 imr;
++
++	/* Disable all interrupts */
++	imr = xuartps_readl(XUARTPS_IMR_OFFSET);
++	xuartps_writel(imr, XUARTPS_IDR_OFFSET);
++
++	/* Wait until FIFO is empty */
++	while (!(xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_TXEMPTY))
++		cpu_relax();
++
++	/* Write a character */
++	xuartps_writel(c, XUARTPS_FIFO_OFFSET);
++
++	/* Wait until FIFO is empty */
++	while (!(xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_TXEMPTY))
++		cpu_relax();
++
++	/* Enable interrupts */
++	xuartps_writel(imr, XUARTPS_IER_OFFSET);
++
++	return;
++}
++#endif
++
+ /** The UART operations structure
+  */
+ static struct uart_ops xuartps_ops = {
+@@ -807,6 +855,10 @@ static struct uart_ops xuartps_ops = {
+ 	.config_port	= xuartps_config_port,	/* Configure when driver
+ 						 * adds a xuartps port
+ 						 */
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= xuartps_poll_get_char,
++	.poll_put_char	= xuartps_poll_put_char,
++#endif
+ };
+ 
+ static struct uart_port xuartps_port[2];
+-- 
+1.8.4.1
+
