@@ -1,56 +1,50 @@
-From: Randy Witt <rewitt@declaratino.com>
-Subject: [PATCH] serial_core: Don't re-initialize a previously initialized spinlock.
-Date: Thu, 17 Oct 2013 16:56:47 -0400
-Message-ID: <1382043407-2699-2-git-send-email-rewitt@declaratino.com>
-References: <1382043407-2699-1-git-send-email-rewitt@declaratino.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from p3plsmtpa08-09.prod.phx3.secureserver.net ([173.201.193.110]:47613
-	"EHLO p3plsmtpa08-09.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1762555Ab3JQVDk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Oct 2013 17:03:40 -0400
-In-Reply-To: <1382043407-2699-1-git-send-email-rewitt@declaratino.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH 00/10] tty: xuartps: Update
+Date: Thu, 17 Oct 2013 14:08:03 -0700
+Message-ID: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: Randy Witt <rewitt@declaratino.com>
 
-The uart_set_options() code unconditionally initalizes the spinlock
-on the port. This can cause a deadlock in some situations.
+This is a series of patches to update the xuartps driver. Most of these
+are contributions to our vendor tree that I ported on top of the curren=
+t
+mainline tree.
 
-One instance that exposed the problem, was when writing to
-/sys/module/kgdboc/parameters/kgdboc to use ttyS0 when the console
-is already running on ttyS0. If the spinlock is re-initialized
-while the lock is held due to output to the console, there
-is a deadlock.
+The highlights are:
+ - support magic-sysrq and kgdb by Vlad
+ - a fix for a deadlock condition by Lars
+ - support for suspend/resume
+ - dynamic adjustment on input clock changes
 
-Assume the spinlock is initialized if the port is a console.
+	S=C3=B6ren
 
-Signed-off-by: Randy Witt <rewitt@declaratino.com>
----
- drivers/tty/serial/serial_core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Lars-Peter Clausen (1):
+  tty: xuartps: Force enable the UART in xuartps_console_write
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 28cdd28..0a2d277 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1830,9 +1830,13 @@ uart_set_options(struct uart_port *port, struct console *co,
- 	/*
- 	 * Ensure that the serial console lock is initialised
- 	 * early.
-+	 * If this port is a console, then the spinlock is already
-+	 * initialised.
- 	 */
--	spin_lock_init(&port->lock);
--	lockdep_set_class(&port->lock, &port_lock_key);
-+	if (!(uart_console(port) && (port->cons->flags & CON_ENABLED))) {
-+		spin_lock_init(&port->lock);
-+		lockdep_set_class(&port->lock, &port_lock_key);
-+	}
- 
- 	memset(&termios, 0, sizeof(struct ktermios));
- 
--- 
-1.8.3.1
+Soren Brinkmann (6):
+  tty: xuartps: Use devm_clk_get()
+  tty: xuartps: Use devm_kzalloc
+  tty: xuartps: Updating set_baud_rate()
+  tty: xuartps: Dynamically adjust to input frequency changes
+  tty: xuartps: Implement suspend/resume callbacks
+  tty: xuartps: Update copyright information
 
+Suneel (1):
+  tty: xuartps: support 64 byte FIFO size
+
+Vlad Lungu (2):
+  tty: xuartps: Implement BREAK detection, add SYSRQ support
+  tty: xuartps: Add polled mode support for xuartps
+
+ drivers/tty/serial/xilinx_uartps.c | 543 +++++++++++++++++++++++++++++=
++++-----
+ 1 file changed, 469 insertions(+), 74 deletions(-)
+
+--=20
+1.8.4.1
