@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 02/10] tty: xuartps: Use devm_kzalloc
-Date: Thu, 17 Oct 2013 14:08:05 -0700
-Message-ID: <1382044093-29905-3-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 09/10] tty: xuartps: Implement suspend/resume callbacks
+Date: Thu, 17 Oct 2013 14:08:12 -0700
+Message-ID: <1382044093-29905-10-git-send-email-soren.brinkmann@xilinx.com>
 References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com>
@@ -10,67 +10,145 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use the device managed interface for memory allocation, simplifying
-error paths.
+Implement suspend and resume callbacks in order to support system
+suspend/hibernation.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 114 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 114 insertions(+)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 103ba8826d06..8c0745951605 100644
+index 82195040e906..9ecd8ea4f3ae 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -949,27 +949,26 @@ static int xuartps_probe(struct platform_device *pdev)
- 	struct resource *res, *res2;
- 	struct xuartps *xuartps_data;
+@@ -1198,6 +1198,119 @@ console_initcall(xuartps_console_init);
  
--	xuartps_data = kzalloc(sizeof(*xuartps_data), GFP_KERNEL);
-+	xuartps_data = devm_kzalloc(&pdev->dev, sizeof(*xuartps_data),
-+			GFP_KERNEL);
- 	if (!xuartps_data)
- 		return -ENOMEM;
+ #endif /* CONFIG_SERIAL_XILINX_PS_UART_CONSOLE */
  
- 	xuartps_data->aperclk = devm_clk_get(&pdev->dev, "aper_clk");
- 	if (IS_ERR(xuartps_data->aperclk)) {
- 		dev_err(&pdev->dev, "aper_clk clock not found.\n");
--		rc = PTR_ERR(xuartps_data->aperclk);
--		goto err_out_free;
-+		return PTR_ERR(xuartps_data->aperclk);
- 	}
- 	xuartps_data->refclk = devm_clk_get(&pdev->dev, "ref_clk");
- 	if (IS_ERR(xuartps_data->refclk)) {
- 		dev_err(&pdev->dev, "ref_clk clock not found.\n");
--		rc = PTR_ERR(xuartps_data->refclk);
--		goto err_out_free;
-+		return PTR_ERR(xuartps_data->refclk);
- 	}
- 
- 	rc = clk_prepare_enable(xuartps_data->aperclk);
- 	if (rc) {
- 		dev_err(&pdev->dev, "Unable to enable APER clock.\n");
--		goto err_out_free;
-+		return rc;
- 	}
- 	rc = clk_prepare_enable(xuartps_data->refclk);
- 	if (rc) {
-@@ -1020,8 +1019,6 @@ err_out_clk_disable:
- 	clk_disable_unprepare(xuartps_data->refclk);
- err_out_clk_dis_aper:
- 	clk_disable_unprepare(xuartps_data->aperclk);
--err_out_free:
--	kfree(xuartps_data);
- 
- 	return rc;
- }
-@@ -1043,7 +1040,6 @@ static int xuartps_remove(struct platform_device *pdev)
- 	port->mapbase = 0;
- 	clk_disable_unprepare(xuartps_data->refclk);
- 	clk_disable_unprepare(xuartps_data->aperclk);
--	kfree(xuartps_data);
- 	return rc;
- }
++#ifdef CONFIG_PM_SLEEP
++/**
++ * xuartps_suspend - suspend event
++ * @device: Pointer to the device structure
++ *
++ * Returns 0
++ */
++static int xuartps_suspend(struct device *device)
++{
++	struct uart_port *port = dev_get_drvdata(device);
++	struct tty_struct *tty;
++	struct device *tty_dev;
++	int may_wake = 0;
++
++	/* Get the tty which could be NULL so don't assume it's valid */
++	tty = tty_port_tty_get(&port->state->port);
++	if (tty) {
++		tty_dev = tty->dev;
++		may_wake = device_may_wakeup(tty_dev);
++		tty_kref_put(tty);
++	}
++
++	/*
++	 * Call the API provided in serial_core.c file which handles
++	 * the suspend.
++	 */
++	uart_suspend_port(&xuartps_uart_driver, port);
++	if (console_suspend_enabled && !may_wake) {
++		struct xuartps *xuartps = port->private_data;
++
++		clk_disable(xuartps->refclk);
++		clk_disable(xuartps->aperclk);
++	} else {
++		unsigned long flags = 0;
++
++		spin_lock_irqsave(&port->lock, flags);
++		/* Empty the receive FIFO 1st before making changes */
++		while (!(xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_RXEMPTY))
++			xuartps_readl(XUARTPS_FIFO_OFFSET);
++		/* set RX trigger level to 1 */
++		xuartps_writel(1, XUARTPS_RXWM_OFFSET);
++		/* disable RX timeout interrups */
++		xuartps_writel(XUARTPS_IXR_TOUT, XUARTPS_IDR_OFFSET);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
++	return 0;
++}
++
++/**
++ * xuartps_resume - Resume after a previous suspend
++ * @device: Pointer to the device structure
++ *
++ * Returns 0
++ */
++static int xuartps_resume(struct device *device)
++{
++	struct uart_port *port = dev_get_drvdata(device);
++	unsigned long flags = 0;
++	u32 ctrl_reg;
++	struct tty_struct *tty;
++	struct device *tty_dev;
++	int may_wake = 0;
++
++	/* Get the tty which could be NULL so don't assume it's valid */
++	tty = tty_port_tty_get(&port->state->port);
++	if (tty) {
++		tty_dev = tty->dev;
++		may_wake = device_may_wakeup(tty_dev);
++		tty_kref_put(tty);
++	}
++
++	if (console_suspend_enabled && !may_wake) {
++		struct xuartps *xuartps = port->private_data;
++
++		clk_enable(xuartps->aperclk);
++		clk_enable(xuartps->refclk);
++
++		spin_lock_irqsave(&port->lock, flags);
++
++		/* Set TX/RX Reset */
++		xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
++				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST),
++				XUARTPS_CR_OFFSET);
++		while (xuartps_readl(XUARTPS_CR_OFFSET) &
++				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST))
++			cpu_relax();
++
++		/* restore rx timeout value */
++		xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
++		/* Enable Tx/Rx */
++		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++		xuartps_writel(
++			(ctrl_reg & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS)) |
++			(XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
++			XUARTPS_CR_OFFSET);
++
++		spin_unlock_irqrestore(&port->lock, flags);
++	} else {
++		spin_lock_irqsave(&port->lock, flags);
++		/* restore original rx trigger level */
++		xuartps_writel(rx_trigger_level, XUARTPS_RXWM_OFFSET);
++		/* enable RX timeout interrupt */
++		xuartps_writel(XUARTPS_IXR_TOUT, XUARTPS_IER_OFFSET);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
++	return uart_resume_port(&xuartps_uart_driver, port);
++}
++#endif /* ! CONFIG_PM_SLEEP */
++
++static SIMPLE_DEV_PM_OPS(xuartps_dev_pm_ops, xuartps_suspend, xuartps_resume);
++
+ /** Structure Definitions
+  */
+ static struct uart_driver xuartps_uart_driver = {
+@@ -1348,6 +1461,7 @@ static struct platform_driver xuartps_platform_driver = {
+ 		.owner = THIS_MODULE,
+ 		.name = XUARTPS_NAME,		/* Driver name */
+ 		.of_match_table = xuartps_of_match,
++		.pm = &xuartps_dev_pm_ops,
+ 		},
+ };
  
 -- 
 1.8.4.1
