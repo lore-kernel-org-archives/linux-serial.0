@@ -1,71 +1,23 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Pericom PCIe Serial board Support (12d8:7952/4/8) - Chip
- PI7C9X7952/4/8
-Date: Sat, 19 Oct 2013 19:51:51 -0700
-Message-ID: <20131020025151.GA31823@kroah.com>
-References: <CAO5Y4f2pszuzTYewAwzJ91BHeoNeSJsMynscyY7CjFTspeaYzg@mail.gmail.com>
- <CAO5Y4f0jtcZP2ScWxt2X7On3W1PzuvZnMG3+2uZ5puvrFbmMvA@mail.gmail.com>
- <20131015140903.GA20755@kroah.com>
- <CAO5Y4f1Em-WG9Yk41OUmJQCdZo2N=eDXK+R+wq0K4BxoNGoaug@mail.gmail.com>
- <20131015172801.GA27279@kroah.com>
- <525D9A56.9080402@gmail.com>
+From: China@srvmail-zcom.mintra.gob.pe,
+	Shenhua@srvmail-zcom.mintra.gob.pe
+Subject: E-mail Has Won 1.5M
+Date: Sun, 20 Oct 2013 17:24:37 +0530
+Message-ID: <20131020115434.CE18B588ED6__7610.75673294744$1382270140$gmane$org@srvmail-zcom.mintra.gob.pe>
+Reply-To: companylimited_c1@yahoo.com.hk
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44142 "EHLO
-	out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751113Ab3JTHi2 (ORCPT
+Received: from [200.37.35.8] ([200.37.35.8]:6081 "EHLO mintra.gob.pe"
+	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
+	id S1751390Ab3JTLy7 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Oct 2013 03:38:28 -0400
-Content-Disposition: inline
-In-Reply-To: <525D9A56.9080402@gmail.com>
+	Sun, 20 Oct 2013 07:54:59 -0400
+Content-Description: Mail message body
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Angelo Butti <buttiangelo@gmail.com>
-Cc: linux-serial@vger.kernel.org
+To: Recipients <China@srvmail-zcom.mintra.gob.pe>
 
-On Tue, Oct 15, 2013 at 10:41:10PM +0300, Angelo Butti wrote:
-> On 10/15/2013 08:28 PM, Greg KH wrote:
-> > On Tue, Oct 15, 2013 at 07:20:18PM +0200, Angelo Butti wrote:
-> >> I'm really sorry for my mistake.
-> >
-> > No worries, but your email client turned all tabs into spaces, and made
-> > the patch imposible to apply :(
-> >
-> >> Also, maybe that there is a simple way to change the clock without
-> >> rewrite the standard serial setup procedure, but I cannot find it ....
-> >> Below the correct one:
-> >>
-> >> --- linux-3.10.11-200.fc19.i686/drivers/tty/serial/8250/8250_pci.c.orig
-> >> 2013-09-16 20:13:52.918548000 +0300
-> >> +++ linux-3.10.11-200.fc19.i686/drivers/tty/serial/8250/8250_pci.c
-> >> 2013-10-15 16:20:18.566685996 +0300
-> >> @@ -1308,6 +1308,29 @@ static int pci_default_setup(struct seri
-> >>    return setup_port(priv, port, bar, offset, board->reg_shift);
-> >>   }
-> >>
-> >> +static int pci_pericom_setup(struct serial_private *priv,
-> >> +  const struct pciserial_board *board,
-> >> +  struct uart_8250_port *port, int idx)
-> >
-> > See?
-> >
-> > Also, we need a "Signed-off-by:" line as per the instructions in the
-> > Documentation/SubmittingPatches file (take a look at it for what that
-> > means.)
-> >
-> > Care to try again?
-> >
-> > thanks,
-> >
-> > greg k-h
-> >
-> 
-> Ok, I change the email client .... I hope ....
-
-The patch was a bit whitespace dammaged, but I fixed it up by hand and
-applied it.
-
-thanks,
-
-greg k-h
+Your E-mail Has Won 1.5M USD and A Brand New Gallery 2013 BMW X6 in the
+China Coal Energy Company Grant 2013.To Receive Award send your
+Name,Add,and Number on Email:companylimited_c1@yahoo.com.hk
