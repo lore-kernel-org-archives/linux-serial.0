@@ -1,23 +1,55 @@
-From: China@srvmail-zcom.mintra.gob.pe,
-	Shenhua@srvmail-zcom.mintra.gob.pe
-Subject: E-mail Has Won 1.5M
-Date: Sun, 20 Oct 2013 17:24:37 +0530
-Message-ID: <20131020115434.CE18B588ED6__7610.75673294744$1382270140$gmane$org@srvmail-zcom.mintra.gob.pe>
-Reply-To: companylimited_c1@yahoo.com.hk
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Michael Opdenacker <michael.opdenacker@free-electrons.com>
+Subject: [PATCH] serial: sirf: remove duplicate defines
+Date: Mon, 21 Oct 2013 10:19:14 +0200
+Message-ID: <1382343554-3320-1-git-send-email-michael.opdenacker@free-electrons.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [200.37.35.8] ([200.37.35.8]:6081 "EHLO mintra.gob.pe"
-	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
-	id S1751390Ab3JTLy7 convert rfc822-to-8bit (ORCPT
+Received: from top.free-electrons.com ([176.31.233.9]:36000 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752614Ab3JUITR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 20 Oct 2013 07:54:59 -0400
-Content-Description: Mail message body
+	Mon, 21 Oct 2013 04:19:17 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <China@srvmail-zcom.mintra.gob.pe>
+To: gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Opdenacker <michael.opdenacker@free-electrons.com>
 
-Your E-mail Has Won 1.5M USD and A Brand New Gallery 2013 BMW X6 in the
-China Coal Energy Company Grant 2013.To Receive Award send your
-Name,Add,and Number on Email:companylimited_c1@yahoo.com.hk
+This patch removes duplicate defines in drivers/tty/serial/sirfsoc_uart.h
+
+Signed-off-by: Michael Opdenacker <michael.opdenacker@free-electrons.com>
+---
+ drivers/tty/serial/sirfsoc_uart.h | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index fb8d0a0..b7d679c 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -368,15 +368,6 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFSOC_UART_NR				6
+ #define SIRFSOC_PORT_TYPE			0xa5
+ 
+-/* Baud Rate Calculation */
+-#define SIRF_MIN_SAMPLE_DIV			0xf
+-#define SIRF_MAX_SAMPLE_DIV			0x3f
+-#define SIRF_IOCLK_DIV_MAX			0xffff
+-#define SIRF_SAMPLE_DIV_SHIFT			16
+-#define SIRF_IOCLK_DIV_MASK			0xffff
+-#define SIRF_SAMPLE_DIV_MASK			0x3f0000
+-#define SIRF_BAUD_RATE_SUPPORT_NR		18
+-
+ /* Uart Common Use Macro*/
+ #define SIRFSOC_RX_DMA_BUF_SIZE	256
+ #define BYTES_TO_ALIGN(dma_addr)	((unsigned long)(dma_addr) & 0x3)
+@@ -453,9 +444,6 @@ struct sirfsoc_uart_port {
+ 	int				rx_issued;
+ };
+ 
+-/* Hardware Flow Control */
+-#define SIRFUART_AFC_CTRL_RX_THD	0x70
+-
+ /* Register Access Control */
+ #define portaddr(port, reg)		((port)->membase + (reg))
+ #define rd_regb(port, reg)		(__raw_readb(portaddr(port, reg)))
+-- 
+1.8.1.2
+
