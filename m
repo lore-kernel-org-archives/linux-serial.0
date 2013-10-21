@@ -1,52 +1,40 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 0/3] tty: xuartps: Fix build
-Date: Mon, 21 Oct 2013 16:40:58 -0700
-Message-ID: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:47205 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752369Ab3JUXlK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Oct 2013 19:41:10 -0400
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH 1/3] tty: xuartps: Fix "may be used uninitialized" build warning
+Date: Mon, 21 Oct 2013 16:40:59 -0700
+Message-ID: <1382398861-21542-2-git-send-email-soren.brinkmann@xilinx.com>
+References: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
+List-Id: linux-serial@vger.kernel.org
 
-This should fix the issues in the x86 build of the xuartps driver. The
-issues are:
- - [tty:tty-next 72/75] drivers/tty/serial/xilinx_uartps.c:436:7: error=
-:
-   'PRE_RATE_CHANGE' undeclared
- - [tty:tty-next 73/75] drivers/tty/serial/xilinx_uartps.c:1227:21:
-   error: 'xuartps_uart_driver' undeclared
+Initialize varibles for which a 'may be used uninitalized' warning is
+issued.
 
-Additionally I found some build warnings while fixing those issues.
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+The warning is actually a false positive. The variables are passed to a
+function per reference. That function uses those variables to return
+values, which then are used by the caller. Is there a way to
+avoid the initialization and the build warning alltogether?
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-There are some additional comments regarding patches 1 and 3 in their
-respective email.
-This series is based on the tty-next tree.
-
-	Thanks,
-	S=C3=B6ren
-
-Soren Brinkmann (3):
-  tty: xuartps: Fix "may be used uninitialized" build warning
-  tty: xuartps: Fix build error due to missing forward declaration
-  tty: xuartps: Fix build error when COMMON_CLK is not set
-
- drivers/tty/serial/xilinx_uartps.c | 38 +++++++++++++++++++++++-------=
---------
- 1 file changed, 23 insertions(+), 15 deletions(-)
-
---=20
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index c7c96c2f149c..5ac6c480df43 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -389,7 +389,7 @@ static unsigned int xuartps_set_baud_rate(struct uart_port *port,
+ 		unsigned int baud)
+ {
+ 	unsigned int calc_baud;
+-	u32 cd, bdiv;
++	u32 cd = 0, bdiv = 0;
+ 	u32 mreg;
+ 	int div8;
+ 	struct xuartps *xuartps = port->private_data;
+-- 
 1.8.4.1
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
