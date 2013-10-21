@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 3/3] tty: xuartps: Fix build error when COMMON_CLK is not set
-Date: Mon, 21 Oct 2013 16:41:01 -0700
-Message-ID: <1382398861-21542-4-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 2/3] tty: xuartps: Fix build error due to missing forward declaration
+Date: Mon, 21 Oct 2013 16:41:00 -0700
+Message-ID: <1382398861-21542-3-git-send-email-soren.brinkmann@xilinx.com>
 References: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
@@ -10,74 +10,62 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Clock notifiers are only available when CONFIG_COMMON_CLK is enabled.
-Hence all notifier related code has to be protected by corresponsing
-ifdefs.
+If CONFIG_PM_SLEEP is enabled and CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+is not, a forward declaration of the uart_driver struct is not
+included, leading to a build error due to an undeclared variable.
+Fixing this by moving the definition of the struct uart_driver before
+the definition of the suspend/resume callbacks.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
-Alternatively this could be fixed by adding a dependency on COMMON_CLK
-in Kconfig. That would keep the code cleaner, but limit this driver to
-platforms using the CCF.
----
- drivers/tty/serial/xilinx_uartps.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/serial/xilinx_uartps.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index ca4a2f1fbca9..e46e9f3f19b9 100644
+index 5ac6c480df43..ca4a2f1fbca9 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -411,6 +411,7 @@ static unsigned int xuartps_set_baud_rate(struct uart_port *port,
- 	return calc_baud;
- }
+@@ -1198,6 +1198,20 @@ console_initcall(xuartps_console_init);
  
-+#ifdef CONFIG_COMMON_CLK
+ #endif /* CONFIG_SERIAL_XILINX_PS_UART_CONSOLE */
+ 
++/** Structure Definitions
++ */
++static struct uart_driver xuartps_uart_driver = {
++	.owner		= THIS_MODULE,		/* Owner */
++	.driver_name	= XUARTPS_NAME,		/* Driver name */
++	.dev_name	= XUARTPS_TTY_NAME,	/* Node name */
++	.major		= XUARTPS_MAJOR,	/* Major number */
++	.minor		= XUARTPS_MINOR,	/* Minor number */
++	.nr		= XUARTPS_NR_PORTS,	/* Number of UART ports */
++#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
++	.cons		= &xuartps_console,	/* Console */
++#endif
++};
++
+ #ifdef CONFIG_PM_SLEEP
  /**
-  * xuartps_clk_notitifer_cb - Clock notifier callback
-  * @nb:		Notifier block
-@@ -504,6 +505,7 @@ static int xuartps_clk_notifier_cb(struct notifier_block *nb,
- 		return NOTIFY_DONE;
- 	}
- }
-+#endif
+  * xuartps_suspend - suspend event
+@@ -1311,20 +1325,6 @@ static int xuartps_resume(struct device *device)
  
- /*----------------------Uart Operations---------------------------*/
+ static SIMPLE_DEV_PM_OPS(xuartps_dev_pm_ops, xuartps_suspend, xuartps_resume);
  
-@@ -1380,11 +1382,13 @@ static int xuartps_probe(struct platform_device *pdev)
- 		goto err_out_clk_disable;
- 	}
- 
-+#ifdef CONFIG_COMMON_CLK
- 	xuartps_data->clk_rate_change_nb.notifier_call =
- 			xuartps_clk_notifier_cb;
- 	if (clk_notifier_register(xuartps_data->refclk,
- 				&xuartps_data->clk_rate_change_nb))
- 		dev_warn(&pdev->dev, "Unable to register clock notifier.\n");
-+#endif
- 
- 	/* Initialize the port structure */
- 	port = xuartps_get_port();
-@@ -1415,8 +1419,10 @@ static int xuartps_probe(struct platform_device *pdev)
- 	}
- 
- err_out_notif_unreg:
-+#ifdef CONFIG_COMMON_CLK
- 	clk_notifier_unregister(xuartps_data->refclk,
- 			&xuartps_data->clk_rate_change_nb);
-+#endif
- err_out_clk_disable:
- 	clk_disable_unprepare(xuartps_data->refclk);
- err_out_clk_dis_aper:
-@@ -1438,8 +1444,10 @@ static int xuartps_remove(struct platform_device *pdev)
- 	int rc;
- 
- 	/* Remove the xuartps port from the serial core */
-+#ifdef CONFIG_COMMON_CLK
- 	clk_notifier_unregister(xuartps_data->refclk,
- 			&xuartps_data->clk_rate_change_nb);
-+#endif
- 	rc = uart_remove_one_port(&xuartps_uart_driver, port);
- 	port->mapbase = 0;
- 	clk_disable_unprepare(xuartps_data->refclk);
+-/** Structure Definitions
+- */
+-static struct uart_driver xuartps_uart_driver = {
+-	.owner		= THIS_MODULE,		/* Owner */
+-	.driver_name	= XUARTPS_NAME,		/* Driver name */
+-	.dev_name	= XUARTPS_TTY_NAME,	/* Node name */
+-	.major		= XUARTPS_MAJOR,	/* Major number */
+-	.minor		= XUARTPS_MINOR,	/* Minor number */
+-	.nr		= XUARTPS_NR_PORTS,	/* Number of UART ports */
+-#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+-	.cons		= &xuartps_console,	/* Console */
+-#endif
+-};
+-
+ /* ---------------------------------------------------------------------
+  * Platform bus binding
+  */
 -- 
 1.8.4.1
