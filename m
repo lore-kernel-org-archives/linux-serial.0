@@ -1,40 +1,61 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzJdIG1yc3RfbWF4MzExMDogZml4IFNQSSBVQVJUIGlu?=
- =?UTF-8?B?dGVycnVwdCBwYXJhbWV0ZXJz?=
-Date: Tue, 22 Oct 2013 23:46:00 +0400
-Message-ID: <1382471160.205404749@f402.i.mail.ru>
-References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com>
- <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: David Cohen <david.a.cohen@linux.intel.com>
+Subject: Re: [PATCH 2/2] mrst_max3110: fix SPI UART interrupt parameters
+Date: Tue, 22 Oct 2013 13:30:40 -0700
+Message-ID: <5266E070.2060408@linux.intel.com>
+References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com> <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com> <1382471160.205404749@f402.i.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?B?RGF2aWQgQ29oZW4=?= <david.a.cohen@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:25864 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754676Ab3JVU03 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Oct 2013 16:26:29 -0400
+In-Reply-To: <1382471160.205404749@f402.i.mail.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-PiBUaGUgY2hhbmdlIGluIHRoZSBtYXgzMTEwIGRyaXZlciBtYWtlcyB0aGUgSVJRIGhhbmRsaW5n
-IHRocmVhZGVkLCBub3cKPiB0aGUgaGFuZGxlciBpcyBjYWxsZWQgb25seSBvbmNlIHBlciByZWNl
-aXZlZCBjaGFyYWN0ZXIuIFdpdGhvdXQgdGhhdAo+IGNoYW5nZSwgd2UgaGFkIG1hbnkgKG1vcmUg
-dGhhbiAxMDApIGludGVycnVwdHMgcGVyIG9uZSByZWNlaXZlZAo+IGNoYXJhY3Rlci4KPiAKPiBV
-bmZvcnR1bmF0ZWx5LCBTRkkgaW50ZXJmYWNlIGRvZXMgbm90IHN1cHBvcnQgSVJRIHBvbGFyaXR5
-IGFuZAo+IHRyaWdnZXJpbmcgbW9kZXMsIHNvIHdlIGhhdmUgdG8ga2VlcCB0aGUgaGFja3MgYXMg
-aGFyZC1jb2RlZCBkZXZpY2UKPiBuYW1lcyBhbmQgSVJRIG51bWJlcnMgdW50aWwgd2Ugc3dpdGNo
-IHRvIEFDUEkuCj4gCj4gRWRnZS10cmlnZ2VyZWQgSVJRIHN0aWxsIHN1cHBvcnRlZCB0byBrZWVw
-IG9sZCBwbGF0Zm9ybXMgd29ya2luZy4KPiBVc2UgcGxhdGZvcm0gZGF0YSB0byBwYXNzIHRoZSBp
-cnEgbW9kZSBhcmd1bWVudC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBJdmFuIEdvcmlub3YgPGl2YW4u
-Z29yaW5vdkBpbnRlbC5jb20+Cj4gU2lnbmVkLW9mZi1ieTogTGkgTmluZyA8bmluZy5saUBpbnRl
-bC5jb20+Cj4gU2lnbmVkLW9mZi1ieTogRGF2aWQgQ29oZW4gPGRhdmlkLmEuY29oZW5AbGludXgu
-aW50ZWwuY29tPgouLi4KPiArKysgYi9pbmNsdWRlL2xpbnV4L3NlcmlhbF9tYXgzMTEwLmgKPiBA
-QCAtMCwwICsxLDE2IEBACj4gKyNpZm5kZWYgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiArI2Rl
-ZmluZSBfTElOVVhfU0VSSUFMX01BWDMxMTBfSAo+ICsKPiArLyoqCj4gKyAqIHN0cnVjdCBwbGF0
-X21heDMxMTAgLSBNQVgzMTEwIFNQSSBVQVJUIHBsYXRmb3JtIGRhdGEKPiArICogQGlycV9lZGdl
-X3RyaWdnZXI6IGlmIElSUSBpcyBlZGdlIHRyaWdnZXJlZAo+ICsgKgo+ICsgKiBZb3Ugc2hvdWxk
-IHVzZSB0aGlzIHN0cnVjdHVyZSBpbiB5b3VyIG1hY2hpbmUgZGVzY3JpcHRpb24gdG8gc3BlY2lm
-eQo+ICsgKiBob3cgdGhlIE1BWDMxMTAgaXMgY29ubmVjdGVkLgo+ICsgKgo+ICsgKi8KPiArc3Ry
-dWN0IHBsYXRfbWF4MzExMCB7Cj4gKwlpbnQgaXJxX2VkZ2VfdHJpZ2dlcmVkOwo+ICt9Owo+ICsK
-PiArI2VuZGlmCj4gLS0gCgpJcyBqdXN0IHJlc291cmNlLT5mbGFncyBmb3IgSVJRIGNhbiBiZSBy
-ZXVzZWQgZm9yIGhhbmRsZSBzdWNoIGNhc2U/CgotLS0K
+On 10/22/2013 12:46 PM, Alexander Shiyan wrote:
+>> The change in the max3110 driver makes the IRQ handling threaded, now
+>> the handler is called only once per received character. Without that
+>> change, we had many (more than 100) interrupts per one received
+>> character.
+>>
+>> Unfortunately, SFI interface does not support IRQ polarity and
+>> triggering modes, so we have to keep the hacks as hard-coded device
+>> names and IRQ numbers until we switch to ACPI.
+>>
+>> Edge-triggered IRQ still supported to keep old platforms working.
+>> Use platform data to pass the irq mode argument.
+>>
+>> Signed-off-by: Ivan Gorinov <ivan.gorinov@intel.com>
+>> Signed-off-by: Li Ning <ning.li@intel.com>
+>> Signed-off-by: David Cohen <david.a.cohen@linux.intel.com>
+> ...
+>> +++ b/include/linux/serial_max3110.h
+>> @@ -0,0 +1,16 @@
+>> +#ifndef _LINUX_SERIAL_MAX3110_H
+>> +#define _LINUX_SERIAL_MAX3110_H
+>> +
+>> +/**
+>> + * struct plat_max3110 - MAX3110 SPI UART platform data
+>> + * @irq_edge_trigger: if IRQ is edge triggered
+>> + *
+>> + * You should use this structure in your machine description to specify
+>> + * how the MAX3110 is connected.
+>> + *
+>> + */
+>> +struct plat_max3110 {
+>> +	int irq_edge_triggered;
+>> +};
+>> +
+>> +#endif
+>> --
+>
+> Is just resource->flags for IRQ can be reused for handle such case?
+
+I believe your suggestion makes perfect sense. I'll rework it.
+
+Br, David Cohen
