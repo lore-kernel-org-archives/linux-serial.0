@@ -1,37 +1,18 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] serial: omap: Add support for optional wake-up
- interrupt
-Date: Tue, 22 Oct 2013 06:49:21 -0700
-Message-ID: <20131022134920.GJ15154@atomide.com>
-References: <20131017232820.GG15154@atomide.com>
- <20131018161916.GF18921@gimli>
- <20131018163740.GP15154@atomide.com>
- <20131018164535.GQ15154@atomide.com>
- <20131018225606.GT15154@atomide.com>
- <20131021122116.GL18921@gimli>
+From: Diasy Bali <diasybali@hotmail.com>
+Subject: hello dearest
+Date: Tue, 22 Oct 2013 12:01:00 -0700 (PDT)
+Message-ID: <1382468460.9401.YahooMailBasic@web161806.mail.bf1.yahoo.com>
+Reply-To: diasybali@yahoo.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:12442 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751264Ab3JVNtY (ORCPT
+Received: from nm32.bullet.mail.ne1.yahoo.com ([98.138.229.25]:25992 "HELO
+	nm32.bullet.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1753537Ab3JVTEs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Oct 2013 09:49:24 -0400
-Content-Disposition: inline
-In-Reply-To: <20131021122116.GL18921@gimli>
+	Tue, 22 Oct 2013 15:04:48 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Kevin Hilman <khilman@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Roger Quadros <rogerq@ti.com>
 
-* Felipe Balbi <balbi@ti.com> [131021 05:21]:
-> 
-> looks much nicer
-> 
-> Reviewed-by: Felipe Balbi <balbi@ti.com>
 
-Thanks, will repost with acks to make Greg's life easier.
-
-Regards,
-
-Tony
+Hello,How are you,I hope you're well,my name is Diasy Bali,I'm medium height and fair in complexion,i love,caring and I decided to contact you.I really want to have a good relationship with you.Next I have a special something I want to discuss with you,and tell you more about my self.Hope hear from you soon.age is not matter for our relationship,I need your love and affection.I will give my best. Yours Miss Diasy Bali.
