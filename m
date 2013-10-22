@@ -1,105 +1,40 @@
-From: David Cohen <david.a.cohen@linux.intel.com>
-Subject: [PATCH 1/2] mrst_max3110: fix unbalanced IRQ issue during resume
-Date: Tue, 22 Oct 2013 12:42:09 -0700
-Message-ID: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzJdIG1yc3RfbWF4MzExMDogZml4IFNQSSBVQVJUIGlu?=
+ =?UTF-8?B?dGVycnVwdCBwYXJhbWV0ZXJz?=
+Date: Tue, 22 Oct 2013 23:46:00 +0400
+Message-ID: <1382471160.205404749@f402.i.mail.ru>
+References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com>
+ <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, "Chen, Jie" <jie.d.chen@intel.com>, David Cohen <david.a.cohen@linux.intel.com>
+To: =?UTF-8?B?RGF2aWQgQ29oZW4=?= <david.a.cohen@linux.intel.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: "Chen, Jie" <jie.d.chen@intel.com>
-
-During resume, a startup will request_irq again, meantime resume function's
-enable_irq will cause unbalanced IRQ issue.
-Fix this issue by moving request_irq to probe function.
-
-Signed-off-by: David Cohen <david.a.cohen@linux.intel.com>
-Signed-off-by: Chen, Jie <jie.d.chen@intel.com>
----
- drivers/tty/serial/mrst_max3110.c | 35 +++++++++++++++++------------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/serial/mrst_max3110.c b/drivers/tty/serial/mrst_max3110.c
-index a67e708..6f618dd 100644
---- a/drivers/tty/serial/mrst_max3110.c
-+++ b/drivers/tty/serial/mrst_max3110.c
-@@ -43,6 +43,7 @@
- 
- #include <linux/kthread.h>
- #include <linux/spi/spi.h>
-+#include <linux/pm.h>
- 
- #include "mrst_max3110.h"
- 
-@@ -491,19 +492,9 @@ static int serial_m3110_startup(struct uart_port *port)
- 	port->state->port.low_latency = 1;
- 
- 	if (max->irq) {
--		max->read_thread = NULL;
--		ret = request_irq(max->irq, serial_m3110_irq,
--				IRQ_TYPE_EDGE_FALLING, "max3110", max);
--		if (ret) {
--			max->irq = 0;
--			pr_err(PR_FMT "unable to allocate IRQ, polling\n");
--		}  else {
--			/* Enable RX IRQ only */
--			config |= WC_RXA_IRQ_ENABLE;
--		}
--	}
--
--	if (max->irq == 0) {
-+		/* Enable RX IRQ only */
-+		config |= WC_RXA_IRQ_ENABLE;
-+	} else {
- 		/* If IRQ is disabled, start a read thread for input data */
- 		max->read_thread =
- 			kthread_run(max3110_read_thread, max, "max3110_read");
-@@ -517,8 +508,6 @@ static int serial_m3110_startup(struct uart_port *port)
- 
- 	ret = max3110_out(max, config);
- 	if (ret) {
--		if (max->irq)
--			free_irq(max->irq, max);
- 		if (max->read_thread)
- 			kthread_stop(max->read_thread);
- 		max->read_thread = NULL;
-@@ -540,9 +529,6 @@ static void serial_m3110_shutdown(struct uart_port *port)
- 		max->read_thread = NULL;
- 	}
- 
--	if (max->irq)
--		free_irq(max->irq, max);
--
- 	/* Disable interrupts from this port */
- 	config = WC_TAG | WC_SW_SHDI;
- 	max3110_out(max, config);
-@@ -840,6 +826,16 @@ static int serial_m3110_probe(struct spi_device *spi)
- 		goto err_kthread;
- 	}
- 
-+	if (max->irq) {
-+		ret = request_irq(max->irq, serial_m3110_irq,
-+				IRQ_TYPE_EDGE_FALLING, "max3110", max);
-+		if (ret) {
-+			max->irq = 0;
-+			dev_warn(&spi->dev,
-+			"unable to allocate IRQ, will use polling method\n");
-+		}
-+	}
-+
- 	spi_set_drvdata(spi, max);
- 	pmax = max;
- 
-@@ -867,6 +863,9 @@ static int serial_m3110_remove(struct spi_device *dev)
- 
- 	free_page((unsigned long)max->con_xmit.buf);
- 
-+	if (max->irq)
-+		free_irq(max->irq, max);
-+
- 	if (max->main_thread)
- 		kthread_stop(max->main_thread);
- 
--- 
-1.8.4.rc3
+PiBUaGUgY2hhbmdlIGluIHRoZSBtYXgzMTEwIGRyaXZlciBtYWtlcyB0aGUgSVJRIGhhbmRsaW5n
+IHRocmVhZGVkLCBub3cKPiB0aGUgaGFuZGxlciBpcyBjYWxsZWQgb25seSBvbmNlIHBlciByZWNl
+aXZlZCBjaGFyYWN0ZXIuIFdpdGhvdXQgdGhhdAo+IGNoYW5nZSwgd2UgaGFkIG1hbnkgKG1vcmUg
+dGhhbiAxMDApIGludGVycnVwdHMgcGVyIG9uZSByZWNlaXZlZAo+IGNoYXJhY3Rlci4KPiAKPiBV
+bmZvcnR1bmF0ZWx5LCBTRkkgaW50ZXJmYWNlIGRvZXMgbm90IHN1cHBvcnQgSVJRIHBvbGFyaXR5
+IGFuZAo+IHRyaWdnZXJpbmcgbW9kZXMsIHNvIHdlIGhhdmUgdG8ga2VlcCB0aGUgaGFja3MgYXMg
+aGFyZC1jb2RlZCBkZXZpY2UKPiBuYW1lcyBhbmQgSVJRIG51bWJlcnMgdW50aWwgd2Ugc3dpdGNo
+IHRvIEFDUEkuCj4gCj4gRWRnZS10cmlnZ2VyZWQgSVJRIHN0aWxsIHN1cHBvcnRlZCB0byBrZWVw
+IG9sZCBwbGF0Zm9ybXMgd29ya2luZy4KPiBVc2UgcGxhdGZvcm0gZGF0YSB0byBwYXNzIHRoZSBp
+cnEgbW9kZSBhcmd1bWVudC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBJdmFuIEdvcmlub3YgPGl2YW4u
+Z29yaW5vdkBpbnRlbC5jb20+Cj4gU2lnbmVkLW9mZi1ieTogTGkgTmluZyA8bmluZy5saUBpbnRl
+bC5jb20+Cj4gU2lnbmVkLW9mZi1ieTogRGF2aWQgQ29oZW4gPGRhdmlkLmEuY29oZW5AbGludXgu
+aW50ZWwuY29tPgouLi4KPiArKysgYi9pbmNsdWRlL2xpbnV4L3NlcmlhbF9tYXgzMTEwLmgKPiBA
+QCAtMCwwICsxLDE2IEBACj4gKyNpZm5kZWYgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiArI2Rl
+ZmluZSBfTElOVVhfU0VSSUFMX01BWDMxMTBfSAo+ICsKPiArLyoqCj4gKyAqIHN0cnVjdCBwbGF0
+X21heDMxMTAgLSBNQVgzMTEwIFNQSSBVQVJUIHBsYXRmb3JtIGRhdGEKPiArICogQGlycV9lZGdl
+X3RyaWdnZXI6IGlmIElSUSBpcyBlZGdlIHRyaWdnZXJlZAo+ICsgKgo+ICsgKiBZb3Ugc2hvdWxk
+IHVzZSB0aGlzIHN0cnVjdHVyZSBpbiB5b3VyIG1hY2hpbmUgZGVzY3JpcHRpb24gdG8gc3BlY2lm
+eQo+ICsgKiBob3cgdGhlIE1BWDMxMTAgaXMgY29ubmVjdGVkLgo+ICsgKgo+ICsgKi8KPiArc3Ry
+dWN0IHBsYXRfbWF4MzExMCB7Cj4gKwlpbnQgaXJxX2VkZ2VfdHJpZ2dlcmVkOwo+ICt9Owo+ICsK
+PiArI2VuZGlmCj4gLS0gCgpJcyBqdXN0IHJlc291cmNlLT5mbGFncyBmb3IgSVJRIGNhbiBiZSBy
+ZXVzZWQgZm9yIGhhbmRsZSBzdWNoIGNhc2U/CgotLS0K
