@@ -1,47 +1,39 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: linux-next: Tree for Oct 22 (xilinx_uartps)
-Date: Wed, 23 Oct 2013 08:04:32 +0100
-Message-ID: <20131023070432.GB31203@kroah.com>
-References: <1382454517-4074-1-git-send-email-treding@nvidia.com>
- <5266F658.5030904@infradead.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [GIT PATCH] TTY/Serial fixes for 3.12-rc4
+Date: Wed, 23 Oct 2013 09:16:36 -0400
+Message-ID: <5267CC34.1020700@hurleysoftware.com>
+References: <20131005173403.GA4811@kroah.com> <CA+55aFzEtnOOB4yPbWg4tmvWTPjQL1_YsZks6wgpGimaQdOEtA@mail.gmail.com> <5250A74E.4070805@hurleysoftware.com> <5250C6CD.1040803@hurleysoftware.com> <20131017211236.GA6155@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5266F658.5030904@infradead.org>
-Sender: linux-next-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:45525 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753752Ab3JWNQl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Oct 2013 09:16:41 -0400
+In-Reply-To: <20131017211236.GA6155@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Mikael Pettersson <mikpelinux@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-On Tue, Oct 22, 2013 at 03:04:08PM -0700, Randy Dunlap wrote:
-> On 10/22/13 08:08, Thierry Reding wrote:
-> > Hi all,
-> > 
-> > I've uploaded today's linux-next tree to the master branch of the
-> > repository below:
-> > 
-> >         git://gitorious.org/thierryreding/linux-next.git
-> > 
-> > A next-20131022 tag is also provided for convenience.
-> > 
-> > Gained a couple new conflicts, fixed more build failures. ARM seems to
-> > be in pretty good shape, as is the 64-bit x86 allmodconfig.
-> 
-> 
-> on i386:
-> 
->   CC [M]  drivers/tty/serial/xilinx_uartps.o
-> drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_suspend':
-> drivers/tty/serial/xilinx_uartps.c:1227:21: error: 'xuartps_uart_driver' undeclared (first use in this function)
-> drivers/tty/serial/xilinx_uartps.c:1227:21: note: each undeclared identifier is reported only once for each function it appears in
-> drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_resume':
-> drivers/tty/serial/xilinx_uartps.c:1308:27: error: 'xuartps_uart_driver' undeclared (first use in this function)
-> drivers/tty/serial/xilinx_uartps.c:1309:1: warning: control reaches end of non-void function [-Wreturn-type]
+On 10/17/2013 05:12 PM, Greg KH wrote:
+> On Sat, Oct 05, 2013 at 10:11:25PM -0400, Peter Hurley wrote:
+>> On 10/05/2013 07:57 PM, Peter Hurley wrote:
+>>
+>> However, the atomic_read_lock exclusion needs to cover the
+>> unconditional n_tty_set_room() when leaving n_tty_read() and
+>> it doesn't. Thus, the departing reader fails to ensure the subsequent
+>> reader has a running flush_to_ldisc() worker.
+>>
+>> Patch forthcoming.
+>
+> Did I miss this patch, or did it not come forth?
 
-There are some patches sent that should resolve this issue now, I'll try
-to apply them later today.
+Sorry to go off-grid like that;  interrupt(life) happened.
 
-thanks,
+I'm testing that patch now.
 
-greg k-h
+Regards,
+Peter Hurley
