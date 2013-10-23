@@ -1,66 +1,59 @@
-From: David Cohen <david.a.cohen@linux.intel.com>
-Subject: Re: [PATCH 2/2] mrst_max3110: fix SPI UART interrupt parameters
-Date: Tue, 22 Oct 2013 16:02:55 -0700
-Message-ID: <5267041F.2090905@linux.intel.com>
-References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com> <1382470930-13807-2-git-send-email-david.a.cohen@linux.intel.com> <1382471160.205404749@f402.i.mail.ru> <5266E070.2060408@linux.intel.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzJdIG1yc3RfbWF4MzExMDogZml4IFNQSSBVQVJUIGlu?=
+ =?UTF-8?B?dGVycnVwdCBwYXJhbWV0ZXJz?=
+Date: Wed, 23 Oct 2013 10:27:46 +0400
+Message-ID: <1382509666.28248007@f107.i.mail.ru>
+References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com>
+ <5266E070.2060408@linux.intel.com>
+ <5267041F.2090905@linux.intel.com>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:48486 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751196Ab3JVW6n (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Oct 2013 18:58:43 -0400
-In-Reply-To: <5266E070.2060408@linux.intel.com>
+Received: from fallback1.mail.ru ([94.100.176.18]:43120 "EHLO
+	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751051Ab3JWGjA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Oct 2013 02:39:00 -0400
+In-Reply-To: <5267041F.2090905@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
+To: =?UTF-8?B?RGF2aWQgQ29oZW4=?= <david.a.cohen@linux.intel.com>
 Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 10/22/2013 01:30 PM, David Cohen wrote:
-> On 10/22/2013 12:46 PM, Alexander Shiyan wrote:
->>> The change in the max3110 driver makes the IRQ handling threaded, now
->>> the handler is called only once per received character. Without that
->>> change, we had many (more than 100) interrupts per one received
->>> character.
->>>
->>> Unfortunately, SFI interface does not support IRQ polarity and
->>> triggering modes, so we have to keep the hacks as hard-coded device
->>> names and IRQ numbers until we switch to ACPI.
->>>
->>> Edge-triggered IRQ still supported to keep old platforms working.
->>> Use platform data to pass the irq mode argument.
->>>
->>> Signed-off-by: Ivan Gorinov <ivan.gorinov@intel.com>
->>> Signed-off-by: Li Ning <ning.li@intel.com>
->>> Signed-off-by: David Cohen <david.a.cohen@linux.intel.com>
->> ...
->>> +++ b/include/linux/serial_max3110.h
->>> @@ -0,0 +1,16 @@
->>> +#ifndef _LINUX_SERIAL_MAX3110_H
->>> +#define _LINUX_SERIAL_MAX3110_H
->>> +
->>> +/**
->>> + * struct plat_max3110 - MAX3110 SPI UART platform data
->>> + * @irq_edge_trigger: if IRQ is edge triggered
->>> + *
->>> + * You should use this structure in your machine description to specify
->>> + * how the MAX3110 is connected.
->>> + *
->>> + */
->>> +struct plat_max3110 {
->>> +    int irq_edge_triggered;
->>> +};
->>> +
->>> +#endif
->>> --
->>
->> Is just resource->flags for IRQ can be reused for handle such case?
->
-> I believe your suggestion makes perfect sense. I'll rework it.
-
-Looks like isp_device has no place for 'resource'. In this case pdata 
-seems to be the way to go here.
-Or maybe there's a better way to recommend?
-
-Br, David Cohen
+PiBPbiAxMC8yMi8yMDEzIDAxOjMwIFBNLCBEYXZpZCBDb2hlbiB3cm90ZToKPiA+IE9uIDEwLzIy
+LzIwMTMgMTI6NDYgUE0sIEFsZXhhbmRlciBTaGl5YW4gd3JvdGU6Cj4gPj4+IFRoZSBjaGFuZ2Ug
+aW4gdGhlIG1heDMxMTAgZHJpdmVyIG1ha2VzIHRoZSBJUlEgaGFuZGxpbmcgdGhyZWFkZWQsIG5v
+dwo+ID4+PiB0aGUgaGFuZGxlciBpcyBjYWxsZWQgb25seSBvbmNlIHBlciByZWNlaXZlZCBjaGFy
+YWN0ZXIuIFdpdGhvdXQgdGhhdAo+ID4+PiBjaGFuZ2UsIHdlIGhhZCBtYW55IChtb3JlIHRoYW4g
+MTAwKSBpbnRlcnJ1cHRzIHBlciBvbmUgcmVjZWl2ZWQKPiA+Pj4gY2hhcmFjdGVyLgo+ID4+Pgo+
+ID4+PiBVbmZvcnR1bmF0ZWx5LCBTRkkgaW50ZXJmYWNlIGRvZXMgbm90IHN1cHBvcnQgSVJRIHBv
+bGFyaXR5IGFuZAo+ID4+PiB0cmlnZ2VyaW5nIG1vZGVzLCBzbyB3ZSBoYXZlIHRvIGtlZXAgdGhl
+IGhhY2tzIGFzIGhhcmQtY29kZWQgZGV2aWNlCj4gPj4+IG5hbWVzIGFuZCBJUlEgbnVtYmVycyB1
+bnRpbCB3ZSBzd2l0Y2ggdG8gQUNQSS4KPiA+Pj4KPiA+Pj4gRWRnZS10cmlnZ2VyZWQgSVJRIHN0
+aWxsIHN1cHBvcnRlZCB0byBrZWVwIG9sZCBwbGF0Zm9ybXMgd29ya2luZy4KPiA+Pj4gVXNlIHBs
+YXRmb3JtIGRhdGEgdG8gcGFzcyB0aGUgaXJxIG1vZGUgYXJndW1lbnQuCj4gPj4+Cj4gPj4+IFNp
+Z25lZC1vZmYtYnk6IEl2YW4gR29yaW5vdiA8aXZhbi5nb3Jpbm92QGludGVsLmNvbT4KPiA+Pj4g
+U2lnbmVkLW9mZi1ieTogTGkgTmluZyA8bmluZy5saUBpbnRlbC5jb20+Cj4gPj4+IFNpZ25lZC1v
+ZmYtYnk6IERhdmlkIENvaGVuIDxkYXZpZC5hLmNvaGVuQGxpbnV4LmludGVsLmNvbT4KPiA+PiAu
+Li4KPiA+Pj4gKysrIGIvaW5jbHVkZS9saW51eC9zZXJpYWxfbWF4MzExMC5oCj4gPj4+IEBAIC0w
+LDAgKzEsMTYgQEAKPiA+Pj4gKyNpZm5kZWYgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiA+Pj4g
+KyNkZWZpbmUgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiA+Pj4gKwo+ID4+PiArLyoqCj4gPj4+
+ICsgKiBzdHJ1Y3QgcGxhdF9tYXgzMTEwIC0gTUFYMzExMCBTUEkgVUFSVCBwbGF0Zm9ybSBkYXRh
+Cj4gPj4+ICsgKiBAaXJxX2VkZ2VfdHJpZ2dlcjogaWYgSVJRIGlzIGVkZ2UgdHJpZ2dlcmVkCj4g
+Pj4+ICsgKgo+ID4+PiArICogWW91IHNob3VsZCB1c2UgdGhpcyBzdHJ1Y3R1cmUgaW4geW91ciBt
+YWNoaW5lIGRlc2NyaXB0aW9uIHRvIHNwZWNpZnkKPiA+Pj4gKyAqIGhvdyB0aGUgTUFYMzExMCBp
+cyBjb25uZWN0ZWQuCj4gPj4+ICsgKgo+ID4+PiArICovCj4gPj4+ICtzdHJ1Y3QgcGxhdF9tYXgz
+MTEwIHsKPiA+Pj4gKyAgICBpbnQgaXJxX2VkZ2VfdHJpZ2dlcmVkOwo+ID4+PiArfTsKPiA+Pj4g
+Kwo+ID4+PiArI2VuZGlmCj4gPj4+IC0tCj4gPj4KPiA+PiBJcyBqdXN0IHJlc291cmNlLT5mbGFn
+cyBmb3IgSVJRIGNhbiBiZSByZXVzZWQgZm9yIGhhbmRsZSBzdWNoIGNhc2U/Cj4gPgo+ID4gSSBi
+ZWxpZXZlIHlvdXIgc3VnZ2VzdGlvbiBtYWtlcyBwZXJmZWN0IHNlbnNlLiBJJ2xsIHJld29yayBp
+dC4KPiAKPiBMb29rcyBsaWtlIGlzcF9kZXZpY2UgaGFzIG5vIHBsYWNlIGZvciAncmVzb3VyY2Un
+LiBJbiB0aGlzIGNhc2UgcGRhdGEgCj4gc2VlbXMgdG8gYmUgdGhlIHdheSB0byBnbyBoZXJlLgo+
+IE9yIG1heWJlIHRoZXJlJ3MgYSBiZXR0ZXIgd2F5IHRvIHJlY29tbWVuZD8KCldoYXQgZG8geW91
+IG1lYW4gYnkgdGhlIGlzcF9kZXZpY2U/CgpNeSBpZGVhIGlzIGFsd2F5cyB1c2UgdGhyZWFkZWQg
+aXJxIGFuZCBwYXNzaW5nIGZsYWdzIGludG8gcmVxdWVzdC4KTGlrZSBhczoKdW5zaWduZWQgbG9u
+ZyBmbGFncyA9IHJlcy0+ZmxhZ3MgJiBJT1JFU09VUkNFX0JJVFM7Ci4uLgpyZXF1ZXN0X3RocmVh
+ZGVkX2lycShtYXgtPmlycSwgc2VyaWFsX20zMTEwX2lycSwgSVJRRl9PTkVTSE9UIHwgZmxhZ3Ms
+ICJtYXgzMTEwIiwgbWF4KTsKCi0tLQo=
