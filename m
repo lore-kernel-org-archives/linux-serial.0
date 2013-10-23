@@ -1,59 +1,47 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCAyLzJdIG1yc3RfbWF4MzExMDogZml4IFNQSSBVQVJUIGlu?=
- =?UTF-8?B?dGVycnVwdCBwYXJhbWV0ZXJz?=
-Date: Wed, 23 Oct 2013 10:27:46 +0400
-Message-ID: <1382509666.28248007@f107.i.mail.ru>
-References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com>
- <5266E070.2060408@linux.intel.com>
- <5267041F.2090905@linux.intel.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: linux-next: Tree for Oct 22 (xilinx_uartps)
+Date: Wed, 23 Oct 2013 08:04:32 +0100
+Message-ID: <20131023070432.GB31203@kroah.com>
+References: <1382454517-4074-1-git-send-email-treding@nvidia.com>
+ <5266F658.5030904@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback1.mail.ru ([94.100.176.18]:43120 "EHLO
-	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751051Ab3JWGjA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Oct 2013 02:39:00 -0400
-In-Reply-To: <5267041F.2090905@linux.intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5266F658.5030904@infradead.org>
+Sender: linux-next-owner@vger.kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?RGF2aWQgQ29oZW4=?= <david.a.cohen@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-PiBPbiAxMC8yMi8yMDEzIDAxOjMwIFBNLCBEYXZpZCBDb2hlbiB3cm90ZToKPiA+IE9uIDEwLzIy
-LzIwMTMgMTI6NDYgUE0sIEFsZXhhbmRlciBTaGl5YW4gd3JvdGU6Cj4gPj4+IFRoZSBjaGFuZ2Ug
-aW4gdGhlIG1heDMxMTAgZHJpdmVyIG1ha2VzIHRoZSBJUlEgaGFuZGxpbmcgdGhyZWFkZWQsIG5v
-dwo+ID4+PiB0aGUgaGFuZGxlciBpcyBjYWxsZWQgb25seSBvbmNlIHBlciByZWNlaXZlZCBjaGFy
-YWN0ZXIuIFdpdGhvdXQgdGhhdAo+ID4+PiBjaGFuZ2UsIHdlIGhhZCBtYW55IChtb3JlIHRoYW4g
-MTAwKSBpbnRlcnJ1cHRzIHBlciBvbmUgcmVjZWl2ZWQKPiA+Pj4gY2hhcmFjdGVyLgo+ID4+Pgo+
-ID4+PiBVbmZvcnR1bmF0ZWx5LCBTRkkgaW50ZXJmYWNlIGRvZXMgbm90IHN1cHBvcnQgSVJRIHBv
-bGFyaXR5IGFuZAo+ID4+PiB0cmlnZ2VyaW5nIG1vZGVzLCBzbyB3ZSBoYXZlIHRvIGtlZXAgdGhl
-IGhhY2tzIGFzIGhhcmQtY29kZWQgZGV2aWNlCj4gPj4+IG5hbWVzIGFuZCBJUlEgbnVtYmVycyB1
-bnRpbCB3ZSBzd2l0Y2ggdG8gQUNQSS4KPiA+Pj4KPiA+Pj4gRWRnZS10cmlnZ2VyZWQgSVJRIHN0
-aWxsIHN1cHBvcnRlZCB0byBrZWVwIG9sZCBwbGF0Zm9ybXMgd29ya2luZy4KPiA+Pj4gVXNlIHBs
-YXRmb3JtIGRhdGEgdG8gcGFzcyB0aGUgaXJxIG1vZGUgYXJndW1lbnQuCj4gPj4+Cj4gPj4+IFNp
-Z25lZC1vZmYtYnk6IEl2YW4gR29yaW5vdiA8aXZhbi5nb3Jpbm92QGludGVsLmNvbT4KPiA+Pj4g
-U2lnbmVkLW9mZi1ieTogTGkgTmluZyA8bmluZy5saUBpbnRlbC5jb20+Cj4gPj4+IFNpZ25lZC1v
-ZmYtYnk6IERhdmlkIENvaGVuIDxkYXZpZC5hLmNvaGVuQGxpbnV4LmludGVsLmNvbT4KPiA+PiAu
-Li4KPiA+Pj4gKysrIGIvaW5jbHVkZS9saW51eC9zZXJpYWxfbWF4MzExMC5oCj4gPj4+IEBAIC0w
-LDAgKzEsMTYgQEAKPiA+Pj4gKyNpZm5kZWYgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiA+Pj4g
-KyNkZWZpbmUgX0xJTlVYX1NFUklBTF9NQVgzMTEwX0gKPiA+Pj4gKwo+ID4+PiArLyoqCj4gPj4+
-ICsgKiBzdHJ1Y3QgcGxhdF9tYXgzMTEwIC0gTUFYMzExMCBTUEkgVUFSVCBwbGF0Zm9ybSBkYXRh
-Cj4gPj4+ICsgKiBAaXJxX2VkZ2VfdHJpZ2dlcjogaWYgSVJRIGlzIGVkZ2UgdHJpZ2dlcmVkCj4g
-Pj4+ICsgKgo+ID4+PiArICogWW91IHNob3VsZCB1c2UgdGhpcyBzdHJ1Y3R1cmUgaW4geW91ciBt
-YWNoaW5lIGRlc2NyaXB0aW9uIHRvIHNwZWNpZnkKPiA+Pj4gKyAqIGhvdyB0aGUgTUFYMzExMCBp
-cyBjb25uZWN0ZWQuCj4gPj4+ICsgKgo+ID4+PiArICovCj4gPj4+ICtzdHJ1Y3QgcGxhdF9tYXgz
-MTEwIHsKPiA+Pj4gKyAgICBpbnQgaXJxX2VkZ2VfdHJpZ2dlcmVkOwo+ID4+PiArfTsKPiA+Pj4g
-Kwo+ID4+PiArI2VuZGlmCj4gPj4+IC0tCj4gPj4KPiA+PiBJcyBqdXN0IHJlc291cmNlLT5mbGFn
-cyBmb3IgSVJRIGNhbiBiZSByZXVzZWQgZm9yIGhhbmRsZSBzdWNoIGNhc2U/Cj4gPgo+ID4gSSBi
-ZWxpZXZlIHlvdXIgc3VnZ2VzdGlvbiBtYWtlcyBwZXJmZWN0IHNlbnNlLiBJJ2xsIHJld29yayBp
-dC4KPiAKPiBMb29rcyBsaWtlIGlzcF9kZXZpY2UgaGFzIG5vIHBsYWNlIGZvciAncmVzb3VyY2Un
-LiBJbiB0aGlzIGNhc2UgcGRhdGEgCj4gc2VlbXMgdG8gYmUgdGhlIHdheSB0byBnbyBoZXJlLgo+
-IE9yIG1heWJlIHRoZXJlJ3MgYSBiZXR0ZXIgd2F5IHRvIHJlY29tbWVuZD8KCldoYXQgZG8geW91
-IG1lYW4gYnkgdGhlIGlzcF9kZXZpY2U/CgpNeSBpZGVhIGlzIGFsd2F5cyB1c2UgdGhyZWFkZWQg
-aXJxIGFuZCBwYXNzaW5nIGZsYWdzIGludG8gcmVxdWVzdC4KTGlrZSBhczoKdW5zaWduZWQgbG9u
-ZyBmbGFncyA9IHJlcy0+ZmxhZ3MgJiBJT1JFU09VUkNFX0JJVFM7Ci4uLgpyZXF1ZXN0X3RocmVh
-ZGVkX2lycShtYXgtPmlycSwgc2VyaWFsX20zMTEwX2lycSwgSVJRRl9PTkVTSE9UIHwgZmxhZ3Ms
-ICJtYXgzMTEwIiwgbWF4KTsKCi0tLQo=
+On Tue, Oct 22, 2013 at 03:04:08PM -0700, Randy Dunlap wrote:
+> On 10/22/13 08:08, Thierry Reding wrote:
+> > Hi all,
+> > 
+> > I've uploaded today's linux-next tree to the master branch of the
+> > repository below:
+> > 
+> >         git://gitorious.org/thierryreding/linux-next.git
+> > 
+> > A next-20131022 tag is also provided for convenience.
+> > 
+> > Gained a couple new conflicts, fixed more build failures. ARM seems to
+> > be in pretty good shape, as is the 64-bit x86 allmodconfig.
+> 
+> 
+> on i386:
+> 
+>   CC [M]  drivers/tty/serial/xilinx_uartps.o
+> drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_suspend':
+> drivers/tty/serial/xilinx_uartps.c:1227:21: error: 'xuartps_uart_driver' undeclared (first use in this function)
+> drivers/tty/serial/xilinx_uartps.c:1227:21: note: each undeclared identifier is reported only once for each function it appears in
+> drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_resume':
+> drivers/tty/serial/xilinx_uartps.c:1308:27: error: 'xuartps_uart_driver' undeclared (first use in this function)
+> drivers/tty/serial/xilinx_uartps.c:1309:1: warning: control reaches end of non-void function [-Wreturn-type]
+
+There are some patches sent that should resolve this issue now, I'll try
+to apply them later today.
+
+thanks,
+
+greg k-h
