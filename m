@@ -1,66 +1,48 @@
-From: David Cohen <david.a.cohen@linux.intel.com>
-Subject: Re: [PATCH 2/2] mrst_max3110: fix SPI UART interrupt parameters
-Date: Wed, 23 Oct 2013 11:38:46 -0700
-Message-ID: <526817B6.3090309@linux.intel.com>
-References: <1382470930-13807-1-git-send-email-david.a.cohen@linux.intel.com> <5266E070.2060408@linux.intel.com> <5267041F.2090905@linux.intel.com> <1382509666.28248007@f107.i.mail.ru> <52681128.2010404@linux.intel.com> <20131023182143.GK25954@gimli> <20131023182351.GL25954@gimli>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Philippe Proulx <philippe.proulx@savoirfairelinux.com>
+Subject: [PATCH 0/2] serial: omap: improve performance for RS-485
+Date: Wed, 23 Oct 2013 18:49:57 -0400
+Message-ID: <cover.1382567103.git.philippe.proulx@savoirfairelinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:20011 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751363Ab3JWSef (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Oct 2013 14:34:35 -0400
-In-Reply-To: <20131023182351.GL25954@gimli>
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:52882 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752094Ab3JWWuM (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Oct 2013 18:50:12 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: Alexander Shiyan <shc_work@mail.ru>, gregkh@linuxfoundation.org, jslaby@suse.cz, ning.li@intel.com, ivan.gorinov@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Mark Jackson <mpfj-list@newflow.co.uk>, linux-kernel@vger.kernel.org, kernel@savoirfairelinux.com
 
-On 10/23/2013 11:23 AM, Felipe Balbi wrote:
-> Hi again,
->
-> On Wed, Oct 23, 2013 at 01:21:43PM -0500, Felipe Balbi wrote:
->> On Wed, Oct 23, 2013 at 11:10:48AM -0700, David Cohen wrote:
->>>> My idea is always use threaded irq and passing flags into request.
->>>> Like as:
->>>> unsigned long flags = res->flags & IORESOURCE_BITS;
->>>> ...
->>>> request_threaded_irq(max->irq, serial_m3110_irq, IRQF_ONESHOT | flags, "max3110", max);
->>>
->>>
->>> Oh, maybe we were talking about different things afterall :)
->>> The reason this struct plat_max3110 was created is to allow platform
->>> code (located under arch/x86/platform/intel-mid/device_libs/) to define
->>> the irq edge type.
->>> When I saw your comment I though you were referring to struct resource
->>> (which has IORESOURCE_IRQ_* flags). But unlike platform_device,
->>> spi_device has no struct resource * to replace the need of struct
->>> plat_max3110.
->>>
->>> OTOH your suggestion can replace this piece of code:
->>>
->>> @@ -68,6 +69,7 @@ struct uart_max3110 {
->>>          u8 clock;
->>>          u8 parity, word_7bits;
->>>          u16 irq;
->>> +       u16 irq_edge_triggered;
->>
->> max3110 is already edge triggered:
->>
->> 495                 ret = request_irq(max->irq, serial_m3110_irq,
->> 496                                 IRQ_TYPE_EDGE_FALLING, "max3110", max);
->>
->> it would be nice a threaded IRQ instead of using a singlethread
->> workqueue, though.
->
-> making it clearer, you only converted to threaded IRQ when
-> edge_triggered isn't set, why don't you *always* use threaded IRQs ?
+The current RS-485 implementation for the OMAP serial driver is to not
+disable THR interrupts when the driver ring buffer becomes empty until
+it makes sure the TX shift register is empty, which means the UART is
+not transmitting anymore and only then can the driver toggle the GPIO
+output pin for RS-485 data direction.
 
-This is a very difficult question to answer, considering the
-non-threaded irq is used just to wake up a wq :)
-I wish this driver was better maintained.
+Since the UART TX FIFO trigger level is set to 32 characters (the
+comment said 16, but it's really 32), this means there's a burst of IRQs
+for the transmission time of 33 characters (which means at least 34 ms
+at 9600 bauds, for example) since the TX FIFO is always below its
+trigger level and the THR interrupts are not disabled. The driver is
+essentially polling the status bit using interrupts during this time.
 
-I'll rework this whole IRQ scheme here.
+This patchset makes use of the TXEMPTYCTLIT bit of the SCR register
+instead, which makes it possible to get a THR interrupt only when both
+the TX FIFO and the TX shift register are empty. We only use this mode
+if RS-485 is enabled.
 
-Br, David Cohen
+This patchset also fixes a few minor coding style warnings from
+checkpatch.pl.
+
+The patches apply to tty/tty-next.
+
+Philippe Proulx (2):
+  serial: omap: improve RS-485 performance
+  serial: omap: fix a few checkpatch warnings
+
+ drivers/tty/serial/omap-serial.c | 67 +++++++++++++++++++++++++++-------------
+ 1 file changed, 46 insertions(+), 21 deletions(-)
+
+-- 
+1.8.4.1
+
