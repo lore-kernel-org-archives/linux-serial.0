@@ -1,24 +1,51 @@
-From: "Mr. X" <jul217@juy793.onmicrosoft.com>
-Subject: my subject
-Date: Sat, 26 Oct 2013 14:06:58 +0530
-Message-ID: <ca442191-4284-4ca1-9915-21ea5ab9fc63__4427.82401009953$1382797208$gmane$org@SIXPR06MB079.apcprd06.prod.outlook.com>
-Reply-To: <guaranteeloancompany1@gmail.com>
+From: Webamail <Webamil@gemma.localdns.com>
+Subject: Account
+Date: 25 Oct 2013 05:05:08 +0800
+Message-ID: <20131024210508.20857.qmail@gemma.localdns.com>
+Reply-To: adminscare@mail.md
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from emea01-db3-ndr.ptr.protection.outlook.com ([157.56.120.105]:13828
-	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751717Ab3JZOTz convert rfc822-to-8bit (ORCPT
+Received: from [210.48.155.134] ([210.48.155.134]:34596 "EHLO
+	gemma.localdns.com" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1753323Ab3JZRAP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 26 Oct 2013 10:19:55 -0400
-Content-Description: Mail message body
+	Sat, 26 Oct 2013 13:00:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <jul217@juy793.onmicrosoft.com>
+To: linux-serial@vger.kernel.org
 
 
-Need a Loan, Loans from $5000 - $10,000,000 00. Get your no obligation FREE quote now! Repayments up to 54 Months. No Collateral, Money paid into your account within 24 hours after approval. For more Info contact us today  guaranteeloancompany1@gmail.com
+
+Email Account Warning !!!
+
+
+
+This mail is from Administrator; we wish to bring to your notice the Condition of your email account.
+
+We have just noticed that you have exceeded your email Database limit of 500 MB quota and your email IP is causing conflict because it is been accessed in different server location. You need to Upgrade and expand your email quota limit before you can continue to use your email.Update your email quota limit to 2.6 GB, fill up the detail to upgrade your account
+
+{user-name:
+
+{Password:
+
+{Confirm Password:
+
+
+
+Failure to do this will result to email deactivation within 24hours
+
+ Thank you for your understanding.
+
+
+
+Copyright 2013 Help Desk
+
+Email Upgrade 
+
+
+
+
 
 
