@@ -1,36 +1,39 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/3] tty: xuartps: Fix "may be used uninitialized" build
- warning
-Date: Tue, 29 Oct 2013 09:22:52 -0700
-Message-ID: <20131029162252.GA21986@kroah.com>
+Subject: Re: [PATCH 0/3] tty: xuartps: Fix build
+Date: Tue, 29 Oct 2013 09:24:57 -0700
+Message-ID: <20131029162457.GA22189@kroah.com>
 References: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
- <1382398861-21542-2-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:36009 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758226Ab3J2QY6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 29 Oct 2013 12:24:58 -0400
 Content-Disposition: inline
-In-Reply-To: <1382398861-21542-2-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Soren Brinkmann <soren.brinkmann@xilinx.com>
 Cc: Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-On Mon, Oct 21, 2013 at 04:40:59PM -0700, Soren Brinkmann wrote:
-> Initialize varibles for which a 'may be used uninitalized' warning is
-> issued.
+On Mon, Oct 21, 2013 at 04:40:58PM -0700, Soren Brinkmann wrote:
+> This should fix the issues in the x86 build of the xuartps driver. The
+> issues are:
+>  - [tty:tty-next 72/75] drivers/tty/serial/xilinx_uartps.c:436:7: error:
+>    'PRE_RATE_CHANGE' undeclared
+>  - [tty:tty-next 73/75] drivers/tty/serial/xilinx_uartps.c:1227:21:
+>    error: 'xuartps_uart_driver' undeclared
 > 
-> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> ---
-> The warning is actually a false positive. The variables are passed to a
-> function per reference. That function uses those variables to return
-> values, which then are used by the caller. Is there a way to
-> avoid the initialization and the build warning alltogether?
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Additionally I found some build warnings while fixing those issues.
+> 
+> There are some additional comments regarding patches 1 and 3 in their
+> respective email.
+> This series is based on the tty-next tree.
 
-Please properly credit the kbuild robot who found these issues the next
-time...
+No it isn't, it doesn't apply there at all.  Please respin these against
+the latest tty-next branch and resend them so that I can apply them.
 
 thanks,
 
