@@ -1,88 +1,86 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 1/5] serial: sh-sci: Sort headers alphabetically
-Date: Tue, 29 Oct 2013 11:29:55 +0100
-Message-ID: <1383042599-25151-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 5/5] serial: sh-sci: Add device tree bindings documentation
+Date: Tue, 29 Oct 2013 11:29:59 +0100
+Message-ID: <1383042599-25151-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:34719 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:34723 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751390Ab3J2K3i (ORCPT
+	with ESMTP id S1753531Ab3J2K3k (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Oct 2013 06:29:38 -0400
+	Tue, 29 Oct 2013 06:29:40 -0400
 In-Reply-To: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org
 
-This helps locating duplicates.
+Document the device tree bindings for the sci serial port devices.
 
+Cc: devicetree@vger.kernel.org
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 42 +++++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ .../bindings/serial/renesas,sci-serial.txt         | 51 ++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5377502..280753f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -23,35 +23,35 @@
- 
- #undef DEBUG
- 
--#include <linux/module.h>
-+#include <linux/clk.h>
-+#include <linux/console.h>
-+#include <linux/ctype.h>
-+#include <linux/cpufreq.h>
-+#include <linux/delay.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/err.h>
- #include <linux/errno.h>
--#include <linux/sh_dma.h>
--#include <linux/timer.h>
-+#include <linux/gpio.h>
-+#include <linux/init.h>
- #include <linux/interrupt.h>
--#include <linux/tty.h>
--#include <linux/tty_flip.h>
--#include <linux/serial.h>
--#include <linux/major.h>
--#include <linux/string.h>
--#include <linux/sysrq.h>
- #include <linux/ioport.h>
-+#include <linux/major.h>
-+#include <linux/module.h>
- #include <linux/mm.h>
--#include <linux/init.h>
--#include <linux/delay.h>
--#include <linux/console.h>
--#include <linux/platform_device.h>
--#include <linux/serial_sci.h>
- #include <linux/notifier.h>
-+#include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
--#include <linux/cpufreq.h>
--#include <linux/clk.h>
--#include <linux/ctype.h>
--#include <linux/err.h>
--#include <linux/dmaengine.h>
--#include <linux/dma-mapping.h>
- #include <linux/scatterlist.h>
-+#include <linux/serial.h>
-+#include <linux/serial_sci.h>
-+#include <linux/sh_dma.h>
- #include <linux/slab.h>
--#include <linux/gpio.h>
-+#include <linux/string.h>
-+#include <linux/sysrq.h>
-+#include <linux/timer.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
- 
- #ifdef CONFIG_SUPERH
- #include <asm/sh_bios.h>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+new file mode 100644
+index 0000000..5658b4f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -0,0 +1,51 @@
++* Renesas SH-Mobile Serial Communication Interface
++
++Required properties:
++
++  - compatible: should be one of the following.
++
++    - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
++    - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
++    - "renesas,scifb-r8a7790" for R8A7790 (R-Car H2) SCIFB compatible UART.
++    - "renesas,hscif-r8a7790" for R8A7790 (R-Car H2) HSCIF compatible UART.
++    - "renesas,scif-generic" for generic SCIF compatible UART.
++    - "renesas,scifa-generic" for generic SCIFA compatible UART.
++    - "renesas,scifb-generic" for generic SCIFB compatible UART.
++    - "renesas,hscif-generic" for generic HSCIF compatible UART.
++
++    When compatible with the generic version, nodes must also list the
++    SoC-specific version corresponding to the platform.
++
++  - reg: Base address and length of the memory resource used by the UART.
++
++  - interrupt-parent: Reference to the parent interrupt controller.
++  - interrupts: Interrupt number(s). Depending on the SoC SCIx UARTs are tied
++    to one or multiple interrupt lines. When using multiple interrupt lines,
++    specify the interrupt names as described below.
++
++  - clocks: Reference to the SCIx UART interface clock.
++  - clock-names: Should be "sci_ick".
++
++Optional properties:
++
++  - interrupt-names: When using multiple interrupts, report the interrupt
++    names as "eri" (receive error), "rxi" (receive), "txi" (transmit) and
++    "bri" (break). When using a single interrupt this property should not be
++    present.
++
++Note: Each enabled SCIx UART should have an alias correctly numbered in the
++"aliases" node.
++
++Example:
++	aliases {
++		serial0 = &scifa0;
++	};
++
++	scifa0: serial@e6c40000 {
++		compatible = "renesas,scifa-r8a7790", "renesas,scifa-generic";
++		reg = <0 0xe6c40000 0 64>;
++		interrupt-parent = <&gic>;
++		interrupts = <0 144 4>;
++		clocks = <&mstp2_clks 4>;
++		clock-names = "sci_ick";
++	};
 -- 
 1.8.1.5
 
