@@ -1,45 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/3] tty: xuartps: Fix build
-Date: Tue, 29 Oct 2013 09:26:06 -0700
-Message-ID: <20131029162606.GA22291@kroah.com>
-References: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
- <20131029162457.GA22189@kroah.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 09:28:48 -0700
+Message-ID: <CACRpkdbKk=n=6tU=9fD05Gu9utpQSZ1qrK7EqLf5qwaV7eHBWA@mail.gmail.com>
+References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:36240 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751167Ab3J2Q0I (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Oct 2013 12:26:08 -0400
-Content-Disposition: inline
-In-Reply-To: <20131029162457.GA22189@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org>
+In-Reply-To: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
+List-Post: <mailto:linux-mtd@lists.infradead.org>
+List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
+Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, Wolfram Sang <wsa@the-dreams.de>, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Input <linux-input@vger.kernel.org>, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>"linux-pwm@vger.kernel.org" <linu>
 List-Id: linux-serial@vger.kernel.org
-To: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Oct 29, 2013 at 09:24:57AM -0700, Greg Kroah-Hartman wrote:
-> On Mon, Oct 21, 2013 at 04:40:58PM -0700, Soren Brinkmann wrote:
-> > This should fix the issues in the x86 build of the xuartps driver. The
-> > issues are:
-> >  - [tty:tty-next 72/75] drivers/tty/serial/xilinx_uartps.c:436:7: error:
-> >    'PRE_RATE_CHANGE' undeclared
-> >  - [tty:tty-next 73/75] drivers/tty/serial/xilinx_uartps.c:1227:21:
-> >    error: 'xuartps_uart_driver' undeclared
-> > 
-> > Additionally I found some build warnings while fixing those issues.
-> > 
-> > There are some additional comments regarding patches 1 and 3 in their
-> > respective email.
-> > This series is based on the tty-next tree.
-> 
-> No it isn't, it doesn't apply there at all.  Please respin these against
-> the latest tty-next branch and resend them so that I can apply them.
+On Mon, Oct 28, 2013 at 4:46 PM, Laurent Pinchart
+<laurent.pinchart+renesas@ideasonboard.com> wrote:
 
-Doh, nevermind, I was using the wrong branch of that tree, sorry, my
-fault.
+> If you believe the issue should be solved in a different way (for instance by
+> removing the architecture dependency completely) please reply to the cover
+> letter to let other maintainers chime in.
 
-/me needs more coffee...
+I have no real opinions on whether this is a good itermediate step towards
+complete arch-independence or not, but I just noticed that you still
+have the <mach/*> hierarchy in mach-shmobile/include/mach/*, and
+grep:ing around this seems totally unnecessary, I think it would be
+easy to produce a patch set eliminating <mach/*> from shmobile.
 
-greg k-h
+(Usually we will just move all the headers down into the
+mach-shmobile folder.)
+
+Yours,
+Linus Walleij
+
+______________________________________________________
+Linux MTD discussion mailing list
+http://lists.infradead.org/mailman/listinfo/linux-mtd/
