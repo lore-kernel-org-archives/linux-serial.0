@@ -1,57 +1,90 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [PATCH 1/3] tty: xuartps: Fix "may be used uninitialized" build
- warning
-Date: Tue, 29 Oct 2013 09:39:13 -0700
-Message-ID: <49d5e652-87b6-4e4c-8812-398bd2076d76@VA3EHSMHS008.ehs.local>
-References: <1382398861-21542-1-git-send-email-soren.brinkmann@xilinx.com>
- <1382398861-21542-2-git-send-email-soren.brinkmann@xilinx.com>
- <20131029162252.GA21986@kroah.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 18:05:53 +0100
+Message-ID: <1577821.Q7gttkPE2J@avalon>
+References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<20131029060427.GF11580@verge.net.au>
+	<20131029160449.GD16686@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:16873
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751732Ab3J2QjW convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Oct 2013 12:39:22 -0400
-Content-Disposition: inline
-In-Reply-To: <20131029162252.GA21986@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============4918095343803587038=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20131029160449.GD16686-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Guennadi Liakhovetski <g.liakhovetski+renesas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, ed.com-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Eduardo Valentin <eduardo.valentin-l0cyMroinI0@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Chris Ball <cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Samuel Ortiz <samuel-jcdQHdrhKHMdnm+yROfE0A@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ian Molton <ian-zdned+2MO1+9FHfhHBbuYA@public.gmane.org>, Simon
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-
-On Tue, Oct 29, 2013 at 09:22:52AM -0700, Greg Kroah-Hartman wrote:
-> On Mon, Oct 21, 2013 at 04:40:59PM -0700, Soren Brinkmann wrote:
-> > Initialize varibles for which a 'may be used uninitalized' warning =
-is
-> > issued.
-> >=20
-> > Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> > ---
-> > The warning is actually a false positive. The variables are passed =
-to a
-> > function per reference. That function uses those variables to retur=
-n
-> > values, which then are used by the caller. Is there a way to
-> > avoid the initialization and the build warning alltogether?
-> > ---
-> >  drivers/tty/serial/xilinx_uartps.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> Please properly credit the kbuild robot who found these issues the ne=
-xt
-> time...
-
-Sorry for that. I'll do that next time.
-
-	Thanks,
-	S=C3=B6ren
 
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--===============4918095343803587038==
+Content-Type: multipart/signed; boundary="nextPart3771148.DUBN0oL5aB"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+
+
+--nextPart3771148.DUBN0oL5aB
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+
+Hi Mark,
+
+On Tuesday 29 October 2013 09:04:49 Mark Brown wrote:
+> On Tue, Oct 29, 2013 at 03:04:27PM +0900, Simon Horman wrote:
+> > I think this is a step in a good direction.
+> > However, I think it would be even better if the architecture dependency
+> > was removed completely.
+> 
+> Yes, please.
+
+I've kept it for two reasons.
+
+The first one is that I can't compile-test all those drivers on all 
+architectures. The spi-sh-msiof driver, for instance, uses io(read|write)(16|
+32) which are not available on all architectures. There might be other similar 
+problems that I can't catch, and I don't want to introduce build breakages in 
+the kernel.
+
+The second reason is that, as the IP cores have never been used on anything 
+but SuperH and ARM, I don't like the idea of clobbering the config process 
+with drivers that are useless on the target architecture. Now that we have a 
+COMPILE_TEST Kconfig option, my preference would thus go to SUPERH || ARM || 
+COMPILE_TEST over no dependency at all.
+
+-- 
+Regards,
+
+Laurent Pinchart
+
+--nextPart3771148.DUBN0oL5aB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQEcBAABAgAGBQJSb+r2AAoJEIkPb2GL7hl19w8H+gJj3zKx1Th48UvyGZV3QsU0
+AEq9ko2/u+rnJtA2vWyrc6Kfjp07Sa6vVOrY/5s9Mzg69jHQ96KzMTmwbv4/ExoW
+6Io3iKE6MdHBnnZ0xPRtNlaE6StlOt4Lv9+rQheJsomFgaRCmvKEaJLOB32bRkgb
+AfqFT8gu1OaKF72FhxwJ0Atl2kIJIMLZuaI0bMjRCaK2oDvV2NhufAUGRjuuMFFw
+/zQ0wxDIZTUQcu6OXEfa8CA5b5EvcW8v46a+BF+C7nVC4TF4wqgxlhJxxgXcd3mO
+pK7clYQn+8d2zpaS7CAMbXXip6r+AO83S8NjR/tDA5er/dyNJ+cskIb5kxNes34=
+=9Krm
+-----END PGP SIGNATURE-----
+
+--nextPart3771148.DUBN0oL5aB--
+
+
+--===============4918095343803587038==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4918095343803587038==--
