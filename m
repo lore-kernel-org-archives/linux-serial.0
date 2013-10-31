@@ -1,57 +1,41 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 0/5] Add OF support to the sh-sci serial port driver
-Date: Thu, 31 Oct 2013 14:21:16 +0900
-Message-ID: <20131031052116.GJ1603@verge.net.au>
-References: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Jonathan Woithe <jwoithe@atrad.com.au>
+Subject: [PATCH] serial: 8250: Fix initialisation of Quatech cards with the
+ AMCC PCI chip
+Date: Thu, 31 Oct 2013 15:43:40 +1030
+Message-ID: <20131031051340.GG927@marvin.atrad.com.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from server.atrad.com.au ([150.101.241.2]:36706 "EHLO
+	server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750762Ab3JaFdM (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Oct 2013 01:33:12 -0400
 Content-Disposition: inline
-In-Reply-To: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: jwoithe@just42.net
 
-[ CCed Greg KH. It is my assumption that he will take this series
-  once it is ready ]
+Fix the initialisation of older Quatech serial cards which are fitted with
+the AMCC PCI Matchmaker interface chip.
 
-On Tue, Oct 29, 2013 at 11:29:54AM +0100, Laurent Pinchart wrote:
-> Hello,
-> 
-> This patch set adds device tree bindings for the sh sci serial port devices
-> and adds OF parsing to the sh-sci driver.
-> 
-> The bindings are based on Bastian Hecht's proposal (see
-> http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach taken
-> here is more minimalistic: instead of describing all hardware characteristics
-> that vary between the SCI device revisions in DT (such as registers layout),
-> that information is stored in the driver and selected based on the compatible
-> property value. Only SCI revisions used on ARM devices are supported through
-> DT, as DT support for SuperH is nowhere down the line.
-> 
-> The first three patches clean up the sh-sci driver. They're not strictly
-> required for OF support but make sense nonetheless. The last two patches add
-> OF parsing to the sh-sci driver and create DT bindings documentation.
-> 
-> The patches have been test on a Lager board (r8a7790-based). Support for other
-> SoCs will be added as needed. Note that all current Renesas ARM SoCs seem to
-> be compatible with the generic (H)SCI(F)(AB) devices, but the plan is for
-> their DT bindings to list the SoC-specific version in case incompatibilities
-> are found later.
-> 
-> Cc: devicetree@vger.kernel.org
-> 
-> Bastian Hecht (1):
->   serial: sh-sci: Add OF support
-> 
-> Laurent Pinchart (4):
->   serial: sh-sci: Sort headers alphabetically
->   serial: sh-sci: Remove baud rate calculation algorithm 5
->   serial: sh-sci: Simplify baud rate calculation algorithms
->   serial: sh-sci: Add device tree bindings documentation
-
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-
-Laurent, is this series waiting on anything other than
-a review of the bindings from the Device-Tree people?
+Signed-off-by: Jonathan Woithe (jwoithe@just42.net)
+---
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index c810da7..710f6d7 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1260,10 +1260,10 @@ static int pci_quatech_init(struct pci_dev *dev)
+ 		unsigned long base = pci_resource_start(dev, 0);
+ 		if (base) {
+ 			u32 tmp;
+-			outl(inl(base + 0x38), base + 0x38);
++			outl(inl(base + 0x38) | 0x00002000, base + 0x38);
+ 			tmp = inl(base + 0x3c);
+ 			outl(tmp | 0x01000000, base + 0x3c);
+-			outl(tmp, base + 0x3c);
++			outl(tmp &= ~0x01000000, base + 0x3c);
+ 		}
+ 	}
+ 	return 0;
