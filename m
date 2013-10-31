@@ -1,74 +1,36 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: linux-next: build failure after merge of the tty tree
-Date: Thu, 31 Oct 2013 06:24:25 -0700
-Message-ID: <20131031132425.GA2913@kroah.com>
-References: <CA+icZUWYHSU3yvsW6fB5aKJ0LQVaY0afsF2DiS9=m_bzy80=hw@mail.gmail.com>
- <73605653.13929.1383224991870.JavaMail.root@mail>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Philippe Proulx <philippe.proulx@savoirfairelinux.com>
+Subject: [PATCH] serial: omap: fix missing comma
+Date: Thu, 31 Oct 2013 09:39:58 -0400
+Message-ID: <fa11da334af37a035497c235fa9f5f5cfe11adec.1383226313.git.philippe.proulx@savoirfairelinux.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:48077 "EHLO
-	out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753751Ab3JaNWY (ORCPT
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:55110 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753832Ab3JaNkC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Oct 2013 09:22:24 -0400
-Content-Disposition: inline
-In-Reply-To: <73605653.13929.1383224991870.JavaMail.root@mail>
+	Thu, 31 Oct 2013 09:40:02 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Philippe Proulx <philippe.proulx@savoirfairelinux.com>
-Cc: sedat dilek <sedat.dilek@gmail.com>, linux-next <linux-next@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sedat Dilek <sedat.dilek@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@savoirfairelinux.com
 
-On Thu, Oct 31, 2013 at 09:09:51AM -0400, Philippe Proulx wrote:
-> ----- Original Message -----
-> > From: "Sedat Dilek" <sedat.dilek@gmail.com>
-> > To: "Stephen Rothwell" <sfr@canb.auug.org.au>, "Philippe Proulx" <philippe.proulx@savoirfairelinux.com>
-> > Cc: "Greg KH" <greg@kroah.com>, "linux-next" <linux-next@vger.kernel.org>, "LKML" <linux-kernel@vger.kernel.org>,
-> > linux-serial@vger.kernel.org
-> > Sent: Thursday, 31 October, 2013 6:35:23 AM
-> > Subject: Re: linux-next: build failure after merge of the tty tree
-> > 
-> > On Thu, Oct 31, 2013 at 8:40 AM, Stephen Rothwell
-> > <sfr@canb.auug.org.au> wrote:
-> > > Hi Greg,
-> > >
-> > > After merging the tty tree, today's linux-next build (arm
-> > > multi_v7_defconfig) failed like this:
-> > >
-> > > drivers/tty/serial/omap-serial.c: In function 'serial_omap_probe':
-> > > drivers/tty/serial/omap-serial.c:1724:22: error: expected ')'
-> > > before numeric constant
-> > > drivers/tty/serial/omap-serial.c:1724:22: warning: format '%d'
-> > > expects a matching 'int' argument [-Wformat]
-> > >
-> > > Caused by commit e5f9bf72efbc ("serial: omap: fix a few checkpatch
-> > > warnings").  There is a missing ',' in the dev_warn() ...
-> > >
-> > > I have used the version of the tty tree from next-20131030 for
-> > > today.
-> > >
-> > 
-> > [ Add CC to linux-serial ML ]
-> > 
-> > Happy HelloWien and WelcomeBackStephen!
-> > 
-> > That was only checkpatch-tested, eh :-)?
-> > 
-> > @@ -1724,8 +1722,9 @@ static int serial_omap_probe(struct
-> > platform_device *pdev)
-> > up->port.uartclk = omap_up_info->uartclk;
-> > if (!up->port.uartclk) {
-> > up->port.uartclk = DEFAULT_CLK_SPEED;
-> > - dev_warn(&pdev->dev, "No clock speed specified: using default:"
-> > - "%d\n", DEFAULT_CLK_SPEED);
-> > + dev_warn(&pdev->dev,
-> > + "No clock speed specified: using default: %d\n" <--- Comma missing
-> > here!
-> 
-> Oops, something obviously went wrong in my process. Sorry about this.
-> 
-> Do you want me to fix this commit?
+Signed-off-by: Philippe Proulx <philippe.proulx@savoirfairelinux.com>
+---
+ drivers/tty/serial/omap-serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please send me a patch that I can apply.
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 97c07f6..fa511eb 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1723,7 +1723,7 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 	if (!up->port.uartclk) {
+ 		up->port.uartclk = DEFAULT_CLK_SPEED;
+ 		dev_warn(&pdev->dev,
+-			 "No clock speed specified: using default: %d\n"
++			 "No clock speed specified: using default: %d\n",
+ 			 DEFAULT_CLK_SPEED);
+ 	}
+ 
+-- 
+1.8.4.2
 
-greg k-h
