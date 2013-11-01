@@ -1,70 +1,73 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 0/5] Add OF support to the sh-sci serial port driver
-Date: Fri, 1 Nov 2013 09:17:25 +0900
-Message-ID: <20131101001724.GE6818@verge.net.au>
+From: Bastian Hecht <hechtb@gmail.com>
+Subject: Re: [PATCH 4/5] serial: sh-sci: Add OF support
+Date: Fri, 1 Nov 2013 10:47:37 +0100
+Message-ID: <CABYn4sxC02bX7XqN8yQ-gYgZEdaHAUohOjyL3pjGYXK9kd8WXg@mail.gmail.com>
 References: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131031052116.GJ1603@verge.net.au>
- <2472479.KWXlO4kKsi@avalon>
+	<1383042599-25151-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <2472479.KWXlO4kKsi@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bk0-f41.google.com ([209.85.214.41]:64758 "EHLO
+	mail-bk0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755805Ab3KAJri (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 1 Nov 2013 05:47:38 -0400
+In-Reply-To: <1383042599-25151-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: Linux-SH <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
 
-On Thu, Oct 31, 2013 at 01:30:12PM +0100, Laurent Pinchart wrote:
-> Hi Simon,
-> 
-> On Thursday 31 October 2013 14:21:16 Simon Horman wrote:
-> > [ CCed Greg KH. It is my assumption that he will take this series
-> >   once it is ready ]
-> > 
-> > On Tue, Oct 29, 2013 at 11:29:54AM +0100, Laurent Pinchart wrote:
-> > > Hello,
-> > > 
-> > > This patch set adds device tree bindings for the sh sci serial port
-> > > devices and adds OF parsing to the sh-sci driver.
-> > > 
-> > > The bindings are based on Bastian Hecht's proposal (see
-> > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
-> > > taken here is more minimalistic: instead of describing all hardware
-> > > characteristics that vary between the SCI device revisions in DT (such as
-> > > registers layout), that information is stored in the driver and selected
-> > > based on the compatible property value. Only SCI revisions used on ARM
-> > > devices are supported through DT, as DT support for SuperH is nowhere
-> > > down the line.
-> > > 
-> > > The first three patches clean up the sh-sci driver. They're not strictly
-> > > required for OF support but make sense nonetheless. The last two patches
-> > > add OF parsing to the sh-sci driver and create DT bindings documentation.
-> > > 
-> > > The patches have been test on a Lager board (r8a7790-based). Support for
-> > > other SoCs will be added as needed. Note that all current Renesas ARM
-> > > SoCs seem to be compatible with the generic (H)SCI(F)(AB) devices, but
-> > > the plan is for their DT bindings to list the SoC-specific version in
-> > > case incompatibilities are found later.
-> > > 
-> > > Cc: devicetree@vger.kernel.org
-> > > 
-> > > Bastian Hecht (1):
-> > >   serial: sh-sci: Add OF support
-> > > 
-> > > Laurent Pinchart (4):
-> > >   serial: sh-sci: Sort headers alphabetically
-> > >   serial: sh-sci: Remove baud rate calculation algorithm 5
-> > >   serial: sh-sci: Simplify baud rate calculation algorithms
-> > >   serial: sh-sci: Add device tree bindings documentation
-> > 
-> > Acked-by: Simon Horman <horms+renesas@verge.net.au>
-> > 
-> > Laurent, is this series waiting on anything other than a review of the
-> > bindings from the Device-Tree people?
-> 
-> It's only waiting for review of the DT bindings and their implementation 
-> (patches 4/5 and 5/5). As I've modified Bastian's patch in 4/5 I'd like to 
-> give him an opportunity to review it as well.
+Hi Laurent!
 
-Understood.
+> +struct sci_port_info {
+> +       unsigned int type;
+> +       unsigned int regtype;
+> +       unsigned int brr_algo;
+> +};
+> +
+> +static const struct of_device_id of_sci_match[] = {
+> +       {
+> +               .compatible = "renesas,scif-generic",
+> +               .data = (void *)&(const struct sci_port_info) {
+> +                       .type = PORT_SCIF,
+> +                       .regtype = SCIx_SH4_SCIF_REGTYPE,
+> +                       .brr_algo = SCBRR_ALGO_2,
+> +               },
+> +       }, {
+> +               .compatible = "renesas,scifa-generic",
+> +               .data = (void *)&(const struct sci_port_info) {
+> +                       .type = PORT_SCIFA,
+> +                       .regtype = SCIx_SCIFA_REGTYPE,
+> +                       .brr_algo = SCBRR_ALGO_4,
+> +               },
+> +       }, {
+> +               .compatible = "renesas,scifb-generic",
+> +               .data = (void *)&(const struct sci_port_info) {
+> +                       .type = PORT_SCIFB,
+> +                       .regtype = SCIx_SCIFB_REGTYPE,
+> +                       .brr_algo = SCBRR_ALGO_4,
+> +               },
+> +       }, {
+> +               .compatible = "renesas,hscif-generic",
+> +               .data = (void *)&(const struct sci_port_info) {
+> +                       .type = PORT_HSCIF,
+> +                       .regtype = SCIx_HSCIF_REGTYPE,
+> +                       .brr_algo = SCBRR_ALGO_6,
+> +               },
+> +       }, {
+> +               /* Terminator */
+> +       },
+> +};
+> +MODULE_DEVICE_TABLE(of, of_sci_match);
+
+I like this version way better than my initial approach, given that we
+only support ARM based ports and we hope the regtype and brr_algo
+won't deviate a lot from the given generic settings for new chips -
+else the of_sci_match[] array might become a bit bloated. This was the
+former reasoning to introduce all the clumsy OF fields.
+
+I'm happy that the sci OF support will finally make it into the
+mainline, thanks Laurent!
+
+Bastian
