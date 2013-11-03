@@ -1,30 +1,76 @@
 From: Colin Leitner <colin.leitner@googlemail.com>
-Subject: Re: [PATCH] pl2303: fixed handling of CS5 setting. 5 databits work
- now
-Date: Sun, 03 Nov 2013 22:54:42 +0100
-Message-ID: <5276C622.4050903@gmail.com>
-References: <CAAMgOiUAwXNYbfAicgq+k0OZfKN8--pgR_-zCVSC2wm90bww0A@mail.gmail.com> <20131103170423.GC32672@localhost>
+Subject: [PATCH] USB: pl2303: fixed handling of CS5 setting
+Date: Sun, 03 Nov 2013 23:09:50 +0100
+Message-ID: <5276C9AE.1050702@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ea0-f172.google.com ([209.85.215.172]:38995 "EHLO
-	mail-ea0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752635Ab3KCVyq (ORCPT
+Received: from mail-ee0-f45.google.com ([74.125.83.45]:37563 "EHLO
+	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752987Ab3KCWJx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Nov 2013 16:54:46 -0500
-In-Reply-To: <20131103170423.GC32672@localhost>
+	Sun, 3 Nov 2013 17:09:53 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>
-Cc: Colin Leitner <colin.leitner@googlemail.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+To: gregkh@linuxfoundation.org, Johan Hovold <jhovold@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
+This patch fixes the CS5 setting on the PL2303 USB-to-serial devices. CS5 has a
+value of 0 and the CSIZE setting has been skipped altogether by the enclosing
+if. Tested on 3.11.6 and the scope shows the correct output after the fix has
+been applied.
 
-> Unfortunately, the patch is white-space damaged. You should use tabs for
-> indentation. Please run your patches through checkpatch.pl before
-> submitting (or fix your mail client if that's where the problem is).
->
+Tagged to be added to stable, because it fixes a user visible driver bug and is
+simple enough to backport easily.
 
-Clearly an end user error. checkpatch.pl didn't complain.
+Cc: stable@vger.kernel.org
+Signed-off-by: Colin Leitner <colin.leitner@gmail.com>
+---
+ drivers/usb/serial/pl2303.c |   30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-I'll repost the patch with the requested changes.
+diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
+index bedf8e4..fd86357 100644
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -522,23 +522,21 @@ static void pl2303_set_termios(struct tty_struct *tty,
+ 			    0, 0, buf, 7, 100);
+ 	dev_dbg(&port->dev, "0xa1:0x21:0:0  %d - %7ph\n", i, buf);
+
+-	if (C_CSIZE(tty)) {
+-		switch (C_CSIZE(tty)) {
+-		case CS5:
+-			buf[6] = 5;
+-			break;
+-		case CS6:
+-			buf[6] = 6;
+-			break;
+-		case CS7:
+-			buf[6] = 7;
+-			break;
+-		default:
+-		case CS8:
+-			buf[6] = 8;
+-		}
+-		dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
++	switch (C_CSIZE(tty)) {
++	case CS5:
++		buf[6] = 5;
++		break;
++	case CS6:
++		buf[6] = 6;
++		break;
++	case CS7:
++		buf[6] = 7;
++		break;
++	default:
++	case CS8:
++		buf[6] = 8;
+ 	}
++	dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
+
+ 	/* For reference:   buf[0]:buf[3] baud rate value */
+ 	pl2303_encode_baudrate(tty, port, spriv->type, buf);
+-- 
+1.7.10.4
