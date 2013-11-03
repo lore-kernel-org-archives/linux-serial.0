@@ -1,47 +1,30 @@
-From: Johan Hovold <jhovold@gmail.com>
+From: Colin Leitner <colin.leitner@googlemail.com>
 Subject: Re: [PATCH] pl2303: fixed handling of CS5 setting. 5 databits work
  now
-Date: Sun, 3 Nov 2013 18:13:56 +0100
-Message-ID: <20131103171356.GD32672@localhost>
-References: <CAAMgOiUAwXNYbfAicgq+k0OZfKN8--pgR_-zCVSC2wm90bww0A@mail.gmail.com>
- <20131103170423.GC32672@localhost>
- <CAMgPeKVinmcB7sDaTjU4LCA_AUY3QnxqoENBOmKsbpvk+9tDRw@mail.gmail.com>
+Date: Sun, 03 Nov 2013 22:54:42 +0100
+Message-ID: <5276C622.4050903@gmail.com>
+References: <CAAMgOiUAwXNYbfAicgq+k0OZfKN8--pgR_-zCVSC2wm90bww0A@mail.gmail.com> <20131103170423.GC32672@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f177.google.com ([209.85.217.177]:44557 "EHLO
-	mail-lb0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753456Ab3KCROD (ORCPT
+Received: from mail-ea0-f172.google.com ([209.85.215.172]:38995 "EHLO
+	mail-ea0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752635Ab3KCVyq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Nov 2013 12:14:03 -0500
-Content-Disposition: inline
-In-Reply-To: <CAMgPeKVinmcB7sDaTjU4LCA_AUY3QnxqoENBOmKsbpvk+9tDRw@mail.gmail.com>
+	Sun, 3 Nov 2013 16:54:46 -0500
+In-Reply-To: <20131103170423.GC32672@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Colin Leitner <colin.leitner@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-usb mailing list <linux-usb@vger.kernel.org>
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Colin Leitner <colin.leitner@googlemail.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Sun, Nov 03, 2013 at 06:11:23PM +0100, Johan Hovold wrote:
 
-> >> +       switch (C_CSIZE(tty)) {
-> >> +       case CS5:
-> >> +               buf[6] = 5;
-> >> +               break;
-> >> +       case CS6:
-> >> +               buf[6] = 6;
-> >> +               break;
-> >> +       case CS7:
-> >> +               buf[6] = 7;
-> >> +               break;
-> >> +       default:
-> >
-> > You can drop the default-case as CSIZE is a two-bit mask.
+> Unfortunately, the patch is white-space damaged. You should use tabs for
+> indentation. Please run your patches through checkpatch.pl before
+> submitting (or fix your mail client if that's where the problem is).
+>
 
-Nevermind. Just leave it there to keep gcc happy.
+Clearly an end user error. checkpatch.pl didn't complain.
 
-Thanks,
-Johan
-
-> +       case CS8:
-> +               buf[6] = 8;
->         }
+I'll repost the patch with the requested changes.
