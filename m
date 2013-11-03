@@ -1,105 +1,138 @@
-From: Johan Hovold <jhovold@gmail.com>
-Subject: Re: [PATCH] pl2303: fixed handling of CS5 setting. 5 databits work
- now
-Date: Sun, 3 Nov 2013 18:04:23 +0100
-Message-ID: <20131103170423.GC32672@localhost>
-References: <CAAMgOiUAwXNYbfAicgq+k0OZfKN8--pgR_-zCVSC2wm90bww0A@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 5/5] serial: sh-sci: Add device tree bindings documentation
+Date: Sun, 03 Nov 2013 18:09:58 +0100
+Message-ID: <2043069.5eESUL0Rq2@avalon>
+References: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1975664.tS0XZnqC8i@avalon> <B021E9B4-2795-4A84-9AD1-690EA119EF18@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f48.google.com ([209.85.215.48]:55373 "EHLO
-	mail-la0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752149Ab3KCREa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 3 Nov 2013 12:04:30 -0500
-Content-Disposition: inline
-In-Reply-To: <CAAMgOiUAwXNYbfAicgq+k0OZfKN8--pgR_-zCVSC2wm90bww0A@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <B021E9B4-2795-4A84-9AD1-690EA119EF18@codeaurora.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Kumar Gala <galak@codeaurora.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Colin Leitner <colin.leitner@googlemail.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-[ Please make sure to CC the linux-usb list. ]
+Hi Kumar,
 
-On Sun, Nov 03, 2013 at 03:47:06PM +0100, Colin Leitner wrote:
-> pl2303: fixed handling of CS5 setting. 5 databits work now
-
-No need to repeat the subject line in the body, and please add a
-"USB:"-prefix and drop the "5 databits work now" from the subject.
-
-> This patch fixes the CS5 setting on the PL2303 USB-to-serial devices. CS5 has
-> a value of 0 and the CSIZE setting has been skipped altogether by the enclosing
-> if. Tested on 3.11.6 and the scope shows the correct output after the fix has
-> been applied.
-
-Good catch!
-
-Unfortunately, the patch is white-space damaged. You should use tabs for
-indentation. Please run your patches through checkpatch.pl before
-submitting (or fix your mail client if that's where the problem is).
- 
-> Tagged to be added to stable, because it fixes a user visible driver bug and is
-> simple enough to backport easily.
+On Thursday 31 October 2013 10:00:36 Kumar Gala wrote:
+> On Oct 31, 2013, at 9:55 AM, Laurent Pinchart wrote:
+> > On Thursday 31 October 2013 09:42:48 Kumar Gala wrote:
+> >> On Oct 29, 2013, at 5:29 AM, Laurent Pinchart wrote:
+> >>> Document the device tree bindings for the sci serial port devices.
+> >>> 
+> >>> Cc: devicetree@vger.kernel.org
+> >>> Signed-off-by: Laurent Pinchart
+> >>> <laurent.pinchart+renesas@ideasonboard.com>
+> >>> ---
+> >>> .../bindings/serial/renesas,sci-serial.txt         | 51 ++++++++++++++++
+> >>> 1 file changed, 51 insertions(+)
+> >>> create mode 100644
+> >>> Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> >>> 
+> >>> diff --git
+> >>> a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> >>> b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt new
+> >>> file mode 100644
+> >>> index 0000000..5658b4f
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> >>> @@ -0,0 +1,51 @@
+> >>> +* Renesas SH-Mobile Serial Communication Interface
+> >>> +
+> >>> +Required properties:
+> >>> +
+> >>> +  - compatible: should be one of the following.
+> >> 
+> >> Being pedantic, but how about saying 'one of the following types (scif,
+> >> scifa, scifb, or hscif)
+> > 
+> > Sounds good to me.
+> > 
+> >>> +
+> >>> +    - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible
+> >>> UART.
+> >>> +    - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible
+> >>> UART.
+> >>> +    - "renesas,scifb-r8a7790" for R8A7790 (R-Car H2) SCIFB compatible
+> >>> UART.
+> >>> +    - "renesas,hscif-r8a7790" for R8A7790 (R-Car H2) HSCIF compatible
+> >>> UART.
+> >>> +    - "renesas,scif-generic" for generic SCIF compatible UART.
+> >>> +    - "renesas,scifa-generic" for generic SCIFA compatible UART.
+> >>> +    - "renesas,scifb-generic" for generic SCIFB compatible UART.
+> >>> +    - "renesas,hscif-generic" for generic HSCIF compatible UART.
+> >>> +
+> >>> +    When compatible with the generic version, nodes must also list the
+> >>> +    SoC-specific version corresponding to the platform.
+> >>> +
+> >>> +  - reg: Base address and length of the memory resource used by the
+> >>> UART.
+> >>> +
+> >>> +  - interrupt-parent: Reference to the parent interrupt controller.
+> >>> +  - interrupts: Interrupt number(s). Depending on the SoC SCIx UARTs
+> >>> are
+> >>> tied
+> >>> +    to one or multiple interrupt lines. When using multiple interrupt
+> >>> lines,
+> >>> +    specify the interrupt names as described below.
+> >>> +
+> >>> +  - clocks: Reference to the SCIx UART interface clock.
+> >>> +  - clock-names: Should be "sci_ick".
+> >>> +
+> >>> +Optional properties:
+> >>> +
+> >>> +  - interrupt-names: When using multiple interrupts, report the
+> >>> interrupt
+> >>> +    names as "eri" (receive error), "rxi" (receive), "txi" (transmit)
+> >>> and
+> >>> +    "bri" (break). When using a single interrupt this property should
+> >>> not
+> >>> be +    present.
+> >> 
+> >> Hmm, is there a reason not to just have the 4 interrupts always present
+> >> and in the case they are all wired to the same interrupt, just have the
+> >> interrupts all be the same?
+> >> 
+> >> example:
+> >> 
+> >> interrupts = <0 144 4>, <0 144 4>, <0 144 4>, <0 144 4>;
+> > 
+> > The multiple interrupts case is the exception, I thought it would be
+> > easier to specify a single interrupt in the general case and have a more
+> > complex binding for the exceptions.
+> > 
+> >>> +
+> >>> +Note: Each enabled SCIx UART should have an alias correctly numbered in
+> >>> the +"aliases" node.
+> >>> +
+> >>> +Example:
+> >>> +	aliases {
+> >>> +		serial0 = &scifa0;
+> >>> +	};
+> >>> +
+> >>> +	scifa0: serial@e6c40000 {
+> >>> +		compatible = "renesas,scifa-r8a7790", "renesas,scifa-generic";
+> >>> +		reg = <0 0xe6c40000 0 64>;
+> >>> +		interrupt-parent = <&gic>;
+> >>> +		interrupts = <0 144 4>;
+> >>> +		clocks = <&mstp2_clks 4>;
+> >>> +		clock-names = "sci_ick";
+> >>> +	};
+> >> 
+> >> might be nice to have an example with the 4 interrupts.
+> > 
+> > The example would be pretty theoretical, as the r8a7790 uses a single
+> > interrupt in all cases. What about adding such an example when adding an
+> > SoC that uses multiple interrupts to the DT bindings documentation ?
 > 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Colin Leitner <colin.leitner@gmail.com>
-> ---
->  drivers/usb/serial/pl2303.c |   30 ++++++++++++++----------------
->  1 file changed, 14 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
-> index bedf8e4..fd86357 100644
-> --- a/drivers/usb/serial/pl2303.c
-> +++ b/drivers/usb/serial/pl2303.c
-> @@ -522,23 +522,21 @@ static void pl2303_set_termios(struct tty_struct *tty,
->                             0, 0, buf, 7, 100);
->         dev_dbg(&port->dev, "0xa1:0x21:0:0  %d - %7ph\n", i, buf);
-> 
-> -       if (C_CSIZE(tty)) {
-> -               switch (C_CSIZE(tty)) {
-> -               case CS5:
-> -                       buf[6] = 5;
-> -                       break;
-> -               case CS6:
-> -                       buf[6] = 6;
-> -                       break;
-> -               case CS7:
-> -                       buf[6] = 7;
-> -                       break;
-> -               default:
-> -               case CS8:
-> -                       buf[6] = 8;
-> -               }
-> -               dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
-> +       switch (C_CSIZE(tty)) {
-> +       case CS5:
-> +               buf[6] = 5;
-> +               break;
-> +       case CS6:
-> +               buf[6] = 6;
-> +               break;
-> +       case CS7:
-> +               buf[6] = 7;
-> +               break;
-> +       default:
+> I'm fine with that if we strip the multiple interrupt bits out of the
+> binding until a device/compatible exists that needs it.
 
-You can drop the default-case as CSIZE is a two-bit mask.
+I'll do that and repost.
 
-Care to respin?
+-- 
+Regards,
 
-Thanks,
-Johan
+Laurent Pinchart
 
-> +       case CS8:
-> +               buf[6] = 8;
->         }
-> +       dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
-> 
->         /* For reference:   buf[0]:buf[3] baud rate value */
->         pl2303_encode_baudrate(tty, port, spriv->type, buf);
-> -- 
-> 1.7.10.4
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
