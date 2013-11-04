@@ -1,85 +1,88 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 4/5] serial: sh-sci: Add OF support
-Date: Mon, 04 Nov 2013 01:58:21 +0100
-Message-ID: <1449714.Sp0o1f9lVb@avalon>
-References: <1383042599-25151-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1383042599-25151-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <CABYn4sxC02bX7XqN8yQ-gYgZEdaHAUohOjyL3pjGYXK9kd8WXg@mail.gmail.com>
+From: Johan Hovold <jhovold@gmail.com>
+Subject: Re: [PATCH] USB: pl2303: fixed handling of CS5 setting
+Date: Mon, 4 Nov 2013 11:13:56 +0100
+Message-ID: <20131104101356.GA15921@localhost>
+References: <5276C9AE.1050702@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CABYn4sxC02bX7XqN8yQ-gYgZEdaHAUohOjyL3pjGYXK9kd8WXg@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Bastian Hecht <hechtb@gmail.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux-SH <linux-sh@vger.kernel.org>, linux-serial@vger.kernel.org, Paul Mundt <lethal@linux-sh.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:56413 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751123Ab3KDKOE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Nov 2013 05:14:04 -0500
+Content-Disposition: inline
+In-Reply-To: <5276C9AE.1050702@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Colin Leitner <colin.leitner@googlemail.com>
+Cc: gregkh@linuxfoundation.org, Johan Hovold <jhovold@gmail.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-Hi Bastian,
-
-On Friday 01 November 2013 10:47:37 Bastian Hecht wrote:
-> Hi Laurent!
+On Sun, Nov 03, 2013 at 11:09:50PM +0100, Colin Leitner wrote:
+> This patch fixes the CS5 setting on the PL2303 USB-to-serial devices. CS5 has a
+> value of 0 and the CSIZE setting has been skipped altogether by the enclosing
+> if. Tested on 3.11.6 and the scope shows the correct output after the fix has
+> been applied.
 > 
-> > +struct sci_port_info {
-> > +       unsigned int type;
-> > +       unsigned int regtype;
-> > +       unsigned int brr_algo;
-> > +};
-> > +
-> > +static const struct of_device_id of_sci_match[] = {
-> > +       {
-> > +               .compatible = "renesas,scif-generic",
-> > +               .data = (void *)&(const struct sci_port_info) {
-> > +                       .type = PORT_SCIF,
-> > +                       .regtype = SCIx_SH4_SCIF_REGTYPE,
-> > +                       .brr_algo = SCBRR_ALGO_2,
-> > +               },
-> > +       }, {
-> > +               .compatible = "renesas,scifa-generic",
-> > +               .data = (void *)&(const struct sci_port_info) {
-> > +                       .type = PORT_SCIFA,
-> > +                       .regtype = SCIx_SCIFA_REGTYPE,
-> > +                       .brr_algo = SCBRR_ALGO_4,
-> > +               },
-> > +       }, {
-> > +               .compatible = "renesas,scifb-generic",
-> > +               .data = (void *)&(const struct sci_port_info) {
-> > +                       .type = PORT_SCIFB,
-> > +                       .regtype = SCIx_SCIFB_REGTYPE,
-> > +                       .brr_algo = SCBRR_ALGO_4,
-> > +               },
-> > +       }, {
-> > +               .compatible = "renesas,hscif-generic",
-> > +               .data = (void *)&(const struct sci_port_info) {
-> > +                       .type = PORT_HSCIF,
-> > +                       .regtype = SCIx_HSCIF_REGTYPE,
-> > +                       .brr_algo = SCBRR_ALGO_6,
-> > +               },
-> > +       }, {
-> > +               /* Terminator */
-> > +       },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, of_sci_match);
+> Tagged to be added to stable, because it fixes a user visible driver bug and is
+> simple enough to backport easily.
 > 
-> I like this version way better than my initial approach,
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Colin Leitner <colin.leitner@gmail.com>
 
-Thank you.
+Looks good now, but I'm afraid it doesn't apply to v3.12. There were
+some last minute reverts in v3.12 which could possibly explain that.
 
-> given that we only support ARM based ports and we hope the regtype and
-> brr_algo won't deviate a lot from the given generic settings for new chips
+Care to rebase against v3.12 and send a v2 (v3?)?
 
-Hopefully :-) I'm trying to simplify the baud rate algorithms mess, I should 
-be able to post patches soon, but I need to test them on hardware first. Would 
-you have a sh7780, sh7785 or sh7786 board by any chance ?
+Thanks,
+Johan
 
-> - else the of_sci_match[] array might become a bit bloated. This was the
-> former reasoning to introduce all the clumsy OF fields.
+> ---
+>  drivers/usb/serial/pl2303.c |   30 ++++++++++++++----------------
+>  1 file changed, 14 insertions(+), 16 deletions(-)
 > 
-> I'm happy that the sci OF support will finally make it into the mainline,
-> thanks Laurent!
-
-You're welcome.
-
--- 
-Regards,
-
-Laurent Pinchart
-
+> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
+> index bedf8e4..fd86357 100644
+> --- a/drivers/usb/serial/pl2303.c
+> +++ b/drivers/usb/serial/pl2303.c
+> @@ -522,23 +522,21 @@ static void pl2303_set_termios(struct tty_struct *tty,
+>  			    0, 0, buf, 7, 100);
+>  	dev_dbg(&port->dev, "0xa1:0x21:0:0  %d - %7ph\n", i, buf);
+> 
+> -	if (C_CSIZE(tty)) {
+> -		switch (C_CSIZE(tty)) {
+> -		case CS5:
+> -			buf[6] = 5;
+> -			break;
+> -		case CS6:
+> -			buf[6] = 6;
+> -			break;
+> -		case CS7:
+> -			buf[6] = 7;
+> -			break;
+> -		default:
+> -		case CS8:
+> -			buf[6] = 8;
+> -		}
+> -		dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
+> +	switch (C_CSIZE(tty)) {
+> +	case CS5:
+> +		buf[6] = 5;
+> +		break;
+> +	case CS6:
+> +		buf[6] = 6;
+> +		break;
+> +	case CS7:
+> +		buf[6] = 7;
+> +		break;
+> +	default:
+> +	case CS8:
+> +		buf[6] = 8;
+>  	}
+> +	dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
+> 
+>  	/* For reference:   buf[0]:buf[3] baud rate value */
+>  	pl2303_encode_baudrate(tty, port, spriv->type, buf);
+> -- 
+> 1.7.10.4
