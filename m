@@ -1,30 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/4] ARM/serial: at91: move machine quirk into machine
-Date: Tue, 5 Nov 2013 04:53:29 -0800
-Message-ID: <20131105125329.GC18093@kroah.com>
-References: <1383643722-14189-1-git-send-email-linus.walleij@linaro.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] USB: pl2303: fixed handling of CS5 setting
+Date: Tue, 5 Nov 2013 10:08:31 -0800
+Message-ID: <20131105180831.GD25633@kroah.com>
+References: <5277EA2B.1020806@gmail.com>
+ <20131104191355.GB15921@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:57067 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751519Ab3KESGU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Nov 2013 13:06:20 -0500
 Content-Disposition: inline
-In-Reply-To: <1383643722-14189-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: linux-gpio@vger.kernel.org, Andrew Victor <linux@maxim.org.za>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-serial@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20131104191355.GB15921@localhost>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Colin Leitner <colin.leitner@googlemail.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Tue, Nov 05, 2013 at 10:28:42AM +0100, Linus Walleij wrote:
-> This removes the dependency on <mach/gpio.h> from the AT91 serial
-> driver by adding an mctrl callback quirk.
+On Mon, Nov 04, 2013 at 08:13:55PM +0100, Johan Hovold wrote:
+> On Mon, Nov 04, 2013 at 07:40:43PM +0100, Colin Leitner wrote:
+> > This patch fixes the CS5 setting on the PL2303 USB-to-serial devices. CS5 has a
+> > value of 0 and the CSIZE setting has been skipped altogether by the enclosing
+> > if. Tested on 3.11.6 and the scope shows the correct output after the fix has
+> > been applied.
+> > 
+> > Tagged to be added to stable, because it fixes a user visible driver bug and is
+> > simple enough to backport easily.
 > 
-> Long term it is better if the driver calls the generic GPIO
-> interface (gpio_set_value()), but this gets a hairy cross-depency
-> into the machine-local headers out of the way for now.
+> Thanks! Now it applies cleanly to v3.12.
 > 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> Greg, if you're OK with this approach please give me an ACK
-> so I can take this through the ARM SoC or GPIO tree in the end.
+> Greg, can you pick this one up for v3.13-rc? The fix could be backported
+> to all stable trees as the bug has been there since pre-git times.
+> 
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Colin Leitner <colin.leitner@gmail.com>
+> 
+> Signed-off-by: Johan Hovold <jhovold@gmail.com>
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thanks, I'll pick this up after 3.13-rc1 is out and get it into the
+stable kernels as well.
+
+greg k-h
