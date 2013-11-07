@@ -1,44 +1,54 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH bz 60724] tty/serial/8250: fix typo in help text
-Date: Thu, 07 Nov 2013 09:58:14 -0800
-Message-ID: <527BD4B6.7040107@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] n_tty: Ensure reader restarts worker for next reader
+Date: Thu,  7 Nov 2013 13:59:46 -0500
+Message-ID: <1383850796-24300-1-git-send-email-peter@hurleysoftware.com>
+References: <20131017211236.GA6155@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from merlin.infradead.org ([205.233.59.134]:60395 "EHLO
-	merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753123Ab3KGR6R (ORCPT
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:43898 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751123Ab3KGTWY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 7 Nov 2013 12:58:17 -0500
+	Thu, 7 Nov 2013 14:22:24 -0500
+In-Reply-To: <20131017211236.GA6155@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Christoph Biedl <bugzilla.kernel.bpeb@manchmal.in-ulm.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Mikael Pettersson <mikpelinux@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, stable@kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+A departing reader must restart a flush_to_ldisc() worker _before_
+the next reader enters the read loop; this is to avoid the new reader
+concluding no more i/o is available and prematurely exiting, when the
+old reader simply hasn't re-started the worker yet.
 
-Commit 9326b047e4fd4a8da72e59d913214a1803e9709c includes a typo
-of "8350_core" instead of "8250_core", so correct it.
-
-Fixes kernel bugzilla #60724:
-  https://bugzilla.kernel.org/show_bug.cgi?id=60724
-
-Reported-by:  Christoph Biedl <bugzilla.kernel.bpeb@manchmal.in-ulm.de>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: stable@kernel.org # 3.12
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_tty.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- lnx-312.orig/drivers/tty/serial/8250/Kconfig
-+++ lnx-312/drivers/tty/serial/8250/Kconfig
-@@ -41,7 +41,7 @@ config SERIAL_8250_DEPRECATED_OPTIONS
- 	  accept kernel parameters in both forms like 8250_core.nr_uarts=4 and
- 	  8250.nr_uarts=4. We now renamed the module back to 8250, but if
- 	  anybody noticed in 3.7 and changed their userspace we still have to
--	  keep the 8350_core.* options around until they revert the changes
-+	  keep the 8250_core.* options around until they revert the changes
- 	  they already did.
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 7a744b6..ce11cd5 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2250,6 +2250,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 		if (time)
+ 			timeout = time;
+ 	}
++	n_tty_set_room(tty);
++	up_read(&tty->termios_rwsem);
++
+ 	mutex_unlock(&ldata->atomic_read_lock);
+ 	remove_wait_queue(&tty->read_wait, &wait);
  
- 	  If 8250 is built as a module, this adds 8250_core alias instead. 
+@@ -2260,8 +2263,6 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 	if (b - buf)
+ 		retval = b - buf;
+ 
+-	n_tty_set_room(tty);
+-	up_read(&tty->termios_rwsem);
+ 	return retval;
+ }
+ 
+-- 
+1.8.1.2
+
