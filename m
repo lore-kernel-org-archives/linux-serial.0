@@ -1,137 +1,49 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 00/29] Add OF support to the sh-sci serial port driver
-Date: Sun, 10 Nov 2013 04:33:12 +0100
-Message-ID: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 02/29] serial: sh-sci: Remove baud rate calculation algorithm 5
+Date: Sun, 10 Nov 2013 04:33:14 +0100
+Message-ID: <1384054421-13357-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: linux-sh@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+The algorithm isn't used, remove it.
 
-This is the second version of the patch set adds device tree bindings for the
-sh sci serial port devices and adds OF parsing to the sh-sci driver.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
+---
+ drivers/tty/serial/sh-sci.c | 2 --
+ include/linux/serial_sci.h  | 1 -
+ 2 files changed, 3 deletions(-)
 
-The bindings are based on Bastian Hecht's proposal (see
-http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach taken
-here is more minimalistic: instead of describing all hardware characteristics
-that vary between the SCI device revisions in DT (such as registers layout),
-that information is stored in the driver and selected based on the compatible
-property value. Only SCI revisions used on ARM devices are supported through
-DT, as DT support for SuperH is nowhere down the line.
-
-Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29 to 27/29
-replace memory and interrupt resources passed through platform data with
-platform resources. Beside replacing a custom mechanism with a standard one,
-it will also make the DT parsing code simpler as resource allocation will be
-shared between DT and non-DT code paths. Finally, patches 28/29 to 29/29 add
-OF parsing to the sh-sci driver and create DT bindings documentation.
-
-The patches have been test on a Lager board (r8a7790-based). Support for other
-SoCs will be added as needed. Note that all current Renesas ARM SoCs seem to
-be compatible with the generic (H)SCI(F)(AB) devices, but the plan is for
-their DT bindings to list the SoC-specific version in case incompatibilities
-are found later.
-
-Patch 08/29 ("serial: sh-sci: Support resources passed through platform
-resources") is the only dependency of the arch/arm and arch/sh patches present
-in this series. As it's too late to get it in v3.13, Simon will need a stable
-branch of the linux serial tree with that patch included.
-
-Changes compared to v1:
-
-- Patches 04/29 to 27/29 have been added
-- Multi-interrupt support has been removed from the DT bindings as they don't
-  support any SoC requiring multi-interrupt yet
-
-Cc: devicetree@vger.kernel.org
-
-Bastian Hecht (1):
-  serial: sh-sci: Add OF support
-
-Laurent Pinchart (28):
-  serial: sh-sci: Sort headers alphabetically
-  serial: sh-sci: Remove baud rate calculation algorithm 5
-  serial: sh-sci: Simplify baud rate calculation algorithms
-  serial: sh-sci: Remove duplicate interrupt check in verify port op
-  serial: sh-sci: Set the UPF_FIXED_PORT flag
-  serial: sh-sci: Don't check IRQ in verify port operation
-  serial: sh-sci: Support resources passed through platform resources
-  ARM: shmobile: sh7372: Use macros to declare SCIF devices
-  ARM: shmobile: sh73a0: Use macros to declare SCIF devices
-  ARM: shmobile: r8a7740: Use macros to declare SCIF devices
-  ARM: shmobile: r8a7779: Use macros to declare SCIF devices
-  ARM: shmobile: r7s72100: Don't define SCIF platform data in an array
-  ARM: shmobile: r8a73a4: Don't define SCIF platform data in an array
-  ARM: shmobile: r8a7778: Don't define SCIF platform data in an array
-  ARM: shmobile: r8a7790: Don't define SCIF platform data in an array
-  ARM: shmobile: r8a7791: Don't define SCIF platform data in an array
-  ARM: shmobile: sh7372: Declare SCIF register base and IRQ as resources
-  ARM: shmobile: sh73a0: Declare SCIF register base and IRQ as resources
-  ARM: shmobile: r7s72100: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a73a4: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a7740: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a7778: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a7779: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a7790: Declare SCIF register base and IRQ as
-    resources
-  ARM: shmobile: r8a7791: Declare SCIF register base and IRQ as
-    resources
-  sh: Declare SCIF register base and IRQ as resources
-  serial: sh-sci: Remove platform data mapbase and irqs fields
-  serial: sh-sci: Add device tree bindings documentation
-
- .../bindings/serial/renesas,sci-serial.txt         |  42 ++++
- arch/arm/mach-shmobile/setup-r7s72100.c            |  63 +++---
- arch/arm/mach-shmobile/setup-r8a73a4.c             |  65 +++---
- arch/arm/mach-shmobile/setup-r8a7740.c             | 196 +++--------------
- arch/arm/mach-shmobile/setup-r8a7778.c             |  45 ++--
- arch/arm/mach-shmobile/setup-r8a7779.c             | 129 +++--------
- arch/arm/mach-shmobile/setup-r8a7790.c             | 117 +++++-----
- arch/arm/mach-shmobile/setup-r8a7791.c             | 130 +++++------
- arch/arm/mach-shmobile/setup-sh7372.c              | 161 +++-----------
- arch/arm/mach-shmobile/setup-sh73a0.c              | 192 +++--------------
- arch/sh/kernel/cpu/sh2/setup-sh7619.c              |  27 ++-
- arch/sh/kernel/cpu/sh2a/setup-mxg.c                |   9 +-
- arch/sh/kernel/cpu/sh2a/setup-sh7201.c             |  72 +++++--
- arch/sh/kernel/cpu/sh2a/setup-sh7203.c             |  36 +++-
- arch/sh/kernel/cpu/sh2a/setup-sh7206.c             |  36 +++-
- arch/sh/kernel/cpu/sh2a/setup-sh7264.c             |  96 +++++++--
- arch/sh/kernel/cpu/sh2a/setup-sh7269.c             |  96 +++++++--
- arch/sh/kernel/cpu/sh3/setup-sh7705.c              |  18 +-
- arch/sh/kernel/cpu/sh3/setup-sh770x.c              |  27 ++-
- arch/sh/kernel/cpu/sh3/setup-sh7710.c              |  18 +-
- arch/sh/kernel/cpu/sh3/setup-sh7720.c              |  18 +-
- arch/sh/kernel/cpu/sh4/setup-sh4-202.c             |  15 +-
- arch/sh/kernel/cpu/sh4/setup-sh7750.c              |  18 +-
- arch/sh/kernel/cpu/sh4/setup-sh7760.c              |  58 +++--
- arch/sh/kernel/cpu/sh4a/setup-sh7343.c             |  36 +++-
- arch/sh/kernel/cpu/sh4a/setup-sh7366.c             |   9 +-
- arch/sh/kernel/cpu/sh4a/setup-sh7722.c             |  27 ++-
- arch/sh/kernel/cpu/sh4a/setup-sh7723.c             |  54 +++--
- arch/sh/kernel/cpu/sh4a/setup-sh7724.c             |  54 +++--
- arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  66 ++++--
- arch/sh/kernel/cpu/sh4a/setup-sh7757.c             |  27 ++-
- arch/sh/kernel/cpu/sh4a/setup-sh7763.c             |  27 ++-
- arch/sh/kernel/cpu/sh4a/setup-sh7770.c             |  90 ++++++--
- arch/sh/kernel/cpu/sh4a/setup-sh7780.c             |  18 +-
- arch/sh/kernel/cpu/sh4a/setup-sh7785.c             |  54 +++--
- arch/sh/kernel/cpu/sh4a/setup-sh7786.c             |  82 +++++--
- arch/sh/kernel/cpu/sh4a/setup-shx3.c               |  45 ++--
- arch/sh/kernel/cpu/sh5/setup-sh5.c                 |  11 +-
- drivers/tty/serial/sh-sci.c                        | 238 ++++++++++++++++-----
- include/linux/serial_sci.h                         |  35 +--
- 40 files changed, 1443 insertions(+), 1114 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 280753f..2fc1a0e 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1820,8 +1820,6 @@ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
+ 		return (((freq * 2) + 16 * bps) / (16 * bps) - 1);
+ 	case SCBRR_ALGO_4:
+ 		return (((freq * 2) + 16 * bps) / (32 * bps) - 1);
+-	case SCBRR_ALGO_5:
+-		return (((freq * 1000 / 32) / bps) - 1);
+ 	}
+ 
+ 	/* Warn, but use a safe default */
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index d340497..803068d 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -15,7 +15,6 @@ enum {
+ 	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
+ 	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
+ 	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
+-	SCBRR_ALGO_5,		/* (((clk * 1000 / 32) / bps) - 1) */
+ 	SCBRR_ALGO_6,		/* HSCIF variable sample rate algorithm */
+ };
+ 
 -- 
-Regards,
-
-Laurent Pinchart
+1.8.1.5
 
