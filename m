@@ -1,46 +1,84 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] n_tty: Fix echo overrun tail computation
-Date: Fri,  8 Nov 2013 09:42:18 -0500
-Message-ID: <1383921738-5774-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:34205 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752041Ab3KHOmo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Nov 2013 09:42:44 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 01/29] serial: sh-sci: Sort headers alphabetically
+Date: Sun, 10 Nov 2013 04:33:13 +0100
+Message-ID: <1384054421-13357-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 
-Commit cbfd0340ae1993378fd47179db949e050e16e697,
-'n_tty: Process echoes in blocks', introduced an error when
-consuming the echo buffer tail to prevent buffer overrun, where
-the incorrect operation code byte is checked to determine how
-far to advance the tail to the next echo byte.
+This helps locating duplicates.
 
-Check the correct byte for the echo operation code byte.
-
-Cc: <stable@vger.kernel.org> # 3.12.x : c476f65 tty: incorrect test of echo_buf() result for ECHO_OP_START
-Cc: <stable@vger.kernel.org> # 3.12.x
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- drivers/tty/n_tty.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 7d35c4c..f918254 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -768,7 +768,7 @@ static size_t __process_echoes(struct tty_struct *tty)
- 	 * data at the tail to prevent a subsequent overrun */
- 	while (ldata->echo_commit - tail >= ECHO_DISCARD_WATERMARK) {
- 		if (echo_buf(ldata, tail) == ECHO_OP_START) {
--			if (echo_buf(ldata, tail) == ECHO_OP_ERASE_TAB)
-+			if (echo_buf(ldata, tail + 1) == ECHO_OP_ERASE_TAB)
- 				tail += 3;
- 			else
- 				tail += 2;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 5377502..280753f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -23,35 +23,35 @@
+ 
+ #undef DEBUG
+ 
+-#include <linux/module.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/ctype.h>
++#include <linux/cpufreq.h>
++#include <linux/delay.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
+ #include <linux/errno.h>
+-#include <linux/sh_dma.h>
+-#include <linux/timer.h>
++#include <linux/gpio.h>
++#include <linux/init.h>
+ #include <linux/interrupt.h>
+-#include <linux/tty.h>
+-#include <linux/tty_flip.h>
+-#include <linux/serial.h>
+-#include <linux/major.h>
+-#include <linux/string.h>
+-#include <linux/sysrq.h>
+ #include <linux/ioport.h>
++#include <linux/major.h>
++#include <linux/module.h>
+ #include <linux/mm.h>
+-#include <linux/init.h>
+-#include <linux/delay.h>
+-#include <linux/console.h>
+-#include <linux/platform_device.h>
+-#include <linux/serial_sci.h>
+ #include <linux/notifier.h>
++#include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+-#include <linux/cpufreq.h>
+-#include <linux/clk.h>
+-#include <linux/ctype.h>
+-#include <linux/err.h>
+-#include <linux/dmaengine.h>
+-#include <linux/dma-mapping.h>
+ #include <linux/scatterlist.h>
++#include <linux/serial.h>
++#include <linux/serial_sci.h>
++#include <linux/sh_dma.h>
+ #include <linux/slab.h>
+-#include <linux/gpio.h>
++#include <linux/string.h>
++#include <linux/sysrq.h>
++#include <linux/timer.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
+ 
+ #ifdef CONFIG_SUPERH
+ #include <asm/sh_bios.h>
 -- 
-1.8.1.2
+1.8.1.5
 
