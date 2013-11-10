@@ -1,161 +1,64 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 27/29] serial: sh-sci: Remove platform data mapbase and irqs fields
-Date: Sun, 10 Nov 2013 04:33:39 +0100
-Message-ID: <1384054421-13357-28-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 20/29] ARM: shmobile: r8a73a4: Declare SCIF register base and IRQ as resources
+Date: Sun, 10 Nov 2013 04:33:32 +0100
+Message-ID: <1384054421-13357-21-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:37370 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:37369 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758676Ab3KJDde (ORCPT
+	with ESMTP id S1758661Ab3KJDd1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 9 Nov 2013 22:33:34 -0500
+	Sat, 9 Nov 2013 22:33:27 -0500
 In-Reply-To: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 
-The fields are not used anymore by board files, remove them.
+Passing the register base address and IRQ through platform data is
+deprecated. Use resources instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 60 +++++++++++++++++++++++++--------------------
- include/linux/serial_sci.h  | 26 --------------------
- 2 files changed, 34 insertions(+), 52 deletions(-)
+ arch/arm/mach-shmobile/setup-r8a73a4.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index c5abe5c..6bb1e8f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -59,6 +59,23 @@
+diff --git a/arch/arm/mach-shmobile/setup-r8a73a4.c b/arch/arm/mach-shmobile/setup-r8a73a4.c
+index 605298b..ef32ce2 100644
+--- a/arch/arm/mach-shmobile/setup-r8a73a4.c
++++ b/arch/arm/mach-shmobile/setup-r8a73a4.c
+@@ -43,11 +43,14 @@ void __init r8a73a4_pinmux_init(void)
+ #define R8A73A4_SCIF(scif_type, _scscr, index, baseaddr, irq)	\
+ static struct plat_sci_port scif##index##_platform_data = {	\
+ 	.type		= scif_type,				\
+-	.mapbase	= baseaddr,				\
+ 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,	\
+ 	.scbrr_algo_id	= SCBRR_ALGO_4,				\
+ 	.scscr		= _scscr,				\
+-	.irqs		= SCIx_IRQ_MUXED(irq),			\
++};								\
++								\
++static struct resource scif##index##_resources[] = {		\
++	DEFINE_RES_MEM(baseaddr, 0x100),			\
++	DEFINE_RES_IRQ(irq),					\
+ }
  
- #include "sh-sci.h"
+ #define R8A73A4_SCIFA(index, baseaddr, irq)	\
+@@ -66,9 +69,11 @@ R8A73A4_SCIFB(4, 0xe6ce0000, gic_spi(150)); /* SCIFB2 */
+ R8A73A4_SCIFB(5, 0xe6cf0000, gic_spi(151)); /* SCIFB3 */
  
-+/* Offsets into the sci_port->irqs array */
-+enum {
-+	SCIx_ERI_IRQ,
-+	SCIx_RXI_IRQ,
-+	SCIx_TXI_IRQ,
-+	SCIx_BRI_IRQ,
-+	SCIx_NR_IRQS,
-+
-+	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
-+};
-+
-+#define SCIx_IRQ_IS_MUXED(port)			\
-+	((port)->irqs[SCIx_ERI_IRQ] ==	\
-+	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
-+	((port)->irqs[SCIx_ERI_IRQ] &&	\
-+	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
-+
- struct sci_port {
- 	struct uart_port	port;
+ #define r8a73a4_register_scif(index)					       \
+-	platform_device_register_data(&platform_bus, "sh-sci", index,	       \
+-				      &scif##index##_platform_data,	       \
+-				      sizeof(scif##index##_platform_data))
++	platform_device_register_resndata(&platform_bus, "sh-sci", index,      \
++					  scif##index##_resources,	       \
++					  ARRAY_SIZE(scif##index##_resources), \
++					  &scif##index##_platform_data,	       \
++					  sizeof(scif##index##_platform_data))
  
-@@ -2160,36 +2177,27 @@ static int sci_init_single(struct platform_device *dev,
- 	port->iotype	= UPIO_MEM;
- 	port->line	= index;
- 
--	if (dev->num_resources) {
--		/* Device has resources, use them. */
--		res = platform_get_resource(dev, IORESOURCE_MEM, 0);
--		if (res == NULL)
--			return -ENOMEM;
-+	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-+	if (res == NULL)
-+		return -ENOMEM;
- 
--		port->mapbase = res->start;
-+	port->mapbase = res->start;
- 
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = platform_get_irq(dev, i);
-+	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
-+		sci_port->irqs[i] = platform_get_irq(dev, i);
- 
--		/* The SCI generates several interrupts. They can be muxed
--		 * together or connected to different interrupt lines. In the
--		 * muxed case only one interrupt resource is specified. In the
--		 * non-muxed case three or four interrupt resources are
--		 * specified, as the BRI interrupt is optional.
--		 */
--		if (sci_port->irqs[0] < 0)
--			return -ENXIO;
-+	/* The SCI generates several interrupts. They can be muxed together or
-+	 * connected to different interrupt lines. In the muxed case only one
-+	 * interrupt resource is specified. In the non-muxed case three or four
-+	 * interrupt resources are specified, as the BRI interrupt is optional.
-+	 */
-+	if (sci_port->irqs[0] < 0)
-+		return -ENXIO;
- 
--		if (sci_port->irqs[1] < 0) {
--			sci_port->irqs[1] = sci_port->irqs[0];
--			sci_port->irqs[2] = sci_port->irqs[0];
--			sci_port->irqs[3] = sci_port->irqs[0];
--		}
--	} else {
--		/* No resources, use old-style platform data. */
--		port->mapbase = p->mapbase;
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = p->irqs[i] ? p->irqs[i] : -ENXIO;
-+	if (sci_port->irqs[1] < 0) {
-+		sci_port->irqs[1] = sci_port->irqs[0];
-+		sci_port->irqs[2] = sci_port->irqs[0];
-+		sci_port->irqs[3] = sci_port->irqs[0];
- 	}
- 
- 	switch (p->type) {
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 68cf0bf..620cb57 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -58,17 +58,6 @@ enum {
- /* HSSRR HSCIF */
- #define HSCIF_SRE	0x8000
- 
--/* Offsets into the sci_port->irqs array */
--enum {
--	SCIx_ERI_IRQ,
--	SCIx_RXI_IRQ,
--	SCIx_TXI_IRQ,
--	SCIx_BRI_IRQ,
--	SCIx_NR_IRQS,
--
--	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
--};
--
- /* Offsets into the sci_port->gpios array */
- enum {
- 	SCIx_SCK,
-@@ -98,19 +87,6 @@ enum {
- 	SCIx_NR_REGTYPES,
- };
- 
--#define SCIx_IRQ_MUXED(irq)		\
--{					\
--	[SCIx_ERI_IRQ]	= (irq),	\
--	[SCIx_RXI_IRQ]	= (irq),	\
--	[SCIx_TXI_IRQ]	= (irq),	\
--	[SCIx_BRI_IRQ]	= (irq),	\
--}
--
--#define SCIx_IRQ_IS_MUXED(port)			\
--	((port)->irqs[SCIx_ERI_IRQ] ==	\
--	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
--	((port)->irqs[SCIx_ERI_IRQ] &&	\
--	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
- /*
-  * SCI register subset common for all port types.
-  * Not all registers will exist on all parts.
-@@ -139,8 +115,6 @@ struct plat_sci_port_ops {
-  * Platform device specific platform_data struct
-  */
- struct plat_sci_port {
--	unsigned long	mapbase;		/* resource base */
--	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
- 	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
- 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
- 	upf_t		flags;			/* UPF_* flags */
+ static const struct renesas_irqc_config irqc0_data = {
+ 	.irq_base = irq_pin(0), /* IRQ0 -> IRQ31 */
 -- 
 1.8.1.5
 
