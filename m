@@ -1,486 +1,194 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
-Date: Wed, 13 Nov 2013 17:28:55 +0100
-Message-ID: <5283A8C7.30904@atmel.com>
-References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: [PATCH 00/31] ARM: tegra: use common reset and DMA bindings
+Date: Fri, 15 Nov 2013 13:53:55 -0700
+Message-ID: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-gpio-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Andrew Victor <linux@maxim.org.za>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Courbot <acourbot@nvidia.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: swarren@wwwdotorg.org
+Cc: Mark Rutland <mark.rutland@arm.com>, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Marc Dietrich <marvin24@gmx.de>, linux-tegra@vger.kernel.org, linux-i2c@vger.kernel.org, ac100@lists.launchpad.net, devel@driverdev.osuosl.org, Stephen Warren <swarren@nvidia.com>, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, =?UTF-8?q?Terje=20Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Julian Andres Klode <jak@jak-linux.org>, Rob Herring <rob.herring@calxeda.com>, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Mike Turquette <mturquette@linaro.org>, Dan Williams <dan.j.willi>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/11/2013 10:25, Linus Walleij :
-> This passes the errata fix using a GPIO to control the RTS pin
-> on one of the AT91 chips to use gpiolib instead of the
-> AT91-specific interfaces. Also remove the reliance on
-> compile-time #defines and the cpu_* check and rely on the
-> platform passing down the proper GPIO pin through platform
-> data.
->
-> This is a prerequisite for getting rid of the local GPIO
-> implementation in the AT91 platform and move toward
-> multiplatform.
->
-> The patch also adds device tree support for getting the
-> RTS GPIO pin from the device tree on DT boot paths.
->
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-
-Hi Greg,
-
-You acknowledged a previous version of this patch which was taking a 
-different approach with the subject:
-"[PATCH 1/4] ARM/serial: at91: move machine quirk into machine"
-
-In order to integrate the series build by Linus in our AT91/arm-soc 
-flow, would you mind reviewing this v4 patch and eventually giving your 
-blessing ;-)
-If it is okay on your side, I'll integrate it in a pull-request to 
-arm-soc for 3.14.
-
-Thanks, bye,
-
-
-> ---
-> ChangeLog v3->v4:
-> - Assign RTS pin setup at runtime for the applicable
->    platforms. Drive it to 1 rather than 0 by default as
->    RTS is active low. Thanks to Jean-Christophe for noticing
->    the fine details... sorry for the fuzz :-/
-> ChangeLog v2->v3:
-> - Instead of disallowing GPIO 0 to be used for the RTS
->    signal to allow null-initialized platform data to mean
->    "no RTS GPIO", be more generic and actually allow it,
->    and patch every instance of atmel_uart_data to set
->    .rts_gpio to -EINVAL except for the one case where we
->    actually use pin 21 for RTS over GPIO.
-> ChangeLog v1->v2:
-> - Skip check for UART base address from leftover hack,
->    if we have an RTS GPIO we just use it.
-> - Set default error value on GPIO pin to -EINVAL
-> - Fold in a device tree support patch from Nicolas Ferre
-> ---
->   .../devicetree/bindings/serial/atmel-usart.txt     |  3 ++
->   arch/arm/mach-at91/at91rm9200_devices.c            | 10 ++++-
->   arch/arm/mach-at91/at91sam9260_devices.c           |  7 ++++
->   arch/arm/mach-at91/at91sam9261_devices.c           |  4 ++
->   arch/arm/mach-at91/at91sam9263_devices.c           |  4 ++
->   arch/arm/mach-at91/at91sam9g45_devices.c           |  5 +++
->   arch/arm/mach-at91/at91sam9rl_devices.c            |  5 +++
->   drivers/tty/serial/atmel_serial.c                  | 49 ++++++++++++++--------
->   include/linux/platform_data/atmel.h                |  1 +
->   9 files changed, 68 insertions(+), 20 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> index 2191dcb9f1da..3adc61c2e4ca 100644
-> --- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> +++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> @@ -10,6 +10,8 @@ Required properties:
->   Optional properties:
->   - atmel,use-dma-rx: use of PDC or DMA for receiving data
->   - atmel,use-dma-tx: use of PDC or DMA for transmitting data
-> +- rts-gpios: specify a GPIO for RTS line. It will use specified PIO instead of the peripheral
-> +  function pin for the USART RTS feature. If unsure, don't specify this property.
->   - add dma bindings for dma transfer:
->   	- dmas: DMA specifier, consisting of a phandle to DMA controller node,
->   		memory peripheral interface and USART DMA channel ID, FIFO configuration.
-> @@ -28,6 +30,7 @@ Example:
->   		interrupts = <7>;
->   		atmel,use-dma-rx;
->   		atmel,use-dma-tx;
-> +		rts-gpios = <&pioD 15 0>;
->   	};
->
->   - use DMA:
-> diff --git a/arch/arm/mach-at91/at91rm9200_devices.c b/arch/arm/mach-at91/at91rm9200_devices.c
-> index c721e9b08066..08ac5e2ff97d 100644
-> --- a/arch/arm/mach-at91/at91rm9200_devices.c
-> +++ b/arch/arm/mach-at91/at91rm9200_devices.c
-> @@ -923,6 +923,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -961,6 +962,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -988,9 +990,10 @@ static inline void configure_usart0_pins(unsigned pins)
->   	if (pins & ATMEL_UART_RTS) {
->   		/*
->   		 * AT91RM9200 Errata #39 - RTS0 is not internally connected to PA21.
-> -		 *  We need to drive the pin manually.  Default is off (RTS is active low).
-> +		 * We need to drive the pin manually. The serial driver will driver
-> +		 * this to high when initializing.
->   		 */
-> -		at91_set_gpio_output(AT91_PIN_PA21, 1);
-> +		uart0_data.rts_gpio = AT91_PIN_PA21;
->   	}
->   }
->
-> @@ -1010,6 +1013,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -1061,6 +1065,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> @@ -1104,6 +1109,7 @@ static struct resource uart3_resources[] = {
->   static struct atmel_uart_data uart3_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart3_dmamask = DMA_BIT_MASK(32);
-> diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
-> index 428abfc14848..bcf4a161a3d8 100644
-> --- a/arch/arm/mach-at91/at91sam9260_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9260_devices.c
-> @@ -819,6 +819,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -857,6 +858,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -908,6 +910,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -951,6 +954,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> @@ -994,6 +998,7 @@ static struct resource uart3_resources[] = {
->   static struct atmel_uart_data uart3_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart3_dmamask = DMA_BIT_MASK(32);
-> @@ -1037,6 +1042,7 @@ static struct resource uart4_resources[] = {
->   static struct atmel_uart_data uart4_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart4_dmamask = DMA_BIT_MASK(32);
-> @@ -1075,6 +1081,7 @@ static struct resource uart5_resources[] = {
->   static struct atmel_uart_data uart5_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart5_dmamask = DMA_BIT_MASK(32);
-> diff --git a/arch/arm/mach-at91/at91sam9261_devices.c b/arch/arm/mach-at91/at91sam9261_devices.c
-> index 4e02e9271ac9..d5b08ef9e848 100644
-> --- a/arch/arm/mach-at91/at91sam9261_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9261_devices.c
-> @@ -880,6 +880,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -918,6 +919,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -961,6 +963,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -1004,6 +1007,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> diff --git a/arch/arm/mach-at91/at91sam9263_devices.c b/arch/arm/mach-at91/at91sam9263_devices.c
-> index 3a384ef27cf6..22b13c6226cb 100644
-> --- a/arch/arm/mach-at91/at91sam9263_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9263_devices.c
-> @@ -1325,6 +1325,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -1363,6 +1364,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -1406,6 +1408,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -1449,6 +1452,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
-> index 6b8effbffc28..89f95ed711c6 100644
-> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
-> @@ -1588,6 +1588,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -1626,6 +1627,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -1669,6 +1671,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -1712,6 +1715,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> @@ -1755,6 +1759,7 @@ static struct resource uart3_resources[] = {
->   static struct atmel_uart_data uart3_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart3_dmamask = DMA_BIT_MASK(32);
-> diff --git a/arch/arm/mach-at91/at91sam9rl_devices.c b/arch/arm/mach-at91/at91sam9rl_devices.c
-> index 6cf441cadf94..3c2462b15b8b 100644
-> --- a/arch/arm/mach-at91/at91sam9rl_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9rl_devices.c
-> @@ -957,6 +957,7 @@ static struct resource dbgu_resources[] = {
->   static struct atmel_uart_data dbgu_data = {
->   	.use_dma_tx	= 0,
->   	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 dbgu_dmamask = DMA_BIT_MASK(32);
-> @@ -995,6 +996,7 @@ static struct resource uart0_resources[] = {
->   static struct atmel_uart_data uart0_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart0_dmamask = DMA_BIT_MASK(32);
-> @@ -1046,6 +1048,7 @@ static struct resource uart1_resources[] = {
->   static struct atmel_uart_data uart1_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart1_dmamask = DMA_BIT_MASK(32);
-> @@ -1089,6 +1092,7 @@ static struct resource uart2_resources[] = {
->   static struct atmel_uart_data uart2_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart2_dmamask = DMA_BIT_MASK(32);
-> @@ -1132,6 +1136,7 @@ static struct resource uart3_resources[] = {
->   static struct atmel_uart_data uart3_data = {
->   	.use_dma_tx	= 1,
->   	.use_dma_rx	= 1,
-> +	.rts_gpio	= -EINVAL,
->   };
->
->   static u64 uart3_dmamask = DMA_BIT_MASK(32);
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index d067285a2d20..af6765d3aedb 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -35,21 +35,18 @@
->   #include <linux/platform_device.h>
->   #include <linux/of.h>
->   #include <linux/of_device.h>
-> +#include <linux/of_gpio.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/atmel_pdc.h>
->   #include <linux/atmel_serial.h>
->   #include <linux/uaccess.h>
->   #include <linux/platform_data/atmel.h>
->   #include <linux/timer.h>
-> +#include <linux/gpio.h>
->
->   #include <asm/io.h>
->   #include <asm/ioctls.h>
->
-> -#ifdef CONFIG_ARM
-> -#include <mach/cpu.h>
-> -#include <asm/gpio.h>
-> -#endif
-> -
->   #define PDC_BUFFER_SIZE		512
->   /* Revisit: We should calculate this based on the actual port settings */
->   #define PDC_RX_TIMEOUT		(3 * 10)		/* 3 bytes */
-> @@ -167,6 +164,7 @@ struct atmel_uart_port {
->   	struct circ_buf		rx_ring;
->
->   	struct serial_rs485	rs485;		/* rs485 settings */
-> +	int			rts_gpio;	/* optional RTS GPIO */
->   	unsigned int		tx_done_mask;
->   	bool			is_usart;	/* usart or uart */
->   	struct timer_list	uart_timer;	/* uart timer */
-> @@ -300,20 +298,16 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
->   	unsigned int mode;
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->
-> -#ifdef CONFIG_ARCH_AT91RM9200
-> -	if (cpu_is_at91rm9200()) {
-> -		/*
-> -		 * AT91RM9200 Errata #39: RTS0 is not internally connected
-> -		 * to PA21. We need to drive the pin manually.
-> -		 */
-> -		if (port->mapbase == AT91RM9200_BASE_US0) {
-> -			if (mctrl & TIOCM_RTS)
-> -				at91_set_gpio_value(AT91_PIN_PA21, 0);
-> -			else
-> -				at91_set_gpio_value(AT91_PIN_PA21, 1);
-> -		}
-> +	/*
-> +	 * AT91RM9200 Errata #39: RTS0 is not internally connected
-> +	 * to PA21. We need to drive the pin as a GPIO.
-> +	 */
-> +	if (gpio_is_valid(atmel_port->rts_gpio)) {
-> +		if (mctrl & TIOCM_RTS)
-> +			gpio_set_value(atmel_port->rts_gpio, 0);
-> +		else
-> +			gpio_set_value(atmel_port->rts_gpio, 1);
->   	}
-> -#endif
->
->   	if (mctrl & TIOCM_RTS)
->   		control |= ATMEL_US_RTSEN;
-> @@ -2365,6 +2359,25 @@ static int atmel_serial_probe(struct platform_device *pdev)
->   	port = &atmel_ports[ret];
->   	port->backup_imr = 0;
->   	port->uart.line = ret;
-> +	port->rts_gpio = -EINVAL; /* Invalid, zero could be valid */
-> +	if (pdata)
-> +		port->rts_gpio = pdata->rts_gpio;
-> +	else if (np)
-> +		port->rts_gpio = of_get_named_gpio(np, "rts-gpios", 0);
-> +
-> +	if (gpio_is_valid(port->rts_gpio)) {
-> +		ret = devm_gpio_request(&pdev->dev, port->rts_gpio, "RTS");
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "error requesting RTS GPIO\n");
-> +			goto err;
-> +		}
-> +		/* Default to 1 as RTS is active low */
-> +		ret = gpio_direction_output(port->rts_gpio, 1);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "error setting up RTS GPIO\n");
-> +			goto err;
-> +		}
-> +	}
->
->   	ret = atmel_init_port(port, pdev);
->   	if (ret)
-> diff --git a/include/linux/platform_data/atmel.h b/include/linux/platform_data/atmel.h
-> index cea9f70133c5..e26b0c14edea 100644
-> --- a/include/linux/platform_data/atmel.h
-> +++ b/include/linux/platform_data/atmel.h
-> @@ -84,6 +84,7 @@ struct atmel_uart_data {
->   	short			use_dma_rx;	/* use receive DMA? */
->   	void __iomem		*regs;		/* virt. base address, if any */
->   	struct serial_rs485	rs485;		/* rs485 settings */
-> +	int			rts_gpio;	/* optional RTS GPIO */
->   };
->
->    /* Touchscreen Controller */
->
-
-
--- 
-Nicolas Ferre
+RnJvbTogU3RlcGhlbiBXYXJyZW4gPHN3YXJyZW5AbnZpZGlhLmNvbT4KClRoaXMgc2VyaWVzIGlt
+cGxlbWVudHMgYSBjb21tb24gcmVzZXQgZnJhbWV3b3JrIGRyaXZlciBmb3IgVGVncmEsIGFuZAp1
+cGRhdGVzIGFsbCByZWxldmFudCBUZWdyYSBkcml2ZXJzIHRvIHVzZSBpdC4gSXQgYWxzbyByZW1v
+dmVzIHRoZSBjdXN0b20KRE1BIGJpbmRpbmdzIGFuZCByZXBsYWNlZCB0aGVtIHdpdGggdGhlIHN0
+YW5kYXJkIERNQSBEVCBiaW5kaW5ncy4KCkhpc3RvcmljYWxseSwgdGhlIFRlZ3JhIGNsb2NrIGRy
+aXZlciBoYXMgZXhwb3J0ZWQgYSBjdXN0b20gQVBJIGZvciBtb2R1bGUKcmVzZXQuIFRoaXMgc2Vy
+aWVzIHJlbW92ZXMgdGhhdCBBUEksIGFuZCB0cmFuc2l0aW9ucyBEVCBhbmQgZHJpdmVycyB0bwp0
+aGUgbmV3IHJlc2V0IGZyYW1ld29yay4KClRoZSBjdXN0b20gQVBJIHVzZWQgYSAic3RydWN0IGNs
+ayIgdG8gaWRlbnRpZnkgd2hpY2ggbW9kdWxlIHRvIHJlc2V0LCBhbmQKY29uc2VxdWVudGx5IHNv
+bWUgRFQgYmluZGluZ3MgYW5kIGRyaXZlcnMgcmVxdWlyZWQgY2xvY2tzIHRvIGJlIHByb3ZpZGVk
+CndoZXJlIHRoZXkgcmVhbGx5IG5lZWRlZCBqdXN0IGEgcmVzZXQgaWRlbnRpZmllciBpbnN0ZWFk
+LiBEdWUgdG8gdGhpcwprbm93biBkZWZpY2llbmN5LCBJIGhhdmUgYWx3YXlzIGNvbnNpZGVyZWQg
+bW9zdCBUZWdyYSBiaW5kaW5ncyB0byBiZQp1bnN0YWJsZS4gVGhpcyBzZXJpZXMgcmVtb3ZlcyB0
+aGlzIGV4Y3VzZSBmb3IgaW5zdGFiaWxpdHksIGFsdGhvdWdoIEkKc3RpbGwgY29uc2lkZXIgc29t
+ZSBUZWdyYSBiaW5kaW5ncyB1bnN0YWJsZSBkdWUgdG8gdGhlIG5lZWQgdG8gY29udmVydCB0bwp0
+aGUgY29tbW9uIERNQSBiaW5kaW5ncy4KCkhpc3RvcmljYWxseSwgVGVncmEgRE1BIGNoYW5uZWxz
+IGhhdmUgYmVlbiByZXByZXNlbnRlZCBpbiBEVCB1c2luZyBhCmN1c3RvbSBudmlkaWEsZG1hLXJl
+cXVlc3Qtc2VsZWN0b3IgcHJvcGVydHkuIE5vdyB0aGF0IHN0YW5kYXJkIERNQSBEVApiaW5kaW5n
+cyBleGlzdCwgY29udmVydCBhbGwgVGVncmEgYmluZGluZ3MsIERUcywgYW5kIGRyaXZlcnMgdG8g
+dXNlIHRoZQpzdGFuZGFyZCBpbnN0ZWFkLgoKVGhpcyBzZXJpZXMgbWFrZXMgYSBEVC1BQkktaW5j
+b21wYXRpYmxlIGNoYW5nZSB0bzoKLSBSZXF1aXJlIHJlc2V0IHNwZWNpZmllcnMgaW4gRFQgd2hl
+cmUgcmVsZXZhbnQuCi0gUmVxdWlyZSBzdGFuZGFyZCBETUEgc3BlY2lmaWVycy4KLSBSZW1vdmUg
+Y2xvY2sgc3BlY2lmaWVycyBmcm9tIERUIHdoZXJlIHRoZXkgd2VyZSBvbmx5IG5lZWRlZCBmb3Ig
+cmVzZXQuCi0gUmVtb3ZlIGxlZ2FjeSBETUEgc3BlY2lmaWVyIHByb3BlcnRpZXMuCgpJIGFudGlj
+aXBhdGUgbWVyZ2luZyB0aGlzIHdob2xlIHNlcmllcyBpbnRvIHRoZSBUZWdyYSBhbmQgYXJtLXNv
+YyB0cmVlcwphcyBpdHMgb3duIGJyYW5jaCwgZHVlIHRvIGludGVybmFsIGRlcGVuZGVuY2llcy4g
+VGhpcyBicmFuY2ggd2lsbCBiZQpzdGFibGUgYW5kIGNhbiB0aGVuIGJlIG1lcmdlZCBpbnRvIGFu
+eSBvdGhlciBzdWJzeXN0ZW0gdHJlZXMgc2hvdWxkIGFueQpjb25mbGljdHMgYXJpc2UuCgpUaGlz
+IHNlcmllcyBkZXBlbmRzIG9uIFBldGVyJ3MgVGVncmEgY2xvY2sgZHJpdmVyIHJld29yaywgYXZh
+aWxhYmxlIGF0CmdpdDovL252LXRlZ3JhLm52aWRpYS5jb20vdXNlci9wZGVzY2hyaWp2ZXIvbGlu
+dXggdGVncmEtY2xrLXRlZ3JhMTI0LTAKKG9yIHdoYXRldmVyIHZlcnNpb24gb2YgdGhhdCBnZXRz
+IGluY2x1ZGVkIGluIDMuMTQpCgpDYzogYWMxMDBAbGlzdHMubGF1bmNocGFkLm5ldApDYzogQWxh
+biBTdGVybiA8c3Rlcm5Acm93bGFuZC5oYXJ2YXJkLmVkdT4KQ2M6IGFsc2EtZGV2ZWxAYWxzYS1w
+cm9qZWN0Lm9yZwpDYzogQmpvcm4gSGVsZ2FhcyA8YmhlbGdhYXNAZ29vZ2xlLmNvbT4KQ2M6IERh
+biBXaWxsaWFtcyA8ZGFuLmoud2lsbGlhbXNAaW50ZWwuY29tPgpDYzogRGF2aWQgQWlybGllIDxh
+aXJsaWVkQGxpbnV4LmllPgpDYzogZGV2ZWxAZHJpdmVyZGV2Lm9zdW9zbC5vcmcKQ2M6IGRldmlj
+ZXRyZWVAdmdlci5rZXJuZWwub3JnCkNjOiBEbWl0cnkgVG9yb2tob3YgPGRtaXRyeS50b3Jva2hv
+dkBnbWFpbC5jb20+CkNjOiBEbWl0cnkgVG9yb2tob3YgPGR0b3JAbWFpbC5ydT4KQ2M6IGRyaS1k
+ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKQ2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2to
+QGxpbnV4Zm91bmRhdGlvbi5vcmc+CkNjOiBJYW4gQ2FtcGJlbGwgPGlqYytkZXZpY2V0cmVlQGhl
+bGxpb24ub3JnLnVrPgpDYzogSnVsaWFuIEFuZHJlcyBLbG9kZSA8amFrQGphay1saW51eC5vcmc+
+CkNjOiBMaWFtIEdpcmR3b29kIDxsZ2lyZHdvb2RAZ21haWwuY29tPgpDYzogbGludXgtYXJtLWtl
+cm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCkNjOiBsaW51eC1pMmNAdmdlci5rZXJuZWwub3JnCkNj
+OiBsaW51eC1pbnB1dEB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5v
+cmcKQ2M6IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LXNwaUB2Z2VyLmtl
+cm5lbC5vcmcKQ2M6IGxpbnV4LXRlZ3JhQHZnZXIua2VybmVsLm9yZwpDYzogbGludXgtdXNiQHZn
+ZXIua2VybmVsLm9yZwpDYzogTWFyYyBEaWV0cmljaCA8bWFydmluMjRAZ214LmRlPgpDYzogTWFy
+ayBCcm93biA8YnJvb25pZUBrZXJuZWwub3JnPgpDYzogTWFyayBSdXRsYW5kIDxtYXJrLnJ1dGxh
+bmRAYXJtLmNvbT4KQ2M6IE1pa2UgVHVycXVldHRlIDxtdHVycXVldHRlQGxpbmFyby5vcmc+CkNj
+OiBQYXdlbCBNb2xsIDxwYXdlbC5tb2xsQGFybS5jb20+CkNjOiBwZGVzY2hyaWp2ZXJAbnZpZGlh
+LmNvbQpDYzogUm9iIEhlcnJpbmcgPHJvYi5oZXJyaW5nQGNhbHhlZGEuY29tPgpDYzogVGVyamUg
+QmVyZ3N0csO2bSA8dGJlcmdzdHJvbUBudmlkaWEuY29tPgpDYzogdHJlZGluZ0BudmlkaWEuY29t
+CkNjOiBXb2xmcmFtIFNhbmcgPHdzYUB0aGUtZHJlYW1zLmRlPgoKU3RlcGhlbiBXYXJyZW4gKDMx
+KToKICBBUk06IHRlZ3JhOiBhZGQgbWlzc2luZyBjbG9jayBkb2N1bWVudGF0aW9uIHRvIERUIGJp
+bmRpbmdzCiAgQVJNOiB0ZWdyYTogZG9jdW1lbnQgcmVzZXQgcHJvcGVydGllcyBpbiBEVCBiaW5k
+aW5ncwogIEFSTTogdGVncmE6IGRvY3VtZW50IHVzZSBvZiBzdGFuZGFyZCBETUEgRFQgYmluZGlu
+Z3MKICBBUk06IHRlZ3JhOiB1cGRhdGUgRFQgZmlsZXMgdG8gYWRkIHJlc2V0IHByb3BlcnRpZXMK
+ICBBUk06IHRlZ3JhOiB1cGRhdGUgRFQgZmlsZXMgdG8gYWRkIERNQSBwcm9wZXJ0aWVzCiAgQVJN
+OiB0ZWdyYTogc2VsZWN0IHRoZSByZXNldCBmcmFtZXdvcmsKICBjbGs6IHRlZ3JhOiBpbXBsZW1l
+bnQgYSByZXNldCBkcml2ZXIKICBwY2k6IHRlZ3JhOiB1c2UgcmVzZXQgZnJhbWV3b3JrCiAgZHJt
+L3RlZ3JhOiB1c2UgcmVzZXQgZnJhbWV3b3JrCiAgQVJNOiB0ZWdyYTogcGFzcyByZXNldCB0byB0
+ZWdyYV9wb3dlcmdhdGVfc2VxdWVuY2VfcG93ZXJfdXAoKQogIGRtYTogYWRkIGNoYW5uZWwgcmVx
+dWVzdCBBUEkgdGhhdCBzdXBwb3J0cyBkZWZlcnJlZCBwcm9iZQogIGRtYTogdGVncmE6IHVzZSBy
+ZXNldCBmcmFtZXdvcmsKICBkbWE6IHRlZ3JhOiByZWdpc3RlciBhcyBhbiBPRiBETUEgY29udHJv
+bGxlcgogIEFTb0M6IGRtYWVuZ2luZTogc3VwcG9ydCBkZWZlcnJlZCBwcm9iZSBmb3IgRE1BIGNo
+YW5uZWxzCiAgQVNvQzogZG1hZW5naW5lOiBhZGQgY3VzdG9tIERNQSBjb25maWcgdG8gc25kX2Rt
+YWVuZ2luZV9wY21fY29uZmlnCiAgQVNvQzogdGVncmE6IHVzZSByZXNldCBmcmFtZXdvcmsKICBB
+U29DOiB0ZWdyYTogY2FsbCBwbV9ydW50aW1lIEFQSXMgYXJvdW5kIHJlZ2lzdGVyIGFjY2Vzc2Vz
+CiAgQVNvQzogdGVncmE6IGFsbG9jYXRlIEFIVUIgRklGTyBkdXJpbmcgcHJvYmUoKSBub3Qgc3Rh
+cnR1cCgpCiAgQVNvQzogdGVncmE6IGNvbnZlcnQgdG8gc3RhbmRhcmQgRE1BIERUIGJpbmRpbmdz
+CiAgaTJjOiB0ZWdyYTogdXNlIHJlc2V0IGZyYW1ld29yawogIHN0YWdpbmc6IG52ZWM6IHVzZSBy
+ZXNldCBmcmFtZXdvcmsKICBzcGk6IHRlZ3JhOiB1c2UgcmVzZXQgZnJhbWV3b3JrCiAgc3BpOiB0
+ZWdyYTogY29udmVydCB0byBzdGFuZGFyZCBETUEgRFQgYmluZGluZ3MKICBzZXJpYWw6IHRlZ3Jh
+OiB1c2UgcmVzZXQgZnJhbWV3b3JrCiAgc2VyaWFsOiB0ZWdyYTogY29udmVydCB0byBzdGFuZGFy
+ZCBETUEgRFQgYmluZGluZ3MKICBJbnB1dDogdGVncmEta2JjIC0gdXNlIHJlc2V0IGZyYW1ld29y
+awogIFVTQjogRUhDSTogdGVncmE6IHVzZSByZXNldCBmcmFtZXdvcmsKICBBUk06IHRlZ3JhOiBy
+ZW1vdmUgbGVnYWN5IGNsb2NrIGVudHJpZXMgZnJvbSBEVAogIEFSTTogdGVncmE6IHJlbW92ZSBs
+ZWdhY3kgRE1BIGVudHJpZXMgZnJvbSBEVAogIGNsazogdGVncmE6IHJlbW92ZSBsZWdhY3kgcmVz
+ZXQgQVBJcwogIGNsazogdGVncmE6IHJlbW92ZSBib2d1cyBQQ0lFX1hDTEsKCiAuLi4vYmluZGlu
+Z3MvYXJtL3RlZ3JhL252aWRpYSx0ZWdyYTIwLXBtYy50eHQgICAgICB8ICAgMSArCiAuLi4vYmlu
+ZGluZ3MvY2xvY2svbnZpZGlhLHRlZ3JhMTE0LWNhci50eHQgICAgICAgICB8ICAgNCArCiAuLi4v
+YmluZGluZ3MvY2xvY2svbnZpZGlhLHRlZ3JhMTI0LWNhci50eHQgICAgICAgICB8ICAgNCArCiAu
+Li4vYmluZGluZ3MvY2xvY2svbnZpZGlhLHRlZ3JhMjAtY2FyLnR4dCAgICAgICAgICB8ICAgNCAr
+CiAuLi4vYmluZGluZ3MvY2xvY2svbnZpZGlhLHRlZ3JhMzAtY2FyLnR4dCAgICAgICAgICB8ICAg
+NCArCiAuLi4vZGV2aWNldHJlZS9iaW5kaW5ncy9kbWEvdGVncmEyMC1hcGJkbWEudHh0ICAgICB8
+ICAgOSArKwogLi4uL2JpbmRpbmdzL2dwdS9udmlkaWEsdGVncmEyMC1ob3N0MXgudHh0ICAgICAg
+ICAgfCAxMjQgKysrKysrKysrKysrKysrCiAuLi4vZGV2aWNldHJlZS9iaW5kaW5ncy9pMmMvbnZp
+ZGlhLHRlZ3JhMjAtaTJjLnR4dCB8ICAyNyArKystCiAuLi4vYmluZGluZ3MvaW5wdXQvbnZpZGlh
+LHRlZ3JhMjAta2JjLnR4dCAgICAgICAgICB8ICAgOSArKwogLi4uL2JpbmRpbmdzL21tYy9udmlk
+aWEsdGVncmEyMC1zZGhjaS50eHQgICAgICAgICAgfCAgIDkgKysKIC4uLi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL252ZWMvbnZpZGlhLG52ZWMudHh0ICAgICAgIHwgIDEyICsrCiAuLi4vYmluZGluZ3Mv
+cGNpL252aWRpYSx0ZWdyYTIwLXBjaWUudHh0ICAgICAgICAgICB8ICAyOCArKy0tCiAuLi4vZGV2
+aWNldHJlZS9iaW5kaW5ncy9wd20vbnZpZGlhLHRlZ3JhMjAtcHdtLnR4dCB8ICAgOSArKwogLi4u
+L2RldmljZXRyZWUvYmluZGluZ3MvcnRjL252aWRpYSx0ZWdyYTIwLXJ0Yy50eHQgfCAgIDMgKwog
+Li4uL2JpbmRpbmdzL3NlcmlhbC9udmlkaWEsdGVncmEyMC1oc3VhcnQudHh0ICAgICAgfCAgMTkg
+KystCiAuLi4vYmluZGluZ3Mvc291bmQvbnZpZGlhLHRlZ3JhLWF1ZGlvLWFsYzU2MzIudHh0ICB8
+ICAgNyArLQogLi4uL2JpbmRpbmdzL3NvdW5kL252aWRpYSx0ZWdyYS1hdWRpby1ydDU2NDAudHh0
+ICAgfCAgIDcgKy0KIC4uLi9iaW5kaW5ncy9zb3VuZC9udmlkaWEsdGVncmEtYXVkaW8td204NzUz
+LnR4dCAgIHwgICA3ICstCiAuLi4vYmluZGluZ3Mvc291bmQvbnZpZGlhLHRlZ3JhLWF1ZGlvLXdt
+ODkwMy50eHQgICB8ICAgNyArLQogLi4uL2JpbmRpbmdzL3NvdW5kL252aWRpYSx0ZWdyYS1hdWRp
+by13bTk3MTIudHh0ICAgfCAgIDcgKy0KIC4uLi9iaW5kaW5ncy9zb3VuZC9udmlkaWEsdGVncmEy
+MC1hYzk3LnR4dCAgICAgICAgIHwgIDIwICsrLQogLi4uL2JpbmRpbmdzL3NvdW5kL252aWRpYSx0
+ZWdyYTIwLWkycy50eHQgICAgICAgICAgfCAgMTkgKystCiAuLi4vYmluZGluZ3Mvc291bmQvbnZp
+ZGlhLHRlZ3JhMzAtYWh1Yi50eHQgICAgICAgICB8ICA1NCArKysrKy0tCiAuLi4vYmluZGluZ3Mv
+c291bmQvbnZpZGlhLHRlZ3JhMzAtaTJzLnR4dCAgICAgICAgICB8ICAxMSArLQogLi4uL2JpbmRp
+bmdzL3NwaS9udmlkaWEsdGVncmExMTQtc3BpLnR4dCAgICAgICAgICAgfCAgMjQgKystCiAuLi4v
+YmluZGluZ3Mvc3BpL252aWRpYSx0ZWdyYTIwLXNmbGFzaC50eHQgICAgICAgICB8ICAyMCArKy0K
+IC4uLi9iaW5kaW5ncy9zcGkvbnZpZGlhLHRlZ3JhMjAtc2xpbmsudHh0ICAgICAgICAgIHwgIDIw
+ICsrLQogLi4uL2JpbmRpbmdzL3RpbWVyL252aWRpYSx0ZWdyYTIwLXRpbWVyLnR4dCAgICAgICAg
+fCAgIDMgKwogLi4uL2JpbmRpbmdzL3RpbWVyL252aWRpYSx0ZWdyYTMwLXRpbWVyLnR4dCAgICAg
+ICAgfCAgIDMgKwogLi4uL2JpbmRpbmdzL3VzYi9udmlkaWEsdGVncmEyMC1laGNpLnR4dCAgICAg
+ICAgICAgfCAgIDcgKy0KIGFyY2gvYXJtL2Jvb3QvZHRzL3RlZ3JhMTE0LmR0c2kgICAgICAgICAg
+ICAgICAgICAgIHwgMTQyICsrKysrKysrKysrKysrLS0tCiBhcmNoL2FybS9ib290L2R0cy90ZWdy
+YTIwLXBhejAwLmR0cyAgICAgICAgICAgICAgICB8ICAgMiArCiBhcmNoL2FybS9ib290L2R0cy90
+ZWdyYTIwLmR0c2kgICAgICAgICAgICAgICAgICAgICB8IDEzMiArKysrKysrKysrKysrKy0tCiBh
+cmNoL2FybS9ib290L2R0cy90ZWdyYTMwLmR0c2kgICAgICAgICAgICAgICAgICAgICB8IDE3MSAr
+KysrKysrKysrKysrKysrKy0tLS0KIGFyY2gvYXJtL21hY2gtdGVncmEvS2NvbmZpZyAgICAgICAg
+ICAgICAgICAgICAgICAgIHwgICAyICsKIGFyY2gvYXJtL21hY2gtdGVncmEvcG93ZXJnYXRlLmMg
+ICAgICAgICAgICAgICAgICAgIHwgICA4ICstCiBkcml2ZXJzL2Nsay90ZWdyYS9jbGstcGVyaXBo
+LWdhdGUuYyAgICAgICAgICAgICAgICB8ICAyMiAtLS0KIGRyaXZlcnMvY2xrL3RlZ3JhL2Nsay1w
+ZXJpcGguYyAgICAgICAgICAgICAgICAgICAgIHwgIDQwIC0tLS0tCiBkcml2ZXJzL2Nsay90ZWdy
+YS9jbGstdGVncmExMTQuYyAgICAgICAgICAgICAgICAgICB8ICAgMyArLQogZHJpdmVycy9jbGsv
+dGVncmEvY2xrLXRlZ3JhMTI0LmMgICAgICAgICAgICAgICAgICAgfCAgIDIgKy0KIGRyaXZlcnMv
+Y2xrL3RlZ3JhL2Nsay10ZWdyYTIwLmMgICAgICAgICAgICAgICAgICAgIHwgICA5ICstCiBkcml2
+ZXJzL2Nsay90ZWdyYS9jbGstdGVncmEzMC5jICAgICAgICAgICAgICAgICAgICB8ICAxMCArLQog
+ZHJpdmVycy9jbGsvdGVncmEvY2xrLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNTUg
+KysrKysrLQogZHJpdmVycy9jbGsvdGVncmEvY2xrLmggICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgfCAgIDMgKy0KIGRyaXZlcnMvZG1hL2FjcGktZG1hLmMgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHwgIDEyICstCiBkcml2ZXJzL2RtYS9kbWFlbmdpbmUuYyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICA0NCArKysrKy0KIGRyaXZlcnMvZG1hL29mLWRtYS5jICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIHwgIDEyICstCiBkcml2ZXJzL2RtYS90ZWdyYTIwLWFwYi1kbWEu
+YyAgICAgICAgICAgICAgICAgICAgICB8ICA0OSArKysrKy0KIGRyaXZlcnMvZ3B1L2RybS90ZWdy
+YS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgIHwgICAxICsKIGRyaXZlcnMvZ3B1L2RybS90
+ZWdyYS9kYy5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgICA5ICstCiBkcml2ZXJzL2dwdS9k
+cm0vdGVncmEvZHJtLmggICAgICAgICAgICAgICAgICAgICAgICB8ICAgMyArCiBkcml2ZXJzL2dw
+dS9kcm0vdGVncmEvZ3IzZC5jICAgICAgICAgICAgICAgICAgICAgICB8ICAyMiArKy0KIGRyaXZl
+cnMvZ3B1L2RybS90ZWdyYS9oZG1pLmMgICAgICAgICAgICAgICAgICAgICAgIHwgIDE0ICstCiBk
+cml2ZXJzL2kyYy9idXNzZXMvaTJjLXRlZ3JhLmMgICAgICAgICAgICAgICAgICAgICB8ICAxMyAr
+LQogZHJpdmVycy9pbnB1dC9rZXlib2FyZC90ZWdyYS1rYmMuYyAgICAgICAgICAgICAgICAgfCAg
+MTMgKy0KIGRyaXZlcnMvcGNpL2hvc3QvcGNpLXRlZ3JhLmMgICAgICAgICAgICAgICAgICAgICAg
+IHwgIDUyICsrKysrLS0KIGRyaXZlcnMvc3BpL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHwgICAzICsKIGRyaXZlcnMvc3BpL3NwaS10ZWdyYTExNC5jICAgICAgICAgICAg
+ICAgICAgICAgICAgIHwgIDY2ICsrKystLS0tCiBkcml2ZXJzL3NwaS9zcGktdGVncmEyMC1zZmxh
+c2guYyAgICAgICAgICAgICAgICAgICB8ICAxOCArKy0KIGRyaXZlcnMvc3BpL3NwaS10ZWdyYTIw
+LXNsaW5rLmMgICAgICAgICAgICAgICAgICAgIHwgIDY2ICsrKystLS0tCiBkcml2ZXJzL3N0YWdp
+bmcvbnZlYy9udmVjLmMgICAgICAgICAgICAgICAgICAgICAgICB8ICAxMSArLQogZHJpdmVycy9z
+dGFnaW5nL252ZWMvbnZlYy5oICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDUgKy0KIGRyaXZl
+cnMvdHR5L3NlcmlhbC9zZXJpYWwtdGVncmEuYyAgICAgICAgICAgICAgICAgIHwgIDg2ICsrKysr
+LS0tLS0tCiBkcml2ZXJzL3VzYi9ob3N0L2VoY2ktdGVncmEuYyAgICAgICAgICAgICAgICAgICAg
+ICB8ICAxNCArLQogaW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay90ZWdyYTIwLWNhci5oICAgICAg
+ICAgICAgfCAgIDIgKy0KIGluY2x1ZGUvZHQtYmluZGluZ3MvY2xvY2svdGVncmEzMC1jYXIuaCAg
+ICAgICAgICAgIHwgICAyICstCiBpbmNsdWRlL2xpbnV4L2Nsay90ZWdyYS5oICAgICAgICAgICAg
+ICAgICAgICAgICAgICB8ICAgNyAtCiBpbmNsdWRlL2xpbnV4L2RtYWVuZ2luZS5oICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8ICAgNyArCiBpbmNsdWRlL2xpbnV4L29mX2RtYS5oICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB8ICAgOSArLQogaW5jbHVkZS9saW51eC90ZWdyYS1wb3dlcmdh
+dGUuaCAgICAgICAgICAgICAgICAgICAgfCAgIDQgKy0KIGluY2x1ZGUvc291bmQvZG1hZW5naW5l
+X3BjbS5oICAgICAgICAgICAgICAgICAgICAgIHwgICA2ICsKIHNvdW5kL3NvYy9zb2MtZ2VuZXJp
+Yy1kbWFlbmdpbmUtcGNtLmMgICAgICAgICAgICAgIHwgIDgyICsrKysrKystLS0KIHNvdW5kL3Nv
+Yy90ZWdyYS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAyICsKIHNvdW5k
+L3NvYy90ZWdyYS90ZWdyYTIwX2FjOTcuYyAgICAgICAgICAgICAgICAgICAgIHwgIDExIC0tCiBz
+b3VuZC9zb2MvdGVncmEvdGVncmEyMF9pMnMuYyAgICAgICAgICAgICAgICAgICAgICB8ICAyMCAr
+LS0KIHNvdW5kL3NvYy90ZWdyYS90ZWdyYTMwX2FodWIuYyAgICAgICAgICAgICAgICAgICAgIHwg
+MTI1ICsrKysrKysrKy0tLS0tLQogc291bmQvc29jL3RlZ3JhL3RlZ3JhMzBfYWh1Yi5oICAgICAg
+ICAgICAgICAgICAgICAgfCAgMTEgKy0KIHNvdW5kL3NvYy90ZWdyYS90ZWdyYTMwX2kycy5jICAg
+ICAgICAgICAgICAgICAgICAgIHwgIDk3ICsrKysrKy0tLS0tLQogc291bmQvc29jL3RlZ3JhL3Rl
+Z3JhMzBfaTJzLmggICAgICAgICAgICAgICAgICAgICAgfCAgIDMgKwogc291bmQvc29jL3RlZ3Jh
+L3RlZ3JhX3BjbS5jICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTcgKy0KIHNvdW5kL3NvYy90
+ZWdyYS90ZWdyYV9wY20uaCAgICAgICAgICAgICAgICAgICAgICAgIHwgICA1ICsKIDgxIGZpbGVz
+IGNoYW5nZWQsIDE0NDggaW5zZXJ0aW9ucygrKSwgNTU4IGRlbGV0aW9ucygtKQoKLS0gCjEuOC4x
+LjUKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
+eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
+ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
+cm0ta2VybmVsCg==
