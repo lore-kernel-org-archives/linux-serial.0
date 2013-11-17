@@ -1,96 +1,126 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: [PATCH 24/31] serial: tegra: use reset framework
-Date: Fri, 15 Nov 2013 13:54:19 -0700
-Message-ID: <1384548866-13141-25-git-send-email-swarren@wwwdotorg.org>
-References: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+From: Heorhi Valakhanovich <valahanovich@tut.by>
+Subject: Re: [PATCH] tty: Only hangup once
+Date: Sun, 17 Nov 2013 20:38:50 +0300
+Message-ID: <20131117203850.46df2124@tormoz-pc>
+References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:51898 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753136Ab3KOUzs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Nov 2013 15:55:48 -0500
-In-Reply-To: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+Received: from plane.gmane.org ([80.91.229.3]:45770 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751864Ab3KQRpE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 17 Nov 2013 12:45:04 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1Vi6P8-0008WD-UR
+	for linux-serial@vger.kernel.org; Sun, 17 Nov 2013 18:45:02 +0100
+Received: from 80.249.84.136 ([80.249.84.136])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sun, 17 Nov 2013 18:45:02 +0100
+Received: from valahanovich by 80.249.84.136 with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Sun, 17 Nov 2013 18:45:02 +0100
+In-Reply-To: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: swarren@wwwdotorg.org
-Cc: Stephen Warren <swarren@nvidia.com>, treding@nvidia.com, pdeschrijver@nvidia.com, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-From: Stephen Warren <swarren@nvidia.com>
+On Wed, 31 Jul 2013 14:05:45 -0400
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-Tegra's clock driver now provides an implementation of the common
-reset API (include/linux/reset.h). Use this instead of the old Tegra-
-specific API; that will soon be removed.
+> Instrumented testing shows a tty can be hungup multiple times [1].
+> Although concurrent hangups are properly serialized, multiple
+> hangups for the same tty should be prevented.
+> 
+> If tty has already been HUPPED, abort hangup. Note it is not
+> necessary to cleanup file *redirect on subsequent hangups,
+> as only TIOCCONS can set that value and ioctls are disabled
+> after hangup.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> 
+> [1]
+> Test performed by simulating a concurrent async hangup via
+> tty_hangup() with a sync hangup via tty_vhangup(), while
+> __tty_hangup() was instrumented with:
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 26bb78c..fe8b061 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -629,6 +629,8 @@ static void __tty_hangup(struct tty_struct *tty,
+> int exit_session)
+> 
+>  	tty_lock(tty);
+> 
+> +	WARN_ON(test_bit(TTY_HUPPED, &tty->flags));
+> +
+>  	/* some functions below drop BTM, so we need this bit */
+>  	set_bit(TTY_HUPPING, &tty->flags);
+> 
+> Test result:
+> 
+> WARNING: at /home/peter/src/kernels/mainline/drivers/tty/tty_io.c:632
+> __tty_hangup+0x459/0x460() Modules linked in: ip6table_filter
+> ip6_tables ebtable_nat <...snip...> CPU: 6 PID: 1197 Comm:
+> kworker/6:2 Not tainted 3.10.0-0+rfcomm-xeon #0+rfcomm Hardware name:
+> Dell Inc. Precision WorkStation T5400  /0RW203, BIOS A11 04/30/2012
+> Workqueue: events do_tty_hangup 0000000000000009 ffff8802b16d7d18
+> ffffffff816b553e ffff8802b16d7d58 ffffffff810407e0 ffff880254f95c00
+> ffff880254f95c00 ffff8802bfd92b00 ffff8802bfd96b00 ffff880254f95e40
+> 0000000000000180 ffff8802b16d7d68 Call Trace:
+>  [<ffffffff816b553e>] dump_stack+0x19/0x1b
+>  [<ffffffff810407e0>] warn_slowpath_common+0x70/0xa0
+>  [<ffffffff8104082a>] warn_slowpath_null+0x1a/0x20
+>  [<ffffffff813fb279>] __tty_hangup+0x459/0x460
+>  [<ffffffff8107409c>] ? finish_task_switch+0xbc/0xe0
+>  [<ffffffff813fb297>] do_tty_hangup+0x17/0x20
+>  [<ffffffff8105fd6f>] process_one_work+0x16f/0x450
+>  [<ffffffff8106007c>] process_scheduled_works+0x2c/0x40
+>  [<ffffffff8106060a>] worker_thread+0x26a/0x380
+>  [<ffffffff810603a0>] ? rescuer_thread+0x310/0x310
+>  [<ffffffff810698a0>] kthread+0xc0/0xd0
+>  [<ffffffff816b0000>] ? destroy_compound_page+0x65/0x92
+>  [<ffffffff810697e0>] ? kthread_create_on_node+0x130/0x130
+>  [<ffffffff816c495c>] ret_from_fork+0x7c/0xb0
+>  [<ffffffff810697e0>] ? kthread_create_on_node+0x130/0x130
+> ---[ end trace 98d9f01536cf411e ]---
+> ---
+>  drivers/tty/tty_io.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 26bb78c..a9355ce 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -629,6 +629,11 @@ static void __tty_hangup(struct tty_struct *tty,
+> int exit_session) 
+>  	tty_lock(tty);
+>  
+> +	if (test_bit(TTY_HUPPED, &tty->flags)) {
+> +		tty_unlock(tty);
+> +		return;
+> +	}
+> +
+>  	/* some functions below drop BTM, so we need this bit */
+>  	set_bit(TTY_HUPPING, &tty->flags);
+>  
 
-Cc: treding@nvidia.com
-Cc: pdeschrijver@nvidia.com
-Cc: linux-tegra@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Stephen Warren <swarren@nvidia.com>
----
-This patch is part of a series with strong internal depdendencies. I'm
-looking for an ack so that I can take the entire series through the Tegra
-and arm-soc trees. The series will be part of a stable branch that can be
-merged into other subsystems if needed to avoid/resolve dependencies.
----
- drivers/tty/serial/serial-tegra.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+After upgrading to kernel 3.12 I noticed one issue with tmux software.
+The easiest way to reproduce will be:
+1. Start tmux session as root.
+2. Connect via ssh and use "tmux attach" to attach to the running
+session.
+3. Kill ssh client.
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index dfe79ccc4fb3..4455481a3517 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -34,6 +34,7 @@
- #include <linux/of_device.h>
- #include <linux/pagemap.h>
- #include <linux/platform_device.h>
-+#include <linux/reset.h>
- #include <linux/serial.h>
- #include <linux/serial_8250.h>
- #include <linux/serial_core.h>
-@@ -44,8 +45,6 @@
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
- 
--#include <linux/clk/tegra.h>
--
- #define TEGRA_UART_TYPE				"TEGRA_UART"
- #define TX_EMPTY_STATUS				(UART_LSR_TEMT | UART_LSR_THRE)
- #define BYTES_TO_ALIGN(x)			((unsigned long)(x) & 0x3)
-@@ -103,6 +102,7 @@ struct tegra_uart_port {
- 	const struct tegra_uart_chip_data	*cdata;
- 
- 	struct clk				*uart_clk;
-+	struct reset_control			*rst;
- 	unsigned int				current_baud;
- 
- 	/* Register shadow */
-@@ -832,9 +832,9 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
- 	clk_prepare_enable(tup->uart_clk);
- 
- 	/* Reset the UART controller to clear all previous status.*/
--	tegra_periph_reset_assert(tup->uart_clk);
-+	reset_control_assert(tup->rst);
- 	udelay(10);
--	tegra_periph_reset_deassert(tup->uart_clk);
-+	reset_control_deassert(tup->rst);
- 
- 	tup->rx_in_progress = 0;
- 	tup->tx_in_progress = 0;
-@@ -1320,6 +1320,12 @@ static int tegra_uart_probe(struct platform_device *pdev)
- 		return PTR_ERR(tup->uart_clk);
- 	}
- 
-+	tup->rst = devm_reset_control_get(&pdev->dev, "serial");
-+	if (IS_ERR(tup->rst)) {
-+		dev_err(&pdev->dev, "Couldn't get the reset\n");
-+		return PTR_ERR(tup->rst);
-+	}
-+
- 	u->iotype = UPIO_MEM32;
- 	u->irq = platform_get_irq(pdev, 0);
- 	u->regshift = 2;
--- 
-1.8.1.5
+You can notice that shell (zsh in my case) and "tmux attach" are still
+remains in process' list. That didn't happen in previous kernels.
+I've tried to bisect this in kernel sources and found commit
+cb50e5235b8ae5aa0fe422eaaa8e444024c5bd98 which contains this exact
+patch. I have not enough experience to investigate more so most likely
+I will not find anything more. But it will be good if someone more
+experienced will have a look at it.
 
