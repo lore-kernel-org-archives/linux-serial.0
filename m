@@ -1,137 +1,72 @@
-From: Gerhard Sittig <gsi@denx.de>
-Subject: [PATCH v5 10/17] serial: mpc512x: setup the PSC FIFO clock as well
-Date: Mon, 18 Nov 2013 00:06:10 +0100
-Message-ID: <1384729577-7336-11-git-send-email-gsi@denx.de>
-References: <1384729577-7336-1-git-send-email-gsi@denx.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:39901 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751546Ab3KQXIW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Nov 2013 18:08:22 -0500
-In-Reply-To: <1384729577-7336-1-git-send-email-gsi@denx.de>
-Sender: linux-serial-owner@vger.kernel.org
+From: =?UTF-8?B?VGVyamUgQmVyZ3N0csO2bQ==?= <tbergstrom@nvidia.com>
+Subject: Re: [PATCH 00/31] ARM: tegra: use common reset and DMA bindings
+Date: Mon, 18 Nov 2013 10:24:26 +0200
+Message-ID: <5289CEBA.3070502@nvidia.com>
+References: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, David Airlie <airlied@linux.ie>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marc Dietrich <marvin24@gmx.de>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "ac100@lists.launchpad.net" <ac100@lists.launchpad.net>, "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>, Stephen Warren <swarren@nvidia.com>, Alan Stern <stern@rowland.harvard.edu>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Anatolij Gustschin <agust@denx.de>, Mike Turquette <mturquette@linaro.org>
-Cc: Scott Wood <scottwood@freescale.com>, Detlev Zundel <dzu@denx.de>, Gerhard Sittig <gsi@denx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-prepare and enable the FIFO clock upon PSC FIFO initialization,
-check for and propagage errors when enabling the PSC FIFO clock,
-disable and unprepare the FIFO clock upon PSC FIFO uninitialization
+On 15.11.2013 22:53, Stephen Warren wrote:
+> From: Stephen Warren <swarren@nvidia.com>
+> 
+> This series implements a common reset framework driver for Tegra, and
+> updates all relevant Tegra drivers to use it. It also removes the custom
+> DMA bindings and replaced them with the standard DMA DT bindings.
+> 
+> Historically, the Tegra clock driver has exported a custom API for module
+> reset. This series removes that API, and transitions DT and drivers to
+> the new reset framework.
+> 
+> The custom API used a "struct clk" to identify which module to reset, and
+> consequently some DT bindings and drivers required clocks to be provided
+> where they really needed just a reset identifier instead. Due to this
+> known deficiency, I have always considered most Tegra bindings to be
+> unstable. This series removes this excuse for instability, although I
+> still consider some Tegra bindings unstable due to the need to convert to
+> the common DMA bindings.
+> 
+> Historically, Tegra DMA channels have been represented in DT using a
+> custom nvidia,dma-request-selector property. Now that standard DMA DT
+> bindings exist, convert all Tegra bindings, DTs, and drivers to use the
+> standard instead.
+> 
+> This series makes a DT-ABI-incompatible change to:
+> - Require reset specifiers in DT where relevant.
+> - Require standard DMA specifiers.
+> - Remove clock specifiers from DT where they were only needed for reset.
+> - Remove legacy DMA specifier properties.
+> 
+> I anticipate merging this whole series into the Tegra and arm-soc trees
+> as its own branch, due to internal dependencies. This branch will be
+> stable and can then be merged into any other subsystem trees should any
+> conflicts arise.
+> 
+> This series depends on Peter's Tegra clock driver rework, available at
+> git://nv-tegra.nvidia.com/user/pdeschrijver/linux tegra-clk-tegra124-0
+> (or whatever version of that gets included in 3.14)
 
-devm_{get,put}_clk() doesn't apply here, as the SoC provides a
-single FIFO component which is shared among several PSC components,
-thus the FIFO isn't associated with a device (while the PSCs are)
+Overall, a good change. For host1x part:
 
-provide a fallback clock lookup approach in case the OF based clock
-lookup for the PSC FIFO fails, this allows for successful operation in
-the presence of an outdated device tree which lacks clock specs
+Acked-By: Terje Bergstrom <tbergstrom@nvidia.com>
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # for v4
-Signed-off-by: Gerhard Sittig <gsi@denx.de>
----
-Greg, the addition since v4 is the clk_get_sys() call for the 'ipg'
-clock item (backwards compat for device trees w/o clock specs)
+This patch does not change the behavior, but we have in original code
+the problem that we don't flush the MC queue when resetting an engine.
+This can cause some memory writes to not hit memory. There was an
+earlier discussion on that, but we seem to have lost track of the issue.
 
----
- drivers/tty/serial/mpc52xx_uart.c |   50 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 44 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 1d1dbe9d5af2..78c8cbadc776 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -421,6 +421,7 @@ struct psc_fifoc {
- 
- static struct psc_fifoc __iomem *psc_fifoc;
- static unsigned int psc_fifoc_irq;
-+static struct clk *psc_fifoc_clk;
- 
- static void mpc512x_psc_fifo_init(struct uart_port *port)
- {
-@@ -568,36 +569,73 @@ static unsigned int mpc512x_psc_set_baudrate(struct uart_port *port,
- /* Init PSC FIFO Controller */
- static int __init mpc512x_psc_fifoc_init(void)
- {
-+	int err;
- 	struct device_node *np;
-+	struct clk *clk;
-+
-+	/* default error code, potentially overwritten by clock calls */
-+	err = -ENODEV;
- 
- 	np = of_find_compatible_node(NULL, NULL,
- 				     "fsl,mpc5121-psc-fifo");
- 	if (!np) {
- 		pr_err("%s: Can't find FIFOC node\n", __func__);
--		return -ENODEV;
-+		goto out_err;
-+	}
-+
-+	clk = of_clk_get(np, 0);
-+	if (IS_ERR(clk)) {
-+		/* backwards compat with device trees that lack clock specs */
-+		clk = clk_get_sys(np->name, "ipg");
-+	}
-+	if (IS_ERR(clk)) {
-+		pr_err("%s: Can't lookup FIFO clock\n", __func__);
-+		err = PTR_ERR(clk);
-+		goto out_ofnode_put;
-+	}
-+	if (clk_prepare_enable(clk)) {
-+		pr_err("%s: Can't enable FIFO clock\n", __func__);
-+		clk_put(clk);
-+		goto out_ofnode_put;
- 	}
-+	psc_fifoc_clk = clk;
- 
- 	psc_fifoc = of_iomap(np, 0);
- 	if (!psc_fifoc) {
- 		pr_err("%s: Can't map FIFOC\n", __func__);
--		of_node_put(np);
--		return -ENODEV;
-+		goto out_clk_disable;
- 	}
- 
- 	psc_fifoc_irq = irq_of_parse_and_map(np, 0);
--	of_node_put(np);
- 	if (psc_fifoc_irq == 0) {
- 		pr_err("%s: Can't get FIFOC irq\n", __func__);
--		iounmap(psc_fifoc);
--		return -ENODEV;
-+		goto out_unmap;
- 	}
- 
-+	of_node_put(np);
- 	return 0;
-+
-+out_unmap:
-+	iounmap(psc_fifoc);
-+out_clk_disable:
-+	clk_disable_unprepare(psc_fifoc_clk);
-+	clk_put(psc_fifoc_clk);
-+out_ofnode_put:
-+	of_node_put(np);
-+out_err:
-+	return err;
- }
- 
- static void __exit mpc512x_psc_fifoc_uninit(void)
- {
- 	iounmap(psc_fifoc);
-+
-+	/* disable the clock, errors are not fatal */
-+	if (psc_fifoc_clk) {
-+		clk_disable_unprepare(psc_fifoc_clk);
-+		clk_put(psc_fifoc_clk);
-+		psc_fifoc_clk = NULL;
-+	}
- }
- 
- /* 512x specific interrupt handler. The caller holds the port lock */
--- 
-1.7.10.4
-
+Terje
