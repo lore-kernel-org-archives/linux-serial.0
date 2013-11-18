@@ -1,75 +1,68 @@
 From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH] tty: Only hangup once
-Date: Mon, 18 Nov 2013 12:37:07 -0500
-Message-ID: <528A5043.6030901@hurleysoftware.com>
-References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>	<20131117203850.46df2124@tormoz-pc> <20131118134211.17861db3@alan.etchedpixels.co.uk>
+Date: Mon, 18 Nov 2013 15:32:59 -0500
+Message-ID: <528A797B.6020807@hurleysoftware.com>
+References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>	<20131117203850.46df2124@tormoz-pc> <20131118134211.17861db3@alan.etchedpixels.co.uk> <528A5043.6030901@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:54344 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:37182 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751297Ab3KRRhK (ORCPT
+	with ESMTP id S1753011Ab3KRUdD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Nov 2013 12:37:10 -0500
-In-Reply-To: <20131118134211.17861db3@alan.etchedpixels.co.uk>
+	Mon, 18 Nov 2013 15:33:03 -0500
+In-Reply-To: <528A5043.6030901@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Heorhi Valakhanovich <valahanovich@tut.by>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+To: Heorhi Valakhanovich <valahanovich@tut.by>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
-On 11/18/2013 08:42 AM, One Thousand Gnomes wrote:
->> After upgrading to kernel 3.12 I noticed one issue with tmux software.
->> The easiest way to reproduce will be:
->> 1. Start tmux session as root.
->> 2. Connect via ssh and use "tmux attach" to attach to the running
->> session.
->> 3. Kill ssh client.
+On 11/18/2013 12:37 PM, Peter Hurley wrote:
+> On 11/18/2013 08:42 AM, One Thousand Gnomes wrote:
+>>> After upgrading to kernel 3.12 I noticed one issue with tmux software.
+>>> The easiest way to reproduce will be:
+>>> 1. Start tmux session as root.
+>>> 2. Connect via ssh and use "tmux attach" to attach to the running
+>>> session.
+>>> 3. Kill ssh client.
+>
+> Heorhi,
+>
+> Thanks for the report.
+>
+>>> You can notice that shell (zsh in my case) and "tmux attach" are still
+>>> remains in process' list. That didn't happen in previous kernels.
 
 Heorhi,
 
-Thanks for the report.
+I could not reproduce this behavior with zsh or bash.
 
->> You can notice that shell (zsh in my case) and "tmux attach" are still
->> remains in process' list. That didn't happen in previous kernels.
+In case I misunderstood, the steps I took to reproduce were,
 
-This may have been a bug in previous kernels.
-The tmux(1) man page has this to say:
+[On ssh server machine running 3.12]
+1.  Add 'set-option -g default-shell /usr/bin/zsh' to /etc/tmux.conf
+2a. In terminal window, 'sudo tmux'
+       - also tried -
+2b. At root login on tty2, 'tmux'
 
-      Each session is persistent and will survive accidental disconnection
-      (such as ssh(1) connection timeout) or intentional detaching (with the
-      `C-b d' key strokes).  tmux may be reattached using:
+Successfully starts tmux session. Then,
 
-            $ tmux attach
+[On ssh client machine]
+1. 'ssh user@server'
+2. 'sudo tmux attach'
+3. Switch to 2nd terminal window,
+4. ps -ef | grep ssh
+5. kill $pid_from_step4
 
+This *did not* leave the 'tmux attach' process alive.
 
-I'll confirm with tmux author(s) what the intended behavior is.
-
->> I've tried to bisect this in kernel sources and found commit
->> cb50e5235b8ae5aa0fe422eaaa8e444024c5bd98 which contains this exact
->> patch. I have not enough experience to investigate more so most likely
->> I will not find anything more. But it will be good if someone more
->> experienced will have a look at it.
->
-> The patch should be reverted. The submission gives no reason that the
-> patch was required - it just adds code and optimises a path that doesn't
-> need optimising anyway.
-
-Alan,
-
-This patch isn't about optimizing; it's about guaranteeing the line discipline
-and a tty driver that ops->hangup() will only occur once for any given tty.
-
-> It's theoretically true you only need one hangup, unfortunately however
-> I think it has to be the *last* hangup not the first or there are races
-> between the tty code and the process group handling.
-
-I doubt this is caused by a race condition; the first hangup would do most
-of the destruction regardless, and a second hangup can't really race with
-the first because of the tty_lock() held for most of the hangup.
-
-In any event, it's worth discovering what state a subsequent hangup can
-effect that the first hangup left incomplete. I'll look into it.
+Is zsh your login shell as well? Maybe that's the required
+component to reproduce the behavior you've observed.
 
 Regards,
 Peter Hurley
+
+
+
+
