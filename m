@@ -1,81 +1,176 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v3 28/29] serial: sh-sci: Add device tree bindings documentation
-Date: Tue, 19 Nov 2013 15:02:29 +0100
-Message-ID: <1384869751-9786-29-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v3 29/29] serial: sh-sci: Add OF support
+Date: Tue, 19 Nov 2013 15:02:30 +0100
+Message-ID: <1384869751-9786-30-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:50405 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752659Ab3KSOCN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 09:02:13 -0500
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+List-Id: linux-serial@vger.kernel.org
 
-Document the device tree bindings for the sci serial port devices.
+From: Bastian Hecht <hechtb@gmail.com>
 
+Extend the driver to with support for SCIx device tree bindings. A
+minimal set of features is supported, additional properties can be added
+later should the need to describe more device features arise.
+
+Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- .../bindings/serial/renesas,sci-serial.txt         | 46 ++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+ drivers/tty/serial/sh-sci.c | 107 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 104 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-new file mode 100644
-index 0000000..f372cf2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -0,0 +1,46 @@
-+* Renesas SH-Mobile Serial Communication Interface
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 6bb1e8f..a3b7266 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -40,6 +40,7 @@
+ #include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/notifier.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/scatterlist.h>
+@@ -2472,6 +2473,89 @@ static int sci_remove(struct platform_device *dev)
+ 	return 0;
+ }
+ 
++struct sci_port_info {
++	unsigned int type;
++	unsigned int regtype;
++	unsigned int brr_algo;
++};
 +
-+Required properties:
++static const struct of_device_id of_sci_match[] = {
++	{
++		.compatible = "renesas,scif",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIF,
++			.regtype = SCIx_SH4_SCIF_REGTYPE,
++			.brr_algo = SCBRR_ALGO_2,
++		},
++	}, {
++		.compatible = "renesas,scifa",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIFA,
++			.regtype = SCIx_SCIFA_REGTYPE,
++			.brr_algo = SCBRR_ALGO_4,
++		},
++	}, {
++		.compatible = "renesas,scifb",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIFB,
++			.regtype = SCIx_SCIFB_REGTYPE,
++			.brr_algo = SCBRR_ALGO_4,
++		},
++	}, {
++		.compatible = "renesas,hscif",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_HSCIF,
++			.regtype = SCIx_HSCIF_REGTYPE,
++			.brr_algo = SCBRR_ALGO_6,
++		},
++	}, {
++		/* Terminator */
++	},
++};
++MODULE_DEVICE_TABLE(of, of_sci_match);
 +
-+  - compatible: Must contain one of the following:
++static struct plat_sci_port *
++sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
++{
++	struct device_node *np = pdev->dev.of_node;
++	const struct of_device_id *match;
++	const struct sci_port_info *info;
++	struct plat_sci_port *p;
++	int id;
 +
-+    - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
-+    - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7790" for R8A7790 (R-Car H2) SCIFB compatible UART.
-+    - "renesas,hscif-r8a7790" for R8A7790 (R-Car H2) HSCIF compatible UART.
-+    - "renesas,scif-r8a7791" for R8A7791 (R-Car M2) SCIF compatible UART.
-+    - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
-+    - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
-+    - "renesas,scif" for generic SCIF compatible UART.
-+    - "renesas,scifa" for generic SCIFA compatible UART.
-+    - "renesas,scifb" for generic SCIFB compatible UART.
-+    - "renesas,hscif" for generic HSCIF compatible UART.
++	if (!IS_ENABLED(CONFIG_OF) || !np)
++		return NULL;
 +
-+    When compatible with the generic version, nodes must list the
-+    SoC-specific version corresponding to the platform first followed by the
-+    generic version.
++	match = of_match_node(of_sci_match, pdev->dev.of_node);
++	if (!match)
++		return NULL;
 +
-+  - reg: Base address and length of the I/O registers used by the UART.
-+  - interrupts: Must contain an interrupt-specifier for the SCIx interrupt.
++	info = match->data;
 +
-+  - clocks: Must contain a phandle and clock-specifier pair for each entry
-+    in clock-names.
-+  - clock-names: Must contain "sci_ick" for the SCIx UART interface clock.
++	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
++	if (!p) {
++		dev_err(&pdev->dev, "failed to allocate DT config data\n");
++		return NULL;
++	}
 +
-+Note: Each enabled SCIx UART should have an alias correctly numbered in the
-+"aliases" node.
++	/* Get the line number for the aliases node. */
++	id = of_alias_get_id(np, "serial");
++	if (id < 0) {
++		dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
++		return NULL;
++	}
 +
-+Example:
-+	aliases {
-+		serial0 = &scifa0;
-+	};
++	*dev_id = id;
 +
-+	scifa0: serial@e6c40000 {
-+		compatible = "renesas,scifa-r8a7790", "renesas,scifa-generic";
-+		reg = <0 0xe6c40000 0 64>;
-+		interrupt-parent = <&gic>;
-+		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&mstp2_clks R8A7790_CLK_SCIFA0>;
-+		clock-names = "sci_ick";
-+	};
++	p->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
++	p->type = info->type;
++	p->regtype = info->regtype;
++	p->scscr = SCSCR_RE | SCSCR_TE;
++	p->scbrr_algo_id = info->brr_algo;
++
++	return p;
++}
++
+ static int sci_probe_single(struct platform_device *dev,
+ 				      unsigned int index,
+ 				      struct plat_sci_port *p,
+@@ -2504,8 +2588,9 @@ static int sci_probe_single(struct platform_device *dev,
+ 
+ static int sci_probe(struct platform_device *dev)
+ {
+-	struct plat_sci_port *p = dev_get_platdata(&dev->dev);
+-	struct sci_port *sp = &sci_ports[dev->id];
++	struct plat_sci_port *p;
++	struct sci_port *sp;
++	unsigned int dev_id;
+ 	int ret;
+ 
+ 	/*
+@@ -2516,9 +2601,24 @@ static int sci_probe(struct platform_device *dev)
+ 	if (is_early_platform_device(dev))
+ 		return sci_probe_earlyprintk(dev);
+ 
++	if (dev->dev.of_node) {
++		p = sci_parse_dt(dev, &dev_id);
++		if (p == NULL)
++			return -EINVAL;
++	} else {
++		p = dev->dev.platform_data;
++		if (p == NULL) {
++			dev_err(&dev->dev, "no platform data supplied\n");
++			return -EINVAL;
++		}
++
++		dev_id = dev->id;
++	}
++
++	sp = &sci_ports[dev_id];
+ 	platform_set_drvdata(dev, sp);
+ 
+-	ret = sci_probe_single(dev, dev->id, p, sp);
++	ret = sci_probe_single(dev, dev_id, p, sp);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2570,6 +2670,7 @@ static struct platform_driver sci_driver = {
+ 		.name	= "sh-sci",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= &sci_dev_pm_ops,
++		.of_match_table = of_match_ptr(of_sci_match),
+ 	},
+ };
+ 
 -- 
 1.8.3.2
 
