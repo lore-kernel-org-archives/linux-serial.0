@@ -1,14 +1,14 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v3 24/29] ARM: shmobile: r8a7790: Declare SCIF register base and IRQ as resources
-Date: Tue, 19 Nov 2013 15:02:25 +0100
-Message-ID: <1384869751-9786-25-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v3 25/29] ARM: shmobile: r8a7791: Declare SCIF register base and IRQ as resources
+Date: Tue, 19 Nov 2013 15:02:26 +0100
+Message-ID: <1384869751-9786-26-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:50405 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:50406 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752730Ab3KSOCI (ORCPT
+	with ESMTP id S1752427Ab3KSOCJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 09:02:08 -0500
+	Tue, 19 Nov 2013 09:02:09 -0500
 In-Reply-To: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -20,21 +20,21 @@ deprecated. Use resources instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r8a7790.c | 15 ++++++++++-----
+ arch/arm/mach-shmobile/setup-r8a7791.c | 15 ++++++++++-----
  1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7790.c b/arch/arm/mach-shmobile/setup-r8a7790.c
-index 8344743..70bb553 100644
---- a/arch/arm/mach-shmobile/setup-r8a7790.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7790.c
-@@ -81,11 +81,14 @@ void __init r8a7790_pinmux_init(void)
- #define __R8A7790_SCIF(scif_type, _scscr, algo, index, baseaddr, irq)	\
+diff --git a/arch/arm/mach-shmobile/setup-r8a7791.c b/arch/arm/mach-shmobile/setup-r8a7791.c
+index 8eb9373..557db8f 100644
+--- a/arch/arm/mach-shmobile/setup-r8a7791.c
++++ b/arch/arm/mach-shmobile/setup-r8a7791.c
+@@ -87,11 +87,14 @@ void __init r8a7791_pinmux_init(void)
+ #define __R8A7791_SCIF(scif_type, algo, index, baseaddr, irq)		\
  static struct plat_sci_port scif##index##_platform_data = {		\
  	.type		= scif_type,					\
 -	.mapbase	= baseaddr,					\
  	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
  	.scbrr_algo_id	= algo,						\
- 	.scscr		= _scscr,					\
+ 	.scscr		= SCSCR_RE | SCSCR_TE,				\
 -	.irqs		= SCIx_IRQ_MUXED(irq),				\
 +};									\
 +									\
@@ -43,11 +43,11 @@ index 8344743..70bb553 100644
 +	DEFINE_RES_IRQ(irq),						\
  }
  
- #define R8A7790_SCIF(index, baseaddr, irq)				\
-@@ -116,9 +119,11 @@ R8A7790_HSCIF(8, 0xe62c0000, gic_spi(154)); /* HSCIF0 */
- R8A7790_HSCIF(9, 0xe62c8000, gic_spi(155)); /* HSCIF1 */
+ #define R8A7791_SCIF(index, baseaddr, irq)				\
+@@ -120,9 +123,11 @@ R8A7791_SCIFA(13, 0xe6c78000, gic_spi(30)); /* SCIFA4 */
+ R8A7791_SCIFA(14, 0xe6c80000, gic_spi(31)); /* SCIFA5 */
  
- #define r8a7790_register_scif(index)					       \
+ #define r8a7791_register_scif(index)					       \
 -	platform_device_register_data(&platform_bus, "sh-sci", index,	       \
 -				      &scif##index##_platform_data,	       \
 -				      sizeof(scif##index##_platform_data))
@@ -57,8 +57,8 @@ index 8344743..70bb553 100644
 +					  &scif##index##_platform_data,	       \
 +					  sizeof(scif##index##_platform_data))
  
- static const struct renesas_irqc_config irqc0_data __initconst = {
- 	.irq_base = irq_pin(0), /* IRQ0 -> IRQ3 */
+ static const struct sh_timer_config cmt00_platform_data __initconst = {
+ 	.name = "CMT00",
 -- 
 1.8.3.2
 
