@@ -1,183 +1,131 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 00/29] Add OF support to the sh-sci serial port driver
-Date: Tue, 19 Nov 2013 14:12:43 +0100
-Message-ID: <1673549.kq3QFrtT8Z@avalon>
-References: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131119015539.GA9186@verge.net.au>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] tty: Only hangup once
+Date: Tue, 19 Nov 2013 08:46:27 -0500
+Message-ID: <528B6BB3.7020303@hurleysoftware.com>
+References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>	<20131117203850.46df2124@tormoz-pc>	<20131118134211.17861db3@alan.etchedpixels.co.uk>	<528A5043.6030901@hurleysoftware.com>	<528A797B.6020807@hurleysoftware.com> <20131119000923.5ca40e51@tormoz-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:50147 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751976Ab3KSNL7 (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40269 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752354Ab3KSNqi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 08:11:59 -0500
-In-Reply-To: <20131119015539.GA9186@verge.net.au>
+	Tue, 19 Nov 2013 08:46:38 -0500
+In-Reply-To: <20131119000923.5ca40e51@tormoz-pc>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org
+To: Heorhi Valakhanovich <valahanovich@tut.by>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
-Hi Simon,
+On 11/18/2013 04:09 PM, Heorhi Valakhanovich wrote:
+> On Mon, 18 Nov 2013 15:32:59 -0500
+> Peter Hurley <peter@hurleysoftware.com> wrote:
+>
+>> On 11/18/2013 12:37 PM, Peter Hurley wrote:
+>>> On 11/18/2013 08:42 AM, One Thousand Gnomes wrote:
+>>>>> After upgrading to kernel 3.12 I noticed one issue with tmux
+>>>>> software. The easiest way to reproduce will be:
+>>>>> 1. Start tmux session as root.
+>>>>> 2. Connect via ssh and use "tmux attach" to attach to the running
+>>>>> session.
+>>>>> 3. Kill ssh client.
+>>>
+>>> Heorhi,
+>>>
+>>> Thanks for the report.
+>>>
+>>>>> You can notice that shell (zsh in my case) and "tmux attach" are
+>>>>> still remains in process' list. That didn't happen in previous
+>>>>> kernels.
+>>
+>> Heorhi,
+>>
+>> I could not reproduce this behavior with zsh or bash.
+>>
+>> In case I misunderstood, the steps I took to reproduce were,
+>>
+>> [On ssh server machine running 3.12]
+>> 1.  Add 'set-option -g default-shell /usr/bin/zsh' to /etc/tmux.conf
+>
+> This is really not necessary. I also reproduced it with bash.
+>
+>> 2a. In terminal window, 'sudo tmux'
+>>         - also tried -
+>> 2b. At root login on tty2, 'tmux'
+>>
+>> Successfully starts tmux session. Then,
+>>
+>> [On ssh client machine]
+>> 1. 'ssh user@server'
+>> 2. 'sudo tmux attach'
+>> 3. Switch to 2nd terminal window,
+>> 4. ps -ef | grep ssh
+>> 5. kill $pid_from_step4
+>>
+>> This *did not* leave the 'tmux attach' process alive.
+>>
+>> Is zsh your login shell as well? Maybe that's the required
+>> component to reproduce the behavior you've observed.
+>>
+>> Regards,
+>> Peter Hurley
+>
+> Thank you for your attention.
+> I tried to reproduce it exactly as you did and notice strange thing.
+> You use "sudo tmux attach" and tmux client uses the terminal created
+> for regular user and those works good.
+>
+> But if you will use "ssh root@server" (you can use localhost too) the
+> "tmux attach" will use terminal created from root (i checked this with
+> lsof and ls -al /dev/pts) and behavior is different. Are terminals
+> created for root is somehow different from those created for regular
+> users?
+>
+> If you can't use root ssh login I will try to reproduce it's for sudo by
+> mixing some kind of dtach and tmux but it will be very unclear at the
+> end.
 
-On Tuesday 19 November 2013 10:55:39 Simon Horman wrote:
-> On Sun, Nov 10, 2013 at 04:33:12AM +0100, Laurent Pinchart wrote:
-> > Hello,
-> > 
-> > This is the second version of the patch set adds device tree bindings for
-> > the sh sci serial port devices and adds OF parsing to the sh-sci driver.
-> > 
-> > The bindings are based on Bastian Hecht's proposal (see
-> > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
-> > taken here is more minimalistic: instead of describing all hardware
-> > characteristics that vary between the SCI device revisions in DT (such as
-> > registers layout), that information is stored in the driver and selected
-> > based on the compatible property value. Only SCI revisions used on ARM
-> > devices are supported through DT, as DT support for SuperH is nowhere
-> > down the line.
-> > 
-> > Patches 01/29 to 06/29 clean up the sh-sci driver.
-> 
-> It seems to me that these could be queued up by Greg.
-> Let me know if you would like me to pass them on to him.
-> I'm quite happy for you to do that yourself. Or to wait.
-> Its entirely up to you.
-> 
-> In any case for those patches:
-> 
-> Acked-by: Simon Horman <horms+renesas@verge.net.au>
+Thanks for the additional testing; yes, the "ssh root@server" is the
+crucial difference. I was able to reproduce the problem immediately.
 
-Thank you. I'll resend the series with the DT bindings updated for r8a7791 and 
-will ask Greg to pick the patches up and provide a stable branch with patches 
-01/29 to 07/29.
+Before sshd execs a new root shell, it hangs up and then re-opens
+the current tty as a security measure. Because the tty state was not
+being reset, the subsequent re-open could not be hung up.
 
-> > Patches 07/29 to 27/29 replace memory and interrupt resources passed
-> > through platform data with platform resources. Beside replacing a custom
-> > mechanism with a standard one, it will also make the DT parsing code
-> > simpler as resource allocation will be shared between DT and non-DT code
-> > paths. Finally, patches 28/29 to 29/29 add OF parsing to the sh-sci driver
-> > and create DT bindings documentation.
-> 
-> 29 is awaiting devicetree review and 28 makes little sense before that
-> happens. Right?
+Would you please test the patch below and confirm the fix?
 
-Correct.
+--->%---
+Subject: [PATCH] tty: Reset hupped state on open
 
-> > The patches have been test on a Lager board (r8a7790-based). Support for
-> > other SoCs will be added as needed. Note that all current Renesas ARM
-> > SoCs seem to be compatible with the generic (H)SCI(F)(AB) devices, but
-> > the plan is for their DT bindings to list the SoC-specific version in
-> > case incompatibilities are found later.
-> > 
-> > Patch 08/29 ("serial: sh-sci: Support resources passed through platform
-> > resources") is the only dependency of the arch/arm and arch/sh patches
-> > present in this series. As it's too late to get it in v3.13, Simon will
-> > need a stable branch of the linux serial tree with that patch included.
-> 
-> That is patch 7 not 8, right?
+A common security idiom is to hangup the current tty (via vhangup())
+after forking but before execing a root shell. This hangs up any
+existing opens which other processes may have and ensures subsequent
+opens have the necessary permissions to open the root shell tty/pty.
 
-Yes, sorry.
+Reset the TTY_HUPPED state after the driver has successfully
+returned the opened tty (perform the reset while the tty is locked
+to avoid racing with concurrent hangups).
 
-> Do all of the shmobile patches depends on that patch?
+Reported-by: Heorhi Valakhanovich <valahanovich@tut.by>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+  drivers/tty/tty_io.c | 1 +
+  1 file changed, 1 insertion(+)
 
-Yes they do.
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 3a1a01a..c74a00a 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2086,6 +2086,7 @@ retry_open:
+  			filp->f_op = &tty_fops;
+  		goto retry_open;
+  	}
++	clear_bit(TTY_HUPPED, &tty->flags);
+  	tty_unlock(tty);
 
-> I would be happy to take some earlier if practical.
-> 
-> > Changes compared to v1:
-> > 
-> > - Patches 04/29 to 27/29 have been added
-> > - Multi-interrupt support has been removed from the DT bindings as they
-> >   don't support any SoC requiring multi-interrupt yet
-> > 
-> > Cc: devicetree@vger.kernel.org
-> > 
-> > Bastian Hecht (1):
-> >   serial: sh-sci: Add OF support
-> > 
-> > Laurent Pinchart (28):
-> >   serial: sh-sci: Sort headers alphabetically
-> >   serial: sh-sci: Remove baud rate calculation algorithm 5
-> >   serial: sh-sci: Simplify baud rate calculation algorithms
-> >   serial: sh-sci: Remove duplicate interrupt check in verify port op
-> >   serial: sh-sci: Set the UPF_FIXED_PORT flag
-> >   serial: sh-sci: Don't check IRQ in verify port operation
-> >   serial: sh-sci: Support resources passed through platform resources
-> >   ARM: shmobile: sh7372: Use macros to declare SCIF devices
-> >   ARM: shmobile: sh73a0: Use macros to declare SCIF devices
-> >   ARM: shmobile: r8a7740: Use macros to declare SCIF devices
-> >   ARM: shmobile: r8a7779: Use macros to declare SCIF devices
-> >   ARM: shmobile: r7s72100: Don't define SCIF platform data in an array
-> >   ARM: shmobile: r8a73a4: Don't define SCIF platform data in an array
-> >   ARM: shmobile: r8a7778: Don't define SCIF platform data in an array
-> >   ARM: shmobile: r8a7790: Don't define SCIF platform data in an array
-> >   ARM: shmobile: r8a7791: Don't define SCIF platform data in an array
-> >   ARM: shmobile: sh7372: Declare SCIF register base and IRQ as resources
-> >   ARM: shmobile: sh73a0: Declare SCIF register base and IRQ as resources
-> >   ARM: shmobile: r7s72100: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a73a4: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a7740: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a7778: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a7779: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a7790: Declare SCIF register base and IRQ as
-> >     resources
-> >   ARM: shmobile: r8a7791: Declare SCIF register base and IRQ as
-> >     resources
-> >   
-> >   sh: Declare SCIF register base and IRQ as resources
-> >   serial: sh-sci: Remove platform data mapbase and irqs fields
-> >   serial: sh-sci: Add device tree bindings documentation
-> >  
-> >  .../bindings/serial/renesas,sci-serial.txt         |  42 ++++
-> >  arch/arm/mach-shmobile/setup-r7s72100.c            |  63 +++---
-> >  arch/arm/mach-shmobile/setup-r8a73a4.c             |  65 +++---
-> >  arch/arm/mach-shmobile/setup-r8a7740.c             | 196 +++-------------
-> >  arch/arm/mach-shmobile/setup-r8a7778.c             |  45 ++--
-> >  arch/arm/mach-shmobile/setup-r8a7779.c             | 129 +++--------
-> >  arch/arm/mach-shmobile/setup-r8a7790.c             | 117 +++++-----
-> >  arch/arm/mach-shmobile/setup-r8a7791.c             | 130 +++++------
-> >  arch/arm/mach-shmobile/setup-sh7372.c              | 161 +++-----------
-> >  arch/arm/mach-shmobile/setup-sh73a0.c              | 192 +++-------------
-> >  arch/sh/kernel/cpu/sh2/setup-sh7619.c              |  27 ++-
-> >  arch/sh/kernel/cpu/sh2a/setup-mxg.c                |   9 +-
-> >  arch/sh/kernel/cpu/sh2a/setup-sh7201.c             |  72 +++++--
-> >  arch/sh/kernel/cpu/sh2a/setup-sh7203.c             |  36 +++-
-> >  arch/sh/kernel/cpu/sh2a/setup-sh7206.c             |  36 +++-
-> >  arch/sh/kernel/cpu/sh2a/setup-sh7264.c             |  96 +++++++--
-> >  arch/sh/kernel/cpu/sh2a/setup-sh7269.c             |  96 +++++++--
-> >  arch/sh/kernel/cpu/sh3/setup-sh7705.c              |  18 +-
-> >  arch/sh/kernel/cpu/sh3/setup-sh770x.c              |  27 ++-
-> >  arch/sh/kernel/cpu/sh3/setup-sh7710.c              |  18 +-
-> >  arch/sh/kernel/cpu/sh3/setup-sh7720.c              |  18 +-
-> >  arch/sh/kernel/cpu/sh4/setup-sh4-202.c             |  15 +-
-> >  arch/sh/kernel/cpu/sh4/setup-sh7750.c              |  18 +-
-> >  arch/sh/kernel/cpu/sh4/setup-sh7760.c              |  58 +++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7343.c             |  36 +++-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7366.c             |   9 +-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7722.c             |  27 ++-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7723.c             |  54 +++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7724.c             |  54 +++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  66 ++++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7757.c             |  27 ++-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7763.c             |  27 ++-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7770.c             |  90 ++++++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7780.c             |  18 +-
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7785.c             |  54 +++--
-> >  arch/sh/kernel/cpu/sh4a/setup-sh7786.c             |  82 +++++--
-> >  arch/sh/kernel/cpu/sh4a/setup-shx3.c               |  45 ++--
-> >  arch/sh/kernel/cpu/sh5/setup-sh5.c                 |  11 +-
-> >  drivers/tty/serial/sh-sci.c                        | 238 +++++++++++++---
-> >  include/linux/serial_sci.h                         |  35 +--
-> >  40 files changed, 1443 insertions(+), 1114 deletions(-)
-> >  create mode 100644
-> >  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+
 -- 
-Regards,
+1.8.1.2
 
-Laurent Pinchart
 
