@@ -1,131 +1,84 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: Only hangup once
-Date: Tue, 19 Nov 2013 08:46:27 -0500
-Message-ID: <528B6BB3.7020303@hurleysoftware.com>
-References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>	<20131117203850.46df2124@tormoz-pc>	<20131118134211.17861db3@alan.etchedpixels.co.uk>	<528A5043.6030901@hurleysoftware.com>	<528A797B.6020807@hurleysoftware.com> <20131119000923.5ca40e51@tormoz-pc>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40269 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752354Ab3KSNqi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 08:46:38 -0500
-In-Reply-To: <20131119000923.5ca40e51@tormoz-pc>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v3 01/29] serial: sh-sci: Sort headers alphabetically
+Date: Tue, 19 Nov 2013 15:02:02 +0100
+Message-ID: <1384869751-9786-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Heorhi Valakhanovich <valahanovich@tut.by>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
-On 11/18/2013 04:09 PM, Heorhi Valakhanovich wrote:
-> On Mon, 18 Nov 2013 15:32:59 -0500
-> Peter Hurley <peter@hurleysoftware.com> wrote:
->
->> On 11/18/2013 12:37 PM, Peter Hurley wrote:
->>> On 11/18/2013 08:42 AM, One Thousand Gnomes wrote:
->>>>> After upgrading to kernel 3.12 I noticed one issue with tmux
->>>>> software. The easiest way to reproduce will be:
->>>>> 1. Start tmux session as root.
->>>>> 2. Connect via ssh and use "tmux attach" to attach to the running
->>>>> session.
->>>>> 3. Kill ssh client.
->>>
->>> Heorhi,
->>>
->>> Thanks for the report.
->>>
->>>>> You can notice that shell (zsh in my case) and "tmux attach" are
->>>>> still remains in process' list. That didn't happen in previous
->>>>> kernels.
->>
->> Heorhi,
->>
->> I could not reproduce this behavior with zsh or bash.
->>
->> In case I misunderstood, the steps I took to reproduce were,
->>
->> [On ssh server machine running 3.12]
->> 1.  Add 'set-option -g default-shell /usr/bin/zsh' to /etc/tmux.conf
->
-> This is really not necessary. I also reproduced it with bash.
->
->> 2a. In terminal window, 'sudo tmux'
->>         - also tried -
->> 2b. At root login on tty2, 'tmux'
->>
->> Successfully starts tmux session. Then,
->>
->> [On ssh client machine]
->> 1. 'ssh user@server'
->> 2. 'sudo tmux attach'
->> 3. Switch to 2nd terminal window,
->> 4. ps -ef | grep ssh
->> 5. kill $pid_from_step4
->>
->> This *did not* leave the 'tmux attach' process alive.
->>
->> Is zsh your login shell as well? Maybe that's the required
->> component to reproduce the behavior you've observed.
->>
->> Regards,
->> Peter Hurley
->
-> Thank you for your attention.
-> I tried to reproduce it exactly as you did and notice strange thing.
-> You use "sudo tmux attach" and tmux client uses the terminal created
-> for regular user and those works good.
->
-> But if you will use "ssh root@server" (you can use localhost too) the
-> "tmux attach" will use terminal created from root (i checked this with
-> lsof and ls -al /dev/pts) and behavior is different. Are terminals
-> created for root is somehow different from those created for regular
-> users?
->
-> If you can't use root ssh login I will try to reproduce it's for sudo by
-> mixing some kind of dtach and tmux but it will be very unclear at the
-> end.
+This helps locating duplicates.
 
-Thanks for the additional testing; yes, the "ssh root@server" is the
-crucial difference. I was able to reproduce the problem immediately.
-
-Before sshd execs a new root shell, it hangs up and then re-opens
-the current tty as a security measure. Because the tty state was not
-being reset, the subsequent re-open could not be hung up.
-
-Would you please test the patch below and confirm the fix?
-
---->%---
-Subject: [PATCH] tty: Reset hupped state on open
-
-A common security idiom is to hangup the current tty (via vhangup())
-after forking but before execing a root shell. This hangs up any
-existing opens which other processes may have and ensures subsequent
-opens have the necessary permissions to open the root shell tty/pty.
-
-Reset the TTY_HUPPED state after the driver has successfully
-returned the opened tty (perform the reset while the tty is locked
-to avoid racing with concurrent hangups).
-
-Reported-by: Heorhi Valakhanovich <valahanovich@tut.by>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
-  drivers/tty/tty_io.c | 1 +
-  1 file changed, 1 insertion(+)
+ drivers/tty/serial/sh-sci.c | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 3a1a01a..c74a00a 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2086,6 +2086,7 @@ retry_open:
-  			filp->f_op = &tty_fops;
-  		goto retry_open;
-  	}
-+	clear_bit(TTY_HUPPED, &tty->flags);
-  	tty_unlock(tty);
-
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 5377502..280753f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -23,35 +23,35 @@
+ 
+ #undef DEBUG
+ 
+-#include <linux/module.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/ctype.h>
++#include <linux/cpufreq.h>
++#include <linux/delay.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
+ #include <linux/errno.h>
+-#include <linux/sh_dma.h>
+-#include <linux/timer.h>
++#include <linux/gpio.h>
++#include <linux/init.h>
+ #include <linux/interrupt.h>
+-#include <linux/tty.h>
+-#include <linux/tty_flip.h>
+-#include <linux/serial.h>
+-#include <linux/major.h>
+-#include <linux/string.h>
+-#include <linux/sysrq.h>
+ #include <linux/ioport.h>
++#include <linux/major.h>
++#include <linux/module.h>
+ #include <linux/mm.h>
+-#include <linux/init.h>
+-#include <linux/delay.h>
+-#include <linux/console.h>
+-#include <linux/platform_device.h>
+-#include <linux/serial_sci.h>
+ #include <linux/notifier.h>
++#include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+-#include <linux/cpufreq.h>
+-#include <linux/clk.h>
+-#include <linux/ctype.h>
+-#include <linux/err.h>
+-#include <linux/dmaengine.h>
+-#include <linux/dma-mapping.h>
+ #include <linux/scatterlist.h>
++#include <linux/serial.h>
++#include <linux/serial_sci.h>
++#include <linux/sh_dma.h>
+ #include <linux/slab.h>
+-#include <linux/gpio.h>
++#include <linux/string.h>
++#include <linux/sysrq.h>
++#include <linux/timer.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
+ 
+ #ifdef CONFIG_SUPERH
+ #include <asm/sh_bios.h>
 -- 
-1.8.1.2
-
+1.8.3.2
 
