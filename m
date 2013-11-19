@@ -1,69 +1,38 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH] tty: Only hangup once
-Date: Tue, 19 Nov 2013 09:40:32 -0800
-Message-ID: <20131119174032.GB22604@kroah.com>
-References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>
- <20131117203850.46df2124@tormoz-pc>
- <20131118134211.17861db3@alan.etchedpixels.co.uk>
- <528A5043.6030901@hurleysoftware.com>
- <528A797B.6020807@hurleysoftware.com>
- <20131119000923.5ca40e51@tormoz-pc>
- <528B6BB3.7020303@hurleysoftware.com>
- <20131119201952.2d63b8ce@tormoz-pc>
+Date: Tue, 19 Nov 2013 16:34:19 -0500
+Message-ID: <528BD95B.3070400@hurleysoftware.com>
+References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com> <20131117203850.46df2124@tormoz-pc> <20131118134211.17861db3@alan.etchedpixels.co.uk> <528A5043.6030901@hurleysoftware.com> <528A797B.6020807@hurleysoftware.com> <20131119000923.5ca40e51@tormoz-pc> <528B6BB3.7020303@hurleysoftware.com> <20131119201952.2d63b8ce@tormoz-pc> <20131119174032.GB22604@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20131119201952.2d63b8ce@tormoz-pc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Heorhi Valakhanovich <valahanovich@tut.by>
-Cc: Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:44397 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750812Ab3KSVeW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Nov 2013 16:34:22 -0500
+In-Reply-To: <20131119174032.GB22604@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Heorhi Valakhanovich <valahanovich@tut.by>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Nov 19, 2013 at 08:19:52PM +0300, Heorhi Valakhanovich wrote:
-> On Tue, 19 Nov 2013 08:46:27 -0500
-> Peter Hurley <peter@hurleysoftware.com> wrote:
-> 
-> > Would you please test the patch below and confirm the fix?
-> > 
-> > --->%---
-> > Subject: [PATCH] tty: Reset hupped state on open
-> > 
-> > A common security idiom is to hangup the current tty (via vhangup())
-> > after forking but before execing a root shell. This hangs up any
-> > existing opens which other processes may have and ensures subsequent
-> > opens have the necessary permissions to open the root shell tty/pty.
-> > 
-> > Reset the TTY_HUPPED state after the driver has successfully
-> > returned the opened tty (perform the reset while the tty is locked
-> > to avoid racing with concurrent hangups).
-> > 
-> > Reported-by: Heorhi Valakhanovich <valahanovich@tut.by>
-> > Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> > ---
-> >   drivers/tty/tty_io.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> > index 3a1a01a..c74a00a 100644
-> > --- a/drivers/tty/tty_io.c
-> > +++ b/drivers/tty/tty_io.c
-> > @@ -2086,6 +2086,7 @@ retry_open:
-> >   			filp->f_op = &tty_fops;
-> >   		goto retry_open;
-> >   	}
-> > +	clear_bit(TTY_HUPPED, &tty->flags);
-> >   	tty_unlock(tty);
-> > 
-> > 
-> 
-> It looks like this patch works. It solves my problem. Thanks.
-> Will wait for such fix in mainline.
+On 11/19/2013 12:40 PM, Greg KH wrote:
+> It should be backported to 3.12, and any other kernels?
 
-I'll queue this up after 3.13-rc1 is out.
+Greg,
 
-It should be backported to 3.12, and any other kernels?
+This patch should apply cleanly to 3.12.
 
-thanks,
+The first commit to rely on the correct TTY_HUPPED state was
+commit 36697529b5bbe36911e39a6309e7a7c9250d280a,
+    'tty: Replace ldisc locking with ldisc_sem'
+which was introduced in the 3.12 cycle.
 
-greg k-h
+Regards,
+Peter Hurley
+
+PS - Did you receive 'n_tty: Fix echo overrun tail computation'?
+I saw it didn't make 3.12.1.
+
