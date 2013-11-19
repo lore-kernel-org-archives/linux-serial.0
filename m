@@ -1,161 +1,68 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v3 27/29] serial: sh-sci: Remove platform data mapbase and irqs fields
-Date: Tue, 19 Nov 2013 15:02:28 +0100
-Message-ID: <1384869751-9786-28-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Heorhi Valakhanovich <valahanovich@tut.by>
+Subject: Re: [PATCH] tty: Only hangup once
+Date: Tue, 19 Nov 2013 20:19:52 +0300
+Message-ID: <20131119201952.2d63b8ce@tormoz-pc>
+References: <1375293945-4087-1-git-send-email-peter@hurleysoftware.com>
+	<20131117203850.46df2124@tormoz-pc>
+	<20131118134211.17861db3@alan.etchedpixels.co.uk>
+	<528A5043.6030901@hurleysoftware.com>
+	<528A797B.6020807@hurleysoftware.com>
+	<20131119000923.5ca40e51@tormoz-pc>
+	<528B6BB3.7020303@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:50406 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750823Ab3KSOCL (ORCPT
+Received: from mail-bk0-f50.google.com ([209.85.214.50]:41327 "EHLO
+	mail-bk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751421Ab3KSRUE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 09:02:11 -0500
-In-Reply-To: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	Tue, 19 Nov 2013 12:20:04 -0500
+Received: by mail-bk0-f50.google.com with SMTP id e11so1733453bkh.23
+        for <linux-serial@vger.kernel.org>; Tue, 19 Nov 2013 09:20:03 -0800 (PST)
+In-Reply-To: <528B6BB3.7020303@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
-The fields are not used anymore by board files, remove them.
+On Tue, 19 Nov 2013 08:46:27 -0500
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- drivers/tty/serial/sh-sci.c | 60 +++++++++++++++++++++++++--------------------
- include/linux/serial_sci.h  | 26 --------------------
- 2 files changed, 34 insertions(+), 52 deletions(-)
+> Would you please test the patch below and confirm the fix?
+> 
+> --->%---
+> Subject: [PATCH] tty: Reset hupped state on open
+> 
+> A common security idiom is to hangup the current tty (via vhangup())
+> after forking but before execing a root shell. This hangs up any
+> existing opens which other processes may have and ensures subsequent
+> opens have the necessary permissions to open the root shell tty/pty.
+> 
+> Reset the TTY_HUPPED state after the driver has successfully
+> returned the opened tty (perform the reset while the tty is locked
+> to avoid racing with concurrent hangups).
+> 
+> Reported-by: Heorhi Valakhanovich <valahanovich@tut.by>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>   drivers/tty/tty_io.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 3a1a01a..c74a00a 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -2086,6 +2086,7 @@ retry_open:
+>   			filp->f_op = &tty_fops;
+>   		goto retry_open;
+>   	}
+> +	clear_bit(TTY_HUPPED, &tty->flags);
+>   	tty_unlock(tty);
+> 
+> 
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index c5abe5c..6bb1e8f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -59,6 +59,23 @@
- 
- #include "sh-sci.h"
- 
-+/* Offsets into the sci_port->irqs array */
-+enum {
-+	SCIx_ERI_IRQ,
-+	SCIx_RXI_IRQ,
-+	SCIx_TXI_IRQ,
-+	SCIx_BRI_IRQ,
-+	SCIx_NR_IRQS,
-+
-+	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
-+};
-+
-+#define SCIx_IRQ_IS_MUXED(port)			\
-+	((port)->irqs[SCIx_ERI_IRQ] ==	\
-+	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
-+	((port)->irqs[SCIx_ERI_IRQ] &&	\
-+	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
-+
- struct sci_port {
- 	struct uart_port	port;
- 
-@@ -2160,36 +2177,27 @@ static int sci_init_single(struct platform_device *dev,
- 	port->iotype	= UPIO_MEM;
- 	port->line	= index;
- 
--	if (dev->num_resources) {
--		/* Device has resources, use them. */
--		res = platform_get_resource(dev, IORESOURCE_MEM, 0);
--		if (res == NULL)
--			return -ENOMEM;
-+	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-+	if (res == NULL)
-+		return -ENOMEM;
- 
--		port->mapbase = res->start;
-+	port->mapbase = res->start;
- 
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = platform_get_irq(dev, i);
-+	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
-+		sci_port->irqs[i] = platform_get_irq(dev, i);
- 
--		/* The SCI generates several interrupts. They can be muxed
--		 * together or connected to different interrupt lines. In the
--		 * muxed case only one interrupt resource is specified. In the
--		 * non-muxed case three or four interrupt resources are
--		 * specified, as the BRI interrupt is optional.
--		 */
--		if (sci_port->irqs[0] < 0)
--			return -ENXIO;
-+	/* The SCI generates several interrupts. They can be muxed together or
-+	 * connected to different interrupt lines. In the muxed case only one
-+	 * interrupt resource is specified. In the non-muxed case three or four
-+	 * interrupt resources are specified, as the BRI interrupt is optional.
-+	 */
-+	if (sci_port->irqs[0] < 0)
-+		return -ENXIO;
- 
--		if (sci_port->irqs[1] < 0) {
--			sci_port->irqs[1] = sci_port->irqs[0];
--			sci_port->irqs[2] = sci_port->irqs[0];
--			sci_port->irqs[3] = sci_port->irqs[0];
--		}
--	} else {
--		/* No resources, use old-style platform data. */
--		port->mapbase = p->mapbase;
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = p->irqs[i] ? p->irqs[i] : -ENXIO;
-+	if (sci_port->irqs[1] < 0) {
-+		sci_port->irqs[1] = sci_port->irqs[0];
-+		sci_port->irqs[2] = sci_port->irqs[0];
-+		sci_port->irqs[3] = sci_port->irqs[0];
- 	}
- 
- 	switch (p->type) {
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 68cf0bf..620cb57 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -58,17 +58,6 @@ enum {
- /* HSSRR HSCIF */
- #define HSCIF_SRE	0x8000
- 
--/* Offsets into the sci_port->irqs array */
--enum {
--	SCIx_ERI_IRQ,
--	SCIx_RXI_IRQ,
--	SCIx_TXI_IRQ,
--	SCIx_BRI_IRQ,
--	SCIx_NR_IRQS,
--
--	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
--};
--
- /* Offsets into the sci_port->gpios array */
- enum {
- 	SCIx_SCK,
-@@ -98,19 +87,6 @@ enum {
- 	SCIx_NR_REGTYPES,
- };
- 
--#define SCIx_IRQ_MUXED(irq)		\
--{					\
--	[SCIx_ERI_IRQ]	= (irq),	\
--	[SCIx_RXI_IRQ]	= (irq),	\
--	[SCIx_TXI_IRQ]	= (irq),	\
--	[SCIx_BRI_IRQ]	= (irq),	\
--}
--
--#define SCIx_IRQ_IS_MUXED(port)			\
--	((port)->irqs[SCIx_ERI_IRQ] ==	\
--	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
--	((port)->irqs[SCIx_ERI_IRQ] &&	\
--	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
- /*
-  * SCI register subset common for all port types.
-  * Not all registers will exist on all parts.
-@@ -139,8 +115,6 @@ struct plat_sci_port_ops {
-  * Platform device specific platform_data struct
-  */
- struct plat_sci_port {
--	unsigned long	mapbase;		/* resource base */
--	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
- 	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
- 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
- 	upf_t		flags;			/* UPF_* flags */
--- 
-1.8.3.2
+It looks like this patch works. It solves my problem. Thanks.
+Will wait for such fix in mainline.
 
+Heorhi.
