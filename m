@@ -1,52 +1,64 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v2 00/29] Add OF support to the sh-sci serial port driver
-Date: Wed, 20 Nov 2013 09:18:37 +0900
-Message-ID: <20131120001836.GB7391@verge.net.au>
-References: <1384054421-13357-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131119015539.GA9186@verge.net.au>
- <1673549.kq3QFrtT8Z@avalon>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] n_tty: Ensure reader restarts worker for next reader
+Date: Tue, 19 Nov 2013 16:21:54 -0800
+Message-ID: <CA+55aFwYps=q14pQ04yWYThFwi3NnR__MeggU8N3M4Q0vrk+nQ@mail.gmail.com>
+References: <20131017211236.GA6155@kroah.com>
+	<1383850796-24300-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1673549.kq3QFrtT8Z@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ve0-f177.google.com ([209.85.128.177]:34677 "EHLO
+	mail-ve0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753247Ab3KTAVz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Nov 2013 19:21:55 -0500
+In-Reply-To: <1383850796-24300-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mikael Pettersson <mikpelinux@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, "# .39.x" <stable@kernel.org>
 
-On Tue, Nov 19, 2013 at 02:12:43PM +0100, Laurent Pinchart wrote:
-> Hi Simon,
-> 
-> On Tuesday 19 November 2013 10:55:39 Simon Horman wrote:
-> > On Sun, Nov 10, 2013 at 04:33:12AM +0100, Laurent Pinchart wrote:
-> > > Hello,
-> > > 
-> > > This is the second version of the patch set adds device tree bindings for
-> > > the sh sci serial port devices and adds OF parsing to the sh-sci driver.
-> > > 
-> > > The bindings are based on Bastian Hecht's proposal (see
-> > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
-> > > taken here is more minimalistic: instead of describing all hardware
-> > > characteristics that vary between the SCI device revisions in DT (such as
-> > > registers layout), that information is stored in the driver and selected
-> > > based on the compatible property value. Only SCI revisions used on ARM
-> > > devices are supported through DT, as DT support for SuperH is nowhere
-> > > down the line.
-> > > 
-> > > Patches 01/29 to 06/29 clean up the sh-sci driver.
-> > 
-> > It seems to me that these could be queued up by Greg.
-> > Let me know if you would like me to pass them on to him.
-> > I'm quite happy for you to do that yourself. Or to wait.
-> > Its entirely up to you.
-> > 
-> > In any case for those patches:
-> > 
-> > Acked-by: Simon Horman <horms+renesas@verge.net.au>
-> 
-> Thank you. I'll resend the series with the DT bindings updated for r8a7791 and 
-> will ask Greg to pick the patches up and provide a stable branch with patches 
-> 01/29 to 07/29.
+Greg,
+ what happened to this patch? Is it still waiting in some random tree
+of yours, or did it get lost?
 
-Thanks, that sounds great.
+                    Linus
+
+On Thu, Nov 7, 2013 at 10:59 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> A departing reader must restart a flush_to_ldisc() worker _before_
+> the next reader enters the read loop; this is to avoid the new reader
+> concluding no more i/o is available and prematurely exiting, when the
+> old reader simply hasn't re-started the worker yet.
+>
+> Cc: stable@kernel.org # 3.12
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index 7a744b6..ce11cd5 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -2250,6 +2250,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+>                 if (time)
+>                         timeout = time;
+>         }
+> +       n_tty_set_room(tty);
+> +       up_read(&tty->termios_rwsem);
+> +
+>         mutex_unlock(&ldata->atomic_read_lock);
+>         remove_wait_queue(&tty->read_wait, &wait);
+>
+> @@ -2260,8 +2263,6 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+>         if (b - buf)
+>                 retval = b - buf;
+>
+> -       n_tty_set_room(tty);
+> -       up_read(&tty->termios_rwsem);
+>         return retval;
+>  }
+>
+> --
+> 1.8.1.2
+>
