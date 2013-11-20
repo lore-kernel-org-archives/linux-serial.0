@@ -1,41 +1,34 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH] n_tty: Ensure reader restarts worker for next reader
-Date: Tue, 19 Nov 2013 16:43:10 -0800
-Message-ID: <CA+55aFzbOsV_3JGV5LQe957TJ1rnEckv+e7qQNLp9ctOYa6EHg@mail.gmail.com>
-References: <20131017211236.GA6155@kroah.com>
-	<1383850796-24300-1-git-send-email-peter@hurleysoftware.com>
-	<CA+55aFwYps=q14pQ04yWYThFwi3NnR__MeggU8N3M4Q0vrk+nQ@mail.gmail.com>
-	<20131120003032.GA27825@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/31] ARM: tegra: use common reset and DMA bindings
+Date: Wed, 20 Nov 2013 16:37:36 +0100
+Message-ID: <201311201637.36733.arnd@arndb.de>
+References: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f174.google.com ([209.85.128.174]:36136 "EHLO
-	mail-ve0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751561Ab3KTAnK (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Nov 2013 19:43:10 -0500
-In-Reply-To: <20131120003032.GA27825@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>, alsa-devel@alsa-project.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Marc Dietrich <marvin24@gmx.de>, Bjorn Helgaas <bhelgaas@google.com>, linux-i2c@vger.kernel.org, ac100@lists.launchpad.net, devel@driverdev.osuosl.org, Stephen Warren <swarren@nvidia.com>, Mike Turquette <mturquette@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, treding@nvidia.com, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Julian Andres Klode <jak@jak-linux.org>, Rob Herring <rob.herring@calxeda.com>, Mark Brown <broonie@kernel.org>, linux-tegra@vger.kernel.org, Terje
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mikael Pettersson <mikpelinux@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, linux-serial@vger.kernel.org, "# .39.x" <stable@kernel.org>
 
-On Tue, Nov 19, 2013 at 4:30 PM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> I was waiting for 3.13-rc1 to be out to populate my trees and then send
-> it on to you.
->
-> But if you want to take it now, great, I have no objection, otherwise I
-> was going to wait till next week.
+On Friday 15 November 2013, Stephen Warren wrote:
+> This series implements a common reset framework driver for Tegra, and
+> updates all relevant Tegra drivers to use it. It also removes the custom
+> DMA bindings and replaced them with the standard DMA DT bindings.
 
-I don't care deeply - it's marled for stable, but the race it fixes is
-so unlikely as to be almost irrelevant, so it's not like I need it
-now.
+The series is rather long, so I may have missed it, but I think you need one
+more patch to the apbdma binding to document the use of #dma-cells, what
+value it has, and what the format of the dma specifiers in slave drivers
+needs to be.
 
-I was just going through emails that came in during travel, and making
-sure it's not lost.
-
-So I'll happily forget about it, knowing that it is in your queue.
-
-                 Linus
+	Arnd
