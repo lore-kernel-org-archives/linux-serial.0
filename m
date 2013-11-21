@@ -1,178 +1,162 @@
-From: Martino Brandolini <martinobrandolini@gmail.com>
-Subject: Re: [Ac100] [PATCH 00/31] ARM: tegra: use common reset and DMA
-	bindings
-Date: Wed, 20 Nov 2013 20:17:33 +0100
-Message-ID: <CAOvQ+ewaVfBA5jjpoUVxqypwfYFaCc_WK=h9JAOq+Mkj9VF0SQ@mail.gmail.com>
-References: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
-	<201311201637.36733.arnd@arndb.de> <528CE71D.5090300@wwwdotorg.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
+Date: Thu, 21 Nov 2013 13:40:38 +0900
+Message-ID: <20131121044038.GR31130@verge.net.au>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0904339317=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <528CE71D.5090300@wwwdotorg.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
-	<mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
-	<mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Sender: dri-devel-bounces@lists.freedesktop.org
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, linux-i2c@vger.kernel.org, ac100@lists.launchpad.net, devel@driverdev.osuosl.org, Stephen Warren <swarren@nvidia.com>, Arnd Bergmann <arnd@arndb.de>, =?ISO-8859-1?Q?Terje_Bergstr=F6m?= <tbergstrom@nvidia.com>, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, treding@nvidia.com, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Julian Andres Klode <jak@jak-linux.org>, Rob Herring <rob.herring@calxeda.com>, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Mike Turquette <mturquette@linaro.org>, Dan Williams <dan.j.williams@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
 
---===============0904339317==
-Content-Type: multipart/alternative; boundary=047d7bdc0e3e114c7c04eba0a2b1
+On Tue, Nov 19, 2013 at 03:02:01PM +0100, Laurent Pinchart wrote:
+> Hello,
+> 
+> This is the third version of the patch set adds device tree bindings for the
+> sh sci serial port devices and adds OF parsing to the sh-sci driver.
+> 
+> The bindings are based on Bastian Hecht's proposal (see
+> http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach taken
+> here is more minimalistic: instead of describing all hardware characteristics
+> that vary between the SCI device revisions in DT (such as registers layout),
+> that information is stored in the driver and selected based on the compatible
+> property value. Only SCI revisions used on ARM devices are supported through
+> DT, as DT support for SuperH is nowhere down the line.
+> 
+> Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29 to 27/29
+> replace memory and interrupt resources passed through platform data with
+> platform resources. Beside replacing a custom mechanism with a standard one,
+> it will also make the DT parsing code simpler as resource allocation will be
+> shared between DT and non-DT code paths. Finally, patches 28/29 to 29/29 add
+> OF parsing to the sh-sci driver and create DT bindings documentation.
+> 
+> The patches have been test on a Lager board (r8a7790-based) and a Koelsch board
+> (r8a7791-based). Support for other SoCs will be added as needed. Note that all
+> current Renesas ARM SoCs seem to be compatible with the generic (H)SCI(F)(AB)
+> devices, but the plan is for their DT bindings to list the SoC-specific version
+> in case incompatibilities are found later.
+> 
+> The series will need to be split in three parts to go to mainline. Patches
+> 01/29 to 07/29 should go through Greg's tree, patches 08/29 to 26/29 through
+> Simon's tree, and patches 27/29 to 29/29 through Greg's tree again. Greg, when
+> applying the first seven patches, could you please provide a stable branch for
+> Simon to base his branch on (I can send you a pull request rebased on top of
+> v3.13-rc1 if that can help) ? Simon will in turn provide a stable branch to
+> base the last three patches on.
 
---047d7bdc0e3e114c7c04eba0a2b1
-Content-Type: text/plain; charset=ISO-8859-1
+Perhaps you meant to CC Greg?
 
-Dear all,
-My ac100 screen is flickering so much. I realized I'm not using it anymore.
-So if anyone wants to have it for free would be for me a huge pleasure to
-give it away. I'm based in milan and I'll be in London for the next week.
-Maybe someone needs it.
-
-Martino
-
-
-2013/11/20 Stephen Warren <swarren@wwwdotorg.org>
-
-> On 11/20/2013 08:37 AM, Arnd Bergmann wrote:
-> > On Friday 15 November 2013, Stephen Warren wrote:
-> >> This series implements a common reset framework driver for Tegra, and
-> >> updates all relevant Tegra drivers to use it. It also removes the custom
-> >> DMA bindings and replaced them with the standard DMA DT bindings.
-> >
-> > The series is rather long, so I may have missed it, but I think you need
-> one
-> > more patch to the apbdma binding to document the use of #dma-cells, what
-> > value it has, and what the format of the dma specifiers in slave drivers
-> > needs to be.
->
-> Yes, you're right. I will fold the following into "ARM: tegra: document
-> use of standard DMA DT bindings":
->
-> > diff --git a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
-> b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
-> > index 0b1e577ab9d3..0b0f9498e265 100644
-> > --- a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
-> > +++ b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt
-> > @@ -11,6 +11,10 @@ Required properties:
-> >    See ../reset/reset.txt for details.
-> >  - reset-names : Must include the following entries:
-> >    - dma
-> > +- #iommu-cells : Must be <1>. This dictates the length of DMA
-> specifiers in
-> > +  client nodes' dmas properties. The specifier represents the DMA
-> request
-> > +  select value for the peripheral. For more details, consult the Tegra
-> TRM's
-> > +  documentation of the APB DMA channel control register REQ_SEL field.
-> >
-> >  Examples:
-> >
-> > @@ -36,4 +40,5 @@ apbdma: dma@6000a000 {
-> >       clocks = <&tegra_car 34>;
-> >       resets = <&tegra_car 34>;
-> >       reset-names = "dma";
-> > +     #iommu-cells = <1>;
-> >  };
->
->
-> _______________________________________________
-> Mailing list: https://launchpad.net/~ac100
-> Post to     : ac100@lists.launchpad.net
-> Unsubscribe : https://launchpad.net/~ac100
-> More help   : https://help.launchpad.net/ListHelp
->
-
---047d7bdc0e3e114c7c04eba0a2b1
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Dear all,<div>My ac100 screen is flickering so much. I rea=
-lized I&#39;m not using it anymore. So if anyone wants to have it for free =
-would be for me a huge pleasure to give it away. I&#39;m based in milan and=
- I&#39;ll be in London for the next week. Maybe someone needs it.</div>
-<div><br></div><div>Martino</div></div><div class=3D"gmail_extra"><br><br><=
-div class=3D"gmail_quote">2013/11/20 Stephen Warren <span dir=3D"ltr">&lt;<=
-a href=3D"mailto:swarren@wwwdotorg.org" target=3D"_blank">swarren@wwwdotorg=
-.org</a>&gt;</span><br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">On 11/20/2013 08:37 AM, Arnd Bergmann wrote:=
-<br>
-&gt; On Friday 15 November 2013, Stephen Warren wrote:<br>
-&gt;&gt; This series implements a common reset framework driver for Tegra, =
-and<br>
-&gt;&gt; updates all relevant Tegra drivers to use it. It also removes the =
-custom<br>
-&gt;&gt; DMA bindings and replaced them with the standard DMA DT bindings.<=
-br>
-&gt;<br>
-&gt; The series is rather long, so I may have missed it, but I think you ne=
-ed one<br>
-&gt; more patch to the apbdma binding to document the use of #dma-cells, wh=
-at<br>
-&gt; value it has, and what the format of the dma specifiers in slave drive=
-rs<br>
-&gt; needs to be.<br>
-<br>
-Yes, you&#39;re right. I will fold the following into &quot;ARM: tegra: doc=
-ument<br>
-use of standard DMA DT bindings&quot;:<br>
-<br>
-&gt; diff --git a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt =
-b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt<br>
-&gt; index 0b1e577ab9d3..0b0f9498e265 100644<br>
-&gt; --- a/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt<br>
-&gt; +++ b/Documentation/devicetree/bindings/dma/tegra20-apbdma.txt<br>
-&gt; @@ -11,6 +11,10 @@ Required properties:<br>
-&gt; =A0 =A0See ../reset/reset.txt for details.<br>
-&gt; =A0- reset-names : Must include the following entries:<br>
-&gt; =A0 =A0- dma<br>
-&gt; +- #iommu-cells : Must be &lt;1&gt;. This dictates the length of DMA s=
-pecifiers in<br>
-&gt; + =A0client nodes&#39; dmas properties. The specifier represents the D=
-MA request<br>
-&gt; + =A0select value for the peripheral. For more details, consult the Te=
-gra TRM&#39;s<br>
-&gt; + =A0documentation of the APB DMA channel control register REQ_SEL fie=
-ld.<br>
-&gt;<br>
-&gt; =A0Examples:<br>
-&gt;<br>
-&gt; @@ -36,4 +40,5 @@ apbdma: dma@6000a000 {<br>
-&gt; =A0 =A0 =A0 clocks =3D &lt;&amp;tegra_car 34&gt;;<br>
-&gt; =A0 =A0 =A0 resets =3D &lt;&amp;tegra_car 34&gt;;<br>
-&gt; =A0 =A0 =A0 reset-names =3D &quot;dma&quot;;<br>
-&gt; + =A0 =A0 #iommu-cells =3D &lt;1&gt;;<br>
-&gt; =A0};<br>
-<br>
-<br>
-_______________________________________________<br>
-Mailing list: <a href=3D"https://launchpad.net/~ac100" target=3D"_blank">ht=
-tps://launchpad.net/~ac100</a><br>
-Post to =A0 =A0 : <a href=3D"mailto:ac100@lists.launchpad.net">ac100@lists.=
-launchpad.net</a><br>
-Unsubscribe : <a href=3D"https://launchpad.net/~ac100" target=3D"_blank">ht=
-tps://launchpad.net/~ac100</a><br>
-More help =A0 : <a href=3D"https://help.launchpad.net/ListHelp" target=3D"_=
-blank">https://help.launchpad.net/ListHelp</a><br>
-</blockquote></div><br></div>
-
---047d7bdc0e3e114c7c04eba0a2b1--
-
---===============0904339317==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-dri-devel mailing list
-dri-devel@lists.freedesktop.org
-http://lists.freedesktop.org/mailman/listinfo/dri-devel
-
---===============0904339317==--
+> 
+> Changes compared to v2:
+> 
+> - Fix indentation in 12/29
+> - Remove interrupt-parent property from the DT bindings documentation
+> - Remove -generic suffix from DT compatible values
+> - Reword the DT bindings documentation based on comments received on v2
+> - Added r8a7791 support to the DT bindings
+> 
+> Changes compared to v1:
+> 
+> - Patches 04/29 to 27/29 have been added
+> - Multi-interrupt support has been removed from the DT bindings as they don't
+>   support any SoC requiring multi-interrupt yet
+> 
+> Cc: devicetree@vger.kernel.org
+> 
+> Bastian Hecht (1):
+>   serial: sh-sci: Add OF support
+> 
+> Laurent Pinchart (28):
+>   serial: sh-sci: Sort headers alphabetically
+>   serial: sh-sci: Remove baud rate calculation algorithm 5
+>   serial: sh-sci: Simplify baud rate calculation algorithms
+>   serial: sh-sci: Remove duplicate interrupt check in verify port op
+>   serial: sh-sci: Set the UPF_FIXED_PORT flag
+>   serial: sh-sci: Don't check IRQ in verify port operation
+>   serial: sh-sci: Support resources passed through platform resources
+>   ARM: shmobile: sh7372: Use macros to declare SCIF devices
+>   ARM: shmobile: sh73a0: Use macros to declare SCIF devices
+>   ARM: shmobile: r8a7740: Use macros to declare SCIF devices
+>   ARM: shmobile: r8a7779: Use macros to declare SCIF devices
+>   ARM: shmobile: r7s72100: Don't define SCIF platform data in an array
+>   ARM: shmobile: r8a73a4: Don't define SCIF platform data in an array
+>   ARM: shmobile: r8a7778: Don't define SCIF platform data in an array
+>   ARM: shmobile: r8a7790: Don't define SCIF platform data in an array
+>   ARM: shmobile: r8a7791: Don't define SCIF platform data in an array
+>   ARM: shmobile: sh7372: Declare SCIF register base and IRQ as resources
+>   ARM: shmobile: sh73a0: Declare SCIF register base and IRQ as resources
+>   ARM: shmobile: r7s72100: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a73a4: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a7740: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a7778: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a7779: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a7790: Declare SCIF register base and IRQ as
+>     resources
+>   ARM: shmobile: r8a7791: Declare SCIF register base and IRQ as
+>     resources
+>   sh: Declare SCIF register base and IRQ as resources
+>   serial: sh-sci: Remove platform data mapbase and irqs fields
+>   serial: sh-sci: Add device tree bindings documentation
+> 
+>  .../bindings/serial/renesas,sci-serial.txt         |  46 ++++
+>  arch/arm/mach-shmobile/setup-r7s72100.c            |  63 +++---
+>  arch/arm/mach-shmobile/setup-r8a73a4.c             |  65 +++---
+>  arch/arm/mach-shmobile/setup-r8a7740.c             | 196 +++--------------
+>  arch/arm/mach-shmobile/setup-r8a7778.c             |  45 ++--
+>  arch/arm/mach-shmobile/setup-r8a7779.c             | 129 +++--------
+>  arch/arm/mach-shmobile/setup-r8a7790.c             | 117 +++++-----
+>  arch/arm/mach-shmobile/setup-r8a7791.c             | 130 +++++------
+>  arch/arm/mach-shmobile/setup-sh7372.c              | 161 +++-----------
+>  arch/arm/mach-shmobile/setup-sh73a0.c              | 192 +++--------------
+>  arch/sh/kernel/cpu/sh2/setup-sh7619.c              |  27 ++-
+>  arch/sh/kernel/cpu/sh2a/setup-mxg.c                |   9 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7201.c             |  72 +++++--
+>  arch/sh/kernel/cpu/sh2a/setup-sh7203.c             |  36 +++-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7206.c             |  36 +++-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7264.c             |  96 +++++++--
+>  arch/sh/kernel/cpu/sh2a/setup-sh7269.c             |  96 +++++++--
+>  arch/sh/kernel/cpu/sh3/setup-sh7705.c              |  18 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh770x.c              |  27 ++-
+>  arch/sh/kernel/cpu/sh3/setup-sh7710.c              |  18 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh7720.c              |  18 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh4-202.c             |  15 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh7750.c              |  18 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh7760.c              |  58 +++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7343.c             |  36 +++-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7366.c             |   9 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7722.c             |  27 ++-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7723.c             |  54 +++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7724.c             |  54 +++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  66 ++++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7757.c             |  27 ++-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7763.c             |  27 ++-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7770.c             |  90 ++++++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7780.c             |  18 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7785.c             |  54 +++--
+>  arch/sh/kernel/cpu/sh4a/setup-sh7786.c             |  82 +++++--
+>  arch/sh/kernel/cpu/sh4a/setup-shx3.c               |  45 ++--
+>  arch/sh/kernel/cpu/sh5/setup-sh5.c                 |  11 +-
+>  drivers/tty/serial/sh-sci.c                        | 238 ++++++++++++++++-----
+>  include/linux/serial_sci.h                         |  35 +--
+>  40 files changed, 1447 insertions(+), 1114 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> 
+> -- 
+> Regards,
+> 
+> Laurent Pinchart
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
