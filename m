@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH staging-next 4/4] staging/fwserial: Add Kconfig options for max ports
-Date: Fri, 22 Nov 2013 13:06:11 -0500
-Message-ID: <1385143571-3571-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH staging-next 2/4] staging/fwserial: Up the tty buffer limit to 128K
+Date: Fri, 22 Nov 2013 13:06:09 -0500
+Message-ID: <1385143571-3571-3-git-send-email-peter@hurleysoftware.com>
 References: <1385143571-3571-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1385143571-3571-1-git-send-email-peter@hurleysoftware.com>
@@ -10,57 +10,25 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Allow kernel configuration of max supported ports for
-TTY-over-Firewire driver.
+The firewire driver can overrun the tty buffers before the
+line discipline can throttle the input; up the buffer limit.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/staging/fwserial/Kconfig    | 20 ++++++++++++++++++++
- drivers/staging/fwserial/fwserial.h |  4 ++--
- 2 files changed, 22 insertions(+), 2 deletions(-)
+ drivers/staging/fwserial/fwserial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/fwserial/Kconfig b/drivers/staging/fwserial/Kconfig
-index a0812d9..9c7c926 100644
---- a/drivers/staging/fwserial/Kconfig
-+++ b/drivers/staging/fwserial/Kconfig
-@@ -9,3 +9,23 @@ config FIREWIRE_SERIAL
+diff --git a/drivers/staging/fwserial/fwserial.c b/drivers/staging/fwserial/fwserial.c
+index c96f62e..cad9e3f 100644
+--- a/drivers/staging/fwserial/fwserial.c
++++ b/drivers/staging/fwserial/fwserial.c
+@@ -2225,6 +2225,7 @@ static int fwserial_create(struct fw_unit *unit)
+ 		port->index = FWTTY_INVALID_INDEX;
+ 		port->port.ops = &fwtty_port_ops;
+ 		port->serial = serial;
++		tty_buffer_set_limit(&port->port, 128 * 1024);
  
- 	  To compile this driver as a module, say M here:  the module will
- 	  be called firewire-serial.
-+
-+if FIREWIRE_SERIAL
-+
-+config FWTTY_MAX_TOTAL_PORTS
-+       int "Maximum number of serial ports supported"
-+       default "64"
-+       help
-+          Set this to the maximum number of serial ports you want the
-+	  firewire-serial driver to support.
-+
-+config FWTTY_MAX_CARD_PORTS
-+       int "Maximum number of serial ports supported per adapter"
-+       range 0 FWTTY_MAX_TOTAL_PORTS
-+       default "32"
-+       help
-+          Set this to the maximum number of serial ports each firewire
-+	  adapter supports. The actual number of serial ports registered
-+	  is set with the module parameter "ttys".
-+
-+endif
-diff --git a/drivers/staging/fwserial/fwserial.h b/drivers/staging/fwserial/fwserial.h
-index eab85b4..54f7f9b 100644
---- a/drivers/staging/fwserial/fwserial.h
-+++ b/drivers/staging/fwserial/fwserial.h
-@@ -291,8 +291,8 @@ struct fwtty_port {
- #define FREQ_BREAKS        (HZ / 50)
- 
- /* Ports are allocated in blocks of num_ports for each fw_card */
--#define MAX_CARD_PORTS           32	/* max # of ports per card */
--#define MAX_TOTAL_PORTS          64	/* max # of ports total    */
-+#define MAX_CARD_PORTS           CONFIG_FWTTY_MAX_CARD_PORTS
-+#define MAX_TOTAL_PORTS          CONFIG_FWTTY_MAX_TOTAL_PORTS
- 
- /* tuning parameters */
- #define FWTTY_PORT_TXFIFO_LEN	4096
+ 		spin_lock_init(&port->lock);
+ 		INIT_DELAYED_WORK(&port->drain, fwtty_drain_tx);
 -- 
 1.8.1.2
