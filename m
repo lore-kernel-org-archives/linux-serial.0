@@ -1,48 +1,48 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 2/2] TTY: amiserial, add missing platform check
-Date: Fri, 22 Nov 2013 16:47:27 +0100
-Message-ID: <1385135247-9068-2-git-send-email-geert@linux-m68k.org>
-References: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH tty-next 0/7] n_tty cleanup + trace additions
+Date: Fri, 22 Nov 2013 10:59:18 -0500
+Message-ID: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from jacques.telenet-ops.be ([195.130.132.50]:35871 "EHLO
-	jacques.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755784Ab3KVPri (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:54725 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755614Ab3KVP7o (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Nov 2013 10:47:38 -0500
-In-Reply-To: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
+	Fri, 22 Nov 2013 10:59:44 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-When booting a multi-platform m68k kernel on a non-Amiga with
-"console=ttyS0" on the kernel command line, it crashes with:
+Greg,
 
-Unable to handle kernel access at virtual address 81dff01c
-Oops: 00000000
-PC: [<001e09a8>] serial_console_write+0xc/0x70
+This patchset contains no bug fixes only misc cleanup for the
+N_TTY line discipline.
 
-Add the missing platform check to amiserial_console_init() to fix this.
+Patches 1-4 cleans up code duplication remnants from 3.12's changes.
+Patch 5 simplifies the snarled logic of how much data is considered
+'input available'. I was getting tired of hand checking that logic
+every time I touched minimum_to_wake.
+Patch 6 reduces unnecessary wake ups.
+Patch 7 extends the trace usage to aid in identifying and fixing
+input flow-control bugs (this was used to fix the readline() bug).
+I also expect to use it to reduce input processing restarts. It's
+use is disabled by default and only enabled with the file-local
+define N_TTY_TRACE (similar to TTY_DEBUG_HANGUP in tty_io.c).
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- drivers/tty/amiserial.c |    3 +++
- 1 file changed, 3 insertions(+)
+Regards,
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 2b86f8e0fb58..71630a2af42c 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -1855,6 +1855,9 @@ static struct console sercons = {
-  */
- static int __init amiserial_console_init(void)
- {
-+	if (!MACH_IS_AMIGA)
-+		return -ENODEV;
-+
- 	register_console(&sercons);
- 	return 0;
- }
+Peter Hurley (7):
+  n_tty: Merge .receive_buf() flavors
+  n_tty: Un-inline slow-path n_tty_receive_char()
+  n_tty: Un-inline slow-path n_tty_receive_char_closing()
+  n_tty: Refactor PARMRK doubling checks
+  n_tty: Refactor input_available_p() by call site
+  n_tty: Only perform wakeups for waiters
+  n_tty: trace input/read flow control
+
+ drivers/tty/n_tty.c | 159 ++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 97 insertions(+), 62 deletions(-)
+
 -- 
-1.7.9.5
+1.8.1.2
 
