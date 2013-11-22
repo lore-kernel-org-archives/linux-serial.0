@@ -1,74 +1,50 @@
-From: Sergei Ianovich <ynvich@gmail.com>
-Subject: Re: [PATCH] allow alternative name for PXA serial console
-Date: Fri, 22 Nov 2013 18:46:38 +0400
-Message-ID: <CAL0eWdFajz3cO-+PyrmLe7vqJLZsayL0dQGMx-o6+tvUZBhXLA@mail.gmail.com>
-References: <1363129342-24310-1-git-send-email-ynvich@gmail.com>
-	<20130312231054.GA6379@kroah.com>
-	<CAL0eWdGYvdun=ChQ5gra67cBEgLFrzQ9dBGHL3ubAHOdww4FrQ@mail.gmail.com>
-	<20130312233951.GA32737@kroah.com>
-	<CAL0eWdHwwcMUc2m0MSihV5R2caQJ7kp579w4M0X=hNZ=ccoRig@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f174.google.com ([209.85.128.174]:65038 "EHLO
-	mail-ve0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755648Ab3KVOqj convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Nov 2013 09:46:39 -0500
-In-Reply-To: <CAL0eWdHwwcMUc2m0MSihV5R2caQJ7kp579w4M0X=hNZ=ccoRig@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 1/2] TTY: pmac_zilog, check existence of ports in pmz_console_init()
+Date: Fri, 22 Nov 2013 16:47:26 +0100
+Message-ID: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Finn Thain <fthain@telegraphics.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 13 March 2013 04:03, =D0=A1=D0=B5=D1=80=D0=B3=D0=B5=D0=B9 =D0=AF=D0=BD=
-=D0=BE=D0=B2=D0=B8=D1=87 <ynvich@gmail.com> wrote:
-> On 13 March 2013 03:39, Greg Kroah-Hartman <gregkh@linuxfoundation.or=
-g> wrote:
->> On Wed, Mar 13, 2013 at 03:34:59AM +0400, =D0=A1=D0=B5=D1=80=D0=B3=D0=
-=B5=D0=B9 =D0=AF=D0=BD=D0=BE=D0=B2=D0=B8=D1=87 wrote:
->>> --------------------
->>> * Non-8250 serial port support
->>> *
->>> PXA serial port support (SERIAL_PXA) [Y/n/?] y
->>>   Console on PXA serial port (SERIAL_PXA_CONSOLE) [Y/n/?] y
->>>   as /dev/ttySA[0-3] (SERIAL_PXA_TTYSA_NAME) [N/y/?] (NEW)
->>
->> Please make it sane for the single line it is on.
->
-> "PXA serial port with SA-1100 major"
-> "PXA serial port with SA-1100 major number"
-> "PXA serial port with SA-1100 major device number"
->
-> Could anything like that be acceptable?
->
-> How long a line could be?
->
->>> Maybe I am missing something obvious, but it seems that such a
->>> collision is a kernel bug. Someone assumed that PXA cannot have a 8=
-250
->>> tty device and used 8250's parameters in PXA tty driver.
->>
->> Yes, someone must have messed up, so care to find the root problem h=
-ere?
->
-> Two drivers try to use the same resource. It was in pre-git era, so i=
-t
-> difficult to find out exactly. I would guess that that 8250 have
-> precedence by at least 5 years. But it is almost guaranteed that lots
-> of people depend on PXA console having ttyS0 name. So simple
-> s/ttyS/ttySA/ is not a solution. My patch preserves status quo by
-> default, but allows to have a correct workaround for those who face a
-> collision. By correct I mean that it will not create a new collision
-> since a system cannot run on both SA-1100 and PXA270 at the same time=
-=2E
-> This assumption is already documented in
-> arch/arm/mach-pxa/include/mach/irqs.h line 94.
+When booting a multi-platform m68k kernel on a non-Mac with "console=ttyS0"
+on the kernel command line, it crashes with:
 
-Patch discussion seemed to stall. Could we restart?
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Unable to handle kernel NULL pointer dereference at virtual address   (null)
+Oops: 00000000
+PC: [<0013ad28>] __pmz_startup+0x32/0x2a0
+...
+Call Trace: [<002c5d3e>] pmz_console_setup+0x64/0xe4
+
+The normal tty driver doesn't crash, because init_pmz() checks
+pmz_ports_count again after calling pmz_probe().
+
+In the serial console initialization path, pmz_console_init() doesn't do
+this, causing the driver to crash later.
+
+Add a check for pmz_ports_count to fix this.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Finn Thain <fthain@telegraphics.com.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+---
+ drivers/tty/serial/pmac_zilog.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 481b781b26e3..e9d420ff3931 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -2052,6 +2052,9 @@ static int __init pmz_console_init(void)
+ 	/* Probe ports */
+ 	pmz_probe();
+ 
++	if (pmz_ports_count == 0)
++		return -ENODEV;
++
+ 	/* TODO: Autoprobe console based on OF */
+ 	/* pmz_console.index = i; */
+ 	register_console(&pmz_console);
+-- 
+1.7.9.5
