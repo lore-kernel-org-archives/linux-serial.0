@@ -1,27 +1,53 @@
-From: "lee hyuk" <leehyuk08@mail2world.com>
-Subject: Re:Answer back
-Date: Thu, 21 Nov 2013 12:52:35 -0000
-Message-ID: <a101726d66b8ef25c589130d0957ee96.squirrel__19058.1568437212$1385080169$gmane$org@168.61.90.144>
-Reply-To: hyuklee1@aol.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] n_tty: Fix 4096-byte canonical reads
+Date: Fri, 22 Nov 2013 07:16:25 -0500
+Message-ID: <1385122585-8535-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [168.61.90.144] ([168.61.90.144]:3568 "EHLO mail.vps.com"
-	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752953Ab3KVA2Y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 21 Nov 2013 19:28:24 -0500
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:60575 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754837Ab3KVMRl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 22 Nov 2013 07:17:41 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 
+Although the maximum allowable canonical line is specified to
+be 255 bytes (MAX_CANON), the practical limit has actually been
+the size of the line discipline read buffer (N_TTY_BUF_SIZE == 4096).
 
+Commit 32f13521ca68bc624ff6effc77f308a52b038bf0,
+n_tty: Line copy to user buffer in canonical mode, limited the
+line copy to 4095 bytes. With a completely full line discipline
+read buffer and a userspace buffer > 4095, _no_ data was copied,
+and the read() syscall returned 0, indicating EOF.
 
+Fix the interval arithmetic to compute the correct number of bytes
+to copy to userspace in the range [1..4096].
 
-I would like to discuss a very important crude oil project with you,kindly
-revert back to me if this is your valid email address for further
-information.
+Cc: <stable@vger.kernel.org> # 3.12.x
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Regards,
-
-Lee
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 053ead2..0f74945 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1998,7 +1998,10 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
+ 		found = 1;
+ 
+ 	size = N_TTY_BUF_SIZE - tail;
+-	n = (found + eol + size) & (N_TTY_BUF_SIZE - 1);
++	n = eol - tail;
++	if (n > 4096)
++		n += 4096;
++	n += found;
+ 	c = n;
+ 
+ 	if (found && read_buf(ldata, eol) == __DISABLED_CHAR) {
+-- 
+1.8.1.2
 
