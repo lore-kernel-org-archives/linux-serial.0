@@ -1,40 +1,134 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next 2/7] n_tty: Un-inline slow-path n_tty_receive_char()
-Date: Fri, 22 Nov 2013 10:59:20 -0500
-Message-ID: <1385135965-4235-3-git-send-email-peter@hurleysoftware.com>
-References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH tty-next 1/5] tty: Always handle NULL flag ptr
+Date: Fri, 22 Nov 2013 12:09:54 -0500
+Message-ID: <1385140198-5822-2-git-send-email-peter@hurleysoftware.com>
+References: <1385140198-5822-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1385140198-5822-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commit e60d27c4d8b33ba20896b76b6558f061bc6460ff,
-n_tty: Factor LNEXT processing from per-char i/o path,
-mistakenly inlined the non-inline alias, n_tty_receive_char(),
-for the inline function, n_tty_receive_char_inline().
+Most line disciplines already handle the undocumented NULL flag
+ptr in their .receive_buf method; however, several don't.
 
-As n_tty_receive_char() is intended for slow-path char
-processing only, un-inline it.
+Document the NULL flag ptr, and correct handling in the
+N_MOUSE, N_GSM0710 and N_R394 line disciplines.
 
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/input/serio/serport.c | 28 +++++++++++++++-------------
+ drivers/tty/n_gsm.c           |  5 +++--
+ drivers/tty/n_r3964.c         |  2 +-
+ include/linux/tty_ldisc.h     |  6 ++++--
+ 4 files changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 3eb54c7..3808d3d 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1418,7 +1418,7 @@ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
- 	put_tty_queue(c, ldata);
- }
- 
--static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
-+static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
+diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+index 8755f5f..72b4633 100644
+--- a/drivers/input/serio/serport.c
++++ b/drivers/input/serio/serport.c
+@@ -124,7 +124,7 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
  {
- 	n_tty_receive_char_inline(tty, c);
- }
+ 	struct serport *serport = (struct serport*) tty->disc_data;
+ 	unsigned long flags;
+-	unsigned int ch_flags;
++	unsigned int ch_flags = TTY_NORMAL;
+ 	int i;
+ 
+ 	spin_lock_irqsave(&serport->lock, flags);
+@@ -133,18 +133,20 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
+ 		goto out;
+ 
+ 	for (i = 0; i < count; i++) {
+-		switch (fp[i]) {
+-		case TTY_FRAME:
+-			ch_flags = SERIO_FRAME;
+-			break;
+-
+-		case TTY_PARITY:
+-			ch_flags = SERIO_PARITY;
+-			break;
+-
+-		default:
+-			ch_flags = 0;
+-			break;
++		if (fp) {
++			switch (fp[i]) {
++			case TTY_FRAME:
++				ch_flags = SERIO_FRAME;
++				break;
++
++			case TTY_PARITY:
++				ch_flags = SERIO_PARITY;
++				break;
++
++			default:
++				ch_flags = TTY_NORMAL;
++				break;
++			}
+ 		}
+ 
+ 		serio_interrupt(serport->serio, cp[i], ch_flags);
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index c0f76da..c09db11 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2269,14 +2269,15 @@ static void gsmld_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 	char *f;
+ 	int i;
+ 	char buf[64];
+-	char flags;
++	char flags = TTY_NORMAL;
+ 
+ 	if (debug & 4)
+ 		print_hex_dump_bytes("gsmld_receive: ", DUMP_PREFIX_OFFSET,
+ 				     cp, count);
+ 
+ 	for (i = count, dp = cp, f = fp; i; i--, dp++) {
+-		flags = *f++;
++		if (f)
++			flags = *f++;
+ 		switch (flags) {
+ 		case TTY_NORMAL:
+ 			gsm->receive(gsm, *dp);
+diff --git a/drivers/tty/n_r3964.c b/drivers/tty/n_r3964.c
+index 1e64050..8b157d6 100644
+--- a/drivers/tty/n_r3964.c
++++ b/drivers/tty/n_r3964.c
+@@ -1244,7 +1244,7 @@ static void r3964_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ {
+ 	struct r3964_info *pInfo = tty->disc_data;
+ 	const unsigned char *p;
+-	char *f, flags = 0;
++	char *f, flags = TTY_NORMAL;
+ 	int i;
+ 
+ 	for (i = count, p = cp, f = fp; i; i--, p++) {
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index f15c898..b8347c2 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -84,7 +84,8 @@
+  *	processing.  <cp> is a pointer to the buffer of input
+  *	character received by the device.  <fp> is a pointer to a
+  *	pointer of flag bytes which indicate whether a character was
+- *	received with a parity error, etc.
++ *	received with a parity error, etc. <fp> may be NULL to indicate
++ *	all data received is TTY_NORMAL.
+  *
+  * void	(*write_wakeup)(struct tty_struct *);
+  *
+@@ -118,7 +119,8 @@
+  *	processing.  <cp> is a pointer to the buffer of input
+  *	character received by the device.  <fp> is a pointer to a
+  *	pointer of flag bytes which indicate whether a character was
+- *	received with a parity error, etc.
++ *	received with a parity error, etc. <fp> may be NULL to indicate
++ *	all data received is TTY_NORMAL.
+  *	If assigned, prefer this function for automatic flow control.
+  */
+ 
 -- 
 1.8.1.2
