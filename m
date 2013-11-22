@@ -1,53 +1,74 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] n_tty: Fix 4096-byte canonical reads
-Date: Fri, 22 Nov 2013 07:16:25 -0500
-Message-ID: <1385122585-8535-1-git-send-email-peter@hurleysoftware.com>
+From: Sergei Ianovich <ynvich@gmail.com>
+Subject: Re: [PATCH] allow alternative name for PXA serial console
+Date: Fri, 22 Nov 2013 18:46:38 +0400
+Message-ID: <CAL0eWdFajz3cO-+PyrmLe7vqJLZsayL0dQGMx-o6+tvUZBhXLA@mail.gmail.com>
+References: <1363129342-24310-1-git-send-email-ynvich@gmail.com>
+	<20130312231054.GA6379@kroah.com>
+	<CAL0eWdGYvdun=ChQ5gra67cBEgLFrzQ9dBGHL3ubAHOdww4FrQ@mail.gmail.com>
+	<20130312233951.GA32737@kroah.com>
+	<CAL0eWdHwwcMUc2m0MSihV5R2caQJ7kp579w4M0X=hNZ=ccoRig@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:60575 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754837Ab3KVMRl (ORCPT
+Received: from mail-ve0-f174.google.com ([209.85.128.174]:65038 "EHLO
+	mail-ve0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755648Ab3KVOqj convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 22 Nov 2013 07:17:41 -0500
+	Fri, 22 Nov 2013 09:46:39 -0500
+In-Reply-To: <CAL0eWdHwwcMUc2m0MSihV5R2caQJ7kp579w4M0X=hNZ=ccoRig@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Although the maximum allowable canonical line is specified to
-be 255 bytes (MAX_CANON), the practical limit has actually been
-the size of the line discipline read buffer (N_TTY_BUF_SIZE == 4096).
+On 13 March 2013 04:03, =D0=A1=D0=B5=D1=80=D0=B3=D0=B5=D0=B9 =D0=AF=D0=BD=
+=D0=BE=D0=B2=D0=B8=D1=87 <ynvich@gmail.com> wrote:
+> On 13 March 2013 03:39, Greg Kroah-Hartman <gregkh@linuxfoundation.or=
+g> wrote:
+>> On Wed, Mar 13, 2013 at 03:34:59AM +0400, =D0=A1=D0=B5=D1=80=D0=B3=D0=
+=B5=D0=B9 =D0=AF=D0=BD=D0=BE=D0=B2=D0=B8=D1=87 wrote:
+>>> --------------------
+>>> * Non-8250 serial port support
+>>> *
+>>> PXA serial port support (SERIAL_PXA) [Y/n/?] y
+>>>   Console on PXA serial port (SERIAL_PXA_CONSOLE) [Y/n/?] y
+>>>   as /dev/ttySA[0-3] (SERIAL_PXA_TTYSA_NAME) [N/y/?] (NEW)
+>>
+>> Please make it sane for the single line it is on.
+>
+> "PXA serial port with SA-1100 major"
+> "PXA serial port with SA-1100 major number"
+> "PXA serial port with SA-1100 major device number"
+>
+> Could anything like that be acceptable?
+>
+> How long a line could be?
+>
+>>> Maybe I am missing something obvious, but it seems that such a
+>>> collision is a kernel bug. Someone assumed that PXA cannot have a 8=
+250
+>>> tty device and used 8250's parameters in PXA tty driver.
+>>
+>> Yes, someone must have messed up, so care to find the root problem h=
+ere?
+>
+> Two drivers try to use the same resource. It was in pre-git era, so i=
+t
+> difficult to find out exactly. I would guess that that 8250 have
+> precedence by at least 5 years. But it is almost guaranteed that lots
+> of people depend on PXA console having ttyS0 name. So simple
+> s/ttyS/ttySA/ is not a solution. My patch preserves status quo by
+> default, but allows to have a correct workaround for those who face a
+> collision. By correct I mean that it will not create a new collision
+> since a system cannot run on both SA-1100 and PXA270 at the same time=
+=2E
+> This assumption is already documented in
+> arch/arm/mach-pxa/include/mach/irqs.h line 94.
 
-Commit 32f13521ca68bc624ff6effc77f308a52b038bf0,
-n_tty: Line copy to user buffer in canonical mode, limited the
-line copy to 4095 bytes. With a completely full line discipline
-read buffer and a userspace buffer > 4095, _no_ data was copied,
-and the read() syscall returned 0, indicating EOF.
-
-Fix the interval arithmetic to compute the correct number of bytes
-to copy to userspace in the range [1..4096].
-
-Cc: <stable@vger.kernel.org> # 3.12.x
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 053ead2..0f74945 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1998,7 +1998,10 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 		found = 1;
- 
- 	size = N_TTY_BUF_SIZE - tail;
--	n = (found + eol + size) & (N_TTY_BUF_SIZE - 1);
-+	n = eol - tail;
-+	if (n > 4096)
-+		n += 4096;
-+	n += found;
- 	c = n;
- 
- 	if (found && read_buf(ldata, eol) == __DISABLED_CHAR) {
--- 
-1.8.1.2
-
+Patch discussion seemed to stall. Could we restart?
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
