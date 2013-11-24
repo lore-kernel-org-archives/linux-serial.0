@@ -1,46 +1,32 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH tty-next 6/7] n_tty: Only perform wakeups for waiters
-Date: Sun, 24 Nov 2013 00:23:24 +0000
-Message-ID: <20131124002324.2fe609d6@alan.etchedpixels.co.uk>
+Subject: Re: [PATCH tty-next 7/7] n_tty: trace input/read flow control
+Date: Sun, 24 Nov 2013 00:25:13 +0000
+Message-ID: <20131124002513.0a806665@alan.etchedpixels.co.uk>
 References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
-	<1385135965-4235-7-git-send-email-peter@hurleysoftware.com>
+	<1385135965-4235-8-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:41052 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:41057 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756448Ab3KXAXb (ORCPT
+	with ESMTP id S1756380Ab3KXAZX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Nov 2013 19:23:31 -0500
-In-Reply-To: <1385135965-4235-7-git-send-email-peter@hurleysoftware.com>
+	Sat, 23 Nov 2013 19:25:23 -0500
+In-Reply-To: <1385135965-4235-8-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Fri, 22 Nov 2013 10:59:24 -0500
+On Fri, 22 Nov 2013 10:59:25 -0500
 Peter Hurley <peter@hurleysoftware.com> wrote:
 
-> Only wakeup the _waiting_ reader, polls and/or writer(s).
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/n_tty.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index 8f2356e..aae28a6 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -275,7 +275,8 @@ static void n_tty_check_unthrottle(struct tty_struct *tty)
->  			return;
->  		n_tty_set_room(tty);
->  		n_tty_write_wakeup(tty->link);
-> -		wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
-> +		if (waitqueue_active(&tty->link->write_wait))
-> +			wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
+> Instrument .receive_buf() and read() paths with trace_printk's
+> to aid in debugging flow control changes.
 
-Does this actually microbenchmark faster ?
+tty devices have a device, we have a dev_dbg() layer. The old tty trace
+predates this but there isn't really any excuse for not using it now that
+I can see ?
 
 Alan
