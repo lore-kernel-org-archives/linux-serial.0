@@ -1,50 +1,41 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] serial: pch_uart: remove unnecessary pci_set_drvdata()
-Date: Mon, 25 Nov 2013 11:19:41 +0900
-Message-ID: <001e01cee984$ccb6ccd0$66246670$%han@samsung.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] n_tty: Protect minimum_to_wake reset for concurrent
+ readers
+Date: Mon, 25 Nov 2013 08:36:02 -0800
+Message-ID: <20131125163602.GA19071@kroah.com>
+References: <1383850917-24416-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:55468 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752560Ab3KYCTn (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:46691 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756687Ab3KYQgE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 24 Nov 2013 21:19:43 -0500
-Received: from epcpsbgr2.samsung.com
- (u142.gpu120.samsung.co.kr [203.254.230.142])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MWS00FWMRSUK200@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Mon, 25 Nov 2013 11:19:42 +0900 (KST)
-Content-language: ko
+	Mon, 25 Nov 2013 11:36:04 -0500
+Content-Disposition: inline
+In-Reply-To: <1383850917-24416-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-The driver core clears the driver data to NULL after device_release
-or on probe failure. Thus, it is not needed to manually clear the
-device driver data to NULL.
+On Thu, Nov 07, 2013 at 02:01:57PM -0500, Peter Hurley wrote:
+> With multiple, concurrent readers (each waiting to acquire the
+> atomic_read_lock mutex), a departing reader may mistakenly reset
+> minimum_to_wake after a new reader has already set a new value.
+> 
+> Protect the minimum_to_wake reset with the atomic_read_lock critical
+> section.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/tty/serial/pch_uart.c |    1 -
- 1 file changed, 1 deletion(-)
+This patch doesn't apply to Linus's tree anymore (and hence, mine.)  Is
+it needed for 3.13-final?  Or just 3.14-rc1?  Either way, can you
+refresh it and resend?
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 0aa2b52..11c862c 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1853,7 +1853,6 @@ static void pch_uart_exit_port(struct eg20t_port *priv)
- 		debugfs_remove(priv->debugfs);
- #endif
- 	uart_remove_one_port(&pch_uart_driver, &priv->port);
--	pci_set_drvdata(priv->pdev, NULL);
- 	free_page((unsigned long)priv->rxbuf.buf);
- }
- 
--- 
-1.7.10.4
+thanks,
 
-
+greg k-h
