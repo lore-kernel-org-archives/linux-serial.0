@@ -1,76 +1,31 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] n_tty: Protect minimum_to_wake reset for concurrent readers
-Date: Mon, 25 Nov 2013 12:45:43 -0500
-Message-ID: <52938CC7.1000409@hurleysoftware.com>
-References: <1383850917-24416-1-git-send-email-peter@hurleysoftware.com> <20131125163602.GA19071@kroah.com> <52938514.60007@hurleysoftware.com> <20131125171646.GA24680@kroah.com> <20131125172408.GA1656@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH staging-next 0/4] fwserial changes for 3.14
+Date: Mon, 25 Nov 2013 12:43:36 -0800
+Message-ID: <20131125204336.GA646@kroah.com>
+References: <1385143571-3571-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:57001 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754007Ab3KYRpp (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:56389 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751269Ab3KYUnh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 25 Nov 2013 12:45:45 -0500
-In-Reply-To: <20131125172408.GA1656@kroah.com>
+	Mon, 25 Nov 2013 15:43:37 -0500
+Content-Disposition: inline
+In-Reply-To: <1385143571-3571-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 11/25/2013 12:24 PM, Greg Kroah-Hartman wrote:
-> On Mon, Nov 25, 2013 at 09:16:46AM -0800, Greg Kroah-Hartman wrote:
->> On Mon, Nov 25, 2013 at 12:12:52PM -0500, Peter Hurley wrote:
->>> On 11/25/2013 11:36 AM, Greg Kroah-Hartman wrote:
->>>> On Thu, Nov 07, 2013 at 02:01:57PM -0500, Peter Hurley wrote:
->>>>> With multiple, concurrent readers (each waiting to acquire the
->>>>> atomic_read_lock mutex), a departing reader may mistakenly reset
->>>>> minimum_to_wake after a new reader has already set a new value.
->>>>>
->>>>> Protect the minimum_to_wake reset with the atomic_read_lock critical
->>>>> section.
->>>>>
->>>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->>>>> ---
->>>>>   drivers/tty/n_tty.c | 4 ++--
->>>>>   1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> This patch doesn't apply to Linus's tree anymore (and hence, mine.)  Is
->>>> it needed for 3.13-final?  Or just 3.14-rc1?  Either way, can you
->>>> refresh it and resend?
->>>
->>> Hmmm, for me this applies cleanly to your tty-linus branch:
->>>
->>> peter@thor:~/src/kernels/tty$ git tree -10
->>> * c7df628 (HEAD, tty-linus) n_tty: Protect minimum_to_wake reset for concurrent readers
->>> * 3dcf344 (origin/tty-linus) TTY: amiserial, add missing platform check
->>> * dc1dc2f TTY: pmac_zilog, check existence of ports in pmz_console_init()
->>> * c284ee2 n_gsm: race between ld close and gsmtty open
->>> * f301412 tty/serial/8250: fix typo in help text
->>> * c77569d n_tty: Fix 4096-byte canonical reads
->>> * 6f22253 n_tty: Fix echo overrun tail computation
->>> * 42458f4 n_tty: Ensure reader restarts worker for next reader
->>> * 6ce4eac (tag: v3.13-rc1, origin/tty-next, origin/master, origin/HEAD) Linux 3.13-rc1
->>>
->>> I'll just resend it.
->>
->> Oh nevermind, it has leading extra spaces, which something added, I'll
->> go edit it by hand and fix it up, sorry for not noticing.
->
-> And 'git am' handles this just fine, I was just testing it out first
-> using 'patch' which didn't like the extra spaces, my fault.
->
-> sorry for the noise,
+On Fri, Nov 22, 2013 at 01:06:07PM -0500, Peter Hurley wrote:
+> **This patchset requires 'Halve tty buffer memory consumption' patchset **
 
-Not a problem.
+Requires it to build or just work properly?
 
-In fact, the interruption was fortuitous because I was testing an
-unsubmitted patch which I'd hoped would fix the readline() paste
-bug & bugzilla #55991.  When I tried to resend this patch with
-git send-email, the 'Password:' prompt looped until I killed it.
+I'm trying to figure out what tree to take this in, (tty-next or
+staging-next).
 
-Thanks for the test vector :)
+thanks,
 
-Regards,
-Peter Hurley
-
+greg k-h
