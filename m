@@ -1,50 +1,25 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] serial: 8250_dw: remove ACPI ifdef
-Date: Tue, 26 Nov 2013 10:30:06 +0200
-Message-ID: <1385454606-23255-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: "Lee Hyuk" <hyuk.lee@lawyer.com>
+Subject: Re:Answer back.
+Date: Tue, 26 Nov 2013 11:12:00 -0000
+Message-ID: <880a177cae08ac95b4ef0046e3319444.squirrel__8096.79285525835$1385466282$gmane$org@168.63.99.252>
+Reply-To: hyuklee1@aol.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:12509 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752608Ab3KZIaO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Nov 2013 03:30:14 -0500
+Received: from [168.63.99.252] ([168.63.99.252]:1032 "EHLO mail.momo.com"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1755814Ab3KZLoR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 26 Nov 2013 06:44:17 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-ACPI now provides stubs for the functions the driver uses.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 8 --------
- 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 4658e3e..816ec88 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -272,7 +272,6 @@ static int dw8250_probe_of(struct uart_port *p,
- 	return 0;
- }
- 
--#ifdef CONFIG_ACPI
- static int dw8250_probe_acpi(struct uart_8250_port *up,
- 			     struct dw8250_data *data)
- {
-@@ -300,13 +299,6 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
- 
- 	return 0;
- }
--#else
--static inline int dw8250_probe_acpi(struct uart_8250_port *up,
--				    struct dw8250_data *data)
--{
--	return -ENODEV;
--}
--#endif /* CONFIG_ACPI */
- 
- static int dw8250_probe(struct platform_device *pdev)
- {
--- 
-1.8.4.3
+
+I would like to discuss a very important crude oil project with you,kindly
+revert back to me if this is your valid email address forfurther
+information.
+Regards,
+Lee
 
