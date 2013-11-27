@@ -1,42 +1,40 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 05/29] serial: sh-sci: Set the UPF_FIXED_PORT flag
-Date: Thu, 28 Nov 2013 00:18:15 +0100
-Message-ID: <1385594319-5758-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 06/29] serial: sh-sci: Don't check IRQ in verify port operation
+Date: Thu, 28 Nov 2013 00:18:16 +0100
+Message-ID: <1385594319-5758-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:56632 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757602Ab3K0XSl (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Nov 2013 18:18:41 -0500
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+List-Id: linux-serial@vger.kernel.org
 
-The base address, IRQ and baud rate generator parent clock rate can't be
-changed by userspace. Mark the port as fixed.
+The IRQ number can't be modified by the user as the port is fixed.
+There's no need to check the new IRQ number as it will be ignored by the
+core.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- drivers/tty/serial/sh-sci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index d1d779f..5edba3f 100644
+index 5edba3f..783625f 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2243,7 +2243,7 @@ static int sci_init_single(struct platform_device *dev,
+@@ -2113,10 +2113,6 @@ static void sci_config_port(struct uart_port *port, int flags)
  
- 	port->mapbase		= p->mapbase;
- 	port->type		= p->type;
--	port->flags		= p->flags;
-+	port->flags		= UPF_FIXED_PORT | p->flags;
- 	port->regshift		= p->regshift;
- 
- 	/*
+ static int sci_verify_port(struct uart_port *port, struct serial_struct *ser)
+ {
+-	struct sci_port *s = to_sci_port(port);
+-
+-	if (ser->irq != s->cfg->irqs[SCIx_TXI_IRQ])
+-		return -EINVAL;
+ 	if (ser->baud_base < 2400)
+ 		/* No paper tape reader for Mitch.. */
+ 		return -EINVAL;
 -- 
 1.8.3.2
 
