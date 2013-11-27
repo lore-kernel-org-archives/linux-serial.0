@@ -1,69 +1,88 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Tue, 26 Nov 2013 15:03:03 -0800
-Message-ID: <CAAYSxhqU9GZdaoTjoCAeyQ4h-KPVzU0BH0D1eLYJoFZ+s8tPgQ@mail.gmail.com>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
-	<20131126183559.GA18570@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f173.google.com ([209.85.214.173]:50336 "EHLO
-	mail-ob0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752490Ab3KZXDF convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Nov 2013 18:03:05 -0500
-Received: by mail-ob0-f173.google.com with SMTP id gq1so6590718obb.32
-        for <linux-serial@vger.kernel.org>; Tue, 26 Nov 2013 15:03:04 -0800 (PST)
-In-Reply-To: <20131126183559.GA18570@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH] serial: sh-sci: Fix warnings due to improper casts and printk formats
+Date: Wed, 27 Nov 2013 01:28:38 +0100
+Message-ID: <1385512118-10219-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Nov 26, 2013 at 10:36 AM, Ezequiel Garcia
-<ezequiel.garcia@free-electrons.com> wrote:
+Use the %zu printk specifier to print size_t variables, and cast
+pointers to unsigned long instead of unsigned int where applicable. This
+fixes warnings on platforms where pointers and/or dma_addr_t have a
+different size than int.
 
-> Since v3.13-rc1, this commit seems to have introduced some oddities o=
-n
-> some of our boards. See this log snippet:
->
-> Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
-> =EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BDR=EF=BF=BDconsole [ttyS0] enabled
-> console [ttyS0] enabled
-> bootconsole [earlycon0] disabled
-> bootconsole [earlycon0] disabled
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 224
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 224
-> d0012100.serial: ttyS1 at MMIO 0xd0012100 (irq =3D 18, base_baud =3D =
-15625000) is a 16550A
->
-> This behavior appear in at least Armada 370 and Armada XP boxes.
->
-> I confirm reverting this commit fixes the issue and things get back t=
-o normal.
-> Here's the complete kernel log: sprunge.us/gMdL
->
-> Ideas?
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Hi Ezequiel,
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7d8103c..25b7f67 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+ 		return 1;
+ 
+ 	/* Cast for ARM damage */
+-	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
++	return !!__raw_readb((void __iomem *)(unsigned long)s->cfg->port_reg);
+ }
+ 
+ /* ********************************************************************** *
+@@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
+ 	}
+ 
+ 	if (room < count)
+-		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
++		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+ 			 count - room);
+ 	if (!room)
+ 		return room;
+@@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+ 		int count;
+ 
+ 		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+-		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
++		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+ 			sh_desc->partial, sh_desc->cookie);
+ 
+ 		spin_lock_irqsave(&port->lock, flags);
+@@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
+ 		s->chan_tx = chan;
+ 		sg_init_table(&s->sg_tx, 1);
+ 		/* UART circular tx buffer is an aligned page. */
+-		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
++		BUG_ON((unsigned long)port->state->xmit.buf & ~PAGE_MASK);
+ 		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+-			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
++			    UART_XMIT_SIZE,
++			    (unsigned long)port->state->xmit.buf & ~PAGE_MASK);
+ 		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+ 		if (!nent)
+ 			sci_tx_dma_release(s, false);
+ 		else
+-			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+-				sg_dma_len(&s->sg_tx),
+-				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
++			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
++				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
++				(unsigned long)sg_dma_address(&s->sg_tx));
+ 
+ 		s->sg_len_tx = nent;
+ 
+@@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 			sg_init_table(sg, 1);
+ 			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+-				    (int)buf[i] & ~PAGE_MASK);
++				    (unsigned long)buf[i] & ~PAGE_MASK);
+ 			sg_dma_address(sg) = dma[i];
+ 		}
+ 
+-- 
+1.8.3.2
 
-An external device may be keeping the UART busy and preventing LCR
-from being written.
-
-What device is attached to ttyS1?  Also, do you know the version of
-the Synopsys IP?
-
-If built with ADDITIONAL_FEATURES=3DYES, the version can be read from
-the hardware:
-
-# busybox devmem 0xd00121f8 32
-
--Tim
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
