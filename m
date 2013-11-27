@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 20/29] ARM: shmobile: r8a73a4: Declare SCIF register base and IRQ as resources
-Date: Thu, 28 Nov 2013 00:18:30 +0100
-Message-ID: <1385594319-5758-21-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 19/29] ARM: shmobile: r7s72100: Declare SCIF register base and IRQ as resources
+Date: Thu, 28 Nov 2013 00:18:29 +0100
+Message-ID: <1385594319-5758-20-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
@@ -15,34 +15,36 @@ deprecated. Use resources instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r8a73a4.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ arch/arm/mach-shmobile/setup-r7s72100.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a73a4.c b/arch/arm/mach-shmobile/setup-r8a73a4.c
-index 605298b..ef32ce2 100644
---- a/arch/arm/mach-shmobile/setup-r8a73a4.c
-+++ b/arch/arm/mach-shmobile/setup-r8a73a4.c
-@@ -43,11 +43,14 @@ void __init r8a73a4_pinmux_init(void)
- #define R8A73A4_SCIF(scif_type, _scscr, index, baseaddr, irq)	\
- static struct plat_sci_port scif##index##_platform_data = {	\
- 	.type		= scif_type,				\
--	.mapbase	= baseaddr,				\
- 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,	\
- 	.scbrr_algo_id	= SCBRR_ALGO_4,				\
- 	.scscr		= _scscr,				\
--	.irqs		= SCIx_IRQ_MUXED(irq),			\
-+};								\
-+								\
-+static struct resource scif##index##_resources[] = {		\
-+	DEFINE_RES_MEM(baseaddr, 0x100),			\
-+	DEFINE_RES_IRQ(irq),					\
- }
+diff --git a/arch/arm/mach-shmobile/setup-r7s72100.c b/arch/arm/mach-shmobile/setup-r7s72100.c
+index 6ae7e32..81b995b 100644
+--- a/arch/arm/mach-shmobile/setup-r7s72100.c
++++ b/arch/arm/mach-shmobile/setup-r7s72100.c
+@@ -36,9 +36,15 @@ static const struct plat_sci_port scif##index##_platform_data = {	\
+ 	.scbrr_algo_id	= SCBRR_ALGO_2,					\
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |	\
+ 			  SCSCR_REIE,					\
+-	.mapbase	= baseaddr,					\
+-	.irqs		= { irq + 1, irq + 2, irq + 3, irq },		\
+-}
++};									\
++									\
++static struct resource scif##index##_resources[] = {			\
++	DEFINE_RES_MEM(baseaddr, 0x100),				\
++	DEFINE_RES_IRQ(irq + 1),					\
++	DEFINE_RES_IRQ(irq + 2),					\
++	DEFINE_RES_IRQ(irq + 3),					\
++	DEFINE_RES_IRQ(irq),						\
++}									\
  
- #define R8A73A4_SCIFA(index, baseaddr, irq)	\
-@@ -66,9 +69,11 @@ R8A73A4_SCIFB(4, 0xe6ce0000, gic_spi(150)); /* SCIFB2 */
- R8A73A4_SCIFB(5, 0xe6cf0000, gic_spi(151)); /* SCIFB3 */
+ R7S72100_SCIF(0, 0xe8007000, gic_iid(221));
+ R7S72100_SCIF(1, 0xe8007800, gic_iid(225));
+@@ -50,9 +56,11 @@ R7S72100_SCIF(6, 0xe800a000, gic_iid(245));
+ R7S72100_SCIF(7, 0xe800a800, gic_iid(249));
  
- #define r8a73a4_register_scif(index)					       \
+ #define r7s72100_register_scif(index)					       \
 -	platform_device_register_data(&platform_bus, "sh-sci", index,	       \
 -				      &scif##index##_platform_data,	       \
 -				      sizeof(scif##index##_platform_data))
@@ -52,8 +54,8 @@ index 605298b..ef32ce2 100644
 +					  &scif##index##_platform_data,	       \
 +					  sizeof(scif##index##_platform_data))
  
- static const struct renesas_irqc_config irqc0_data = {
- 	.irq_base = irq_pin(0), /* IRQ0 -> IRQ31 */
+ 
+ static struct sh_timer_config mtu2_0_platform_data __initdata = {
 -- 
 1.8.3.2
 
