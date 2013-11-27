@@ -1,57 +1,92 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] tty: atmel_serial: include <mach/hardware.h> explicitly
-Date: Wed, 27 Nov 2013 11:02:43 +0100
-Message-ID: <20131127100243.GQ28642@pengutronix.de>
-References: <1385545111-1256-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <5295BFE3.5070700@atmel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57830 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751575Ab3K0KCv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Nov 2013 05:02:51 -0500
-Content-Disposition: inline
-In-Reply-To: <5295BFE3.5070700@atmel.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts and printk formats
+Date: Wed, 27 Nov 2013 11:10:37 +0100
+Message-ID: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Andrew Victor <linux@maxim.org.za>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 
-On Wed, Nov 27, 2013 at 10:48:19AM +0100, Nicolas Ferre wrote:
-> On 27/11/2013 10:38, Uwe Kleine-K=F6nig :
-> >When compiled for at91rm9200 (i.e. ARM) the driver needs among other=
-s
-> >the symbol AT91RM9200_BASE_US0 which is defined in
-> >arch/arm/mach-at91/include/mach/at91rm9200.h. This file is included
-> >implicitly via several steps. As ARM's <asm/timex.h> will stop inclu=
-ding
-> ><mach/hardware.h> later in this series explicitly include
-> ><mach/hardware.h>
-> >
-> >Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
->=20
-> Uwe, this AT91RM9200_BASE_US0 value is supposed to disappear in 3.14
-> tanks to a patch from Linus W. ([PATCH v4] ARM/serial: at91: switch
-> atmel serial to use gpiolib) (not in linux-next yet).
->=20
-> So I think that this patch is not needed for 3.14.
-So I'll keep this patch in my queue for now, but keep an eye on this
-one. The other symbols were dropped, too?
+Use the %zu printk specifier to print size_t variables, and cast
+pointers to uintptr_t instead of unsigned int where applicable. This
+fixes warnings on platforms where pointers and/or dma_addr_t have a
+different size than int.
 
-Thanks
-Uwe
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Changes compared to v1:
+
+- Cast to uintptr_t instead of unsigned long
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7d8103c..680e0d9 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+ 		return 1;
+ 
+ 	/* Cast for ARM damage */
+-	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
++	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+ }
+ 
+ /* ********************************************************************** *
+@@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
+ 	}
+ 
+ 	if (room < count)
+-		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
++		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+ 			 count - room);
+ 	if (!room)
+ 		return room;
+@@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+ 		int count;
+ 
+ 		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+-		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
++		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+ 			sh_desc->partial, sh_desc->cookie);
+ 
+ 		spin_lock_irqsave(&port->lock, flags);
+@@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
+ 		s->chan_tx = chan;
+ 		sg_init_table(&s->sg_tx, 1);
+ 		/* UART circular tx buffer is an aligned page. */
+-		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
++		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+ 		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+-			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
++			    UART_XMIT_SIZE,
++			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+ 		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+ 		if (!nent)
+ 			sci_tx_dma_release(s, false);
+ 		else
+-			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+-				sg_dma_len(&s->sg_tx),
+-				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
++			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
++				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
++				(uintptr_t)sg_dma_address(&s->sg_tx));
+ 
+ 		s->sg_len_tx = nent;
+ 
+@@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 			sg_init_table(sg, 1);
+ 			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+-				    (int)buf[i] & ~PAGE_MASK);
++				    (uintptr_t)buf[i] & ~PAGE_MASK);
+ 			sg_dma_address(sg) = dma[i];
+ 		}
+ 
+-- 
+1.8.3.2
+
