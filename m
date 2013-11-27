@@ -1,68 +1,84 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PATCH] TTY/Serial fixes for 3.13-rc2
-Date: Wed, 27 Nov 2013 14:51:13 -0800
-Message-ID: <20131127225113.GA3567@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52155 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754595Ab3K0WvO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Nov 2013 17:51:14 -0500
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 01/29] serial: sh-sci: Sort headers alphabetically
+Date: Thu, 28 Nov 2013 00:18:11 +0100
+Message-ID: <1385594319-5758-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-The following changes since commit 6ce4eac1f600b34f2f7f58f9cd8f0503d79e42ae:
+This helps locating duplicates.
 
-  Linux 3.13-rc1 (2013-11-22 11:30:55 -0800)
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
+---
+ drivers/tty/serial/sh-sci.c | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-are available in the git repository at:
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7d8103c..10c98b1 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -23,35 +23,35 @@
+ 
+ #undef DEBUG
+ 
+-#include <linux/module.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/ctype.h>
++#include <linux/cpufreq.h>
++#include <linux/delay.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
+ #include <linux/errno.h>
+-#include <linux/sh_dma.h>
+-#include <linux/timer.h>
++#include <linux/gpio.h>
++#include <linux/init.h>
+ #include <linux/interrupt.h>
+-#include <linux/tty.h>
+-#include <linux/tty_flip.h>
+-#include <linux/serial.h>
+-#include <linux/major.h>
+-#include <linux/string.h>
+-#include <linux/sysrq.h>
+ #include <linux/ioport.h>
++#include <linux/major.h>
++#include <linux/module.h>
+ #include <linux/mm.h>
+-#include <linux/init.h>
+-#include <linux/delay.h>
+-#include <linux/console.h>
+-#include <linux/platform_device.h>
+-#include <linux/serial_sci.h>
+ #include <linux/notifier.h>
++#include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+-#include <linux/cpufreq.h>
+-#include <linux/clk.h>
+-#include <linux/ctype.h>
+-#include <linux/err.h>
+-#include <linux/dmaengine.h>
+-#include <linux/dma-mapping.h>
+ #include <linux/scatterlist.h>
++#include <linux/serial.h>
++#include <linux/serial_sci.h>
++#include <linux/sh_dma.h>
+ #include <linux/slab.h>
+-#include <linux/gpio.h>
++#include <linux/string.h>
++#include <linux/sysrq.h>
++#include <linux/timer.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
+ 
+ #ifdef CONFIG_SUPERH
+ #include <asm/sh_bios.h>
+-- 
+1.8.3.2
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.13-rc2
-
-for you to fetch changes up to c42b4e6501cdaabee8cc292ae1ef0f66bf4825c1:
-
-  Revert "n_gsm: race between ld close and gsmtty open" (2013-11-25 18:30:21 -0800)
-
-----------------------------------------------------------------
-TTY/serial fixes for 3.13-rc2
-
-Here are some tty/serial driver fixes for reported issues in 3.13-rc2.
-
-The n_gsm "fix" was reverted as it was found to not be correct.
-Hopefully this will be resolved in a future pull request, but as there's
-really only one user of this line setting, it's not a big deal...
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Chao Bi (1):
-      n_gsm: race between ld close and gsmtty open
-
-Geert Uytterhoeven (2):
-      TTY: pmac_zilog, check existence of ports in pmz_console_init()
-      TTY: amiserial, add missing platform check
-
-Greg Kroah-Hartman (1):
-      Revert "n_gsm: race between ld close and gsmtty open"
-
-Peter Hurley (5):
-      n_tty: Ensure reader restarts worker for next reader
-      n_tty: Fix echo overrun tail computation
-      n_tty: Fix 4096-byte canonical reads
-      tty: Reset hupped state on open
-      n_tty: Protect minimum_to_wake reset for concurrent readers
-
-Randy Dunlap (1):
-      tty/serial/8250: fix typo in help text
-
- drivers/tty/amiserial.c         |  3 +++
- drivers/tty/n_tty.c             | 16 ++++++++++------
- drivers/tty/serial/8250/Kconfig |  2 +-
- drivers/tty/serial/pmac_zilog.c |  3 +++
- drivers/tty/tty_io.c            |  1 +
- 5 files changed, 18 insertions(+), 7 deletions(-)
