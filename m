@@ -1,49 +1,53 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 22/29] ARM: shmobile: r8a7778: Declare SCIF register base and IRQ as resources
-Date: Thu, 28 Nov 2013 00:18:32 +0100
-Message-ID: <1385594319-5758-23-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 24/29] ARM: shmobile: r8a7790: Declare SCIF register base and IRQ as resources
+Date: Thu, 28 Nov 2013 00:18:34 +0100
+Message-ID: <1385594319-5758-25-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:56631 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758493Ab3K0XS6 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Nov 2013 18:18:58 -0500
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
-List-Id: linux-serial@vger.kernel.org
 
 Passing the register base address and IRQ through platform data is
 deprecated. Use resources instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r8a7778.c | 15 ++++++++++-----
+ arch/arm/mach-shmobile/setup-r8a7790.c | 15 ++++++++++-----
  1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7778.c b/arch/arm/mach-shmobile/setup-r8a7778.c
-index 676257e..47c8230 100644
---- a/arch/arm/mach-shmobile/setup-r8a7778.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7778.c
-@@ -46,12 +46,15 @@
- /* SCIF */
- #define R8A7778_SCIF(index, baseaddr, irq)			\
- static struct plat_sci_port scif##index##_platform_data = {	\
--	.mapbase	= baseaddr,				\
- 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,	\
- 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_CKE1,	\
- 	.scbrr_algo_id	= SCBRR_ALGO_2,				\
- 	.type		= PORT_SCIF,				\
--	.irqs		= SCIx_IRQ_MUXED(irq),			\
-+};								\
-+								\
-+static struct resource scif##index##_resources[] = {		\
-+	DEFINE_RES_MEM(baseaddr, 0x100),			\
-+	DEFINE_RES_IRQ(irq),					\
+diff --git a/arch/arm/mach-shmobile/setup-r8a7790.c b/arch/arm/mach-shmobile/setup-r8a7790.c
+index 8344743..70bb553 100644
+--- a/arch/arm/mach-shmobile/setup-r8a7790.c
++++ b/arch/arm/mach-shmobile/setup-r8a7790.c
+@@ -81,11 +81,14 @@ void __init r8a7790_pinmux_init(void)
+ #define __R8A7790_SCIF(scif_type, _scscr, algo, index, baseaddr, irq)	\
+ static struct plat_sci_port scif##index##_platform_data = {		\
+ 	.type		= scif_type,					\
+-	.mapbase	= baseaddr,					\
+ 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
+ 	.scbrr_algo_id	= algo,						\
+ 	.scscr		= _scscr,					\
+-	.irqs		= SCIx_IRQ_MUXED(irq),				\
++};									\
++									\
++static struct resource scif##index##_resources[] = {			\
++	DEFINE_RES_MEM(baseaddr, 0x100),				\
++	DEFINE_RES_IRQ(irq),						\
  }
  
- R8A7778_SCIF(0, 0xffe40000, gic_iid(0x66));
-@@ -62,9 +65,11 @@ R8A7778_SCIF(4, 0xffe44000, gic_iid(0x6a));
- R8A7778_SCIF(5, 0xffe45000, gic_iid(0x6b));
+ #define R8A7790_SCIF(index, baseaddr, irq)				\
+@@ -116,9 +119,11 @@ R8A7790_HSCIF(8, 0xe62c0000, gic_spi(154)); /* HSCIF0 */
+ R8A7790_HSCIF(9, 0xe62c8000, gic_spi(155)); /* HSCIF1 */
  
- #define r8a7778_register_scif(index)					       \
+ #define r8a7790_register_scif(index)					       \
 -	platform_device_register_data(&platform_bus, "sh-sci", index,	       \
 -				      &scif##index##_platform_data,	       \
 -				      sizeof(scif##index##_platform_data))
@@ -53,8 +57,8 @@ index 676257e..47c8230 100644
 +					  &scif##index##_platform_data,	       \
 +					  sizeof(scif##index##_platform_data))
  
- /* TMU */
- static struct resource sh_tmu0_resources[] __initdata = {
+ static const struct renesas_irqc_config irqc0_data __initconst = {
+ 	.irq_base = irq_pin(0), /* IRQ0 -> IRQ3 */
 -- 
 1.8.3.2
 
