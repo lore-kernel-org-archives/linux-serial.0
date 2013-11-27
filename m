@@ -1,49 +1,42 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 02/29] serial: sh-sci: Remove baud rate calculation algorithm 5
-Date: Thu, 28 Nov 2013 00:18:12 +0100
-Message-ID: <1385594319-5758-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 05/29] serial: sh-sci: Set the UPF_FIXED_PORT flag
+Date: Thu, 28 Nov 2013 00:18:15 +0100
+Message-ID: <1385594319-5758-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:56632 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757602Ab3K0XSl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Nov 2013 18:18:41 -0500
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
-List-Id: linux-serial@vger.kernel.org
 
-The algorithm isn't used, remove it.
+The base address, IRQ and baud rate generator parent clock rate can't be
+changed by userspace. Mark the port as fixed.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- drivers/tty/serial/sh-sci.c | 2 --
- include/linux/serial_sci.h  | 1 -
- 2 files changed, 3 deletions(-)
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 10c98b1..277b669 100644
+index d1d779f..5edba3f 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1820,8 +1820,6 @@ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
- 		return (((freq * 2) + 16 * bps) / (16 * bps) - 1);
- 	case SCBRR_ALGO_4:
- 		return (((freq * 2) + 16 * bps) / (32 * bps) - 1);
--	case SCBRR_ALGO_5:
--		return (((freq * 1000 / 32) / bps) - 1);
- 	}
+@@ -2243,7 +2243,7 @@ static int sci_init_single(struct platform_device *dev,
  
- 	/* Warn, but use a safe default */
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 50fe651..babc5fe 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -15,7 +15,6 @@ enum {
- 	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
- 	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
- 	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
--	SCBRR_ALGO_5,		/* (((clk * 1000 / 32) / bps) - 1) */
- 	SCBRR_ALGO_6,		/* HSCIF variable sample rate algorithm */
- };
+ 	port->mapbase		= p->mapbase;
+ 	port->type		= p->type;
+-	port->flags		= p->flags;
++	port->flags		= UPF_FIXED_PORT | p->flags;
+ 	port->regshift		= p->regshift;
  
+ 	/*
 -- 
 1.8.3.2
 
