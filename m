@@ -1,92 +1,148 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts and printk formats
-Date: Wed, 27 Nov 2013 11:10:37 +0100
-Message-ID: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: tty/serial eating \n regression in 3.13-rc1
+Date: Wed, 27 Nov 2013 07:13:47 -0500
+Message-ID: <5295E1FB.8090607@hurleysoftware.com>
+References: <20131126215349.GA4818@obsidianresearch.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:46667 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754647Ab3K0MNw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 27 Nov 2013 07:13:52 -0500
+In-Reply-To: <20131126215349.GA4818@obsidianresearch.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Use the %zu printk specifier to print size_t variables, and cast
-pointers to uintptr_t instead of unsigned int where applicable. This
-fixes warnings on platforms where pointers and/or dma_addr_t have a
-different size than int.
+On 11/26/2013 04:53 PM, Jason Gunthorpe wrote:
+> Hello Peter,
+>
+> I have been testing 3.13-rc1 and I noticed a change in behavior in the
+> tty/serial layer. Specifically I have a login running on serial that
+> presents the usual login:/password: prompt.
+>
+> 3.10.12 does this:
+>
+> login: admin
+> password:
+> prompt>
+>
+> While 3.13-rc1 does this:
+>
+> login: admin
+> password: prompt>
+>
+> That is to say, a \n got lost. I have also noticed while using the
+> serial console that '\n's are occasionally lost, and the lossage is
+> highly repeatable and seemingly based on number of chars being output
+> in a burst, eg entering 'foo bar' at a shell prompt might loose the \n,
+> while entering 'foo bar ' will not.
+>
+> I ran a full git bisect search and determined that the attached patch
+> introduced the problem.
+>
+> This seems like a bug - at least the commit comment seems like it
+> should not cause any change in behaviour. I can reproduce it and help
+> debug, if you can give some guidance, I am not a tty layer expert :)
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Hi Jason,
+
+Thanks for the bisect: this is definitely a bug and not designed behavior.
+But just to be clear here, the error you're seeing is strictly wrt.
+echo output; normal output remains uncorrupted?
+
+Also, you're not seeing other echo drop-outs?
+
+Although there are some fixes due for 3.13-rc2 concerning echoes, I
+think this may be a smp weak memory ordering problem.
+
+> I have seen this bug on ppc with an out-of-tree serial driver, and on
+> ARM kirkwood with the serial8250 driver. I did the bisection search on
+> PPC.
+
+Ah, the games processors play. I assume the ppc is the host machine; the
+serial terminal remained unchanged, yes?
+
+Would you please test with the patch below which uses ftrace to
+capture the output? [The trace only tracks the echo buffer indices, not
+any of the data.]
+
+When you see the lost '\n', copy /sys/kernel/debug/tracing/trace
+to a file and send it to me (compressed if too big for the lists). Or
+you can send it off-list, if you'd prefer.
+
+[Apologies if the patch is white-space mangled; my mailer [Thunderbird]
+is dain-bramaged. I think git am will still do the right thing.]
+
+--- >% ----
+Subject: [PATCH] n_tty: Add trace support for echo output
+
+Debug patch.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+  drivers/tty/n_tty.c | 24 ++++++++++++++++++++++++
+  1 file changed, 24 insertions(+)
 
-Changes compared to v1:
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 7cdd1eb..b055838 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -79,6 +79,12 @@
+  #define ECHO_BLOCK		256
+  #define ECHO_DISCARD_WATERMARK	N_TTY_BUF_SIZE - (ECHO_BLOCK + 32)
 
-- Cast to uintptr_t instead of unsigned long
++#define trace_facility trace_printk
++#define _n_tty_trace(tty, f, args...)					\
++	do {								\
++		char buf[64];						\
++		trace_facility("[%s] " f, tty_name(tty, buf), ##args);	\
++	} while (0)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7d8103c..680e0d9 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
- 		return 1;
- 
- 	/* Cast for ARM damage */
--	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
-+	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
- }
- 
- /* ********************************************************************** *
-@@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
- 	}
- 
- 	if (room < count)
--		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
-+		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
- 			 count - room);
- 	if (!room)
- 		return room;
-@@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
- 		int count;
- 
- 		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
--		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
-+		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
- 			sh_desc->partial, sh_desc->cookie);
- 
- 		spin_lock_irqsave(&port->lock, flags);
-@@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
- 		s->chan_tx = chan;
- 		sg_init_table(&s->sg_tx, 1);
- 		/* UART circular tx buffer is an aligned page. */
--		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
-+		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
- 		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
--			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
-+			    UART_XMIT_SIZE,
-+			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
- 		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
- 		if (!nent)
- 			sci_tx_dma_release(s, false);
- 		else
--			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
--				sg_dma_len(&s->sg_tx),
--				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
-+			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
-+				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
-+				(uintptr_t)sg_dma_address(&s->sg_tx));
- 
- 		s->sg_len_tx = nent;
- 
-@@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
- 
- 			sg_init_table(sg, 1);
- 			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
--				    (int)buf[i] & ~PAGE_MASK);
-+				    (uintptr_t)buf[i] & ~PAGE_MASK);
- 			sg_dma_address(sg) = dma[i];
- 		}
- 
+  #undef N_TTY_TRACE
+  #ifdef N_TTY_TRACE
+@@ -87,6 +93,15 @@
+  # define n_tty_trace(f, args...)
+  #endif
+
++#undef N_TTY_TRACE_ECHOES
++#define N_TTY_TRACE_ECHOES 1
++#ifdef N_TTY_TRACE_ECHOES
++# define n_tty_trace_echoes(tty, f, args...)	_n_tty_trace(tty, f, args)
++#else
++# define n_tty_trace_echoes(tty, f, args...)	do { } while (0)
++#endif
++
++
+  struct n_tty_data {
+  	/* producer-published */
+  	size_t read_head;
+@@ -763,10 +778,19 @@ static size_t __process_echoes(struct tty_struct *tty)
+  		}
+  	}
+
++	n_tty_trace_echoes(tty, "echoes:%zu,%zu commit:%zu head:%zu\n",
++			   ldata->echo_tail, tail, ldata->echo_commit,
++			   ldata->echo_head);
++
+  	/* If the echo buffer is nearly full (so that the possibility exists
+  	 * of echo overrun before the next commit), then discard enough
+  	 * data at the tail to prevent a subsequent overrun */
+  	while (ldata->echo_commit - tail >= ECHO_DISCARD_WATERMARK) {
++
++		n_tty_trace_echoes(tty, "discard echoes (%zu - %zu > %d)\n",
++				   ldata->echo_commit, tail,
++				   ECHO_DISCARD_WATERMARK);
++
+  		if (echo_buf(ldata, tail) == ECHO_OP_START) {
+  			if (echo_buf(ldata, tail) == ECHO_OP_ERASE_TAB)
+  				tail += 3;
 -- 
-1.8.3.2
+1.8.1.2
+
+
 
