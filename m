@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 12/29] ARM: shmobile: r7s72100: Don't define SCIF platform data in an array
-Date: Thu, 28 Nov 2013 00:18:22 +0100
-Message-ID: <1385594319-5758-13-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 16/29] ARM: shmobile: r8a7791: Don't define SCIF platform data in an array
+Date: Thu, 28 Nov 2013 00:18:26 +0100
+Message-ID: <1385594319-5758-17-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
@@ -18,82 +18,152 @@ structures.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r7s72100.c | 49 +++++++++++++++------------------
- 1 file changed, 22 insertions(+), 27 deletions(-)
+ arch/arm/mach-shmobile/setup-r8a7791.c | 125 ++++++++++++++-------------------
+ 1 file changed, 52 insertions(+), 73 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r7s72100.c b/arch/arm/mach-shmobile/setup-r7s72100.c
-index 55f0b9c..6ae7e32 100644
---- a/arch/arm/mach-shmobile/setup-r7s72100.c
-+++ b/arch/arm/mach-shmobile/setup-r7s72100.c
-@@ -28,8 +28,8 @@
- #include <mach/r7s72100.h>
- #include <asm/mach/arch.h>
- 
--#define SCIF_DATA(index, baseaddr, irq)					\
--[index] = {								\
-+#define R7S72100_SCIF(index, baseaddr, irq)				\
-+static const struct plat_sci_port scif##index##_platform_data = {	\
- 	.type		= PORT_SCIF,					\
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,		\
- 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
-@@ -40,24 +40,19 @@
- 	.irqs		= { irq + 1, irq + 2, irq + 3, irq },		\
+diff --git a/arch/arm/mach-shmobile/setup-r8a7791.c b/arch/arm/mach-shmobile/setup-r8a7791.c
+index cddca99..3fe0d7d 100644
+--- a/arch/arm/mach-shmobile/setup-r8a7791.c
++++ b/arch/arm/mach-shmobile/setup-r8a7791.c
+@@ -84,66 +84,45 @@ void __init r8a7791_pinmux_init(void)
+ 	r8a7791_register_gpio(7);
  }
  
--enum { SCIF0, SCIF1, SCIF2, SCIF3, SCIF4, SCIF5, SCIF6, SCIF7 };
-+R7S72100_SCIF(0, 0xe8007000, gic_iid(221));
-+R7S72100_SCIF(1, 0xe8007800, gic_iid(225));
-+R7S72100_SCIF(2, 0xe8008000, gic_iid(229));
-+R7S72100_SCIF(3, 0xe8008800, gic_iid(233));
-+R7S72100_SCIF(4, 0xe8009000, gic_iid(237));
-+R7S72100_SCIF(5, 0xe8009800, gic_iid(241));
-+R7S72100_SCIF(6, 0xe800a000, gic_iid(245));
-+R7S72100_SCIF(7, 0xe800a800, gic_iid(249));
+-#define SCIF_COMMON(scif_type, baseaddr, irq)			\
+-	.type		= scif_type,				\
+-	.mapbase	= baseaddr,				\
+-	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,	\
+-	.irqs		= SCIx_IRQ_MUXED(irq)
+-
+-#define SCIFA_DATA(index, baseaddr, irq)		\
+-[index] = {						\
+-	SCIF_COMMON(PORT_SCIFA, baseaddr, irq),		\
+-	.scbrr_algo_id	= SCBRR_ALGO_4,			\
+-	.scscr = SCSCR_RE | SCSCR_TE,	\
++#define __R8A7791_SCIF(scif_type, algo, index, baseaddr, irq)		\
++static struct plat_sci_port scif##index##_platform_data = {		\
++	.type		= scif_type,					\
++	.mapbase	= baseaddr,					\
++	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
++	.scbrr_algo_id	= algo,						\
++	.scscr		= SCSCR_RE | SCSCR_TE,				\
++	.irqs		= SCIx_IRQ_MUXED(irq),				\
+ }
  
+-#define SCIFB_DATA(index, baseaddr, irq)	\
+-[index] = {					\
+-	SCIF_COMMON(PORT_SCIFB, baseaddr, irq),	\
+-	.scbrr_algo_id	= SCBRR_ALGO_4,		\
+-	.scscr = SCSCR_RE | SCSCR_TE,		\
+-}
+-
+-#define SCIF_DATA(index, baseaddr, irq)		\
+-[index] = {						\
+-	SCIF_COMMON(PORT_SCIF, baseaddr, irq),		\
+-	.scbrr_algo_id	= SCBRR_ALGO_2,			\
+-	.scscr = SCSCR_RE | SCSCR_TE,	\
+-}
+-
+-#define HSCIF_DATA(index, baseaddr, irq)		\
+-[index] = {						\
+-	SCIF_COMMON(PORT_HSCIF, baseaddr, irq),		\
+-	.scbrr_algo_id	= SCBRR_ALGO_6,			\
+-	.scscr = SCSCR_RE | SCSCR_TE,	\
+-}
+-
+-enum { SCIFA0, SCIFA1, SCIFB0, SCIFB1, SCIFB2, SCIFA2, SCIF0, SCIF1,
+-	SCIF2, SCIF3, SCIF4, SCIF5, SCIFA3, SCIFA4, SCIFA5 };
+-
 -static const struct plat_sci_port scif[] __initconst = {
--	SCIF_DATA(SCIF0, 0xe8007000, gic_iid(221)), /* SCIF0 */
--	SCIF_DATA(SCIF1, 0xe8007800, gic_iid(225)), /* SCIF1 */
--	SCIF_DATA(SCIF2, 0xe8008000, gic_iid(229)), /* SCIF2 */
--	SCIF_DATA(SCIF3, 0xe8008800, gic_iid(233)), /* SCIF3 */
--	SCIF_DATA(SCIF4, 0xe8009000, gic_iid(237)), /* SCIF4 */
--	SCIF_DATA(SCIF5, 0xe8009800, gic_iid(241)), /* SCIF5 */
--	SCIF_DATA(SCIF6, 0xe800a000, gic_iid(245)), /* SCIF6 */
--	SCIF_DATA(SCIF7, 0xe800a800, gic_iid(249)), /* SCIF7 */
+-	SCIFA_DATA(SCIFA0, 0xe6c40000, gic_spi(144)), /* SCIFA0 */
+-	SCIFA_DATA(SCIFA1, 0xe6c50000, gic_spi(145)), /* SCIFA1 */
+-	SCIFB_DATA(SCIFB0, 0xe6c20000, gic_spi(148)), /* SCIFB0 */
+-	SCIFB_DATA(SCIFB1, 0xe6c30000, gic_spi(149)), /* SCIFB1 */
+-	SCIFB_DATA(SCIFB2, 0xe6ce0000, gic_spi(150)), /* SCIFB2 */
+-	SCIFA_DATA(SCIFA2, 0xe6c60000, gic_spi(151)), /* SCIFA2 */
+-	SCIF_DATA(SCIF0, 0xe6e60000, gic_spi(152)), /* SCIF0 */
+-	SCIF_DATA(SCIF1, 0xe6e68000, gic_spi(153)), /* SCIF1 */
+-	SCIF_DATA(SCIF2, 0xe6e58000, gic_spi(22)), /* SCIF2 */
+-	SCIF_DATA(SCIF3, 0xe6ea8000, gic_spi(23)), /* SCIF3 */
+-	SCIF_DATA(SCIF4, 0xe6ee0000, gic_spi(24)), /* SCIF4 */
+-	SCIF_DATA(SCIF5, 0xe6ee8000, gic_spi(25)), /* SCIF5 */
+-	SCIFA_DATA(SCIFA3, 0xe6c70000, gic_spi(29)), /* SCIFA3 */
+-	SCIFA_DATA(SCIFA4, 0xe6c78000, gic_spi(30)), /* SCIFA4 */
+-	SCIFA_DATA(SCIFA5, 0xe6c80000, gic_spi(31)), /* SCIFA5 */
 -};
 -
--static inline void r7s72100_register_scif(int idx)
+-static inline void r8a7791_register_scif(int idx)
 -{
 -	platform_device_register_data(&platform_bus, "sh-sci", idx, &scif[idx],
 -				      sizeof(struct plat_sci_port));
 -}
-+#define r7s72100_register_scif(index)					       \
++#define R8A7791_SCIF(index, baseaddr, irq)				\
++	__R8A7791_SCIF(PORT_SCIF, SCBRR_ALGO_2, index, baseaddr, irq)
++
++#define R8A7791_SCIFA(index, baseaddr, irq)				\
++	__R8A7791_SCIF(PORT_SCIFA, SCBRR_ALGO_4, index, baseaddr, irq)
++
++#define R8A7791_SCIFB(index, baseaddr, irq)				\
++	__R8A7791_SCIF(PORT_SCIFB, SCBRR_ALGO_4, index, baseaddr, irq)
++
++R8A7791_SCIFA(0,  0xe6c40000, gic_spi(144)); /* SCIFA0 */
++R8A7791_SCIFA(1,  0xe6c50000, gic_spi(145)); /* SCIFA1 */
++R8A7791_SCIFB(2,  0xe6c20000, gic_spi(148)); /* SCIFB0 */
++R8A7791_SCIFB(3,  0xe6c30000, gic_spi(149)); /* SCIFB1 */
++R8A7791_SCIFB(4,  0xe6ce0000, gic_spi(150)); /* SCIFB2 */
++R8A7791_SCIFA(5,  0xe6c60000, gic_spi(151)); /* SCIFA2 */
++R8A7791_SCIF(6,   0xe6e60000, gic_spi(152)); /* SCIF0 */
++R8A7791_SCIF(7,   0xe6e68000, gic_spi(153)); /* SCIF1 */
++R8A7791_SCIF(8,   0xe6e58000, gic_spi(22)); /* SCIF2 */
++R8A7791_SCIF(9,   0xe6ea8000, gic_spi(23)); /* SCIF3 */
++R8A7791_SCIF(10,  0xe6ee0000, gic_spi(24)); /* SCIF4 */
++R8A7791_SCIF(11,  0xe6ee8000, gic_spi(25)); /* SCIF5 */
++R8A7791_SCIFA(12, 0xe6c70000, gic_spi(29)); /* SCIFA3 */
++R8A7791_SCIFA(13, 0xe6c78000, gic_spi(30)); /* SCIFA4 */
++R8A7791_SCIFA(14, 0xe6c80000, gic_spi(31)); /* SCIFA5 */
++
++#define r8a7791_register_scif(index)					       \
 +	platform_device_register_data(&platform_bus, "sh-sci", index,	       \
 +				      &scif##index##_platform_data,	       \
 +				      sizeof(scif##index##_platform_data))
  
+ static const struct sh_timer_config cmt00_platform_data __initconst = {
+ 	.name = "CMT00",
+@@ -202,21 +181,21 @@ static const struct resource thermal_resources[] __initconst = {
  
- static struct sh_timer_config mtu2_0_platform_data __initdata = {
-@@ -81,14 +76,14 @@ static struct resource mtu2_0_resources[] __initdata = {
- 
- void __init r7s72100_add_dt_devices(void)
+ void __init r8a7791_add_dt_devices(void)
  {
--	r7s72100_register_scif(SCIF0);
--	r7s72100_register_scif(SCIF1);
--	r7s72100_register_scif(SCIF2);
--	r7s72100_register_scif(SCIF3);
--	r7s72100_register_scif(SCIF4);
--	r7s72100_register_scif(SCIF5);
--	r7s72100_register_scif(SCIF6);
--	r7s72100_register_scif(SCIF7);
-+	r7s72100_register_scif(0);
-+	r7s72100_register_scif(1);
-+	r7s72100_register_scif(2);
-+	r7s72100_register_scif(3);
-+	r7s72100_register_scif(4);
-+	r7s72100_register_scif(5);
-+	r7s72100_register_scif(6);
-+	r7s72100_register_scif(7);
- 	r7s72100_register_mtu2(0);
+-	r8a7791_register_scif(SCIFA0);
+-	r8a7791_register_scif(SCIFA1);
+-	r8a7791_register_scif(SCIFB0);
+-	r8a7791_register_scif(SCIFB1);
+-	r8a7791_register_scif(SCIFB2);
+-	r8a7791_register_scif(SCIFA2);
+-	r8a7791_register_scif(SCIF0);
+-	r8a7791_register_scif(SCIF1);
+-	r8a7791_register_scif(SCIF2);
+-	r8a7791_register_scif(SCIF3);
+-	r8a7791_register_scif(SCIF4);
+-	r8a7791_register_scif(SCIF5);
+-	r8a7791_register_scif(SCIFA3);
+-	r8a7791_register_scif(SCIFA4);
+-	r8a7791_register_scif(SCIFA5);
++	r8a7791_register_scif(0);
++	r8a7791_register_scif(1);
++	r8a7791_register_scif(2);
++	r8a7791_register_scif(3);
++	r8a7791_register_scif(4);
++	r8a7791_register_scif(5);
++	r8a7791_register_scif(6);
++	r8a7791_register_scif(7);
++	r8a7791_register_scif(8);
++	r8a7791_register_scif(9);
++	r8a7791_register_scif(10);
++	r8a7791_register_scif(11);
++	r8a7791_register_scif(12);
++	r8a7791_register_scif(13);
++	r8a7791_register_scif(14);
+ 	r8a7791_register_cmt(00);
  }
  
 -- 
