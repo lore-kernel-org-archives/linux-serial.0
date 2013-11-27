@@ -1,34 +1,29 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v4 18/29] ARM: shmobile: sh73a0: Declare SCIF register base and IRQ as resources
-Date: Thu, 28 Nov 2013 00:18:28 +0100
-Message-ID: <1385594319-5758-19-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 17/29] ARM: shmobile: sh7372: Declare SCIF register base and IRQ as resources
+Date: Thu, 28 Nov 2013 00:18:27 +0100
+Message-ID: <1385594319-5758-18-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:56631 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758493Ab3K0XSz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 27 Nov 2013 18:18:55 -0500
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1385594319-5758-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+List-Id: linux-serial@vger.kernel.org
 
 Passing the register base address and IRQ through platform data is
 deprecated. Use resources instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-sh73a0.c | 9 +++++++--
+ arch/arm/mach-shmobile/setup-sh7372.c | 9 +++++++--
  1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-sh73a0.c b/arch/arm/mach-shmobile/setup-sh73a0.c
-index 9c94f34..55ed98f 100644
---- a/arch/arm/mach-shmobile/setup-sh73a0.c
-+++ b/arch/arm/mach-shmobile/setup-sh73a0.c
-@@ -75,16 +75,21 @@ void __init sh73a0_pinmux_init(void)
- #define SH73A0_SCIF(scif_type, index, baseaddr, irq)		\
+diff --git a/arch/arm/mach-shmobile/setup-sh7372.c b/arch/arm/mach-shmobile/setup-sh7372.c
+index 77627dd..798f8ac 100644
+--- a/arch/arm/mach-shmobile/setup-sh7372.c
++++ b/arch/arm/mach-shmobile/setup-sh7372.c
+@@ -90,16 +90,21 @@ void __init sh7372_pinmux_init(void)
+ #define SH7372_SCIF(scif_type, index, baseaddr, irq)		\
  static struct plat_sci_port scif##index##_platform_data = {	\
  	.type		= scif_type,				\
 -	.mapbase	= baseaddr,				\
