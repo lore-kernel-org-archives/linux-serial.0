@@ -1,42 +1,75 @@
-From: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
-Subject: Re: tty/serial eating \n regression in 3.13-rc1
-Date: Thu, 28 Nov 2013 10:46:14 -0700
-Message-ID: <20131128174614.GB28055@obsidianresearch.com>
-References: <20131127181348.GA22723@obsidianresearch.com>
- <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
+From: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
+Date: Thu, 28 Nov 2013 16:47:21 -0300
+Message-ID: <20131128194720.GD13182@localhost>
+References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
+ <20131126183559.GA18570@localhost>
+ <CAAYSxhqU9GZdaoTjoCAeyQ4h-KPVzU0BH0D1eLYJoFZ+s8tPgQ@mail.gmail.com>
+ <20131127185448.GA21422@localhost> <20131128093034.5d61130a@skate>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from quartz.orcorp.ca ([184.70.90.242]:51110 "EHLO quartz.orcorp.ca"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754781Ab3K1RqU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 12:46:20 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20131128093034.5d61130a@skate>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Cc: Lior Amsalem <alior@marvell.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jason Cooper <jason@lakedaemon.net>, Patch Tracking <patches@linaro.org>, Tim Kryger <tim.kryger@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Gregory Clement <gregory.clement@free-electrons.com>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Thu, Nov 28, 2013 at 10:26:57AM -0500, Peter Hurley wrote:
-
-> Please test out the attached patch and let me know if that solves
-> the login whitespace problem.
-
-Yes, it certainly does:
-Tested-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
-
-My bisection search showed this should go into 3.12 stable and 3.13..
-
-> Also, please retest the 'cat enable' problem; I have doubts that this
-> patch fixes that problem, though.
-
-Correct, this case is still broken, I had guessed they were the same..
-
-Hmm.. it behaves that way in 3.10 as well.. And the issue happens when
-the line exceeds 80 cols, and things visually look sane if my x
-terminal is 80 cols. So this is something different and probably
-expected behavior.
-
-Thanks!
-Jason
+SGkgVGhvbWFzLCBUaW06CgpPbiBUaHUsIE5vdiAyOCwgMjAxMyBhdCAwOTozMDozNEFNICswMTAw
+LCBUaG9tYXMgUGV0YXp6b25pIHdyb3RlOgo+IERlYXIgRXplcXVpZWwgR2FyY2lhLAo+IAo+IE9u
+IFdlZCwgMjcgTm92IDIwMTMgMTU6NTQ6NDkgLTAzMDAsIEV6ZXF1aWVsIEdhcmNpYSB3cm90ZToK
+PiAKPiA+ID4gQW4gZXh0ZXJuYWwgZGV2aWNlIG1heSBiZSBrZWVwaW5nIHRoZSBVQVJUIGJ1c3kg
+YW5kIHByZXZlbnRpbmcgTENSCj4gPiA+IGZyb20gYmVpbmcgd3JpdHRlbi4KPiA+ID4gCj4gPiA+
+IFdoYXQgZGV2aWNlIGlzIGF0dGFjaGVkIHRvIHR0eVMxPwo+ID4gCj4gPiBUaGVyZSdzIG5vIGRl
+dmljZSBhdHRhY2hlZCBhdCB0dHlTMS4gSSd2ZSBqdXN0IHRlc3RlZCB0aGlzIGluIGFub3RoZXIK
+PiA+IGJveCBhbmQgaXQgc2VlbXMgdGhlIHNhbWUgZXJyb3IgaXMgb2J0YWluZWQgb24gZWFjaCB1
+bnVzZWQgcG9ydDoKPiAKPiBBcmUgeW91IHN1cmUgYWJvdXQgdGhpcz8gSSBzdXBwb3NlIHlvdSdy
+ZSB0ZXN0aW5nIG9uIHRoZSBBcm1hZGEgWFAgR1AKPiBib2FyZCwgYW5kIHRoaXMgYm9hcmQgaGFz
+IGEgNCBwb3J0cyBGVERJIGNoaXAsIGFuZCBhY2NvcmRpbmcgdG8gdGhlCj4gYm9hcmQgc2NoZW1h
+dGljcyB0aGUgZm91ciBVQVJUcyBhcmUgYWxsIGNvbm5lY3RlZCB0byB0aGUgRlRESSBjaGlwLiBT
+bwo+IGZyb20gdGhlIFNvQyBwZXJzcGVjdGl2ZSwgdHR5UzEgaXMgY29ubmVjdGVkIHRvIHNvbWV0
+aGluZywgYXMgZmFyIGFzIEkKPiBjYW4gdW5kZXJzdGFuZC4gT3IgbWF5YmUgeW91IGFsc28gdGVz
+dGVkIEFybWFkYSBYUCBEQiA/Cj4gCgpZZWFoLCBzb3JyeSBhYm91dCB0aGF0LiBJIG1pc3NlZCB0
+aGUgRlRESSBjaGlwLiBBcyBUaG9tYXMgc2F5cyB0aGUgWFAgR1AKYm9hcmQgSSdtIHRlc3Rpbmcg
+dGhpcyBvbiwgaGFzIGl0cyBmb3VyIFVBUlRzIGNvbm5lY3RlZCB0byBhIEZUREkgY2hpcC4KCkNo
+YW5naW5nIHRoZSBjb25zb2xlIHBvcnQgYnkgc2V0dGluZyAiY29uc29sZT10dHlTMSwxMTUyMDAi
+IGdpdmVzIHRoaXM6CgpbLi5dClNlcmlhbDogODI1MC8xNjU1MCBkcml2ZXIsIDQgcG9ydHMsIElS
+USBzaGFyaW5nIGVuYWJsZWQKZHctYXBiLXVhcnQgZDAwMTIwMDAuc2VyaWFsOiBDb3VsZG4ndCBz
+ZXQgTENSIHRvIDE5MQpkdy1hcGItdWFydCBkMDAxMjAwMC5zZXJpYWw6IENvdWxkbid0IHNldCBM
+Q1IgdG8gMTkxCmR3LWFwYi11YXJ0IGQwMDEyMDAwLnNlcmlhbDogQ291bGRuJ3Qgc2V0IExDUiB0
+byAyMjQKZHctYXBiLXVhcnQgZDAwMTIwMDAuc2VyaWFsOiBDb3VsZG4ndCBzZXQgTENSIHRvIDIy
+NApkMDAxMjAwMC5zZXJpYWw6IHR0eVMwIGF0IE1NSU8gMHhkMDAxMjAwMCAoaXJxID0gMTcsIGJh
+c2VfYmF1ZCA9IDE1NjI1MDAwKSBpcyBhIDE2NTUwQQpkdy1hcGItdWFydCBkMDAxMjEwMC5zZXJp
+YWw6IENvdWxkbid0IHNldCBMQ1IgdG8gMTkxCmR3LWFwYi11YXJ0IGQwMDEyMTAwLnNlcmlhbDog
+Q291bGRuJ3Qgc2V0IExDUiB0byAxOTEKZHctYXBiLXVhcnQgZDAwMTIxMDAuc2VyaWFsOiBDb3Vs
+ZG4ndCBzZXQgTENSIHRvIDIyNApkdy1hcGItdWFydCBkMDAxMjEwMC5zZXJpYWw6IENvdWxkbid0
+IHNldCBMQ1IgdG8gMjI0CmQwMDEyMTAwLnNlcmlhbDogdHR5UzEgYXQgTU1JTyAweGQwMDEyMTAw
+IChpcnEgPSAxOCwgYmFzZV9iYXVkID0gMTU2MjUwMDApIGlzIGEgMTY1NTBBCmNvbnNvbGUgW3R0
+eVMxXSBlbmFibGVkCmR3LWFwYi11YXJ0IGQwMDEyMjAwLnNlcmlhbDogQ291bGRuJ3Qgc2V0IExD
+UiB0byAxOTEKZHctYXBiLXVhcnQgZDAwMTIyMDAuc2VyaWFsOiBDb3VsZG4ndCBzZXQgTENSIHRv
+IDE5MQpkdy1hcGItdWFydCBkMDAxMjIwMC5zZXJpYWw6IENvdWxkbid0IHNldCBMQ1IgdG8gMjI0
+CmR3LWFwYi11YXJ0IGQwMDEyMjAwLnNlcmlhbDogQ291bGRuJ3Qgc2V0IExDUiB0byAyMjQKZDAw
+MTIyMDAuc2VyaWFsOiB0dHlTMiBhdCBNTUlPIDB4ZDAwMTIyMDAgKGlycSA9IDMxLCBiYXNlX2Jh
+dWQgPSAxNTYyNTAwMCkgaXMgYSAxNjU1MEEKZHctYXBiLXVhcnQgZDAwMTIzMDAuc2VyaWFsOiBD
+b3VsZG4ndCBzZXQgTENSIHRvIDE5MQpkdy1hcGItdWFydCBkMDAxMjMwMC5zZXJpYWw6IENvdWxk
+bid0IHNldCBMQ1IgdG8gMTkxCmR3LWFwYi11YXJ0IGQwMDEyMzAwLnNlcmlhbDogQ291bGRuJ3Qg
+c2V0IExDUiB0byAyMjQKZHctYXBiLXVhcnQgZDAwMTIzMDAuc2VyaWFsOiBDb3VsZG4ndCBzZXQg
+TENSIHRvIDIyNApkMDAxMjMwMC5zZXJpYWw6IHR0eVMzIGF0IE1NSU8gMHhkMDAxMjMwMCAoaXJx
+ID0gMzIsIGJhc2VfYmF1ZCA9IDE1NjI1MDAwKSBpcyBhIDE2NTUwQQoKU28gd2UgZ2V0IHRoZSAi
+Q291bGRuJ3Qgc2V0IiBtZXNzYWdlIGluIGFsbCBmb3VyIHBvcnRzLgoKVGltOiBBbnkgaWRlYXM/
+Ci0tIApFemVxdWllbCBHYXJjw61hLCBGcmVlIEVsZWN0cm9ucwpFbWJlZGRlZCBMaW51eCwgS2Vy
+bmVsIGFuZCBBbmRyb2lkIEVuZ2luZWVyaW5nCmh0dHA6Ly9mcmVlLWVsZWN0cm9ucy5jb20KCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1r
+ZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpo
+dHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJu
+ZWwK
