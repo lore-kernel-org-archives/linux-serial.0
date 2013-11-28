@@ -1,60 +1,62 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] serial: pl011: use DMA RX polling by default
-Date: Thu, 28 Nov 2013 10:41:04 +0100
-Message-ID: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+Subject: Re: [PATCH 3/5] serial: jsm: use DEFINE_PCI_DEVICE_TABLE macro
+Date: Thu, 28 Nov 2013 09:35:42 -0200
+Message-ID: <20131128113542.GC24646@oc0268524204.ibm.com>
+References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
+ <000801ceebdd$5b984a50$12c8def0$%han@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f43.google.com ([209.85.215.43]:53589 "EHLO
-	mail-la0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756167Ab3K1JlS (ORCPT
+Received: from e24smtp01.br.ibm.com ([32.104.18.85]:47684 "EHLO
+	e24smtp01.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759205Ab3K1Lfu (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 04:41:18 -0500
-Received: by mail-la0-f43.google.com with SMTP id n7so5827602lam.16
-        for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 01:41:17 -0800 (PST)
+	Thu, 28 Nov 2013 06:35:50 -0500
+Received: from /spool/local
+	by e24smtp01.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+	for <linux-serial@vger.kernel.org> from <cascardo@linux.vnet.ibm.com>;
+	Thu, 28 Nov 2013 09:35:48 -0200
+Received: from d24relay01.br.ibm.com (d24relay01.br.ibm.com [9.8.31.16])
+	by d24dlp01.br.ibm.com (Postfix) with ESMTP id B9FA3352006A
+	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 06:35:44 -0500 (EST)
+Received: from d24av04.br.ibm.com (d24av04.br.ibm.com [9.8.31.97])
+	by d24relay01.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id rASBZnGG3883098
+	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 09:35:49 -0200
+Received: from d24av04.br.ibm.com (localhost [127.0.0.1])
+	by d24av04.br.ibm.com (8.14.4/8.14.4/NCO v10.0 AVout) with ESMTP id rASBZiSK008021
+	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 09:35:45 -0200
+Content-Disposition: inline
+In-Reply-To: <000801ceebdd$5b984a50$12c8def0$%han@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Jongsung Kim <neidhard.kim@lge.com>, Chanho Min <chanho.min@lge.com>, Russell King <rmk+kernel@arm.linux.org.uk>
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Making DMA RX polling optional when DMA is on was just
-over-cautious: there is one single system in the kernel tree
-using this facility, Ux500 and after some testing I turned
-this on also for Ux500, which means it should simply be on
-by default if DMA is enabled.
+On Thu, Nov 28, 2013 at 10:58:39AM +0900, Jingoo Han wrote:
+> This macro is used to create a struct pci_device_id array.
+> 
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> ---
+>  drivers/tty/serial/jsm/jsm_driver.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+> index a47d882..4e4899b 100644
+> --- a/drivers/tty/serial/jsm/jsm_driver.c
+> +++ b/drivers/tty/serial/jsm/jsm_driver.c
+> @@ -202,7 +202,7 @@ static void jsm_remove_one(struct pci_dev *pdev)
+>  	kfree(brd);
+>  }
+> 
+> -static struct pci_device_id jsm_pci_tbl[] = {
+> +static DEFINE_PCI_DEVICE_TABLE(jsm_pci_tbl) = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
+> -- 
+> 1.7.10.4
+> 
+> 
 
-Cc: Jongsung Kim <neidhard.kim@lge.com>
-Cc: Chanho Min <chanho.min@lge.com>
-Cc: Russell King <rmk+kernel@arm.linux.org.uk>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/tty/serial/amba-pl011.c | 2 +-
- include/linux/amba/serial.h     | 1 -
- 2 files changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 7203864992a5..501d96453466 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -327,7 +327,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
- 		dmaengine_slave_config(chan, &rx_conf);
- 		uap->dmarx.chan = chan;
- 
--		if (plat && plat->dma_rx_poll_enable) {
-+		if (plat) {
- 			/* Set poll rate if specified. */
- 			if (plat->dma_rx_poll_rate) {
- 				uap->dmarx.auto_poll_rate = false;
-diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
-index 0ddb5c02ad8b..0891ea0458f6 100644
---- a/include/linux/amba/serial.h
-+++ b/include/linux/amba/serial.h
-@@ -203,7 +203,6 @@ struct amba_pl011_data {
- 	bool (*dma_filter)(struct dma_chan *chan, void *filter_param);
- 	void *dma_rx_param;
- 	void *dma_tx_param;
--	bool dma_rx_poll_enable;
- 	unsigned int dma_rx_poll_rate;
- 	unsigned int dma_rx_poll_timeout;
-         void (*init) (void);
--- 
-1.8.3.1
+Acked-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
 
