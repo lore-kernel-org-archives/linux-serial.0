@@ -1,198 +1,40 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 04/16] serial: sh-sci: Rework baud rate calculation
-Date: Thu, 28 Nov 2013 22:43:18 +0100
-Message-ID: <1385675010-26904-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 08/16] ARM: shmobile: r8a73a4: Don't set plat_sci_port scbrr_algo_id field
+Date: Thu, 28 Nov 2013 22:43:22 +0100
+Message-ID: <1385675010-26904-9-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1385675010-26904-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:35261 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751325Ab3K1Vnb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Nov 2013 16:43:31 -0500
 In-Reply-To: <1385675010-26904-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-Computing the baud rate register value requires knowledge of the
-hardware sampling rate. This information is currently encoded in a baud
-rate calculation algorithm ID passed through platform data. However, it
-can be derived from the port type directly in most cases.
-
-Compute the sampling rate internally in the driver if the baud rate
-calculation algorithm ID isn't specified, and allow platforms to
-override the sampling rate through platform data in special cases (this
-is only required for SCIFA ports on sh7723 and sh7724, the reason needs
-to be investigated).
+The field will be removed from the sh-sci driver. Don't set it and let
+the driver handle baud rate calculation internally.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 43 ++++++++++++++++++++++++++++++-------------
- include/linux/serial_sci.h  |  2 ++
- 2 files changed, 32 insertions(+), 13 deletions(-)
+ arch/arm/mach-shmobile/setup-r8a73a4.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index d9b14d0..c65d37b 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -83,6 +83,7 @@ struct sci_port {
- 	struct plat_sci_port	*cfg;
- 	int			overrun_bit;
- 	unsigned int		error_mask;
-+	unsigned int		sampling_rate;
- 
- 
- 	/* Break timer */
-@@ -1763,10 +1764,13 @@ static void sci_shutdown(struct uart_port *port)
- 	sci_free_irq(s);
- }
- 
--static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
-+static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 				   unsigned long freq)
- {
--	switch (algo_id) {
-+	if (s->sampling_rate)
-+		return DIV_ROUND_CLOSEST(freq, s->sampling_rate * bps) - 1;
-+
-+	switch (s->cfg->scbrr_algo_id) {
- 	case SCBRR_ALGO_1:
- 		return freq / (16 * bps);
- 	case SCBRR_ALGO_2:
-@@ -1856,12 +1860,11 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
- 	if (likely(baud && port->uartclk)) {
--		if (s->cfg->scbrr_algo_id == SCBRR_ALGO_6) {
-+		if (s->cfg->type == PORT_HSCIF) {
- 			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
- 					    &cks);
- 		} else {
--			t = sci_scbrr_calc(s->cfg->scbrr_algo_id, baud,
--					   port->uartclk);
-+			t = sci_scbrr_calc(s, baud, port->uartclk);
- 			for (cks = 0; t >= 256 && cks <= 3; cks++)
- 				t >>= 2;
- 		}
-@@ -2105,6 +2108,7 @@ static int sci_init_single(struct platform_device *dev,
- {
- 	struct uart_port *port = &sci_port->port;
- 	const struct resource *res;
-+	unsigned int sampling_rate;
- 	unsigned int i;
- 	int ret;
- 
-@@ -2147,28 +2151,47 @@ static int sci_init_single(struct platform_device *dev,
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
- 		sci_port->overrun_bit = 9;
-+		sampling_rate = 16;
- 		break;
- 	case PORT_HSCIF:
- 		port->fifosize = 128;
-+		sampling_rate = 0;
- 		sci_port->overrun_bit = 0;
- 		break;
- 	case PORT_SCIFA:
- 		port->fifosize = 64;
- 		sci_port->overrun_bit = 9;
-+		sampling_rate = 16;
- 		break;
- 	case PORT_SCIF:
- 		port->fifosize = 16;
--		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE)
-+		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
- 			sci_port->overrun_bit = 9;
--		else
-+			sampling_rate = 16;
-+		} else {
- 			sci_port->overrun_bit = 0;
-+			sampling_rate = 32;
-+		}
- 		break;
- 	default:
- 		port->fifosize = 1;
- 		sci_port->overrun_bit = 5;
-+		sampling_rate = 32;
- 		break;
- 	}
- 
-+	/* Set the sampling rate if the baud rate calculation algorithm isn't
-+	 * specified.
-+	 */
-+	if (p->scbrr_algo_id == SCBRR_ALGO_NONE) {
-+		/* SCIFA on sh7723 and sh7724 need a custom sampling rate that
-+		 * doesn't match the SoC datasheet, this should be investigated.
-+		 * Let platform data override the sampling rate for now.
-+		 */
-+		sci_port->sampling_rate = p->sampling_rate ? p->sampling_rate
-+					: sampling_rate;
-+	}
-+
- 	if (!early) {
- 		sci_port->iclk = clk_get(&dev->dev, "sci_ick");
- 		if (IS_ERR(sci_port->iclk)) {
-@@ -2407,7 +2430,6 @@ static int sci_remove(struct platform_device *dev)
- struct sci_port_info {
- 	unsigned int type;
- 	unsigned int regtype;
--	unsigned int brr_algo;
- };
- 
- static const struct of_device_id of_sci_match[] = {
-@@ -2416,28 +2438,24 @@ static const struct of_device_id of_sci_match[] = {
- 		.data = (void *)&(const struct sci_port_info) {
- 			.type = PORT_SCIF,
- 			.regtype = SCIx_SH4_SCIF_REGTYPE,
--			.brr_algo = SCBRR_ALGO_2,
- 		},
- 	}, {
- 		.compatible = "renesas,scifa",
- 		.data = (void *)&(const struct sci_port_info) {
- 			.type = PORT_SCIFA,
- 			.regtype = SCIx_SCIFA_REGTYPE,
--			.brr_algo = SCBRR_ALGO_4,
- 		},
- 	}, {
- 		.compatible = "renesas,scifb",
- 		.data = (void *)&(const struct sci_port_info) {
- 			.type = PORT_SCIFB,
- 			.regtype = SCIx_SCIFB_REGTYPE,
--			.brr_algo = SCBRR_ALGO_4,
- 		},
- 	}, {
- 		.compatible = "renesas,hscif",
- 		.data = (void *)&(const struct sci_port_info) {
- 			.type = PORT_HSCIF,
- 			.regtype = SCIx_HSCIF_REGTYPE,
--			.brr_algo = SCBRR_ALGO_6,
- 		},
- 	}, {
- 		/* Terminator */
-@@ -2482,7 +2500,6 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
- 	p->type = info->type;
- 	p->regtype = info->regtype;
- 	p->scscr = SCSCR_RE | SCSCR_TE;
--	p->scbrr_algo_id = info->brr_algo;
- 
- 	return p;
- }
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 3d5d878..06dc806 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -11,6 +11,7 @@
- #define SCIx_NOT_SUPPORTED	(-1)
- 
- enum {
-+	SCBRR_ALGO_NONE,	/* Compute sampling rate in the driver */
- 	SCBRR_ALGO_1,		/* clk / (16 * bps) */
- 	SCBRR_ALGO_2,		/* DIV_ROUND_CLOSEST(clk, 32 * bps) - 1 */
- 	SCBRR_ALGO_3,		/* clk / (8 * bps) */
-@@ -108,6 +109,7 @@ struct plat_sci_port {
- 	upf_t		flags;			/* UPF_* flags */
- 	unsigned long	capabilities;		/* Port features/capabilities */
- 
-+	unsigned int	sampling_rate;
- 	unsigned int	scbrr_algo_id;		/* SCBRR calculation algo */
- 	unsigned int	scscr;			/* SCSCR initialization */
- 
+diff --git a/arch/arm/mach-shmobile/setup-r8a73a4.c b/arch/arm/mach-shmobile/setup-r8a73a4.c
+index ef32ce2..cd36f80 100644
+--- a/arch/arm/mach-shmobile/setup-r8a73a4.c
++++ b/arch/arm/mach-shmobile/setup-r8a73a4.c
+@@ -44,7 +44,6 @@ void __init r8a73a4_pinmux_init(void)
+ static struct plat_sci_port scif##index##_platform_data = {	\
+ 	.type		= scif_type,				\
+ 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,	\
+-	.scbrr_algo_id	= SCBRR_ALGO_4,				\
+ 	.scscr		= _scscr,				\
+ };								\
+ 								\
 -- 
 1.8.3.2
 
