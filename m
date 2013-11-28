@@ -1,125 +1,86 @@
-From: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Thu, 28 Nov 2013 16:53:38 -0300
-Message-ID: <20131128195337.GE13182@localhost>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
- <20131126183559.GA18570@localhost>
- <CAAYSxhqU9GZdaoTjoCAeyQ4h-KPVzU0BH0D1eLYJoFZ+s8tPgQ@mail.gmail.com>
- <20131127185448.GA21422@localhost>
- <20131128093034.5d61130a@skate>
- <20131128194720.GD13182@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:39079 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751045Ab3K1Txy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 14:53:54 -0500
-Content-Disposition: inline
-In-Reply-To: <20131128194720.GD13182@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 00/16] sh-sci: Remove unnecessary fields from platform data
+Date: Thu, 28 Nov 2013 22:43:14 +0100
+Message-ID: <1385675010-26904-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Cc: Tim Kryger <tim.kryger@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Thu, Nov 28, 2013 at 04:47:20PM -0300, Ezequiel Garcia wrote:
-> Hi Thomas, Tim:
->=20
-> On Thu, Nov 28, 2013 at 09:30:34AM +0100, Thomas Petazzoni wrote:
-> > Dear Ezequiel Garcia,
-> >=20
-> > On Wed, 27 Nov 2013 15:54:49 -0300, Ezequiel Garcia wrote:
-> >=20
-> > > > An external device may be keeping the UART busy and preventing =
-LCR
-> > > > from being written.
-> > > >=20
-> > > > What device is attached to ttyS1?
-> > >=20
-> > > There's no device attached at ttyS1. I've just tested this in ano=
-ther
-> > > box and it seems the same error is obtained on each unused port:
-> >=20
-> > Are you sure about this? I suppose you're testing on the Armada XP =
-GP
-> > board, and this board has a 4 ports FTDI chip, and according to the
-> > board schematics the four UARTs are all connected to the FTDI chip.=
- So
-> > from the SoC perspective, ttyS1 is connected to something, as far a=
-s I
-> > can understand. Or maybe you also tested Armada XP DB ?
-> >=20
->=20
-> Yeah, sorry about that. I missed the FTDI chip. As Thomas says the XP=
- GP
-> board I'm testing this on, has its four UARTs connected to a FTDI chi=
-p.
->=20
-> Changing the console port by setting "console=3DttyS1,115200" gives t=
-his:
->=20
-> [..]
-> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> dw-apb-uart d0012000.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012000.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012000.serial: Couldn't set LCR to 224
-> dw-apb-uart d0012000.serial: Couldn't set LCR to 224
-> d0012000.serial: ttyS0 at MMIO 0xd0012000 (irq =3D 17, base_baud =3D =
-15625000) is a 16550A
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 224
-> dw-apb-uart d0012100.serial: Couldn't set LCR to 224
-> d0012100.serial: ttyS1 at MMIO 0xd0012100 (irq =3D 18, base_baud =3D =
-15625000) is a 16550A
-> console [ttyS1] enabled
-> dw-apb-uart d0012200.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012200.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012200.serial: Couldn't set LCR to 224
-> dw-apb-uart d0012200.serial: Couldn't set LCR to 224
-> d0012200.serial: ttyS2 at MMIO 0xd0012200 (irq =3D 31, base_baud =3D =
-15625000) is a 16550A
-> dw-apb-uart d0012300.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012300.serial: Couldn't set LCR to 191
-> dw-apb-uart d0012300.serial: Couldn't set LCR to 224
-> dw-apb-uart d0012300.serial: Couldn't set LCR to 224
-> d0012300.serial: ttyS3 at MMIO 0xd0012300 (irq =3D 32, base_baud =3D =
-15625000) is a 16550A
->=20
-> So we get the "Couldn't set" message in all four ports.
->=20
-> Tim: Any ideas?
+Hello,
 
-And another thing: the weird output on the console looks related to the
-early boot console. If I enable 'earlyprintk' on ttyS0 but set the cons=
-ole
-on ttyS1, this is what I get on ttyS0:
+This patch set removes or replaces unneeded fields from the sh-sci platform
+data structure. Fields are simply removed when unused (gpios), moved to the
+sci_port structure when used by the driver but not by board code (overrun_bit
+and error_mask), or replaced by a more explicit field with a default value
+computed in the driver for most cases (scbrr_algo_id).
 
-bootconsole [earlycon0] enabled
-[..]
-Kernel command line: earlyprintk console=3DttyS1,115200 root=3D/dev/nfs=
- rw nfsroot=3D192.168.0.45:/opt/buildrootfs,v3, ip=3D192.168.0.159:192.=
-168.0.45:192.168.0.1:255.255.255.0:develboard:eth0:on rootwait
-[..]
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-=EF=BF=BD=C9=8A=EF=BF=BD=EF=BF=BD=C9=81=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=
-=BD=C9=86=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=
-=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=
-=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=
-=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=
-=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD
-Welcome to Buildroot
-buildroot login:=20
+The patches are based on top of the sh-sci DT patch series previously posted
+to the mailing lists.
 
-Hope this helps you understand what's going on...
---=20
-Ezequiel Garc=C3=ADa, Free Electrons
-Embedded Linux, Kernel and Android Engineering
-http://free-electrons.com
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Laurent Pinchart (16):
+  serial: sh-sci: Move overrun_bit and error_mask fields out of pdata
+  serial: sh-sci: Remove unused GPIO request code
+  serial: sh-sci: Compute overrun_bit without using baud rate algo
+  serial: sh-sci: Rework baud rate calculation
+  ARM: shmobile: sh7372: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: sh73a0: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r7s72100: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a73a4: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a7740: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a7778: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a7779: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a7790: Don't set plat_sci_port scbrr_algo_id field
+  ARM: shmobile: r8a7791: Don't set plat_sci_port scbrr_algo_id field
+  sh: sh772[34]: Set serial port sampling rate to 8 for SCIFA ports
+  sh: Don't set plat_sci_port scbrr_algo_id field
+  serial: sh-sci: Remove platform data scbrr_algo_id field
+
+ arch/arm/mach-shmobile/setup-r7s72100.c |   1 -
+ arch/arm/mach-shmobile/setup-r8a73a4.c  |   1 -
+ arch/arm/mach-shmobile/setup-r8a7740.c  |   1 -
+ arch/arm/mach-shmobile/setup-r8a7778.c  |   1 -
+ arch/arm/mach-shmobile/setup-r8a7779.c  |   1 -
+ arch/arm/mach-shmobile/setup-r8a7790.c  |  11 +--
+ arch/arm/mach-shmobile/setup-r8a7791.c  |   9 +-
+ arch/arm/mach-shmobile/setup-sh7372.c   |   1 -
+ arch/arm/mach-shmobile/setup-sh73a0.c   |   1 -
+ arch/sh/kernel/cpu/sh2/setup-sh7619.c   |   3 -
+ arch/sh/kernel/cpu/sh2a/setup-mxg.c     |   1 -
+ arch/sh/kernel/cpu/sh2a/setup-sh7201.c  |   8 --
+ arch/sh/kernel/cpu/sh2a/setup-sh7203.c  |   4 -
+ arch/sh/kernel/cpu/sh2a/setup-sh7206.c  |   4 -
+ arch/sh/kernel/cpu/sh2a/setup-sh7264.c  |   8 --
+ arch/sh/kernel/cpu/sh2a/setup-sh7269.c  |   8 --
+ arch/sh/kernel/cpu/sh3/setup-sh7705.c   |   2 -
+ arch/sh/kernel/cpu/sh3/setup-sh770x.c   |   3 -
+ arch/sh/kernel/cpu/sh3/setup-sh7710.c   |   2 -
+ arch/sh/kernel/cpu/sh3/setup-sh7720.c   |   2 -
+ arch/sh/kernel/cpu/sh4/setup-sh4-202.c  |   1 -
+ arch/sh/kernel/cpu/sh4/setup-sh7750.c   |   2 -
+ arch/sh/kernel/cpu/sh4/setup-sh7760.c   |   4 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7343.c  |   4 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7366.c  |   1 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7722.c  |   3 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7723.c  |   9 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7724.c  |   9 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7734.c  |   6 --
+ arch/sh/kernel/cpu/sh4a/setup-sh7757.c  |   3 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7763.c  |   3 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7770.c  |  10 --
+ arch/sh/kernel/cpu/sh4a/setup-sh7780.c  |   4 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7785.c  |   6 --
+ arch/sh/kernel/cpu/sh4a/setup-sh7786.c  |   6 --
+ arch/sh/kernel/cpu/sh4a/setup-shx3.c    |   3 -
+ arch/sh/kernel/cpu/sh5/setup-sh5.c      |   1 -
+ drivers/tty/serial/sh-sci.c             | 170 ++++++++++----------------------
+ drivers/tty/serial/sh-sci.h             |   2 +-
+ include/linux/serial_sci.h              |  25 +----
+ 40 files changed, 68 insertions(+), 276 deletions(-)
+
+-- 
+Regards,
+
+Laurent Pinchart
+
