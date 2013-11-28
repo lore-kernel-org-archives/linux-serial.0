@@ -1,62 +1,140 @@
-From: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
-Subject: Re: [PATCH 3/5] serial: jsm: use DEFINE_PCI_DEVICE_TABLE macro
-Date: Thu, 28 Nov 2013 09:35:42 -0200
-Message-ID: <20131128113542.GC24646@oc0268524204.ibm.com>
-References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
- <000801ceebdd$5b984a50$12c8def0$%han@samsung.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts and printk formats
+Date: Thu, 28 Nov 2013 15:00:35 +0100
+Message-ID: <1772107.qNxlNP4NDS@avalon>
+References: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131128072731.GB24146@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from e24smtp01.br.ibm.com ([32.104.18.85]:47684 "EHLO
-	e24smtp01.br.ibm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759205Ab3K1Lfu (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 06:35:50 -0500
-Received: from /spool/local
-	by e24smtp01.br.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-	for <linux-serial@vger.kernel.org> from <cascardo@linux.vnet.ibm.com>;
-	Thu, 28 Nov 2013 09:35:48 -0200
-Received: from d24relay01.br.ibm.com (d24relay01.br.ibm.com [9.8.31.16])
-	by d24dlp01.br.ibm.com (Postfix) with ESMTP id B9FA3352006A
-	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 06:35:44 -0500 (EST)
-Received: from d24av04.br.ibm.com (d24av04.br.ibm.com [9.8.31.97])
-	by d24relay01.br.ibm.com (8.13.8/8.13.8/NCO v10.0) with ESMTP id rASBZnGG3883098
-	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 09:35:49 -0200
-Received: from d24av04.br.ibm.com (localhost [127.0.0.1])
-	by d24av04.br.ibm.com (8.14.4/8.14.4/NCO v10.0 AVout) with ESMTP id rASBZiSK008021
-	for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2013 09:35:45 -0200
-Content-Disposition: inline
-In-Reply-To: <000801ceebdd$5b984a50$12c8def0$%han@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20131128072731.GB24146@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Thu, Nov 28, 2013 at 10:58:39AM +0900, Jingoo Han wrote:
-> This macro is used to create a struct pci_device_id array.
-> 
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-> ---
->  drivers/tty/serial/jsm/jsm_driver.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
-> index a47d882..4e4899b 100644
-> --- a/drivers/tty/serial/jsm/jsm_driver.c
-> +++ b/drivers/tty/serial/jsm/jsm_driver.c
-> @@ -202,7 +202,7 @@ static void jsm_remove_one(struct pci_dev *pdev)
->  	kfree(brd);
->  }
-> 
-> -static struct pci_device_id jsm_pci_tbl[] = {
-> +static DEFINE_PCI_DEVICE_TABLE(jsm_pci_tbl) = {
->  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
->  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
->  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
-> -- 
-> 1.7.10.4
-> 
-> 
+Hi Simon,
 
-Acked-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+On Thursday 28 November 2013 16:27:31 Simon Horman wrote:
+> On Wed, Nov 27, 2013 at 11:10:37AM +0100, Laurent Pinchart wrote:
+> > Use the %zu printk specifier to print size_t variables, and cast
+> > pointers to uintptr_t instead of unsigned int where applicable. This
+> > fixes warnings on platforms where pointers and/or dma_addr_t have a
+> > different size than int.
+> > 
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: linux-serial@vger.kernel.org
+> > Signed-off-by: Laurent Pinchart
+> > <laurent.pinchart+renesas@ideasonboard.com>
+> 
+> Acked-by: Simon Horman <horms+renesas@verge.net.au>
+> 
+> Laurent, I am assuming that you would like Greg to take this one.
+
+Actually, as we have quite a few pending sh-sci patches interleaved with 
+arch/arm patches, it would be easier if all sh-sci patches went through your 
+tree for this kernel version. That's if Greg agrees of course.
+
+> > ---
+> > 
+> >  drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+> >  1 file changed, 10 insertions(+), 9 deletions(-)
+> > 
+> > Changes compared to v1:
+> > 
+> > - Cast to uintptr_t instead of unsigned long
+> > 
+> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> > index 7d8103c..680e0d9 100644
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+> > 
+> >  		return 1;
+> >  	
+> >  	/* Cast for ARM damage */
+> > 
+> > -	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
+> > +	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+> > 
+> >  }
+> >  
+> >  /* **********************************************************************
+> >  *
+> > 
+> > @@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s,
+> > size_t count)> 
+> >  	}
+> >  	
+> >  	if (room < count)
+> > 
+> > -		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
+> > +		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+> > 
+> >  			 count - room);
+> >  	
+> >  	if (!room)
+> >  	
+> >  		return room;
+> > 
+> > @@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+> > 
+> >  		int count;
+> >  		
+> >  		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+> > 
+> > -		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
+> > +		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+> > 
+> >  			sh_desc->partial, sh_desc->cookie);
+> >  		
+> >  		spin_lock_irqsave(&port->lock, flags);
+> > 
+> > @@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port
+> > *port)
+> > 
+> >  		s->chan_tx = chan;
+> >  		sg_init_table(&s->sg_tx, 1);
+> >  		/* UART circular tx buffer is an aligned page. */
+> > 
+> > -		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
+> > +		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+> > 
+> >  		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+> > 
+> > -			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
+> > +			    UART_XMIT_SIZE,
+> > +			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+> > 
+> >  		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+> >  		if (!nent)
+> >  		
+> >  			sci_tx_dma_release(s, false);
+> >  		
+> >  		else
+> > 
+> > -			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+> > -				sg_dma_len(&s->sg_tx),
+> > -				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
+> > +			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
+> > +				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
+> > +				(uintptr_t)sg_dma_address(&s->sg_tx));
+> > 
+> >  		s->sg_len_tx = nent;
+> > 
+> > @@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+> > 
+> >  			sg_init_table(sg, 1);
+> >  			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+> > 
+> > -				    (int)buf[i] & ~PAGE_MASK);
+> > +				    (uintptr_t)buf[i] & ~PAGE_MASK);
+> > 
+> >  			sg_dma_address(sg) = dma[i];
+> >  		
+> >  		}
+-- 
+Regards,
+
+Laurent Pinchart
 
