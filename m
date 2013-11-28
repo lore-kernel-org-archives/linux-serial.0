@@ -1,58 +1,48 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 03/15] serial: sh-sci: Restrict non-COMPILE_TEST
- compilation
-Date: Thu, 28 Nov 2013 16:37:11 +0900
-Message-ID: <20131128073711.GF24146@verge.net.au>
-References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1385515117-23664-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
+Date: Thu, 28 Nov 2013 09:30:34 +0100
+Message-ID: <20131128093034.5d61130a@skate>
+References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
+	<20131126183559.GA18570@localhost>
+	<CAAYSxhqU9GZdaoTjoCAeyQ4h-KPVzU0BH0D1eLYJoFZ+s8tPgQ@mail.gmail.com>
+	<20131127185448.GA21422@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:36569 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750835Ab3K1HhN (ORCPT
+Received: from top.free-electrons.com ([176.31.233.9]:35962 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751213Ab3K1Iah (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 02:37:13 -0500
-Content-Disposition: inline
-In-Reply-To: <1385515117-23664-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	Thu, 28 Nov 2013 03:30:37 -0500
+In-Reply-To: <20131127185448.GA21422@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Wed, Nov 27, 2013 at 02:18:25AM +0100, Laurent Pinchart wrote:
-> Hardware supported by the driver is only found on SUPERH or
-> ARCH_SHMOBILE platforms. Restrict non-COMPILE_TEST compilation to them.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Dear Ezequiel Garcia,
 
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
+On Wed, 27 Nov 2013 15:54:49 -0300, Ezequiel Garcia wrote:
 
-> ---
->  drivers/tty/serial/Kconfig | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> > An external device may be keeping the UART busy and preventing LCR
+> > from being written.
+> > 
+> > What device is attached to ttyS1?
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index a3817ab..a640d0b 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -709,7 +709,8 @@ config SERIAL_IP22_ZILOG_CONSOLE
->  
->  config SERIAL_SH_SCI
->  	tristate "SuperH SCI(F) serial port support"
-> -	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
-> +	depends on HAVE_CLK
-> +	depends on SUPERH || ARCH_SHMOBILE || COMPILE_TEST
->  	select SERIAL_CORE
->  
->  config SERIAL_SH_SCI_NR_UARTS
-> -- 
-> 1.8.3.2
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> There's no device attached at ttyS1. I've just tested this in another
+> box and it seems the same error is obtained on each unused port:
+
+Are you sure about this? I suppose you're testing on the Armada XP GP
+board, and this board has a 4 ports FTDI chip, and according to the
+board schematics the four UARTs are all connected to the FTDI chip. So
+from the SoC perspective, ttyS1 is connected to something, as far as I
+can understand. Or maybe you also tested Armada XP DB ?
+
+Best regards,
+
+Thomas
+-- 
+Thomas Petazzoni, CTO, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
