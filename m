@@ -1,140 +1,71 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts and printk formats
-Date: Thu, 28 Nov 2013 15:00:35 +0100
-Message-ID: <1772107.qNxlNP4NDS@avalon>
-References: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131128072731.GB24146@verge.net.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20131128072731.GB24146@verge.net.au>
-Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: >> On 11/26/2013 04:53 PM, Jason Gunthorpe wrote:
+Date: Thu, 28 Nov 2013 10:26:57 -0500
+Message-ID: <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
+References: <20131127181348.GA22723@obsidianresearch.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:57071 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751045Ab3K1P1T (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 28 Nov 2013 10:27:19 -0500
+In-Reply-To: <20131127181348.GA22723@obsidianresearch.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Hi Simon,
+Jason,
 
-On Thursday 28 November 2013 16:27:31 Simon Horman wrote:
-> On Wed, Nov 27, 2013 at 11:10:37AM +0100, Laurent Pinchart wrote:
-> > Use the %zu printk specifier to print size_t variables, and cast
-> > pointers to uintptr_t instead of unsigned int where applicable. This
-> > fixes warnings on platforms where pointers and/or dma_addr_t have a
-> > different size than int.
-> > 
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: linux-serial@vger.kernel.org
-> > Signed-off-by: Laurent Pinchart
-> > <laurent.pinchart+renesas@ideasonboard.com>
-> 
-> Acked-by: Simon Horman <horms+renesas@verge.net.au>
-> 
-> Laurent, I am assuming that you would like Greg to take this one.
+Seriously, thanks for all the diagnostic info. The strace led me right
+to the problem.
 
-Actually, as we have quite a few pending sh-sci patches interleaved with 
-arch/arm patches, it would be easier if all sh-sci patches went through your 
-tree for this kernel version. That's if Greg agrees of course.
+Please test out the attached patch and let me know if that solves
+the login whitespace problem.
 
-> > ---
-> > 
-> >  drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
-> >  1 file changed, 10 insertions(+), 9 deletions(-)
-> > 
-> > Changes compared to v1:
-> > 
-> > - Cast to uintptr_t instead of unsigned long
-> > 
-> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index 7d8103c..680e0d9 100644
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
-> > 
-> >  		return 1;
-> >  	
-> >  	/* Cast for ARM damage */
-> > 
-> > -	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
-> > +	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
-> > 
-> >  }
-> >  
-> >  /* **********************************************************************
-> >  *
-> > 
-> > @@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s,
-> > size_t count)> 
-> >  	}
-> >  	
-> >  	if (room < count)
-> > 
-> > -		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
-> > +		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
-> > 
-> >  			 count - room);
-> >  	
-> >  	if (!room)
-> >  	
-> >  		return room;
-> > 
-> > @@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
-> > 
-> >  		int count;
-> >  		
-> >  		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
-> > 
-> > -		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
-> > +		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
-> > 
-> >  			sh_desc->partial, sh_desc->cookie);
-> >  		
-> >  		spin_lock_irqsave(&port->lock, flags);
-> > 
-> > @@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port
-> > *port)
-> > 
-> >  		s->chan_tx = chan;
-> >  		sg_init_table(&s->sg_tx, 1);
-> >  		/* UART circular tx buffer is an aligned page. */
-> > 
-> > -		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
-> > +		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
-> > 
-> >  		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
-> > 
-> > -			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
-> > +			    UART_XMIT_SIZE,
-> > +			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
-> > 
-> >  		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
-> >  		if (!nent)
-> >  		
-> >  			sci_tx_dma_release(s, false);
-> >  		
-> >  		else
-> > 
-> > -			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
-> > -				sg_dma_len(&s->sg_tx),
-> > -				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
-> > +			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
-> > +				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
-> > +				(uintptr_t)sg_dma_address(&s->sg_tx));
-> > 
-> >  		s->sg_len_tx = nent;
-> > 
-> > @@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
-> > 
-> >  			sg_init_table(sg, 1);
-> >  			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
-> > 
-> > -				    (int)buf[i] & ~PAGE_MASK);
-> > +				    (uintptr_t)buf[i] & ~PAGE_MASK);
-> > 
-> >  			sg_dma_address(sg) = dma[i];
-> >  		
-> >  		}
+Also, please retest the 'cat enable' problem; I have doubts that this
+patch fixes that problem, though.
+
+PS - sending this via git send-email so whitespace shouldn't be
+a problem.
+
+--- >% ---
+Subject: [PATCH] n_tty: Fix missing newline echo
+
+When L_ECHONL is on, newlines are echoed regardless of the L_ECHO
+state; if set, ensure accumulated echoes are flushed before finishing
+the current input processing and before more output.
+
+Reported-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index ac8dfe6..3ab928f 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -855,7 +855,8 @@ static void process_echoes(struct tty_struct *tty)
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	size_t echoed;
+ 
+-	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_tail)
++	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
++	    ldata->echo_commit == ldata->echo_tail)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
+@@ -870,7 +871,8 @@ static void flush_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+-	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_head)
++	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
++	    ldata->echo_commit == ldata->echo_head)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
 -- 
-Regards,
-
-Laurent Pinchart
+1.8.1.2
 
