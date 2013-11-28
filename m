@@ -1,71 +1,33 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: >> On 11/26/2013 04:53 PM, Jason Gunthorpe wrote:
-Date: Thu, 28 Nov 2013 10:26:57 -0500
-Message-ID: <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
-References: <20131127181348.GA22723@obsidianresearch.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:57071 "EHLO
-	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751045Ab3K1P1T (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 10:27:19 -0500
-In-Reply-To: <20131127181348.GA22723@obsidianresearch.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 0/2] serial: sh-sci: Prepare for CCF migration
+Date: Thu, 28 Nov 2013 18:11:44 +0100
+Message-ID: <1385658706-20093-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>
 List-Id: linux-serial@vger.kernel.org
-To: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Jason,
+Hello,
 
-Seriously, thanks for all the diagnostic info. The strace led me right
-to the problem.
+This patch set prepares the driver to CCF migration by replacing clk_enable()
+and clk_disable() by clk_prepare_enable() and clk_disable_unprepare()
+respectively (2/2). In order to do so it first ensures that the clk_enable()
+and clk_disable() calls will only take place from non-atomic context (1/2).
 
-Please test out the attached patch and let me know if that solves
-the login whitespace problem.
+Greg, these patches are dependencies for a bunch of ARM patches that will go
+through Simon's tree. Would you be fine if Simon merged all sh-sci patches
+through his tree for v3.14 ?
 
-Also, please retest the 'cat enable' problem; I have doubts that this
-patch fixes that problem, though.
+Laurent Pinchart (2):
+  serial: sh-sci: Don't enable/disable port from within break timer
+  serial: sh-sci: Convert to clk_prepare/unprepare
 
-PS - sending this via git send-email so whitespace shouldn't be
-a problem.
+ drivers/tty/serial/sh-sci.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
---- >% ---
-Subject: [PATCH] n_tty: Fix missing newline echo
-
-When L_ECHONL is on, newlines are echoed regardless of the L_ECHO
-state; if set, ensure accumulated echoes are flushed before finishing
-the current input processing and before more output.
-
-Reported-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index ac8dfe6..3ab928f 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -855,7 +855,8 @@ static void process_echoes(struct tty_struct *tty)
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t echoed;
- 
--	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_tail)
-+	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
-+	    ldata->echo_commit == ldata->echo_tail)
- 		return;
- 
- 	mutex_lock(&ldata->output_lock);
-@@ -870,7 +871,8 @@ static void flush_echoes(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
--	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_head)
-+	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
-+	    ldata->echo_commit == ldata->echo_head)
- 		return;
- 
- 	mutex_lock(&ldata->output_lock);
 -- 
-1.8.1.2
+Regards,
+
+Laurent Pinchart
 
