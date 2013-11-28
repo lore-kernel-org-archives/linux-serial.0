@@ -1,120 +1,110 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 1/5] serial: 8250_pci: use DEFINE_PCI_DEVICE_TABLE macro
-Date: Wed, 27 Nov 2013 22:24:23 -0800
-Message-ID: <1385619863.12210.14.camel@joe-AO722>
-References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
-	 <20131128040750.GA29917@kroah.com>
-	 <006001ceebfa$c85a1020$590e3060$%han@samsung.com>
-	 <1385617213.12210.5.camel@joe-AO722> <20131128055328.GA565@kroah.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts
+ and printk formats
+Date: Thu, 28 Nov 2013 16:27:31 +0900
+Message-ID: <20131128072731.GB24146@verge.net.au>
+References: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay0173.hostedemail.com ([216.40.44.173]:41584 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750923Ab3K1GY0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 01:24:26 -0500
-In-Reply-To: <20131128055328.GA565@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Andy Whitcroft' <apw@canonical.com>, linux-serial@vger.kernel.org
 
-On Wed, 2013-11-27 at 21:53 -0800, 'Greg Kroah-Hartman' wrote:
-> On Wed, Nov 27, 2013 at 09:40:13PM -0800, Joe Perches wrote:
-> > On Thu, 2013-11-28 at 14:29 +0900, Jingoo Han wrote:
-> > > On Thursday, November 28, 2013 1:08 PM, Greg Kroah-Hartman wrote:
-> > > > On Thu, Nov 28, 2013 at 10:55:35AM +0900, Jingoo Han wrote:
-> > > > > This macro is used to create a struct pci_device_id array.
-> > > > 
-> > > > Yeah, and it's a horrid macro that deserves to be removed, please don't
-> > > > use it in more places.
-> > > > 
-> > > > Actually, if you could just remove it, that would be best, sorry, I'm
-> > > > not going to take these patches.
-> > > 
-> > > (+cc Joe Perches, Andrew Morton, Andy Whitcroft)
-> > > 
-> > > Hi Joe Perches,
-> > > 
-> > > Would you fix checkpatch.pl about DEFINE_PCI_DEVICE_TABLE?
-> > > Currently, checkpatch.pl guides to use DEFINE_PCI_DEVICE_TABLE
-> > > as below.
-> > > 
-> > >   WARNING: Use DEFINE_PCI_DEVICE_TABLE for struct pci_device_id
-> > >   #331: FILE: drivers/usb/host/ehci-pci.c:331:
-> > >   +static const struct pci_device_id pci_ids [] = { {
-> > > 
-> > > However, Greg Kroah-Hartman mentioned that DEFINE_PCI_DEVICE_TABLE
-> > > shouldn't be used anymore.
-> > > 
-> > > So, would you change checkpatch.pl in order to guide to use
-> > > struct pci_device_id instead of DEFINE_PCI_DEVICE_TABLE?
-> > > 
-> > > For example,
-> > >   WARNING: Use struct pci_device_id instead of DEFINE_PCI_DEVICE_TABLE
-> > 
-> > The documentation doesn't agree with Greg.
-[]
-> I say just remove it, I should have done that years ago when I was the
-> PCI maintainer, just never got around to it.  No other bus has something
-> like this for their device ids, why should PCI be "special"?
+On Wed, Nov 27, 2013 at 11:10:37AM +0100, Laurent Pinchart wrote:
+> Use the %zu printk specifier to print size_t variables, and cast
+> pointers to uintptr_t instead of unsigned int where applicable. This
+> fixes warnings on platforms where pointers and/or dma_addr_t have a
+> different size than int.
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Anyone else have an opinion?
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
-I don't care one way or another, but please, one way
-not two.
-
-Changing checkpatch is a trifle, but there are a _lot_
-of maintainers to work through if it's to be removed.
-
-It'll probably take several releases.
-
-$ git grep --name-only -w DEFINE_PCI_DEVICE_TABLE | \
-  cut -f1,2 -d/ | uniq -c
-      1 Documentation/PCI
-      1 arch/x86
-      1 drivers/bcma
-      3 drivers/block
-      1 drivers/char
-      1 drivers/cpufreq
-      2 drivers/dma
-     18 drivers/edac
-      6 drivers/gpio
-      6 drivers/gpu
-      6 drivers/hwmon
-     20 drivers/i2c
-      2 drivers/infiniband
-      1 drivers/ipack
-      1 drivers/leds
-      3 drivers/media
-     10 drivers/mfd
-      2 drivers/misc
-      1 drivers/mmc
-      1 drivers/mtd
-    132 drivers/net
-      1 drivers/ntb
-      1 drivers/pci
-      5 drivers/pcmcia
-      2 drivers/platform
-      1 drivers/ptp
-      1 drivers/rapidio
-      7 drivers/scsi
-      3 drivers/spi
-     65 drivers/staging
-      3 drivers/tty
-      1 drivers/uio
-      5 drivers/usb
-      1 drivers/video
-      1 drivers/virtio
-      3 drivers/vme
-      9 drivers/watchdog
-      1 drivers/xen
-      1 include/linux
-      1 scripts/checkpatch.pl
-      1 scripts/tags.sh
-      1 sound/oss
-     67 sound/pci
+Laurent, I am assuming that you would like Greg to take this one.
 
 
+> ---
+>  drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+>  1 file changed, 10 insertions(+), 9 deletions(-)
+> 
+> Changes compared to v1:
+> 
+> - Cast to uintptr_t instead of unsigned long
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 7d8103c..680e0d9 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+>  		return 1;
+>  
+>  	/* Cast for ARM damage */
+> -	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
+> +	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+>  }
+>  
+>  /* ********************************************************************** *
+> @@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
+>  	}
+>  
+>  	if (room < count)
+> -		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
+> +		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+>  			 count - room);
+>  	if (!room)
+>  		return room;
+> @@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+>  		int count;
+>  
+>  		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+> -		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
+> +		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+>  			sh_desc->partial, sh_desc->cookie);
+>  
+>  		spin_lock_irqsave(&port->lock, flags);
+> @@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
+>  		s->chan_tx = chan;
+>  		sg_init_table(&s->sg_tx, 1);
+>  		/* UART circular tx buffer is an aligned page. */
+> -		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
+> +		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+>  		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+> -			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
+> +			    UART_XMIT_SIZE,
+> +			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+>  		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+>  		if (!nent)
+>  			sci_tx_dma_release(s, false);
+>  		else
+> -			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+> -				sg_dma_len(&s->sg_tx),
+> -				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
+> +			dev_dbg(port->dev, "%s: mapped %d@%p to %lx\n", __func__,
+> +				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
+> +				(uintptr_t)sg_dma_address(&s->sg_tx));
+>  
+>  		s->sg_len_tx = nent;
+>  
+> @@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+>  
+>  			sg_init_table(sg, 1);
+>  			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+> -				    (int)buf[i] & ~PAGE_MASK);
+> +				    (uintptr_t)buf[i] & ~PAGE_MASK);
+>  			sg_dma_address(sg) = dma[i];
+>  		}
+>  
+> -- 
+> 1.8.3.2
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
