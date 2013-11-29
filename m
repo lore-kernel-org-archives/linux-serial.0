@@ -1,82 +1,89 @@
 From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH 1/3] serial: mxs-auart: implement flush_buffer hook
-Date: Fri, 29 Nov 2013 17:50:22 +0100
-Message-ID: <201311291750.22215.marex@denx.de>
-References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com> <1385742927-11358-2-git-send-email-hector.palacios@digi.com>
+Subject: Re: [PATCH 3/3] serial: mxs-auart: move irq handling to a tasklet
+Date: Fri, 29 Nov 2013 18:00:12 +0100
+Message-ID: <201311291800.12366.marex@denx.de>
+References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com> <1385742927-11358-4-git-send-email-hector.palacios@digi.com>
 Mime-Version: 1.0
 Content-Type: Text/Plain;
   charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:49380 "EHLO
+Received: from mail-out.m-online.net ([212.18.0.10]:50104 "EHLO
 	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755352Ab3K2Qu0 (ORCPT
+	with ESMTP id S1756874Ab3K2RAM (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Nov 2013 11:50:26 -0500
-In-Reply-To: <1385742927-11358-2-git-send-email-hector.palacios@digi.com>
+	Fri, 29 Nov 2013 12:00:12 -0500
+In-Reply-To: <1385742927-11358-4-git-send-email-hector.palacios@digi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Hector Palacios <hector.palacios@digi.com>
 Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, b32955@freescale.com, fabio.estevam@freescale.com, u.kleine-koenig@pengutronix.de
 
-Hello Hector,
+Dear Hector Palacios,
 
-> Terminate any DMA transfer and verify the TX FIFO is empty.
+> The ISR was handling CTS flag and RX/TX processing.
+> Occasionally interrupts were coming in the middle of the ISR and
+> led to blocking transmission (with hw flow) or loss of data.
+> This patch moves this processing to a tasklet that the ISR schedules.
 > 
 > Signed-off-by: Hector Palacios <hector.palacios@digi.com>
 > ---
->  drivers/tty/serial/mxs-auart.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
+>  drivers/tty/serial/mxs-auart.c | 61
+> +++++++++++++++++++++++++++--------------- 1 file changed, 39
+> insertions(+), 22 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/mxs-auart.c
-> b/drivers/tty/serial/mxs-auart.c index 9f0461778fc1..d9bf6e103f65 100644
+> b/drivers/tty/serial/mxs-auart.c index e5540c89dd48..7021269c70b2 100644
 > --- a/drivers/tty/serial/mxs-auart.c
 > +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -782,6 +782,28 @@ static unsigned int mxs_auart_tx_empty(struct
-> uart_port *u) return 0;
+> @@ -148,6 +148,10 @@ struct mxs_auart_port {
+>  	struct clk *clk;
+>  	struct device *dev;
+> 
+> +	struct tasklet_struct tasklet;
+> +	unsigned int irq_status;
+> +	unsigned int status;
+> +
+>  	/* for DMA */
+>  	struct scatterlist tx_sgl;
+>  	struct dma_chan	*tx_dma_chan;
+> @@ -680,38 +684,48 @@ static void mxs_auart_settermios(struct uart_port *u,
+>  	}
 >  }
 > 
 > +/*
-> + * Flush the transmit buffer.
-> + * Locking: called with port lock held and IRQs disabled.
+> + * tasklet handling tty stuff outside the interrupt handler.
 > + */
-> +static void mxs_auart_flush_buffer(struct uart_port *u)
+> +static void mxs_auart_tasklet_func(unsigned long data)
 > +{
-> +	struct mxs_auart_port *s = to_auart_port(u);
-> +	struct dma_chan *channel = s->tx_dma_chan;
-> +	unsigned int to;
+> +	struct uart_port *port = (struct uart_port *)data;
+> +	struct mxs_auart_port *s = to_auart_port(port);
 > +
-> +	if (auart_dma_enabled(s)) {
-> +		/* Avoid deadlock with the DMA engine callback */
-> +		spin_unlock(&s->port.lock);
-> +		dmaengine_terminate_all(channel);
-> +		spin_lock(&s->port.lock);
-
-Can you not maybe just set some flag here to tell the DMA engine callback things 
-are shutting down and to don't do anything funny anymore ?
-
+> +	/* Handle status irq */
+> +	if (s->irq_status & AUART_INTR_CTSMIS) {
+> +		uart_handle_cts_change(&s->port, s->status & AUART_STAT_CTS);
+> +		writel(AUART_INTR_CTSMIS,
+> +		       s->port.membase + AUART_INTR_CLR);
 > +	}
-> +	/* Wait for the FIFO to flush */
-> +	to = u->timeout;
-> +	while (!mxs_auart_tx_empty(u) && to--)
-> +		mdelay(1);
-
-Maybe you can put some cond_resched() into the loop to avoid wasting too many 
-cycles ?
-
+> +	/* Handle receive irq */
+> +	if (s->irq_status & (AUART_INTR_RTIS | AUART_INTR_RXIS)) {
+> +		if (!auart_dma_enabled(s))
+> +			mxs_auart_rx_chars(s);
+> +	}
+> +	/* Handle transmit irq */
+> +	if (s->irq_status & AUART_INTR_TXIS)
+> +		mxs_auart_tx_chars(s);
 > +}
 > +
->  static void mxs_auart_start_tx(struct uart_port *u)
+>  static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 >  {
->  	struct mxs_auart_port *s = to_auart_port(u);
-> @@ -828,6 +850,7 @@ static struct uart_ops mxs_auart_ops = {
->  	.get_mctrl      = mxs_auart_get_mctrl,
->  	.startup	= mxs_auart_startup,
->  	.shutdown       = mxs_auart_shutdown,
-> +	.flush_buffer	= mxs_auart_flush_buffer,
->  	.set_termios    = mxs_auart_settermios,
->  	.type	   	= mxs_auart_type,
->  	.release_port   = mxs_auart_release_port,
+> -	u32 istat;
+>  	struct mxs_auart_port *s = context;
+> -	u32 stat = readl(s->port.membase + AUART_STAT);
+> 
+> -	istat = readl(s->port.membase + AUART_INTR);
+> +	s->status = readl(s->port.membase + AUART_STAT);
+> +	s->irq_status = readl(s->port.membase + AUART_INTR);
 
-Best regards,
-Marek Vasut
+Aren't you up for a nice race condition here if you get interrupt while checking 
+the s->irq_status bits in the tasklet ?
