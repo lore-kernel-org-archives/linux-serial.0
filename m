@@ -1,103 +1,54 @@
-From: Lucas Stach <l.stach@pengutronix.de>
-Subject: Re: [PATCH 1/3] serial: mxs-auart: implement flush_buffer hook
-Date: Fri, 29 Nov 2013 19:02:49 +0100
-Message-ID: <1385748169.4244.1.camel@weser.hi.pengutronix.de>
-References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com>
-	 <201311291750.22215.marex@denx.de> <5298D3B6.5050700@digi.com>
-	 <201311291902.34445.marex@denx.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] drivers/misc/ti-st: Prefer tty_driver_flush_buffer
+Date: Fri, 29 Nov 2013 18:00:35 -0500
+Message-ID: <1385766035-5029-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:35770 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751690Ab3K2SHf (ORCPT
+Received: from mailout01.c08.mtsvc.net ([205.186.168.189]:37545 "EHLO
+	mailout01.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750905Ab3K2XBB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Nov 2013 13:07:35 -0500
-In-Reply-To: <201311291902.34445.marex@denx.de>
+	Fri, 29 Nov 2013 18:01:01 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Marek Vasut <marex@denx.de>
-Cc: Hector Palacios <hector.palacios@digi.com>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "b32955@freescale.com" <b32955@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-Am Freitag, den 29.11.2013, 19:02 +0100 schrieb Marek Vasut:
-> Dear Hector Palacios,
-> 
-> > Hi Marek,
-> > 
-> > On 11/29/2013 05:50 PM, Marek Vasut wrote:
-> > > Hello Hector,
-> > > 
-> > >> Terminate any DMA transfer and verify the TX FIFO is empty.
-> > >> 
-> > >> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-> > >> ---
-> > >> 
-> > >>   drivers/tty/serial/mxs-auart.c | 23 +++++++++++++++++++++++
-> > >>   1 file changed, 23 insertions(+)
-> > >> 
-> > >> diff --git a/drivers/tty/serial/mxs-auart.c
-> > >> b/drivers/tty/serial/mxs-auart.c index 9f0461778fc1..d9bf6e103f65 100644
-> > >> --- a/drivers/tty/serial/mxs-auart.c
-> > >> +++ b/drivers/tty/serial/mxs-auart.c
-> > >> @@ -782,6 +782,28 @@ static unsigned int mxs_auart_tx_empty(struct
-> > >> uart_port *u) return 0;
-> > >> 
-> > >>   }
-> > >> 
-> > >> +/*
-> > >> + * Flush the transmit buffer.
-> > >> + * Locking: called with port lock held and IRQs disabled.
-> > >> + */
-> > >> +static void mxs_auart_flush_buffer(struct uart_port *u)
-> > >> +{
-> > >> +	struct mxs_auart_port *s = to_auart_port(u);
-> > >> +	struct dma_chan *channel = s->tx_dma_chan;
-> > >> +	unsigned int to;
-> > >> +
-> > >> +	if (auart_dma_enabled(s)) {
-> > >> +		/* Avoid deadlock with the DMA engine callback */
-> > >> +		spin_unlock(&s->port.lock);
-> > >> +		dmaengine_terminate_all(channel);
-> > >> +		spin_lock(&s->port.lock);
-> > > 
-> > > Can you not maybe just set some flag here to tell the DMA engine callback
-> > > things are shutting down and to don't do anything funny anymore ?
-> > 
-> > I copied these spin_lock protections from the amba-pl011.c driver.
-> > The callbacks in the mxs-auart driver are not taking the lock but I was not
-> > sure if any of the serial core functions they call are, so I thought it
-> > was a good idea to take it.
-> 
-> It might be worth investigating this then.
-> 
-> > >> +	}
-> > >> +	/* Wait for the FIFO to flush */
-> > >> +	to = u->timeout;
-> > >> +	while (!mxs_auart_tx_empty(u) && to--)
-> > >> +		mdelay(1);
-> > > 
-> > > Maybe you can put some cond_resched() into the loop to avoid wasting too
-> > > many cycles ?
-> > 
-> > Do you mean like this? Ok
-> > 
-> > 	while (!mxs_auart_tx_empty(u) && to--) {
-> > 		cond_resched();
-> > 		mdelay(1);
-> > 	}
-> 
-> Yes, like that.
-> 
-This path isn't timing critical. mdelay still keeps the cpu spinning,
-even with a resched. Just use an absolute timeout and sleep instead of
-delay.
+The tty core provides an interface for flushing the driver's
+write buffer: tty_driver_flush_buffer(); prefer the provided
+interface over open-coded. Open-coding can lead to errors
+such as the duplicated call in the st_kim driver.
 
-Regards,
-Lucas
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/misc/ti-st/st_core.c | 2 +-
+ drivers/misc/ti-st/st_kim.c  | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/misc/ti-st/st_core.c b/drivers/misc/ti-st/st_core.c
+index 8d64b68..3aed525 100644
+--- a/drivers/misc/ti-st/st_core.c
++++ b/drivers/misc/ti-st/st_core.c
+@@ -812,7 +812,7 @@ static void st_tty_flush_buffer(struct tty_struct *tty)
+ 	kfree_skb(st_gdata->tx_skb);
+ 	st_gdata->tx_skb = NULL;
+ 
+-	tty->ops->flush_buffer(tty);
++	tty_driver_flush_buffer(tty);
+ 	return;
+ }
+ 
+diff --git a/drivers/misc/ti-st/st_kim.c b/drivers/misc/ti-st/st_kim.c
+index 83907c7..9c14b07 100644
+--- a/drivers/misc/ti-st/st_kim.c
++++ b/drivers/misc/ti-st/st_kim.c
+@@ -531,7 +531,6 @@ long st_kim_stop(void *kim_data)
+ 		/* Flush any pending characters in the driver and discipline. */
+ 		tty_ldisc_flush(tty);
+ 		tty_driver_flush_buffer(tty);
+-		tty->ops->flush_buffer(tty);
+ 	}
+ 
+ 	/* send uninstall notification to UIM */
 -- 
-Pengutronix e.K.                           | Lucas Stach                 |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-5076 |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.8.1.2
 
