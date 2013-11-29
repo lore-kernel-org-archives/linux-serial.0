@@ -1,54 +1,39 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH] serial: imx: add support for loopback mode.
-Date: Fri, 29 Nov 2013 17:29:24 +0800
-Message-ID: <1385717364-31844-1-git-send-email-b32955@freescale.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: tty/serial eating \n regression in 3.13-rc1
+Date: Fri, 29 Nov 2013 07:39:45 -0500
+Message-ID: <52988B11.3090300@hurleysoftware.com>
+References: <20131127181348.GA22723@obsidianresearch.com> <1385652419-4732-1-git-send-email-peter@hurleysoftware.com> <20131128174614.GB28055@obsidianresearch.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:30579 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752404Ab3K2Jyr (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:59503 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754409Ab3K2Mjt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Nov 2013 04:54:47 -0500
+	Fri, 29 Nov 2013 07:39:49 -0500
+In-Reply-To: <20131128174614.GB28055@obsidianresearch.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Huang Shijie <b32955@freescale.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Add the loopback mode support for imx uart driver.
+On 11/28/2013 12:46 PM, Jason Gunthorpe wrote:
+> On Thu, Nov 28, 2013 at 10:26:57AM -0500, Peter Hurley wrote:
+>
+>> Please test out the attached patch and let me know if that solves
+>> the login whitespace problem.
+>
+> Yes, it certainly does:
+> Tested-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+>
+> My bisection search showed this should go into 3.12 stable and 3.13..
 
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
- drivers/tty/serial/imx.c |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
+Greg,
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index b2cfdb6..d799140 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -806,6 +806,9 @@ static unsigned int imx_get_mctrl(struct uart_port *port)
- 	if (readl(sport->port.membase + UCR2) & UCR2_CTS)
- 		tmp |= TIOCM_RTS;
- 
-+	if (readl(sport->port.membase + uts_reg(sport)) & UTS_LOOP)
-+		tmp |= TIOCM_LOOP;
-+
- 	return tmp;
- }
- 
-@@ -821,6 +824,11 @@ static void imx_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 			temp |= UCR2_CTS;
- 
- 	writel(temp, sport->port.membase + UCR2);
-+
-+	temp = readl(sport->port.membase + uts_reg(sport)) & ~UTS_LOOP;
-+	if (mctrl & TIOCM_LOOP)
-+		temp |= UTS_LOOP;
-+	writel(temp, sport->port.membase + uts_reg(sport));
- }
- 
- /*
--- 
-1.7.2.rc3
+Please let me know if you need me to resend the earlier patch with
+Jason's Tested-by and a proper Cc to stable.
 
+Regards,
+Peter Hurley
 
