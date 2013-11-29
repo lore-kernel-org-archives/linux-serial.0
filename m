@@ -1,60 +1,43 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH 3/5] serial: jsm: use DEFINE_PCI_DEVICE_TABLE macro
-Date: Fri, 29 Nov 2013 09:53:36 +0900
-Message-ID: <001c01ceec9d$6fa72a50$4ef57ef0$%han@samsung.com>
-References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
- <000801ceebdd$5b984a50$12c8def0$%han@samsung.com>
- <20131128113542.GC24646@oc0268524204.ibm.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v2] serial: sh-sci: Fix warnings due to improper casts
+ and printk formats
+Date: Fri, 29 Nov 2013 09:12:12 +0900
+Message-ID: <20131129001208.GA6462@verge.net.au>
+References: <1385547037-13422-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <20131128072731.GB24146@verge.net.au>
+ <1772107.qNxlNP4NDS@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:22651 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751329Ab3K2Axk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Nov 2013 19:53:40 -0500
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MX0000IP2HE8ZA0@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Fri, 29 Nov 2013 09:53:38 +0900 (KST)
-In-reply-to: <20131128113542.GC24646@oc0268524204.ibm.com>
-Content-language: ko
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1772107.qNxlNP4NDS@avalon>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Thadeu Lima de Souza Cascardo' <cascardo@linux.vnet.ibm.com>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 
-On Thursday, November 28, 2013 8:36 PM, Thadeu Lima de Souza Cascardo wrote:
-> On Thu, Nov 28, 2013 at 10:58:39AM +0900, Jingoo Han wrote:
-> > This macro is used to create a struct pci_device_id array.
-> >
-> > Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-> > ---
-> >  drivers/tty/serial/jsm/jsm_driver.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-
-[.....]
-
+On Thu, Nov 28, 2013 at 03:00:35PM +0100, Laurent Pinchart wrote:
+> Hi Simon,
 > 
-> Acked-by: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+> On Thursday 28 November 2013 16:27:31 Simon Horman wrote:
+> > On Wed, Nov 27, 2013 at 11:10:37AM +0100, Laurent Pinchart wrote:
+> > > Use the %zu printk specifier to print size_t variables, and cast
+> > > pointers to uintptr_t instead of unsigned int where applicable. This
+> > > fixes warnings on platforms where pointers and/or dma_addr_t have a
+> > > different size than int.
+> > > 
+> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Cc: linux-serial@vger.kernel.org
+> > > Signed-off-by: Laurent Pinchart
+> > > <laurent.pinchart+renesas@ideasonboard.com>
+> > 
+> > Acked-by: Simon Horman <horms+renesas@verge.net.au>
+> > 
+> > Laurent, I am assuming that you would like Greg to take this one.
+> 
+> Actually, as we have quite a few pending sh-sci patches interleaved with 
+> arch/arm patches, it would be easier if all sh-sci patches went through your 
+> tree for this kernel version. That's if Greg agrees of course.
 
-Thank you for your review! :-)
-
-However, these patches should NOT be merged.
-
-According to the Greg Kroah-Hartman,
-"Yeah, and it's a horrid macro that deserves to be removed, please don't
-use it in more places.
-
-Actually, if you could just remove it, that would be best, sorry, I'm
-not going to take these patches."
-
-So, I will send the patch to remove 'DEFINE_PCI_DEVICE_TABLE' instead.
-Sorry for annoying you. :-)
-
-Best regards,
-Jingoo Han
-
+Thanks, that is fine by me so long as its fine by Greg and I get
+an Ack from him for each of the sh-sci that go into my tree.
