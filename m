@@ -1,89 +1,41 @@
-From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH 3/3] serial: mxs-auart: move irq handling to a tasklet
-Date: Fri, 29 Nov 2013 18:00:12 +0100
-Message-ID: <201311291800.12366.marex@denx.de>
-References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com> <1385742927-11358-4-git-send-email-hector.palacios@digi.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: tty/serial eating \n regression in 3.13-rc1
+Date: Fri, 29 Nov 2013 09:32:12 -0800
+Message-ID: <20131129173212.GA5510@kroah.com>
+References: <20131127181348.GA22723@obsidianresearch.com>
+ <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
+ <20131128174614.GB28055@obsidianresearch.com>
+ <52988B11.3090300@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:50104 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756874Ab3K2RAM (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:40745 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752239Ab3K2RbT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Nov 2013 12:00:12 -0500
-In-Reply-To: <1385742927-11358-4-git-send-email-hector.palacios@digi.com>
+	Fri, 29 Nov 2013 12:31:19 -0500
+Content-Disposition: inline
+In-Reply-To: <52988B11.3090300@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Hector Palacios <hector.palacios@digi.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, b32955@freescale.com, fabio.estevam@freescale.com, u.kleine-koenig@pengutronix.de
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Dear Hector Palacios,
+On Fri, Nov 29, 2013 at 07:39:45AM -0500, Peter Hurley wrote:
+> On 11/28/2013 12:46 PM, Jason Gunthorpe wrote:
+> > On Thu, Nov 28, 2013 at 10:26:57AM -0500, Peter Hurley wrote:
+> >
+> >> Please test out the attached patch and let me know if that solves
+> >> the login whitespace problem.
+> >
+> > Yes, it certainly does:
+> > Tested-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+> >
+> > My bisection search showed this should go into 3.12 stable and 3.13..
+> 
+> Greg,
+> 
+> Please let me know if you need me to resend the earlier patch with
+> Jason's Tested-by and a proper Cc to stable.
 
-> The ISR was handling CTS flag and RX/TX processing.
-> Occasionally interrupts were coming in the middle of the ISR and
-> led to blocking transmission (with hw flow) or loss of data.
-> This patch moves this processing to a tasklet that the ISR schedules.
-> 
-> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-> ---
->  drivers/tty/serial/mxs-auart.c | 61
-> +++++++++++++++++++++++++++--------------- 1 file changed, 39
-> insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mxs-auart.c
-> b/drivers/tty/serial/mxs-auart.c index e5540c89dd48..7021269c70b2 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -148,6 +148,10 @@ struct mxs_auart_port {
->  	struct clk *clk;
->  	struct device *dev;
-> 
-> +	struct tasklet_struct tasklet;
-> +	unsigned int irq_status;
-> +	unsigned int status;
-> +
->  	/* for DMA */
->  	struct scatterlist tx_sgl;
->  	struct dma_chan	*tx_dma_chan;
-> @@ -680,38 +684,48 @@ static void mxs_auart_settermios(struct uart_port *u,
->  	}
->  }
-> 
-> +/*
-> + * tasklet handling tty stuff outside the interrupt handler.
-> + */
-> +static void mxs_auart_tasklet_func(unsigned long data)
-> +{
-> +	struct uart_port *port = (struct uart_port *)data;
-> +	struct mxs_auart_port *s = to_auart_port(port);
-> +
-> +	/* Handle status irq */
-> +	if (s->irq_status & AUART_INTR_CTSMIS) {
-> +		uart_handle_cts_change(&s->port, s->status & AUART_STAT_CTS);
-> +		writel(AUART_INTR_CTSMIS,
-> +		       s->port.membase + AUART_INTR_CLR);
-> +	}
-> +	/* Handle receive irq */
-> +	if (s->irq_status & (AUART_INTR_RTIS | AUART_INTR_RXIS)) {
-> +		if (!auart_dma_enabled(s))
-> +			mxs_auart_rx_chars(s);
-> +	}
-> +	/* Handle transmit irq */
-> +	if (s->irq_status & AUART_INTR_TXIS)
-> +		mxs_auart_tx_chars(s);
-> +}
-> +
->  static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
->  {
-> -	u32 istat;
->  	struct mxs_auart_port *s = context;
-> -	u32 stat = readl(s->port.membase + AUART_STAT);
-> 
-> -	istat = readl(s->port.membase + AUART_INTR);
-> +	s->status = readl(s->port.membase + AUART_STAT);
-> +	s->irq_status = readl(s->port.membase + AUART_INTR);
-
-Aren't you up for a nice race condition here if you get interrupt while checking 
-the s->irq_status bits in the tasklet ?
+That would be nice to have, thanks :)
