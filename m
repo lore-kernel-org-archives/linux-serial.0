@@ -1,71 +1,46 @@
-From: Hector Palacios <hector.palacios@digi.com>
-Subject: [PATCH 1/3] serial: mxs-auart: implement flush_buffer hook
-Date: Fri, 29 Nov 2013 17:35:25 +0100
-Message-ID: <1385742927-11358-2-git-send-email-hector.palacios@digi.com>
+From: Marek Vasut <marex@denx.de>
+Subject: Re: [PATCH 0/3] serial: mxs-auart: flush_buffer hook and interrupt processing
+Date: Fri, 29 Nov 2013 17:44:06 +0100
+Message-ID: <201311291744.06943.marex@denx.de>
 References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:47190 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756316Ab3K2QoG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 29 Nov 2013 11:44:06 -0500
 In-Reply-To: <1385742927-11358-1-git-send-email-hector.palacios@digi.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: fabio.estevam@freescale.com, marex@denx.de, gregkh@linuxfoundation.org, b32955@freescale.com, hector.palacios@digi.com, u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Hector Palacios <hector.palacios@digi.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, b32955@freescale.com, fabio.estevam@freescale.com, u.kleine-koenig@pengutronix.de
 
-Terminate any DMA transfer and verify the TX FIFO is empty.
+Hi Hector,
 
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>
----
- drivers/tty/serial/mxs-auart.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+> Hello,
+> 
+> This series implement several fixes to the mxs-auart serial driver.
+> 
+> The first patch implements the flush_buffer hook. Currently the driver
+> can be shut down and pending data in the FIFO will be lost.
+> 
+> The second patchs adds a check of the BUSY flag in the tx_empty hook
+> to make sure the UART is not about to fill data into the FIFO.
+> 
+> The third patch moves the interrupt handling from the ISR out to a
+> tasklet. This was motivated due to different transmission problems
+> with hardware and software flow control at high baudrates whereby
+> transmission was interrupted or data lost.
+> The problem can be reproduced by setting two AUARTs at 576000/N/8
+> with CRTSCTS and sending a large file from one port to the other
+>  with 'cat'.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 9f0461778fc1..d9bf6e103f65 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -782,6 +782,28 @@ static unsigned int mxs_auart_tx_empty(struct uart_port *u)
- 		return 0;
- }
- 
-+/*
-+ * Flush the transmit buffer.
-+ * Locking: called with port lock held and IRQs disabled.
-+ */
-+static void mxs_auart_flush_buffer(struct uart_port *u)
-+{
-+	struct mxs_auart_port *s = to_auart_port(u);
-+	struct dma_chan *channel = s->tx_dma_chan;
-+	unsigned int to;
-+
-+	if (auart_dma_enabled(s)) {
-+		/* Avoid deadlock with the DMA engine callback */
-+		spin_unlock(&s->port.lock);
-+		dmaengine_terminate_all(channel);
-+		spin_lock(&s->port.lock);
-+	}
-+	/* Wait for the FIFO to flush */
-+	to = u->timeout;
-+	while (!mxs_auart_tx_empty(u) && to--)
-+		mdelay(1);
-+}
-+
- static void mxs_auart_start_tx(struct uart_port *u)
- {
- 	struct mxs_auart_port *s = to_auart_port(u);
-@@ -828,6 +850,7 @@ static struct uart_ops mxs_auart_ops = {
- 	.get_mctrl      = mxs_auart_get_mctrl,
- 	.startup	= mxs_auart_startup,
- 	.shutdown       = mxs_auart_shutdown,
-+	.flush_buffer	= mxs_auart_flush_buffer,
- 	.set_termios    = mxs_auart_settermios,
- 	.type	   	= mxs_auart_type,
- 	.release_port   = mxs_auart_release_port,
+57600 is not that high of a baudrate. Or do you really mean 576000 (576 
+thousand) ?
+
+Best regards,
+Marek Vasut
