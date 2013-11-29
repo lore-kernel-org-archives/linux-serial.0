@@ -1,41 +1,84 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: tty/serial eating \n regression in 3.13-rc1
-Date: Fri, 29 Nov 2013 09:32:12 -0800
-Message-ID: <20131129173212.GA5510@kroah.com>
-References: <20131127181348.GA22723@obsidianresearch.com>
- <1385652419-4732-1-git-send-email-peter@hurleysoftware.com>
- <20131128174614.GB28055@obsidianresearch.com>
- <52988B11.3090300@hurleysoftware.com>
+From: Hector Palacios <hector.palacios@digi.com>
+Subject: Re: [PATCH 1/3] serial: mxs-auart: implement flush_buffer hook
+Date: Fri, 29 Nov 2013 18:49:42 +0100
+Message-ID: <5298D3B6.5050700@digi.com>
+References: <1385742927-11358-1-git-send-email-hector.palacios@digi.com> <1385742927-11358-2-git-send-email-hector.palacios@digi.com> <201311291750.22215.marex@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:40745 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752239Ab3K2RbT (ORCPT
+Received: from mail1.bemta8.messagelabs.com ([216.82.243.193]:61302 "EHLO
+	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754617Ab3K2Rtv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Nov 2013 12:31:19 -0500
-Content-Disposition: inline
-In-Reply-To: <52988B11.3090300@hurleysoftware.com>
+	Fri, 29 Nov 2013 12:49:51 -0500
+In-Reply-To: <201311291750.22215.marex@denx.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Marek Vasut <marex@denx.de>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "b32955@freescale.com" <b32955@freescale.com>, "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
 
-On Fri, Nov 29, 2013 at 07:39:45AM -0500, Peter Hurley wrote:
-> On 11/28/2013 12:46 PM, Jason Gunthorpe wrote:
-> > On Thu, Nov 28, 2013 at 10:26:57AM -0500, Peter Hurley wrote:
-> >
-> >> Please test out the attached patch and let me know if that solves
-> >> the login whitespace problem.
-> >
-> > Yes, it certainly does:
-> > Tested-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
-> >
-> > My bisection search showed this should go into 3.12 stable and 3.13..
-> 
-> Greg,
-> 
-> Please let me know if you need me to resend the earlier patch with
-> Jason's Tested-by and a proper Cc to stable.
+Hi Marek,
 
-That would be nice to have, thanks :)
+On 11/29/2013 05:50 PM, Marek Vasut wrote:
+> Hello Hector,
+>
+>> Terminate any DMA transfer and verify the TX FIFO is empty.
+>>
+>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+>> ---
+>>   drivers/tty/serial/mxs-auart.c | 23 +++++++++++++++++++++++
+>>   1 file changed, 23 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/mxs-auart.c
+>> b/drivers/tty/serial/mxs-auart.c index 9f0461778fc1..d9bf6e103f65 100644
+>> --- a/drivers/tty/serial/mxs-auart.c
+>> +++ b/drivers/tty/serial/mxs-auart.c
+>> @@ -782,6 +782,28 @@ static unsigned int mxs_auart_tx_empty(struct
+>> uart_port *u) return 0;
+>>   }
+>>
+>> +/*
+>> + * Flush the transmit buffer.
+>> + * Locking: called with port lock held and IRQs disabled.
+>> + */
+>> +static void mxs_auart_flush_buffer(struct uart_port *u)
+>> +{
+>> +	struct mxs_auart_port *s = to_auart_port(u);
+>> +	struct dma_chan *channel = s->tx_dma_chan;
+>> +	unsigned int to;
+>> +
+>> +	if (auart_dma_enabled(s)) {
+>> +		/* Avoid deadlock with the DMA engine callback */
+>> +		spin_unlock(&s->port.lock);
+>> +		dmaengine_terminate_all(channel);
+>> +		spin_lock(&s->port.lock);
+>
+> Can you not maybe just set some flag here to tell the DMA engine callback things
+> are shutting down and to don't do anything funny anymore ?
+
+I copied these spin_lock protections from the amba-pl011.c driver.
+The callbacks in the mxs-auart driver are not taking the lock but I was not sure if 
+any of the serial core functions they call are, so I thought it was a good idea to 
+take it.
+
+>> +	}
+>> +	/* Wait for the FIFO to flush */
+>> +	to = u->timeout;
+>> +	while (!mxs_auart_tx_empty(u) && to--)
+>> +		mdelay(1);
+>
+> Maybe you can put some cond_resched() into the loop to avoid wasting too many
+> cycles ?
+
+Do you mean like this? Ok
+
+	while (!mxs_auart_tx_empty(u) && to--) {
+		cond_resched();
+		mdelay(1);
+	}
+
+
+Best regards,
+--
+Hector Palacios
