@@ -1,137 +1,114 @@
-From: Gerhard Sittig <gsi@denx.de>
-Subject: [PATCH v6 10/17] serial: mpc512x: setup the PSC FIFO clock as well
-Date: Sat, 30 Nov 2013 23:51:30 +0100
-Message-ID: <1385851897-23475-11-git-send-email-gsi@denx.de>
-References: <1385851897-23475-1-git-send-email-gsi@denx.de>
+From: Sergei Ianovich <ynvich@gmail.com>
+Subject: [PATCH 01/11] resolve PXA<->8250 serial device address conflict
+Date: Sun,  1 Dec 2013 10:26:14 +0400
+Message-ID: <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:46326 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751653Ab3K3WwM (ORCPT
+Received: from mail-lb0-f170.google.com ([209.85.217.170]:59199 "EHLO
+	mail-lb0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751066Ab3LAG0x (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 30 Nov 2013 17:52:12 -0500
-In-Reply-To: <1385851897-23475-1-git-send-email-gsi@denx.de>
+	Sun, 1 Dec 2013 01:26:53 -0500
+In-Reply-To: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Anatolij Gustschin <agust@denx.de>, Mike Turquette <mturquette@linaro.org>
-Cc: Scott Wood <scottwood@freescale.com>, Detlev Zundel <dzu@denx.de>, Gerhard Sittig <gsi@denx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Sergei Ianovich <ynvich@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
-prepare and enable the FIFO clock upon PSC FIFO initialization,
-check for and propagage errors when enabling the PSC FIFO clock,
-disable and unprepare the FIFO clock upon PSC FIFO uninitialization
+PXA serial ports have "standard" UART names (ttyS[0-3]), major
+device number (4) and first minor device number (64) by default.
 
-devm_{get,put}_clk() doesn't apply here, as the SoC provides a
-single FIFO component which is shared among several PSC components,
-thus the FIFO isn't associated with a device (while the PSCs are)
+If the system has extra 8250 serial port hardware in addition
+to onboard PXA serial ports, default settings produce a device
+allocation conflict.
 
-provide a fallback clock lookup approach in case the OF based clock
-lookup for the PSC FIFO fails, this allows for successful operation in
-the presence of an outdated device tree which lacks clock specs
+The patch provides a configuration option which can move onboard
+ports out of the way of 8250_core by assigning a different (204)
+major number and corresponding device names (ttySA[0-3]).
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # for v4
-Signed-off-by: Gerhard Sittig <gsi@denx.de>
+Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
 ---
-Greg, the addition since v4 is the clk_get_sys() call for the 'ipg'
-clock item (backwards compat for device trees w/o clock specs)
+ drivers/tty/serial/Kconfig | 19 +++++++++++++++++++
+ drivers/tty/serial/pxa.c   | 22 ++++++++++++++++++----
+ 2 files changed, 37 insertions(+), 4 deletions(-)
 
----
- drivers/tty/serial/mpc52xx_uart.c |   50 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 44 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 6345f377a246..97888f4900ec 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -421,6 +421,7 @@ struct psc_fifoc {
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a3817ab..328b716 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -419,6 +419,25 @@ config SERIAL_PXA_CONSOLE
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
  
- static struct psc_fifoc __iomem *psc_fifoc;
- static unsigned int psc_fifoc_irq;
-+static struct clk *psc_fifoc_clk;
- 
- static void mpc512x_psc_fifo_init(struct uart_port *port)
- {
-@@ -568,36 +569,73 @@ static unsigned int mpc512x_psc_set_baudrate(struct uart_port *port,
- /* Init PSC FIFO Controller */
- static int __init mpc512x_psc_fifoc_init(void)
- {
-+	int err;
- 	struct device_node *np;
-+	struct clk *clk;
++config SERIAL_PXA_AS_TTYSA
++	bool "PXA serial ports with SA-1100 name and major number"
++	depends on SERIAL_PXA
++	default N
++	help
++	  PXA serial ports have "standard" UART names (ttyS[0-3]), major
++	  device number (4) and first minor device number (64) by default.
 +
-+	/* default error code, potentially overwritten by clock calls */
-+	err = -ENODEV;
- 
- 	np = of_find_compatible_node(NULL, NULL,
- 				     "fsl,mpc5121-psc-fifo");
- 	if (!np) {
- 		pr_err("%s: Can't find FIFOC node\n", __func__);
--		return -ENODEV;
-+		goto out_err;
-+	}
++	  If the system has extra 8250 serial port hardware in addition
++	  to onboard PXA serial ports, default settings produce a device
++	  allocation conflict.
 +
-+	clk = of_clk_get(np, 0);
-+	if (IS_ERR(clk)) {
-+		/* backwards compat with device trees that lack clock specs */
-+		clk = clk_get_sys(np->name, "ipg");
-+	}
-+	if (IS_ERR(clk)) {
-+		pr_err("%s: Can't lookup FIFO clock\n", __func__);
-+		err = PTR_ERR(clk);
-+		goto out_ofnode_put;
-+	}
-+	if (clk_prepare_enable(clk)) {
-+		pr_err("%s: Can't enable FIFO clock\n", __func__);
-+		clk_put(clk);
-+		goto out_ofnode_put;
- 	}
-+	psc_fifoc_clk = clk;
- 
- 	psc_fifoc = of_iomap(np, 0);
- 	if (!psc_fifoc) {
- 		pr_err("%s: Can't map FIFOC\n", __func__);
--		of_node_put(np);
--		return -ENODEV;
-+		goto out_clk_disable;
- 	}
- 
- 	psc_fifoc_irq = irq_of_parse_and_map(np, 0);
--	of_node_put(np);
- 	if (psc_fifoc_irq == 0) {
- 		pr_err("%s: Can't get FIFOC irq\n", __func__);
--		iounmap(psc_fifoc);
--		return -ENODEV;
-+		goto out_unmap;
- 	}
- 
-+	of_node_put(np);
- 	return 0;
++	  Selecting this option will move onboard ports out of the way of
++	  8250_core by assigning a different (204) major number and
++	  corresponding device names (ttySA[0-3]).
 +
-+out_unmap:
-+	iounmap(psc_fifoc);
-+out_clk_disable:
-+	clk_disable_unprepare(psc_fifoc_clk);
-+	clk_put(psc_fifoc_clk);
-+out_ofnode_put:
-+	of_node_put(np);
-+out_err:
-+	return err;
++	  Say Y here, if you need to support extra 8250 serial port hardware
++	  on a PXA system.
++
+ config SERIAL_SA1100
+ 	bool "SA1100 serial port support"
+ 	depends on ARCH_SA1100
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index f9f20f3..2b5a8ad 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -593,6 +593,20 @@ serial_pxa_type(struct uart_port *port)
+ static struct uart_pxa_port *serial_pxa_ports[4];
+ static struct uart_driver serial_pxa_reg;
+ 
++#ifndef CONFIG_SERIAL_PXA_AS_TTYSA
++
++#define PXA_TTY_NAME	"ttyS"
++#define PXA_TTY_MAJOR	TTY_MAJOR
++#define PXA_TTY_MINOR	64
++
++#else
++
++#define PXA_TTY_NAME	"ttySA"
++#define PXA_TTY_MAJOR	204
++#define PXA_TTY_MINOR	5
++
++#endif
++
+ #ifdef CONFIG_SERIAL_PXA_CONSOLE
+ 
+ #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+@@ -751,7 +765,7 @@ serial_pxa_console_setup(struct console *co, char *options)
  }
  
- static void __exit mpc512x_psc_fifoc_uninit(void)
- {
- 	iounmap(psc_fifoc);
-+
-+	/* disable the clock, errors are not fatal */
-+	if (psc_fifoc_clk) {
-+		clk_disable_unprepare(psc_fifoc_clk);
-+		clk_put(psc_fifoc_clk);
-+		psc_fifoc_clk = NULL;
-+	}
- }
- 
- /* 512x specific interrupt handler. The caller holds the port lock */
+ static struct console serial_pxa_console = {
+-	.name		= "ttyS",
++	.name		= PXA_TTY_NAME,
+ 	.write		= serial_pxa_console_write,
+ 	.device		= uart_console_device,
+ 	.setup		= serial_pxa_console_setup,
+@@ -792,9 +806,9 @@ static struct uart_ops serial_pxa_pops = {
+ static struct uart_driver serial_pxa_reg = {
+ 	.owner		= THIS_MODULE,
+ 	.driver_name	= "PXA serial",
+-	.dev_name	= "ttyS",
+-	.major		= TTY_MAJOR,
+-	.minor		= 64,
++	.dev_name	= PXA_TTY_NAME,
++	.major		= PXA_TTY_MAJOR,
++	.minor		= PXA_TTY_MINOR,
+ 	.nr		= 4,
+ 	.cons		= PXA_CONSOLE,
+ };
 -- 
-1.7.10.4
+1.8.4.2
 
