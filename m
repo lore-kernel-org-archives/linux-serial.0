@@ -1,68 +1,96 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 tty-next 8/8] n_tty: Trace echo output with separate trace configuration
-Date: Mon,  2 Dec 2013 14:24:48 -0500
-Message-ID: <1386012288-5079-9-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 tty-next 4/8] n_tty: Refactor PARMRK doubling checks
+Date: Mon,  2 Dec 2013 14:24:44 -0500
+Message-ID: <1386012288-5079-5-git-send-email-peter@hurleysoftware.com>
 References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
  <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:44397 "EHLO
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:44382 "EHLO
 	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752454Ab3LBTZy (ORCPT
+	with ESMTP id S1754914Ab3LBTZp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 14:25:54 -0500
+	Mon, 2 Dec 2013 14:25:45 -0500
 In-Reply-To: <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 
-Add trace support for echo output but leave it separately selectable/
-buildable from the base trace support.
+Perform PARMRK doubling checks explicitly; remove ternary idiom
+and local variable.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/tty/n_tty.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 26ae9d7..bd01d97 100644
+index f8a76d3..008b6e5 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -94,6 +94,13 @@
- # define n_tty_trace(tty, f, args...)	do { } while (0)
- #endif
+@@ -1260,7 +1260,6 @@ static int
+ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int parmrk;
  
-+#undef N_TTY_TRACE_ECHOES
-+#ifdef N_TTY_TRACE_ECHOES
-+# define n_tty_trace_echoes(tty, f, args...)	_n_tty_trace(tty, f, args)
-+#else
-+# define n_tty_trace_echoes(tty, f, args...)	do { } while (0)
-+#endif
-+
- struct n_tty_data {
- 	/* producer-published */
- 	size_t read_head;
-@@ -791,13 +798,18 @@ static size_t __process_echoes(struct tty_struct *tty)
+ 	if (I_IXON(tty)) {
+ 		if (c == START_CHAR(tty)) {
+@@ -1345,8 +1344,6 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+ 		}
+ 		if ((c == EOL_CHAR(tty)) ||
+ 		    (c == EOL2_CHAR(tty) && L_IEXTEN(tty))) {
+-			parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty))
+-				 ? 1 : 0;
+ 			/*
+ 			 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
+ 			 */
+@@ -1361,7 +1358,7 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+ 			 * XXX does PARMRK doubling happen for
+ 			 * EOL_CHAR and EOL2_CHAR?
+ 			 */
+-			if (parmrk)
++			if (c == (unsigned char) '\377' && I_PARMRK(tty))
+ 				put_tty_queue(c, ldata);
+ 
+ handle_newline:
+@@ -1375,7 +1372,6 @@ handle_newline:
  		}
  	}
  
-+	n_tty_trace_echoes(tty, "echoes:%zu,%zu commit:%zu head:%zu\n",
-+			   ldata->echo_tail, tail, ldata->echo_commit,
-+			   ldata->echo_head);
-+
- 	/* If the echo buffer is nearly full (so that the possibility exists
- 	 * of echo overrun before the next commit), then discard enough
- 	 * data at the tail to prevent a subsequent overrun */
- 	while (ldata->echo_commit - tail >= ECHO_DISCARD_WATERMARK) {
+-	parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
+ 	if (L_ECHO(tty)) {
+ 		finish_erasing(ldata);
+ 		if (c == '\n')
+@@ -1389,7 +1385,8 @@ handle_newline:
+ 		commit_echoes(tty);
+ 	}
  
--		n_tty_trace(tty, "discard echoes (%zu - %zu > %d)\n",
--			    ldata->echo_commit, tail, ECHO_DISCARD_WATERMARK);
-+		n_tty_trace_echoes(tty, "discard echoes (%zu - %zu > %d)\n",
-+				   ldata->echo_commit, tail,
-+				   ECHO_DISCARD_WATERMARK);
+-	if (parmrk)
++	/* PARMRK doubling check */
++	if (c == (unsigned char) '\377' && I_PARMRK(tty))
+ 		put_tty_queue(c, ldata);
  
- 		if (echo_buf(ldata, tail) == ECHO_OP_START) {
- 			if (echo_buf(ldata, tail + 1) == ECHO_OP_ERASE_TAB)
+ 	put_tty_queue(c, ldata);
+@@ -1400,7 +1397,6 @@ static inline void
+ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int parmrk;
+ 
+ 	if (tty->stopped && !tty->flow_stopped && I_IXON(tty) && I_IXANY(tty)) {
+ 		start_tty(tty);
+@@ -1414,8 +1410,8 @@ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
+ 		echo_char(c, tty);
+ 		commit_echoes(tty);
+ 	}
+-	parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
+-	if (parmrk)
++	/* PARMRK doubling check */
++	if (c == (unsigned char) '\377' && I_PARMRK(tty))
+ 		put_tty_queue(c, ldata);
+ 	put_tty_queue(c, ldata);
+ }
 -- 
 1.8.1.2
 
