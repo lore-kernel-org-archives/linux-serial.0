@@ -1,96 +1,91 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 tty-next 4/8] n_tty: Refactor PARMRK doubling checks
-Date: Mon,  2 Dec 2013 14:24:44 -0500
-Message-ID: <1386012288-5079-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 tty-next 1/8] n_tty: Merge .receive_buf() flavors
+Date: Mon,  2 Dec 2013 14:24:41 -0500
+Message-ID: <1386012288-5079-2-git-send-email-peter@hurleysoftware.com>
 References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
  <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:44382 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754914Ab3LBTZp (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 14:25:45 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Perform PARMRK doubling checks explicitly; remove ternary idiom
-and local variable.
+N_TTY's direct and flow-controlled flavors of the .receive_buf()
+method are nearly identical; fold together.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/tty/n_tty.c | 43 ++++++++++++++++---------------------------
+ 1 file changed, 16 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index f8a76d3..008b6e5 100644
+index d4d63b0..446ccfd 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1260,7 +1260,6 @@ static int
- n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	int parmrk;
- 
- 	if (I_IXON(tty)) {
- 		if (c == START_CHAR(tty)) {
-@@ -1345,8 +1344,6 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- 		}
- 		if ((c == EOL_CHAR(tty)) ||
- 		    (c == EOL2_CHAR(tty) && L_IEXTEN(tty))) {
--			parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty))
--				 ? 1 : 0;
- 			/*
- 			 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
- 			 */
-@@ -1361,7 +1358,7 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- 			 * XXX does PARMRK doubling happen for
- 			 * EOL_CHAR and EOL2_CHAR?
- 			 */
--			if (parmrk)
-+			if (c == (unsigned char) '\377' && I_PARMRK(tty))
- 				put_tty_queue(c, ldata);
- 
- handle_newline:
-@@ -1375,7 +1372,6 @@ handle_newline:
- 		}
+@@ -1677,32 +1677,9 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
  	}
- 
--	parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
- 	if (L_ECHO(tty)) {
- 		finish_erasing(ldata);
- 		if (c == '\n')
-@@ -1389,7 +1385,8 @@ handle_newline:
- 		commit_echoes(tty);
- 	}
- 
--	if (parmrk)
-+	/* PARMRK doubling check */
-+	if (c == (unsigned char) '\377' && I_PARMRK(tty))
- 		put_tty_queue(c, ldata);
- 
- 	put_tty_queue(c, ldata);
-@@ -1400,7 +1397,6 @@ static inline void
- n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	int parmrk;
- 
- 	if (tty->stopped && !tty->flow_stopped && I_IXON(tty) && I_IXANY(tty)) {
- 		start_tty(tty);
-@@ -1414,8 +1410,8 @@ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
- 		echo_char(c, tty);
- 		commit_echoes(tty);
- 	}
--	parmrk = (c == (unsigned char) '\377' && I_PARMRK(tty)) ? 1 : 0;
--	if (parmrk)
-+	/* PARMRK doubling check */
-+	if (c == (unsigned char) '\377' && I_PARMRK(tty))
- 		put_tty_queue(c, ldata);
- 	put_tty_queue(c, ldata);
  }
+ 
+-static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+-			      char *fp, int count)
+-{
+-	int room, n;
+-
+-	down_read(&tty->termios_rwsem);
+-
+-	while (1) {
+-		room = receive_room(tty);
+-		n = min(count, room);
+-		if (!n)
+-			break;
+-		__receive_buf(tty, cp, fp, n);
+-		cp += n;
+-		if (fp)
+-			fp += n;
+-		count -= n;
+-	}
+-
+-	tty->receive_room = room;
+-	n_tty_check_throttle(tty);
+-	up_read(&tty->termios_rwsem);
+-}
+-
+-static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
+-			      char *fp, int count)
++static int
++n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
++			 char *fp, int count, int flow)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int room, n, rcvd = 0;
+@@ -1713,7 +1690,7 @@ static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
+ 		room = receive_room(tty);
+ 		n = min(count, room);
+ 		if (!n) {
+-			if (!room)
++			if (flow && !room)
+ 				ldata->no_room = 1;
+ 			break;
+ 		}
+@@ -1732,6 +1709,18 @@ static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
+ 	return rcvd;
+ }
+ 
++static void n_tty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
++			      char *fp, int count)
++{
++	n_tty_receive_buf_common(tty, cp, fp, count, 0);
++}
++
++static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
++			      char *fp, int count)
++{
++	return n_tty_receive_buf_common(tty, cp, fp, count, 1);
++}
++
+ int is_ignored(int sig)
+ {
+ 	return (sigismember(&current->blocked, sig) ||
 -- 
 1.8.1.2
-
