@@ -1,70 +1,74 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 05/11] serial: support for 16550 serial ports on LP-8x4x
-Date: Mon, 2 Dec 2013 15:53:33 +0200
-Message-ID: <20131202135333.GJ3942@xps8300>
+Subject: Re: [PATCH 01/11] resolve PXA<->8250 serial device address conflict
+Date: Mon, 2 Dec 2013 16:10:33 +0200
+Message-ID: <20131202141033.GK3942@xps8300>
 References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
- <1385879185-22455-6-git-send-email-ynvich@gmail.com>
- <20131202084845.GD3942@xps8300>
- <1385984782.12531.26.camel@host5.omatika.ru>
+ <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+ <20131202090253.GE3942@xps8300>
+ <1385976238.12531.8.camel@host5.omatika.ru>
+ <20131202094932.GF3942@xps8300>
+ <1385980005.12531.21.camel@host5.omatika.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:29245 "EHLO mga09.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:44810 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751510Ab3LBNxm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 08:53:42 -0500
+	id S1751515Ab3LBOKi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Dec 2013 09:10:38 -0500
 Content-Disposition: inline
-In-Reply-To: <1385984782.12531.26.camel@host5.omatika.ru>
+In-Reply-To: <1385980005.12531.21.camel@host5.omatika.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Sergei Ianovich <ynvich@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
 Hi,
 
-On Mon, Dec 02, 2013 at 03:46:22PM +0400, Sergei Ianovich wrote:
-> On Mon, 2013-12-02 at 10:48 +0200, Heikki Krogerus wrote:
-> > On Sun, Dec 01, 2013 at 10:26:18AM +0400, Sergei Ianovich wrote:
-> > > +static int request_and_remap(int i)
-> > > +{
-> > > +	if (!request_mem_region(extra_mem[i], 1, "serial"))
-> > > +		return -EBUSY;
-> > > +
-> > > +	lp8x4x_data[i].private_data = ioremap(extra_mem[i], 1);
-> > > +	if (lp8x4x_data[i].private_data)
-> > > +		return 0;
-> > > +
-> > > +	release_mem_region(extra_mem[i], 1);
-> > > +	return -ENODEV;
-> 
-> > Instead of registering a platform device for serial8250 here, you need
-> > to simply register a platform driver for something like lp8x4x_serial.
-> > The platform code will to registers the platform devices for it. You
-> > will use serial8250_register_8250_port() in your probe to register a
-> > new port. Use 8250_em.c and 8250_dw.c under drivers/tty/serial/8250/
-> > as an example.
+On Mon, Dec 02, 2013 at 02:26:45PM +0400, Sergei Ianovich wrote:
+> On Mon, 2013-12-02 at 11:49 +0200, Heikki Krogerus wrote:
+> > On Mon, Dec 02, 2013 at 01:23:58PM +0400, Sergei Ianovich wrote:
+> > > On Mon, 2013-12-02 at 11:02 +0200, Heikki Krogerus wrote:
+> > > > 
+> > > > If drivers/tty/serial/pxa.c was converted to an other probe driver for
+> > > > the 8250, this would not be an issue.
+> > > 
+> > > It seems that my patch is not going to be accepted. However, there is a
+> > > device which has both PXA ports and a additional 8250 accent chip. As a
+> > > result, there is a device allocation conflict. For the device to be
+> > > usable the conflict needs to be resolved.
+> > > 
+> > > Do you mean that drivers/tty/serial/pxa.c needs to be rewritten to
+> > > support lp8x4x special case?
 > > 
-> > You don't need to introduce plat_serial8250_port so you won't need
-> > the QUIRK_PORT stuff. You deliver the iomem and the irq as normal
-> > resources that the driver uses when you create the platform device.
-> > That of course also means the driver does not need to care about the
-> > instances. The platform code will generate a platform device for as
-> > many ports you have and set to resources accordingly.
+> > Sorry I was not clear. I was suggesting that drivers/tty/serial/pxa.c
+> > would be converted to drivers/tty/serial/8250/8250_pxa.c since it
+> > looks to me like just an other 16x50 compatible UART. That would fix
+> > the issue with the name conflict. You would then simply register 8250
+> > ports from two probe drivers (drivers/tty/serial/8250/8250_pxa.c and
+> > drivers/tty/serial/8250/8250_lp8x4x.c).
+> > 
+> > Depending on the order you register your platform devices (which you
+> > decide in your platform code), but let's say the pxa gets registered
+> > first and let's say it only has one port. You will then have in your
+> > system /dev/ttyS0 for the pxa port and /dev/ttyS[1-4] for the other
+> > UART.
+> > 
+> > I hope I was able to explain what I mean this time :)
 > 
-> 8250_core.c doesn't use platform infrastructure to request and map IO
-> memory. There will be a conflict (and an error in
-> serial8250_request_std_resource()), if main IO memory is requested by
-> the platform device, won't it?
+> Sorry, I wasn't clear as well. I got it right the first time. You mean
+> pxa.c needs to merged into 8250. This will solve the conflict in
+> question, and do it the right way. However, this will be a *much* bigger
+> patch, and it will affect everyone on pxa.
+> 
+> Who makes the decision which way to go?
 
-You don't need to request the mem region in your probe driver.
+Greg and Russel make this decision. By having the pxa driver simply
+register 8250 ports would probable reduce the code. Thats about the
+biggest benefit from it.
 
-You can still map it. You have the flag UPF_IOREMAP that you can use
-to tell 8250_code.c to map the region. If you don't set the flag,
-8250_core.c will in practice expect that port->membase is already set
-by the probe driver.
-
-Check 8250_dw.c. It does the mapping on it's own and simply doesn't
-set the flag.
+It would still be something nice to have IMO. Ideally all the
+8250/16x50 UARTs should register the ports with 8250_core.c, and not
+create complete uart driver on their own.
 
 Br,
 
