@@ -1,216 +1,96 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 05/11] serial: support for 16550 serial ports on LP-8x4x
-Date: Mon, 2 Dec 2013 10:48:45 +0200
-Message-ID: <20131202084845.GD3942@xps8300>
+Subject: Re: [PATCH 01/11] resolve PXA<->8250 serial device address conflict
+Date: Mon, 2 Dec 2013 11:02:53 +0200
+Message-ID: <20131202090253.GE3942@xps8300>
 References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
- <1385879185-22455-6-git-send-email-ynvich@gmail.com>
+ <1385879185-22455-2-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:37023 "EHLO mga02.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:15840 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752562Ab3LBIsu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 03:48:50 -0500
+	id S1751232Ab3LBJDK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Dec 2013 04:03:10 -0500
 Content-Disposition: inline
-In-Reply-To: <1385879185-22455-6-git-send-email-ynvich@gmail.com>
+In-Reply-To: <1385879185-22455-2-git-send-email-ynvich@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Sergei Ianovich <ynvich@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
 Hi,
 
-On Sun, Dec 01, 2013 at 10:26:18AM +0400, Sergei Ianovich wrote:
-> The patch adds support for 3 additional LP-8x4x built-in serial
-> ports.
+On Sun, Dec 01, 2013 at 10:26:14AM +0400, Sergei Ianovich wrote:
+> PXA serial ports have "standard" UART names (ttyS[0-3]), major
+> device number (4) and first minor device number (64) by default.
 > 
-> The device can also host up to 8 extension cards with 4 serial ports
-> on each card for a total of 35 ports. However, I don't have
-> the hardware to test extension cards, so they are not supported, yet.
+> If the system has extra 8250 serial port hardware in addition
+> to onboard PXA serial ports, default settings produce a device
+> allocation conflict.
+> 
+> The patch provides a configuration option which can move onboard
+> ports out of the way of 8250_core by assigning a different (204)
+> major number and corresponding device names (ttySA[0-3]).
 > 
 > Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
 > ---
->  arch/arm/configs/lp8x4x_defconfig       |   1 +
->  arch/arm/mach-pxa/include/mach/lp8x4x.h |   6 ++
->  drivers/tty/serial/8250/8250_lp8x4x.c   | 181 ++++++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig         |  11 ++
->  drivers/tty/serial/8250/Makefile        |   1 +
->  5 files changed, 200 insertions(+)
->  create mode 100644 drivers/tty/serial/8250/8250_lp8x4x.c
-> 
-> diff --git a/arch/arm/configs/lp8x4x_defconfig b/arch/arm/configs/lp8x4x_defconfig
-> index 03c85bc..d297a67 100644
-> --- a/arch/arm/configs/lp8x4x_defconfig
-> +++ b/arch/arm/configs/lp8x4x_defconfig
-> @@ -1141,6 +1141,7 @@ CONFIG_SERIAL_8250_NR_UARTS=36
->  CONFIG_SERIAL_8250_RUNTIME_UARTS=36
->  CONFIG_SERIAL_8250_EXTENDED=y
->  CONFIG_SERIAL_8250_MANY_PORTS=y
-> +CONFIG_SERIAL_8250_LP8X4X=m
->  CONFIG_SERIAL_8250_SHARE_IRQ=y
->  # CONFIG_SERIAL_8250_DETECT_IRQ is not set
->  # CONFIG_SERIAL_8250_RSA is not set
-> diff --git a/arch/arm/mach-pxa/include/mach/lp8x4x.h b/arch/arm/mach-pxa/include/mach/lp8x4x.h
-> index a49df22..4d5474e 100644
-> --- a/arch/arm/mach-pxa/include/mach/lp8x4x.h
-> +++ b/arch/arm/mach-pxa/include/mach/lp8x4x.h
-> @@ -50,6 +50,12 @@
->  #define LP8X4X_CLRFALLINT	LP8X4X_P2V(0x1700901a)
->  #define LP8X4X_RWRTC		LP8X4X_P2V(0x1700901c)
->  #define LP8X4X_SRAMBANK		0x1700901e
-> +#define LP8X4X_TTYS0_QUIRK	0x17009030
-> +#define LP8X4X_TTYS1_QUIRK	0x17009032
-> +#define LP8X4X_TTYS2_QUIRK	0x17009034
-> +#define LP8X4X_TTYS0_IOMEM	0x17009050
-> +#define LP8X4X_TTYS1_IOMEM	0x17009060
-> +#define LP8X4X_TTYS2_IOMEM	0x17009070
->  #define LP8X4X_SRAM		0x1700a000
->  
->  /* board specific IRQs */
-> diff --git a/drivers/tty/serial/8250/8250_lp8x4x.c b/drivers/tty/serial/8250/8250_lp8x4x.c
-> new file mode 100644
-> index 0000000..27b01f0b
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_lp8x4x.c
-> @@ -0,0 +1,181 @@
-> +/*  linux/drivers/tty/serial/8250/8250_lp8x4x.c
-> + *
-> + *  Support for 16550 serial ports on ICP DAS LP-8x4x
-> + *
-> + *  Copyright (C) 2013 Sergei Ianovich <ynvich@gmail.com>
-> + *  Framework taken from linux/drivers/tty/serial/8250/8250_accent.c
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License version 2 as
-> + *  published by the Free Software Foundation.
-> + */
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/irq.h>
-> +#include <linux/delay.h>
-> +#include <linux/serial_8250.h>
-> +#include <mach/lp8x4x.h>
-> +#include <linux/io.h>
-> +
-> +#define QUIRK_PORT(_base, _irq)					\
-> +	{							\
-> +		.iobase		= _base,			\
-> +		.membase	= (void *) _base,		\
-> +		.mapbase	= _base,			\
-> +		.irq		= _irq,				\
-> +		.uartclk	= 14745600,			\
-> +		.regshift	= 1,				\
-> +		.iotype		= UPIO_MEM,			\
-> +		.flags		= UPF_IOREMAP,			\
-> +		.set_termios	= lp8x4x_set_termios,		\
-> +		.serial_in	= lp8x4x_serial_in,		\
-> +		.serial_out	= lp8x4x_serial_out,		\
-> +	}
-> +
-> +static void lp8x4x_set_termios(struct uart_port *port,
-> +		struct ktermios *termios, struct ktermios *old)
-> +{
+>  drivers/tty/serial/Kconfig | 19 +++++++++++++++++++
+>  drivers/tty/serial/pxa.c   | 22 ++++++++++++++++++----
+>  2 files changed, 37 insertions(+), 4 deletions(-)
+> diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
 
 <snip>
 
-> +}
+> --- a/drivers/tty/serial/pxa.c
+> +++ b/drivers/tty/serial/pxa.c
+> @@ -593,6 +593,20 @@ serial_pxa_type(struct uart_port *port)
+>  static struct uart_pxa_port *serial_pxa_ports[4];
+>  static struct uart_driver serial_pxa_reg;
+>  
+> +#ifndef CONFIG_SERIAL_PXA_AS_TTYSA
 > +
-> +static unsigned int lp8x4x_serial_in(struct uart_port *p, int offset)
-> +{
-> +	unsigned int b;
-> +	udelay(30);
-> +	offset = offset << p->regshift;
-> +	b = readb(p->membase + offset);
-> +	return b;
-> +}
+> +#define PXA_TTY_NAME	"ttyS"
+> +#define PXA_TTY_MAJOR	TTY_MAJOR
+> +#define PXA_TTY_MINOR	64
 > +
-> +static void lp8x4x_serial_out(struct uart_port *p, int offset, int value)
-> +{
-> +	offset = offset << p->regshift;
-> +	writeb(value, p->membase + offset);
-> +}
+> +#else
 > +
-> +static struct plat_serial8250_port lp8x4x_data[] = {
-> +	QUIRK_PORT(LP8X4X_TTYS0_IOMEM, LP8X4X_TTYS0_IRQ),
-> +	QUIRK_PORT(LP8X4X_TTYS1_IOMEM, LP8X4X_TTYS1_IRQ),
-> +	QUIRK_PORT(LP8X4X_TTYS2_IOMEM, LP8X4X_TTYS2_IRQ),
-> +	{ },
-> +};
+> +#define PXA_TTY_NAME	"ttySA"
+> +#define PXA_TTY_MAJOR	204
+> +#define PXA_TTY_MINOR	5
 > +
-> +/* Total number of ports can be 35. The first 3 ports are on
-> + * the device, the rest are on extension slots. Only the first 3
-> + * require termios quirk */
-> +#define LP8X4X_QUIRK_PORTS	3
+> +#endif
 > +
-> +static unsigned int extra_mem[LP8X4X_QUIRK_PORTS] = {
-> +	LP8X4X_TTYS0_QUIRK,
-> +	LP8X4X_TTYS1_QUIRK,
-> +	LP8X4X_TTYS2_QUIRK
-> +};
-> +
-> +static int request_and_remap(int i)
-> +{
-> +	if (!request_mem_region(extra_mem[i], 1, "serial"))
-> +		return -EBUSY;
-> +
-> +	lp8x4x_data[i].private_data = ioremap(extra_mem[i], 1);
-> +	if (lp8x4x_data[i].private_data)
-> +		return 0;
-> +
-> +	release_mem_region(extra_mem[i], 1);
-> +	return -ENODEV;
-> +}
-> +
-> +static void release_and_unmap(int i)
-> +{
-> +	iounmap((void *) lp8x4x_data[i].private_data);
-> +	release_mem_region(extra_mem[i], 1);
-> +}
-> +
-> +static struct platform_device lp8x4x_device = {
-> +	.name			= "serial8250",
-> +	.id			= PLAT8250_DEV_ACCENT,
-> +	.dev			= {
-> +		.platform_data	= lp8x4x_data,
-> +	},
-> +};
-> +
-> +static int __init lp8x4x_init(void)
-> +{
-> +	int i = 0;
-> +	int err = 0;
-> +
-> +	for (i = 0; i < LP8X4X_QUIRK_PORTS; i++) {
-> +		err = request_and_remap(i);
-> +		if (err == 0)
-> +			continue;
-> +
-> +		for (; i >= 0; i--)
-> +			release_and_unmap(i);
-> +		lp8x4x_device.dev.platform_data = NULL;
-> +		return err;
-> +	}
-> +	return platform_device_register(&lp8x4x_device);
-> +}
-> +
-> +module_init(lp8x4x_init);
+>  #ifdef CONFIG_SERIAL_PXA_CONSOLE
+>  
+>  #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+> @@ -751,7 +765,7 @@ serial_pxa_console_setup(struct console *co, char *options)
+>  }
+>  
+>  static struct console serial_pxa_console = {
+> -	.name		= "ttyS",
+> +	.name		= PXA_TTY_NAME,
+>  	.write		= serial_pxa_console_write,
+>  	.device		= uart_console_device,
+>  	.setup		= serial_pxa_console_setup,
+> @@ -792,9 +806,9 @@ static struct uart_ops serial_pxa_pops = {
+>  static struct uart_driver serial_pxa_reg = {
+>  	.owner		= THIS_MODULE,
+>  	.driver_name	= "PXA serial",
+> -	.dev_name	= "ttyS",
+> -	.major		= TTY_MAJOR,
+> -	.minor		= 64,
+> +	.dev_name	= PXA_TTY_NAME,
+> +	.major		= PXA_TTY_MAJOR,
+> +	.minor		= PXA_TTY_MINOR,
+>  	.nr		= 4,
+>  	.cons		= PXA_CONSOLE,
+>  };
 
-Instead of registering a platform device for serial8250 here, you need
-to simply register a platform driver for something like lp8x4x_serial.
-The platform code will to registers the platform devices for it. You
-will use serial8250_register_8250_port() in your probe to register a
-new port. Use 8250_em.c and 8250_dw.c under drivers/tty/serial/8250/
-as an example.
+If drivers/tty/serial/pxa.c was converted to an other probe driver for
+the 8250, this would not be an issue.
 
-You don't need to introduce plat_serial8250_port so you won't need
-the QUIRK_PORT stuff. You deliver the iomem and the irq as normal
-resources that the driver uses when you create the platform device.
-That of course also means the driver does not need to care about the
-instances. The platform code will generate a platform device for as
-many ports you have and set to resources accordingly.
-
-
-Thanks,
+Br,
 
 -- 
 heikki
