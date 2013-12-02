@@ -1,85 +1,54 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 tty-next 6/8] n_tty: Only perform wakeups for waiters
-Date: Mon,  2 Dec 2013 14:24:46 -0500
-Message-ID: <1386012288-5079-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 tty-next 5/8] n_tty: Refactor input_available_p() by call site
+Date: Mon,  2 Dec 2013 14:24:45 -0500
+Message-ID: <1386012288-5079-6-git-send-email-peter@hurleysoftware.com>
 References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
  <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:44392 "EHLO
-	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755394Ab3LBTZx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 14:25:53 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Only wakeup the _waiting_ reader, polls and/or writer(s).
+Distinguish if caller is n_tty_poll() or n_tty_read(), and
+set the read/wakeup threshold accordingly.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/tty/n_tty.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index aae171e..5254082 100644
+index 008b6e5..aae171e 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -275,7 +275,8 @@ static void n_tty_check_unthrottle(struct tty_struct *tty)
- 			return;
- 		n_tty_set_room(tty);
- 		n_tty_write_wakeup(tty->link);
--		wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
-+		if (waitqueue_active(&tty->link->write_wait))
-+			wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
- 		return;
- 	}
- 
-@@ -350,7 +351,8 @@ static void n_tty_packet_mode_flush(struct tty_struct *tty)
- 	spin_lock_irqsave(&tty->ctrl_lock, flags);
- 	if (tty->link->packet) {
- 		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
--		wake_up_interruptible(&tty->link->read_wait);
-+		if (waitqueue_active(&tty->link->read_wait))
-+			wake_up_interruptible(&tty->link->read_wait);
- 	}
- 	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- }
-@@ -1158,7 +1160,8 @@ static void n_tty_receive_break(struct tty_struct *tty)
- 		put_tty_queue('\0', ldata);
- 	}
- 	put_tty_queue('\0', ldata);
--	wake_up_interruptible(&tty->read_wait);
-+	if (waitqueue_active(&tty->read_wait))
-+		wake_up_interruptible(&tty->read_wait);
+@@ -1881,14 +1881,15 @@ static int n_tty_open(struct tty_struct *tty)
+ 	return 0;
  }
  
- /**
-@@ -1216,7 +1219,8 @@ static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
- 		put_tty_queue('\0', ldata);
- 	else
- 		put_tty_queue(c, ldata);
--	wake_up_interruptible(&tty->read_wait);
-+	if (waitqueue_active(&tty->read_wait))
-+		wake_up_interruptible(&tty->read_wait);
- }
+-static inline int input_available_p(struct tty_struct *tty, int amt)
++static inline int input_available_p(struct tty_struct *tty, int poll)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
++	int amt = poll && !TIME_CHAR(tty) ? MIN_CHAR(tty) : 1;
  
- static void
-@@ -1811,8 +1815,10 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- 		start_tty(tty);
+ 	if (ldata->icanon && !L_EXTPROC(tty)) {
+ 		if (ldata->canon_head != ldata->read_tail)
+ 			return 1;
+-	} else if (read_cnt(ldata) >= (amt ? amt : 1))
++	} else if (read_cnt(ldata) >= amt)
+ 		return 1;
  
- 	/* The termios change make the tty ready for I/O */
--	wake_up_interruptible(&tty->write_wait);
--	wake_up_interruptible(&tty->read_wait);
-+	if (waitqueue_active(&tty->write_wait))
-+		wake_up_interruptible(&tty->write_wait);
-+	if (waitqueue_active(&tty->read_wait))
-+		wake_up_interruptible(&tty->read_wait);
- }
+ 	return 0;
+@@ -2393,7 +2394,7 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
  
- /**
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
+-	if (input_available_p(tty, TIME_CHAR(tty) ? 0 : MIN_CHAR(tty)))
++	if (input_available_p(tty, 1))
+ 		mask |= POLLIN | POLLRDNORM;
+ 	if (tty->packet && tty->link->ctrl_status)
+ 		mask |= POLLPRI | POLLIN | POLLRDNORM;
 -- 
 1.8.1.2
-
