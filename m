@@ -1,41 +1,61 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 tty-next 2/8] n_tty: Un-inline slow-path n_tty_receive_char()
-Date: Mon,  2 Dec 2013 14:24:42 -0500
-Message-ID: <1386012288-5079-3-git-send-email-peter@hurleysoftware.com>
-References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
- <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+From: Shuah Khan <shuah.kh@samsung.com>
+Subject: Re: 3.12.x looses serial mouse over hibernate + resume
+Date: Mon, 02 Dec 2013 12:30:57 -0700
+Message-ID: <529CDFF1.2080807@samsung.com>
+References: <52951E69.7090602@netscape.net>
+ <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net>
+ <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com>
+ <20131202164525.GA32406@core.coreip.homeip.net>
+ <529CD303.4040103@netscape.net> <529CD528.9000709@samsung.com>
+ <20131202190824.GB5245@core.coreip.homeip.net>
+Reply-To: shuah.kh@samsung.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout4.w2.samsung.com ([211.189.100.14]:48234 "EHLO
+	usmailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753047Ab3LBTbB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Dec 2013 14:31:01 -0500
+In-reply-to: <20131202190824.GB5245@core.coreip.homeip.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Manuel Krause <manuelkrause@netscape.net>, Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, "shuahkhan@gmail.com" <shuahkhan@gmail.com>, Shuah Khan <shuah.kh@samsung.com>
 
-Commit e60d27c4d8b33ba20896b76b6558f061bc6460ff,
-n_tty: Factor LNEXT processing from per-char i/o path,
-mistakenly inlined the non-inline alias, n_tty_receive_char(),
-for the inline function, n_tty_receive_char_inline().
+On 12/02/2013 12:08 PM, Dmitry Torokhov wrote:
+> On Mon, Dec 02, 2013 at 11:44:56AM -0700, Shuah Khan wrote:
 
-As n_tty_receive_char() is intended for slow-path char
-processing only, un-inline it.
+>>>
+>>
+>> I am glad the problem is fixed. But I am puzzled. pnp_bus_resume()
+>> didn't handle restore prior to this change. state doesn't get passed
+>> in to legacy resume routines. I had to add freeze to handle
+>> PMSG_FREEZE case, sounds like restore is needed as well, however I
+>> don't see where how restore is handled prior to this change.
+>
+> Take a look at drivers/base/platform.c::platform_pm_restore()
+>
+> Thanks.
+>
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes I see it now. Before the conversion, platform_legacy_resume() path 
+is taken since pnp didn't have pm.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 446ccfd..86de3d0 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1420,7 +1420,7 @@ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
- 	put_tty_queue(c, ldata);
- }
- 
--static inline void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
-+static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- {
- 	n_tty_receive_char_inline(tty, c);
- }
+        if (drv->pm) {
+                 if (drv->pm->restore)
+                         ret = drv->pm->restore(dev);
+        } else {
+                 ret = platform_legacy_resume(dev);
+         }
+
+Thanks for fixing the problem.
+
+-- Shuah
+
 -- 
-1.8.1.2
+Shuah Khan
+Senior Linux Kernel Developer - Open Source Group
+Samsung Research America(Silicon Valley)
+shuah.kh@samsung.com | (970) 672-0658
