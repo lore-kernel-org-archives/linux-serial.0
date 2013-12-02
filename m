@@ -1,61 +1,62 @@
-From: Shuah Khan <shuah.kh@samsung.com>
-Subject: Re: 3.12.x looses serial mouse over hibernate + resume
-Date: Mon, 02 Dec 2013 12:30:57 -0700
-Message-ID: <529CDFF1.2080807@samsung.com>
-References: <52951E69.7090602@netscape.net>
- <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net>
- <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com>
- <20131202164525.GA32406@core.coreip.homeip.net>
- <529CD303.4040103@netscape.net> <529CD528.9000709@samsung.com>
- <20131202190824.GB5245@core.coreip.homeip.net>
-Reply-To: shuah.kh@samsung.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH] tty: xuartps: Properly guard sysrq specific code
+Date: Mon,  2 Dec 2013 11:38:38 -0800
+Message-ID: <1386013118-25280-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout4.w2.samsung.com ([211.189.100.14]:48234 "EHLO
-	usmailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753047Ab3LBTbB (ORCPT
+Received: from mail-pb0-f52.google.com ([209.85.160.52]:37738 "EHLO
+	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752417Ab3LBTi7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 14:31:01 -0500
-In-reply-to: <20131202190824.GB5245@core.coreip.homeip.net>
+	Mon, 2 Dec 2013 14:38:59 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Manuel Krause <manuelkrause@netscape.net>, Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, "shuahkhan@gmail.com" <shuahkhan@gmail.com>, Shuah Khan <shuah.kh@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Masanari Iida <standby24x7@gmail.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>, Vlad Lungu <vlad.lungu@windriver.com>
 
-On 12/02/2013 12:08 PM, Dmitry Torokhov wrote:
-> On Mon, Dec 02, 2013 at 11:44:56AM -0700, Shuah Khan wrote:
+Commit 'tty: xuartps: Implement BREAK detection, add SYSRQ support'
+(0c0c47bc40a2e358d593b2d7fb93b50027fbfc0c) introduced sysrq support
+without properly guarding sysrq specific code which results in build
+errors when sysrq is disabled:
+	DNAME=KBUILD_STR(xilinx_uartps)" -c -o
+	drivers/tty/serial/.tmp_xilinx_uartps.o
+	drivers/tty/serial/xilinx_uartps.c
+	drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_isr':
+	drivers/tty/serial/xilinx_uartps.c:247:5: error: 'struct uart_port'
+	has no member named 'sysrq'
+	drivers/tty/serial/xilinx_uartps.c:247:5: error: 'struct uart_port'
+	has no member named 'sysrq'
+	drivers/tty/serial/xilinx_uartps.c:247:5: error: 'struct uart_port'
+	has no member named 'sysrq'
+	make[3]: *** [drivers/tty/serial/xilinx_uartps.o] Error 1
 
->>>
->>
->> I am glad the problem is fixed. But I am puzzled. pnp_bus_resume()
->> didn't handle restore prior to this change. state doesn't get passed
->> in to legacy resume routines. I had to add freeze to handle
->> PMSG_FREEZE case, sounds like restore is needed as well, however I
->> don't see where how restore is handled prior to this change.
->
-> Take a look at drivers/base/platform.c::platform_pm_restore()
->
-> Thanks.
->
+Reported-by: Masanari Iida <standby24x7@gmail.com>
+Cc: Vlad Lungu <vlad.lungu@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Yes I see it now. Before the conversion, platform_legacy_resume() path 
-is taken since pnp didn't have pm.
-
-        if (drv->pm) {
-                 if (drv->pm->restore)
-                         ret = drv->pm->restore(dev);
-        } else {
-                 ret = platform_legacy_resume(dev);
-         }
-
-Thanks for fixing the problem.
-
--- Shuah
-
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index e46e9f3f19b9..f619ad5b5eae 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -240,6 +240,7 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+ 					continue;
+ 			}
+ 
++#ifdef SUPPORT_SYSRQ
+ 			/*
+ 			 * uart_handle_sysrq_char() doesn't work if
+ 			 * spinlocked, for some reason
+@@ -253,6 +254,7 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+ 				}
+ 				spin_lock(&port->lock);
+ 			}
++#endif
+ 
+ 			port->icount.rx++;
+ 
 -- 
-Shuah Khan
-Senior Linux Kernel Developer - Open Source Group
-Samsung Research America(Silicon Valley)
-shuah.kh@samsung.com | (970) 672-0658
+1.8.4.4
+
