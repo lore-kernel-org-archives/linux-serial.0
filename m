@@ -1,209 +1,125 @@
-From: Manuel Krause <manuelkrause@netscape.net>
-Subject: Re: 3.12.x looses serial mouse over hibernate + resume
-Date: Mon, 02 Dec 2013 21:40:20 +0100
-Message-ID: <529CF034.1060505@netscape.net>
-References: <52951E69.7090602@netscape.net> <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net> <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com> <20131202164525.GA32406@core.coreip.homeip.net> <529CD303.4040103@netscape.net> <20131202190730.GA5245@core.coreip.homeip.net>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 03/10] tty: xuartps: Implement BREAK detection, add SYSRQ
+ support
+Date: Mon, 02 Dec 2013 15:42:05 -0500
+Message-ID: <529CF09D.6060906@hurleysoftware.com>
+References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com> <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20131202190730.GA5245@core.coreip.homeip.net>
+In-Reply-To: <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vlad Lungu <vlad.lungu@windriver.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2013-12-02 20:07, Dmitry Torokhov wrote:
-> On Mon, Dec 02, 2013 at 07:35:47PM +0100, Manuel Krause wrote:
->> On 2013-12-02 17:45, Dmitry Torokhov wrote:
->>> On Mon, Dec 02, 2013 at 08:38:16AM -0800, Dmitry Torokhov wrote:
->>>> On Monday, December 02, 2013 05:08:28 PM Manuel Krause wrote:
->>>>> On 2013-12-01 16:43, Peter Hurley wrote:
->>>>>> [ +cc Dmitry Torokhov, Greg Kroah-Hartman, linux-input,
->>>>>> linux-serial ]
->>>>>>
->>>>>> On 11/26/2013 05:19 PM, Manuel Krause wrote:
->>>>>>> Since kernel 3.12.0 I have a problem with hibernate+resume
->>>>>>> not reactivating my serial mouse (trackball) with my HP notebook.
->>>>>>> Kernels 3.11.0 til 9 don't show this behaviour.
->>>>>>>
->>>>>>> Machine:           HP Notebook with Core2Duo CPU (Penryn)
->>>>>>> Distro:            openSUSE 12.3, 64bit, continuously updated
->>>>>>> Desktop:           KDE 4.11.3
->>>>>>> MESA & drm & Xorg: most recent ones from:
->>>>>>>
->>>>>>> http://download.opensuse.org/repositories/home:/pontostroy:/X11/openSUSE_
->>>>>>> 12.3/x86_64/
->>>>>>>
->>>>>>> Current kernel:    3.12.1 vanilla from openSUSE repos, with
->>>>>>>
->>>>>>>                      -ck1 and BFQ patches
->>>>>>>
->>>>>>> The Logitech Trackman Marble FX is a PS/2 device and connected
->>>>>>> via an original Logitech
->>>>>>> PS/2-COM-port adapter and manually configured via my xorg.conf.
->>>>>>>
->>>>>>> At first, I blamed the -ck1 patches from Con Kolivas for this
->>>>>>> behaviour that I use in
->>>>>>> addition  to the BFQ patches, what has showed up as not right:
->>>>>>> This happens with the
->>>>>>> normal vanilla kernel
->>>>>>> schedulers for CPU and disk I/O, too.
->>>>>>>
->>>>>>> By coincidence I found a weird(!) way to reactivate the serial
->>>>>>> mouse:
->>>>>>> (1) call Hibernate (suspend-to-disk) from KDE desktop as normal
->>>>>>> (2) resume --> the PS/2 touchpad is working, the serial
->>>>>>> trackball NOT
->>>>>>> (3) call suspend-to-RAM (Sleep) from KDE, serial trackball
->>>>>>> still dead
->>>>>>> (4) execute `setserial -a /dev/ttyS0` in a konsole window or a
->>>>>>> tty* console
->>>>>>> (5) ==> serial trackball is back with all configuration from
->>>>>>> xorg.conf
->>>>>>>
->>>>>>> It's fully reproducible over multiple hibernations. This also
->>>>>>> happens when calling
->>>>>>> `pm-hibernate` (to-disk) and `pm-suspend` (to-RAM) and the
->>>>>>> setserial from a root shell
->>>>>>> in KDE or any tty*.
->>>>>>>
->>>>>>> Please, _always_CC_me_ -- as I'm not on the kernel mailing list.
->>>>>>
->>>>>> Manuel,
->>>>>>
->>>>>> Please attach complete dmesgs (zipped, if necessary) of a
->>>>>> suspend/resume cycle
->>>>>> on a vanilla 3.12.x (where resume fails) _and_ a vanilla 3.11.x
->>>>>> (where resume succeeds).
->>>>>>
->>>>>> For the test configurations, please do not apply patches.
->>>>>>
->>>>>> Regards,
->>>>>> Peter Hurley
->>>>>
->>>>> Thank you very much for your reply!
->>>>> Attached you'll find a zip file with the two edited dmesg logs of
->>>>> plain vanilla kernel runs.
->>>>>
->>>>> I have to add, that the resumes _do_ succeed in both cases, only
->>>>> the serial mouse doesn't get activated after hibernate in 3.12.x
->>>>> automatically. Just scan for and compare the lines indicating
->>>>> "serial 00:08: disabled" or "serial 00:08: activated". In 3.12.x
->>>>> the activation doesn't happen after hibernate, but after
->>>>> suspend-to-ram (sleep). That only after STR and not before a
->>>>> setserial gets my mouse back... a miracle. ;-)
->>>>
->>>> I do not see
->>>>
->>>>> [  206.577370] serial 00:08: activated
->>>>
->>>> in the restore from hibernation log of 3.12 which shoudl come from PNP
->>>> layer.
->>>>
->>>> [dtor@dtor-d630 work]$ git log --oneline v3.11..v3.12 -- drivers/pnp/
->>>> 729377d pnp: change pnp bus pm_ops to invoke pnp driver dev_pm_ops if specified
->>>> ce63e18 Merge branch 'pnp'
->>>> 8ad928d ACPI / PM: Use ACPI_STATE_D3_COLD instead of ACPI_STATE_D3 everywhere
->>>> eaf140b PNP: convert PNP driver bus legacy pm_ops to dev_pm_ops
->>>>
->>>> I'd start looking into these commits.
->>>>
->>>
->>> Does the following patch fixes the issue?
->>>
->>
->> PNP: fix restoring devices after hibernation
->>
->> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
->>
->> On returning from hibernation 'restore; callback is called, not
->> 'resume'.
->> This fixes breakage introduced by commit
->> eaf140b60ec961252083ab8adaf67aef29a362dd
->>
->> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
->> ---
->>   drivers/pnp/driver.c |    3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
->> index a39ee38..185a24a 100644
->> --- a/drivers/pnp/driver.c
->> +++ b/drivers/pnp/driver.c
->> @@ -235,8 +235,9 @@ static int pnp_bus_resume(struct device *dev)
->>
->>   static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
->>   	.suspend = pnp_bus_suspend,
->> -	.freeze = pnp_bus_freeze,
->>   	.resume = pnp_bus_resume,
->> +	.freeze = pnp_bus_freeze,
->> +	.restore = pnp_bus_resume,
->>   };
->>
->>   struct bus_type pnp_bus_type = {
->>
->>
->> YES! This patch fixes the issue!!! (Even if compiled with a patched
->> kernel.)   ;-)
->>
->> Many thanks for your work!
->>
+On 10/17/2013 05:08 PM, Soren Brinkmann wrote:
+> From: Vlad Lungu <vlad.lungu@windriver.com>
 >
-> Thank you Manuel, but IO think the patch is not complete as we need to
-> re-enable PNP devices after we make a snapshot to make sure they are
-> working and can handle saving the data. Coudl you please try the patch
-> below?
+> The Cadence UART does not do break detection, even if the
+> datasheet says it does. This patch adds break detection in
+> software (tested in 8N1 mode only) and enables SYSRQ,
+> allowing for Break-g to enter KDB and all the other goodies.
 >
+> Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
+> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+> ---
+> I ported this patch to 3.12 and fixed some style issues
+> ---
+>   drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 49 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index 8c0745951605..5d5557af4d22 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -11,13 +11,17 @@
+>    *
+>    */
+>
+> +#if defined(CONFIG_SERIAL_XILINX_PS_UART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+> +#define SUPPORT_SYSRQ
+> +#endif
+> +
+>   #include <linux/platform_device.h>
+>   #include <linux/serial.h>
+> +#include <linux/console.h>
+>   #include <linux/serial_core.h>
+>   #include <linux/slab.h>
+>   #include <linux/tty.h>
+>   #include <linux/tty_flip.h>
+> -#include <linux/console.h>
+>   #include <linux/clk.h>
+>   #include <linux/irq.h>
+>   #include <linux/io.h>
+> @@ -128,6 +132,9 @@
+>   #define XUARTPS_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
+>   #define XUARTPS_IXR_MASK	0x00001FFF /* Valid bit mask */
+>
+> +/* Goes in read_status_mask for break detection as the HW doesn't do it*/
+> +#define XUARTPS_IXR_BRK		0x80000000
+> +
+>   /** Channel Status Register
+>    *
+>    * The channel status register (CSR) is provided to enable the control logic
+> @@ -171,6 +178,23 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+>   	 */
+>   	isrstatus = xuartps_readl(XUARTPS_ISR_OFFSET);
+>
+> +	/*
+> +	 * There is no hardware break detection, so we interpret framing
+> +	 * error with all-zeros data as a break sequence. Most of the time,
+> +	 * there's another non-zero byte at the end of the sequence.
+> +	 */
+> +
+> +	if (isrstatus & XUARTPS_IXR_FRAMING) {
+> +		while (!(xuartps_readl(XUARTPS_SR_OFFSET) &
+> +					XUARTPS_SR_RXEMPTY)) {
+> +			if (!xuartps_readl(XUARTPS_FIFO_OFFSET)) {
+> +				port->read_status_mask |= XUARTPS_IXR_BRK;
+> +				isrstatus &= ~XUARTPS_IXR_FRAMING;
+> +			}
+> +		}
+> +		xuartps_writel(XUARTPS_IXR_FRAMING, XUARTPS_ISR_OFFSET);
+> +	}
+> +
+>   	/* drop byte with parity error if IGNPAR specified */
+>   	if (isrstatus & port->ignore_status_mask & XUARTPS_IXR_PARITY)
+>   		isrstatus &= ~(XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT);
+> @@ -184,6 +208,30 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
+>   		while ((xuartps_readl(XUARTPS_SR_OFFSET) &
+>   			XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
+>   			data = xuartps_readl(XUARTPS_FIFO_OFFSET);
+> +
+> +			/* Non-NULL byte after BREAK is garbage (99%) */
+> +			if (data && (port->read_status_mask &
+> +						XUARTPS_IXR_BRK)) {
+> +				port->read_status_mask &= ~XUARTPS_IXR_BRK;
+> +				port->icount.brk++;
+> +				if (uart_handle_break(port))
+> +					continue;
+> +			}
+> +
+> +			/*
+> +			 * uart_handle_sysrq_char() doesn't work if
+> +			 * spinlocked, for some reason
+> +			 */
+                                        ^^^^^^^^^^^^^^^
+Because the console write method, xuartps_console_write(), tries to
+lock the port->lock. Double-claim deadlock.
 
-PNP: fix restoring devices after hibernation
-
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-On returning from hibernation 'restore; callback is called, not 
-'resume'.
-This fixes breakage introduced by commit
-eaf140b60ec961252083ab8adaf67aef29a362dd
-
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
-  drivers/pnp/driver.c |   12 +++++++++++-
-  1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
-index a39ee38..2bd5c5f 100644
---- a/drivers/pnp/driver.c
-+++ b/drivers/pnp/driver.c
-@@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
-  	return __pnp_bus_suspend(dev, PMSG_FREEZE);
-  }
-
-+static int pnp_bus_poweroff(struct device *dev)
-+{
-+	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
-+}
-+
-  static int pnp_bus_resume(struct device *dev)
-  {
-  	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
-@@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
-  }
-
-  static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
-+	/* Suspend callbacks */
-  	.suspend = pnp_bus_suspend,
--	.freeze = pnp_bus_freeze,
-  	.resume = pnp_bus_resume,
-+	/* Hibernate callbacks */
-+	.freeze = pnp_bus_freeze,
-+	.thaw = pnp_bus_resume,
-+	.poweroff = pnp_bus_poweroff,
-+	.restore = pnp_bus_resume,
-  };
-
-  struct bus_type pnp_bus_type = {
-
-ALSO, YES, this second patch version does cure the issue, on 
-here, too.
-
-Best regards, Manuel Krause
+> +			 if (port->sysrq) {
+> +				spin_unlock(&port->lock);
+> +				if (uart_handle_sysrq_char(port,
+> +							(unsigned char)data)) {
+> +					spin_lock(&port->lock);
+> +					continue;
+> +				}
+> +				spin_lock(&port->lock);
+> +			}
+> +
+>   			port->icount.rx++;
+>
+>   			if (isrstatus & XUARTPS_IXR_PARITY) {
+>
