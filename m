@@ -1,125 +1,46 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 03/10] tty: xuartps: Implement BREAK detection, add SYSRQ
- support
-Date: Mon, 02 Dec 2013 15:42:05 -0500
-Message-ID: <529CF09D.6060906@hurleysoftware.com>
-References: <1382044093-29905-1-git-send-email-soren.brinkmann@xilinx.com> <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1382044093-29905-4-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Vlad Lungu <vlad.lungu@windriver.com>
+Subject: [PATCH tty-next 1/4] tty: Fix stale tty_buffer_flush() comment
+Date: Mon,  2 Dec 2013 16:12:02 -0500
+Message-ID: <1386018725-4781-2-git-send-email-peter@hurleysoftware.com>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout02.c08.mtsvc.net ([205.186.168.190]:51325 "EHLO
+	mailout02.c08.mtsvc.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756051Ab3LBVM2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Dec 2013 16:12:28 -0500
+In-Reply-To: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On 10/17/2013 05:08 PM, Soren Brinkmann wrote:
-> From: Vlad Lungu <vlad.lungu@windriver.com>
->
-> The Cadence UART does not do break detection, even if the
-> datasheet says it does. This patch adds break detection in
-> software (tested in 8N1 mode only) and enables SYSRQ,
-> allowing for Break-g to enter KDB and all the other goodies.
->
-> Signed-off-by: Vlad Lungu <vlad.lungu@windriver.com>
-> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> ---
-> I ported this patch to 3.12 and fixed some style issues
-> ---
->   drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++++++++++++++++++-
->   1 file changed, 49 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 8c0745951605..5d5557af4d22 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -11,13 +11,17 @@
->    *
->    */
->
-> +#if defined(CONFIG_SERIAL_XILINX_PS_UART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-> +#define SUPPORT_SYSRQ
-> +#endif
-> +
->   #include <linux/platform_device.h>
->   #include <linux/serial.h>
-> +#include <linux/console.h>
->   #include <linux/serial_core.h>
->   #include <linux/slab.h>
->   #include <linux/tty.h>
->   #include <linux/tty_flip.h>
-> -#include <linux/console.h>
->   #include <linux/clk.h>
->   #include <linux/irq.h>
->   #include <linux/io.h>
-> @@ -128,6 +132,9 @@
->   #define XUARTPS_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
->   #define XUARTPS_IXR_MASK	0x00001FFF /* Valid bit mask */
->
-> +/* Goes in read_status_mask for break detection as the HW doesn't do it*/
-> +#define XUARTPS_IXR_BRK		0x80000000
-> +
->   /** Channel Status Register
->    *
->    * The channel status register (CSR) is provided to enable the control logic
-> @@ -171,6 +178,23 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
->   	 */
->   	isrstatus = xuartps_readl(XUARTPS_ISR_OFFSET);
->
-> +	/*
-> +	 * There is no hardware break detection, so we interpret framing
-> +	 * error with all-zeros data as a break sequence. Most of the time,
-> +	 * there's another non-zero byte at the end of the sequence.
-> +	 */
-> +
-> +	if (isrstatus & XUARTPS_IXR_FRAMING) {
-> +		while (!(xuartps_readl(XUARTPS_SR_OFFSET) &
-> +					XUARTPS_SR_RXEMPTY)) {
-> +			if (!xuartps_readl(XUARTPS_FIFO_OFFSET)) {
-> +				port->read_status_mask |= XUARTPS_IXR_BRK;
-> +				isrstatus &= ~XUARTPS_IXR_FRAMING;
-> +			}
-> +		}
-> +		xuartps_writel(XUARTPS_IXR_FRAMING, XUARTPS_ISR_OFFSET);
-> +	}
-> +
->   	/* drop byte with parity error if IGNPAR specified */
->   	if (isrstatus & port->ignore_status_mask & XUARTPS_IXR_PARITY)
->   		isrstatus &= ~(XUARTPS_IXR_RXTRIG | XUARTPS_IXR_TOUT);
-> @@ -184,6 +208,30 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
->   		while ((xuartps_readl(XUARTPS_SR_OFFSET) &
->   			XUARTPS_SR_RXEMPTY) != XUARTPS_SR_RXEMPTY) {
->   			data = xuartps_readl(XUARTPS_FIFO_OFFSET);
-> +
-> +			/* Non-NULL byte after BREAK is garbage (99%) */
-> +			if (data && (port->read_status_mask &
-> +						XUARTPS_IXR_BRK)) {
-> +				port->read_status_mask &= ~XUARTPS_IXR_BRK;
-> +				port->icount.brk++;
-> +				if (uart_handle_break(port))
-> +					continue;
-> +			}
-> +
-> +			/*
-> +			 * uart_handle_sysrq_char() doesn't work if
-> +			 * spinlocked, for some reason
-> +			 */
-                                        ^^^^^^^^^^^^^^^
-Because the console write method, xuartps_console_write(), tries to
-lock the port->lock. Double-claim deadlock.
+Commit d7a68be4f265be10e24be931c257af30ca55566b,
+'tty: Only perform flip buffer flush from tty_buffer_flush()',
+removed buffer flushing from flush_to_ldisc().
 
-> +			 if (port->sysrq) {
-> +				spin_unlock(&port->lock);
-> +				if (uart_handle_sysrq_char(port,
-> +							(unsigned char)data)) {
-> +					spin_lock(&port->lock);
-> +					continue;
-> +				}
-> +				spin_lock(&port->lock);
-> +			}
-> +
->   			port->icount.rx++;
->
->   			if (isrstatus & XUARTPS_IXR_PARITY) {
->
+Fix function header comment which describes the former behavior.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_buffer.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 6664f0d..2cea1ab 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -208,9 +208,7 @@ static void tty_buffer_free(struct tty_port *port, struct tty_buffer *b)
+  *	tty_buffer_flush		-	flush full tty buffers
+  *	@tty: tty to flush
+  *
+- *	flush all the buffers containing receive data. If the buffer is
+- *	being processed by flush_to_ldisc then we defer the processing
+- *	to that function
++ *	flush all the buffers containing receive data.
+  *
+  *	Locking: takes buffer lock to ensure single-threaded flip buffer
+  *		 'consumer'
+-- 
+1.8.1.2
+
