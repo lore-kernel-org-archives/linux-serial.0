@@ -1,48 +1,72 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 0/2] serial: sh-sci: Prepare for CCF migration
-Date: Mon, 02 Dec 2013 14:36:32 +0100
-Message-ID: <1516614.DSSr7jaai1@avalon>
-References: <1385658706-20093-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 05/11] serial: support for 16550 serial ports on LP-8x4x
+Date: Mon, 2 Dec 2013 15:53:33 +0200
+Message-ID: <20131202135333.GJ3942@xps8300>
+References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
+ <1385879185-22455-6-git-send-email-ynvich@gmail.com>
+ <20131202084845.GD3942@xps8300>
+ <1385984782.12531.26.camel@host5.omatika.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:33068 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752410Ab3LBNg2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 08:36:28 -0500
-In-Reply-To: <1385658706-20093-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Received: from mga09.intel.com ([134.134.136.24]:29245 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751510Ab3LBNxm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 2 Dec 2013 08:53:42 -0500
+Content-Disposition: inline
+In-Reply-To: <1385984782.12531.26.camel@host5.omatika.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
+To: Sergei Ianovich <ynvich@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
-Hi Greg,
+Hi,
 
-On Thursday 28 November 2013 18:11:44 Laurent Pinchart wrote:
-> Hello,
+On Mon, Dec 02, 2013 at 03:46:22PM +0400, Sergei Ianovich wrote:
+> On Mon, 2013-12-02 at 10:48 +0200, Heikki Krogerus wrote:
+> > On Sun, Dec 01, 2013 at 10:26:18AM +0400, Sergei Ianovich wrote:
+> > > +static int request_and_remap(int i)
+> > > +{
+> > > +	if (!request_mem_region(extra_mem[i], 1, "serial"))
+> > > +		return -EBUSY;
+> > > +
+> > > +	lp8x4x_data[i].private_data = ioremap(extra_mem[i], 1);
+> > > +	if (lp8x4x_data[i].private_data)
+> > > +		return 0;
+> > > +
+> > > +	release_mem_region(extra_mem[i], 1);
+> > > +	return -ENODEV;
 > 
-> This patch set prepares the driver to CCF migration by replacing
-> clk_enable() and clk_disable() by clk_prepare_enable() and
-> clk_disable_unprepare() respectively (2/2). In order to do so it first
-> ensures that the clk_enable() and clk_disable() calls will only take place
-> from non-atomic context (1/2).
+> > Instead of registering a platform device for serial8250 here, you need
+> > to simply register a platform driver for something like lp8x4x_serial.
+> > The platform code will to registers the platform devices for it. You
+> > will use serial8250_register_8250_port() in your probe to register a
+> > new port. Use 8250_em.c and 8250_dw.c under drivers/tty/serial/8250/
+> > as an example.
+> > 
+> > You don't need to introduce plat_serial8250_port so you won't need
+> > the QUIRK_PORT stuff. You deliver the iomem and the irq as normal
+> > resources that the driver uses when you create the platform device.
+> > That of course also means the driver does not need to care about the
+> > instances. The platform code will generate a platform device for as
+> > many ports you have and set to resources accordingly.
 > 
-> Greg, these patches are dependencies for a bunch of ARM patches that will go
-> through Simon's tree. Would you be fine if Simon merged all sh-sci patches
-> through his tree for v3.14 ?
+> 8250_core.c doesn't use platform infrastructure to request and map IO
+> memory. There will be a conflict (and an error in
+> serial8250_request_std_resource()), if main IO memory is requested by
+> the platform device, won't it?
 
-Ping ?
+You don't need to request the mem region in your probe driver.
 
-> Laurent Pinchart (2):
->   serial: sh-sci: Don't enable/disable port from within break timer
->   serial: sh-sci: Convert to clk_prepare/unprepare
-> 
->  drivers/tty/serial/sh-sci.c | 20 ++++++++++++--------
->  1 file changed, 12 insertions(+), 8 deletions(-)
+You can still map it. You have the flag UPF_IOREMAP that you can use
+to tell 8250_code.c to map the region. If you don't set the flag,
+8250_core.c will in practice expect that port->membase is already set
+by the probe driver.
+
+Check 8250_dw.c. It does the mapping on it's own and simply doesn't
+set the flag.
+
+Br,
+
 -- 
-Regards,
-
-Laurent Pinchart
-
+heikki
