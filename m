@@ -1,113 +1,110 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
-Date: Mon, 02 Dec 2013 22:22:00 -0500
-Message-ID: <529D4E58.9020101@hurleysoftware.com>
-References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com> <20131203000116.0d512b59@alan.etchedpixels.co.uk>
+Date: Tue, 3 Dec 2013 14:20:11 +0000
+Message-ID: <20131203142011.371067ea@alan.etchedpixels.co.uk>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
+	<20131203000116.0d512b59@alan.etchedpixels.co.uk>
+	<529D4E58.9020101@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40022 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751739Ab3LCDWI (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:53042 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752630Ab3LCOUW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 22:22:08 -0500
-In-Reply-To: <20131203000116.0d512b59@alan.etchedpixels.co.uk>
+	Tue, 3 Dec 2013 09:20:22 -0500
+In-Reply-To: <529D4E58.9020101@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 12/02/2013 07:01 PM, One Thousand Gnomes wrote:
->> I cc'd you because of your recent involvement in other
->> tty patches/bug fixes and because it's your FIXME comment.
->> Feel free to ignore and/or let me know you would prefer not to
->> be bothered.
->
-> It does seem horribly convoluted and likely to dig bigger long term holes
-> than the one its filling. The tty layer has suffered far too much from
-> "dodging one bullet by being clever and then getting shot at twice more"
+> These types of nested lock problems are common when different layers use
+> the same interface (the fb subsystem's use of the vt driver is another
+> example).
 
-Alan,
+They are, and they end up nasty and eventually become impossible to fix.
+Better to fix the underlying fundamental error as and when we can. The
+current state of vt and fb and drm and handling accelerated scrolling of
+a quota warning on drm on fb on vt is a testimony to what happens if you
+don't go back and fix it properly now and then.
 
-Thanks for the feedback.
+In this case I would argue there is a fundamental error. That is trying to
+combine locking of the structures for buffers and locking the receive
+path. It's a mistake and I don't see how you can properly clean up the
+tty layer with that mix of high and low level lock in one. It's already
+turned into a hackfest with buf->priority.
 
-I think any solution will be seriously constrained by the larger design
-choice; the simplicity and performance of direct writes into a shared
-buffer has trade-offs.
+The old code wasn't the right answer either but did isolate the locks
+better.
 
-I chose what I felt was the simplest route; the code itself is
-straightforward. Maybe I could move the locking documentation into the
-changelog instead?
 
-Setting aside the parallel flush interface complications (which in some
-form is necessary even with a shared lock), there are a limited number
-of solutions to concurrent pty buffer flushes:
-1. Leave it broken.
-2. As submitted.
-3. Drop the buf->lock before flushing. This was the other solution I
-    seriously considered, because a parallel flush interface would not
-    be necessary then.
-    The problem with this solution is that input processing would need
-    to be aborted and restarted in case the current buffer data had been
-    flushed in parallel while the buf->lock was unowned; this requires
-    bubbling up return values from n_tty_receive_break() and
-    n_tty_receive_signal_char(), plus the actual processed char count
-    would need to propagate as well.
-4. Do the flush in flush_to_ldisc(). This is variation on 3, because
-    current input processing would still need to abort. This solution
-    suffers in that the echo may still be deferred, since at the time
-    of processing the signal, the other pty write buffer may still be
-    full.
-5. Probably a few others I haven't thought of.
+We've got three confused locks IMHO all stuck in as one
 
- > Bigger question (and one I'm not going to try and untangle at quarter to
- > midnight). Is there any reason that the buffer locking has to be per tty
- > not a shared lock in some cases.
+- integrity of the buffer queue
+- lifetime of a buffer (don't free a buffer as someone else is
+  processing it)
+- serialization of flush_to_ldisc
 
-I'm not sure what kind of impact a partial half-duplex pty design would
-really have.
+(as an aside it was historically always required that a low_latency
+caller correctly implemented its own serialization because you can't
+really get that locking totally clean except in the driver either)
 
-> My thinking is that we never sit hogging the buffer lock for long periods
-> (even though someone has now made it a mutex which seems an odd
-> performance choice)
 
-Uncontended mutex lock performance is on-par with uncontended spinlock;
-both use a single bus-locked r/m/w instruction.
+It's a bit of a drastic rethink of the idiom but the networking layer
+basically does this, and has to solve exactly the same problem space
 
-The buffer lock is mostly uncontended because it only excludes the
-consumer-side; ie., only excludes flush_to_ldisc() from tty_buffer_flush().
-The driver-side doesn't use buf->lock for access.
 
-The use of a mutex for buf->lock allows the n_tty_receive_buf() path to
-claim a read lock on termios changes with a r/w semaphore, termios_rwsem.
+	while((buf = tty_buffer_dequeue(port)) != NULL) {
+		if (receive_buf(tty, buf) < 0) {
+			tty_buffer_requeue_head(port, buf);
+			break;
+		}
+	}
 
-> and it is the deepest lock in the subsystem we take
->
-> So:
->
-> if the tty_buffer contained a mutex and a pointer to that mutex then for
-> the pty pairs you could set them to point to the same mutex but default
-> to separate mutexes.
->
-> At that point you swap all the locks on the mutex to simply lock through
-> the pointer, you don't need the nested hack and there are no special case
-> paths or uglies in the general code.
+tty_buffer_dequeue is trivial enough, tty_buffer_requeue_head is also
+trivial because we are single threading flush_to_ldisc. Flushing just
+requires ensuring we don't requeue the buffer so we have
 
-To claim the buf->lock in any form from within the receive_buf() path
-will require some construct that informs the pty driver's flush_buffer()
-method that the buf->lock has already been claimed; otherwise,
-double-claim deadlock.
+	tty_buffer_requeue_head(port, buf)
+	{
+		lock(&port->buf.lock);
+		if (port->buf.clock == buf->clock)
+			requeue;
+		else
+			kfree
+	}
 
-These types of nested lock problems are common when different layers use
-the same interface (the fb subsystem's use of the vt driver is another
-example).
+	tty_buffer_flush(port)
+	{
+		port->buf.clock++;
+		free buffers in queue
+	}
 
-> The only special is that pty init
-> paths set the points to both point at the same mutex and no kittens die.
+Flush is trivial - increment clock, empty queue. The lifetime handling
+will ensure the current buffer is either processed or returned but not
+requeued.
 
-I like the ptr-to-a-shadow-lock idiom, thanks for sharing.
+Queuing data is also trivial - we just add to the buffer that is at the
+end of the queue, or start a new buffer if empty. The requeue_head will
+deal with the rest of it automagically
 
-Regards,
-Peter Hurley
+Downsides - slightly more locking, probably several things I've missed.
 
+Upsides - tty buffer locking is clear and self contained, we invoke
+flush_to_ldisc without holding what are really low level locks, queue
+manipulation in flush_to_ldisc works just like anywhere else. The buffer
+is owned by the tty which means the tty must free it, which means the tty
+can 'borrow' a buffer for ldisc internal queueing without having to copy
+all the bytes and we get the backpressure on the queue for free as the
+network layer does.
+
+It does mean touching every ldisc but as far as I can see with the
+exception of n_tty the change in each case is (as usual) trivial.
+
+As a PS: I think the termios is probably an RCU problem. The semaphore
+seemed to make sense when I did it, but in hindsight I think I made the
+wrong call.
+
+Alan
