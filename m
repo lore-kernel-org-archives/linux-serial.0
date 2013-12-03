@@ -1,49 +1,109 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
-Date: Tue, 3 Dec 2013 00:01:16 +0000
-Message-ID: <20131203000116.0d512b59@alan.etchedpixels.co.uk>
-References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH] pci/checkpatch: Deprecate DEFINE_PCI_DEVICE_TABLE
+Date: Tue, 03 Dec 2013 10:52:49 +0900
+Message-ID: <004501ceefca$5f35b2b0$1da11810$%han@samsung.com>
+References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
+ <20131128040750.GA29917@kroah.com>
+ <006001ceebfa$c85a1020$590e3060$%han@samsung.com>
+ <1385617213.12210.5.camel@joe-AO722> <20131128055328.GA565@kroah.com>
+ <1385619863.12210.14.camel@joe-AO722> <529C026E.2000302@roeck-us.net>
+ <000f01ceef11$a14acf00$e3e06d00$%han@samsung.com>
+ <529C04C7.9050506@roeck-us.net>
+ <001001ceef13$7fa3ee70$7eebcb50$%han@samsung.com>
+ <1385963295.2680.2.camel@joe-AO722> <529C6495.3020305@southpole.se>
+ <1386006217.2680.13.camel@joe-AO722>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52170 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750874Ab3LCAB0 (ORCPT
+Received: from mailout4.samsung.com ([203.254.224.34]:11008 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752947Ab3LCBxB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 19:01:26 -0500
-In-Reply-To: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
+	Mon, 2 Dec 2013 20:53:01 -0500
+In-reply-to: <1386006217.2680.13.camel@joe-AO722>
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: 'Joe Perches' <joe@perches.com>
+Cc: 'Jonas Bonn' <jonas@southpole.se>, 'Guenter Roeck' <linux@roeck-us.net>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Bjorn Helgaas' <bhelgaas@google.com>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Andy Whitcroft' <apw@canonical.com>, linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 
-> I cc'd you because of your recent involvement in other
-> tty patches/bug fixes and because it's your FIXME comment.
-> Feel free to ignore and/or let me know you would prefer not to
-> be bothered.
+On Tuesday, December 03, 2013 2:44 AM, Joe Perches
+> 
+> Prefer use of the direct definition of struct pci_device_id
+> instead of indirection via macro DEFINE_PCI_DEVICE_TABLE.
+> 
+> Update the PCI documentation to deprecate DEFINE_PCI_DEVICE_TABLE.
+> Update checkpatch adding --fix option.
+> 
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-It does seem horribly convoluted and likely to dig bigger long term holes
-than the one its filling. The tty layer has suffered far too much from
-"dodging one bullet by being clever and then getting shot at twice more"
+Reviewed-by: Jingoo Han <jg1.han@samsung.com>
 
-Bigger question (and one I'm not going to try and untangle at quarter to
-midnight). Is there any reason that the buffer locking has to be per tty
-not a shared lock in some cases.
+Best regards,
+Jingoo Han
 
-My thinking is that we never sit hogging the buffer lock for long periods
-(even though someone has now made it a mutex which seems an odd
-performance choice) and it is the deepest lock in the subsystem we take
+> ---
+>  Documentation/PCI/pci.txt |  6 ++++--
+>  include/linux/pci.h       |  3 +--
+>  scripts/checkpatch.pl     | 11 +++++++----
+>  3 files changed, 12 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/PCI/pci.txt b/Documentation/PCI/pci.txt
+> index 6f45856..9518006 100644
+> --- a/Documentation/PCI/pci.txt
+> +++ b/Documentation/PCI/pci.txt
+> @@ -123,8 +123,10 @@ initialization with a pointer to a structure describing the driver
+> 
+> 
+>  The ID table is an array of struct pci_device_id entries ending with an
+> -all-zero entry; use of the macro DEFINE_PCI_DEVICE_TABLE is the preferred
+> -method of declaring the table.  Each entry consists of:
+> +all-zero entry.  Definitions with static const are generally preferred.
+> +Use of the deprecated macro DEFINE_PCI_DEVICE_TABLE should be avoided.
+> +
+> +Each entry consists of:
+> 
+>  	vendor,device	Vendor and device ID to match (or PCI_ANY_ID)
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 1084a15..88674b0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -634,8 +634,7 @@ struct pci_driver {
+>   * DEFINE_PCI_DEVICE_TABLE - macro used to describe a pci device table
+>   * @_table: device table name
+>   *
+> - * This macro is used to create a struct pci_device_id array (a device table)
+> - * in a generic manner.
+> + * This macro is deprecated and should not be used in new code.
+>   */
+>  #define DEFINE_PCI_DEVICE_TABLE(_table) \
+>  	const struct pci_device_id _table[]
+> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> index 38be5d5..6f883f0 100755
+> --- a/scripts/checkpatch.pl
+> +++ b/scripts/checkpatch.pl
+> @@ -2643,10 +2643,13 @@ sub process {
+>  			}
+>  		}
+> 
+> -# check for declarations of struct pci_device_id
+> -		if ($line =~ /\bstruct\s+pci_device_id\s+\w+\s*\[\s*\]\s*\=\s*\{/) {
+> -			WARN("DEFINE_PCI_DEVICE_TABLE",
+> -			     "Use DEFINE_PCI_DEVICE_TABLE for struct pci_device_id\n" . $herecurr);
+> +# check for uses of DEFINE_PCI_DEVICE_TABLE
+> +		if ($line =~ /\bDEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=/) {
+> +			if (WARN("DEFINE_PCI_DEVICE_TABLE",
+> +				 "Prefer struct pci_device_id over deprecated DEFINE_PCI_DEVICE_TABLE\n" .
+> $herecurr) &&
+> +			    $fix) {
+> +				$fixed[$linenr - 1] =~
+> s/\b(?:static\s+|)DEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=\s*/static const struct pci_device_id
+> $1\[\] = /;
+> +			}
+>  		}
+> 
+>  # check for new typedefs, only function parameters and sparse annotations
 
-So:
 
-if the tty_buffer contained a mutex and a pointer to that mutex then for
-the pty pairs you could set them to point to the same mutex but default
-to separate mutexes.
-
-At that point you swap all the locks on the mutex to simply lock through
-the pointer, you don't need the nested hack and there are no special case
-paths or uglies in the general code. The only special is that pty init
-paths set the points to both point at the same mutex and no kittens die.
-
-Alan
