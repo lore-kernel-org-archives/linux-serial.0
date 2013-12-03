@@ -1,71 +1,83 @@
-From: Greg KH <greg@kroah.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
-Date: Tue, 3 Dec 2013 10:09:53 -0800
-Message-ID: <20131203180953.GD15279@kroah.com>
-References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131121044038.GR31130@verge.net.au>
- <2057415.BMTvM9f5bq@avalon>
+Date: Tue, 03 Dec 2013 19:28:47 +0100
+Message-ID: <2824851.TLa71oqPbP@avalon>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <2057415.BMTvM9f5bq@avalon> <20131203180953.GD15279@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52742 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752227Ab3LCSIv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 3 Dec 2013 13:08:51 -0500
-Content-Disposition: inline
-In-Reply-To: <2057415.BMTvM9f5bq@avalon>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20131203180953.GD15279@kroah.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg KH <greg@kroah.com>
 Cc: Simon Horman <horms@verge.net.au>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 21, 2013 at 08:17:27AM +0100, Laurent Pinchart wrote:
-> Hi Simon (and Greg this time),
-> 
-> On Thursday 21 November 2013 13:40:38 Simon Horman wrote:
-> > On Tue, Nov 19, 2013 at 03:02:01PM +0100, Laurent Pinchart wrote:
-> > > Hello,
+Hi Greg,
+
+On Tuesday 03 December 2013 10:09:53 Greg KH wrote:
+> On Thu, Nov 21, 2013 at 08:17:27AM +0100, Laurent Pinchart wrote:
+> > Hi Simon (and Greg this time),
+> > On Thursday 21 November 2013 13:40:38 Simon Horman wrote:
+> > > On Tue, Nov 19, 2013 at 03:02:01PM +0100, Laurent Pinchart wrote:
+> > > > Hello,
+> > > > 
+> > > > This is the third version of the patch set adds device tree bindings
+> > > > for the sh sci serial port devices and adds OF parsing to the sh-sci
+> > > > driver.
+> > > > 
+> > > > The bindings are based on Bastian Hecht's proposal (see
+> > > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
+> > > > taken here is more minimalistic: instead of describing all hardware
+> > > > characteristics that vary between the SCI device revisions in DT (such
+> > > > as registers layout), that information is stored in the driver and
+> > > > selected based on the compatible property value. Only SCI revisions
+> > > > used on ARM devices are supported through DT, as DT support for SuperH
+> > > > is nowhere down the line.
+> > > > 
+> > > > Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29 to
+> > > > 27/29 replace memory and interrupt resources passed through platform
+> > > > data with platform resources. Beside replacing a custom mechanism with
+> > > > a standard one, it will also make the DT parsing code simpler as
+> > > > resource allocation will be shared between DT and non-DT code paths.
+> > > > Finally, patches 28/29 to 29/29 add OF parsing to the sh-sci driver
+> > > > and create DT bindings documentation.
+> > > > 
+> > > > The patches have been test on a Lager board (r8a7790-based) and a
+> > > > Koelsch board (r8a7791-based). Support for other SoCs will be added as
+> > > > needed. Note that all current Renesas ARM SoCs seem to be compatible
+> > > > with the generic (H)SCI(F)(AB) devices, but the plan is for their DT
+> > > > bindings to list the SoC-specific version in case incompatibilities
+> > > > are found later.
+> > > > 
+> > > > The series will need to be split in three parts to go to mainline.
+> > > > Patches 01/29 to 07/29 should go through Greg's tree, patches 08/29 to
+> > > > 26/29 through Simon's tree, and patches 27/29 to 29/29 through Greg's
+> > > > tree again. Greg, when applying the first seven patches, could you
+> > > > please provide a stable branch for Simon to base his branch on (I can
+> > > > send you a pull request rebased on top of v3.13-rc1 if that can help)
+> > > > ? Simon will in turn provide a stable branch to base the last three
+> > > > patches on.
 > > > 
-> > > This is the third version of the patch set adds device tree bindings for
-> > > the sh sci serial port devices and adds OF parsing to the sh-sci driver.
-> > > 
-> > > The bindings are based on Bastian Hecht's proposal (see
-> > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
-> > > taken
-> > > here is more minimalistic: instead of describing all hardware
-> > > characteristics that vary between the SCI device revisions in DT (such as
-> > > registers layout), that information is stored in the driver and selected
-> > > based on the compatible property value. Only SCI revisions used on ARM
-> > > devices are supported through DT, as DT support for SuperH is nowhere
-> > > down the line.
-> > > 
-> > > Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29 to 27/29
-> > > replace memory and interrupt resources passed through platform data with
-> > > platform resources. Beside replacing a custom mechanism with a standard
-> > > one, it will also make the DT parsing code simpler as resource allocation
-> > > will be shared between DT and non-DT code paths. Finally, patches 28/29
-> > > to 29/29 add OF parsing to the sh-sci driver and create DT bindings
-> > > documentation.
-> > > 
-> > > The patches have been test on a Lager board (r8a7790-based) and a Koelsch
-> > > board (r8a7791-based). Support for other SoCs will be added as needed.
-> > > Note that all current Renesas ARM SoCs seem to be compatible with the
-> > > generic (H)SCI(F)(AB) devices, but the plan is for their DT bindings to
-> > > list the SoC-specific version in case incompatibilities are found later.
-> > > 
-> > > The series will need to be split in three parts to go to mainline. Patches
-> > > 01/29 to 07/29 should go through Greg's tree, patches 08/29 to 26/29
-> > > through Simon's tree, and patches 27/29 to 29/29 through Greg's tree
-> > > again. Greg, when applying the first seven patches, could you please
-> > > provide a stable branch for Simon to base his branch on (I can send you a
-> > > pull request rebased on top of v3.13-rc1 if that can help) ? Simon will
-> > > in turn provide a stable branch to base the last three patches on.
+> > > Perhaps you meant to CC Greg?
 > > 
-> > Perhaps you meant to CC Greg?
+> > Indeed :-)
 > 
-> Indeed :-)
+> That's a mess, how about Simon just take all of these in his tree:
 
-That's a mess, how about Simon just take all of these in his tree:
+We all seem to agree that it's the best solution, so let's do that. There will 
+be a couple of other sh-sci patches for the next kernel version that should 
+then go through Simon's tree as well. I will make sure to post them for review 
+on the linux-serial list and CC you to get your ack (from what I've been told 
+the ARM SoC maintainer usually dislike driver patches going through their tree 
+without the driver subsystem maintainer ack).
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Thank you.
+
+-- 
+Regards,
+
+Laurent Pinchart
+
