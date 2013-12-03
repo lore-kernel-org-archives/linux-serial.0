@@ -1,109 +1,113 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH] pci/checkpatch: Deprecate DEFINE_PCI_DEVICE_TABLE
-Date: Tue, 03 Dec 2013 10:52:49 +0900
-Message-ID: <004501ceefca$5f35b2b0$1da11810$%han@samsung.com>
-References: <000601ceebdc$ee148de0$ca3da9a0$%han@samsung.com>
- <20131128040750.GA29917@kroah.com>
- <006001ceebfa$c85a1020$590e3060$%han@samsung.com>
- <1385617213.12210.5.camel@joe-AO722> <20131128055328.GA565@kroah.com>
- <1385619863.12210.14.camel@joe-AO722> <529C026E.2000302@roeck-us.net>
- <000f01ceef11$a14acf00$e3e06d00$%han@samsung.com>
- <529C04C7.9050506@roeck-us.net>
- <001001ceef13$7fa3ee70$7eebcb50$%han@samsung.com>
- <1385963295.2680.2.camel@joe-AO722> <529C6495.3020305@southpole.se>
- <1386006217.2680.13.camel@joe-AO722>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
+Date: Mon, 02 Dec 2013 22:22:00 -0500
+Message-ID: <529D4E58.9020101@hurleysoftware.com>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com> <20131203000116.0d512b59@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:11008 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752947Ab3LCBxB (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40022 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751739Ab3LCDWI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 2 Dec 2013 20:53:01 -0500
-In-reply-to: <1386006217.2680.13.camel@joe-AO722>
-Content-language: ko
+	Mon, 2 Dec 2013 22:22:08 -0500
+In-Reply-To: <20131203000116.0d512b59@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Joe Perches' <joe@perches.com>
-Cc: 'Jonas Bonn' <jonas@southpole.se>, 'Guenter Roeck' <linux@roeck-us.net>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Bjorn Helgaas' <bhelgaas@google.com>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Andy Whitcroft' <apw@canonical.com>, linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tuesday, December 03, 2013 2:44 AM, Joe Perches
-> 
-> Prefer use of the direct definition of struct pci_device_id
-> instead of indirection via macro DEFINE_PCI_DEVICE_TABLE.
-> 
-> Update the PCI documentation to deprecate DEFINE_PCI_DEVICE_TABLE.
-> Update checkpatch adding --fix option.
-> 
-> Signed-off-by: Joe Perches <joe@perches.com>
+On 12/02/2013 07:01 PM, One Thousand Gnomes wrote:
+>> I cc'd you because of your recent involvement in other
+>> tty patches/bug fixes and because it's your FIXME comment.
+>> Feel free to ignore and/or let me know you would prefer not to
+>> be bothered.
+>
+> It does seem horribly convoluted and likely to dig bigger long term holes
+> than the one its filling. The tty layer has suffered far too much from
+> "dodging one bullet by being clever and then getting shot at twice more"
 
-Reviewed-by: Jingoo Han <jg1.han@samsung.com>
+Alan,
 
-Best regards,
-Jingoo Han
+Thanks for the feedback.
 
-> ---
->  Documentation/PCI/pci.txt |  6 ++++--
->  include/linux/pci.h       |  3 +--
->  scripts/checkpatch.pl     | 11 +++++++----
->  3 files changed, 12 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/PCI/pci.txt b/Documentation/PCI/pci.txt
-> index 6f45856..9518006 100644
-> --- a/Documentation/PCI/pci.txt
-> +++ b/Documentation/PCI/pci.txt
-> @@ -123,8 +123,10 @@ initialization with a pointer to a structure describing the driver
-> 
-> 
->  The ID table is an array of struct pci_device_id entries ending with an
-> -all-zero entry; use of the macro DEFINE_PCI_DEVICE_TABLE is the preferred
-> -method of declaring the table.  Each entry consists of:
-> +all-zero entry.  Definitions with static const are generally preferred.
-> +Use of the deprecated macro DEFINE_PCI_DEVICE_TABLE should be avoided.
-> +
-> +Each entry consists of:
-> 
->  	vendor,device	Vendor and device ID to match (or PCI_ANY_ID)
-> 
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 1084a15..88674b0 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -634,8 +634,7 @@ struct pci_driver {
->   * DEFINE_PCI_DEVICE_TABLE - macro used to describe a pci device table
->   * @_table: device table name
->   *
-> - * This macro is used to create a struct pci_device_id array (a device table)
-> - * in a generic manner.
-> + * This macro is deprecated and should not be used in new code.
->   */
->  #define DEFINE_PCI_DEVICE_TABLE(_table) \
->  	const struct pci_device_id _table[]
-> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> index 38be5d5..6f883f0 100755
-> --- a/scripts/checkpatch.pl
-> +++ b/scripts/checkpatch.pl
-> @@ -2643,10 +2643,13 @@ sub process {
->  			}
->  		}
-> 
-> -# check for declarations of struct pci_device_id
-> -		if ($line =~ /\bstruct\s+pci_device_id\s+\w+\s*\[\s*\]\s*\=\s*\{/) {
-> -			WARN("DEFINE_PCI_DEVICE_TABLE",
-> -			     "Use DEFINE_PCI_DEVICE_TABLE for struct pci_device_id\n" . $herecurr);
-> +# check for uses of DEFINE_PCI_DEVICE_TABLE
-> +		if ($line =~ /\bDEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=/) {
-> +			if (WARN("DEFINE_PCI_DEVICE_TABLE",
-> +				 "Prefer struct pci_device_id over deprecated DEFINE_PCI_DEVICE_TABLE\n" .
-> $herecurr) &&
-> +			    $fix) {
-> +				$fixed[$linenr - 1] =~
-> s/\b(?:static\s+|)DEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=\s*/static const struct pci_device_id
-> $1\[\] = /;
-> +			}
->  		}
-> 
->  # check for new typedefs, only function parameters and sparse annotations
+I think any solution will be seriously constrained by the larger design
+choice; the simplicity and performance of direct writes into a shared
+buffer has trade-offs.
 
+I chose what I felt was the simplest route; the code itself is
+straightforward. Maybe I could move the locking documentation into the
+changelog instead?
+
+Setting aside the parallel flush interface complications (which in some
+form is necessary even with a shared lock), there are a limited number
+of solutions to concurrent pty buffer flushes:
+1. Leave it broken.
+2. As submitted.
+3. Drop the buf->lock before flushing. This was the other solution I
+    seriously considered, because a parallel flush interface would not
+    be necessary then.
+    The problem with this solution is that input processing would need
+    to be aborted and restarted in case the current buffer data had been
+    flushed in parallel while the buf->lock was unowned; this requires
+    bubbling up return values from n_tty_receive_break() and
+    n_tty_receive_signal_char(), plus the actual processed char count
+    would need to propagate as well.
+4. Do the flush in flush_to_ldisc(). This is variation on 3, because
+    current input processing would still need to abort. This solution
+    suffers in that the echo may still be deferred, since at the time
+    of processing the signal, the other pty write buffer may still be
+    full.
+5. Probably a few others I haven't thought of.
+
+ > Bigger question (and one I'm not going to try and untangle at quarter to
+ > midnight). Is there any reason that the buffer locking has to be per tty
+ > not a shared lock in some cases.
+
+I'm not sure what kind of impact a partial half-duplex pty design would
+really have.
+
+> My thinking is that we never sit hogging the buffer lock for long periods
+> (even though someone has now made it a mutex which seems an odd
+> performance choice)
+
+Uncontended mutex lock performance is on-par with uncontended spinlock;
+both use a single bus-locked r/m/w instruction.
+
+The buffer lock is mostly uncontended because it only excludes the
+consumer-side; ie., only excludes flush_to_ldisc() from tty_buffer_flush().
+The driver-side doesn't use buf->lock for access.
+
+The use of a mutex for buf->lock allows the n_tty_receive_buf() path to
+claim a read lock on termios changes with a r/w semaphore, termios_rwsem.
+
+> and it is the deepest lock in the subsystem we take
+>
+> So:
+>
+> if the tty_buffer contained a mutex and a pointer to that mutex then for
+> the pty pairs you could set them to point to the same mutex but default
+> to separate mutexes.
+>
+> At that point you swap all the locks on the mutex to simply lock through
+> the pointer, you don't need the nested hack and there are no special case
+> paths or uglies in the general code.
+
+To claim the buf->lock in any form from within the receive_buf() path
+will require some construct that informs the pty driver's flush_buffer()
+method that the buf->lock has already been claimed; otherwise,
+double-claim deadlock.
+
+These types of nested lock problems are common when different layers use
+the same interface (the fb subsystem's use of the vt driver is another
+example).
+
+> The only special is that pty init
+> paths set the points to both point at the same mutex and no kittens die.
+
+I like the ptr-to-a-shadow-lock idiom, thanks for sharing.
+
+Regards,
+Peter Hurley
 
