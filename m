@@ -1,35 +1,36 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/2] serial: sh-sci: Prepare for CCF migration
-Date: Tue, 3 Dec 2013 10:43:46 -0800
-Message-ID: <20131203184346.GB23280@kroah.com>
-References: <1385658706-20093-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1516614.DSSr7jaai1@avalon>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 00/16] sh-sci: Remove unnecessary fields from platform
+ data
+Date: Tue, 3 Dec 2013 10:44:28 -0800
+Message-ID: <20131203184428.GC23280@kroah.com>
+References: <1385675010-26904-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53040 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752412Ab3LCSn0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 3 Dec 2013 13:43:26 -0500
 Content-Disposition: inline
-In-Reply-To: <1516614.DSSr7jaai1@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
+In-Reply-To: <1385675010-26904-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Dec 02, 2013 at 02:36:32PM +0100, Laurent Pinchart wrote:
-> Hi Greg,
+On Thu, Nov 28, 2013 at 10:43:14PM +0100, Laurent Pinchart wrote:
+> Hello,
 > 
-> On Thursday 28 November 2013 18:11:44 Laurent Pinchart wrote:
-> > Hello,
-> > 
-> > This patch set prepares the driver to CCF migration by replacing
-> > clk_enable() and clk_disable() by clk_prepare_enable() and
-> > clk_disable_unprepare() respectively (2/2). In order to do so it first
-> > ensures that the clk_enable() and clk_disable() calls will only take place
-> > from non-atomic context (1/2).
-> > 
-> > Greg, these patches are dependencies for a bunch of ARM patches that will go
-> > through Simon's tree. Would you be fine if Simon merged all sh-sci patches
-> > through his tree for v3.14 ?
+> This patch set removes or replaces unneeded fields from the sh-sci platform
+> data structure. Fields are simply removed when unused (gpios), moved to the
+> sci_port structure when used by the driver but not by board code (overrun_bit
+> and error_mask), or replaced by a more explicit field with a default value
+> computed in the driver for most cases (scbrr_algo_id).
 > 
-> Ping ?
+> The patches are based on top of the sh-sci DT patch series previously posted
+> to the mailing lists.
+
+For all serial patches:
 
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
