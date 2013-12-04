@@ -1,49 +1,35 @@
-From: Nicolas Pitre <nicolas.pitre@linaro.org>
-Subject: Re: [PATCH] serial: pl011: use port lock to guard control register
- access
-Date: Wed, 4 Dec 2013 11:17:27 -0500 (EST)
-Message-ID: <alpine.LFD.2.10.1312041105470.31246@knanqh.ubzr>
-References: <1386149930.3417.22.camel@linaro1.home>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
+Date: Wed, 4 Dec 2013 09:08:49 -0800
+Message-ID: <20131204170849.GB14859@kroah.com>
+References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qe0-f53.google.com ([209.85.128.53]:43842 "EHLO
-	mail-qe0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932787Ab3LDQRb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 11:17:31 -0500
-Received: by mail-qe0-f53.google.com with SMTP id nc12so14915723qeb.12
-        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2013 08:17:30 -0800 (PST)
-In-Reply-To: <1386149930.3417.22.camel@linaro1.home>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-gpio@vger.kernel.org, Andrew Victor <linux@maxim.org.za>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-serial@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: "Jon Medhurst (Tixy)" <tixy@linaro.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Wed, 4 Dec 2013, Jon Medhurst (Tixy) wrote:
-
-> I can't help but think I've missed something fundamental here as it
-> seems wrong to be in the situation at all where were initialising
-> hardware if it is already being used?
+On Thu, Nov 07, 2013 at 10:25:55AM +0100, Linus Walleij wrote:
+> This passes the errata fix using a GPIO to control the RTS pin
+> on one of the AT91 chips to use gpiolib instead of the
+> AT91-specific interfaces. Also remove the reliance on
+> compile-time #defines and the cpu_* check and rely on the
+> platform passing down the proper GPIO pin through platform
+> data.
 > 
-> Also, even with this fix I still see spurious/corrupt output on the
-> serial port at the point the port is initialised, so there is obviously
-> some other issues in this area.
+> This is a prerequisite for getting rid of the local GPIO
+> implementation in the AT91 platform and move toward
+> multiplatform.
+> 
+> The patch also adds device tree support for getting the
+> RTS GPIO pin from the device tree on DT boot paths.
+> 
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-I don't know if this is still the case nowdays, but that might be due to 
-the fact that the tty layer initializes the port speed to 9600 bauds 
-when opened.  So there might be a period when the port goes from 115200 
-bauds (from the serial console setup) to 9600 bauds, to finally go back 
-to 115200 bauds configured by the getty process.  If the serial console 
-is in the middle of outputting something when user space opens the port 
-then you might see garbled output for a brief period.
-
-[ On some boards the typical speed is 38400 instead of 115200 but the 
-  same concern applies. ]
-
-I think that if a serial console has already initialized a port then the 
-tty's initial parameters could simply default to those from the already 
-active serial console sharing the same port.
-
-
-Nicolas
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
