@@ -1,85 +1,95 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
-Date: Wed, 4 Dec 2013 09:09:11 -0800
-Message-ID: <20131204170911.GC14859@kroah.com>
-References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
- <5283A8C7.30904@atmel.com>
- <529C4936.5060304@atmel.com>
- <20131204102353.GI29721@pengutronix.de>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: 3.12.x looses serial mouse over hibernate + resume
+Date: Wed, 4 Dec 2013 09:16:26 -0800
+Message-ID: <20131204171626.GD8838@core.coreip.homeip.net>
+References: <52951E69.7090602@netscape.net>
+ <529B591F.1020909@hurleysoftware.com>
+ <529CB07C.2040609@netscape.net>
+ <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com>
+ <20131202164525.GA32406@core.coreip.homeip.net>
+ <529CD303.4040103@netscape.net>
+ <20131202190730.GA5245@core.coreip.homeip.net>
+ <529CF034.1060505@netscape.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:33877 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932690Ab3LDRJM (ORCPT
+Received: from mail-pd0-f169.google.com ([209.85.192.169]:57802 "EHLO
+	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753970Ab3LDRQb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 12:09:12 -0500
+	Wed, 4 Dec 2013 12:16:31 -0500
 Content-Disposition: inline
-In-Reply-To: <20131204102353.GI29721@pengutronix.de>
+In-Reply-To: <529CF034.1060505@netscape.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>, linux-serial@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
+To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>, Manuel Krause <manuelkrause@netscape.net>
 
-On Wed, Dec 04, 2013 at 11:23:53AM +0100, Uwe Kleine-K=F6nig wrote:
-> Hello Greg, hi Nicolas,
->=20
-> On Mon, Dec 02, 2013 at 09:47:50AM +0100, Nicolas Ferre wrote:
-> > On 13/11/2013 17:28, Nicolas Ferre :
-> > >On 07/11/2013 10:25, Linus Walleij :
-> > >>This passes the errata fix using a GPIO to control the RTS pin
-> > >>on one of the AT91 chips to use gpiolib instead of the
-> > >>AT91-specific interfaces. Also remove the reliance on
-> > >>compile-time #defines and the cpu_* check and rely on the
-> > >>platform passing down the proper GPIO pin through platform
-> > >>data.
-> > >>
-> > >>This is a prerequisite for getting rid of the local GPIO
-> > >>implementation in the AT91 platform and move toward
-> > >>multiplatform.
-> > >>
-> > >>The patch also adds device tree support for getting the
-> > >>RTS GPIO pin from the device tree on DT boot paths.
-> > >>
-> > >>Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> > >>Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com=
->
-> > >>Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> > >
-> > >Hi Greg,
-> > >
-> > >You acknowledged a previous version of this patch which was taking=
- a
-> > >different approach with the subject:
-> > >"[PATCH 1/4] ARM/serial: at91: move machine quirk into machine"
-> > >
-> > >In order to integrate the series build by Linus in our AT91/arm-so=
-c
-> > >flow, would you mind reviewing this v4 patch and eventually giving=
- your
-> > >blessing ;-)
-> > >If it is okay on your side, I'll integrate it in a pull-request to
-> > >arm-soc for 3.14.
-> >=20
-> > Greg, ping?
-> I'm depending on that patch for a series that gets rid of ARM's
-> <mach/timex.h>. So I'm interested to either get a stable commit to
-> base on or alternatively to get the blessing from both of you to take=
- it
-> (also via arm-soc) as part of my series.
->=20
-> A preview of my series is available at
->=20
-> 	git://git.pengutronix.de/git/ukl/linux.git deprecatemachtimexh
+On Mon, Dec 02, 2013 at 09:40:20PM +0100, Manuel Krause wrote:
+> On 2013-12-02 20:07, Dmitry Torokhov wrote:
+> >
+> >Thank you Manuel, but IO think the patch is not complete as we need to
+> >re-enable PNP devices after we make a snapshot to make sure they are
+> >working and can handle saving the data. Coudl you please try the patch
+> >below?
+> >
+> 
+> PNP: fix restoring devices after hibernation
+> 
+> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> 
+> On returning from hibernation 'restore; callback is called, not
+> 'resume'.
+> This fixes breakage introduced by commit
+> eaf140b60ec961252083ab8adaf67aef29a362dd
+> 
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  drivers/pnp/driver.c |   12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
+> index a39ee38..2bd5c5f 100644
+> --- a/drivers/pnp/driver.c
+> +++ b/drivers/pnp/driver.c
+> @@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
+>  	return __pnp_bus_suspend(dev, PMSG_FREEZE);
+>  }
+> 
+> +static int pnp_bus_poweroff(struct device *dev)
+> +{
+> +	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
+> +}
+> +
+>  static int pnp_bus_resume(struct device *dev)
+>  {
+>  	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
+> @@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
+>  }
+> 
+>  static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
+> +	/* Suspend callbacks */
+>  	.suspend = pnp_bus_suspend,
+> -	.freeze = pnp_bus_freeze,
+>  	.resume = pnp_bus_resume,
+> +	/* Hibernate callbacks */
+> +	.freeze = pnp_bus_freeze,
+> +	.thaw = pnp_bus_resume,
+> +	.poweroff = pnp_bus_poweroff,
+> +	.restore = pnp_bus_resume,
+>  };
+> 
+>  struct bus_type pnp_bus_type = {
+> 
+> ALSO, YES, this second patch version does cure the issue, on here,
+> too.
 
-No objection from me to take it through your tree.
+Rafael,
 
-thanks,
+Will you please take this patch in? It would also make sense to add it
+to stable I think.
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks.
+
+-- 
+Dmitry
