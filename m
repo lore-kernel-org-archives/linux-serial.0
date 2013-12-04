@@ -1,95 +1,138 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: 3.12.x looses serial mouse over hibernate + resume
-Date: Wed, 4 Dec 2013 09:16:26 -0800
-Message-ID: <20131204171626.GD8838@core.coreip.homeip.net>
-References: <52951E69.7090602@netscape.net>
- <529B591F.1020909@hurleysoftware.com>
- <529CB07C.2040609@netscape.net>
- <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com>
- <20131202164525.GA32406@core.coreip.homeip.net>
- <529CD303.4040103@netscape.net>
- <20131202190730.GA5245@core.coreip.homeip.net>
- <529CF034.1060505@netscape.net>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
+Date: Wed, 04 Dec 2013 12:42:36 -0500
+Message-ID: <529F698C.6040603@hurleysoftware.com>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>	<20131203000116.0d512b59@alan.etchedpixels.co.uk>	<529D4E58.9020101@hurleysoftware.com> <20131203142011.371067ea@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:57802 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753970Ab3LDRQb (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:44758 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932167Ab3LDRmk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 12:16:31 -0500
-Content-Disposition: inline
-In-Reply-To: <529CF034.1060505@netscape.net>
+	Wed, 4 Dec 2013 12:42:40 -0500
+In-Reply-To: <20131203142011.371067ea@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>, Manuel Krause <manuelkrause@netscape.net>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, Dec 02, 2013 at 09:40:20PM +0100, Manuel Krause wrote:
-> On 2013-12-02 20:07, Dmitry Torokhov wrote:
-> >
-> >Thank you Manuel, but IO think the patch is not complete as we need to
-> >re-enable PNP devices after we make a snapshot to make sure they are
-> >working and can handle saving the data. Coudl you please try the patch
-> >below?
-> >
-> 
-> PNP: fix restoring devices after hibernation
-> 
-> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> 
-> On returning from hibernation 'restore; callback is called, not
-> 'resume'.
-> This fixes breakage introduced by commit
-> eaf140b60ec961252083ab8adaf67aef29a362dd
-> 
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> ---
->  drivers/pnp/driver.c |   12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
-> index a39ee38..2bd5c5f 100644
-> --- a/drivers/pnp/driver.c
-> +++ b/drivers/pnp/driver.c
-> @@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
->  	return __pnp_bus_suspend(dev, PMSG_FREEZE);
->  }
-> 
-> +static int pnp_bus_poweroff(struct device *dev)
-> +{
-> +	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
-> +}
-> +
->  static int pnp_bus_resume(struct device *dev)
->  {
->  	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
-> @@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
->  }
-> 
->  static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
-> +	/* Suspend callbacks */
->  	.suspend = pnp_bus_suspend,
-> -	.freeze = pnp_bus_freeze,
->  	.resume = pnp_bus_resume,
-> +	/* Hibernate callbacks */
-> +	.freeze = pnp_bus_freeze,
-> +	.thaw = pnp_bus_resume,
-> +	.poweroff = pnp_bus_poweroff,
-> +	.restore = pnp_bus_resume,
->  };
-> 
->  struct bus_type pnp_bus_type = {
-> 
-> ALSO, YES, this second patch version does cure the issue, on here,
-> too.
+On 12/03/2013 09:20 AM, One Thousand Gnomes wrote:
+>> These types of nested lock problems are common when different layers use
+>> the same interface (the fb subsystem's use of the vt driver is another
+>> example).
+>
+> They are, and they end up nasty and eventually become impossible to fix.
+> Better to fix the underlying fundamental error as and when we can. The
+> current state of vt and fb and drm and handling accelerated scrolling of
+> a quota warning on drm on fb on vt is a testimony to what happens if you
+> don't go back and fix it properly now and then.
+>
+> In this case I would argue there is a fundamental error. That is trying to
+> combine locking of the structures for buffers and locking the receive
+> path. It's a mistake and I don't see how you can properly clean up the
+> tty layer with that mix of high and low level lock in one. It's already
+> turned into a hackfest with buf->priority.
+>
+> The old code wasn't the right answer either but did isolate the locks
+> better.
+>
+>
+> We've got three confused locks IMHO all stuck in as one
+>
+> - integrity of the buffer queue
+> - lifetime of a buffer (don't free a buffer as someone else is
+>    processing it)
+> - serialization of flush_to_ldisc
 
-Rafael,
+Not so much confused as simply merged. Input processing is inherently
+single-threaded; it makes sense to rely on that at the highest level
+possible.
 
-Will you please take this patch in? It would also make sense to add it
-to stable I think.
+On smp, locked instructions and cache-line contention on the tty_buffer
+list ptrs and read_buf indices account for more than 90% of the time cost
+in the read path for real hardware (and over 95% for ptys).
 
-Thanks.
+Firewire, which is capable of sustained throughput in excess of 40MB/sec,
+struggles to get over 5MB/sec through the tty layer. [And drm output
+is orders-of-magnitude slower than that, which is just sad...]
 
--- 
-Dmitry
+buf->priority isn't a hackfest; it's a zero-cost-in-read-path mechanism
+for interrupting input processing, similar to the clock (or generation)
+approach.
+
+Although using locks is satisfyingly symmetrical, input processing vs.
+buffer flush is an asymmetric problem.
+
+> (as an aside it was historically always required that a low_latency
+> caller correctly implemented its own serialization because you can't
+> really get that locking totally clean except in the driver either)
+>
+>
+> It's a bit of a drastic rethink of the idiom but the networking layer
+> basically does this, and has to solve exactly the same problem space
+>
+>
+> 	while((buf = tty_buffer_dequeue(port)) != NULL) {
+> 		if (receive_buf(tty, buf) < 0) {
+> 			tty_buffer_requeue_head(port, buf);
+> 			break;
+> 		}
+> 	}
+>
+> tty_buffer_dequeue is trivial enough, tty_buffer_requeue_head is also
+> trivial because we are single threading flush_to_ldisc. Flushing just
+> requires ensuring we don't requeue the buffer so we have
+>
+> 	tty_buffer_requeue_head(port, buf)
+> 	{
+> 		lock(&port->buf.lock);
+> 		if (port->buf.clock == buf->clock)
+> 			requeue;
+> 		else
+> 			kfree
+> 	}
+>
+> 	tty_buffer_flush(port)
+> 	{
+> 		port->buf.clock++;
+> 		free buffers in queue
+> 	}
+>
+> Flush is trivial - increment clock, empty queue. The lifetime handling
+> will ensure the current buffer is either processed or returned but not
+> requeued.
+>
+> Queuing data is also trivial - we just add to the buffer that is at the
+> end of the queue, or start a new buffer if empty. The requeue_head will
+> deal with the rest of it automagically
+>
+> Downsides - slightly more locking, probably several things I've missed.
+>
+> Upsides - tty buffer locking is clear and self contained, we invoke
+> flush_to_ldisc without holding what are really low level locks, queue
+> manipulation in flush_to_ldisc works just like anywhere else. The buffer
+> is owned by the tty which means the tty must free it, which means the tty
+> can 'borrow' a buffer for ldisc internal queueing without having to copy
+> all the bytes and we get the backpressure on the queue for free as the
+> network layer does.
+>
+> It does mean touching every ldisc but as far as I can see with the
+> exception of n_tty the change in each case is (as usual) trivial.
+
+While that would work, it's expensive extra locking in a path that 99.999%
+of the time doesn't need it. I'd rather explore other solutions.
+
+The clock/generation method seems like it might yield a lockless solution
+for this problem, but maybe creates another one because the driver-side
+would need to stamp the buffer (in essence, a flush could affect data
+that has not yet been copied from the driver).
+
+Still, it might be worth seeing if a solution lies in scheduling only
+one flush_to_ldisc() per tty_buffer (per port) and letting it sleep
+if receive_buf() can't accept more data [N_TTY would awaken the worker
+instead of queueing it].
+
+Regards,
+Peter Hurley
