@@ -1,50 +1,90 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] tty: serial: pch: don't crash if DMA enabled but not loaded
-Date: Wed,  4 Dec 2013 20:52:49 +0100
-Message-ID: <1386186769-12708-1-git-send-email-bigeasy@linutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:38785 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933211Ab3LDTwz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 14:52:55 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Manuel Krause <manuelkrause@netscape.net>
+Subject: Re: 3.12.x looses serial mouse over hibernate + resume
+Date: Wed, 04 Dec 2013 21:33:00 +0100
+Message-ID: <529F917C.3070501@netscape.net>
+References: <52951E69.7090602@netscape.net> <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net> <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com> <20131202164525.GA32406@core.coreip.homeip.net> <529CD303.4040103@netscape.net> <20131202190730.GA5245@core.coreip.homeip.net> <529CF034.1060505@netscape.net> <20131204171626.GD8838@core.coreip.homeip.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <20131204171626.GD8838@core.coreip.homeip.net>
+Sender: linux-input-owner@vger.kernel.org
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Johan Hovold <jhovold@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-if the DMA driver isn't loaded "on time" then we crash in the irq handler:
-| pch_uart 0000:02:0a.4: pch_request_dma:dma_request_channel FAILS(Tx)
-| BUG: unable to handle kernel NULL pointer dereference at   (null)
-| IP: [<c0676ed9>] pch_uart_interrupt+0x739/0x940
+On 2013-12-04 18:16, Dmitry Torokhov wrote:
+> On Mon, Dec 02, 2013 at 09:40:20PM +0100, Manuel Krause wrote:
+>> On 2013-12-02 20:07, Dmitry Torokhov wrote:
+>>>
+>>> Thank you Manuel, but IO think the patch is not complete as we need to
+>>> re-enable PNP devices after we make a snapshot to make sure they are
+>>> working and can handle saving the data. Coudl you please try the patch
+>>> below?
+>>>
+>>
+>> PNP: fix restoring devices after hibernation
+>>
+>> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>>
+>> On returning from hibernation 'restore; callback is called, not
+>> 'resume'.
+>> This fixes breakage introduced by commit
+>> eaf140b60ec961252083ab8adaf67aef29a362dd
+>>
+>> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>> ---
+>>   drivers/pnp/driver.c |   12 +++++++++++-
+>>   1 file changed, 11 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
+>> index a39ee38..2bd5c5f 100644
+>> --- a/drivers/pnp/driver.c
+>> +++ b/drivers/pnp/driver.c
+>> @@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
+>>   	return __pnp_bus_suspend(dev, PMSG_FREEZE);
+>>   }
+>>
+>> +static int pnp_bus_poweroff(struct device *dev)
+>> +{
+>> +	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
+>> +}
+>> +
+>>   static int pnp_bus_resume(struct device *dev)
+>>   {
+>>   	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
+>> @@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
+>>   }
+>>
+>>   static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
+>> +	/* Suspend callbacks */
+>>   	.suspend = pnp_bus_suspend,
+>> -	.freeze = pnp_bus_freeze,
+>>   	.resume = pnp_bus_resume,
+>> +	/* Hibernate callbacks */
+>> +	.freeze = pnp_bus_freeze,
+>> +	.thaw = pnp_bus_resume,
+>> +	.poweroff = pnp_bus_poweroff,
+>> +	.restore = pnp_bus_resume,
+>>   };
+>>
+>>   struct bus_type pnp_bus_type = {
+>>
+>> ALSO, YES, this second patch version does cure the issue, on here,
+>> too.
+>
+> Rafael,
+>
+> Will you please take this patch in? It would also make sense to add it
+> to stable I think.
+>
+> Thanks.
+>
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/tty/serial/pch_uart.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+This patch works very well for many following hibernate/resume 
+cyles, now, since the patch is applied. And it doesn't show any 
+side-effects for me.
+Thank you for "taking it in".
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 20e4c94..9b7cd40 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1492,10 +1492,14 @@ static int pch_uart_verify_port(struct uart_port *port,
- 			__func__);
- 		return -EOPNOTSUPP;
- #endif
--		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
--		if (!priv->use_dma)
-+		if (!priv->use_dma) {
- 			pch_request_dma(port);
--		priv->use_dma = 1;
-+			if (priv->chan_rx)
-+				priv->use_dma = 1;
-+		}
-+		dev_info(priv->port.dev, "PCH UART: %s\n",
-+				priv->use_dma ?
-+				"Use DMA Mode" : "No DMA");
- 	}
- 
- 	return 0;
--- 
-1.8.4.4
+Best regards, Manuel Krause
 
