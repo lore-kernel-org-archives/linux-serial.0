@@ -1,119 +1,96 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Wed, 4 Dec 2013 10:56:43 -0800
-Message-ID: <CAAYSxhrvNRkDjxyeHWFfDux3c8VqoYwDomdVViy-H2ysbXGJwQ@mail.gmail.com>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
-	<20131126183559.GA18570@localhost>
-	<CAAYSxhqU9GZdaoTjoCAeyQ4h-KPVzU0BH0D1eLYJoFZ+s8tPgQ@mail.gmail.com>
-	<20131127185448.GA21422@localhost>
-	<20131128093034.5d61130a@skate>
-	<20131128194720.GD13182@localhost>
-	<20131128195337.GE13182@localhost>
-	<20131204130156.GA2486@localhost>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
+Date: Wed, 4 Dec 2013 20:16:06 +0100
+Message-ID: <20131204191606.GL29721@pengutronix.de>
+References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+ <5283A8C7.30904@atmel.com>
+ <529C4936.5060304@atmel.com>
+ <20131204102353.GI29721@pengutronix.de>
+ <20131204170911.GC14859@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f48.google.com ([209.85.219.48]:41855 "EHLO
-	mail-oa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933067Ab3LDS4o convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 13:56:44 -0500
-Received: by mail-oa0-f48.google.com with SMTP id l6so17153756oag.35
-        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2013 10:56:44 -0800 (PST)
-In-Reply-To: <20131204130156.GA2486@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20131204170911.GC14859@kroah.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>, linux-serial@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 
-On Wed, Dec 4, 2013 at 5:01 AM, Ezequiel Garcia
-<ezequiel.garcia@free-electrons.com> wrote:
-> On Thu, Nov 28, 2013 at 04:53:37PM -0300, Ezequiel Garcia wrote:
->> On Thu, Nov 28, 2013 at 04:47:20PM -0300, Ezequiel Garcia wrote:
+Hello Greg,
 
->> > Changing the console port by setting "console=3DttyS1,115200" give=
-s this:
->> >
->> > [..]
->> > Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
->> > dw-apb-uart d0012000.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012000.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012000.serial: Couldn't set LCR to 224
->> > dw-apb-uart d0012000.serial: Couldn't set LCR to 224
->> > d0012000.serial: ttyS0 at MMIO 0xd0012000 (irq =3D 17, base_baud =3D=
- 15625000) is a 16550A
->> > dw-apb-uart d0012100.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012100.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012100.serial: Couldn't set LCR to 224
->> > dw-apb-uart d0012100.serial: Couldn't set LCR to 224
->> > d0012100.serial: ttyS1 at MMIO 0xd0012100 (irq =3D 18, base_baud =3D=
- 15625000) is a 16550A
->> > console [ttyS1] enabled
->> > dw-apb-uart d0012200.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012200.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012200.serial: Couldn't set LCR to 224
->> > dw-apb-uart d0012200.serial: Couldn't set LCR to 224
->> > d0012200.serial: ttyS2 at MMIO 0xd0012200 (irq =3D 31, base_baud =3D=
- 15625000) is a 16550A
->> > dw-apb-uart d0012300.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012300.serial: Couldn't set LCR to 191
->> > dw-apb-uart d0012300.serial: Couldn't set LCR to 224
->> > dw-apb-uart d0012300.serial: Couldn't set LCR to 224
->> > d0012300.serial: ttyS3 at MMIO 0xd0012300 (irq =3D 32, base_baud =3D=
- 15625000) is a 16550A
->> >
->> > So we get the "Couldn't set" message in all four ports.
->> >
->> > Tim: Any ideas?
->>
->> And another thing: the weird output on the console looks related to =
-the
->> early boot console. If I enable 'earlyprintk' on ttyS0 but set the c=
-onsole
->> on ttyS1, this is what I get on ttyS0:
->>
->> bootconsole [earlycon0] enabled
->> [..]
->> Kernel command line: earlyprintk console=3DttyS1,115200 root=3D/dev/=
-nfs rw nfsroot=3D192.168.0.45:/opt/buildrootfs,v3, ip=3D192.168.0.159:1=
-92.168.0.45:192.168.0.1:255.255.255.0:develboard:eth0:on rootwait
->> [..]
->> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
->> =EF=BF=BD=C9=8A=EF=BF=BD=EF=BF=BD=C9=81=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=
-=BF=BD=C9=86=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=
-=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=
-=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=
-=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=
-=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD
->> Welcome to Buildroot
->> buildroot login:
->>
->> Hope this helps you understand what's going on...
->
-> Gentle ping?
->
-> Any ideas about those weird characters?
+On Wed, Dec 04, 2013 at 09:09:11AM -0800, Greg Kroah-Hartman wrote:
+> On Wed, Dec 04, 2013 at 11:23:53AM +0100, Uwe Kleine-K=F6nig wrote:
+> > Hello Greg, hi Nicolas,
+> >=20
+> > On Mon, Dec 02, 2013 at 09:47:50AM +0100, Nicolas Ferre wrote:
+> > > On 13/11/2013 17:28, Nicolas Ferre :
+> > > >On 07/11/2013 10:25, Linus Walleij :
+> > > >>This passes the errata fix using a GPIO to control the RTS pin
+> > > >>on one of the AT91 chips to use gpiolib instead of the
+> > > >>AT91-specific interfaces. Also remove the reliance on
+> > > >>compile-time #defines and the cpu_* check and rely on the
+> > > >>platform passing down the proper GPIO pin through platform
+> > > >>data.
+> > > >>
+> > > >>This is a prerequisite for getting rid of the local GPIO
+> > > >>implementation in the AT91 platform and move toward
+> > > >>multiplatform.
+> > > >>
+> > > >>The patch also adds device tree support for getting the
+> > > >>RTS GPIO pin from the device tree on DT boot paths.
+> > > >>
+> > > >>Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> > > >>Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.c=
+om>
+> > > >>Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> > > >
+> > > >Hi Greg,
+> > > >
+> > > >You acknowledged a previous version of this patch which was taki=
+ng a
+> > > >different approach with the subject:
+> > > >"[PATCH 1/4] ARM/serial: at91: move machine quirk into machine"
+> > > >
+> > > >In order to integrate the series build by Linus in our AT91/arm-=
+soc
+> > > >flow, would you mind reviewing this v4 patch and eventually givi=
+ng your
+> > > >blessing ;-)
+> > > >If it is okay on your side, I'll integrate it in a pull-request =
+to
+> > > >arm-soc for 3.14.
+> > >=20
+> > > Greg, ping?
+> > I'm depending on that patch for a series that gets rid of ARM's
+> > <mach/timex.h>. So I'm interested to either get a stable commit to
+> > base on or alternatively to get the blessing from both of you to ta=
+ke it
+> > (also via arm-soc) as part of my series.
+> >=20
+> > A preview of my series is available at
+> >=20
+> > 	git://git.pengutronix.de/git/ukl/linux.git deprecatemachtimexh
+>=20
+> No objection from me to take it through your tree.
+gregkh: Thanks. I'll interpret this as Acked-by: you if Nicolas also
+agrees that I take it.
 
-If there was just one weird character, I would say it was an
-indication that hardware rejected a write to LCR and then software
-wrote the lower 8 bits of the baud into DLL which happens to live at
-the same address offset as RBR.  However, there are a bunch of them
-here so it is less clear.
+nferre: What is your plan with this patch? Do you have patches
+depending on it, too, or is it ok if I take it?
 
-It would be really helpful to get any extra information that you can
-about the Synopsys IP in your SoC.  If it configured with
-UART_ADD_ENCODED_PARAMS =3D 1, there should be a UART configuration ID
-register at offset 0xF4.  Could you try reading that back?  This
-register has information about the FIFO size and a few more things.
+Best regards
+Uwe
 
-Also, I am curious what LCR value the hardware reports when the driver
-fails update it.  Perhaps you can amend the error message to include
-p->serial_in(p, UART_LCR) too?
-
--Tim
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
