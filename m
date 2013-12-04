@@ -1,94 +1,79 @@
-From: "Jon Medhurst (Tixy)" <tixy@linaro.org>
-Subject: [PATCH] serial: pl011: use port lock to guard control register access
-Date: Wed, 04 Dec 2013 09:38:50 +0000
-Message-ID: <1386149930.3417.22.camel@linaro1.home>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
+Date: Wed, 4 Dec 2013 11:23:53 +0100
+Message-ID: <20131204102353.GI29721@pengutronix.de>
+References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+ <5283A8C7.30904@atmel.com>
+ <529C4936.5060304@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <529C4936.5060304@atmel.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>, linux-serial@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-When the pl011 is being used for a console, pl011_console_write forces
-the control register (CR) to enable the UART for transmission and then
-restores this to the original value afterwards. It does this while
-holding the port lock.
+Hello Greg, hi Nicolas,
 
-Unfortunately, when the uart is started or shutdown - say in response to
-userland using the serial device for a terminal - then this updates the
-control register without any locking.
+On Mon, Dec 02, 2013 at 09:47:50AM +0100, Nicolas Ferre wrote:
+> On 13/11/2013 17:28, Nicolas Ferre :
+> >On 07/11/2013 10:25, Linus Walleij :
+> >>This passes the errata fix using a GPIO to control the RTS pin
+> >>on one of the AT91 chips to use gpiolib instead of the
+> >>AT91-specific interfaces. Also remove the reliance on
+> >>compile-time #defines and the cpu_* check and rely on the
+> >>platform passing down the proper GPIO pin through platform
+> >>data.
+> >>
+> >>This is a prerequisite for getting rid of the local GPIO
+> >>implementation in the AT91 platform and move toward
+> >>multiplatform.
+> >>
+> >>The patch also adds device tree support for getting the
+> >>RTS GPIO pin from the device tree on DT boot paths.
+> >>
+> >>Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> >>Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> >>Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> >
+> >Hi Greg,
+> >
+> >You acknowledged a previous version of this patch which was taking a
+> >different approach with the subject:
+> >"[PATCH 1/4] ARM/serial: at91: move machine quirk into machine"
+> >
+> >In order to integrate the series build by Linus in our AT91/arm-soc
+> >flow, would you mind reviewing this v4 patch and eventually giving y=
+our
+> >blessing ;-)
+> >If it is okay on your side, I'll integrate it in a pull-request to
+> >arm-soc for 3.14.
+>=20
+> Greg, ping?
+I'm depending on that patch for a series that gets rid of ARM's
+<mach/timex.h>. So I'm interested to either get a stable commit to
+base on or alternatively to get the blessing from both of you to take i=
+t
+(also via arm-soc) as part of my series.
 
-This means we can have
+A preview of my series is available at
 
-  pl011_console_write   Save CR
-  pl011_startup         Initialise CR, e.g. enable receive
-  pl011_console_write   Restore old CR with receive not enabled
+	git://git.pengutronix.de/git/ukl/linux.git deprecatemachtimexh
 
-this result is a serial port which doesn't respond to any input.
+Best regards
+Uwe
 
-A similar race in reverse could happen when the device is shutdown.
-
-We can fix these problems by taking the port lock when updating CR.
-
-Signed-off-by: Jon Medhurst <tixy@linaro.org>
----
-
-I can't help but think I've missed something fundamental here as it
-seems wrong to be in the situation at all where were initialising
-hardware if it is already being used?
-
-Also, even with this fix I still see spurious/corrupt output on the
-serial port at the point the port is initialised, so there is obviously
-some other issues in this area.
-
- drivers/tty/serial/amba-pl011.c |    6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 7203864..a0dfb86 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1537,6 +1537,8 @@ static int pl011_startup(struct uart_port *port)
- 	/*
- 	 * Provoke TX FIFO interrupt into asserting.
- 	 */
-+	spin_lock_irq(&uap->port.lock);
-+
- 	cr = UART01x_CR_UARTEN | UART011_CR_TXE | UART011_CR_LBE;
- 	writew(cr, uap->port.membase + UART011_CR);
- 	writew(0, uap->port.membase + UART011_FBRD);
-@@ -1561,6 +1563,8 @@ static int pl011_startup(struct uart_port *port)
- 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
- 	writew(cr, uap->port.membase + UART011_CR);
- 
-+	spin_unlock_irq(&uap->port.lock);
-+
- 	/*
- 	 * initialise the old status of the modem signals
- 	 */
-@@ -1629,11 +1633,13 @@ static void pl011_shutdown(struct uart_port *port)
- 	 * it during startup().
- 	 */
- 	uap->autorts = false;
-+	spin_lock_irq(&uap->port.lock);
- 	cr = readw(uap->port.membase + UART011_CR);
- 	uap->old_cr = cr;
- 	cr &= UART011_CR_RTS | UART011_CR_DTR;
- 	cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
- 	writew(cr, uap->port.membase + UART011_CR);
-+	spin_unlock_irq(&uap->port.lock);
- 
- 	/*
- 	 * disable break condition and fifos
--- 
-1.7.10.4
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
