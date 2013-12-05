@@ -1,88 +1,49 @@
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: Re: 3.12.x looses serial mouse over hibernate + resume
-Date: Thu, 05 Dec 2013 01:41:14 +0100
-Message-ID: <529FCBAA.70308@intel.com>
-References: <52951E69.7090602@netscape.net> <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net> <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com> <20131202164525.GA32406@core.coreip.homeip.net> <529CD303.4040103@netscape.net> <20131202190730.GA5245@core.coreip.homeip.net> <529CF034.1060505@netscape.net> <20131204171626.GD8838@core.coreip.homeip.net>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v6 10/17] serial: mpc512x: setup the PSC FIFO clock as
+ well
+Date: Wed, 4 Dec 2013 16:55:21 -0800
+Message-ID: <20131205005521.GA21377@kroah.com>
+References: <1385851897-23475-1-git-send-email-gsi@denx.de>
+ <1385851897-23475-11-git-send-email-gsi@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:18714 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756148Ab3LEAlS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 19:41:18 -0500
-In-Reply-To: <20131204171626.GD8838@core.coreip.homeip.net>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37394 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933433Ab3LECwq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Dec 2013 21:52:46 -0500
+Content-Disposition: inline
+In-Reply-To: <1385851897-23475-11-git-send-email-gsi@denx.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>, Manuel Krause <manuelkrause@netscape.net>
+To: Gerhard Sittig <gsi@denx.de>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Anatolij Gustschin <agust@denx.de>, Mike Turquette <mturquette@linaro.org>, Scott Wood <scottwood@freescale.com>, Detlev Zundel <dzu@denx.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On 12/4/2013 6:16 PM, Dmitry Torokhov wrote:
-> On Mon, Dec 02, 2013 at 09:40:20PM +0100, Manuel Krause wrote:
->> On 2013-12-02 20:07, Dmitry Torokhov wrote:
->>> Thank you Manuel, but IO think the patch is not complete as we need to
->>> re-enable PNP devices after we make a snapshot to make sure they are
->>> working and can handle saving the data. Coudl you please try the patch
->>> below?
->>>
->> PNP: fix restoring devices after hibernation
->>
->> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
->>
->> On returning from hibernation 'restore; callback is called, not
->> 'resume'.
->> This fixes breakage introduced by commit
->> eaf140b60ec961252083ab8adaf67aef29a362dd
->>
->> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
->> ---
->>   drivers/pnp/driver.c |   12 +++++++++++-
->>   1 file changed, 11 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
->> index a39ee38..2bd5c5f 100644
->> --- a/drivers/pnp/driver.c
->> +++ b/drivers/pnp/driver.c
->> @@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
->>   	return __pnp_bus_suspend(dev, PMSG_FREEZE);
->>   }
->>
->> +static int pnp_bus_poweroff(struct device *dev)
->> +{
->> +	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
->> +}
->> +
->>   static int pnp_bus_resume(struct device *dev)
->>   {
->>   	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
->> @@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
->>   }
->>
->>   static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
->> +	/* Suspend callbacks */
->>   	.suspend = pnp_bus_suspend,
->> -	.freeze = pnp_bus_freeze,
->>   	.resume = pnp_bus_resume,
->> +	/* Hibernate callbacks */
->> +	.freeze = pnp_bus_freeze,
->> +	.thaw = pnp_bus_resume,
->> +	.poweroff = pnp_bus_poweroff,
->> +	.restore = pnp_bus_resume,
->>   };
->>
->>   struct bus_type pnp_bus_type = {
->>
->> ALSO, YES, this second patch version does cure the issue, on here,
->> too.
-> Rafael,
->
-> Will you please take this patch in? It would also make sense to add it
-> to stable I think.
+On Sat, Nov 30, 2013 at 11:51:30PM +0100, Gerhard Sittig wrote:
+> prepare and enable the FIFO clock upon PSC FIFO initialization,
+> check for and propagage errors when enabling the PSC FIFO clock,
+> disable and unprepare the FIFO clock upon PSC FIFO uninitialization
+> 
+> devm_{get,put}_clk() doesn't apply here, as the SoC provides a
+> single FIFO component which is shared among several PSC components,
+> thus the FIFO isn't associated with a device (while the PSCs are)
+> 
+> provide a fallback clock lookup approach in case the OF based clock
+> lookup for the PSC FIFO fails, this allows for successful operation in
+> the presence of an outdated device tree which lacks clock specs
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: linux-serial@vger.kernel.org
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # for v4
+> Signed-off-by: Gerhard Sittig <gsi@denx.de>
+> ---
+> Greg, the addition since v4 is the clk_get_sys() call for the 'ipg'
+> clock item (backwards compat for device trees w/o clock specs)
 
-Well, it conveniently hasn't been sent to linux-pm.
+That's fine, my ACK still stands.
 
-OK, I'll try to find it in the linux-kernel archives.
+thanks,
 
-Thanks,
-Rafael
-
+greg k-h
