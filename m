@@ -1,129 +1,88 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
-Date: Thu, 5 Dec 2013 00:13:15 +0000
-Message-ID: <20131205001315.3ac390d6@alan.etchedpixels.co.uk>
-References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
-	<20131203000116.0d512b59@alan.etchedpixels.co.uk>
-	<529D4E58.9020101@hurleysoftware.com>
-	<20131203142011.371067ea@alan.etchedpixels.co.uk>
-	<529F698C.6040603@hurleysoftware.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: 3.12.x looses serial mouse over hibernate + resume
+Date: Thu, 05 Dec 2013 01:41:14 +0100
+Message-ID: <529FCBAA.70308@intel.com>
+References: <52951E69.7090602@netscape.net> <529B591F.1020909@hurleysoftware.com> <529CB07C.2040609@netscape.net> <19253701.sgP3OieFUq@dtor-d630.eng.vmware.com> <20131202164525.GA32406@core.coreip.homeip.net> <529CD303.4040103@netscape.net> <20131202190730.GA5245@core.coreip.homeip.net> <529CF034.1060505@netscape.net> <20131204171626.GD8838@core.coreip.homeip.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:55504 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756116Ab3LEANX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 19:13:23 -0500
-In-Reply-To: <529F698C.6040603@hurleysoftware.com>
+Received: from mga03.intel.com ([143.182.124.21]:18714 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756148Ab3LEAlS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Dec 2013 19:41:18 -0500
+In-Reply-To: <20131204171626.GD8838@core.coreip.homeip.net>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Shuah Khan <shuah.kh@samsung.com>, Manuel Krause <manuelkrause@netscape.net>
 
-> Not so much confused as simply merged. Input processing is inherently
-> single-threaded; it makes sense to rely on that at the highest level
-> possible.
+On 12/4/2013 6:16 PM, Dmitry Torokhov wrote:
+> On Mon, Dec 02, 2013 at 09:40:20PM +0100, Manuel Krause wrote:
+>> On 2013-12-02 20:07, Dmitry Torokhov wrote:
+>>> Thank you Manuel, but IO think the patch is not complete as we need to
+>>> re-enable PNP devices after we make a snapshot to make sure they are
+>>> working and can handle saving the data. Coudl you please try the patch
+>>> below?
+>>>
+>> PNP: fix restoring devices after hibernation
+>>
+>> From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>>
+>> On returning from hibernation 'restore; callback is called, not
+>> 'resume'.
+>> This fixes breakage introduced by commit
+>> eaf140b60ec961252083ab8adaf67aef29a362dd
+>>
+>> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>> ---
+>>   drivers/pnp/driver.c |   12 +++++++++++-
+>>   1 file changed, 11 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pnp/driver.c b/drivers/pnp/driver.c
+>> index a39ee38..2bd5c5f 100644
+>> --- a/drivers/pnp/driver.c
+>> +++ b/drivers/pnp/driver.c
+>> @@ -197,6 +197,11 @@ static int pnp_bus_freeze(struct device *dev)
+>>   	return __pnp_bus_suspend(dev, PMSG_FREEZE);
+>>   }
+>>
+>> +static int pnp_bus_poweroff(struct device *dev)
+>> +{
+>> +	return __pnp_bus_suspend(dev, PMSG_HIBERNATE);
+>> +}
+>> +
+>>   static int pnp_bus_resume(struct device *dev)
+>>   {
+>>   	struct pnp_dev *pnp_dev = to_pnp_dev(dev);
+>> @@ -234,9 +239,14 @@ static int pnp_bus_resume(struct device *dev)
+>>   }
+>>
+>>   static const struct dev_pm_ops pnp_bus_dev_pm_ops = {
+>> +	/* Suspend callbacks */
+>>   	.suspend = pnp_bus_suspend,
+>> -	.freeze = pnp_bus_freeze,
+>>   	.resume = pnp_bus_resume,
+>> +	/* Hibernate callbacks */
+>> +	.freeze = pnp_bus_freeze,
+>> +	.thaw = pnp_bus_resume,
+>> +	.poweroff = pnp_bus_poweroff,
+>> +	.restore = pnp_bus_resume,
+>>   };
+>>
+>>   struct bus_type pnp_bus_type = {
+>>
+>> ALSO, YES, this second patch version does cure the issue, on here,
+>> too.
+> Rafael,
+>
+> Will you please take this patch in? It would also make sense to add it
+> to stable I think.
 
-I would disagree entirely. You want to minimise the areas affected by a
-given lock. You also want to lock data not code. Correctness comes before
-speed. You optimise it when its right, otherwise you end up in a nasty
-mess when you discover you've optimised to assumptions that are flawed.
+Well, it conveniently hasn't been sent to linux-pm.
 
-> On smp, locked instructions and cache-line contention on the tty_buffer
-> list ptrs and read_buf indices account for more than 90% of the time cost
-> in the read path for real hardware (and over 95% for ptys).
+OK, I'll try to find it in the linux-kernel archives.
 
-Yes I'm uncomfortably aware of that for modern SMP hardware, and also
-that simply ripping out the buffering will screw the real low end people
-(eg M68K and friends)
+Thanks,
+Rafael
 
-> Firewire, which is capable of sustained throughput in excess of 40MB/sec,
-> struggles to get over 5MB/sec through the tty layer. [And drm output
-> is orders-of-magnitude slower than that, which is just sad...]
-
-And what protocols do you care about 5MB/second - n_tty - no ? For the
-high speed protocols you are trying to fix a lost cause. By the time
-we've gone piddling around with tty buffers and serialized tty queues
-firing bytes through tasks and the like you already lost.
-
-For drm I assume you mean the framebuffer console logic ? Last time I
-benched that except for the Poulsbo it was bottlenecked on the GPU - not
-that I can type at 5MB/second anyway. Not that fixing the performance of
-the various bits wouldn't be a good thing too especially on the output
-end.
-
-> While that would work, it's expensive extra locking in a path that 99.999%
-> of the time doesn't need it. I'd rather explore other solutions.
-
-How about getting the high speed paths out of the whole tty buffer
-layer ? Almost every line discipline can be a fastpath directly to the
-network layer. If optimisation is the new obsession then we can cut the
-crap entirely by optimising for networking not making it a slave of n_tty.
-
-Starting at the beginning
-
-we have locks on rx because
-- we want serialized rx
-- we have buffer lifetimes
-- we have buffer queues
-- we have loads of flow control parameters
-
-Only n_tty needs the buffers (maybe some of irda but irda hasn't worked
-for years afaik). IRQ receive paths are serialized (and as a bonus can be
-pinned to a CPU). Flow control is n_tty stuff, everyone else simply fires
-it at their network layer as fast as possible and net already does the
-work.
-
-Keep a single tty_buf in the tty for batching at any given time, and
-private so no locks at all
-
-Have a wrapper via
-ld->receive(tty, buf)
-
-which fires the tty_buf at the ldisc and allocates a new empty one
-
-tty_queue_bytes(tty, buf, flags, len)
-
-which adds to the buffer, and if full calls ld->queue and then carries on
-the copying cycle
-
-and
-
-ld->receive_direct(tty, buf, flags, len)
-
-which allows block mode devices to blast bytes directly at the queue (ie
-all the USB 3G stuff, firewire, etc) without going via any additional
-copies.
-
-For almost all ldiscs
-
-ld->receive would be
-
-ld->receive_direct(tty, buf->buf, buf->flags, buf->len);
-free buffer
-
-For n_tty type stuff
-
-ld->receive is basically much of tty_flip_buffer_push
-
-ld->receive_direct allocates tty_buffers and copies into it
-
-We may even be able to optimise some of the n_tty cases into the
-fastpath afterwards (notably raw, no echo)
-
-For anything receiving in blocks that puts us close to (but not quite at)
-ethernet kinds of cleanness for network buffer delivery.
-
-Worth me looking into ?
-
-> The clock/generation method seems like it might yield a lockless solution
-> for this problem, but maybe creates another one because the driver-side
-> would need to stamp the buffer (in essence, a flush could affect data
-> that has not yet been copied from the driver).
-
-But it has arrived in the driver so might not matter. That requires a
-little thought!
-
-Alan
