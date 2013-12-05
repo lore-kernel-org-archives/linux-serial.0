@@ -1,37 +1,31 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v6 10/17] serial: mpc512x: setup the PSC FIFO clock as
- well
-Date: Wed, 4 Dec 2013 16:55:21 -0800
-Message-ID: <20131205005521.GA21377@kroah.com>
+Subject: Re: [PATCH v6 09/17] serial: mpc512x: adjust for OF based clock
+ lookup
+Date: Wed, 4 Dec 2013 16:55:53 -0800
+Message-ID: <20131205005553.GC21377@kroah.com>
 References: <1385851897-23475-1-git-send-email-gsi@denx.de>
- <1385851897-23475-11-git-send-email-gsi@denx.de>
+ <1385851897-23475-10-git-send-email-gsi@denx.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37394 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37414 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933433Ab3LECwq (ORCPT
+	with ESMTP id S933434Ab3LECws (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Dec 2013 21:52:46 -0500
+	Wed, 4 Dec 2013 21:52:48 -0500
 Content-Disposition: inline
-In-Reply-To: <1385851897-23475-11-git-send-email-gsi@denx.de>
+In-Reply-To: <1385851897-23475-10-git-send-email-gsi@denx.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Gerhard Sittig <gsi@denx.de>
 Cc: linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Anatolij Gustschin <agust@denx.de>, Mike Turquette <mturquette@linaro.org>, Scott Wood <scottwood@freescale.com>, Detlev Zundel <dzu@denx.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Sat, Nov 30, 2013 at 11:51:30PM +0100, Gerhard Sittig wrote:
-> prepare and enable the FIFO clock upon PSC FIFO initialization,
-> check for and propagage errors when enabling the PSC FIFO clock,
-> disable and unprepare the FIFO clock upon PSC FIFO uninitialization
+On Sat, Nov 30, 2013 at 11:51:29PM +0100, Gerhard Sittig wrote:
+> after device tree based clock lookup became available, the peripheral
+> driver need no longer construct clock names which include the PSC index,
+> remove the "psc%d_mclk" template and unconditionally use 'mclk'
 > 
-> devm_{get,put}_clk() doesn't apply here, as the SoC provides a
-> single FIFO component which is shared among several PSC components,
-> thus the FIFO isn't associated with a device (while the PSCs are)
-> 
-> provide a fallback clock lookup approach in case the OF based clock
-> lookup for the PSC FIFO fails, this allows for successful operation in
-> the presence of an outdated device tree which lacks clock specs
+> acquire and release the "ipg" clock item for register access as well
 > 
 > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Cc: Jiri Slaby <jslaby@suse.cz>
@@ -39,11 +33,11 @@ On Sat, Nov 30, 2013 at 11:51:30PM +0100, Gerhard Sittig wrote:
 > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # for v4
 > Signed-off-by: Gerhard Sittig <gsi@denx.de>
 > ---
-> Greg, the addition since v4 is the clk_get_sys() call for the 'ipg'
-> clock item (backwards compat for device trees w/o clock specs)
+> Greg, the difference since v4 of this patch is that v4 took the 'mclk'
+> and 'ipg' clock items in reverse order, and thus potentially obfuscated
+> the adjusted name for 'mclk' -- the updated version of the patch is
+> identical in content but cleaner diff-wise
 
-That's fine, my ACK still stands.
+That's fine:
 
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
