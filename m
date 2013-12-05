@@ -1,87 +1,81 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
-Date: Thu, 5 Dec 2013 12:33:23 +0900
-Message-ID: <20131205033322.GK21443@verge.net.au>
-References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <2057415.BMTvM9f5bq@avalon>
- <20131203180953.GD15279@kroah.com>
- <2824851.TLa71oqPbP@avalon>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 01/11] resolve PXA<->8250 serial device address conflict
+Date: Wed, 4 Dec 2013 20:12:51 -0800
+Message-ID: <20131205041251.GA24906@kroah.com>
+References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
+ <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+ <20131202090253.GE3942@xps8300>
+ <1385976238.12531.8.camel@host5.omatika.ru>
+ <20131202094932.GF3942@xps8300>
+ <1385980005.12531.21.camel@host5.omatika.ru>
+ <20131202141033.GK3942@xps8300>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37803 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932390Ab3LEELq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Dec 2013 23:11:46 -0500
 Content-Disposition: inline
-In-Reply-To: <2824851.TLa71oqPbP@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Greg KH <greg@kroah.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
+In-Reply-To: <20131202141033.GK3942@xps8300>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Sergei Ianovich <ynvich@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
-On Tue, Dec 03, 2013 at 07:28:47PM +0100, Laurent Pinchart wrote:
-> Hi Greg,
+On Mon, Dec 02, 2013 at 04:10:33PM +0200, Heikki Krogerus wrote:
+> Hi,
 > 
-> On Tuesday 03 December 2013 10:09:53 Greg KH wrote:
-> > On Thu, Nov 21, 2013 at 08:17:27AM +0100, Laurent Pinchart wrote:
-> > > Hi Simon (and Greg this time),
-> > > On Thursday 21 November 2013 13:40:38 Simon Horman wrote:
-> > > > On Tue, Nov 19, 2013 at 03:02:01PM +0100, Laurent Pinchart wrote:
-> > > > > Hello,
+> On Mon, Dec 02, 2013 at 02:26:45PM +0400, Sergei Ianovich wrote:
+> > On Mon, 2013-12-02 at 11:49 +0200, Heikki Krogerus wrote:
+> > > On Mon, Dec 02, 2013 at 01:23:58PM +0400, Sergei Ianovich wrote:
+> > > > On Mon, 2013-12-02 at 11:02 +0200, Heikki Krogerus wrote:
 > > > > > 
-> > > > > This is the third version of the patch set adds device tree bindings
-> > > > > for the sh sci serial port devices and adds OF parsing to the sh-sci
-> > > > > driver.
-> > > > > 
-> > > > > The bindings are based on Bastian Hecht's proposal (see
-> > > > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The approach
-> > > > > taken here is more minimalistic: instead of describing all hardware
-> > > > > characteristics that vary between the SCI device revisions in DT (such
-> > > > > as registers layout), that information is stored in the driver and
-> > > > > selected based on the compatible property value. Only SCI revisions
-> > > > > used on ARM devices are supported through DT, as DT support for SuperH
-> > > > > is nowhere down the line.
-> > > > > 
-> > > > > Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29 to
-> > > > > 27/29 replace memory and interrupt resources passed through platform
-> > > > > data with platform resources. Beside replacing a custom mechanism with
-> > > > > a standard one, it will also make the DT parsing code simpler as
-> > > > > resource allocation will be shared between DT and non-DT code paths.
-> > > > > Finally, patches 28/29 to 29/29 add OF parsing to the sh-sci driver
-> > > > > and create DT bindings documentation.
-> > > > > 
-> > > > > The patches have been test on a Lager board (r8a7790-based) and a
-> > > > > Koelsch board (r8a7791-based). Support for other SoCs will be added as
-> > > > > needed. Note that all current Renesas ARM SoCs seem to be compatible
-> > > > > with the generic (H)SCI(F)(AB) devices, but the plan is for their DT
-> > > > > bindings to list the SoC-specific version in case incompatibilities
-> > > > > are found later.
-> > > > > 
-> > > > > The series will need to be split in three parts to go to mainline.
-> > > > > Patches 01/29 to 07/29 should go through Greg's tree, patches 08/29 to
-> > > > > 26/29 through Simon's tree, and patches 27/29 to 29/29 through Greg's
-> > > > > tree again. Greg, when applying the first seven patches, could you
-> > > > > please provide a stable branch for Simon to base his branch on (I can
-> > > > > send you a pull request rebased on top of v3.13-rc1 if that can help)
-> > > > > ? Simon will in turn provide a stable branch to base the last three
-> > > > > patches on.
+> > > > > If drivers/tty/serial/pxa.c was converted to an other probe driver for
+> > > > > the 8250, this would not be an issue.
 > > > > 
-> > > > Perhaps you meant to CC Greg?
+> > > > It seems that my patch is not going to be accepted. However, there is a
+> > > > device which has both PXA ports and a additional 8250 accent chip. As a
+> > > > result, there is a device allocation conflict. For the device to be
+> > > > usable the conflict needs to be resolved.
+> > > > 
+> > > > Do you mean that drivers/tty/serial/pxa.c needs to be rewritten to
+> > > > support lp8x4x special case?
 > > > 
-> > > Indeed :-)
+> > > Sorry I was not clear. I was suggesting that drivers/tty/serial/pxa.c
+> > > would be converted to drivers/tty/serial/8250/8250_pxa.c since it
+> > > looks to me like just an other 16x50 compatible UART. That would fix
+> > > the issue with the name conflict. You would then simply register 8250
+> > > ports from two probe drivers (drivers/tty/serial/8250/8250_pxa.c and
+> > > drivers/tty/serial/8250/8250_lp8x4x.c).
+> > > 
+> > > Depending on the order you register your platform devices (which you
+> > > decide in your platform code), but let's say the pxa gets registered
+> > > first and let's say it only has one port. You will then have in your
+> > > system /dev/ttyS0 for the pxa port and /dev/ttyS[1-4] for the other
+> > > UART.
+> > > 
+> > > I hope I was able to explain what I mean this time :)
 > > 
-> > That's a mess, how about Simon just take all of these in his tree:
+> > Sorry, I wasn't clear as well. I got it right the first time. You mean
+> > pxa.c needs to merged into 8250. This will solve the conflict in
+> > question, and do it the right way. However, this will be a *much* bigger
+> > patch, and it will affect everyone on pxa.
+> > 
+> > Who makes the decision which way to go?
 > 
-> We all seem to agree that it's the best solution, so let's do that. There will 
-> be a couple of other sh-sci patches for the next kernel version that should 
-> then go through Simon's tree as well. I will make sure to post them for review 
-> on the linux-serial list and CC you to get your ack (from what I've been told 
-> the ARM SoC maintainer usually dislike driver patches going through their tree 
-> without the driver subsystem maintainer ack).
+> Greg and Russel make this decision. By having the pxa driver simply
+> register 8250 ports would probable reduce the code. Thats about the
+> biggest benefit from it.
 > 
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> Thank you.
+> It would still be something nice to have IMO. Ideally all the
+> 8250/16x50 UARTs should register the ports with 8250_core.c, and not
+> create complete uart driver on their own.
 
-Yes, thanks Greg.
+I agree, this is the best way to resolve this, having a separate uart
+driver isn't that good at all to be doing, if at all possible.
 
-Laurent, I have v4 of these patches sitting in patchwork.
-Would you like me to look at queuing them up as-is or
-are you planning v5?
+thanks,
+
+greg k-h
