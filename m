@@ -1,161 +1,159 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 11/47] serial: sh-sci: Remove unused GPIO request code
-Date: Fri,  6 Dec 2013 10:59:18 +0100
-Message-ID: <1386323994-12850-12-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 13/47] serial: sh-sci: Rework baud rate calculation
+Date: Fri,  6 Dec 2013 10:59:20 +0100
+Message-ID: <1386323994-12850-14-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33750 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757849Ab3LFKAN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Dec 2013 05:00:13 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
-List-Id: linux-serial@vger.kernel.org
 
-The driver requests at initialization time GPIOs passed through platform
-data. No platform makes use of this feature, remove it.
+Computing the baud rate register value requires knowledge of the
+hardware sampling rate. This information is currently encoded in a baud
+rate calculation algorithm ID passed through platform data. However, it
+can be derived from the port type directly in most cases.
+
+Compute the sampling rate internally in the driver if the baud rate
+calculation algorithm ID isn't specified, and allow platforms to
+override the sampling rate through platform data in special cases (this
+is only required for SCIFA ports on sh7723 and sh7724, the reason needs
+to be investigated).
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 67 ---------------------------------------------
- include/linux/serial_sci.h  | 12 --------
- 2 files changed, 79 deletions(-)
+ drivers/tty/serial/sh-sci.c | 37 ++++++++++++++++++++++++++++++-------
+ include/linux/serial_sci.h  |  2 ++
+ 2 files changed, 32 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 9e6600b..5cb7189 100644
+index cd508c6..aadc3cd 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -32,7 +32,6 @@
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/errno.h>
--#include <linux/gpio.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/ioport.h>
-@@ -79,7 +78,6 @@ struct sci_port {
+@@ -65,6 +65,7 @@ struct sci_port {
+ 	struct plat_sci_port	*cfg;
+ 	int			overrun_bit;
+ 	unsigned int		error_mask;
++	unsigned int		sampling_rate;
  
- 	int			irqs[SCIx_NR_IRQS];
- 	char			*irqstr[SCIx_NR_IRQS];
--	char			*gpiostr[SCIx_NR_FNS];
  
- 	struct dma_chan			*chan_tx;
- 	struct dma_chan			*chan_rx;
-@@ -1153,67 +1151,6 @@ static void sci_free_irq(struct sci_port *port)
- 	}
+ 	/* Break timer */
+@@ -1749,10 +1750,13 @@ static void sci_shutdown(struct uart_port *port)
+ 	sci_free_irq(s);
  }
  
--static const char *sci_gpio_names[SCIx_NR_FNS] = {
--	"sck", "rxd", "txd", "cts", "rts",
--};
--
--static const char *sci_gpio_str(unsigned int index)
--{
--	return sci_gpio_names[index];
--}
--
--static void sci_init_gpios(struct sci_port *port)
--{
--	struct uart_port *up = &port->port;
--	int i;
--
--	if (!port->cfg)
--		return;
--
--	for (i = 0; i < SCIx_NR_FNS; i++) {
--		const char *desc;
--		int ret;
--
--		if (!port->cfg->gpios[i])
--			continue;
--
--		desc = sci_gpio_str(i);
--
--		port->gpiostr[i] = kasprintf(GFP_KERNEL, "%s:%s",
--					     dev_name(up->dev), desc);
--
--		/*
--		 * If we've failed the allocation, we can still continue
--		 * on with a NULL string.
--		 */
--		if (!port->gpiostr[i])
--			dev_notice(up->dev, "%s string allocation failure\n",
--				   desc);
--
--		ret = gpio_request(port->cfg->gpios[i], port->gpiostr[i]);
--		if (unlikely(ret != 0)) {
--			dev_notice(up->dev, "failed %s gpio request\n", desc);
--
--			/*
--			 * If we can't get the GPIO for whatever reason,
--			 * no point in keeping the verbose string around.
--			 */
--			kfree(port->gpiostr[i]);
--		}
--	}
--}
--
--static void sci_free_gpios(struct sci_port *port)
--{
--	int i;
--
--	for (i = 0; i < SCIx_NR_FNS; i++)
--		if (port->cfg->gpios[i]) {
--			gpio_free(port->cfg->gpios[i]);
--			kfree(port->gpiostr[i]);
--		}
--}
--
- static unsigned int sci_tx_empty(struct uart_port *port)
+-static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
++static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ 				   unsigned long freq)
  {
- 	unsigned short status = serial_port_in(port, SCxSR);
-@@ -2239,8 +2176,6 @@ static int sci_init_single(struct platform_device *dev,
+-	switch (algo_id) {
++	if (s->sampling_rate)
++		return DIV_ROUND_CLOSEST(freq, s->sampling_rate * bps) - 1;
++
++	switch (s->cfg->scbrr_algo_id) {
+ 	case SCBRR_ALGO_1:
+ 		return freq / (16 * bps);
+ 	case SCBRR_ALGO_2:
+@@ -1842,12 +1846,11 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
  
- 		port->dev = &dev->dev;
+ 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
+ 	if (likely(baud && port->uartclk)) {
+-		if (s->cfg->scbrr_algo_id == SCBRR_ALGO_6) {
++		if (s->cfg->type == PORT_HSCIF) {
+ 			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
+ 					    &cks);
+ 		} else {
+-			t = sci_scbrr_calc(s->cfg->scbrr_algo_id, baud,
+-					   port->uartclk);
++			t = sci_scbrr_calc(s, baud, port->uartclk);
+ 			for (cks = 0; t >= 256 && cks <= 3; cks++)
+ 				t >>= 2;
+ 		}
+@@ -2091,6 +2094,7 @@ static int sci_init_single(struct platform_device *dev,
+ {
+ 	struct uart_port *port = &sci_port->port;
+ 	const struct resource *res;
++	unsigned int sampling_rate;
+ 	unsigned int i;
+ 	int ret;
  
--		sci_init_gpios(sci_port);
--
- 		pm_runtime_enable(&dev->dev);
+@@ -2142,28 +2146,47 @@ static int sci_init_single(struct platform_device *dev,
+ 	case PORT_SCIFB:
+ 		port->fifosize = 256;
+ 		sci_port->overrun_bit = 9;
++		sampling_rate = 16;
+ 		break;
+ 	case PORT_HSCIF:
+ 		port->fifosize = 128;
++		sampling_rate = 0;
+ 		sci_port->overrun_bit = 0;
+ 		break;
+ 	case PORT_SCIFA:
+ 		port->fifosize = 64;
+ 		sci_port->overrun_bit = 9;
++		sampling_rate = 16;
+ 		break;
+ 	case PORT_SCIF:
+ 		port->fifosize = 16;
+-		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE)
++		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
+ 			sci_port->overrun_bit = 9;
+-		else
++			sampling_rate = 16;
++		} else {
+ 			sci_port->overrun_bit = 0;
++			sampling_rate = 32;
++		}
+ 		break;
+ 	default:
+ 		port->fifosize = 1;
+ 		sci_port->overrun_bit = 5;
++		sampling_rate = 32;
+ 		break;
  	}
  
-@@ -2297,8 +2232,6 @@ static int sci_init_single(struct platform_device *dev,
- 
- static void sci_cleanup_single(struct sci_port *port)
- {
--	sci_free_gpios(port);
--
- 	clk_put(port->iclk);
- 	clk_put(port->fclk);
- 
++	/* Set the sampling rate if the baud rate calculation algorithm isn't
++	 * specified.
++	 */
++	if (p->scbrr_algo_id == SCBRR_ALGO_NONE) {
++		/* SCIFA on sh7723 and sh7724 need a custom sampling rate that
++		 * doesn't match the SoC datasheet, this should be investigated.
++		 * Let platform data override the sampling rate for now.
++		 */
++		sci_port->sampling_rate = p->sampling_rate ? p->sampling_rate
++					: sampling_rate;
++	}
++
+ 	if (!early) {
+ 		sci_port->iclk = clk_get(&dev->dev, "sci_ick");
+ 		if (IS_ERR(sci_port->iclk)) {
 diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index af9834b..e9c3021 100644
+index e9c3021..af414e1 100644
 --- a/include/linux/serial_sci.h
 +++ b/include/linux/serial_sci.h
-@@ -69,17 +69,6 @@ enum {
- 	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
- };
+@@ -11,6 +11,7 @@
+ #define SCIx_NOT_SUPPORTED	(-1)
  
--/* Offsets into the sci_port->gpios array */
--enum {
--	SCIx_SCK,
--	SCIx_RXD,
--	SCIx_TXD,
--	SCIx_CTS,
--	SCIx_RTS,
--
--	SCIx_NR_FNS,
--};
--
  enum {
- 	SCIx_PROBE_REGTYPE,
- 
-@@ -141,7 +130,6 @@ struct plat_sci_port_ops {
- struct plat_sci_port {
- 	unsigned long	mapbase;		/* resource base */
- 	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
--	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
- 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
++	SCBRR_ALGO_NONE,	/* Compute sampling rate in the driver */
+ 	SCBRR_ALGO_1,		/* clk / (16 * bps) */
+ 	SCBRR_ALGO_2,		/* DIV_ROUND_CLOSEST(clk, 32 * bps) - 1 */
+ 	SCBRR_ALGO_3,		/* clk / (8 * bps) */
+@@ -134,6 +135,7 @@ struct plat_sci_port {
  	upf_t		flags;			/* UPF_* flags */
  	unsigned long	capabilities;		/* Port features/capabilities */
+ 
++	unsigned int	sampling_rate;
+ 	unsigned int	scbrr_algo_id;		/* SCBRR calculation algo */
+ 	unsigned int	scscr;			/* SCSCR initialization */
+ 
 -- 
 1.8.3.2
 
