@@ -1,159 +1,196 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 13/47] serial: sh-sci: Rework baud rate calculation
-Date: Fri,  6 Dec 2013 10:59:20 +0100
-Message-ID: <1386323994-12850-14-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 14/47] ARM: shmobile: sh7372: Use macros to declare SCIF devices
+Date: Fri,  6 Dec 2013 10:59:21 +0100
+Message-ID: <1386323994-12850-15-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:33750 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757849Ab3LFKAN (ORCPT
+	with ESMTP id S1757728Ab3LFKAP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:13 -0500
+	Fri, 6 Dec 2013 05:00:15 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
 
-Computing the baud rate register value requires knowledge of the
-hardware sampling rate. This information is currently encoded in a baud
-rate calculation algorithm ID passed through platform data. However, it
-can be derived from the port type directly in most cases.
-
-Compute the sampling rate internally in the driver if the baud rate
-calculation algorithm ID isn't specified, and allow platforms to
-override the sampling rate through platform data in special cases (this
-is only required for SCIFA ports on sh7723 and sh7724, the reason needs
-to be investigated).
+Replace copy-n-paste SCIF platform data and device declaration with a
+macro. This reduces the amount of code and improves readability.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 37 ++++++++++++++++++++++++++++++-------
- include/linux/serial_sci.h  |  2 ++
- 2 files changed, 32 insertions(+), 7 deletions(-)
+ arch/arm/mach-shmobile/setup-sh7372.c | 156 ++++++----------------------------
+ 1 file changed, 25 insertions(+), 131 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index cd508c6..aadc3cd 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -65,6 +65,7 @@ struct sci_port {
- 	struct plat_sci_port	*cfg;
- 	int			overrun_bit;
- 	unsigned int		error_mask;
-+	unsigned int		sampling_rate;
- 
- 
- 	/* Break timer */
-@@ -1749,10 +1750,13 @@ static void sci_shutdown(struct uart_port *port)
- 	sci_free_irq(s);
+diff --git a/arch/arm/mach-shmobile/setup-sh7372.c b/arch/arm/mach-shmobile/setup-sh7372.c
+index 3118783..77627dd 100644
+--- a/arch/arm/mach-shmobile/setup-sh7372.c
++++ b/arch/arm/mach-shmobile/setup-sh7372.c
+@@ -86,138 +86,32 @@ void __init sh7372_pinmux_init(void)
+ 	platform_device_register(&sh7372_pfc_device);
  }
  
--static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
-+static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 				   unsigned long freq)
- {
--	switch (algo_id) {
-+	if (s->sampling_rate)
-+		return DIV_ROUND_CLOSEST(freq, s->sampling_rate * bps) - 1;
-+
-+	switch (s->cfg->scbrr_algo_id) {
- 	case SCBRR_ALGO_1:
- 		return freq / (16 * bps);
- 	case SCBRR_ALGO_2:
-@@ -1842,12 +1846,11 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+-/* SCIFA0 */
+-static struct plat_sci_port scif0_platform_data = {
+-	.mapbase	= 0xe6c40000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0c00), evt2irq(0x0c00),
+-			    evt2irq(0x0c00), evt2irq(0x0c00) },
+-};
+-
+-static struct platform_device scif0_device = {
+-	.name		= "sh-sci",
+-	.id		= 0,
+-	.dev		= {
+-		.platform_data	= &scif0_platform_data,
+-	},
+-};
+-
+-/* SCIFA1 */
+-static struct plat_sci_port scif1_platform_data = {
+-	.mapbase	= 0xe6c50000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0c20), evt2irq(0x0c20),
+-			    evt2irq(0x0c20), evt2irq(0x0c20) },
+-};
+-
+-static struct platform_device scif1_device = {
+-	.name		= "sh-sci",
+-	.id		= 1,
+-	.dev		= {
+-		.platform_data	= &scif1_platform_data,
+-	},
+-};
+-
+-/* SCIFA2 */
+-static struct plat_sci_port scif2_platform_data = {
+-	.mapbase	= 0xe6c60000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0c40), evt2irq(0x0c40),
+-			    evt2irq(0x0c40), evt2irq(0x0c40) },
+-};
+-
+-static struct platform_device scif2_device = {
+-	.name		= "sh-sci",
+-	.id		= 2,
+-	.dev		= {
+-		.platform_data	= &scif2_platform_data,
+-	},
+-};
+-
+-/* SCIFA3 */
+-static struct plat_sci_port scif3_platform_data = {
+-	.mapbase	= 0xe6c70000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0c60), evt2irq(0x0c60),
+-			    evt2irq(0x0c60), evt2irq(0x0c60) },
+-};
+-
+-static struct platform_device scif3_device = {
+-	.name		= "sh-sci",
+-	.id		= 3,
+-	.dev		= {
+-		.platform_data	= &scif3_platform_data,
+-	},
+-};
+-
+-/* SCIFA4 */
+-static struct plat_sci_port scif4_platform_data = {
+-	.mapbase	= 0xe6c80000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0d20), evt2irq(0x0d20),
+-			    evt2irq(0x0d20), evt2irq(0x0d20) },
+-};
+-
+-static struct platform_device scif4_device = {
+-	.name		= "sh-sci",
+-	.id		= 4,
+-	.dev		= {
+-		.platform_data	= &scif4_platform_data,
+-	},
+-};
+-
+-/* SCIFA5 */
+-static struct plat_sci_port scif5_platform_data = {
+-	.mapbase	= 0xe6cb0000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFA,
+-	.irqs		= { evt2irq(0x0d40), evt2irq(0x0d40),
+-			    evt2irq(0x0d40), evt2irq(0x0d40) },
+-};
+-
+-static struct platform_device scif5_device = {
+-	.name		= "sh-sci",
+-	.id		= 5,
+-	.dev		= {
+-		.platform_data	= &scif5_platform_data,
+-	},
+-};
+-
+-/* SCIFB */
+-static struct plat_sci_port scif6_platform_data = {
+-	.mapbase	= 0xe6c30000,
+-	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+-	.type		= PORT_SCIFB,
+-	.irqs		= { evt2irq(0x0d60), evt2irq(0x0d60),
+-			    evt2irq(0x0d60), evt2irq(0x0d60) },
+-};
++/* SCIF */
++#define SH7372_SCIF(scif_type, index, baseaddr, irq)		\
++static struct plat_sci_port scif##index##_platform_data = {	\
++	.type		= scif_type,				\
++	.mapbase	= baseaddr,				\
++	.flags		= UPF_BOOT_AUTOCONF,			\
++	.irqs		= SCIx_IRQ_MUXED(irq),			\
++	.scbrr_algo_id	= SCBRR_ALGO_4,				\
++	.scscr		= SCSCR_RE | SCSCR_TE,			\
++};								\
++								\
++static struct platform_device scif##index##_device = {		\
++	.name		= "sh-sci",				\
++	.id		= index,				\
++	.dev		= {					\
++		.platform_data	= &scif##index##_platform_data,	\
++	},							\
++}
  
- 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
- 	if (likely(baud && port->uartclk)) {
--		if (s->cfg->scbrr_algo_id == SCBRR_ALGO_6) {
-+		if (s->cfg->type == PORT_HSCIF) {
- 			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
- 					    &cks);
- 		} else {
--			t = sci_scbrr_calc(s->cfg->scbrr_algo_id, baud,
--					   port->uartclk);
-+			t = sci_scbrr_calc(s, baud, port->uartclk);
- 			for (cks = 0; t >= 256 && cks <= 3; cks++)
- 				t >>= 2;
- 		}
-@@ -2091,6 +2094,7 @@ static int sci_init_single(struct platform_device *dev,
- {
- 	struct uart_port *port = &sci_port->port;
- 	const struct resource *res;
-+	unsigned int sampling_rate;
- 	unsigned int i;
- 	int ret;
+-static struct platform_device scif6_device = {
+-	.name		= "sh-sci",
+-	.id		= 6,
+-	.dev		= {
+-		.platform_data	= &scif6_platform_data,
+-	},
+-};
++SH7372_SCIF(PORT_SCIFA, 0, 0xe6c40000, evt2irq(0x0c00));
++SH7372_SCIF(PORT_SCIFA, 1, 0xe6c50000, evt2irq(0x0c20));
++SH7372_SCIF(PORT_SCIFA, 2, 0xe6c60000, evt2irq(0x0c40));
++SH7372_SCIF(PORT_SCIFA, 3, 0xe6c70000, evt2irq(0x0c60));
++SH7372_SCIF(PORT_SCIFA, 4, 0xe6c80000, evt2irq(0x0d20));
++SH7372_SCIF(PORT_SCIFA, 5, 0xe6cb0000, evt2irq(0x0d40));
++SH7372_SCIF(PORT_SCIFB, 6, 0xe6c30000, evt2irq(0x0d60));
  
-@@ -2142,28 +2146,47 @@ static int sci_init_single(struct platform_device *dev,
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
- 		sci_port->overrun_bit = 9;
-+		sampling_rate = 16;
- 		break;
- 	case PORT_HSCIF:
- 		port->fifosize = 128;
-+		sampling_rate = 0;
- 		sci_port->overrun_bit = 0;
- 		break;
- 	case PORT_SCIFA:
- 		port->fifosize = 64;
- 		sci_port->overrun_bit = 9;
-+		sampling_rate = 16;
- 		break;
- 	case PORT_SCIF:
- 		port->fifosize = 16;
--		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE)
-+		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
- 			sci_port->overrun_bit = 9;
--		else
-+			sampling_rate = 16;
-+		} else {
- 			sci_port->overrun_bit = 0;
-+			sampling_rate = 32;
-+		}
- 		break;
- 	default:
- 		port->fifosize = 1;
- 		sci_port->overrun_bit = 5;
-+		sampling_rate = 32;
- 		break;
- 	}
- 
-+	/* Set the sampling rate if the baud rate calculation algorithm isn't
-+	 * specified.
-+	 */
-+	if (p->scbrr_algo_id == SCBRR_ALGO_NONE) {
-+		/* SCIFA on sh7723 and sh7724 need a custom sampling rate that
-+		 * doesn't match the SoC datasheet, this should be investigated.
-+		 * Let platform data override the sampling rate for now.
-+		 */
-+		sci_port->sampling_rate = p->sampling_rate ? p->sampling_rate
-+					: sampling_rate;
-+	}
-+
- 	if (!early) {
- 		sci_port->iclk = clk_get(&dev->dev, "sci_ick");
- 		if (IS_ERR(sci_port->iclk)) {
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index e9c3021..af414e1 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -11,6 +11,7 @@
- #define SCIx_NOT_SUPPORTED	(-1)
- 
- enum {
-+	SCBRR_ALGO_NONE,	/* Compute sampling rate in the driver */
- 	SCBRR_ALGO_1,		/* clk / (16 * bps) */
- 	SCBRR_ALGO_2,		/* DIV_ROUND_CLOSEST(clk, 32 * bps) - 1 */
- 	SCBRR_ALGO_3,		/* clk / (8 * bps) */
-@@ -134,6 +135,7 @@ struct plat_sci_port {
- 	upf_t		flags;			/* UPF_* flags */
- 	unsigned long	capabilities;		/* Port features/capabilities */
- 
-+	unsigned int	sampling_rate;
- 	unsigned int	scbrr_algo_id;		/* SCBRR calculation algo */
- 	unsigned int	scscr;			/* SCSCR initialization */
- 
+ /* CMT */
+ static struct sh_timer_config cmt2_platform_data = {
 -- 
 1.8.3.2
 
