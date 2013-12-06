@@ -1,14 +1,14 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 39/47] ARM: shmobile: r8a7790: Don't set plat_sci_port scbrr_algo_id field
-Date: Fri,  6 Dec 2013 10:59:46 +0100
-Message-ID: <1386323994-12850-40-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 34/47] ARM: shmobile: r7s72100: Don't set plat_sci_port scbrr_algo_id field
+Date: Fri,  6 Dec 2013 10:59:41 +0100
+Message-ID: <1386323994-12850-35-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:33750 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757908Ab3LFKAm (ORCPT
+	with ESMTP id S1757885Ab3LFKAe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:42 -0500
+	Fri, 6 Dec 2013 05:00:34 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -20,50 +20,21 @@ the driver handle baud rate calculation internally.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r8a7790.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/arm/mach-shmobile/setup-r7s72100.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7790.c b/arch/arm/mach-shmobile/setup-r8a7790.c
-index 70bb553..bb805a4 100644
---- a/arch/arm/mach-shmobile/setup-r8a7790.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7790.c
-@@ -78,11 +78,10 @@ void __init r8a7790_pinmux_init(void)
- 	r8a7790_register_gpio(5);
- }
- 
--#define __R8A7790_SCIF(scif_type, _scscr, algo, index, baseaddr, irq)	\
-+#define __R8A7790_SCIF(scif_type, _scscr, index, baseaddr, irq)		\
- static struct plat_sci_port scif##index##_platform_data = {		\
- 	.type		= scif_type,					\
+diff --git a/arch/arm/mach-shmobile/setup-r7s72100.c b/arch/arm/mach-shmobile/setup-r7s72100.c
+index 81b995b..9c0b3a9 100644
+--- a/arch/arm/mach-shmobile/setup-r7s72100.c
++++ b/arch/arm/mach-shmobile/setup-r7s72100.c
+@@ -33,7 +33,6 @@ static const struct plat_sci_port scif##index##_platform_data = {	\
+ 	.type		= PORT_SCIF,					\
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,		\
  	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
--	.scbrr_algo_id	= algo,						\
- 	.scscr		= _scscr,					\
+-	.scbrr_algo_id	= SCBRR_ALGO_2,					\
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |	\
+ 			  SCSCR_REIE,					\
  };									\
- 									\
-@@ -93,19 +92,19 @@ static struct resource scif##index##_resources[] = {			\
- 
- #define R8A7790_SCIF(index, baseaddr, irq)				\
- 	__R8A7790_SCIF(PORT_SCIF, SCSCR_RE | SCSCR_TE,			\
--		       SCBRR_ALGO_2, index, baseaddr, irq)
-+		       index, baseaddr, irq)
- 
- #define R8A7790_SCIFA(index, baseaddr, irq)				\
- 	__R8A7790_SCIF(PORT_SCIFA, SCSCR_RE | SCSCR_TE | SCSCR_CKE0,	\
--		       SCBRR_ALGO_4, index, baseaddr, irq)
-+		       index, baseaddr, irq)
- 
- #define R8A7790_SCIFB(index, baseaddr, irq)				\
- 	__R8A7790_SCIF(PORT_SCIFB, SCSCR_RE | SCSCR_TE,			\
--		       SCBRR_ALGO_4, index, baseaddr, irq)
-+		       index, baseaddr, irq)
- 
- #define R8A7790_HSCIF(index, baseaddr, irq)				\
- 	__R8A7790_SCIF(PORT_HSCIF, SCSCR_RE | SCSCR_TE,			\
--		       SCBRR_ALGO_6, index, baseaddr, irq)
-+		       index, baseaddr, irq)
- 
- R8A7790_SCIFA(0, 0xe6c40000, gic_spi(144)); /* SCIFA0 */
- R8A7790_SCIFA(1, 0xe6c50000, gic_spi(145)); /* SCIFA1 */
 -- 
 1.8.3.2
 
