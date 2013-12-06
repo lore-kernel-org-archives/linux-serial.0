@@ -1,62 +1,93 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 40/47] ARM: shmobile: r8a7791: Don't set plat_sci_port scbrr_algo_id field
-Date: Fri,  6 Dec 2013 10:59:47 +0100
-Message-ID: <1386323994-12850-41-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 42/47] sh: sh772[34]: Set serial port sampling rate to 8 for SCIFA ports
+Date: Fri,  6 Dec 2013 10:59:49 +0100
+Message-ID: <1386323994-12850-43-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757909Ab3LFKAn (ORCPT
+	with ESMTP id S1757912Ab3LFKAo (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:43 -0500
+	Fri, 6 Dec 2013 05:00:44 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
 
-The field will be removed from the sh-sci driver. Don't set it and let
-the driver handle baud rate calculation internally.
+SCIFA ports on sh7723 and sh7724 seem to use a sampling rate of half the
+value specified in the datasheet. This is currently handled by a custom
+baud rate calculation algorithm. The algorithm ID will be removed from
+platform data, set the sampling rate directly instead.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/mach-shmobile/setup-r8a7791.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ arch/sh/kernel/cpu/sh4a/setup-sh7723.c | 6 +++---
+ arch/sh/kernel/cpu/sh4a/setup-sh7724.c | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7791.c b/arch/arm/mach-shmobile/setup-r8a7791.c
-index f15b537..e28404e 100644
---- a/arch/arm/mach-shmobile/setup-r8a7791.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7791.c
-@@ -84,11 +84,10 @@ void __init r8a7791_pinmux_init(void)
- 	r8a7791_register_gpio(7);
- }
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
+index 521a09e..079951b 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
+@@ -98,7 +98,7 @@ static struct plat_sci_port scif3_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
  
--#define __R8A7791_SCIF(scif_type, algo, index, baseaddr, irq)		\
-+#define __R8A7791_SCIF(scif_type, index, baseaddr, irq)			\
- static struct plat_sci_port scif##index##_platform_data = {		\
- 	.type		= scif_type,					\
- 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,		\
--	.scbrr_algo_id	= algo,						\
- 	.scscr		= SCSCR_RE | SCSCR_TE,				\
- };									\
- 									\
-@@ -98,13 +97,13 @@ static struct resource scif##index##_resources[] = {			\
- }
+@@ -121,7 +121,7 @@ static struct plat_sci_port scif4_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
  
- #define R8A7791_SCIF(index, baseaddr, irq)				\
--	__R8A7791_SCIF(PORT_SCIF, SCBRR_ALGO_2, index, baseaddr, irq)
-+	__R8A7791_SCIF(PORT_SCIF, index, baseaddr, irq)
+@@ -144,7 +144,7 @@ static struct plat_sci_port scif5_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
  
- #define R8A7791_SCIFA(index, baseaddr, irq)				\
--	__R8A7791_SCIF(PORT_SCIFA, SCBRR_ALGO_4, index, baseaddr, irq)
-+	__R8A7791_SCIF(PORT_SCIFA, index, baseaddr, irq)
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
+index fb0a237..59c3594 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
+@@ -365,7 +365,7 @@ static struct plat_sci_port scif3_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
  
- #define R8A7791_SCIFB(index, baseaddr, irq)				\
--	__R8A7791_SCIF(PORT_SCIFB, SCBRR_ALGO_4, index, baseaddr, irq)
-+	__R8A7791_SCIF(PORT_SCIFB, index, baseaddr, irq)
+@@ -388,7 +388,7 @@ static struct plat_sci_port scif4_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
  
- R8A7791_SCIFA(0,  0xe6c40000, gic_spi(144)); /* SCIFA0 */
- R8A7791_SCIFA(1,  0xe6c50000, gic_spi(145)); /* SCIFA1 */
+@@ -411,7 +411,7 @@ static struct plat_sci_port scif5_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_3,
++	.sampling_rate	= 8,
+ 	.type           = PORT_SCIFA,
+ };
+ 
 -- 
 1.8.3.2
 
