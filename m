@@ -1,91 +1,1023 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 42/47] sh: sh772[34]: Set serial port sampling rate to 8 for SCIFA ports
-Date: Fri,  6 Dec 2013 10:59:49 +0100
-Message-ID: <1386323994-12850-43-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 43/47] sh: Don't set plat_sci_port scbrr_algo_id field
+Date: Fri,  6 Dec 2013 10:59:50 +0100
+Message-ID: <1386323994-12850-44-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
 Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757912Ab3LFKAo (ORCPT
+	with ESMTP id S1757416Ab3LFKAq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:44 -0500
+	Fri, 6 Dec 2013 05:00:46 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
 
-SCIFA ports on sh7723 and sh7724 seem to use a sampling rate of half the
-value specified in the datasheet. This is currently handled by a custom
-baud rate calculation algorithm. The algorithm ID will be removed from
-platform data, set the sampling rate directly instead.
+The field will be removed from the sh-sci driver. Don't set it and let
+the driver handle baud rate calculation internally.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/sh/kernel/cpu/sh4a/setup-sh7723.c | 6 +++---
- arch/sh/kernel/cpu/sh4a/setup-sh7724.c | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ arch/sh/kernel/cpu/sh2/setup-sh7619.c  |  3 ---
+ arch/sh/kernel/cpu/sh2a/setup-mxg.c    |  1 -
+ arch/sh/kernel/cpu/sh2a/setup-sh7201.c |  8 --------
+ arch/sh/kernel/cpu/sh2a/setup-sh7203.c |  4 ----
+ arch/sh/kernel/cpu/sh2a/setup-sh7206.c |  4 ----
+ arch/sh/kernel/cpu/sh2a/setup-sh7264.c |  8 --------
+ arch/sh/kernel/cpu/sh2a/setup-sh7269.c |  8 --------
+ arch/sh/kernel/cpu/sh3/setup-sh7705.c  |  2 --
+ arch/sh/kernel/cpu/sh3/setup-sh770x.c  |  3 ---
+ arch/sh/kernel/cpu/sh3/setup-sh7710.c  |  2 --
+ arch/sh/kernel/cpu/sh3/setup-sh7720.c  |  2 --
+ arch/sh/kernel/cpu/sh4/setup-sh4-202.c |  1 -
+ arch/sh/kernel/cpu/sh4/setup-sh7750.c  |  2 --
+ arch/sh/kernel/cpu/sh4/setup-sh7760.c  |  4 ----
+ arch/sh/kernel/cpu/sh4a/setup-sh7343.c |  4 ----
+ arch/sh/kernel/cpu/sh4a/setup-sh7366.c |  1 -
+ arch/sh/kernel/cpu/sh4a/setup-sh7722.c |  3 ---
+ arch/sh/kernel/cpu/sh4a/setup-sh7723.c |  3 ---
+ arch/sh/kernel/cpu/sh4a/setup-sh7724.c |  3 ---
+ arch/sh/kernel/cpu/sh4a/setup-sh7734.c |  6 ------
+ arch/sh/kernel/cpu/sh4a/setup-sh7757.c |  3 ---
+ arch/sh/kernel/cpu/sh4a/setup-sh7763.c |  3 ---
+ arch/sh/kernel/cpu/sh4a/setup-sh7770.c | 10 ----------
+ arch/sh/kernel/cpu/sh4a/setup-sh7780.c |  4 ----
+ arch/sh/kernel/cpu/sh4a/setup-sh7785.c |  6 ------
+ arch/sh/kernel/cpu/sh4a/setup-sh7786.c |  6 ------
+ arch/sh/kernel/cpu/sh4a/setup-shx3.c   |  3 ---
+ arch/sh/kernel/cpu/sh5/setup-sh5.c     |  1 -
+ 28 files changed, 108 deletions(-)
 
+diff --git a/arch/sh/kernel/cpu/sh2/setup-sh7619.c b/arch/sh/kernel/cpu/sh2/setup-sh7619.c
+index 1a4fe7c..3860b0b 100644
+--- a/arch/sh/kernel/cpu/sh2/setup-sh7619.c
++++ b/arch/sh/kernel/cpu/sh2/setup-sh7619.c
+@@ -63,7 +63,6 @@ static DECLARE_INTC_DESC(intc_desc, "sh7619", vectors, NULL,
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -85,7 +84,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -107,7 +105,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-mxg.c b/arch/sh/kernel/cpu/sh2a/setup-mxg.c
+index 9bdc611..63e996f 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-mxg.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-mxg.c
+@@ -201,7 +201,6 @@ static struct platform_device mtu2_2_device = {
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7201.c b/arch/sh/kernel/cpu/sh2a/setup-sh7201.c
+index 7585c4e..2c68744 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7201.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7201.c
+@@ -180,7 +180,6 @@ static DECLARE_INTC_DESC(intc_desc, "sh7201", vectors, groups,
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -202,7 +201,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -224,7 +222,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -246,7 +243,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -268,7 +264,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -290,7 +285,6 @@ static struct platform_device scif4_device = {
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -312,7 +306,6 @@ static struct platform_device scif5_device = {
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -334,7 +327,6 @@ static struct platform_device scif6_device = {
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
+index f2a9baa..d55a0f3 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
+@@ -177,7 +177,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -201,7 +200,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -225,7 +223,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -249,7 +246,6 @@ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7206.c b/arch/sh/kernel/cpu/sh2a/setup-sh7206.c
+index fc7cacd..241e745 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7206.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7206.c
+@@ -136,7 +136,6 @@ static DECLARE_INTC_DESC(intc_desc, "sh7206", vectors, groups,
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -158,7 +157,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -180,7 +178,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -202,7 +199,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+index 00edbda..ad5b0f4 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+@@ -229,7 +229,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -256,7 +255,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -283,7 +281,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -310,7 +307,6 @@ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -337,7 +333,6 @@ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -364,7 +359,6 @@ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -391,7 +385,6 @@ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -418,7 +411,6 @@ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+index 5cdbaac..3995119 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+@@ -251,7 +251,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -278,7 +277,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -305,7 +303,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -332,7 +329,6 @@ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -359,7 +355,6 @@ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -386,7 +381,6 @@ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -413,7 +407,6 @@ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -440,7 +433,6 @@ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+ 			  SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7705.c b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+index 10dd0a0..c76b254 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7705.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+@@ -73,7 +73,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TIE | SCSCR_RIE  | SCSCR_TE |
+ 			  SCSCR_RE  | SCSCR_CKE1 | SCSCR_CKE0,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+@@ -97,7 +96,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TIE | SCSCR_RIE | SCSCR_TE | SCSCR_RE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh770x.c b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
+index d5541b0..ff1465c 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh770x.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
+@@ -112,7 +112,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.port_reg	= 0xa4000136,
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCI,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regshift	= 1,
+@@ -138,7 +137,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH3_SCIF_REGTYPE,
+@@ -165,7 +163,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_IRDA,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regshift	= 1,
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7710.c b/arch/sh/kernel/cpu/sh3/setup-sh7710.c
+index de229f5..e2ce936 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7710.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7710.c
+@@ -101,7 +101,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE | SCSCR_REIE |
+ 			  SCSCR_CKE1 | SCSCR_CKE0,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -124,7 +123,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE | SCSCR_REIE |
+ 			  SCSCR_CKE1 | SCSCR_CKE0,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7720.c b/arch/sh/kernel/cpu/sh3/setup-sh7720.c
+index ca83581..1d5729d 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7720.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7720.c
+@@ -54,7 +54,6 @@ static struct platform_device rtc_device = {
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh7720_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+@@ -78,7 +77,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE,
+-	.scbrr_algo_id	= SCBRR_ALGO_4,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh7720_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+diff --git a/arch/sh/kernel/cpu/sh4/setup-sh4-202.c b/arch/sh/kernel/cpu/sh4/setup-sh4-202.c
+index 0fc6a10..a8bd778 100644
+--- a/arch/sh/kernel/cpu/sh4/setup-sh4-202.c
++++ b/arch/sh/kernel/cpu/sh4/setup-sh4-202.c
+@@ -19,7 +19,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7750.c b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
+index 5613c15..a447a24 100644
+--- a/arch/sh/kernel/cpu/sh4/setup-sh7750.c
++++ b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
+@@ -41,7 +41,6 @@ static struct plat_sci_port sci_platform_data = {
+ 	.port_reg	= 0xffe0001C,
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCI,
+ 	.regshift	= 2,
+ };
+@@ -64,7 +63,6 @@ static struct platform_device sci_device = {
+ static struct plat_sci_port scif_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_TE | SCSCR_RE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7760.c b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
+index a83e6f5..1abd9fb4 100644
+--- a/arch/sh/kernel/cpu/sh4/setup-sh7760.c
++++ b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
+@@ -130,7 +130,6 @@ static DECLARE_INTC_DESC(intc_desc_irq, "sh7760-irq", vectors_irq, groups,
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -157,7 +156,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.type		= PORT_SCIF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+ 
+@@ -182,7 +180,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -208,7 +205,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCI,
+ 	.regshift	= 2,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7343.c b/arch/sh/kernel/cpu/sh4a/setup-sh7343.c
+index 8b45f67..245d192 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7343.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7343.c
+@@ -20,7 +20,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ };
+ 
+@@ -42,7 +41,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ };
+ 
+@@ -64,7 +62,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ };
+ 
+@@ -86,7 +83,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7366.c b/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
+index 317f710..6f56cbd 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
+@@ -23,7 +23,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.port_reg	= 0xa405013e,
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7722.c b/arch/sh/kernel/cpu/sh4a/setup-sh7722.c
+index 6aeebb5..5a94efc 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7722.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7722.c
+@@ -181,7 +181,6 @@ struct platform_device dma_device = {
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.ops		= &sh7722_sci_port_ops,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+@@ -205,7 +204,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.ops		= &sh7722_sci_port_ops,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+@@ -229,7 +227,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.ops		= &sh7722_sci_port_ops,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
 diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
-index 521a09e..079951b 100644
+index 079951b..3c5eb09 100644
 --- a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
 +++ b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
-@@ -98,7 +98,7 @@ static struct plat_sci_port scif3_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
- };
- 
-@@ -121,7 +121,7 @@ static struct plat_sci_port scif4_platform_data = {
- 	.port_reg	= SCIx_NOT_SUPPORTED,
+@@ -26,7 +26,6 @@ static struct plat_sci_port scif0_platform_data = {
+ 	.port_reg	= 0xa4050160,
  	.flags          = UPF_BOOT_AUTOCONF,
  	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
  };
- 
-@@ -144,7 +144,7 @@ static struct plat_sci_port scif5_platform_data = {
+@@ -50,7 +49,6 @@ static struct plat_sci_port scif1_platform_data = {
  	.port_reg	= SCIx_NOT_SUPPORTED,
  	.flags          = UPF_BOOT_AUTOCONF,
  	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
  };
- 
+@@ -74,7 +72,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+ };
 diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
-index fb0a237..59c3594 100644
+index 59c3594..60ebbc6 100644
 --- a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
 +++ b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
-@@ -365,7 +365,7 @@ static struct plat_sci_port scif3_platform_data = {
+@@ -293,7 +293,6 @@ static struct plat_sci_port scif0_platform_data = {
  	.port_reg	= SCIx_NOT_SUPPORTED,
  	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+ };
+@@ -317,7 +316,6 @@ static struct plat_sci_port scif1_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+ };
+@@ -341,7 +339,6 @@ static struct plat_sci_port scif2_platform_data = {
+ 	.port_reg	= SCIx_NOT_SUPPORTED,
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7734.c b/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
+index bedf8fb..dad4ed1 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
+@@ -27,7 +27,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id  = SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+ };
+@@ -50,7 +49,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+ };
+@@ -73,7 +71,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id  = SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+ };
+@@ -96,7 +93,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id  = SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+ };
+@@ -119,7 +115,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype        = SCIx_SH4_SCIF_REGTYPE,
+ };
+@@ -142,7 +137,6 @@ static struct platform_device scif4_device = {
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags          = UPF_BOOT_AUTOCONF,
+ 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type           = PORT_SCIF,
+ 	.regtype		= SCIx_SH4_SCIF_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7757.c b/arch/sh/kernel/cpu/sh4a/setup-sh7757.c
+index 6b8d0e6..e43e5db 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7757.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7757.c
+@@ -26,7 +26,6 @@
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
  };
  
-@@ -388,7 +388,7 @@ static struct plat_sci_port scif4_platform_data = {
- 	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
+@@ -48,7 +47,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
  };
  
-@@ -411,7 +411,7 @@ static struct plat_sci_port scif5_platform_data = {
- 	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr		= SCSCR_RE | SCSCR_TE,
--	.scbrr_algo_id	= SCBRR_ALGO_3,
-+	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
+@@ -70,7 +68,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7763.c b/arch/sh/kernel/cpu/sh4a/setup-sh7763.c
+index 940505c..5eebbd7 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7763.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7763.c
+@@ -21,7 +21,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -44,7 +43,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -67,7 +65,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7770.c b/arch/sh/kernel/cpu/sh4a/setup-sh7770.c
+index f9c04de..e1ba8cb7 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7770.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7770.c
+@@ -18,7 +18,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -40,7 +39,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -62,7 +60,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -84,7 +81,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -106,7 +102,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -128,7 +123,6 @@ static struct platform_device scif4_device = {
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -150,7 +144,6 @@ static struct platform_device scif5_device = {
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -172,7 +165,6 @@ static struct platform_device scif6_device = {
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -194,7 +186,6 @@ static struct platform_device scif7_device = {
+ static struct plat_sci_port scif8_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -216,7 +207,6 @@ static struct platform_device scif8_device = {
+ static struct plat_sci_port scif9_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7780.c b/arch/sh/kernel/cpu/sh4a/setup-sh7780.c
+index 227f8f4..668e54b 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7780.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7780.c
+@@ -20,7 +20,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -43,7 +42,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -419,9 +417,7 @@ void __init plat_early_device_setup(void)
+ {
+ 	if (mach_is_sh2007()) {
+ 		scif0_platform_data.scscr &= ~SCSCR_CKE1;
+-		scif0_platform_data.scbrr_algo_id = SCBRR_ALGO_2;
+ 		scif1_platform_data.scscr &= ~SCSCR_CKE1;
+-		scif1_platform_data.scbrr_algo_id = SCBRR_ALGO_2;
+ 	}
+ 
+ 	early_platform_add_devices(sh7780_early_devices,
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7785.c b/arch/sh/kernel/cpu/sh4a/setup-sh7785.c
+index b9f64c1..4aa6791 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7785.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7785.c
+@@ -22,7 +22,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -45,7 +44,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -68,7 +66,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -91,7 +88,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -114,7 +110,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -137,7 +132,6 @@ static struct platform_device scif4_device = {
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7786.c b/arch/sh/kernel/cpu/sh4a/setup-sh7786.c
+index 92b95ce..5d619a5 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-sh7786.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-sh7786.c
+@@ -30,7 +30,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -59,7 +58,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -91,7 +89,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -114,7 +111,6 @@ static struct platform_device scif2_device = {
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -137,7 +133,6 @@ static struct platform_device scif3_device = {
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -160,7 +155,6 @@ static struct platform_device scif4_device = {
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_CKE1,
+-	.scbrr_algo_id	= SCBRR_ALGO_1,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/setup-shx3.c b/arch/sh/kernel/cpu/sh4a/setup-shx3.c
+index 4d65be9..0856bcb 100644
+--- a/arch/sh/kernel/cpu/sh4a/setup-shx3.c
++++ b/arch/sh/kernel/cpu/sh4a/setup-shx3.c
+@@ -30,7 +30,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -55,7 +54,6 @@ static struct platform_device scif0_device = {
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+@@ -80,7 +78,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
+ };
+ 
+diff --git a/arch/sh/kernel/cpu/sh5/setup-sh5.c b/arch/sh/kernel/cpu/sh5/setup-sh5.c
+index 64b0981..14d6821 100644
+--- a/arch/sh/kernel/cpu/sh5/setup-sh5.c
++++ b/arch/sh/kernel/cpu/sh5/setup-sh5.c
+@@ -19,7 +19,6 @@
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,
+ 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+-	.scbrr_algo_id	= SCBRR_ALGO_2,
+ 	.type		= PORT_SCIF,
  };
  
 -- 
