@@ -1,157 +1,176 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 45/47] serial: sh-sci: Remove platform data mapbase and irqs fields
-Date: Fri,  6 Dec 2013 10:59:52 +0100
-Message-ID: <1386323994-12850-46-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 47/47] serial: sh-sci: Add OF support
+Date: Fri,  6 Dec 2013 10:59:54 +0100
+Message-ID: <1386323994-12850-48-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757909Ab3LFKAw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Dec 2013 05:00:52 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
-List-Id: linux-serial@vger.kernel.org
 
-The fields are not used anymore by board files, remove them.
+From: Bastian Hecht <hechtb@gmail.com>
 
+Extend the driver to with support for SCIx device tree bindings. A
+minimal set of features is supported, additional properties can be added
+later should the need to describe more device features arise.
+
+Signed-off-by: Bastian Hecht <hechtb+renesas@gmail.com>
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 60 +++++++++++++++++++++++++--------------------
- include/linux/serial_sci.h  | 26 --------------------
- 2 files changed, 34 insertions(+), 52 deletions(-)
+ drivers/tty/serial/sh-sci.c | 101 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 98 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 9c57468..4258bb8 100644
+index 4258bb8..6653c11 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -58,6 +58,23 @@
+@@ -39,6 +39,7 @@
+ #include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/notifier.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/scatterlist.h>
+@@ -2414,6 +2415,83 @@ static int sci_remove(struct platform_device *dev)
+ 	return 0;
+ }
  
- #include "sh-sci.h"
- 
-+/* Offsets into the sci_port->irqs array */
-+enum {
-+	SCIx_ERI_IRQ,
-+	SCIx_RXI_IRQ,
-+	SCIx_TXI_IRQ,
-+	SCIx_BRI_IRQ,
-+	SCIx_NR_IRQS,
-+
-+	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
++struct sci_port_info {
++	unsigned int type;
++	unsigned int regtype;
 +};
 +
-+#define SCIx_IRQ_IS_MUXED(port)			\
-+	((port)->irqs[SCIx_ERI_IRQ] ==	\
-+	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
-+	((port)->irqs[SCIx_ERI_IRQ] &&	\
-+	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
++static const struct of_device_id of_sci_match[] = {
++	{
++		.compatible = "renesas,scif",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIF,
++			.regtype = SCIx_SH4_SCIF_REGTYPE,
++		},
++	}, {
++		.compatible = "renesas,scifa",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIFA,
++			.regtype = SCIx_SCIFA_REGTYPE,
++		},
++	}, {
++		.compatible = "renesas,scifb",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIFB,
++			.regtype = SCIx_SCIFB_REGTYPE,
++		},
++	}, {
++		.compatible = "renesas,hscif",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_HSCIF,
++			.regtype = SCIx_HSCIF_REGTYPE,
++		},
++	}, {
++		/* Terminator */
++	},
++};
++MODULE_DEVICE_TABLE(of, of_sci_match);
 +
- struct sci_port {
- 	struct uart_port	port;
++static struct plat_sci_port *
++sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
++{
++	struct device_node *np = pdev->dev.of_node;
++	const struct of_device_id *match;
++	const struct sci_port_info *info;
++	struct plat_sci_port *p;
++	int id;
++
++	if (!IS_ENABLED(CONFIG_OF) || !np)
++		return NULL;
++
++	match = of_match_node(of_sci_match, pdev->dev.of_node);
++	if (!match)
++		return NULL;
++
++	info = match->data;
++
++	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
++	if (!p) {
++		dev_err(&pdev->dev, "failed to allocate DT config data\n");
++		return NULL;
++	}
++
++	/* Get the line number for the aliases node. */
++	id = of_alias_get_id(np, "serial");
++	if (id < 0) {
++		dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
++		return NULL;
++	}
++
++	*dev_id = id;
++
++	p->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
++	p->type = info->type;
++	p->regtype = info->regtype;
++	p->scscr = SCSCR_RE | SCSCR_TE;
++
++	return p;
++}
++
+ static int sci_probe_single(struct platform_device *dev,
+ 				      unsigned int index,
+ 				      struct plat_sci_port *p,
+@@ -2446,8 +2524,9 @@ static int sci_probe_single(struct platform_device *dev,
  
-@@ -2093,36 +2110,27 @@ static int sci_init_single(struct platform_device *dev,
- 	port->iotype	= UPIO_MEM;
- 	port->line	= index;
+ static int sci_probe(struct platform_device *dev)
+ {
+-	struct plat_sci_port *p = dev_get_platdata(&dev->dev);
+-	struct sci_port *sp = &sci_ports[dev->id];
++	struct plat_sci_port *p;
++	struct sci_port *sp;
++	unsigned int dev_id;
+ 	int ret;
  
--	if (dev->num_resources) {
--		/* Device has resources, use them. */
--		res = platform_get_resource(dev, IORESOURCE_MEM, 0);
--		if (res == NULL)
--			return -ENOMEM;
-+	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-+	if (res == NULL)
-+		return -ENOMEM;
+ 	/*
+@@ -2458,9 +2537,24 @@ static int sci_probe(struct platform_device *dev)
+ 	if (is_early_platform_device(dev))
+ 		return sci_probe_earlyprintk(dev);
  
--		port->mapbase = res->start;
-+	port->mapbase = res->start;
++	if (dev->dev.of_node) {
++		p = sci_parse_dt(dev, &dev_id);
++		if (p == NULL)
++			return -EINVAL;
++	} else {
++		p = dev->dev.platform_data;
++		if (p == NULL) {
++			dev_err(&dev->dev, "no platform data supplied\n");
++			return -EINVAL;
++		}
++
++		dev_id = dev->id;
++	}
++
++	sp = &sci_ports[dev_id];
+ 	platform_set_drvdata(dev, sp);
  
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = platform_get_irq(dev, i);
-+	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
-+		sci_port->irqs[i] = platform_get_irq(dev, i);
+-	ret = sci_probe_single(dev, dev->id, p, sp);
++	ret = sci_probe_single(dev, dev_id, p, sp);
+ 	if (ret)
+ 		return ret;
  
--		/* The SCI generates several interrupts. They can be muxed
--		 * together or connected to different interrupt lines. In the
--		 * muxed case only one interrupt resource is specified. In the
--		 * non-muxed case three or four interrupt resources are
--		 * specified, as the BRI interrupt is optional.
--		 */
--		if (sci_port->irqs[0] < 0)
--			return -ENXIO;
-+	/* The SCI generates several interrupts. They can be muxed together or
-+	 * connected to different interrupt lines. In the muxed case only one
-+	 * interrupt resource is specified. In the non-muxed case three or four
-+	 * interrupt resources are specified, as the BRI interrupt is optional.
-+	 */
-+	if (sci_port->irqs[0] < 0)
-+		return -ENXIO;
- 
--		if (sci_port->irqs[1] < 0) {
--			sci_port->irqs[1] = sci_port->irqs[0];
--			sci_port->irqs[2] = sci_port->irqs[0];
--			sci_port->irqs[3] = sci_port->irqs[0];
--		}
--	} else {
--		/* No resources, use old-style platform data. */
--		port->mapbase = p->mapbase;
--		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--			sci_port->irqs[i] = p->irqs[i] ? p->irqs[i] : -ENXIO;
-+	if (sci_port->irqs[1] < 0) {
-+		sci_port->irqs[1] = sci_port->irqs[0];
-+		sci_port->irqs[2] = sci_port->irqs[0];
-+		sci_port->irqs[3] = sci_port->irqs[0];
- 	}
- 
- 	if (p->regtype == SCIx_PROBE_REGTYPE) {
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index fd7f9da..22b3640 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -50,17 +50,6 @@
- /* HSSRR HSCIF */
- #define HSCIF_SRE	0x8000
- 
--/* Offsets into the sci_port->irqs array */
--enum {
--	SCIx_ERI_IRQ,
--	SCIx_RXI_IRQ,
--	SCIx_TXI_IRQ,
--	SCIx_BRI_IRQ,
--	SCIx_NR_IRQS,
--
--	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
--};
--
- enum {
- 	SCIx_PROBE_REGTYPE,
- 
-@@ -79,19 +68,6 @@ enum {
- 	SCIx_NR_REGTYPES,
+@@ -2512,6 +2606,7 @@ static struct platform_driver sci_driver = {
+ 		.name	= "sh-sci",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= &sci_dev_pm_ops,
++		.of_match_table = of_match_ptr(of_sci_match),
+ 	},
  };
  
--#define SCIx_IRQ_MUXED(irq)		\
--{					\
--	[SCIx_ERI_IRQ]	= (irq),	\
--	[SCIx_RXI_IRQ]	= (irq),	\
--	[SCIx_TXI_IRQ]	= (irq),	\
--	[SCIx_BRI_IRQ]	= (irq),	\
--}
--
--#define SCIx_IRQ_IS_MUXED(port)			\
--	((port)->irqs[SCIx_ERI_IRQ] ==	\
--	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
--	((port)->irqs[SCIx_ERI_IRQ] &&	\
--	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
- /*
-  * SCI register subset common for all port types.
-  * Not all registers will exist on all parts.
-@@ -120,8 +96,6 @@ struct plat_sci_port_ops {
-  * Platform device specific platform_data struct
-  */
- struct plat_sci_port {
--	unsigned long	mapbase;		/* resource base */
--	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
- 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
- 	upf_t		flags;			/* UPF_* flags */
- 	unsigned long	capabilities;		/* Port features/capabilities */
 -- 
 1.8.3.2
 
