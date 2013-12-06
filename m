@@ -1,67 +1,44 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 05/47] serial: sh-sci: Simplify baud rate calculation algorithms
-Date: Fri,  6 Dec 2013 10:59:12 +0100
-Message-ID: <1386323994-12850-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 06/47] serial: sh-sci: Remove duplicate interrupt check in verify port op
+Date: Fri,  6 Dec 2013 10:59:13 +0100
+Message-ID: <1386323994-12850-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757645Ab3LFKAB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 6 Dec 2013 05:00:01 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
-List-Id: linux-serial@vger.kernel.org
 
-Rewrite the baud rate register value calculations in easier to read
-forms. The computed value isn't modified.
+The driver checks if the interrupt number is greater than nr_irqs and
+returns an error in that case. The same check is already performed by
+the caller, remove it.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 8 ++++----
- include/linux/serial_sci.h  | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 86b33f3..1671074 100644
+index 1671074..3e5f62a 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1817,13 +1817,13 @@ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
+@@ -2119,7 +2119,7 @@ static int sci_verify_port(struct uart_port *port, struct serial_struct *ser)
  {
- 	switch (algo_id) {
- 	case SCBRR_ALGO_1:
--		return ((freq + 16 * bps) / (16 * bps) - 1);
-+		return freq / (16 * bps);
- 	case SCBRR_ALGO_2:
--		return ((freq + 16 * bps) / (32 * bps) - 1);
-+		return DIV_ROUND_CLOSEST(freq, 32 * bps) - 1;
- 	case SCBRR_ALGO_3:
--		return (((freq * 2) + 16 * bps) / (16 * bps) - 1);
-+		return freq / (8 * bps);
- 	case SCBRR_ALGO_4:
--		return (((freq * 2) + 16 * bps) / (32 * bps) - 1);
-+		return DIV_ROUND_CLOSEST(freq, 16 * bps) - 1;
- 	}
+ 	struct sci_port *s = to_sci_port(port);
  
- 	/* Warn, but use a safe default */
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index babc5fe..12cf50c 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -11,10 +11,10 @@
- #define SCIx_NOT_SUPPORTED	(-1)
- 
- enum {
--	SCBRR_ALGO_1,		/* ((clk + 16 * bps) / (16 * bps) - 1) */
--	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
--	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
--	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
-+	SCBRR_ALGO_1,		/* clk / (16 * bps) */
-+	SCBRR_ALGO_2,		/* DIV_ROUND_CLOSEST(clk, 32 * bps) - 1 */
-+	SCBRR_ALGO_3,		/* clk / (8 * bps) */
-+	SCBRR_ALGO_4,		/* DIV_ROUND_CLOSEST(clk, 16 * bps) - 1 */
- 	SCBRR_ALGO_6,		/* HSCIF variable sample rate algorithm */
- };
- 
+-	if (ser->irq != s->cfg->irqs[SCIx_TXI_IRQ] || ser->irq > nr_irqs)
++	if (ser->irq != s->cfg->irqs[SCIx_TXI_IRQ])
+ 		return -EINVAL;
+ 	if (ser->baud_base < 2400)
+ 		/* No paper tape reader for Mitch.. */
 -- 
 1.8.3.2
 
