@@ -1,93 +1,161 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 12/47] serial: sh-sci: Compute overrun_bit without using baud rate algo
-Date: Fri,  6 Dec 2013 10:59:19 +0100
-Message-ID: <1386323994-12850-13-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 11/47] serial: sh-sci: Remove unused GPIO request code
+Date: Fri,  6 Dec 2013 10:59:18 +0100
+Message-ID: <1386323994-12850-12-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757823Ab3LFKAM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:12 -0500
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
+List-Id: linux-serial@vger.kernel.org
 
-The overrun bit index is a property of the hardware. It's currently
-computed based on a different and unrelated hardware property, the baud
-rate calculation algorithm. Compute it using hardware identification
-information only.
+The driver requests at initialization time GPIOs passed through platform
+data. No platform makes use of this feature, remove it.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/tty/serial/sh-sci.c | 67 ---------------------------------------------
+ include/linux/serial_sci.h  | 12 --------
+ 2 files changed, 79 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5cb7189..cd508c6 100644
+index 9e6600b..5cb7189 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2132,30 +2132,38 @@ static int sci_init_single(struct platform_device *dev,
- 			sci_port->irqs[i] = p->irqs[i] ? p->irqs[i] : -ENXIO;
- 	}
+@@ -32,7 +32,6 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/errno.h>
+-#include <linux/gpio.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/ioport.h>
+@@ -79,7 +78,6 @@ struct sci_port {
  
-+	if (p->regtype == SCIx_PROBE_REGTYPE) {
-+		ret = sci_probe_regmap(p);
-+		if (unlikely(ret))
-+			return ret;
-+	}
-+
- 	switch (p->type) {
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
-+		sci_port->overrun_bit = 9;
- 		break;
- 	case PORT_HSCIF:
- 		port->fifosize = 128;
-+		sci_port->overrun_bit = 0;
- 		break;
- 	case PORT_SCIFA:
- 		port->fifosize = 64;
-+		sci_port->overrun_bit = 9;
- 		break;
- 	case PORT_SCIF:
- 		port->fifosize = 16;
-+		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE)
-+			sci_port->overrun_bit = 9;
-+		else
-+			sci_port->overrun_bit = 0;
- 		break;
- 	default:
- 		port->fifosize = 1;
-+		sci_port->overrun_bit = 5;
- 		break;
- 	}
+ 	int			irqs[SCIx_NR_IRQS];
+ 	char			*irqstr[SCIx_NR_IRQS];
+-	char			*gpiostr[SCIx_NR_FNS];
  
--	if (p->regtype == SCIx_PROBE_REGTYPE) {
--		ret = sci_probe_regmap(p);
--		if (unlikely(ret))
--			return ret;
--	}
+ 	struct dma_chan			*chan_tx;
+ 	struct dma_chan			*chan_rx;
+@@ -1153,67 +1151,6 @@ static void sci_free_irq(struct sci_port *port)
+ 	}
+ }
+ 
+-static const char *sci_gpio_names[SCIx_NR_FNS] = {
+-	"sck", "rxd", "txd", "cts", "rts",
+-};
 -
- 	if (!early) {
- 		sci_port->iclk = clk_get(&dev->dev, "sci_ick");
- 		if (IS_ERR(sci_port->iclk)) {
-@@ -2193,12 +2201,6 @@ static int sci_init_single(struct platform_device *dev,
- 	 * Establish sensible defaults for the overrun detection, unless
- 	 * the part has explicitly disabled support for it.
- 	 */
--	if (p->type == PORT_SCI)
--		sci_port->overrun_bit = 5;
--	else if (p->scbrr_algo_id == SCBRR_ALGO_4)
--		sci_port->overrun_bit = 9;
--	else
--		sci_port->overrun_bit = 0;
+-static const char *sci_gpio_str(unsigned int index)
+-{
+-	return sci_gpio_names[index];
+-}
+-
+-static void sci_init_gpios(struct sci_port *port)
+-{
+-	struct uart_port *up = &port->port;
+-	int i;
+-
+-	if (!port->cfg)
+-		return;
+-
+-	for (i = 0; i < SCIx_NR_FNS; i++) {
+-		const char *desc;
+-		int ret;
+-
+-		if (!port->cfg->gpios[i])
+-			continue;
+-
+-		desc = sci_gpio_str(i);
+-
+-		port->gpiostr[i] = kasprintf(GFP_KERNEL, "%s:%s",
+-					     dev_name(up->dev), desc);
+-
+-		/*
+-		 * If we've failed the allocation, we can still continue
+-		 * on with a NULL string.
+-		 */
+-		if (!port->gpiostr[i])
+-			dev_notice(up->dev, "%s string allocation failure\n",
+-				   desc);
+-
+-		ret = gpio_request(port->cfg->gpios[i], port->gpiostr[i]);
+-		if (unlikely(ret != 0)) {
+-			dev_notice(up->dev, "failed %s gpio request\n", desc);
+-
+-			/*
+-			 * If we can't get the GPIO for whatever reason,
+-			 * no point in keeping the verbose string around.
+-			 */
+-			kfree(port->gpiostr[i]);
+-		}
+-	}
+-}
+-
+-static void sci_free_gpios(struct sci_port *port)
+-{
+-	int i;
+-
+-	for (i = 0; i < SCIx_NR_FNS; i++)
+-		if (port->cfg->gpios[i]) {
+-			gpio_free(port->cfg->gpios[i]);
+-			kfree(port->gpiostr[i]);
+-		}
+-}
+-
+ static unsigned int sci_tx_empty(struct uart_port *port)
+ {
+ 	unsigned short status = serial_port_in(port, SCxSR);
+@@ -2239,8 +2176,6 @@ static int sci_init_single(struct platform_device *dev,
  
- 	/*
- 	 * Make the error mask inclusive of overrun detection, if
+ 		port->dev = &dev->dev;
+ 
+-		sci_init_gpios(sci_port);
+-
+ 		pm_runtime_enable(&dev->dev);
+ 	}
+ 
+@@ -2297,8 +2232,6 @@ static int sci_init_single(struct platform_device *dev,
+ 
+ static void sci_cleanup_single(struct sci_port *port)
+ {
+-	sci_free_gpios(port);
+-
+ 	clk_put(port->iclk);
+ 	clk_put(port->fclk);
+ 
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index af9834b..e9c3021 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -69,17 +69,6 @@ enum {
+ 	SCIx_MUX_IRQ = SCIx_NR_IRQS,	/* special case */
+ };
+ 
+-/* Offsets into the sci_port->gpios array */
+-enum {
+-	SCIx_SCK,
+-	SCIx_RXD,
+-	SCIx_TXD,
+-	SCIx_CTS,
+-	SCIx_RTS,
+-
+-	SCIx_NR_FNS,
+-};
+-
+ enum {
+ 	SCIx_PROBE_REGTYPE,
+ 
+@@ -141,7 +130,6 @@ struct plat_sci_port_ops {
+ struct plat_sci_port {
+ 	unsigned long	mapbase;		/* resource base */
+ 	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
+-	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
+ 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
+ 	upf_t		flags;			/* UPF_* flags */
+ 	unsigned long	capabilities;		/* Port features/capabilities */
 -- 
 1.8.3.2
 
