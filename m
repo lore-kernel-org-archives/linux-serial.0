@@ -1,7 +1,7 @@
 From: Florian Fainelli <florian@openwrt.org>
-Subject: [PATCH 4/5] tty: serial: bcm63xx_uart: use linux/serial_bcm63xx.h
-Date: Thu, 5 Dec 2013 18:26:07 -0800
-Message-ID: <1386296768-20204-5-git-send-email-florian@openwrt.org>
+Subject: [PATCH 1/5] tty: serial: bcm63xx_uart: remove unused inclusion
+Date: Thu, 5 Dec 2013 18:26:04 -0800
+Message-ID: <1386296768-20204-2-git-send-email-florian@openwrt.org>
 References: <1386296768-20204-1-git-send-email-florian@openwrt.org>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -20,28 +20,25 @@ To: linux-mips@linux-mips.org
 Cc: ralf@linux-mips.org, blogic@openwrt.org, jogo@openwrt.org, mbizon@freebox.fr, cernekee@gmail.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, Florian Fainelli <florian@openwrt.org>
 List-Id: linux-serial@vger.kernel.org
 
-Now that the UART block defines have been moved to a separate file,
-include that one and do not longer rely on the MIPS-specific
-bcm63xx_regs.h header file.
+bcm63xx_irqs.h is included but we are not using anything from it, drop
+that include.
 
 Signed-off-by: Florian Fainelli <florian@openwrt.org>
 ---
- drivers/tty/serial/bcm63xx_uart.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/bcm63xx_uart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-index 6d773a3..78e82b0 100644
+index 649d512..2e72752 100644
 --- a/drivers/tty/serial/bcm63xx_uart.c
 +++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -29,8 +29,7 @@
- #include <linux/sysrq.h>
+@@ -30,7 +30,6 @@
  #include <linux/serial.h>
  #include <linux/serial_core.h>
--
--#include <bcm63xx_regs.h>
-+#include <linux/serial_bcm63xx.h>
  
- #define BCM63XX_NR_UARTS	2
+-#include <bcm63xx_irq.h>
+ #include <bcm63xx_regs.h>
+ #include <bcm63xx_io.h>
  
 -- 
 1.8.3.2
