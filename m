@@ -1,223 +1,150 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 09/47] serial: sh-sci: Support resources passed through platform resources
-Date: Fri,  6 Dec 2013 10:59:16 +0100
-Message-ID: <1386323994-12850-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 10/47] serial: sh-sci: Move overrun_bit and error_mask fields out of pdata
+Date: Fri,  6 Dec 2013 10:59:17 +0100
+Message-ID: <1386323994-12850-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:33750 "EHLO
+Received: from perceval.ideasonboard.com ([95.142.166.194]:33748 "EHLO
 	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757809Ab3LFKAD (ORCPT
+	with ESMTP id S1757646Ab3LFKAG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Dec 2013 05:00:03 -0500
+	Fri, 6 Dec 2013 05:00:06 -0500
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
 
-Memory and IRQ resources are currently passed to the driver through
-platform data. Support passing them through the standard platform
-resources mechanism instead. This deprecates platform data resources.
+None of the fields is ever set by board code, and both of them are set
+in the driver at probe time. Move them out of struct plat_sci_port to
+struct sci_port.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 65 ++++++++++++++++++++++++++++++++++-----------
- include/linux/serial_sci.h  |  8 +++---
- 2 files changed, 53 insertions(+), 20 deletions(-)
+ drivers/tty/serial/sh-sci.c | 50 +++++++++++++++++++++------------------------
+ drivers/tty/serial/sh-sci.h |  2 +-
+ include/linux/serial_sci.h  |  3 ---
+ 3 files changed, 24 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 40ced29..4c49ebe 100644
+index 4c49ebe..9e6600b 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -74,6 +74,7 @@ struct sci_port {
- 	/* Function clock */
- 	struct clk		*fclk;
+@@ -64,6 +64,9 @@ struct sci_port {
  
-+	int			irqs[SCIx_NR_IRQS];
- 	char			*irqstr[SCIx_NR_IRQS];
- 	char			*gpiostr[SCIx_NR_FNS];
+ 	/* Platform configuration */
+ 	struct plat_sci_port	*cfg;
++	int			overrun_bit;
++	unsigned int		error_mask;
++
  
-@@ -1079,19 +1080,19 @@ static int sci_request_irq(struct sci_port *port)
+ 	/* Break timer */
+ 	struct timer_list	break_timer;
+@@ -760,19 +763,15 @@ static int sci_handle_errors(struct uart_port *port)
+ 	struct tty_port *tport = &port->state->port;
+ 	struct sci_port *s = to_sci_port(port);
  
- 	for (i = j = 0; i < SCIx_NR_IRQS; i++, j++) {
- 		struct sci_irq_desc *desc;
--		unsigned int irq;
-+		int irq;
+-	/*
+-	 * Handle overruns, if supported.
+-	 */
+-	if (s->cfg->overrun_bit != SCIx_NOT_SUPPORTED) {
+-		if (status & (1 << s->cfg->overrun_bit)) {
+-			port->icount.overrun++;
++	/* Handle overruns */
++	if (status & (1 << s->overrun_bit)) {
++		port->icount.overrun++;
  
- 		if (SCIx_IRQ_IS_MUXED(port)) {
- 			i = SCIx_MUX_IRQ;
- 			irq = up->irq;
- 		} else {
--			irq = port->cfg->irqs[i];
-+			irq = port->irqs[i];
+-			/* overrun error */
+-			if (tty_insert_flip_char(tport, 0, TTY_OVERRUN))
+-				copied++;
++		/* overrun error */
++		if (tty_insert_flip_char(tport, 0, TTY_OVERRUN))
++			copied++;
  
- 			/*
- 			 * Certain port types won't support all of the
- 			 * available interrupt sources.
- 			 */
--			if (unlikely(!irq))
-+			if (unlikely(irq < 0))
- 				continue;
- 		}
+-			dev_notice(port->dev, "overrun error");
+-		}
++		dev_notice(port->dev, "overrun error");
+ 	}
  
-@@ -1116,7 +1117,7 @@ static int sci_request_irq(struct sci_port *port)
+ 	if (status & SCxSR_FER(port)) {
+@@ -834,7 +833,7 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ 	if (!reg->size)
+ 		return 0;
  
- out_noirq:
- 	while (--i >= 0)
--		free_irq(port->cfg->irqs[i], port);
-+		free_irq(port->irqs[i], port);
+-	if ((serial_port_in(port, SCLSR) & (1 << s->cfg->overrun_bit))) {
++	if ((serial_port_in(port, SCLSR) & (1 << s->overrun_bit))) {
+ 		serial_port_out(port, SCLSR, 0);
  
- out_nomem:
- 	while (--j >= 0)
-@@ -1134,16 +1135,16 @@ static void sci_free_irq(struct sci_port *port)
- 	 * IRQ first.
+ 		port->icount.overrun++;
+@@ -2252,28 +2251,25 @@ static int sci_init_single(struct platform_device *dev,
+ 	/*
+ 	 * Establish some sensible defaults for the error detection.
  	 */
- 	for (i = 0; i < SCIx_NR_IRQS; i++) {
--		unsigned int irq = port->cfg->irqs[i];
-+		int irq = port->irqs[i];
+-	if (!p->error_mask)
+-		p->error_mask = (p->type == PORT_SCI) ?
++	sci_port->error_mask = (p->type == PORT_SCI) ?
+ 			SCI_DEFAULT_ERROR_MASK : SCIF_DEFAULT_ERROR_MASK;
  
- 		/*
- 		 * Certain port types won't support all of the available
- 		 * interrupt sources.
- 		 */
--		if (unlikely(!irq))
-+		if (unlikely(irq < 0))
- 			continue;
+ 	/*
+ 	 * Establish sensible defaults for the overrun detection, unless
+ 	 * the part has explicitly disabled support for it.
+ 	 */
+-	if (p->overrun_bit != SCIx_NOT_SUPPORTED) {
+-		if (p->type == PORT_SCI)
+-			p->overrun_bit = 5;
+-		else if (p->scbrr_algo_id == SCBRR_ALGO_4)
+-			p->overrun_bit = 9;
+-		else
+-			p->overrun_bit = 0;
++	if (p->type == PORT_SCI)
++		sci_port->overrun_bit = 5;
++	else if (p->scbrr_algo_id == SCBRR_ALGO_4)
++		sci_port->overrun_bit = 9;
++	else
++		sci_port->overrun_bit = 0;
  
--		free_irq(port->cfg->irqs[i], port);
-+		free_irq(port->irqs[i], port);
- 		kfree(port->irqstr[i]);
+-		/*
+-		 * Make the error mask inclusive of overrun detection, if
+-		 * supported.
+-		 */
+-		p->error_mask |= (1 << p->overrun_bit);
+-	}
++	/*
++	 * Make the error mask inclusive of overrun detection, if
++	 * supported.
++	 */
++	sci_port->error_mask |= 1 << sci_port->overrun_bit;
  
- 		if (SCIx_IRQ_IS_MUXED(port)) {
-@@ -1659,7 +1660,7 @@ static void rx_timer_fn(unsigned long arg)
- 
- 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
- 		scr &= ~0x4000;
--		enable_irq(s->cfg->irqs[1]);
-+		enable_irq(s->irqs[SCIx_RXI_IRQ]);
- 	}
- 	serial_port_out(port, SCSCR, scr | SCSCR_RIE);
- 	dev_dbg(port->dev, "DMA Rx timed out\n");
-@@ -2149,11 +2150,12 @@ static struct uart_ops sci_uart_ops = {
- };
- 
- static int sci_init_single(struct platform_device *dev,
--				     struct sci_port *sci_port,
--				     unsigned int index,
--				     struct plat_sci_port *p)
-+			   struct sci_port *sci_port, unsigned int index,
-+			   struct plat_sci_port *p, bool early)
- {
- 	struct uart_port *port = &sci_port->port;
-+	const struct resource *res;
-+	unsigned int i;
- 	int ret;
- 
- 	sci_port->cfg	= p;
-@@ -2162,6 +2164,38 @@ static int sci_init_single(struct platform_device *dev,
- 	port->iotype	= UPIO_MEM;
- 	port->line	= index;
- 
-+	if (dev->num_resources) {
-+		/* Device has resources, use them. */
-+		res = platform_get_resource(dev, IORESOURCE_MEM, 0);
-+		if (res == NULL)
-+			return -ENOMEM;
-+
-+		port->mapbase = res->start;
-+
-+		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
-+			sci_port->irqs[i] = platform_get_irq(dev, i);
-+
-+		/* The SCI generates several interrupts. They can be muxed
-+		 * together or connected to different interrupt lines. In the
-+		 * muxed case only one interrupt resource is specified. In the
-+		 * non-muxed case three or four interrupt resources are
-+		 * specified, as the BRI interrupt is optional.
-+		 */
-+		if (sci_port->irqs[0] < 0)
-+			return -ENXIO;
-+
-+		if (sci_port->irqs[1] < 0) {
-+			sci_port->irqs[1] = sci_port->irqs[0];
-+			sci_port->irqs[2] = sci_port->irqs[0];
-+			sci_port->irqs[3] = sci_port->irqs[0];
-+		}
-+	} else {
-+		/* No resources, use old-style platform data. */
-+		port->mapbase = p->mapbase;
-+		for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
-+			sci_port->irqs[i] = p->irqs[i] ? p->irqs[i] : -ENXIO;
-+	}
-+
- 	switch (p->type) {
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
-@@ -2186,7 +2220,7 @@ static int sci_init_single(struct platform_device *dev,
- 			return ret;
- 	}
- 
--	if (dev) {
-+	if (!early) {
- 		sci_port->iclk = clk_get(&dev->dev, "sci_ick");
- 		if (IS_ERR(sci_port->iclk)) {
- 			sci_port->iclk = clk_get(&dev->dev, "peripheral_clk");
-@@ -2241,7 +2275,6 @@ static int sci_init_single(struct platform_device *dev,
- 		p->error_mask |= (1 << p->overrun_bit);
- 	}
- 
--	port->mapbase		= p->mapbase;
  	port->type		= p->type;
  	port->flags		= UPF_FIXED_PORT | p->flags;
- 	port->regshift		= p->regshift;
-@@ -2253,7 +2286,7 @@ static int sci_init_single(struct platform_device *dev,
- 	 *
- 	 * For the muxed case there's nothing more to do.
- 	 */
--	port->irq		= p->irqs[SCIx_RXI_IRQ];
-+	port->irq		= sci_port->irqs[SCIx_RXI_IRQ];
- 	port->irqflags		= 0;
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index 5aca736..d5db81a 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -9,7 +9,7 @@
+ #define SCxSR_PER(port)		(((port)->type == PORT_SCI) ? SCI_PER    : SCIF_PER)
+ #define SCxSR_BRK(port)		(((port)->type == PORT_SCI) ? 0x00       : SCIF_BRK)
  
- 	port->serial_in		= sci_serial_in;
-@@ -2385,7 +2418,7 @@ static int sci_probe_earlyprintk(struct platform_device *pdev)
+-#define SCxSR_ERRORS(port)	(to_sci_port(port)->cfg->error_mask)
++#define SCxSR_ERRORS(port)	(to_sci_port(port)->error_mask)
  
- 	early_serial_console.index = pdev->id;
- 
--	sci_init_single(NULL, &sci_ports[pdev->id], pdev->id, cfg);
-+	sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
- 
- 	serial_console_setup(&early_serial_console, early_serial_buf);
- 
-@@ -2452,7 +2485,7 @@ static int sci_probe_single(struct platform_device *dev,
- 		return -EINVAL;
- 	}
- 
--	ret = sci_init_single(dev, sciport, index, p);
-+	ret = sci_init_single(dev, sciport, index, p, false);
- 	if (ret)
- 		return ret;
- 
+ #if defined(CONFIG_CPU_SUBTYPE_SH7705) || \
+     defined(CONFIG_CPU_SUBTYPE_SH7720) || \
 diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 12cf50c..42620f1 100644
+index 42620f1..af9834b 100644
 --- a/include/linux/serial_sci.h
 +++ b/include/linux/serial_sci.h
-@@ -107,10 +107,10 @@ enum {
- }
- 
- #define SCIx_IRQ_IS_MUXED(port)			\
--	((port)->cfg->irqs[SCIx_ERI_IRQ] ==	\
--	 (port)->cfg->irqs[SCIx_RXI_IRQ]) ||	\
--	((port)->cfg->irqs[SCIx_ERI_IRQ] &&	\
--	 !(port)->cfg->irqs[SCIx_RXI_IRQ])
-+	((port)->irqs[SCIx_ERI_IRQ] ==	\
-+	 (port)->irqs[SCIx_RXI_IRQ]) ||	\
-+	((port)->irqs[SCIx_ERI_IRQ] &&	\
-+	 ((port)->irqs[SCIx_RXI_IRQ] < 0))
- /*
-  * SCI register subset common for all port types.
-  * Not all registers will exist on all parts.
+@@ -152,9 +152,6 @@ struct plat_sci_port {
+ 	/*
+ 	 * Platform overrides if necessary, defaults otherwise.
+ 	 */
+-	int		overrun_bit;
+-	unsigned int	error_mask;
+-
+ 	int		port_reg;
+ 	unsigned char	regshift;
+ 	unsigned char	regtype;
 -- 
 1.8.3.2
 
