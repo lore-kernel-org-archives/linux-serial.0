@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 03/47] serial: sh-sci: Sort headers alphabetically
-Date: Fri,  6 Dec 2013 10:59:10 +0100
-Message-ID: <1386323994-12850-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 05/47] serial: sh-sci: Simplify baud rate calculation algorithms
+Date: Fri,  6 Dec 2013 10:59:12 +0100
+Message-ID: <1386323994-12850-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,76 +10,58 @@ To: linux-sh@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Simon Horman <horms@verge.net.au>
 List-Id: linux-serial@vger.kernel.org
 
-This helps locating duplicates.
+Rewrite the baud rate register value calculations in easier to read
+forms. The computed value isn't modified.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sh-sci.c | 42 +++++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ drivers/tty/serial/sh-sci.c | 8 ++++----
+ include/linux/serial_sci.h  | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 07a5da4..6211a2e 100644
+index 86b33f3..1671074 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -23,35 +23,35 @@
+@@ -1817,13 +1817,13 @@ static unsigned int sci_scbrr_calc(unsigned int algo_id, unsigned int bps,
+ {
+ 	switch (algo_id) {
+ 	case SCBRR_ALGO_1:
+-		return ((freq + 16 * bps) / (16 * bps) - 1);
++		return freq / (16 * bps);
+ 	case SCBRR_ALGO_2:
+-		return ((freq + 16 * bps) / (32 * bps) - 1);
++		return DIV_ROUND_CLOSEST(freq, 32 * bps) - 1;
+ 	case SCBRR_ALGO_3:
+-		return (((freq * 2) + 16 * bps) / (16 * bps) - 1);
++		return freq / (8 * bps);
+ 	case SCBRR_ALGO_4:
+-		return (((freq * 2) + 16 * bps) / (32 * bps) - 1);
++		return DIV_ROUND_CLOSEST(freq, 16 * bps) - 1;
+ 	}
  
- #undef DEBUG
+ 	/* Warn, but use a safe default */
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index babc5fe..12cf50c 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -11,10 +11,10 @@
+ #define SCIx_NOT_SUPPORTED	(-1)
  
--#include <linux/module.h>
-+#include <linux/clk.h>
-+#include <linux/console.h>
-+#include <linux/ctype.h>
-+#include <linux/cpufreq.h>
-+#include <linux/delay.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/err.h>
- #include <linux/errno.h>
--#include <linux/sh_dma.h>
--#include <linux/timer.h>
-+#include <linux/gpio.h>
-+#include <linux/init.h>
- #include <linux/interrupt.h>
--#include <linux/tty.h>
--#include <linux/tty_flip.h>
--#include <linux/serial.h>
--#include <linux/major.h>
--#include <linux/string.h>
--#include <linux/sysrq.h>
- #include <linux/ioport.h>
-+#include <linux/major.h>
-+#include <linux/module.h>
- #include <linux/mm.h>
--#include <linux/init.h>
--#include <linux/delay.h>
--#include <linux/console.h>
--#include <linux/platform_device.h>
--#include <linux/serial_sci.h>
- #include <linux/notifier.h>
-+#include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
--#include <linux/cpufreq.h>
--#include <linux/clk.h>
--#include <linux/ctype.h>
--#include <linux/err.h>
--#include <linux/dmaengine.h>
--#include <linux/dma-mapping.h>
- #include <linux/scatterlist.h>
-+#include <linux/serial.h>
-+#include <linux/serial_sci.h>
-+#include <linux/sh_dma.h>
- #include <linux/slab.h>
--#include <linux/gpio.h>
-+#include <linux/string.h>
-+#include <linux/sysrq.h>
-+#include <linux/timer.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
+ enum {
+-	SCBRR_ALGO_1,		/* ((clk + 16 * bps) / (16 * bps) - 1) */
+-	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
+-	SCBRR_ALGO_3,		/* (((clk * 2) + 16 * bps) / (16 * bps) - 1) */
+-	SCBRR_ALGO_4,		/* (((clk * 2) + 16 * bps) / (32 * bps) - 1) */
++	SCBRR_ALGO_1,		/* clk / (16 * bps) */
++	SCBRR_ALGO_2,		/* DIV_ROUND_CLOSEST(clk, 32 * bps) - 1 */
++	SCBRR_ALGO_3,		/* clk / (8 * bps) */
++	SCBRR_ALGO_4,		/* DIV_ROUND_CLOSEST(clk, 16 * bps) - 1 */
+ 	SCBRR_ALGO_6,		/* HSCIF variable sample rate algorithm */
+ };
  
- #ifdef CONFIG_SUPERH
- #include <asm/sh_bios.h>
 -- 
 1.8.3.2
 
