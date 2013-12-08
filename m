@@ -1,53 +1,113 @@
-From: Anatolij Gustschin <agust@denx.de>
-Subject: Re: [PATCH v6 10/17] serial: mpc512x: setup the PSC FIFO clock as
- well
-Date: Sat, 7 Dec 2013 10:51:28 +0100
-Message-ID: <20131207105128.68d1f2ba@crub>
-References: <1385851897-23475-1-git-send-email-gsi@denx.de>
-	<1385851897-23475-11-git-send-email-gsi@denx.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Bug in tty cooked mode kernel 3.12.3
+Date: Sat, 7 Dec 2013 21:36:21 -0800
+Message-ID: <20131208053621.GA6445@kroah.com>
+References: <20131107184607.eklhad@comcast.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:38959 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752393Ab3LGJva (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 7 Dec 2013 04:51:30 -0500
-In-Reply-To: <1385851897-23475-11-git-send-email-gsi@denx.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20131107184607.eklhad@comcast.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Karl Dahlke <eklhad@comcast.net>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Gerhard Sittig <gsi@denx.de>
-Cc: linuxppc-dev@lists.ozlabs.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Sat, 30 Nov 2013 23:51:30 +0100
-Gerhard Sittig <gsi@denx.de> wrote:
+On Sat, Dec 07, 2013 at 06:46:07PM -0500, Karl Dahlke wrote:
+> This may have appeared in 3.9.11 with the changes to tty.
+> Don't know; I just started running 3.12 from kernel.org.
+> Perhaps nobody saw it before because nobody runs command line programs,
+> we're all on desktops or x or whatever,
+> and even those in the command line are still raw.
+> bash is raw by default, but I run it cooked.
+> You can supress its readline functions like this.
+> 
+> set +o emacs
+> set +o vi
+> set +o histexpand
+> set +o history
+> 
+> That puts its tty back into cooked mode.
+> 
+> Come up in run level 3, command line mode,
+> and bring up two consoles with bash in cooked mode as above.
+> Set a simple prompt like this.
+> 
+> PS1='$ '
+> 
+> Switch to console 2 via alt-f2.
+> Hit return.
+> The cursor should drop to a new line then give you the $ prompt.
+> But it puts the $ prompt next too the old one, then drops down
+> to a blank line.
+> The $ prompt and the crlf are out of sequence.
+> Hit return a few more times and it will straighten itself out.
+> Then switch back to console 1 alt-f1
+> Hit return and the same bug,
+> $ $
+> 
+> hit return a few more times to straighten it out.
+> Switch back to console 2 and the same problem.
+> For me it's repeatable.
+> 
+> It's also very confusing when I'm running other command line programs with cooked tty.
+> For unknown reasons the crlf can come out at the wrong time,
+> breaking lines or leaving lines together.
+> My editor can run either way, so I've switched it over to readline mode
+> and I haven't noticed any problems this way, yet.
+> But I would prefer the cooked mode.
+> 
+> I looked through MAINTAINERS but couldn't find
+> a clear maintainer for drivers/tty/tty*.c
 
-> prepare and enable the FIFO clock upon PSC FIFO initialization,
-> check for and propagage errors when enabling the PSC FIFO clock,
-> disable and unprepare the FIFO clock upon PSC FIFO uninitialization
-> 
-> devm_{get,put}_clk() doesn't apply here, as the SoC provides a
-> single FIFO component which is shared among several PSC components,
-> thus the FIFO isn't associated with a device (while the PSCs are)
-> 
-> provide a fallback clock lookup approach in case the OF based clock
-> lookup for the PSC FIFO fails, this allows for successful operation in
-> the presence of an outdated device tree which lacks clock specs
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> # for v4
-> Signed-off-by: Gerhard Sittig <gsi@denx.de>
-> ---
-> Greg, the addition since v4 is the clk_get_sys() call for the 'ipg'
-> clock item (backwards compat for device trees w/o clock specs)
-> 
-> ---
->  drivers/tty/serial/mpc52xx_uart.c |   50 ++++++++++++++++++++++++++++++++-----
->  1 file changed, 44 insertions(+), 6 deletions(-)
+Did you see the big "TTY LAYER" section in MAINTAINERS?  :)
 
-applied to next. Thanks!
+Anyway, we've had a number of fixes in this area, I've just sent a pull
+request to Linus to fix this issue (I think.)  If you could test the
+patch below, that would be great.
 
-Anatolij
+thanks,
+
+greg k-h
+
+----------------
+commit 39434abd942c8e4b9c14c06a03b3245beaf8467f
+Author: Peter Hurley <peter@hurleysoftware.com>
+Date:   Fri Nov 29 12:56:10 2013 -0500
+
+    n_tty: Fix missing newline echo
+    
+    When L_ECHONL is on, newlines are echoed regardless of the L_ECHO
+    state; if set, ensure accumulated echoes are flushed before finishing
+    the current input processing and before more output.
+    
+    Cc: <stable@vger.kernel.org> # 3.12.x
+    Reported-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com
+    Tested-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+    Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 0f74945af624..268b62768f2b 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -810,7 +810,8 @@ static void process_echoes(struct tty_struct *tty)
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	size_t echoed;
+ 
+-	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_tail)
++	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
++	    ldata->echo_commit == ldata->echo_tail)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
+@@ -825,7 +826,8 @@ static void flush_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+-	if (!L_ECHO(tty) || ldata->echo_commit == ldata->echo_head)
++	if ((!L_ECHO(tty) && !L_ECHONL(tty)) ||
++	    ldata->echo_commit == ldata->echo_head)
+ 		return;
+ 
+ 	mutex_lock(&ldata->output_lock);
