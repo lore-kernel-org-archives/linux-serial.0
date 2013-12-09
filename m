@@ -1,86 +1,61 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: [PATCH] serial: pl011: also enable DMA Rx polling with no platform
- data
-Date: Mon, 9 Dec 2013 12:53:30 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
-References: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
+Date: Mon, 09 Dec 2013 08:19:16 -0500
+Message-ID: <52A5C354.5050600@hurleysoftware.com>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com> <20131209011220.GA7671@kroah.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:64093 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760360Ab3LILxm (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:35259 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932631Ab3LINTU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Dec 2013 06:53:42 -0500
-In-Reply-To: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
+	Mon, 9 Dec 2013 08:19:20 -0500
+In-Reply-To: <20131209011220.GA7671@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>, Chanho Min <chanho.min@lge.com>, linux-arm-kernel@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karl Dahlke <eklhad@comcast.net>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-An earlier patch "serial: pl011: use DMA RX polling by default" enabled
-DMA Rx polling on PL011 only in configurations, using platform data. A
-simple extension of that patch also enables DMA Rx polling when no
-platform data is used, e.g. in Device Tree configurations. In such cases
-a default poll timeout and an automatically calculated poll rate will be
-used.
+On 12/08/2013 08:12 PM, Greg Kroah-Hartman wrote:
+> On Mon, Dec 02, 2013 at 04:12:01PM -0500, Peter Hurley wrote:
+>> Greg,
+>>
+>> Sometimes when interrupting terminal output, the '^C' won't be echoed
+>> until more output is echoed. This is fairly repeatable by interrupting
+>> 'cat large-file'.
+>>
+>> The common reason for this is because the tty write buffer is full,
+>> even though the write buffer _should_ have been flushed already.
+>> Because of a known deadlock, the pty driver does not perform a
+>> write buffer flush in its flush_buffer() method.
+>>
+>> [Refer to the FIXME in pty_flush_buffer() from commit
+>> d945cb9cce20ac7143c2de8d88b187f62db99bdc,
+>> 'pty: Rework the pty layer to use the normal buffering logic']
+>>
+>> Patch 1 fixes a stale comment.
+>> Patch 2 adds the necessary interfaces to avoid direct linkage
+>> between the N_TTY line discipline and the pty driver.
+>> Patch 3 avoids the deadlock while performing the write buffer flush.
+>> Patch 4 fixes a less common condition introduced by the echo batch
+>> processing added in 3.12.
+>>
+>> Alan,
+>>
+>> I cc'd you because of your recent involvement in other
+>> tty patches/bug fixes and because it's your FIXME comment.
+>> Feel free to ignore and/or let me know you would prefer not to
+>> be bothered.
+>
+> Peter, this series doesn't fix the ^C echo problem that Karl recently
+> reported, so I'll hold off in applying it for now.
 
-Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
----
- drivers/tty/serial/amba-pl011.c |   39 ++++++++++++++++++---------------------
- 1 files changed, 18 insertions(+), 21 deletions(-)
+Yeah, please discard this. It does fix some problems but I don't really
+like how it goes about fixing them. I've been exploring some ideas
+based on my discussion with Alan but nothing fruitful yet.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e593f8d..baecdfa 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -327,28 +327,25 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
- 		dmaengine_slave_config(chan, &rx_conf);
- 		uap->dmarx.chan = chan;
- 
--		if (plat) {
--			/* Set poll rate if specified. */
--			if (plat->dma_rx_poll_rate) {
--				uap->dmarx.auto_poll_rate = false;
--				uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
--			} else {
--				/*
--				 * 100 ms defaults to poll rate if not
--				 * specified. This will be adjusted with
--				 * the baud rate at set_termios.
--				 */
--				uap->dmarx.auto_poll_rate = true;
--				uap->dmarx.poll_rate =  100;
--			}
--			/* 3 secs defaults poll_timeout if not specified. */
--			if (plat->dma_rx_poll_timeout)
--				uap->dmarx.poll_timeout =
--					plat->dma_rx_poll_timeout;
--			else
--				uap->dmarx.poll_timeout = 3000;
--		} else
-+		/* Set poll rate if specified. */
-+		if (plat && plat->dma_rx_poll_rate) {
- 			uap->dmarx.auto_poll_rate = false;
-+			uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
-+		} else {
-+			/*
-+			 * 100 ms defaults to poll rate if not
-+			 * specified. This will be adjusted with
-+			 * the baud rate at set_termios.
-+			 */
-+			uap->dmarx.auto_poll_rate = true;
-+			uap->dmarx.poll_rate =  100;
-+		}
-+		/* 3 secs defaults poll_timeout if not specified. */
-+		if (plat && plat->dma_rx_poll_timeout)
-+			uap->dmarx.poll_timeout =
-+				plat->dma_rx_poll_timeout;
-+		else
-+			uap->dmarx.poll_timeout = 3000;
- 
- 		dev_info(uap->port.dev, "DMA channel RX %s\n",
- 			 dma_chan_name(uap->dmarx.chan));
--- 
-1.7.2.5
+Regards,
+Peter Hurley
 
