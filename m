@@ -1,38 +1,55 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: Remove old SC26XX driver
-Date: Sun, 8 Dec 2013 17:09:52 -0800
-Message-ID: <20131209010952.GA30880@kroah.com>
-References: <1386084192-24158-1-git-send-email-shc_work@mail.ru>
+Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
+Date: Sun, 8 Dec 2013 17:12:20 -0800
+Message-ID: <20131209011220.GA7671@kroah.com>
+References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:47967 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:47972 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751400Ab3LIIWL (ORCPT
+	with ESMTP id S1751915Ab3LIIW2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Dec 2013 03:22:11 -0500
+	Mon, 9 Dec 2013 03:22:28 -0500
 Content-Disposition: inline
-In-Reply-To: <1386084192-24158-1-git-send-email-shc_work@mail.ru>
+In-Reply-To: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: Peter Hurley <peter@hurleysoftware.com>, Karl Dahlke <eklhad@comcast.net>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Tue, Dec 03, 2013 at 07:23:12PM +0400, Alexander Shiyan wrote:
-> New driver for NXP (Philips) UART ICs was introduced in September 2012.
-> Old driver no longer used anywhere, this patch removes it.
+On Mon, Dec 02, 2013 at 04:12:01PM -0500, Peter Hurley wrote:
+> Greg,
 > 
-> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
-> ---
->  drivers/tty/serial/Kconfig  |  18 --
->  drivers/tty/serial/Makefile |   1 -
->  drivers/tty/serial/sc26xx.c | 749 --------------------------------------------
->  3 files changed, 768 deletions(-)
->  delete mode 100644 drivers/tty/serial/sc26xx.c
+> Sometimes when interrupting terminal output, the '^C' won't be echoed
+> until more output is echoed. This is fairly repeatable by interrupting
+> 'cat large-file'.
+> 
+> The common reason for this is because the tty write buffer is full,
+> even though the write buffer _should_ have been flushed already.
+> Because of a known deadlock, the pty driver does not perform a
+> write buffer flush in its flush_buffer() method.
+> 
+> [Refer to the FIXME in pty_flush_buffer() from commit
+> d945cb9cce20ac7143c2de8d88b187f62db99bdc,
+> 'pty: Rework the pty layer to use the normal buffering logic']
+> 
+> Patch 1 fixes a stale comment.
+> Patch 2 adds the necessary interfaces to avoid direct linkage
+> between the N_TTY line discipline and the pty driver.
+> Patch 3 avoids the deadlock while performing the write buffer flush.
+> Patch 4 fixes a less common condition introduced by the echo batch
+> processing added in 3.12.
+> 
+> Alan,
+> 
+> I cc'd you because of your recent involvement in other
+> tty patches/bug fixes and because it's your FIXME comment.
+> Feel free to ignore and/or let me know you would prefer not to
+> be bothered.
 
-This patch doesn't apply to my tree for some reason, can you redo it
-against the tty-next branch of the tty.git tree on git.kernel.org and
-resend it?
+Peter, this series doesn't fix the ^C echo problem that Karl recently
+reported, so I'll hold off in applying it for now.
 
 thanks,
 
