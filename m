@@ -1,85 +1,105 @@
-From: "Jon Medhurst (Tixy)" <tixy@linaro.org>
-Subject: Re: [PATCH] serial: pl011: use port lock to guard control register
- access
-Date: Mon, 09 Dec 2013 17:34:01 +0000
-Message-ID: <1386610441.3380.58.camel@linaro1.home>
-References: <1386149930.3417.22.camel@linaro1.home>
- <alpine.LFD.2.10.1312041105470.31246@knanqh.ubzr>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
+Date: Mon, 9 Dec 2013 10:59:18 -0800
+Message-ID: <20131209185918.GC27562@quad.lixom.net>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <2824851.TLa71oqPbP@avalon>
+ <20131205033322.GK21443@verge.net.au>
+ <2724721.HK10kZYK7T@avalon>
+ <20131205070342.GC29902@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <alpine.LFD.2.10.1312041105470.31246@knanqh.ubzr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20131205070342.GC29902@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Greg KH <greg@kroah.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2013-12-04 at 11:17 -0500, Nicolas Pitre wrote:
-> On Wed, 4 Dec 2013, Jon Medhurst (Tixy) wrote:
-> 
-> > I can't help but think I've missed something fundamental here as it
-> > seems wrong to be in the situation at all where were initialising
-> > hardware if it is already being used?
+On Thu, Dec 05, 2013 at 04:03:43PM +0900, Simon Horman wrote:
+> On Thu, Dec 05, 2013 at 06:53:41AM +0100, Laurent Pinchart wrote:
+> > Hi Simon,
 > > 
-> > Also, even with this fix I still see spurious/corrupt output on the
-> > serial port at the point the port is initialised, so there is obviously
-> > some other issues in this area.
+> > On Thursday 05 December 2013 12:33:23 Simon Horman wrote:
+> > > On Tue, Dec 03, 2013 at 07:28:47PM +0100, Laurent Pinchart wrote:
+> > > > On Tuesday 03 December 2013 10:09:53 Greg KH wrote:
+> > > > > On Thu, Nov 21, 2013 at 08:17:27AM +0100, Laurent Pinchart wrote:
+> > > > > > On Thursday 21 November 2013 13:40:38 Simon Horman wrote:
+> > > > > > > On Tue, Nov 19, 2013 at 03:02:01PM +0100, Laurent Pinchart wrote:
+> > > > > > > > Hello,
+> > > > > > > > 
+> > > > > > > > This is the third version of the patch set adds device tree
+> > > > > > > > bindings for the sh sci serial port devices and adds OF parsing to
+> > > > > > > > the sh-sci driver.
+> > > > > > > > 
+> > > > > > > > The bindings are based on Bastian Hecht's proposal (see
+> > > > > > > > http://www.spinics.net/lists/arm-kernel/msg228129.html). The
+> > > > > > > > approach taken here is more minimalistic: instead of describing
+> > > > > > > > all hardware characteristics that vary between the SCI device
+> > > > > > > > revisions in DT (such as registers layout), that information is
+> > > > > > > > stored in the driver and selected based on the compatible property
+> > > > > > > > value. Only SCI revisions used on ARM devices are supported
+> > > > > > > > through DT, as DT support for SuperH is nowhere down the line.
+> > > > > > > > 
+> > > > > > > > Patches 01/29 to 06/29 clean up the sh-sci driver. Patches 07/29
+> > > > > > > > to 27/29 replace memory and interrupt resources passed through
+> > > > > > > > platform data with platform resources. Beside replacing a custom
+> > > > > > > > mechanism with a standard one, it will also make the DT parsing
+> > > > > > > > code simpler as resource allocation will be shared between DT and
+> > > > > > > > non-DT code paths. Finally, patches 28/29 to 29/29 add OF parsing
+> > > > > > > > to the sh-sci driver and create DT bindings documentation.
+> > > > > > > > 
+> > > > > > > > The patches have been test on a Lager board (r8a7790-based) and a
+> > > > > > > > Koelsch board (r8a7791-based). Support for other SoCs will be
+> > > > > > > > added as needed. Note that all current Renesas ARM SoCs seem to be
+> > > > > > > > compatible with the generic (H)SCI(F)(AB) devices, but the plan is
+> > > > > > > > for their DT bindings to list the SoC-specific version in case
+> > > > > > > > incompatibilities are found later.
+> > > > > > > > 
+> > > > > > > > The series will need to be split in three parts to go to mainline.
+> > > > > > > > Patches 01/29 to 07/29 should go through Greg's tree, patches
+> > > > > > > > 08/29 to 26/29 through Simon's tree, and patches 27/29 to 29/29
+> > > > > > > > through Greg's tree again. Greg, when applying the first seven
+> > > > > > > > patches, could you please provide a stable branch for Simon to
+> > > > > > > > base his branch on (I can send you a pull request rebased on top
+> > > > > > > > of v3.13-rc1 if that can help) ? Simon will in turn provide a
+> > > > > > > > stable branch to base the last three patches on.
+> > > > > > > 
+> > > > > > > Perhaps you meant to CC Greg?
+> > > > > > 
+> > > > > > Indeed :-)
+> > > > > 
+> > > > > That's a mess, how about Simon just take all of these in his tree:
+> > > >
+> > > > We all seem to agree that it's the best solution, so let's do that. There
+> > > > will be a couple of other sh-sci patches for the next kernel version that
+> > > > should then go through Simon's tree as well. I will make sure to post
+> > > > them for review on the linux-serial list and CC you to get your ack (from
+> > > > what I've been told the ARM SoC maintainer usually dislike driver patches
+> > > > going through their tree without the driver subsystem maintainer ack).
+> > > > 
+> > > > > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > 
+> > > > Thank you.
+> > > 
+> > > Yes, thanks Greg.
+> > > 
+> > > Laurent, I have v4 of these patches sitting in patchwork.
+> > > Would you like me to look at queuing them up as-is or
+> > > are you planning v5?
+> > 
+> > I'm not planning for a v5, but there's another patch series ("[PATCH 00/16] 
+> > sh-sci: Remove unnecessary fields from platform data") that is similarly 
+> > organized as sh-sci / platform / sh-sci patches on top of this. Would you like 
+> > me to reorganize the all the 45 patches in one big series with a single set of 
+> > platform patches in-between two sets of sh-sci patches ?
 > 
-> I don't know if this is still the case nowdays, but that might be due to 
-> the fact that the tty layer initializes the port speed to 9600 bauds 
-> when opened.  So there might be a period when the port goes from 115200 
-> bauds (from the serial console setup) to 9600 bauds, to finally go back 
-> to 115200 bauds configured by the getty process.  If the serial console 
-> is in the middle of outputting something when user space opens the port 
-> then you might see garbled output for a brief period.
+> That sounds nice, thanks.
+> 
+> To be clear, we are planning sh-sci -> soc -> sh-sci ?
+> 
+> If so, I'll have a word with Olof (CCed) as he tends to want
+> to avoid such circular dependencies if possible.
 
-I've just got back to looking at this and the baud rate and data format
-don't get gratuitously changed by the serial framework, just by
-pl011_startup which sets the port to max baud rate and shortest bit size
-in order to send one character via loopback mode (relevant code copied
-below). These values get restored fairly quickly afterwards by a call to
-pl011_set_termios, but there is a window where they are wrong, leading
-to corruption if console outputs text during this window.
-
-If I save and restore register values in this startup code then that
-seems to fix things.
-
-I guess an alternative would be to leave the registers unchanged in this
-initialisation code if the port is being used for a console. But I'm
-unsure how to reliably detect that is the case or if using the fact that
-the port has already been setup once means that it's safe to assume it
-stays set up, e.g. state isn't lost though power management actions.
-
-	/*
-	 * Provoke TX FIFO interrupt into asserting.
-	 */
-	cr = UART01x_CR_UARTEN | UART011_CR_TXE | UART011_CR_LBE;
-	writew(cr, uap->port.membase + UART011_CR);
-	writew(0, uap->port.membase + UART011_FBRD);
-	writew(1, uap->port.membase + UART011_IBRD);
-	writew(0, uap->port.membase + uap->lcrh_rx);
-	if (uap->lcrh_tx != uap->lcrh_rx) {
-		int i;
-		/*
-		 * Wait 10 PCLKs before writing LCRH_TX register,
-		 * to get this delay write read only register 10 times
-		 */
-		for (i = 0; i < 10; ++i)
-			writew(0xff, uap->port.membase + UART011_MIS);
-		writew(0, uap->port.membase + uap->lcrh_tx);
-	}
-	writew(0, uap->port.membase + UART01x_DR);
-	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
-		barrier();
-
--- 
-Tixy
+What are the platform changes in the middle that you need?
