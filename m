@@ -1,43 +1,42 @@
-From: Jonathan Woithe <jwoithe@just42.net>
-Subject: [PATCH] [RESEND] serial: 8250: Fix initialisation of Quatech cards
- with the AMCC PCI chip
-Date: Mon, 9 Dec 2013 16:33:08 +1030
-Message-ID: <20131209060308.GH3689@marvin.atrad.com.au>
-References: <20131031051340.GG927@marvin.atrad.com.au>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 tty-next 7/8] n_tty: Extend debug tracing
+Date: Sun, 8 Dec 2013 16:54:41 -0800
+Message-ID: <20131209005441.GA17588@kroah.com>
+References: <1385135965-4235-1-git-send-email-peter@hurleysoftware.com>
+ <1386012288-5079-1-git-send-email-peter@hurleysoftware.com>
+ <1386012288-5079-8-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from server.atrad.com.au ([150.101.241.2]:45334 "EHLO
-	server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754078Ab3LIGNO (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:47923 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760645Ab3LIITD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Dec 2013 01:13:14 -0500
+	Mon, 9 Dec 2013 03:19:03 -0500
 Content-Disposition: inline
-In-Reply-To: <20131031051340.GG927@marvin.atrad.com.au>
+In-Reply-To: <1386012288-5079-8-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: jwoithe@just42.net
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-Fix the initialisation of older Quatech serial cards which are fitted with
-the AMCC PCI Matchmaker interface chip.
+On Mon, Dec 02, 2013 at 02:24:47PM -0500, Peter Hurley wrote:
+> Add configurable trace support to allow tracing with dev_dbg,
+> pr_dbg, or trace_printk. Instrument .receive_buf() and read()
+> paths with traces to aid in debugging flow control changes.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 79 ++++++++++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 63 insertions(+), 16 deletions(-)
 
-Signed-off-by: Jonathan Woithe (jwoithe@just42.net)
----
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index c810da7..710f6d7 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1260,10 +1260,10 @@ static int pci_quatech_init(struct pci_dev *dev)
- 		unsigned long base = pci_resource_start(dev, 0);
- 		if (base) {
- 			u32 tmp;
--			outl(inl(base + 0x38), base + 0x38);
-+			outl(inl(base + 0x38) | 0x00002000, base + 0x38);
- 			tmp = inl(base + 0x3c);
- 			outl(tmp | 0x01000000, base + 0x3c);
--			outl(tmp, base + 0x3c);
-+			outl(tmp &= ~0x01000000, base + 0x3c);
- 		}
- 	}
- 	return 0;
+If we are going to do tracing in the tty layer, why not use the
+in-kernel tracing functionality instead of having this mis-mash of
+different ways to get tracing data out?
+
+I'd much rather prefer that, so I've stopped applying things in this
+series at this point, I've applied the 6 previous ones.
+
+thanks,
+
+greg k-h
