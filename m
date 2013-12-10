@@ -1,68 +1,62 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 0/3] serial: amba-pl011: fix race conditions during
- initialisation
-Date: Tue, 10 Dec 2013 18:09:40 +0000
-Message-ID: <20131210180940.GA19513@sirena.org.uk>
-References: <1386670740-16914-1-git-send-email-tixy@linaro.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:49833 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754683Ab3LJSKJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Dec 2013 13:10:09 -0500
-Content-Disposition: inline
-In-Reply-To: <1386670740-16914-1-git-send-email-tixy@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: James Hogan <james@albanarts.com>
+Subject: [PATCH] serial: 8250_dw: Fix LCR workaround regression
+Date: Tue, 10 Dec 2013 22:28:04 +0000
+Message-ID: <1386714484-30251-1-git-send-email-james@albanarts.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Gregory Clement <gregory.clement@free-electrons.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, James Hogan <james.hogan@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Tim Kryger <tim.kryger@linaro.org>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Matt Porter <matt.porter@linaro.org>, Markus Mayer <markus.mayer@linaro.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Jon Medhurst <tixy@linaro.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
+From: James Hogan <james.hogan@imgtec.com>
 
---2fHTh5uZTiUOsy+g
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Commit c49436b657d0 (serial: 8250_dw: Improve unwritable LCR workaround)
+caused a regression. It added a check that the LCR was written properly
+to detect and workaround the busy quirk, but the behaviour of bit 5
+(UART_LCR_SPAR) differs between IP versions 3.00a and 3.14c per the
+docs. On older versions this caused the check to fail and it would
+repeatedly force idle and rewrite the LCR register, causing delays and
+preventing any input from serial being received.
 
-On Tue, Dec 10, 2013 at 10:18:57AM +0000, Jon Medhurst wrote:
+This is fixed by masking out UART_LCR_SPAR before making the comparison.
 
-> When a UART that is being used for a kernel console is also opened
-> by user-side, e.g. for use as a terminal, then there are race conditions
-> which can lead to terminal input being disabled and console output being
-> corrupted. This small patch series fixes these.
->=20
-> Jon Medhurst (3):
->       serial: amba-pl011: use port lock to guard control register access
->       serial: amba-pl011: factor out code for writing LCR_H register
->       serial: amba-pl011: preseserve hardware settings during initialisat=
-ion
+Signed-off-by: James Hogan <james.hogan@imgtec.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Tim Kryger <tim.kryger@linaro.org>
+Cc: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+Cc: Matt Porter <matt.porter@linaro.org>
+Cc: Markus Mayer <markus.mayer@linaro.org>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Tested-by: Tim Kryger <tim.kryger@linaro.org>
+Tested-by: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Given that this seems relatively easy to trigger when you know how and
-renders the device non-functional perhaps this should be considered for
-stable too?
-
---2fHTh5uZTiUOsy+g
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSp1jgAAoJELSic+t+oim9THMQAJqnNkkBAemHn1UhG45cQvrc
-0aY7qtCsaHAgQX8hyJN4Pjij4JjlUOkVNXe8a32GsFQsucTDupL1ekzLTsdVSdWh
-YdyO4vi48xBTtFqci67x0wPMV7HkD/GqyuxUA6RjQ9MX0BEmVgaNReYge5DhyYYS
-oal+jDIn4+B0cirZ6swXWlS1RBL+RyqXcSHB7X8jQYJGMJK7V6VScjKAmEWvau7L
-v6F+lp3jVYWI84U98EWqC0sU10Bxv2h2ii9PAmgtqac80HZLqQ8W0hZf3b0x8Eh+
-C/ZqFJ23qH3FNm2nY2SmXaqtA6VtXSpYzO05UeHR7TV8MCyxsWJiUX+aMcJt0Ffp
-EyyLdd7YDSDC7sTqByMKWqEcqsFwapfsssXquh4KaeuaFePT6hM/iH6IxNsmdNFf
-0EjpXTgKEvkQ0tYviuuCRL+3m15C+2CfqUjQH4KSsHrCpUHn7IPlbitgX9VOfjxB
-kqnpUyPW2At4/XFF2FyalEy4zXrWK/6IaJBgd11i+Gt0Z46JYFx7OsTQWTSZKFTu
-u7+AAyqEGgIdaizzQqVE3xSCJan0DsXu7nii1Qv+UisbC6S5y94s5seZHBgR6GHp
-Kp3Ak0uRQ+1lvb31bVi033RcpWOGBsxlv/XEISmj0r957c+PXwtMB5zG+hLcW4HJ
-0QiNrAhBdrgW3OdTyD8l
-=vyIV
------END PGP SIGNATURE-----
-
---2fHTh5uZTiUOsy+g--
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 4658e3e..5f096c7 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -96,7 +96,8 @@ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ 	if (offset == UART_LCR) {
+ 		int tries = 1000;
+ 		while (tries--) {
+-			if (value == p->serial_in(p, UART_LCR))
++			unsigned int lcr = p->serial_in(p, UART_LCR);
++			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+ 				return;
+ 			dw8250_force_idle(p);
+ 			writeb(value, p->membase + (UART_LCR << p->regshift));
+@@ -132,7 +133,8 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+ 	if (offset == UART_LCR) {
+ 		int tries = 1000;
+ 		while (tries--) {
+-			if (value == p->serial_in(p, UART_LCR))
++			unsigned int lcr = p->serial_in(p, UART_LCR);
++			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+ 				return;
+ 			dw8250_force_idle(p);
+ 			writel(value, p->membase + (UART_LCR << p->regshift));
+-- 
+1.8.3.2
