@@ -1,69 +1,54 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Mon, 9 Dec 2013 16:42:23 -0800
-Message-ID: <CAAYSxhraDF6T9URw0CpEig2VpnuTBNdZYL9uuw6vdPn0=X4zGA@mail.gmail.com>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org>
-	<5548535.pYirbknue4@radagast>
-	<CAAYSxhpR664Od7AaWZrX0rE=iDUHo0h+4=uY=gvkFps4Hz4aew@mail.gmail.com>
-	<3010367.6CxxZ6Dpea@radagast>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
+Date: Tue, 10 Dec 2013 02:03:12 +0100
+Message-ID: <1522281.dMO104xr5U@avalon>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131209185918.GC27562@quad.lixom.net> <20131209234205.GB24573@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f48.google.com ([209.85.219.48]:53750 "EHLO
-	mail-oa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750880Ab3LJAmY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Dec 2013 19:42:24 -0500
-Received: by mail-oa0-f48.google.com with SMTP id l6so4757934oag.21
-        for <linux-serial@vger.kernel.org>; Mon, 09 Dec 2013 16:42:23 -0800 (PST)
-In-Reply-To: <3010367.6CxxZ6Dpea@radagast>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20131209234205.GB24573@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Olof Johansson <olof@lixom.net>, Greg KH <greg@kroah.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: James Hogan <james.hogan@imgtec.com>
-Cc: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Fri, Dec 6, 2013 at 4:59 PM, James Hogan <james.hogan@imgtec.com> wrote:
+Hi Olof,
 
-> It appears to work with ~0x20 too, and the workaround isn't getting hit (only
-> tested boot and logging in - nothing fancy). I think having the printks in
-> this code with the console directed at the serial must have caused
-> resursion/busy problems somehow.
+On Tuesday 10 December 2013 08:42:05 Simon Horman wrote:
+> On Mon, Dec 09, 2013 at 10:59:18AM -0800, Olof Johansson wrote:
+> > On Thu, Dec 05, 2013 at 04:03:43PM +0900, Simon Horman wrote:
 
-James,
+[snip]
 
-I tested tested the code you proposed (cleaned up to avoid magic
-numbers) on my hardware and it works fine.
+> > > To be clear, we are planning sh-sci -> soc -> sh-sci ?
+> > > 
+> > > If so, I'll have a word with Olof (CCed) as he tends to want
+> > > to avoid such circular dependencies if possible.
+> > 
+> > What are the platform changes in the middle that you need?
+> 
+> I will let Laurent speak to the nature of the changes.
+> 
+> In terms of patches Laurent has recently published a single series
+> which includes sh-sci patches, followed by SoC patches, followed
+> by sh-sci patches. The series is "[PATCH 00/47] sh-sci updates for v3.14"
+> 
+> http://www.spinics.net/lists/linux-sh/msg26033.html
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c
-b/drivers/tty/serial/8250/8250_dw.c
-index 4658e3e..5f096c7 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -96,7 +96,8 @@ static void dw8250_serial_out(struct uart_port *p,
-int offset, int value)
-        if (offset == UART_LCR) {
-                int tries = 1000;
-                while (tries--) {
--                       if (value == p->serial_in(p, UART_LCR))
-+                       unsigned int lcr = p->serial_in(p, UART_LCR);
-+                       if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-                                return;
-                        dw8250_force_idle(p);
-                        writeb(value, p->membase + (UART_LCR << p->regshift));
-@@ -132,7 +133,8 @@ static void dw8250_serial_out32(struct uart_port
-*p, int offset, int value)
-        if (offset == UART_LCR) {
-                int tries = 1000;
-                while (tries--) {
--                       if (value == p->serial_in(p, UART_LCR))
-+                       unsigned int lcr = p->serial_in(p, UART_LCR);
-+                       if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-                                return;
-                        dw8250_force_idle(p);
-                        writel(value, p->membase + (UART_LCR << p->regshift));
+There's two of them. The series replaces platform data fields for platform 
+device resources (for memory I/O region address and IRQs) and other platform 
+data fields (for baud rate calculation information). This requires modifying 
+the driver first to support the new method of passing information, followed by 
+modifying the platforms to use it, and finally removing the old method from 
+the driver.
 
+As all sh-sci driver patches will go through Simon's tree for this kernel 
+release, and as the series has been acked by Greg as the serial tree 
+maintainer, I believe this should not be a problem from a merge perspective.
 
-Would you mind posting this for proper review so we can get the fix in?
+-- 
+Regards,
 
-Thanks,
-Tim Kryger
+Laurent Pinchart
+
