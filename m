@@ -1,43 +1,83 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: [PATCH 2/2] serial: pl011: fix fall back from DMA to interrupt mode
-Date: Tue, 10 Dec 2013 14:54:47 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1312101451390.30411@axis700.grange>
-References: <Pine.LNX.4.64.1312101449501.30411@axis700.grange>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH RESEND] serial: Remove old SC26XX driver
+Date: Tue, 10 Dec 2013 18:47:04 +0400
+Message-ID: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:57031 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752376Ab3LJNyx (ORCPT
+Received: from fallback4.mail.ru ([94.100.176.42]:59770 "EHLO
+	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753890Ab3LJPLH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Dec 2013 08:54:53 -0500
-In-Reply-To: <Pine.LNX.4.64.1312101449501.30411@axis700.grange>
+	Tue, 10 Dec 2013 10:11:07 -0500
+Received: from smtp33.i.mail.ru (smtp33.i.mail.ru [94.100.177.93])
+	by fallback4.mail.ru (mPOP.Fallback_MX) with ESMTP id 05C9D145511
+	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2013 18:47:22 +0400 (MSK)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-When falling back from DMA to interrupt mode the receive interrupt has to
-be re-enabled to catch new incoming data.
+New driver for NXP (Philips) UART ICs was introduced in September 2012.
+Old driver no longer used anywhere, this patch removes it.
 
-Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/tty/serial/amba-pl011.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ drivers/tty/serial/Kconfig  |  18 --
+ drivers/tty/serial/Makefile |   1 -
+ drivers/tty/serial/sc26xx.c | 749 --------------------------------------------
+ 3 files changed, 768 deletions(-)
+ delete mode 100644 drivers/tty/serial/sc26xx.c
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 0efa9d5..3d16973 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -966,6 +966,8 @@ static void pl011_dma_rx_poll(unsigned long args)
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a3817ab..7fbbbad 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1146,31 +1146,13 @@ config SERIAL_QE
+ 	  This driver supports the QE serial ports on Freescale embedded
+ 	  PowerPC that contain a QUICC Engine.
  
- 		spin_lock_irqsave(&uap->port.lock, flags);
- 		pl011_dma_rx_stop(uap);
-+		uap->im |= UART011_RXIM;
-+		writew(uap->im, uap->port.membase + UART011_IMSC);
- 		spin_unlock_irqrestore(&uap->port.lock, flags);
+-config SERIAL_SC26XX
+-	tristate "SC2681/SC2692 serial port support"
+-	depends on SNI_RM
+-	select SERIAL_CORE
+-	help
+-	  This is a driver for the onboard serial ports of
+-	  older RM400 machines.
+-
+-config SERIAL_SC26XX_CONSOLE
+-	bool "Console on SC2681/SC2692 serial port"
+-	depends on SERIAL_SC26XX=y
+-	select SERIAL_CORE_CONSOLE
+-	help
+-	  Support for Console on SC2681/SC2692 serial ports.
+-
+ config SERIAL_SCCNXP
+ 	tristate "SCCNXP serial port support"
+-	depends on !SERIAL_SC26XX
+ 	select SERIAL_CORE
+-	default n
+ 	help
+ 	  This selects support for an advanced UART from NXP (Philips).
+ 	  Supported ICs are SCC2681, SCC2691, SCC2692, SC28L91, SC28L92,
+ 	  SC28L202, SCC68681 and SCC68692.
+-	  Positioned as a replacement for the driver SC26XX.
  
- 		uap->dmarx.running = false;
+ config SERIAL_SCCNXP_CONSOLE
+ 	bool "Console on SCCNXP serial port"
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 3068c77..3680854 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -47,7 +47,6 @@ obj-$(CONFIG_SERIAL_M32R_SIO) += m32r_sio.o
+ obj-$(CONFIG_SERIAL_MPSC) += mpsc.o
+ obj-$(CONFIG_SERIAL_SB1250_DUART) += sb1250-duart.o
+ obj-$(CONFIG_ETRAX_SERIAL) += crisv10.o
+-obj-$(CONFIG_SERIAL_SC26XX) += sc26xx.o
+ obj-$(CONFIG_SERIAL_SCCNXP) += sccnxp.o
+ obj-$(CONFIG_SERIAL_JSM) += jsm/
+ obj-$(CONFIG_SERIAL_TXX9) += serial_txx9.o
+diff --git a/drivers/tty/serial/sc26xx.c b/drivers/tty/serial/sc26xx.c
+deleted file mode 100644
+index 887b4f7..0000000
 -- 
-1.7.2.5
+1.8.3.2
 
