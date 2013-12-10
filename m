@@ -1,51 +1,52 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH] serial: samsung: move clock deactivation below uart
- registration
-Date: Tue, 10 Dec 2013 14:52:40 +0100
-Message-ID: <4640026.L8HxPz97OG@amdc1227>
-References: <201312050054.39327.heiko@sntech.de>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH 1/2] serial: pl011: (cosmetic) remove superfluous register
+ write
+Date: Tue, 10 Dec 2013 14:54:42 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1312101449501.30411@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <201312050054.39327.heiko@sntech.de>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Chander Kashyap <chander.kashyap@linaro.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.10]:60917 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751631Ab3LJNyw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 10 Dec 2013 08:54:52 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>
 
-Hi Heiko,
+In pl011_rx_chars() if pl011_dma_rx_trigger_dma() succeeds it will disable
+the receive interrupt, no need to do this again.
 
-On Thursday 05 of December 2013 00:54:38 Heiko St=FCbner wrote:
-> Commit 60e93575476f (serial: samsung: enable clock before clearing pe=
-nding
-> interrupts during init) added handling of the controller clock during=
- init.
->=20
-> On most systems this clock is also one of the baud_clock sources and
-> possibly used by the earlycon and thus already enabled by the bootloa=
-der.
->=20
-> Therefore a gap exists between s3c24xx_serial_init_port disabling the
-> clock and an attached console reenabling it, making the transition fr=
-om
-> earlycon to regular console possibly hang the system - as seen on my
-> S3C2442 based Freerunner today.
->=20
-> Therefore move the disabling of the clock from s3c24xx_serial_init_po=
-rt
-> below the uart port registration, effectively creating an overlap and
-> keeping the clock running non-stop if the console wants to grab this =
-port.
->=20
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> ---
->  drivers/tty/serial/samsung.c |    8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+---
+ drivers/tty/serial/amba-pl011.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
-Makes sense.
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index baecdfa..0efa9d5 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1213,8 +1213,8 @@ __acquires(&uap->port.lock)
+ 			dev_dbg(uap->port.dev, "could not trigger RX DMA job "
+ 				"fall back to interrupt mode again\n");
+ 			uap->im |= UART011_RXIM;
++			writew(uap->im, uap->port.membase + UART011_IMSC);
+ 		} else {
+-			uap->im &= ~UART011_RXIM;
+ #ifdef CONFIG_DMA_ENGINE
+ 			/* Start Rx DMA poll */
+ 			if (uap->dmarx.poll_rate) {
+@@ -1226,8 +1226,6 @@ __acquires(&uap->port.lock)
+ 			}
+ #endif
+ 		}
+-
+-		writew(uap->im, uap->port.membase + UART011_IMSC);
+ 	}
+ 	spin_lock(&uap->port.lock);
+ }
+-- 
+1.7.2.5
 
-Reviewed-by: Tomasz Figa <t.figa@samsung.com>
-
-Best regards,
-Tomasz
