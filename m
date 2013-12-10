@@ -1,83 +1,68 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH RESEND] serial: Remove old SC26XX driver
-Date: Tue, 10 Dec 2013 18:47:04 +0400
-Message-ID: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 0/3] serial: amba-pl011: fix race conditions during
+ initialisation
+Date: Tue, 10 Dec 2013 18:09:40 +0000
+Message-ID: <20131210180940.GA19513@sirena.org.uk>
+References: <1386670740-16914-1-git-send-email-tixy@linaro.org>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback4.mail.ru ([94.100.176.42]:59770 "EHLO
-	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753890Ab3LJPLH (ORCPT
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:49833 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754683Ab3LJSKJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Dec 2013 10:11:07 -0500
-Received: from smtp33.i.mail.ru (smtp33.i.mail.ru [94.100.177.93])
-	by fallback4.mail.ru (mPOP.Fallback_MX) with ESMTP id 05C9D145511
-	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2013 18:47:22 +0400 (MSK)
+	Tue, 10 Dec 2013 13:10:09 -0500
+Content-Disposition: inline
+In-Reply-To: <1386670740-16914-1-git-send-email-tixy@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
+To: Jon Medhurst <tixy@linaro.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-New driver for NXP (Philips) UART ICs was introduced in September 2012.
-Old driver no longer used anywhere, this patch removes it.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- drivers/tty/serial/Kconfig  |  18 --
- drivers/tty/serial/Makefile |   1 -
- drivers/tty/serial/sc26xx.c | 749 --------------------------------------------
- 3 files changed, 768 deletions(-)
- delete mode 100644 drivers/tty/serial/sc26xx.c
+--2fHTh5uZTiUOsy+g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index a3817ab..7fbbbad 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1146,31 +1146,13 @@ config SERIAL_QE
- 	  This driver supports the QE serial ports on Freescale embedded
- 	  PowerPC that contain a QUICC Engine.
- 
--config SERIAL_SC26XX
--	tristate "SC2681/SC2692 serial port support"
--	depends on SNI_RM
--	select SERIAL_CORE
--	help
--	  This is a driver for the onboard serial ports of
--	  older RM400 machines.
--
--config SERIAL_SC26XX_CONSOLE
--	bool "Console on SC2681/SC2692 serial port"
--	depends on SERIAL_SC26XX=y
--	select SERIAL_CORE_CONSOLE
--	help
--	  Support for Console on SC2681/SC2692 serial ports.
--
- config SERIAL_SCCNXP
- 	tristate "SCCNXP serial port support"
--	depends on !SERIAL_SC26XX
- 	select SERIAL_CORE
--	default n
- 	help
- 	  This selects support for an advanced UART from NXP (Philips).
- 	  Supported ICs are SCC2681, SCC2691, SCC2692, SC28L91, SC28L92,
- 	  SC28L202, SCC68681 and SCC68692.
--	  Positioned as a replacement for the driver SC26XX.
- 
- config SERIAL_SCCNXP_CONSOLE
- 	bool "Console on SCCNXP serial port"
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 3068c77..3680854 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -47,7 +47,6 @@ obj-$(CONFIG_SERIAL_M32R_SIO) += m32r_sio.o
- obj-$(CONFIG_SERIAL_MPSC) += mpsc.o
- obj-$(CONFIG_SERIAL_SB1250_DUART) += sb1250-duart.o
- obj-$(CONFIG_ETRAX_SERIAL) += crisv10.o
--obj-$(CONFIG_SERIAL_SC26XX) += sc26xx.o
- obj-$(CONFIG_SERIAL_SCCNXP) += sccnxp.o
- obj-$(CONFIG_SERIAL_JSM) += jsm/
- obj-$(CONFIG_SERIAL_TXX9) += serial_txx9.o
-diff --git a/drivers/tty/serial/sc26xx.c b/drivers/tty/serial/sc26xx.c
-deleted file mode 100644
-index 887b4f7..0000000
--- 
-1.8.3.2
+On Tue, Dec 10, 2013 at 10:18:57AM +0000, Jon Medhurst wrote:
 
+> When a UART that is being used for a kernel console is also opened
+> by user-side, e.g. for use as a terminal, then there are race conditions
+> which can lead to terminal input being disabled and console output being
+> corrupted. This small patch series fixes these.
+>=20
+> Jon Medhurst (3):
+>       serial: amba-pl011: use port lock to guard control register access
+>       serial: amba-pl011: factor out code for writing LCR_H register
+>       serial: amba-pl011: preseserve hardware settings during initialisat=
+ion
+
+Given that this seems relatively easy to trigger when you know how and
+renders the device non-functional perhaps this should be considered for
+stable too?
+
+--2fHTh5uZTiUOsy+g
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSp1jgAAoJELSic+t+oim9THMQAJqnNkkBAemHn1UhG45cQvrc
+0aY7qtCsaHAgQX8hyJN4Pjij4JjlUOkVNXe8a32GsFQsucTDupL1ekzLTsdVSdWh
+YdyO4vi48xBTtFqci67x0wPMV7HkD/GqyuxUA6RjQ9MX0BEmVgaNReYge5DhyYYS
+oal+jDIn4+B0cirZ6swXWlS1RBL+RyqXcSHB7X8jQYJGMJK7V6VScjKAmEWvau7L
+v6F+lp3jVYWI84U98EWqC0sU10Bxv2h2ii9PAmgtqac80HZLqQ8W0hZf3b0x8Eh+
+C/ZqFJ23qH3FNm2nY2SmXaqtA6VtXSpYzO05UeHR7TV8MCyxsWJiUX+aMcJt0Ffp
+EyyLdd7YDSDC7sTqByMKWqEcqsFwapfsssXquh4KaeuaFePT6hM/iH6IxNsmdNFf
+0EjpXTgKEvkQ0tYviuuCRL+3m15C+2CfqUjQH4KSsHrCpUHn7IPlbitgX9VOfjxB
+kqnpUyPW2At4/XFF2FyalEy4zXrWK/6IaJBgd11i+Gt0Z46JYFx7OsTQWTSZKFTu
+u7+AAyqEGgIdaizzQqVE3xSCJan0DsXu7nii1Qv+UisbC6S5y94s5seZHBgR6GHp
+Kp3Ak0uRQ+1lvb31bVi033RcpWOGBsxlv/XEISmj0r957c+PXwtMB5zG+hLcW4HJ
+0QiNrAhBdrgW3OdTyD8l
+=vyIV
+-----END PGP SIGNATURE-----
+
+--2fHTh5uZTiUOsy+g--
