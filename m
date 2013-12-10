@@ -1,8 +1,8 @@
 From: Jon Medhurst <tixy@linaro.org>
-Subject: [PATCH 3/3] serial: amba-pl011: preseserve hardware settings during
- initialisation
-Date: Tue, 10 Dec 2013 10:19:00 +0000
-Message-ID: <1386670740-16914-4-git-send-email-tixy@linaro.org>
+Subject: [PATCH 2/3] serial: amba-pl011: factor out code for writing LCR_H
+ register
+Date: Tue, 10 Dec 2013 10:18:59 +0000
+Message-ID: <1386670740-16914-3-git-send-email-tixy@linaro.org>
 References: <1386670740-16914-1-git-send-email-tixy@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,56 +22,77 @@ To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfound
 Cc: Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-During initialisation, a UART may already be in use for a console, so
-take care to preserve things like baud rate and data format to avoid
-corrupting console output.
+The code to cope with a split tx/rx LCR_H register is non-trivial
+so put it into it's own function to avoid duplication.
 
 Signed-off-by: Jon Medhurst <tixy@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c |   14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   39 +++++++++++++++++----------------------
+ 1 file changed, 17 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8ec1729..7012ef3 100644
+index a0dfb86..8ec1729 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1531,7 +1531,7 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+@@ -1513,6 +1513,21 @@ static int pl011_hwinit(struct uart_port *port)
+ 	return retval;
+ }
+ 
++static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
++{
++	writew(lcr_h, uap->port.membase + uap->lcrh_rx);
++	if (uap->lcrh_rx != uap->lcrh_tx) {
++		int i;
++		/*
++		 * Wait 10 PCLKs before writing LCRH_TX register,
++		 * to get this delay write read only register 10 times
++		 */
++		for (i = 0; i < 10; ++i)
++			writew(0xff, uap->port.membase + UART011_MIS);
++		writew(lcr_h, uap->port.membase + uap->lcrh_tx);
++	}
++}
++
  static int pl011_startup(struct uart_port *port)
  {
  	struct uart_amba_port *uap = (struct uart_amba_port *)port;
--	unsigned int cr;
-+	unsigned int cr, lcr_h, fbrd, ibrd;
- 	int retval;
- 
- 	retval = pl011_hwinit(port);
-@@ -1550,10 +1550,16 @@ static int pl011_startup(struct uart_port *port)
- 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
- 
- 	/*
--	 * Provoke TX FIFO interrupt into asserting.
-+	 * Provoke TX FIFO interrupt into asserting. Taking care to preserve
-+	 * baud rate and data format specified by FBRD, IBRD and LCRH as the
-+	 * UART may already be in use as a console.
- 	 */
- 	spin_lock_irq(&uap->port.lock);
- 
-+	fbrd = readw(uap->port.membase + UART011_FBRD);
-+	ibrd = readw(uap->port.membase + UART011_IBRD);
-+	lcr_h = readw(uap->port.membase + uap->lcrh_rx);
-+
- 	cr = UART01x_CR_UARTEN | UART011_CR_TXE | UART011_CR_LBE;
+@@ -1543,17 +1558,7 @@ static int pl011_startup(struct uart_port *port)
  	writew(cr, uap->port.membase + UART011_CR);
  	writew(0, uap->port.membase + UART011_FBRD);
-@@ -1563,6 +1569,10 @@ static int pl011_startup(struct uart_port *port)
+ 	writew(1, uap->port.membase + UART011_IBRD);
+-	writew(0, uap->port.membase + uap->lcrh_rx);
+-	if (uap->lcrh_tx != uap->lcrh_rx) {
+-		int i;
+-		/*
+-		 * Wait 10 PCLKs before writing LCRH_TX register,
+-		 * to get this delay write read only register 10 times
+-		 */
+-		for (i = 0; i < 10; ++i)
+-			writew(0xff, uap->port.membase + UART011_MIS);
+-		writew(0, uap->port.membase + uap->lcrh_tx);
+-	}
++	pl011_write_lcr_h(uap, 0);
+ 	writew(0, uap->port.membase + UART01x_DR);
  	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
  		barrier();
- 
-+	writew(fbrd, uap->port.membase + UART011_FBRD);
-+	writew(ibrd, uap->port.membase + UART011_IBRD);
+@@ -1803,17 +1808,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * UART011_FBRD & UART011_IBRD.
+ 	 * ----------^----------^----------^----------^-----
+ 	 */
+-	writew(lcr_h, port->membase + uap->lcrh_rx);
+-	if (uap->lcrh_rx != uap->lcrh_tx) {
+-		int i;
+-		/*
+-		 * Wait 10 PCLKs before writing LCRH_TX register,
+-		 * to get this delay write read only register 10 times
+-		 */
+-		for (i = 0; i < 10; ++i)
+-			writew(0xff, uap->port.membase + UART011_MIS);
+-		writew(lcr_h, port->membase + uap->lcrh_tx);
+-	}
 +	pl011_write_lcr_h(uap, lcr_h);
-+
- 	/* restore RTS and DTR */
- 	cr = uap->old_cr & (UART011_CR_RTS | UART011_CR_DTR);
- 	cr |= UART01x_CR_UARTEN | UART011_CR_RXE | UART011_CR_TXE;
+ 	writew(old_cr, port->membase + UART011_CR);
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
 -- 
 1.7.10.4
