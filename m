@@ -1,59 +1,33 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: [PATCH] drivers: tty: serial: xilinx_uartps: check related config
- macro before processing 'sysrq'
-Date: Tue, 10 Dec 2013 13:21:49 +0800
-Message-ID: <52A6A4ED.60700@gmail.com>
+From: Jon Medhurst <tixy@linaro.org>
+Subject: [PATCH 0/3] serial: amba-pl011: fix race conditions during
+ initialisation
+Date: Tue, 10 Dec 2013 10:18:57 +0000
+Message-ID: <1386670740-16914-1-git-send-email-tixy@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f52.google.com ([209.85.160.52]:64528 "EHLO
-	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751123Ab3LJFTf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Dec 2013 00:19:35 -0500
-Received: by mail-pb0-f52.google.com with SMTP id uo5so6839845pbc.25
-        for <linux-serial@vger.kernel.org>; Mon, 09 Dec 2013 21:19:35 -0800 (PST)
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Greg KH <gregkh@linuxfoundation.org>, James Hogan <james.hogan@imgtec.com>, linux-serial@vger.kernel.org
 
-Need check CONFIG_SERIAL_CORE_CONSOLE or SUPPORT_SYSRQ just like the
-structure definiation has done. Or may cause compiling issue.
+When a UART that is being used for a kernel console is also opened
+by user-side, e.g. for use as a terminal, then there are race conditions
+which can lead to terminal input being disabled and console output being
+corrupted. This small patch series fixes these.
 
-The related error (with allmodconfig for metag):
+Jon Medhurst (3):
+      serial: amba-pl011: use port lock to guard control register access
+      serial: amba-pl011: factor out code for writing LCR_H register
+      serial: amba-pl011: preseserve hardware settings during initialisation
 
-    CC [M]  drivers/tty/serial/xilinx_uartps.o
-  drivers/tty/serial/xilinx_uartps.c: In function 'xuartps_isr':
-  drivers/tty/serial/xilinx_uartps.c:247: error: 'struct uart_port' has no member named 'sysrq'
-
-
-Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
----
- drivers/tty/serial/xilinx_uartps.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index e46e9f3..1501e6b 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -244,6 +244,7 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
- 			 * uart_handle_sysrq_char() doesn't work if
- 			 * spinlocked, for some reason
- 			 */
-+#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
- 			 if (port->sysrq) {
- 				spin_unlock(&port->lock);
- 				if (uart_handle_sysrq_char(port,
-@@ -253,7 +254,7 @@ static irqreturn_t xuartps_isr(int irq, void *dev_id)
- 				}
- 				spin_lock(&port->lock);
- 			}
--
-+#endif
- 			port->icount.rx++;
- 
- 			if (isrstatus & XUARTPS_IXR_PARITY) {
--- 
-1.7.7.6
+ drivers/tty/serial/amba-pl011.c |   59 ++++++++++++++++++++++++++++++++++------------------------
