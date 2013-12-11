@@ -1,61 +1,66 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 2/2] serial: clps711x: dts: Add bindings documentation for the CLPS711X UART
-Date: Wed, 11 Dec 2013 19:52:35 +0400
-Message-ID: <1386777155-24851-1-git-send-email-shc_work@mail.ru>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp40.i.mail.ru ([94.100.177.100]:55555 "EHLO smtp40.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750881Ab3LKPwy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Dec 2013 10:52:54 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: Re: [PATCH] serial: 8250_dw: Fix LCR workaround regression
+Date: Wed, 11 Dec 2013 13:00:33 -0800
+Message-ID: <CAAYSxhr10XqQdQrvGf3Ez6e4LSbvmc0J-=yRgUePVEcd93e5wQ@mail.gmail.com>
+References: <1386714484-30251-1-git-send-email-james@albanarts.com>
+	<20131211140014.GF28456@xps8300>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20131211140014.GF28456@xps8300>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: James Hogan <james@albanarts.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Gregory Clement <gregory.clement@free-electrons.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, James Hogan <james.hogan@imgtec.com>, Jiri Slaby <jslaby@suse.cz>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Matt Porter <matt.porter@linaro.org>, Markus Mayer <markus.mayer@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Russell King <linux@arm.linux.org.uk>, devicetree@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, Alexander Shiyan <shc_work@mail.ru>
 
-This patch adds the devicetree documentation for the Cirrus Logic
-CLPS711X UART.
+On Wed, Dec 11, 2013 at 6:00 AM, Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
+> Hi,
+>
+> On Tue, Dec 10, 2013 at 10:28:04PM +0000, James Hogan wrote:
+>> From: James Hogan <james.hogan@imgtec.com>
+>>
+>> Commit c49436b657d0 (serial: 8250_dw: Improve unwritable LCR workaround)
+>> caused a regression. It added a check that the LCR was written properly
+>> to detect and workaround the busy quirk, but the behaviour of bit 5
+>> (UART_LCR_SPAR) differs between IP versions 3.00a and 3.14c per the
+>> docs. On older versions this caused the check to fail and it would
+>> repeatedly force idle and rewrite the LCR register, causing delays and
+>> preventing any input from serial being received.
+>>
+>> This is fixed by masking out UART_LCR_SPAR before making the comparison.
+>>
+>> Signed-off-by: James Hogan <james.hogan@imgtec.com>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jslaby@suse.cz>
+>> Cc: Tim Kryger <tim.kryger@linaro.org>
+>> Cc: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+>> Cc: Matt Porter <matt.porter@linaro.org>
+>> Cc: Markus Mayer <markus.mayer@linaro.org>
+>> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+>> Tested-by: Tim Kryger <tim.kryger@linaro.org>
+>> Tested-by: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+>
+> I tested this with HW without the busy functionality
+> (UART_16550_COMPATIBLE == yes). No problems here. FWIW:
+>
+> Tested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- .../bindings/serial/cirrus,clps711x-uart.txt       | 29 ++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+Greg, can you consider taking this patch as a regression fix for 3.13?
 
-diff --git a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
-new file mode 100644
-index 0000000..8bbdd21
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
-@@ -0,0 +1,29 @@
-+* Cirrus Logic CLPS711X Universal Asynchronous Receiver/Transmitter (UART)
-+
-+Required properties:
-+- compatible: Should be "cirrus,clps711x-uart".
-+- reg: Address and length of the register set for the device.
-+- interrupts: Should contain UART TX and RX interrupt.
-+- clocks: Should contain UART core clock number.
-+- syscon: Phandle to SYSCON node, which contain UART control bits.
-+
-+Optional properties:
-+- uart-use-ms: Indicate the UART has modem signal (DCD, DSR, CTS).
-+- uart-use-irda: Indicate the UART use IRDA mode.
-+
-+Note: Each UART port should have an alias correctly numbered
-+in "aliases" node.
-+
-+Example:
-+	aliases {
-+		serial0 = &uart1;
-+	};
-+
-+	uart1: uart@80000480 {
-+		compatible = "cirrus,clps711x-uart";
-+		reg = <0x80000480 0x80>;
-+		interrupts = <12 13>;
-+		clocks = <&clks 11>;
-+		syscon = <&syscon1>;
-+		uart-use-ms;
-+	};
--- 
-1.8.3.2
+Just in case you want a little more background beyond what is in the
+commit message...
 
+Statically declared DW UARTs will execute autoconfig_16550a during
+probe which attempts to set the SPAR bit of LCR.  Some old versions of
+the DW IP don't implement the stick parity feature and for these
+versions the SPAR bit always reads back as zero. Since these writes
+aren't fully accepted by the hardware, they trigger the workaround
+which interprets the partially rejected write to mean the UART was
+busy.  A number of attempts are made to idle the UART and re-write the
+LCR but eventually the workaround gives up and prints a warning.  DT
+declared DW UARTs don't run autoconfig and don't see this issue as far
+as I know.
+
+Thanks,
+Tim Kryger
