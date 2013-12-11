@@ -1,109 +1,33 @@
-From: James Hogan <james.hogan@imgtec.com>
-Subject: Re: [PATCH] serial: 8250_dw: Fix LCR workaround regression
-Date: Wed, 11 Dec 2013 21:05:10 +0000
-Message-ID: <2515351.7napg2VnCT@radagast>
-References: <1386714484-30251-1-git-send-email-james@albanarts.com> <20131211140014.GF28456@xps8300> <CAAYSxhr10XqQdQrvGf3Ez6e4LSbvmc0J-=yRgUePVEcd93e5wQ@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 0/2] serial: clps711x: UART driver refactor
+Date: Wed, 11 Dec 2013 22:21:21 +0100
+Message-ID: <201312112221.22180.arnd@arndb.de>
+References: <1386777016-24750-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2998279.KlRiSWXGat"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f53.google.com ([74.125.82.53]:35812 "EHLO
-	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751800Ab3LKVF1 (ORCPT
+Received: from moutng.kundenserver.de ([212.227.17.8]:53756 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751051Ab3LKVV5 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Dec 2013 16:05:27 -0500
-Received: by mail-wg0-f53.google.com with SMTP id k14so7094844wgh.20
-        for <linux-serial@vger.kernel.org>; Wed, 11 Dec 2013 13:05:26 -0800 (PST)
-In-Reply-To: <CAAYSxhr10XqQdQrvGf3Ez6e4LSbvmc0J-=yRgUePVEcd93e5wQ@mail.gmail.com>
+	Wed, 11 Dec 2013 16:21:57 -0500
+In-Reply-To: <1386777016-24750-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tim Kryger <tim.kryger@linaro.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Gregory Clement <gregory.clement@free-electrons.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, Jiri Slaby <jslaby@suse.cz>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Matt Porter <matt.porter@linaro.org>, Markus Mayer <markus.mayer@linaro.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, arm@kenrel.org, Olof Johansson <olof@lixom.net>, Jiri Slaby <jslaby@suse.cz>
 
-
---nextPart2998279.KlRiSWXGat
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-
-On Wednesday 11 December 2013 13:00:33 Tim Kryger wrote:
-> On Wed, Dec 11, 2013 at 6:00 AM, Heikki Krogerus
+On Wednesday 11 December 2013, Alexander Shiyan wrote:
+> This is a complex patch for refactoring CLPS711X serial driver.
+> Major changes:
+> - Eliminate <mach/hardware.h> usage.
+> - Devicetree support.
 > 
-> <heikki.krogerus@linux.intel.com> wrote:
-> > Hi,
-> > 
-> > On Tue, Dec 10, 2013 at 10:28:04PM +0000, James Hogan wrote:
-> >> From: James Hogan <james.hogan@imgtec.com>
-> >> 
-> >> Commit c49436b657d0 (serial: 8250_dw: Improve unwritable LCR workaround)
-> >> caused a regression. It added a check that the LCR was written properly
-> >> to detect and workaround the busy quirk, but the behaviour of bit 5
-> >> (UART_LCR_SPAR) differs between IP versions 3.00a and 3.14c per the
-> >> docs. On older versions this caused the check to fail and it would
-> >> repeatedly force idle and rewrite the LCR register, causing delays and
-> >> preventing any input from serial being received.
-> >> 
-> >> This is fixed by masking out UART_LCR_SPAR before making the comparison.
-> >> 
-> >> Signed-off-by: James Hogan <james.hogan@imgtec.com>
-> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> Cc: Jiri Slaby <jslaby@suse.cz>
-> >> Cc: Tim Kryger <tim.kryger@linaro.org>
-> >> Cc: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-> >> Cc: Matt Porter <matt.porter@linaro.org>
-> >> Cc: Markus Mayer <markus.mayer@linaro.org>
-> >> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> >> Tested-by: Tim Kryger <tim.kryger@linaro.org>
-> >> Tested-by: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-> > 
-> > I tested this with HW without the busy functionality
-> > (UART_16550_COMPATIBLE == yes). No problems here. FWIW:
-> > 
-> > Tested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> 
-> Greg, can you consider taking this patch as a regression fix for 3.13?
-> 
-> Just in case you want a little more background beyond what is in the
-> commit message...
-> 
-> Statically declared DW UARTs will execute autoconfig_16550a during
-> probe which attempts to set the SPAR bit of LCR.  Some old versions of
-> the DW IP don't implement the stick parity feature and for these
-> versions the SPAR bit always reads back as zero. Since these writes
-> aren't fully accepted by the hardware, they trigger the workaround
-> which interprets the partially rejected write to mean the UART was
-> busy.  A number of attempts are made to idle the UART and re-write the
-> LCR but eventually the workaround gives up and prints a warning. DT
-> declared DW UARTs don't run autoconfig and don't see this issue as far
-> as I know.
+> Patch created for adding in tty tree, but this changes need attention
+> from ARM and DT maintainers, so "ACK" will be useful here.
 
-Hi Tim
+Both patches look good to me.
 
-Thanks for the extra description. FYI, I was instantiating DW UART from DT 
-when I saw the problem.
-
-Cheers
-James
---nextPart2998279.KlRiSWXGat
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAABAgAGBQJSqNOTAAoJEKHZs+irPybfSsQP/jRiDTaJK0XscY6/uaU8XI9k
-naSkOlGvdJJmEx89HyWnuaM/m7bgQJaY4zUFCixp33VlJw3ozPbWPx7rCAvwwaFb
-Hfp5gWZDy9meYb20WgenI39YmNkNYy81ukhsS4/g2Z7VnhjUxnA4boUmxNcQjevW
-TRtvdMG7Qdi9EOyJzDqlIWlTfMAVtS4scGfgDQaB0D6Y7wy+81mRNlf1HOspzK3n
-67wBS4lz5631IVl5TNqdvCAaLZ9NxWexNLbQkblWcU4AnBPHxQbulKV9jAOZzZMT
-uhUVAKMSfwfadQETkdWLooL04r4nAG9qnadIOjLmYyoX55NYzQzungEOZzfNE5b+
-ScqXaZ7XXnydYan0fAQFQ4W6HOeeolDnWdC7LHzYdULPdRhlpyzL02gEmW+nmyG6
-wxQT4/sKGWSTJ+K22SWmk4skP4YTX7VJmHX4iFyQS4K5PA2Bc5oNsR/CdokEEL/e
-P18WaHFQ8tr7QHUfRX0xeHeNctL5sz3HBM5slvNVo3cVTm+zgSiJIyM/Ro9i965j
-XDeqcSUGTyr88XcKIeFBjTg2te9L/g8t8h4I6+ZIg3OuIg5xBIu2aGGPhxEEky7h
-NICq5VPeHAs3VbfTMSZ97Z622RNm1tCwwxj1ZaH+gJ0N2G0yMOsUKPiTR9ENrklM
-/nZ5wBD2J4q/oOGEYqw8
-=GIDi
------END PGP SIGNATURE-----
-
---nextPart2998279.KlRiSWXGat--
-
+Acked-by: Arnd Bergmann <arnd@arndb.de>
