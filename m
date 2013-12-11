@@ -1,39 +1,93 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH RFC] tty_ldisc: add more limits to the @write_wakeup
-Date: Wed, 11 Dec 2013 06:47:11 -0500
-Message-ID: <52A850BF.1000408@hurleysoftware.com>
-References: <1384327803-5925-1-git-send-email-b32955@freescale.com> <52A1A84B.80409@freescale.com> <52A1F8BF.5030204@hurleysoftware.com> <52A809BC.2040909@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34822 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751406Ab3LKLrO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Dec 2013 06:47:14 -0500
-In-Reply-To: <52A809BC.2040909@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v3] serial: sh-sci: Fix warnings due to improper casts and printk formats
+Date: Wed, 11 Dec 2013 13:40:31 +0100
+Message-ID: <1386765631-1840-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, marcel@holtmann.org, linux-bluetooth@vger.kernel.org
 
-On 12/11/2013 01:44 AM, Huang Shijie wrote:
-> =E4=BA=8E 2013=E5=B9=B412=E6=9C=8807=E6=97=A5 00:18, Peter Hurley =E5=
-=86=99=E9=81=93:
->> hci_uart_tx_wakeup() should perform the actual tx in a work item.
-> Does the "work item" mean a workqueue or a tasklet?
-> This patch is used to tell the line discipline writers to send the da=
-ta in the workqueue or a tasklet.
+Use the %zu and %pad printk specifiers to print size_t and dma_addr_t
+variables, and cast pointers to uintptr_t instead of unsigned int where
+applicable. This fixes warnings on platforms where pointers and/or
+dma_addr_t have a different size than int.
 
-Yes, "work item" means struct work_struct.
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
+This patch depends on "vsprintf: add %pad extension for dma_addr_t use" that
+should make it to v3.14.
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7d8103c..6e5ce62 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+ 		return 1;
+ 
+ 	/* Cast for ARM damage */
+-	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
++	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+ }
+ 
+ /* ********************************************************************** *
+@@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
+ 	}
+ 
+ 	if (room < count)
+-		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
++		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+ 			 count - room);
+ 	if (!room)
+ 		return room;
+@@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+ 		int count;
+ 
+ 		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+-		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
++		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+ 			sh_desc->partial, sh_desc->cookie);
+ 
+ 		spin_lock_irqsave(&port->lock, flags);
+@@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
+ 		s->chan_tx = chan;
+ 		sg_init_table(&s->sg_tx, 1);
+ 		/* UART circular tx buffer is an aligned page. */
+-		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
++		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+ 		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+-			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
++			    UART_XMIT_SIZE,
++			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+ 		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+ 		if (!nent)
+ 			sci_tx_dma_release(s, false);
+ 		else
+-			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+-				sg_dma_len(&s->sg_tx),
+-				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
++			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
++				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
++				&sg_dma_address(&s->sg_tx));
+ 
+ 		s->sg_len_tx = nent;
+ 
+@@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 			sg_init_table(sg, 1);
+ 			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+-				    (int)buf[i] & ~PAGE_MASK);
++				    (uintptr_t)buf[i] & ~PAGE_MASK);
+ 			sg_dma_address(sg) = dma[i];
+ 		}
+ 
+-- 
 Regards,
-Peter Hurley
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Laurent Pinchart
+
