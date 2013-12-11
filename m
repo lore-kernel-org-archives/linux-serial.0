@@ -1,113 +1,26 @@
-From: James Hogan <james.hogan@imgtec.com>
-Subject: Re: [PATCH v2] serial: 8250_dw: Improve unwritable LCR workaround
-Date: Tue, 10 Dec 2013 22:48:06 +0000
-Message-ID: <5829576.XRqmsfpHkX@radagast>
-References: <1380647888-32473-1-git-send-email-tim.kryger@linaro.org> <CAAYSxhraDF6T9URw0CpEig2VpnuTBNdZYL9uuw6vdPn0=X4zGA@mail.gmail.com> <20131210121154.GA16238@localhost>
+From: Huang Shijie <b32955-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH RFC] tty_ldisc: add more limits to the @write_wakeup
+Date: Wed, 11 Dec 2013 14:44:12 +0800
+Message-ID: <52A809BC.2040909@freescale.com>
+References: <1384327803-5925-1-git-send-email-b32955@freescale.com> <52A1A84B.80409@freescale.com> <52A1F8BF.5030204@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart9126169.0cbx9Cncuf"; micalg="pgp-sha1"; protocol="application/pgp-signature"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f169.google.com ([74.125.82.169]:48799 "EHLO
-	mail-we0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751030Ab3LJWsS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Dec 2013 17:48:18 -0500
-Received: by mail-we0-f169.google.com with SMTP id w61so5767433wes.28
-        for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2013 14:48:17 -0800 (PST)
-In-Reply-To: <20131210121154.GA16238@localhost>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <52A1F8BF.5030204-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Tim Kryger <tim.kryger@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Patch Tracking <patches@linaro.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Gregory Clement <gregory.clement@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
+=E4=BA=8E 2013=E5=B9=B412=E6=9C=8807=E6=97=A5 00:18, Peter Hurley =E5=86=
+=99=E9=81=93:
+> hci_uart_tx_wakeup() should perform the actual tx in a work item.=20
+Does the "work item" mean a workqueue or a tasklet?
+This patch is used to tell the line discipline writers to send the data=
+=20
+in the workqueue or a tasklet.
 
---nextPart9126169.0cbx9Cncuf
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-
-On Tuesday 10 December 2013 09:11:55 Ezequiel Garcia wrote:
-> Hi Tim, James:
-> 
-> On Mon, Dec 09, 2013 at 04:42:23PM -0800, Tim Kryger wrote:
-> > On Fri, Dec 6, 2013 at 4:59 PM, James Hogan <james.hogan@imgtec.com> 
-wrote:
-> [..]
-> 
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c
-> > b/drivers/tty/serial/8250/8250_dw.c
-> > index 4658e3e..5f096c7 100644
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -96,7 +96,8 @@ static void dw8250_serial_out(struct uart_port *p,
-> > int offset, int value)
-> > 
-> >         if (offset == UART_LCR) {
-> >         
-> >                 int tries = 1000;
-> >                 while (tries--) {
-> > 
-> > -                       if (value == p->serial_in(p, UART_LCR))
-> > +                       unsigned int lcr = p->serial_in(p, UART_LCR);
-> > +                       if ((value & ~UART_LCR_SPAR) == (lcr &
-> > ~UART_LCR_SPAR))> 
-> >                                 return;
-> >                         
-> >                         dw8250_force_idle(p);
-> >                         writeb(value, p->membase + (UART_LCR <<
-> >                         p->regshift));
-> > 
-> > @@ -132,7 +133,8 @@ static void dw8250_serial_out32(struct uart_port
-> > *p, int offset, int value)
-> > 
-> >         if (offset == UART_LCR) {
-> >         
-> >                 int tries = 1000;
-> >                 while (tries--) {
-> > 
-> > -                       if (value == p->serial_in(p, UART_LCR))
-> > +                       unsigned int lcr = p->serial_in(p, UART_LCR);
-> > +                       if ((value & ~UART_LCR_SPAR) == (lcr &
-> > ~UART_LCR_SPAR))> 
-> >                                 return;
-> >                         
-> >                         dw8250_force_idle(p);
-> >                         writel(value, p->membase + (UART_LCR <<
-> >                         p->regshift));
-> > 
-> > Would you mind posting this for proper review so we can get the fix in?
-> 
-> Applying this change fixes all the problems I reported (just did a quick
-> test on the board I have currently on my desk).
-> 
-> Nice work!
-
-Thanks for testing it.
-
-I've posted Tim's version for proper review with both your tested-by.
-
-Cheers
-James
---nextPart9126169.0cbx9Cncuf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAABAgAGBQJSp5ouAAoJEKHZs+irPybfaR8P/R6SrFsvocrdOCjNVdkWXuPF
-NG27O5MVE1WvjvTuWmsd89NxZhBRquK31gi9qSr/uPzy9v5azu4FBgWJUqlIvpQN
-JpYwcWHmkUF15fFyXK7AXu6VQ4DgVEnc33xPRS6Ym4U0/BTX91eNvrqzyblQ9OhA
-6KvRp8rC+dqRJw6+xIX18PgH8/mu2SLOVD7W3XbOo43T5t2B5x1DoTgmgQloafTM
-w3R+0wfN12NJSsw/wjTonLa6DYQQl96MfbvAF98sMai20Rdtt5dt4irtDu9TMjZP
-GhKbRVfJxgWjq5R5wo2oa1r/YypymPUW3TJEa/kWcNmSq9DJlRWekBbWgY8+8Fjf
-H/LXdVzlM6ArpcirQHV2g1EaMWGo4lwAkwSLx0GcvH36oQlcUUSxsGtmp40wNhF1
-8/8WO+pZIYNdE2JorZyEBnGoygTJ/SF1Xd8YgY0o5KFAXkLXCSMCPyPFgroD+zWA
-X4jr2qu5dw2Gmni5vPJkrVPmYOYGSkxk5fH2iux35iTiLpDHk+TEcZN2jd7R+ZDP
-EbGTkdzKlqsqUsLsvznhecHrseTjs7A0R2FMH60mNUIVKkoZ27KD+zcLDOvSqDNe
-xelMde1EX98cCYUK1q+PiYUcgyF/Am4hkmU610tSfZUibIIovcRHEGpdtNvWAuOt
-idqLTtgprnKlf50UDpA/
-=QdKq
------END PGP SIGNATURE-----
-
---nextPart9126169.0cbx9Cncuf--
-
+thanks
+Huang Shijie
