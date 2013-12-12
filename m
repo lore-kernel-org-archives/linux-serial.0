@@ -1,149 +1,130 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH tty-next 0/4] tty: Fix ^C echo
-Date: Wed, 11 Dec 2013 22:59:20 -0500
-Message-ID: <52A93498.4030803@hurleysoftware.com>
-References: <1386018725-4781-1-git-send-email-peter@hurleysoftware.com>	<20131203000116.0d512b59@alan.etchedpixels.co.uk>	<529D4E58.9020101@hurleysoftware.com>	<20131203142011.371067ea@alan.etchedpixels.co.uk>	<529F698C.6040603@hurleysoftware.com> <20131205001315.3ac390d6@alan.etchedpixels.co.uk>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: Re: [PATCH] serial: pl011: also enable DMA Rx polling with no platform
+ data
+Date: Thu, 12 Dec 2013 10:18:14 +0100 (CET)
+Message-ID: <Pine.LNX.4.64.1312120923160.32185@axis700.grange>
+References: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
+ <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:44886 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751339Ab3LLD7b (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Dec 2013 22:59:31 -0500
-In-Reply-To: <20131205001315.3ac390d6@alan.etchedpixels.co.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Chanho Min <chanho.min@lge.com>, Phil Edworthy <phil@edworthys.org>, linux-serial@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 12/04/2013 07:13 PM, One Thousand Gnomes wrote:
->> Not so much confused as simply merged. Input processing is inherently
->> single-threaded; it makes sense to rely on that at the highest level
->> possible.
->
-> I would disagree entirely. You want to minimise the areas affected by a
-> given lock. You also want to lock data not code. Correctness comes before
-> speed. You optimise it when its right, otherwise you end up in a nasty
-> mess when you discover you've optimised to assumptions that are flawed.
+An addendum to this patch, that might well lead to dropping it and, 
+possibly, doing the opposite - removing the DMA Rx polling completely. 
+This patch was a logical continuation of the referenced below patch from 
+Linus W. It doesn't make matters worse on its own, it just unifies the two 
+cases - with platform data and with DT. However, after fixing other issues 
+with my set up, it has been identified, that this polling is actually 
+causing problems, rather than fixing any. In our set up we don't use the 
+"single character DMA transfer request line," but the burst DMA request 
+line, which means, a DMA request is only activated, when a watermark is 
+reached. And as soon as DMA picks up data from the FIFO to drop below the 
+threshold, the request line is deactivated again. This means, if less than 
+a complete DMA buffer of data is received, "threshold - 1" (15 in our 
+case) bytes will stay in UART FIFO, causing an Rx timeout interrupt, which 
+will pick those 15 bytes up and deliver the data to the tty layer. All 
+works beautifully.
 
-Sorry for the delayed reply, Alan; what little free time I had was spent
-snuffing out regressions :/
+Whereas with polling we get data loss and corruption. This isn't my top 
+priority at the moment to investigate and fix this. Please, feel free to 
+decide whether to take this patch to unify driver's behaviour with and 
+without DT, or to drop it to at least give some configurations a chance to 
+work correctly, or maybe someone has an idea what exactly can be going 
+wrong and how to fix it.
 
-Sure, I understand that ideally locks protect data, not operations.
-But I think maybe you're missing my point. Almost every lock, even at
-inception, is somewhat optimized; otherwise, every datum would have its
-own lock. Eliminating overlapping locks is a common optimization in stable
-code.
+To help a bit with looking for a fix, in one of the tests the first 4144 
+bytes have been received correctly, which = 4096 (DMA buffer size) + 32 
+(UART FIFO size) + 16 (half UART FIFO size). Then 45 bytes went lost (3 * 
+15?), then reception resumed correctly.
 
-In this case, an already broken bit of code is just only still broken.
-buf->lock is also fairly simple to break apart (although I don't want to
-because of the performance hit) which is not characteristic of locks
-which protect operations.
+Thanks
+Guennadi
 
+On Mon, 9 Dec 2013, Guennadi Liakhovetski wrote:
 
->> Firewire, which is capable of sustained throughput in excess of 40MB/sec,
->> struggles to get over 5MB/sec through the tty layer. [And drm output
->> is orders-of-magnitude slower than that, which is just sad...]
->
-> And what protocols do you care about 5MB/second - n_tty - no ? For the
-> high speed protocols you are trying to fix a lost cause. By the time
-> we've gone piddling around with tty buffers and serialized tty queues
-> firing bytes through tasks and the like you already lost.
->
-> For drm I assume you mean the framebuffer console logic ? Last time I
-> benched that except for the Poulsbo it was bottlenecked on the GPU - not
-> that I can type at 5MB/second anyway. Not that fixing the performance of
-> the various bits wouldn't be a good thing too especially on the output
-> end.
+> An earlier patch "serial: pl011: use DMA RX polling by default" enabled
+> DMA Rx polling on PL011 only in configurations, using platform data. A
+> simple extension of that patch also enables DMA Rx polling when no
+> platform data is used, e.g. in Device Tree configurations. In such cases
+> a default poll timeout and an automatically calculated poll rate will be
+> used.
+> 
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> ---
+>  drivers/tty/serial/amba-pl011.c |   39 ++++++++++++++++++---------------------
+>  1 files changed, 18 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index e593f8d..baecdfa 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -327,28 +327,25 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
+>  		dmaengine_slave_config(chan, &rx_conf);
+>  		uap->dmarx.chan = chan;
+>  
+> -		if (plat) {
+> -			/* Set poll rate if specified. */
+> -			if (plat->dma_rx_poll_rate) {
+> -				uap->dmarx.auto_poll_rate = false;
+> -				uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
+> -			} else {
+> -				/*
+> -				 * 100 ms defaults to poll rate if not
+> -				 * specified. This will be adjusted with
+> -				 * the baud rate at set_termios.
+> -				 */
+> -				uap->dmarx.auto_poll_rate = true;
+> -				uap->dmarx.poll_rate =  100;
+> -			}
+> -			/* 3 secs defaults poll_timeout if not specified. */
+> -			if (plat->dma_rx_poll_timeout)
+> -				uap->dmarx.poll_timeout =
+> -					plat->dma_rx_poll_timeout;
+> -			else
+> -				uap->dmarx.poll_timeout = 3000;
+> -		} else
+> +		/* Set poll rate if specified. */
+> +		if (plat && plat->dma_rx_poll_rate) {
+>  			uap->dmarx.auto_poll_rate = false;
+> +			uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
+> +		} else {
+> +			/*
+> +			 * 100 ms defaults to poll rate if not
+> +			 * specified. This will be adjusted with
+> +			 * the baud rate at set_termios.
+> +			 */
+> +			uap->dmarx.auto_poll_rate = true;
+> +			uap->dmarx.poll_rate =  100;
+> +		}
+> +		/* 3 secs defaults poll_timeout if not specified. */
+> +		if (plat && plat->dma_rx_poll_timeout)
+> +			uap->dmarx.poll_timeout =
+> +				plat->dma_rx_poll_timeout;
+> +		else
+> +			uap->dmarx.poll_timeout = 3000;
+>  
+>  		dev_info(uap->port.dev, "DMA channel RX %s\n",
+>  			 dma_chan_name(uap->dmarx.chan));
+> -- 
+> 1.7.2.5
+> 
+> 
 
-For drm, I actually mean GEM object deletion, which is typically fenced
-and thus appears to be GPU-bound. What's really needed there is deferred
-deletion, like kfree_rcu(), with partial synchronization on allocation
-failures only.
-
-I mostly care about output speed; unfortunately, that's the input side
-at the other end :)
-
->> While that would work, it's expensive extra locking in a path that 99.999%
->> of the time doesn't need it. I'd rather explore other solutions.
->
-> How about getting the high speed paths out of the whole tty buffer
-> layer ? Almost every line discipline can be a fastpath directly to the
-> network layer. If optimisation is the new obsession then we can cut the
-> crap entirely by optimising for networking not making it a slave of n_tty.
->
-> Starting at the beginning
->
-> we have locks on rx because
-> - we want serialized rx
-> - we have buffer lifetimes
-> - we have buffer queues
-> - we have loads of flow control parameters
->
-> Only n_tty needs the buffers (maybe some of irda but irda hasn't worked
-> for years afaik). IRQ receive paths are serialized (and as a bonus can be
-> pinned to a CPU). Flow control is n_tty stuff, everyone else simply fires
-> it at their network layer as fast as possible and net already does the
-> work.
->
-> Keep a single tty_buf in the tty for batching at any given time, and
-> private so no locks at all
->
-> Have a wrapper via
-> ld->receive(tty, buf)
->
-> which fires the tty_buf at the ldisc and allocates a new empty one
->
-> tty_queue_bytes(tty, buf, flags, len)
->
-> which adds to the buffer, and if full calls ld->queue and then carries on
-> the copying cycle
->
-> and
->
-> ld->receive_direct(tty, buf, flags, len)
->
-> which allows block mode devices to blast bytes directly at the queue (ie
-> all the USB 3G stuff, firewire, etc) without going via any additional
-> copies.
->
-> For almost all ldiscs
->
-> ld->receive would be
->
-> ld->receive_direct(tty, buf->buf, buf->flags, buf->len);
-> free buffer
->
-> For n_tty type stuff
->
-> ld->receive is basically much of tty_flip_buffer_push
->
-> ld->receive_direct allocates tty_buffers and copies into it
->
-> We may even be able to optimise some of the n_tty cases into the
-> fastpath afterwards (notably raw, no echo)
->
-> For anything receiving in blocks that puts us close to (but not quite at)
-> ethernet kinds of cleanness for network buffer delivery.
->
-> Worth me looking into ?
-
-I have to give this a lot more thought.
-
-The universality of n_tty is important, and costs real cycles on servers and
-such. It's not just about typing speed.
-
->> The clock/generation method seems like it might yield a lockless solution
->> for this problem, but maybe creates another one because the driver-side
->> would need to stamp the buffer (in essence, a flush could affect data
->> that has not yet been copied from the driver).
->
-> But it has arrived in the driver so might not matter. That requires a
-> little thought!
-
-This is my next experiment.
-
-Regards,
-Peter Hurley
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
