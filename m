@@ -1,130 +1,108 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: Re: [PATCH] serial: pl011: also enable DMA Rx polling with no platform
- data
-Date: Thu, 12 Dec 2013 10:18:14 +0100 (CET)
-Message-ID: <Pine.LNX.4.64.1312120923160.32185@axis700.grange>
-References: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
- <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v3] serial: sh-sci: Fix warnings due to improper casts
+ and printk formats
+Date: Thu, 12 Dec 2013 22:15:21 +0900
+Message-ID: <20131212131520.GF30624@verge.net.au>
+References: <1386765631-1840-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Chanho Min <chanho.min@lge.com>, Phil Edworthy <phil@edworthys.org>, linux-serial@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1386765631-1840-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-An addendum to this patch, that might well lead to dropping it and, 
-possibly, doing the opposite - removing the DMA Rx polling completely. 
-This patch was a logical continuation of the referenced below patch from 
-Linus W. It doesn't make matters worse on its own, it just unifies the two 
-cases - with platform data and with DT. However, after fixing other issues 
-with my set up, it has been identified, that this polling is actually 
-causing problems, rather than fixing any. In our set up we don't use the 
-"single character DMA transfer request line," but the burst DMA request 
-line, which means, a DMA request is only activated, when a watermark is 
-reached. And as soon as DMA picks up data from the FIFO to drop below the 
-threshold, the request line is deactivated again. This means, if less than 
-a complete DMA buffer of data is received, "threshold - 1" (15 in our 
-case) bytes will stay in UART FIFO, causing an Rx timeout interrupt, which 
-will pick those 15 bytes up and deliver the data to the tty layer. All 
-works beautifully.
-
-Whereas with polling we get data loss and corruption. This isn't my top 
-priority at the moment to investigate and fix this. Please, feel free to 
-decide whether to take this patch to unify driver's behaviour with and 
-without DT, or to drop it to at least give some configurations a chance to 
-work correctly, or maybe someone has an idea what exactly can be going 
-wrong and how to fix it.
-
-To help a bit with looking for a fix, in one of the tests the first 4144 
-bytes have been received correctly, which = 4096 (DMA buffer size) + 32 
-(UART FIFO size) + 16 (half UART FIFO size). Then 45 bytes went lost (3 * 
-15?), then reception resumed correctly.
-
-Thanks
-Guennadi
-
-On Mon, 9 Dec 2013, Guennadi Liakhovetski wrote:
-
-> An earlier patch "serial: pl011: use DMA RX polling by default" enabled
-> DMA Rx polling on PL011 only in configurations, using platform data. A
-> simple extension of that patch also enables DMA Rx polling when no
-> platform data is used, e.g. in Device Tree configurations. In such cases
-> a default poll timeout and an automatically calculated poll rate will be
-> used.
+On Wed, Dec 11, 2013 at 01:40:31PM +0100, Laurent Pinchart wrote:
+> Use the %zu and %pad printk specifiers to print size_t and dma_addr_t
+> variables, and cast pointers to uintptr_t instead of unsigned int where
+> applicable. This fixes warnings on platforms where pointers and/or
+> dma_addr_t have a different size than int.
 > 
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Thanks, I will queue this up.
+
 > ---
->  drivers/tty/serial/amba-pl011.c |   39 ++++++++++++++++++---------------------
->  1 files changed, 18 insertions(+), 21 deletions(-)
+>  drivers/tty/serial/sh-sci.c | 19 ++++++++++---------
+>  1 file changed, 10 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index e593f8d..baecdfa 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -327,28 +327,25 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
->  		dmaengine_slave_config(chan, &rx_conf);
->  		uap->dmarx.chan = chan;
+> This patch depends on "vsprintf: add %pad extension for dma_addr_t use" that
+> should make it to v3.14.
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 7d8103c..6e5ce62 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -557,7 +557,7 @@ static inline int sci_rxd_in(struct uart_port *port)
+>  		return 1;
 >  
-> -		if (plat) {
-> -			/* Set poll rate if specified. */
-> -			if (plat->dma_rx_poll_rate) {
-> -				uap->dmarx.auto_poll_rate = false;
-> -				uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
-> -			} else {
-> -				/*
-> -				 * 100 ms defaults to poll rate if not
-> -				 * specified. This will be adjusted with
-> -				 * the baud rate at set_termios.
-> -				 */
-> -				uap->dmarx.auto_poll_rate = true;
-> -				uap->dmarx.poll_rate =  100;
-> -			}
-> -			/* 3 secs defaults poll_timeout if not specified. */
-> -			if (plat->dma_rx_poll_timeout)
-> -				uap->dmarx.poll_timeout =
-> -					plat->dma_rx_poll_timeout;
-> -			else
-> -				uap->dmarx.poll_timeout = 3000;
-> -		} else
-> +		/* Set poll rate if specified. */
-> +		if (plat && plat->dma_rx_poll_rate) {
->  			uap->dmarx.auto_poll_rate = false;
-> +			uap->dmarx.poll_rate = plat->dma_rx_poll_rate;
-> +		} else {
-> +			/*
-> +			 * 100 ms defaults to poll rate if not
-> +			 * specified. This will be adjusted with
-> +			 * the baud rate at set_termios.
-> +			 */
-> +			uap->dmarx.auto_poll_rate = true;
-> +			uap->dmarx.poll_rate =  100;
-> +		}
-> +		/* 3 secs defaults poll_timeout if not specified. */
-> +		if (plat && plat->dma_rx_poll_timeout)
-> +			uap->dmarx.poll_timeout =
-> +				plat->dma_rx_poll_timeout;
-> +		else
-> +			uap->dmarx.poll_timeout = 3000;
+>  	/* Cast for ARM damage */
+> -	return !!__raw_readb((void __iomem *)s->cfg->port_reg);
+> +	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+>  }
 >  
->  		dev_info(uap->port.dev, "DMA channel RX %s\n",
->  			 dma_chan_name(uap->dmarx.chan));
+>  /* ********************************************************************** *
+> @@ -1309,7 +1309,7 @@ static int sci_dma_rx_push(struct sci_port *s, size_t count)
+>  	}
+>  
+>  	if (room < count)
+> -		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
+> +		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+>  			 count - room);
+>  	if (!room)
+>  		return room;
+> @@ -1442,7 +1442,7 @@ static void work_fn_rx(struct work_struct *work)
+>  		int count;
+>  
+>  		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+> -		dev_dbg(port->dev, "Read %u bytes with cookie %d\n",
+> +		dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+>  			sh_desc->partial, sh_desc->cookie);
+>  
+>  		spin_lock_irqsave(&port->lock, flags);
+> @@ -1691,16 +1691,17 @@ static void sci_request_dma(struct uart_port *port)
+>  		s->chan_tx = chan;
+>  		sg_init_table(&s->sg_tx, 1);
+>  		/* UART circular tx buffer is an aligned page. */
+> -		BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
+> +		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+>  		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+> -			    UART_XMIT_SIZE, (int)port->state->xmit.buf & ~PAGE_MASK);
+> +			    UART_XMIT_SIZE,
+> +			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+>  		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
+>  		if (!nent)
+>  			sci_tx_dma_release(s, false);
+>  		else
+> -			dev_dbg(port->dev, "%s: mapped %d@%p to %x\n", __func__,
+> -				sg_dma_len(&s->sg_tx),
+> -				port->state->xmit.buf, sg_dma_address(&s->sg_tx));
+> +			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
+> +				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
+> +				&sg_dma_address(&s->sg_tx));
+>  
+>  		s->sg_len_tx = nent;
+>  
+> @@ -1740,7 +1741,7 @@ static void sci_request_dma(struct uart_port *port)
+>  
+>  			sg_init_table(sg, 1);
+>  			sg_set_page(sg, virt_to_page(buf[i]), s->buf_len_rx,
+> -				    (int)buf[i] & ~PAGE_MASK);
+> +				    (uintptr_t)buf[i] & ~PAGE_MASK);
+>  			sg_dma_address(sg) = dma[i];
+>  		}
+>  
 > -- 
-> 1.7.2.5
+> Regards,
 > 
+> Laurent Pinchart
 > 
-
----
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
