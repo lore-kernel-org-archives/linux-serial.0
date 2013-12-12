@@ -1,64 +1,39 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 00/31] ARM: tegra: use common reset and DMA bindings
-Date: Wed, 11 Dec 2013 17:11:44 -0700
-Message-ID: <52A8FF40.6000809@wwwdotorg.org>
-References: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: Re: [PATCH] serial: 8250_dw: Fix LCR workaround regression
+Date: Wed, 11 Dec 2013 17:00:15 -0800
+Message-ID: <CAAYSxhonv=zvhVJwM2s8ANFZp24=KjmB=C5zm7gcN9yg+wVzhQ@mail.gmail.com>
+References: <1386714484-30251-1-git-send-email-james@albanarts.com>
+	<20131211140014.GF28456@xps8300>
+	<CAAYSxhr10XqQdQrvGf3Ez6e4LSbvmc0J-=yRgUePVEcd93e5wQ@mail.gmail.com>
+	<2515351.7napg2VnCT@radagast>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1384548866-13141-1-git-send-email-swarren@wwwdotorg.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: swarren@wwwdotorg.org
-Cc: Mark Rutland <mark.rutland@arm.com>, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, linux-i2c@vger.kernel.org, ac100@lists.launchpad.net, devel@driverdev.osuosl.org, Stephen Warren <swarren@nvidia.com>, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, =?UTF-8?B?VGVyamUgQmVyZ3N0csO2bQ==?= <tbergstrom@nvidia.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <rob.herring@calxeda.com>, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Mike Turquette <mturquette@linaro.org>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org, treding@nvidia.com
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:40295 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750894Ab3LLBAQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 11 Dec 2013 20:00:16 -0500
+Received: by mail-ob0-f174.google.com with SMTP id wn1so7881285obc.33
+        for <linux-serial@vger.kernel.org>; Wed, 11 Dec 2013 17:00:15 -0800 (PST)
+In-Reply-To: <2515351.7napg2VnCT@radagast>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: James Hogan <james.hogan@imgtec.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Gregory Clement <gregory.clement@free-electrons.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Lior Amsalem <alior@marvell.com>, Jason Cooper <jason@lakedaemon.net>, Jiri Slaby <jslaby@suse.cz>, Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Matt Porter <matt.porter@linaro.org>, Markus Mayer <markus.mayer@linaro.org>
 
-On 11/15/2013 01:53 PM, Stephen Warren wrote:
-> From: Stephen Warren <swarren@nvidia.com>
-> 
-> This series implements a common reset framework driver for Tegra, and
-> updates all relevant Tegra drivers to use it. It also removes the custom
-> DMA bindings and replaced them with the standard DMA DT bindings.
-> 
-> Historically, the Tegra clock driver has exported a custom API for module
-> reset. This series removes that API, and transitions DT and drivers to
-> the new reset framework.
-> 
-> The custom API used a "struct clk" to identify which module to reset, and
-> consequently some DT bindings and drivers required clocks to be provided
-> where they really needed just a reset identifier instead. Due to this
-> known deficiency, I have always considered most Tegra bindings to be
-> unstable. This series removes this excuse for instability, although I
-> still consider some Tegra bindings unstable due to the need to convert to
-> the common DMA bindings.
-> 
-> Historically, Tegra DMA channels have been represented in DT using a
-> custom nvidia,dma-request-selector property. Now that standard DMA DT
-> bindings exist, convert all Tegra bindings, DTs, and drivers to use the
-> standard instead.
-> 
-> This series makes a DT-ABI-incompatible change to:
-> - Require reset specifiers in DT where relevant.
-> - Require standard DMA specifiers.
-> - Remove clock specifiers from DT where they were only needed for reset.
-> - Remove legacy DMA specifier properties.
-> 
-> I anticipate merging this whole series into the Tegra and arm-soc trees
-> as its own branch, due to internal dependencies. This branch will be
-> stable and can then be merged into any other subsystem trees should any
-> conflicts arise.
-> 
-> This series depends on Peter's Tegra clock driver rework, available at
-> git://nv-tegra.nvidia.com/user/pdeschrijver/linux tegra-clk-tegra124-0
-> (or whatever version of that gets included in 3.14)
+On Wed, Dec 11, 2013 at 1:05 PM, James Hogan <james.hogan@imgtec.com> wrote:
+> On Wednesday 11 December 2013 13:00:33 Tim Kryger wrote:
 
-I've applied this series (and pulled in the DMA/ASoC/clk dependencies
-required) to Tegra's for-3.14/dmas-resets-rework branch.
+>> DT declared DW UARTs don't run autoconfig and don't see this issue as
+>> far as I know.
+
+> Thanks for the extra description. FYI, I was instantiating DW UART from DT
+> when I saw the problem.
+
+You are right.  It is a little more nuanced.
+
+The regression will also appear for DT declared UARTs if they were
+configured without FIFOs or with UART_ADD_ENCODED_PARAMS = 0.
+
+-Tim
