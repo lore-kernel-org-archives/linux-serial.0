@@ -1,331 +1,105 @@
-From: Sergei Ianovich <ynvich@gmail.com>
-Subject: [PATCH v2 10/16] serial: support for 16550A serial ports on LP-8x4x
-Date: Fri, 13 Dec 2013 06:27:19 +0400
-Message-ID: <1386901645-28895-11-git-send-email-ynvich@gmail.com>
-References: <1386543229-1542-1-git-send-email-ynvich@gmail.com>
- <1386901645-28895-1-git-send-email-ynvich@gmail.com>
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1386901645-28895-1-git-send-email-ynvich@gmail.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Sergei Ianovich <ynvich@gmail.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Landley <rob@landley.net>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Paul Bolle <pebolle@tiscali.nl>, James Cameron <quozl@laptop.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH] pci/checkpatch: Deprecate DEFINE_PCI_DEVICE_TABLE
+Date: Fri, 13 Dec 2013 11:39:05 -0700
+Message-ID: <20131213183905.GA6746@google.com>
+References: <1385617213.12210.5.camel@joe-AO722>
+ <20131128055328.GA565@kroah.com>
+ <1385619863.12210.14.camel@joe-AO722>
+ <529C026E.2000302@roeck-us.net>
+ <000f01ceef11$a14acf00$e3e06d00$%han@samsung.com>
+ <529C04C7.9050506@roeck-us.net>
+ <001001ceef13$7fa3ee70$7eebcb50$%han@samsung.com>
+ <1385963295.2680.2.camel@joe-AO722>
+ <529C6495.3020305@southpole.se>
+ <1386006217.2680.13.camel@joe-AO722>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:57252 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753228Ab3LMSjL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 13 Dec 2013 13:39:11 -0500
+Received: by mail-pd0-f178.google.com with SMTP id y10so2822837pdj.23
+        for <linux-serial@vger.kernel.org>; Fri, 13 Dec 2013 10:39:10 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <1386006217.2680.13.camel@joe-AO722>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Joe Perches <joe@perches.com>
+Cc: Jonas Bonn <jonas@southpole.se>, Jingoo Han <jg1.han@samsung.com>, 'Guenter Roeck' <linux@roeck-us.net>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Andy Whitcroft' <apw@canonical.com>, linux-serial@vger.kernel.org
 
-The patch adds support for 3 additional LP-8x4x built-in serial
-ports.
+On Mon, Dec 02, 2013 at 09:43:37AM -0800, Joe Perches wrote:
+> Prefer use of the direct definition of struct pci_device_id
+> instead of indirection via macro DEFINE_PCI_DEVICE_TABLE.
+> 
+> Update the PCI documentation to deprecate DEFINE_PCI_DEVICE_TABLE.
+> Update checkpatch adding --fix option.
+> 
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-The device can also host up to 8 extension cards with 4 serial ports
-on each card for a total of 35 ports. However, I don't have
-the hardware to test extension cards, so they are not supported, yet.
+Applied with Jingoo's ack for v3.14, thanks!
 
-Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
-CC: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
-   v0..v2
-   * register platform driver instead of platform device
-   * use device tree
-   * use devm helpers where possible
+Bjorn
 
- .../devicetree/bindings/serial/lp8x4x-serial.txt   |  35 +++++
- arch/arm/boot/dts/pxa27x-lp8x4x.dts                |  27 ++++
- arch/arm/configs/lp8x4x_defconfig                  |   1 +
- drivers/tty/serial/8250/8250_lp8x4x.c              | 162 +++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig                    |  12 ++
- drivers/tty/serial/8250/Makefile                   |   1 +
- 6 files changed, 238 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
- create mode 100644 drivers/tty/serial/8250/8250_lp8x4x.c
-
-diff --git a/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt b/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
-new file mode 100644
-index 0000000..eed4ffc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
-@@ -0,0 +1,35 @@
-+UART ports on ICP DAS LP-8x4x
-+
-+ICP DAS LP-8x4x contains three additional serial ports interfaced via
-+Analog Devices ADM213EA chips in addition to 3 serial ports on PXA CPU.
-+
-+Required properties:
-+- compatible : should be "icpdas,uart-lp8x4x"
-+
-+- reg : should provide 16 byte man IO memory region and 1 byte region for
-+	termios
-+
-+- interrupts : should provide interrupt
-+
-+- interrupt-parent : should provide a link to interrupt controller either
-+		     explicitly and implicitly from a parent node
-+
-+Examples (from pxa27x-lp8x4x.dts):
-+
-+		uart@17009050 {
-+			compatible = "icpdas,uart-lp8x4x";
-+			reg = <0x17009050 0x10
-+			       0x17009030 0x02>;
-+			interrupt-parent = <&fpga>;
-+			interrupts = <13>;
-+			status = "okay";
-+		};
-+
-+		uart@17009060 {
-+			compatible = "icpdas,uart-lp8x4x";
-+			reg = <0x17009060 0x10
-+			       0x17009032 0x02>;
-+			interrupt-parent = <&fpga>;
-+			interrupts = <14>;
-+			status = "okay";
-+		};
-diff --git a/arch/arm/boot/dts/pxa27x-lp8x4x.dts b/arch/arm/boot/dts/pxa27x-lp8x4x.dts
-index 2704760..4bcf400 100644
---- a/arch/arm/boot/dts/pxa27x-lp8x4x.dts
-+++ b/arch/arm/boot/dts/pxa27x-lp8x4x.dts
-@@ -129,5 +129,32 @@
- 			interrupt-controller;
- 			status = "okay";
- 		};
-+
-+		uart@17009050 {
-+			compatible = "icpdas,uart-lp8x4x";
-+			reg = <0x17009050 0x10
-+			       0x17009030 0x02>;
-+			interrupt-parent = <&fpga>;
-+			interrupts = <13>;
-+			status = "okay";
-+		};
-+
-+		uart@17009060 {
-+			compatible = "icpdas,uart-lp8x4x";
-+			reg = <0x17009060 0x10
-+			       0x17009032 0x02>;
-+			interrupt-parent = <&fpga>;
-+			interrupts = <14>;
-+			status = "okay";
-+		};
-+
-+		uart@17009070 {
-+			compatible = "icpdas,uart-lp8x4x";
-+			reg = <0x17009070 0x10
-+			       0x17009034 0x02>;
-+			interrupt-parent = <&fpga>;
-+			interrupts = <15>;
-+			status = "okay";
-+		};
- 	};
- };
-diff --git a/arch/arm/configs/lp8x4x_defconfig b/arch/arm/configs/lp8x4x_defconfig
-index 8fa871e..ea1a4b8 100644
---- a/arch/arm/configs/lp8x4x_defconfig
-+++ b/arch/arm/configs/lp8x4x_defconfig
-@@ -111,6 +111,7 @@ CONFIG_SERIAL_8250_EXTENDED=y
- CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_PXA=y
-+CONFIG_SERIAL_8250_LP8X4X=m
- CONFIG_HW_RANDOM=y
- CONFIG_I2C=m
- # CONFIG_I2C_COMPAT is not set
-diff --git a/drivers/tty/serial/8250/8250_lp8x4x.c b/drivers/tty/serial/8250/8250_lp8x4x.c
-new file mode 100644
-index 0000000..ec2f215
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_lp8x4x.c
-@@ -0,0 +1,162 @@
-+/*  linux/drivers/tty/serial/8250/8250_lp8x4x.c
-+ *
-+ *  Support for 16550A serial ports on ICP DAS LP-8x4x
-+ *
-+ *  Copyright (C) 2013 Sergei Ianovich <ynvich@gmail.com>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2 as
-+ *  published by the Free Software Foundation.
-+ */
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/module.h>
-+#include <linux/serial_8250.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+struct lp8x4x_serial_data {
-+	int			line;
-+	void			*ios_mem;
-+};
-+
-+static void lp8x4x_serial_set_termios(struct uart_port *port,
-+		struct ktermios *termios, struct ktermios *old)
-+{
-+	unsigned int len;
-+	unsigned int baud;
-+	struct lp8x4x_serial_data *data = port->private_data;
-+
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS5:
-+		len = 7;
-+		break;
-+	case CS6:
-+		len = 8;
-+		break;
-+	case CS7:
-+		len = 9;
-+		break;
-+	default:
-+	case CS8:
-+		len = 10;
-+		break;
-+	}
-+
-+	if (termios->c_cflag & CSTOPB)
-+		len++;
-+	if (termios->c_cflag & PARENB)
-+		len++;
-+	if (!(termios->c_cflag & PARODD))
-+		len++;
-+#ifdef CMSPAR
-+	if (termios->c_cflag & CMSPAR)
-+		len++;
-+#endif
-+
-+	len -= 9;
-+	len &= 3;
-+	len <<= 3;
-+	/*
-+	 * Ask the core to calculate the divisor for us.
-+	 */
-+	baud = uart_get_baud_rate(port, termios, old,
-+				  port->uartclk / 16 / 0xffff,
-+				  port->uartclk / 16);
-+	switch (baud) {
-+	case 2400:
-+		len |= 1;
-+	case 4800:
-+		len |= 2;
-+	case 19200:
-+		len |= 4;
-+	case 38400:
-+		len |= 5;
-+	case 57600:
-+		len |= 6;
-+	case 115200:
-+		len |= 7;
-+	case 9600:
-+	default:
-+		len |= 3;
-+	};
-+	iowrite8(len, data->ios_mem);
-+
-+	serial8250_do_set_termios(port, termios, old);
-+}
-+
-+static struct of_device_id lp8x4x_serial_dt_ids[] = {
-+	{ .compatible = "icpdas,uart-lp8x4x", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, lp8x4x_serial_dt_ids);
-+
-+static int lp8x4x_serial_probe(struct platform_device *pdev)
-+{
-+	struct uart_8250_port uart = {};
-+	struct lp8x4x_serial_data *data;
-+	struct resource *mmres, *mires, *irqres;
-+	int ret;
-+
-+	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	mires = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	if (!mmres || !mires || !irqres)
-+		return -ENODEV;
-+
-+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->ios_mem = devm_ioremap_resource(&pdev->dev, mires);
-+	if (!data->ios_mem)
-+		return -EFAULT;
-+
-+	uart.port.iotype = UPIO_MEM;
-+	uart.port.mapbase = mmres->start;
-+	uart.port.iobase = mmres->start;
-+	uart.port.regshift = 1;
-+	uart.port.irq = irqres->start;
-+	uart.port.flags = UPF_IOREMAP;
-+	uart.port.dev = &pdev->dev;
-+	uart.port.uartclk = 14745600;
-+	uart.port.set_termios = lp8x4x_serial_set_termios;
-+	uart.port.private_data = data;
-+
-+	ret = serial8250_register_8250_port(&uart);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->line = ret;
-+
-+	platform_set_drvdata(pdev, data);
-+
-+	return 0;
-+}
-+
-+static int lp8x4x_serial_remove(struct platform_device *pdev)
-+{
-+	struct lp8x4x_serial_data *data = platform_get_drvdata(pdev);
-+
-+	serial8250_unregister_port(data->line);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver lp8x4x_serial_driver = {
-+	.probe          = lp8x4x_serial_probe,
-+	.remove         = lp8x4x_serial_remove,
-+
-+	.driver		= {
-+		.name	= "uart-lp8x4x",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = lp8x4x_serial_dt_ids,
-+	},
-+};
-+
-+module_platform_driver(lp8x4x_serial_driver);
-+
-+MODULE_AUTHOR("Sergei Ianovich");
-+MODULE_DESCRIPTION("8250 serial port module for LP-8x4x");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 81bd7c9..9fb0fbb 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -311,3 +311,15 @@ config SERIAL_PXA
- 	  can enable its onboard serial ports by enabling this option.
- 
- 	  If you choose M here, the module name will be 8250_pxa.
-+
-+config SERIAL_8250_LP8X4X
-+	tristate "Support 16550A ports on ICP DAS LP-8x4x"
-+	depends on OF && SERIAL_8250 && SERIAL_8250_MANY_PORTS && ARCH_PXA
-+	select LP8X4X_IRQ
-+	help
-+	  In addition to serial ports on PXA270 SoC, LP-8x4x has 1 dual
-+	  RS232/RS485 port, 1 RS485 port and 1 RS232 port.
-+
-+	  Say N here, unless you plan to run this kernel on a LP-8x4x system.
-+
-+	  If you choose M here, the module name will be 8250_lp8x4x.
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index b7d1b61..7370bfb 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
- obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
- obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
- obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
-+obj-$(CONFIG_SERIAL_8250_LP8X4X)	+= 8250_lp8x4x.o
- obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
- obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
- obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
--- 
-1.8.4.3
-
+> ---
+>  Documentation/PCI/pci.txt |  6 ++++--
+>  include/linux/pci.h       |  3 +--
+>  scripts/checkpatch.pl     | 11 +++++++----
+>  3 files changed, 12 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/PCI/pci.txt b/Documentation/PCI/pci.txt
+> index 6f45856..9518006 100644
+> --- a/Documentation/PCI/pci.txt
+> +++ b/Documentation/PCI/pci.txt
+> @@ -123,8 +123,10 @@ initialization with a pointer to a structure describing the driver
+>  
+>  
+>  The ID table is an array of struct pci_device_id entries ending with an
+> -all-zero entry; use of the macro DEFINE_PCI_DEVICE_TABLE is the preferred
+> -method of declaring the table.  Each entry consists of:
+> +all-zero entry.  Definitions with static const are generally preferred.
+> +Use of the deprecated macro DEFINE_PCI_DEVICE_TABLE should be avoided.
+> +
+> +Each entry consists of:
+>  
+>  	vendor,device	Vendor and device ID to match (or PCI_ANY_ID)
+>  
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 1084a15..88674b0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -634,8 +634,7 @@ struct pci_driver {
+>   * DEFINE_PCI_DEVICE_TABLE - macro used to describe a pci device table
+>   * @_table: device table name
+>   *
+> - * This macro is used to create a struct pci_device_id array (a device table)
+> - * in a generic manner.
+> + * This macro is deprecated and should not be used in new code.
+>   */
+>  #define DEFINE_PCI_DEVICE_TABLE(_table) \
+>  	const struct pci_device_id _table[]
+> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> index 38be5d5..6f883f0 100755
+> --- a/scripts/checkpatch.pl
+> +++ b/scripts/checkpatch.pl
+> @@ -2643,10 +2643,13 @@ sub process {
+>  			}
+>  		}
+>  
+> -# check for declarations of struct pci_device_id
+> -		if ($line =~ /\bstruct\s+pci_device_id\s+\w+\s*\[\s*\]\s*\=\s*\{/) {
+> -			WARN("DEFINE_PCI_DEVICE_TABLE",
+> -			     "Use DEFINE_PCI_DEVICE_TABLE for struct pci_device_id\n" . $herecurr);
+> +# check for uses of DEFINE_PCI_DEVICE_TABLE
+> +		if ($line =~ /\bDEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=/) {
+> +			if (WARN("DEFINE_PCI_DEVICE_TABLE",
+> +				 "Prefer struct pci_device_id over deprecated DEFINE_PCI_DEVICE_TABLE\n" . $herecurr) &&
+> +			    $fix) {
+> +				$fixed[$linenr - 1] =~ s/\b(?:static\s+|)DEFINE_PCI_DEVICE_TABLE\s*\(\s*(\w+)\s*\)\s*=\s*/static const struct pci_device_id $1\[\] = /;
+> +			}
+>  		}
+>  
+>  # check for new typedefs, only function parameters and sparse annotations
+> 
+> 
