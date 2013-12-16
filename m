@@ -1,44 +1,60 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 0/2] serial: sh-sci: Prepare for CCF migration
-Date: Sat, 14 Dec 2013 10:00:45 +0900
-Message-ID: <20131214010045.GD12584@verge.net.au>
-References: <1385658706-20093-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1516614.DSSr7jaai1@avalon>
- <20131203184346.GB23280@kroah.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: re: TTY: switch tty_insert_flip_char
+Date: Mon, 16 Dec 2013 12:44:10 +0300
+Message-ID: <20131216094410.GA13831@elgon.mountain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:46875 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752363Ab3LNBAs (ORCPT
+Received: from userp1040.oracle.com ([156.151.31.81]:24263 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751112Ab3LPJoY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Dec 2013 20:00:48 -0500
+	Mon, 16 Dec 2013 04:44:24 -0500
 Content-Disposition: inline
-In-Reply-To: <20131203184346.GB23280@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
+To: jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Dec 03, 2013 at 10:43:46AM -0800, Greg Kroah-Hartman wrote:
-> On Mon, Dec 02, 2013 at 02:36:32PM +0100, Laurent Pinchart wrote:
-> > Hi Greg,
-> > 
-> > On Thursday 28 November 2013 18:11:44 Laurent Pinchart wrote:
-> > > Hello,
-> > > 
-> > > This patch set prepares the driver to CCF migration by replacing
-> > > clk_enable() and clk_disable() by clk_prepare_enable() and
-> > > clk_disable_unprepare() respectively (2/2). In order to do so it first
-> > > ensures that the clk_enable() and clk_disable() calls will only take place
-> > > from non-atomic context (1/2).
-> > > 
-> > > Greg, these patches are dependencies for a bunch of ARM patches that will go
-> > > through Simon's tree. Would you be fine if Simon merged all sh-sci patches
-> > > through his tree for v3.14 ?
-> > 
-> > Ping ?
-> 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Hello Jiri Slaby,
 
-Thanks, I will (finally) queue these up.
+The patch 92a19f9cec9a: "TTY: switch tty_insert_flip_char" from
+Jan 3, 2013, leads to the following static checker warning:
+	drivers/tty/serial/sc26xx.c:189 receive_chars()
+	error: potential NULL dereference 'tport'.
+
+drivers/tty/serial/sc26xx.c
+   139  static bool receive_chars(struct uart_port *port)
+   140  {
+   141          struct tty_port *tport = NULL;
+   142          int limit = 10000;
+   143          unsigned char ch;
+   144          char flag;
+   145          u8 status;
+   146  
+   147          /* FIXME what is this trying to achieve? */
+   148          if (port->state != NULL)                /* Unopened serial console */
+   149                  tport = &port->state->port;
+
+"tport" can be NULL if port->state is NULL.  It's not clear if this is
+actually possible.
+
+   150  
+
+[ snip ]
+
+   182  
+   183                  if (uart_handle_sysrq_char(port, ch))
+   184                          continue;
+   185  
+   186                  if (status & port->ignore_status_mask)
+   187                          continue;
+   188  
+   189                  tty_insert_flip_char(tport, ch, flag);
+   190          }
+   191          return !!tport;
+
+
+regards,
+dan carpenter
+
