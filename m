@@ -1,57 +1,108 @@
-From: Boris BREZILLON <b.brezillon@overkiz.com>
-Subject: [PATCH v2] tty/serial: at91: document clock properties
-Date: Tue, 17 Dec 2013 17:22:20 +0100
-Message-ID: <1387297340-8198-1-git-send-email-b.brezillon@overkiz.com>
-References: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Rob Landley <rob@landley.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>
-Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Boris BREZILLON <b.brezillon@overkiz.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: Bug in tty cooked mode kernel 3.12.3
+Date: Tue, 17 Dec 2013 09:30:52 -0800
+Message-ID: <20131217173052.GA15633@kroah.com>
+References: <20131107184607.eklhad@comcast.net>
+ <1386630367-4658-1-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1386630367-4658-1-git-send-email-peter@hurleysoftware.com>
+Sender: stable-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Karl Dahlke <eklhad@comcast.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Document the clock properties required by the at91 usart driver.
+On Mon, Dec 09, 2013 at 06:06:07PM -0500, Peter Hurley wrote:
+> On 12/07/2013 06:46 PM, Karl Dahlke wrote:
+> > This may have appeared in 3.9.11 with the changes to tty.
+> > Don't know; I just started running 3.12 from kernel.org.
+> > Perhaps nobody saw it before because nobody runs command line programs,
+> > we're all on desktops or x or whatever,
+> > and even those in the command line are still raw.
+> > bash is raw by default, but I run it cooked.
+> > You can supress its readline functions like this.
+> > 
+> > set +o emacs
+> > set +o vi
+> > set +o histexpand
+> > set +o history
+> > 
+> > That puts its tty back into cooked mode.
+> > 
+> > Come up in run level 3, command line mode,
+> > and bring up two consoles with bash in cooked mode as above.
+> > Set a simple prompt like this.
+> > 
+> > PS1='$ '
+> > 
+> > Switch to console 2 via alt-f2.
+> > Hit return.
+> > The cursor should drop to a new line then give you the $ prompt.
+> > But it puts the $ prompt next too the old one, then drops down
+> > to a blank line.
+> > The $ prompt and the crlf are out of sequence.
+> > Hit return a few more times and it will straighten itself out.
+> > Then switch back to console 1 alt-f1
+> > Hit return and the same bug,
+> > $ $
+> > 
+> > hit return a few more times to straighten it out.
+> > Switch back to console 2 and the same problem.
+> > For me it's repeatable.
+> > 
+> > It's also very confusing when I'm running other command line programs with cooked tty.
+> > For unknown reasons the crlf can come out at the wrong time,
+> > breaking lines or leaving lines together.
+> > My editor can run either way, so I've switched it over to readline mode
+> > and I haven't noticed any problems this way, yet.
+> > But I would prefer the cooked mode.
+> > 
+> > I looked through MAINTAINERS but couldn't find
+> > a clear maintainer for drivers/tty/tty*.c
+> > Please forward this to the appropriate people.
+> 
+> Thanks for the report, Karl.
+> 
+> Please test the patch below (requires
+> commit 39434abd942c8e4b9c14c06a03b3245beaf8467f,
+> 'n_tty: Fix missing newline echo').
+> This should fix the 'newline output after the new prompt' problem.
+> 
+> Note however that the other output order you observe is correct:
+> you press enter, a newline is echoed to terminal which mixes
+> with program output, the program ends, and the cooked mode
+> shell outputs an extra prompt because it reads a newline (which
+> the program did not read).
+> 
+> Regards,
+> Peter Hurley
+> 
+> --- >% ---
+> From: Peter Hurley <peter@hurleysoftware.com>
+> Subject: [PATCH] n_tty: Fix apparent order of echoed output
+> 
+> With block processing of echoed output, observed output order is still
+> required. Push completed echoes and echo commands prior to output.
+> 
+> Introduce echo_mark echo buffer index, which tracks completed echo
+> commands; ie., those submitted via commit_echoes but which may not
+> have been committed. Ensure that completed echoes are output prior
+> to subsequent terminal writes in process_echoes().
+> 
+> Fixes newline/prompt output order in cooked mode shell.
+> 
+> Cc: <stable@vger.kernel.org> # 3.12.x : 39434ab n_tty: Fix missing newline echo
+> Reported-by: Karl Dahlke <eklhad@comcast.net>
+> Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 
-Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
----
-Changes since v1:
- - fix commit message
+Do you want me to queue this up for 3.13-final, or have I already?
 
- .../devicetree/bindings/serial/atmel-usart.txt     |    7 +++++++
- 1 file changed, 7 insertions(+)
+thanks,
 
-diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-index 2191dcb..9c5d19a 100644
---- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
-+++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-@@ -6,6 +6,9 @@ Required properties:
-   additional mode or an USART new feature.
- - reg: Should contain registers location and length
- - interrupts: Should contain interrupt
-+- clock-names: tuple listing input clock names.
-+	Required elements: "usart"
-+- clocks: phandles to input clocks.
- 
- Optional properties:
- - atmel,use-dma-rx: use of PDC or DMA for receiving data
-@@ -26,6 +29,8 @@ Example:
- 		compatible = "atmel,at91sam9260-usart";
- 		reg = <0xfff8c000 0x4000>;
- 		interrupts = <7>;
-+		clocks = <&usart0_clk>;
-+		clock-names = "usart";
- 		atmel,use-dma-rx;
- 		atmel,use-dma-tx;
- 	};
-@@ -35,6 +40,8 @@ Example:
- 		compatible = "atmel,at91sam9260-usart";
- 		reg = <0xf001c000 0x100>;
- 		interrupts = <12 4 5>;
-+		clocks = <&usart0_clk>;
-+		clock-names = "usart";
- 		atmel,use-dma-rx;
- 		atmel,use-dma-tx;
- 		dmas = <&dma0 2 0x3>,
--- 
-1.7.9.5
-
+greg k-h
