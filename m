@@ -1,45 +1,115 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: pl011: also enable DMA Rx polling with no
- platform data
-Date: Tue, 17 Dec 2013 09:34:14 -0800
-Message-ID: <20131217173414.GB15633@kroah.com>
-References: <1385631664-32607-1-git-send-email-linus.walleij@linaro.org>
- <Pine.LNX.4.64.1312091229550.30018@axis700.grange>
- <Pine.LNX.4.64.1312120923160.32185@axis700.grange>
- <CACRpkdZ2n64EnVaB81bo578jmMzmW+OMGjehVTO=7Pa1zBGAvA@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Bug in tty cooked mode kernel 3.12.3
+Date: Tue, 17 Dec 2013 12:46:19 -0500
+Message-ID: <52B08DEB.5050304@hurleysoftware.com>
+References: <20131107184607.eklhad@comcast.net> <1386630367-4658-1-git-send-email-peter@hurleysoftware.com> <20131217173052.GA15633@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:53536 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754318Ab3LQReO (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:47075 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753798Ab3LQRq0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Dec 2013 12:34:14 -0500
-Content-Disposition: inline
-In-Reply-To: <CACRpkdZ2n64EnVaB81bo578jmMzmW+OMGjehVTO=7Pa1zBGAvA@mail.gmail.com>
+	Tue, 17 Dec 2013 12:46:26 -0500
+In-Reply-To: <20131217173052.GA15633@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Guennadi Liakhovetski <g.liakhovetski@gmx.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jongsung Kim <neidhard.kim@lge.com>, Chanho Min <chanho.min@lge.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <rmk+kernel@arm.linux.org.uk>, Phil Edworthy <phil@edworthys.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Karl Dahlke <eklhad@comcast.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org
 
-On Thu, Dec 12, 2013 at 02:24:37PM +0100, Linus Walleij wrote:
-> On Thu, Dec 12, 2013 at 10:18 AM, Guennadi Liakhovetski
-> <g.liakhovetski@gmx.de> wrote:
-> 
-> > An addendum to this patch, that might well lead to dropping it and,
-> > possibly, doing the opposite - removing the DMA Rx polling completely.
-> 
-> I agree with your reasoning, but not with dropping the Rx code
-> altogether. However we should also drop my patch so we restore
-> the opt-in-only characteristic until we can rootcause this.
-> 
-> Greg can you please drop or revert
-> commit 17438217a6f5e33d920ed3821a4b857311cc2872
-> "serial: pl011: use DMA RX polling by default"
-> from the TTY tree until this has been sorted out?
+On 12/17/2013 12:30 PM, Greg Kroah-Hartman wrote:
+> On Mon, Dec 09, 2013 at 06:06:07PM -0500, Peter Hurley wrote:
+>> On 12/07/2013 06:46 PM, Karl Dahlke wrote:
+>>> This may have appeared in 3.9.11 with the changes to tty.
+>>> Don't know; I just started running 3.12 from kernel.org.
+>>> Perhaps nobody saw it before because nobody runs command line programs,
+>>> we're all on desktops or x or whatever,
+>>> and even those in the command line are still raw.
+>>> bash is raw by default, but I run it cooked.
+>>> You can supress its readline functions like this.
+>>>
+>>> set +o emacs
+>>> set +o vi
+>>> set +o histexpand
+>>> set +o history
+>>>
+>>> That puts its tty back into cooked mode.
+>>>
+>>> Come up in run level 3, command line mode,
+>>> and bring up two consoles with bash in cooked mode as above.
+>>> Set a simple prompt like this.
+>>>
+>>> PS1='$ '
+>>>
+>>> Switch to console 2 via alt-f2.
+>>> Hit return.
+>>> The cursor should drop to a new line then give you the $ prompt.
+>>> But it puts the $ prompt next too the old one, then drops down
+>>> to a blank line.
+>>> The $ prompt and the crlf are out of sequence.
+>>> Hit return a few more times and it will straighten itself out.
+>>> Then switch back to console 1 alt-f1
+>>> Hit return and the same bug,
+>>> $ $
+>>>
+>>> hit return a few more times to straighten it out.
+>>> Switch back to console 2 and the same problem.
+>>> For me it's repeatable.
+>>>
+>>> It's also very confusing when I'm running other command line programs with cooked tty.
+>>> For unknown reasons the crlf can come out at the wrong time,
+>>> breaking lines or leaving lines together.
+>>> My editor can run either way, so I've switched it over to readline mode
+>>> and I haven't noticed any problems this way, yet.
+>>> But I would prefer the cooked mode.
+>>>
+>>> I looked through MAINTAINERS but couldn't find
+>>> a clear maintainer for drivers/tty/tty*.c
+>>> Please forward this to the appropriate people.
+>>
+>> Thanks for the report, Karl.
+>>
+>> Please test the patch below (requires
+>> commit 39434abd942c8e4b9c14c06a03b3245beaf8467f,
+>> 'n_tty: Fix missing newline echo').
+>> This should fix the 'newline output after the new prompt' problem.
+>>
+>> Note however that the other output order you observe is correct:
+>> you press enter, a newline is echoed to terminal which mixes
+>> with program output, the program ends, and the cooked mode
+>> shell outputs an extra prompt because it reads a newline (which
+>> the program did not read).
+>>
+>> Regards,
+>> Peter Hurley
+>>
+>> --- >% ---
+>> From: Peter Hurley <peter@hurleysoftware.com>
+>> Subject: [PATCH] n_tty: Fix apparent order of echoed output
+>>
+>> With block processing of echoed output, observed output order is still
+>> required. Push completed echoes and echo commands prior to output.
+>>
+>> Introduce echo_mark echo buffer index, which tracks completed echo
+>> commands; ie., those submitted via commit_echoes but which may not
+>> have been committed. Ensure that completed echoes are output prior
+>> to subsequent terminal writes in process_echoes().
+>>
+>> Fixes newline/prompt output order in cooked mode shell.
+>>
+>> Cc: <stable@vger.kernel.org> # 3.12.x : 39434ab n_tty: Fix missing newline echo
+>> Reported-by: Karl Dahlke <eklhad@comcast.net>
+>> Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>   drivers/tty/n_tty.c | 7 ++++++-
+>>   1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> Do you want me to queue this up for 3.13-final, or have I already?
 
-Now reverted.
+Yes, please queue this for 3.13.
 
-thanks,
+Regards,
+Peter Hurley
 
-greg k-h
