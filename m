@@ -1,60 +1,52 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: re: TTY: switch tty_insert_flip_char
-Date: Mon, 16 Dec 2013 12:44:10 +0300
-Message-ID: <20131216094410.GA13831@elgon.mountain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:24263 "EHLO
-	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751112Ab3LPJoY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 16 Dec 2013 04:44:24 -0500
-Content-Disposition: inline
-Sender: linux-serial-owner@vger.kernel.org
+From: Boris BREZILLON <b.brezillon@overkiz.com>
+Subject: [PATCH] tty/serial: at91: document clock properties
+Date: Tue, 17 Dec 2013 17:02:01 +0100
+Message-ID: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Rob Landley <rob@landley.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>
+Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Boris BREZILLON <b.brezillon@overkiz.com>
 List-Id: linux-serial@vger.kernel.org
-To: jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org
 
-Hello Jiri Slaby,
+Document the clock properties required by the at91 i2c bus driver.
 
-The patch 92a19f9cec9a: "TTY: switch tty_insert_flip_char" from
-Jan 3, 2013, leads to the following static checker warning:
-	drivers/tty/serial/sc26xx.c:189 receive_chars()
-	error: potential NULL dereference 'tport'.
+Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
+---
+ .../devicetree/bindings/serial/atmel-usart.txt     |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-drivers/tty/serial/sc26xx.c
-   139  static bool receive_chars(struct uart_port *port)
-   140  {
-   141          struct tty_port *tport = NULL;
-   142          int limit = 10000;
-   143          unsigned char ch;
-   144          char flag;
-   145          u8 status;
-   146  
-   147          /* FIXME what is this trying to achieve? */
-   148          if (port->state != NULL)                /* Unopened serial console */
-   149                  tport = &port->state->port;
-
-"tport" can be NULL if port->state is NULL.  It's not clear if this is
-actually possible.
-
-   150  
-
-[ snip ]
-
-   182  
-   183                  if (uart_handle_sysrq_char(port, ch))
-   184                          continue;
-   185  
-   186                  if (status & port->ignore_status_mask)
-   187                          continue;
-   188  
-   189                  tty_insert_flip_char(tport, ch, flag);
-   190          }
-   191          return !!tport;
-
-
-regards,
-dan carpenter
+diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+index 2191dcb..9c5d19a 100644
+--- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
++++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+@@ -6,6 +6,9 @@ Required properties:
+   additional mode or an USART new feature.
+ - reg: Should contain registers location and length
+ - interrupts: Should contain interrupt
++- clock-names: tuple listing input clock names.
++	Required elements: "usart"
++- clocks: phandles to input clocks.
+ 
+ Optional properties:
+ - atmel,use-dma-rx: use of PDC or DMA for receiving data
+@@ -26,6 +29,8 @@ Example:
+ 		compatible = "atmel,at91sam9260-usart";
+ 		reg = <0xfff8c000 0x4000>;
+ 		interrupts = <7>;
++		clocks = <&usart0_clk>;
++		clock-names = "usart";
+ 		atmel,use-dma-rx;
+ 		atmel,use-dma-tx;
+ 	};
+@@ -35,6 +40,8 @@ Example:
+ 		compatible = "atmel,at91sam9260-usart";
+ 		reg = <0xf001c000 0x100>;
+ 		interrupts = <12 4 5>;
++		clocks = <&usart0_clk>;
++		clock-names = "usart";
+ 		atmel,use-dma-rx;
+ 		atmel,use-dma-tx;
+ 		dmas = <&dma0 2 0x3>,
+-- 
+1.7.9.5
 
