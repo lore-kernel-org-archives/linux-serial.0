@@ -1,17 +1,22 @@
 From: Boris BREZILLON <b.brezillon@overkiz.com>
-Subject: [PATCH] tty/serial: at91: document clock properties
-Date: Tue, 17 Dec 2013 17:02:01 +0100
-Message-ID: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
+Subject: [PATCH v2] tty/serial: at91: document clock properties
+Date: Tue, 17 Dec 2013 17:22:20 +0100
+Message-ID: <1387297340-8198-1-git-send-email-b.brezillon@overkiz.com>
+References: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
 Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1387296121-7558-1-git-send-email-b.brezillon@overkiz.com>
 Sender: linux-doc-owner@vger.kernel.org
 To: Rob Landley <rob@landley.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>
 Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Boris BREZILLON <b.brezillon@overkiz.com>
 List-Id: linux-serial@vger.kernel.org
 
-Document the clock properties required by the at91 i2c bus driver.
+Document the clock properties required by the at91 usart driver.
 
 Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
 ---
+Changes since v1:
+ - fix commit message
+
  .../devicetree/bindings/serial/atmel-usart.txt     |    7 +++++++
  1 file changed, 7 insertions(+)
 
