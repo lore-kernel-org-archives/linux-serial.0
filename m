@@ -1,52 +1,41 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.13-rc5
-Date: Wed, 18 Dec 2013 09:42:33 -0800
-Message-ID: <20131218174233.GA32642@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 01/21 resend] serial: rewrite pxa2xx-uart to use
+ 8250_core
+Date: Wed, 18 Dec 2013 15:55:11 -0800
+Message-ID: <20131218235511.GD14527@kroah.com>
+References: <1386901645-28895-1-git-send-email-ynvich@gmail.com>
+ <1387309071-22382-1-git-send-email-ynvich@gmail.com>
+ <1387309071-22382-2-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37870 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751367Ab3LRXzK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 18 Dec 2013 18:55:10 -0500
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <1387309071-22382-2-git-send-email-ynvich@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sergei Ianovich <ynvich@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, James Cameron <quozl@laptop.org>, Zhou Zhu <zzhu3@marvell.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Arnd Bergmann <arnd@arndb.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
 
-The following changes since commit 319e2e3f63c348a9b66db4667efa73178e18b17d:
+On Tue, Dec 17, 2013 at 11:37:31PM +0400, Sergei Ianovich wrote:
+> pxa2xx-uart was a separate uart platform driver. It was declaring
+> the same device names and numbers as 8250 driver. As a result,
+> it was impossible to use 8250 driver on PXA SoCs.
+> 
+> Upon closer examination pxa2xx-uart turned out to be a clone of
+> 8250_core driver.
+> 
+> Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
+> Specification Update (April 19, 2010) is dropped. 8250_core reads
+> from FIFO immediately after checking DR bit in LSR.
+> 
+> Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Reviewed-by: James Cameron <quozl@laptop.org>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-  Linux 3.13-rc4 (2013-12-15 12:31:33 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.13-rc5
-
-for you to fetch changes up to c2db11eca089b60148ded7467b956a547e8a2ae0:
-
-  tty: xuartps: Properly guard sysrq specific code (2013-12-17 16:02:25 -0800)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 3.13-rc5
-
-Here are a few fixes for 3.13-rc5 that resolve a number of reported tty
-and serial driver issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-James Hogan (1):
-      serial: 8250_dw: Fix LCR workaround regression
-
-Mika Westerberg (1):
-      serial: 8250_dw: add new ACPI IDs
-
-Peter Hurley (2):
-      tty: Fix hang at ldsem_down_read()
-      n_tty: Fix apparent order of echoed output
-
-Soren Brinkmann (1):
-      tty: xuartps: Properly guard sysrq specific code
-
- drivers/tty/n_tty.c                |  7 ++++++-
- drivers/tty/serial/8250/8250_dw.c  |  8 ++++++--
- drivers/tty/serial/xilinx_uartps.c |  2 ++
- drivers/tty/tty_ldsem.c            | 16 +++++++++++++---
- 4 files changed, 27 insertions(+), 6 deletions(-)
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
