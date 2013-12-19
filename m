@@ -1,41 +1,42 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH RESEND] serial: Remove old SC26XX driver
-Date: Thu, 19 Dec 2013 10:21:04 -0800
-Message-ID: <20131219182104.GA923@kroah.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCBSRVNFTkRdIHNlcmlhbDogUmVtb3ZlIG9sZCBTQzI2WFgg?=
+ =?UTF-8?B?ZHJpdmVy?=
+Date: Thu, 19 Dec 2013 22:27:58 +0400
+Message-ID: <1387477678.352581860@f236.i.mail.ru>
 References: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
+ <20131219182104.GA923@kroah.com>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:44398 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753546Ab3LSSVC (ORCPT
+Received: from fallback4.mail.ru ([94.100.176.42]:36170 "EHLO
+	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753502Ab3LSS3b (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Dec 2013 13:21:02 -0500
-Content-Disposition: inline
-In-Reply-To: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
+	Thu, 19 Dec 2013 13:29:31 -0500
+Received: from f236.i.mail.ru (f236.i.mail.ru [94.100.178.216])
+	by fallback4.mail.ru (mPOP.Fallback_MX) with ESMTP id C5340144DAD
+	for <linux-serial@vger.kernel.org>; Thu, 19 Dec 2013 22:28:10 +0400 (MSK)
+In-Reply-To: <20131219182104.GA923@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>
 
-On Tue, Dec 10, 2013 at 06:47:04PM +0400, Alexander Shiyan wrote:
-> New driver for NXP (Philips) UART ICs was introduced in September 2012.
-> Old driver no longer used anywhere, this patch removes it.
-> 
-> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
-> ---
->  drivers/tty/serial/Kconfig  |  18 --
->  drivers/tty/serial/Makefile |   1 -
->  drivers/tty/serial/sc26xx.c | 749 --------------------------------------------
->  3 files changed, 768 deletions(-)
->  delete mode 100644 drivers/tty/serial/sc26xx.c
-
-What kernel are you making this patch against?  This still doesn't
-apply, and no one has touched this driver since 3.12-rc1 in my trees...
-
-Please redo this patch against the latest kernel version so that it can
-be properly applied.
-
-thanks,
-
-greg k-h
+PiBPbiBUdWUsIERlYyAxMCwgMjAxMyBhdCAwNjo0NzowNFBNICswNDAwLCBBbGV4YW5kZXIgU2hp
+eWFuIHdyb3RlOgo+ID4gTmV3IGRyaXZlciBmb3IgTlhQIChQaGlsaXBzKSBVQVJUIElDcyB3YXMg
+aW50cm9kdWNlZCBpbiBTZXB0ZW1iZXIgMjAxMi4KPiA+IE9sZCBkcml2ZXIgbm8gbG9uZ2VyIHVz
+ZWQgYW55d2hlcmUsIHRoaXMgcGF0Y2ggcmVtb3ZlcyBpdC4KPiA+IAo+ID4gU2lnbmVkLW9mZi1i
+eTogQWxleGFuZGVyIFNoaXlhbiA8c2hjX3dvcmtAbWFpbC5ydT4KPiA+IC0tLQo+ID4gIGRyaXZl
+cnMvdHR5L3NlcmlhbC9LY29uZmlnICB8ICAxOCAtLQo+ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9N
+YWtlZmlsZSB8ICAgMSAtCj4gPiAgZHJpdmVycy90dHkvc2VyaWFsL3NjMjZ4eC5jIHwgNzQ5IC0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiAgMyBmaWxlcyBj
+aGFuZ2VkLCA3NjggZGVsZXRpb25zKC0pCj4gPiAgZGVsZXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMv
+dHR5L3NlcmlhbC9zYzI2eHguYwo+IAo+IFdoYXQga2VybmVsIGFyZSB5b3UgbWFraW5nIHRoaXMg
+cGF0Y2ggYWdhaW5zdD8gIFRoaXMgc3RpbGwgZG9lc24ndAo+IGFwcGx5LCBhbmQgbm8gb25lIGhh
+cyB0b3VjaGVkIHRoaXMgZHJpdmVyIHNpbmNlIDMuMTItcmMxIGluIG15IHRyZWVzLi4uCj4gCj4g
+UGxlYXNlIHJlZG8gdGhpcyBwYXRjaCBhZ2FpbnN0IHRoZSBsYXRlc3Qga2VybmVsIHZlcnNpb24g
+c28gdGhhdCBpdCBjYW4KPiBiZSBwcm9wZXJseSBhcHBsaWVkLgoKRXhhY3QgYXMgeW91IGFza2Vk
+IGJlZm9yZToKZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L2dy
+ZWdraC90dHkuZ2l0CnR0eS1uZXh0IGJyYW5jaAoKLS0tCg==
