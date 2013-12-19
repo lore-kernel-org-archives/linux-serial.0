@@ -1,50 +1,43 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v3 01/21 resend] serial: rewrite pxa2xx-uart to use
- 8250_core
-Date: Thu, 19 Dec 2013 13:05:02 +0200
-Message-ID: <20131219110502.GC20686@xps8300>
+Subject: Re: [PATCH v3 12/21] serial: support for 16550A serial ports on
+ LP-8x4x
+Date: Thu, 19 Dec 2013 13:18:48 +0200
+Message-ID: <20131219111848.GD20686@xps8300>
 References: <1386901645-28895-1-git-send-email-ynvich@gmail.com>
  <1387309071-22382-1-git-send-email-ynvich@gmail.com>
- <1387309071-22382-2-git-send-email-ynvich@gmail.com>
- <20131219085145.GB20686@xps8300>
- <1387445713.31516.30.camel@host5.omatika.ru>
- <1387447296.31516.37.camel@host5.omatika.ru>
+ <1387309071-22382-13-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:63661 "EHLO mga01.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:1061 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752165Ab3LSLFK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Dec 2013 06:05:10 -0500
+	id S1753172Ab3LSLSz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Dec 2013 06:18:55 -0500
 Content-Disposition: inline
-In-Reply-To: <1387447296.31516.37.camel@host5.omatika.ru>
+In-Reply-To: <1387309071-22382-13-git-send-email-ynvich@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Sergei Ianovich <ynvich@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, James Cameron <quozl@laptop.org>, Zhou Zhu <zzhu3@marvell.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Arnd Bergmann <arnd@arndb.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, James Cameron <quozl@laptop.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
-On Thu, Dec 19, 2013 at 02:01:36PM +0400, Sergei Ianovich wrote:
-> On Thu, 2013-12-19 at 13:35 +0400, Sergei Ianovich wrote:
-> > On Thu, 2013-12-19 at 10:51 +0200, Heikki Krogerus wrote:
-> > > I noticed one more thing. I'm sorry about commenting this late.
-> > > 
-> > > Since you set the type PORT_XSCALE, don's you want to use
-> > > UPF_FIXED_TYPE flag instead of the UPF_SKIP_TEST here? Otherwise the
-> > > type will just get overridden and autoconfig() will be executed.
-> > 
-> > UPF_FIXED_PORT was my first guess. However, it didn't work.
-> > 
-> > I've also tried to do ioremap in serial_pxa_probe instead of using
-> > UPF_IOREMAP. This didn't work as well.
-> 
-> I didn't clarify properly.
-> 
-> UPF_SKIP_TEST skips only the loopback test. This test could work on PXA,
-> but requires PXA-specific pre-initialization. There are more test after
-> the loopback one, which will fail if we are not on PXA. So I decided
-> that skipping it is easier than tricky rewriting of autoconfig().
+Hi,
 
-OK. So there is no problem here. Sorry about the noise.
+On Tue, Dec 17, 2013 at 11:37:42PM +0400, Sergei Ianovich wrote:
+> The patch adds support for 3 additional LP-8x4x built-in serial
+> ports.
+> 
+> The device can also host up to 8 extension cards with 4 serial ports
+> on each card for a total of 35 ports. However, I don't have
+> the hardware to test extension cards, so they are not supported, yet.
+> 
+> Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
+> CC: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+Looks OK to me, though normally I would prefer the arch code and the
+driver to be handled in separate patches. FWIW...
+
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
 
 Thanks,
 
