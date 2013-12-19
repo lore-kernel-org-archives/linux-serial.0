@@ -1,49 +1,853 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCBSRVNFTkRdIHNlcmlhbDogUmVtb3ZlIG9sZCBTQzI2WFgg?=
- =?UTF-8?B?ZHJpdmVy?=
-Date: Fri, 20 Dec 2013 00:00:51 +0400
-Message-ID: <1387483251.210379532@f290.i.mail.ru>
-References: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
- <1387481356.914448614@f290.i.mail.ru>
- <20131219194254.GA1443@kroah.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH RESEND] serial: Remove old SC26XX driver
+Date: Fri, 20 Dec 2013 00:02:50 +0400
+Message-ID: <1387483370-15510-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f290.i.mail.ru ([128.140.169.163]:42925 "EHLO f290.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755717Ab3LSUAy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Dec 2013 15:00:54 -0500
-In-Reply-To: <20131219194254.GA1443@kroah.com>
+Received: from fallback3.mail.ru ([94.100.176.58]:46720 "EHLO
+	fallback3.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756038Ab3LSUDa (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Dec 2013 15:03:30 -0500
+Received: from smtp12.mail.ru (smtp12.mail.ru [94.100.176.89])
+	by fallback3.mail.ru (mPOP.Fallback_MX) with ESMTP id BA8A1105BC505
+	for <linux-serial@vger.kernel.org>; Fri, 20 Dec 2013 00:03:10 +0400 (MSK)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-PiA+ID4gPiA+IE9uIFR1ZSwgRGVjIDEwLCAyMDEzIGF0IDA2OjQ3OjA0UE0gKzA0MDAsIEFsZXhh
-bmRlciBTaGl5YW4gd3JvdGU6Cj4gPiA+ID4gPiA+IE5ldyBkcml2ZXIgZm9yIE5YUCAoUGhpbGlw
-cykgVUFSVCBJQ3Mgd2FzIGludHJvZHVjZWQgaW4gU2VwdGVtYmVyIDIwMTIuCj4gPiA+ID4gPiA+
-IE9sZCBkcml2ZXIgbm8gbG9uZ2VyIHVzZWQgYW55d2hlcmUsIHRoaXMgcGF0Y2ggcmVtb3ZlcyBp
-dC4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRlciBTaGl5
-YW4gPHNoY193b3JrQG1haWwucnU+Cj4gPiA+ID4gPiA+IC0tLQo+ID4gPiA+ID4gPiAgZHJpdmVy
-cy90dHkvc2VyaWFsL0tjb25maWcgIHwgIDE4IC0tCj4gPiA+ID4gPiA+ICBkcml2ZXJzL3R0eS9z
-ZXJpYWwvTWFrZWZpbGUgfCAgIDEgLQo+ID4gPiA+ID4gPiAgZHJpdmVycy90dHkvc2VyaWFsL3Nj
-MjZ4eC5jIHwgNzQ5IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-Cj4gPiA+ID4gPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDc2OCBkZWxldGlvbnMoLSkKPiA+ID4gPiA+
-ID4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3R0eS9zZXJpYWwvc2MyNnh4LmMKPiA+ID4g
-PiA+IAo+ID4gPiA+ID4gV2hhdCBrZXJuZWwgYXJlIHlvdSBtYWtpbmcgdGhpcyBwYXRjaCBhZ2Fp
-bnN0PyAgVGhpcyBzdGlsbCBkb2Vzbid0Cj4gPiA+ID4gPiBhcHBseSwgYW5kIG5vIG9uZSBoYXMg
-dG91Y2hlZCB0aGlzIGRyaXZlciBzaW5jZSAzLjEyLXJjMSBpbiBteSB0cmVlcy4uLgo+ID4gPiA+
-ID4gCj4gPiA+ID4gPiBQbGVhc2UgcmVkbyB0aGlzIHBhdGNoIGFnYWluc3QgdGhlIGxhdGVzdCBr
-ZXJuZWwgdmVyc2lvbiBzbyB0aGF0IGl0IGNhbgo+ID4gPiA+ID4gYmUgcHJvcGVybHkgYXBwbGll
-ZC4KPiA+ID4gPiAKPiA+ID4gPiBFeGFjdCBhcyB5b3UgYXNrZWQgYmVmb3JlOgo+ID4gPiA+IGdp
-dDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9ncmVna2gvdHR5Lmdp
-dAo+ID4gPiA+IHR0eS1uZXh0IGJyYW5jaAo+ID4gPiAKPiA+ID4gTm9wZSwgZmFpbHMgdG8gYXBw
-bHkgdGhlcmUgOigKPiA+IAo+ID4gQ2FuIHRoaXMgcHJvYmxlbSBiZSB0aGUgcmVzdWx0IG9mIGEg
-b3B0aW9uICItRCIgZm9yICJnaXQgZm9ybWF0LXBhdGNoIj8KPiAKPiBJIGRvIG5vdCBrbm93LCBj
-YW4geW91IHRha2UgeW91ciBlbWFpbCBmcm9tIHRoZSBtYWlsaW5nIGxpc3QgYW5kIGFwcGx5Cj4g
-aXQgcHJvcGVybHkgdG8gdGhlIHRyZWUgdXNpbmcgJ2dpdCBhbScgb3IgZXZlbiAncGF0Y2ggLXAx
-Jz8gIEJvdGggb2YKPiB0aG9zZSBmYWlsIGZvciBtZS4KCk9LIGZvciBtZSwgZXhjZXB0IHJlbW92
-aW5nIGZpbGUuCkxldHMgdHJ5IHRvIGFwcGx5IHZlcnNpb24gd2l0aG91dCAiLUQiIG9wdGlvbi4g
-SSdsbCByZXNlbmQgaXQgc2hvcnRseS4KCi0tLQo=
+New driver for NXP (Philips) UART ICs was introduced in September 2012.
+Old driver no longer used anywhere, this patch removes it.
+
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/Kconfig  |  18 --
+ drivers/tty/serial/Makefile |   1 -
+ drivers/tty/serial/sc26xx.c | 749 ------------------------------------=
+--------
+ 3 files changed, 768 deletions(-)
+ delete mode 100644 drivers/tty/serial/sc26xx.c
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a3817ab..7fbbbad 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1146,31 +1146,13 @@ config SERIAL_QE
+ 	  This driver supports the QE serial ports on Freescale embedded
+ 	  PowerPC that contain a QUICC Engine.
+=20
+-config SERIAL_SC26XX
+-	tristate "SC2681/SC2692 serial port support"
+-	depends on SNI_RM
+-	select SERIAL_CORE
+-	help
+-	  This is a driver for the onboard serial ports of
+-	  older RM400 machines.
+-
+-config SERIAL_SC26XX_CONSOLE
+-	bool "Console on SC2681/SC2692 serial port"
+-	depends on SERIAL_SC26XX=3Dy
+-	select SERIAL_CORE_CONSOLE
+-	help
+-	  Support for Console on SC2681/SC2692 serial ports.
+-
+ config SERIAL_SCCNXP
+ 	tristate "SCCNXP serial port support"
+-	depends on !SERIAL_SC26XX
+ 	select SERIAL_CORE
+-	default n
+ 	help
+ 	  This selects support for an advanced UART from NXP (Philips).
+ 	  Supported ICs are SCC2681, SCC2691, SCC2692, SC28L91, SC28L92,
+ 	  SC28L202, SCC68681 and SCC68692.
+-	  Positioned as a replacement for the driver SC26XX.
+=20
+ config SERIAL_SCCNXP_CONSOLE
+ 	bool "Console on SCCNXP serial port"
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 3068c77..3680854 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -47,7 +47,6 @@ obj-$(CONFIG_SERIAL_M32R_SIO) +=3D m32r_sio.o
+ obj-$(CONFIG_SERIAL_MPSC) +=3D mpsc.o
+ obj-$(CONFIG_SERIAL_SB1250_DUART) +=3D sb1250-duart.o
+ obj-$(CONFIG_ETRAX_SERIAL) +=3D crisv10.o
+-obj-$(CONFIG_SERIAL_SC26XX) +=3D sc26xx.o
+ obj-$(CONFIG_SERIAL_SCCNXP) +=3D sccnxp.o
+ obj-$(CONFIG_SERIAL_JSM) +=3D jsm/
+ obj-$(CONFIG_SERIAL_TXX9) +=3D serial_txx9.o
+diff --git a/drivers/tty/serial/sc26xx.c b/drivers/tty/serial/sc26xx.c
+deleted file mode 100644
+index 887b4f7..0000000
+--- a/drivers/tty/serial/sc26xx.c
++++ /dev/null
+@@ -1,749 +0,0 @@
+-/*
+- * SC268xx.c: Serial driver for Philiphs SC2681/SC2692 devices.
+- *
+- * Copyright (C) 2006,2007 Thomas Bogend=C3=B6rfer (tsbogend@alpha.fra=
+nken.de)
+- */
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/errno.h>
+-#include <linux/tty.h>
+-#include <linux/tty_flip.h>
+-#include <linux/major.h>
+-#include <linux/circ_buf.h>
+-#include <linux/serial.h>
+-#include <linux/sysrq.h>
+-#include <linux/console.h>
+-#include <linux/spinlock.h>
+-#include <linux/slab.h>
+-#include <linux/delay.h>
+-#include <linux/init.h>
+-#include <linux/platform_device.h>
+-#include <linux/irq.h>
+-#include <linux/io.h>
+-
+-#warning "Please try migrate to use new driver SCCNXP and report the s=
+tatus" \
+-	 "in the linux-serial mailing list."
+-
+-#if defined(CONFIG_MAGIC_SYSRQ)
+-#define SUPPORT_SYSRQ
+-#endif
+-
+-#include <linux/serial_core.h>
+-
+-#define SC26XX_MAJOR         204
+-#define SC26XX_MINOR_START   205
+-#define SC26XX_NR            2
+-
+-struct uart_sc26xx_port {
+-	struct uart_port      port[2];
+-	u8     dsr_mask[2];
+-	u8     cts_mask[2];
+-	u8     dcd_mask[2];
+-	u8     ri_mask[2];
+-	u8     dtr_mask[2];
+-	u8     rts_mask[2];
+-	u8     imr;
+-};
+-
+-/* register common to both ports */
+-#define RD_ISR      0x14
+-#define RD_IPR      0x34
+-
+-#define WR_ACR      0x10
+-#define WR_IMR      0x14
+-#define WR_OPCR     0x34
+-#define WR_OPR_SET  0x38
+-#define WR_OPR_CLR  0x3C
+-
+-/* access common register */
+-#define READ_SC(p, r)        readb((p)->membase + RD_##r)
+-#define WRITE_SC(p, r, v)    writeb((v), (p)->membase + WR_##r)
+-
+-/* register per port */
+-#define RD_PORT_MRx 0x00
+-#define RD_PORT_SR  0x04
+-#define RD_PORT_RHR 0x0c
+-
+-#define WR_PORT_MRx 0x00
+-#define WR_PORT_CSR 0x04
+-#define WR_PORT_CR  0x08
+-#define WR_PORT_THR 0x0c
+-
+-/* SR bits */
+-#define SR_BREAK    (1 << 7)
+-#define SR_FRAME    (1 << 6)
+-#define SR_PARITY   (1 << 5)
+-#define SR_OVERRUN  (1 << 4)
+-#define SR_TXRDY    (1 << 2)
+-#define SR_RXRDY    (1 << 0)
+-
+-#define CR_RES_MR   (1 << 4)
+-#define CR_RES_RX   (2 << 4)
+-#define CR_RES_TX   (3 << 4)
+-#define CR_STRT_BRK (6 << 4)
+-#define CR_STOP_BRK (7 << 4)
+-#define CR_DIS_TX   (1 << 3)
+-#define CR_ENA_TX   (1 << 2)
+-#define CR_DIS_RX   (1 << 1)
+-#define CR_ENA_RX   (1 << 0)
+-
+-/* ISR bits */
+-#define ISR_RXRDYB  (1 << 5)
+-#define ISR_TXRDYB  (1 << 4)
+-#define ISR_RXRDYA  (1 << 1)
+-#define ISR_TXRDYA  (1 << 0)
+-
+-/* IMR bits */
+-#define IMR_RXRDY   (1 << 1)
+-#define IMR_TXRDY   (1 << 0)
+-
+-/* access port register */
+-static inline u8 read_sc_port(struct uart_port *p, u8 reg)
+-{
+-	return readb(p->membase + p->line * 0x20 + reg);
+-}
+-
+-static inline void write_sc_port(struct uart_port *p, u8 reg, u8 val)
+-{
+-	writeb(val, p->membase + p->line * 0x20 + reg);
+-}
+-
+-#define READ_SC_PORT(p, r)     read_sc_port(p, RD_PORT_##r)
+-#define WRITE_SC_PORT(p, r, v) write_sc_port(p, WR_PORT_##r, v)
+-
+-static void sc26xx_enable_irq(struct uart_port *port, int mask)
+-{
+-	struct uart_sc26xx_port *up;
+-	int line =3D port->line;
+-
+-	port -=3D line;
+-	up =3D container_of(port, struct uart_sc26xx_port, port[0]);
+-
+-	up->imr |=3D mask << (line * 4);
+-	WRITE_SC(port, IMR, up->imr);
+-}
+-
+-static void sc26xx_disable_irq(struct uart_port *port, int mask)
+-{
+-	struct uart_sc26xx_port *up;
+-	int line =3D port->line;
+-
+-	port -=3D line;
+-	up =3D container_of(port, struct uart_sc26xx_port, port[0]);
+-
+-	up->imr &=3D ~(mask << (line * 4));
+-	WRITE_SC(port, IMR, up->imr);
+-}
+-
+-static bool receive_chars(struct uart_port *port)
+-{
+-	struct tty_port *tport =3D NULL;
+-	int limit =3D 10000;
+-	unsigned char ch;
+-	char flag;
+-	u8 status;
+-
+-	/* FIXME what is this trying to achieve? */
+-	if (port->state !=3D NULL)		/* Unopened serial console */
+-		tport =3D &port->state->port;
+-
+-	while (limit-- > 0) {
+-		status =3D READ_SC_PORT(port, SR);
+-		if (!(status & SR_RXRDY))
+-			break;
+-		ch =3D READ_SC_PORT(port, RHR);
+-
+-		flag =3D TTY_NORMAL;
+-		port->icount.rx++;
+-
+-		if (unlikely(status & (SR_BREAK | SR_FRAME |
+-				       SR_PARITY | SR_OVERRUN))) {
+-			if (status & SR_BREAK) {
+-				status &=3D ~(SR_PARITY | SR_FRAME);
+-				port->icount.brk++;
+-				if (uart_handle_break(port))
+-					continue;
+-			} else if (status & SR_PARITY)
+-				port->icount.parity++;
+-			else if (status & SR_FRAME)
+-				port->icount.frame++;
+-			if (status & SR_OVERRUN)
+-				port->icount.overrun++;
+-
+-			status &=3D port->read_status_mask;
+-			if (status & SR_BREAK)
+-				flag =3D TTY_BREAK;
+-			else if (status & SR_PARITY)
+-				flag =3D TTY_PARITY;
+-			else if (status & SR_FRAME)
+-				flag =3D TTY_FRAME;
+-		}
+-
+-		if (uart_handle_sysrq_char(port, ch))
+-			continue;
+-
+-		if (status & port->ignore_status_mask)
+-			continue;
+-
+-		tty_insert_flip_char(tport, ch, flag);
+-	}
+-	return !!tport;
+-}
+-
+-static void transmit_chars(struct uart_port *port)
+-{
+-	struct circ_buf *xmit;
+-
+-	if (!port->state)
+-		return;
+-
+-	xmit =3D &port->state->xmit;
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+-		sc26xx_disable_irq(port, IMR_TXRDY);
+-		return;
+-	}
+-	while (!uart_circ_empty(xmit)) {
+-		if (!(READ_SC_PORT(port, SR) & SR_TXRDY))
+-			break;
+-
+-		WRITE_SC_PORT(port, THR, xmit->buf[xmit->tail]);
+-		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+-		port->icount.tx++;
+-	}
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(port);
+-}
+-
+-static irqreturn_t sc26xx_interrupt(int irq, void *dev_id)
+-{
+-	struct uart_sc26xx_port *up =3D dev_id;
+-	unsigned long flags;
+-	bool push;
+-	u8 isr;
+-
+-	spin_lock_irqsave(&up->port[0].lock, flags);
+-
+-	push =3D false;
+-	isr =3D READ_SC(&up->port[0], ISR);
+-	if (isr & ISR_TXRDYA)
+-	    transmit_chars(&up->port[0]);
+-	if (isr & ISR_RXRDYA)
+-	    push =3D receive_chars(&up->port[0]);
+-
+-	spin_unlock(&up->port[0].lock);
+-
+-	if (push)
+-		tty_flip_buffer_push(&up->port[0].state->port);
+-
+-	spin_lock(&up->port[1].lock);
+-
+-	push =3D false;
+-	if (isr & ISR_TXRDYB)
+-	    transmit_chars(&up->port[1]);
+-	if (isr & ISR_RXRDYB)
+-	    push =3D receive_chars(&up->port[1]);
+-
+-	spin_unlock_irqrestore(&up->port[1].lock, flags);
+-
+-	if (push)
+-		tty_flip_buffer_push(&up->port[1].state->port);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-/* port->lock is not held.  */
+-static unsigned int sc26xx_tx_empty(struct uart_port *port)
+-{
+-	return (READ_SC_PORT(port, SR) & SR_TXRDY) ? TIOCSER_TEMT : 0;
+-}
+-
+-/* port->lock held by caller.  */
+-static void sc26xx_set_mctrl(struct uart_port *port, unsigned int mctr=
+l)
+-{
+-	struct uart_sc26xx_port *up;
+-	int line =3D port->line;
+-
+-	port -=3D line;
+-	up =3D container_of(port, struct uart_sc26xx_port, port[0]);
+-
+-	if (up->dtr_mask[line]) {
+-		if (mctrl & TIOCM_DTR)
+-			WRITE_SC(port, OPR_SET, up->dtr_mask[line]);
+-		else
+-			WRITE_SC(port, OPR_CLR, up->dtr_mask[line]);
+-	}
+-	if (up->rts_mask[line]) {
+-		if (mctrl & TIOCM_RTS)
+-			WRITE_SC(port, OPR_SET, up->rts_mask[line]);
+-		else
+-			WRITE_SC(port, OPR_CLR, up->rts_mask[line]);
+-	}
+-}
+-
+-/* port->lock is held by caller and interrupts are disabled.  */
+-static unsigned int sc26xx_get_mctrl(struct uart_port *port)
+-{
+-	struct uart_sc26xx_port *up;
+-	int line =3D port->line;
+-	unsigned int mctrl =3D TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
+-	u8 ipr;
+-
+-	port -=3D line;
+-	up =3D container_of(port, struct uart_sc26xx_port, port[0]);
+-	ipr =3D READ_SC(port, IPR) ^ 0xff;
+-
+-	if (up->dsr_mask[line]) {
+-		mctrl &=3D ~TIOCM_DSR;
+-		mctrl |=3D ipr & up->dsr_mask[line] ? TIOCM_DSR : 0;
+-	}
+-	if (up->cts_mask[line]) {
+-		mctrl &=3D ~TIOCM_CTS;
+-		mctrl |=3D ipr & up->cts_mask[line] ? TIOCM_CTS : 0;
+-	}
+-	if (up->dcd_mask[line]) {
+-		mctrl &=3D ~TIOCM_CAR;
+-		mctrl |=3D ipr & up->dcd_mask[line] ? TIOCM_CAR : 0;
+-	}
+-	if (up->ri_mask[line]) {
+-		mctrl &=3D ~TIOCM_RNG;
+-		mctrl |=3D ipr & up->ri_mask[line] ? TIOCM_RNG : 0;
+-	}
+-	return mctrl;
+-}
+-
+-/* port->lock held by caller.  */
+-static void sc26xx_stop_tx(struct uart_port *port)
+-{
+-	return;
+-}
+-
+-/* port->lock held by caller.  */
+-static void sc26xx_start_tx(struct uart_port *port)
+-{
+-	struct circ_buf *xmit =3D &port->state->xmit;
+-
+-	while (!uart_circ_empty(xmit)) {
+-		if (!(READ_SC_PORT(port, SR) & SR_TXRDY)) {
+-			sc26xx_enable_irq(port, IMR_TXRDY);
+-			break;
+-		}
+-		WRITE_SC_PORT(port, THR, xmit->buf[xmit->tail]);
+-		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+-		port->icount.tx++;
+-	}
+-}
+-
+-/* port->lock held by caller.  */
+-static void sc26xx_stop_rx(struct uart_port *port)
+-{
+-}
+-
+-/* port->lock held by caller.  */
+-static void sc26xx_enable_ms(struct uart_port *port)
+-{
+-}
+-
+-/* port->lock is not held.  */
+-static void sc26xx_break_ctl(struct uart_port *port, int break_state)
+-{
+-	if (break_state =3D=3D -1)
+-		WRITE_SC_PORT(port, CR, CR_STRT_BRK);
+-	else
+-		WRITE_SC_PORT(port, CR, CR_STOP_BRK);
+-}
+-
+-/* port->lock is not held.  */
+-static int sc26xx_startup(struct uart_port *port)
+-{
+-	sc26xx_disable_irq(port, IMR_TXRDY | IMR_RXRDY);
+-	WRITE_SC(port, OPCR, 0);
+-
+-	/* reset tx and rx */
+-	WRITE_SC_PORT(port, CR, CR_RES_RX);
+-	WRITE_SC_PORT(port, CR, CR_RES_TX);
+-
+-	/* start rx/tx */
+-	WRITE_SC_PORT(port, CR, CR_ENA_TX | CR_ENA_RX);
+-
+-	/* enable irqs */
+-	sc26xx_enable_irq(port, IMR_RXRDY);
+-	return 0;
+-}
+-
+-/* port->lock is not held.  */
+-static void sc26xx_shutdown(struct uart_port *port)
+-{
+-	/* disable interrupst */
+-	sc26xx_disable_irq(port, IMR_TXRDY | IMR_RXRDY);
+-
+-	/* stop tx/rx */
+-	WRITE_SC_PORT(port, CR, CR_DIS_TX | CR_DIS_RX);
+-}
+-
+-/* port->lock is not held.  */
+-static void sc26xx_set_termios(struct uart_port *port, struct ktermios=
+ *termios,
+-			      struct ktermios *old)
+-{
+-	unsigned int baud =3D uart_get_baud_rate(port, termios, old, 0, 40000=
+00);
+-	unsigned int quot =3D uart_get_divisor(port, baud);
+-	unsigned int iflag, cflag;
+-	unsigned long flags;
+-	u8 mr1, mr2, csr;
+-
+-	spin_lock_irqsave(&port->lock, flags);
+-
+-	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) !=3D 0xc)
+-		udelay(2);
+-
+-	WRITE_SC_PORT(port, CR, CR_DIS_TX | CR_DIS_RX);
+-
+-	iflag =3D termios->c_iflag;
+-	cflag =3D termios->c_cflag;
+-
+-	port->read_status_mask =3D SR_OVERRUN;
+-	if (iflag & INPCK)
+-		port->read_status_mask |=3D SR_PARITY | SR_FRAME;
+-	if (iflag & (BRKINT | PARMRK))
+-		port->read_status_mask |=3D SR_BREAK;
+-
+-	port->ignore_status_mask =3D 0;
+-	if (iflag & IGNBRK)
+-		port->ignore_status_mask |=3D SR_BREAK;
+-	if ((cflag & CREAD) =3D=3D 0)
+-		port->ignore_status_mask |=3D SR_BREAK | SR_FRAME |
+-					    SR_PARITY | SR_OVERRUN;
+-
+-	switch (cflag & CSIZE) {
+-	case CS5:
+-		mr1 =3D 0x00;
+-		break;
+-	case CS6:
+-		mr1 =3D 0x01;
+-		break;
+-	case CS7:
+-		mr1 =3D 0x02;
+-		break;
+-	default:
+-	case CS8:
+-		mr1 =3D 0x03;
+-		break;
+-	}
+-	mr2 =3D 0x07;
+-	if (cflag & CSTOPB)
+-		mr2 =3D 0x0f;
+-	if (cflag & PARENB) {
+-		if (cflag & PARODD)
+-			mr1 |=3D (1 << 2);
+-	} else
+-		mr1 |=3D (2 << 3);
+-
+-	switch (baud) {
+-	case 50:
+-		csr =3D 0x00;
+-		break;
+-	case 110:
+-		csr =3D 0x11;
+-		break;
+-	case 134:
+-		csr =3D 0x22;
+-		break;
+-	case 200:
+-		csr =3D 0x33;
+-		break;
+-	case 300:
+-		csr =3D 0x44;
+-		break;
+-	case 600:
+-		csr =3D 0x55;
+-		break;
+-	case 1200:
+-		csr =3D 0x66;
+-		break;
+-	case 2400:
+-		csr =3D 0x88;
+-		break;
+-	case 4800:
+-		csr =3D 0x99;
+-		break;
+-	default:
+-	case 9600:
+-		csr =3D 0xbb;
+-		break;
+-	case 19200:
+-		csr =3D 0xcc;
+-		break;
+-	}
+-
+-	WRITE_SC_PORT(port, CR, CR_RES_MR);
+-	WRITE_SC_PORT(port, MRx, mr1);
+-	WRITE_SC_PORT(port, MRx, mr2);
+-
+-	WRITE_SC(port, ACR, 0x80);
+-	WRITE_SC_PORT(port, CSR, csr);
+-
+-	/* reset tx and rx */
+-	WRITE_SC_PORT(port, CR, CR_RES_RX);
+-	WRITE_SC_PORT(port, CR, CR_RES_TX);
+-
+-	WRITE_SC_PORT(port, CR, CR_ENA_TX | CR_ENA_RX);
+-	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) !=3D 0xc)
+-		udelay(2);
+-
+-	/* XXX */
+-	uart_update_timeout(port, cflag,
+-			    (port->uartclk / (16 * quot)));
+-
+-	spin_unlock_irqrestore(&port->lock, flags);
+-}
+-
+-static const char *sc26xx_type(struct uart_port *port)
+-{
+-	return "SC26XX";
+-}
+-
+-static void sc26xx_release_port(struct uart_port *port)
+-{
+-}
+-
+-static int sc26xx_request_port(struct uart_port *port)
+-{
+-	return 0;
+-}
+-
+-static void sc26xx_config_port(struct uart_port *port, int flags)
+-{
+-}
+-
+-static int sc26xx_verify_port(struct uart_port *port, struct serial_st=
+ruct *ser)
+-{
+-	return -EINVAL;
+-}
+-
+-static struct uart_ops sc26xx_ops =3D {
+-	.tx_empty	=3D sc26xx_tx_empty,
+-	.set_mctrl	=3D sc26xx_set_mctrl,
+-	.get_mctrl	=3D sc26xx_get_mctrl,
+-	.stop_tx	=3D sc26xx_stop_tx,
+-	.start_tx	=3D sc26xx_start_tx,
+-	.stop_rx	=3D sc26xx_stop_rx,
+-	.enable_ms	=3D sc26xx_enable_ms,
+-	.break_ctl	=3D sc26xx_break_ctl,
+-	.startup	=3D sc26xx_startup,
+-	.shutdown	=3D sc26xx_shutdown,
+-	.set_termios	=3D sc26xx_set_termios,
+-	.type		=3D sc26xx_type,
+-	.release_port	=3D sc26xx_release_port,
+-	.request_port	=3D sc26xx_request_port,
+-	.config_port	=3D sc26xx_config_port,
+-	.verify_port	=3D sc26xx_verify_port,
+-};
+-
+-static struct uart_port *sc26xx_port;
+-
+-#ifdef CONFIG_SERIAL_SC26XX_CONSOLE
+-static void sc26xx_console_putchar(struct uart_port *port, char c)
+-{
+-	unsigned long flags;
+-	int limit =3D 1000000;
+-
+-	spin_lock_irqsave(&port->lock, flags);
+-
+-	while (limit-- > 0) {
+-		if (READ_SC_PORT(port, SR) & SR_TXRDY) {
+-			WRITE_SC_PORT(port, THR, c);
+-			break;
+-		}
+-		udelay(2);
+-	}
+-
+-	spin_unlock_irqrestore(&port->lock, flags);
+-}
+-
+-static void sc26xx_console_write(struct console *con, const char *s, u=
+nsigned n)
+-{
+-	struct uart_port *port =3D sc26xx_port;
+-	int i;
+-
+-	for (i =3D 0; i < n; i++) {
+-		if (*s =3D=3D '\n')
+-			sc26xx_console_putchar(port, '\r');
+-		sc26xx_console_putchar(port, *s++);
+-	}
+-}
+-
+-static int __init sc26xx_console_setup(struct console *con, char *opti=
+ons)
+-{
+-	struct uart_port *port =3D sc26xx_port;
+-	int baud =3D 9600;
+-	int bits =3D 8;
+-	int parity =3D 'n';
+-	int flow =3D 'n';
+-
+-	if (port->type !=3D PORT_SC26XX)
+-		return -1;
+-
+-	printk(KERN_INFO "Console: ttySC%d (SC26XX)\n", con->index);
+-	if (options)
+-		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-
+-	return uart_set_options(port, con, baud, parity, bits, flow);
+-}
+-
+-static struct uart_driver sc26xx_reg;
+-static struct console sc26xx_console =3D {
+-	.name	=3D	"ttySC",
+-	.write	=3D	sc26xx_console_write,
+-	.device	=3D	uart_console_device,
+-	.setup  =3D       sc26xx_console_setup,
+-	.flags	=3D	CON_PRINTBUFFER,
+-	.index	=3D	-1,
+-	.data	=3D	&sc26xx_reg,
+-};
+-#define SC26XX_CONSOLE   &sc26xx_console
+-#else
+-#define SC26XX_CONSOLE   NULL
+-#endif
+-
+-static struct uart_driver sc26xx_reg =3D {
+-	.owner			=3D THIS_MODULE,
+-	.driver_name		=3D "SC26xx",
+-	.dev_name		=3D "ttySC",
+-	.major			=3D SC26XX_MAJOR,
+-	.minor			=3D SC26XX_MINOR_START,
+-	.nr			=3D SC26XX_NR,
+-	.cons                   =3D SC26XX_CONSOLE,
+-};
+-
+-static u8 sc26xx_flags2mask(unsigned int flags, unsigned int bitpos)
+-{
+-	unsigned int bit =3D (flags >> bitpos) & 15;
+-
+-	return bit ? (1 << (bit - 1)) : 0;
+-}
+-
+-static void sc26xx_init_masks(struct uart_sc26xx_port *up,
+-					int line, unsigned int data)
+-{
+-	up->dtr_mask[line] =3D sc26xx_flags2mask(data,  0);
+-	up->rts_mask[line] =3D sc26xx_flags2mask(data,  4);
+-	up->dsr_mask[line] =3D sc26xx_flags2mask(data,  8);
+-	up->cts_mask[line] =3D sc26xx_flags2mask(data, 12);
+-	up->dcd_mask[line] =3D sc26xx_flags2mask(data, 16);
+-	up->ri_mask[line]  =3D sc26xx_flags2mask(data, 20);
+-}
+-
+-static int sc26xx_probe(struct platform_device *dev)
+-{
+-	struct resource *res;
+-	struct uart_sc26xx_port *up;
+-	unsigned int *sc26xx_data =3D dev_get_platdata(&dev->dev);
+-	int err;
+-
+-	res =3D platform_get_resource(dev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+-	up =3D kzalloc(sizeof *up, GFP_KERNEL);
+-	if (unlikely(!up))
+-		return -ENOMEM;
+-
+-	up->port[0].line =3D 0;
+-	up->port[0].ops =3D &sc26xx_ops;
+-	up->port[0].type =3D PORT_SC26XX;
+-	up->port[0].uartclk =3D (29491200 / 16); /* arbitrary */
+-
+-	up->port[0].mapbase =3D res->start;
+-	up->port[0].membase =3D ioremap_nocache(up->port[0].mapbase, 0x40);
+-	up->port[0].iotype =3D UPIO_MEM;
+-	up->port[0].irq =3D platform_get_irq(dev, 0);
+-
+-	up->port[0].dev =3D &dev->dev;
+-
+-	sc26xx_init_masks(up, 0, sc26xx_data[0]);
+-
+-	sc26xx_port =3D &up->port[0];
+-
+-	up->port[1].line =3D 1;
+-	up->port[1].ops =3D &sc26xx_ops;
+-	up->port[1].type =3D PORT_SC26XX;
+-	up->port[1].uartclk =3D (29491200 / 16); /* arbitrary */
+-
+-	up->port[1].mapbase =3D up->port[0].mapbase;
+-	up->port[1].membase =3D up->port[0].membase;
+-	up->port[1].iotype =3D UPIO_MEM;
+-	up->port[1].irq =3D up->port[0].irq;
+-
+-	up->port[1].dev =3D &dev->dev;
+-
+-	sc26xx_init_masks(up, 1, sc26xx_data[1]);
+-
+-	err =3D uart_register_driver(&sc26xx_reg);
+-	if (err)
+-		goto out_free_port;
+-
+-	sc26xx_reg.tty_driver->name_base =3D sc26xx_reg.minor;
+-
+-	err =3D uart_add_one_port(&sc26xx_reg, &up->port[0]);
+-	if (err)
+-		goto out_unregister_driver;
+-
+-	err =3D uart_add_one_port(&sc26xx_reg, &up->port[1]);
+-	if (err)
+-		goto out_remove_port0;
+-
+-	err =3D request_irq(up->port[0].irq, sc26xx_interrupt, 0, "sc26xx", u=
+p);
+-	if (err)
+-		goto out_remove_ports;
+-
+-	platform_set_drvdata(dev, up);
+-	return 0;
+-
+-out_remove_ports:
+-	uart_remove_one_port(&sc26xx_reg, &up->port[1]);
+-out_remove_port0:
+-	uart_remove_one_port(&sc26xx_reg, &up->port[0]);
+-
+-out_unregister_driver:
+-	uart_unregister_driver(&sc26xx_reg);
+-
+-out_free_port:
+-	kfree(up);
+-	sc26xx_port =3D NULL;
+-	return err;
+-}
+-
+-
+-static int __exit sc26xx_driver_remove(struct platform_device *dev)
+-{
+-	struct uart_sc26xx_port *up =3D platform_get_drvdata(dev);
+-
+-	free_irq(up->port[0].irq, up);
+-
+-	uart_remove_one_port(&sc26xx_reg, &up->port[0]);
+-	uart_remove_one_port(&sc26xx_reg, &up->port[1]);
+-
+-	uart_unregister_driver(&sc26xx_reg);
+-
+-	kfree(up);
+-	sc26xx_port =3D NULL;
+-
+-	return 0;
+-}
+-
+-static struct platform_driver sc26xx_driver =3D {
+-	.probe	=3D sc26xx_probe,
+-	.remove	=3D sc26xx_driver_remove,
+-	.driver	=3D {
+-		.name	=3D "SC26xx",
+-		.owner	=3D THIS_MODULE,
+-	},
+-};
+-
+-module_platform_driver(sc26xx_driver);
+-
+-MODULE_AUTHOR("Thomas Bogend=C3=B6rfer");
+-MODULE_DESCRIPTION("SC681/SC2692 serial driver");
+-MODULE_VERSION("1.0");
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:SC26xx");
+--=20
+1.8.3.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
