@@ -1,35 +1,59 @@
-From: Paul Gortmaker <paul.gortmaker@gmail.com>
-Subject: Re: [PATCH RESEND] serial: Remove old SC26XX driver
-Date: Thu, 19 Dec 2013 17:46:19 -0500
-Message-ID: <CAP=VYLqJM=MB=7aa2YHTXvJB_wtRyzGpXpJ7Gdsv+skN2nExXw@mail.gmail.com>
-References: <1386686824-15291-1-git-send-email-shc_work@mail.ru>
- <1387481356.914448614@f290.i.mail.ru> <20131219194254.GA1443@kroah.com> <1387483251.210379532@f290.i.mail.ru>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
+Date: Fri, 20 Dec 2013 02:48:10 +0100
+Message-ID: <38543610.aspcIFqj1g@avalon>
+References: <1384869751-9786-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131209185918.GC27562@quad.lixom.net> <20131209234205.GB24573@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=KOI8-R
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:41049 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755213Ab3LSWqv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 19 Dec 2013 17:46:51 -0500
-Received: by mail-wg0-f45.google.com with SMTP id y10so1774178wgg.24
-        for <linux-serial@vger.kernel.org>; Thu, 19 Dec 2013 14:46:50 -0800 (PST)
-In-Reply-To: <1387483251.210379532@f290.i.mail.ru>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20131209234205.GB24573@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Olof Johansson <olof@lixom.net>, Greg KH <greg@kroah.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Bastian Hecht <hechtb+renesas@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Thu, Dec 19, 2013 at 3:00 PM, Alexander Shiyan <shc_work@mail.ru> wrote:
+Hi,
 
-[...]
+On Tuesday 10 December 2013 08:42:05 Simon Horman wrote:
+> On Mon, Dec 09, 2013 at 10:59:18AM -0800, Olof Johansson wrote:
+> > On Thu, Dec 05, 2013 at 04:03:43PM +0900, Simon Horman wrote:
+> > > On Thu, Dec 05, 2013 at 06:53:41AM +0100, Laurent Pinchart wrote:
 
-> OK for me, except removing file.
-> Lets try to apply version without "-D" option. I'll resend it shortly.
+[snip]
 
-Yes, the unconditional delete is a win for review, but git-am does not
-like it.  I proposed a patch to fix this some months ago; I should try
-and re-push it, since for mailing list reviews, it is a valuable option.
+> > > > I'm not planning for a v5, but there's another patch series ("[PATCH
+> > > > 00/16] sh-sci: Remove unnecessary fields from platform data") that is
+> > > > similarly organized as sh-sci / platform / sh-sci patches on top of
+> > > > this. Would you like me to reorganize the all the 45 patches in one
+> > > > big series with a single set of platform patches in-between two sets
+> > > > of sh-sci patches ?
+> > > 
+> > > That sounds nice, thanks.
+> > > 
+> > > To be clear, we are planning sh-sci -> soc -> sh-sci ?
+> > > 
+> > > If so, I'll have a word with Olof (CCed) as he tends to want
+> > > to avoid such circular dependencies if possible.
+> > 
+> > What are the platform changes in the middle that you need?
 
-Paul.
---
+Basically we need to change the driver platform data, so the first part gets 
+the driver in shape by adding new platform data fields, the second part 
+switches the platform code, and the third part removes the old fields. Part of 
+this is about switching from passing IRQs and memory base through platform 
+data to passing them through resources, which is a dependency for OF support.
+
+> I will let Laurent speak to the nature of the changes.
+> 
+> In terms of patches Laurent has recently published a single series
+> which includes sh-sci patches, followed by SoC patches, followed
+> by sh-sci patches. The series is "[PATCH 00/47] sh-sci updates for v3.14"
+> 
+> http://www.spinics.net/lists/linux-sh/msg26033.html
+
+-- 
+Regards,
+
+Laurent Pinchart
+
