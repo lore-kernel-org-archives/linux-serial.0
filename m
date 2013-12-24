@@ -1,33 +1,68 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 00/47] sh-sci updates for v3.14
-Date: Tue, 24 Dec 2013 11:44:52 +0900
-Message-ID: <20131224024451.GB22401@verge.net.au>
-References: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 03/15] serial: sh-sci: Restrict non-COMPILE_TEST compilation
+Date: Tue, 24 Dec 2013 13:03:10 +0100
+Message-ID: <3378064.llLXVomVIb@avalon>
+References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131128073711.GF24146@verge.net.au> <1644962.Fmr1aLVkXP@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1386323994-12850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:52533 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751905Ab3LXMCp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Dec 2013 07:02:45 -0500
+In-Reply-To: <1644962.Fmr1aLVkXP@avalon>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Fri, Dec 06, 2013 at 10:59:07AM +0100, Laurent Pinchart wrote:
-> Hello,
-> 
-> This patch series combines the sh-sci and related arch/ changes from the
-> following previously posted series.
-> 
-> [PATCH 0/2] serial: sh-sci: Prepare for CCF migration
-> [PATCH v3 00/29] Add OF support to the sh-sci serial port driver
-> [PATCH 00/16] sh-sci: Remove unnecessary fields from platform data
-> 
-> The patches have been rebased on top of renesas-devel-v3.13-rc2-20131205 and
-> reordered to have a single arch/ set between two sh-sci sets. Nothing else has
-> been changed.
-> 
-> Simon, I believe this set to be ready for v3.14. Greg has acked all the sh-sci
-> patches, and no comment has been received for some time now.
+Hi Simon,
 
-Thanks. After concluding discussions with Olof I will queued these up.
+On Wednesday 11 December 2013 13:44:54 Laurent Pinchart wrote:
+> Hi Simon,
+> 
+> Could you please add this patch to your tree with the "[PATCH 00/47] sh-sci
+> updates for v3.14" series ?
+
+I've updated all my pending branches to your latest devel tag and this patch 
+is missing. Could you please pick it up ?
+
+> On Thursday 28 November 2013 16:37:11 Simon Horman wrote:
+> > On Wed, Nov 27, 2013 at 02:18:25AM +0100, Laurent Pinchart wrote:
+> > > Hardware supported by the driver is only found on SUPERH or
+> > > ARCH_SHMOBILE platforms. Restrict non-COMPILE_TEST compilation to them.
+> > > 
+> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Cc: linux-serial@vger.kernel.org
+> > > Signed-off-by: Laurent Pinchart
+> > > <laurent.pinchart+renesas@ideasonboard.com>
+> > 
+> > Acked-by: Simon Horman <horms+renesas@verge.net.au>
+> > 
+> > > ---
+> > > 
+> > >  drivers/tty/serial/Kconfig | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > > index a3817ab..a640d0b 100644
+> > > --- a/drivers/tty/serial/Kconfig
+> > > +++ b/drivers/tty/serial/Kconfig
+> > > @@ -709,7 +709,8 @@ config SERIAL_IP22_ZILOG_CONSOLE
+> > > 
+> > >  config SERIAL_SH_SCI
+> > >  	tristate "SuperH SCI(F) serial port support"
+> > > -	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
+> > > +	depends on HAVE_CLK
+> > > +	depends on SUPERH || ARCH_SHMOBILE || COMPILE_TEST
+> > >  	select SERIAL_CORE
+> > >  
+> > >  config SERIAL_SH_SCI_NR_UARTS
+
+-- 
+Regards,
+
+Laurent Pinchart
+
