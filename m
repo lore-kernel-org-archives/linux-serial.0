@@ -1,53 +1,42 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 1/2] TTY: pmac_zilog, check existence of ports in pmz_console_init()
-Date: Tue, 24 Dec 2013 15:39:50 +0100
-Message-ID: <CAMuHMdVcqiNQiMHD3pgRWUzt7n3+F0dwmeXVnmZtgCxyo=GmFw@mail.gmail.com>
-References: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 03/15] serial: sh-sci: Restrict non-COMPILE_TEST
+ compilation
+Date: Fri, 27 Dec 2013 11:17:59 +0900
+Message-ID: <20131227021759.GE9184@verge.net.au>
+References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <20131128073711.GF24146@verge.net.au>
+ <1644962.Fmr1aLVkXP@avalon>
+ <3378064.llLXVomVIb@avalon>
+ <20131224142640.GB16032@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>
-Cc: linux-serial@vger.kernel.org, Linux/m68k <linux-m68k@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Finn Thain <fthain@telegraphics.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from kirsty.vergenet.net ([202.4.237.240]:37948 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754011Ab3L0CSC (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 26 Dec 2013 21:18:02 -0500
+Content-Disposition: inline
+In-Reply-To: <20131224142640.GB16032@verge.net.au>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Fri, Nov 22, 2013 at 4:47 PM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> When booting a multi-platform m68k kernel on a non-Mac with "console=ttyS0"
-> on the kernel command line, it crashes with:
+On Tue, Dec 24, 2013 at 11:26:41PM +0900, Simon Horman wrote:
+> On Tue, Dec 24, 2013 at 01:03:10PM +0100, Laurent Pinchart wrote:
+> > Hi Simon,
+> > 
+> > On Wednesday 11 December 2013 13:44:54 Laurent Pinchart wrote:
+> > > Hi Simon,
+> > > 
+> > > Could you please add this patch to your tree with the "[PATCH 00/47] sh-sci
+> > > updates for v3.14" series ?
+> > 
+> > I've updated all my pending branches to your latest devel tag and this patch 
+> > is missing. Could you please pick it up ?
+> 
+> Sure, will do.
 
-Can we please get this in stable, too?
-
-commit dc1dc2f8a5dd863bf2e79f338fc3ae29e99c683a
-
-Thanks!
-
-> Unable to handle kernel NULL pointer dereference at virtual address   (null)
-> Oops: 00000000
-> PC: [<0013ad28>] __pmz_startup+0x32/0x2a0
-> ...
-> Call Trace: [<002c5d3e>] pmz_console_setup+0x64/0xe4
->
-> The normal tty driver doesn't crash, because init_pmz() checks
-> pmz_ports_count again after calling pmz_probe().
->
-> In the serial console initialization path, pmz_console_init() doesn't do
-> this, causing the driver to crash later.
->
-> Add a check for pmz_ports_count to fix this.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Finn Thain <fthain@telegraphics.com.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+I have now done so. But I'm not sure that it will make it into v3.14.
+If not it might be best to send it back to Greg for v3.15. I can handle that.
