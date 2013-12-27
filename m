@@ -1,42 +1,47 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 03/15] serial: sh-sci: Restrict non-COMPILE_TEST
- compilation
-Date: Fri, 27 Dec 2013 11:17:59 +0900
-Message-ID: <20131227021759.GE9184@verge.net.au>
-References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131128073711.GF24146@verge.net.au>
- <1644962.Fmr1aLVkXP@avalon>
- <3378064.llLXVomVIb@avalon>
- <20131224142640.GB16032@verge.net.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:37948 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754011Ab3L0CSC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Dec 2013 21:18:02 -0500
-Content-Disposition: inline
-In-Reply-To: <20131224142640.GB16032@verge.net.au>
-Sender: linux-serial-owner@vger.kernel.org
+From: Tushar Behera <tushar.behera@linaro.org>
+Subject: [PATCH] serial: samsung: Remove hard-coded major/minor numbers
+Date: Fri, 27 Dec 2013 10:37:28 +0530
+Message-ID: <1388120848-15879-1-git-send-email-tushar.behera@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: jslaby@suse.cz, gregkh@linuxfoundation.org, patches@linaro.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Tue, Dec 24, 2013 at 11:26:41PM +0900, Simon Horman wrote:
-> On Tue, Dec 24, 2013 at 01:03:10PM +0100, Laurent Pinchart wrote:
-> > Hi Simon,
-> > 
-> > On Wednesday 11 December 2013 13:44:54 Laurent Pinchart wrote:
-> > > Hi Simon,
-> > > 
-> > > Could you please add this patch to your tree with the "[PATCH 00/47] sh-sci
-> > > updates for v3.14" series ?
-> > 
-> > I've updated all my pending branches to your latest devel tag and this patch 
-> > is missing. Could you please pick it up ?
-> 
-> Sure, will do.
+The hard-coded values clash with the values set for amba-pl011 serial
+driver. Because of this there is no serial output on Samsung boards
+if amba-pl011 is enabled alongwith samsung-serial driver.
 
-I have now done so. But I'm not sure that it will make it into v3.14.
-If not it might be best to send it back to Greg for v3.15. I can handle that.
+Remove the hardcoded values and let the framework decide on
+appropriate major/minor number. This is required for multi-platform
+development work on Exynos platform.
+
+Signed-off-by: Tushar Behera <tushar.behera@linaro.org>
+---
+ drivers/tty/serial/samsung.c |    4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index c1af04d..9c20543 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -56,8 +56,6 @@
+ /* UART name and device definitions */
+ 
+ #define S3C24XX_SERIAL_NAME	"ttySAC"
+-#define S3C24XX_SERIAL_MAJOR	204
+-#define S3C24XX_SERIAL_MINOR	64
+ 
+ /* macros to change one thing to another */
+ 
+@@ -951,8 +949,6 @@ static struct uart_driver s3c24xx_uart_drv = {
+ 	.nr		= CONFIG_SERIAL_SAMSUNG_UARTS,
+ 	.cons		= S3C24XX_SERIAL_CONSOLE,
+ 	.dev_name	= S3C24XX_SERIAL_NAME,
+-	.major		= S3C24XX_SERIAL_MAJOR,
+-	.minor		= S3C24XX_SERIAL_MINOR,
+ };
+ 
+ static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS] = {
+-- 
+1.7.9.5
