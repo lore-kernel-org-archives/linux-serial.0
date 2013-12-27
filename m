@@ -1,78 +1,50 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: samsung: Remove hard-coded major/minor numbers
-Date: Thu, 26 Dec 2013 22:38:43 -0800
-Message-ID: <20131227063843.GA3310@kroah.com>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gc2VyaWFsOiBzYW1zdW5nOiBSZW1vdmUgaGFyZC1jb2Rl?=
+ =?UTF-8?B?ZCBtYWpvci9taW5vciBudW1iZXJz?=
+Date: Fri, 27 Dec 2013 10:43:23 +0400
+Message-ID: <1388126603.342451910@f289.i.mail.ru>
 References: <1388120848-15879-1-git-send-email-tushar.behera@linaro.org>
- <20131227051843.GA840@kroah.com>
  <CAHbNUh27ZZ5UxuLMPvv6weNOSG4XKV9ZRrmTB9F0RvgQxufGDQ@mail.gmail.com>
+ <20131227063843.GA3310@kroah.com>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:41761 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752662Ab3L0GiL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Dec 2013 01:38:11 -0500
-Content-Disposition: inline
-In-Reply-To: <CAHbNUh27ZZ5UxuLMPvv6weNOSG4XKV9ZRrmTB9F0RvgQxufGDQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20131227063843.GA3310@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?B?R3JlZyBLSA==?= <gregkh@linuxfoundation.org>
+Cc: =?UTF-8?B?VHVzaGFyIEJlaGVyYQ==?= <tushar.behera@linaro.org>, =?UTF-8?B?bGludXgtc2VyaWFs?= <linux-serial@vger.kernel.org>, =?UTF-8?B?bGttbA==?= <linux-kernel@vger.kernel.org>, =?UTF-8?B?anNsYWJ5?= <jslaby@suse.cz>, =?UTF-8?B?UGF0Y2ggVHJhY2tpbmc=?= <patches@linaro.org>, =?UTF-8?B?bGludXgtc2Ftc3VuZy1zb2M=?= <linux-samsung-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Tushar Behera <tushar.behera@linaro.org>
-Cc: linux-serial <linux-serial@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>, jslaby <jslaby@suse.cz>, Patch Tracking <patches@linaro.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>
 
-On Fri, Dec 27, 2013 at 12:00:20PM +0530, Tushar Behera wrote:
-> On 27 December 2013 10:48, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Fri, Dec 27, 2013 at 10:37:28AM +0530, Tushar Behera wrote:
-> >> The hard-coded values clash with the values set for amba-pl011 serial
-> >> driver. Because of this there is no serial output on Samsung boards
-> >> if amba-pl011 is enabled alongwith samsung-serial driver.
-> >>
-> >> Remove the hardcoded values and let the framework decide on
-> >> appropriate major/minor number. This is required for multi-platform
-> >> development work on Exynos platform.
-> >>
-> >> Signed-off-by: Tushar Behera <tushar.behera@linaro.org>
-> >> ---
-> >>  drivers/tty/serial/samsung.c |    4 ----
-> >>  1 file changed, 4 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> >> index c1af04d..9c20543 100644
-> >> --- a/drivers/tty/serial/samsung.c
-> >> +++ b/drivers/tty/serial/samsung.c
-> >> @@ -56,8 +56,6 @@
-> >>  /* UART name and device definitions */
-> >>
-> >>  #define S3C24XX_SERIAL_NAME  "ttySAC"
-> >> -#define S3C24XX_SERIAL_MAJOR 204
-> >> -#define S3C24XX_SERIAL_MINOR 64
-> >>
-> >>  /* macros to change one thing to another */
-> >>
-> >> @@ -951,8 +949,6 @@ static struct uart_driver s3c24xx_uart_drv = {
-> >>       .nr             = CONFIG_SERIAL_SAMSUNG_UARTS,
-> >>       .cons           = S3C24XX_SERIAL_CONSOLE,
-> >>       .dev_name       = S3C24XX_SERIAL_NAME,
-> >> -     .major          = S3C24XX_SERIAL_MAJOR,
-> >> -     .minor          = S3C24XX_SERIAL_MINOR,
-> >
-> > Doesn't this break existing systems and configurations that are
-> > expecting 204:64 as the location of this serial port?
-> >
-> 
-> I tested this on Exynos4210-Origen, Exynos5250-Arndale board, it works
-> fine there. I haven't tested on any older boards.
-
-How did it work?  You are relying on some userspace tools to do this
-properly, right?  What about systems without those specific tools?
-
-> > Why change this one and not the amba-pl011 driver?
-> >
-> 
-> I could only test this driver, so thought of changing this rather than
-> modifying amba-pl011 driver. I don't have any other reason.
-
-Please get the samsung driver maintainer to agree with this and sign off
-on it before trying to get it merged again.
-
-greg k-h
+SGVsbG8uCj4gT24gRnJpLCBEZWMgMjcsIDIwMTMgYXQgMTI6MDA6MjBQTSArMDUzMCwgVHVzaGFy
+IEJlaGVyYSB3cm90ZToKPiA+IE9uIDI3IERlY2VtYmVyIDIwMTMgMTA6NDgsIEdyZWcgS0ggPGdy
+ZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPiB3cm90ZToKPiA+ID4gT24gRnJpLCBEZWMgMjcsIDIw
+MTMgYXQgMTA6Mzc6MjhBTSArMDUzMCwgVHVzaGFyIEJlaGVyYSB3cm90ZToKPiA+ID4+IFRoZSBo
+YXJkLWNvZGVkIHZhbHVlcyBjbGFzaCB3aXRoIHRoZSB2YWx1ZXMgc2V0IGZvciBhbWJhLXBsMDEx
+IHNlcmlhbAo+ID4gPj4gZHJpdmVyLiBCZWNhdXNlIG9mIHRoaXMgdGhlcmUgaXMgbm8gc2VyaWFs
+IG91dHB1dCBvbiBTYW1zdW5nIGJvYXJkcwo+ID4gPj4gaWYgYW1iYS1wbDAxMSBpcyBlbmFibGVk
+IGFsb25nd2l0aCBzYW1zdW5nLXNlcmlhbCBkcml2ZXIuCj4gPiA+Pgo+ID4gPj4gUmVtb3ZlIHRo
+ZSBoYXJkY29kZWQgdmFsdWVzIGFuZCBsZXQgdGhlIGZyYW1ld29yayBkZWNpZGUgb24KPiA+ID4+
+IGFwcHJvcHJpYXRlIG1ham9yL21pbm9yIG51bWJlci4gVGhpcyBpcyByZXF1aXJlZCBmb3IgbXVs
+dGktcGxhdGZvcm0KPiA+ID4+IGRldmVsb3BtZW50IHdvcmsgb24gRXh5bm9zIHBsYXRmb3JtLgo+
+ID4gPj4KPiA+ID4+IFNpZ25lZC1vZmYtYnk6IFR1c2hhciBCZWhlcmEgPHR1c2hhci5iZWhlcmFA
+bGluYXJvLm9yZz4KLi4uCj4gPiA+PiAgI2RlZmluZSBTM0MyNFhYX1NFUklBTF9OQU1FICAidHR5
+U0FDIgo+ID4gPj4gLSNkZWZpbmUgUzNDMjRYWF9TRVJJQUxfTUFKT1IgMjA0Cj4gPiA+PiAtI2Rl
+ZmluZSBTM0MyNFhYX1NFUklBTF9NSU5PUiA2NAo+ID4gPj4KPiA+ID4+ICAvKiBtYWNyb3MgdG8g
+Y2hhbmdlIG9uZSB0aGluZyB0byBhbm90aGVyICovCj4gPiA+Pgo+ID4gPj4gQEAgLTk1MSw4ICs5
+NDksNiBAQCBzdGF0aWMgc3RydWN0IHVhcnRfZHJpdmVyIHMzYzI0eHhfdWFydF9kcnYgPSB7Cj4g
+PiA+PiAgICAgICAubnIgICAgICAgICAgICAgPSBDT05GSUdfU0VSSUFMX1NBTVNVTkdfVUFSVFMs
+Cj4gPiA+PiAgICAgICAuY29ucyAgICAgICAgICAgPSBTM0MyNFhYX1NFUklBTF9DT05TT0xFLAo+
+ID4gPj4gICAgICAgLmRldl9uYW1lICAgICAgID0gUzNDMjRYWF9TRVJJQUxfTkFNRSwKPiA+ID4+
+IC0gICAgIC5tYWpvciAgICAgICAgICA9IFMzQzI0WFhfU0VSSUFMX01BSk9SLAo+ID4gPj4gLSAg
+ICAgLm1pbm9yICAgICAgICAgID0gUzNDMjRYWF9TRVJJQUxfTUlOT1IsCj4gPiA+Cj4gPiA+IERv
+ZXNuJ3QgdGhpcyBicmVhayBleGlzdGluZyBzeXN0ZW1zIGFuZCBjb25maWd1cmF0aW9ucyB0aGF0
+IGFyZQo+ID4gPiBleHBlY3RpbmcgMjA0OjY0IGFzIHRoZSBsb2NhdGlvbiBvZiB0aGlzIHNlcmlh
+bCBwb3J0Pwo+ID4gPgo+ID4gCj4gPiBJIHRlc3RlZCB0aGlzIG9uIEV4eW5vczQyMTAtT3JpZ2Vu
+LCBFeHlub3M1MjUwLUFybmRhbGUgYm9hcmQsIGl0IHdvcmtzCj4gPiBmaW5lIHRoZXJlLiBJIGhh
+dmVuJ3QgdGVzdGVkIG9uIGFueSBvbGRlciBib2FyZHMuCj4gCj4gSG93IGRpZCBpdCB3b3JrPyAg
+WW91IGFyZSByZWx5aW5nIG9uIHNvbWUgdXNlcnNwYWNlIHRvb2xzIHRvIGRvIHRoaXMKPiBwcm9w
+ZXJseSwgcmlnaHQ/ICBXaGF0IGFib3V0IHN5c3RlbXMgd2l0aG91dCB0aG9zZSBzcGVjaWZpYyB0
+b29scz8KCkNhbiB0aGlzIGlzc3VlIGJlIHJlc29sdmVkIGJ5IHVzaW5nIE1PRFVMRV9BTElBU19D
+SEFSREVWKCkKaW4gdGhlIGRyaXZlciBjb2RlPwoKLS0tCg==
