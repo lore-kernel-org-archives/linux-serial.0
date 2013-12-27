@@ -1,69 +1,365 @@
-From: Tushar Behera <tushar.behera@linaro.org>
-Subject: Re: [PATCH] serial: samsung: Remove hard-coded major/minor numbers
-Date: Fri, 27 Dec 2013 15:47:31 +0530
-Message-ID: <CAHbNUh0NBVEBJbSG7UWgnHbORgbKCrA_74=jiArSvv5jaFk1SQ@mail.gmail.com>
-References: <1388120848-15879-1-git-send-email-tushar.behera@linaro.org>
-	<20131227051843.GA840@kroah.com>
-	<CAHbNUh27ZZ5UxuLMPvv6weNOSG4XKV9ZRrmTB9F0RvgQxufGDQ@mail.gmail.com>
-	<20131227063843.GA3310@kroah.com>
+From: Yuan Yao <yao.yuan@freescale.com>
+Subject: [PATCH] the eDMA support for the LPUART send driver
+Date: Fri, 27 Dec 2013 19:24:09 +0800
+Message-ID: <1388143449-28640-1-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f181.google.com ([209.85.214.181]:54602 "EHLO
-	mail-ob0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754232Ab3L0KRc (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 27 Dec 2013 05:17:32 -0500
-Received: by mail-ob0-f181.google.com with SMTP id uy5so9308470obc.12
-        for <linux-serial@vger.kernel.org>; Fri, 27 Dec 2013 02:17:31 -0800 (PST)
-In-Reply-To: <20131227063843.GA3310@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial <linux-serial@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>, jslaby <jslaby@suse.cz>, Patch Tracking <patches@linaro.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, ben@simtec.co.uk, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <t.figa@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, heiko <heiko@sntech.de>, Kgene Kim <kgene.kim@samsung.com>
 
-On 27 December 2013 12:08, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Fri, Dec 27, 2013 at 12:00:20PM +0530, Tushar Behera wrote:
->> On 27 December 2013 10:48, Greg KH <gregkh@linuxfoundation.org> wrote:
->> > On Fri, Dec 27, 2013 at 10:37:28AM +0530, Tushar Behera wrote:
+This patch add eDMA support for LPUART send function.
 
-[ ... ]
+Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
+---
+ arch/arm/boot/dts/vf610.dtsi    |  12 +++
+ drivers/tty/serial/fsl_lpuart.c | 187 ++++++++++++++++++++++++++++++++--------
+ 2 files changed, 163 insertions(+), 36 deletions(-)
 
->> >> @@ -951,8 +949,6 @@ static struct uart_driver s3c24xx_uart_drv = {
->> >>       .nr             = CONFIG_SERIAL_SAMSUNG_UARTS,
->> >>       .cons           = S3C24XX_SERIAL_CONSOLE,
->> >>       .dev_name       = S3C24XX_SERIAL_NAME,
->> >> -     .major          = S3C24XX_SERIAL_MAJOR,
->> >> -     .minor          = S3C24XX_SERIAL_MINOR,
->> >
->> > Doesn't this break existing systems and configurations that are
->> > expecting 204:64 as the location of this serial port?
->> >
->>
->> I tested this on Exynos4210-Origen, Exynos5250-Arndale board, it works
->> fine there. I haven't tested on any older boards.
->
-> How did it work?  You are relying on some userspace tools to do this
-> properly, right?  What about systems without those specific tools?
->
-
-Enabling CONFIG_DEVTMPFS, all the /dev/ttySAC<n> nodes are generated
-and the appropriate console is specified through command line
-argument.
-
->> > Why change this one and not the amba-pl011 driver?
->> >
->>
->> I could only test this driver, so thought of changing this rather than
->> modifying amba-pl011 driver. I don't have any other reason.
->
-> Please get the samsung driver maintainer to agree with this and sign off
-> on it before trying to get it merged again.
->
-> greg k-h
-
-Adding a few other developers who have contributed to this file or are
-working on different Samsung platforms to get an ack/sign-off.
-
+diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
+index 365e0fa..35d7a79 100644
+--- a/arch/arm/boot/dts/vf610.dtsi
++++ b/arch/arm/boot/dts/vf610.dtsi
+@@ -118,6 +118,9 @@
+ 				interrupts = <0 61 0x00>;
+ 				clocks = <&clks VF610_CLK_UART0>;
+ 				clock-names = "ipg";
++				dma-names = "lpuart-rx","lpuart-tx";
++				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART0_RX>,
++				       <&edma0 0 VF610_EDMA_MUXID0_UART0_TX>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -127,6 +130,9 @@
+ 				interrupts = <0 62 0x04>;
+ 				clocks = <&clks VF610_CLK_UART1>;
+ 				clock-names = "ipg";
++				dma-names = "lpuart-rx","lpuart-tx";
++				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART1_RX>,
++				       <&edma0 0 VF610_EDMA_MUXID0_UART1_TX>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -136,6 +142,9 @@
+ 				interrupts = <0 63 0x04>;
+ 				clocks = <&clks VF610_CLK_UART2>;
+ 				clock-names = "ipg";
++				dma-names = "lpuart-rx","lpuart-tx";
++				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART2_RX>,
++				       <&edma0 0 VF610_EDMA_MUXID0_UART2_TX>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -145,6 +154,9 @@
+ 				interrupts = <0 64 0x04>;
+ 				clocks = <&clks VF610_CLK_UART3>;
+ 				clock-names = "ipg";
++				dma-names = "lpuart-rx","lpuart-tx";
++				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART3_RX>,
++				       <&edma0 0 VF610_EDMA_MUXID0_UART3_TX>;
+ 				status = "disabled";
+ 			};
+ 
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 8978dc9..8375141 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -13,14 +13,19 @@
+ #define SUPPORT_SYSRQ
+ #endif
+ 
+-#include <linux/module.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/dma-mapping.h>
++#include <linux/dmaengine.h>
++#include <linux/dmapool.h>
+ #include <linux/io.h>
+ #include <linux/irq.h>
+-#include <linux/clk.h>
++#include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+-#include <linux/console.h>
++#include <linux/of_dma.h>
+ #include <linux/serial_core.h>
++#include <linux/slab.h>
+ #include <linux/tty_flip.h>
+ 
+ /* All registers are 8-bit width */
+@@ -112,6 +117,9 @@
+ #define UARTSFIFO_TXOF		0x02
+ #define UARTSFIFO_RXUF		0x01
+ 
++#define DMA_MAXBURST		16
++#define DMA_MAXBURST_MASK	(DMA_MAXBURST - 1)
++
+ #define DRIVER_NAME	"fsl-lpuart"
+ #define DEV_NAME	"ttyLP"
+ #define UART_NR		6
+@@ -121,6 +129,13 @@ struct lpuart_port {
+ 	struct clk		*clk;
+ 	unsigned int		txfifo_size;
+ 	unsigned int		rxfifo_size;
++	struct dma_chan		*tx_dma_lpuart;
++	struct dma_async_tx_descriptor  *tx_dma_desc;
++	dma_addr_t		tx_dma_buf_phys;
++	dma_cookie_t		tx_cookie;
++	unsigned char		*tx_dma_buf_virt;
++	unsigned int		tx_bytes;
++	int			tx_in_progress;
+ };
+ 
+ static struct of_device_id lpuart_dt_ids[] = {
+@@ -131,6 +146,9 @@ static struct of_device_id lpuart_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+ 
++static int lpuart_dma_tx(struct lpuart_port *sport, unsigned long count);
++static void lpuart_prepare_tx(struct lpuart_port *sport);
++
+ static void lpuart_stop_tx(struct uart_port *port)
+ {
+ 	unsigned char temp;
+@@ -152,12 +170,36 @@ static void lpuart_enable_ms(struct uart_port *port)
+ {
+ }
+ 
+-static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
++static void lpuart_dma_tx_complete(void *arg)
++{
++	struct lpuart_port *sport = arg;
++	struct circ_buf *xmit = &sport->port.state->xmit;
++	unsigned long flags;
++
++	async_tx_ack(sport->tx_dma_desc);
++
++	spin_lock_irqsave(&sport->port.lock, flags);
++
++	xmit->tail = (xmit->tail + sport->tx_bytes) & (UART_XMIT_SIZE - 1);
++	sport->tx_in_progress = 0;
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(&sport->port);
++
++	lpuart_prepare_tx(sport);
++
++	spin_unlock_irqrestore(&sport->port.lock, flags);
++}
++
++static void lpuart_pio_tx(struct lpuart_port *sport)
+ {
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
++	unsigned long flags;
++
++	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	while (!uart_circ_empty(xmit) &&
+-		(readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size)) {
++		readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size) {
+ 		writeb(xmit->buf[xmit->tail], sport->port.membase + UARTDR);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		sport->port.icount.tx++;
+@@ -167,46 +211,69 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
+ 		uart_write_wakeup(&sport->port);
+ 
+ 	if (uart_circ_empty(xmit))
+-		lpuart_stop_tx(&sport->port);
+-}
++		writeb(readb(sport->port.membase + UARTCR5) | UARTCR5_TDMAS,
++			sport->port.membase + UARTCR5);
+ 
+-static void lpuart_start_tx(struct uart_port *port)
++	spin_unlock_irqrestore(&sport->port.lock, flags);
++}
++
++static int lpuart_dma_tx(struct lpuart_port *sport, unsigned long count)
+ {
+-	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+-	unsigned char temp;
++	struct circ_buf *xmit = &sport->port.state->xmit;
++	dma_addr_t tx_phys_addr;
++
++	dma_sync_single_for_device(sport->port.dev, sport->tx_dma_buf_phys,
++				UART_XMIT_SIZE, DMA_TO_DEVICE);
++	sport->tx_bytes = count & ~(DMA_MAXBURST_MASK);
++	tx_phys_addr = sport->tx_dma_buf_phys + xmit->tail;
++	sport->tx_dma_desc = dmaengine_prep_slave_single(sport->tx_dma_lpuart,
++					tx_phys_addr, sport->tx_bytes,
++					DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT);
++
++	if (!sport->tx_dma_desc) {
++		dev_err(sport->port.dev, "Not able to get desc for Tx\n");
++		return -EIO;
++	}
+ 
+-	temp = readb(port->membase + UARTCR2);
+-	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
++	sport->tx_dma_desc->callback = lpuart_dma_tx_complete;
++	sport->tx_dma_desc->callback_param = sport;
++	sport->tx_in_progress = 1;
++	sport->tx_cookie = dmaengine_submit(sport->tx_dma_desc);
++	dma_async_issue_pending(sport->tx_dma_lpuart);
+ 
+-	if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
+-		lpuart_transmit_buffer(sport);
++	return 0;
+ }
+ 
+-static irqreturn_t lpuart_txint(int irq, void *dev_id)
++static void lpuart_prepare_tx(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = dev_id;
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+-	unsigned long flags;
++	unsigned long count =  CIRC_CNT_TO_END(xmit->head,
++					xmit->tail, UART_XMIT_SIZE);
+ 
+-	spin_lock_irqsave(&sport->port.lock, flags);
+-	if (sport->port.x_char) {
+-		writeb(sport->port.x_char, sport->port.membase + UARTDR);
+-		goto out;
+-	}
+-
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
+-		lpuart_stop_tx(&sport->port);
+-		goto out;
+-	}
++	if (!count)
++		return;
+ 
+-	lpuart_transmit_buffer(sport);
++	if (count < DMA_MAXBURST)
++		writeb(readb(sport->port.membase + UARTCR5) & ~UARTCR5_TDMAS,
++				sport->port.membase + UARTCR5);
++	else
++		lpuart_dma_tx(sport, count);
++}
++
++static void lpuart_start_tx(struct uart_port *port)
++{
++	struct lpuart_port *sport = container_of(port,
++			struct lpuart_port, port);
++	struct circ_buf *xmit = &sport->port.state->xmit;
++	unsigned char temp;
+ 
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(&sport->port);
++	temp = readb(port->membase + UARTCR2);
++	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
++	temp = readb(port->membase + UARTCR5);
++	writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
+ 
+-out:
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
+-	return IRQ_HANDLED;
++	if (!uart_circ_empty(xmit) && !sport->tx_in_progress)
++		lpuart_prepare_tx(sport);
+ }
+ 
+ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
+@@ -283,8 +346,9 @@ static irqreturn_t lpuart_int(int irq, void *dev_id)
+ 		lpuart_rxint(irq, dev_id);
+ 
+ 	if (sts & UARTSR1_TDRE &&
+-		!(readb(sport->port.membase + UARTCR5) & UARTCR5_TDMAS))
+-		lpuart_txint(irq, dev_id);
++		!(readb(sport->port.membase + UARTCR5) & UARTCR5_TDMAS)) {
++		lpuart_pio_tx(sport);
++	}
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -366,13 +430,60 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
+ 			sport->port.membase + UARTCFIFO);
+ 
+-	writeb(2, sport->port.membase + UARTTWFIFO);
++	writeb(0, sport->port.membase + UARTTWFIFO);
+ 	writeb(1, sport->port.membase + UARTRWFIFO);
+ 
+ 	/* Restore cr2 */
+ 	writeb(cr2_saved, sport->port.membase + UARTCR2);
+ }
+ 
++static int fsl_request_dma(struct uart_port *port)
++{
++	struct lpuart_port *sport = container_of(port,
++					struct lpuart_port, port);
++	struct dma_chan *tx_chan;
++	struct dma_slave_config dma_tx_sconfig;
++	dma_addr_t dma_phys;
++	unsigned char *dma_buf;
++	int ret;
++
++	tx_chan  = dma_request_slave_channel(sport->port.dev, "lpuart-tx");
++
++	if (!tx_chan) {
++		dev_err(sport->port.dev, "Dma TX channel request failed!\n");
++		return -ENODEV;
++	}
++
++	dma_phys = dma_map_single(sport->port.dev,
++				sport->port.state->xmit.buf,
++				UART_XMIT_SIZE, DMA_TO_DEVICE);
++
++	if (!dma_phys) {
++		dev_err(sport->port.dev, "Dma_phys single failed\n");
++		return -ENOMEM;
++	}
++
++	dma_buf = sport->port.state->xmit.buf;
++	dma_tx_sconfig.dst_addr = sport->port.mapbase + UARTDR;
++	dma_tx_sconfig.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	dma_tx_sconfig.dst_maxburst = DMA_MAXBURST;
++	dma_tx_sconfig.direction = DMA_MEM_TO_DEV;
++	ret = dmaengine_slave_config(tx_chan, &dma_tx_sconfig);
++
++	if (ret < 0) {
++		dev_err(sport->port.dev,
++				"Dma slave config failed, err = %d\n", ret);
++		return ret;
++	}
++
++	sport->tx_dma_lpuart = tx_chan;
++	sport->tx_dma_buf_virt = dma_buf;
++	sport->tx_dma_buf_phys = dma_phys;
++	sport->tx_in_progress = 0;
++
++	return 0;
++}
++
+ static int lpuart_startup(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+@@ -380,6 +491,7 @@ static int lpuart_startup(struct uart_port *port)
+ 	unsigned long flags;
+ 	unsigned char temp;
+ 
++	fsl_request_dma(port);
+ 	ret = devm_request_irq(port->dev, port->irq, lpuart_int, 0,
+ 				DRIVER_NAME, sport);
+ 	if (ret)
+@@ -393,6 +505,9 @@ static int lpuart_startup(struct uart_port *port)
+ 	temp |= (UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE);
+ 	writeb(temp, sport->port.membase + UARTCR2);
+ 
++	temp = readb(port->membase + UARTCR5);
++	writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
++
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	return 0;
+ }
 -- 
-Tushar Behera
+1.8.4
