@@ -1,65 +1,84 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] serial: samsung: Remove hard-coded major/minor numbers
-Date: Tue, 31 Dec 2013 16:07:59 +0000
-Message-ID: <20131231160759.GF31886@sirena.org.uk>
-References: <1388120848-15879-1-git-send-email-tushar.behera@linaro.org>
- <20131227051843.GA840@kroah.com>
- <CAHbNUh27ZZ5UxuLMPvv6weNOSG4XKV9ZRrmTB9F0RvgQxufGDQ@mail.gmail.com>
- <20131227063843.GA3310@kroah.com>
- <CAHbNUh0NBVEBJbSG7UWgnHbORgbKCrA_74=jiArSvv5jaFk1SQ@mail.gmail.com>
- <20131227184424.GA4938@kroah.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VvwS7Fyc3fvERiQe"
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH 1/2] serial: clps711x: Add support for N_IRDA line discipline
+Date: Tue, 31 Dec 2013 20:49:41 +0400
+Message-ID: <1388508582-13094-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:49189 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753510Ab3LaQII (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 Dec 2013 11:08:08 -0500
-Content-Disposition: inline
-In-Reply-To: <20131227184424.GA4938@kroah.com>
+Received: from smtp45.i.mail.ru ([94.100.177.105]:48668 "EHLO smtp45.i.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753695Ab3LaQty (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 31 Dec 2013 11:49:54 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Tushar Behera <tushar.behera@linaro.org>, linux-serial <linux-serial@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>, jslaby <jslaby@suse.cz>, Patch Tracking <patches@linaro.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, ben@simtec.co.uk, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <t.figa@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, heiko <heiko@sntech.de>, Kgene Kim <kgene.kim@samsung.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
+This patch replace custom handling of IrDA feature with N_IRDA
+line discipline, so IrDA mode can be used with irtty driver.
 
---VvwS7Fyc3fvERiQe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ .../bindings/serial/cirrus,clps711x-uart.txt         |  1 -
+ drivers/tty/serial/clps711x.c                        | 20 ++++++++++++--------
+ 2 files changed, 12 insertions(+), 9 deletions(-)
 
-On Fri, Dec 27, 2013 at 10:44:24AM -0800, Greg KH wrote:
+diff --git a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+index 8bbdd21..12f3cf8 100644
+--- a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
++++ b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+@@ -9,7 +9,6 @@ Required properties:
+ 
+ Optional properties:
+ - uart-use-ms: Indicate the UART has modem signal (DCD, DSR, CTS).
+-- uart-use-irda: Indicate the UART use IRDA mode.
+ 
+ Note: Each UART port should have an alias correctly numbered
+ in "aliases" node.
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index 4f59f1c..5a931f9 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -232,6 +232,16 @@ static void uart_clps711x_break_ctl(struct uart_port *port, int break_state)
+ 	writel_relaxed(ubrlcr, port->membase + UBRLCR_OFFSET);
+ }
+ 
++static void uart_clps711x_set_ldisc(struct uart_port *port, int ld)
++{
++	if (!port->line) {
++		struct clps711x_port *s = dev_get_drvdata(port->dev);
++
++		regmap_update_bits(s->syscon, SYSCON_OFFSET, SYSCON1_SIREN,
++				   (ld == N_IRDA) ? SYSCON1_SIREN : 0);
++	}
++}
++
+ static int uart_clps711x_startup(struct uart_port *port)
+ {
+ 	struct clps711x_port *s = dev_get_drvdata(port->dev);
+@@ -342,6 +352,7 @@ static const struct uart_ops uart_clps711x_ops = {
+ 	.stop_rx	= uart_clps711x_nop_void,
+ 	.enable_ms	= uart_clps711x_nop_void,
+ 	.break_ctl	= uart_clps711x_break_ctl,
++	.set_ldisc	= uart_clps711x_set_ldisc,
+ 	.startup	= uart_clps711x_startup,
+ 	.shutdown	= uart_clps711x_shutdown,
+ 	.set_termios	= uart_clps711x_set_termios,
+@@ -482,15 +493,8 @@ static int uart_clps711x_probe(struct platform_device *pdev)
+ 		if (IS_ERR(s->syscon))
+ 			return PTR_ERR(s->syscon);
+ 
+-		if (!index) {
+-			bool use_irda;
+-
++		if (!index)
+ 			s->use_ms = of_property_read_bool(np, "uart-use-ms");
+-			use_irda = of_property_read_bool(np, "uart-use-irda");
+-			regmap_update_bits(s->syscon, SYSCON_OFFSET,
+-					   SYSCON1_SIREN,
+-					   use_irda ? SYSCON1_SIREN : 0);
+-		}
+ 	}
+ 
+ 	s->port.line		= index;
+-- 
+1.8.3.2
 
-> Please get approval for this patch from others within Linaro before
-> sending it out again.  Linaro has a process in place for this type of
-> thing, please use it, otherwise it makes people like me really grumpy
-> and upset and causes me to yell at people at their conferences.
-
-This isn't really anything to do with Linaro - it's a Samsung driver so
-it's their call.  A good proportion of the Samsung guys and their list
-are in the CCs so hopefully they'll chime in.
-
---VvwS7Fyc3fvERiQe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSwuvcAAoJELSic+t+oim9SFMP/0bvb6TXdPlUztTjy/OMME6m
-MmJBcRUU0Aj09XUQf+9yqjqQxiuyLfxmn9G7x55wOlcV74yVMrF98xecj9V7kCND
-Evr61BG0923z2x/HUrsjmzgOvYp1J/1xZOEH1quzwmp6ILtbCokt/IwvawBZw7vf
-phOcZ9PvenVzOt2kIxXOGk2AtXKUJ/HXQ5U8dh7bGymIitiNkeZKbBg6p7jeU2wO
-9OVAYcKDEnZbei8LfdUGHP7+V3/urqe541KkYhsNK7FvocrTshV9AE6dF9KNM7Vl
-JD5gT0EA4R1ymQd5URMzAQTvlVYaO8+BQK11ZNIGNcDCwFQzHOnyx5jETsZdnaUT
-MHjEbiYrM3kS92fMQIsZbYbikyJ5EJCIT0hnEn+93IJyls7E9z2/9JKf7qfR1rtx
-Xv7YnbVPOAqKA+bApPMfG1XJd7X1WBIhrQ1p5wRyoN9JrqY7ATW4KLje3hjo3liA
-pnZuncOurrQkyBgRBySYHReOoJBTWimopiG6AwCKWK2MveONUEd2Qd8cFeeA43OG
-F0TWRYv0pc9UMvwomdlYWezqI8Wb+RchNq+XXCG/9ix25Z9kgAop4BL8gAw4A+1J
-QUNSe14GunnIM2rIER4Aiv36romnO+4fP34RcjmmFAfp7ttrCucio9hfziylVDRx
-oExYe+bWyYV7DE3LCyk+
-=jVf1
------END PGP SIGNATURE-----
-
---VvwS7Fyc3fvERiQe--
