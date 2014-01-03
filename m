@@ -1,222 +1,81 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] tty: delete non-required instances of include <linux/init.h>
-Date: Thu, 2 Jan 2014 19:23:47 -0500
-Message-ID: <1388708627-23741-1-git-send-email-paul.gortmaker@windriver.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH 1/3] uart: sirf: use PM macro initialize PM functions
+Date: Fri,  3 Jan 2014 15:44:06 +0800
+Message-ID: <1388735048-16093-1-git-send-email-21cnbao@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.windriver.com ([147.11.146.13]:44150 "EHLO
-	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754173AbaACAY1 (ORCPT
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:55478 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750802AbaACHo2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Jan 2014 19:24:27 -0500
+	Fri, 3 Jan 2014 02:44:28 -0500
+Received: by mail-pd0-f175.google.com with SMTP id w10so14922303pde.6
+        for <linux-serial@vger.kernel.org>; Thu, 02 Jan 2014 23:44:26 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Gortmaker <paul.gortmaker@windriver.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-None of these files are actually using any __init type directives
-and hence don't need to include <linux/init.h>.  Most are just a
-left over from __devinit and __cpuinit removal, or simply due to
-code getting copied from one driver to the next.
+From: Qipan Li <Qipan.Li@csr.com>
 
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+use SET_SYSTEM_SLEEP_PM_OPS to initialize suspend/resume functions
+instead of legacy suspend and resume entries of platform_driver.
+this will add hibernation support automatically as suspend to disk
+entries are also set.
+
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
 ---
- drivers/tty/goldfish.c                      | 1 -
- drivers/tty/hvc/hvsi_lib.c                  | 1 -
- drivers/tty/ipwireless/tty.c                | 1 -
- drivers/tty/serial/8250/8250_dw.c           | 1 -
- drivers/tty/serial/8250/8250_em.c           | 1 -
- drivers/tty/serial/8250/8250_pci.c          | 1 -
- drivers/tty/serial/8250/8250_pnp.c          | 1 -
- drivers/tty/serial/8250/serial_cs.c         | 1 -
- drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c | 1 -
- drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 1 -
- drivers/tty/serial/kgdb_nmi.c               | 1 -
- drivers/tty/serial/of_serial.c              | 1 -
- drivers/tty/tty_buffer.c                    | 1 -
- drivers/tty/tty_ldisc.c                     | 1 -
- drivers/tty/tty_port.c                      | 1 -
- 15 files changed, 15 deletions(-)
+ drivers/tty/serial/sirfsoc_uart.c |   17 +++++++++++------
+ 1 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index f17d2e4..75dc9d2 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -14,7 +14,6 @@
-  */
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index f186a8f..6fea79b 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -1518,32 +1518,37 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
- #include <linux/console.h>
--#include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
- #include <linux/tty.h>
-diff --git a/drivers/tty/hvc/hvsi_lib.c b/drivers/tty/hvc/hvsi_lib.c
-index 347050e..7ae6c29 100644
---- a/drivers/tty/hvc/hvsi_lib.c
-+++ b/drivers/tty/hvc/hvsi_lib.c
-@@ -1,5 +1,4 @@
- #include <linux/types.h>
--#include <linux/init.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/console.h>
-diff --git a/drivers/tty/ipwireless/tty.c b/drivers/tty/ipwireless/tty.c
-index 8fd72ff..ebd5bff 100644
---- a/drivers/tty/ipwireless/tty.c
-+++ b/drivers/tty/ipwireless/tty.c
-@@ -15,7 +15,6 @@
-  *   Copyright (C) 2007 David Sterba
-  */
++#ifdef CONFIG_PM_SLEEP
+ static int
+-sirfsoc_uart_suspend(struct platform_device *pdev, pm_message_t state)
++sirfsoc_uart_suspend(struct device *pdev)
+ {
+-	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
++	struct sirfsoc_uart_port *sirfport = dev_get_drvdata(pdev);
+ 	struct uart_port *port = &sirfport->port;
+ 	uart_suspend_port(&sirfsoc_uart_drv, port);
+ 	return 0;
+ }
  
--#include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index aa30271..faa64e6 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -14,7 +14,6 @@
-  * raised, the LCR needs to be rewritten and the uart status register read.
-  */
- #include <linux/device.h>
--#include <linux/init.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/serial_8250.h>
-diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index d1a9078..56c8723 100644
---- a/drivers/tty/serial/8250/8250_em.c
-+++ b/drivers/tty/serial/8250/8250_em.c
-@@ -18,7 +18,6 @@
-  */
+-static int sirfsoc_uart_resume(struct platform_device *pdev)
++static int sirfsoc_uart_resume(struct device *pdev)
+ {
+-	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
++	struct sirfsoc_uart_port *sirfport = dev_get_drvdata(pdev);
+ 	struct uart_port *port = &sirfport->port;
+ 	uart_resume_port(&sirfsoc_uart_drv, port);
+ 	return 0;
+ }
++#endif
++
++static const struct dev_pm_ops sirfsoc_uart_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(sirfsoc_uart_suspend, sirfsoc_uart_resume)
++};
  
- #include <linux/device.h>
--#include <linux/init.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/serial_8250.h>
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 77d0aca..50228ee 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -11,7 +11,6 @@
-  */
- #undef DEBUG
- #include <linux/module.h>
--#include <linux/init.h>
- #include <linux/pci.h>
- #include <linux/string.h>
- #include <linux/kernel.h>
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 35d9ab9..682a2fb 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -12,7 +12,6 @@
-  * the Free Software Foundation; either version 2 of the License.
-  */
- #include <linux/module.h>
--#include <linux/init.h>
- #include <linux/pci.h>
- #include <linux/pnp.h>
- #include <linux/string.h>
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index 1b74b88..4d180c9 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -34,7 +34,6 @@
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/kernel.h>
--#include <linux/init.h>
- #include <linux/ptrace.h>
- #include <linux/slab.h>
- #include <linux/string.h>
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-index 527a969..6d3b22e 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-@@ -29,7 +29,6 @@
- #include <linux/tty.h>
- #include <linux/gfp.h>
- #include <linux/ioport.h>
--#include <linux/init.h>
- #include <linux/serial.h>
- #include <linux/console.h>
- #include <linux/sysrq.h>
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-index a4927e6..f46d2ca 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-@@ -29,7 +29,6 @@
- #include <linux/tty.h>
- #include <linux/ioport.h>
- #include <linux/slab.h>
--#include <linux/init.h>
- #include <linux/serial.h>
- #include <linux/console.h>
- #include <linux/sysrq.h>
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 5dafcf1..5f673b7 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -15,7 +15,6 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/compiler.h>
--#include <linux/init.h>
- #include <linux/slab.h>
- #include <linux/errno.h>
- #include <linux/atomic.h>
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 2caf9c6..9924660 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -9,7 +9,6 @@
-  *  2 of the License, or (at your option) any later version.
-  *
-  */
--#include <linux/init.h>
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/delay.h>
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 3002e20..765125d 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -11,7 +11,6 @@
- #include <linux/string.h>
- #include <linux/slab.h>
- #include <linux/sched.h>
--#include <linux/init.h>
- #include <linux/wait.h>
- #include <linux/bitops.h>
- #include <linux/delay.h>
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 6458e11..2d822aa 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -11,7 +11,6 @@
- #include <linux/slab.h>
- #include <linux/poll.h>
- #include <linux/proc_fs.h>
--#include <linux/init.h>
- #include <linux/module.h>
- #include <linux/device.h>
- #include <linux/wait.h>
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index c94d234..3f746c8 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -12,7 +12,6 @@
- #include <linux/string.h>
- #include <linux/slab.h>
- #include <linux/sched.h>
--#include <linux/init.h>
- #include <linux/wait.h>
- #include <linux/bitops.h>
- #include <linux/delay.h>
+ static struct platform_driver sirfsoc_uart_driver = {
+ 	.probe		= sirfsoc_uart_probe,
+ 	.remove		= sirfsoc_uart_remove,
+-	.suspend	= sirfsoc_uart_suspend,
+-	.resume		= sirfsoc_uart_resume,
+ 	.driver		= {
+ 		.name	= SIRFUART_PORT_NAME,
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table = sirfsoc_uart_ids,
++		.pm	= &sirfsoc_uart_pm_ops,
+ 	},
+ };
+ 
 -- 
-1.8.4.1
+1.7.5.4
 
