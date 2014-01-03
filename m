@@ -1,196 +1,222 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 2/2] serial: clps711x: Enable driver compilation with COMPILE_TEST
-Date: Tue, 31 Dec 2013 20:49:42 +0400
-Message-ID: <1388508582-13094-2-git-send-email-shc_work@mail.ru>
-References: <1388508582-13094-1-git-send-email-shc_work@mail.ru>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] tty: delete non-required instances of include <linux/init.h>
+Date: Thu, 2 Jan 2014 19:23:47 -0500
+Message-ID: <1388708627-23741-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp45.i.mail.ru ([94.100.177.105]:49495 "EHLO smtp45.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753769Ab3LaQty (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 31 Dec 2013 11:49:54 -0500
-In-Reply-To: <1388508582-13094-1-git-send-email-shc_work@mail.ru>
+Received: from mail1.windriver.com ([147.11.146.13]:44150 "EHLO
+	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754173AbaACAY1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 2 Jan 2014 19:24:27 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Gortmaker <paul.gortmaker@windriver.com>
 
-This helps increasing build testing coverage.
-To do this, read{write}_relaxed() functions was be replaced with
-simple read{write}() variants. Potential "uninitialized variable"
-warnings was be fixed if driver compiled without MFD_SYSCON.
+None of these files are actually using any __init type directives
+and hence don't need to include <linux/init.h>.  Most are just a
+left over from __devinit and __cpuinit removal, or simply due to
+code getting copied from one driver to the next.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 ---
- drivers/tty/serial/Kconfig    |  3 +--
- drivers/tty/serial/clps711x.c | 40 ++++++++++++++++++++++------------------
- 2 files changed, 23 insertions(+), 20 deletions(-)
+ drivers/tty/goldfish.c                      | 1 -
+ drivers/tty/hvc/hvsi_lib.c                  | 1 -
+ drivers/tty/ipwireless/tty.c                | 1 -
+ drivers/tty/serial/8250/8250_dw.c           | 1 -
+ drivers/tty/serial/8250/8250_em.c           | 1 -
+ drivers/tty/serial/8250/8250_pci.c          | 1 -
+ drivers/tty/serial/8250/8250_pnp.c          | 1 -
+ drivers/tty/serial/8250/serial_cs.c         | 1 -
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c | 1 -
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 1 -
+ drivers/tty/serial/kgdb_nmi.c               | 1 -
+ drivers/tty/serial/of_serial.c              | 1 -
+ drivers/tty/tty_buffer.c                    | 1 -
+ drivers/tty/tty_ldisc.c                     | 1 -
+ drivers/tty/tty_port.c                      | 1 -
+ 15 files changed, 15 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 7fbbbad..441ada4 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -181,9 +181,8 @@ config SERIAL_KS8695_CONSOLE
+diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
+index f17d2e4..75dc9d2 100644
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -14,7 +14,6 @@
+  */
  
- config SERIAL_CLPS711X
- 	tristate "CLPS711X serial port support"
--	depends on ARCH_CLPS711X
-+	depends on ARCH_CLPS711X || COMPILE_TEST
- 	select SERIAL_CORE
--	default y
- 	help
- 	  This enables the driver for the on-chip UARTs of the Cirrus
- 	  Logic EP711x/EP721x/EP731x processors.
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index 5a931f9..b0eacb8 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -99,15 +99,16 @@ static irqreturn_t uart_clps711x_int_rx(int irq, void *dev_id)
- 	struct uart_port *port = dev_id;
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 	unsigned int status, flg;
--	u32 sysflg;
- 	u16 ch;
+ #include <linux/console.h>
+-#include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+ #include <linux/tty.h>
+diff --git a/drivers/tty/hvc/hvsi_lib.c b/drivers/tty/hvc/hvsi_lib.c
+index 347050e..7ae6c29 100644
+--- a/drivers/tty/hvc/hvsi_lib.c
++++ b/drivers/tty/hvc/hvsi_lib.c
+@@ -1,5 +1,4 @@
+ #include <linux/types.h>
+-#include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/console.h>
+diff --git a/drivers/tty/ipwireless/tty.c b/drivers/tty/ipwireless/tty.c
+index 8fd72ff..ebd5bff 100644
+--- a/drivers/tty/ipwireless/tty.c
++++ b/drivers/tty/ipwireless/tty.c
+@@ -15,7 +15,6 @@
+  *   Copyright (C) 2007 David Sterba
+  */
  
- 	for (;;) {
-+		u32 sysflg = 0;
-+
- 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
- 		if (sysflg & SYSFLG_URXFE)
- 			break;
+-#include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index aa30271..faa64e6 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -14,7 +14,6 @@
+  * raised, the LCR needs to be rewritten and the uart status register read.
+  */
+ #include <linux/device.h>
+-#include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/serial_8250.h>
+diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
+index d1a9078..56c8723 100644
+--- a/drivers/tty/serial/8250/8250_em.c
++++ b/drivers/tty/serial/8250/8250_em.c
+@@ -18,7 +18,6 @@
+  */
  
--		ch = readw_relaxed(port->membase + UARTDR_OFFSET);
-+		ch = readw(port->membase + UARTDR_OFFSET);
- 		status = ch & (UARTDR_FRMERR | UARTDR_PARERR | UARTDR_OVERR);
- 		ch &= 0xff;
- 
-@@ -151,10 +152,9 @@ static irqreturn_t uart_clps711x_int_tx(int irq, void *dev_id)
- 	struct uart_port *port = dev_id;
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 	struct circ_buf *xmit = &port->state->xmit;
--	u32 sysflg;
- 
- 	if (port->x_char) {
--		writew_relaxed(port->x_char, port->membase + UARTDR_OFFSET);
-+		writew(port->x_char, port->membase + UARTDR_OFFSET);
- 		port->icount.tx++;
- 		port->x_char = 0;
- 		return IRQ_HANDLED;
-@@ -169,8 +169,9 @@ static irqreturn_t uart_clps711x_int_tx(int irq, void *dev_id)
- 	}
- 
- 	while (!uart_circ_empty(xmit)) {
--		writew_relaxed(xmit->buf[xmit->tail],
--			       port->membase + UARTDR_OFFSET);
-+		u32 sysflg = 0;
-+
-+		writew(xmit->buf[xmit->tail], port->membase + UARTDR_OFFSET);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
- 		port->icount.tx++;
- 
-@@ -188,7 +189,7 @@ static irqreturn_t uart_clps711x_int_tx(int irq, void *dev_id)
- static unsigned int uart_clps711x_tx_empty(struct uart_port *port)
- {
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
--	u32 sysflg;
-+	u32 sysflg = 0;
- 
- 	regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
- 
-@@ -199,9 +200,10 @@ static unsigned int uart_clps711x_get_mctrl(struct uart_port *port)
- {
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 	unsigned int result = 0;
--	u32 sysflg;
- 
- 	if (s->use_ms) {
-+		u32 sysflg = 0;
-+
- 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
- 		if (sysflg & SYSFLG1_DCD)
- 			result |= TIOCM_CAR;
-@@ -224,12 +226,12 @@ static void uart_clps711x_break_ctl(struct uart_port *port, int break_state)
- {
- 	unsigned int ubrlcr;
- 
--	ubrlcr = readl_relaxed(port->membase + UBRLCR_OFFSET);
-+	ubrlcr = readl(port->membase + UBRLCR_OFFSET);
- 	if (break_state)
- 		ubrlcr |= UBRLCR_BREAK;
- 	else
- 		ubrlcr &= ~UBRLCR_BREAK;
--	writel_relaxed(ubrlcr, port->membase + UBRLCR_OFFSET);
-+	writel(ubrlcr, port->membase + UBRLCR_OFFSET);
- }
- 
- static void uart_clps711x_set_ldisc(struct uart_port *port, int ld)
-@@ -247,8 +249,8 @@ static int uart_clps711x_startup(struct uart_port *port)
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
- 
- 	/* Disable break */
--	writel_relaxed(readl_relaxed(port->membase + UBRLCR_OFFSET) &
--		       ~UBRLCR_BREAK, port->membase + UBRLCR_OFFSET);
-+	writel(readl(port->membase + UBRLCR_OFFSET) & ~UBRLCR_BREAK,
-+	       port->membase + UBRLCR_OFFSET);
- 
- 	/* Enable the port */
- 	return regmap_update_bits(s->syscon, SYSCON_OFFSET,
-@@ -320,7 +322,7 @@ static void uart_clps711x_set_termios(struct uart_port *port,
- 
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
--	writel_relaxed(ubrlcr | (quot - 1), port->membase + UBRLCR_OFFSET);
-+	writel(ubrlcr | (quot - 1), port->membase + UBRLCR_OFFSET);
- }
- 
- static const char *uart_clps711x_type(struct uart_port *port)
-@@ -366,13 +368,13 @@ static const struct uart_ops uart_clps711x_ops = {
- static void uart_clps711x_console_putchar(struct uart_port *port, int ch)
- {
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
--	u32 sysflg;
-+	u32 sysflg = 0;
- 
- 	do {
- 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
- 	} while (sysflg & SYSFLG_UTXFF);
- 
--	writew_relaxed(ch, port->membase + UARTDR_OFFSET);
-+	writew(ch, port->membase + UARTDR_OFFSET);
- }
- 
- static void uart_clps711x_console_write(struct console *co, const char *c,
-@@ -380,7 +382,7 @@ static void uart_clps711x_console_write(struct console *co, const char *c,
- {
- 	struct uart_port *port = clps711x_uart.state[co->index].uart_port;
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
--	u32 sysflg;
-+	u32 sysflg = 0;
- 
- 	uart_console_write(port, c, n, uart_clps711x_console_putchar);
- 
-@@ -396,8 +398,8 @@ static int uart_clps711x_console_setup(struct console *co, char *options)
- 	int ret, index = co->index;
- 	struct clps711x_port *s;
- 	struct uart_port *port;
--	u32 ubrlcr, syscon;
- 	unsigned int quot;
-+	u32 ubrlcr;
- 
- 	if (index < 0 || index >= UART_CLPS711X_NR)
- 		return -EINVAL;
-@@ -409,9 +411,11 @@ static int uart_clps711x_console_setup(struct console *co, char *options)
- 	s = dev_get_drvdata(port->dev);
- 
- 	if (!options) {
-+		u32 syscon = 0;
-+
- 		regmap_read(s->syscon, SYSCON_OFFSET, &syscon);
- 		if (syscon & SYSCON_UARTEN) {
--			ubrlcr = readl_relaxed(port->membase + UBRLCR_OFFSET);
-+			ubrlcr = readl(port->membase + UBRLCR_OFFSET);
- 
- 			if (ubrlcr & UBRLCR_PRTEN) {
- 				if (ubrlcr & UBRLCR_EVENPRT)
+ #include <linux/device.h>
+-#include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/serial_8250.h>
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 77d0aca..50228ee 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -11,7 +11,6 @@
+  */
+ #undef DEBUG
+ #include <linux/module.h>
+-#include <linux/init.h>
+ #include <linux/pci.h>
+ #include <linux/string.h>
+ #include <linux/kernel.h>
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index 35d9ab9..682a2fb 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -12,7 +12,6 @@
+  * the Free Software Foundation; either version 2 of the License.
+  */
+ #include <linux/module.h>
+-#include <linux/init.h>
+ #include <linux/pci.h>
+ #include <linux/pnp.h>
+ #include <linux/string.h>
+diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
+index 1b74b88..4d180c9 100644
+--- a/drivers/tty/serial/8250/serial_cs.c
++++ b/drivers/tty/serial/8250/serial_cs.c
+@@ -34,7 +34,6 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/kernel.h>
+-#include <linux/init.h>
+ #include <linux/ptrace.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+index 527a969..6d3b22e 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+@@ -29,7 +29,6 @@
+ #include <linux/tty.h>
+ #include <linux/gfp.h>
+ #include <linux/ioport.h>
+-#include <linux/init.h>
+ #include <linux/serial.h>
+ #include <linux/console.h>
+ #include <linux/sysrq.h>
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+index a4927e6..f46d2ca 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+@@ -29,7 +29,6 @@
+ #include <linux/tty.h>
+ #include <linux/ioport.h>
+ #include <linux/slab.h>
+-#include <linux/init.h>
+ #include <linux/serial.h>
+ #include <linux/console.h>
+ #include <linux/sysrq.h>
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+index 5dafcf1..5f673b7 100644
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ b/drivers/tty/serial/kgdb_nmi.c
+@@ -15,7 +15,6 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/compiler.h>
+-#include <linux/init.h>
+ #include <linux/slab.h>
+ #include <linux/errno.h>
+ #include <linux/atomic.h>
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 2caf9c6..9924660 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -9,7 +9,6 @@
+  *  2 of the License, or (at your option) any later version.
+  *
+  */
+-#include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 3002e20..765125d 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -11,7 +11,6 @@
+ #include <linux/string.h>
+ #include <linux/slab.h>
+ #include <linux/sched.h>
+-#include <linux/init.h>
+ #include <linux/wait.h>
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 6458e11..2d822aa 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -11,7 +11,6 @@
+ #include <linux/slab.h>
+ #include <linux/poll.h>
+ #include <linux/proc_fs.h>
+-#include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/device.h>
+ #include <linux/wait.h>
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index c94d234..3f746c8 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -12,7 +12,6 @@
+ #include <linux/string.h>
+ #include <linux/slab.h>
+ #include <linux/sched.h>
+-#include <linux/init.h>
+ #include <linux/wait.h>
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
 -- 
-1.8.3.2
+1.8.4.1
 
