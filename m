@@ -1,15 +1,17 @@
 From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH 1/3] uart: sirf: use PM macro initialize PM functions
-Date: Fri,  3 Jan 2014 15:44:06 +0800
-Message-ID: <1388735048-16093-1-git-send-email-21cnbao@gmail.com>
+Subject: [PATCH 2/3] uart: sirf: provide pm entries of uart_ops
+Date: Fri,  3 Jan 2014 15:44:07 +0800
+Message-ID: <1388735048-16093-2-git-send-email-21cnbao@gmail.com>
+References: <1388735048-16093-1-git-send-email-21cnbao@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f175.google.com ([209.85.192.175]:55478 "EHLO
-	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750802AbaACHo2 (ORCPT
+Received: from mail-pa0-f51.google.com ([209.85.220.51]:40506 "EHLO
+	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750802AbaACHow (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Jan 2014 02:44:28 -0500
-Received: by mail-pd0-f175.google.com with SMTP id w10so14922303pde.6
-        for <linux-serial@vger.kernel.org>; Thu, 02 Jan 2014 23:44:26 -0800 (PST)
+	Fri, 3 Jan 2014 02:44:52 -0500
+Received: by mail-pa0-f51.google.com with SMTP id fa1so15513898pad.38
+        for <linux-serial@vger.kernel.org>; Thu, 02 Jan 2014 23:44:52 -0800 (PST)
+In-Reply-To: <1388735048-16093-1-git-send-email-21cnbao@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
@@ -17,65 +19,71 @@ Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@cs
 
 From: Qipan Li <Qipan.Li@csr.com>
 
-use SET_SYSTEM_SLEEP_PM_OPS to initialize suspend/resume functions
-instead of legacy suspend and resume entries of platform_driver.
-this will add hibernation support automatically as suspend to disk
-entries are also set.
+this patch provides PM entry of uart_ops, then drop clk enable and
+disable because serial core will do it.
+
+the patch also fixes the issue that uart hang in resume caused by
+not-enabled clock.
 
 Signed-off-by: Qipan Li <Qipan.Li@csr.com>
 Signed-off-by: Barry Song <Baohua.Song@csr.com>
 ---
- drivers/tty/serial/sirfsoc_uart.c |   17 +++++++++++------
- 1 files changed, 11 insertions(+), 6 deletions(-)
+ drivers/tty/serial/sirfsoc_uart.c |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index f186a8f..6fea79b 100644
+index 6fea79b..a6c38ab 100644
 --- a/drivers/tty/serial/sirfsoc_uart.c
 +++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -1518,32 +1518,37 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
- 	return 0;
+@@ -1033,6 +1033,16 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
+ 	spin_unlock_irqrestore(&port->lock, flags);
  }
  
-+#ifdef CONFIG_PM_SLEEP
- static int
--sirfsoc_uart_suspend(struct platform_device *pdev, pm_message_t state)
-+sirfsoc_uart_suspend(struct device *pdev)
- {
--	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
-+	struct sirfsoc_uart_port *sirfport = dev_get_drvdata(pdev);
- 	struct uart_port *port = &sirfport->port;
- 	uart_suspend_port(&sirfsoc_uart_drv, port);
- 	return 0;
- }
- 
--static int sirfsoc_uart_resume(struct platform_device *pdev)
-+static int sirfsoc_uart_resume(struct device *pdev)
- {
--	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
-+	struct sirfsoc_uart_port *sirfport = dev_get_drvdata(pdev);
- 	struct uart_port *port = &sirfport->port;
- 	uart_resume_port(&sirfsoc_uart_drv, port);
- 	return 0;
- }
-+#endif
++static void sirfsoc_uart_pm(struct uart_port *port, unsigned int state,
++			      unsigned int oldstate)
++{
++	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
++	if (!state)
++		clk_prepare_enable(sirfport->clk);
++	else
++		clk_disable_unprepare(sirfport->clk);
++}
 +
-+static const struct dev_pm_ops sirfsoc_uart_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(sirfsoc_uart_suspend, sirfsoc_uart_resume)
-+};
+ static unsigned int sirfsoc_uart_init_tx_dma(struct uart_port *port)
+ {
+ 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
+@@ -1264,6 +1274,7 @@ static struct uart_ops sirfsoc_uart_ops = {
+ 	.startup	= sirfsoc_uart_startup,
+ 	.shutdown	= sirfsoc_uart_shutdown,
+ 	.set_termios	= sirfsoc_uart_set_termios,
++	.pm		= sirfsoc_uart_pm,
+ 	.type		= sirfsoc_uart_type,
+ 	.release_port	= sirfsoc_uart_release_port,
+ 	.request_port	= sirfsoc_uart_request_port,
+@@ -1486,7 +1497,6 @@ usp_no_flow_control:
+ 		ret = PTR_ERR(sirfport->clk);
+ 		goto err;
+ 	}
+-	clk_prepare_enable(sirfport->clk);
+ 	port->uartclk = clk_get_rate(sirfport->clk);
  
- static struct platform_driver sirfsoc_uart_driver = {
- 	.probe		= sirfsoc_uart_probe,
- 	.remove		= sirfsoc_uart_remove,
--	.suspend	= sirfsoc_uart_suspend,
--	.resume		= sirfsoc_uart_resume,
- 	.driver		= {
- 		.name	= SIRFUART_PORT_NAME,
- 		.owner	= THIS_MODULE,
- 		.of_match_table = sirfsoc_uart_ids,
-+		.pm	= &sirfsoc_uart_pm_ops,
- 	},
- };
+ 	port->ops = &sirfsoc_uart_ops;
+@@ -1502,7 +1512,6 @@ usp_no_flow_control:
+ 	return 0;
  
+ port_err:
+-	clk_disable_unprepare(sirfport->clk);
+ 	clk_put(sirfport->clk);
+ err:
+ 	return ret;
+@@ -1512,7 +1521,6 @@ static int sirfsoc_uart_remove(struct platform_device *pdev)
+ {
+ 	struct sirfsoc_uart_port *sirfport = platform_get_drvdata(pdev);
+ 	struct uart_port *port = &sirfport->port;
+-	clk_disable_unprepare(sirfport->clk);
+ 	clk_put(sirfport->clk);
+ 	uart_remove_one_port(&sirfsoc_uart_drv, port);
+ 	return 0;
 -- 
 1.7.5.4
 
