@@ -1,44 +1,83 @@
 From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: [PATCH 0/4] tty/serial: at91: fixes dealing with port shutdown
-Date: Tue, 7 Jan 2014 11:41:35 +0100
-Message-ID: <cover.1389090437.git.nicolas.ferre@atmel.com>
+Subject: [PATCH 1/4] tty/serial: at91: Handle shutdown more safely
+Date: Tue, 7 Jan 2014 11:45:06 +0100
+Message-ID: <dc7afa0aaab583d94211069f3696168f67efbcf3.1389090437.git.nicolas.ferre@atmel.com>
+References: <cover.1389090437.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:39722 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751068AbaAGKlm (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Jan 2014 05:41:42 -0500
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1389090437.git.nicolas.ferre@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: Leilei Zhao <leilei.zhao@atmel.com>, mark.roszko@gmail.com, mdeneen@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Leilei Zhao <leilei.zhao@atmel.com>, mark.roszko@gmail.com, mdeneen@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
+List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Marek Roszko <mark.roszko@gmail.com>
 
-These four fixes are pretty important for our atmel_serial driver as they
-deal with closing/re-opening of ports. They fix race condition and
-null pointers dereference.
-I added the "stable" tag to each of them (v3.12).
+Interrupts were being cleaned up late in the shutdown handler, it is possible
+that an interrupt can occur and schedule a tasklet that runs after the port is
+cleaned up. There is a null dereference due to this race condition with the
+following stacktrace:
 
-Even if we are late in the development cycle, can you please consider including
-these patches for 3.13?
+[<c02092b0>] (atmel_tasklet_func+0x514/0x814) from [<c001fd34>] (tasklet_action+0x70/0xa8)
+[<c001fd34>] (tasklet_action+0x70/0xa8) from [<c001f60c>] (__do_softirq+0x90/0x144)
+[<c001f60c>] (__do_softirq+0x90/0x144) from [<c001fa18>] (irq_exit+0x40/0x4c)
+[<c001fa18>] (irq_exit+0x40/0x4c) from [<c000e298>] (handle_IRQ+0x64/0x84)
+[<c000e298>] (handle_IRQ+0x64/0x84) from [<c000d6c0>] (__irq_svc+0x40/0x50)
+[<c000d6c0>] (__irq_svc+0x40/0x50) from [<c0208060>] (atmel_rx_dma_release+0x88/0xb8)
+[<c0208060>] (atmel_rx_dma_release+0x88/0xb8) from [<c0209740>] (atmel_shutdown+0x104/0x160)
+[<c0209740>] (atmel_shutdown+0x104/0x160) from [<c0205e8c>] (uart_port_shutdown+0x2c/0x38)
 
-Thanks, best regards,
-   Nicolas Ferre
+Signed-off-by: Marek Roszko <mark.roszko@gmail.com>
+Acked-by: Leilei Zhao <leilei.zhao@atmel.com>
+Cc: <stable@vger.kernel.org> # v3.12
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+---
+ drivers/tty/serial/atmel_serial.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-Marek Roszko (3):
-  tty/serial: at91: Handle shutdown more safely
-  tty/serial: at91: fix race condition in atmel_serial_remove
-  tty/serial: at91: prevent null dereference in tasklet function
-
-Mark Deneen (1):
-  tty/serial: at91: reset rx_ring when port is shutdown
-
- drivers/tty/serial/atmel_serial.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index c7d99af46a96..48ea47a32d5f 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1650,12 +1650,24 @@ static int atmel_startup(struct uart_port *port)
+ static void atmel_shutdown(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++
+ 	/*
+-	 * Ensure everything is stopped.
++	 * Clear out any scheduled tasklets before
++	 * we destroy the buffers
++	 */
++	tasklet_kill(&atmel_port->tasklet);
++
++	/*
++	 * Ensure everything is stopped and
++	 * disable all interrupts, port and break condition.
+ 	 */
+ 	atmel_stop_rx(port);
+ 	atmel_stop_tx(port);
+ 
++	UART_PUT_CR(port, ATMEL_US_RSTSTA);
++	UART_PUT_IDR(port, -1);
++
++
+ 	/*
+ 	 * Shut-down the DMA.
+ 	 */
+@@ -1665,12 +1677,6 @@ static void atmel_shutdown(struct uart_port *port)
+ 		atmel_port->release_tx(port);
+ 
+ 	/*
+-	 * Disable all interrupts, port and break condition.
+-	 */
+-	UART_PUT_CR(port, ATMEL_US_RSTSTA);
+-	UART_PUT_IDR(port, -1);
+-
+-	/*
+ 	 * Free the interrupt
+ 	 */
+ 	free_irq(port->irq, port);
 -- 
 1.8.2.2
-
