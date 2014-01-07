@@ -1,82 +1,44 @@
-From: Yao Yuan <yao.yuan@freescale.com>
-Subject: RE: [PATCH] the eDMA support for the LPUART send driver
-Date: Tue, 7 Jan 2014 09:49:02 +0000
-Message-ID: <8c7c4d5a53f74c6aa2f701bcb3dbbeab@BL2PR03MB338.namprd03.prod.outlook.com>
-References: <1388143449-28640-1-git-send-email-yao.yuan@freescale.com>
- <201401051544.50036.arnd@arndb.de>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [PATCH 0/4] tty/serial: at91: fixes dealing with port shutdown
+Date: Tue, 7 Jan 2014 11:41:35 +0100
+Message-ID: <cover.1389090437.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [207.46.163.185] ([207.46.163.185]:24919 "EHLO
-	na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753558AbaAGJtT convert rfc822-to-8bit (ORCPT
+Received: from eusmtp01.atmel.com ([212.144.249.243]:39722 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751068AbaAGKlm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Jan 2014 04:49:19 -0500
-In-Reply-To: <201401051544.50036.arnd@arndb.de>
-Content-Language: en-US
+	Tue, 7 Jan 2014 05:41:42 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: gregkh@linuxfoundation.org
+Cc: Leilei Zhao <leilei.zhao@atmel.com>, mark.roszko@gmail.com, mdeneen@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Thanks for your suggestion.
+Hi,
 
-I will fix those errors and also add the "jpg" in the next version.
+These four fixes are pretty important for our atmel_serial driver as they
+deal with closing/re-opening of ports. They fix race condition and
+null pointers dereference.
+I added the "stable" tag to each of them (v3.12).
 
------Original Message-----
-From: Arnd Bergmann [mailto:arnd@arndb.de] 
-Sent: Sunday, January 05, 2014 10:45 PM
-To: linux-arm-kernel@lists.infradead.org
-Cc: Yuan Yao-B46683; gregkh@linuxfoundation.org; linux-serial@vger.kernel.org
-Subject: Re: [PATCH] the eDMA support for the LPUART send driver
+Even if we are late in the development cycle, can you please consider including
+these patches for 3.13?
 
-On Friday 27 December 2013, Yuan Yao wrote:
-> This patch add eDMA support for LPUART send function.
-> 
-> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
-> ---
->  arch/arm/boot/dts/vf610.dtsi    |  12 +++
->  drivers/tty/serial/fsl_lpuart.c | 187 
-> ++++++++++++++++++++++++++++++++--------
->  2 files changed, 163 insertions(+), 36 deletions(-)
+Thanks, best regards,
+   Nicolas Ferre
 
-Not sure if this got applied already, but you are missing the respective change to Documentation/devicetree/bindings/serial/fsl-lpuart.txt.
+Marek Roszko (3):
+  tty/serial: at91: Handle shutdown more safely
+  tty/serial: at91: fix race condition in atmel_serial_remove
+  tty/serial: at91: prevent null dereference in tasklet function
 
-Please document the dma-names you use here. While you are at it, please also add the "ipg" clock-name.
+Mark Deneen (1):
+  tty/serial: at91: reset rx_ring when port is shutdown
 
-	Arnd
+ drivers/tty/serial/atmel_serial.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
 
-> +static int fsl_request_dma(struct uart_port *port) {
-> +	struct lpuart_port *sport = container_of(port,
-> +					struct lpuart_port, port);
-> +	struct dma_chan *tx_chan;
-> +	struct dma_slave_config dma_tx_sconfig;
-> +	dma_addr_t dma_phys;
-> +	unsigned char *dma_buf;
-> +	int ret;
-> +
-> +	tx_chan  = dma_request_slave_channel(sport->port.dev, "lpuart-tx");
-> +
-> +	if (!tx_chan) {
-> +		dev_err(sport->port.dev, "Dma TX channel request failed!\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	dma_phys = dma_map_single(sport->port.dev,
-> +				sport->port.state->xmit.buf,
-> +				UART_XMIT_SIZE, DMA_TO_DEVICE);
-
-This is wrong: Since the dma is performed by the dma engine rather than the uart, the first argument here needs to be the dma device pointer. In fact, dma_map_single is normally supposed to fail on the uart device as the dma_mask value should be zero. Not sure why this worked.
-
-> +	if (!dma_phys) {
-> +		dev_err(sport->port.dev, "Dma_phys single failed\n");
-> +		return -ENOMEM;
-> +	}
-
-Please also change all references to "phys" -- it's not a phys address but a bus address. These are often the same, but that's not for the driver to know.
-
-	Arnd
-
+-- 
+1.8.2.2
 
