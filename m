@@ -1,77 +1,60 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: [PATCH] serial: 8250: enable UART_BUG_NOMSR for Tegra
-Date: Tue,  7 Jan 2014 15:00:12 -0700
-Message-ID: <1389132012-2257-1-git-send-email-swarren@wwwdotorg.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 3/4] tty/serial: at91: prevent null dereference in
+ tasklet function
+Date: Tue, 7 Jan 2014 17:11:37 -0800
+Message-ID: <20140108011137.GA13590@kroah.com>
+References: <cover.1389090437.git.nicolas.ferre@atmel.com>
+ <69b33ebdc9427b5c036b4ba09151ae88c14a30f4.1389090437.git.nicolas.ferre@atmel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:40728 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754231AbaAGWAU (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:32822 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753284AbaAHBLI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 7 Jan 2014 17:00:20 -0500
+	Tue, 7 Jan 2014 20:11:08 -0500
+Content-Disposition: inline
+In-Reply-To: <69b33ebdc9427b5c036b4ba09151ae88c14a30f4.1389090437.git.nicolas.ferre@atmel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, olof@lixom.net, Stephen Warren <swarren@nvidia.com>, stable@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Leilei Zhao <leilei.zhao@atmel.com>, mark.roszko@gmail.com, mdeneen@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org
 
-From: Stephen Warren <swarren@nvidia.com>
+On Tue, Jan 07, 2014 at 11:45:08AM +0100, Nicolas Ferre wrote:
+> From: Marek Roszko <mark.roszko@gmail.com>
+> 
+> Something asks a tasklet to be scheduled when the uart port is closed.
 
-Tegra chips have 4 or 5 identical UART modules embedded. UARTs C..E have
-their MODEM-control signals tied off to a static state. However UARTs A
-and B can optionally route those signals to/from package pins, depending
-on the exact pinmux configuration.
+What is that something?  Shouldn't you track that down and find the real
+problem here?
 
-When these signals are not routed to package pins, false interrupts may
-trigger either temporarily, or permanently, all while not showing up in
-the IIR; it will read as NO_INT. This will eventually lead to the UART
-IRQ being disabled due to unhandled interrupts. When this happens, the
-kernel may print e.g.:
+> Need to supress the kernel panic for now by checking if the port is NULL or
+> not.
+> 
+> Signed-off-by: Marek Roszko <mark.roszko@gmail.com>
+> Acked-by: Leilei Zhao <leilei.zhao@atmel.com>
+> Cc: <stable@vger.kernel.org> # v3.12
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index c421d11b3d4c..6e68486c83cb 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1360,6 +1360,10 @@ static void atmel_tasklet_func(unsigned long data)
+>  	unsigned int status;
+>  	unsigned int status_change;
+>  
+> +	if(!port->state || !port->state->port.tty)
+> +		/* uart has been closed */
+> +		return;
 
-    irq 68: nobody cared (try booting with the "irqpoll" option)
+Did you really test this?
 
-In order to prevent this, enable UART_BUG_NOMSR. This prevents
-UART_IER_MSI from being enabled, which prevents the false interrupts
-from triggering.
+How about running it through checkpatch?
 
-In practice, this is not needed under any of the following conditions:
+thanks,
 
-* On Tegra chips after Tegra30, since the HW bug has apparently been
-  fixed.
-
-* On UARTs C..E since their MODEM control signals are tied to the correct
-  static state which doesn't trigger the issue.
-
-* On UARTs A..B if the MODEM control signals are routed out to package
-  pins, since they will then carry valid signals.
-
-However, we ignore these exceptions for now, since they are only relevant
-if a board actually hooks up more than a 4-wire UART, and no currently
-supported board does this. If we ever support a board that does, we can
-refine the algorithm that enables UART_BUG_NOMSR to take those exceptions
-into account, and/or read a flag from DT/... that indicates that the
-board has hooked up and pinmux'd more than a 4-wire UART.
-
-Reported-by: Olof Johansson <olof@lixom.net> # autotester
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Stephen Warren <swarren@nvidia.com>
----
- drivers/tty/serial/8250/8250_core.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index e33d38cb170f..61ecd709a722 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2670,6 +2670,10 @@ static void serial8250_config_port(struct uart_port *port, int flags)
- 	if (port->type == PORT_16550A && port->iotype == UPIO_AU)
- 		up->bugs |= UART_BUG_NOMSR;
- 
-+	/* HW bugs may trigger IRQ while IIR == NO_INT */
-+	if (port->type == PORT_TEGRA)
-+		up->bugs |= UART_BUG_NOMSR;
-+
- 	if (port->type != PORT_UNKNOWN && flags & UART_CONFIG_IRQ)
- 		autoconfig_irq(up);
- 
--- 
-1.8.1.5
-
+greg k-h
