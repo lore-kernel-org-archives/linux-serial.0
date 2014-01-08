@@ -1,36 +1,52 @@
-From: Mark Roszko <mark.roszko@gmail.com>
-Subject: Re: [RFC PATCH] tty/serial: at91: disable uart timer at start of shutdown
-Date: Wed, 8 Jan 2014 09:29:31 -0500
-Message-ID: <CAJjB1q+0cMqGRX8e5ssvvvo1pSw4KY7n38vWOh-PnE8GRC2Pug@mail.gmail.com>
-References: <CAJjB1qLBoXA_XeEV+qU6pi0JVS+==kVA7mEDuAufrYup3htU2g@mail.gmail.com>
- <1389176916-6114-1-git-send-email-nicolas.ferre@atmel.com>
+From: "Dr. Musa Hamed" <drmusahamed01@gmail.com>
+Subject: I have a very lucrative Business
+Date: Wed, 8 Jan 2014 21:47:31 +0100
+Message-ID: <CALS90i9nMs6jMoH2O5S68sPF=juYOV2sfMAwaBekL8ccz3eSOQ__8523.08901162378$1389215527$gmane$org@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1389176916-6114-1-git-send-email-nicolas.ferre@atmel.com>
-Sender: stable-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "Zhao, Leilei" <leilei.zhao@atmel.com>, Mark Deneen <mdeneen@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable <stable@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f67.google.com ([74.125.82.67]:40151 "EHLO
+	mail-wg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757410AbaAHVLz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Jan 2014 16:11:55 -0500
+Received: by mail-wg0-f67.google.com with SMTP id n12so446392wgh.2
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jan 2014 13:11:54 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-**Sorry for the duplicate mail, I forgot to force plain-text mode in
-gmail or the mailing list rejects the mails. Sigh, I need to buy my
-own email server at this rate to even deal with the mailing lists and
-proper etiquette (no quoteS) :(
+ATTN: Dear,
 
-Ah, I forgot there was that third mode(no dma and no pdc). Yea it's
-probably a bad idea to play with fire and call del_timer_sync on a
-non-initialized timer struct.
+I am Dr. Musa Hamed Executive Director of the Bank of Africa
+Plc B.O.A,Cotonou Benin Rep. I have a very lucrative Business proposal
+worth of 21,500,000.00 USD.
 
-Alternatively to setting it up in all modes, the mode could also be
-checked in _shutdown:
-if ( ( atmel_use_dma_rx(port) || atmel_use_pdc_rx(port) )
-           && !atmel_port->is_usart)
-      del_timer_sync(&atmel_port->uart_timer);
+An Iraqi named Hamadi Hashem a business man made a fixed deposit of
+21,500,000.00 USD . Upon maturity several notices was sent to him,
+even during the war,eleven years ago (2003) up till this date. Again
+after the war another notification was sent and still no response came
+from him. it has been found out that Hamadi Hashem and his family had
+been killed during the war in bomb blast that hit their home at
+Mukaradeeb where his personal oil well was. I am prepared to split the
+funds with you 50%:50%.By placing you as the NEXT OF KIN to his
+deposit.
 
-But it doesn't hurt to call setup_timer in the other case either
-because it just initializes the fields in timer_list. So I'm not sure
-what best practices dictates here.
+Should you be interested in doing this deal with me, please send me
+the following information:
 
-Commit messages looks fine, thanks for fixing that, I'm still getting
-used to the linux dev process and I also do it at 3am at night.
+(1) Your Name
+(2) Resident Address
+(3) Your Occupation
+(4) Your Phone Number
+(5) Date of Birth
+(6) Resident Country
+
+And I will prefer you to reach me privately and securely on my personal
+email address: dr.musahamed30@yahoo.fr
+Tel: +229-988-400-97
+
+I will provide you with further information as soon as I hear
+positively from you.
+
+Regards,
+Dr. Musa Hamed
