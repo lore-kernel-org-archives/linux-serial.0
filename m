@@ -1,99 +1,85 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
 Subject: Re: [PATCH 2/2] serial: fsl_lpuart: add eDMA support
-Date: Thu, 9 Jan 2014 09:56:38 +0100
-Message-ID: <201401090956.38789.arnd@arndb.de>
-References: <1389236681-30372-1-git-send-email-yao.yuan@freescale.com> <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
+Date: Thu, 9 Jan 2014 10:35:15 +0100
+Message-ID: <20140109103515.164af26c@ipc1.ka-ro>
+References: <1389236681-30372-1-git-send-email-yao.yuan@freescale.com>
+ <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:55284 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754872AbaAII4t (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Jan 2014 03:56:49 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Yuan Yao <yao.yuan@freescale.com>
-Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: linux@arm.linux.org.uk, arnd@arndb.de, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, shawn.guo@linaro.org, linux-arm-kernel@lists.infradead.org
+List-Id: linux-serial@vger.kernel.org
 
-On Thursday 09 January 2014, Yuan Yao wrote:
-> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
-> ---
->  .../devicetree/bindings/serial/fsl-lpuart.txt      |  17 +-
->  drivers/tty/serial/fsl_lpuart.c                    | 434 +++++++++++++++++----
->  2 files changed, 365 insertions(+), 86 deletions(-)
-
-
-Both patches are lacking a changeset description. Please describe why
-this patch is needed and what the changes to the interfaces are.
-
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> index 6fd1dd1..311598d 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> @@ -4,11 +4,20 @@ Required properties:
->  - compatible : Should be "fsl,<soc>-lpuart"
->  - reg : Address and length of the register set for the device
->  - interrupts : Should contain uart interrupt
-> +- clocks : clocks: from common clock binding: handle to uart clock
-> +- clock-names : from common clock binding: Shall be "jpg"
-
-	typo: "ipg", not "jpg"
-
-> +- dma-names: Should contain "lpuart-tx" for transmit and "lpuart-rx" for receive channels
-> +- dmas: Should contain dma specifiers for transmit and receive channels
-
-I note that this is an incompatible change: Prior to this patch,
-the dma properties were not allowed, now they are listed as
-"required". We try hard to avoid incompatible changes to the binding
-in general. Please make sure that you either
-
-a) list the dma properties as "optional" and verify that the driver still works
-   fine when they are absent, or
-
-b) document in the changeset text your motivation for doing an incompatible
-   change, why you could not do it in a compatible way, and what the possible
-   impact is for existing users.
-
->  Example:
->  
->  uart0: serial@40027000 {
-> -	       compatible = "fsl,vf610-lpuart";
-> -	       reg = <0x40027000 0x1000>;
-> -	       interrupts = <0 61 0x00>;
-> -       };
-> +		compatible = "fsl,vf610-lpuart";
-> +		reg = <0x40027000 0x1000>;
-> +		interrupts = <0 61 0x00>;
-> +		clocks = <&clks VF610_CLK_UART0>;
-> +		clock-names = "ipg";
-> +		dma-names = "lpuart-tx","lpuart-rx";
-> +		dmas = <&edma0 0 VF610_EDMA_MUXID0_UART0_TX>,
-> +			<&edma0 0 VF610_EDMA_MUXID0_UART0_RX>;
-> +	};
-
-I checked again and found that VF610_EDMA_MUXID0_UART0_TX and RX are not
-defined as macros anywhere, and I think they should not be. The common
-convention is to just ust number literals here. There is no point
-defining the macros in a common header file because they will change
-with every new SoC.
-
-> @@ -131,6 +158,10 @@ static struct of_device_id lpuart_dt_ids[] = {
->  };
->  MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
->  
-> +static int lpuart_dma_tx(struct lpuart_port *sport, unsigned long count);
-> +static int lpuart_dma_rx(struct lpuart_port *sport);
-> +static void lpuart_prepare_tx(struct lpuart_port *sport);
-> +
->  static void lpuart_stop_tx(struct uart_port *port)
->  {
->  	unsigned char temp;
-
-Coding style: Please try to avoid forward declarations for "static" functions.
-Instead, reorder the code in a way that they are not needed.
-
-	Arnd
+SGksCgpZdWFuIFlhbyB3cm90ZToKPiBTaWduZWQtb2ZmLWJ5OiBZdWFuIFlhbyA8eWFvLnl1YW5A
+ZnJlZXNjYWxlLmNvbT4KPiAtLS0KPiAgLi4uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL2Zz
+bC1scHVhcnQudHh0ICAgICAgfCAgMTcgKy0KPiAgZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9scHVh
+cnQuYyAgICAgICAgICAgICAgICAgICAgfCA0MzQgKysrKysrKysrKysrKysrKystLS0tCj4gIDIg
+ZmlsZXMgY2hhbmdlZCwgMzY1IGluc2VydGlvbnMoKyksIDg2IGRlbGV0aW9ucygtKQo+IAo+IGRp
+ZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL2ZzbC1s
+cHVhcnQudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9mc2wt
+bHB1YXJ0LnR4dAo+IGluZGV4IDZmZDFkZDEuLjMxMTU5OGQgMTAwNjQ0Cj4gK3N0YXRpYyBpbnQg
+bHB1YXJ0X2RtYV90eChzdHJ1Y3QgbHB1YXJ0X3BvcnQgKnNwb3J0LCB1bnNpZ25lZCBsb25nIGNv
+dW50KQpbLi4uXQo+ICB7Cj4gLQlzdHJ1Y3QgbHB1YXJ0X3BvcnQgKnNwb3J0ID0gZGV2X2lkOwo+
+IC0JdW5zaWduZWQgaW50IGZsZywgaWdub3JlZCA9IDA7Cj4gLQlzdHJ1Y3QgdHR5X3BvcnQgKnBv
+cnQgPSAmc3BvcnQtPnBvcnQuc3RhdGUtPnBvcnQ7Cj4gLQl1bnNpZ25lZCBsb25nIGZsYWdzOwo+
+IC0JdW5zaWduZWQgY2hhciByeCwgc3I7Cj4gKwlzdHJ1Y3QgY2lyY19idWYgKnhtaXQgPSAmc3Bv
+cnQtPnBvcnQuc3RhdGUtPnhtaXQ7Cj4gKwlkbWFfYWRkcl90IHR4X2J1c19hZGRyOwo+ICsKPiAr
+CWRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKHNwb3J0LT5wb3J0LmRldiwgc3BvcnQtPmRtYV90
+eF9idWZfYnVzLAo+ICsJCQkJVUFSVF9YTUlUX1NJWkUsIERNQV9UT19ERVZJQ0UpOwo+ICsJc3Bv
+cnQtPmRtYV90eF9ieXRlcyA9IGNvdW50ICYgfihETUFfVFhfTUFYQlVSU1RfTUFTSyk7Cj4gKwl0
+eF9idXNfYWRkciA9IHNwb3J0LT5kbWFfdHhfYnVmX2J1cyArIHhtaXQtPnRhaWw7Cj4gKwlzcG9y
+dC0+ZG1hX3R4X2Rlc2MgPSBkbWFlbmdpbmVfcHJlcF9zbGF2ZV9zaW5nbGUoc3BvcnQtPmRtYV90
+eF9jaGFuLAo+ICsJCQkJCXR4X2J1c19hZGRyLCBzcG9ydC0+ZG1hX3R4X2J5dGVzLAo+ICsJCQkJ
+CURNQV9NRU1fVE9fREVWLCBETUFfUFJFUF9JTlRFUlJVUFQpOwo+ICsKPiArCWlmICghc3BvcnQt
+PmRtYV90eF9kZXNjKSB7Cj4gKwkJZGV2X2VycihzcG9ydC0+cG9ydC5kZXYsICJOb3QgYWJsZSB0
+byBnZXQgZGVzYyBmb3IgVHhcbiIpOwpzL05vdCBhYmxlL3VuYWJsZS8KQWxzbyB0aGUgY2FwaXRh
+bGl6YXRpb24gb2YgJ1R4JyBsb29rcyBzdHJhbmdlLiBJTU8gJ1RYJyBvciAndHgnIHdvdWxkCmxv
+b2sgYmV0dGVyLgoKPiArCQlyZXR1cm4gLUVJTzsKPiArCX0KPiAgCj4gLQlzcGluX2xvY2tfaXJx
+c2F2ZSgmc3BvcnQtPnBvcnQubG9jaywgZmxhZ3MpOwo+ICsJc3BvcnQtPmRtYV90eF9kZXNjLT5j
+YWxsYmFjayA9IGxwdWFydF9kbWFfdHhfY29tcGxldGU7Cj4gKwlzcG9ydC0+ZG1hX3R4X2Rlc2Mt
+PmNhbGxiYWNrX3BhcmFtID0gc3BvcnQ7Cj4gKwlzcG9ydC0+ZG1hX3R4X2luX3Byb2dyZXNzID0g
+MTsKPiArCXNwb3J0LT5kbWFfdHhfY29va2llID0gZG1hZW5naW5lX3N1Ym1pdChzcG9ydC0+ZG1h
+X3R4X2Rlc2MpOwo+ICsJZG1hX2FzeW5jX2lzc3VlX3BlbmRpbmcoc3BvcnQtPmRtYV90eF9jaGFu
+KTsKPiAgCj4gLQl3aGlsZSAoIShyZWFkYihzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUFSVFNGSUZP
+KSAmIFVBUlRTRklGT19SWEVNUFQpKSB7Cj4gLQkJZmxnID0gVFRZX05PUk1BTDsKPiAtCQlzcG9y
+dC0+cG9ydC5pY291bnQucngrKzsKPiAtCQkvKgo+IC0JCSAqIHRvIGNsZWFyIHRoZSBGRSwgT1Is
+IE5GLCBGRSwgUEUgZmxhZ3MsCj4gLQkJICogcmVhZCBTUjEgdGhlbiByZWFkIERSCj4gLQkJICov
+Cj4gLQkJc3IgPSByZWFkYihzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUFSVFNSMSk7Cj4gLQkJcngg
+PSByZWFkYihzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUFSVERSKTsKPiArCXJldHVybiAwOwo+ICt9
+Cj4gIAo+IC0JCWlmICh1YXJ0X2hhbmRsZV9zeXNycV9jaGFyKCZzcG9ydC0+cG9ydCwgKHVuc2ln
+bmVkIGNoYXIpcngpKQo+IC0JCQljb250aW51ZTsKPiArc3RhdGljIGludCBscHVhcnRfZG1hX3J4
+KHN0cnVjdCBscHVhcnRfcG9ydCAqc3BvcnQpCj4gK3sKPiArCWRtYV9zeW5jX3NpbmdsZV9mb3Jf
+ZGV2aWNlKHNwb3J0LT5wb3J0LmRldiwgc3BvcnQtPmRtYV9yeF9idWZfYnVzLAo+ICsJCQlETUFf
+UlhfQlVGRkVSX1NJWkUsIERNQV9UT19ERVZJQ0UpOwo+CmRtYV9hbGxvY19jb2hlcmVudCgpICh3
+aGljaCB5b3UgdXNlIHRvIGFsbG9jYXRlIHRoZSBETUEgcnggYnVmZmVyKSBhbmQKZG1hX3N5bWNf
+KigpIGFyZSBvcnRob2dvbmFsIHRvIGVhY2ggb3RoZXIhCllvdSBlaXRoZXIgYWxsb2NhdGUgRE1B
+IGNvaGVyZW50IG1lbW9yeSBhcyBETUEgYnVmZmVyIG9yIHVzZSBvcmRpbmFyeQptZW1vcnkgd2l0
+aCB0aGUgRE1BIHN0cmVhbWluZyBBUEkgKGRtYV9tYXBfKigpLCBkbWFfc3luY18qKCkpLgpTZWUg
+RG9jdW1lbnRhdGlvbi9ETUEtQVBJLUhPV1RPLnR4dAoKPiArCXNwb3J0LT5kbWFfcnhfZGVzYyA9
+IGRtYWVuZ2luZV9wcmVwX3NsYXZlX3NpbmdsZShzcG9ydC0+ZG1hX3J4X2NoYW4sCj4gKwkJCXNw
+b3J0LT5kbWFfcnhfYnVmX2J1cywgRE1BX1JYX0JVRkZFUl9TSVpFLAo+ICsJCQlETUFfREVWX1RP
+X01FTSwgRE1BX1BSRVBfSU5URVJSVVBUKTsKPiArCj4gKwlpZiAoIXNwb3J0LT5kbWFfcnhfZGVz
+Yykgewo+ICsJCWRldl9lcnIoc3BvcnQtPnBvcnQuZGV2LCAiTm90IGFibGUgdG8gZ2V0IGRlc2Mg
+Zm9yIFJ4XG4iKTsKPgpTdHJhbmdlIGNhcGl0YWxpemF0aW9uIG9mICdSeCcuCgoKTG90aGFyIFdh
+w59tYW5uCi0tIApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwoKS2EtUm8gZWxlY3Ryb25pY3MgR21iSCB8IFBhc2NhbHN0cmHDn2UgMjIg
+fCBEIC0gNTIwNzYgQWFjaGVuClBob25lOiArNDkgMjQwOCAxNDAyLTAgfCBGYXg6ICs0OSAyNDA4
+IDE0MDItMTAKR2VzY2jDpGZ0c2bDvGhyZXI6IE1hdHRoaWFzIEthdXNzZW4KSGFuZGVsc3JlZ2lz
+dGVyZWludHJhZzogQW10c2dlcmljaHQgQWFjaGVuLCBIUkIgNDk5NgoKd3d3Lmthcm8tZWxlY3Ry
+b25pY3MuZGUgfCBpbmZvQGthcm8tZWxlY3Ryb25pY3MuZGUKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBs
+aXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5m
+cmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
