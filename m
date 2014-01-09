@@ -1,49 +1,99 @@
-From: Mark Roszko <mark.roszko@gmail.com>
-Subject: Re: [RFC PATCH] tty/serial: at91: disable uart timer at start of shutdown
-Date: Thu, 9 Jan 2014 02:08:14 -0500
-Message-ID: <CAJjB1qJez363RAaNg1bzE3QTsaGDFfAqOJux=VttNXCyaQTy3A@mail.gmail.com>
-References: <CAJjB1qLBoXA_XeEV+qU6pi0JVS+==kVA7mEDuAufrYup3htU2g@mail.gmail.com>
- <1389176916-6114-1-git-send-email-nicolas.ferre@atmel.com> <CAJjB1q+0cMqGRX8e5ssvvvo1pSw4KY7n38vWOh-PnE8GRC2Pug@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/2] serial: fsl_lpuart: add eDMA support
+Date: Thu, 9 Jan 2014 09:56:38 +0100
+Message-ID: <201401090956.38789.arnd@arndb.de>
+References: <1389236681-30372-1-git-send-email-yao.yuan@freescale.com> <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:42714 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751501AbaAIHIf (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.186]:55284 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754872AbaAII4t (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Jan 2014 02:08:35 -0500
-In-Reply-To: <CAJjB1q+0cMqGRX8e5ssvvvo1pSw4KY7n38vWOh-PnE8GRC2Pug@mail.gmail.com>
+	Thu, 9 Jan 2014 03:56:49 -0500
+In-Reply-To: <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "Zhao, Leilei" <leilei.zhao@atmel.com>, Mark Deneen <mdeneen@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable <stable@vger.kernel.org>
+To: Yuan Yao <yao.yuan@freescale.com>
+Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Just to sumarize the bug after poking before the patch:
-   systemd calls open/close on /dev/ttyS0 per line
-   atmel_shutdown executes on close
-   uart_timer_callback may fire during shutdown before timer is killed
-   tasklet gets scheduled after tasklet_kill
-   atmel_shutdown returns back to uart_close
-dice roll:
-   if the tasklet executes before uart_close kills the tty references,
-the kernel is fine           <--- I saw this happening more often than
-panics, around once every 3 resets
-   if the tasklet executes after uart_close kills the tty references, it panics
+On Thursday 09 January 2014, Yuan Yao wrote:
+> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
+> ---
+>  .../devicetree/bindings/serial/fsl-lpuart.txt      |  17 +-
+>  drivers/tty/serial/fsl_lpuart.c                    | 434 +++++++++++++++++----
+>  2 files changed, 365 insertions(+), 86 deletions(-)
 
-I tested the patch by old fashion way of manual board resets with a
-total of 70 resets each on two individual SAMA5D34-EK boards I have in
-my possession programmed with the same patched kernel image and
-rootfs. They did not panic once with the patch applied. Typically
-before the patch the panic would occur around once every 10 resets if
-not more often to the point it occured for 4 resets straight.
 
-I have been trying to automate the testing, even If I make sure
-nothing is using ttyS0 and then run a program that spams open()
-writev() and close() (systemd uses the syscalls) to print messages, it
-will never panic so I'm possibly misunderstanding how the driver
-startup/shutdown ops get triggered(which should just be open/close
-respectively) or variable length of messages from systemd and timing
-between messages contributes to being unlucky and having the timer
-fire at the wrong time.
+Both patches are lacking a changeset description. Please describe why
+this patch is needed and what the changes to the interfaces are.
 
-But from manual testing I'm pretty confident the bug is fixed.
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> index 6fd1dd1..311598d 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> @@ -4,11 +4,20 @@ Required properties:
+>  - compatible : Should be "fsl,<soc>-lpuart"
+>  - reg : Address and length of the register set for the device
+>  - interrupts : Should contain uart interrupt
+> +- clocks : clocks: from common clock binding: handle to uart clock
+> +- clock-names : from common clock binding: Shall be "jpg"
+
+	typo: "ipg", not "jpg"
+
+> +- dma-names: Should contain "lpuart-tx" for transmit and "lpuart-rx" for receive channels
+> +- dmas: Should contain dma specifiers for transmit and receive channels
+
+I note that this is an incompatible change: Prior to this patch,
+the dma properties were not allowed, now they are listed as
+"required". We try hard to avoid incompatible changes to the binding
+in general. Please make sure that you either
+
+a) list the dma properties as "optional" and verify that the driver still works
+   fine when they are absent, or
+
+b) document in the changeset text your motivation for doing an incompatible
+   change, why you could not do it in a compatible way, and what the possible
+   impact is for existing users.
+
+>  Example:
+>  
+>  uart0: serial@40027000 {
+> -	       compatible = "fsl,vf610-lpuart";
+> -	       reg = <0x40027000 0x1000>;
+> -	       interrupts = <0 61 0x00>;
+> -       };
+> +		compatible = "fsl,vf610-lpuart";
+> +		reg = <0x40027000 0x1000>;
+> +		interrupts = <0 61 0x00>;
+> +		clocks = <&clks VF610_CLK_UART0>;
+> +		clock-names = "ipg";
+> +		dma-names = "lpuart-tx","lpuart-rx";
+> +		dmas = <&edma0 0 VF610_EDMA_MUXID0_UART0_TX>,
+> +			<&edma0 0 VF610_EDMA_MUXID0_UART0_RX>;
+> +	};
+
+I checked again and found that VF610_EDMA_MUXID0_UART0_TX and RX are not
+defined as macros anywhere, and I think they should not be. The common
+convention is to just ust number literals here. There is no point
+defining the macros in a common header file because they will change
+with every new SoC.
+
+> @@ -131,6 +158,10 @@ static struct of_device_id lpuart_dt_ids[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+>  
+> +static int lpuart_dma_tx(struct lpuart_port *sport, unsigned long count);
+> +static int lpuart_dma_rx(struct lpuart_port *sport);
+> +static void lpuart_prepare_tx(struct lpuart_port *sport);
+> +
+>  static void lpuart_stop_tx(struct uart_port *port)
+>  {
+>  	unsigned char temp;
+
+Coding style: Please try to avoid forward declarations for "static" functions.
+Instead, reorder the code in a way that they are not needed.
+
+	Arnd
