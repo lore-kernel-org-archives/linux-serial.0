@@ -1,59 +1,65 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [RFC PATCH] tty/serial: at91: disable uart timer at start of
- shutdown
-Date: Fri, 10 Jan 2014 10:34:20 +0100
-Message-ID: <52CFBE9C.8080204@atmel.com>
-References: <CAJjB1qLBoXA_XeEV+qU6pi0JVS+==kVA7mEDuAufrYup3htU2g@mail.gmail.com> <1389176916-6114-1-git-send-email-nicolas.ferre@atmel.com> <CAJjB1q+0cMqGRX8e5ssvvvo1pSw4KY7n38vWOh-PnE8GRC2Pug@mail.gmail.com> <CAJjB1qJez363RAaNg1bzE3QTsaGDFfAqOJux=VttNXCyaQTy3A@mail.gmail.com>
+From: franklinbuthelezi1@yahoo.com
+Subject: =?UTF-8?Q?DiePresse.com_Mein_Freund,_der_Fahrradh=C3=A4ndler?=
+Date: Fri, 10 Jan 2014 13:33:08 +0100 (CET)
+Message-ID: <1252587197.1389357188901.JavaMail.root@dpoportal4.diepresse.apa.net>
+Reply-To: franklinbuthelezi1@yahoo.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:20964 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751013AbaAJJeX (ORCPT
+Received: from dpocron.diepresse.apa.net ([194.232.102.6]:41793 "EHLO
+	dpocron.diepresse.apa.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755218AbaAJMj4 convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jan 2014 04:34:23 -0500
-In-Reply-To: <CAJjB1qJez363RAaNg1bzE3QTsaGDFfAqOJux=VttNXCyaQTy3A@mail.gmail.com>
+	Fri, 10 Jan 2014 07:39:56 -0500
+Received: from dpoportal4.diepresse.apa.net (dpoportal4.diepresse.local [192.168.0.20])
+	by dpocron.diepresse.apa.net (Postfix) with ESMTP id DEF17445E0
+	for <linux-serial@vger.kernel.org>; Fri, 10 Jan 2014 13:33:08 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Roszko <mark.roszko@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "Zhao, Leilei" <leilei.zhao@atmel.com>, Mark Deneen <mdeneen@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable <stable@vger.kernel.org>
+To: linux-serial@vger.kernel.org
 
-On 09/01/2014 08:08, Mark Roszko :
-> Just to sumarize the bug after poking before the patch:
->    systemd calls open/close on /dev/ttyS0 per line
->    atmel_shutdown executes on close
->    uart_timer_callback may fire during shutdown before timer is killed
->    tasklet gets scheduled after tasklet_kill
->    atmel_shutdown returns back to uart_close
-> dice roll:
->    if the tasklet executes before uart_close kills the tty references,
-> the kernel is fine           <--- I saw this happening more often than
-> panics, around once every 3 resets
->    if the tasklet executes after uart_close kills the tty references, it panics
-> 
-> I tested the patch by old fashion way of manual board resets with a
-> total of 70 resets each on two individual SAMA5D34-EK boards I have in
-> my possession programmed with the same patched kernel image and
-> rootfs. They did not panic once with the patch applied. Typically
-> before the patch the panic would occur around once every 10 resets if
-> not more often to the point it occured for 4 resets straight.
-> 
-> I have been trying to automate the testing, even If I make sure
-> nothing is using ttyS0 and then run a program that spams open()
-> writev() and close() (systemd uses the syscalls) to print messages, it
-> will never panic so I'm possibly misunderstanding how the driver
-> startup/shutdown ops get triggered(which should just be open/close
-> respectively) or variable length of messages from systemd and timing
-> between messages contributes to being unlucky and having the timer
-> fire at the wrong time.
-> 
-> But from manual testing I'm pretty confident the bug is fixed.
+=46olgender Artikel auf http://diepresse.com wird Ihnen von Franklin Bu=
+thelezi empfohlen:
 
-Nice, thanks for the detailed feedback.
+Mein Freund, der Fahrradh=C3=A4ndler
+Manche Dinge ver=C3=A4ndern sich =C3=BCber die langen Wintermonate hinw=
+eg.=20
 
-So I send the patch for inclusion to Greg.
+http://diepresse.com/home/leben/mode/kolumnezumtag/548717/index.do
 
-Thanks for your help Mark. Best regards,
--- 
-Nicolas Ferre
+Notiz:
+Dear friend,
+=20
+I am the international operations manager of ABSA bank South Africa. My=
+ name is Franklin Buthelezi. I have a sensitive and private offer from =
+the top executive to seek your partnership in re-profiling some offshor=
+e investment funds worth 11.5M U.S.D (Eleven Million five hundred thous=
+and United States Dollars) I am constrained however to withhold most of=
+ the details for now. This is a legitimate transaction.=20
+=20
+If we agree on the terms you will be given 15% of the total funds, if y=
+ou are interested please write back via email providing me your persona=
+l details and phone number for further directives.
+=20
+If you are interested and willing to render your assistance please resp=
+ond via my private email address stated below.
+=20
+I look forward to your response.
+=20
+Best regards
+=46ranklin Buthelezi
+Email: franklinbuthelezi1@yahoo.com
+
+
+------------------------------------
+DiePresse.com =C3=BCbernimmt keine Haftung f=C3=BCr den Inhalt der pers=
+=C3=B6nlichen Nachricht.
+
+=C2=A9 DiePresse.com - http://diepresse.com
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
