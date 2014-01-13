@@ -1,65 +1,64 @@
-From: franklinbuthelezi1@yahoo.com
-Subject: =?UTF-8?Q?DiePresse.com_Mein_Freund,_der_Fahrradh=C3=A4ndler?=
-Date: Fri, 10 Jan 2014 13:33:08 +0100 (CET)
-Message-ID: <1252587197.1389357188901.JavaMail.root@dpoportal4.diepresse.apa.net>
-Reply-To: franklinbuthelezi1@yahoo.com
+From: Yao Yuan <yao.yuan@freescale.com>
+Subject: RE: [PATCH 2/2] serial: fsl_lpuart: add eDMA support
+Date: Mon, 13 Jan 2014 06:47:14 +0000
+Message-ID: <1d437762499348b6aeca3621b151d770@BL2PR03MB338.namprd03.prod.outlook.com>
+References: <1389236681-30372-1-git-send-email-yao.yuan@freescale.com>
+ <1389236681-30372-3-git-send-email-yao.yuan@freescale.com>
+ <201401090956.38789.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dpocron.diepresse.apa.net ([194.232.102.6]:41793 "EHLO
-	dpocron.diepresse.apa.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755218AbaAJMj4 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Jan 2014 07:39:56 -0500
-Received: from dpoportal4.diepresse.apa.net (dpoportal4.diepresse.local [192.168.0.20])
-	by dpocron.diepresse.apa.net (Postfix) with ESMTP id DEF17445E0
-	for <linux-serial@vger.kernel.org>; Fri, 10 Jan 2014 13:33:08 +0100 (CET)
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <201401090956.38789.arnd@arndb.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-=46olgender Artikel auf http://diepresse.com wird Ihnen von Franklin Bu=
-thelezi empfohlen:
+Hi, Arnd
 
-Mein Freund, der Fahrradh=C3=A4ndler
-Manche Dinge ver=C3=A4ndern sich =C3=BCber die langen Wintermonate hinw=
-eg.=20
+> Arnd Bergmann wrote:
+> 
+> > @@ -131,6 +158,10 @@ static struct of_device_id lpuart_dt_ids[] = {
+> > };  MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+> >
+> > +static int lpuart_dma_tx(struct lpuart_port *sport, unsigned long
+> > +count); static int lpuart_dma_rx(struct lpuart_port *sport); static
+> > +void lpuart_prepare_tx(struct lpuart_port *sport);
+> > +
+> >  static void lpuart_stop_tx(struct uart_port *port)  {
+> >  	unsigned char temp;
+> 
+> Coding style: Please try to avoid forward declarations for "static"
+> functions.
+> Instead, reorder the code in a way that they are not needed.
+> 
+> 	Arnd
+> 
 
-http://diepresse.com/home/leben/mode/kolumnezumtag/548717/index.do
+I need the functions like this:
+Static A()
+{
+	if(condition) 
+		B();
+}
+Static B()
+{
+	callback:C();
+}
+Static C()
+{
+	if(condition)
+		A();
+}
 
-Notiz:
-Dear friend,
-=20
-I am the international operations manager of ABSA bank South Africa. My=
- name is Franklin Buthelezi. I have a sensitive and private offer from =
-the top executive to seek your partnership in re-profiling some offshor=
-e investment funds worth 11.5M U.S.D (Eleven Million five hundred thous=
-and United States Dollars) I am constrained however to withhold most of=
- the details for now. This is a legitimate transaction.=20
-=20
-If we agree on the terms you will be given 15% of the total funds, if y=
-ou are interested please write back via email providing me your persona=
-l details and phone number for further directives.
-=20
-If you are interested and willing to render your assistance please resp=
-ond via my private email address stated below.
-=20
-I look forward to your response.
-=20
-Best regards
-=46ranklin Buthelezi
-Email: franklinbuthelezi1@yahoo.com
-
-
-------------------------------------
-DiePresse.com =C3=BCbernimmt keine Haftung f=C3=BCr den Inhalt der pers=
-=C3=B6nlichen Nachricht.
-
-=C2=A9 DiePresse.com - http://diepresse.com
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+So, it's hard to avoid forward declarations for "static" functions. I'm very glad for a better way.
