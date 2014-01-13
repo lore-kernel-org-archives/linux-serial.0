@@ -1,60 +1,43 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/2] serial: fsl_lpuart: add eDMA support
-Date: Mon, 13 Jan 2014 09:45:52 +0100
-Message-ID: <201401130945.53447.arnd@arndb.de>
-References: <1389236681-30372-1-git-send-email-yao.yuan@freescale.com>
- <201401090956.38789.arnd@arndb.de>
- <1d437762499348b6aeca3621b151d770@BL2PR03MB338.namprd03.prod.outlook.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
+Date: Mon, 13 Jan 2014 14:39:07 +0100
+Message-ID: <CACRpkdZNe0L+yZnqrY51Oeg+k5NHXebJAiqxi+p5Scy-BQ2+1w@mail.gmail.com>
+References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1d437762499348b6aeca3621b151d770@BL2PR03MB338.namprd03.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Yao Yuan <yao.yuan@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: "arm@kernel.org" <arm@kernel.org>
+Cc: Alexandre Courbot <acourbot@nvidia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Victor <linux@maxim.org.za>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday 13 January 2014, Yao Yuan wrote:
-> I need the functions like this:
-> Static A()
-> {
->         if(condition) 
->                 B();
-> }
-> Static B()
-> {
->         callback:C();
-> }
-> Static C()
-> {
->         if(condition)
->                 A();
-> }
-> 
-> So, it's hard to avoid forward declarations for "static" functions.
-> I'm very glad for a better way.
+On Thu, Nov 7, 2013 at 10:25 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
 
+> This passes the errata fix using a GPIO to control the RTS pin
+> on one of the AT91 chips to use gpiolib instead of the
+> AT91-specific interfaces. Also remove the reliance on
+> compile-time #defines and the cpu_* check and rely on the
+> platform passing down the proper GPIO pin through platform
+> data.
+>
+> This is a prerequisite for getting rid of the local GPIO
+> implementation in the AT91 platform and move toward
+> multiplatform.
+>
+> The patch also adds device tree support for getting the
+> RTS GPIO pin from the device tree on DT boot paths.
+>
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v3->v4:
 
-Ok, that makes sense. It is an unusual pattern from the dmaengine API,
-most drivers can more easily do without forward declarations. I think
-you'd be able to avoid the lpuart_prepare_tx() forward declation, but
-that wouldn't actually improve readability in this case. Just add a
-comment above the declarations describing that they are needed for the
-callbacks and that no recursion is possible. The important problem
-to avoid really is having unbounded recursion between multple
-functions, because that could blow the kernel stack size limit.
+ARM SoC folks, if you're not taking this in through the <timex.h> removal
+series then please ACK this patch so I can take it through the GPIO
+tree instead (unless you want to apply this single patch, which would
+be even better, you have Greg's ACK in this thread).
 
-A small improvement that you can try is to have forward declarations
-for the completion functions rather than the dma start functions, but
-it won't be a big difference in the end. Your choice.
-
-	Arnd
+Yours,
+Linus Walleij
