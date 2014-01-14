@@ -1,35 +1,250 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: USB, TTY, char/misc, and Staging trees now closed for 3.14
-Date: Mon, 13 Jan 2014 16:23:41 -0800
-Message-ID: <20140114002341.GA19710@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: devel@driverdev.osuosl.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH] msm_serial: Add support for poll_{get,put}_char()
+Date: Tue, 14 Jan 2014 12:34:55 -0800
+Message-ID: <1389731695-28265-1-git-send-email-sboyd@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, David Brown <davidb@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi all,
+Implement the polling functionality for the MSM serial driver.
+This allows us to use KGDB on this hardware.
 
-Given that 3.13 will be out in a few days, it's time to close my trees
-for new patches until 3.14-rc1 is out.
+Cc: David Brown <davidb@codeaurora.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+---
+ drivers/tty/serial/msm_serial.c | 140 +++++++++++++++++++++++++++++++++++++++-
+ drivers/tty/serial/msm_serial.h |   9 +++
+ 2 files changed, 146 insertions(+), 3 deletions(-)
 
-Please feel free to send me patches for these trees, but note that I'll
-be ignoring them until 3.14-rc1 is out, at which point in time I'll
-start reviewing them again and applying them to the various places they
-belong.
-
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index b5d779cd3c2b..053b98eb46c8 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -39,6 +39,13 @@
+ 
+ #include "msm_serial.h"
+ 
++enum {
++	UARTDM_1P1 = 1,
++	UARTDM_1P2,
++	UARTDM_1P3,
++	UARTDM_1P4,
++};
++
+ struct msm_port {
+ 	struct uart_port	uart;
+ 	char			name[16];
+@@ -309,6 +316,8 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
+ 
+ static void msm_reset(struct uart_port *port)
+ {
++	struct msm_port *msm_port = UART_TO_MSM(port);
++
+ 	/* reset everything */
+ 	msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
+ 	msm_write(port, UART_CR_CMD_RESET_TX, UART_CR);
+@@ -316,6 +325,10 @@ static void msm_reset(struct uart_port *port)
+ 	msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
+ 	msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
+ 	msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
++
++	/* Disable DM modes */
++	if (msm_port->is_uartdm)
++		msm_write(port, 0, UARTDM_DMEN);
+ }
+ 
+ static void msm_set_mctrl(struct uart_port *port, unsigned int mctrl)
+@@ -711,6 +724,117 @@ static void msm_power(struct uart_port *port, unsigned int state,
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int msm_poll_init(struct uart_port *port)
++{
++	struct msm_port *msm_port = UART_TO_MSM(port);
++
++	/* Enable single character mode on RX FIFO */
++	if (msm_port->is_uartdm >= UARTDM_1P4)
++		msm_write(port, UARTDM_DMEN_RX_SC_ENABLE, UARTDM_DMEN);
++
++	return 0;
++}
++
++static int msm_poll_get_char_single(struct uart_port *port)
++{
++	struct msm_port *msm_port = UART_TO_MSM(port);
++	unsigned int rf_reg = msm_port->is_uartdm ? UARTDM_RF : UART_RF;
++
++	if (!(msm_read(port, UART_SR) & UART_SR_RX_READY))
++		return NO_POLL_CHAR;
++	else
++		return msm_read(port, rf_reg) & 0xff;
++}
++
++static int msm_poll_get_char_dm_1p3(struct uart_port *port)
++{
++	int c;
++	static u32 slop;
++	static int count;
++	unsigned char *sp = (unsigned char *)&slop;
++
++	/* Check if a previous read had more than one char */
++	if (count) {
++		c = sp[sizeof(slop) - count];
++		count--;
++	/* Or if FIFO is empty */
++	} else if (!(msm_read(port, UART_SR) & UART_SR_RX_READY)) {
++		/*
++		 * If RX packing buffer has less than a word, force stale to
++		 * push contents into RX FIFO
++		 */
++		count = msm_read(port, UARTDM_RXFS);
++		count = (count >> UARTDM_RXFS_BUF_SHIFT) & UARTDM_RXFS_BUF_MASK;
++		if (count) {
++			msm_write(port, UART_CR_CMD_FORCE_STALE, UART_CR);
++			slop = msm_read(port, UARTDM_RF);
++			c = sp[0];
++			count--;
++		} else {
++			c = NO_POLL_CHAR;
++		}
++	/* FIFO has a word */
++	} else {
++		slop = msm_read(port, UARTDM_RF);
++		c = sp[0];
++		count = sizeof(slop) - 1;
++	}
++
++	return c;
++}
++
++static int msm_poll_get_char(struct uart_port *port)
++{
++	u32 imr;
++	int c;
++	struct msm_port *msm_port = UART_TO_MSM(port);
++
++	/* Disable all interrupts */
++	imr = msm_read(port, UART_IMR);
++	msm_write(port, 0, UART_IMR);
++
++	if (msm_port->is_uartdm == UARTDM_1P3)
++		c = msm_poll_get_char_dm_1p3(port);
++	else
++		c = msm_poll_get_char_single(port);
++
++	/* Enable interrupts */
++	msm_write(port, imr, UART_IMR);
++
++	return c;
++}
++
++static void msm_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	u32 imr;
++	struct msm_port *msm_port = UART_TO_MSM(port);
++
++	/* Disable all interrupts */
++	imr = msm_read(port, UART_IMR);
++	msm_write(port, 0, UART_IMR);
++
++	if (msm_port->is_uartdm)
++		reset_dm_count(port, 1);
++
++	/* Wait until FIFO is empty */
++	while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
++		cpu_relax();
++
++	/* Write a character */
++	msm_write(port, c, msm_port->is_uartdm ? UARTDM_TF : UART_TF);
++
++	/* Wait until FIFO is empty */
++	while (!(msm_read(port, UART_SR) & UART_SR_TX_READY))
++		cpu_relax();
++
++	/* Enable interrupts */
++	msm_write(port, imr, UART_IMR);
++
++	return;
++}
++#endif
++
+ static struct uart_ops msm_uart_pops = {
+ 	.tx_empty = msm_tx_empty,
+ 	.set_mctrl = msm_set_mctrl,
+@@ -729,6 +853,11 @@ static struct uart_ops msm_uart_pops = {
+ 	.config_port = msm_config_port,
+ 	.verify_port = msm_verify_port,
+ 	.pm = msm_power,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_init = msm_poll_init,
++	.poll_get_char	= msm_poll_get_char,
++	.poll_put_char	= msm_poll_put_char,
++#endif
+ };
+ 
+ static struct msm_port msm_uart_ports[] = {
+@@ -900,7 +1029,10 @@ static struct uart_driver msm_uart_driver = {
+ static atomic_t msm_uart_next_id = ATOMIC_INIT(0);
+ 
+ static const struct of_device_id msm_uartdm_table[] = {
+-	{ .compatible = "qcom,msm-uartdm" },
++	{ .compatible = "qcom,msm-uartdm-v1.1", .data = (void *)UARTDM_1P1 },
++	{ .compatible = "qcom,msm-uartdm-v1.2", .data = (void *)UARTDM_1P2 },
++	{ .compatible = "qcom,msm-uartdm-v1.3", .data = (void *)UARTDM_1P3 },
++	{ .compatible = "qcom,msm-uartdm-v1.4", .data = (void *)UARTDM_1P4 },
+ 	{ }
+ };
+ 
+@@ -909,6 +1041,7 @@ static int __init msm_serial_probe(struct platform_device *pdev)
+ 	struct msm_port *msm_port;
+ 	struct resource *resource;
+ 	struct uart_port *port;
++	const struct of_device_id *id;
+ 	int irq;
+ 
+ 	if (pdev->id == -1)
+@@ -923,8 +1056,9 @@ static int __init msm_serial_probe(struct platform_device *pdev)
+ 	port->dev = &pdev->dev;
+ 	msm_port = UART_TO_MSM(port);
+ 
+-	if (of_match_device(msm_uartdm_table, &pdev->dev))
+-		msm_port->is_uartdm = 1;
++	id = of_match_device(msm_uartdm_table, &pdev->dev);
++	if (id)
++		msm_port->is_uartdm = (unsigned long)id->data;
+ 	else
+ 		msm_port->is_uartdm = 0;
+ 
+diff --git a/drivers/tty/serial/msm_serial.h b/drivers/tty/serial/msm_serial.h
+index 469fda50ac63..1e9b68b6f9eb 100644
+--- a/drivers/tty/serial/msm_serial.h
++++ b/drivers/tty/serial/msm_serial.h
+@@ -59,6 +59,7 @@
+ #define UART_CR_CMD_RESET_RFR		(14 << 4)
+ #define UART_CR_CMD_PROTECTION_EN	(16 << 4)
+ #define UART_CR_CMD_STALE_EVENT_ENABLE	(80 << 4)
++#define UART_CR_CMD_FORCE_STALE		(4 << 8)
+ #define UART_CR_CMD_RESET_TX_READY	(3 << 8)
+ #define UART_CR_TX_DISABLE		(1 << 3)
+ #define UART_CR_TX_ENABLE		(1 << 2)
+@@ -113,6 +114,14 @@
+ #define GSBI_PROTOCOL_UART	0x40
+ #define GSBI_PROTOCOL_IDLE	0x0
+ 
++#define UARTDM_RXFS		0x50
++#define UARTDM_RXFS_BUF_SHIFT	0x7
++#define UARTDM_RXFS_BUF_MASK	0x7
++
++#define UARTDM_DMEN		0x3C
++#define UARTDM_DMEN_RX_SC_ENABLE BIT(5)
++#define UARTDM_DMEN_TX_SC_ENABLE BIT(4)
++
+ #define UARTDM_DMRX		0x34
+ #define UARTDM_NCF_TX		0x40
+ #define UARTDM_RX_TOTAL_SNAP	0x38
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
