@@ -1,43 +1,35 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v4] ARM/serial: at91: switch atmel serial to use gpiolib
-Date: Mon, 13 Jan 2014 14:39:07 +0100
-Message-ID: <CACRpkdZNe0L+yZnqrY51Oeg+k5NHXebJAiqxi+p5Scy-BQ2+1w@mail.gmail.com>
-References: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: USB, TTY, char/misc, and Staging trees now closed for 3.14
+Date: Mon, 13 Jan 2014 16:23:41 -0800
+Message-ID: <20140114002341.GA19710@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1383816355-2956-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-gpio-owner@vger.kernel.org
-To: "arm@kernel.org" <arm@kernel.org>
-Cc: Alexandre Courbot <acourbot@nvidia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Victor <linux@maxim.org.za>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: driverdev-devel-bounces@linuxdriverproject.org
+To: devel@driverdev.osuosl.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 7, 2013 at 10:25 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
+Hi all,
 
-> This passes the errata fix using a GPIO to control the RTS pin
-> on one of the AT91 chips to use gpiolib instead of the
-> AT91-specific interfaces. Also remove the reliance on
-> compile-time #defines and the cpu_* check and rely on the
-> platform passing down the proper GPIO pin through platform
-> data.
->
-> This is a prerequisite for getting rid of the local GPIO
-> implementation in the AT91 platform and move toward
-> multiplatform.
->
-> The patch also adds device tree support for getting the
-> RTS GPIO pin from the device tree on DT boot paths.
->
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Acked-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v3->v4:
+Given that 3.13 will be out in a few days, it's time to close my trees
+for new patches until 3.14-rc1 is out.
 
-ARM SoC folks, if you're not taking this in through the <timex.h> removal
-series then please ACK this patch so I can take it through the GPIO
-tree instead (unless you want to apply this single patch, which would
-be even better, you have Greg's ACK in this thread).
+Please feel free to send me patches for these trees, but note that I'll
+be ignoring them until 3.14-rc1 is out, at which point in time I'll
+start reviewing them again and applying them to the various places they
+belong.
 
-Yours,
-Linus Walleij
+thanks,
+
+greg k-h
