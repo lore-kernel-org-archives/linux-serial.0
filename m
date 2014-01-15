@@ -1,75 +1,33 @@
 From: Yuan Yao <yao.yuan@freescale.com>
-Subject: [PATCH v3 1/2] ARM: dts: vf610: lpuart: Add eDMA support
-Date: Wed, 15 Jan 2014 13:24:47 +0800
-Message-ID: <1389763488-27361-2-git-send-email-yao.yuan@freescale.com>
-References: <1389763488-27361-1-git-send-email-yao.yuan@freescale.com>
+Subject: [PATCH v3 0/2] serial: fsl_lpuart: add DMA support
+Date: Wed, 15 Jan 2014 13:24:46 +0800
+Message-ID: <1389763488-27361-1-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe001.messaging.microsoft.com ([216.32.180.184]:59027
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750754AbaAOGWP (ORCPT
+Received: from ch1ehsobe005.messaging.microsoft.com ([216.32.181.185]:43990
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751199AbaAOGWS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Jan 2014 01:22:15 -0500
-In-Reply-To: <1389763488-27361-1-git-send-email-yao.yuan@freescale.com>
+	Wed, 15 Jan 2014 01:22:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, shawn.guo@linaro.org
 Cc: linux@arm.linux.org.uk, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-Add lpuart dts node properties for eDMA support, them depend on the eDMA driver.
-See VF610_EDMA_MUXID0_UART*_*X macro on eDMA driver
+Changed in v3:
+- Use the streaming DMA API for receive.
+- Add the macro(SERIAL_FSL_LPUART_DMA) and dts node propertie for whether using the dma.
+- Adjust some coding style.
 
-Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
----
- arch/arm/boot/dts/vf610.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index 365e0fa..ed6b053 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -118,6 +118,9 @@
- 				interrupts = <0 61 0x00>;
- 				clocks = <&clks VF610_CLK_UART0>;
- 				clock-names = "ipg";
-+				dma-names = "lpuart-tx","lpuart-rx";
-+				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART0_TX>,
-+					<&edma0 0 VF610_EDMA_MUXID0_UART0_RX>;
- 				status = "disabled";
- 			};
+Changed in v2:
+- Add eDMA support for lpuart receive.
+- Use dma_mapping_error test dma_map_single.
+- Change some names of variable.
+- Fix some bugs.
  
-@@ -127,6 +130,9 @@
- 				interrupts = <0 62 0x04>;
- 				clocks = <&clks VF610_CLK_UART1>;
- 				clock-names = "ipg";
-+				dma-names = "lpuart-tx","lpuart-rx";
-+				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART1_TX>,
-+					<&edma0 0 VF610_EDMA_MUXID0_UART1_RX>;
- 				status = "disabled";
- 			};
- 
-@@ -136,6 +142,9 @@
- 				interrupts = <0 63 0x04>;
- 				clocks = <&clks VF610_CLK_UART2>;
- 				clock-names = "ipg";
-+				dma-names = "lpuart-tx","lpuart-rx";
-+				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART2_TX>,
-+					<&edma0 0 VF610_EDMA_MUXID0_UART2_RX>;
- 				status = "disabled";
- 			};
- 
-@@ -145,6 +154,9 @@
- 				interrupts = <0 64 0x04>;
- 				clocks = <&clks VF610_CLK_UART3>;
- 				clock-names = "ipg";
-+				dma-names = "lpuart-tx","lpuart-rx";
-+				dmas = <&edma0 0 VF610_EDMA_MUXID0_UART3_TX>,
-+					<&edma0 0 VF610_EDMA_MUXID0_UART3_RX>;
- 				status = "disabled";
- 			};
- 
--- 
-1.8.4
+ Added in v1:
+ - Add device tree bindings for lupart eDMA support.
+ - Add eDMA support for lpuart send.
 
 
