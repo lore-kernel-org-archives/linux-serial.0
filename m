@@ -1,36 +1,47 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250: enable UART_BUG_NOMSR for Tegra
-Date: Wed, 15 Jan 2014 13:12:05 +0200
-Message-ID: <20140115111205.GA11732@xps8300>
-References: <1389132012-2257-1-git-send-email-swarren@wwwdotorg.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v3 2/2] serial: fsl_lpuart: add DMA support
+Date: Wed, 15 Jan 2014 12:17:07 +0100
+Message-ID: <15900408.Osb5heuoGi@wuerfel>
+References: <1389763265-27300-2-git-send-email-yao.yuan@freescale.com>
+ <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
+ <20140115110537.GA25824@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1389132012-2257-1-git-send-email-swarren@wwwdotorg.org>
-Sender: stable-owner@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, olof@lixom.net, Stephen Warren <swarren@nvidia.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140115110537.GA25824@e106331-lin.cambridge.arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Yuan Yao <yao.yuan@freescale.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Wednesday 15 January 2014 11:05:37 Mark Rutland wrote:
+> On Wed, Jan 15, 2014 at 05:21:05AM +0000, Yuan Yao wrote:
+> > --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> > +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> > @@ -4,11 +4,24 @@ Required properties:
+> >  - compatible : Should be "fsl,<soc>-lpuart"
+> >  - reg : Address and length of the register set for the device
+> >  - interrupts : Should contain uart interrupt
+> > +- clocks : from common clock binding: handle to uart clock
+> > +- clock-names : from common clock binding: Shall be "ipg"
+> 
+> Why are these now requried if they weren't previously? That breaks old
+> dts. I can't see any new code touching clocks. Was this an old but
+> undocumented requirement?
 
-On Tue, Jan 07, 2014 at 03:00:12PM -0700, Stephen Warren wrote:
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index e33d38cb170f..61ecd709a722 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -2670,6 +2670,10 @@ static void serial8250_config_port(struct uart_port *port, int flags)
->  	if (port->type == PORT_16550A && port->iotype == UPIO_AU)
->  		up->bugs |= UART_BUG_NOMSR;
->  
-> +	/* HW bugs may trigger IRQ while IIR == NO_INT */
-> +	if (port->type == PORT_TEGRA)
-> +		up->bugs |= UART_BUG_NOMSR;
-> +
+It was previously required but not documented. I asked Yuan Yao to
+add the text to the binding along with the new "dmas" addition.
 
-Is there any reason this needs to be in 8250_core.c? Why not set it in
-drivers/tty/serial/of_serial.c?
+It would have been cleaner to do this as a separate patch, but at
+the very least it should be mentioned in the changelog.
 
--- 
-heikki
+	Arnd
