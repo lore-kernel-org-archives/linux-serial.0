@@ -1,159 +1,89 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Mark Rutland <mark.rutland@arm.com>
 Subject: Re: [PATCH v3 2/2] serial: fsl_lpuart: add DMA support
-Date: Wed, 15 Jan 2014 10:25:34 +0100
-Message-ID: <201401151025.34628.arnd@arndb.de>
-References: <1389763265-27300-2-git-send-email-yao.yuan@freescale.com> <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
+Date: Wed, 15 Jan 2014 11:05:37 +0000
+Message-ID: <20140115110537.GA25824@e106331-lin.cambridge.arm.com>
+References: <1389763265-27300-2-git-send-email-yao.yuan@freescale.com>
+ <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.186]:60344 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751566AbaAOJZo (ORCPT
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:59155 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750856AbaAOLGU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Jan 2014 04:25:44 -0500
+	Wed, 15 Jan 2014 06:06:20 -0500
+Content-Disposition: inline
 In-Reply-To: <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Yuan Yao <yao.yuan@freescale.com>
-Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Wednesday 15 January 2014, Yuan Yao wrote:
-> Add dma support for lpuart. This function depend on DMA driver. 
+On Wed, Jan 15, 2014 at 05:21:05AM +0000, Yuan Yao wrote:
+> Add dma support for lpuart. This function depend on DMA driver.
 > You can turn on it by SERIAL_FSL_LPUART_DMA=y. And It works if dts node has dma properties.
 > 
 > Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
+> ---
+>  .../devicetree/bindings/serial/fsl-lpuart.txt      |  21 +-
+>  drivers/tty/serial/Kconfig                         |   7 +
+>  drivers/tty/serial/fsl_lpuart.c                    | 457 ++++++++++++++++++++-
+>  3 files changed, 473 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> index 6fd1dd1..7509080 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> @@ -4,11 +4,24 @@ Required properties:
+>  - compatible : Should be "fsl,<soc>-lpuart"
+>  - reg : Address and length of the register set for the device
+>  - interrupts : Should contain uart interrupt
+> +- clocks : from common clock binding: handle to uart clock
+> +- clock-names : from common clock binding: Shall be "ipg"
 
-Most of the changes you did look good, but I have to say I'm not a fan of
-the #ifdef you added. I don't think you actually need to have the compile-time
-selection, and it would be best to just drop that part.
+Why are these now requried if they weren't previously? That breaks old
+dts. I can't see any new code touching clocks. Was this an old but
+undocumented requirement?
 
-If you have a good reason to keep it, please change the code to
-more readable "if (IS_ENABLED(CONFIG_FSL_LPUART_DMA))" constructs.
-If you decide to do this, you will find that you need far fewer
-such conditionals because a lot of the code will automatically
-get dropped by the compiler.
-  
->  uart0: serial@40027000 {
-> -	       compatible = "fsl,vf610-lpuart";
-> -	       reg = <0x40027000 0x1000>;
-> -	       interrupts = <0 61 0x00>;
-> -       };
-> +		compatible = "fsl,vf610-lpuart";
-> +		reg = <0x40027000 0x1000>;
-> +		interrupts = <0 61 0x00>;
-> +		clocks = <&clks VF610_CLK_UART0>;
-> +		clock-names = "ipg";
-> +		dma-names = "lpuart-tx","lpuart-rx";
-> +		dmas = <&edma0 0 VF610_EDMA_MUXID0_UART0_TX>,
-> +			<&edma0 0 VF610_EDMA_MUXID0_UART0_RX>;
-> +	};
+Could you please reword this so clocks is defined in terms of
+clock-names so as to make the relationship between them clear:
 
-You still haven't addressed my comment about removing the VF610_EDMA_MUXID0_UART0_TX
-macros.
+- clocks: a list of phandles + clock-specifier pairs, one for each entry
+  in clock-names
 
->  
-> +#ifdef CONFIG_SERIAL_FSL_LPUART_DMA
-> +#define DMA_MAXBURST		16
-> +#define DMA_MAXBURST_MASK	(DMA_MAXBURST - 1)
-> +#define FSL_UART_RX_DMA_BUFFER_SIZE	64
-> +#endif
-
-For this part there was no need for the #ifdef to start with.
-
->  #define DRIVER_NAME	"fsl-lpuart"
->  #define DEV_NAME	"ttyLP"
->  #define UART_NR		6
-> @@ -121,6 +132,26 @@ struct lpuart_port {
->  	struct clk		*clk;
->  	unsigned int		txfifo_size;
->  	unsigned int		rxfifo_size;
-> +
-> +#ifdef CONFIG_SERIAL_FSL_LPUART_DMA
-> +	bool			lpuart_dma_use;
-> +	struct dma_chan		*dma_tx_chan;
-> +	struct dma_chan		*dma_rx_chan;
-> +	struct dma_async_tx_descriptor  *dma_tx_desc;
-> +	struct dma_async_tx_descriptor  *dma_rx_desc;
-> +	dma_addr_t		dma_tx_buf_bus;
-> +	dma_addr_t		dma_rx_buf_bus;
-> +	dma_cookie_t		dma_tx_cookie;
-> +	dma_cookie_t		dma_rx_cookie;
-> +	unsigned char		*dma_tx_buf_virt;
-> +	unsigned char		*dma_rx_buf_virt;
-> +	unsigned int		dma_tx_bytes;
-> +	unsigned int		dma_rx_bytes;
-> +	int			dma_tx_in_progress;
-> +	int			dma_rx_in_progress;
-> +	unsigned int		dma_rx_timeout;
-> +	struct timer_list	lpuart_timer;
-> +#endif
->  };
-
-This part will result in a slight increase in data size even if
-dma support is turned off at compile time.
-
->  
->  	temp = readb(port->membase + UARTCR2);
->  	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
->  
-> +#ifdef CONFIG_SERIAL_FSL_LPUART_DMA
-> +	if (sport->lpuart_dma_use) {
-> +		if (!uart_circ_empty(xmit) && !sport->dma_tx_in_progress)
-> +			lpuart_prepare_tx(sport);
-> +	} else {
-> +		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
-> +			lpuart_transmit_buffer(sport);
-> +	}
-> +#else
->  	if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
->  		lpuart_transmit_buffer(sport);
-> +#endif
->  }
-
-So this can simply become
-
-+	if (IS_ENABLED(CONFIG_SERIAL_FSL_LPUART_DMA) && sport->lpuart_dma_use) {
-+		if (!uart_circ_empty(xmit) && !sport->dma_tx_in_progress)
-+			lpuart_prepare_tx(sport);
-+	} else {
-+		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
-+			lpuart_trans	mit_buffer(sport);
-+	}
-
-and the compiler will silently drop the lpuart_prepare_tx() function and everything
-it calls that isn't used elsewhere.
-
+- clock-names: should contain:
+   * "ipg" - the uart clock
 
 > +
+> +Optional properties:
+> +- dma-names: Should contain "lpuart-tx" for transmit and "lpuart-rx" for receive channels
+> +- dmas: Should contain dma specifiers for transmit and receive channels
+
+Likewise could you please define dmas in terms of dma-names please. Why
+not just "tx" and "rx" as other bindings use?
+
+[...]
+
 > +#ifdef CONFIG_SERIAL_FSL_LPUART_DMA
-> +	struct platform_device *pdev = to_platform_device(port->dev);
-> +	struct device_node *np = pdev->dev.of_node;
+> +       struct platform_device *pdev = to_platform_device(port->dev);
+> +       struct device_node *np = pdev->dev.of_node;
 > +
-> +	if (of_get_property(np, "dmas", NULL)) {
-> +		sport->lpuart_dma_use = true;
-> +		lpuart_dma_tx_request(port);
-> +		lpuart_dma_rx_request(port);
-> +		temp = readb(port->membase + UARTCR5);
-> +		writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
-> +	} else
-> +		sport->lpuart_dma_use = false;	
-> +#endif
+> +       if (of_get_property(np, "dmas", NULL)) {
+> +               sport->lpuart_dma_use = true;
+> +               lpuart_dma_tx_request(port);
+> +               lpuart_dma_rx_request(port);
+> +               temp = readb(port->membase + UARTCR5);
+> +               writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
 
-Same here.
+Rather than reading the raw dt to find out if you have dmas, can you not
+just attempt to request the dmas and if either fail give up on using
+them?
 
-> @@ -854,6 +1291,10 @@ static int __init lpuart_serial_init(void)
->  
->  	pr_info("serial: Freescale lpuart driver\n");
->  
-> +#ifdef CONFIG_SERIAL_FSL_LPUART_DMA
-> +	pr_info("serial: Freescale lpuart dma support\n");
-> +#endif
-> +
+> +       } else
+> +               sport->lpuart_dma_use = false;
 
-This message is not helpful in the long run, I'd rather see you drop the
-other one as well. Note that this function is called on *all* platforms
-when the driver is enabled, not just on those that actually have the uart.
+Nit: if you have brackets on one half of an if-else, they should be on
+the other half too (even if i's a single line).
 
-	Arnd
+Cheers,
+Mark.
