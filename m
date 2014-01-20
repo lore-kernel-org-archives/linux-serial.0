@@ -1,23 +1,43 @@
-From: "Howard Maxim" <howardd@maxxim.com>
-Subject: project!!
-Date: Sat, 18 Jan 2014 20:14:16 -0300 (ART)
-Message-ID: <65407.41.71.189.183.1390086856.squirrel@41.71.189.183>
-Reply-To: project2014x@gmail.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from flash.escape.com.ar ([200.61.170.3]:59179 "HELO
-	flash.escape.com.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752148AbaASNyt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 19 Jan 2014 08:54:49 -0500
-Received: from unknown ([127.0.0.2])
- by flash.escape.com.ar (flash [127.0.0.2]) (amavisd-new, port 628)
- id 10989-85 for <linux-serial@vger.kernel.org>;
- Sun, 19 Jan 2014 02:24:39 -0300 (ART)
-Sender: linux-serial-owner@vger.kernel.org
+From: Tushar Behera <tushar.behera@linaro.org>
+Subject: [PATCH 0/2] serial: Move uart_register_driver call to device probe
+Date: Mon, 20 Jan 2014 14:32:33 +0530
+Message-ID: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Cc: jslaby@suse.cz, gregkh@linuxfoundation.org, linux@arm.linux.org.uk, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-I am Howard Maxim,retired professional broker.I have a project for you or
-your firm.My private email is project2014x@gmail.com
+In a multiplatform scenario, it is possible that multiple serial
+drivers are part of the kernel. Currently the driver registration fails
+if multiple serial drivers with same default major/minor numbers are
+included in the kernel. A typical case is observed with amba-pl011 and
+samsung-uart drivers.
+
+This is the 3rd iteration to fix above problem.
+
+Iteration 1:
+[PATCH] serial: samsung: Remove hard-coded major/minor numbers
+https://lkml.org/lkml/2013/12/27/2
+
+Iteration 2:
+[PATCH] tty: Fallback to use dynamic major number
+https://lkml.org/lkml/2014/1/16/2
+
+Both these approaches were rejected because they were breaking userspace
+interface.
+
+Iteration 3:
+uart_register_driver call binds the driver to a specific device
+node through tty_driver_register call. This is moved to device probe call.
+
+Tushar Behera (2):
+  serial: samsung: Move uart_register_driver call to device probe
+  serial: pl011: Move uart_register_driver call to device probe
+
+ drivers/tty/serial/amba-pl011.c |   21 +++++++++++---------
+ drivers/tty/serial/samsung.c    |   40 +++++++++++----------------------------
+ 2 files changed, 23 insertions(+), 38 deletions(-)
+
+-- 
+1.7.9.5
