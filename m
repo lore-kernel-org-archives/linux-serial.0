@@ -1,57 +1,65 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
  device probe
-Date: Mon, 20 Jan 2014 21:43:05 +0000
-Message-ID: <20140120214305.54f65ffa@www.etchedpixels.co.uk>
+Date: Mon, 20 Jan 2014 15:11:41 -0800
+Message-ID: <20140120231141.GA2355@kroah.com>
 References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
-	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
-	<20140120100530.GY15937@n2100.arm.linux.org.uk>
-	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+ <1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+ <20140120100530.GY15937@n2100.arm.linux.org.uk>
+ <20140120211601.GB634@kroah.com>
+ <20140120213206.GJ15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tushar Behera <tushar.behera@linaro.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:36309 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753021AbaATXKz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 Jan 2014 18:10:55 -0500
+Content-Disposition: inline
+In-Reply-To: <20140120213206.GJ15937@n2100.arm.linux.org.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 
-> I had earlier submitted a patch [1] to remove the hard coded
-> major/minor number for Samsung UART driver, but that was rejected
-> because of userspace breakage. Without this patch, Samsung UART driver
-> can't bind to the hard-coded device node. Changing the default
-> major/minor will also not help to fix the objections raised in [1].
+On Mon, Jan 20, 2014 at 09:32:06PM +0000, Russell King - ARM Linux wrote:
+> On Mon, Jan 20, 2014 at 01:16:01PM -0800, Greg KH wrote:
+> > On Mon, Jan 20, 2014 at 10:05:30AM +0000, Russell King - ARM Linux wrote:
+> > > On Mon, Jan 20, 2014 at 02:32:34PM +0530, Tushar Behera wrote:
+> > > > uart_register_driver call binds the driver to a specific device
+> > > > node through tty_register_driver call. This should typically happen
+> > > > during device probe call.
+> > > > 
+> > > > In a multiplatform scenario, it is possible that multiple serial
+> > > > drivers are part of the kernel. Currently the driver registration fails
+> > > > if multiple serial drivers with same default major/minor numbers are
+> > > > included in the kernel.
+> > > > 
+> > > > A typical case is observed with amba-pl011 and samsung-uart drivers.
+> > > 
+> > > The samsung-uart driver is at fault here - the major/minor numbers were
+> > > officially registered to amba-pl011.  Samsung needs to be fixed properly.
+> > 
+> > I agree, the Samsung driver is "broken" here, but that's no reason why
+> > these two drivers can't register with the tty layer _after_ the hardware
+> > is detected, and not before.
+> > 
+> > That saves resources on systems that build the drivers in, yet do not
+> > have the hardware present, which is always a good thing.
 > 
-> Would you please suggest a way forward?
-> 
-> [1] https://lkml.org/lkml/2013/12/27/2
+> Great, so what you're saying is that we need to wait until the first
+> device calls into the probe function.  What about removal... how does
+> a driver know when it's last device has been removed to de-register
+> that?
 
-The dynamic major/minor is the right patch. If the userspace breaks then
-the userspace was broken, but I see no evidence in the discussion that
-the userspace broke.
+The "bus" that the device is on handles that, right?
 
-204,64 belongs to Altix so neither of the clashing drivers should use it.
-We had a table to stop messes like this, and we have dynamic numbering
-to stop the table being needed for the future
+> I guess it needs the driver model to provide some way to know when a
+> driver is completely unbound - but isn't that racy?
 
-           50 = /dev/ttyIOC0              Altix serial card
-                    ...
-           81 = /dev/ttyIOC31             Altix serial card
+How is it racy?  That's how the driver model works...
 
+thanks,
 
-Thats what the list says. Samsung should have followed the rules, they
-didn't so they get to pick up the pieces. The Amba driver wants moving as
-well. It's easy. If you want something to be ABI then make sure you get
-it upstream first, if not you get to own all the pain down the line.
-
-Hacking up the core code to paper over this crap is not on. We've been
-insisting firmly and robustly for years that people don't keep borrowing
-names and numbers they are not allocated, and use dynamic values whenever
-possible.
-
-If the hardware isn't present then the driver shouldn't even register
-with the tty layer in the first place so it doesn't make any resource
-differeneces either for properly written code.
-
-Alan
+greg k-h
