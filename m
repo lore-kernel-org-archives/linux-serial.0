@@ -1,90 +1,99 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
- device probe
-Date: Mon, 20 Jan 2014 16:26:23 -0800
-Message-ID: <20140121002623.GA6173@kroah.com>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
- <1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
- <20140120100530.GY15937@n2100.arm.linux.org.uk>
- <20140120211601.GB634@kroah.com>
- <20140120213206.GJ15937@n2100.arm.linux.org.uk>
- <20140120231141.GA2355@kroah.com>
- <20140120231603.GL15937@n2100.arm.linux.org.uk>
- <20140120235128.GA5012@kroah.com>
- <20140121000706.GN15937@n2100.arm.linux.org.uk>
+	device probe
+Date: Tue, 21 Jan 2014 00:38:56 +0000
+Message-ID: <20140121003856.GP15937@n2100.arm.linux.org.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <20140120211601.GB634@kroah.com> <20140120213206.GJ15937@n2100.arm.linux.org.uk> <20140120231141.GA2355@kroah.com> <20140120231603.GL15937@n2100.arm.linux.org.uk> <20140120235128.GA5012@kroah.com> <20140121000706.GN15937@n2100.arm.linux.org.uk> <20140121002623.GA6173@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140121000706.GN15937@n2100.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+In-Reply-To: <20140121002623.GA6173@kroah.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
 Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 21, 2014 at 12:07:06AM +0000, Russell King - ARM Linux wrote:
-> On Mon, Jan 20, 2014 at 03:51:28PM -0800, Greg KH wrote:
-> > On Mon, Jan 20, 2014 at 11:16:03PM +0000, Russell King - ARM Linux wrote:
-> > > I don't believe the driver model has any locking to prevent a drivers
-> > > ->probe function running concurrently with it's ->remove function for
-> > > two (or more) devices.
+On Mon, Jan 20, 2014 at 04:26:23PM -0800, Greg KH wrote:
+> On Tue, Jan 21, 2014 at 12:07:06AM +0000, Russell King - ARM Linux wrote:
+> > On Mon, Jan 20, 2014 at 03:51:28PM -0800, Greg KH wrote:
+> > > On Mon, Jan 20, 2014 at 11:16:03PM +0000, Russell King - ARM Linux wrote:
+> > > > I don't believe the driver model has any locking to prevent a drivers
+> > > > ->probe function running concurrently with it's ->remove function for
+> > > > two (or more) devices.
+> > > 
+> > > The bus prevents this from happening.
+> > > 
+> > > > The locking against this is done on a per-device basis, not a per-driver
+> > > > basis.
+> > > 
+> > > No, on a per-bus basis.
 > > 
-> > The bus prevents this from happening.
+> > I don't see it.
 > > 
-> > > The locking against this is done on a per-device basis, not a per-driver
-> > > basis.
-> > 
-> > No, on a per-bus basis.
+> > Let's start from driver_register().
 > 
-> I don't see it.
+> Which happens from module probing, which is single-threaded, right?
+
+Yes, to _some_ extent - the driver is added to the bus list of drivers
+before existing drivers are probed, so it's always worth bearing in
+mind that if a new device comes along, it's possible for that device
+to be offered to even a driver which hasn't finished returning from
+its module_init().
+
+> > If you think there's a per-driver lock that's held over probes or removes,
+> > please point it out.  I'm fairly certain that there isn't, because we have
+> > to be able to deal with recursive probes (yes, we've had to deal with
+> > those in the past.)
 > 
-> Let's start from driver_register().
-
-Which happens from module probing, which is single-threaded, right?
-
-Or from module_init callbacks, which is single-threaded.
-
-Normally, busses never add devices (which is what drivers bind to),
-except in a single-at-a-time fashion, unless they really know what they
-are doing (i.e. PCI had multi-threaded device probing for a while, don't
-remember if it still does...)
-
-
-> This takes no locks and calls bus_add_driver().
-> This also takes no locks and calls driver_attach().
-> This walks the list of devices calling __driver_attach() for each.
-> __driver_attach() tries to match the device against the driver,
-> locks the parent device if one exists, and the device which is about
-> to be probed.  It then calls driver_probe_device().
-> driver_probe_device() inserts a runtime barrier and calls really_probe().
-> really_probe() ultimately calls either the bus ->probe method or the
-> driver ->probe method.
+> Hm, you are right, I think that's why we had to remove the locks.  The
+> klist stuff handles us getting the needed locks for managing our
+> internal lists of devices and drivers, and those should be fine.
 > 
-> At no point in that sequence do I see anything which does any locking
-> on a per-driver basis.  Let's look at device_add().
-> 
-> device_add() calls bus_probe_device(), which then calls device_attach().
-> device_attach() takes the device's lock, and walks the list of drivers
-> calling __device_attach() on each driver.  This then calls down into
-> driver_probe_device(), and the path is the same as the above.
-> 
-> I don't see any per-driver locking here either.
-> 
-> I've checked the klist stuff, don't see anything there.  Ditto for
-> bus_for_each_drv().
-> 
-> If you think there's a per-driver lock that's held over probes or removes,
-> please point it out.  I'm fairly certain that there isn't, because we have
-> to be able to deal with recursive probes (yes, we've had to deal with
-> those in the past.)
+> So, let's go back to your original worry, what are you concerned about?
+> A device being removed while probe() is called?
 
-Hm, you are right, I think that's why we had to remove the locks.  The
-klist stuff handles us getting the needed locks for managing our
-internal lists of devices and drivers, and those should be fine.
+My concern is that we're turning something which should be simple into
+something unnecessarily complex.  By that, I mean something along the
+lines of:
 
-So, let's go back to your original worry, what are you concerned about?
-A device being removed while probe() is called?
+static DEFINE_MUTEX(foo_mutex);
+static unsigned foo_devices;
 
-thanks,
+static int foo_probe(struct platform_device *pdev)
+{
+	int ret;
 
-greg k-h
+	mutex_lock(&foo_mutex);
+	if (foo_devices++ == 0)
+		uart_register_driver(&driver);
+
+	ret = foo_really_probe_device(pdev);
+	if (ret) {
+		if (--foo_devices == 0)
+			uart_unregister_driver(&driver);
+	}
+	mutex_unlock(&foo_mutex);
+
+	return ret;
+}
+
+static int foo_remove(struct platform_device *pdev)
+{
+	mutex_lock(&foo_mutex);
+	foo_really_remove(pdev);
+	if (--foo_devices == 0)
+		uart_unregister_driver(&driver);
+	mutex_unlock(&foo_mutex);
+
+	return 0;
+}
+
+in every single serial driver we have...  Wouldn't it just be better to
+fix the major/minor number problem rather than have to add all that code
+repetitively to all those drivers?
+
+-- 
+FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
+in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
+Estimate before purchase was "up to 13.2Mbit".
