@@ -1,56 +1,48 @@
 From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
 	device probe
-Date: Tue, 21 Jan 2014 09:45:29 +0000
-Message-ID: <20140121094529.GQ15937@n2100.arm.linux.org.uk>
-References: <20140120100530.GY15937@n2100.arm.linux.org.uk> <20140120211601.GB634@kroah.com> <20140120213206.GJ15937@n2100.arm.linux.org.uk> <20140120231141.GA2355@kroah.com> <20140120231603.GL15937@n2100.arm.linux.org.uk> <20140120235128.GA5012@kroah.com> <20140121000706.GN15937@n2100.arm.linux.org.uk> <20140121002623.GA6173@kroah.com> <20140121003856.GP15937@n2100.arm.linux.org.uk> <20140121092531.350ab714@alan.etchedpixels.co.uk>
+Date: Tue, 21 Jan 2014 09:49:02 +0000
+Message-ID: <20140121094902.GR15937@n2100.arm.linux.org.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com> <20140120214305.54f65ffa@www.etchedpixels.co.uk> <20140120231457.GZ17314@sirena.org.uk> <20140120234734.11b78578@www.etchedpixels.co.uk> <20140121001657.GO15937@n2100.arm.linux.org.uk> <20140121090340.6e067d2d@www.etchedpixels.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:43602 "EHLO
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:43614 "EHLO
 	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753973AbaAUJp5 (ORCPT
+	by vger.kernel.org with ESMTP id S1754247AbaAUJtK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Jan 2014 04:45:57 -0500
+	Tue, 21 Jan 2014 04:49:10 -0500
 Content-Disposition: inline
-In-Reply-To: <20140121092531.350ab714@alan.etchedpixels.co.uk>
+In-Reply-To: <20140121090340.6e067d2d@www.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 
-On Tue, Jan 21, 2014 at 09:25:31AM +0000, One Thousand Gnomes wrote:
-> > static DEFINE_MUTEX(foo_mutex);
-> > static unsigned foo_devices;
-> > 
-> > static int foo_probe(struct platform_device *pdev)
-> > {
-> > 	int ret;
-> > 
-> > 	mutex_lock(&foo_mutex);
-> > 	if (foo_devices++ == 0)
-> > 		uart_register_driver(&driver);
-> > 
-> > 	ret = foo_really_probe_device(pdev);
+On Tue, Jan 21, 2014 at 09:03:40AM +0000, Alan Cox wrote:
+> On Tue, 21 Jan 2014 00:16:57 +0000
+> Russell King - ARM Linux <linux@arm.linux.org.uk> wrote:
 > 
-> We have atomic_inc_and_test and atomic_dec_and_test so it's
-> fractionally less ugly.
+> [I did post a reply to this while on my phone but it got rejected]
+> 
+> > On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
+> > > But yes I agree about the idiom, but a definite NAK to any attempts to
+> > > plaster over this grand screwup by crapping in the tty core. Your turd,
+> > > deal with it locally in the ARM code if you can't apply common sense and
+> > > just go dynamic.
+> > 
+> > I believe at the time there was no one maintaining the device list to
+> > _do_ that allocation - AMBA PL011 came along in 2005 after (I believe)
+> > hpa stopped looking after that list.
+> 
+> git log Documentation/devices.txt
 
-How do atomics help here?  If we do this as:
+Hmm.  Given that git history starts at 2.6.12-rc2, and this was introduced
+in 2.5 kernels, there's no point me looking, because I know the history
+I have access to does not go back to that time.
 
-	if (atomic_inc_and_test(&foo_atomic))
-		uart_register_driver(&driver);
-
-Then let's think about what can happen:
-
-	CPU0				CPU1
-	foo_probe
-	atomic_inc_and_test() == true
-		uart_register_driver
-					foo_probe
-					atomic_inc_and_test()
-					really_probe_foo()
-						*bang*
+And I know for certain that the devices list *did* fall out of maintainership
+for a while.
 
 -- 
 FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
