@@ -1,57 +1,72 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
  device probe
-Date: Tue, 21 Jan 2014 09:03:40 +0000
-Message-ID: <20140121090340.6e067d2d@www.etchedpixels.co.uk>
+Date: Tue, 21 Jan 2014 09:25:31 +0000
+Message-ID: <20140121092531.350ab714@alan.etchedpixels.co.uk>
 References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
 	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
 	<20140120100530.GY15937@n2100.arm.linux.org.uk>
-	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
-	<20140120214305.54f65ffa@www.etchedpixels.co.uk>
-	<20140120231457.GZ17314@sirena.org.uk>
-	<20140120234734.11b78578@www.etchedpixels.co.uk>
-	<20140121001657.GO15937@n2100.arm.linux.org.uk>
+	<20140120211601.GB634@kroah.com>
+	<20140120213206.GJ15937@n2100.arm.linux.org.uk>
+	<20140120231141.GA2355@kroah.com>
+	<20140120231603.GL15937@n2100.arm.linux.org.uk>
+	<20140120235128.GA5012@kroah.com>
+	<20140121000706.GN15937@n2100.arm.linux.org.uk>
+	<20140121002623.GA6173@kroah.com>
+	<20140121003856.GP15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20140121001657.GO15937@n2100.arm.linux.org.uk>
+In-Reply-To: <20140121003856.GP15937@n2100.arm.linux.org.uk>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 21 Jan 2014 00:16:57 +0000
-Russell King - ARM Linux <linux@arm.linux.org.uk> wrote:
-
-[I did post a reply to this while on my phone but it got rejected]
-
-> On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
-> > But yes I agree about the idiom, but a definite NAK to any attempts to
-> > plaster over this grand screwup by crapping in the tty core. Your turd,
-> > deal with it locally in the ARM code if you can't apply common sense and
-> > just go dynamic.
+> > So, let's go back to your original worry, what are you concerned about?
+> > A device being removed while probe() is called?
 > 
-> I believe at the time there was no one maintaining the device list to
-> _do_ that allocation - AMBA PL011 came along in 2005 after (I believe)
-> hpa stopped looking after that list.
+> My concern is that we're turning something which should be simple into
+> something unnecessarily complex.  By that, I mean something along the
+> lines of:
 
-git log Documentation/devices.txt
+Or in fact more complex in other cases because your remove may well be
+refcounted so the stuff may not be going away in the foo_remove() path.
 
-> So, please tell me how a number could be allocated properly without the
-> device numbers list being maintained?
+> 
+> static DEFINE_MUTEX(foo_mutex);
+> static unsigned foo_devices;
+> 
+> static int foo_probe(struct platform_device *pdev)
+> {
+> 	int ret;
+> 
+> 	mutex_lock(&foo_mutex);
+> 	if (foo_devices++ == 0)
+> 		uart_register_driver(&driver);
+> 
+> 	ret = foo_really_probe_device(pdev);
 
-It was being maintained
+We have atomic_inc_and_test and atomic_dec_and_test so it's
+fractionally less ugly.
 
-> I've no problem with going dynamic, and I suggest that you get a sense
-> of perspective rather than just spouting rubbish from on high.
+> in every single serial driver we have...  Wouldn't it just be better to
+> fix the major/minor number problem rather than have to add all that code
+> repetitively to all those drivers?
 
-I suggest you take a harder look at the actual history rather than your
-revisionist one and then apologise.
+Quite.
 
-The "simple" way to sort this out is to go dynamic as first proposed. The
-more complicated way *IFF* Ben can show an actual systems that break is
-for the ARM folks to bury a "Use ancient static device mapping" KConfig
-entry into the arch Kconfig - which can then go away after a while.
+Although for some drivers I suspect what is actually missing when built
+in is
+
+module_init() {
+	if (not_the_right_platform())
+		return -ENOGOOD;
+}
+
+ 
+Going dynamic is the right fix though. Changing how the driver
+registration work is a different (and quite independent) problem.
 
 Alan
