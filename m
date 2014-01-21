@@ -1,99 +1,57 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
-	device probe
-Date: Tue, 21 Jan 2014 00:38:56 +0000
-Message-ID: <20140121003856.GP15937@n2100.arm.linux.org.uk>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <20140120211601.GB634@kroah.com> <20140120213206.GJ15937@n2100.arm.linux.org.uk> <20140120231141.GA2355@kroah.com> <20140120231603.GL15937@n2100.arm.linux.org.uk> <20140120235128.GA5012@kroah.com> <20140121000706.GN15937@n2100.arm.linux.org.uk> <20140121002623.GA6173@kroah.com>
+ device probe
+Date: Tue, 21 Jan 2014 09:03:40 +0000
+Message-ID: <20140121090340.6e067d2d@www.etchedpixels.co.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+	<20140120100530.GY15937@n2100.arm.linux.org.uk>
+	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+	<20140120214305.54f65ffa@www.etchedpixels.co.uk>
+	<20140120231457.GZ17314@sirena.org.uk>
+	<20140120234734.11b78578@www.etchedpixels.co.uk>
+	<20140121001657.GO15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140121002623.GA6173@kroah.com>
+In-Reply-To: <20140121001657.GO15937@n2100.arm.linux.org.uk>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 20, 2014 at 04:26:23PM -0800, Greg KH wrote:
-> On Tue, Jan 21, 2014 at 12:07:06AM +0000, Russell King - ARM Linux wrote:
-> > On Mon, Jan 20, 2014 at 03:51:28PM -0800, Greg KH wrote:
-> > > On Mon, Jan 20, 2014 at 11:16:03PM +0000, Russell King - ARM Linux wrote:
-> > > > I don't believe the driver model has any locking to prevent a drivers
-> > > > ->probe function running concurrently with it's ->remove function for
-> > > > two (or more) devices.
-> > > 
-> > > The bus prevents this from happening.
-> > > 
-> > > > The locking against this is done on a per-device basis, not a per-driver
-> > > > basis.
-> > > 
-> > > No, on a per-bus basis.
-> > 
-> > I don't see it.
-> > 
-> > Let's start from driver_register().
+On Tue, 21 Jan 2014 00:16:57 +0000
+Russell King - ARM Linux <linux@arm.linux.org.uk> wrote:
+
+[I did post a reply to this while on my phone but it got rejected]
+
+> On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
+> > But yes I agree about the idiom, but a definite NAK to any attempts to
+> > plaster over this grand screwup by crapping in the tty core. Your turd,
+> > deal with it locally in the ARM code if you can't apply common sense and
+> > just go dynamic.
 > 
-> Which happens from module probing, which is single-threaded, right?
+> I believe at the time there was no one maintaining the device list to
+> _do_ that allocation - AMBA PL011 came along in 2005 after (I believe)
+> hpa stopped looking after that list.
 
-Yes, to _some_ extent - the driver is added to the bus list of drivers
-before existing drivers are probed, so it's always worth bearing in
-mind that if a new device comes along, it's possible for that device
-to be offered to even a driver which hasn't finished returning from
-its module_init().
+git log Documentation/devices.txt
 
-> > If you think there's a per-driver lock that's held over probes or removes,
-> > please point it out.  I'm fairly certain that there isn't, because we have
-> > to be able to deal with recursive probes (yes, we've had to deal with
-> > those in the past.)
-> 
-> Hm, you are right, I think that's why we had to remove the locks.  The
-> klist stuff handles us getting the needed locks for managing our
-> internal lists of devices and drivers, and those should be fine.
-> 
-> So, let's go back to your original worry, what are you concerned about?
-> A device being removed while probe() is called?
+> So, please tell me how a number could be allocated properly without the
+> device numbers list being maintained?
 
-My concern is that we're turning something which should be simple into
-something unnecessarily complex.  By that, I mean something along the
-lines of:
+It was being maintained
 
-static DEFINE_MUTEX(foo_mutex);
-static unsigned foo_devices;
+> I've no problem with going dynamic, and I suggest that you get a sense
+> of perspective rather than just spouting rubbish from on high.
 
-static int foo_probe(struct platform_device *pdev)
-{
-	int ret;
+I suggest you take a harder look at the actual history rather than your
+revisionist one and then apologise.
 
-	mutex_lock(&foo_mutex);
-	if (foo_devices++ == 0)
-		uart_register_driver(&driver);
+The "simple" way to sort this out is to go dynamic as first proposed. The
+more complicated way *IFF* Ben can show an actual systems that break is
+for the ARM folks to bury a "Use ancient static device mapping" KConfig
+entry into the arch Kconfig - which can then go away after a while.
 
-	ret = foo_really_probe_device(pdev);
-	if (ret) {
-		if (--foo_devices == 0)
-			uart_unregister_driver(&driver);
-	}
-	mutex_unlock(&foo_mutex);
-
-	return ret;
-}
-
-static int foo_remove(struct platform_device *pdev)
-{
-	mutex_lock(&foo_mutex);
-	foo_really_remove(pdev);
-	if (--foo_devices == 0)
-		uart_unregister_driver(&driver);
-	mutex_unlock(&foo_mutex);
-
-	return 0;
-}
-
-in every single serial driver we have...  Wouldn't it just be better to
-fix the major/minor number problem rather than have to add all that code
-repetitively to all those drivers?
-
--- 
-FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
-in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
-Estimate before purchase was "up to 13.2Mbit".
+Alan
