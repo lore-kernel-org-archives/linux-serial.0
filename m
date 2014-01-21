@@ -1,41 +1,90 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
-	device probe
-Date: Tue, 21 Jan 2014 00:16:57 +0000
-Message-ID: <20140121001657.GO15937@n2100.arm.linux.org.uk>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com> <20140120214305.54f65ffa@www.etchedpixels.co.uk> <20140120231457.GZ17314@sirena.org.uk> <20140120234734.11b78578@www.etchedpixels.co.uk>
+ device probe
+Date: Mon, 20 Jan 2014 16:26:23 -0800
+Message-ID: <20140121002623.GA6173@kroah.com>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+ <1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+ <20140120100530.GY15937@n2100.arm.linux.org.uk>
+ <20140120211601.GB634@kroah.com>
+ <20140120213206.GJ15937@n2100.arm.linux.org.uk>
+ <20140120231141.GA2355@kroah.com>
+ <20140120231603.GL15937@n2100.arm.linux.org.uk>
+ <20140120235128.GA5012@kroah.com>
+ <20140121000706.GN15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:43334 "EHLO
-	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751127AbaAUARG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Jan 2014 19:17:06 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140120234734.11b78578@www.etchedpixels.co.uk>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20140121000706.GN15937@n2100.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 
-On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
-> But yes I agree about the idiom, but a definite NAK to any attempts to
-> plaster over this grand screwup by crapping in the tty core. Your turd,
-> deal with it locally in the ARM code if you can't apply common sense and
-> just go dynamic.
+On Tue, Jan 21, 2014 at 12:07:06AM +0000, Russell King - ARM Linux wrote:
+> On Mon, Jan 20, 2014 at 03:51:28PM -0800, Greg KH wrote:
+> > On Mon, Jan 20, 2014 at 11:16:03PM +0000, Russell King - ARM Linux wrote:
+> > > I don't believe the driver model has any locking to prevent a drivers
+> > > ->probe function running concurrently with it's ->remove function for
+> > > two (or more) devices.
+> > 
+> > The bus prevents this from happening.
+> > 
+> > > The locking against this is done on a per-device basis, not a per-driver
+> > > basis.
+> > 
+> > No, on a per-bus basis.
+> 
+> I don't see it.
+> 
+> Let's start from driver_register().
 
-I believe at the time there was no one maintaining the device list to
-_do_ that allocation - AMBA PL011 came along in 2005 after (I believe)
-hpa stopped looking after that list.
+Which happens from module probing, which is single-threaded, right?
 
-So, please tell me how a number could be allocated properly without the
-device numbers list being maintained?
+Or from module_init callbacks, which is single-threaded.
 
-I've no problem with going dynamic, and I suggest that you get a sense
-of perspective rather than just spouting rubbish from on high.
+Normally, busses never add devices (which is what drivers bind to),
+except in a single-at-a-time fashion, unless they really know what they
+are doing (i.e. PCI had multi-threaded device probing for a while, don't
+remember if it still does...)
 
--- 
-FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
-in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
-Estimate before purchase was "up to 13.2Mbit".
+
+> This takes no locks and calls bus_add_driver().
+> This also takes no locks and calls driver_attach().
+> This walks the list of devices calling __driver_attach() for each.
+> __driver_attach() tries to match the device against the driver,
+> locks the parent device if one exists, and the device which is about
+> to be probed.  It then calls driver_probe_device().
+> driver_probe_device() inserts a runtime barrier and calls really_probe().
+> really_probe() ultimately calls either the bus ->probe method or the
+> driver ->probe method.
+> 
+> At no point in that sequence do I see anything which does any locking
+> on a per-driver basis.  Let's look at device_add().
+> 
+> device_add() calls bus_probe_device(), which then calls device_attach().
+> device_attach() takes the device's lock, and walks the list of drivers
+> calling __device_attach() on each driver.  This then calls down into
+> driver_probe_device(), and the path is the same as the above.
+> 
+> I don't see any per-driver locking here either.
+> 
+> I've checked the klist stuff, don't see anything there.  Ditto for
+> bus_for_each_drv().
+> 
+> If you think there's a per-driver lock that's held over probes or removes,
+> please point it out.  I'm fairly certain that there isn't, because we have
+> to be able to deal with recursive probes (yes, we've had to deal with
+> those in the past.)
+
+Hm, you are right, I think that's why we had to remove the locks.  The
+klist stuff handles us getting the needed locks for managing our
+internal lists of devices and drivers, and those should be fine.
+
+So, let's go back to your original worry, what are you concerned about?
+A device being removed while probe() is called?
+
+thanks,
+
+greg k-h
