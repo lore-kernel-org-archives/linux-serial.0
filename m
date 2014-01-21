@@ -1,103 +1,96 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Subject: Re: [PATCH] serial: samsung: move clock deactivation below uart registration
-Date: Tue, 21 Jan 2014 15:26:42 +0100
-Message-ID: <2813762.7GxfVBIcrq@phil>
-References: <201312050054.39327.heiko@sntech.de>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
+ device probe
+Date: Tue, 21 Jan 2014 16:59:35 +0000
+Message-ID: <20140121165935.GB17314@sirena.org.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+ <1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+ <20140120100530.GY15937@n2100.arm.linux.org.uk>
+ <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+ <20140120214305.54f65ffa@www.etchedpixels.co.uk>
+ <20140120231457.GZ17314@sirena.org.uk>
+ <20140120234734.11b78578@www.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="YLBcqQnAC9NQWYFL"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:49439 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754606AbaAUOz2 convert rfc822-to-8bit (ORCPT
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:57602 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754751AbaAUQ76 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Jan 2014 09:55:28 -0500
-In-Reply-To: <201312050054.39327.heiko@sntech.de>
+	Tue, 21 Jan 2014 11:59:58 -0500
+Content-Disposition: inline
+In-Reply-To: <20140120234734.11b78578@www.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Chander Kashyap <chander.kashyap@linaro.org>
-
-Hi Greg,
-
-just wanted to ask about the state of this patch. I can see it in your =
-branch=20
-named "fixes" [0] but it seems it hasn't made its way into the kernel n=
-either=20
-during the 3.13-rcs or with your 3.14-pull [1].
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Tushar Behera <tushar.behera@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 
 
-Thanks
-Heiko
+--YLBcqQnAC9NQWYFL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
+> Mark Brown <broonie@kernel.org> wrote:
+> > On Mon, Jan 20, 2014 at 09:43:05PM +0000, Alan Cox wrote:
 
-[0] https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git/log/?h=3D=
-fixes
-[1]=20
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/=
-?id=3Dbcee63488ece9a0fca8be19951428a7b41001e66
+> > The userspace breakage is that if someone has a static /dev that doesn't
+> > handle any dynamic devices then renumbering the device will cause that
+> > static /dev to stop matching the kernel.
 
+> Diddums and you've only provided theoretical cases not real world ones.
 
-Am Donnerstag, 5. Dezember 2013, 00:54:38 schrieb Heiko St=FCbner:
-> Commit 60e93575476f (serial: samsung: enable clock before clearing pe=
-nding
-> interrupts during init) added handling of the controller clock during=
- init.
->=20
-> On most systems this clock is also one of the baud_clock sources and
-> possibly used by the earlycon and thus already enabled by the bootloa=
-der.
->=20
-> Therefore a gap exists between s3c24xx_serial_init_port disabling the
-> clock and an attached console reenabling it, making the transition fr=
-om
-> earlycon to regular console possibly hang the system - as seen on my
-> S3C2442 based Freerunner today.
->=20
-> Therefore move the disabling of the clock from s3c24xx_serial_init_po=
-rt
-> below the uart port registration, effectively creating an overlap and
-> keeping the clock running non-stop if the console wants to grab this =
-port.
->=20
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> ---
->  drivers/tty/serial/samsung.c |    8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsun=
-g.c
-> index c1af04d..9cd706d 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1209,7 +1209,6 @@ static int s3c24xx_serial_init_port(struct
-> s3c24xx_uart_port *ourport,
->=20
->  	/* reset the fifos (and setup the uart) */
->  	s3c24xx_serial_resetport(port, cfg);
-> -	clk_disable_unprepare(ourport->clk);
->  	return 0;
->  }
->=20
-> @@ -1287,6 +1286,13 @@ static int s3c24xx_serial_probe(struct
-> platform_device *pdev) uart_add_one_port(&s3c24xx_uart_drv,
-> &ourport->port);
->  	platform_set_drvdata(pdev, &ourport->port);
->=20
-> +	/*
-> +	 * Deactivate the clock enabled in s3c24xx_serial_init_port here,
-> +	 * so that a potential re-enablement through the pm-callback overla=
-ps
-> +	 * and keeps the clock enabled in this case.
-> +	 */
-> +	clk_disable_unprepare(ourport->clk);
-> +
->  #ifdef CONFIG_SAMSUNG_CLOCK
->  	ret =3D device_create_file(&pdev->dev, &dev_attr_clock_source);
->  	if (ret < 0)
+I'm fairly sure I have some older boards on my desk with static /dev,
+I'd need to go and check which is rather more effort than I'm interested
+in putting in for point scoring.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> They should have followed proper practice and reserved their minors. The
+> device number belongs to the Altix. The driver should just move.
+
+They should have done that about a decade ago when this stuff was
+introduced, yes.  At some point one has to accept and deal with the
+world as it is.
+
+> But yes I agree about the idiom, but a definite NAK to any attempts to
+> plaster over this grand screwup by crapping in the tty core. Your turd,
+> deal with it locally in the ARM code if you can't apply common sense and
+> just go dynamic.
+
+Local bodges being the first two patches Greg knocked back of course...
+In any case, if we can convince people to make the subsystem better and
+coincidentally also stop problems occuring on their systems that does
+seem like a win overall.
+
+> And please, after screwing this up twice - *learn* from the mess.
+
+One of the things we've been trying to do is to ensure that the all the
+driver code that isn't core architecture support (not just for ARM, for
+everything) is going into subsystems so we're getting good review from
+people who actually know the subsystems and aren't just saying things
+are random platform stuff or whatever that we don't care about.  That
+has been a source of problems all over, we're trying to avoid it.
+
+--YLBcqQnAC9NQWYFL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS3qd0AAoJELSic+t+oim9HdIP/0e6iP3BmAVkfhOOPBcT0F+A
+lc8rTFXJK7w8UW1p7lqC8B6LKDyhqBkcpEYxN98uBH2N5X5bdigMABS7Fx52goyy
+7gVdWKx8aKyAM9QHdEklngkdJN94bvLXlRPmOXFb34iq1LfilCSv75hPeqpJ5JaY
+aaljl1kKHRqs5OWeGyM8M3MIPtP9j311SqmFR4BRG0nJcpoEc3GCKMPmkVKCW1Si
+I/81+4zfUU1euPf740rq9amgmno7Y7uY3acAFE3ya2TvvBg2Hmblg6TAHect+V2I
+6zh4jU0Zu1CC0DJJ+zN/io/OCIY4xKMieZu+7wWQKlR7+qvEbEhgrTh7W76ZeznA
+6flNLi9tAJAyWuCKDcLkZP34QRoNghqUobIqw8gOqvULKZX2lwtUsDaTXEuAsv10
+BNuBMx9MJ39r0x2njYzjFxV+y0YScMTw4OIDku/xxb/CiDc3BcYzrNGtQnbejeso
+Bl+YRNjk4nCSzcP14g/PoCP0dPFUKf8hg4k4giwpl4xGk0Wv1nboBlyIj1p3hr5k
+WNBJKYzY+QNu6PZ37XXpleuQilSpzuj3SSeAsNpNNND+NUEcSrzUc+mg3jonQgzm
+84ShHydayUuwsu5ZT5G14GRnFw1lRMcjvWKx+l86P2nRKqYWAfcs+TmJH/lwMC6t
+l/qHUm/JU5TCw2vyfKHK
+=ySsu
+-----END PGP SIGNATURE-----
+
+--YLBcqQnAC9NQWYFL--
