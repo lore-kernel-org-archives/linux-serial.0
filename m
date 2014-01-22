@@ -1,151 +1,59 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
-	device probe
-Date: Tue, 21 Jan 2014 18:30:28 +0000
-Message-ID: <20140121183028.GV15937@n2100.arm.linux.org.uk>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com> <20140120214305.54f65ffa@www.etchedpixels.co.uk> <20140120231457.GZ17314@sirena.org.uk> <20140120234734.11b78578@www.etchedpixels.co.uk> <20140121165935.GB17314@sirena.org.uk>
+From: Yao Yuan <yao.yuan@freescale.com>
+Subject: RE: [PATCH v3 2/2] serial: fsl_lpuart: add DMA support
+Date: Wed, 22 Jan 2014 03:41:08 +0000
+Message-ID: <3da53d9f2adb44d18c45c44c13621288@BL2PR03MB338.namprd03.prod.outlook.com>
+References: <1389763265-27300-2-git-send-email-yao.yuan@freescale.com>
+ <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
+ <20140115110537.GA25824@e106331-lin.cambridge.arm.com>
+ <b55917fd1b664ebeaeb135330ff806bd@DM2PR03MB349.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140121165935.GB17314@sirena.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bl2lp0203.outbound.protection.outlook.com ([207.46.163.203]:32875
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751805AbaAVDlY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Jan 2014 22:41:24 -0500
+In-Reply-To: <b55917fd1b664ebeaeb135330ff806bd@DM2PR03MB349.namprd03.prod.outlook.com>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Tue, Jan 21, 2014 at 04:59:35PM +0000, Mark Brown wrote:
-> On Mon, Jan 20, 2014 at 11:47:34PM +0000, Alan Cox wrote:
-> > They should have followed proper practice and reserved their minors. The
-> > device number belongs to the Altix. The driver should just move.
-> 
-> They should have done that about a decade ago when this stuff was
-> introduced, yes.  At some point one has to accept and deal with the
-> world as it is.
-
-Let's look at the facts, shall we?  We have several drivers which I was
-involved in, which include the original AMBA PL010 driver, the SA11x0
-serial driver, and the Footbridge driver.  Both of those had been around
-for some time in earlier kernels.
-
-I remember there being a discussion about the major/minor numbers, and
-the conclusion which came out of that was to have this "low density
-serial ports" major, and allocate minor numbers from that.
-
-So I applied for minor numbers for these drivers, and HPA at the time
-granted them.  Here's an exmaple:
-| Russell King wrote:
-| > 
-| > Hi hpa,
-| > 
-| > Did you get my previous mail about this device allocation?  If not, here
-| > is the request (although its hard to put it together without an up to
-| > date devices.txt list):
-| > 
-| >         Major:                  204
-| >         Minor:                  16
-| >         Number of minors:       16
-| >         Non-devfs name:         ttyAM0 to ttyAM15
-| >         Description:            ARM "AMBA" serial ports
-| > 
-| >         Major:                  205
-| >         Minor:                  16
-| >         Number of minors:       16
-| >         Non-devfs name:         cuaam to cuaam15
-| >         Description:            Callout device for ttyAM0 to ttyAM15
-| > 
-| 
-| Approved as written.
-
-Others did the same (previously) for the StrongARM driver (which was
-Nicolas).
-
-During the 2.3/2.4 era, the clps711x serial driver was added, and that
-re-used the above allocations since it was believed at the time that
-there would be no overlap (they'd only appear on SoCs and you would
-never have one of each type on each SoC).  So, the clps711x serial
-driver never had an offical allocation at that time.  Later on, it
-transitioned to using its own minors (which now conflicts).  Exactly
-when that happened, I'm not sure - sometime between Jan and July 2002.
-
-However, the clps711x driver went in as a side effect of the need to
-replace the old serial.c driver with something better - and it was
-decided that my serial_core and serial rewrite was the desired way
-forward.  So that stuff got sucked in with no official allocation -
-that was an oversight on my part.
-
-At some point after that, the amba PL011 driver was added - I can't
-pin that down, because the history from the 2.5/early 2.6 is lost to
-me (and I can't sanely get access to the Linux history git... not
-with the state of my DSL.)  Looking at the patch archive I have, it
-may have been around patch-2.6.0-test2 time when amba-pl011 came into
-being, which places that around 5th August 2003, but I can't see when
-it went into mainline since I stopped producing patches in December
-2003, but we can be certain that it was after 2003.
-
-Now, I'm certain of my facts here that LANANA stopped being useful
-around this time - especially so now that I've found an email from
-2004:
-
-| Date:   Wed, 23 Jun 2004 10:07:54 -0500
-| From:   Erik Jacobson <erikj@subway.americas.sgi.com>
-| Subject: Re: [PATCH 2.6] Altix serial driver
-| Message-ID: <Pine.SGI.4.53.0406231005110.280312@subway.americas.sgi.com>
-| 
-| LANANA has been unresponsive and their site states they aren't accepting
-| 2.6 submissions.
-
-So here we have evidence that I'm not the only one who stumbled across
-LANANA becoming a problem - and it becoming impossible to have additional
-numbers allocated in that range.
-
-Here's more evidence, from later on, which appears to show when LANANA
-resumed:
-
-| From: David Woodhouse <dwmw2@infradead.org>
-| To: device@lanana.org
-| Cc: benh@kernel.crashing.org, rmk+serial@arm.linux.org.uk
-| Date: Fri, 01 Dec 2006 15:40:23 +0000
-| Message-Id: <1164987623.12649.36.camel@pmac.infradead.org>
-| 
-| Please assign four minor numbers from major 204, for the pmac_zilog
-| driver.
-| 
-| Thanks.
-
-To which LANANA never responded, so it was followed up:
-
-| From: David Woodhouse <dwmw2@infradead.org>
-| To: device@lanana.org
-| Cc: benh@kernel.crashing.org, rmk+serial@arm.linux.org.uk
-| Date: Fri, 30 Mar 2007 04:11:52 +0100
-| Message-Id: <1175224312.3122.113.camel@pmac.infradead.org>
-| 
-| On Fri, 2006-12-01 at 15:40 +0000, David Woodhouse wrote:
-| > Please assign four minor numbers from major 204, for the pmac_zilog
-| > driver.
-| 
-| Pretty please?
-
-And this finally resulted in numbers being allocated again, this time by
-Torben Mathiasen.
-
-Now, I had - and have - absolutely *no* problem with this process... and
-if it had been available for allocating the ttyAMA numbers properly, I
-would have definitely used it - for the sole reason that it is the only
-sane thing to do.
-
-But it wasn't available, and something had to be done.
-
-Unlike Alan's comments which would have you believe that LANANA has been
-operating continuously, it seems that the evidence I have backs up my
-claim, and supports the reason why these drivers never had an official
-allocation, and it's certainly *not* through lack of common sense or the
-intention of creating "a turd" - which I take great offence to those
-accusations.  I did the best I could at that time given the circumstances
-that were prevailing.
-
--- 
-FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
-in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
-Estimate before purchase was "up to 13.2Mbit".
+SGksIE1hcmsNCg0KVGhpbmsgdHdpY2UuDQpZZXMsIHlvdSBhcmUgcmlnaHQuICJvZl9nZXRfcHJv
+cGVydHkiIGlzIG5vdCBuZWNlc3NhcnkgaGVyZS4NCg0KVGhhbmtzIGZvciB5b3VyIHN1Z2dlc3Rp
+b24uDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtc2VyaWFs
+LW93bmVyQHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LXNlcmlhbC0NCj4gb3duZXJAdmdl
+ci5rZXJuZWwub3JnXSBPbiBCZWhhbGYgT2YgWWFvIFl1YW4NCj4gU2VudDogVGh1cnNkYXksIEph
+bnVhcnkgMTYsIDIwMTQgMjo1NCBQTQ0KPiBUbzogTWFyayBSdXRsYW5kDQo+IENjOiBncmVna2hA
+bGludXhmb3VuZGF0aW9uLm9yZzsgc2hhd24uZ3VvQGxpbmFyby5vcmc7DQo+IGxpbnV4QGFybS5s
+aW51eC5vcmcudWs7IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gYXJu
+ZEBhcm5kYi5kZTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSRTog
+W1BBVENIIHYzIDIvMl0gc2VyaWFsOiBmc2xfbHB1YXJ0OiBhZGQgRE1BIHN1cHBvcnQNCj4gDQo+
+IEhpLCBtYXJrDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiArI2lm
+ZGVmIENPTkZJR19TRVJJQUxfRlNMX0xQVUFSVF9ETUENCj4gPiA+ICsgICAgICAgc3RydWN0IHBs
+YXRmb3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShwb3J0LT5kZXYpOw0KPiA+
+ID4gKyAgICAgICBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wID0gcGRldi0+ZGV2Lm9mX25vZGU7DQo+
+ID4gPiArDQo+ID4gPiArICAgICAgIGlmIChvZl9nZXRfcHJvcGVydHkobnAsICJkbWFzIiwgTlVM
+TCkpIHsNCj4gPiA+ICsgICAgICAgICAgICAgICBzcG9ydC0+bHB1YXJ0X2RtYV91c2UgPSB0cnVl
+Ow0KPiA+ID4gKyAgICAgICAgICAgICAgIGxwdWFydF9kbWFfdHhfcmVxdWVzdChwb3J0KTsNCj4g
+PiA+ICsgICAgICAgICAgICAgICBscHVhcnRfZG1hX3J4X3JlcXVlc3QocG9ydCk7DQo+ID4gPiAr
+ICAgICAgICAgICAgICAgdGVtcCA9IHJlYWRiKHBvcnQtPm1lbWJhc2UgKyBVQVJUQ1I1KTsNCj4g
+PiA+ICsgICAgICAgICAgICAgICB3cml0ZWIodGVtcCB8IFVBUlRDUjVfVERNQVMsIHBvcnQtPm1l
+bWJhc2UgKw0KPiA+ID4gKyBVQVJUQ1I1KTsNCj4gPg0KPiA+IFJhdGhlciB0aGFuIHJlYWRpbmcg
+dGhlIHJhdyBkdCB0byBmaW5kIG91dCBpZiB5b3UgaGF2ZSBkbWFzLCBjYW4geW91DQo+ID4gbm90
+IGp1c3QgYXR0ZW1wdCB0byByZXF1ZXN0IHRoZSBkbWFzIGFuZCBpZiBlaXRoZXIgZmFpbCBnaXZl
+IHVwIG9uDQo+IHVzaW5nIHRoZW0/DQo+IA0KPiBZZXMsIHRoZSBkbWEgcmVxdWVzdCBmdW5jdGlv
+biBjYW4gYWxzbyBjb25maXJtIGl0LiBCdXQgbWF5YmUgaXQncyBiZXR0ZXINCj4gdGhhdCBhZGQg
+dGhlIGp1ZGdlIGFzIGEgZG1hIGVudHJhbmNlIGZpcnN0Pw0KPiBJIHRoaW5rIGlmIHRoZSBkbWFz
+IGlzIGJlIHdyaXR0ZW4gaXQgbWVhbnMgZG1hIHdhbnQgYmUgc3VwcG9ydC4gQXQgdGhpcw0KPiB0
+aW1lLCByYXRoZXIgdGhhbiBzaWxlbnRseSBjaGFuZ2UgdG8gbm8gZG1hIG1vZGVsLCB3ZSBtYXkg
+dGhyb3cgdGhlIGVycm9yDQo+IHdoZW4gc29tZSBlcnJvcnMgaGFwcGVuZWQuDQo+IEJ1dCBkbWEg
+cmVxdWVzdCBmYWlsZWQgbWF5IGhhdmUgbWFueSBvdGhlciByZWFzb25zLiBBbHNvIHRoZSBqdWRn
+ZSB3aWxsDQo+IGp1c3QgcnVuIG9ubHkgb25jZSwgaXQgd2lsbCBub3Qgd2FzdGUgb2YgcGVyZm9y
+bWFuY2UuDQo+IElmIHRoZSBkbWFzIGlzIG5vdCBiZSB3cml0dGVuLCB3ZSBkb24ndCBuZWVkIHRv
+IGRvIGFueXRoaW5nIGFib3V0IGRtYS4NCj4gEyAg7Lm7HCAmIH4gJiAYICArLSAg3bYXICB3ICDL
+myAgIG0gYiAgbHogICApICAgdypqZyAgIB4gICAgIN2iai8gICB6IN6WICAyIN6ZDQo+ICYgKd+h
+IGEgIH8gIB4gRyAgIGggDyBqOit2ICAgdyDZpQ0K
