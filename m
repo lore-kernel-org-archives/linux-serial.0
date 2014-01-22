@@ -1,48 +1,48 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH] serial: imx: always wake up the processes in the TX callback
-Date: Wed, 22 Jan 2014 16:23:37 +0800
-Message-ID: <1390379017-23737-1-git-send-email-b32955@freescale.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [PATCH] tty/serial: atmel_serial: remove dev_dbg in atmel_set_termios
+Date: Wed, 22 Jan 2014 10:38:52 +0100
+Message-ID: <1390383532-2600-1-git-send-email-nicolas.ferre@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co1ehsobe006.messaging.microsoft.com ([216.32.180.189]:6165
-	"EHLO co1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751302AbaAVJAp (ORCPT
+Received: from eusmtp01.atmel.com ([212.144.249.242]:56107 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753105AbaAVJiz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Jan 2014 04:00:45 -0500
+	Wed, 22 Jan 2014 04:38:55 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
+To: Leilei Zhao <leilei.zhao@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Boris BREZILLON <b.brezillon@overkiz.com>, linux-kernel@vger.kernel.org, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-The current code only wakes up the processes when the circle
-buffer has less data then the WAKEUP_CHARS.
+This fixes a driver bug which stopped the whole system (in case
+of serial console).
+This log message is not useful anyway as this information is
+printed elsewhere.
 
-But sometimes, the circle buffer may has data more then the WAKEUP_CHARS,
-in such case, the processes will hang.
-
-This patch makes it always wakes up the processes in the TX callback.
-
-Signed-off-by: Huang Shijie <b32955@freescale.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- drivers/tty/serial/imx.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index d799140..dff0f0a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -496,8 +496,7 @@ static void dma_tx_callback(void *data)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index a49f10d269b2..3d7206fc532f 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1853,13 +1853,10 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	mode &= ~ATMEL_US_USMODE;
  
- 	dev_dbg(sport->port.dev, "we finish the TX DMA.\n");
+ 	if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
+-		dev_dbg(port->dev, "Setting UART to RS485\n");
+ 		if ((atmel_port->rs485.delay_rts_after_send) > 0)
+ 			UART_PUT_TTGR(port,
+ 					atmel_port->rs485.delay_rts_after_send);
+ 		mode |= ATMEL_US_USMODE_RS485;
+-	} else {
+-		dev_dbg(port->dev, "Setting UART to RS232\n");
+ 	}
  
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
--		uart_write_wakeup(&sport->port);
-+	uart_write_wakeup(&sport->port);
- 
- 	if (waitqueue_active(&sport->dma_wait)) {
- 		wake_up(&sport->dma_wait);
+ 	/* set the parity, stop bits and data size */
 -- 
-1.7.2.rc3
-
+1.8.2.2
 
