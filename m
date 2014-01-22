@@ -1,59 +1,40 @@
-From: Yao Yuan <yao.yuan@freescale.com>
-Subject: RE: [PATCH v3 2/2] serial: fsl_lpuart: add DMA support
-Date: Wed, 22 Jan 2014 03:41:08 +0000
-Message-ID: <3da53d9f2adb44d18c45c44c13621288@BL2PR03MB338.namprd03.prod.outlook.com>
-References: <1389763265-27300-2-git-send-email-yao.yuan@freescale.com>
- <1389763265-27300-3-git-send-email-yao.yuan@freescale.com>
- <20140115110537.GA25824@e106331-lin.cambridge.arm.com>
- <b55917fd1b664ebeaeb135330ff806bd@DM2PR03MB349.namprd03.prod.outlook.com>
+From: Yuan Yao <yao.yuan@freescale.com>
+Subject: [PATCH v4 0/3] serial: fsl_lpuart: add DMA support
+Date: Wed, 22 Jan 2014 12:09:30 +0800
+Message-ID: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bl2lp0203.outbound.protection.outlook.com ([207.46.163.203]:32875
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751805AbaAVDlY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Jan 2014 22:41:24 -0500
-In-Reply-To: <b55917fd1b664ebeaeb135330ff806bd@DM2PR03MB349.namprd03.prod.outlook.com>
-Content-Language: en-US
+Received: from va3ehsobe005.messaging.microsoft.com ([216.32.180.31]:55466
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750795AbaAVFIR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Jan 2014 00:08:17 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: gregkh@linuxfoundation.org, shawn.guo@linaro.org
+Cc: linux@arm.linux.org.uk, arnd@arndb.de, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-SGksIE1hcmsNCg0KVGhpbmsgdHdpY2UuDQpZZXMsIHlvdSBhcmUgcmlnaHQuICJvZl9nZXRfcHJv
-cGVydHkiIGlzIG5vdCBuZWNlc3NhcnkgaGVyZS4NCg0KVGhhbmtzIGZvciB5b3VyIHN1Z2dlc3Rp
-b24uDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtc2VyaWFs
-LW93bmVyQHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LXNlcmlhbC0NCj4gb3duZXJAdmdl
-ci5rZXJuZWwub3JnXSBPbiBCZWhhbGYgT2YgWWFvIFl1YW4NCj4gU2VudDogVGh1cnNkYXksIEph
-bnVhcnkgMTYsIDIwMTQgMjo1NCBQTQ0KPiBUbzogTWFyayBSdXRsYW5kDQo+IENjOiBncmVna2hA
-bGludXhmb3VuZGF0aW9uLm9yZzsgc2hhd24uZ3VvQGxpbmFyby5vcmc7DQo+IGxpbnV4QGFybS5s
-aW51eC5vcmcudWs7IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gYXJu
-ZEBhcm5kYi5kZTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSRTog
-W1BBVENIIHYzIDIvMl0gc2VyaWFsOiBmc2xfbHB1YXJ0OiBhZGQgRE1BIHN1cHBvcnQNCj4gDQo+
-IEhpLCBtYXJrDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiArI2lm
-ZGVmIENPTkZJR19TRVJJQUxfRlNMX0xQVUFSVF9ETUENCj4gPiA+ICsgICAgICAgc3RydWN0IHBs
-YXRmb3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShwb3J0LT5kZXYpOw0KPiA+
-ID4gKyAgICAgICBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wID0gcGRldi0+ZGV2Lm9mX25vZGU7DQo+
-ID4gPiArDQo+ID4gPiArICAgICAgIGlmIChvZl9nZXRfcHJvcGVydHkobnAsICJkbWFzIiwgTlVM
-TCkpIHsNCj4gPiA+ICsgICAgICAgICAgICAgICBzcG9ydC0+bHB1YXJ0X2RtYV91c2UgPSB0cnVl
-Ow0KPiA+ID4gKyAgICAgICAgICAgICAgIGxwdWFydF9kbWFfdHhfcmVxdWVzdChwb3J0KTsNCj4g
-PiA+ICsgICAgICAgICAgICAgICBscHVhcnRfZG1hX3J4X3JlcXVlc3QocG9ydCk7DQo+ID4gPiAr
-ICAgICAgICAgICAgICAgdGVtcCA9IHJlYWRiKHBvcnQtPm1lbWJhc2UgKyBVQVJUQ1I1KTsNCj4g
-PiA+ICsgICAgICAgICAgICAgICB3cml0ZWIodGVtcCB8IFVBUlRDUjVfVERNQVMsIHBvcnQtPm1l
-bWJhc2UgKw0KPiA+ID4gKyBVQVJUQ1I1KTsNCj4gPg0KPiA+IFJhdGhlciB0aGFuIHJlYWRpbmcg
-dGhlIHJhdyBkdCB0byBmaW5kIG91dCBpZiB5b3UgaGF2ZSBkbWFzLCBjYW4geW91DQo+ID4gbm90
-IGp1c3QgYXR0ZW1wdCB0byByZXF1ZXN0IHRoZSBkbWFzIGFuZCBpZiBlaXRoZXIgZmFpbCBnaXZl
-IHVwIG9uDQo+IHVzaW5nIHRoZW0/DQo+IA0KPiBZZXMsIHRoZSBkbWEgcmVxdWVzdCBmdW5jdGlv
-biBjYW4gYWxzbyBjb25maXJtIGl0LiBCdXQgbWF5YmUgaXQncyBiZXR0ZXINCj4gdGhhdCBhZGQg
-dGhlIGp1ZGdlIGFzIGEgZG1hIGVudHJhbmNlIGZpcnN0Pw0KPiBJIHRoaW5rIGlmIHRoZSBkbWFz
-IGlzIGJlIHdyaXR0ZW4gaXQgbWVhbnMgZG1hIHdhbnQgYmUgc3VwcG9ydC4gQXQgdGhpcw0KPiB0
-aW1lLCByYXRoZXIgdGhhbiBzaWxlbnRseSBjaGFuZ2UgdG8gbm8gZG1hIG1vZGVsLCB3ZSBtYXkg
-dGhyb3cgdGhlIGVycm9yDQo+IHdoZW4gc29tZSBlcnJvcnMgaGFwcGVuZWQuDQo+IEJ1dCBkbWEg
-cmVxdWVzdCBmYWlsZWQgbWF5IGhhdmUgbWFueSBvdGhlciByZWFzb25zLiBBbHNvIHRoZSBqdWRn
-ZSB3aWxsDQo+IGp1c3QgcnVuIG9ubHkgb25jZSwgaXQgd2lsbCBub3Qgd2FzdGUgb2YgcGVyZm9y
-bWFuY2UuDQo+IElmIHRoZSBkbWFzIGlzIG5vdCBiZSB3cml0dGVuLCB3ZSBkb24ndCBuZWVkIHRv
-IGRvIGFueXRoaW5nIGFib3V0IGRtYS4NCj4gEyAg7Lm7HCAmIH4gJiAYICArLSAg3bYXICB3ICDL
-myAgIG0gYiAgbHogICApICAgdypqZyAgIB4gICAgIN2iai8gICB6IN6WICAyIN6ZDQo+ICYgKd+h
-IGEgIH8gIB4gRyAgIGggDyBqOit2ICAgdyDZpQ0K
+Changed in v4:
+- Move dma properties from dtsi to dts.
+- Cancle the macro(SERIAL_FSL_LPUART_DMA)  .
+- Separate the document for clocks which undocumented before into a single patch.
+- Change some explanations in document(clocks, clock-names, dmas, dma-names).
+- Change "lpuart-tx" and "lpuart-rx" to "tx" and "rx".
+
+Changed in v3:
+- Use the streaming DMA API for receive.
+- Add the macro(SERIAL_FSL_LPUART_DMA) and dts node propertie for whether using the dma.
+- Adjust some coding style.
+ 
+Changed in v2:
+- Add eDMA support for lpuart receive.
+- Use dma_mapping_error test dma_map_single.
+- Change some names of variable.
+- Fix some bugs.
+ 
+Added in v1:
+- Add device tree bindings for lupart eDMA support.
+- Add eDMA support for lpuart send.
+
+
