@@ -1,120 +1,71 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2] tty: uartps: Initialize ports according to aliases
-Date: Thu, 23 Jan 2014 16:06:33 +0100
-Message-ID: <225c74aa791dc09c72267f6718323cbcc36fef95.1390489583.git.michal.simek@xilinx.com>
-Content-Type: multipart/signed;
-    boundary="=_mimegpg-monstr-desktop-9931-1390489594-0001";
-    micalg=pgp-sha1; protocol="application/pgp-signature"
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
+ device probe
+Date: Thu, 23 Jan 2014 18:04:23 +0000
+Message-ID: <20140123180423.1a62611a@www.etchedpixels.co.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+	<20140120100530.GY15937@n2100.arm.linux.org.uk>
+	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f179.google.com ([74.125.82.179]:36119 "EHLO
-	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754141AbaAWPGl (ORCPT
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:33859 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754491AbaAWSEz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jan 2014 10:06:41 -0500
-Received: by mail-we0-f179.google.com with SMTP id w62so1280507wes.38
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2014 07:06:40 -0800 (PST)
+	Thu, 23 Jan 2014 13:04:55 -0500
+In-Reply-To: <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Tushar Behera <tushar.behera@linaro.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Mark Brown <broonie@kernel.org>
 
-This is a MIME GnuPG-signed message.  If you see this text, it means that
-your E-mail or Usenet software does not support MIME signed messages.
-The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
-To open this message correctly you will need to install E-mail or Usenet
-software that supports modern Internet standards.
+> I had earlier submitted a patch [1] to remove the hard coded
+> major/minor number for Samsung UART driver, but that was rejected
+> because of userspace breakage. Without this patch, Samsung UART driver
+> can't bind to the hard-coded device node. Changing the default
+> major/minor will also not help to fix the objections raised in [1].
+> 
+> Would you please suggest a way forward?
+> 
+> [1] https://lkml.org/lkml/2013/12/27/2
 
---=_mimegpg-monstr-desktop-9931-1390489594-0001
+So to go and try and put this to bed properly I would suggest the
+following way forward. 
 
-Register port numbers according to order in DT aliases.
-If aliases are not defined, order in DT is used.
-If aliases are defined, register port id based
-on that.
-This patch ensures proper ttyPS0/1 assignment.
+We add
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
-This patch should by applied on the top of:
-http://www.spinics.net/lists/arm-kernel/msg302143.html
-http://www.spinics.net/lists/arm-kernel/msg302144.html
+CONFIG_LEGACY_STATIC_TTY
 
-Changes in v2:
-- Fix my fault by sending incorrect version
+Some platforms historically used static device nodes for the console
+devices. Select this if you are building a kernel for an old system which
+has a static /dev.
 
- drivers/tty/serial/xilinx_uartps.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 528f16a..d8f46e8 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1031,17 +1031,21 @@ static struct uart_port xuartps_port[2];
-  * xuartps_get_port - Configure the port from the platform device resource
-  *			info
-  *
-+ * @id: Port id
-+ *
-  * Return: a pointer to a uart_port or NULL for failure
-  */
--static struct uart_port *xuartps_get_port(void)
-+static struct uart_port *xuartps_get_port(int id)
- {
- 	struct uart_port *port;
--	int id;
-
--	/* Find the next unused port */
--	for (id = 0; id < XUARTPS_NR_PORTS; id++)
--		if (xuartps_port[id].mapbase == 0)
--			break;
-+	/* Try the given port id if failed use default method */
-+	if (xuartps_port[id].mapbase != 0) {
-+		/* Find the next unused port */
-+		for (id = 0; id < XUARTPS_NR_PORTS; id++)
-+			if (xuartps_port[id].mapbase == 0)
-+				break;
-+	}
-
- 	if (id >= XUARTPS_NR_PORTS)
- 		return NULL;
-@@ -1333,6 +1337,7 @@ static int xuartps_probe(struct platform_device *pdev)
- 	struct uart_port *port;
- 	struct resource *res, *res2;
- 	struct xuartps *xuartps_data;
-+	int id;
-
- 	xuartps_data = devm_kzalloc(&pdev->dev, sizeof(*xuartps_data),
- 			GFP_KERNEL);
-@@ -1380,9 +1385,15 @@ static int xuartps_probe(struct platform_device *pdev)
- 				&xuartps_data->clk_rate_change_nb))
- 		dev_warn(&pdev->dev, "Unable to register clock notifier.\n");
- #endif
-+	/* Look for a serialN alias */
-+	id = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (id < 0) {
-+		dev_warn(&pdev->dev, "failed to get alias id, errno %d\n", id);
-+		id = 0;
-+	}
-
- 	/* Initialize the port structure */
--	port = xuartps_get_port();
-+	port = xuartps_get_port(id);
-
- 	if (!port) {
- 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
---
-1.8.2.3
+Note that because some devices historically used incorrect clashing
+numbering this may prevent you building a single kernel which can be
+booted on multiple platforms.
 
 
---=_mimegpg-monstr-desktop-9931-1390489594-0001
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
+And then we do
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
+	.nr		= CONFIG_SERIAL_SAMSUNG_UARTS,
+ 	.cons		= S3C24XX_SERIAL_CONSOLE,
+ 	.dev_name	= S3C24XX_SERIAL_NAME,
+#ifdef CONFIG_LEGACY_STATIC_TTY
+	.major		= S3C24XX_SERIAL_MAJOR,
+	.minor		= S3C24XX_SERIAL_MINOR,
+#endif
 
-iEYEABECAAYFAlLhL/oACgkQykllyylKDCFcVACfcJl5CNQLF7FrJHiaekI4cey+
-ZkYAnRmjGC/BScPV86pkL164wFTn6uCl
-=QHE/
------END PGP SIGNATURE-----
+for the afflicted ports (and anyone else who wants to migrate)
 
---=_mimegpg-monstr-desktop-9931-1390489594-0001--
+
+We can then enable that config option for ARM (and in time for any other
+architecture that turns out to need/want it). Eventually it can go away
+(not that its exactly doing any harm if it doesnt).
+
+
+Does that sound a valid way forward for everyone ?
+
+Alan
