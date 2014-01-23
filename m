@@ -1,86 +1,62 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] tty: uartps: Initialize ports according to aliases
-Date: Thu, 23 Jan 2014 15:45:14 +0100
-Message-ID: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
-Content-Type: multipart/signed;
-    boundary="=_mimegpg-monstr-desktop-14580-1390488314-0001";
-    micalg=pgp-sha1; protocol="application/pgp-signature"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:35955 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753840AbaAWOpY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jan 2014 09:45:24 -0500
-Received: by mail-wg0-f44.google.com with SMTP id l18so1560279wgh.23
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2014 06:45:23 -0800 (PST)
-Sender: linux-serial-owner@vger.kernel.org
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH] tty: uartps: Initialize ports according to aliases
+Date: Thu, 23 Jan 2014 15:49:53 +0100
+Message-ID: <52E12C11.4090008@monstr.eu>
+References: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
+Reply-To: monstr@monstr.eu
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="udadgKURhCcQeKGE52NmVSj188lsgXU76"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-This is a MIME GnuPG-signed message.  If you see this text, it means that
-your E-mail or Usenet software does not support MIME signed messages.
-The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
-To open this message correctly you will need to install E-mail or Usenet
-software that supports modern Internet standards.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--udadgKURhCcQeKGE52NmVSj188lsgXU76
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
---=_mimegpg-monstr-desktop-14580-1390488314-0001
+On 01/23/2014 03:45 PM, Michal Simek wrote:
+> Register port numbers according to order in DT aliases.
+> If aliases are not defined, order in DT is used.
+> If aliases are defined, register port id based
+> on that.
+> This patch ensures proper ttyPS0/1 assignment.
+>=20
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
 
-Register port numbers according to order in DT aliases.
-If aliases are not defined, order in DT is used.
-If aliases are defined, register port id based
-on that.
-This patch ensures proper ttyPS0/1 assignment.
+oou - Ignore this version - will send v2.
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
-
- drivers/tty/serial/xilinx_uartps.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 528f16a..8c09a3b 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1038,10 +1038,20 @@ static struct uart_port *xuartps_get_port(void)
- 	struct uart_port *port;
- 	int id;
-
--	/* Find the next unused port */
--	for (id = 0; id < XUARTPS_NR_PORTS; id++)
--		if (xuartps_port[id].mapbase == 0)
--			break;
-+	/* Look for a serialN alias */
-+	id = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (id < 0) {
-+		dev_warn(&pdev->dev, "failed to get alias id, errno %d\n", id);
-+		id = 0;
-+	}
-+
-+	/* Try the given port id if failed use default method */
-+	if (xuartps_port[id].mapbase != 0) {
-+		/* Find the next unused port */
-+		for (id = 0; id < XUARTPS_NR_PORTS; id++)
-+			if (xuartps_port[id].mapbase == 0)
-+				break;
-+	}
-
- 	if (id >= XUARTPS_NR_PORTS)
- 		return NULL;
---
-1.8.2.3
+Sorry,
+Michal
 
 
---=_mimegpg-monstr-desktop-14580-1390488314-0001
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--udadgKURhCcQeKGE52NmVSj188lsgXU76
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEABECAAYFAlLhKvsACgkQykllyylKDCGoIQCgkqzySLb5nJoRmfTtypnfgcnK
-jo4AnjWkVrxmkbjKbTUhOmZx+FLnI1Wp
-=ylaN
+iEYEARECAAYFAlLhLBEACgkQykllyylKDCEJ5QCfduCqJCBtG/4F9P4Fm8TGH5vg
+RTAAnRX0YL5/eYgCTa7r1fcXFrJbWfiK
+=47Jj
 -----END PGP SIGNATURE-----
 
---=_mimegpg-monstr-desktop-14580-1390488314-0001--
+--udadgKURhCcQeKGE52NmVSj188lsgXU76--
