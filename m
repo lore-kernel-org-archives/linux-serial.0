@@ -1,87 +1,86 @@
-From: John Crispin <john@phrozen.org>
-Subject: Re: [PATCH] mips: make loongsoon serial driver explicitly modular
-Date: Wed, 22 Jan 2014 16:25:34 +0100
-Message-ID: <52DFE2EE.8040108@phrozen.org>
-References: <52df9ab1.ahF1zl0PTutzrviC%fengguang.wu@intel.com> <1390403871-16809-1-git-send-email-paul.gortmaker@windriver.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] tty: uartps: Initialize ports according to aliases
+Date: Thu, 23 Jan 2014 15:45:14 +0100
+Message-ID: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
+Content-Type: multipart/signed;
+    boundary="=_mimegpg-monstr-desktop-14580-1390488314-0001";
+    micalg=pgp-sha1; protocol="application/pgp-signature"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:43162 "EHLO nbd.name"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755223AbaAVPZp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Jan 2014 10:25:45 -0500
-In-Reply-To: <1390403871-16809-1-git-send-email-paul.gortmaker@windriver.com>
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:35955 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753840AbaAWOpY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 Jan 2014 09:45:24 -0500
+Received: by mail-wg0-f44.google.com with SMTP id l18so1560279wgh.23
+        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2014 06:45:23 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: fengguang.wu@intel.com, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi,
+This is a MIME GnuPG-signed message.  If you see this text, it means that
+your E-mail or Usenet software does not support MIME signed messages.
+The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
+To open this message correctly you will need to install E-mail or Usenet
+software that supports modern Internet standards.
 
-On 22/01/2014 16:17, Paul Gortmaker wrote:
-> The file looks as if it is non-modular, but it piggy-backs
-> off CONFIG_SERIAL_8250 which is tristate.  If set to "=m"
-> we will get this after the init/module header cleanup:
->
-> arch/mips/loongson/common/serial.c:76:1: error: data definition has no type or storage class [-Werror]
-> arch/mips/loongson/common/serial.c:76:1: error: type defaults to 'int' in declaration of 'device_initcall' [-Werror=implicit-int]
-> arch/mips/loongson/common/serial.c:76:1: error: parameter names (without types) in function declaration [-Werror]
-> arch/mips/loongson/common/serial.c:58:19: error: 'serial_init' defined but not used [-Werror=unused-function]
-> cc1: all warnings being treated as errors
-> make[3]: *** [arch/mips/loongson/common/serial.o] Error 1
->
-> Make it clearly modular, and add a module_exit function,
-> so that we avoid the above breakage.
->
-> Reported-by: kbuild test robot <fengguang.wu@intel.com>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: linux-mips@linux-mips.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+--=_mimegpg-monstr-desktop-14580-1390488314-0001
 
-Acked-by: John Crispin <blogic@openwrt.org>
+Register port numbers according to order in DT aliases.
+If aliases are not defined, order in DT is used.
+If aliases are defined, register port id based
+on that.
+This patch ensures proper ttyPS0/1 assignment.
 
-as this patch is already in Paul's tree, i will set it to "other
-maintainer" in the linux-mips patchwork.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Thanks,
-    John
+ drivers/tty/serial/xilinx_uartps.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 528f16a..8c09a3b 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1038,10 +1038,20 @@ static struct uart_port *xuartps_get_port(void)
+ 	struct uart_port *port;
+ 	int id;
+
+-	/* Find the next unused port */
+-	for (id = 0; id < XUARTPS_NR_PORTS; id++)
+-		if (xuartps_port[id].mapbase == 0)
+-			break;
++	/* Look for a serialN alias */
++	id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (id < 0) {
++		dev_warn(&pdev->dev, "failed to get alias id, errno %d\n", id);
++		id = 0;
++	}
++
++	/* Try the given port id if failed use default method */
++	if (xuartps_port[id].mapbase != 0) {
++		/* Find the next unused port */
++		for (id = 0; id < XUARTPS_NR_PORTS; id++)
++			if (xuartps_port[id].mapbase == 0)
++				break;
++	}
+
+ 	if (id >= XUARTPS_NR_PORTS)
+ 		return NULL;
+--
+1.8.2.3
 
 
+--=_mimegpg-monstr-desktop-14580-1390488314-0001
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
 
+iEYEABECAAYFAlLhKvsACgkQykllyylKDCGoIQCgkqzySLb5nJoRmfTtypnfgcnK
+jo4AnjWkVrxmkbjKbTUhOmZx+FLnI1Wp
+=ylaN
+-----END PGP SIGNATURE-----
 
-> ---
->
-> [patch added to init cleanup series:
->    http://git.kernel.org/cgit/linux/kernel/git/paulg/init.git/  ]
->
->  arch/mips/loongson/common/serial.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/mips/loongson/common/serial.c b/arch/mips/loongson/common/serial.c
-> index 5f2b78a..4d0922f 100644
-> --- a/arch/mips/loongson/common/serial.c
-> +++ b/arch/mips/loongson/common/serial.c
-> @@ -11,7 +11,7 @@
->   */
->  
->  #include <linux/io.h>
-> -#include <linux/init.h>
-> +#include <linux/module.h>
->  #include <linux/serial_8250.h>
->  
->  #include <asm/bootinfo.h>
-> @@ -72,5 +72,10 @@ static int __init serial_init(void)
->  
->  	return platform_device_register(&uart8250_device);
->  }
-> +module_init(serial_init);
->  
-> -device_initcall(serial_init);
-> +static void __init serial_exit(void)
-> +{
-> +	platform_device_unregister(&uart8250_device);
-> +}
-> +module_exit(serial_exit);
-
+--=_mimegpg-monstr-desktop-14580-1390488314-0001--
