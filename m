@@ -1,62 +1,120 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH] tty: uartps: Initialize ports according to aliases
-Date: Thu, 23 Jan 2014 15:49:53 +0100
-Message-ID: <52E12C11.4090008@monstr.eu>
-References: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
-Reply-To: monstr@monstr.eu
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="udadgKURhCcQeKGE52NmVSj188lsgXU76"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c1882ea5f2e45b19cc1930b624254cb1b59b2fe0.1390488303.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v2] tty: uartps: Initialize ports according to aliases
+Date: Thu, 23 Jan 2014 16:06:33 +0100
+Message-ID: <225c74aa791dc09c72267f6718323cbcc36fef95.1390489583.git.michal.simek@xilinx.com>
+Content-Type: multipart/signed;
+    boundary="=_mimegpg-monstr-desktop-9931-1390489594-0001";
+    micalg=pgp-sha1; protocol="application/pgp-signature"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-we0-f179.google.com ([74.125.82.179]:36119 "EHLO
+	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754141AbaAWPGl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 23 Jan 2014 10:06:41 -0500
+Received: by mail-we0-f179.google.com with SMTP id w62so1280507wes.38
+        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2014 07:06:40 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---udadgKURhCcQeKGE52NmVSj188lsgXU76
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+This is a MIME GnuPG-signed message.  If you see this text, it means that
+your E-mail or Usenet software does not support MIME signed messages.
+The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
+To open this message correctly you will need to install E-mail or Usenet
+software that supports modern Internet standards.
 
-On 01/23/2014 03:45 PM, Michal Simek wrote:
-> Register port numbers according to order in DT aliases.
-> If aliases are not defined, order in DT is used.
-> If aliases are defined, register port id based
-> on that.
-> This patch ensures proper ttyPS0/1 assignment.
->=20
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
+--=_mimegpg-monstr-desktop-9931-1390489594-0001
 
-oou - Ignore this version - will send v2.
+Register port numbers according to order in DT aliases.
+If aliases are not defined, order in DT is used.
+If aliases are defined, register port id based
+on that.
+This patch ensures proper ttyPS0/1 assignment.
 
-Sorry,
-Michal
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+This patch should by applied on the top of:
+http://www.spinics.net/lists/arm-kernel/msg302143.html
+http://www.spinics.net/lists/arm-kernel/msg302144.html
+
+Changes in v2:
+- Fix my fault by sending incorrect version
+
+ drivers/tty/serial/xilinx_uartps.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 528f16a..d8f46e8 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1031,17 +1031,21 @@ static struct uart_port xuartps_port[2];
+  * xuartps_get_port - Configure the port from the platform device resource
+  *			info
+  *
++ * @id: Port id
++ *
+  * Return: a pointer to a uart_port or NULL for failure
+  */
+-static struct uart_port *xuartps_get_port(void)
++static struct uart_port *xuartps_get_port(int id)
+ {
+ 	struct uart_port *port;
+-	int id;
+
+-	/* Find the next unused port */
+-	for (id = 0; id < XUARTPS_NR_PORTS; id++)
+-		if (xuartps_port[id].mapbase == 0)
+-			break;
++	/* Try the given port id if failed use default method */
++	if (xuartps_port[id].mapbase != 0) {
++		/* Find the next unused port */
++		for (id = 0; id < XUARTPS_NR_PORTS; id++)
++			if (xuartps_port[id].mapbase == 0)
++				break;
++	}
+
+ 	if (id >= XUARTPS_NR_PORTS)
+ 		return NULL;
+@@ -1333,6 +1337,7 @@ static int xuartps_probe(struct platform_device *pdev)
+ 	struct uart_port *port;
+ 	struct resource *res, *res2;
+ 	struct xuartps *xuartps_data;
++	int id;
+
+ 	xuartps_data = devm_kzalloc(&pdev->dev, sizeof(*xuartps_data),
+ 			GFP_KERNEL);
+@@ -1380,9 +1385,15 @@ static int xuartps_probe(struct platform_device *pdev)
+ 				&xuartps_data->clk_rate_change_nb))
+ 		dev_warn(&pdev->dev, "Unable to register clock notifier.\n");
+ #endif
++	/* Look for a serialN alias */
++	id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (id < 0) {
++		dev_warn(&pdev->dev, "failed to get alias id, errno %d\n", id);
++		id = 0;
++	}
+
+ 	/* Initialize the port structure */
+-	port = xuartps_get_port();
++	port = xuartps_get_port(id);
+
+ 	if (!port) {
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+--
+1.8.2.3
 
 
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
-Maintainer of Linux kernel - Xilinx Zynq ARM architecture
-Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
-
-
-
---udadgKURhCcQeKGE52NmVSj188lsgXU76
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--=_mimegpg-monstr-desktop-9931-1390489594-0001
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlLhLBEACgkQykllyylKDCEJ5QCfduCqJCBtG/4F9P4Fm8TGH5vg
-RTAAnRX0YL5/eYgCTa7r1fcXFrJbWfiK
-=47Jj
+iEYEABECAAYFAlLhL/oACgkQykllyylKDCFcVACfcJl5CNQLF7FrJHiaekI4cey+
+ZkYAnRmjGC/BScPV86pkL164wFTn6uCl
+=QHE/
 -----END PGP SIGNATURE-----
 
---udadgKURhCcQeKGE52NmVSj188lsgXU76--
+--=_mimegpg-monstr-desktop-9931-1390489594-0001--
