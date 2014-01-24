@@ -1,50 +1,61 @@
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
- device probe
-Date: Thu, 23 Jan 2014 21:33:21 +0000
-Message-ID: <20140123213321.372ce82b@www.etchedpixels.co.uk>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
-	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
-	<20140120100530.GY15937@n2100.arm.linux.org.uk>
-	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
-	<20140123180423.1a62611a@www.etchedpixels.co.uk>
-	<20140123184022.GC11727@sirena.org.uk>
-	<52E163DC.1090002@samsung.com>
-	<20140123193633.GG11727@sirena.org.uk>
-	<20140123195144.2d3aa44d@www.etchedpixels.co.uk>
-	<20140123200509.GO11727@sirena.org.uk>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v4 3/3] serial: fsl_lpuart: documented the clock
+ requirement.
+Date: Fri, 24 Jan 2014 11:26:27 +0000
+Message-ID: <20140124112626.GD814@e106331-lin.cambridge.arm.com>
+References: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
+ <1390363773-24108-4-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:34213 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932078AbaAWVdz (ORCPT
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:43080 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752018AbaAXL1E (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 23 Jan 2014 16:33:55 -0500
-In-Reply-To: <20140123200509.GO11727@sirena.org.uk>
+	Fri, 24 Jan 2014 06:27:04 -0500
+Content-Disposition: inline
+In-Reply-To: <1390363773-24108-4-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Tomasz Figa <t.figa@samsung.com>, Tushar Behera <tushar.behera@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
+To: Yuan Yao <yao.yuan@freescale.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Thu, 23 Jan 2014 20:05:09 +0000
-Mark Brown <broonie@kernel.org> wrote:
-
-> On Thu, Jan 23, 2014 at 07:51:44PM +0000, Alan Cox wrote:
+On Wed, Jan 22, 2014 at 04:09:33AM +0000, Yuan Yao wrote:
+> It was previously required but not documented.
+> Add the text to the binding along with the new "dmas" addition.
 > 
-> > That strikes me as rather more risky. We can propogate it through the
-> > drivers as we are sure it is safe to do so on that platform and encourage
-> > driver authors to migrate. Better than a "big bang" and the inevitable
-> > fallout.
+> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
+> ---
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> I don't see how we can meaningfully test this on a platform - the kernel
-> would have to be pretty demented to care, it's userspace that cares and
-> that's not really tied to individual serial drivers but is where we
-> mainly need coverage.
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> index 6e1cbbf..9666f97 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> @@ -4,6 +4,8 @@ Required properties:
+>  - compatible : Should be "fsl,<soc>-lpuart"
+>  - reg : Address and length of the register set for the device
+>  - interrupts : Should contain uart interrupt
+> +- clocks : phandle + clock specifier pairs, one for each entry in clock-names
+> +- clock-names : should contain: "ipg" - the uart clock
+>  
+>  Optional properties:
+>  - dmas: Generic dma devicetree binding as described
+> @@ -19,6 +21,8 @@ uart0: serial@40027000 {
+>  		compatible = "fsl,vf610-lpuart";
+>  		reg = <0x40027000 0x1000>;
+>  		interrupts = <0 61 0x00>;
+> +		clocks = <&clks VF610_CLK_UART0>;
+> +		clock-names = "ipg";
+>  		dmas = <&edma0 0 2>,
+>  			<&edma0 0 3>;
+>  		dma-names = "rx","tx";
 
-Which is why I think we want to enable it gradually and platform by
-platform as that platform or arch maintainer judges it appropriate given
-their knowledge of their platform(s).
+As this was a previous requirement, and this is a correction to the
+documentation rather than a binding change:
 
-Alan
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Thanks,
+Mark.
