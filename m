@@ -1,54 +1,71 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v4 2/3] serial: fsl_lpuart: add DMA support
-Date: Fri, 24 Jan 2014 11:31:14 +0000
-Message-ID: <20140124113114.GE814@e106331-lin.cambridge.arm.com>
-References: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
- <1390363773-24108-3-git-send-email-yao.yuan@freescale.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
+ device probe
+Date: Fri, 24 Jan 2014 12:03:09 +0000
+Message-ID: <20140124120309.GU11727@sirena.org.uk>
+References: <1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+ <20140120100530.GY15937@n2100.arm.linux.org.uk>
+ <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+ <20140123180423.1a62611a@www.etchedpixels.co.uk>
+ <20140123184022.GC11727@sirena.org.uk>
+ <52E163DC.1090002@samsung.com>
+ <20140123193633.GG11727@sirena.org.uk>
+ <20140123195144.2d3aa44d@www.etchedpixels.co.uk>
+ <20140123200509.GO11727@sirena.org.uk>
+ <20140123213321.372ce82b@www.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:43290 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751053AbaAXLbn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Jan 2014 06:31:43 -0500
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gn1ylXQ+YRNuZICZ"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1390363773-24108-3-git-send-email-yao.yuan@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20140123213321.372ce82b@www.etchedpixels.co.uk>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: Tomasz Figa <t.figa@samsung.com>, Tushar Behera <tushar.behera@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Yuan Yao <yao.yuan@freescale.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Wed, Jan 22, 2014 at 04:09:32AM +0000, Yuan Yao wrote:
-> Add dma support for lpuart. This function depend on DMA driver.
-> You can turn on it by write both the dmas and dma-name properties in dts node.
-> 
-> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
-> ---
->  .../devicetree/bindings/serial/fsl-lpuart.txt      |  19 +-
->  drivers/tty/serial/fsl_lpuart.c                    | 430 ++++++++++++++++++++-
->  2 files changed, 433 insertions(+), 16 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> index 6fd1dd1..6e1cbbf 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-> @@ -5,10 +5,21 @@ Required properties:
->  - reg : Address and length of the register set for the device
->  - interrupts : Should contain uart interrupt
-> 
-> +Optional properties:
-> +- dmas: Generic dma devicetree binding as described
-> +       in Documentation/devicetree/bindings/dma/dma.txt.
-> +- dma-names: Two dmas have to be defined, "rx" and "tx".
-> +       An ordered list of channel names affiliated to the above.
 
-Please describe dmas in terms of dma-names (as with the patch describing
-clocks and clock-names).
+--gn1ylXQ+YRNuZICZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-It would be nice to describe the type of the dmas property, but I see
-that we have a propblem with inconsistent terminology in the area of
-${THING}-specifiers, so I'll try to get that cleaned up separately.
+On Thu, Jan 23, 2014 at 09:33:21PM +0000, Alan Cox wrote:
+> Mark Brown <broonie@kernel.org> wrote:
 
-Cheers,
-Mark.
+> > I don't see how we can meaningfully test this on a platform - the kernel
+> > would have to be pretty demented to care, it's userspace that cares and
+> > that's not really tied to individual serial drivers but is where we
+> > mainly need coverage.
+
+> Which is why I think we want to enable it gradually and platform by
+> platform as that platform or arch maintainer judges it appropriate given
+> their knowledge of their platform(s).
+
+I don't see how that follows?  For the most part architecture
+maintainers aren't going to be able to say too much about which
+userspaces are being run on their platforms if the architecture
+has any kind of widespread use.
+
+--gn1ylXQ+YRNuZICZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS4lZ6AAoJELSic+t+oim9OPUQAJG4Z+j/lirrJAWlmFxJXBHZ
+bmzofKXrOShsBFBOFUDrIKYZ6FNlr8YuU+5Pggr9IT52fc7gGUeU3j9U075nQMgx
+9Bx8rOBSh4WxNiGFDkf6PK5S3PkaXTvrNtrnx5TA57LtqzueEhErD8KsofaKdp1G
+51Z5fr+DRiceauRBnRAN8ozN1fjJnHUMyXwZoKZYFh1vHlRc0OJBxuUsmTkZvoj7
+6ZfDUa/Sl5Z6d7GXyQDZlZLwJY8Sfm/oO9FzLqMlAkn6rzWnkw6suvqXxBUuqrBr
+eKzeDAZCd7zf8M4r/KWBmFS6mwkGjDdY8+eoP+JOLG7BpUQmBdvMrzUXbcouEqEz
+unsCFxJ0SqQgMehq7jK8uccqguzN0odc5pcLL3dlOaAbKROGL8tYsDoex72yqm2I
+dCZBNiqLbLmz7/kl8FoMcbAPZUH/B246XunYtg9O1oaFXlTH0Wamm9hXbhGrcj5p
+C/GzxErdLM8ZaCWwLStU4InTQzK2vmJPbqT5fkvKGdX2Wx80DHixVkvX6pFFuFX1
+aTgGtXbB04M4IJGk4j0wQ1uBWTHVWpcAjN3wHJej34P6g73h+82GHAd/cqEi4RGv
+MhJBtCuHkhPHJJlJf0Hx/nee6KDDlR672QRULlKKag7Zpz1YzUCnKxDciSw6PFjU
+P5QLeU5DIwmMpXnJNgvi
+=+gPQ
+-----END PGP SIGNATURE-----
+
+--gn1ylXQ+YRNuZICZ--
