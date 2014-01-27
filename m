@@ -1,103 +1,28 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH] serial: sirf: fix kernel panic caused by unpaired spinlock
-Date: Mon, 27 Jan 2014 14:23:39 +0800
-Message-ID: <1390803819-3246-1-git-send-email-21cnbao@gmail.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH v4 0/3] serial: fsl_lpuart: add DMA support
+Date: Mon, 27 Jan 2014 15:50:27 +0800
+Message-ID: <20140127075025.GC4765@S2101-09.ap.freescale.net>
+References: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f181.google.com ([209.85.192.181]:43912 "EHLO
-	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753471AbaA0GYR (ORCPT
+Received: from co9ehsobe005.messaging.microsoft.com ([207.46.163.28]:2240 "EHLO
+	co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751098AbaA0HuY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Jan 2014 01:24:17 -0500
-Received: by mail-pd0-f181.google.com with SMTP id y10so5297806pdj.26
-        for <linux-serial@vger.kernel.org>; Sun, 26 Jan 2014 22:24:17 -0800 (PST)
+	Mon, 27 Jan 2014 02:50:24 -0500
+Content-Disposition: inline
+In-Reply-To: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Yuan Yao <yao.yuan@freescale.com>
+Cc: gregkh@linuxfoundation.org, linux@arm.linux.org.uk, arnd@arndb.de, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-From: Qipan Li <Qipan.Li@csr.com>
+On Wed, Jan 22, 2014 at 12:09:30PM +0800, Yuan Yao wrote:
+> Changed in v4:
+> - Move dma properties from dtsi to dts.
 
-commit 8b9ade9f74f8a279 coming from Viresh Kumar "tty: serial: sirfsoc: drop
-uart_port->lock before calling tty_flip_buffer_push()" broke sirfsoc uart
-driver by knic:
+Why this change?  DMA is a SoC level resource rather than board one.
 
-	[    5.129122] BUG: spinlock already unlocked on CPU#0, ip6tables/1331
-	[    5.132554]  lock: sirfsoc_uart_ports+0x4/0x8a0, .magic: dead4ead,
-	.owner: <none>/-1, .owner_cpu: -1
-	[    5.141651] CPU: 0 PID: 1331 Comm: ip6tables Tainted: G
-	W  O 3.10.16 #3
-	[    5.148866] [<c0013528>] (unwind_backtrace+0x0/0xe0) from
-	[<c0010e70>] (show_stack+0x10/0x14)
-	[    5.157362] [<c0010e70>] (show_stack+0x10/0x14) from
-	[<c01a5e68>] (do_raw_spin_unlock+0x40/0xc8)
-	[    5.166125] [<c01a5e68>] (do_raw_spin_unlock+0x40/0xc8) from
-	[<c03ff8b4>] (_raw_spin_unlock+0x8/0x40)
-	[    5.175322] [<c03ff8b4>] (_raw_spin_unlock+0x8/0x40) from
-	[<c0203fcc>] (sirfsoc_uart_pio_rx_chars+0xa4/0xc0)
-	[    5.185120] [<c0203fcc>]
-	(sirfsoc_uart_pio_rx_chars+0xa4/0xc0) from [<c0204fb8>]
-	(sirfsoc_rx_tmo_process_tl+0xdc/0x1e0)
-	[    5.195875] [<c0204fb8>]
-	(sirfsoc_rx_tmo_process_tl+0xdc/0x1e0) from [<c0024b50>]
-	(tasklet_action+0x8c/0xec)
-	[    5.205673] [<c0024b50>] (tasklet_action+0x8c/0xec) from
-	[<c00242a8>] (__do_softirq+0xec/0x1d4)
-	[    5.214347] [<c00242a8>] (__do_softirq+0xec/0x1d4) from
-	[<c0024428>] (do_softirq+0x48/0x54)
-	[    5.222674] [<c0024428>] (do_softirq+0x48/0x54) from
-	[<c0024690>] (irq_exit+0x74/0xc0)
-	[    5.230573] [<c0024690>] (irq_exit+0x74/0xc0) from
-	[<c000e1e8>] (handle_IRQ+0x6c/0x90)
-	[    5.238465] [<c000e1e8>] (handle_IRQ+0x6c/0x90) from
-	[<c000d500>] (__irq_svc+0x40/0x70)
-	[    5.246446] [<c000d500>] (__irq_svc+0x40/0x70) from
-	[<c0092e7c>] (mark_page_accessed+0xc/0x68)
-	[    5.255034] [<c0092e7c>] (mark_page_accessed+0xc/0x68) from
-	[<c00a2a4c>] (unmap_single_vma+0x3bc/0x550)
-	[    5.264402] [<c00a2a4c>] (unmap_single_vma+0x3bc/0x550) from
-	[<c00a3b4c>] (unmap_vmas+0x44/0x54)
-	[    5.273164] [<c00a3b4c>] (unmap_vmas+0x44/0x54) from
-	[<c00a81a8>] (exit_mmap+0xc4/0x1e0)
-	[    5.281233] [<c00a81a8>] (exit_mmap+0xc4/0x1e0) from
-	[<c001bb78>] (mmput+0x3c/0xdc)
-	[    5.288868] [<c001bb78>] (mmput+0x3c/0xdc) from [<c0021b0c>]
-	(do_exit+0x30c/0x828)
-	[    5.296413] [<c0021b0c>] (do_exit+0x30c/0x828) from
-	[<c0022dac>] (do_group_exit+0x4c/0xb0)
-	[    5.304653] [<c0022dac>] (do_group_exit+0x4c/0xb0) from
-	[<c0022e20>] (__wake_up_parent+0x0/0x18)
-
-Root cause:
-the commit dropped uart_port->lock before calling tty_flip_buffer_push(), but in sirfsoc-uart,
-sirfsoc_uart_pio_rx_chars() can be called by sirfsoc_rx_tmo_process_tl(). here uart_port->lock
-has not been taken yet. so that caused unpaired lock/unlock.
-
-Solution:
-This patch is doing a quick fix for that, it adds spin_lock/unlock(&port->lock) protect to
-sirfsoc_uart_pio_rx_chars() in sirfsoc_rx_tmo_process_tl() to keep spin_lock/unlock in pair.
-
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
----
- drivers/tty/serial/sirfsoc_uart.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 49a2ffd..b7bfe24 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -542,8 +542,10 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
- 	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
- 			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
- 			SIRFUART_IO_MODE);
--	sirfsoc_uart_pio_rx_chars(port, 4 - sirfport->rx_io_count);
- 	spin_unlock_irqrestore(&sirfport->rx_lock, flags);
-+	spin_lock(&port->lock);
-+	sirfsoc_uart_pio_rx_chars(port, 4 - sirfport->rx_io_count);
-+	spin_unlock(&port->lock);
- 	if (sirfport->rx_io_count == 4) {
- 		spin_lock_irqsave(&sirfport->rx_lock, flags);
- 		sirfport->rx_io_count = 0;
--- 
-1.7.5.4
+Shawn
 
