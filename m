@@ -1,59 +1,79 @@
-From: Nicolas Pitre <nicolas.pitre@linaro.org>
-Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
- device probe
-Date: Mon, 27 Jan 2014 10:03:47 -0500 (EST)
-Message-ID: <alpine.LFD.2.11.1401270957450.1652@knanqh.ubzr>
-References: <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com> <20140120214305.54f65ffa@www.etchedpixels.co.uk>
- <20140120231457.GZ17314@sirena.org.uk> <20140120234734.11b78578@www.etchedpixels.co.uk> <20140121001657.GO15937@n2100.arm.linux.org.uk> <50b66ac6-1150-4ad7-aeaf-3d0dce77334d@email.android.com> <20140126115402.GA25689@n2100.arm.linux.org.uk>
- <alpine.LFD.2.11.1401262318350.1652@knanqh.ubzr> <20140127123249.GJ15937@n2100.arm.linux.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] Serial fixes for 3.14-rc1
+Date: Mon, 27 Jan 2014 15:48:28 -0800
+Message-ID: <20140127234828.GA15394@kroah.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20140127123249.GJ15937@n2100.arm.linux.org.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Alan Cox <alan@etchedpixels.co.uk>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37210 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753679AbaA0XrX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Jan 2014 18:47:23 -0500
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Mon, 27 Jan 2014, Russell King - ARM Linux wrote:
+The following changes since commit 8bc661bfc0c2d221e209f4205bdaaf574d50=
+100c:
 
-> On Sun, Jan 26, 2014 at 11:30:00PM -0500, Nicolas Pitre wrote:
-> > On Sun, 26 Jan 2014, Russell King - ARM Linux wrote:
-> > 
-> > > On Tue, Jan 21, 2014 at 12:45:05AM +0000, Alan Cox wrote:
-> > > > Peter handed it on. Try using git log on Documentation/devices.txt. It
-> > > > still gets updates.
-> > > > 
-> > > > Perhaps you'd care to stick to reality and fix the tree instead of trying
-> > > > to excuse the mess ?
-> > > 
-> > > Perhaps returning to reality might be advantageous rather than trying
-> > > to repeat statements which can't have any bearing on this - especially
-> > > as the git history which you're referring to only goes back to 2.6.12-rc2,
-> > > and this predates 2.6.12-rc2 by a long shot.
-> > > 
-> > > > More importantly certain folks need to stop abusing static numbers
-> > > > allocated properly. Repeating it having made a total hash of it before
-> > > > is dismal.
-> > > 
-> > > And if you continue these stupid accusations which have no basis at all,
-> > > we're going to get into a real big argument, because you are soo _wrong_
-> > > on that point.  I was always the one arguing /against/ the re-use of
-> > > existing major/minor numbers.  I was the one arguing /against/ Nicolas'
-> > > patches to make every serial port appear in the 4,64 ttyS namespace.
-> > 
-> > If you remember correctly, that was my attempt at making serial port 
-> > minor assignment to be dynamic... just like everything else is today.  
-> > And it seemed to me that you thought this was a good idea.
-> 
-> I may have thought that a dynamic space for serial devices was a good
-> idea, but what I was referring to above was specifically the
-> implementation.
+  tty/serial: at91: disable uart timer at start of shutdown (2014-01-13=
+ 15:55:59 -0800)
 
-Oh I do not dispute the fact that the implementation at the time was not 
-up to needed standards.  That would have been fixed eventually though, 
-if it hadn't been for the policy based objection we received.  At which 
-point this effort was simply dropped.
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-3.14-rc1
 
-Nicolas
+for you to fetch changes up to 4fbd269f1f9f8020dd9474b60e55c4f34d267b08=
+:
+
+  Merge branch 'fixes' into tty-next (2014-01-22 13:42:19 -0800)
+
+----------------------------------------------------------------
+
+Serial fixes for 3.14-rc1
+
+Here are tiny and assorted serial driver fixes that have been in a
+branch in my tree for a while and somehow did not get properly merged
+into my big TTY / Serial pull request for 3.14-rc1.  Sorry about that.
+
+All have been in linux-next for a while with no issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      serial: icom: dereference after free in load_code()
+
+Greg Kroah-Hartman (1):
+      Merge branch 'fixes' into tty-next
+
+Heiko St=FCbner (1):
+      serial: samsung: move clock deactivation below uart registration
+
+Jonathan Woithe (1):
+      serial: 8250: Fix initialisation of Quatech cards with the AMCC P=
+CI chip
+
+Mika Westerberg (1):
+      serial: 8250_dw: add new ACPI IDs
+
+Sebastian Andrzej Siewior (1):
+      tty: serial: pch: don't crash if DMA enabled but not loaded
+
+Soren Brinkmann (1):
+      tty: xuartps: Properly guard sysrq specific code
+
+ drivers/tty/serial/icom.c     |  4 ++--
+ drivers/tty/serial/pch_uart.c | 10 +++++++---
+ drivers/tty/serial/samsung.c  |  8 +++++++-
+ 3 files changed, 16 insertions(+), 6 deletions(-)
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
