@@ -1,28 +1,33 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH v4 0/3] serial: fsl_lpuart: add DMA support
-Date: Mon, 27 Jan 2014 15:50:27 +0800
-Message-ID: <20140127075025.GC4765@S2101-09.ap.freescale.net>
-References: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
+ device probe
+Date: Mon, 27 Jan 2014 10:07:41 +0000
+Message-ID: <20140127100741.1fc1608c@www.etchedpixels.co.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+	<1390208555-27770-2-git-send-email-tushar.behera@linaro.org>
+	<20140120100530.GY15937@n2100.arm.linux.org.uk>
+	<CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
+	<20140120214305.54f65ffa@www.etchedpixels.co.uk>
+	<20140120231457.GZ17314@sirena.org.uk>
+	<20140120234734.11b78578@www.etchedpixels.co.uk>
+	<20140121001657.GO15937@n2100.arm.linux.org.uk>
+	<50b66ac6-1150-4ad7-aeaf-3d0dce77334d@email.android.com>
+	<20140126115402.GA25689@n2100.arm.linux.org.uk>
+	<alpine.LFD.2.11.1401262318350.1652@knanqh.ubzr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co9ehsobe005.messaging.microsoft.com ([207.46.163.28]:2240 "EHLO
-	co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751098AbaA0HuY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Jan 2014 02:50:24 -0500
-Content-Disposition: inline
-In-Reply-To: <1390363773-24108-1-git-send-email-yao.yuan@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.LFD.2.11.1401262318350.1652@knanqh.ubzr>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Pitre <nicolas.pitre@linaro.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Alan Cox <alan@etchedpixels.co.uk>, Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Yuan Yao <yao.yuan@freescale.com>
-Cc: gregkh@linuxfoundation.org, linux@arm.linux.org.uk, arnd@arndb.de, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-On Wed, Jan 22, 2014 at 12:09:30PM +0800, Yuan Yao wrote:
-> Changed in v4:
-> - Move dma properties from dtsi to dts.
+> Either everything is dynamic, or everything follows proper minor 
+> assignment process.
 
-Why this change?  DMA is a SoC level resource rather than board one.
+Ultimately everything should probably be dynamic, but trying to get there
+in one step will simply mean we never get there at all.
 
-Shawn
-
+Alan
