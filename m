@@ -1,63 +1,103 @@
-From: Nicolas Pitre <nicolas.pitre@linaro.org>
-Subject: Re: [PATCH 1/2] serial: samsung: Move uart_register_driver call to
- device probe
-Date: Sun, 26 Jan 2014 23:30:00 -0500 (EST)
-Message-ID: <alpine.LFD.2.11.1401262318350.1652@knanqh.ubzr>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-2-git-send-email-tushar.behera@linaro.org> <20140120100530.GY15937@n2100.arm.linux.org.uk> <CAHbNUh3m=uNybv=3yxmr2on=Cc0UuGrYP8zf3GMR-9RQZ394dg@mail.gmail.com>
- <20140120214305.54f65ffa@www.etchedpixels.co.uk> <20140120231457.GZ17314@sirena.org.uk> <20140120234734.11b78578@www.etchedpixels.co.uk> <20140121001657.GO15937@n2100.arm.linux.org.uk> <50b66ac6-1150-4ad7-aeaf-3d0dce77334d@email.android.com>
- <20140126115402.GA25689@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH] serial: sirf: fix kernel panic caused by unpaired spinlock
+Date: Mon, 27 Jan 2014 14:23:39 +0800
+Message-ID: <1390803819-3246-1-git-send-email-21cnbao@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f173.google.com ([209.85.216.173]:57362 "EHLO
-	mail-qc0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753347AbaA0EaD (ORCPT
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:43912 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753471AbaA0GYR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 26 Jan 2014 23:30:03 -0500
-Received: by mail-qc0-f173.google.com with SMTP id i8so7323564qcq.18
-        for <linux-serial@vger.kernel.org>; Sun, 26 Jan 2014 20:30:02 -0800 (PST)
-In-Reply-To: <20140126115402.GA25689@n2100.arm.linux.org.uk>
+	Mon, 27 Jan 2014 01:24:17 -0500
+Received: by mail-pd0-f181.google.com with SMTP id y10so5297806pdj.26
+        for <linux-serial@vger.kernel.org>; Sun, 26 Jan 2014 22:24:17 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Alan Cox <alan@etchedpixels.co.uk>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Mark Brown <broonie@kernel.org>, Tushar Behera <tushar.behera@linaro.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, jslaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-On Sun, 26 Jan 2014, Russell King - ARM Linux wrote:
+From: Qipan Li <Qipan.Li@csr.com>
 
-> On Tue, Jan 21, 2014 at 12:45:05AM +0000, Alan Cox wrote:
-> > Peter handed it on. Try using git log on Documentation/devices.txt. It
-> > still gets updates.
-> > 
-> > Perhaps you'd care to stick to reality and fix the tree instead of trying
-> > to excuse the mess ?
-> 
-> Perhaps returning to reality might be advantageous rather than trying
-> to repeat statements which can't have any bearing on this - especially
-> as the git history which you're referring to only goes back to 2.6.12-rc2,
-> and this predates 2.6.12-rc2 by a long shot.
-> 
-> > More importantly certain folks need to stop abusing static numbers
-> > allocated properly. Repeating it having made a total hash of it before
-> > is dismal.
-> 
-> And if you continue these stupid accusations which have no basis at all,
-> we're going to get into a real big argument, because you are soo _wrong_
-> on that point.  I was always the one arguing /against/ the re-use of
-> existing major/minor numbers.  I was the one arguing /against/ Nicolas'
-> patches to make every serial port appear in the 4,64 ttyS namespace.
+commit 8b9ade9f74f8a279 coming from Viresh Kumar "tty: serial: sirfsoc: drop
+uart_port->lock before calling tty_flip_buffer_push()" broke sirfsoc uart
+driver by knic:
 
-If you remember correctly, that was my attempt at making serial port 
-minor assignment to be dynamic... just like everything else is today.  
-And it seemed to me that you thought this was a good idea.
+	[    5.129122] BUG: spinlock already unlocked on CPU#0, ip6tables/1331
+	[    5.132554]  lock: sirfsoc_uart_ports+0x4/0x8a0, .magic: dead4ead,
+	.owner: <none>/-1, .owner_cpu: -1
+	[    5.141651] CPU: 0 PID: 1331 Comm: ip6tables Tainted: G
+	W  O 3.10.16 #3
+	[    5.148866] [<c0013528>] (unwind_backtrace+0x0/0xe0) from
+	[<c0010e70>] (show_stack+0x10/0x14)
+	[    5.157362] [<c0010e70>] (show_stack+0x10/0x14) from
+	[<c01a5e68>] (do_raw_spin_unlock+0x40/0xc8)
+	[    5.166125] [<c01a5e68>] (do_raw_spin_unlock+0x40/0xc8) from
+	[<c03ff8b4>] (_raw_spin_unlock+0x8/0x40)
+	[    5.175322] [<c03ff8b4>] (_raw_spin_unlock+0x8/0x40) from
+	[<c0203fcc>] (sirfsoc_uart_pio_rx_chars+0xa4/0xc0)
+	[    5.185120] [<c0203fcc>]
+	(sirfsoc_uart_pio_rx_chars+0xa4/0xc0) from [<c0204fb8>]
+	(sirfsoc_rx_tmo_process_tl+0xdc/0x1e0)
+	[    5.195875] [<c0204fb8>]
+	(sirfsoc_rx_tmo_process_tl+0xdc/0x1e0) from [<c0024b50>]
+	(tasklet_action+0x8c/0xec)
+	[    5.205673] [<c0024b50>] (tasklet_action+0x8c/0xec) from
+	[<c00242a8>] (__do_softirq+0xec/0x1d4)
+	[    5.214347] [<c00242a8>] (__do_softirq+0xec/0x1d4) from
+	[<c0024428>] (do_softirq+0x48/0x54)
+	[    5.222674] [<c0024428>] (do_softirq+0x48/0x54) from
+	[<c0024690>] (irq_exit+0x74/0xc0)
+	[    5.230573] [<c0024690>] (irq_exit+0x74/0xc0) from
+	[<c000e1e8>] (handle_IRQ+0x6c/0x90)
+	[    5.238465] [<c000e1e8>] (handle_IRQ+0x6c/0x90) from
+	[<c000d500>] (__irq_svc+0x40/0x70)
+	[    5.246446] [<c000d500>] (__irq_svc+0x40/0x70) from
+	[<c0092e7c>] (mark_page_accessed+0xc/0x68)
+	[    5.255034] [<c0092e7c>] (mark_page_accessed+0xc/0x68) from
+	[<c00a2a4c>] (unmap_single_vma+0x3bc/0x550)
+	[    5.264402] [<c00a2a4c>] (unmap_single_vma+0x3bc/0x550) from
+	[<c00a3b4c>] (unmap_vmas+0x44/0x54)
+	[    5.273164] [<c00a3b4c>] (unmap_vmas+0x44/0x54) from
+	[<c00a81a8>] (exit_mmap+0xc4/0x1e0)
+	[    5.281233] [<c00a81a8>] (exit_mmap+0xc4/0x1e0) from
+	[<c001bb78>] (mmput+0x3c/0xdc)
+	[    5.288868] [<c001bb78>] (mmput+0x3c/0xdc) from [<c0021b0c>]
+	(do_exit+0x30c/0x828)
+	[    5.296413] [<c0021b0c>] (do_exit+0x30c/0x828) from
+	[<c0022dac>] (do_group_exit+0x4c/0xb0)
+	[    5.304653] [<c0022dac>] (do_group_exit+0x4c/0xb0) from
+	[<c0022e20>] (__wake_up_parent+0x0/0x18)
 
-But that was objected by the X86 folks who insisted on always having 
-COM1 == ttyS0 and COM2 == ttyS1, whether or not COM1 was present.
+Root cause:
+the commit dropped uart_port->lock before calling tty_flip_buffer_push(), but in sirfsoc-uart,
+sirfsoc_uart_pio_rx_chars() can be called by sirfsoc_rx_tmo_process_tl(). here uart_port->lock
+has not been taken yet. so that caused unpaired lock/unlock.
 
-Nowdays serial ports have pretty much disappeared from the X86 world.  
-But the problem they've created is still with us.
+Solution:
+This patch is doing a quick fix for that, it adds spin_lock/unlock(&port->lock) protect to
+sirfsoc_uart_pio_rx_chars() in sirfsoc_rx_tmo_process_tl() to keep spin_lock/unlock in pair.
 
-Either everything is dynamic, or everything follows proper minor 
-assignment process.
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/tty/serial/sirfsoc_uart.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 49a2ffd..b7bfe24 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -542,8 +542,10 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
+ 	wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+ 			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
+ 			SIRFUART_IO_MODE);
+-	sirfsoc_uart_pio_rx_chars(port, 4 - sirfport->rx_io_count);
+ 	spin_unlock_irqrestore(&sirfport->rx_lock, flags);
++	spin_lock(&port->lock);
++	sirfsoc_uart_pio_rx_chars(port, 4 - sirfport->rx_io_count);
++	spin_unlock(&port->lock);
+ 	if (sirfport->rx_io_count == 4) {
+ 		spin_lock_irqsave(&sirfport->rx_lock, flags);
+ 		sirfport->rx_io_count = 0;
+-- 
+1.7.5.4
 
-Nicolas
