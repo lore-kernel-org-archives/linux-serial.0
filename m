@@ -1,41 +1,33 @@
-From: Pavel Machek <pavel@ucw.cz>
+From: Sergei Ianovich <ynvich@gmail.com>
 Subject: Re: [PATCH 01/11] resolve PXA<->8250 serial device address conflict
-Date: Tue, 28 Jan 2014 15:14:37 +0100
-Message-ID: <20140128141437.GB8713@xo-6d-61-c0.localdomain>
+Date: Tue, 28 Jan 2014 18:20:34 +0400
+Message-ID: <1390918834.22403.16.camel@host5.omatika.ru>
 References: <1385879185-22455-1-git-send-email-ynvich@gmail.com>
- <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+	 <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+	 <20140128141437.GB8713@xo-6d-61-c0.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:34575 "EHLO
-	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754574AbaA1OOy (ORCPT
+Received: from mail-la0-f47.google.com ([209.85.215.47]:64695 "EHLO
+	mail-la0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751985AbaA1OUk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Jan 2014 09:14:54 -0500
-Content-Disposition: inline
-In-Reply-To: <1385879185-22455-2-git-send-email-ynvich@gmail.com>
+	Tue, 28 Jan 2014 09:20:40 -0500
+In-Reply-To: <20140128141437.GB8713@xo-6d-61-c0.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sergei Ianovich <ynvich@gmail.com>
+To: Pavel Machek <pavel@ucw.cz>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 
-Hi!
+On Tue, 2014-01-28 at 15:14 +0100, Pavel Machek wrote:
+> Yes, please. I was hitting the same issue with Sharp Zaurus and bluetooth
+> CF card... Bluetooth card had 8250 inside...
 
-> PXA serial ports have "standard" UART names (ttyS[0-3]), major
-> device number (4) and first minor device number (64) by default.
-> 
-> If the system has extra 8250 serial port hardware in addition
-> to onboard PXA serial ports, default settings produce a device
-> allocation conflict.
-> 
-> The patch provides a configuration option which can move onboard
-> ports out of the way of 8250_core by assigning a different (204)
-> major number and corresponding device names (ttySA[0-3]).
+A better implementation is posted as v3 of the patch.
 
-Yes, please. I was hitting the same issue with Sharp Zaurus and bluetooth
-CF card... Bluetooth card had 8250 inside...
+http://linux-kernel.2935.n7.nabble.com/PATCH-00-11-ARM-support-for-ICP-DAS-LP-8x4x-tp761919p773485.html
 
+It would be great if you could test that patch add post back the
+results.
 
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
