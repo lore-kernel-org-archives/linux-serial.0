@@ -1,56 +1,38 @@
-From: Darren Hart <dvhart@linux.intel.com>
-Subject: Re: [PATCH 2/2] serial: pch_uart: Fix build warning when
- CONFIG_DEBUG_FS=n
-Date: Wed, 05 Feb 2014 10:12:03 -0800
-Message-ID: <1391623923.2835.1.camel@dvhart-mobl.amr.corp.intel.com>
-References: <000501cf2176$1e733d00$5b59b700$%han@samsung.com>
-	 <000601cf2176$766f7ff0$634e7fd0$%han@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH] serial: sh_sci: remove HAVE_CLK build dependecy
+Date: Wed,  5 Feb 2014 21:28:38 +0200
+Message-ID: <2f1dd25b19bf588948fbebc734eebe5d61ca7007.1391628518.git.baruch@tkos.co.il>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:63873 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750933AbaBESM2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Feb 2014 13:12:28 -0500
-In-Reply-To: <000601cf2176$766f7ff0$634e7fd0$%han@samsung.com>
+Received: from guitar.tcltek.co.il ([192.115.133.116]:45856 "EHLO
+	mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752249AbaBET3Q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Feb 2014 14:29:16 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 'Johan Hovold' <jhovold@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
 
-On Tue, 2014-02-04 at 15:58 +0900, Jingoo Han wrote:
-> Add CONFIG_DEBUG_FS to 'char name' in order to fix the following
-> build warning, because 'char name' is used only when CONFIG_DEBUG_FS
-> is enabled.
-> 
-> drivers/tty/serial/pch_uart.c:1765:7: warning: unused variable 'name' [-Wunused-variable]
-> 
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+Since 93abe8e4 (clk: add non CONFIG_HAVE_CLK routines) code using clk.h
+like this driver needs not depend on HAVE_CLK.
 
-Acked-by: Darren Hart <dvhart@linux.intel.com>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  drivers/tty/serial/pch_uart.c |    2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 8fa1134..0931b3f 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -1762,7 +1762,9 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
->  	int fifosize;
->  	int port_type;
->  	struct pch_uart_driver_data *board;
-> +#ifdef CONFIG_DEBUG_FS
->  	char name[32];	/* for debugfs file name */
-> +#endif
->  
->  	board = &drv_dat[id->driver_data];
->  	port_type = board->port_type;
-
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a3815eaed421..ce6fd1dd0864 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -708,7 +708,7 @@ config SERIAL_IP22_ZILOG_CONSOLE
+ 
+ config SERIAL_SH_SCI
+ 	tristate "SuperH SCI(F) serial port support"
+-	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
++	depends on SUPERH || ARM || COMPILE_TEST
+ 	select SERIAL_CORE
+ 
+ config SERIAL_SH_SCI_NR_UARTS
 -- 
-Darren Hart
-Yocto Project - Linux Kernel
-Intel Open Source Technology Center
+1.8.5.3
 
