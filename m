@@ -1,45 +1,57 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH 2/2] serial: sh-sci: Fix compatible string in DT bindings example
-Date: Thu,  6 Feb 2014 15:47:40 +0900
-Message-ID: <1391669260-23970-3-git-send-email-horms+renesas@verge.net.au>
-References: <1391669260-23970-1-git-send-email-horms+renesas@verge.net.au>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:58958 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751850AbaBFGrt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Feb 2014 01:47:49 -0500
-In-Reply-To: <1391669260-23970-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-serial-owner@vger.kernel.org
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: Re: [PATCH] serial: sh_sci: remove HAVE_CLK build dependecy
+Date: Thu, 6 Feb 2014 09:18:21 +0200
+Message-ID: <20140206071821.GC4125@tarshish>
+References: <2f1dd25b19bf588948fbebc734eebe5d61ca7007.1391628518.git.baruch@tkos.co.il>
+ <20140206064056.GB17591@verge.net.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140206064056.GB17591@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, devicetree@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Hi Simon,
 
-Remove the -generic suffix from the compatible string in the serial port
-DT bindings example.
+On Thu, Feb 06, 2014 at 03:40:56PM +0900, Simon Horman wrote:
+> On Wed, Feb 05, 2014 at 09:28:38PM +0200, Baruch Siach wrote:
+> > Since 93abe8e4 (clk: add non CONFIG_HAVE_CLK routines) code using clk.h
+> > like this driver needs not depend on HAVE_CLK.
+> > 
+> > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> 
+> Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks. This patch conflicts with another sh_sci patch you have just posted 
+(http://article.gmane.org/gmane.linux.serial/13640). How would you like this 
+to be handled?
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index f372cf2..53e6c17 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -37,7 +37,7 @@ Example:
- 	};
- 
- 	scifa0: serial@e6c40000 {
--		compatible = "renesas,scifa-r8a7790", "renesas,scifa-generic";
-+		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
- 		reg = <0 0xe6c40000 0 64>;
- 		interrupt-parent = <&gic>;
- 		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
+baruch
+
+> > ---
+> >  drivers/tty/serial/Kconfig | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > index a3815eaed421..ce6fd1dd0864 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -708,7 +708,7 @@ config SERIAL_IP22_ZILOG_CONSOLE
+> >  
+> >  config SERIAL_SH_SCI
+> >  	tristate "SuperH SCI(F) serial port support"
+> > -	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
+> > +	depends on SUPERH || ARM || COMPILE_TEST
+> >  	select SERIAL_CORE
+> >  
+> >  config SERIAL_SH_SCI_NR_UARTS
+> > -- 
+> > 1.8.5.3
+
 -- 
-1.8.5.2
-
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
