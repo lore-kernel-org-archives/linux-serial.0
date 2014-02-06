@@ -1,47 +1,45 @@
 From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH 1/2] serial: sh-sci: Restrict non-COMPILE_TEST compilation
-Date: Thu,  6 Feb 2014 15:47:39 +0900
-Message-ID: <1391669260-23970-2-git-send-email-horms+renesas@verge.net.au>
+Subject: [PATCH 2/2] serial: sh-sci: Fix compatible string in DT bindings example
+Date: Thu,  6 Feb 2014 15:47:40 +0900
+Message-ID: <1391669260-23970-3-git-send-email-horms+renesas@verge.net.au>
 References: <1391669260-23970-1-git-send-email-horms+renesas@verge.net.au>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:58954 "EHLO
+Received: from kirsty.vergenet.net ([202.4.237.240]:58958 "EHLO
 	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752050AbaBFGrs (ORCPT
+	with ESMTP id S1751850AbaBFGrt (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Feb 2014 01:47:48 -0500
+	Thu, 6 Feb 2014 01:47:49 -0500
 In-Reply-To: <1391669260-23970-1-git-send-email-horms+renesas@verge.net.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Simon Horman <horms+renesas@verge.net.au>
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, devicetree@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Hardware supported by the driver is only found on SUPERH or
-ARCH_SHMOBILE platforms. Restrict non-COMPILE_TEST compilation to them.
+Remove the -generic suffix from the compatible string in the serial port
+DT bindings example.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index a3815ea..923d3de 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -708,7 +708,8 @@ config SERIAL_IP22_ZILOG_CONSOLE
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index f372cf2..53e6c17 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -37,7 +37,7 @@ Example:
+ 	};
  
- config SERIAL_SH_SCI
- 	tristate "SuperH SCI(F) serial port support"
--	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
-+	depends on HAVE_CLK
-+	depends on SUPERH || ARCH_SHMOBILE || COMPILE_TEST
- 	select SERIAL_CORE
- 
- config SERIAL_SH_SCI_NR_UARTS
+ 	scifa0: serial@e6c40000 {
+-		compatible = "renesas,scifa-r8a7790", "renesas,scifa-generic";
++		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
+ 		reg = <0 0xe6c40000 0 64>;
+ 		interrupt-parent = <&gic>;
+ 		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 1.8.5.2
 
