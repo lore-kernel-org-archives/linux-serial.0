@@ -1,16 +1,16 @@
 From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 3/6] serial: max310x: Remove init() and exit() callbacks
-Date: Fri,  7 Feb 2014 18:16:05 +0400
-Message-ID: <1391782568-19442-4-git-send-email-shc_work@mail.ru>
+Subject: [PATCH 4/6] serial: max310x: Remove excess port configure at startup
+Date: Fri,  7 Feb 2014 18:16:06 +0400
+Message-ID: <1391782568-19442-5-git-send-email-shc_work@mail.ru>
 References: <1391782568-19442-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback1.mail.ru ([94.100.176.18]:59561 "EHLO
-	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752393AbaBGOQk (ORCPT
+Received: from fallback7.mail.ru ([94.100.176.135]:37330 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752354AbaBGOQk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
 	Fri, 7 Feb 2014 09:16:40 -0500
 Received: from smtp48.i.mail.ru (smtp48.i.mail.ru [94.100.177.108])
-	by fallback1.mail.ru (mPOP.Fallback_MX) with ESMTP id 95ED333A7EF7
+	by fallback7.mail.ru (mPOP.Fallback_MX) with ESMTP id C6289F7E21F4
 	for <linux-serial@vger.kernel.org>; Fri,  7 Feb 2014 18:16:38 +0400 (MSK)
 In-Reply-To: <1391782568-19442-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
@@ -18,56 +18,31 @@ List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-These callbacks were previously used for the IC power initialization.
-If this initialization will be needed in the future, it should be
-implemented with the regulator API.
+Serial core calls set_termios() after port startup, so there are
+no reason to setup port twice.
 
 Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/tty/serial/max310x.c          | 7 -------
- include/linux/platform_data/max310x.h | 4 ----
- 2 files changed, 11 deletions(-)
+ drivers/tty/serial/max310x.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 313bdf0..202c1fb 100644
+index 202c1fb..1fb3895 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -1135,10 +1135,6 @@ static int max310x_probe(struct device *dev, int is_spi,
- 		return PTR_ERR(s->regmap);
- 	}
+@@ -896,12 +896,6 @@ static int max310x_startup(struct uart_port *port)
  
--	/* Board specific configure */
--	if (s->pdata->init)
--		s->pdata->init();
+ 	s->devtype->power(port, 1);
+ 
+-	/* Configure baud rate, 9600 as default */
+-	max310x_set_baud(port, 9600);
 -
- 	/* Check device to ensure we are talking to what we expect */
- 	ret = devtype->detect(dev);
- 	if (ret)
-@@ -1265,9 +1261,6 @@ static int max310x_remove(struct device *dev)
- 		ret = gpiochip_remove(&s->gpio);
- #endif
- 
--	if (s->pdata->exit)
--		s->pdata->exit();
+-	/* Configure LCR register, 8N1 mode by default */
+-	max310x_port_write(port, MAX310X_LCR_REG, MAX310X_LCR_WORD_LEN_8);
 -
- 	return ret;
- }
- 
-diff --git a/include/linux/platform_data/max310x.h b/include/linux/platform_data/max310x.h
-index dd11dcd..5f4b35d 100644
---- a/include/linux/platform_data/max310x.h
-+++ b/include/linux/platform_data/max310x.h
-@@ -55,10 +55,6 @@ struct max310x_pdata {
- 	const int		frequency;
- 	/* GPIO base number (can be negative) */
- 	const int		gpio_base;
--	/* Called during startup */
--	void (*init)(void);
--	/* Called before finish */
--	void (*exit)(void);
- };
- 
- #endif
+ 	/* Configure MODE1 register */
+ 	max310x_port_update(port, MAX310X_MODE1_REG,
+ 			    MAX310X_MODE1_TRNSCVCTRL_BIT,
 -- 
 1.8.3.2
 
