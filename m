@@ -1,45 +1,37 @@
-From: Gianluca Anzolin <gianluca@sottospazio.it>
-Subject: Re: BISECTED Re: 3.14-mw regression:  circular locking dependency
- (&tty->legacy_mutex){+.+.+.}, at: [<ffffffff81ad6344>]
- tty_lock_nested+0x44/0xa0
-Date: Fri, 7 Feb 2014 07:55:30 +0100
-Message-ID: <20140207065530.GA30769@sottospazio.it>
-References: <378824645.20140126114721@eikelenboom.it>
- <754206689.20140207013750@eikelenboom.it>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH 0/6] serial: max310x: Improve driver. Part 1.
+Date: Fri,  7 Feb 2014 18:16:02 +0400
+Message-ID: <1391782568-19442-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp205.alice.it ([82.57.200.101]:41868 "EHLO smtp205.alice.it"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750729AbaBGGzg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Feb 2014 01:55:36 -0500
-Content-Disposition: inline
-In-Reply-To: <754206689.20140207013750@eikelenboom.it>
+Received: from fallback7.mail.ru ([94.100.176.135]:37308 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752172AbaBGOQ3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Feb 2014 09:16:29 -0500
+Received: from smtp48.i.mail.ru (smtp48.i.mail.ru [94.100.177.108])
+	by fallback7.mail.ru (mPOP.Fallback_MX) with ESMTP id 52565F7DF535
+	for <linux-serial@vger.kernel.org>; Fri,  7 Feb 2014 18:16:27 +0400 (MSK)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sander Eikelenboom <linux@eikelenboom.it>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-wireless@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-Hi Sander,
+This patchset provide various improvements/fixes for MAX310X
+serial driver.
 
-On Fri, Feb 07, 2014 at 01:37:50AM +0100, Sander Eikelenboom wrote:
-> Hi Marcel / Gianluca,
-> 
-> Bisection points to this commit:
-> 
-> 4a2fb3ecc7467c775b154813861f25a0ddc11aa0 is the first bad commit
-> commit 4a2fb3ecc7467c775b154813861f25a0ddc11aa0
-> Author: Gianluca Anzolin <gianluca@sottospazio.it>
-> Date:   Mon Jan 6 21:23:52 2014 +0100
+Alexander Shiyan (6):
+  serial: max310x: Allow driver to be compiled as module
+  serial: max310x: Setup baud rate generator more precisely
+  serial: max310x: Remove init() and exit() callbacks
+  serial: max310x: Remove excess port configure at startup
+  serial: max310x: Add the loopback mode support
+  serial: max310x: Remove IRQ validation
 
-Thank you for you report. I'm aware of this bug, no need to investigate
-further.
+ drivers/tty/serial/Kconfig            |  2 +-
+ drivers/tty/serial/max310x.c          | 76 +++++++++++++++++------------------
+ include/linux/platform_data/max310x.h |  5 ---
+ 3 files changed, 39 insertions(+), 44 deletions(-)
 
-This and other bugs are being tackled by Peter Hurley, who knows the tty
-code way better than me.
+-- 
+1.8.3.2
 
-You just have to wait for his patches, I think they will come shortly.
-
-Thank you,
-
-Gianluca
