@@ -1,63 +1,67 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH V2 1/2] serial: sh-sci: Fix cast warning
-Date: Mon, 10 Feb 2014 14:15:23 +0100
-Message-ID: <2819790.IHlWH9aZoh@avalon>
-References: <000001cf220d$1fd2ed70$5f78c850$%han@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:39308 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752206AbaBJNOW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Feb 2014 08:14:22 -0500
-In-Reply-To: <000001cf220d$1fd2ed70$5f78c850$%han@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
+Subject: [PATCH 8/8] serial: max310x: Add bindings documentation for the MAX310X UARTs
+Date: Mon, 10 Feb 2014 22:17:47 +0400
+Message-ID: <1392056267-13806-1-git-send-email-shc_work@mail.ru>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>, 'Simon Horman' <horms+renesas@verge.net.au>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Hi Jingoo,
+This patch adds the devicetree documentation for the Maxim MAX310X UARTs.
 
-Thank you for the patch.
+Signed-off-by: Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
+---
+ .../devicetree/bindings/serial/maxim,max310x.txt   | 36 ++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.txt
 
-On Wednesday 05 February 2014 09:56:37 Jingoo Han wrote:
-> Fix the following compile warning about cast to pointer from
-> integer of different size.
-> 
-> drivers/tty/serial/sh-sci.c:2021:19: warning: cast to pointer from integer
-> of different size [-Wint-to-pointer-cast]
-> 
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-Simon, Greg, how do you plan to handle sh-sci patches for v3.15 ?
-
-> ---
-> Changes since V1:
-> - Use uintptr_t instead of unsigned long per Laurent Pinchart
-> 
->  drivers/tty/serial/sh-sci.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index be33d2b..1668523 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2018,7 +2018,7 @@ static int sci_remap_port(struct uart_port *port)
->  		 * need to do any remapping, just cast the cookie
->  		 * directly.
->  		 */
-> -		port->membase = (void __iomem *)port->mapbase;
-> +		port->membase = (void __iomem *)(uintptr_t)port->mapbase;
->  	}
-> 
->  	return 0;
-
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+new file mode 100644
+index 0000000..0daf780
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+@@ -0,0 +1,36 @@
++* Maxim MAX310X advanced Universal Asynchronous Receiver-Transmitter (UART)
++
++Required properties:
++- compatible: Should be one of the following:
++  - "maxim,max3107" for Maxim MAX3107,
++  - "maxim,max3108" for Maxim MAX3108,
++  - "maxim,max3109" for Maxim MAX3109,
++  - "maxim,max14830" for Maxim MAX14830.
++- reg: SPI chip select number.
++- interrupt-parent: The phandle for the interrupt controller that
++  services interrupts for this IC.
++- interrupts: Specifies the interrupt source of the parent interrupt
++  controller. The format of the interrupt specifier depends on the
++  parent interrupt controller.
++- clocks: phandle to the IC source clock.
++- clock-names: Should be "osc" if clock is an external crystal or
++  "xtal" if an external clock source is used.
++
++Optional properties:
++- gpio-controller: Marks the device node as a GPIO controller.
++- #gpio-cells: Should be two. The first cell is the GPIO number and
++  the second cell is used to specify the GPIO polarity:
++    0 = active high,
++    1 = active low.
++
++Example:
++	max14830: max14830@0 {
++		compatible = "maxim,max14830";
++		reg = <0>;
++		clocks = <&clk20m>;
++		clock-names = "osc";
++		interrupt-parent = <&gpio3>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		gpio-controller;
++		#gpio-cells = <2>;
++	};
 -- 
-Regards,
+1.8.3.2
 
-Laurent Pinchart
-
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
