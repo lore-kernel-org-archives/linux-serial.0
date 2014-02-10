@@ -1,24 +1,67 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] RFC: MFD: driver for Atmel Microcontroller on iPaq h3xxx
-Date: Mon, 10 Feb 2014 10:02:56 +0100
-Message-ID: <CACRpkdb1LFP45Oy0YJ6DSHriSorvHacH=RRWb4LmZ286LJJX0g@mail.gmail.com>
-References: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 5/8] tty/serial: at91: add dtr control via gpio
+Date: Mon, 10 Feb 2014 11:24:40 +0100
+Message-ID: <CACQ1gAjQi+g0=HcR9K0rBQxBUZ_cN783sCWx40P5Hec-BdRtVg@mail.gmail.com>
+References: <1391785155-18525-1-git-send-email-richard.genoud@gmail.com>
+ <1391785155-18525-6-git-send-email-richard.genoud@gmail.com> <1391786494.259974704@f81.i.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@arm.linux.org.uk>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Alessandro Gardich <gremlin@gremlin.it>, Dmitry Artamonow <mad_soft@inbox.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f42.google.com ([209.85.215.42]:62767 "EHLO
+	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751564AbaBJKZD convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Feb 2014 05:25:03 -0500
+Received: by mail-la0-f42.google.com with SMTP id hr13so4613403lab.15
+        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2014 02:25:00 -0800 (PST)
+In-Reply-To: <1391786494.259974704@f81.i.mail.ru>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Fri, Jan 31, 2014 at 2:34 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
+2014-02-07 16:21 GMT+01:00 Alexander Shiyan <shc_work@mail.ru>:
+> Hello.
+>
+> =D0=9F=D1=8F=D1=82=D0=BD=D0=B8=D1=86=D0=B0,  7 =D1=84=D0=B5=D0=B2=D1=80=
+=D0=B0=D0=BB=D1=8F 2014, 15:59 +01:00 =D0=BE=D1=82 Richard Genoud <rich=
+ard.genoud@gmail.com>:
+>> On sam9x5, the USART controller doesn't handle DTR/DSR/DCD/RI signal=
+s,
+>> so we have to control them via GPIO.
+>>
+>> This patch permits to use a GPIO to control the DTR signal.
+>>
+>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>> ---
+> ...
+>> +     if (gpio_is_valid(atmel_port->gpio.dtr)) {
+>> +             if (mctrl & TIOCM_DTR)
+>> +                     gpio_set_value(atmel_port->gpio.dtr, 0);
+>> +             else
+>> +                     gpio_set_value(atmel_port->gpio.dtr, 1);
+>> +     }
+>
+> So, if you use GPIO for such purpose (here and in the other patches),
+> you should take and use GPIO active level from bindings.
+> It will make use of GPIO more flexible and deliver us from further sp=
+ecial
+> possible bindings to declare the active level.
+Yes, I could do that. I'll have to change the alreday merged RTS
+binding so that it gets it's active level from DTS, but I don't think
+it's a problem, since it's not already in mainline.
+Linus, Nicolas, what do you think ?
 
-> This adds a driver for the Atmel Microcontroller found on the
-> iPAQ h3xxx series. This device handles some keys, the
-> touchscreen, and the battery monitoring.
+> Actually, it would be good to have a separate unit for mctrl GPIOs,
+> which could be used for other drivers.
+good idea, I can add them in serial_core.c
 
-Any opinions on this driver or should we queue it in MFD as-is?
+Thanks!
 
-Yours,
-Linus Walleij
+Richard.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
