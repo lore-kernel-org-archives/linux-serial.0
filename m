@@ -1,42 +1,63 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] RFC: MFD: driver for Atmel Microcontroller on iPaq h3xxx
-Date: Mon, 10 Feb 2014 11:53:18 +0000
-Message-ID: <20140210115318.GD22773@lee--X1>
-References: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
- <CACRpkdb1LFP45Oy0YJ6DSHriSorvHacH=RRWb4LmZ286LJJX0g@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH V2 1/2] serial: sh-sci: Fix cast warning
+Date: Mon, 10 Feb 2014 14:15:23 +0100
+Message-ID: <2819790.IHlWH9aZoh@avalon>
+References: <000001cf220d$1fd2ed70$5f78c850$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f182.google.com ([209.85.212.182]:60166 "EHLO
-	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752716AbaBJLxZ (ORCPT
+Received: from perceval.ideasonboard.com ([95.142.166.194]:39308 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752206AbaBJNOW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Feb 2014 06:53:25 -0500
-Received: by mail-wi0-f182.google.com with SMTP id f8so2705261wiw.9
-        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2014 03:53:24 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <CACRpkdb1LFP45Oy0YJ6DSHriSorvHacH=RRWb4LmZ286LJJX0g@mail.gmail.com>
+	Mon, 10 Feb 2014 08:14:22 -0500
+In-Reply-To: <000001cf220d$1fd2ed70$5f78c850$%han@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Alessandro Gardich <gremlin@gremlin.it>, Dmitry Artamonow <mad_soft@inbox.ru>
+To: Jingoo Han <jg1.han@samsung.com>, 'Simon Horman' <horms+renesas@verge.net.au>
+Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-> > This adds a driver for the Atmel Microcontroller found on the
-> > iPAQ h3xxx series. This device handles some keys, the
-> > touchscreen, and the battery monitoring.
->=20
-> Any opinions on this driver or should we queue it in MFD as-is?
+Hi Jingoo,
 
-I have no problem taking this through the MFD tree with Greg's nod.
+Thank you for the patch.
 
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Wednesday 05 February 2014 09:56:37 Jingoo Han wrote:
+> Fix the following compile warning about cast to pointer from
+> integer of different size.
+> 
+> drivers/tty/serial/sh-sci.c:2021:19: warning: cast to pointer from integer
+> of different size [-Wint-to-pointer-cast]
+> 
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+Simon, Greg, how do you plan to handle sh-sci patches for v3.15 ?
+
+> ---
+> Changes since V1:
+> - Use uintptr_t instead of unsigned long per Laurent Pinchart
+> 
+>  drivers/tty/serial/sh-sci.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index be33d2b..1668523 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2018,7 +2018,7 @@ static int sci_remap_port(struct uart_port *port)
+>  		 * need to do any remapping, just cast the cookie
+>  		 * directly.
+>  		 */
+> -		port->membase = (void __iomem *)port->mapbase;
+> +		port->membase = (void __iomem *)(uintptr_t)port->mapbase;
+>  	}
+> 
+>  	return 0;
+
+-- 
+Regards,
+
+Laurent Pinchart
+
