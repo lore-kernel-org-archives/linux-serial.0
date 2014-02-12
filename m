@@ -1,56 +1,63 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MiAxLzRdIHR0eS9zZXJpYWw6IEFkZCBHUElPTElCIGhl?=
- =?UTF-8?B?bHBlcnMgZm9yIGNvbnRyb2xsaW5nIG1vZGVtIGxpbmVz?=
-Date: Tue, 11 Feb 2014 22:23:06 +0400
-Message-ID: <1392142986.607813065@f171.i.mail.ru>
-References: <1392140715-15295-1-git-send-email-richard.genoud@gmail.com>
- <1392140715-15295-2-git-send-email-richard.genoud@gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Aaron Sierra <asierra@xes-inc.com>
+Subject: [PATCH] serial: 8250: Support XR17V35x fraction divisor
+Date: Tue, 11 Feb 2014 18:30:01 -0600 (CST)
+Message-ID: <1442475818.84768.1392165001658.JavaMail.zimbra@xes-inc.com>
+References: <2007190186.84300.1392164036297.JavaMail.zimbra@xes-inc.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback3.mail.ru ([94.100.176.58]:55484 "EHLO
-	fallback3.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751358AbaBKSXj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Feb 2014 13:23:39 -0500
-Received: from f171.i.mail.ru (f171.i.mail.ru [94.100.178.90])
-	by fallback3.mail.ru (mPOP.Fallback_MX) with ESMTP id 38DA710BE923D
-	for <linux-serial@vger.kernel.org>; Tue, 11 Feb 2014 22:23:36 +0400 (MSK)
-In-Reply-To: <1392140715-15295-2-git-send-email-richard.genoud@gmail.com>
+Received: from xes-mad.com ([216.165.139.218]:64654 "EHLO xes-mad.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752128AbaBLAaF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Feb 2014 19:30:05 -0500
+In-Reply-To: <2007190186.84300.1392164036297.JavaMail.zimbra@xes-inc.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?Tmljb2xhcyBGZXJyZQ==?= <nicolas.ferre@atmel.com>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joe Schultz <jschultz@xes-inc.com>
 
-SGVsbG8uCgrQktGC0L7RgNC90LjQuiwgMTEg0YTQtdCy0YDQsNC70Y8gMjAxNCwgMTg6NDUgKzAx
-OjAwINC+0YIgUmljaGFyZCBHZW5vdWQgPHJpY2hhcmQuZ2Vub3VkQGdtYWlsLmNvbT46Cj4gVGhp
-cyBwYXRjaCBhZGQgc29tZSBoZWxwZXJzIHRvIGNvbnRyb2wgbW9kZW0gbGluZXMgKENUUy9SVFMv
-RFNSLi4uKSB2aWEKPiBHUElPLgo+IFRoaXMgd2lsbCBiZSB1c2VmdWwgZm9yIG1hbnkgYm9hcmRz
-IHdoaWNoIGhhdmUgYSBzZXJpYWwgY29udHJvbGxlciB0aGF0Cj4gb25seSBoYW5kbGUgQ1RTL1JU
-UyBwaW5zIChvciBldmVuIGp1c3QgUlgvVFgpLgo+IAo+IFNpZ25lZC1vZmYtYnk6IFJpY2hhcmQg
-R2Vub3VkIDxyaWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+Cj4gLS0tCgpPSywgYSBmZXcgY29tbWVu
-dHMgYmVsb3cuCgouLi4KPiArY29uZmlnIFNFUklBTF9NQ1RSTF9HUElPCj4gKwlkZWZfYm9vbCB5
-Cj4gKwlkZXBlbmRzIG9uIEdQSU9MSUIKCkkgc3VnZ2VzdCB0byBtb3ZlIEdQSU9MSUIgZGVwZW5k
-ZW5jeSB0byBzZXJpYWxfbWN0cmxfZ3Bpby5oIGhlYWRlciwgc28KdW5pdCBjYW4gYmUgdXNlZCB3
-aXRoIG9yIHdpdGhvdXQgR1BJT0xJQiwgc28gS2NvbmZpZyB3aWxsIGxvb2sgc29tZXRoaW5nIGxp
-a2UgdGhpczoKCmNvbmZpZyBTRVJJQUxfTUNUUkxfR1BJTwogIHRyaXN0YXRlCgpUaGVuLCB5b3Ug
-Y2FuIHNlbGVjdCB0aGlzIG9wdGlvbiBmb3IgcGFydGljdWxhciBVQVJUOgpjb25maWcgU0VSSUFM
-X0FUTUVMCiAgLi4uCiAgc2VsZWN0IFNFUklBTF9NQ1RSTF9HUElPCgouLi4KPiArKysgYi9kcml2
-ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX21jdHJsX2dwaW8uYwouLi4KPiArc3RhdGljIGNvbnN0IGNo
-YXIgKm1jdHJsX2dwaW9fb2ZfbmFtZXNbVUFSVF9HUElPX01BWF0gPSB7Cj4gKwkiY3RzIiwgImRz
-ciIsICJkY2QiLCAicmkiLCAicnRzIiwgImR0ciIKPiArfTsKCk1ha2UgYSBjb21iaW5lZCBhcnJh
-eS4gVGhpcyB3aWxsIHVzZSBjeWNsZXMgZm9yIHNldC9nZXQgb3BlcmF0aW9ucy4KCnN0YXRpYyBz
-dHJ1Y3QgewogIGNvbnN0IGNoYXIgKm5hbWU7CiAgdW5zaWduZWQgaW50IG1jdHJsOwp9IG1jdHJs
-X2dwaW9zW10gPSB7CiAgeyAiY3RzIiwgVElPQ01fQ1RTLCB9LAogIC4uLgp9OwoKLi4uCj4gK2lu
-dCBtY3RybF9ncGlvX2luaXQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbWN0cmxfZ3Bpb3Mg
-KmdwaW9zKQo+ICt7CgpJJ20gbm90IHN1cmUgd2hldGhlciB0byBtYWtlIGEgbm9uLURUIHN1cHBv
-cnQgYXQgYWxsIC4uLgoKPiArCWVudW0gbWN0cmxfZ3Bpb19pZHggaTsKPiArCWludCBlcnIgPSAw
-Owo+ICsJaW50IHJldCA9IDA7Cj4gKwo+ICsJZm9yIChpID0gVUFSVF9HUElPX01JTjsgaSA8IFVB
-UlRfR1BJT19NQVg7IGkrKykgewo+ICsJCWdwaW9zLT5ncGlvW2ldID0gZ3Bpb2RfZ2V0KGRldiwg
-bWN0cmxfZ3Bpb19vZl9uYW1lc1tpXSk7CgpXaGF0IGEgcmVhc29uIHRvIHVzaW5nIGdwaW9kX3h4
-eCgpID8KV2h5IHdlIGNhbm5vdCB1c2Ugc3RhbmRhcnQgZGV2bV9ncGlvX3JlcXVlc3QvZ2V0L3Nl
-dCBldGMuID8KCkluIGFkZGl0aW9uLCBJIHJlY29tbWVuZCBjcmVhdGUgdGhpcyBwYXRjaCBhcyBz
-ZXBhcmF0ZSwKYmVjYXVzZSBpdCB3aWxsIG1vc3QgbGlrZWx5IHN0aWxsIGJlIGNvbW1lbnRzIGxh
-dGVyLgpUaGFua3MuCgotLS0K
+From: Joe Schultz <jschultz@xes-inc.com>
+
+The Exar XR17V35x family of UARTs have an additional fractional divisor
+register (DLD) which was not being used. Calculate and set this
+register for these devices to reduce their baud rate error.
+
+Signed-off-by: Joe Schultz <jschultz@xes-inc.com>
+Signed-off-by: Aaron Sierra <asierra@xes-inc.com>
+---
+ drivers/tty/serial/8250/8250_core.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 61ecd70..69932b7 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -2433,6 +2433,24 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	serial_dl_write(up, quot);
+ 
+ 	/*
++	 * XR17V35x UARTs have an extra fractional divisor register (DLD)
++	 *
++	 * We need to recalculate all of the registers, because DLM and DLL
++	 * are already rounded to a whole integer.
++	 *
++	 * When recalculating we use a 32x clock instead of a 16x clock to
++	 * allow 1-bit for rounding in the fractional part.
++	 */
++	if (up->port.type == PORT_XR17V35X) {
++		unsigned int baud_x32 = (port->uartclk * 2) / baud;
++		u16 quot = baud_x32 / 32;
++		u8 quot_frac = DIV_ROUND_CLOSEST(baud_x32 % 32, 2);
++
++		serial_dl_write(up, quot);
++		serial_port_out(port, 0x2, quot_frac & 0xf);
++	}
++
++	/*
+ 	 * LCR DLAB must be set to enable 64-byte FIFO mode. If the FCR
+ 	 * is written without DLAB set, this mode will be disabled.
+ 	 */
+-- 
+1.7.9.5
+
