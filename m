@@ -1,52 +1,55 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: sirf: update copyright years to 2014
-Date: Wed, 12 Feb 2014 08:38:10 -0800
-Message-ID: <20140212163810.GA22377@kroah.com>
-References: <1392214124-3427-1-git-send-email-21cnbao@gmail.com>
- <20140212141931.GA7688@kroah.com>
- <CAGsJ_4zuju7x06nvZOMKvU8xfULy5bgNTyENSfmPVNg6TcwRdQ@mail.gmail.com>
- <20140212143744.GA10095@kroah.com>
- <CAGsJ_4xTfsYJMj7MkzKigQcdiyozK-fqq=JYosHMr9=jx7XQyQ@mail.gmail.com>
- <20140212161230.GA22431@kroah.com>
- <CAGsJ_4yXjRFxcazwx+Zfxm4_2njhMeRVRKXEM2w4wKsGPas6yA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Is tty->receive_room no longer usable w/ SMP?
+Date: Wed, 12 Feb 2014 22:43:18 +0000 (UTC)
+Message-ID: <ldgte5$kp1$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50464 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751914AbaBLQgy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Feb 2014 11:36:54 -0500
-Content-Disposition: inline
-In-Reply-To: <CAGsJ_4yXjRFxcazwx+Zfxm4_2njhMeRVRKXEM2w4wKsGPas6yA@mail.gmail.com>
+Received: from plane.gmane.org ([80.91.229.3]:38961 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754155AbaBLWno (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Feb 2014 17:43:44 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1WDiWs-0005U5-1T
+	for linux-serial@vger.kernel.org; Wed, 12 Feb 2014 23:43:42 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2014 23:43:42 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2014 23:43:42 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Barry Song <21cnbao@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: linux-serial@vger.kernel.org
 
-On Thu, Feb 13, 2014 at 12:26:35AM +0800, Barry Song wrote:
-> > Well, your 2012 change doesn't seem to be "significant" to warrent a
-> > normal copyright update, but the update is usually "less strict" than an
-> > original mark, so that might be ok, now that I review these closer.
-> >
-> > But I'd still prefer to get the opinion of your lawyer about this.
-> 
-> Greg, thanks. i will ask csr lawyer to give some feedback if i can :-)
-> 
-> i am not an expert of  copyright and i am really ignorant on it. in my
-> shallow understand, it seems it is difficult to evaluate what is
-> "significant" and what is not important as it highly depends on the
-> personal opinion? is this something like "there are a thousand Hamlets
-> in a thousand people's eyes"?
+A couple serial drivers I maintain check the value of tty->receive_room
+to decide the max number of bytes to pull out of the UART's receive
+FIFO and shove into a flip buffer.
 
-It does "depend", but the "general" rule that most everyone follows, and
-what I have been advised to stick to, is "1/3 of the file is
-modified/added to" by a company/developer.  If that happens, then a
-copyright mark is allowed.  That has worked well over the many years of
-me having to deal with this, but the issue of "extending" the mark
-hasn't really been discussed, so I don't know if that same rule applies
-here or not.
+After checking tty->receive room to decide how many bytes to read, one
+of the drivers uses this sequence:
 
-Feedback from your lawyer would be great to have on this, thanks.
+ tty_prepare_flip_string_flags(...)
+ <fill up char buffer and flag buffer>
+ tty_flip_buffer_push(...)
 
-greg k-h
+The other uses
+
+ for (i=0; i<count; ++i)
+   uart_insert_char(...);
+ tty_flip_buffer_push(...);   
+ 
+But, starting with kernel 3.12.0, whenSMP is enabled, tty->receive_room
+is always 0 and never changes.  With SMP disabled, it seems to work the
+way it always has.
+
+Is use of tty->receive room no longer supported for SMP kernels?
+
+How _should_ a serial driver decide how many rx characters there are
+room for?
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! What I need is a
+                                  at               MATURE RELATIONSHIP with a
+                              gmail.com            FLOPPY DISK ...
+
