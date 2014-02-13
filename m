@@ -1,66 +1,84 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: Is tty->receive_room no longer usable w/ SMP?
-Date: Thu, 13 Feb 2014 19:46:35 +0000 (UTC)
-Message-ID: <ldj7er$ec0$1@ger.gmane.org>
-References: <ldgte5$kp1$1@ger.gmane.org>
- <52FC1A14.5080004@hurleysoftware.com> <ldhaiq$jg$1@ger.gmane.org>
- <52FC427A.8050907@hurleysoftware.com> <ldhlpd$bbr$1@ger.gmane.org>
- <52FCE506.2040801@hurleysoftware.com> <ldj0o5$oq6$1@ger.gmane.org>
- <52FD0CD5.1050807@hurleysoftware.com> <ldj44p$4a0$1@ger.gmane.org>
- <52FD187C.8020604@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:56136 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752571AbaBMTrA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Feb 2014 14:47:00 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1WE2FP-0002yt-A1
-	for linux-serial@vger.kernel.org; Thu, 13 Feb 2014 20:46:59 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2014 20:46:59 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2014 20:46:59 +0100
-Sender: linux-serial-owner@vger.kernel.org
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
+ device probe
+Date: Thu, 13 Feb 2014 15:26:06 -0800
+Message-ID: <20140213232606.GA27372@kroah.com>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+ <1390208555-27770-3-git-send-email-tushar.behera@linaro.org>
+ <20140120100415.GX15937@n2100.arm.linux.org.uk>
+ <20140213181216.GB24155@kroah.com>
+ <20140213181559.GB30257@n2100.arm.linux.org.uk>
+ <20140213182701.GA32578@kroah.com>
+ <20140213184249.GC30257@n2100.arm.linux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140213184249.GC30257@n2100.arm.linux.org.uk>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-On 2014-02-13, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 02/13/2014 01:50 PM, Grant Edwards wrote:
+On Thu, Feb 13, 2014 at 06:42:49PM +0000, Russell King - ARM Linux wrote:
+> On Thu, Feb 13, 2014 at 10:27:01AM -0800, Greg KH wrote:
+> > On Thu, Feb 13, 2014 at 06:15:59PM +0000, Russell King - ARM Linux wrote:
+> > > On Thu, Feb 13, 2014 at 10:12:16AM -0800, Greg KH wrote:
+> > > > On Mon, Jan 20, 2014 at 10:04:15AM +0000, Russell King - ARM Linux wrote:
+> > > > > On Mon, Jan 20, 2014 at 02:32:35PM +0530, Tushar Behera wrote:
+> > > > > > uart_register_driver call binds the driver to a specific device
+> > > > > > node through tty_register_driver call. This should typically happen
+> > > > > > during device probe call.
+> > > > > > 
+> > > > > > In a multiplatform scenario, it is possible that multiple serial
+> > > > > > drivers are part of the kernel. Currently the driver registration fails
+> > > > > > if multiple serial drivers with same default major/minor numbers are
+> > > > > > included in the kernel.
+> > > > > > 
+> > > > > > A typical case is observed with amba-pl011 and samsung-uart drivers.
+> > > > > 
+> > > > > NAK.  There should not be any other driver using amba-pl011's device numbers.
+> > > > 
+> > > > I agree, but there is.  And because of that, moving the registration to
+> > > > the probe call fixes the issue with building a kernel with all of the
+> > > > drivers built into them, so I'm going to take both of these patches, as
+> > > > it does solve that problem, while still allowing the device number
+> > > > collision to happen.
+> > > 
+> > > So what happens when two _devices_ are probed by this driver at the same
+> > > time?
+> > 
+> > The bus that the driver is on will not allow that to happen, I thought
+> > we went through this before...
+> > 
+> > And yes, devices on different busses could cause problems, but is that
+> > the case here for these devices?  At first glance, I don't think that
+> > can happen for these drivers.
+> 
+> We went through this before, and I stated the paths, and no one disagreed
+> with that.
+> 
+> It /is/ racy.
 
->> For example, it turns out almost nobody on the planet uses IXANY. It
->> got left out of both our automated and manual regression testing, and
->> (embarassingly) it took 10+ years for somebody to realize that it
->> didn't work.  And that "somebody" was a customer that still had 2.4
->> kenels running in production machines.
->
-> Not unusual. The N_TTY ldisc just had a bug fixed in 3.10 where
-> turning off IXON with an already-stopped tty permanently hung the
-> tty.
+Ok, I just went and looked at the uart driver register path, and I don't
+see the race (note, if there is one, it's there today, regardless of
+this patch).
 
-Yea, over the years, Xon/Xoff flow control is probably a larger source
-of headaches than any other feature.  In fact, I think our serial core
-drivers currently have to disable the UART's hardware Xon/Xoff
-handling because the serial core API doesn't notify the driver when
-the user makes a termios call to change the Xon/Xoff characters.  [Not
-that anybody really uses that feature either...]
+uart_register_driver() fils in a bunch of fields, and passes control off
+to tty_register_driver().  If the minor/major number allocation here
+fails, due to collisions, then an error occurs, and things back out
+safely.
 
-> We should extend the serial-core to add rx methods that work with
-> your UARTs in their fastest and most native way. The idea behind
-> serial-core is only to abstract the busy-work away from the i/o, not
-> become an ill-fitting shoe that enforces The One True Way.
+If the allocation succeeds, then we lock the list of drivers, add them
+to the list, then register the tty device with the subsystem for how
+ever many tty devices were asked for.  Yes, the locking might be wrong
+here, in the tty layer, but again, that's nothing new created by this
+patch.
 
-The prepare/push flip buffer API was pretty close to ideal.
+So I fail to see the problem with applying this patch, as it solves a
+problem people are having, and should be fine given that no hardware
+with both of these devices will ever be present at the same time.
 
-It eliminates one set of buffer copy operations involved in the
-room/insert/push method.  But, given the speed of in-memory buffer
-copies, I doubt the difference is noticeable.
+thanks,
 
--- 
-Grant Edwards               grant.b.edwards        Yow! for ARTIFICIAL
-                                  at               FLAVORING!!
-                              gmail.com            
-
+greg k-h
