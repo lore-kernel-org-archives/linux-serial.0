@@ -1,51 +1,50 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH] serial: max310x: Fix build warning
-Date: Thu, 13 Feb 2014 22:08:29 +0400
-Message-ID: <1392314909-30288-2-git-send-email-shc_work@mail.ru>
-References: <1392314909-30288-1-git-send-email-shc_work@mail.ru>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
+	device probe
+Date: Thu, 13 Feb 2014 18:15:59 +0000
+Message-ID: <20140213181559.GB30257@n2100.arm.linux.org.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-3-git-send-email-tushar.behera@linaro.org> <20140120100415.GX15937@n2100.arm.linux.org.uk> <20140213181216.GB24155@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback8.mail.ru ([94.100.176.136]:56026 "EHLO
-	fallback8.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752299AbaBMSMt (ORCPT
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:35200 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752039AbaBMSQL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Feb 2014 13:12:49 -0500
-Received: from smtp31.i.mail.ru (smtp31.i.mail.ru [94.100.177.91])
-	by fallback8.mail.ru (mPOP.Fallback_MX) with ESMTP id 21BF65089263
-	for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2014 22:09:01 +0400 (MSK)
-In-Reply-To: <1392314909-30288-1-git-send-email-shc_work@mail.ru>
+	Thu, 13 Feb 2014 13:16:11 -0500
+Content-Disposition: inline
+In-Reply-To: <20140213181216.GB24155@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 
-config: x86_64-randconfig-x006 (attached as .config)
+On Thu, Feb 13, 2014 at 10:12:16AM -0800, Greg KH wrote:
+> On Mon, Jan 20, 2014 at 10:04:15AM +0000, Russell King - ARM Linux wrote:
+> > On Mon, Jan 20, 2014 at 02:32:35PM +0530, Tushar Behera wrote:
+> > > uart_register_driver call binds the driver to a specific device
+> > > node through tty_register_driver call. This should typically happen
+> > > during device probe call.
+> > > 
+> > > In a multiplatform scenario, it is possible that multiple serial
+> > > drivers are part of the kernel. Currently the driver registration fails
+> > > if multiple serial drivers with same default major/minor numbers are
+> > > included in the kernel.
+> > > 
+> > > A typical case is observed with amba-pl011 and samsung-uart drivers.
+> > 
+> > NAK.  There should not be any other driver using amba-pl011's device numbers.
+> 
+> I agree, but there is.  And because of that, moving the registration to
+> the probe call fixes the issue with building a kernel with all of the
+> drivers built into them, so I'm going to take both of these patches, as
+> it does solve that problem, while still allowing the device number
+> collision to happen.
 
-All warnings:
+So what happens when two _devices_ are probed by this driver at the same
+time?
 
- drivers/tty/serial/max310x.c: In function 'max310x_probe':
->> drivers/tty/serial/max310x.c:1240:1: warning: label 'out_uart' defined but not used [-Wunused-label]
-
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
----
- drivers/tty/serial/max310x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index e49d88a..ef01d37 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1250,9 +1250,9 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
- 
- #ifdef CONFIG_GPIOLIB
- 	WARN_ON(gpiochip_remove(&s->gpio));
--#endif
- 
- out_uart:
-+#endif
- 	uart_unregister_driver(&s->uart);
- 
- out_clk:
 -- 
-1.8.3.2
-
+FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
+in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
+Estimate before purchase was "up to 13.2Mbit".
