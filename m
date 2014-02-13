@@ -1,57 +1,76 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
 	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] serial: omap: fix rs485 probe on defered pinctrl
-Date: Thu, 13 Feb 2014 10:52:03 +0100
-Message-ID: <1392285123-13207-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: omap-serial: Move info message to probe function
+Date: Thu, 13 Feb 2014 10:56:33 +0100
+Message-ID: <20140213095633.GA17650@pengutronix.de>
+References: <1390583381-9076-1-git-send-email-mpa@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38427 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751488AbaBMJw1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Feb 2014 04:52:27 -0500
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1390583381-9076-1-git-send-email-mpa@pengutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, kernel@pengutronix.de, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org
-Cc: kernel@pengutronix.de, Roger Quadros <rogerq@ti.com>, Felipe Balbi <balbi@ti.com>, Linus Walleij <linus.walleij@linaro.org>, Kevin Hilman <khilman@linaro.org>, Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-=46rom: Michael Grzeschik <m.grzeschik@pengutronix.de>
+On Fri, Jan 24, 2014 at 06:09:41PM +0100, Markus Pargmann wrote:
+> Currently the info message about a missing wakeirq for uart is printe=
+d
+> every time the serial driver's startup function is called. This happe=
+ns
+> multiple times and not just once.
+>=20
+> This patch moves the infomessage to the probe function to display it
+> only once.
+>=20
+> Cc: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/tty/serial/omap-serial.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/om=
+ap-serial.c
+> index fa511eb..2051581 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -738,9 +738,6 @@ static int serial_omap_startup(struct uart_port *=
+port)
+>  			return retval;
+>  		}
+>  		disable_irq(up->wakeirq);
+> -	} else {
+> -		dev_info(up->port.dev, "no wakeirq for uart%d\n",
+> -			 up->port.line);
+>  	}
+> =20
+>  	dev_dbg(up->port.dev, "serial_omap_startup+%d\n", up->port.line);
+> @@ -1687,6 +1684,9 @@ static int serial_omap_probe(struct platform_de=
+vice *pdev)
+>  	up->port.iotype =3D UPIO_MEM;
+>  	up->port.irq =3D uartirq;
+>  	up->wakeirq =3D wakeirq;
+> +	if (!up->wakeirq)
+> +		dev_info(up->port.dev, "no wakeirq for uart%d\n",
+> +			 up->port.line);
+> =20
+>  	up->port.regshift =3D 2;
+>  	up->port.fifosize =3D 64;
+> --=20
+> 1.8.5.2
+>=20
+>=20
 
-If the gpio is not yet available we better also
-defer the probing in the rs485 case.
-
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/omap-serial.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
--serial.c
-index fa511ebab67c..2116e76b9559 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1604,8 +1604,11 @@ static int serial_omap_probe_rs485(struct uart_o=
-map_port *up,
- 					    flags & SER_RS485_RTS_AFTER_SEND);
- 		if (ret < 0)
- 			return ret;
--	} else
-+	} else if (up->rts_gpio =3D=3D -EPROBE_DEFER) {
-+		return -EPROBE_DEFER;
-+	} else {
- 		up->rts_gpio =3D -EINVAL;
-+	}
-=20
- 	if (of_property_read_u32_array(np, "rs485-rts-delay",
- 				    rs485_delay, 2) =3D=3D 0) {
 --=20
-1.8.5.3
-
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
 --
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
