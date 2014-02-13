@@ -1,141 +1,180 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Grant Edwards <grant.b.edwards@gmail.com>
 Subject: Re: Is tty->receive_room no longer usable w/ SMP?
-Date: Wed, 12 Feb 2014 22:56:42 -0500
-Message-ID: <52FC427A.8050907@hurleysoftware.com>
-References: <ldgte5$kp1$1@ger.gmane.org> <52FC1A14.5080004@hurleysoftware.com> <ldhaiq$jg$1@ger.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Thu, 13 Feb 2014 05:38:53 +0000 (UTC)
+Message-ID: <ldhlpd$bbr$1@ger.gmane.org>
+References: <ldgte5$kp1$1@ger.gmane.org>
+ <52FC1A14.5080004@hurleysoftware.com> <ldhaiq$jg$1@ger.gmane.org>
+ <52FC427A.8050907@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53055 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751320AbaBMD4o (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Feb 2014 22:56:44 -0500
-In-Reply-To: <ldhaiq$jg$1@ger.gmane.org>
+Received: from plane.gmane.org ([80.91.229.3]:45757 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751526AbaBMFjU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Feb 2014 00:39:20 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1WDp14-0007Ef-Vz
+	for linux-serial@vger.kernel.org; Thu, 13 Feb 2014 06:39:18 +0100
+Received: from c-24-118-110-103.hsd1.mn.comcast.net ([24.118.110.103])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2014 06:39:18 +0100
+Received: from grant.b.edwards by c-24-118-110-103.hsd1.mn.comcast.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2014 06:39:18 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org
-Cc: Greg KH <gregkh@linuxfoundation.org>
+To: linux-serial@vger.kernel.org
 
-[ +cc Greg Kroah-Hartman]
+On 2014-02-13, Peter Hurley <peter@hurleysoftware.com> wrote:
 
-On 02/12/2014 09:27 PM, Grant Edwards wrote:
-> On 2014-02-13, Peter Hurley <peter@hurleysoftware.com> wrote:
->> On 02/12/2014 05:43 PM, Grant Edwards wrote:
->>> A couple serial drivers I maintain check the value of tty->receive_room
->>> to decide the max number of bytes to pull out of the UART's receive
->>> FIFO and shove into a flip buffer.
+>>>>    tty_prepare_flip_string_flags(...)
+>>>         ^^^^^^^^^^^^
+>>> This was removed for 3.14.
 >>
->> tty->receive_room is not part of the driver<->tty core interface.
+>> Why?
 >
-> OK, fair enough.  Where is the driver<->tty core interface documented?
+> The tty flip buffer code now uses an encoding method to maximize
+> memory usage for actual data (when the data is all TTY_NORMAL). Since
+> there were no in-tree users,
 
-Exported functions and the data mentioned in Documentation/serial/tty.txt,
-like certain flag bits (eg., TTY_IO_ERROR).
+I noticed that earlier this evening when browsing the in-kernel
+drivers.
 
-But the documentation could use some modernization. Eg., I don't think
-there's any docs on tty_port other than the example in-tree drivers.
-
->>> After checking tty->receive room to decide how many bytes to read, one
->>> of the drivers uses this sequence:
->>>
->>>    tty_prepare_flip_string_flags(...)
->>         ^^^^^^^^^^^^
->> This was removed for 3.14.
+>> I _was_ planning on removing the code that checks tty->receive_room
+>> and instead rely instead on the return value from
+>> tty_prepare_flip_string_flags().  But, as you noted, that's gone now.
 >
-> Why?
+> That's one of the hazards of out-of-tree drivers, for you and for me.
+> When I'm writing functionality, I can't know if some defunct code is
+> actually being used in the wild. For you, breakage ensues.
 
-The tty flip buffer code now uses an encoding method to maximize
-memory usage for actual data (when the data is all TTY_NORMAL).
-Since there were no in-tree users, it was pointless to rewrite the function.
+Indeed.
 
-> What is the replacement?
-
-There isn't one. No in-tree drivers use this function.
-
->> The use of tty->receive_room by drivers is not supported on any
->> kernel.
+>> Is there any documentation explaining how one is supposed to handle
+>> rx data in a serial driver?  The topic doesn't seem to be mentioned
+>> at all in Documentation/serial/driver.
 >
-> Got it.
->
->>> How _should_ a serial driver decide how many rx characters there are
->>> room for?
+> This has been and continues to be one of the most active areas of
+> development with the tty subsystem, especially to support really high
+> speed tty (50+MB/sec).
+
+Thankfully, my drivers don't have to support baud rates that high. 
+Our serial ports top out at 921K bits/sec, but in theory we support up
+to 256 ports.  In practice I've never heard of anybody with more than
+128 ports, and speeds above 115K are pretty rare -- but just running a
+few dozen ports at 115K starts to add up.
+
+>> If you can assume all rx data is TTY_NORMAL, then it looks like this
+>> is the right way to do it:
 >>
->> All of the flip buffer functions that reserve/use buffer space return
->> the space reserved/consumed. Is rx overflowing the flip buffers
->> before you can throttle the sender?
+>>    n = tty_prepare_flip_string()
+>>    <copy n data bytes>
+>>    tty_flip_buffer_push()
+
+Should I assume that this is the preferred method if I can know that I
+have a specific amount of TTY_NORMAL data available?
+
+>> I've tried transferring one byte/flag pair at a time
 >
-> Well, it certainly didn't when I used tty->receive_room to decide how
-> much data to read from the UART's rx FIFO. :)
+> Don't do that.
+
+I'll have to do a little more investigating, but I think I can detect
+the case where there are no error flags present in the rx FIFO, so I
+can use the prepare/push method when that's true (which it should be
+the vast majority of the time).
+
+If I can do that, then I think I could live with tty_insert_char() in
+the much rarer case where there are errors present -- but I still need
+to know if there's room to insert a byte before reading the byte/flag
+from the rx FIFO and subsequently calling tty_insert_char().
+
+That's the part I don't understand:
+
+How are drivers that use tty_insert_char() supposed to know when to
+stop calling it?  tty_insert_char() doesn't return a status, so you
+don't know even after the fact if the byte you just passed was
+accepted. Do you?
+
+Similarly, how are drivers that use tty_insert_flip_string_flags()
+supposed to know how much data they can pass to it?
+
+Are they expected to keep reading data from the rx FIFO and passing it
+to tty_insert_flip_string_flags() until it returns a value smaller
+than the requested transfer size and then buffer the "overflow" data
+that has already been read from the rx FIFO but not accepted by
+tty_insert_flip_string_flags()?  Then at some point in the future you
+retry the old, buffered data, and once that's all been transferred you
+start reading from the rx FIFO again? That would work, but it's a
+little ugly.
+
+Looking at existing in-tree users of tty_insert_flip_string_flags(),
+they call tty_buffer_request_room() to determine how many char/flag
+pairs can be transferred and then depend on the assumption that
+tty_insert_flip_string_flags() will accept that much. I didn't think
+that was valid because tty_buffer_request_room() assumes you're not
+going to transfer flags -- doesn't it?
+
+I must be missing something.
+
+> At this point, I would prefer to code up a
+> tty_prepare_flip_string_flags(), than have out-of-tree drivers
+> hacking things up.
+
+I would be perfectly happy using tty_insert_flip_string_flags()
+instead of tty_prepare_flip_string_flags() if I knew how many
+char/flag pairs I can pass to it.
+
+> The thing is:
 >
-> I _was_ planning on removing the code that checks tty->receive_room
-> and instead rely instead on the return value from
-> tty_prepare_flip_string_flags().  But, as you noted, that's gone now.
+> 1. I'll have to convince Greg and he's not a fan of out-of-tree
+>    drivers :)
 
-That's one of the hazards of out-of-tree drivers, for you and for me.
-When I'm writing functionality, I can't know if some defunct code is
-actually being used in the wild. For you, breakage ensues.
+I know.
 
-> Is there any documentation explaining how one is supposed to handle rx
-> data in a serial driver?  The topic doesn't seem to be mentioned at
-> all in Documentation/serial/driver.
+> 2. rc2 is pretty late for an exported function that will have almost
+>    no testing. But I'll do what I can do.
 
-This has been and continues to be one of the most active areas of
-development with the tty subsystem, especially to support really high
-speed tty (50+MB/sec).
+> You can help avoid this situation in the future by testing linux-next
+> (or at least Greg's tty-next tree if you only work on serial stuff)
+> where these tty buffer changes have been sitting for 2 months (since
+> Dec 8).
 
-> If you can assume all rx data is TTY_NORMAL, then it looks like this
-> is the right way to do it:
->
->    n = tty_prepare_flip_string()
->    <copy n data bytes>
->    tty_flip_buffer_push()
->
-> What do you do if you can't assume all rx data is going to have a flag
-> value of TTY_NORMAL?
+Point well taken.  I'll try get get resources allocated for periodic
+testing against linux-next.  Currently, we don't start testing with a
+kernel until an "rc" version comes out.
 
-ATM (meaning in 3.14-rc1/2) there's no direct replacement for
-tty_prepare_flip_string_flags() but see below.
+> Or better yet, submit your driver(s) for in-tree inclusion. That way
+> the situation doesn't happen in the first place.
 
-> According to the comments in tty_buffer.c you can't use
-> tty_buffer_space_avail(), instead you're supposed to use
-> tty_prepare_flip_string(), but you can't use that unless you can
-> assume all rx data will be TTY_NORMAL.
->
-> Now that tty_prepare_flip_string_flags() is gone, it looks like
-> tty_insert_flip_string_flags() is the only option for transferring
-> blocks of data/flags.  For that you need to know ahead of time how
-> many bytes can be guaranteed to be transferred because once you've
-> read data from the UART's rx FIFO it's lost if it can't be
-> transferred.
->
-> AFAICT, tty_buffer_request_room() can't be used in the case where you
-> you're passing a flags buffer: it can only be used to request a buffer
-> where all data will be TTY_NORMAL.
+We've tried in-kernel drivers before, but it may be time to look into
+it again.
 
-Although tty_buffer_request_room() can be used in this situation
-(because it does return a buffer suitable for 1/2 data + 1/2 flags),
-I'd rather you didn't - see below.
+<sob-story>
+In the past it didn't work out very well: maintaining both in-tree
+drivers and out-of-tree drivers was too much work.  The problem with
+in-tree drivers is that the only kernel version supported with fixes
+and new features is "the next version". Unfortunately, none of our
+customers are ever running "the next version". [One steady customer
+just switched from 2.4 to 2.6 within the past year.] So even when
+there is an in-tree driver, we still have to maintain a separate
+out-of-tree driver the same way we would if there weren't an in-tree
+driver.
 
-> I've tried transferring one byte/flag pair at a time
+Since the out-of-tree driver has to support a wide range of kernel
+versions, the code had to be written in ways that are unacceptable for
+an in-tree driver. As a result, the in-tree and out-of-tree drivers
+diverge.  Every feature has to be added twice, bugs have to be fixed
+twice, there's twice as much QA, twice as much documentation, etc.  On
+top of that there's the additional work of getting those fixes and
+changes _into_ the in-tree driver.
 
-Don't do that.
+After struggling with that for a while, it was decided that the
+benefits gained from maintaining a set of in-tree drivers weren't
+enough to justify all additional work involved.  Whenever it's been
+mentioned subsequently the response is something on the lines of "we
+fell for that once, we're not going to fall for it again."
+</sob-story>
 
-At this point, I would prefer to code up a tty_prepare_flip_string_flags(),
-than have out-of-tree drivers hacking things up.
+-- 
+Grant
 
-The thing is:
-1. I'll have to convince Greg and he's not a fan of out-of-tree drivers :)
-2. rc2 is pretty late for an exported function that will have almost no testing.
-But I'll do what I can do.
-
-You can help avoid this situation in the future by testing linux-next
-(or at least Greg's tty-next tree if you only work on serial stuff) where
-these tty buffer changes have been sitting for 2 months (since Dec 8).
-
-Or better yet, submit your driver(s) for in-tree inclusion. That way
-the situation doesn't happen in the first place.
-
-Regards,
-Peter Hurley
