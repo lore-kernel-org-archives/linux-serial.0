@@ -1,71 +1,93 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: sirf: update copyright years to 2014
-Date: Fri, 14 Feb 2014 09:14:24 -0800
-Message-ID: <20140214171424.GA26194@kroah.com>
-References: <1392214124-3427-1-git-send-email-21cnbao@gmail.com>
- <20140212141931.GA7688@kroah.com>
- <CAGsJ_4zuju7x06nvZOMKvU8xfULy5bgNTyENSfmPVNg6TcwRdQ@mail.gmail.com>
- <20140212143744.GA10095@kroah.com>
- <CAGsJ_4xTfsYJMj7MkzKigQcdiyozK-fqq=JYosHMr9=jx7XQyQ@mail.gmail.com>
- <20140212161230.GA22431@kroah.com>
- <CAGsJ_4yXjRFxcazwx+Zfxm4_2njhMeRVRKXEM2w4wKsGPas6yA@mail.gmail.com>
- <20140212163810.GA22377@kroah.com>
- <CAGsJ_4x-9MiX_CMgQAhmUDQFXvCo0Nd2Y5AkVu+ePvurbefiFQ@mail.gmail.com>
+Subject: [GIT PULL] TTY/Serial fixes for 3.14-rc3
+Date: Fri, 14 Feb 2014 13:26:25 -0800
+Message-ID: <20140214212625.GA19466@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:43659 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751277AbaBNRNG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Feb 2014 12:13:06 -0500
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAGsJ_4x-9MiX_CMgQAhmUDQFXvCo0Nd2Y5AkVu+ePvurbefiFQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Barry Song <21cnbao@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-On Thu, Feb 13, 2014 at 10:27:17AM +0800, Barry Song wrote:
-> 2014-02-13 0:38 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
-> > On Thu, Feb 13, 2014 at 12:26:35AM +0800, Barry Song wrote:
-> >> > Well, your 2012 change doesn't seem to be "significant" to warrent a
-> >> > normal copyright update, but the update is usually "less strict" than an
-> >> > original mark, so that might be ok, now that I review these closer.
-> >> >
-> >> > But I'd still prefer to get the opinion of your lawyer about this.
-> >>
-> >> Greg, thanks. i will ask csr lawyer to give some feedback if i can :-)
-> >>
-> >> i am not an expert of  copyright and i am really ignorant on it. in my
-> >> shallow understand, it seems it is difficult to evaluate what is
-> >> "significant" and what is not important as it highly depends on the
-> >> personal opinion? is this something like "there are a thousand Hamlets
-> >> in a thousand people's eyes"?
-> >
-> > It does "depend", but the "general" rule that most everyone follows, and
-> > what I have been advised to stick to, is "1/3 of the file is
-> > modified/added to" by a company/developer.  If that happens, then a
-> > copyright mark is allowed.  That has worked well over the many years of
-> > me having to deal with this, but the issue of "extending" the mark
-> > hasn't really been discussed, so I don't know if that same rule applies
-> > here or not.
-> >
-> > Feedback from your lawyer would be great to have on this, thanks.
-> >
-> 
-> Greg, i am inviting our lawyer Cherrie into this, as she is maybe
-> busy, so we might wait some time.
+The following changes since commit 38dbfb59d1175ef458d006556061adeaa875=
+1b72:
 
-In my research, it's become apparent that the copyright notice should
-just be removed entirely from the files, as they don't mean anything
-from a legal standpoint, so updating them shouldn't really be done
-either, as they don't mean anything.  Although one could argue, if they
-don't mean anything, updating it shouldn't matter, but I don't think
-that the transitive is true here...
+  Linus 3.14-rc1 (2014-02-02 16:42:13 -0800)
 
-It will be interesting to find out what your lawyer says about this.
+are available in the git repository at:
 
-thanks,
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-3.14-rc3
 
-greg k-h
+for you to fetch changes up to 0930b0950a8996aa88b0d2ba4bb2bab27cc36bc7=
+:
+
+  vt: Fix secure clear screen (2014-02-13 11:12:00 -0800)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 3.14-rc3
+
+Here are a small number of tty/serial driver fixes to resolve reported
+issues with 3.14-rc and earlier (in the case of the vt bugfix.)  Some o=
+f
+these have been tested and reported by a number of people as the tty
+bugfix was pretty commonly hit on some platforms.
+
+All have been in linux-next for a while.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Dmitry Eremin-Solenikov (1):
+      serial: 8250_pci: unbreak last serial ports on NetMos 9865 cards
+
+Hannes Reinecke (1):
+      tty: Set correct tty name in 'active' sysfs attribute
+
+Joe Schultz (1):
+      serial: 8250: Support XR17V35x fraction divisor
+
+Lars Poeschel (1):
+      tty: n_gsm: Fix for modems with brk in modem status control
+
+Markus Pargmann (1):
+      serial: omap-serial: Move info message to probe function
+
+Michael Grzeschik (1):
+      serial: omap: fix rs485 probe on defered pinctrl
+
+Mika Westerberg (1):
+      serial: 8250_dw: fix compilation warning when !CONFIG_PM_SLEEP
+
+Paul Gortmaker (1):
+      drivers/tty/hvc: don't use module_init in non-modular hyp. consol=
+e code
+
+Peter Hurley (2):
+      n_tty: Fix poll() when TIME_CHAR and MIN_CHAR =3D=3D 0
+      n_tty: Fix stale echo output
+
+Petr P=C3=ADsa=C5=99 (1):
+      vt: Fix secure clear screen
+
+Qipan Li (1):
+      serial: sirf: fix kernel panic caused by unpaired spinlock
+
+ Documentation/ABI/testing/sysfs-tty |  3 ++-
+ drivers/tty/hvc/hvc_opal.c          |  8 +-------
+ drivers/tty/hvc/hvc_rtas.c          | 12 +-----------
+ drivers/tty/hvc/hvc_udbg.c          |  9 +--------
+ drivers/tty/hvc/hvc_xen.c           | 17 +----------------
+ drivers/tty/n_gsm.c                 | 11 +++++++++++
+ drivers/tty/n_tty.c                 | 14 ++++++++------
+ drivers/tty/serial/8250/8250_core.c | 18 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_dw.c   |  4 ++--
+ drivers/tty/serial/8250/8250_pci.c  |  3 ++-
+ drivers/tty/serial/omap-serial.c    | 11 +++++++----
+ drivers/tty/serial/sirfsoc_uart.c   |  4 +++-
+ drivers/tty/tty_io.c                | 25 ++++++++++++++++++-------
+ drivers/tty/vt/vt.c                 |  2 ++
+ 14 files changed, 77 insertions(+), 64 deletions(-)
