@@ -1,84 +1,67 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
- device probe
-Date: Thu, 13 Feb 2014 15:26:06 -0800
-Message-ID: <20140213232606.GA27372@kroah.com>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
- <1390208555-27770-3-git-send-email-tushar.behera@linaro.org>
- <20140120100415.GX15937@n2100.arm.linux.org.uk>
- <20140213181216.GB24155@kroah.com>
- <20140213181559.GB30257@n2100.arm.linux.org.uk>
- <20140213182701.GA32578@kroah.com>
- <20140213184249.GC30257@n2100.arm.linux.org.uk>
+	device probe
+Date: Fri, 14 Feb 2014 00:07:17 +0000
+Message-ID: <20140214000717.GG30257@n2100.arm.linux.org.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org> <1390208555-27770-3-git-send-email-tushar.behera@linaro.org> <20140120100415.GX15937@n2100.arm.linux.org.uk> <20140213181216.GB24155@kroah.com> <20140213181559.GB30257@n2100.arm.linux.org.uk> <20140213182701.GA32578@kroah.com> <20140213184249.GC30257@n2100.arm.linux.org.uk> <20140213232606.GA27372@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:35438 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751323AbaBNAH2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Feb 2014 19:07:28 -0500
 Content-Disposition: inline
-In-Reply-To: <20140213184249.GC30257@n2100.arm.linux.org.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
+In-Reply-To: <20140213232606.GA27372@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 
-On Thu, Feb 13, 2014 at 06:42:49PM +0000, Russell King - ARM Linux wrote:
-> On Thu, Feb 13, 2014 at 10:27:01AM -0800, Greg KH wrote:
-> > On Thu, Feb 13, 2014 at 06:15:59PM +0000, Russell King - ARM Linux wrote:
-> > > On Thu, Feb 13, 2014 at 10:12:16AM -0800, Greg KH wrote:
-> > > > On Mon, Jan 20, 2014 at 10:04:15AM +0000, Russell King - ARM Linux wrote:
-> > > > > On Mon, Jan 20, 2014 at 02:32:35PM +0530, Tushar Behera wrote:
-> > > > > > uart_register_driver call binds the driver to a specific device
-> > > > > > node through tty_register_driver call. This should typically happen
-> > > > > > during device probe call.
-> > > > > > 
-> > > > > > In a multiplatform scenario, it is possible that multiple serial
-> > > > > > drivers are part of the kernel. Currently the driver registration fails
-> > > > > > if multiple serial drivers with same default major/minor numbers are
-> > > > > > included in the kernel.
-> > > > > > 
-> > > > > > A typical case is observed with amba-pl011 and samsung-uart drivers.
-> > > > > 
-> > > > > NAK.  There should not be any other driver using amba-pl011's device numbers.
-> > > > 
-> > > > I agree, but there is.  And because of that, moving the registration to
-> > > > the probe call fixes the issue with building a kernel with all of the
-> > > > drivers built into them, so I'm going to take both of these patches, as
-> > > > it does solve that problem, while still allowing the device number
-> > > > collision to happen.
-> > > 
-> > > So what happens when two _devices_ are probed by this driver at the same
-> > > time?
+On Thu, Feb 13, 2014 at 03:26:06PM -0800, Greg KH wrote:
+> On Thu, Feb 13, 2014 at 06:42:49PM +0000, Russell King - ARM Linux wrote:
+> > We went through this before, and I stated the paths, and no one disagreed
+> > with that.
 > > 
-> > The bus that the driver is on will not allow that to happen, I thought
-> > we went through this before...
-> > 
-> > And yes, devices on different busses could cause problems, but is that
-> > the case here for these devices?  At first glance, I don't think that
-> > can happen for these drivers.
+> > It /is/ racy.
 > 
-> We went through this before, and I stated the paths, and no one disagreed
-> with that.
-> 
-> It /is/ racy.
+> Ok, I just went and looked at the uart driver register path, and I don't
+> see the race (note, if there is one, it's there today, regardless of
+> this patch).
 
-Ok, I just went and looked at the uart driver register path, and I don't
-see the race (note, if there is one, it's there today, regardless of
-this patch).
+The race isn't the uart code, it's the driver model.
 
-uart_register_driver() fils in a bunch of fields, and passes control off
-to tty_register_driver().  If the minor/major number allocation here
-fails, due to collisions, then an error occurs, and things back out
-safely.
+Consider what happens when this happens:
 
-If the allocation succeeds, then we lock the list of drivers, add them
-to the list, then register the tty device with the subsystem for how
-ever many tty devices were asked for.  Yes, the locking might be wrong
-here, in the tty layer, but again, that's nothing new created by this
-patch.
+* Two pl011 devices get registered at the same time by two different
+  threads.
 
-So I fail to see the problem with applying this patch, as it solves a
-problem people are having, and should be fine given that no hardware
-with both of these devices will ever be present at the same time.
+* Both devices have a lock taken on the _device_ itself before matching
+  against the driver.
 
-thanks,
+* Both devices get matched to the same driver.
 
-greg k-h
+* Both devices are passed into the driver's probe function.
+
+* Both check uart_reg.state, both call uart_register_driver() on that
+  at the same time, which results in two allocations inside
+  uart_register_driver(), one gets overwritten...
+
+So, the /only/ thing which stops this happening is that the devices
+are generally available before the driver is registered, and driver
+registration results in devices being probed serially.  Moreover, both
+attempt to call tty_register_driver()... one succeeds, the other fails.
+
+However, what about the userspace bind/unbind methods.  Yes, userspace
+can ask the driver core to unbind devices from a driver or bind - and
+again, there's no per-driver locking here.  So, if you can trigger two
+concurrent binds from userspace, you hit the same race as above.
+
+So, if you want to accept these patches, go ahead, introduce races, but
+personally I'd recommend plugging these races.
+
+-- 
+FTTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
+in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
+Estimate before purchase was "up to 13.2Mbit".
