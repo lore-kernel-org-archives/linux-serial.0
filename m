@@ -1,53 +1,62 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v5 0/3] serial: fsl_lpuart: add DMA support
-Date: Fri, 14 Feb 2014 10:11:11 +0100
-Message-ID: <2297536.ERjsbpLrzg@wuerfel>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v5 2/3] serial: fsl_lpuart: add DMA support
+Date: Fri, 14 Feb 2014 10:24:15 +0000
+Message-ID: <20140214102415.GB9907@e106331-lin.cambridge.arm.com>
 References: <1392362839-8004-1-git-send-email-yao.yuan@freescale.com>
+ <1392362839-8004-3-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:62792 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751833AbaBNJMA (ORCPT
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:61973 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750975AbaBNKYy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Feb 2014 04:12:00 -0500
-In-Reply-To: <1392362839-8004-1-git-send-email-yao.yuan@freescale.com>
+	Fri, 14 Feb 2014 05:24:54 -0500
+Content-Disposition: inline
+In-Reply-To: <1392362839-8004-3-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Yuan Yao <yao.yuan@freescale.com>
-Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, mark.rutland@arm.com, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Friday 14 February 2014 15:27:16 Yuan Yao wrote:
-> Changed in v5:
-> - Revoke move dma properties from dtsi to dts.
-> - Change the explanations for dmas, dma-names in document.
-> - Change the description for [PATCH 3] serial: fsl_lpuart: documented the clock requirement.
-
-Whole series
-
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-
-> Changed in v4:
-> - Move dma properties from dtsi to dts.
-> - Cancle the macro(SERIAL_FSL_LPUART_DMA)  .
-> - Separate the document for clocks which undocumented before into a single patch.
-> - Change some explanations in document(clocks, clock-names, dmas, dma-names).
-> - Change "lpuart-tx" and "lpuart-rx" to "tx" and "rx".
+On Fri, Feb 14, 2014 at 07:27:18AM +0000, Yuan Yao wrote:
+> Add dma support for lpuart. This function depend on DMA driver.
+> You can turn on it by write both the dmas and dma-name properties in dts node.
 > 
-> Changed in v3:
-> - Use the streaming DMA API for receive.
-> - Add the macro(SERIAL_FSL_LPUART_DMA) and dts node propertie for whether using the dma.
-> - Adjust some coding style.
+> Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
+> ---
+>  .../devicetree/bindings/serial/fsl-lpuart.txt      |  19 +-
+>  drivers/tty/serial/fsl_lpuart.c                    | 430 ++++++++++++++++++++-
+>  2 files changed, 433 insertions(+), 16 deletions(-)
 > 
-> Changed in v2:
-> - Add eDMA support for lpuart receive.
-> - Use dma_mapping_error test dma_map_single.
-> - Change some names of variable.
-> - Fix some bugs.
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> index 6fd1dd1..6e1cbbf 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> @@ -5,10 +5,24 @@ Required properties:
+>  - reg : Address and length of the register set for the device
+>  - interrupts : Should contain uart interrupt
 > 
-> Added in v1:
-> - Add device tree bindings for lupart eDMA support.
-> - Add eDMA support for lpuart send.
-> 
+> +Optional properties:
+> +- dmas: List of two DMA specifiers, using a three-cell specifier for each channel.
+> +       a phandle plus two integer cells. The three cells in order are:
+> +       1.A phandle pointing to the DMA controller.
+> +       2.specifies the channel group(DMAMUX) in which this request can be multiplexed,
+> +       3.specifies the request source.
 
+The precise format of a dma-specifier is up to the DMA binding. Why does
+the client binding care?
+
+> +- dma-names: Contains one identifier string for each DMA specifier in the dmas property.
+> +       "tx" for the transmit channel, "rx" for the receive channel.
+> +
+> +Note: Optional properties for DMA support. Write them both or both not.
+> +
+
+All you need is something like:
+
+dmas: A list of two dma specifiers, one for each entry in dma-names
+dma-names: should contain "tx" and "rx".
+
+Thanks,
+Mark.
