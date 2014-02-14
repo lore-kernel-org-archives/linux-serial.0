@@ -1,53 +1,53 @@
-From: Yuan Yao <yao.yuan@freescale.com>
-Subject: [PATCH v5 3/3] serial: fsl_lpuart: documented the clock requirement.
-Date: Fri, 14 Feb 2014 15:27:19 +0800
-Message-ID: <1392362839-8004-4-git-send-email-yao.yuan@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v5 0/3] serial: fsl_lpuart: add DMA support
+Date: Fri, 14 Feb 2014 10:11:11 +0100
+Message-ID: <2297536.ERjsbpLrzg@wuerfel>
 References: <1392362839-8004-1-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [213.199.154.204] ([213.199.154.204]:40081 "EHLO
-	am1outboundpool.messaging.microsoft.com" rhost-flags-FAIL-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752216AbaBNIbf (ORCPT
+Received: from moutng.kundenserver.de ([212.227.126.171]:62792 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751833AbaBNJMA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Feb 2014 03:31:35 -0500
+	Fri, 14 Feb 2014 04:12:00 -0500
 In-Reply-To: <1392362839-8004-1-git-send-email-yao.yuan@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, shawn.guo@linaro.org, mark.rutland@arm.com
-Cc: linux@arm.linux.org.uk, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Yuan Yao <yao.yuan@freescale.com>
+Cc: gregkh@linuxfoundation.org, shawn.guo@linaro.org, mark.rutland@arm.com, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-This is a correction to the documentation. It was previously required but not documented.
+On Friday 14 February 2014 15:27:16 Yuan Yao wrote:
+> Changed in v5:
+> - Revoke move dma properties from dtsi to dts.
+> - Change the explanations for dmas, dma-names in document.
+> - Change the description for [PATCH 3] serial: fsl_lpuart: documented the clock requirement.
 
-Signed-off-by: Yuan Yao <yao.yuan@freescale.com>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
----
- Documentation/devicetree/bindings/serial/fsl-lpuart.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+Whole series
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-index 6e1cbbf..9666f97 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-@@ -4,6 +4,8 @@ Required properties:
- - compatible : Should be "fsl,<soc>-lpuart"
- - reg : Address and length of the register set for the device
- - interrupts : Should contain uart interrupt
-+- clocks : phandle + clock specifier pairs, one for each entry in clock-names
-+- clock-names : should contain: "ipg" - the uart clock
- 
- Optional properties:
- - dmas: List of two DMA specifiers, using a three-cell specifier for each channel.
-@@ -22,6 +24,8 @@ uart0: serial@40027000 {
- 		compatible = "fsl,vf610-lpuart";
- 		reg = <0x40027000 0x1000>;
- 		interrupts = <0 61 0x00>;
-+		clocks = <&clks VF610_CLK_UART0>;
-+		clock-names = "ipg";
- 		dmas = <&edma0 0 2>,
- 			<&edma0 0 3>;
- 		dma-names = "rx","tx";
--- 
-1.8.4
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
+> Changed in v4:
+> - Move dma properties from dtsi to dts.
+> - Cancle the macro(SERIAL_FSL_LPUART_DMA)  .
+> - Separate the document for clocks which undocumented before into a single patch.
+> - Change some explanations in document(clocks, clock-names, dmas, dma-names).
+> - Change "lpuart-tx" and "lpuart-rx" to "tx" and "rx".
+> 
+> Changed in v3:
+> - Use the streaming DMA API for receive.
+> - Add the macro(SERIAL_FSL_LPUART_DMA) and dts node propertie for whether using the dma.
+> - Adjust some coding style.
+> 
+> Changed in v2:
+> - Add eDMA support for lpuart receive.
+> - Use dma_mapping_error test dma_map_single.
+> - Change some names of variable.
+> - Fix some bugs.
+> 
+> Added in v1:
+> - Add device tree bindings for lupart eDMA support.
+> - Add eDMA support for lpuart send.
+> 
 
