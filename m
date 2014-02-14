@@ -1,93 +1,54 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.14-rc3
-Date: Fri, 14 Feb 2014 13:26:25 -0800
-Message-ID: <20140214212625.GA19466@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: Is tty->receive_room no longer usable w/ SMP?
+Date: Fri, 14 Feb 2014 22:31:52 +0000 (UTC)
+Message-ID: <ldm5go$ug5$1@ger.gmane.org>
+References: <ldgte5$kp1$1@ger.gmane.org>
+ <52FC1A14.5080004@hurleysoftware.com> <ldhaiq$jg$1@ger.gmane.org>
+ <52FC427A.8050907@hurleysoftware.com> <ldhlpd$bbr$1@ger.gmane.org>
+ <52FCE506.2040801@hurleysoftware.com> <ldj0o5$oq6$1@ger.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:39782 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752282AbaBNWcS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Feb 2014 17:32:18 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1WERIu-0003U0-GR
+	for linux-serial@vger.kernel.org; Fri, 14 Feb 2014 23:32:16 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2014 23:32:16 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2014 23:32:16 +0100
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The following changes since commit 38dbfb59d1175ef458d006556061adeaa875=
-1b72:
+On 2014-02-13, Grant Edwards <grant.b.edwards@gmail.com> wrote:
+> On 2014-02-13, Peter Hurley <peter@hurleysoftware.com> wrote:
 
-  Linus 3.14-rc1 (2014-02-02 16:42:13 -0800)
+>> There's no realistic way to single-source a driver across hundreds of
+>> kernel versions.
+>
+> Maybe not hundreds.  Our current drivers only support 2.6.24 and
+> later.
 
-are available in the git repository at:
+It turns out I was wrong on both counts. The oldest supported version
+is 2.6.25, not 2.6.24, and yes that is hundreds of versions.  :)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
-y-3.14-rc3
+I got curious and counted: we currently have single-source support for
+541 official Linux kernel versions. That's not counting current "rc"
+versions (which are now supported), or RedHat's backport abominiations
+(which occasionally require special support).
 
-for you to fetch changes up to 0930b0950a8996aa88b0d2ba4bb2bab27cc36bc7=
-:
+Within those 541 versions there are only about five or six distinct
+incompatible API subsets to worry about, so it's not as impressive as
+it sounds.
 
-  vt: Fix secure clear screen (2014-02-13 11:12:00 -0800)
+-- 
+Grant Edwards               grant.b.edwards        Yow! HOORAY, Ronald!!
+                                  at               Now YOU can marry LINDA
+                              gmail.com            RONSTADT too!!
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 3.14-rc3
-
-Here are a small number of tty/serial driver fixes to resolve reported
-issues with 3.14-rc and earlier (in the case of the vt bugfix.)  Some o=
-f
-these have been tested and reported by a number of people as the tty
-bugfix was pretty commonly hit on some platforms.
-
-All have been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Dmitry Eremin-Solenikov (1):
-      serial: 8250_pci: unbreak last serial ports on NetMos 9865 cards
-
-Hannes Reinecke (1):
-      tty: Set correct tty name in 'active' sysfs attribute
-
-Joe Schultz (1):
-      serial: 8250: Support XR17V35x fraction divisor
-
-Lars Poeschel (1):
-      tty: n_gsm: Fix for modems with brk in modem status control
-
-Markus Pargmann (1):
-      serial: omap-serial: Move info message to probe function
-
-Michael Grzeschik (1):
-      serial: omap: fix rs485 probe on defered pinctrl
-
-Mika Westerberg (1):
-      serial: 8250_dw: fix compilation warning when !CONFIG_PM_SLEEP
-
-Paul Gortmaker (1):
-      drivers/tty/hvc: don't use module_init in non-modular hyp. consol=
-e code
-
-Peter Hurley (2):
-      n_tty: Fix poll() when TIME_CHAR and MIN_CHAR =3D=3D 0
-      n_tty: Fix stale echo output
-
-Petr P=C3=ADsa=C5=99 (1):
-      vt: Fix secure clear screen
-
-Qipan Li (1):
-      serial: sirf: fix kernel panic caused by unpaired spinlock
-
- Documentation/ABI/testing/sysfs-tty |  3 ++-
- drivers/tty/hvc/hvc_opal.c          |  8 +-------
- drivers/tty/hvc/hvc_rtas.c          | 12 +-----------
- drivers/tty/hvc/hvc_udbg.c          |  9 +--------
- drivers/tty/hvc/hvc_xen.c           | 17 +----------------
- drivers/tty/n_gsm.c                 | 11 +++++++++++
- drivers/tty/n_tty.c                 | 14 ++++++++------
- drivers/tty/serial/8250/8250_core.c | 18 ++++++++++++++++++
- drivers/tty/serial/8250/8250_dw.c   |  4 ++--
- drivers/tty/serial/8250/8250_pci.c  |  3 ++-
- drivers/tty/serial/omap-serial.c    | 11 +++++++----
- drivers/tty/serial/sirfsoc_uart.c   |  4 +++-
- drivers/tty/tty_io.c                | 25 ++++++++++++++++++-------
- drivers/tty/vt/vt.c                 |  2 ++
- 14 files changed, 77 insertions(+), 64 deletions(-)
