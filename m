@@ -1,54 +1,56 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: Is tty->receive_room no longer usable w/ SMP?
-Date: Fri, 14 Feb 2014 22:31:52 +0000 (UTC)
-Message-ID: <ldm5go$ug5$1@ger.gmane.org>
-References: <ldgte5$kp1$1@ger.gmane.org>
- <52FC1A14.5080004@hurleysoftware.com> <ldhaiq$jg$1@ger.gmane.org>
- <52FC427A.8050907@hurleysoftware.com> <ldhlpd$bbr$1@ger.gmane.org>
- <52FCE506.2040801@hurleysoftware.com> <ldj0o5$oq6$1@ger.gmane.org>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH 1/2] serial: max310x: Fix sparse warnings
+Date: Sat, 15 Feb 2014 14:59:01 +0400
+Message-ID: <1392461942-19328-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:39782 "EHLO plane.gmane.org"
+Received: from smtp33.i.mail.ru ([94.100.177.93]:40961 "EHLO smtp33.i.mail.ru"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752282AbaBNWcS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Feb 2014 17:32:18 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1WERIu-0003U0-GR
-	for linux-serial@vger.kernel.org; Fri, 14 Feb 2014 23:32:16 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2014 23:32:16 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2014 23:32:16 +0100
+	id S1752800AbaBOK7M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sat, 15 Feb 2014 05:59:12 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-On 2014-02-13, Grant Edwards <grant.b.edwards@gmail.com> wrote:
-> On 2014-02-13, Peter Hurley <peter@hurleysoftware.com> wrote:
+sparse warnings: (new ones prefixed by >>)
 
->> There's no realistic way to single-source a driver across hundreds of
->> kernel versions.
->
-> Maybe not hundreds.  Our current drivers only support 2.6.24 and
-> later.
+>> drivers/tty/serial/max310x.c:906:45: sparse: incorrect type in argument 2 (different address spaces)
+ drivers/tty/serial/max310x.c:906:45: expected void const [noderef] <asn:1>*from
+ drivers/tty/serial/max310x.c:906:45: got struct serial_rs485 *<noident>
+>> drivers/tty/serial/max310x.c:938:35: sparse: incorrect type in argument 1 (different address spaces)
+ drivers/tty/serial/max310x.c:938:35: expected void [noderef] <asn:1>*to
+ drivers/tty/serial/max310x.c:938:35: got struct serial_rs485 *<noident>
 
-It turns out I was wrong on both counts. The oldest supported version
-is 2.6.25, not 2.6.24, and yes that is hundreds of versions.  :)
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/max310x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-I got curious and counted: we currently have single-source support for
-541 official Linux kernel versions. That's not counting current "rc"
-versions (which are now supported), or RedHat's backport abominiations
-(which occasionally require special support).
-
-Within those 541 versions there are only about five or six distinct
-incompatible API subsets to worry about, so it's not as impressive as
-it sounds.
-
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 5836168..471dbc1 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -882,8 +882,7 @@ static int max310x_ioctl(struct uart_port *port, unsigned int cmd,
+ 
+ 	switch (cmd) {
+ 	case TIOCSRS485:
+-		if (copy_from_user(&rs485, (struct serial_rs485 *)arg,
+-				   sizeof(rs485)))
++		if (copy_from_user(&rs485, (void __user *)arg, sizeof(rs485)))
+ 			return -EFAULT;
+ 		if (rs485.delay_rts_before_send > 0x0f ||
+ 		    rs485.delay_rts_after_send > 0x0f)
+@@ -914,8 +913,7 @@ static int max310x_ioctl(struct uart_port *port, unsigned int cmd,
+ 		val = max310x_port_read(port, MAX310X_HDPIXDELAY_REG);
+ 		rs485.delay_rts_before_send = val >> 4;
+ 		rs485.delay_rts_after_send = val & 0x0f;
+-		if (copy_to_user((struct serial_rs485 *)arg, &rs485,
+-				 sizeof(rs485)))
++		if (copy_to_user((void __user *)arg, &rs485, sizeof(rs485)))
+ 			return -EFAULT;
+ 		return 0;
+ 	default:
 -- 
-Grant Edwards               grant.b.edwards        Yow! HOORAY, Ronald!!
-                                  at               Now YOU can marry LINDA
-                              gmail.com            RONSTADT too!!
+1.8.3.2
 
