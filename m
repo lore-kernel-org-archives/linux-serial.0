@@ -1,8 +1,8 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
  device probe
-Date: Mon, 17 Feb 2014 15:35:18 +0000
-Message-ID: <20140217153518.30891455@alan.etchedpixels.co.uk>
+Date: Mon, 17 Feb 2014 15:54:51 +0000
+Message-ID: <20140217155451.34b2c749@alan.etchedpixels.co.uk>
 References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
 	<1390208555-27770-3-git-send-email-tushar.behera@linaro.org>
 	<20140120100415.GX15937@n2100.arm.linux.org.uk>
@@ -14,40 +14,69 @@ References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
 	<20140214000717.GG30257@n2100.arm.linux.org.uk>
 	<20140214001436.GA16287@kroah.com>
 	<20140214003834.GH30257@n2100.arm.linux.org.uk>
+	<20140217153518.30891455@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20140214003834.GH30257@n2100.arm.linux.org.uk>
+In-Reply-To: <20140217153518.30891455@alan.etchedpixels.co.uk>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> > How?  What two different busses will see this same device?  The amba bus
-> > code should prevent that from happening, right?  If not, there's bigger
-> > problems in that bus code :)
-> 
-> Where is that requirement documented?  It isn't documented.  No one
-> implements any kind of locking at the bus level to prevent this, not
-> PCI, nor platform devices.
+And an even simpler broad brush approach will also work I think (untested)
 
-We don't want bus locking. There are lots of busses that can be parallel
-probed and in some cases its expensive not to do so. We may well need to
-do much more parallel probing in PCI bus in future and we may be parallel
-probing multiple bus types at once.
+The "zero crap" approach....
 
-The uart_register hack is simply broken. Nobody can stop you merging it
-Greg but in the long term its the wrong approach.
+commit c5cd0be0576ba9059799ef5383402ff6ffc212a3
+Author: Alan <gnomes@lxorguk.ukuu.org.uk>
+Date:   Mon Feb 17 15:52:21 2014 +0000
 
-We've identified a correct working approach which is to simply add a
-CONFIG entry to the ARM tree and a few ifdefs to the problem drivers to
-make the "problem" (in fact a complete fictional non-problem) go away and
-to get rid of the mess over time completely as the drivers are set
-dynamic and it turns out that all the userspace happens to already handle
-this just fine.
+    tty: Allow serial port allocations to be fully dynamic
+    
+    This switch allows platforms to make their serial port allocations entirely
+    dynamic as is needed on some non-x86 platforms which have overlapping static
+    minor numbers between some of their devices.
+    
+    Default to the old static allocations for maximum compatibility with ancient
+    userspace.
+    
+    Signed-off-by: Alan Cox <alan@linux.intel.com>
 
-Far better than botchfixes to uart registration code that will haunt us
-for years.
-
-Alan
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 65cd80b..670c076 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -166,6 +166,16 @@ config LEGACY_PTY_COUNT
+ 	  When not in use, each legacy PTY occupies 12 bytes on 32-bit
+ 	  architectures and 24 bytes on 64-bit architectures.
+ 
++config TTY_SERIAL_LEGACY
++	bool "Allocate legacy fixed minor numbers for serial ports"
++	default y
++	---help---
++	  Modern linux dynamically allocates device numbers. Some very old
++	  Linux distributions only support static device numbering.
++	  Selecting this option will enable support for very old
++	  userspace but on some non PC architectures may prevent you building
++	  a single kernel for multiple machines.
++
+ config BFIN_JTAG_COMM
+ 	tristate "Blackfin JTAG Communication"
+ 	depends on BLACKFIN
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index ece2049..b78afc1 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2315,8 +2315,10 @@ int uart_register_driver(struct uart_driver *drv)
+ 
+ 	normal->driver_name	= drv->driver_name;
+ 	normal->name		= drv->dev_name;
++#ifdef CONFIG_TTY_SERIAL_LEGACY
+ 	normal->major		= drv->major;
+ 	normal->minor_start	= drv->minor;
++#endif	
+ 	normal->type		= TTY_DRIVER_TYPE_SERIAL;
+ 	normal->subtype		= SERIAL_TYPE_NORMAL;
+ 	normal->init_termios	= tty_std_termios;
