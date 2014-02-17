@@ -1,51 +1,68 @@
 From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH v3 2/7] tty/serial: at91: use dev_err instead of printk
-Date: Mon, 17 Feb 2014 17:57:22 +0100
-Message-ID: <1392656247-3351-3-git-send-email-richard.genoud@gmail.com>
+Subject: [PATCH v3 5/7] ARM: at91: gpio: implement get_direction
+Date: Mon, 17 Feb 2014 17:57:25 +0100
+Message-ID: <1392656247-3351-6-git-send-email-richard.genoud@gmail.com>
 References: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f42.google.com ([74.125.82.42]:62627 "EHLO
-	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753885AbaBQQ6D (ORCPT
+Received: from mail-wg0-f48.google.com ([74.125.82.48]:63086 "EHLO
+	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751976AbaBQQ6J (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Feb 2014 11:58:03 -0500
-Received: by mail-wg0-f42.google.com with SMTP id k14so2311973wgh.1
-        for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2014 08:58:02 -0800 (PST)
+	Mon, 17 Feb 2014 11:58:09 -0500
+Received: by mail-wg0-f48.google.com with SMTP id a1so2422751wgh.3
+        for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2014 08:58:08 -0800 (PST)
 In-Reply-To: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 
-For better consistency.
+This is needed for gpiod_get_direction().
+Otherwise, it returns -EINVAL.
 
 Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
- drivers/tty/serial/atmel_serial.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-at91/gpio.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 91c0d8839570..ed9621a21d67 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1549,7 +1549,7 @@ static int atmel_startup(struct uart_port *port)
- 	retval = request_irq(port->irq, atmel_interrupt, IRQF_SHARED,
- 			tty ? tty->name : "atmel_serial", port);
- 	if (retval) {
--		printk("atmel_serial: atmel_startup - Can't get irq\n");
-+		dev_err(port->dev, "atmel_startup - Can't get irq\n");
- 		return retval;
- 	}
- 
-@@ -1732,7 +1732,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
- 		clk_disable_unprepare(atmel_port->clk);
- 		break;
- 	default:
--		printk(KERN_ERR "atmel_serial: unknown pm %d\n", state);
-+		dev_err(port->dev, "atmel_serial: unknown pm %d\n", state);
- 	}
+diff --git a/arch/arm/mach-at91/gpio.c b/arch/arm/mach-at91/gpio.c
+index a5afcf76550e..afbe34027e62 100644
+--- a/arch/arm/mach-at91/gpio.c
++++ b/arch/arm/mach-at91/gpio.c
+@@ -49,6 +49,7 @@ static int at91_gpiolib_request(struct gpio_chip *chip, unsigned offset);
+ static void at91_gpiolib_dbg_show(struct seq_file *s, struct gpio_chip *chip);
+ static void at91_gpiolib_set(struct gpio_chip *chip, unsigned offset, int val);
+ static int at91_gpiolib_get(struct gpio_chip *chip, unsigned offset);
++static int at91_gpiolib_get_direction(struct gpio_chip *chip, unsigned offset);
+ static int at91_gpiolib_direction_output(struct gpio_chip *chip,
+ 					 unsigned offset, int val);
+ static int at91_gpiolib_direction_input(struct gpio_chip *chip,
+@@ -60,6 +61,7 @@ static int at91_gpiolib_to_irq(struct gpio_chip *chip, unsigned offset);
+ 		.chip = {						\
+ 			.label		  = name,			\
+ 			.request	  = at91_gpiolib_request,	\
++			.get_direction    = at91_gpiolib_get_direction, \
+ 			.direction_input  = at91_gpiolib_direction_input, \
+ 			.direction_output = at91_gpiolib_direction_output, \
+ 			.get		  = at91_gpiolib_get,		\
+@@ -799,6 +801,17 @@ static int at91_gpiolib_request(struct gpio_chip *chip, unsigned offset)
+ 	return 0;
  }
  
++static int at91_gpiolib_get_direction(struct gpio_chip *chip, unsigned offset)
++{
++	struct at91_gpio_chip *at91_gpio = to_at91_gpio_chip(chip);
++	void __iomem *pio = at91_gpio->regbase;
++	unsigned mask = 1 << offset;
++	u32 osr;
++
++	osr = __raw_readl(pio + PIO_OSR);
++	return !(osr & mask);
++}
++
+ static int at91_gpiolib_direction_input(struct gpio_chip *chip,
+ 					unsigned offset)
+ {
 -- 
 1.8.5
 
