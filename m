@@ -1,82 +1,96 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
- device probe
-Date: Mon, 17 Feb 2014 15:54:51 +0000
-Message-ID: <20140217155451.34b2c749@alan.etchedpixels.co.uk>
-References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
-	<1390208555-27770-3-git-send-email-tushar.behera@linaro.org>
-	<20140120100415.GX15937@n2100.arm.linux.org.uk>
-	<20140213181216.GB24155@kroah.com>
-	<20140213181559.GB30257@n2100.arm.linux.org.uk>
-	<20140213182701.GA32578@kroah.com>
-	<20140213184249.GC30257@n2100.arm.linux.org.uk>
-	<20140213232606.GA27372@kroah.com>
-	<20140214000717.GG30257@n2100.arm.linux.org.uk>
-	<20140214001436.GA16287@kroah.com>
-	<20140214003834.GH30257@n2100.arm.linux.org.uk>
-	<20140217153518.30891455@alan.etchedpixels.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20140217153518.30891455@alan.etchedpixels.co.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCH v3 0/7] tty/serial: Add helpers to use GPIOs to control modem lines and implement atmel_serial.c
+Date: Mon, 17 Feb 2014 17:57:20 +0100
+Message-ID: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-we0-f169.google.com ([74.125.82.169]:50511 "EHLO
+	mail-we0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753047AbaBQQ56 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Feb 2014 11:57:58 -0500
+Received: by mail-we0-f169.google.com with SMTP id t61so10977209wes.0
+        for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2014 08:57:57 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-And an even simpler broad brush approach will also work I think (untested)
+The USART controller on sam9x5 chips (and also all AT91/SAMA5 chips
+but at91rm9200) are not capable of handling DTR/DSR/DCD/RI signal.
+Moreover, even if the controller can handle CTS/RTS, the dedicated
+CTS/RTS pins are already muxed for other peripherals (LCDC/EMAC/MMC).
 
-The "zero crap" approach....
+So this patchset adds the possibility to control those lines via GPIO,
+as it is done for RTS in the patch "switch atmel serial to use gpiolib"
 
-commit c5cd0be0576ba9059799ef5383402ff6ffc212a3
-Author: Alan <gnomes@lxorguk.ukuu.org.uk>
-Date:   Mon Feb 17 15:52:21 2014 +0000
+As it was suggested by Alexander Shiyan, I made that available for
+every board.
 
-    tty: Allow serial port allocations to be fully dynamic
-    
-    This switch allows platforms to make their serial port allocations entirely
-    dynamic as is needed on some non-x86 platforms which have overlapping static
-    minor numbers between some of their devices.
-    
-    Default to the old static allocations for maximum compatibility with ancient
-    userspace.
-    
-    Signed-off-by: Alan Cox <alan@linux.intel.com>
+Patch 1 implements the generic helpers to control modem lines via GPIO
+Patches 2 and 3 are just a little tidy up of atmel_serial.c.
+Patch 4 implements modem control lines in atmel_serial atmel_serial.
+Patches 5 and 6 implement the get_direction() gpio call for at91, as
+it is needed by gpiod_get_direction().
+Patch 7 implement the interrupts of CTS/DSR/DCD/RI.
 
-diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-index 65cd80b..670c076 100644
---- a/drivers/tty/Kconfig
-+++ b/drivers/tty/Kconfig
-@@ -166,6 +166,16 @@ config LEGACY_PTY_COUNT
- 	  When not in use, each legacy PTY occupies 12 bytes on 32-bit
- 	  architectures and 24 bytes on 64-bit architectures.
+This is based on 3.14-rc3 + Linus Walleij/Nicolas Ferre's patch:
+ 354e57f3a0a2 ARM/serial: at91: switch atmel serial to use gpiolib
+(in Uwe's tree git://git.pengutronix.de/git/ukl/linux.git dropmachtimexh )
+and Philipp Zabel's patch:
+ 8f984bc11e1cc gpiolib: make gpiod_direction_output take a logical value
+(in gpio tree git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git )
+(there won't be a merge conflict if this last patch is not present, the
+gpios will "just" be on the wrong direction.)
  
-+config TTY_SERIAL_LEGACY
-+	bool "Allocate legacy fixed minor numbers for serial ports"
-+	default y
-+	---help---
-+	  Modern linux dynamically allocates device numbers. Some very old
-+	  Linux distributions only support static device numbering.
-+	  Selecting this option will enable support for very old
-+	  userspace but on some non PC architectures may prevent you building
-+	  a single kernel for multiple machines.
-+
- config BFIN_JTAG_COMM
- 	tristate "Blackfin JTAG Communication"
- 	depends on BLACKFIN
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index ece2049..b78afc1 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2315,8 +2315,10 @@ int uart_register_driver(struct uart_driver *drv)
- 
- 	normal->driver_name	= drv->driver_name;
- 	normal->name		= drv->dev_name;
-+#ifdef CONFIG_TTY_SERIAL_LEGACY
- 	normal->major		= drv->major;
- 	normal->minor_start	= drv->minor;
-+#endif	
- 	normal->type		= TTY_DRIVER_TYPE_SERIAL;
- 	normal->subtype		= SERIAL_TYPE_NORMAL;
- 	normal->init_termios	= tty_std_termios;
+Tested on at91sam9g35, with a null modem cable between 2 serial ports,
+one with CTS/RTS controlled by the USART controller, the other via GPIO,
+full duplex transfers.
+Did some tests also with null modem cables on a PC.
+
+Updates from v2:
+	- remove UART_GPIO_MIN/UART_GPIO_MAX_INPUT and use a direction
+	boolean instead.
+	- implement get_direction in at91 pinctrl and mach-at91/gpio.c.
+	- remove the get_mctrl_gpio_name() function that was used for
+	logs only.
+	- split atmel_serial.c patch in 2.
+	- use a gpio lookup table to declare modem gpios in platform
+	devices boards. So there's no more special case for platform
+	data gpios in atmel_serial.c.
+
+Updates from v1:
+	- Instead of controlling modem signal only on atmel board, the
+	code is now available for every board.
+	- The active low flag from device tree is now used.
+
+Richard Genoud (7):
+  tty/serial: Add GPIOLIB helpers for controlling modem lines
+  tty/serial: at91: use dev_err instead of printk
+  tty/serial: at91: remove unused open/close hooks
+  tty/serial: at91: use mctrl_gpio helpers
+  ARM: at91: gpio: implement get_direction
+  pinctrl: at91: implement get_direction
+  tty/serial: at91: add interrupts for modem control lines
+
+ Documentation/serial/driver              |  21 +++
+ arch/arm/mach-at91/at91rm9200_devices.c  |  16 +-
+ arch/arm/mach-at91/at91sam9260_devices.c |   7 -
+ arch/arm/mach-at91/at91sam9261_devices.c |   4 -
+ arch/arm/mach-at91/at91sam9263_devices.c |   4 -
+ arch/arm/mach-at91/at91sam9g45_devices.c |   5 -
+ arch/arm/mach-at91/at91sam9rl_devices.c  |   5 -
+ arch/arm/mach-at91/gpio.c                |  13 ++
+ drivers/pinctrl/pinctrl-at91.c           |  12 ++
+ drivers/tty/serial/Kconfig               |   4 +
+ drivers/tty/serial/Makefile              |   3 +
+ drivers/tty/serial/atmel_serial.c        | 249 +++++++++++++++++++++++--------
+ drivers/tty/serial/serial_mctrl_gpio.c   | 112 ++++++++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h   |  92 ++++++++++++
+ include/linux/platform_data/atmel.h      |   1 -
+ 15 files changed, 456 insertions(+), 92 deletions(-)
+ create mode 100644 drivers/tty/serial/serial_mctrl_gpio.c
+ create mode 100644 drivers/tty/serial/serial_mctrl_gpio.h
+
+-- 
+1.8.5
+
