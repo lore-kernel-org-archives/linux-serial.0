@@ -1,91 +1,66 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MyAxLzddIHR0eS9zZXJpYWw6IEFkZCBHUElPTElCIGhl?=
- =?UTF-8?B?bHBlcnMgZm9yIGNvbnRyb2xsaW5nIG1vZGVtIGxpbmVz?=
-Date: Mon, 17 Feb 2014 22:37:11 +0400
-Message-ID: <1392662231.122430857@f359.i.mail.ru>
-References: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
- <1392656247-3351-2-git-send-email-richard.genoud@gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
+ device probe
+Date: Tue, 18 Feb 2014 08:50:13 +0900
+Message-ID: <20140217235013.GD2669@sirena.org.uk>
+References: <20140120100415.GX15937@n2100.arm.linux.org.uk>
+ <20140213181216.GB24155@kroah.com>
+ <20140213181559.GB30257@n2100.arm.linux.org.uk>
+ <20140213182701.GA32578@kroah.com>
+ <20140213184249.GC30257@n2100.arm.linux.org.uk>
+ <20140213232606.GA27372@kroah.com>
+ <20140214000717.GG30257@n2100.arm.linux.org.uk>
+ <20140214001436.GA16287@kroah.com>
+ <20140214003834.GH30257@n2100.arm.linux.org.uk>
+ <20140217153518.30891455@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1392656247-3351-2-git-send-email-richard.genoud@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, =?UTF-8?B?Tmljb2xhcyBGZXJyZQ==?= <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="C+ts3FVlLX8+P6JN"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140217153518.30891455@alan.etchedpixels.co.uk>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8uCgpBIGZldyBjb21tZW50cyBiZWxvdy4uCgrQn9C+0L3QtdC00LXQu9GM0L3QuNC6LCAx
-NyDRhNC10LLRgNCw0LvRjyAyMDE0LCAxNzo1NyArMDE6MDAg0L7RgiBSaWNoYXJkIEdlbm91ZCA8
-cmljaGFyZC5nZW5vdWRAZ21haWwuY29tPjoKPiBUaGlzIHBhdGNoIGFkZCBzb21lIGhlbHBlcnMg
-dG8gY29udHJvbCBtb2RlbSBsaW5lcyAoQ1RTL1JUUy9EU1IuLi4pIHZpYQo+IEdQSU8uCj4gVGhp
-cyB3aWxsIGJlIHVzZWZ1bCBmb3IgbWFueSBib2FyZHMgd2hpY2ggaGF2ZSBhIHNlcmlhbCBjb250
-cm9sbGVyIHRoYXQKPiBvbmx5IGhhbmRsZSBDVFMvUlRTIHBpbnMgKG9yIGV2ZW4ganVzdCBSWC9U
-WCkuCj4gCj4gU2lnbmVkLW9mZi1ieTogUmljaGFyZCBHZW5vdWQgPHJpY2hhcmQuZ2Vub3VkQGdt
-YWlsLmNvbT4KPiAtLS0KLi4uCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJp
-YWxfbWN0cmxfZ3Bpby5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9tY3RybF9ncGlvLmMK
-Li4uCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3Qgewo+ICsJY29uc3QgY2hhciAqbmFtZTsKPiArCXVu
-c2lnbmVkIGludCBtY3RybDsKPiArCWJvb2wgZGlyX291dDsKPiArfSBtY3RybF9ncGlvc19kZXNj
-W10gPSB7Cj4gKwl7ICJjdHMiLCBUSU9DTV9DVFMsIGZhbHNlLCB9LAo+ICsJeyAiZHNyIiwgVElP
-Q01fRFNSLCBmYWxzZSwgfSwKPiArCXsgImRjZCIsIFRJT0NNX0NELCBmYWxzZSwgfSwKPiArCXsg
-InJpIiwgVElPQ01fUkksIGZhbHNlLCB9LAo+ICsJeyAicnRzIiwgVElPQ01fUlRTLCB0cnVlLCB9
-LAo+ICsJeyAiZHRyIiwgVElPQ01fRFRSLCB0cnVlLCB9LAo+ICsJeyAib3V0MSIsIFRJT0NNX09V
-VDEsIHRydWUsIH0sCj4gKwl7ICJvdXQyIiwgVElPQ01fT1VUMiwgdHJ1ZSwgfSwKPiArfTsKPiAr
-Cj4gK3ZvaWQgbWN0cmxfZ3Bpb19zZXQoc3RydWN0IG1jdHJsX2dwaW9zICpncGlvcywgdW5zaWdu
-ZWQgaW50IG1jdHJsKQo+ICt7Cj4gKwllbnVtIG1jdHJsX2dwaW9faWR4IGk7Cj4gKwo+ICsJZm9y
-IChpID0gMDsgaSA8IFVBUlRfR1BJT19NQVg7IGkrKykKClVzZSBBUlJBWV9TSVpFKG1jdHJsX2dw
-aW9zX2Rlc2MpIGhlcmUgYW5kIGVsc2V3aGVyZSBiZWxvdy4KCj4gKwkJaWYgKCFJU19FUlJfT1Jf
-TlVMTChncGlvcy0+Z3Bpb1tpXSkgJiYKPiArCQkgICAgbWN0cmxfZ3Bpb3NfZGVzY1tpXS5kaXJf
-b3V0KQo+ICsJCQlncGlvZF9zZXRfdmFsdWUoZ3Bpb3MtPmdwaW9baV0sCj4gKwkJCQkJISEobWN0
-cmwgJiBtY3RybF9ncGlvc19kZXNjW2ldLm1jdHJsKSk7Cj4gK30KPiArRVhQT1JUX1NZTUJPTF9H
-UEwobWN0cmxfZ3Bpb19zZXQpOwo+ICsKPiArdW5zaWduZWQgaW50IG1jdHJsX2dwaW9fZ2V0KHN0
-cnVjdCBtY3RybF9ncGlvcyAqZ3Bpb3MsIHVuc2lnbmVkIGludCAqbWN0cmwpCj4gK3sKCldoeSB5
-b3Ugd2FudCB0byBwdXQgbWN0cmwgYXMgcGFyYW1ldGVyIGhlcmU/CkxldCdzIHJldHVybiBtY3Ry
-bCBmcm9tIEdQSU9zLCB0aGVuIGhhbmRsZSB0aGlzIHZhbHVlIGFzIHlvdSB3YW50IGludCB0aGUg
-ZHJpdmVyLgoKPiArCWVudW0gbWN0cmxfZ3Bpb19pZHggaTsKPiArCj4gKwlmb3IgKGkgPSAwOyBp
-IDwgVUFSVF9HUElPX01BWDsgaSsrKSB7Cj4gKwkJaWYgKCFJU19FUlJfT1JfTlVMTChncGlvcy0+
-Z3Bpb1tpXSkgJiYKPiArCQkgICAgIW1jdHJsX2dwaW9zX2Rlc2NbaV0uZGlyX291dCkgewo+ICsJ
-CQlpZiAoZ3Bpb2RfZ2V0X3ZhbHVlKGdwaW9zLT5ncGlvW2ldKSkKPiArCQkJCSptY3RybCB8PSBt
-Y3RybF9ncGlvc19kZXNjW2ldLm1jdHJsOwo+ICsJCQllbHNlCj4gKwkJCQkqbWN0cmwgJj0gfm1j
-dHJsX2dwaW9zX2Rlc2NbaV0ubWN0cmw7Cj4gKwkJfQo+ICsJfQo+ICsKPiArCXJldHVybiAqbWN0
-cmw7Cj4gK30KPiArRVhQT1JUX1NZTUJPTF9HUEwobWN0cmxfZ3Bpb19nZXQpOwo+ICsKCj4gK2lu
-dCBtY3RybF9ncGlvX2luaXQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbWN0cmxfZ3Bpb3Mg
-KmdwaW9zKQo+ICt7CgpJIHN1Z2dlc3QgdG8gYWxsb2NhdGUgImdwaW9zIiBoZXJlIGFuZCByZXR1
-cm4gcG9pbnRlciB0byB0aGlzIHN0cnVjdHVyZQpvciBFUlJfUFRSKCkuIEFkZGl0aW9uYWxseSwg
-YXMgSSBtZW50aW9uZWQgYmVmb3JlLCBhZGQgImluZGV4IiB2YXJpYWJsZQp0byBzcGVjaWZ5IHBv
-cnQgbnVtYmVyLgoKPiArCWVudW0gbWN0cmxfZ3Bpb19pZHggaTsKPiArCWludCBlcnIgPSAwOwo+
-ICsJaW50IHJldCA9IDA7Cj4gKwo+ICsJZm9yIChpID0gMDsgaSA8IFVBUlRfR1BJT19NQVg7IGkr
-Kykgewo+ICsJCWdwaW9zLT5ncGlvW2ldID0gZGV2bV9ncGlvZF9nZXQoZGV2LCBtY3RybF9ncGlv
-c19kZXNjW2ldLm5hbWUpOwo+ICsKPiArCQkvKgo+ICsJCSAqIFRoZSBHUElPcyBhcmUgbWF5YmUg
-bm90IGFsbCBmaWxsZWQsCj4gKwkJICogdGhpcyBpcyBub3QgYW4gZXJyb3IuCj4gKwkJICovCj4g
-KwkJaWYgKElTX0VSUl9PUl9OVUxMKGdwaW9zLT5ncGlvW2ldKSkKPiArCQkJY29udGludWU7Cj4g
-Kwo+ICsJCWlmIChtY3RybF9ncGlvc19kZXNjW2ldLmRpcl9vdXQpCj4gKwkJCWVyciA9IGdwaW9k
-X2RpcmVjdGlvbl9vdXRwdXQoZ3Bpb3MtPmdwaW9baV0sIDApOwo+ICsJCWVsc2UKPiArCQkJZXJy
-ID0gZ3Bpb2RfZGlyZWN0aW9uX2lucHV0KGdwaW9zLT5ncGlvW2ldKTsKPiArCQlpZiAoZXJyKSB7
-Cj4gKwkJCWRldl9lcnIoZGV2LCAiVW5hYmxlIHRvIHNldCBkaXJlY3Rpb24gZm9yICVzIEdQSU8i
-LAo+ICsJCQkJbWN0cmxfZ3Bpb3NfZGVzY1tpXS5uYW1lKTsKPiArCQkJZGV2bV9ncGlvZF9wdXQo
-ZGV2LCBncGlvcy0+Z3Bpb1tpXSk7Cj4gKwkJCWdwaW9zLT5ncGlvW2ldID0gTlVMTDsKPiArCQkJ
-cmV0LS07Cj4gKwkJfQo+ICsJfQo+ICsKPiArCXJldHVybiByZXQ7Cj4gK30KPiArRVhQT1JUX1NZ
-TUJPTF9HUEwobWN0cmxfZ3Bpb19pbml0KTsKLi4uCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC9zZXJpYWxfbWN0cmxfZ3Bpby5oIGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9t
-Y3RybF9ncGlvLmgKLi4uCj4gK2VudW0gbWN0cmxfZ3Bpb19pZHggewo+ICsJVUFSVF9HUElPX0NU
-UywKPiArCVVBUlRfR1BJT19EU1IsCj4gKwlVQVJUX0dQSU9fRENELAo+ICsJVUFSVF9HUElPX1JJ
-LAo+ICsJVUFSVF9HUElPX1JUUywKPiArCVVBUlRfR1BJT19EVFIsCj4gKwlVQVJUX0dQSU9fT1VU
-MSwKPiArCVVBUlRfR1BJT19PVVQyLAo+ICsJVUFSVF9HUElPX01BWCwKPiArfTsKPiArCj4gK3N0
-cnVjdCBtY3RybF9ncGlvcyB7Cj4gKwlzdHJ1Y3QgZ3Bpb19kZXNjICpncGlvW1VBUlRfR1BJT19N
-QVhdOwoKc3RydWN0IGdwaW9fZGVzYyAqZ3BpbzsKCi4uLgo+ICtzdGF0aWMgaW5saW5lCj4gK2lu
-dCBtY3RybF9ncGlvX2luaXQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbWN0cmxfZ3Bpb3Mg
-KmdwaW9zKQo+ICt7Cj4gKwlyZXR1cm4gLVVBUlRfR1BJT19NQVg7CgpyZXR1cm4gLUVOT1NZUzsK
-Ci4uLgoKVGhhbmtzLgotLS0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
-aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
-dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+
+--C+ts3FVlLX8+P6JN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Mon, Feb 17, 2014 at 03:35:18PM +0000, One Thousand Gnomes wrote:
+
+> We've identified a correct working approach which is to simply add a
+> CONFIG entry to the ARM tree and a few ifdefs to the problem drivers to
+> make the "problem" (in fact a complete fictional non-problem) go away and
+> to get rid of the mess over time completely as the drivers are set
+> dynamic and it turns out that all the userspace happens to already handle
+> this just fine.
+
+It's a very real problem which affects actual kernels that distro style
+users are building.
+
+--C+ts3FVlLX8+P6JN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTAqAyAAoJELSic+t+oim92UwP/0m0dRoUHXGOGX5r1ff+rubV
+ZY50YbYvRmLF9X2UUYw4V1+eg0Sb0iKZMQZ2MBddZH04A2OY6YEZ/mqbUwHtJKBz
+tLJjmoitQbZfUdenDPer2Sl9uxquyHdr5EMdQCO3qI0AQvVtA5tNRMszopRJTU7o
+/sE+j4HI4tIdsyC7CAms3Upsn1Q6CTvH5w00CfxTlniaomk0dHj1HxKfVVXR9XZ5
+WBYbkTG+1iTMpTD8pdgBKrQzhESaxiBPBEKQIjFyp7xyOFF7l8NUi2rRF0f/Dc4x
+QVT3kz4uLO4C2mICqy8UcNxGpU/OLyqhix/CMP7JVNotqcQ9b1+WYQ1O/c4nx94C
+UI9L2jBRxqTw8rsSYp+Gg+uJVjWKv2IYtrQOxaRFoyiQyGnNwh0XAFaPdpf4uZgg
+ORT6fywjFRdPI9DshWSo8TnpnU+UchEBUNP7oOV1BBz+eOsPVt4KZYc81Hh+sFsK
+JfCUExznM6p2hlxsSoVbgRS6xNxFHit98cmsv7xk2C59wCN3Zlej2Uad4ISIhyJL
+OiJPVEb19w0xP/g8WYB1DcP8n0OMrp+4HtW/MjVON0rCa3tWdaiaiu4GBr/MeTXP
+sswnTBHioiy3CQdQs5aerrSaHd1GoqtdWt+Q7u/9Lkv3LT1ViE/bn6I4IK+57bVy
+OLbyJj69YT3nQts5tFNp
+=lMha
+-----END PGP SIGNATURE-----
+
+--C+ts3FVlLX8+P6JN--
