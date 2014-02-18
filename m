@@ -1,66 +1,152 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
- device probe
-Date: Tue, 18 Feb 2014 08:50:13 +0900
-Message-ID: <20140217235013.GD2669@sirena.org.uk>
-References: <20140120100415.GX15937@n2100.arm.linux.org.uk>
- <20140213181216.GB24155@kroah.com>
- <20140213181559.GB30257@n2100.arm.linux.org.uk>
- <20140213182701.GA32578@kroah.com>
- <20140213184249.GC30257@n2100.arm.linux.org.uk>
- <20140213232606.GA27372@kroah.com>
- <20140214000717.GG30257@n2100.arm.linux.org.uk>
- <20140214001436.GA16287@kroah.com>
- <20140214003834.GH30257@n2100.arm.linux.org.uk>
- <20140217153518.30891455@alan.etchedpixels.co.uk>
+From: Magnus <magnus-swe@telia.com>
+Subject: USB to Serial converter code pl2303
+Date: Tue, 18 Feb 2014 02:57:45 +0100
+Message-ID: <1392688665.7323.32.camel@mange>
+Reply-To: magnus-swe@telia.com
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="C+ts3FVlLX8+P6JN"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140217153518.30891455@alan.etchedpixels.co.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp-out12.han.skanova.net ([195.67.226.212]:58666 "EHLO
+	smtp-out12.han.skanova.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753411AbaBRCDo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Feb 2014 21:03:44 -0500
+Received: from [192.168.0.10] (83.255.132.218) by smtp-out12.han.skanova.net (8.5.133) (authenticated as u26116172)
+        id 52C0564D00B9FDC2 for linux-serial@vger.kernel.org; Tue, 18 Feb 2014 02:57:46 +0100
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+
+Hi,
+
+I just bought a Plexgear USB to serial adapter that i wanted to use
+for a robot that im building.
+
+This works fine via a serial connection, but now i want my new
+Raspberry PI mini computer to handle the chip and it only has USB
+unless i connect some special Raspberry converter that i cant buy
+where i live atm and dont know if itll work for this kind of
+controller chip.
+
+After plugging in the plexgear adapter into my linux boxes:
+Fedora 18, Debian 3.11.0-15-generic #25-Ubuntu and weezy it doesnt
+send any commands to the servo controller chip on the other side
+of the converter.
+
+I can open the port /dev/ttyUSB0 and send to it with stty, but not
+a beep on the other side. I have also set the tty Baudrate manually to
+2400 but this made no difference. My code does this as well including
+setting stopbit
+parity and so on.
+
+The robot controller chip only handles 2400 Baud but is fast enough
+for the connected servos to spin around as fast as possible.
+Those are up to 5 regular rc-servos running on 9 volts and
+controlled via a FT639/EDE639 chip that i made some code for
+many years ago for Linux.
 
 
---C+ts3FVlLX8+P6JN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Some data i get from Linux and Plexgear converter follows:
 
-On Mon, Feb 17, 2014 at 03:35:18PM +0000, One Thousand Gnomes wrote:
+$ lsmod | grep pl2303
+pl2303                 18527  0 
+usbserial              38603  1 pl2303
 
-> We've identified a correct working approach which is to simply add a
-> CONFIG entry to the ARM tree and a few ifdefs to the problem drivers to
-> make the "problem" (in fact a complete fictional non-problem) go away and
-> to get rid of the mess over time completely as the drivers are set
-> dynamic and it turns out that all the userspace happens to already handle
-> this just fine.
 
-It's a very real problem which affects actual kernels that distro style
-users are building.
+$ lsusb
+Bus 005 Device 007: ID 067b:2303 Prolific Technology, Inc.
+PL2303 Serial Port
 
---C+ts3FVlLX8+P6JN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+$ lsusb -v
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Bus 005 Device 007: ID 067b:2303 Prolific Technology, Inc.
+PL2303 Serial Port
 
-iQIcBAEBAgAGBQJTAqAyAAoJELSic+t+oim92UwP/0m0dRoUHXGOGX5r1ff+rubV
-ZY50YbYvRmLF9X2UUYw4V1+eg0Sb0iKZMQZ2MBddZH04A2OY6YEZ/mqbUwHtJKBz
-tLJjmoitQbZfUdenDPer2Sl9uxquyHdr5EMdQCO3qI0AQvVtA5tNRMszopRJTU7o
-/sE+j4HI4tIdsyC7CAms3Upsn1Q6CTvH5w00CfxTlniaomk0dHj1HxKfVVXR9XZ5
-WBYbkTG+1iTMpTD8pdgBKrQzhESaxiBPBEKQIjFyp7xyOFF7l8NUi2rRF0f/Dc4x
-QVT3kz4uLO4C2mICqy8UcNxGpU/OLyqhix/CMP7JVNotqcQ9b1+WYQ1O/c4nx94C
-UI9L2jBRxqTw8rsSYp+Gg+uJVjWKv2IYtrQOxaRFoyiQyGnNwh0XAFaPdpf4uZgg
-ORT6fywjFRdPI9DshWSo8TnpnU+UchEBUNP7oOV1BBz+eOsPVt4KZYc81Hh+sFsK
-JfCUExznM6p2hlxsSoVbgRS6xNxFHit98cmsv7xk2C59wCN3Zlej2Uad4ISIhyJL
-OiJPVEb19w0xP/g8WYB1DcP8n0OMrp+4HtW/MjVON0rCa3tWdaiaiu4GBr/MeTXP
-sswnTBHioiy3CQdQs5aerrSaHd1GoqtdWt+Q7u/9Lkv3LT1ViE/bn6I4IK+57bVy
-OLbyJj69YT3nQts5tFNp
-=lMha
------END PGP SIGNATURE-----
+Couldn't open device, some information will be missing
+(My comment... hmm, but it can read from it ?)..
 
---C+ts3FVlLX8+P6JN--
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               1.10
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  idVendor           0x067b Prolific Technology, Inc.
+  idProduct          0x2303 PL2303 Serial Port
+  bcdDevice            3.00
+  iManufacturer           1 
+  iProduct                2 
+  iSerial                 0 
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           39
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0x80
+      (Bus Powered)
+    MaxPower              100mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           3
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass      0 
+      bInterfaceProtocol      0 
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x000a  1x 10 bytes
+        bInterval               1
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+
+I can code some, but i dont know where to start so any
+help on this is highly appreciated.
+
+
+When i google to find info on adapters i read that
+"bMaxPacketSize0 64" indicates that its a counterfeit product
+but i paid 250 Swedish for it and that not very cheap for a
+univeristy student i think.
+
+This is what it looks like,
+(It has a sticker on it saying its from China):
+https://serialio.com/sites/default/files/images/USB-RS232-Cable-med-wm1.jpg
+
+
+Sincerely,
+Magnus-swe
+
+
