@@ -1,60 +1,61 @@
-From: Karsten Malcher <debian@dct.mine.nu>
-Subject: Re: Adding driver for MCS9865 to the kernel sources
-Date: Tue, 18 Feb 2014 11:57:22 +0100
-Message-ID: <53033C92.1010909@dct.mine.nu>
-References: <53033560.2090004@dct.mine.nu> <1392720214.53908977@f120.i.mail.ru>
-Reply-To: debian@dct.mine.nu
+From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Subject: Re: [PATCH] serial: 8250_pci: unbreak last serial ports on NetMos
+ 9865 cards
+Date: Tue, 18 Feb 2014 15:00:36 +0400
+Message-ID: <CALT56yPj=0BTHxQ_2w+we8q4ETHjqX_VOUcbuYZBS5cU8GSooQ@mail.gmail.com>
+References: <1392113893-8269-1-git-send-email-dbaryshkov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay01.ispgateway.de ([80.67.31.28]:43689 "EHLO
-	smtprelay01.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753936AbaBRK53 (ORCPT
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:40377 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754778AbaBRLAh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Feb 2014 05:57:29 -0500
-In-Reply-To: <1392720214.53908977@f120.i.mail.ru>
+	Tue, 18 Feb 2014 06:00:37 -0500
+In-Reply-To: <1392113893-8269-1-git-send-email-dbaryshkov@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-serial@vger.kernel.org
+To: kernel list <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Am 18.02.2014 11:43, schrieb Alexander Shiyan:
-> At least for my 9835, its works without any 3rd-party drivers.
+Hello,
+
+On Tue, Feb 11, 2014 at 2:18 PM, Dmitry Eremin-Solenikov
+<dbaryshkov@gmail.com> wrote:
+> Aparently 9865 uses standard BAR encoding scheme (unlike 99xx cards).
+> Current pci_netmos_9900_setup() uses wrong BAR indices for the 9865 PCI
+> device, function 2. Using standard BAR indices makes all 6 ports work
+> for me. Thus disable the NetMos 9900 quirk for NetMos 9865 pci device.
+
+Do you need any additional details for the patch?
+
+[skipped lspci]
+
 >
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 4697a51..143a381 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -784,7 +784,8 @@ static int pci_netmos_9900_setup(struct serial_private *priv,
+>  {
+>         unsigned int bar;
+>
+> -       if ((priv->dev->subsystem_device & 0xff00) == 0x3000) {
+> +       if ((priv->dev->device != PCI_DEVICE_ID_NETMOS_9865) &&
+> +           (priv->dev->subsystem_device & 0xff00) == 0x3000) {
+>                 /* netmos apparently orders BARs by datasheet layout, so serial
+>                  * ports get BARs 0 and 3 (or 1 and 4 for memmapped)
+>                  */
+> --
+> 1.8.5.2
 >
 
-In the history it was working with older kernels previous version 3.0.
-
-When you open the README you find this description:
 
 
-To build driver on kernels from v2.6.34 till latest:
-----------------------------------------------------
-   Since the device ID 9865 is included (as built-in) with kernel versions
-     starts from v2.6.34 and above, the following procedure is required to
-     follow to detect MCS9865 devices.
-
-   b) Open file "8250_pci.c".
-     - find for the macro PCI_DEVICE_ID_NETMOS_9865.  It will be found in two places,
-         1) In the struct definition "serial_pci_tbl[]"
-           - Comment the below lines,
-
-         "
-                 {       PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
-                         0xA000, 0x1000,
-                         0, 0, pbn_b0_1_115200 },
-
-                 {       PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
-                         0xA000, 0x3004,
-                         0, 0, pbn_b0_bt_4_115200 },
-         "
----------------------------------------------------------------------------------------------------
-
-
-This seems to be the problem.
-At least you must recompile parts of the kernel to get it running.
-So you can't work with the standard kernel of a distribution!
-
-It would be very helpful if this driver would be part of the standard kernel sources.
-
+-- 
+With best wishes
+Dmitry
