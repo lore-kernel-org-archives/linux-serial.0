@@ -1,73 +1,73 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] vt: drop an useless enum and assignment.
-Date: Tue, 18 Feb 2014 10:45:05 -0800
-Message-ID: <20140218184505.GB29209@kroah.com>
-References: <1391731567-10260-1-git-send-email-kilobyte@angband.pl>
- <20140213184101.GB18522@kroah.com>
- <20140216014329.GA30022@angband.pl>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Tue, 18 Feb 2014 17:12:13 -0500
+Message-ID: <5303DABD.9000302@hurleysoftware.com>
+References: <20140218093829.GC1741@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:47658 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751527AbaBRSnk (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34748 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751587AbaBRWMR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Feb 2014 13:43:40 -0500
-Content-Disposition: inline
-In-Reply-To: <20140216014329.GA30022@angband.pl>
+	Tue, 18 Feb 2014 17:12:17 -0500
+In-Reply-To: <20140218093829.GC1741@redhat.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Adam Borowski <kilobyte@angband.pl>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Stanislaw Gruszka <sgruszka@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-On Sun, Feb 16, 2014 at 02:43:29AM +0100, Adam Borowski wrote:
-> On Thu, Feb 13, 2014 at 10:41:01AM -0800, Greg Kroah-Hartman wrote:
-> > On Fri, Feb 07, 2014 at 01:06:07AM +0100, Adam Borowski wrote:
-> > > Signed-off-by: Adam Borowski <kilobyte@angband.pl>
-> > > ---
-> > >  drivers/tty/vt/vt.c | 6 ++----
-> > >  1 file changed, 2 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> > > index 0377c52..3baed72 100644
-> > > --- a/drivers/tty/vt/vt.c
-> > > +++ b/drivers/tty/vt/vt.c
-> > > @@ -1588,7 +1588,7 @@ static void restore_cur(struct vc_data *vc)
-> > >  	vc->vc_need_wrap = 0;
-> > >  }
-> > >  
-> > > -enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
-> > > +enum { ESnormal, ESesc, ESsquare, ESgetpars, ESfunckey,
-> > >  	EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
-> > >  	ESpalette, ESosc };
-> > >  
-> > > @@ -1811,9 +1811,7 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
-> > >  			vc->vc_par[vc->vc_npar] *= 10;
-> > >  			vc->vc_par[vc->vc_npar] += c - '0';
-> > >  			return;
-> > > -		} else
-> > > -			vc->vc_state = ESgotpars;
-> > > -	case ESgotpars:
-> > > +		}
-> > >             vc->vc_state = ESnormal;
-> > >             switch(c) {
-> > >             case 'h':
-> > 
-> > Yes, this looks odd, but are you sure it's not going to break anything?
-> 
-> This is a proper enum (ie, no arithmetic is done on it), and the only place
-> the value of ESgotpars could get assigned is one I removed, which then got
-> overwritten on the very next statement.
-> 
-> > And always cc: public mailing lists, kernel development is not done in
-> > private.
-> 
-> Okay.  Posting to -kernel would be spamming just for several bytes of
-> optimization, and I've read somewhere that -serial is inappropriate for vt
-> related patches; thanks for clearing this up.
+Hi Stanislaw,
 
-Ok, care to resend along with your other vt patch?
+On 02/18/2014 04:38 AM, Stanislaw Gruszka wrote:
+> Hi,
+>
+> setserial has low_latency option which should minimize receive latency
+> (scheduler delay). AFAICT it is used if someone talk to external device
+> via RS-485/RS-232 and need to have quick requests and responses . On
+> kernel this feature was implemented by direct tty processing from
+> interrupt context:
+>
+> void tty_flip_buffer_push(struct tty_port *port)
+> {
+>          struct tty_bufhead *buf = &port->buf;
+>
+>          buf->tail->commit = buf->tail->used;
+>
+>          if (port->low_latency)
+>                  flush_to_ldisc(&buf->work);
+>          else
+>                  schedule_work(&buf->work);
+> }
+>
+> But after 3.12 tty locking changes, calling flush_to_ldisc() from
+> interrupt context is a bug (we got scheduling while atomic bug report
+> here: https://bugzilla.redhat.com/show_bug.cgi?id=1065087 )
+>
+> I'm not sure how this should be solved. After Peter get rid all of those
+> race condition in tty layer, we probably don't want go back to use
+> spin_lock's there. Maybe we can create WQ_HIGHPRI workqueue and schedule
+> flush_to_ldisc() work there. Or perhaps users that need to low latency,
+> should switch to thread irq and prioritize serial irq to meat
+> retirements. Anyway setserial low_latency is now broken and all who use
+> this feature in the past can not do this any longer on 3.12+ kernels.
+>
+> Thoughts ?
 
-thanks,
+Can you give me an idea of your device's average and minimum required
+latency (please be specific)?  Is your target arch x86 [so I can evaluate the
+the impact of bus-locked instructions relative to your expected]?
 
-greg k-h
+Also, how painful would it be if unsupported termios changes were rejected
+if the port was in low_latency mode and/or if low_latency setting was
+disallowed because of termios state?
+
+It would be pointless to throttle low_latency, yes?
+
+What would be an acceptable outcome of being unable to accept input?
+Corrupted overrun? Dropped i/o? Queued for later? Please explain with
+comparison to the outcome of missed minimum latency.
+
+Regards,
+Peter Hurley
