@@ -1,52 +1,60 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IEFkZGluZyBkcml2ZXIgZm9yIE1DUzk4NjUgdG8gdGhlIGtlcm5lbCBz?=
- =?UTF-8?B?b3VyY2Vz?=
-Date: Tue, 18 Feb 2014 14:43:34 +0400
-Message-ID: <1392720214.53908977@f120.i.mail.ru>
-References: <53033560.2090004@dct.mine.nu>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Karsten Malcher <debian@dct.mine.nu>
+Subject: Re: Adding driver for MCS9865 to the kernel sources
+Date: Tue, 18 Feb 2014 11:57:22 +0100
+Message-ID: <53033C92.1010909@dct.mine.nu>
+References: <53033560.2090004@dct.mine.nu> <1392720214.53908977@f120.i.mail.ru>
+Reply-To: debian@dct.mine.nu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f120.i.mail.ru ([94.100.178.186]:45269 "EHLO f120.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754622AbaBRKnh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Feb 2014 05:43:37 -0500
-In-Reply-To: <53033560.2090004@dct.mine.nu>
+Received: from smtprelay01.ispgateway.de ([80.67.31.28]:43689 "EHLO
+	smtprelay01.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753936AbaBRK53 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Feb 2014 05:57:29 -0500
+In-Reply-To: <1392720214.53908977@f120.i.mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: debian@dct.mine.nu
+To: Alexander Shiyan <shc_work@mail.ru>
 Cc: linux-serial@vger.kernel.org
 
-0JLRgtC+0YDQvdC40LosIDE4INGE0LXQstGA0LDQu9GPIDIwMTQsIDExOjI2ICswMTowMCDQvtGC
-IEthcnN0ZW4gTWFsY2hlciA8ZGViaWFuQGRjdC5taW5lLm51PjoKPiBIZWxsbywKPiAKPiBpIGp1
-c3Qgd2FudCB0byBhc2sgd2h5IHRoZXJlIGlzIG5vIHdvcmtpbmcgZHJpdmVyIGZvciB0aGUgc2Vy
-aWFsIFBDSSBjaGlwcyBNQ1M5ODY1Pwo+IGh0dHA6Ly93d3cuYXNpeC5jb20udHcvcHJvZHVjdHMu
-cGhwP29wPXBJdGVtZGV0YWlsJlBJdGVtSUQ9MTI1Ozc0OzExMSZQTGluZT03NAo+IAo+IEJlY2F1
-c2Ugc2VyaWFsIGludGVyZmFjZXMgYXJlIG5vdCBzdGFuZGFyZCBvbiBtYWluYm9hcmRzIGFueSBt
-b3JlLCB0aGUgcmVsZXZhbmNlIG9mIHN1Y2ggaW50ZXJmYWNlIGNhcmRzIGhhcyBpbmNyZWFzZWQu
-Cj4gCj4gSXQgaXMgbm90IGVhc3kgdG8gZ2V0IHRoZSBkcml2ZXIgd29ya2luZyAtIGUuZy4gb24g
-bXkgcnVubmluZyBEZWJpYW4gd2hlZXp5IHRoZSBkcml2ZXIgaXMgbG9hZGVkIGJ1dCBub3Qgd29y
-a2luZy4KPiBXaGVuIHRoZSBkcml2ZXIgd291bGQgYmUgaW50ZWdyYXRlZCBpbnRvIHRoZSBrZXJu
-ZWwgc291cmNlcyBpIHNlZSBhIGdvb2QgY2hhbmNlIHRoYXQgaXQgd2lsbCBydW4gaW4gdGhlIGRp
-c3RyaWJ1dGlvbnMuCgpBdCBsZWFzdCBmb3IgbXkgOTgzNSwgaXRzIHdvcmtzIHdpdGhvdXQgYW55
-IDNyZC1wYXJ0eSBkcml2ZXJzLgoKI2xzcGNpIC12dgouLi4KMDE6MDIuMCBDb21tdW5pY2F0aW9u
-IGNvbnRyb2xsZXI6IE1vc0NoaXAgU2VtaWNvbmR1Y3RvciBUZWNobm9sb2d5IEx0ZC4gUENJIDk4
-MzUgTXVsdGktSS9PIENvbnRyb2xsZXIgKHJldiAwMSkKICAgICAgICBTdWJzeXN0ZW06IExTSSBM
-b2dpYyAvIFN5bWJpb3MgTG9naWMgMVAyUwogICAgICAgIENvbnRyb2w6IEkvTysgTWVtKyBCdXNN
-YXN0ZXItIFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3RlcHBpbmctIFNF
-UlItIEZhc3RCMkItIERpc0lOVHgtCiAgICAgICAgU3RhdHVzOiBDYXAtIDY2TUh6LSBVREYtIEZh
-c3RCMkIrIFBhckVyci0gREVWU0VMPW1lZGl1bSA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0LSA+
-U0VSUi0gPFBFUlItIElOVHgtCiAgICAgICAgSW50ZXJydXB0OiBwaW4gQSByb3V0ZWQgdG8gSVJR
-IDIzCiAgICAgICAgUmVnaW9uIDA6IEkvTyBwb3J0cyBhdCA4ODAwIFtzaXplPThdCiAgICAgICAg
-UmVnaW9uIDE6IEkvTyBwb3J0cyBhdCA4NDAwIFtzaXplPThdCiAgICAgICAgUmVnaW9uIDI6IEkv
-TyBwb3J0cyBhdCA4MDAwIFtzaXplPThdCiAgICAgICAgUmVnaW9uIDM6IEkvTyBwb3J0cyBhdCA3
-ODAwIFtzaXplPThdCiAgICAgICAgUmVnaW9uIDQ6IEkvTyBwb3J0cyBhdCA3NDAwIFtzaXplPThd
-CiAgICAgICAgUmVnaW9uIDU6IEkvTyBwb3J0cyBhdCA3MDAwIFtzaXplPTE2XQogICAgICAgIEtl
-cm5lbCBkcml2ZXIgaW4gdXNlOiBwYXJwb3J0X3NlcmlhbAogICAgICAgIEtlcm5lbCBtb2R1bGVz
-OiBwYXJwb3J0X3NlcmlhbAoKIyBjYXQgL3Byb2MvdHR5L2RyaXZlci9zZXJpYWwKc2VyaW5mbzox
-LjAgZHJpdmVyIHJldmlzaW9uOgowOiB1YXJ0OjE2NTUwQSBwb3J0OjAwMDAwM0Y4IGlycTo0IHR4
-OjExIHJ4OjQxMzEgYnJrOjYgUlRTfERUUgoxOiB1YXJ0OjE2NTUwQSBwb3J0OjAwMDA4ODAwIGly
-cToyMyB0eDowIHJ4OjAKMjogdWFydDoxNjU1MEEgcG9ydDowMDAwODQwMCBpcnE6MjMgdHg6MjEw
-OTcgcng6MzMwNTE4IFJUUwoKLS0tCg==
+Am 18.02.2014 11:43, schrieb Alexander Shiyan:
+> At least for my 9835, its works without any 3rd-party drivers.
+>
+>
+
+In the history it was working with older kernels previous version 3.0.
+
+When you open the README you find this description:
+
+
+To build driver on kernels from v2.6.34 till latest:
+----------------------------------------------------
+   Since the device ID 9865 is included (as built-in) with kernel versions
+     starts from v2.6.34 and above, the following procedure is required to
+     follow to detect MCS9865 devices.
+
+   b) Open file "8250_pci.c".
+     - find for the macro PCI_DEVICE_ID_NETMOS_9865.  It will be found in two places,
+         1) In the struct definition "serial_pci_tbl[]"
+           - Comment the below lines,
+
+         "
+                 {       PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
+                         0xA000, 0x1000,
+                         0, 0, pbn_b0_1_115200 },
+
+                 {       PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
+                         0xA000, 0x3004,
+                         0, 0, pbn_b0_bt_4_115200 },
+         "
+---------------------------------------------------------------------------------------------------
+
+
+This seems to be the problem.
+At least you must recompile parts of the kernel to get it running.
+So you can't work with the standard kernel of a distribution!
+
+It would be very helpful if this driver would be part of the standard kernel sources.
+
