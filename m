@@ -1,56 +1,50 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Wed, 19 Feb 2014 19:17:17 +0000
-Message-ID: <20140219191717.486ac4d0@alan.etchedpixels.co.uk>
-References: <20140218093829.GC1741@redhat.com>
-	<5303DABD.9000302@hurleysoftware.com>
-	<20140219130308.GC1851@redhat.com>
-	<le2nmd$p1$1@ger.gmane.org>
-	<5304EC33.5040502@hurleysoftware.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] drivers/tty/serial: deal with 8250_core.c uninitialized warning for good
+Date: Wed, 19 Feb 2014 15:00:13 -0500
+Message-ID: <1392840013-15957-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:33380 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754034AbaBSTRf (ORCPT
+Received: from mail1.windriver.com ([147.11.146.13]:43049 "EHLO
+	mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752114AbaBSUCE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 14:17:35 -0500
-In-Reply-To: <5304EC33.5040502@hurleysoftware.com>
+	Wed, 19 Feb 2014 15:02:04 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Alan Cox <alan@linux.intel.com>
 
-> How can the requirement be for both must-handle-in-minimum-time data
-> (low_latency) and the-userspace-reader-isn't-reading-fast-enough-
-> so-its-ok-to-halt-transmission ?
+Every couple of months, someone sends a patch to fix:
 
-Because low latency is about *turn around* time. There are plenty of
-protocols that can flow control, do flow control and want low latency
-because they are not windowed. It's not mutually exclusive by any means.
+drivers/tty/serial/8250/8250_core.c: In function 'serial_unlink_irq_chain':
+drivers/tty/serial/8250/8250_core.c:1712:2: warning: 'i' may be used uninitialized in this function [-Wuninitialized]
 
-> But first I'd like some hard data on whether or not a low latency
-> mode is even necessary (at least for user-space).
+and they in turn get a NACK for their efforts, and are told that
+their compiler is broken.  This has been going on since at least
+the year 2008:  https://lkml.org/lkml/2008/11/24/433
 
-The easy way to simulate the annoying as crap worst cases from dumbass
-firmware downloaders and the like is to set up a link between two PCs and
-time 2000+ repetitions of
+Lets add a comment, so that subsequent patches don't get as far as
+the maintainers or the mailing lists.
 
-send 64 bytes
-wait for a Y
-send 64 bytes
-wait for a Y
-....
+Cc: Alan Cox <alan@linux.intel.com>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 
-and the matching far end being a box running an existing kernel or a PIC
-or something doing the responses.
-
-Historically we used to lose about 20mS per cycle which over 2000 got to
-be a bit of a PITA.
-
-Low latency goes back to the days of flip buffers, bottom halves an a
-100Hz clock. There are certainly better ways to do it now if its needed.
-
-Alan
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 69932b7556cf..747073b8c38a 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1694,6 +1694,10 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 
+ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+ {
++	/*
++	 * yes, some broken gcc emit "warning: 'i' may be used uninitialized"
++	 * but no, we are not going to take a patch that assigns NULL below.
++	 */
+ 	struct irq_info *i;
+ 	struct hlist_node *n;
+ 	struct hlist_head *h;
+-- 
+1.8.5.2
 
