@@ -1,107 +1,97 @@
-From: Stanislaw Gruszka <sgruszka@redhat.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Wed, 19 Feb 2014 14:03:09 +0100
-Message-ID: <20140219130308.GC1851@redhat.com>
-References: <20140218093829.GC1741@redhat.com>
- <5303DABD.9000302@hurleysoftware.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
+ device probe
+Date: Wed, 19 Feb 2014 22:57:51 +0900
+Message-ID: <20140219135751.GX2669@sirena.org.uk>
+References: <20140213181559.GB30257@n2100.arm.linux.org.uk>
+ <20140213182701.GA32578@kroah.com>
+ <20140213184249.GC30257@n2100.arm.linux.org.uk>
+ <20140213232606.GA27372@kroah.com>
+ <20140214000717.GG30257@n2100.arm.linux.org.uk>
+ <20140214001436.GA16287@kroah.com>
+ <20140214003834.GH30257@n2100.arm.linux.org.uk>
+ <20140217153518.30891455@alan.etchedpixels.co.uk>
+ <20140217235013.GD2669@sirena.org.uk>
+ <20140218100943.34f2e186@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7aQJ/pUO7E0NVzIB"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:64882 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752036AbaBSNAy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 08:00:54 -0500
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:43955 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752823AbaBSN6P (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Feb 2014 08:58:15 -0500
 Content-Disposition: inline
-In-Reply-To: <5303DABD.9000302@hurleysoftware.com>
+In-Reply-To: <20140218100943.34f2e186@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>
+To: Etched Pixels <sales@etchedpixels.co.uk>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk
 
-Hello,
 
-On Tue, Feb 18, 2014 at 05:12:13PM -0500, Peter Hurley wrote:
-> On 02/18/2014 04:38 AM, Stanislaw Gruszka wrote:
-> >Hi,
-> >
-> >setserial has low_latency option which should minimize receive latency
-> >(scheduler delay). AFAICT it is used if someone talk to external device
-> >via RS-485/RS-232 and need to have quick requests and responses . On
-> >kernel this feature was implemented by direct tty processing from
-> >interrupt context:
-> >
-> >void tty_flip_buffer_push(struct tty_port *port)
-> >{
-> >         struct tty_bufhead *buf = &port->buf;
-> >
-> >         buf->tail->commit = buf->tail->used;
-> >
-> >         if (port->low_latency)
-> >                 flush_to_ldisc(&buf->work);
-> >         else
-> >                 schedule_work(&buf->work);
-> >}
-> >
-> >But after 3.12 tty locking changes, calling flush_to_ldisc() from
-> >interrupt context is a bug (we got scheduling while atomic bug report
-> >here: https://bugzilla.redhat.com/show_bug.cgi?id=1065087 )
-> >
-> >I'm not sure how this should be solved. After Peter get rid all of those
-> >race condition in tty layer, we probably don't want go back to use
-> >spin_lock's there. Maybe we can create WQ_HIGHPRI workqueue and schedule
-> >flush_to_ldisc() work there. Or perhaps users that need to low latency,
-> >should switch to thread irq and prioritize serial irq to meat
-> >retirements. Anyway setserial low_latency is now broken and all who use
-> >this feature in the past can not do this any longer on 3.12+ kernels.
-> >
-> >Thoughts ?
-> 
-> Can you give me an idea of your device's average and minimum required
-> latency (please be specific)?  Is your target arch x86 [so I can evaluate the
-> the impact of bus-locked instructions relative to your expected]?
-> 
-> Also, how painful would it be if unsupported termios changes were rejected
-> if the port was in low_latency mode and/or if low_latency setting was
-> disallowed because of termios state?
-> 
-> It would be pointless to throttle low_latency, yes?
-> 
-> What would be an acceptable outcome of being unable to accept input?
-> Corrupted overrun? Dropped i/o? Queued for later? Please explain with
-> comparison to the outcome of missed minimum latency.
+--7aQJ/pUO7E0NVzIB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I'm sorry, I can not answer your questions.
+On Tue, Feb 18, 2014 at 10:09:43AM +0000, Etched Pixels wrote:
+> Mark Brown <broonie@kernel.org> wrote:
 
-For what I googled it looks like users wanted to get rid of 10ms jitter
-caused by scheduler. Unfortunately that is all I know. I'm not user of
-this feature and I don't know what are exact expectations. I'm adding Hal,
-who reported bug to RH bugzilla, perhaps he can tell more about what
-expectations are.
+> > It's a very real problem which affects actual kernels that distro style
+> > users are building.
 
-For now, since issue is not easy fixable, perhaps we should just fix
-scheduling while atomic bug and add warning like on below patch ?
+> Only because you persist in trying to keep the old static minor
+> numbers even though they are not needed by anything in the real world
+> that will ever run such kernels. Also only because you are apparently
+> too slack to bother to check whether the driver matches the platform or
+> there is an device tree node before registering it even though that's
+> trivial to code and is already done by some other platforms and serial
+> drivers just fine.
 
-Thanks
-Stanislaw
+> It's a core code "problem" that is invented by refusing to do the simple
+> trivial fixes in the ARM tree. Please clean up your own poop instead of
+> trying to shovel it into the street.
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 765125d..0fe6d65 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -504,9 +504,13 @@ void tty_flip_buffer_push(struct tty_port *port)
- 
- 	buf->tail->commit = buf->tail->used;
- 
--	if (port->low_latency)
--		flush_to_ldisc(&buf->work);
--	else
-+	if (port->low_latency) {
-+		if (WARN_ONCE(in_irq() || irqs_disabled(),
-+			      "serial low_latency feature can not be used in interrupt context"))
-+			schedule_work(&buf->work);
-+		else
-+			flush_to_ldisc(&buf->work);
-+	} else
- 		schedule_work(&buf->work);
- }
- EXPORT_SYMBOL(tty_flip_buffer_push);
+Please try to avoid this sort of misdirected yelling, it's not helping
+anything to complain that people are following the recommendations of
+the maintainer or to demand that this somehow gets hacked around in
+arch/ when we're trying to convince all the architectures to get their
+drivers merged into subsystem trees so they're reviewed by the subsystem
+maintainers.
+
+If you have some examples of better practice for serial device
+registration that you'd like to identify that'd be helpful, but what
+you're doing here is making disparaging remarks and telling people to
+adopt bad practices because someone else made a mistake a decade ago.
+That is how problems like this get created in the first place.
+
+> And the proposed change set is buggy as hell - because we register things
+> like 8250 devices at least four ways on the same x86 machine all of which
+> could in theory occur in parallel.
+
+Then you need to convince Greg of that.  The most recent set of patches
+are exactly what he asked for.
+
+--7aQJ/pUO7E0NVzIB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTBLhcAAoJELSic+t+oim9m1sP/3h8AGWjt6SRAJGq0YftYmCI
+2FP4GjglrhURnXEXai2TRb7VQ8E3TKauIalcQkSfrgxVAcTAenT9T0vOOuH5MqLP
+DMmuS+IHZXkfqTvq4aC1zCup/bZ6XdauJqS1dT+cKmybN8dA8TsASazD4xBpDHh2
+29agoop6X7SjNDAWd2E4mXdusDuRw7dBbznDM7s+9B0XHFxQQ8mkElDLtgm7g8YZ
+vrxo1BqsssE4fHXOsv0H9C874offG3xtHzIQF+5z+HZo2Ho7mL/uxvO0rYCbqdNC
+kzgUr1+ZFkTS9lZTvAKDDbgsIM8mPv754DzKvqvCgl4ticFRA7dVs8woUaXEZF+W
+YHYvlDJc0QXH6pHkzCzZI035ni5PHJla5XKh50lH5h/IXi4qGPWawKDvqVSUr1zI
+aQwUPzwtIpa0a0t0VZvsZLT/htBUzzfu/YViXraR0eQ3BnfdMvG5ViRT5/RKiekh
+be5Sla4UWKHJTEixPhwv4DP7YCrOaiFMwPYzePJS5uBDS4XvttmLBw2oNUogfNxM
+7uQ06P883gMUOi1HHuQBkpgS0DWKWCP2knk1jGZDYPwoBf2gMGh3neWp0IN0NQvs
+9bAq32ULro6btx8FOkMbV1ACUItyfc+Pr91pqVvCK+37d5n9klV0xESV8S878EeG
++a0WnYO2XYRbEJc0Vm06
+=dC3o
+-----END PGP SIGNATURE-----
+
+--7aQJ/pUO7E0NVzIB--
