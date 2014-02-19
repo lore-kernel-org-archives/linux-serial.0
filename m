@@ -1,67 +1,125 @@
-From: Karsten Malcher <debian-QdlBTFngBEMsCylrc8G9yg@public.gmane.org>
-Subject: Re: USB to Serial converter code pl2303
-Date: Wed, 19 Feb 2014 18:21:25 +0100
-Message-ID: <5304E815.8010901@dct.mine.nu>
-References: <1392688665.7323.32.camel@mange> <20140218090946.GA1954@localhost> <1392828260.3113.24.camel@mange> <20140219170039.GG24335@localhost> <5304E472.2000203@dct.mine.nu> <20140219171406.GH24335@localhost>
-Reply-To: debian-QdlBTFngBEMsCylrc8G9yg@public.gmane.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Wed, 19 Feb 2014 12:38:59 -0500
+Message-ID: <5304EC33.5040502@hurleysoftware.com>
+References: <20140218093829.GC1741@redhat.com> <5303DABD.9000302@hurleysoftware.com> <20140219130308.GC1851@redhat.com> <le2nmd$p1$1@ger.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140219171406.GH24335@localhost>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?ISO-8859-1?Q?Frank_Sch=E4fer?= <fschaefer.oss-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Magnus <magnus-swe-zq6IREYz3ykAvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <le2nmd$p1$1@ger.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Am 19.02.2014 18:14, schrieb Johan Hovold:
-> On Wed, Feb 19, 2014 at 06:05:54PM +0100, Karsten Malcher wrote:
->> Am 19.02.2014 18:00, schrieb Johan Hovold:
->>> I need an adapter that can handle 2400 Baud to talk to the
->>> ft639/ede639 servo controller chip or possibly a pl2303 driver
->>> that is improved.
->>> The pl2303-driver can handle 2400 baud, but not sure exactly what b=
-aud
->>> rates are available for a cloned/pirated pl2303 chip (if that is wh=
-at
->>> you've got). 115200 baud should be supported, though.
->> We have tested different baud rates with the PL2303HX china clones.
->> All are working including non standard baud rates.
-> Ok, good, so 2400 baud should work.
+Hi Grant,
 
-Yes - this should be no problem with every usb converter.
-I have different one and all of them are usable now.
-
+On 02/19/2014 11:55 AM, Grant Edwards wrote:
+> On 2014-02-19, Stanislaw Gruszka <sgruszka@redhat.com> wrote:
+>> Hello,
+>>
+>> On Tue, Feb 18, 2014 at 05:12:13PM -0500, Peter Hurley wrote:
+>>> On 02/18/2014 04:38 AM, Stanislaw Gruszka wrote:
+>>>
+>>>> setserial has low_latency option which should minimize receive latency
+>>>> (scheduler delay). AFAICT it is used if someone talk to external device
+>>>> via RS-485/RS-232 and need to have quick requests and responses.
 >
->> But the non standard baud rates are only available with the modified
->> driver from Frank Sch=E4fer.
-> What driver is that? The latest clone-related patch from Frank that I=
-'ve
-> seen stated:
+> Exactly.
+
+But not exactly, because I need a quantified value for "quick",
+preferably with average latency measurements for 3.11- and 3.12+
+
+>>>>
+>>>> But after 3.12 tty locking changes, calling flush_to_ldisc() from
+>>>> interrupt context is a bug (we got scheduling while atomic bug report
+>>>> here: https://bugzilla.redhat.com/show_bug.cgi?id=1065087 )
+>>>
+>>> Can you give me an idea of your device's average and minimum required
+>>> latency (please be specific)?
 >
-> 	"According to Prolific, several (unauthorized) cheap and less
-> 	 functional clones of the PL2303HX chip are in circulation. [1]
-> 	 I've had the chance to test such a cloned device and it turned
-> 	 out that it doesn't support any baud rates above 115200 baud
-> 	 (original: 6 Mbaud) It also doesn't support the divisior based
-> 	 baud rate encoding method, so no continuous baud rate adjustment
-> 	 is possible."
-
-That's a good question.
-He send me a special debug version that gives all registers of the PL23=
-03HX after the plugin.
-I think it is better when Frank directly suffer us with his latest vers=
-ion.
-
-Cheers
-Karsten
-
+> If by "device" you mean the UART being supported by the the driver in
+> question, then there is no answer.
 >
-> Thanks,
-> Johan
+> Latency issues and requirements are a user-space application level
+> requirement that depend on the specific application's requirements and
+> those of the widget on the other end of the serial cable.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'm trying to determine if 3.12+ already satisfies the userspace requirement
+(or if the requirement is infeasible).
+
+The assumption is that 3.12+ w/o low_latency is worse than 3.11- w/ low_latency,
+which may not be true.
+
+Also, as you note, the latency requirement is in userspace, so bound
+to the behavior of the scheduler anyway. Thus, immediately writing
+to the read buffer from IRQ may have no different average latency than
+handling by a worker (as measured by the elapsed time from interrupt to
+userspace read).
+
+>>> Also, how painful would it be if unsupported termios changes were rejected
+>>> if the port was in low_latency mode and/or if low_latency setting was
+>>> disallowed because of termios state?
+>>>
+>>> It would be pointless to throttle low_latency, yes?
+>
+> By "throttle" I assume you're talking about flow control?
+
+Driver throttle (but the discussion can include auto-flow control devices).
+
+How can the requirement be for both must-handle-in-minimum-time data
+(low_latency) and the-userspace-reader-isn't-reading-fast-enough-
+so-its-ok-to-halt-transmission ?
+
+Throttling/unthrottling the sender seems counter to "low latency".
+
+> _Usually_ applications that require low latency are exchanging short
+> messages (up to a few hundred bytes, but usually more like a few
+> dozen).  In those cases flow control is not generally needed.
+>
+> Does it matter?
+
+Driver throttling requires excluding concurrent unthrottle and calling into
+the driver (and said driver has relied on sleeping locks for many
+kernel versions).
+
+But first I'd like some hard data on whether or not a low latency
+mode is even necessary (at least for user-space).
+
+>>> What would be an acceptable outcome of being unable to accept input?
+>>> Corrupted overrun? Dropped i/o? Queued for later? Please explain with
+>>> comparison to the outcome of missed minimum latency.
+>>
+>> I'm sorry, I can not answer your questions.
+>>
+>> For what I googled it looks like users wanted to get rid of 10ms jitter
+>> caused by scheduler.
+>
+> Yes.  That was the use for the low_latency option. Historically, all
+> of my drivers had supported the low_latency options for customers that
+> found scheduling delays to be a problem.
+>
+> However, low_latency has been broken in certain contexts for a long
+> time. As a result, drivers have to avoid using it either completely or
+> sometimes only where rx data is handled in certain contexts.
+>
+> For some drivers the end result of that is that you can choose either
+> a low-latency I/O mechanism or low-latency TTY layer rx handling, but
+> you can't use both at the same time because the low-latency I/O
+> mechanism handles rx data in a context where low-latency TTY layer
+> stuff can't be used.
+>
+> Now that HZ is often 1000 and tickless is commonly used, I don't think
+> the scheduling delay is nearly as much an issue as it used to be.  I
+> haven't gotten any complaints since it was largely rendered useless
+> several years ago.
+>
+> Now all my drivers will silently override users if they set the
+> low_latency flag on a port in situations where it can't be used.
+
+Right. I'd rather not 'fix' something that doesn't really need
+fixing (other than to suppress any WARNING caused by low_latency).
+
+Regards,
+Peter Hurley
