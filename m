@@ -1,58 +1,78 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH] drivers/tty/serial: deal with 8250_core.c uninitialized
- warning for good
-Date: Wed, 19 Feb 2014 16:19:14 -0500
-Message-ID: <53051FD2.1020905@windriver.com>
-References: <1392840013-15957-1-git-send-email-paul.gortmaker@windriver.com> <1392843083.11798.74.camel@acox1-desk.ger.corp.intel.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Wed, 19 Feb 2014 21:42:42 +0000
+Message-ID: <20140219214242.406e705b@alan.etchedpixels.co.uk>
+References: <20140218093829.GC1741@redhat.com>
+	<5303DABD.9000302@hurleysoftware.com>
+	<20140219130308.GC1851@redhat.com>
+	<le2nmd$p1$1@ger.gmane.org>
+	<5304EC33.5040502@hurleysoftware.com>
+	<20140219191717.486ac4d0@alan.etchedpixels.co.uk>
+	<53051276.2070601@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1392843083.11798.74.camel@acox1-desk.ger.corp.intel.com>
+In-Reply-To: <53051276.2070601@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 14-02-19 03:51 PM, Alan Cox wrote:
-> On Wed, 2014-02-19 at 15:00 -0500, Paul Gortmaker wrote:
->> Every couple of months, someone sends a patch to fix:
->>
->> drivers/tty/serial/8250/8250_core.c: In function 'serial_unlink_irq_chain':
->> drivers/tty/serial/8250/8250_core.c:1712:2: warning: 'i' may be used uninitialized in this function [-Wuninitialized]
->>
->> and they in turn get a NACK for their efforts, and are told that
->> their compiler is broken.  This has been going on since at least
->> the year 2008:  https://lkml.org/lkml/2008/11/24/433
->>
->> Lets add a comment, so that subsequent patches don't get as far as
->> the maintainers or the mailing lists.
+> > Because low latency is about *turn around* time. There are plenty of
+> > protocols that can flow control, do flow control and want low latency
+> > because they are not windowed. It's not mutually exclusive by any means.
 > 
-> Are people still using gcc variants that get this wrong ?
+> But if it's all about turn around time, how can the situation devolve to
+> needing throttling in the first place?  For N_TTY, throttling only happens
+> when the read queue is close to overflow (only 128 bytes left in 4k buffer).
 
-It seems that gcc 4.6.3 gets it wrong, and it isn't _that_ old.
+Because if we are on the uplink end of a dumb protocol then our flow ends
+up as
 
-Paul.
---
+< 4K in
+		read
+rest of block
+		read
+		block complete
+		write Y
 
-$ mips-linux-gcc -v
-Using built-in specs.
-COLLECT_GCC=mips-linux-gcc
-COLLECT_LTO_WRAPPER=/home/paul/tc/gcc-4.6.3-nolibc/mips-linux/bin/../libexec/gcc/mips-linux/4.6.3/lto-wrapper
-Target: mips-linux
-Configured with: /home/tony/buildall/src/gcc/configure --target=mips-linux --host=x86_64-linux-gnu --build=x86_64-linux-gnu --enable-targets=all --prefix=/opt/cross/gcc-4.6.3-nolibc/mips-linux/ --enable-languages=c --with-newlib --without-headers --enable-sjlj-exceptions --with-system-libunwind --disable-nls --disable-threads --disable-shared --disable-libmudflap --disable-libssp --disable-libgomp --disable-decimal-float --enable-checking=release --with-mpfr=/home/tony/buildall/src/sys-x86_64 --with-gmp=/home/tony/buildall/src/sys-x86_64 --disable-bootstrap --disable-libquadmath
-Thread model: single
-gcc version 4.6.3 (GCC) 
-$ make allmodconfig > /dev/null
-$ make drivers/tty/serial/8250/8250_core.o > /dev/null
-drivers/tty/serial/8250/8250_core.c: In function 'serial_unlink_irq_chain':
-drivers/tty/serial/8250/8250_core.c:1712:2: warning: 'i' may be used uninitialized in this function [-Wuninitialized]
-$ 
+until at some point sods law decrees that we do a big load of disk
+writes, an SMM event steals the processor, firefox garbage collects or
+somesuch and we go
+
+4K in
+		throttle
+		flow control
 
 
+It only has to happen *once*, not every time to screw stuff up.
+
+> If the reader isn't pulling _all_ the data out the instant it's woken,
+> trying to trim off one worker wakeup (by processing input at interrupt time)
+> is pointless.
+
+No - because of the statistical corner cases. The standard Linux is not
+remotely hard real time, and even if it were most of the tools involved
+are not.
+
+> > Low latency goes back to the days of flip buffers, bottom halves an a
+> > 100Hz clock. There are certainly better ways to do it now if its needed.
 > 
-> Fine by me.
-> 
-> Acked-by: Alan Cox <alan@linux.intel.com>
-> 
-> 
+> Still, as you've pointed out a couple of times, maybe there's a limited
+> fastpath that's easy and simple. That's why I was asking about throttling
+> because it's evaluated even for raw mode.
+
+Even if there isn't the goal of low latency was always 'get stuff to
+happen soon' not 'get stuff to happen in the IRQ handler' If you have the
+tty processing happening immediately after the IRQ returns when
+low_latency is set I'm sure the numbers will be just fine and as good as
+historically.
+
+Whether you can always do that I guess depends what happens on really
+slow boxes if you don't do any deferral - eg on Geert's Amiga.
+
+Flow control even in raw mode is expected Unix behaviour. However do we
+ever need to evaluate it if the tty termios has IXON and CRTSCTS clear ?
+
+Alan
