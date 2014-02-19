@@ -1,70 +1,40 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Wed, 19 Feb 2014 15:22:14 -0500
-Message-ID: <53051276.2070601@hurleysoftware.com>
-References: <20140218093829.GC1741@redhat.com>	<5303DABD.9000302@hurleysoftware.com>	<20140219130308.GC1851@redhat.com>	<le2nmd$p1$1@ger.gmane.org>	<5304EC33.5040502@hurleysoftware.com> <20140219191717.486ac4d0@alan.etchedpixels.co.uk>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH] drivers/tty/serial: deal with 8250_core.c uninitialized
+ warning for good
+Date: Wed, 19 Feb 2014 20:51:23 +0000
+Message-ID: <1392843083.11798.74.camel@acox1-desk.ger.corp.intel.com>
+References: <1392840013-15957-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:33696 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754569AbaBSUWS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 15:22:18 -0500
-In-Reply-To: <20140219191717.486ac4d0@alan.etchedpixels.co.uk>
+Received: from mga14.intel.com ([143.182.124.37]:47126 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753820AbaBSUv2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Feb 2014 15:51:28 -0500
+In-Reply-To: <1392840013-15957-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 02/19/2014 02:17 PM, One Thousand Gnomes wrote:
->> How can the requirement be for both must-handle-in-minimum-time data
->> (low_latency) and the-userspace-reader-isn't-reading-fast-enough-
->> so-its-ok-to-halt-transmission ?
->
-> Because low latency is about *turn around* time. There are plenty of
-> protocols that can flow control, do flow control and want low latency
-> because they are not windowed. It's not mutually exclusive by any means.
+On Wed, 2014-02-19 at 15:00 -0500, Paul Gortmaker wrote:
+> Every couple of months, someone sends a patch to fix:
+> 
+> drivers/tty/serial/8250/8250_core.c: In function 'serial_unlink_irq_chain':
+> drivers/tty/serial/8250/8250_core.c:1712:2: warning: 'i' may be used uninitialized in this function [-Wuninitialized]
+> 
+> and they in turn get a NACK for their efforts, and are told that
+> their compiler is broken.  This has been going on since at least
+> the year 2008:  https://lkml.org/lkml/2008/11/24/433
+> 
+> Lets add a comment, so that subsequent patches don't get as far as
+> the maintainers or the mailing lists.
 
-But if it's all about turn around time, how can the situation devolve to
-needing throttling in the first place?  For N_TTY, throttling only happens
-when the read queue is close to overflow (only 128 bytes left in 4k buffer).
+Are people still using gcc variants that get this wrong ?
 
-If the reader isn't pulling _all_ the data out the instant it's woken,
-trying to trim off one worker wakeup (by processing input at interrupt time)
-is pointless.
+Fine by me.
 
->> But first I'd like some hard data on whether or not a low latency
->> mode is even necessary (at least for user-space).
->
-> The easy way to simulate the annoying as crap worst cases from dumbass
-> firmware downloaders and the like is to set up a link between two PCs and
-> time 2000+ repetitions of
->
-> send 64 bytes
-> wait for a Y
-> send 64 bytes
-> wait for a Y
-> ....
->
-> and the matching far end being a box running an existing kernel or a PIC
-> or something doing the responses.
-
-Well this is easy enough to mock up.
-
-> Historically we used to lose about 20mS per cycle which over 2000 got to
-> be a bit of a PITA.
->
-> Low latency goes back to the days of flip buffers, bottom halves an a
-> 100Hz clock. There are certainly better ways to do it now if its needed.
-
-Still, as you've pointed out a couple of times, maybe there's a limited
-fastpath that's easy and simple. That's why I was asking about throttling
-because it's evaluated even for raw mode.
-
-Regards,
-Peter Hurley
-
+Acked-by: Alan Cox <alan@linux.intel.com>
 
 
