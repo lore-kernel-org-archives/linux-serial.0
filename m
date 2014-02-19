@@ -1,73 +1,60 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Tue, 18 Feb 2014 17:12:13 -0500
-Message-ID: <5303DABD.9000302@hurleysoftware.com>
-References: <20140218093829.GC1741@redhat.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 2/2] serial: pl011: Move uart_register_driver call to
+ device probe
+Date: Wed, 19 Feb 2014 00:47:36 +0000
+Message-ID: <20140219004736.65beeb08@alan.etchedpixels.co.uk>
+References: <1390208555-27770-1-git-send-email-tushar.behera@linaro.org>
+	<1390208555-27770-3-git-send-email-tushar.behera@linaro.org>
+	<20140120100415.GX15937@n2100.arm.linux.org.uk>
+	<20140213181216.GB24155@kroah.com>
+	<20140213181559.GB30257@n2100.arm.linux.org.uk>
+	<20140213182701.GA32578@kroah.com>
+	<20140213184249.GC30257@n2100.arm.linux.org.uk>
+	<20140213232606.GA27372@kroah.com>
+	<20140214000717.GG30257@n2100.arm.linux.org.uk>
+	<20140214001436.GA16287@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34748 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751587AbaBRWMR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Feb 2014 17:12:17 -0500
-In-Reply-To: <20140218093829.GC1741@redhat.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20140214001436.GA16287@kroah.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Tushar Behera <tushar.behera@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, jslaby@suse.cz, ben.dooks@codethink.co.uk, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stanislaw Gruszka <sgruszka@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-Hi Stanislaw,
+> > The race isn't the uart code, it's the driver model.
+> > 
+> > Consider what happens when this happens:
+> > 
+> > * Two pl011 devices get registered at the same time by two different
+> >   threads.
+> 
+> How?  What two different busses will see this same device?  The amba bus
+> code should prevent that from happening, right?  If not, there's bigger
+> problems in that bus code :)
+> 
+> That's where this problem should be fixed, if there is one, otherwise
+> this same issue would be there for any type of driver that calles into
+> the uart core, right?
 
-On 02/18/2014 04:38 AM, Stanislaw Gruszka wrote:
-> Hi,
->
-> setserial has low_latency option which should minimize receive latency
-> (scheduler delay). AFAICT it is used if someone talk to external device
-> via RS-485/RS-232 and need to have quick requests and responses . On
-> kernel this feature was implemented by direct tty processing from
-> interrupt context:
->
-> void tty_flip_buffer_push(struct tty_port *port)
-> {
->          struct tty_bufhead *buf = &port->buf;
->
->          buf->tail->commit = buf->tail->used;
->
->          if (port->low_latency)
->                  flush_to_ldisc(&buf->work);
->          else
->                  schedule_work(&buf->work);
-> }
->
-> But after 3.12 tty locking changes, calling flush_to_ldisc() from
-> interrupt context is a bug (we got scheduling while atomic bug report
-> here: https://bugzilla.redhat.com/show_bug.cgi?id=1065087 )
->
-> I'm not sure how this should be solved. After Peter get rid all of those
-> race condition in tty layer, we probably don't want go back to use
-> spin_lock's there. Maybe we can create WQ_HIGHPRI workqueue and schedule
-> flush_to_ldisc() work there. Or perhaps users that need to low latency,
-> should switch to thread irq and prioritize serial irq to meat
-> retirements. Anyway setserial low_latency is now broken and all who use
-> this feature in the past can not do this any longer on 3.12+ kernels.
->
-> Thoughts ?
+I did some more digging into this the problem goes beyond the uart and
+driver model code. Even if you serialize every bus and you serialize
+every bus against every other bus (which you can't do btw as we get
+recursive probes of one bus from a device probe of another) it's still
+racy. We have non bus registering paths for some drivers and those could
+be user triggered.
 
-Can you give me an idea of your device's average and minimum required
-latency (please be specific)?  Is your target arch x86 [so I can evaluate the
-the impact of bus-locked instructions relative to your expected]?
+An obvious example is 8250.
 
-Also, how painful would it be if unsupported termios changes were rejected
-if the port was in low_latency mode and/or if low_latency setting was
-disallowed because of termios state?
+If the 8250 driver is loaded on a platform where no device is
+autodetected (which is true on a few wackier PC laptops with touchscreens
+on an 8250) then you hae a race between say a PCMCIA card insertion of an
+8250 and a user who creates the first 8250 device using setserial at the
+same moment.
 
-It would be pointless to throttle low_latency, yes?
+There are similar races between the various directly created devices on
+some of the serial ports and bus probed ones where the driver mixes bus
+probing with olde worlde straight forward hardcoding.
 
-What would be an acceptable outcome of being unable to accept input?
-Corrupted overrun? Dropped i/o? Queued for later? Please explain with
-comparison to the outcome of missed minimum latency.
-
-Regards,
-Peter Hurley
+Alan
