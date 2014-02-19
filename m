@@ -1,76 +1,107 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH] serial: sirf: update copyright years to 2014
-Date: Wed, 19 Feb 2014 13:16:05 +0800
-Message-ID: <CAGsJ_4wu80_50Vb4tzBT6Uug+JaSgajdTA6N5fK-FtxvCRxxeQ@mail.gmail.com>
-References: <1392214124-3427-1-git-send-email-21cnbao@gmail.com>
- <20140212141931.GA7688@kroah.com> <CAGsJ_4zuju7x06nvZOMKvU8xfULy5bgNTyENSfmPVNg6TcwRdQ@mail.gmail.com>
- <20140212143744.GA10095@kroah.com> <CAGsJ_4xTfsYJMj7MkzKigQcdiyozK-fqq=JYosHMr9=jx7XQyQ@mail.gmail.com>
- <20140212161230.GA22431@kroah.com> <CAGsJ_4yXjRFxcazwx+Zfxm4_2njhMeRVRKXEM2w4wKsGPas6yA@mail.gmail.com>
- <20140212163810.GA22377@kroah.com> <CAGsJ_4x-9MiX_CMgQAhmUDQFXvCo0Nd2Y5AkVu+ePvurbefiFQ@mail.gmail.com>
- <20140214171424.GA26194@kroah.com>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Wed, 19 Feb 2014 14:03:09 +0100
+Message-ID: <20140219130308.GC1851@redhat.com>
+References: <20140218093829.GC1741@redhat.com>
+ <5303DABD.9000302@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ig0-f180.google.com ([209.85.213.180]:63046 "EHLO
-	mail-ig0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750771AbaBSFQ1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 00:16:27 -0500
-Received: by mail-ig0-f180.google.com with SMTP id m12so513194iga.1
-        for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2014 21:16:26 -0800 (PST)
-In-Reply-To: <20140214171424.GA26194@kroah.com>
+Received: from mx1.redhat.com ([209.132.183.28]:64882 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752036AbaBSNAy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Feb 2014 08:00:54 -0500
+Content-Disposition: inline
+In-Reply-To: <5303DABD.9000302@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>
 
-2014-02-15 1:14 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
-> On Thu, Feb 13, 2014 at 10:27:17AM +0800, Barry Song wrote:
->> 2014-02-13 0:38 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
->> > On Thu, Feb 13, 2014 at 12:26:35AM +0800, Barry Song wrote:
->> >> > Well, your 2012 change doesn't seem to be "significant" to warrent a
->> >> > normal copyright update, but the update is usually "less strict" than an
->> >> > original mark, so that might be ok, now that I review these closer.
->> >> >
->> >> > But I'd still prefer to get the opinion of your lawyer about this.
->> >>
->> >> Greg, thanks. i will ask csr lawyer to give some feedback if i can :-)
->> >>
->> >> i am not an expert of  copyright and i am really ignorant on it. in my
->> >> shallow understand, it seems it is difficult to evaluate what is
->> >> "significant" and what is not important as it highly depends on the
->> >> personal opinion? is this something like "there are a thousand Hamlets
->> >> in a thousand people's eyes"?
->> >
->> > It does "depend", but the "general" rule that most everyone follows, and
->> > what I have been advised to stick to, is "1/3 of the file is
->> > modified/added to" by a company/developer.  If that happens, then a
->> > copyright mark is allowed.  That has worked well over the many years of
->> > me having to deal with this, but the issue of "extending" the mark
->> > hasn't really been discussed, so I don't know if that same rule applies
->> > here or not.
->> >
->> > Feedback from your lawyer would be great to have on this, thanks.
->> >
->>
->> Greg, i am inviting our lawyer Cherrie into this, as she is maybe
->> busy, so we might wait some time.
->
-> In my research, it's become apparent that the copyright notice should
-> just be removed entirely from the files, as they don't mean anything
-> from a legal standpoint, so updating them shouldn't really be done
-> either, as they don't mean anything.  Although one could argue, if they
-> don't mean anything, updating it shouldn't matter, but I don't think
-> that the transitive is true here...
->
-> It will be interesting to find out what your lawyer says about this.
+Hello,
 
-Greg, all your comments have been forwarded to our layer and counsel.
-pls wait for some time :-)
+On Tue, Feb 18, 2014 at 05:12:13PM -0500, Peter Hurley wrote:
+> On 02/18/2014 04:38 AM, Stanislaw Gruszka wrote:
+> >Hi,
+> >
+> >setserial has low_latency option which should minimize receive latency
+> >(scheduler delay). AFAICT it is used if someone talk to external device
+> >via RS-485/RS-232 and need to have quick requests and responses . On
+> >kernel this feature was implemented by direct tty processing from
+> >interrupt context:
+> >
+> >void tty_flip_buffer_push(struct tty_port *port)
+> >{
+> >         struct tty_bufhead *buf = &port->buf;
+> >
+> >         buf->tail->commit = buf->tail->used;
+> >
+> >         if (port->low_latency)
+> >                 flush_to_ldisc(&buf->work);
+> >         else
+> >                 schedule_work(&buf->work);
+> >}
+> >
+> >But after 3.12 tty locking changes, calling flush_to_ldisc() from
+> >interrupt context is a bug (we got scheduling while atomic bug report
+> >here: https://bugzilla.redhat.com/show_bug.cgi?id=1065087 )
+> >
+> >I'm not sure how this should be solved. After Peter get rid all of those
+> >race condition in tty layer, we probably don't want go back to use
+> >spin_lock's there. Maybe we can create WQ_HIGHPRI workqueue and schedule
+> >flush_to_ldisc() work there. Or perhaps users that need to low latency,
+> >should switch to thread irq and prioritize serial irq to meat
+> >retirements. Anyway setserial low_latency is now broken and all who use
+> >this feature in the past can not do this any longer on 3.12+ kernels.
+> >
+> >Thoughts ?
+> 
+> Can you give me an idea of your device's average and minimum required
+> latency (please be specific)?  Is your target arch x86 [so I can evaluate the
+> the impact of bus-locked instructions relative to your expected]?
+> 
+> Also, how painful would it be if unsupported termios changes were rejected
+> if the port was in low_latency mode and/or if low_latency setting was
+> disallowed because of termios state?
+> 
+> It would be pointless to throttle low_latency, yes?
+> 
+> What would be an acceptable outcome of being unable to accept input?
+> Corrupted overrun? Dropped i/o? Queued for later? Please explain with
+> comparison to the outcome of missed minimum latency.
 
->
-> thanks,
->
-> greg k-h
+I'm sorry, I can not answer your questions.
 
--barry
+For what I googled it looks like users wanted to get rid of 10ms jitter
+caused by scheduler. Unfortunately that is all I know. I'm not user of
+this feature and I don't know what are exact expectations. I'm adding Hal,
+who reported bug to RH bugzilla, perhaps he can tell more about what
+expectations are.
+
+For now, since issue is not easy fixable, perhaps we should just fix
+scheduling while atomic bug and add warning like on below patch ?
+
+Thanks
+Stanislaw
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 765125d..0fe6d65 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -504,9 +504,13 @@ void tty_flip_buffer_push(struct tty_port *port)
+ 
+ 	buf->tail->commit = buf->tail->used;
+ 
+-	if (port->low_latency)
+-		flush_to_ldisc(&buf->work);
+-	else
++	if (port->low_latency) {
++		if (WARN_ONCE(in_irq() || irqs_disabled(),
++			      "serial low_latency feature can not be used in interrupt context"))
++			schedule_work(&buf->work);
++		else
++			flush_to_ldisc(&buf->work);
++	} else
+ 		schedule_work(&buf->work);
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
