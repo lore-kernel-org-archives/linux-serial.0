@@ -1,51 +1,72 @@
-From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: USB to Serial converter code pl2303
-Date: Thu, 20 Feb 2014 21:02:50 +0100
-Message-ID: <20140220200250.GB16785@localhost>
-References: <1392688665.7323.32.camel@mange>
- <20140218090946.GA1954@localhost>
- <1392828260.3113.24.camel@mange>
- <20140219170039.GG24335@localhost>
- <5304E472.2000203@dct.mine.nu>
- <20140219171406.GH24335@localhost>
- <53064721.3080905@googlemail.com>
+From: Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Thu, 20 Feb 2014 13:55:41 -0800
+Message-ID: <20140220215541.7D694406062@ip-64-139-1-69.sjc.megapath.net>
+References: <peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <53064721.3080905-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Frank =?iso-8859-1?Q?Sch=E4fer?= <fschaefer.oss-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Karsten Malcher <debian-QdlBTFngBEMsCylrc8G9yg@public.gmane.org>, Magnus <magnus-swe-zq6IREYz3ykAvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: Message from Peter Hurley <peter@hurleysoftware.com>
+   of "Wed, 19 Feb 2014 21:55:21 EST." <53056E99.9070900@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Stanislaw Gruszka <sgruszka@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2014 at 07:19:13PM +0100, Frank Sch=E4fer wrote:
-> Am 19.02.2014 18:14, schrieb Johan Hovold:
 
-> > What driver is that? The latest clone-related patch from Frank that=
- I've
-> > seen stated:
-> >
-> > 	"According to Prolific, several (unauthorized) cheap and less
-> > 	 functional clones of the PL2303HX chip are in circulation. [1]
-> > 	 I've had the chance to test such a cloned device and it turned
-> > 	 out that it doesn't support any baud rates above 115200 baud
-> > 	 (original: 6 Mbaud) It also doesn't support the divisior based
-> > 	 baud rate encoding method, so no continuous baud rate adjustment
-> > 	 is possible."
-> This patch is still 100% valid.
-> The "good" clones are detected as originals, which is fine.
+> Have you tried 3.12+ without low_latency? I ripped out a lot of locks from
+> 3.12+ so it's possible it already meets your requirements. 
 
-Good to know. Thanks for clarifying.
+Looks good.  I don't think I could tell the difference by looking at my 
+normal collection of graphs.
 
-Care to respin your refined-device-detection patches against the update=
-d
-driver in v3.14-rc?
 
-Thanks,
-Johan
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Hopefully you meant "milliseconds" here; single-digit microsecond latency on
+> any kind of stable duty cycle is linux-rt territory, and simply not a
+> reasonable goal for mainline. 
+
+No, I really meant microseconds.  Remember, I'm running on a lightly loaded 
+system, not trying to squeeze the impossible out of an overloaded system.
+
+top says gpsd has niced itself to -10, and ntpd is marked RT. 
+
+100 microseconds is easy.  I can get down to a few 10s of microseconds.  I'm 
+not sure how low I could get.
+
+
+>> What does "unsupported termios changes" mean?
+
+> For example, once the port is in low_latency mode, setting L_ECHO (and its
+> ilk) would be rejected. And vice versa, if the L_ECHO is set in termios,
+> low_latency would be rejected.
+
+> So running a vt console is low_latency mode is not going to work. 
+
+OK.  I doubt if there is any problem, but we should be sure to be explicit 
+about what "and its ilk" really means.
+
+------------
+
+I don't understand the scheduler issues that triggered this bug.
+
+Let's go back to the big picture.  In the old old days, time sharing systems 
+had lots of serial ports.  It was common for the hardware to buffer up 
+several characters before requesting an interrupt in order to reduce the CPU 
+load.  There was usually a bit in the hardware to bypass this if you thought 
+that response time was more important than CPU load.  I was expecting 
+low_latency to set that bit.
+
+Is that option even present in modern serial chips?  Do the various chips 
+claiming to be 8250/16550 and friends correctly implement all the details of 
+the specs?
+
+Many gigabit ethernet controllers have the same issue.  It's often called 
+interrupt coalescing.
+
+What/why is the serial/scheduler doing differently in the low_latency case?  
+What case does that help?
+
+
+
+-- 
+These are my opinions.  I hate spam.
