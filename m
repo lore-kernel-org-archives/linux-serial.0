@@ -1,74 +1,79 @@
-From: =?ISO-8859-1?Q?Frank_Sch=E4fer?= <fschaefer.oss@googlemail.com>
-Subject: Re: USB to Serial converter code pl2303
-Date: Thu, 20 Feb 2014 19:19:13 +0100
-Message-ID: <53064721.3080905@googlemail.com>
-References: <1392688665.7323.32.camel@mange> <20140218090946.GA1954@localhost> <1392828260.3113.24.camel@mange> <20140219170039.GG24335@localhost> <5304E472.2000203@dct.mine.nu> <20140219171406.GH24335@localhost>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH tty-next v2 3/4] tty: serial: bcm63xx_uart: add support for DT probing
+Date: Thu, 20 Feb 2014 10:15:53 -0800
+Message-ID: <1392920154-3642-4-git-send-email-f.fainelli@gmail.com>
+References: <1392920154-3642-1-git-send-email-f.fainelli@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:47099 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755742AbaBTSSL (ORCPT
+Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:63417 "EHLO
+	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755729AbaBTSSJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Feb 2014 13:18:11 -0500
-In-Reply-To: <20140219171406.GH24335@localhost>
+	Thu, 20 Feb 2014 13:18:09 -0500
+In-Reply-To: <1392920154-3642-1-git-send-email-f.fainelli@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johan Hovold <jhovold@gmail.com>, Karsten Malcher <debian@dct.mine.nu>
-Cc: Magnus <magnus-swe@telia.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org, mbizon@freebox.fr, jogo@openwrt.org, gregkh@linuxfoundation.org, mark.rutland@arm.com, gregory.0xf0@gmail.com, Florian Fainelli <f.fainelli@gmail.com>
 
+Add a matching table for the the bcm63xx_uart driver on the compatible
+string "brcm,bcm6345-uart" which covers all BCM63xx implementations and
+reflects the fact that this block was first introduced with the BCM6345
+SoC.  Also make sure that we convert the id based on the uart aliases
+provided by the relevant Device Tree.
 
-Am 19.02.2014 18:14, schrieb Johan Hovold:
-> On Wed, Feb 19, 2014 at 06:05:54PM +0100, Karsten Malcher wrote:
->> Am 19.02.2014 18:00, schrieb Johan Hovold:
->>> I need an adapter that can handle 2400 Baud to talk to the
->>> ft639/ede639 servo controller chip or possibly a pl2303 driver
->>> that is improved.
->>> The pl2303-driver can handle 2400 baud, but not sure exactly what b=
-aud
->>> rates are available for a cloned/pirated pl2303 chip (if that is wh=
-at
->>> you've got). 115200 baud should be supported, though.
->> We have tested different baud rates with the PL2303HX china clones.
->> All are working including non standard baud rates.
-Urgh... Karsten... don't confuse the people. :/
-Yes, _your_ clones behave exactly like HX originals, but others don't.
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
+- match on the compatible property "brcm,bcm6345-uart" as suggested
 
-> Ok, good, so 2400 baud should work.
-Indeed.
-Even the bad clones should support all standard baud rates up o 115200.
+ drivers/tty/serial/bcm63xx_uart.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
->
->> But the non standard baud rates are only available with the modified
->> driver from Frank Sch=E4fer.
-> What driver is that? The latest clone-related patch from Frank that I=
-'ve
-> seen stated:
->
-> 	"According to Prolific, several (unauthorized) cheap and less
-> 	 functional clones of the PL2303HX chip are in circulation. [1]
-> 	 I've had the chance to test such a cloned device and it turned
-> 	 out that it doesn't support any baud rates above 115200 baud
-> 	 (original: 6 Mbaud) It also doesn't support the divisior based
-> 	 baud rate encoding method, so no continuous baud rate adjustment
-> 	 is possible."
-This patch is still 100% valid.
-The "good" clones are detected as originals, which is fine.
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 37e7e33..a47421e 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -31,6 +31,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/serial_bcm63xx.h>
+ #include <linux/io.h>
++#include <linux/of.h>
+ 
+ #define BCM63XX_NR_UARTS	2
+ 
+@@ -806,6 +807,9 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	struct clk *clk;
+ 	int ret;
+ 
++	if (pdev->dev.of_node)
++		pdev->id = of_alias_get_id(pdev->dev.of_node, "uart");
++
+ 	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
+ 		return -EINVAL;
+ 
+@@ -857,6 +861,12 @@ static int bcm_uart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id bcm63xx_of_match[] = {
++	{ .compatible = "brcm,bcm6345-uart" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
++
+ /*
+  * platform driver stuff
+  */
+@@ -866,6 +876,7 @@ static struct platform_driver bcm_uart_platform_driver = {
+ 	.driver	= {
+ 		.owner = THIS_MODULE,
+ 		.name  = "bcm63xx_uart",
++		.of_match_table = bcm63xx_of_match,
+ 	},
+ };
+ 
+-- 
+1.8.3.2
 
-Regards,
-=46rank
-
-> Thanks,
-> Johan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-usb" =
-in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
