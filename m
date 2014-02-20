@@ -1,71 +1,51 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Thu, 20 Feb 2014 19:33:46 +0000 (UTC)
-Message-ID: <le5laq$40s$1@ger.gmane.org>
-References: <20140219230623.736E8406062@ip-64-139-1-69.sjc.megapath.net>
- <53056E99.9070900@hurleysoftware.com> <53064672.3000807@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: USB to Serial converter code pl2303
+Date: Thu, 20 Feb 2014 21:02:50 +0100
+Message-ID: <20140220200250.GB16785@localhost>
+References: <1392688665.7323.32.camel@mange>
+ <20140218090946.GA1954@localhost>
+ <1392828260.3113.24.camel@mange>
+ <20140219170039.GG24335@localhost>
+ <5304E472.2000203@dct.mine.nu>
+ <20140219171406.GH24335@localhost>
+ <53064721.3080905@googlemail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <53064721.3080905-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Frank =?iso-8859-1?Q?Sch=E4fer?= <fschaefer.oss-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Karsten Malcher <debian-QdlBTFngBEMsCylrc8G9yg@public.gmane.org>, Magnus <magnus-swe-zq6IREYz3ykAvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2014-02-20, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 02/19/2014 09:55 PM, Peter Hurley wrote:
->> On 02/19/2014 06:06 PM, Hal Murray wrote:
->>>> Can you give me an idea of your device's average and minimum required
->>>> latency (please be specific)?  Is your target arch x86 [so I can evaluate the
->>>> the impact of bus-locked instructions relative to your expected]?
->>>
->>> The code I'm familiar with is ntpd and gpsd.  They run on almost any hardware
->>> or OS and talk to a wide collection of devices.
->>>
->>> There is no hard requirement for latency.  They just work better with lower
->>> latency.  The lower the better.
->>>
->>> People gripe about the latency due to USB polling which is about a ms.
->>
->> Have you tried 3.12+ without low_latency? I ripped out a lot of locks
->> from 3.12+ so it's possible it already meets your requirements.
->
-> Using Alan's idea to mock up a latency test, I threw together a test jig
-> using two computers running 3.14-rc1 and my fwserial driver (modified to
-> not aggregrate writes) in raw mode where the target does this:
->
->          while (1) {
->                  read 64 bytes
->                  compare to pattern
->                  write 1 byte response
->          }
->
-> and the sender does this:
->
->          for (i = 0; i < 2000; i++) {
->                  write 64-byte pattern
->                  read 1 byte response
->          }
->
-> Sender completes 2000 loops in 160ms total run time;
-> that's 80us average per complete round-trip.
+On Thu, Feb 20, 2014 at 07:19:13PM +0100, Frank Sch=E4fer wrote:
+> Am 19.02.2014 18:14, schrieb Johan Hovold:
 
-If I understand correctly, that 80us _includes_ the actual time for
-the bits on the wire (which means the actual "baud rate" involved is
-high enough that it's negligible).
+> > What driver is that? The latest clone-related patch from Frank that=
+ I've
+> > seen stated:
+> >
+> > 	"According to Prolific, several (unauthorized) cheap and less
+> > 	 functional clones of the PL2303HX chip are in circulation. [1]
+> > 	 I've had the chance to test such a cloned device and it turned
+> > 	 out that it doesn't support any baud rates above 115200 baud
+> > 	 (original: 6 Mbaud) It also doesn't support the divisior based
+> > 	 baud rate encoding method, so no continuous baud rate adjustment
+> > 	 is possible."
+> This patch is still 100% valid.
+> The "good" clones are detected as originals, which is fine.
 
+Good to know. Thanks for clarifying.
 
-> I think this shows that low_latency is unnecessary and should
-> just be removed/ignored by the tty core.
+Care to respin your refined-device-detection patches against the update=
+d
+driver in v3.14-rc?
 
-If that's the sort of latency that you get for typical kernel
-configurations for typical distros, then I agree that the low_latency
-flag is not needed by the tty later.
-
-However, it might still be useful for the lower-level tty or
-serial-core driver to control CPU usage vs. latency trade-offs (for
-exaple, one of my drivers uses it to decide where to set the rx FIFO
-threshold).
-
--- 
-Grant Edwards               grant.b.edwards        Yow! I wonder if I could
-                                  at               ever get started in the
-                              gmail.com            credit world?
+Thanks,
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
