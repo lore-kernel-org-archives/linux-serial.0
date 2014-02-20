@@ -1,91 +1,111 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH 3/4] tty: serial: bcm63xx_uart: add support for DT probing
-Date: Wed, 19 Feb 2014 17:29:31 -0800
-Message-ID: <CAGVrzcYEWJ6nKncSx3jjWFp9TXf8PFJnd-joPwSe0mDh-CeMiw@mail.gmail.com>
-References: <1392852167-26243-1-git-send-email-f.fainelli@gmail.com>
- <1392852167-26243-4-git-send-email-f.fainelli@gmail.com> <CAOiHx==rYbsy66zRUc-QXTS7ZjaX8v9kiomp+m33+tcEtKC-dA@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Wed, 19 Feb 2014 21:19:56 -0500
+Message-ID: <5305664C.7080701@hurleysoftware.com>
+References: <20140218093829.GC1741@redhat.com>	<5303DABD.9000302@hurleysoftware.com>	<20140219130308.GC1851@redhat.com>	<le2nmd$p1$1@ger.gmane.org>	<5304EC33.5040502@hurleysoftware.com>	<20140219191717.486ac4d0@alan.etchedpixels.co.uk>	<53051276.2070601@hurleysoftware.com> <20140219214242.406e705b@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:61177 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751717AbaBTBaM (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34763 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752748AbaBTCUA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 20:30:12 -0500
-In-Reply-To: <CAOiHx==rYbsy66zRUc-QXTS7ZjaX8v9kiomp+m33+tcEtKC-dA@mail.gmail.com>
+	Wed, 19 Feb 2014 21:20:00 -0500
+In-Reply-To: <20140219214242.406e705b@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jonas Gorski <jogo@openwrt.org>
-Cc: linux-serial@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Maxime Bizon <mbizon@freebox.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
 
-2014-02-19 16:00 GMT-08:00 Jonas Gorski <jogo@openwrt.org>:
-> On Thu, Feb 20, 2014 at 12:22 AM, Florian Fainelli <f.fainelli@gmail.com> wrote:
->> Add a matching table for the the bcm63xx_uart driver on the compatible
->> string "brcm,bcm63xx-uart" which covers all BCM63xx implementations.
->> Also make sure that we convert the id based on the uart aliases provided
->> by the relevant Device Tree.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>  drivers/tty/serial/bcm63xx_uart.c | 11 +++++++++++
->>  1 file changed, 11 insertions(+)
->>
->> diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
->> index 37e7e33..538e84c 100644
->> --- a/drivers/tty/serial/bcm63xx_uart.c
->> +++ b/drivers/tty/serial/bcm63xx_uart.c
->> @@ -31,6 +31,7 @@
->>  #include <linux/serial_core.h>
->>  #include <linux/serial_bcm63xx.h>
->>  #include <linux/io.h>
->> +#include <linux/of.h>
->>
->>  #define BCM63XX_NR_UARTS       2
->>
->> @@ -806,6 +807,9 @@ static int bcm_uart_probe(struct platform_device *pdev)
->>         struct clk *clk;
->>         int ret;
->>
->> +       if (pdev->dev.of_node)
->> +               pdev->id = of_alias_get_id(pdev->dev.of_node, "uart");
->> +
->>         if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
->>                 return -EINVAL;
->>
->> @@ -857,6 +861,12 @@ static int bcm_uart_remove(struct platform_device *pdev)
->>         return 0;
->>  }
->>
->> +static const struct of_device_id bcm63xx_of_match[] = {
->> +       { .compatible = "brcm,bcm63xx-uart" },
+On 02/19/2014 04:42 PM, One Thousand Gnomes wrote:
+> It only has to happen *once*, not every time to screw stuff up.
 >
-> From my understanding, this should be "brcm,bcm6345-uart", because
-> this kind of uart appeared first on bcm6345 (well, maybe bcm6335, no
-> idea which one of these two was first, but the latter was never
-> supported in mainline anyway).
-
-That's right, in fact, I think it might be desirable to handle both
-compatible string, just as a hint that it is compatible with the
-entire bcm63xx family. Would that work for you?
-
-> The same applies to 4/4.
+>> If the reader isn't pulling _all_ the data out the instant it's woken,
+>> trying to trim off one worker wakeup (by processing input at interrupt time)
+>> is pointless.
 >
->> +       { /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
->> +
->>  /*
->>   * platform driver stuff
->>   */
->> @@ -866,6 +876,7 @@ static struct platform_driver bcm_uart_platform_driver = {
->>         .driver = {
->>                 .owner = THIS_MODULE,
->>                 .name  = "bcm63xx_uart",
->> +               .of_match_table = bcm63xx_of_match,
->
-> You could guard this one with of_match_ptr (and then bcm63xx_of_match
-> with CONFIG_OF. Probably not much, but it's the little things ;-)
+> No - because of the statistical corner cases. The standard Linux is not
+> remotely hard real time, and even if it were most of the tools involved
+> are not.
 
-Good catch.
--- 
-Florian
+Ok, so this is still only about "best effort", and really bad
+worst case behavior (that the tty core has no control over) is ok.
+
+Going to great lengths to trim one wakeup when nouveau disables interrupts
+for 2ms seemed like a waste of time.
+
+>>> Low latency goes back to the days of flip buffers, bottom halves an a
+>>> 100Hz clock. There are certainly better ways to do it now if its needed.
+>>
+>> Still, as you've pointed out a couple of times, maybe there's a limited
+>> fastpath that's easy and simple. That's why I was asking about throttling
+>> because it's evaluated even for raw mode.
+>
+> Even if there isn't the goal of low latency was always 'get stuff to
+> happen soon' not 'get stuff to happen in the IRQ handler' If you have the
+> tty processing happening immediately after the IRQ returns when
+> low_latency is set I'm sure the numbers will be just fine and as good as
+> historically.
+>
+> Whether you can always do that I guess depends what happens on really
+> slow boxes if you don't do any deferral - eg on Geert's Amiga.
+
+Sure.
+
+I think _some_ effort will yield positive results. For example,
+in flush_to_ldisc():
+
+  	if (disc == NULL)
+  		return;
+
+-	mutex_lock(&buf->lock);
++	if (!mutex_trylock(&buf->lock))
++		goto deref;
+
+  	while (1) {
+  		struct tty_buffer *head = buf->head;
+
+	.....
+
+  	mutex_unlock(&buf->lock);
+-
++ deref:
+  	tty_ldisc_deref(disc);
+  }
+
+This change makes flush_to_ldisc() itself safely callable from
+interrupt context, and:
+1. doesn't lose data (ie., buffers if the ldisc is filling up)
+2. automatically picks the optimum handling whether the input worker
+    is running or not
+3. doesn't require more locks to exclude flushing or the input worker
+
+This still leaves fixing termios lock, properly handling throttling
+and the exclusion logic for incompatible termios options and low_latency.
+
+[For this change to work properly, I still need to solve a race where
+the driver has just updated the commit marker but can't grab the buf
+lock because tty_buffer_flush() still has the lock but has already
+performed the flush -- in this case, the work needs to be restarted
+or something because there's still data in the buffer that needs
+processing. There's plenty of possible solutions to this; I'm thinking on
+which is the right one].
+
+> Flow control even in raw mode is expected Unix behaviour. However do we
+> ever need to evaluate it if the tty termios has IXON and CRTSCTS clear ?
+
+It doesn't right now because the assumption is that drivers can
+have a whole host of reasons why they want to throttle (the pty driver
+leaves it on permanently; the vt driver needs unthrottle to support
+paste that no one uses even though I fixed it).
+
+Putting aside for a moment the issue of termios safety inside
+the throttle and unthrottle driver methods, the exclusion locks here could
+be spinlocks if the drivers can be audited/fixed to not sleep here.
+
+Then that just leaves the termios lock, which is a non-trivial problem, and
+I'm not convinced RCU will magically fix it.
+
+Regards,
+Peter Hurley
