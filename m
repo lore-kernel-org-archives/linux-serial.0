@@ -1,96 +1,83 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 01/19] serial: sh-sci: Enable the driver on all ARM
- platforms
-Date: Thu, 20 Feb 2014 01:00:43 +0100
-Message-ID: <20140220000043.GE6988@pengutronix.de>
-References: <1383086274-11049-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1383086274-11049-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20140219205446.GD6988@pengutronix.de>
- <1609898.QTd44x6TTB@avalon>
+From: Jonas Gorski <jogo@openwrt.org>
+Subject: Re: [PATCH 3/4] tty: serial: bcm63xx_uart: add support for DT probing
+Date: Thu, 20 Feb 2014 01:00:13 +0100
+Message-ID: <CAOiHx==rYbsy66zRUc-QXTS7ZjaX8v9kiomp+m33+tcEtKC-dA@mail.gmail.com>
+References: <1392852167-26243-1-git-send-email-f.fainelli@gmail.com> <1392852167-26243-4-git-send-email-f.fainelli@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57689 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751300AbaBTAAq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Feb 2014 19:00:46 -0500
-Content-Disposition: inline
-In-Reply-To: <1609898.QTd44x6TTB@avalon>
+Received: from 0.mx.nanl.de ([217.115.11.12]:42026 "EHLO mail.nanl.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752589AbaBTAKe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 19 Feb 2014 19:10:34 -0500
+In-Reply-To: <1392852167-26243-4-git-send-email-f.fainelli@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Wed, Feb 19, 2014 at 11:24:38PM +0100, Laurent Pinchart wrote:
-> Hi Uwe,
->=20
-> On Wednesday 19 February 2014 21:54:46 Uwe Kleine-K=F6nig wrote:
-> > On Tue, Oct 29, 2013 at 11:37:36PM +0100, Laurent Pinchart wrote:
-> > > Renesas ARM platforms are transitioning from single-platform to
-> > > multi-platform kernels using the new ARCH_SHMOBILE_MULTI. Make th=
-e
-> > > driver available on all ARM platforms to enable it on both ARCH_S=
-HMOBILE
-> > > and ARCH_SHMOBILE_MULTI, and increase build testing coverage with
-> > > COMPILE_TEST.
-> > >=20
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: linux-serial@vger.kernel.org
-> > > Signed-off-by: Laurent Pinchart
-> > > <laurent.pinchart+renesas@ideasonboard.com>
-> > > ---
-> > >=20
-> > >  drivers/tty/serial/Kconfig | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kcon=
-fig
-> > > index febd45c..9a5a8ef 100644
-> > > --- a/drivers/tty/serial/Kconfig
-> > > +++ b/drivers/tty/serial/Kconfig
-> > > @@ -709,7 +709,7 @@ config SERIAL_IP22_ZILOG_CONSOLE
-> > >=20
-> > >  config SERIAL_SH_SCI
-> > > =20
-> > >  	tristate "SuperH SCI(F) serial port support"
-> > >=20
-> > > -	depends on HAVE_CLK && (SUPERH || ARCH_SHMOBILE)
-> > > +	depends on HAVE_CLK && (SUPERH || ARM || COMPILE_TEST)
-> > >=20
-> > >  	select SERIAL_CORE
-> >=20
-> > This patch is in mainline as d4f9e7b3d12e92ede642f6f4fc7d959f06da8c=
-cc
-> > since v3.13-rc1. I wonder if
-> >=20
-> > 	depends on HAVE_CLK && (SUPERH || ARCH_SHMOBILE || COMPILE_TEST)
-> >=20
-> > isn't the better option. (Since bf98c1eac1d4a6bcf00532e4fa41d8126cd=
-6c187
-> > ARCH_SHMOBILE is enabled for both multi-platform and legacy shmobil=
-e
-> > configs.) Or do you plan to deprecate ARCH_SHMOBILE?
->=20
-> We don't plan to deprecate ARCH_SHMOBILE. I've posted a patch to fix =
-this,=20
-> please see http://www.spinics.net/lists/linux-sh/msg28296.html ("[PAT=
-CH 1/2]=20
-> serial: sh-sci: Restrict non-COMPILE_TEST compilation").
-Ah, this is equivalent. So you can consider my suggestion as an Ack.
+On Thu, Feb 20, 2014 at 12:22 AM, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> Add a matching table for the the bcm63xx_uart driver on the compatible
+> string "brcm,bcm63xx-uart" which covers all BCM63xx implementations.
+> Also make sure that we convert the id based on the uart aliases provided
+> by the relevant Device Tree.
+>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  drivers/tty/serial/bcm63xx_uart.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+> index 37e7e33..538e84c 100644
+> --- a/drivers/tty/serial/bcm63xx_uart.c
+> +++ b/drivers/tty/serial/bcm63xx_uart.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/serial_core.h>
+>  #include <linux/serial_bcm63xx.h>
+>  #include <linux/io.h>
+> +#include <linux/of.h>
+>
+>  #define BCM63XX_NR_UARTS       2
+>
+> @@ -806,6 +807,9 @@ static int bcm_uart_probe(struct platform_device *pdev)
+>         struct clk *clk;
+>         int ret;
+>
+> +       if (pdev->dev.of_node)
+> +               pdev->id = of_alias_get_id(pdev->dev.of_node, "uart");
+> +
+>         if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
+>                 return -EINVAL;
+>
+> @@ -857,6 +861,12 @@ static int bcm_uart_remove(struct platform_device *pdev)
+>         return 0;
+>  }
+>
+> +static const struct of_device_id bcm63xx_of_match[] = {
+> +       { .compatible = "brcm,bcm63xx-uart" },
 
-Best regards
-Uwe
+>From my understanding, this should be "brcm,bcm6345-uart", because
+this kind of uart appeared first on bcm6345 (well, maybe bcm6335, no
+idea which one of these two was first, but the latter was never
+supported in mainline anyway).
+The same applies to 4/4.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> +       { /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
+> +
+>  /*
+>   * platform driver stuff
+>   */
+> @@ -866,6 +876,7 @@ static struct platform_driver bcm_uart_platform_driver = {
+>         .driver = {
+>                 .owner = THIS_MODULE,
+>                 .name  = "bcm63xx_uart",
+> +               .of_match_table = bcm63xx_of_match,
+
+You could guard this one with of_match_ptr (and then bcm63xx_of_match
+with CONFIG_OF. Probably not much, but it's the little things ;-)
+
+
+Regards
+Jonas
