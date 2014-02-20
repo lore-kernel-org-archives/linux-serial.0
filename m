@@ -1,42 +1,74 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH tty-next v2 0/4] Device Tree probing for bcm63xx_uart
-Date: Thu, 20 Feb 2014 10:15:50 -0800
-Message-ID: <1392920154-3642-1-git-send-email-f.fainelli@gmail.com>
+From: =?ISO-8859-1?Q?Frank_Sch=E4fer?= <fschaefer.oss@googlemail.com>
+Subject: Re: USB to Serial converter code pl2303
+Date: Thu, 20 Feb 2014 19:19:13 +0100
+Message-ID: <53064721.3080905@googlemail.com>
+References: <1392688665.7323.32.camel@mange> <20140218090946.GA1954@localhost> <1392828260.3113.24.camel@mange> <20140219170039.GG24335@localhost> <5304E472.2000203@dct.mine.nu> <20140219171406.GH24335@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:20432 "EHLO
-	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755725AbaBTSSG (ORCPT
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:47099 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755742AbaBTSSL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Feb 2014 13:18:06 -0500
+	Thu, 20 Feb 2014 13:18:11 -0500
+In-Reply-To: <20140219171406.GH24335@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: devicetree@vger.kernel.org, mbizon@freebox.fr, jogo@openwrt.org, gregkh@linuxfoundation.org, mark.rutland@arm.com, gregory.0xf0@gmail.com, Florian Fainelli <f.fainelli@gmail.com>
+To: Johan Hovold <jhovold@gmail.com>, Karsten Malcher <debian@dct.mine.nu>
+Cc: Magnus <magnus-swe@telia.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-Hi Greg,
 
-This patchset make the bcm63xx_uart architecture agnostic such that it can be
-built on something else than MIPS now. Finally it adds support for Device Tree
-probing to the driver along with a DT binding documentation.
+Am 19.02.2014 18:14, schrieb Johan Hovold:
+> On Wed, Feb 19, 2014 at 06:05:54PM +0100, Karsten Malcher wrote:
+>> Am 19.02.2014 18:00, schrieb Johan Hovold:
+>>> I need an adapter that can handle 2400 Baud to talk to the
+>>> ft639/ede639 servo controller chip or possibly a pl2303 driver
+>>> that is improved.
+>>> The pl2303-driver can handle 2400 baud, but not sure exactly what b=
+aud
+>>> rates are available for a cloned/pirated pl2303 chip (if that is wh=
+at
+>>> you've got). 115200 baud should be supported, though.
+>> We have tested different baud rates with the PL2303HX china clones.
+>> All are working including non standard baud rates.
+Urgh... Karsten... don't confuse the people. :/
+Yes, _your_ clones behave exactly like HX originals, but others don't.
 
-I would appreciate if this could go via your tree for consistency.
+> Ok, good, so 2400 baud should work.
+Indeed.
+Even the bad clones should support all standard baud rates up o 115200.
 
-Thanks!
+>
+>> But the non standard baud rates are only available with the modified
+>> driver from Frank Sch=E4fer.
+> What driver is that? The latest clone-related patch from Frank that I=
+'ve
+> seen stated:
+>
+> 	"According to Prolific, several (unauthorized) cheap and less
+> 	 functional clones of the PL2303HX chip are in circulation. [1]
+> 	 I've had the chance to test such a cloned device and it turned
+> 	 out that it doesn't support any baud rates above 115200 baud
+> 	 (original: 6 Mbaud) It also doesn't support the divisior based
+> 	 baud rate encoding method, so no continuous baud rate adjustment
+> 	 is possible."
+This patch is still 100% valid.
+The "good" clones are detected as originals, which is fine.
 
-Florian Fainelli (4):
-  tty: serial: bcm63xx_uart: include linux/io.h
-  tty: serial: bcm63xx_uart: define UART_REG_SIZE constant
-  tty: serial: bcm63xx_uart: add support for DT probing
-  Documentation: devicetree: add bindings documentation for bcm63xx-uart
+Regards,
+=46rank
 
- .../devicetree/bindings/serial/bcm63xx-uart.txt    | 27 ++++++++++++++++++++++
- drivers/tty/serial/bcm63xx_uart.c                  | 16 +++++++++++--
- include/linux/serial_bcm63xx.h                     |  2 ++
- 3 files changed, 43 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+> Thanks,
+> Johan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-usb" =
+in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
--- 
-1.8.3.2
-
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
