@@ -1,58 +1,64 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH tty-next v2 4/4] Documentation: devicetree: add bindings documentation for bcm63xx-uart
-Date: Fri, 21 Feb 2014 16:23:46 +0100
-Message-ID: <30959154.CHzZGsTM1h@wuerfel>
-References: <1392920154-3642-1-git-send-email-f.fainelli@gmail.com> <3851734.OkR5IG0DHF@wuerfel> <CAOiHx==mQ5Dg4P1AYSLg1G1vHiXAcThSb+n+8L9OAoU-fPgt6w@mail.gmail.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Fri, 21 Feb 2014 15:39:46 +0000
+Message-ID: <20140221153946.2bda2ef0@alan.etchedpixels.co.uk>
+References: <20140218093829.GC1741@redhat.com>
+	<5303DABD.9000302@hurleysoftware.com>
+	<20140219130308.GC1851@redhat.com>
+	<le2nmd$p1$1@ger.gmane.org>
+	<5304EC33.5040502@hurleysoftware.com>
+	<20140219191717.486ac4d0@alan.etchedpixels.co.uk>
+	<53051276.2070601@hurleysoftware.com>
+	<20140219214242.406e705b@alan.etchedpixels.co.uk>
+	<5305664C.7080701@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.187]:50132 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932150AbaBUPYF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Feb 2014 10:24:05 -0500
-In-Reply-To: <CAOiHx==mQ5Dg4P1AYSLg1G1vHiXAcThSb+n+8L9OAoU-fPgt6w@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <5305664C.7080701@hurleysoftware.com>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jonas Gorski <jogo@openwrt.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Florian Fainelli <f.fainelli@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "mbizon@freebox.fr" <mbizon@freebox.fr>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "gregory.0xf0@gmail.com" <gregory.0xf0@gmail.com>
 
-On Friday 21 February 2014 16:18:54 Jonas Gorski wrote:
-> On Fri, Feb 21, 2014 at 3:59 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Friday 21 February 2014 15:48:04 Jonas Gorski wrote:
-> >>
-> >> There already is a (non-OF) user for this driver that exports a
-> >> "periph" clock, which is where the name comes from. It currently does
-> >> all clock lookups purely based on the clock name, not the device name
-> >> itself. Of course we can just make it get a different named clock when
-> >> of_node is present; that should satisfy both.
-> >
-> > I think you are referring to arch/mips/bcm63xx/clk.c, but that doesn't
-> > actually use clkdev at all and instead expects device drivers to know
-> > the name of *output* of the clock controllers. You can't use that
-> > name in the binding for a device, which needs to know the name of
-> > the *input* from the clock consumer point of view.
+> Ok, so this is still only about "best effort", and really bad
+> worst case behavior (that the tty core has no control over) is ok.
 > 
-> That's why I was suggesting making the driver do a lookup on the input
-> name in case of probing through OF (having an of_node), and using
-> the "legacy" output name else. That way the binding is not limited to
-> the output name of bcm63xx/mips anymore.
+> Going to great lengths to trim one wakeup when nouveau disables interrupts
+> for 2ms seemed like a waste of time.
 
-Ok, fair enough.
+If it used to work and it doesn't now it's a regression. It's also a
+nasty one if you've removed the facility for it.
 
-> > An easy solution would be to register a clkdev lookup table in
-> > the above clock driver.
-> 
-> Requiring bcm63xx/mips to implement clkdev would be IMHO an
-> unnecessary burden just so bcm63xx/arm using OF can reuse this driver.
-> Letting bcm63xx use a clkdev lookup table (or rather tables, as each
-> chip is different) is good mid or long term goal, but it should not
-> block other users.
+> This change makes flush_to_ldisc() itself safely callable from
+> interrupt context, and:
+> 1. doesn't lose data (ie., buffers if the ldisc is filling up)
+> 2. automatically picks the optimum handling whether the input worker
+>     is running or not
+> 3. doesn't require more locks to exclude flushing or the input worker
 
-Ah, that's probably right. I was assuming you'd only need to
-add a single function call to register a table, but I see now
-that using clkdev would impact the entire clk implementation
-on bcm63xx.
+Yep
 
-	Arnd
+> Putting aside for a moment the issue of termios safety inside
+> the throttle and unthrottle driver methods, the exclusion locks here could
+> be spinlocks if the drivers can be audited/fixed to not sleep here.
+
+That was basically insoluble when the lock first went in. We tried with a
+spinlock but a lot of USB widgets need to go and chatter with the device
+when you do flow control. Flow control is fundamentally ordered but
+asynchronous however so if the right fix was to make the USB dongles
+queue the work then no harm is done (and the queued flow control
+assertion would worst case be no different to a non queued one from a
+queued flush_to_ldisc)
+
+> Then that just leaves the termios lock, which is a non-trivial problem, and
+> I'm not convinced RCU will magically fix it.
+
+If you pass a snapshot of the termios state down then I think it does,
+but it's still not remotely trivial.
+
+First question though comes before all of this - and that is do we need
+low_latency at all any more or is the current scheduling logic now good
+enough to do the job anyway.
+
+Alan
