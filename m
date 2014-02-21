@@ -1,44 +1,79 @@
-From: Karsten Malcher <debian@dct.mine.nu>
-Subject: Re: USB to Serial converter code pl2303
-Date: Fri, 21 Feb 2014 09:47:14 +0100
-Message-ID: <53071292.3050800@dct.mine.nu>
-References: <1392688665.7323.32.camel@mange> <20140218090946.GA1954@localhost> <1392828260.3113.24.camel@mange> <20140219170039.GG24335@localhost> <5304E472.2000203@dct.mine.nu> <20140219171406.GH24335@localhost> <53064721.3080905@googlemail.com>
-Reply-To: debian@dct.mine.nu
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH tty-next v2 4/4] Documentation: devicetree: add
+ bindings documentation for bcm63xx-uart
+Date: Fri, 21 Feb 2014 12:08:54 +0000
+Message-ID: <20140221120854.GE8783@e106331-lin.cambridge.arm.com>
+References: <1392920154-3642-1-git-send-email-f.fainelli@gmail.com>
+ <1392920154-3642-5-git-send-email-f.fainelli@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay04.ispgateway.de ([80.67.29.8]:52413 "EHLO
-	smtprelay04.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753737AbaBUIrT (ORCPT
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:37298 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755261AbaBUMJH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Feb 2014 03:47:19 -0500
-In-Reply-To: <53064721.3080905@googlemail.com>
+	Fri, 21 Feb 2014 07:09:07 -0500
+Content-Disposition: inline
+In-Reply-To: <1392920154-3642-5-git-send-email-f.fainelli@gmail.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?ISO-8859-1?Q?Frank_Sch=E4fer?= <fschaefer.oss@googlemail.com>
-Cc: Johan Hovold <jhovold@gmail.com>, Magnus <magnus-swe@telia.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "mbizon@freebox.fr" <mbizon@freebox.fr>, "jogo@openwrt.org" <jogo@openwrt.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "gregory.0xf0@gmail.com" <gregory.0xf0@gmail.com>
 
-Am 20.02.2014 19:19, schrieb Frank Sch=E4fer:
->> We have tested different baud rates with the PL2303HX china clones.
->> All are working including non standard baud rates.
-> Urgh... Karsten... don't confuse the people. :/
-> Yes, _your_ clones behave exactly like HX originals, but others don't=
-=2E
+On Thu, Feb 20, 2014 at 06:15:54PM +0000, Florian Fainelli wrote:
+> Add the Device Tree binding documentation for the non-standard BCM63xx
+> UART hardware block found in the BCM63xx DSL SoCs.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-O.K. - all of them is not correct.
-My meaning was all i have tested from the PL2303HX clones.
+This looks fine to me.
 
-At least all standard driver only support the standard baud rates.
-That's sufficient for nearly all purposes.
-But if someone needs to support non standard baud rates, it might be go=
-od to know that this is possible with some chips.
+Acked-by: Mark Rutland <mark.rutland@arm.com>
 
-Cheers
-Karsten
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> Changes in v2:
+> - update the compatible property to be "brcm,bcm6345-uart" as suggested
+> - reword the clocks and clock-names properties based on feedback from Mark
+> 
+>  .../devicetree/bindings/serial/bcm63xx-uart.txt    | 27 ++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+> new file mode 100644
+> index 0000000..f288232
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+> @@ -0,0 +1,27 @@
+> +Broadcom BCM63xx UART: Non standard UART used in the Broadcom BCM63xx DSL SoCs
+> +
+> +Required properties:
+> +- compatible: must be "brcm,bcm6345-uart"
+> +- reg: offset and length of the register set for the device
+> +- interrupts: device interrupt
+> +- clocks: a list of phandles and clock-specifiers, one for each entry
+> +  in clock-names
+> +- clock-names: should contain "periph" for the functional clock
+> +
+> +Example:
+> +
+> +serial0: uart@600 {
+> +	compatible = "brcm,bcm6345-uart";
+> +	reg = <0x600 0x1b>;
+> +	interrupts = <GIC_SPI 32 0>;
+> +	clocks = <&periph_clk>;
+> +	clock-names = "periph";
+> +};
+> +
+> +Note: each UART port must have an alias correctly numbered in the "aliases"
+> +node, e.g:
+> +
+> +aliases {
+> +	uart0 = &serial0;
+> +	uart1 = &serial1;
+> +};
+> -- 
+> 1.8.3.2
+> 
+> 
