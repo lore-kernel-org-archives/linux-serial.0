@@ -1,73 +1,44 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Thu, 20 Feb 2014 22:14:53 +0000 (UTC)
-Message-ID: <le5uot$si0$1@ger.gmane.org>
-References: <peter@hurleysoftware.com>
- <20140220215541.7D694406062@ip-64-139-1-69.sjc.megapath.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org
+From: Karsten Malcher <debian@dct.mine.nu>
+Subject: Re: USB to Serial converter code pl2303
+Date: Fri, 21 Feb 2014 09:47:14 +0100
+Message-ID: <53071292.3050800@dct.mine.nu>
+References: <1392688665.7323.32.camel@mange> <20140218090946.GA1954@localhost> <1392828260.3113.24.camel@mange> <20140219170039.GG24335@localhost> <5304E472.2000203@dct.mine.nu> <20140219171406.GH24335@localhost> <53064721.3080905@googlemail.com>
+Reply-To: debian@dct.mine.nu
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtprelay04.ispgateway.de ([80.67.29.8]:52413 "EHLO
+	smtprelay04.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753737AbaBUIrT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Feb 2014 03:47:19 -0500
+In-Reply-To: <53064721.3080905@googlemail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?ISO-8859-1?Q?Frank_Sch=E4fer?= <fschaefer.oss@googlemail.com>
+Cc: Johan Hovold <jhovold@gmail.com>, Magnus <magnus-swe@telia.com>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On 2014-02-20, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net> wrote:
+Am 20.02.2014 19:19, schrieb Frank Sch=E4fer:
+>> We have tested different baud rates with the PL2303HX china clones.
+>> All are working including non standard baud rates.
+> Urgh... Karsten... don't confuse the people. :/
+> Yes, _your_ clones behave exactly like HX originals, but others don't=
+=2E
 
-> Let's go back to the big picture.  In the old old days, time sharing
-> systems had lots of serial ports.  It was common for the hardware to
-> buffer up several characters before requesting an interrupt in order
-> to reduce the CPU load.
+O.K. - all of them is not correct.
+My meaning was all i have tested from the PL2303HX clones.
 
-There were even serial boards that had a cooked "line mode" which
-buffered up a whole line of input: they handled limited line-editing
-and didn't interrupt the CPU until they saw 'enter' or 'ctrl-C'.
+At least all standard driver only support the standard baud rates.
+That's sufficient for nearly all purposes.
+But if someone needs to support non standard baud rates, it might be go=
+od to know that this is possible with some chips.
 
-> There was usually a bit in the hardware to bypass this if you thought
-> that response time was more important than CPU load.  I was expecting
-> low_latency to set that bit.
-
-It might.  That depends on whether the driver paid any attention to
-the low_latency flag.  IIRC, some did, some didn't.
-
-> Is that option even present in modern serial chips?
-
-Sure.  In pretty much all of the UARTs I know of, you can configure
-the rx FIFO threshold or disable the rx FIFO altogether [though
-setting the threshold to 1 is usually a better idea than disabling the
-rx FIFO].  At least one of my serial_core drivers looks at the
-low_latency flag and configure a lower rx FIFO threshold if it's set.
-
-> Do the various chips claiming to be 8250/16550 and friends correctly
-> implement all the details of the specs?
-
-What specs?
-
-> Many gigabit ethernet controllers have the same issue.  It's often
-> called interrupt coalescing.
->
-> What/why is the serial/scheduler doing differently in the low_latency
-> case?  What case does that help?
-
-Back in the old days, when a serial driver pushed characters up to the
-tty layer it didn't immediately wake up a process that was blocking on
-a read().  AFAICT, that didn't happen until the next system tick. I'm
-not sure if that was just because the scheduler wasn't called until a
-tick happened, or if there was some intermediate tty-layer
-worker-thread that had to run.
-
-Setting the low_latency flag avoided that.
-
-When the driver pushed characters to the tty layer with the
-low_latency flag set, the user-space process that was blocking on
-read() would wake up "immediately". This potentially used up a lot
-more CPU time, since a user process that is reading a large block of
-data _might_ be woken up and then block again for every rx byte --
-assuming no rx FIFO.  Without the low_latency flag, the user process
-would wake up every 10ms and be handed 10ms worth of data.  (Back then
-HZ was always 100.)
-
-At least that's how I remember it...
-
--- 
-Grant Edwards               grant.b.edwards        Yow! My EARS are GONE!!
-                                  at               
-                              gmail.com            
+Cheers
+Karsten
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
