@@ -1,64 +1,95 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: locking changes in tty broke low latency feature
-Date: Fri, 21 Feb 2014 16:31:03 +0000 (UTC)
-Message-ID: <le7v07$9gn$1@ger.gmane.org>
-References: <20140218093829.GC1741@redhat.com>
- <5303DABD.9000302@hurleysoftware.com> <20140219130308.GC1851@redhat.com>
- <le2nmd$p1$1@ger.gmane.org> <5304EC33.5040502@hurleysoftware.com>
- <20140219191717.486ac4d0@alan.etchedpixels.co.uk>
- <53051276.2070601@hurleysoftware.com>
- <20140219214242.406e705b@alan.etchedpixels.co.uk>
- <5305664C.7080701@hurleysoftware.com>
- <20140221153946.2bda2ef0@alan.etchedpixels.co.uk>
- <53077799.6030700@hurleysoftware.com>
+From: "Ira W. Snyder" <iws@ovro.caltech.edu>
+Subject: Re: [PATCH 1/1] serial: 8250_pci: fix support for MosChip 98xx boards
+Date: Fri, 21 Feb 2014 14:49:49 -0800
+Message-ID: <20140221224949.GL16209@ovro.caltech.edu>
+References: <1393022777-5959-1-git-send-email-iws@ovro.caltech.edu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1393022777-5959-1-git-send-email-iws@ovro.caltech.edu>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org
+To: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, gtdev@spearhead.de, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2014-02-21, Peter Hurley <peter@hurleysoftware.com> wrote:
+On Fri, Feb 21, 2014 at 02:46:17PM -0800, Ira W. Snyder wrote:
+> From: "Ira W. Snyder" <iws@ovro.caltech.edu>
+> 
+> Commit 7808edcd306f22aeb23775d34e70b7fa2f58b852 "Basic support for
+> Moschip 9900 family I/O chips" broke support for the 98xx boards. This
+> is due to a missing check for the 99xx family inside the newly added
+> pci_netmos_9900_setup() function, which is now used for all boards in
+> the Moschip family.
+> 
+> The code for skipping BARs is incorrect for the 98xx boards. Using it
+> causes two serial ports to be left undetected on my 9865 board.
+> 
+> By checking for the 99xx boards and using the new code exclusively for
+> them, all of my serial ports are now detected.
+> 
+> Signed-off-by: Ira W. Snyder <iws@ovro.caltech.edu>
+> ---
+> 
+> Here is the lspci output for my 9865 board. On the 05:00.2 device, the
+> middle two serial ports (I/O ports 0x1010 and 0x1008) are left unused
+> and undetected without this patch.
+> 
+> After the patch, they work perfectly.
+> 
+> 05:00.0 Serial controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller (prog-if 02 [16550])
+> 	Subsystem: Device a000:1000
+> 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 21
+> 	I/O ports at 1028 [size=8]
+> 	Memory at e0104000 (32-bit, non-prefetchable) [size=4K]
+> 	Memory at e0103000 (32-bit, non-prefetchable) [size=4K]
+> 	Capabilities: <access denied>
+> 	Kernel driver in use: serial
+> 	Kernel modules: parport_pc
+> 
+> 05:00.1 Serial controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller (prog-if 02 [16550])
+> 	Subsystem: Device a000:1000
+> 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 22
+> 	I/O ports at 1020 [size=8]
+> 	Memory at e0102000 (32-bit, non-prefetchable) [size=4K]
+> 	Memory at e0101000 (32-bit, non-prefetchable) [size=4K]
+> 	Capabilities: <access denied>
+> 	Kernel driver in use: serial
+> 	Kernel modules: parport_pc
+> 
+> 05:00.2 Communication controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller
+> 	Subsystem: Device a000:3004
+> 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 23
+> 	I/O ports at 1018 [size=8]
+> 	I/O ports at 1010 [size=8]
+> 	I/O ports at 1008 [size=8]
+> 	I/O ports at 1000 [size=8]
+> 	Memory at e0100000 (32-bit, non-prefetchable) [size=4K]
+> 	Capabilities: <access denied>
+> 	Kernel driver in use: serial
+> 
+>  drivers/tty/serial/8250/8250_pci.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 50228eed3b6f..374551f196c5 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -783,7 +783,8 @@ static int pci_netmos_9900_setup(struct serial_private *priv,
+>  {
+>  	unsigned int bar;
+>  
+> -	if ((priv->dev->subsystem_device & 0xff00) == 0x3000) {
+> +	if ((priv->dev->subsystem_device & 0xff00) == 0x3000 &&
+> +		(priv->dev->device & 0xff00) == 0x9900) {
+>  		/* netmos apparently orders BARs by datasheet layout, so serial
+>  		 * ports get BARs 0 and 3 (or 1 and 4 for memmapped)
+>  		 */
+> -- 
+> 1.8.3.2
+> 
 
-> I think the consensus is to leave the low_latency facility in, but
-> remove it's connection to the tty buffers.
->
-> If the known-to-be-already-in-non-interrupt-context drivers want,
-> I can add a different function for executing flush_to_ldisc()
-> directly. But I don't want to do that without a use-case and test
-> subject.
+Adding some CC's that were missed the first time. Greg's email address
+has changed.
 
-Three of the drivers I maintain have modes where they handle all rx
-data in non-interrupt contexts, but I'm not convinced (or even
-suspicious) that there would be any noticeable benefit from such a
-function.  If, at some point in the future, it becomes apparent that
-there is "too much latency" in certain cases then perhaps it can be
-looked at again -- but I think doing it now is premature optimization.
-That said, all things being equal, it would be nice to avoid anything
-that would make such an addition impossible in the future.
-
->> First question though comes before all of this - and that is do we need
->> low_latency at all any more or is the current scheduling logic now good
->> enough to do the job anyway.
->
-> Right.
->
-> Based on my recent test, I think low_latency doesn't need to be a
-> knob for the tty core.
-
-I Agree: there doesn't seem to be any evidence that it's needed by the
-tty/ldisc layer.
-
-> Drivers can continue to use it to mess with their rx fifo settings
-> and such like.
-
-Excellent.  One of my serial_core drivers still has (in it's default
-configuration) 10ms of latency that I can choose to eliminate on a
-per-port bases (at the cost of extra CPU cycles) when the low_latency
-flag is set.
-
-> I plan on sending Greg a patch to do just that, probably this weekend.
-
-Cool.  Thanks much for your attention to this.
-
--- 
-Grant
+Apologies,
+Ira
