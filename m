@@ -1,136 +1,100 @@
 From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 3/3] serial: imx: Remove init() and exit() platform callbacks
-Date: Sat, 22 Feb 2014 16:01:35 +0400
-Message-ID: <1393070495-11220-3-git-send-email-shc_work@mail.ru>
-References: <1393070495-11220-1-git-send-email-shc_work@mail.ru>
+Subject: [PATCH 1/3] serial: imx: Use devm_ioremap_resource()
+Date: Sat, 22 Feb 2014 16:01:33 +0400
+Message-ID: <1393070495-11220-1-git-send-email-shc_work@mail.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp40.i.mail.ru ([94.100.177.100]:49749 "EHLO smtp40.i.mail.ru"
+Received: from smtp40.i.mail.ru ([94.100.177.100]:49710 "EHLO smtp40.i.mail.ru"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751060AbaBVMBs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	id S1750965AbaBVMBs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
 	Sat, 22 Feb 2014 07:01:48 -0500
-In-Reply-To: <1393070495-11220-1-git-send-email-shc_work@mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>
 
+Use devm_ioremap_resource() in order to make the code simpler and
+it gives proper codes on errors.
+
 Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- arch/arm/mach-imx/mach-mx31moboard.c     | 21 +++++----------------
- drivers/tty/serial/imx.c                 | 27 ++-------------------------
- include/linux/platform_data/serial-imx.h |  2 --
- 3 files changed, 7 insertions(+), 43 deletions(-)
+ drivers/tty/serial/imx.c | 44 ++++----------------------------------------
+ 1 file changed, 4 insertions(+), 40 deletions(-)
 
-diff --git a/arch/arm/mach-imx/mach-mx31moboard.c b/arch/arm/mach-imx/mach-mx31moboard.c
-index b3738e6..8f45afe 100644
---- a/arch/arm/mach-imx/mach-mx31moboard.c
-+++ b/arch/arm/mach-imx/mach-mx31moboard.c
-@@ -128,27 +128,15 @@ static struct platform_device mx31moboard_flash = {
- 	.num_resources = 1,
- };
- 
--static int moboard_uart0_init(struct platform_device *pdev)
-+static void __init moboard_uart0_init(void)
- {
--	int ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_CTS1), "uart0-cts-hack");
--	if (ret)
--		return ret;
--
--	ret = gpio_direction_output(IOMUX_TO_GPIO(MX31_PIN_CTS1), 0);
--	if (ret)
-+	if (!gpio_request(IOMUX_TO_GPIO(MX31_PIN_CTS1), "uart0-cts-hack")) {
-+		gpio_direction_output(IOMUX_TO_GPIO(MX31_PIN_CTS1), 0);
- 		gpio_free(IOMUX_TO_GPIO(MX31_PIN_CTS1));
--
--	return ret;
--}
--
--static void moboard_uart0_exit(struct platform_device *pdev)
--{
--	gpio_free(IOMUX_TO_GPIO(MX31_PIN_CTS1));
-+	}
- }
- 
- static const struct imxuart_platform_data uart0_pdata __initconst = {
--	.init = moboard_uart0_init,
--	.exit = moboard_uart0_exit,
- };
- 
- static const struct imxuart_platform_data uart4_pdata __initconst = {
-@@ -543,6 +531,7 @@ static void __init mx31moboard_init(void)
- 
- 	imx31_add_imx2_wdt();
- 
-+	moboard_uart0_init();
- 	imx31_add_imx_uart0(&uart0_pdata);
- 	imx31_add_imx_uart4(&uart4_pdata);
- 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 37c3939..3b6c1a2 100644
+index dff0f0a..d185972 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1901,7 +1901,6 @@ static void serial_imx_probe_pdata(struct imx_port *sport,
- static int serial_imx_probe(struct platform_device *pdev)
- {
- 	struct imx_port *sport;
--	struct imxuart_platform_data *pdata;
- 	void __iomem *base;
- 	int ret = 0;
- 	struct resource *res;
-@@ -1955,38 +1954,16 @@ static int serial_imx_probe(struct platform_device *pdev)
- 
- 	imx_ports[sport->port.line] = sport;
- 
--	pdata = dev_get_platdata(&pdev->dev);
--	if (pdata && pdata->init) {
--		ret = pdata->init(pdev);
--		if (ret)
--			return ret;
--	}
--
--	ret = uart_add_one_port(&imx_reg, &sport->port);
--	if (ret)
--		goto deinit;
- 	platform_set_drvdata(pdev, sport);
- 
--	return 0;
--deinit:
--	if (pdata && pdata->exit)
--		pdata->exit(pdev);
--	return ret;
-+	return uart_add_one_port(&imx_reg, &sport->port);
+@@ -1469,44 +1469,13 @@ static const char *imx_type(struct uart_port *port)
  }
  
- static int serial_imx_remove(struct platform_device *pdev)
+ /*
+- * Release the memory region(s) being used by 'port'.
+- */
+-static void imx_release_port(struct uart_port *port)
+-{
+-	struct platform_device *pdev = to_platform_device(port->dev);
+-	struct resource *mmres;
+-
+-	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(mmres->start, resource_size(mmres));
+-}
+-
+-/*
+- * Request the memory region(s) being used by 'port'.
+- */
+-static int imx_request_port(struct uart_port *port)
+-{
+-	struct platform_device *pdev = to_platform_device(port->dev);
+-	struct resource *mmres;
+-	void *ret;
+-
+-	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!mmres)
+-		return -ENODEV;
+-
+-	ret = request_mem_region(mmres->start, resource_size(mmres), "imx-uart");
+-
+-	return  ret ? 0 : -EBUSY;
+-}
+-
+-/*
+  * Configure/autoconfigure the port.
+  */
+ static void imx_config_port(struct uart_port *port, int flags)
  {
--	struct imxuart_platform_data *pdata;
- 	struct imx_port *sport = platform_get_drvdata(pdev);
+ 	struct imx_port *sport = (struct imx_port *)port;
  
--	pdata = dev_get_platdata(&pdev->dev);
--
--	uart_remove_one_port(&imx_reg, &sport->port);
--
--	if (pdata && pdata->exit)
--		pdata->exit(pdev);
--
--	return 0;
-+	return uart_remove_one_port(&imx_reg, &sport->port);
+-	if (flags & UART_CONFIG_TYPE &&
+-	    imx_request_port(&sport->port) == 0)
++	if (flags & UART_CONFIG_TYPE)
+ 		sport->port.type = PORT_IMX;
  }
  
- static struct platform_driver serial_imx_driver = {
-diff --git a/include/linux/platform_data/serial-imx.h b/include/linux/platform_data/serial-imx.h
-index 4adec9b..3cc2e3c 100644
---- a/include/linux/platform_data/serial-imx.h
-+++ b/include/linux/platform_data/serial-imx.h
-@@ -23,8 +23,6 @@
- #define IMXUART_IRDA        (1<<1)
+@@ -1616,8 +1585,6 @@ static struct uart_ops imx_pops = {
+ 	.flush_buffer	= imx_flush_buffer,
+ 	.set_termios	= imx_set_termios,
+ 	.type		= imx_type,
+-	.release_port	= imx_release_port,
+-	.request_port	= imx_request_port,
+ 	.config_port	= imx_config_port,
+ 	.verify_port	= imx_verify_port,
+ #if defined(CONFIG_CONSOLE_POLL)
+@@ -1950,12 +1917,9 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 		return ret;
  
- struct imxuart_platform_data {
--	int (*init)(struct platform_device *pdev);
--	void (*exit)(struct platform_device *pdev);
- 	unsigned int flags;
- 	void (*irda_enable)(int enable);
- 	unsigned int irda_inv_rx:1;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+-	base = devm_ioremap(&pdev->dev, res->start, PAGE_SIZE);
+-	if (!base)
+-		return -ENOMEM;
++	base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
+ 
+ 	sport->port.dev = &pdev->dev;
+ 	sport->port.mapbase = res->start;
 -- 
 1.8.3.2
 
