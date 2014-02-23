@@ -1,45 +1,59 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fix for 3.14-rc4
-Date: Sat, 22 Feb 2014 15:12:38 -0800
-Message-ID: <20140222231238.GA28925@kroah.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Sun, 23 Feb 2014 23:33:21 +0100 (CET)
+Message-ID: <alpine.DEB.2.02.1402232330190.21251@ionos.tec.linutronix.de>
+References: <20140219230623.736E8406062@ip-64-139-1-69.sjc.megapath.net> <53056E99.9070900@hurleysoftware.com> <53064672.3000807@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37053 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751877AbaBVXJy (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:52602 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752209AbaBWWdY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 22 Feb 2014 18:09:54 -0500
-Content-Disposition: inline
+	Sun, 23 Feb 2014 17:33:24 -0500
+In-Reply-To: <53064672.3000807@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Stanislaw Gruszka <sgruszka@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-The following changes since commit 6d0abeca3242a88cab8232e4acd7e2bf088f3bc2:
+On Thu, 20 Feb 2014, Peter Hurley wrote:
 
-  Linux 3.14-rc3 (2014-02-16 13:30:25 -0800)
+> On 02/19/2014 09:55 PM, Peter Hurley wrote:
+> > On 02/19/2014 06:06 PM, Hal Murray wrote:
+> > > > Can you give me an idea of your device's average and minimum required
+> > > > latency (please be specific)?  Is your target arch x86 [so I can
+> > > > evaluate the
+> > > > the impact of bus-locked instructions relative to your expected]?
+> > > 
+> > > The code I'm familiar with is ntpd and gpsd.  They run on almost any
+> > > hardware
+> > > or OS and talk to a wide collection of devices.
+> > > 
+> > > There is no hard requirement for latency.  They just work better with
+> > > lower
+> > > latency.  The lower the better.
+> > > 
+> > > People gripe about the latency due to USB polling which is about a ms.
+> > 
+> > Have you tried 3.12+ without low_latency? I ripped out a lot of locks
+> > from 3.12+ so it's possible it already meets your requirements.
+> 
+> Using Alan's idea to mock up a latency test, I threw together a test jig
+> using two computers running 3.14-rc1 and my fwserial driver (modified to
+> not aggregrate writes) in raw mode where the target does this:
 
-are available in the git repository at:
+This is a complete pointless test. Use a bog standard 8250 UART on the
+PC and connect a microcontroller on the other end which serves you an
+continous stream of data at 115200 Baud.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.14-rc4
+There is no way you can keep up with that without the low latency
+option neither on old and nor on new machines if you have enough other
+stuff going on in the system.
 
-for you to fetch changes up to 5c0a2450d695bbe32b1fb81c07751bcbea64f084:
+Thanks,
 
-  Revert "tty: Set correct tty name in 'active' sysfs attribute" (2014-02-22 14:31:04 -0800)
+	tglx
 
-----------------------------------------------------------------
-TTY patch revert for 3.14-rc4
 
-Here is a single commit, a revert of a sysfs file change that ended up
-breaking a userspace tool.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Greg Kroah-Hartman (1):
-      Revert "tty: Set correct tty name in 'active' sysfs attribute"
-
- Documentation/ABI/testing/sysfs-tty |  3 +--
- drivers/tty/tty_io.c                | 25 +++++++------------------
- 2 files changed, 8 insertions(+), 20 deletions(-)
