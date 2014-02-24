@@ -1,26 +1,47 @@
-From: Jermaine Shannon <rowenashannonjermain@libero.it>
-Subject: Product Request
-Date: Mon, 24 Feb 2014 17:12:09 +0100 (CET)
-Message-ID: <1151463415.17952541393258329087.JavaMail.actor@webmail14>
-Reply-To: shannonjermain@outlook.com
+From: "Technical Support Team" <technicalsppt3@gmail.com>
+Subject: Messenger from Administrator
+Date: Tue, 25 Feb 2014 02:24:11 +0530 (IST)
+Message-ID: <60824.174.140.169.238.1393275251.squirrel__34148.848479572$1393278610$gmane$org@prithvi>
+Reply-To: technicalsppt@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outrelay03.libero.it ([212.52.84.103]:39580 "EHLO
-	outrelay03.libero.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751781AbaBXQNN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Feb 2014 11:13:13 -0500
+Received: from [14.139.209.20] ([14.139.209.20]:50748 "EHLO imsva.nerist.ac.in"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752054AbaBXVuA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Feb 2014 16:50:00 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello
 
-Can you send us your full Product catalog, we want to buy and ship to Doha,
-Qatar.
 
-waiting
-for your response
-Jermaine  Shannon
 
+Our records indicate that your E-mail=AE Account could not be automatic=
+ally
+updated with our F-Secure R-HTK4S new(2014) version
+anti-spam/anti-virus/anti-spyware. Please provide us with the following
+details below to update manually
+
+Name:----->
+Email:----->
+User Id:----->
+password:----->
+Verify Password----->
+
+We Are Sorry For Any Inconvenience.
+
+Verification Code: SQP4039VE
+
+Regards,
+Technical Support Team
+Copyright =A9 2014. All Rights Reserved
+-----------------------------------------------------------------------=
+----
+This mail is scanned and found clean by NERIST Trend Micro IMSVA
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
