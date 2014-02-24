@@ -1,35 +1,33 @@
-From: David Sterba <dsterba@suse.cz>
-Subject: Re: [PATCH] tty: Fix low_latency BUG
-Date: Mon, 24 Feb 2014 14:02:05 +0100
-Message-ID: <20140224130205.GD16073@suse.cz>
-References: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
-Reply-To: dsterba@suse.cz
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Mon, 24 Feb 2014 13:23:34 +0000
+Message-ID: <20140224132334.313f2527@alan.etchedpixels.co.uk>
+References: <20140219230623.736E8406062@ip-64-139-1-69.sjc.megapath.net>
+	<53056E99.9070900@hurleysoftware.com>
+	<53064672.3000807@hurleysoftware.com>
+	<alpine.DEB.2.02.1402232330190.21251@ionos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
-Sender: stable-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Beat Bolli <bbolli@ewanet.ch>, Pavel Roskin <proski@gnu.org>, linux-kernel@vger.kernel.org, Jiri Kosina <jkosina@suse.cz>, Felipe Balbi <balbi@ti.com>, Grant Edwards <grant.b.edwards@gmail.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.02.1402232330190.21251@ionos.tec.linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Stanislaw Gruszka <sgruszka@redhat.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Feb 22, 2014 at 07:31:21AM -0500, Peter Hurley wrote:
-> --- a/drivers/tty/ipwireless/tty.c
-> +++ b/drivers/tty/ipwireless/tty.c
-> @@ -176,9 +176,6 @@ void ipwireless_tty_received(struct ipw_tty *tty, unsigned char *data,
->  				": %d chars not inserted to flip buffer!\n",
->  				length - work);
->  
-> -	/*
-> -	 * This may sleep if ->low_latency is set
-> -	 */
+> This is a complete pointless test. Use a bog standard 8250 UART on the
+> PC and connect a microcontroller on the other end which serves you an
+> continous stream of data at 115200 Baud.
+> 
+> There is no way you can keep up with that without the low latency
+> option neither on old and nor on new machines if you have enough other
+> stuff going on in the system.
 
-This is a no-op change for the ipwireless driver itself, nevertheless
-here goes the maintainer's
+Sorry but having done this in the past the reverse is true. On ancient
+machines with crap uarts the low_latency case would routinely overrun
+while the non low_latency case did not. That was half of the point of
+deferred processing - it pushed tty processing out of the IRQ handler so
+bytes were not lost and a 486DX could cope with a 56Kbit modem.
 
-Acked-by: David Sterba <dsterba@suse.cz>
-
->  	if (work)
->  		tty_flip_buffer_push(&tty->port);
->  }
+Alan
