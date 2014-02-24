@@ -1,44 +1,59 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v3 6/7] pinctrl: at91: implement get_direction
-Date: Mon, 24 Feb 2014 15:56:36 +0100
-Message-ID: <CACQ1gAi+rSvuRzCQiyV4QT0V75CccwH7iSEBRMyDdF_1W63OKA@mail.gmail.com>
-References: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
- <1392656247-3351-7-git-send-email-richard.genoud@gmail.com> <CACRpkdZN_fT05+1JCJ2bemN3KfpfFFWu__HQcL9Sz7n2M9gCnw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: locking changes in tty broke low latency feature
+Date: Mon, 24 Feb 2014 15:44:59 +0000 (UTC)
+Message-ID: <lefpdr$br$1@ger.gmane.org>
+References: <20140219230623.736E8406062@ip-64-139-1-69.sjc.megapath.net>
+ <53056E99.9070900@hurleysoftware.com> <53064672.3000807@hurleysoftware.com>
+ <alpine.DEB.2.02.1402232330190.21251@ionos.tec.linutronix.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f53.google.com ([209.85.215.53]:45990 "EHLO
-	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752260AbaBXO45 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Feb 2014 09:56:57 -0500
-Received: by mail-la0-f53.google.com with SMTP id e16so5887523lan.12
-        for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2014 06:56:56 -0800 (PST)
-In-Reply-To: <CACRpkdZN_fT05+1JCJ2bemN3KfpfFFWu__HQcL9Sz7n2M9gCnw@mail.gmail.com>
+Received: from plane.gmane.org ([80.91.229.3]:58274 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752446AbaBXPpZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Feb 2014 10:45:25 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1WHxid-0004j6-T7
+	for linux-serial@vger.kernel.org; Mon, 24 Feb 2014 16:45:23 +0100
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2014 16:45:23 +0100
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2014 16:45:23 +0100
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
 
-2014-02-24 15:44 GMT+01:00 Linus Walleij <linus.walleij@linaro.org>:
-> On Mon, Feb 17, 2014 at 5:57 PM, Richard Genoud
-> <richard.genoud@gmail.com> wrote:
+On 2014-02-23, Thomas Gleixner <tglx@linutronix.de> wrote:
+> On Thu, 20 Feb 2014, Peter Hurley wrote:
+
+>> Using Alan's idea to mock up a latency test, I threw together a test
+>> jig using two computers running 3.14-rc1 and my fwserial driver
+>> (modified to not aggregrate writes) in raw mode where the target does
+>> this:
 >
->> This is needed for gpiod_get_direction().
->> Otherwise, it returns -EINVAL.
->>
->> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> This is a complete pointless test.
+
+No, it isn't.  It tested exactly what it was supposed to test: latency
+between the driver pushing bytes to the line discipline and user-space
+read waking up.
+
+> Use a bog standard 8250 UART on the PC and connect a microcontroller
+> on the other end which serves you an continous stream of data at
+> 115200 Baud.
 >
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
->
-> Can I apply this directly to the pinctrl tree or do you want it to
-> go through AT91 ARM SoC with the rest of these patches
-> or something?
+> There is no way you can keep up with that without the low latency
+> option neither on old and nor on new machines if you have enough
+> other stuff going on in the system.
 
-Well, I guess you can apply it on pinctrl tree.
+That makes no sense.  Enabling the low-latency option historically
+made it _harder_ to keep up since it caused more overhead in the form
+buffer processing and context switches.
 
-I'll comme with an updated version of patches 1,4,7 soon, and I'll
-write clearly in the cover letter the needed patches, and the tree
-they're in to prevent breaking the compilation.
+-- 
+Grant Edwards               grant.b.edwards        Yow! Look into my eyes and
+                                  at               try to forget that you have
+                              gmail.com            a Macy's charge card!
 
-thanks !
