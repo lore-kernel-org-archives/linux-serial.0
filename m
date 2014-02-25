@@ -1,47 +1,48 @@
-From: "Technical Support Team" <technicalsppt3@gmail.com>
-Subject: Messenger from Administrator
-Date: Tue, 25 Feb 2014 02:24:11 +0530 (IST)
-Message-ID: <60824.174.140.169.238.1393275251.squirrel__34148.848479572$1393278610$gmane$org@prithvi>
-Reply-To: technicalsppt@gmail.com
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v3 6/7] pinctrl: at91: implement get_direction
+Date: Tue, 25 Feb 2014 10:34:33 +0100
+Message-ID: <CACRpkdaOhJr2=uiR6KeEFBNT4ChPF6T42Q2v5oLwZrZLBgS=6A@mail.gmail.com>
+References: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
+	<1392656247-3351-7-git-send-email-richard.genoud@gmail.com>
+	<CACRpkdZN_fT05+1JCJ2bemN3KfpfFFWu__HQcL9Sz7n2M9gCnw@mail.gmail.com>
+	<CACQ1gAi+rSvuRzCQiyV4QT0V75CccwH7iSEBRMyDdF_1W63OKA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [14.139.209.20] ([14.139.209.20]:50748 "EHLO imsva.nerist.ac.in"
-	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752054AbaBXVuA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Feb 2014 16:50:00 -0500
+Received: from mail-oa0-f45.google.com ([209.85.219.45]:63207 "EHLO
+	mail-oa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750744AbaBYJee (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Feb 2014 04:34:34 -0500
+Received: by mail-oa0-f45.google.com with SMTP id i11so124595oag.32
+        for <linux-serial@vger.kernel.org>; Tue, 25 Feb 2014 01:34:33 -0800 (PST)
+In-Reply-To: <CACQ1gAi+rSvuRzCQiyV4QT0V75CccwH7iSEBRMyDdF_1W63OKA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?ISO-8859-1?Q?Uwe_Kleine=2DK=F6nig?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 
+On Mon, Feb 24, 2014 at 3:56 PM, Richard Genoud
+<richard.genoud@gmail.com> wrote:
+> 2014-02-24 15:44 GMT+01:00 Linus Walleij <linus.walleij@linaro.org>:
+>> On Mon, Feb 17, 2014 at 5:57 PM, Richard Genoud
+>> <richard.genoud@gmail.com> wrote:
+>>
+>>> This is needed for gpiod_get_direction().
+>>> Otherwise, it returns -EINVAL.
+>>>
+>>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>>
+>> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+>>
+>> Can I apply this directly to the pinctrl tree or do you want it to
+>> go through AT91 ARM SoC with the rest of these patches
+>> or something?
+>
+> Well, I guess you can apply it on pinctrl tree.
 
+OK patch applied tentatively unless Nicolas or Jean-Christophe
+has objections.
 
-
-Our records indicate that your E-mail=AE Account could not be automatic=
-ally
-updated with our F-Secure R-HTK4S new(2014) version
-anti-spam/anti-virus/anti-spyware. Please provide us with the following
-details below to update manually
-
-Name:----->
-Email:----->
-User Id:----->
-password:----->
-Verify Password----->
-
-We Are Sorry For Any Inconvenience.
-
-Verification Code: SQP4039VE
-
-Regards,
-Technical Support Team
-Copyright =A9 2014. All Rights Reserved
------------------------------------------------------------------------=
-----
-This mail is scanned and found clean by NERIST Trend Micro IMSVA
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yours,
+Linus Walleij
