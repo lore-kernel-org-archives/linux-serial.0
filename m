@@ -1,44 +1,80 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2NCAxLzVdIHR0eS9zZXJpYWw6IEFkZCBHUElPTElCIGhl?=
- =?UTF-8?B?bHBlcnMgZm9yIGNvbnRyb2xsaW5nIG1vZGVtIGxpbmVz?=
-Date: Wed, 26 Feb 2014 20:37:04 +0400
-Message-ID: <1393432624.955150590@f282.i.mail.ru>
-References: <1393431588-25977-1-git-send-email-richard.genoud@gmail.com>
- <1393431588-25977-2-git-send-email-richard.genoud@gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: API to flush rx fifo?
+Date: Wed, 26 Feb 2014 12:14:23 -0500
+Message-ID: <530E20EF.7070609@hurleysoftware.com>
+References: <kpak75$9ko$1@ger.gmane.org> <51BB2C2A.9050601@hurleysoftware.com> <kpfc5k$5u4$1@ger.gmane.org> <51BB3AD0.50201@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f282.i.mail.ru ([94.100.178.224]:45947 "EHLO f282.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751971AbaBZQhK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Feb 2014 11:37:10 -0500
-In-Reply-To: <1393431588-25977-2-git-send-email-richard.genoud@gmail.com>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34847 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752493AbaBZROZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Feb 2014 12:14:25 -0500
+In-Reply-To: <51BB3AD0.50201@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?Tmljb2xhcyBGZXJyZQ==?= <nicolas.ferre@atmel.com>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Grant Edwards <grant.b.edwards@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-SGVsbG8gUmljaGFyZC4KCtCh0YDQtdC00LAsIDI2INGE0LXQstGA0LDQu9GPIDIwMTQsIDE3OjE5
-ICswMTowMCDQvtGCIFJpY2hhcmQgR2Vub3VkIDxyaWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+Ogo+
-IFRoaXMgcGF0Y2ggYWRkIHNvbWUgaGVscGVycyB0byBjb250cm9sIG1vZGVtIGxpbmVzIChDVFMv
-UlRTL0RTUi4uLikgdmlhCj4gR1BJTy4KPiBUaGlzIHdpbGwgYmUgdXNlZnVsIGZvciBtYW55IGJv
-YXJkcyB3aGljaCBoYXZlIGEgc2VyaWFsIGNvbnRyb2xsZXIgdGhhdAo+IG9ubHkgaGFuZGxlIENU
-Uy9SVFMgcGlucyAob3IgZXZlbiBqdXN0IFJYL1RYKS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBSaWNo
-YXJkIEdlbm91ZCA8cmljaGFyZC5nZW5vdWRAZ21haWwuY29tPgoKQmV0dGVyLCBidXQgSSBmb3Vu
-ZCBmZXcgYnVncy4uLiA6KQoKLi4uCj4gK01vZGVtIGNvbnRyb2wgbGluZXMgdmlhIEdQSU8KPiAr
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+ICsKPiArU29tZSBoZWxwZXJzIGFyZSBwcm92
-aWRlZCBpbiBvcmRlciB0byBzZXQvZ2V0IG1vZGVtIGNvbnRyb2wgbGluZXMgdmlhIEdQSU8uCj4g
-Kwo+ICttY3RybF9ncGlvX2luaXQoZGV2LCBpZHgpOgoKSSB0aGluayB3ZSBzaG91bGQgaW5kaWNh
-dGUgdmFyaWFibGUgdHlwZXMgdXNlZCBpbiB0aGVzZSBmdW5jdGlvbnMuCgouLi4KPiArdm9pZCBt
-Y3RybF9ncGlvX3NldChzdHJ1Y3QgbWN0cmxfZ3Bpb3MgKmdwaW9zLCB1bnNpZ25lZCBpbnQgbWN0
-cmwpCj4gK3sKPiArCWVudW0gbWN0cmxfZ3Bpb19pZHggaTsKPiArCj4gKwlpZiAoSVNfRVJSX09S
-X05VTEwoZ3Bpb3MpKQo+ICsJCXJldHVybjsKCk5vLiBJU19FUlJfT1JfTlVMTCgpIGlzIG5vdCB2
-YWxpZCBoZXJlLiBUaGlzIGlzIGFsbG9jYXRlZCBieSBremFsbG9jKCksCnNvIHlvdSBzaG91bGQg
-Y2hlY2sgdmFsaWQgcG9pbnRlciBvbmx5LCBpZSAoIWdwaW9zKS4KU2FtZSBpbiBvdGhlciBwbGFj
-ZXMuCgoKPiArCQlpZiAoZXJyKSB7Cj4gKwkJCWRldl9lcnIoZGV2LCAiVW5hYmxlIHRvIHNldCBk
-aXJlY3Rpb24gZm9yICVzIEdQSU8iLAo+ICsJCQkJbWN0cmxfZ3Bpb3NfZGVzY1tpXS5uYW1lKTsK
-PiArCQkJZGV2bV9ncGlvZF9wdXQoZGV2LCBncGlvcy0+Z3Bpb1tpXSk7Cj4gKwkJCWdwaW9zLT5n
-cGlvW2ldID0gTlVMTDsKPiArCQl9Cj4gKwl9CgpMZXQncyB1c2UgZGV2X2RiZygpLgoKVGhhbmtz
-LgotLS0K
+Hi Grant,
+
+I know this is old but I had marked this for re-review in my mail,
+and after re-looking at this problem, I realized I gave you some bad info.
+
+Since you were referring to uart_ops, I'll assume this is for your
+serial-core mini-driver(s).
+
+
+On 06/14/2013 11:46 AM, Peter Hurley wrote:
+> On 06/14/2013 11:17 AM, Grant Edwards wrote:
+>> On 2013-06-14, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>> On 06/12/2013 04:03 PM, Grant Edwards wrote:
+>>>> I see the uart_ops.flush_buffer method which is used to flush the
+>>>> UART's tx fifo (presumably when the user calls tcflush(TCOFLUSH)).
+
+The N_TTY ldisc calls tty->ops->flush_buffer() for TCOFLUSH _and TCIOFLUSH_.
+
+[ For a serial-core mini-driver, tty->ops->flush_buffer() is uart_flush_buffer(),
+   which calls uart_ops.flush_buffer().
+]
+
+>>>>
+>>>> How does the rx fifo get flushed when the user calls tcflush(TCIFLUSH)?
+>>>
+>>> It doesn't.
+
+The ioctl(TCIFLUSH) does in fact flush the tty buffers.
+
+If you want to flush your hardware rx fifo, you can define the .ioctl()
+method in your struct uart_ops and handle TCIFLUSH there.
+
+Note: be sure to return -ENOIOCTLCMD so that TCIFLUSH processing still
+gets seen by the ldisc!
+
+Like this (apologies in advance for formatting; my mailer is dain-bramaged),
+
+/* called with port->mutex held */
+static int xxxxxx_ioctl(struct uart_port *port, unsigned int cmd,
+			unsigned long arg)
+{
+	if (cmd == TCFLSH) {
+		switch (arg) {
+		case TCIFLUSH:
+		case TCIOFLUSH:
+			spin_lock_irq(&port->lock);
+			xxxxxx_empty_rx_fifo(port);
+			spin_unlock_irq(&port->lock);
+			/* fall-through */
+		}
+	}
+	return -ENOIOCTLCMD;
+}
+
+
+Sorry, hope this isn't too late :(
+
+Regards,
+Peter Hurley
+
