@@ -1,48 +1,57 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 6/7] pinctrl: at91: implement get_direction
-Date: Tue, 25 Feb 2014 10:34:33 +0100
-Message-ID: <CACRpkdaOhJr2=uiR6KeEFBNT4ChPF6T42Q2v5oLwZrZLBgS=6A@mail.gmail.com>
-References: <1392656247-3351-1-git-send-email-richard.genoud@gmail.com>
-	<1392656247-3351-7-git-send-email-richard.genoud@gmail.com>
-	<CACRpkdZN_fT05+1JCJ2bemN3KfpfFFWu__HQcL9Sz7n2M9gCnw@mail.gmail.com>
-	<CACQ1gAi+rSvuRzCQiyV4QT0V75CccwH7iSEBRMyDdF_1W63OKA@mail.gmail.com>
+From: Feng Tang <feng.79.tang@gmail.com>
+Subject: Re: [PATCH] tty: Fix low_latency BUG
+Date: Wed, 26 Feb 2014 13:11:21 +0800
+Message-ID: <CA++bM2uq=vRo20FTMWvkDau+-X7h0+KU3n4Av7ef895mQKr5fA@mail.gmail.com>
+References: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f45.google.com ([209.85.219.45]:63207 "EHLO
-	mail-oa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750744AbaBYJee (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Feb 2014 04:34:34 -0500
-Received: by mail-oa0-f45.google.com with SMTP id i11so124595oag.32
-        for <linux-serial@vger.kernel.org>; Tue, 25 Feb 2014 01:34:33 -0800 (PST)
-In-Reply-To: <CACQ1gAi+rSvuRzCQiyV4QT0V75CccwH7iSEBRMyDdF_1W63OKA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
+Sender: stable-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Beat Bolli <bbolli@ewanet.ch>, Pavel Roskin <proski@gnu.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Kosina <jkosina@suse.cz>, David Sterba <dsterba@suse.cz>, Felipe Balbi <balbi@ti.com>, Grant Edwards <grant.b.edwards@gmail.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?ISO-8859-1?Q?Uwe_Kleine=2DK=F6nig?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 
-On Mon, Feb 24, 2014 at 3:56 PM, Richard Genoud
-<richard.genoud@gmail.com> wrote:
-> 2014-02-24 15:44 GMT+01:00 Linus Walleij <linus.walleij@linaro.org>:
->> On Mon, Feb 17, 2014 at 5:57 PM, Richard Genoud
->> <richard.genoud@gmail.com> wrote:
->>
->>> This is needed for gpiod_get_direction().
->>> Otherwise, it returns -EINVAL.
->>>
->>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
->>
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
->>
->> Can I apply this directly to the pinctrl tree or do you want it to
->> go through AT91 ARM SoC with the rest of these patches
->> or something?
+Hi Peter,
+
+2014-02-22 20:31 GMT+08:00 Peter Hurley <peter@hurleysoftware.com>:
+> The user-settable knob, low_latency, has been the source of
+> several BUG reports which stem from flush_to_ldisc() running
+> in interrupt context. Since 3.12, which added several sleeping
+> locks (termios_rwsem and buf->lock) to the input processing path,
+> the frequency of these BUG reports has increased.
 >
-> Well, I guess you can apply it on pinctrl tree.
+> Note that changes in 3.12 did not introduce this regression;
+> sleeping locks were first added to the input processing path
+> with the removal of the BKL from N_TTY in commit
+> a88a69c91256418c5907c2f1f8a0ec0a36f9e6cc,
+> 'n_tty: Fix loss of echoed characters and remove bkl from n_tty'
+> and later in commit 38db89799bdf11625a831c5af33938dcb11908b6,
+> 'tty: throttling race fix'. Since those changes, executing
+> flush_to_ldisc() in interrupt_context (ie, low_latency set), is unsafe.
+>
+> However, since most devices do not validate if the low_latency
+> setting is appropriate for the context (process or interrupt) in
+> which they receive data, some reports are due to misconfiguration.
+> Further, serial dma devices for which dma fails, resort to
+> interrupt receiving as a backup without resetting low_latency.
+>
+> Historically, low_latency was used to force wake-up the reading
+> process rather than wait for the next scheduler tick. The
+> effect was to trim multiple milliseconds of latency from
+> when the process would receive new data.
+>
+> Recent tests [1] have shown that the reading process now receives
+> data with only 10's of microseconds latency without low_latency set.
 
-OK patch applied tentatively unless Nicolas or Jean-Christophe
-has objections.
+The 10's of miscroseconds is ok for 115200 bps like device, but it may
+hurt the high speed device like Bluetooth which runs at 3M/4M bps or
+higher.
 
-Yours,
-Linus Walleij
+More and more smartphones are using uart as the Bluetooth data
+interface due to its low-pin, low-power feature, and many of them
+are using HZ=100 kernel, I'm afraid this added delay may cause
+some problem.
+
+Thanks,
+Feng
