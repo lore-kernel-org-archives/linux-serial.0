@@ -1,92 +1,361 @@
 From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH v4 0/5] tty/serial: Add helpers to use GPIOs to control modem lines and implement atmel_serial.c
-Date: Wed, 26 Feb 2014 17:19:43 +0100
-Message-ID: <1393431588-25977-1-git-send-email-richard.genoud@gmail.com>
+Subject: [PATCH v4 1/5] tty/serial: Add GPIOLIB helpers for controlling modem lines
+Date: Wed, 26 Feb 2014 17:19:44 +0100
+Message-ID: <1393431588-25977-2-git-send-email-richard.genoud@gmail.com>
+References: <1393431588-25977-1-git-send-email-richard.genoud@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:45248 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751790AbaBZQUa (ORCPT
+Received: from mail-wi0-f169.google.com ([209.85.212.169]:64492 "EHLO
+	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751604AbaBZQUh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Feb 2014 11:20:30 -0500
-Received: by mail-wi0-f180.google.com with SMTP id hm4so2351902wib.7
-        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2014 08:20:29 -0800 (PST)
+	Wed, 26 Feb 2014 11:20:37 -0500
+Received: by mail-wi0-f169.google.com with SMTP id e4so5835032wiv.4
+        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2014 08:20:36 -0800 (PST)
+In-Reply-To: <1393431588-25977-1-git-send-email-richard.genoud@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-The USART controller on sam9x5 chips (and also all AT91/SAMA5 chips
-but at91rm9200) are not capable of handling DTR/DSR/DCD/RI signal.
-Moreover, even if the controller can handle CTS/RTS, the dedicated
-CTS/RTS pins are already muxed for other peripherals (LCDC/EMAC/MMC).
+This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
+GPIO.
+This will be useful for many boards which have a serial controller that
+only handle CTS/RTS pins (or even just RX/TX).
 
-So this patchset adds the possibility to control those lines via GPIO,
-as it is done for RTS in the patch "switch atmel serial to use gpiolib"
-
-As it was suggested by Alexander Shiyan, I made that available for
-every board.
-
-Patch 1 implements the generic helpers to control modem lines via GPIO
-Patches 2 and 3 are just a little tidy up of atmel_serial.c.
-Patch 4 implements modem control lines in atmel_serial atmel_serial.
-Patch 5 implement the interrupts of CTS/DSR/DCD/RI.
-
-This is based on next-20140226 + [PATCH v3 5/7] ARM: at91: gpio: implement get_direction
-That Nicolas (has/will/might) appl(ied/y) on AT91 tree.
-
-Tested on at91sam9g35, with a null modem cable between 2 serial ports,
-one with CTS/RTS controlled by the USART controller, the other via GPIO,
-full duplex transfers.
-Did some tests also with null modem cables on a PC, and with real modems.
-
-Updates from v3:
-	- add static keyword on struct uart0_gpios_table.
-	- add use an index at the mctrl_gpio_init() function to make it
-	usable by driver that allocates several ports at once.
-	- hide struct gpio_desc from users.
-	- patch "pinctrl: at91: implement get_direction" has been picked by Linus.
-	- patch "ARM: at91: gpio: implement get_direction" has been acked by Linus.
-
-Updates from v2:
-	- remove UART_GPIO_MIN/UART_GPIO_MAX_INPUT and use a direction
-	boolean instead.
-	- implement get_direction in at91 pinctrl and mach-at91/gpio.c.
-	- remove the get_mctrl_gpio_name() function that was used for
-	logs only.
-	- split atmel_serial.c patch in 2.
-	- use a gpio lookup table to declare modem gpios in platform
-	devices boards. So there's no more special case for platform
-	data gpios in atmel_serial.c.
-
-Updates from v1:
-	- Instead of controlling modem signal only on atmel board, the
-	code is now available for every board.
-	- The active low flag from device tree is now used.
-
-Richard Genoud (5):
-  tty/serial: Add GPIOLIB helpers for controlling modem lines
-  tty/serial: at91: use dev_err instead of printk
-  tty/serial: at91: remove unused open/close hooks
-  tty/serial: at91: use mctrl_gpio helpers
-  tty/serial: at91: add interrupts for modem control lines
-
- Documentation/serial/driver              |  25 +++
- arch/arm/mach-at91/at91rm9200_devices.c  |  16 +-
- arch/arm/mach-at91/at91sam9260_devices.c |   7 -
- arch/arm/mach-at91/at91sam9261_devices.c |   4 -
- arch/arm/mach-at91/at91sam9263_devices.c |   4 -
- arch/arm/mach-at91/at91sam9g45_devices.c |   5 -
- arch/arm/mach-at91/at91sam9rl_devices.c  |   5 -
- drivers/tty/serial/Kconfig               |   4 +
- drivers/tty/serial/Makefile              |   3 +
- drivers/tty/serial/atmel_serial.c        | 259 ++++++++++++++++++++++++-------
- drivers/tty/serial/serial_mctrl_gpio.c   | 146 +++++++++++++++++
- drivers/tty/serial/serial_mctrl_gpio.h   | 109 +++++++++++++
- include/linux/platform_data/atmel.h      |   1 -
- 13 files changed, 496 insertions(+), 92 deletions(-)
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+---
+ Documentation/serial/driver            |  25 ++++++
+ drivers/tty/serial/Kconfig             |   3 +
+ drivers/tty/serial/Makefile            |   3 +
+ drivers/tty/serial/serial_mctrl_gpio.c | 146 +++++++++++++++++++++++++++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h | 109 ++++++++++++++++++++++++
+ 5 files changed, 286 insertions(+)
  create mode 100644 drivers/tty/serial/serial_mctrl_gpio.c
  create mode 100644 drivers/tty/serial/serial_mctrl_gpio.h
 
+diff --git a/Documentation/serial/driver b/Documentation/serial/driver
+index c3a7689a90e6..3bba1aeb799c 100644
+--- a/Documentation/serial/driver
++++ b/Documentation/serial/driver
+@@ -429,3 +429,28 @@ thus:
+ 		struct uart_port	port;
+ 		int			my_stuff;
+ 	};
++
++Modem control lines via GPIO
++----------------------------
++
++Some helpers are provided in order to set/get modem control lines via GPIO.
++
++mctrl_gpio_init(dev, idx):
++	This will get the {cts,rts,...}-gpios from device tree if they are
++	present and request them, set direction etc, and return an
++	allocated structure. devm_* functions are used, so there's no need
++	to call mctrl_gpio_free().
++
++mctrl_gpio_free(dev, gpios):
++	This will free the requested gpios in mctrl_gpio_init().
++	As devm_* function are used, there's generally no need to call
++	this function.
++
++mctrl_gpio_to_gpiod(gpios, gidx)
++	This returns the gpio structure associated to the modem line index.
++
++mctrl_gpio_set(gpios, mctrl):
++	This will sets the gpios according to the mctrl state.
++
++mctrl_gpio_get(gpios, mctrl):
++	This will update mctrl with the gpios values.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2e6d8ddc4425..7e8f15cfb8d0 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1509,4 +1509,7 @@ config SERIAL_ST_ASC_CONSOLE
+ 
+ endmenu
+ 
++config SERIAL_MCTRL_GPIO
++	tristate
++
+ endif # TTY
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 3680854fef41..bcf31da267dd 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -87,3 +87,6 @@ obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
+ obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
+ obj-$(CONFIG_SERIAL_RP2)	+= rp2.o
+ obj-$(CONFIG_SERIAL_FSL_LPUART)	+= fsl_lpuart.o
++
++# GPIOLIB helpers for modem control lines
++obj-$(CONFIG_SERIAL_MCTRL_GPIO) += serial_mctrl_gpio.o
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+new file mode 100644
+index 000000000000..344641f31304
+--- /dev/null
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -0,0 +1,146 @@
++/*
++ * Helpers for controlling modem lines via GPIO
++ *
++ * Copyright (C) 2014 Paratronic S.A.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/err.h>
++#include <linux/device.h>
++#include <linux/gpio/consumer.h>
++#include <uapi/asm-generic/termios.h>
++
++#include "serial_mctrl_gpio.h"
++
++struct mctrl_gpios {
++	struct gpio_desc *gpio[UART_GPIO_MAX];
++};
++
++static const struct {
++	const char *name;
++	unsigned int mctrl;
++	bool dir_out;
++} mctrl_gpios_desc[UART_GPIO_MAX] = {
++	{ "cts", TIOCM_CTS, false, },
++	{ "dsr", TIOCM_DSR, false, },
++	{ "dcd", TIOCM_CD, false, },
++	{ "ri", TIOCM_RI, false, },
++	{ "rts", TIOCM_RTS, true, },
++	{ "dtr", TIOCM_DTR, true, },
++	{ "out1", TIOCM_OUT1, true, },
++	{ "out2", TIOCM_OUT2, true, },
++};
++
++void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
++{
++	enum mctrl_gpio_idx i;
++
++	if (IS_ERR_OR_NULL(gpios))
++		return;
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
++		    mctrl_gpios_desc[i].dir_out)
++			gpiod_set_value(gpios->gpio[i],
++					!!(mctrl & mctrl_gpios_desc[i].mctrl));
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_set);
++
++struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
++				      enum mctrl_gpio_idx gidx)
++{
++	if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
++		return gpios->gpio[gidx];
++	else
++		return NULL;
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
++
++unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
++{
++	enum mctrl_gpio_idx i;
++
++	/*
++	 * return it unchanged if the structure is not allocated
++	 */
++	if (IS_ERR_OR_NULL(gpios))
++		return *mctrl;
++
++	for (i = 0; i < UART_GPIO_MAX; i++) {
++		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
++		    !mctrl_gpios_desc[i].dir_out) {
++			if (gpiod_get_value(gpios->gpio[i]))
++				*mctrl |= mctrl_gpios_desc[i].mctrl;
++			else
++				*mctrl &= ~mctrl_gpios_desc[i].mctrl;
++		}
++	}
++
++	return *mctrl;
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_get);
++
++struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
++{
++	struct mctrl_gpios *gpios;
++	enum mctrl_gpio_idx i;
++	int err;
++
++	gpios = devm_kzalloc(dev, sizeof(*gpios), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(gpios))
++		goto out;
++
++	for (i = 0; i < UART_GPIO_MAX; i++) {
++		gpios->gpio[i] = devm_gpiod_get_index(dev,
++						      mctrl_gpios_desc[i].name,
++						      idx);
++
++		/*
++		 * The GPIOs are maybe not all filled,
++		 * this is not an error.
++		 */
++		if (IS_ERR_OR_NULL(gpios->gpio[i]))
++			continue;
++
++		if (mctrl_gpios_desc[i].dir_out)
++			err = gpiod_direction_output(gpios->gpio[i], 0);
++		else
++			err = gpiod_direction_input(gpios->gpio[i]);
++		if (err) {
++			dev_err(dev, "Unable to set direction for %s GPIO",
++				mctrl_gpios_desc[i].name);
++			devm_gpiod_put(dev, gpios->gpio[i]);
++			gpios->gpio[i] = NULL;
++		}
++	}
++
++out:
++	return gpios;
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_init);
++
++void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
++{
++	enum mctrl_gpio_idx i;
++
++	if (IS_ERR_OR_NULL(gpios))
++		return;
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (!IS_ERR_OR_NULL(gpios->gpio[i])) {
++			devm_gpiod_put(dev, gpios->gpio[i]);
++			gpios->gpio[i] = NULL;
++		}
++	devm_kfree(dev, gpios);
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_free);
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+new file mode 100644
+index 000000000000..4ed2f814028b
+--- /dev/null
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -0,0 +1,109 @@
++/*
++ * Helpers for controlling modem lines via GPIO
++ *
++ * Copyright (C) 2014 Paratronic S.A.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#ifndef __SERIAL_MCTRL_GPIO__
++#define __SERIAL_MCTRL_GPIO__
++
++#include <linux/err.h>
++#include <linux/device.h>
++#include <linux/gpio/consumer.h>
++
++enum mctrl_gpio_idx {
++	UART_GPIO_CTS,
++	UART_GPIO_DSR,
++	UART_GPIO_DCD,
++	UART_GPIO_RI,
++	UART_GPIO_RTS,
++	UART_GPIO_DTR,
++	UART_GPIO_OUT1,
++	UART_GPIO_OUT2,
++	UART_GPIO_MAX,
++};
++
++/*
++ * Opaque descriptor for modem lines controlled by GPIOs
++ */
++struct mctrl_gpios;
++
++#ifdef CONFIG_GPIOLIB
++
++/*
++ * Set state of the modem control output lines via GPIOs.
++ */
++void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl);
++
++/*
++ * Get state of the modem control output lines from GPIOs.
++ * The mctrl flags are updated and returned.
++ */
++unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl);
++
++/*
++ * Returns the associated struct gpio_desc to the modem line gidx
++ */
++struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
++				      enum mctrl_gpio_idx gidx);
++
++/*
++ * Request and set direction of modem control lines GPIOs.
++ * devm_* functions are used, so there's no need to call mctrl_gpio_free().
++ * Returns a pointer to the allocated mctrl structure if ok,
++ * or an error from devm_kzalloc().
++ */
++struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx);
++
++/*
++ * Free the mctrl_gpios structure.
++ * Normally, this function will not be called, as the GPIOs will
++ * be disposed of by the resource management code.
++ */
++void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios);
++
++#else /* GPIOLIB */
++
++static inline
++void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
++{
++}
++
++static inline
++unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
++{
++	return *mctrl;
++}
++
++static inline
++struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
++				      enum mctrl_gpio_idx gidx)
++{
++	return ERR_PTR(-ENOSYS);
++}
++
++static inline
++struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
++{
++	return ERR_PTR(-ENOSYS);
++}
++
++static inline
++void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
++{
++}
++
++#endif /* GPIOLIB */
++
++#endif
 -- 
 1.8.5
 
