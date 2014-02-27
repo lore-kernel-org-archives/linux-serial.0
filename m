@@ -1,94 +1,100 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: API to flush rx fifo?
-Date: Wed, 26 Feb 2014 17:51:13 +0000 (UTC)
-Message-ID: <lel9ih$p6i$1@ger.gmane.org>
-References: <kpak75$9ko$1@ger.gmane.org>
- <51BB2C2A.9050601@hurleysoftware.com> <kpfc5k$5u4$1@ger.gmane.org>
- <51BB3AD0.50201@hurleysoftware.com> <530E20EF.7070609@hurleysoftware.com>
+From: Feng Tang <feng.79.tang@gmail.com>
+Subject: Re: [PATCH] tty: Fix low_latency BUG
+Date: Thu, 27 Feb 2014 11:28:59 +0800
+Message-ID: <CA++bM2vjzFOt5wmc=TQ1XMvRCwgnpq6=PKpex=GGZBK_-M6=mw@mail.gmail.com>
+References: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
+	<CA++bM2uq=vRo20FTMWvkDau+-X7h0+KU3n4Av7ef895mQKr5fA@mail.gmail.com>
+	<530E0AD3.7040909@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:35678 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752061AbaBZRvl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Feb 2014 12:51:41 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1WIidu-0000Rv-8t
-	for linux-serial@vger.kernel.org; Wed, 26 Feb 2014 18:51:38 +0100
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2014 18:51:38 +0100
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2014 18:51:38 +0100
+Received: from mail-ve0-f170.google.com ([209.85.128.170]:33997 "EHLO
+	mail-ve0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751929AbaB0D3A (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Feb 2014 22:29:00 -0500
+In-Reply-To: <530E0AD3.7040909@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Beat Bolli <bbolli@ewanet.ch>, Pavel Roskin <proski@gnu.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Kosina <jkosina@suse.cz>, David Sterba <dsterba@suse.cz>, Felipe Balbi <balbi@ti.com>, Grant Edwards <grant.b.edwards@gmail.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, stable@vger.kernel.org, linux-bluetooth <linux-bluetooth@vger.kernel.org>, feng.tang@intel.com, bin.yang@intel.com, alek.du@intel.com
 
-On 2014-02-26, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Hi Grant,
+Hi Peter,
+
+2014-02-26 23:40 GMT+08:00 Peter Hurley <peter@hurleysoftware.com>:
+> [ +cc linux-bluetooth ]
+
+>>>
+>>> Historically, low_latency was used to force wake-up the reading
+>>> process rather than wait for the next scheduler tick. The
+>>> effect was to trim multiple milliseconds of latency from
+>>> when the process would receive new data.
+>>>
+>>> Recent tests [1] have shown that the reading process now receives
+>>> data with only 10's of microseconds latency without low_latency set.
+>>
+>>
+>> The 10's of miscroseconds is ok for 115200 bps like device, but it may
+>> hurt the high speed device like Bluetooth which runs at 3M/4M bps or
+>> higher.
 >
-> I know this is old but I had marked this for re-review in my mail,
-> and after re-looking at this problem, I realized I gave you some bad info.
 >
-> Since you were referring to uart_ops, I'll assume this is for your
-> serial-core mini-driver(s).
+> The tests were run at 400Mbps, so 3Mbps or 4Mbps is not a problem
+> (but I think you may be confusing throughput with latency).
 
-Yup.
+I wrote the serial driver for intel mid platforms which are widely used
+in current smart phones, so I guess I know what I'm talking :)
 
-Upon review of this thread, I see that you had warned me that
-tty->receive_room was going away, and I completely forgot about that
-warning and didn't do anything about it about that until my drivers
-actually broke 8 months later.
+Our test and customer test cover both the performance and latency.
+say like transferring  2 GB file while using BT A2DP to playing music.
 
-Shame on me.
+Also I heard there is some app which will do real time void/data
+exchange with paired bluetooth, here microseconds really means
+something.
 
->>>>> How does the rx fifo get flushed when the user calls tcflush(TCIFLUSH)?
->>>>
->>>> It doesn't.
 >
-> The ioctl(TCIFLUSH) does in fact flush the tty buffers.
+> FWIW, two things affected the latency times of those particular tests;
+> 1) the kernel firewire subsystem handles rx data in a tasklet (so not
+>    directly from IRQ) which negatively affected the latency reported, and
+> 2) the ftrace instrumentation is not free and there are several traces per
+> rx.
 >
-> If you want to flush your hardware rx fifo, you can define the
-> .ioctl() method in your struct uart_ops and handle TCIFLUSH there.
+> If you look carefully at the test trace data, you'll see that the timestamps
+> from tty_flip_buffer_push() of the rx data to n_tty_write() of the
+> response averages _~11us_; this is the measured latency from tty driver
+> receiving the rx data to reading of that data *and* the process
+> response (which comes back up through several tty locks).
 >
-> Note: be sure to return -ENOIOCTLCMD so that TCIFLUSH processing
-> still gets seen by the ldisc!
+> Naturally, in mainline kernel, the scheduler load will affect the
+> measured latency *but that's true regardless of low_latency rx steering
+> because the user-space process must still be woken to complete the read*.
 >
-> Like this (apologies in advance for formatting; my mailer is
-> dain-bramaged),
 >
-> /* called with port->mutex held */
-> static int xxxxxx_ioctl(struct uart_port *port, unsigned int cmd,
-> 			unsigned long arg)
-> {
-> 	if (cmd == TCFLSH) {
-> 		switch (arg) {
-> 		case TCIFLUSH:
-> 		case TCIOFLUSH:
-> 			spin_lock_irq(&port->lock);
-> 			xxxxxx_empty_rx_fifo(port);
-> 			spin_unlock_irq(&port->lock);
-> 			/* fall-through */
-> 		}
-> 	}
-> 	return -ENOIOCTLCMD;
-> }
+>> More and more smartphones are using uart as the Bluetooth data
+>> interface due to its low-pin, low-power feature, and many of them
+>> are using HZ=100 kernel, I'm afraid this added delay may cause
+>> some problem.
 >
-> Sorry, hope this isn't too late :(
+>
+> Some hard data showing a real problem would help further this
+> discussion; my belief is that 3.12+ w/o low_latency rx steering
+> will outperform 3.11- w/ low_latency rx steering in every test.
 
-Great!  That's certalinly simple enough.
+As for measurements, I guess it should cover 2 parts:
+1. the performance, like the BT file transfer data rate
+2. the latency, like the real time BT communication
 
-It turns out the customer's problem had nothing to do with the UART's
-rx fifos not getting flushed when TCIFLUSH was done, so I put that
-issue on the list of things to be worried about later (and that's
-where it still is).
+I'll try to get some test data soon. Also I'm wondering what devices
+have you tested? regarding these 2 points.
 
-I'll add the above handling to my drivers just to be complete, but I
-don't think it's actually ever caused any problems.
+>
+> I'm glad to hear that the Bluetooth uart interface is getting
+> some use; that means someone will soon be fixing the hard lockup
+> in hci_uart_tx_wakeup() reported here:
 
--- 
-Grant Edwards               grant.b.edwards        Yow! I was making donuts
-                                  at               and now I'm on a bus!
-                              gmail.com            
+I'm not very familiar with the BT devices on our platforms, but most
+of them are not using the in-kernel BT driver, some just use the
+n_tty ldisc and the raw data, some use their own ldisc driver.
 
+Thanks,
+Feng
