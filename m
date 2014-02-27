@@ -1,39 +1,52 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty: Fix low_latency BUG
-Date: Thu, 27 Feb 2014 09:22:23 +0000
-Message-ID: <20140227092223.5b035f7f@alan.etchedpixels.co.uk>
-References: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
-	<CA++bM2uq=vRo20FTMWvkDau+-X7h0+KU3n4Av7ef895mQKr5fA@mail.gmail.com>
-	<530E0AD3.7040909@hurleysoftware.com>
-	<CA++bM2vjzFOt5wmc=TQ1XMvRCwgnpq6=PKpex=GGZBK_-M6=mw@mail.gmail.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: [PATCH 1/3] serial: st-asc: Use SIMPLE_DEV_PM_OPS macro
+Date: Thu, 27 Feb 2014 20:43:57 +0900
+Message-ID: <000f01cf33b1$32c234d0$98469e70$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:43949 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751066AbaB0JXV (ORCPT
+Received: from mailout4.samsung.com ([203.254.224.34]:47291 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751200AbaB0Ln6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Feb 2014 04:23:21 -0500
-In-Reply-To: <CA++bM2vjzFOt5wmc=TQ1XMvRCwgnpq6=PKpex=GGZBK_-M6=mw@mail.gmail.com>
+	Thu, 27 Feb 2014 06:43:58 -0500
+Received: from epcpsbgr1.samsung.com
+ (u141.gpu120.samsung.co.kr [203.254.230.141])
+ by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N1N008CPKL90890@mailout4.samsung.com> for
+ linux-serial@vger.kernel.org; Thu, 27 Feb 2014 20:43:57 +0900 (KST)
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Feng Tang <feng.79.tang@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Beat Bolli <bbolli@ewanet.ch>, Pavel Roskin <proski@gnu.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Kosina <jkosina@suse.cz>, David Sterba <dsterba@suse.cz>, Felipe Balbi <balbi@ti.com>, Grant Edwards <grant.b.edwards@gmail.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, stable@vger.kernel.org, linux-bluetooth <linux-bluetooth@vger.kernel.org>, feng.tang@intel.com, bin.yang@intel.com, alek.du@intel.com
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Srinivas Kandagatla' <srinivas.kandagatla@st.com>
 
-> > I'm glad to hear that the Bluetooth uart interface is getting
-> > some use; that means someone will soon be fixing the hard lockup
-> > in hci_uart_tx_wakeup() reported here:
-> 
-> I'm not very familiar with the BT devices on our platforms, but most
-> of them are not using the in-kernel BT driver, some just use the
-> n_tty ldisc and the raw data, some use their own ldisc driver.
+Use SIMPLE_DEV_PM_OPS macro in order to make the code simpler.
 
-Outside of the world of phones/android the Bluetooth on quite a few of the
-Baytrail/T devices is on the LPSS serial so it probably will be getting
-tested sooner not later and there will actually be a common platform
-around that is using the bluetooth uart features.
+Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+---
+ drivers/tty/serial/st-asc.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-I'm not anticipating any problems though.
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 21e6e84..93e27b9 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -883,9 +883,8 @@ static struct uart_driver asc_uart_driver = {
+ 	.cons		= ASC_SERIAL_CONSOLE,
+ };
+ 
+-static const struct dev_pm_ops asc_serial_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
+-};
++static SIMPLE_DEV_PM_OPS(asc_serial_pm_ops, asc_serial_suspend,
++			 asc_serial_resume);
+ 
+ static struct platform_driver asc_serial_driver = {
+ 	.probe		= asc_serial_probe,
+-- 
+1.7.10.4
 
-Alan
+
