@@ -1,100 +1,93 @@
-From: Feng Tang <feng.79.tang@gmail.com>
-Subject: Re: [PATCH] tty: Fix low_latency BUG
-Date: Thu, 27 Feb 2014 11:28:59 +0800
-Message-ID: <CA++bM2vjzFOt5wmc=TQ1XMvRCwgnpq6=PKpex=GGZBK_-M6=mw@mail.gmail.com>
-References: <1393072281-5814-1-git-send-email-peter@hurleysoftware.com>
-	<CA++bM2uq=vRo20FTMWvkDau+-X7h0+KU3n4Av7ef895mQKr5fA@mail.gmail.com>
-	<530E0AD3.7040909@hurleysoftware.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v4 1/5] tty/serial: Add GPIOLIB helpers for controlling
+ modem lines
+Date: Thu, 27 Feb 2014 09:43:28 +0100
+Message-ID: <CACQ1gAhF805ZjPGenb7UWi6z4jMF+p2bW8Z63DfMtNuyB5BLkg@mail.gmail.com>
+References: <1393431588-25977-1-git-send-email-richard.genoud@gmail.com>
+ <1393431588-25977-2-git-send-email-richard.genoud@gmail.com> <1393432624.955150590@f282.i.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f170.google.com ([209.85.128.170]:33997 "EHLO
-	mail-ve0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751929AbaB0D3A (ORCPT
+Received: from mail-lb0-f175.google.com ([209.85.217.175]:58157 "EHLO
+	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751021AbaB0Int convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Feb 2014 22:29:00 -0500
-In-Reply-To: <530E0AD3.7040909@hurleysoftware.com>
+	Thu, 27 Feb 2014 03:43:49 -0500
+Received: by mail-lb0-f175.google.com with SMTP id w7so1440646lbi.20
+        for <linux-serial@vger.kernel.org>; Thu, 27 Feb 2014 00:43:48 -0800 (PST)
+In-Reply-To: <1393432624.955150590@f282.i.mail.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Beat Bolli <bbolli@ewanet.ch>, Pavel Roskin <proski@gnu.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Kosina <jkosina@suse.cz>, David Sterba <dsterba@suse.cz>, Felipe Balbi <balbi@ti.com>, Grant Edwards <grant.b.edwards@gmail.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Hal Murray <murray+fedora@ip-64-139-1-69.sjc.megapath.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, stable@vger.kernel.org, linux-bluetooth <linux-bluetooth@vger.kernel.org>, feng.tang@intel.com, bin.yang@intel.com, alek.du@intel.com
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Hi Peter,
-
-2014-02-26 23:40 GMT+08:00 Peter Hurley <peter@hurleysoftware.com>:
-> [ +cc linux-bluetooth ]
-
->>>
->>> Historically, low_latency was used to force wake-up the reading
->>> process rather than wait for the next scheduler tick. The
->>> effect was to trim multiple milliseconds of latency from
->>> when the process would receive new data.
->>>
->>> Recent tests [1] have shown that the reading process now receives
->>> data with only 10's of microseconds latency without low_latency set.
+2014-02-26 17:37 GMT+01:00 Alexander Shiyan <shc_work@mail.ru>:
+> Hello Richard.
+>
+> =D0=A1=D1=80=D0=B5=D0=B4=D0=B0, 26 =D1=84=D0=B5=D0=B2=D1=80=D0=B0=D0=BB=
+=D1=8F 2014, 17:19 +01:00 =D0=BE=D1=82 Richard Genoud <richard.genoud@g=
+mail.com>:
+>> This patch add some helpers to control modem lines (CTS/RTS/DSR...) =
+via
+>> GPIO.
+>> This will be useful for many boards which have a serial controller t=
+hat
+>> only handle CTS/RTS pins (or even just RX/TX).
 >>
->>
->> The 10's of miscroseconds is ok for 115200 bps like device, but it may
->> hurt the high speed device like Bluetooth which runs at 3M/4M bps or
->> higher.
+>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 >
+> Better, but I found few bugs... :)
+> ...
+>> +Modem control lines via GPIO
+>> +----------------------------
+>> +
+>> +Some helpers are provided in order to set/get modem control lines v=
+ia GPIO.
+>> +
+>> +mctrl_gpio_init(dev, idx):
 >
-> The tests were run at 400Mbps, so 3Mbps or 4Mbps is not a problem
-> (but I think you may be confusing throughput with latency).
+> I think we should indicate variable types used in these functions.
+In the whole file, the variable type are not indicated. So, for
+consistency, I think it's better like that.
 
-I wrote the serial driver for intel mid platforms which are widely used
-in current smart phones, so I guess I know what I'm talking :)
-
-Our test and customer test cover both the performance and latency.
-say like transferring  2 GB file while using BT A2DP to playing music.
-
-Also I heard there is some app which will do real time void/data
-exchange with paired bluetooth, here microseconds really means
-something.
-
+ ...
+>> +void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+>> +{
+>> +     enum mctrl_gpio_idx i;
+>> +
+>> +     if (IS_ERR_OR_NULL(gpios))
+>> +             return;
 >
-> FWIW, two things affected the latency times of those particular tests;
-> 1) the kernel firewire subsystem handles rx data in a tasklet (so not
->    directly from IRQ) which negatively affected the latency reported, and
-> 2) the ftrace instrumentation is not free and there are several traces per
-> rx.
->
-> If you look carefully at the test trace data, you'll see that the timestamps
-> from tty_flip_buffer_push() of the rx data to n_tty_write() of the
-> response averages _~11us_; this is the measured latency from tty driver
-> receiving the rx data to reading of that data *and* the process
-> response (which comes back up through several tty locks).
->
-> Naturally, in mainline kernel, the scheduler load will affect the
-> measured latency *but that's true regardless of low_latency rx steering
-> because the user-space process must still be woken to complete the read*.
->
->
->> More and more smartphones are using uart as the Bluetooth data
->> interface due to its low-pin, low-power feature, and many of them
->> are using HZ=100 kernel, I'm afraid this added delay may cause
->> some problem.
->
->
-> Some hard data showing a real problem would help further this
-> discussion; my belief is that 3.12+ w/o low_latency rx steering
-> will outperform 3.11- w/ low_latency rx steering in every test.
-
-As for measurements, I guess it should cover 2 parts:
-1. the performance, like the BT file transfer data rate
-2. the latency, like the real time BT communication
-
-I'll try to get some test data soon. Also I'm wondering what devices
-have you tested? regarding these 2 points.
+> No. IS_ERR_OR_NULL() is not valid here. This is allocated by kzalloc(=
+),
+> so you should check valid pointer only, ie (!gpios).
+> Same in other places.
+You're right !
 
 >
-> I'm glad to hear that the Bluetooth uart interface is getting
-> some use; that means someone will soon be fixing the hard lockup
-> in hci_uart_tx_wakeup() reported here:
+>> +             if (err) {
+>> +                     dev_err(dev, "Unable to set direction for %s G=
+PIO",
+>> +                             mctrl_gpios_desc[i].name);
+>> +                     devm_gpiod_put(dev, gpios->gpio[i]);
+>> +                     gpios->gpio[i] =3D NULL;
+>> +             }
+>> +     }
+>
+> Let's use dev_dbg().
+Why dbg ? I agree that _err may be a bit strong, we could use
+dev_warn() instead.
+But as it really should not happen, I'm a bit reluctant to set it as de=
+bug.
+Or have you something else in mind ?
 
-I'm not very familiar with the BT devices on our platforms, but most
-of them are not using the in-kernel BT driver, some just use the
-n_tty ldisc and the raw data, some use their own ldisc driver.
+> Thanks.
+> ---
 
-Thanks,
-Feng
+Thanks for reviewing !
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
