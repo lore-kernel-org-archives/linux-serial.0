@@ -1,28 +1,52 @@
-From: Karen Williams <KWilliams@gloversvilleschools.org>
-Subject: Outlook gebruiker waarschuwing.
-Date: Wed, 26 Feb 2014 06:32:14 +0000
-Message-ID: <34AEC189DE25054ABC8B6B969C68365215080226__21187.7031754286$1393540771$gmane$org@GESDMBX01.gesda.gesd.gsd>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 2/2] serial: sh-sci: Add missing call to uart_remove_one_port() in failure path
+Date: Fri, 28 Feb 2014 14:21:33 +0100
+Message-ID: <1393593694-30262-2-git-send-email-geert@linux-m68k.org>
+References: <1393593694-30262-1-git-send-email-geert@linux-m68k.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.gloversvilleschools.org ([163.153.10.66]:30021 "HELO
-	barracuda.gloversvilleschools.org" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with SMTP id S1752258AbaB0WjJ convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Feb 2014 17:39:09 -0500
-Content-Language: en-US
+Received: from albert.telenet-ops.be ([195.130.137.90]:38842 "EHLO
+	albert.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751661AbaB1NVp (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Feb 2014 08:21:45 -0500
+In-Reply-To: <1393593694-30262-1-git-send-email-geert@linux-m68k.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "acount-security-noreply@account.microsoft.com" <acount-security-noreply@account.microsoft.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Geachte Webmail Gebruiker,
-Uw twee inkomende mails hangende toestand geplaatst als gevolg van de recente upgrade in onze database.
+From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-in volgorde te ontvangen uw berichten KLIK HIER<http://goorsoicuesaeorusdoisda.webs.com/>
+If cpufreq_register_notifier() fails, we have to remove the port added by
+sci_probe_single(), which is not done by sci_cleanup_single().
 
-Login met uw juiste Webmail informatie en wachten op antwoordt van onze data service.
-Onze excuses voor het ongemak en waarderen uw begrip.
+Else the serial port stays active from the point of view of the serial
+subsystem, and it may crash when userspace getty is started, or when the
+loadable driver module is unloaded.
 
-Exchange administrator
-The Microsoft Account Team 2014.
+This was introduced by commit 6dae14216c85eea13db7b12c469475c5d30e5499
+("serial: sh-sci: Fix probe error paths").
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+---
+This depends on "serial_core: Unregister console in uart_remove_one_port()"
+when using a serial console.
+---
+ drivers/tty/serial/sh-sci.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index be33d2b0613b..7958115e6a51 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2564,6 +2564,7 @@ static int sci_probe(struct platform_device *dev)
+ 	ret = cpufreq_register_notifier(&sp->freq_transition,
+ 					CPUFREQ_TRANSITION_NOTIFIER);
+ 	if (unlikely(ret < 0)) {
++		uart_remove_one_port(&sci_uart_driver, &sp->port);
+ 		sci_cleanup_single(sp);
+ 		return ret;
+ 	}
+-- 
+1.7.9.5
+
