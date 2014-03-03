@@ -1,60 +1,110 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2NSAxLzNdIHR0eS9zZXJpYWw6IEFkZCBHUElPTElCIGhl?=
- =?UTF-8?B?bHBlcnMgZm9yIGNvbnRyb2xsaW5nIG1vZGVtIGxpbmVz?=
-Date: Mon, 03 Mar 2014 15:27:10 +0400
-Message-ID: <1393846030.273217958@f113.i.mail.ru>
-References: <1393845120-6340-1-git-send-email-richard.genoud@gmail.com>
- <1393845120-6340-2-git-send-email-richard.genoud@gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: "Ira W. Snyder" <iws@ovro.caltech.edu>
+Subject: Re: [PATCH RESEND 1/1] serial: 8250_pci: fix support for MosChip
+ 98xx boards
+Date: Mon, 3 Mar 2014 08:32:52 -0800
+Message-ID: <20140303163251.GA11529@ovro.caltech.edu>
+References: <1393631839-30734-1-git-send-email-iws@ovro.caltech.edu>
+ <20140301004543.GA32604@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback3.mail.ru ([94.100.176.58]:47680 "EHLO
-	fallback3.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753566AbaCCL1i (ORCPT
+Received: from ovro.ovro.caltech.edu ([192.100.16.2]:34177 "EHLO
+	ovro.ovro.caltech.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753980AbaCCQcz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Mar 2014 06:27:38 -0500
-Received: from f113.i.mail.ru (f113.i.mail.ru [128.140.171.227])
-	by fallback3.mail.ru (mPOP.Fallback_MX) with ESMTP id 8F30010E07250
-	for <linux-serial@vger.kernel.org>; Mon,  3 Mar 2014 15:27:34 +0400 (MSK)
-In-Reply-To: <1393845120-6340-2-git-send-email-richard.genoud@gmail.com>
+	Mon, 3 Mar 2014 11:32:55 -0500
+Content-Disposition: inline
+In-Reply-To: <20140301004543.GA32604@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <noreply.rgenoud@gmail.com>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, =?UTF-8?B?Tmljb2xhcyBGZXJyZQ==?= <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
 
-SGVsbG8uCgrQn9C+0L3QtdC00LXQu9GM0L3QuNC6LCAgMyDQvNCw0YDRgtCwIDIwMTQsIDEyOjEx
-ICswMTowMCDQvtGCIFJpY2hhcmQgR2Vub3VkIDxub3JlcGx5LnJnZW5vdWRAZ21haWwuY29tPjoK
-PiBUaGlzIHBhdGNoIGFkZCBzb21lIGhlbHBlcnMgdG8gY29udHJvbCBtb2RlbSBsaW5lcyAoQ1RT
-L1JUUy9EU1IuLi4pIHZpYQo+IEdQSU8uCj4gVGhpcyB3aWxsIGJlIHVzZWZ1bCBmb3IgbWFueSBi
-b2FyZHMgd2hpY2ggaGF2ZSBhIHNlcmlhbCBjb250cm9sbGVyIHRoYXQKPiBvbmx5IGhhbmRsZSBD
-VFMvUlRTIHBpbnMgKG9yIGV2ZW4ganVzdCBSWC9UWCkuCj4gCj4gU2lnbmVkLW9mZi1ieTogUmlj
-aGFyZCBHZW5vdWQgPHJpY2hhcmQuZ2Vub3VkQGdtYWlsLmNvbT4KLi4uCj4gK3N0cnVjdCBtY3Ry
-bF9ncGlvcyAqbWN0cmxfZ3Bpb19pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgdW5zaWduZWQgaW50
-IGlkeCkKPiArewo+ICsJc3RydWN0IG1jdHJsX2dwaW9zICpncGlvczsKPiArCWVudW0gbWN0cmxf
-Z3Bpb19pZHggaTsKPiArCWludCBlcnI7Cj4gKwo+ICsJZ3Bpb3MgPSBkZXZtX2t6YWxsb2MoZGV2
-LCBzaXplb2YoKmdwaW9zKSwgR0ZQX0tFUk5FTCk7Cj4gKwlpZiAoIWdwaW9zKQo+ICsJCWdvdG8g
-b3V0OwoKaWYgKCFncGlvcykKICByZXR1cm4gRVJSX1BUUigtRU5PTUVNKTsKCgo+ICsJZm9yIChp
-ID0gMDsgaSA8IFVBUlRfR1BJT19NQVg7IGkrKykgewo+ICsJCWdwaW9zLT5ncGlvW2ldID0gZGV2
-bV9ncGlvZF9nZXRfaW5kZXgoZGV2LAo+ICsJCQkJCQkgICAgICBtY3RybF9ncGlvc19kZXNjW2ld
-Lm5hbWUsCj4gKwkJCQkJCSAgICAgIGlkeCk7Cj4gKwo+ICsJCS8qCj4gKwkJICogVGhlIEdQSU9z
-IGFyZSBtYXliZSBub3QgYWxsIGZpbGxlZCwKPiArCQkgKiB0aGlzIGlzIG5vdCBhbiBlcnJvci4K
-PiArCQkgKi8KPiArCQlpZiAoSVNfRVJSX09SX05VTEwoZ3Bpb3MtPmdwaW9baV0pKQo+ICsJCQlj
-b250aW51ZTsKPiArCj4gKwkJaWYgKG1jdHJsX2dwaW9zX2Rlc2NbaV0uZGlyX291dCkKPiArCQkJ
-ZXJyID0gZ3Bpb2RfZGlyZWN0aW9uX291dHB1dChncGlvcy0+Z3Bpb1tpXSwgMCk7Cj4gKwkJZWxz
-ZQo+ICsJCQllcnIgPSBncGlvZF9kaXJlY3Rpb25faW5wdXQoZ3Bpb3MtPmdwaW9baV0pOwo+ICsJ
-CWlmIChlcnIpIHsKPiArCQkJZGV2X3dhcm4oZGV2LCAiVW5hYmxlIHRvIHNldCBkaXJlY3Rpb24g
-Zm9yICVzIEdQSU8iLAo+ICsJCQkJIG1jdHJsX2dwaW9zX2Rlc2NbaV0ubmFtZSk7Cj4gKwkJCWRl
-dm1fZ3Bpb2RfcHV0KGRldiwgZ3Bpb3MtPmdwaW9baV0pOwo+ICsJCQlncGlvcy0+Z3Bpb1tpXSA9
-IE5VTEw7Cj4gKwkJfQo+ICsJfQo+ICsKPiArb3V0Ogo+ICsJcmV0dXJuIGdwaW9zOwo+ICt9Cj4g
-K0VYUE9SVF9TWU1CT0xfR1BMKG1jdHJsX2dwaW9faW5pdCk7Cj4gKwo+ICt2b2lkIG1jdHJsX2dw
-aW9fZnJlZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBtY3RybF9ncGlvcyAqZ3Bpb3MpCj4g
-K3sKPiArCWVudW0gbWN0cmxfZ3Bpb19pZHggaTsKPiArCj4gKwlpZiAoIWdwaW9zKQo+ICsJCXJl
-dHVybjsKPiArCj4gKwlmb3IgKGkgPSAwOyBpIDwgVUFSVF9HUElPX01BWDsgaSsrKQo+ICsJCWlm
-ICghSVNfRVJSX09SX05VTEwoZ3Bpb3MtPmdwaW9baV0pKSB7Cj4gKwkJCWRldm1fZ3Bpb2RfcHV0
-KGRldiwgZ3Bpb3MtPmdwaW9baV0pOwo+ICsJCQlncGlvcy0+Z3Bpb1tpXSA9IE5VTEw7CgpObyBu
-ZWVkIHRvIE5VTEwgdGhpcyB2YXJpYWJsZS4gSW5zdGVhZCwgeW91IHNob3VsZCBOVUxMCiJncGlv
-cyIgZW50aXJlbHkgYXQgdGhlIGVuZCBvZiB0aGlzIGZ1bmN0aW9uLgoKPiArCQl9Cj4gKwlkZXZt
-X2tmcmVlKGRldiwgZ3Bpb3MpOwoKZ3Bpb3MgPSBOVUxMOwpTbyB0aGlzIHdpbGwgaW5kaWNhdGUg
-dGhhdCBpdHMgbm8gbW9yZSB2YWxpZC4KCj4gK30KLi4uCgpUaGFua3MuCi0tLQo=
+On Fri, Feb 28, 2014 at 04:45:43PM -0800, Greg KH wrote:
+> On Fri, Feb 28, 2014 at 03:57:19PM -0800, Ira W. Snyder wrote:
+> > Commit 7808edcd306f22aeb23775d34e70b7fa2f58b852 "Basic support for
+> > Moschip 9900 family I/O chips" broke support for the 98xx boards. This
+> > is due to a missing check for the 99xx family inside the newly added
+> > pci_netmos_9900_setup() function, which is now used for all boards in
+> > the Moschip family.
+> > 
+> > The code for skipping BARs is incorrect for the 98xx boards. Using it
+> > causes two serial ports to be left undetected on my 9865 board.
+> > 
+> > By checking for the 99xx boards and using the new code exclusively for
+> > them, all of my serial ports are now detected.
+> > 
+> > Signed-off-by: Ira W. Snyder <iws@ovro.caltech.edu>
+> > ---
+> > 
+> > Here is the lspci output for my 9865 board. On the 05:00.2 device, the
+> > middle two serial ports (I/O ports 0x1010 and 0x1008) are left unused
+> > and undetected without this patch.
+> > 
+> > After the patch, they work perfectly.
+> > 
+> > 05:00.0 Serial controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller (prog-if 02 [16550])
+> > 	Subsystem: Device a000:1000
+> > 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 21
+> > 	I/O ports at 1028 [size=8]
+> > 	Memory at e0104000 (32-bit, non-prefetchable) [size=4K]
+> > 	Memory at e0103000 (32-bit, non-prefetchable) [size=4K]
+> > 	Capabilities: <access denied>
+> > 	Kernel driver in use: serial
+> > 	Kernel modules: parport_pc
+> > 
+> > 05:00.1 Serial controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller (prog-if 02 [16550])
+> > 	Subsystem: Device a000:1000
+> > 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 22
+> > 	I/O ports at 1020 [size=8]
+> > 	Memory at e0102000 (32-bit, non-prefetchable) [size=4K]
+> > 	Memory at e0101000 (32-bit, non-prefetchable) [size=4K]
+> > 	Capabilities: <access denied>
+> > 	Kernel driver in use: serial
+> > 	Kernel modules: parport_pc
+> > 
+> > 05:00.2 Communication controller: MosChip Semiconductor Technology Ltd. PCI 9865 Multi-I/O Controller
+> > 	Subsystem: Device a000:3004
+> > 	Flags: bus master, fast Back2Back, medium devsel, latency 32, IRQ 23
+> > 	I/O ports at 1018 [size=8]
+> > 	I/O ports at 1010 [size=8]
+> > 	I/O ports at 1008 [size=8]
+> > 	I/O ports at 1000 [size=8]
+> > 	Memory at e0100000 (32-bit, non-prefetchable) [size=4K]
+> > 	Capabilities: <access denied>
+> > 	Kernel driver in use: serial
+> > 
+> >  drivers/tty/serial/8250/8250_pci.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> > index 50228eed3b6f..374551f196c5 100644
+> > --- a/drivers/tty/serial/8250/8250_pci.c
+> > +++ b/drivers/tty/serial/8250/8250_pci.c
+> > @@ -783,7 +783,8 @@ static int pci_netmos_9900_setup(struct serial_private *priv,
+> >  {
+> >  	unsigned int bar;
+> >  
+> > -	if ((priv->dev->subsystem_device & 0xff00) == 0x3000) {
+> > +	if ((priv->dev->subsystem_device & 0xff00) == 0x3000 &&
+> > +		(priv->dev->device & 0xff00) == 0x9900) {
+> >  		/* netmos apparently orders BARs by datasheet layout, so serial
+> >  		 * ports get BARs 0 and 3 (or 1 and 4 for memmapped)
+> >  		 */
+> 
+> This patch doesn't apply at all due to a change to this statement in
+> 3.14-rc3.  Actually, is the patch even needed after commit
+> 333c085e4b0cd9df04b087d29f87969a4e26dfa9 went into Linus's tree?  If so,
+> please refresh it against the latest tree so I can apply it.
+> 
+> thanks,
+> 
+> greg k-h
+
+Hi Greg,
+
+This patch is no longer needed. The commit you mention accomplishes the
+same thing.
+
+Thanks,
+Ira
