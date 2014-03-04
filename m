@@ -1,59 +1,50 @@
-From: Aaron Sierra <asierra@xes-inc.com>
-Subject: [PATCH 2/2] serial: 8250_pci: change BayTrail default uartclk
-Date: Mon, 3 Mar 2014 19:54:36 -0600 (CST)
-Message-ID: <1222639163.81280.1393898076434.JavaMail.zimbra@xes-inc.com>
-References: <694295964.81260.1393897982162.JavaMail.zimbra@xes-inc.com>
+From: srinivas kandagatla <srinivas.kandagatla@st.com>
+Subject: Re: [PATCH 1/3] serial: st-asc: Use SIMPLE_DEV_PM_OPS macro
+Date: Tue, 4 Mar 2014 09:13:13 +0000
+Message-ID: <53159929.8020906@st.com>
+References: <000f01cf33b1$32c234d0$98469e70$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from xes-mad.com ([216.165.139.218]:31963 "EHLO xes-mad.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755665AbaCDByk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Mar 2014 20:54:40 -0500
-In-Reply-To: <694295964.81260.1393897982162.JavaMail.zimbra@xes-inc.com>
+Received: from eu1sys200aog118.obsmtp.com ([207.126.144.145]:49950 "EHLO
+	eu1sys200aog118.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756677AbaCDJTt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 4 Mar 2014 04:19:49 -0500
+In-Reply-To: <000f01cf33b1$32c234d0$98469e70$%han@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Jingoo Han <jg1.han@samsung.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
 
-The Intel BayTrail HSUART power-on default reference clock is 44.2368 MHz,
-but 73.728 MHz provides 0% error for additional "conventional" baud rates
-above 460800 (e.g. 576000, 921600, and 1152000).
+Thanks for the patch, It looks ok to me.
 
-Signed-off-by: Aaron Sierra <asierra@xes-inc.com>
----
- drivers/tty/serial/8250/8250_pci.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Acked-by: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e4289b2..75398af 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1400,9 +1400,9 @@ byt_set_termios(struct uart_port *p, struct ktermios *termios,
- 		p->uartclk = 40000000;
- 		break;
- 	default:
--		m = 6912;
--		n = 15625;
--		p->uartclk = 44236800;
-+		m = 2304;
-+		n = 3125;
-+		p->uartclk = 73728000;
- 	}
- 
- 	/* Reset the clock */
-@@ -3469,6 +3469,10 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
-+	/*
-+	 * Intel BayTrail HSUART reference clock is 44.2368 MHz at power-on,
-+	 * but is overridden by byt_set_termios.
-+	 */
- 	[pbn_byt] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 1,
--- 
-1.7.9.5
+On 27/02/14 11:43, Jingoo Han wrote:
+> Use SIMPLE_DEV_PM_OPS macro in order to make the code simpler.
+> 
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> ---
+>  drivers/tty/serial/st-asc.c |    5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index 21e6e84..93e27b9 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -883,9 +883,8 @@ static struct uart_driver asc_uart_driver = {
+>  	.cons		= ASC_SERIAL_CONSOLE,
+>  };
+>  
+> -static const struct dev_pm_ops asc_serial_pm_ops = {
+> -	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
+> -};
+> +static SIMPLE_DEV_PM_OPS(asc_serial_pm_ops, asc_serial_suspend,
+> +			 asc_serial_resume);
+>  
+>  static struct platform_driver asc_serial_driver = {
+>  	.probe		= asc_serial_probe,
+> 
 
