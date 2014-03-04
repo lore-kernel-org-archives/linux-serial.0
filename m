@@ -1,11 +1,13 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH RFC 0/6] tty: xuartps renaming
-Date: Tue,  4 Mar 2014 09:17:23 -0800
-Message-ID: <1393953449-28551-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH RFC 4/6] tty: cadence: Document DT binding
+Date: Tue,  4 Mar 2014 09:17:27 -0800
+Message-ID: <1393953449-28551-5-git-send-email-soren.brinkmann@xilinx.com>
+References: <1393953449-28551-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1393953449-28551-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,49 +21,40 @@ To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfound
 Cc: Peter Crosthwaite <peter.crosthwaite@xilinx.com>, Kevin Hilman <khilman@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgp0aGlzIHNlcmllcyBhcHBlYXJzIGEgbGl0dGxlIG1lc3N5LgpUaGUgVUFSVCBjb250cm9s
-bGVyIGluIFp5bnEgaXMgQ2FkZW5jZSB2ZW5kb3IgSVAuIEhlbmNlLCBuYW1pbmcgYW5kCmlkZW50
-aWZ5aW5nIHRoaXMgcHJvcGVybHkgd291bGQgZmFjaWxpdGF0ZSB1c2FnZSBvZiB0aGlzIGRyaXZl
-ciBieSBvdGhlcgppbXBsZW1lbnRlcnMgb2YgdGhpcyBJUC4gVGhvdWdoLCB0aGlzIG1pZ2h0IHNv
-dW5kIG5pY2UsIHRoZXJlIGFyZSBzb21lCmRldGFpbHMgYWJvdXQgdGhpcyBzZXJpZXMsIEkgYW0g
-bm90IHN1cmUgd2hldGhlciB0aGV5IGFyZSBhY2NlcHRhYmxlOgoKIC0gdGhlIGRldmljZSBub2Rl
-IG5hbWU6IEl0IGN1cnJlbnRseSBpcyAndHR5UFMnLiBJIGRvbid0IGtub3cgaWYgdGhlcmUKICAg
-YXJlIGFueSBydWxlcyByZWdhcmRpbmcgdGhpcyBhbmQgd2hldGhlciB0aGlzIHNob3VsZCBiZSBj
-aGFuZ2VkIG9yCiAgIG5vdC4KIC0gdGhlIFVBUlQgcG9ydCAjZGVmaW5lIGluIGluY2x1ZGUvdWFw
-aS9saW51eC9zZXJpYWxfY29yZS5oIGlzIGNoYW5nZWQKIC0gdGhlIHNlcmllcyBkb2VzIG5vdCBj
-bGVhbmx5IG1pZ3JhdGUgWnlucSAod2hpY2ggaXMgdGhlIG9ubHkgdXNlciBvZgogICB0aGlzIGRy
-aXZlcikgdG8gdGhlIG5ldyBkcml2ZXIuIFRoZXJlIGlzIGJyb2tlbiBVQVJUIGJldHdlZW4gdGhl
-CiAgIHBhdGNoZXMgJ3R0eTogUmVuYW1lIHhpbGlueF91YXJ0IC0+IGNhZGVuY2VfdWFydCcgYW5k
-ICdBUk06IHp5bnE6IERUOgogICBNaWdyYXRlIFVBUlQgdG8gQ2FkZW5jZSBiaW5kaW5nJy4gVGhp
-cyBpcyBtb3N0bHkgZHVlIHRvIGEgY2hhbmdlIG9mCiAgIHRoZSBjbG9jayBuYW1lcyB3aGljaCBh
-cmUgdXNlZCBpbiB0aGUgRFQgYmluZGluZy4gSXQgbWlnaHQgYmUKICAgcG9zc2libGUgdG8gbWFr
-ZSB0aGUgbmV3IGFuZCBsZWdhY3kgbmFtZXMgd29yaywgYnV0IGl0IHdvdWxkIGxvb2sKICAgcmF0
-aGVyIHVnbHkgYW5kIHNpbmNlIHRoaXMgc2hvdWxkIGFmZmVjdCBaeW5xIG9ubHksIEkgaG9wZSB0
-byBnZXQKICAgYXdheSB3aXRoIHRoaXMuCgpJIGtlZXAgdGhlIENDIGxpc3QgZm9yIHRoZSBSRkMg
-YSBsaXR0bGUgcmVkdWNlZCwgaW4gcGFydGljdWxhciBJIGxlYXZlCm91dCB0aGUgT0YgcGVvcGxl
-LiBJIHRoaW5rIHRoZSBmdW5kYW1lbnRhbCBxdWVzdGlvbnMgYXJlIGluIHRoZSB0dHkKZmllbGQg
-YW5kIHByb2JhYmx5IEFSTS4gVGhlIGJpbmRpbmcgc2hvdWxkIG5vdCBiZSBhIG1ham9yIHByb2Js
-ZW0gc2luY2UKaXQgaXMgZXNzZW50aWFsbHkgdXNlZCBhbHJlYWR5IC0gaXQncyBqdXN0IG1pc3Np
-bmcgZG9jdW1lbnRhdGlvbi4KCiAgIAlUaGFua3MsCglTw7ZyZW4KClNvcmVuIEJyaW5rbWFubiAo
-Nik6CiAgdHR5OiB4ZW1hY3BzOiBDbGVhbiB1cAogIHR0eTogeGVtYWNwczogUHJpbnQgd2Fybmlu
-ZyBpbiBjbG9jayBub3RpZmllcgogIHR0eTogUmVuYW1lIHhpbGlueF91YXJ0IC0+IGNhZGVuY2Vf
-dWFydAogIHR0eTogY2FkZW5jZTogRG9jdW1lbnQgRFQgYmluZGluZwogIEFSTTogenlucTogRFQ6
-IE1pZ3JhdGUgVUFSVCB0byBDYWRlbmNlIGJpbmRpbmcKICBBUk06IG11bHRpX3Y3X2RlZmNvbmZp
-ZzogQWRvcHQgdG8gVUFSVCBkcml2ZXIgcmVuYW1pbmcKCiAuLi4vZGV2aWNldHJlZS9iaW5kaW5n
-cy9zZXJpYWwvY2FkZW5jZV91YXJ0LnR4dCAgICB8ICAgMjAgKwogYXJjaC9hcm0vYm9vdC9kdHMv
-enlucS03MDAwLmR0c2kgICAgICAgICAgICAgICAgICAgfCAgICA4ICstCiBhcmNoL2FybS9jb25m
-aWdzL211bHRpX3Y3X2RlZmNvbmZpZyAgICAgICAgICAgICAgICB8ICAgIDQgKy0KIGRyaXZlcnMv
-dHR5L3NlcmlhbC9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAxNSArLQogZHJp
-dmVycy90dHkvc2VyaWFsL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAyICst
-CiBkcml2ZXJzL3R0eS9zZXJpYWwvY2FkZW5jZV91YXJ0LmMgICAgICAgICAgICAgICAgICB8IDE0
-NTcgKysrKysrKysrKysrKysrKysrKwogZHJpdmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMu
-YyAgICAgICAgICAgICAgICAgfCAxNTI0IC0tLS0tLS0tLS0tLS0tLS0tLS0tCiBpbmNsdWRlL3Vh
-cGkvbGludXgvc2VyaWFsX2NvcmUuaCAgICAgICAgICAgICAgICAgICB8ICAgIDQgKy0KIDggZmls
-ZXMgY2hhbmdlZCwgMTQ5NCBpbnNlcnRpb25zKCspLCAxNTQwIGRlbGV0aW9ucygtKQogY3JlYXRl
-IG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvY2Fk
-ZW5jZV91YXJ0LnR4dAogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvdHR5L3NlcmlhbC9jYWRl
-bmNlX3VhcnQuYwogZGVsZXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhf
-dWFydHBzLmMKCi0tIAoxLjkuMC4xLmc0MTk2MDAwCgoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGlu
-dXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQu
-b3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Add binding documentation for the Cadence UART.
+
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
+---
+ .../devicetree/bindings/serial/cadence_uart.txt      | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/cadence_uart.txt
+
+diff --git a/Documentation/devicetree/bindings/serial/cadence_uart.txt b/Documentation/devicetree/bindings/serial/cadence_uart.txt
+new file mode 100644
+index 000000000000..fc8ac527dee8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/cadence_uart.txt
+@@ -0,0 +1,20 @@
++Binding for Cadence UART Controller
++
++Required properties:
++- compatible : should be "cdns,uart-r1p8"
++- reg: Should contain UART controller registers location and length.
++- interrupts: Should contain UART controller interrupts.
++- clocks: Must contain phandles to the UART clocks
++  See ../clocks/clock-bindings.txt for details.
++- clock-names: Tuple to identify input clocks, must contain "uart_clk" and "pclk"
++  See ../clocks/clock-bindings.txt for details.
++
++
++Example:
++	uart@e0000000 {
++		compatible = "cdns,uart-r1p8";
++		clocks = <&clkc 23>, <&clkc 40>;
++		clock-names = "uart_clk", "pclk";
++		reg = <0xE0000000 0x1000>;
++		interrupts = <0 27 4>;
++	};
+-- 
+1.9.0.1.g4196000
