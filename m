@@ -1,95 +1,71 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [PATCH RFC 3/6] tty: Rename xilinx_uart -> cadence_uart
-Date: Wed, 5 Mar 2014 10:22:05 -0800
-Message-ID: <0c95ba9c-30bd-4fb2-ae44-e0e3e4553e84@CO9EHSMHS018.ehs.local>
-References: <1393953449-28551-1-git-send-email-soren.brinkmann@xilinx.com>
- <1393953449-28551-4-git-send-email-soren.brinkmann@xilinx.com>
- <20140304193913.71c6f307@alan.etchedpixels.co.uk>
- <201403042316.26221.arnd@arndb.de>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 2/2] serial: sh-sci: Add missing call to
+ uart_remove_one_port() in failure path
+Date: Thu, 6 Mar 2014 13:19:13 +0900
+Message-ID: <20140306041912.GB29693@verge.net.au>
+References: <1393593694-30262-1-git-send-email-geert@linux-m68k.org>
+ <1393593694-30262-2-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from co9ehsobe005.messaging.microsoft.com ([207.46.163.28]:4458 "EHLO
-	co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752221AbaCESWx convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Mar 2014 13:22:53 -0500
+Received: from kirsty.vergenet.net ([202.4.237.240]:60899 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751457AbaCFETQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Mar 2014 23:19:16 -0500
 Content-Disposition: inline
-In-Reply-To: <201403042316.26221.arnd@arndb.de>
+In-Reply-To: <1393593694-30262-2-git-send-email-geert@linux-m68k.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Kevin Hilman <khilman@linaro.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Hi Arnd, Alan,
+On Fri, Feb 28, 2014 at 02:21:33PM +0100, Geert Uytterhoeven wrote:
+> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+> 
+> If cpufreq_register_notifier() fails, we have to remove the port added by
+> sci_probe_single(), which is not done by sci_cleanup_single().
+> 
+> Else the serial port stays active from the point of view of the serial
+> subsystem, and it may crash when userspace getty is started, or when the
+> loadable driver module is unloaded.
+> 
+> This was introduced by commit 6dae14216c85eea13db7b12c469475c5d30e5499
+> ("serial: sh-sci: Fix probe error paths").
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-On Tue, 2014-03-04 at 11:16PM +0100, Arnd Bergmann wrote:
-> On Tuesday 04 March 2014, One Thousand Gnomes wrote:
-> > On Tue,  4 Mar 2014 09:17:26 -0800
-> > Soren Brinkmann <soren.brinkmann@xilinx.com> wrote:
->=20
-> > The following aspects of the change set are IMHO acceptable
-> >=20
-> > - Cleaning up all the code formatting
-> > - Update the driver comments and header to explain the Cadence/Xili=
-nx
-> >   thing
-> > - change "Xilinx PS UART Support" text to "Cadence (Xilinx PS) Supp=
-ort"
-> >   or similar wording in Kconfig
-> > - Adding the cadence devicetree compatibility strings and inputs *i=
-n
-> >   addition* to the existing ones.
-> > - Documentation for the new options
->=20
-> I agree. I think it would also be nice to allow the standard clock na=
-mes
-> to be used as an alternative to the bogus ref_clk" and "aper_clk"
-> names, but just like the compatible string, it's too late to remove
-> support for the existing ones.
->=20
-> Regarding the "xlnx,xuartps" compatible string, even if we were to br=
-eak
-> backwards comptibility with the clocks, I would still want to see thi=
-s
-> string being used in addition to "cdns,uart-r1p8" so we have a way to
-> detect possible changes that xilinx did on top of the r1p8 version.
-> I also wonder if "cdns,uart-r1p8" is actually specific enough: r1p8
-> looks like a version number rather than a name, and it seems possible
-> that Cadence has produced more than one uart implemention in the past
-> or will do another one in the future that is not just a different
-> revision of this one but instead something completely different.
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
-This was pretty much what I expected, but I wanted to at least try,
-before documenting the binding.
+This looks reasonable to me.
 
-So, to summarize:
- - don't rename the file
- - I think changing the Kconfig option might be possible, but doesn't
-   really matter either. So, I'll leave it as is.
- - compat strings is the easy part, we can simple add another one
- - clock-names is not that forgiving. I'm inclined to document only the
-   Cadence names, but allow both with issuing a deprecated warning when
-   the Zynq ones are used. Then we can remove those probably a little
-   later(?)
- - I'll do something like Alan's suggestion for the Kconfig prompt
-
-Regarding how specific we can make the compat string: I asked myself th=
-e
-same question when I looked at the docs. But they don't seem to use any
-fancy names or anything. It's pretty much just a UART. The other proble=
-m
-I have is, I'd have to double check what information, beyond what alrea=
-dy
-is in the Zynq TRM, is allowed to be disclosed.
-
-	Thanks,
-	S=C3=B6ren
+Greg, could you take this one?
 
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> This depends on "serial_core: Unregister console in uart_remove_one_port()"
+> when using a serial console.
+> ---
+>  drivers/tty/serial/sh-sci.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index be33d2b0613b..7958115e6a51 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2564,6 +2564,7 @@ static int sci_probe(struct platform_device *dev)
+>  	ret = cpufreq_register_notifier(&sp->freq_transition,
+>  					CPUFREQ_TRANSITION_NOTIFIER);
+>  	if (unlikely(ret < 0)) {
+> +		uart_remove_one_port(&sci_uart_driver, &sp->port);
+>  		sci_cleanup_single(sp);
+>  		return ret;
+>  	}
+> -- 
+> 1.7.9.5
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
