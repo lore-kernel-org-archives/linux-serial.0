@@ -1,100 +1,97 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: serial core: crash / race condition on unbind
-Date: Fri, 7 Mar 2014 17:55:19 +0100
-Message-ID: <CAMuHMdVV_NrQ3PPJwPNx7MoM9TWLdk02d+10zNipNcC7VC0HAA@mail.gmail.com>
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH RFC v2 00/11] tty: xuartps: Rebranding
+Date: Fri,  7 Mar 2014 11:13:23 -0800
+Message-ID: <1394219614-3197-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ig0-f172.google.com ([209.85.213.172]:38627 "EHLO
+	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751065AbaCGTON (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Mar 2014 14:14:13 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 
-When unbinding a serial driver, uart_remove_one_port() clears
-uart_state.uart_port:
+A second iteration of this series.
 
-        state->uart_port = NULL;
+I added some more to the cleanup parts. The more you look at things the
+more things to fix you find.
 
-If the serial port is still in use (e.g. by getty), uart_close() will be
-called later:
+The read-modify-write refactoring is more or less a result of the prefi=
+x
+substitution. With the changed prefix for better indentation is
+necessary, and I think it makes the code more readably in general.
 
-        static void uart_close(struct tty_struct *tty, struct file *filp)
-        {
-                struct uart_state *state = tty->driver_data;
-                struct uart_port *uport;
+The controversial part, the re-branding: I split this up into 4 separat=
+e
+patches, starting at 5/8. Each going a little further and I'd like to
+know which ones are wanted/okay and which rather not. And whether the
+wanted ones should be squashed.
 
-                ...
+The first one is pretty much the light-weight changes Alan suggested.
 
-                if (!state)
-                        return;
+The second changes the driver name. I don't know if that is acceptable.
+I think the name is used in some sysfs nodes. Does that make it part of
+the userspace API? And I don't know if the name might be used elsewhere=
+?
 
-                uport = state->uart_port;
+The third is mostly a search and replace of 'xuartps' with
+'cdns-uart'. A noisy change but it should not impact anything else. I
+thought it might be nice to have more generic names since they show in
+stack traces and the xuartps thing may not be that meaningful on
+non-Zynq platforms - though there is non for this driver as of now.
 
-uport is NULL
+Similar the Kconfig symbol renaming. Probably not worth it, but might
+clarify things a bit.
 
-                ...
+The defconfig update would - obviously - only needed if the Kconfig
+change is done. Which is probably another reason to not change the
+config symbol.
 
-                pr_debug("uart_close(%d) called\n", uport->line);
+In the documentation I added xlnx,xuartps as valid compatible string,
+but refrained from documenting the Zynq-specific clock names. The
+driver, though, allows them, but prints a warning.
 
-If debugging is enabled, it will already crash here while dereferencing uport
-(this one is easily fixed)
+The DT update would silence the afore-mentioned warning by migrating to
+the new clock names.
 
-                if (tty_port_close_start(port, tty, filp) == 0)
-                        return;
+	Thanks,
+	S=C3=B6ren
 
-                ...
+Soren Brinkmann (11):
+  tty: xuartps: Clean up
+  tty: xuartps: Print warning in clock notifier
+  tty: xuartps: Refactor read-modify-writes
+  tty: xuartps: Remove bogus comment and register write
+  tty: xuartps: Rebrand driver as Cadence UART
+  tty: xuartps: Change driver name to 'cdns-uart'
+  tty: xuartps: Replace function and symbol prefix
+  tty: xuartps: Rename Kconfig symbols
+  ARM: multi_v7_defconfig: Adopt to UART driver renaming
+  tty: cadence: Document DT binding
+  ARM: zynq: DT: Migrate UART to Cadence binding
 
-                uart_flush_buffer(tty);
+ .../devicetree/bindings/serial/cdns,uart.txt       |   20 +
+ arch/arm/boot/dts/zynq-7000.dtsi                   |    8 +-
+ arch/arm/configs/multi_v7_defconfig                |    4 +-
+ drivers/tty/serial/Kconfig                         |   15 +-
+ drivers/tty/serial/Makefile                        |    2 +-
+ drivers/tty/serial/xilinx_uartps.c                 | 1123 ++++++++++--=
+--------
+ include/uapi/linux/serial_core.h                   |    2 +-
+ 7 files changed, 569 insertions(+), 605 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.=
+txt
 
-uart_flush_buffer() will try to obtain the port's spinlock:
-
-        static void uart_flush_buffer(struct tty_struct *tty)
-        {
-                struct uart_state *state = tty->driver_data;
-                struct uart_port *port;
-
-                ...
-
-                port = state->uart_port;
-
-port is NULL
-
-                ...
-
-                spin_lock_irqsave(&port->lock, flags);
-
-Crash!!
-
-It doesn't always crash, though.
-
-Sometimes uart_close() returns after the tty_port_close_start() above,
-without a crash (bypassing e.g. the call to uart_change_pm() :-(
-Sometimes it crashs in uart_chars_in_buffer(), which also tries to take the
-spinlock:
-    tty_port_close_start()
-        tty_wait_until_sent_from_close()
-            tty_wait_until_sent()
-                tty_chars_in_buffer()
-                    uart_chars_in_buffer()
-                        spin_lock_irqsave(&state->uart_port->lock, flags);
-
-I'm not that familiar with the internals of the serial core. Perhaps
-uart_close()
-should return early if uport is NULL, just like if state is NULL?
-However, that means the uart_change_pm(state, UART_PM_STATE_OFF)
-is bypassed again.
-
-This is with sh-sci, but I don't think the driver matters.
-
-Thanks for your comments and suggestions!
-
-Gr{oetje,eeting}s,
-
-                        Geert
+--=20
+1.9.0.1.g4196000
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
