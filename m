@@ -1,72 +1,100 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] serial: 8250: Clean up the locking for -rt
-Date: Fri,  7 Mar 2014 14:58:39 +0100
-Message-ID: <1394200719-12601-1-git-send-email-bigeasy@linutronix.de>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:37724 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752126AbaCGN6u (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Mar 2014 08:58:50 -0500
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: serial core: crash / race condition on unbind
+Date: Fri, 7 Mar 2014 17:55:19 +0100
+Message-ID: <CAMuHMdVV_NrQ3PPJwPNx7MoM9TWLdk02d+10zNipNcC7VC0HAA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Ingo Molnar <mingo@elte.hu>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
+List-Id: linux-serial@vger.kernel.org
 
-From: Ingo Molnar <mingo@elte.hu>
+When unbinding a serial driver, uart_remove_one_port() clears
+uart_state.uart_port:
 
-In -RT the spin_lock_irqsave() does not spin but sleep if the lock is
-taken. Before that, local_irq_save() is invoked which disables
-interrupts even on -RT. Therefore local_irq_save() + spin_lock() does not
-work.
-In the ->sysrq and oops_in_progress case it is save to trylock the lock
-i.e. this is what we do now anyway except for ->sysrq where we assume
-that the lock is already taken.
+        state->uart_port = NULL;
 
-The spin_lock_irqsave() grabs the lock and disables the interrupts on
-vanilla (the same behavior) and on -RT it won't disable interrupts.
+If the serial port is still in use (e.g. by getty), uart_close() will be
+called later:
 
-Signed-off-by: Ingo Molnar <mingo@elte.hu>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-[bigeasy: add a patch description]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/tty/serial/8250/8250_core.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+        static void uart_close(struct tty_struct *tty, struct file *filp)
+        {
+                struct uart_state *state = tty->driver_data;
+                struct uart_port *uport;
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 747073b..81f909c 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2886,14 +2886,10 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
- 
- 	touch_nmi_watchdog();
- 
--	local_irq_save(flags);
--	if (port->sysrq) {
--		/* serial8250_handle_irq() already took the lock */
--		locked = 0;
--	} else if (oops_in_progress) {
--		locked = spin_trylock(&port->lock);
--	} else
--		spin_lock(&port->lock);
-+	if (port->sysrq || oops_in_progress)
-+		locked = spin_trylock_irqsave(&port->lock, flags);
-+	else
-+		spin_lock_irqsave(&port->lock, flags);
- 
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -2925,8 +2921,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
- 		serial8250_modem_status(up);
- 
- 	if (locked)
--		spin_unlock(&port->lock);
--	local_irq_restore(flags);
-+		spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- static int __init serial8250_console_setup(struct console *co, char *options)
--- 
-1.9.0
+                ...
 
+                if (!state)
+                        return;
+
+                uport = state->uart_port;
+
+uport is NULL
+
+                ...
+
+                pr_debug("uart_close(%d) called\n", uport->line);
+
+If debugging is enabled, it will already crash here while dereferencing uport
+(this one is easily fixed)
+
+                if (tty_port_close_start(port, tty, filp) == 0)
+                        return;
+
+                ...
+
+                uart_flush_buffer(tty);
+
+uart_flush_buffer() will try to obtain the port's spinlock:
+
+        static void uart_flush_buffer(struct tty_struct *tty)
+        {
+                struct uart_state *state = tty->driver_data;
+                struct uart_port *port;
+
+                ...
+
+                port = state->uart_port;
+
+port is NULL
+
+                ...
+
+                spin_lock_irqsave(&port->lock, flags);
+
+Crash!!
+
+It doesn't always crash, though.
+
+Sometimes uart_close() returns after the tty_port_close_start() above,
+without a crash (bypassing e.g. the call to uart_change_pm() :-(
+Sometimes it crashs in uart_chars_in_buffer(), which also tries to take the
+spinlock:
+    tty_port_close_start()
+        tty_wait_until_sent_from_close()
+            tty_wait_until_sent()
+                tty_chars_in_buffer()
+                    uart_chars_in_buffer()
+                        spin_lock_irqsave(&state->uart_port->lock, flags);
+
+I'm not that familiar with the internals of the serial core. Perhaps
+uart_close()
+should return early if uport is NULL, just like if state is NULL?
+However, that means the uart_change_pm(state, UART_PM_STATE_OFF)
+is bypassed again.
+
+This is with sh-sci, but I don't think the driver matters.
+
+Thanks for your comments and suggestions!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
