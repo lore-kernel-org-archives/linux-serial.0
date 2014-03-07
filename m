@@ -1,52 +1,36 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH RFC v2 06/11] tty: xuartps: Change driver name to 'cdns-uart'
-Date: Fri,  7 Mar 2014 11:13:29 -0800
-Message-ID: <1394219614-3197-7-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH RFC v2 04/11] tty: xuartps: Remove bogus comment and register write
+Date: Fri,  7 Mar 2014 11:13:27 -0800
+Message-ID: <1394219614-3197-5-git-send-email-soren.brinkmann@xilinx.com>
 References: <1394219614-3197-1-git-send-email-soren.brinkmann@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ig0-f173.google.com ([209.85.213.173]:60818 "EHLO
-	mail-ig0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753500AbaCGTOa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Mar 2014 14:14:30 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1394219614-3197-1-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Cc: Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
+List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
-I'm not sure about this change. Is this acceptable or already too much?
-I think the name is used for some sysfs entries.
+ drivers/tty/serial/xilinx_uartps.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-	S=C3=B6ren
----
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xi=
-linx_uartps.c
-index b4a2a68b5e0e..3be1da41c2a8 100644
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index a4bd6242e72d..a39c2d290902 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -31,7 +31,7 @@
- #include <linux/module.h>
-=20
- #define XUARTPS_TTY_NAME	"ttyPS"
--#define XUARTPS_NAME		"xuartps"
-+#define XUARTPS_NAME		"cdns-uart"
- #define XUARTPS_MAJOR		0	/* use dynamic node allocation */
- #define XUARTPS_MINOR		0	/* works best with devtmpfs */
- #define XUARTPS_NR_PORTS	2
---=20
+@@ -1082,11 +1082,7 @@ static void xuartps_console_write(struct console *co, const char *s,
+ 
+ 	xuartps_writel(ctrl, XUARTPS_CR_OFFSET);
+ 
+-	/* restore interrupt state, it seems like there may be a h/w bug
+-	 * in that the interrupt enable register should not need to be
+-	 * written based on the data sheet
+-	 */
+-	xuartps_writel(~imr, XUARTPS_IDR_OFFSET);
++	/* restore interrupt state */
+ 	xuartps_writel(imr, XUARTPS_IER_OFFSET);
+ 
+ 	if (locked)
+-- 
 1.9.0.1.g4196000
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
