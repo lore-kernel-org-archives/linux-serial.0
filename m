@@ -1,72 +1,54 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] RFC: WIP: sc16is7xx [v0.4]
-Date: Mon, 10 Mar 2014 14:20:32 +0000
-Message-ID: <20140310142032.47e680b5@alan.etchedpixels.co.uk>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gUkZDOiBXSVA6IHNjMTZpczd4eCBbdjAuNF0=?=
+Date: Mon, 10 Mar 2014 20:14:36 +0400
+Message-ID: <1394468076.709210210@f170.i.mail.ru>
 References: <1394432777-13005-1-git-send-email-jon@ringle.org>
-	<1394434945.519725450@f256.i.mail.ru>
-	<alpine.DEB.2.02.1403100744230.23103@jringle-ubuntu>
+ <1394434945.519725450@f256.i.mail.ru>
+ <alpine.DEB.2.02.1403100744230.23103@jringle-ubuntu>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58338 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752888AbaCJOUu convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Mar 2014 10:20:50 -0400
+Received: from f170.i.mail.ru ([94.100.178.89]:40358 "EHLO f170.i.mail.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753411AbaCJQOl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Mar 2014 12:14:41 -0400
 In-Reply-To: <alpine.DEB.2.02.1403100744230.23103@jringle-ubuntu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jon Ringle <jon@ringle.org>
-Cc: Alexander Shiyan <shc_work@mail.ru>, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
+To: =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jon@ringle.org>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jringle@gridpoint.com>
 
-On Mon, 10 Mar 2014 07:50:12 -0400 (EDT)
-Jon Ringle <jon@ringle.org> wrote:
-
->=20
-> On Mon, 10 Mar 2014, Alexander Shiyan wrote:
->=20
-> > =D0=9F=D0=BE=D0=BD=D0=B5=D0=B4=D0=B5=D0=BB=D1=8C=D0=BD=D0=B8=D0=BA,=
- 10 =D0=BC=D0=B0=D1=80=D1=82=D0=B0 2014, 2:26 -04:00 =D0=BE=D1=82 jon@r=
-ingle.org:
-> > > From: Jon Ringle <jringle@gridpoint.com>
-> > ...
-> > > +config SERIAL_SC16IS7XX
-> > > +	tristate "SC16IS7xx RS485 serial support"
-> > > +	  select SERIAL_CORE
-> > > +	  default n
-> > > +	  help
-> > > +	  This selects support for SC16IS7xx for use as a RS485 serial =
-port
-> >=20
-> > Documentation says:
-> > The SC16IS740/750/760 is a slave I=C2=B2C-bus/SPI interface to a si=
-ngle-channel
-> > high performance UART.
-> > ...
-> > The SC16IS740/750/760 also provides additional advanced features su=
-ch
-> > as auto hardware and software flow control, automatic RS-485 suppor=
-t...
-> >=20
-> > So why do you position this chip as RS485 only? Automatic direction=
- for
-> > RS485 is just a feature as an addition for standart UART.
->=20
-> You're right. This is just how we are using the chip in our board. Wo=
-uld a=20
-> configuration flag in platform_data make sense to use the auto rs485=20
-> direction?
-
-We have interfaces for RS485 runtime configuration so it could be
-extended to set a lot of parameters that way, but I think for now it
-might not be a bad idea to support rs485 auto direction in/out/off in t=
-he
-platform data.
-
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+0J/QvtC90LXQtNC10LvRjNC90LjQuiwgMTAg0LzQsNGA0YLQsCAyMDE0LCA3OjUwIC0wNDowMCDQ
+vtGCIEpvbiBSaW5nbGUgPGpvbkByaW5nbGUub3JnPjoKPiAKPiBPbiBNb24sIDEwIE1hciAyMDE0
+LCBBbGV4YW5kZXIgU2hpeWFuIHdyb3RlOgo+IAo+ID4g0J/QvtC90LXQtNC10LvRjNC90LjQuiwg
+MTAg0LzQsNGA0YLQsCAyMDE0LCAyOjI2IC0wNDowMCDQvtGCIGpvbkByaW5nbGUub3JnOgo+ID4g
+PiBGcm9tOiBKb24gUmluZ2xlIDxqcmluZ2xlQGdyaWRwb2ludC5jb20+Cj4gPiAuLi4KPiA+ID4g
+K2NvbmZpZyBTRVJJQUxfU0MxNklTN1hYCj4gPiA+ICsJdHJpc3RhdGUgIlNDMTZJUzd4eCBSUzQ4
+NSBzZXJpYWwgc3VwcG9ydCIKPiA+ID4gKwkgIHNlbGVjdCBTRVJJQUxfQ09SRQo+ID4gPiArCSAg
+ZGVmYXVsdCBuCj4gPiA+ICsJICBoZWxwCj4gPiA+ICsJICBUaGlzIHNlbGVjdHMgc3VwcG9ydCBm
+b3IgU0MxNklTN3h4IGZvciB1c2UgYXMgYSBSUzQ4NSBzZXJpYWwgcG9ydAo+ID4gCj4gPiBEb2N1
+bWVudGF0aW9uIHNheXM6Cj4gPiBUaGUgU0MxNklTNzQwLzc1MC83NjAgaXMgYSBzbGF2ZSBJwrJD
+LWJ1cy9TUEkgaW50ZXJmYWNlIHRvIGEgc2luZ2xlLWNoYW5uZWwKPiA+IGhpZ2ggcGVyZm9ybWFu
+Y2UgVUFSVC4KPiA+IC4uLgo+ID4gVGhlIFNDMTZJUzc0MC83NTAvNzYwIGFsc28gcHJvdmlkZXMg
+YWRkaXRpb25hbCBhZHZhbmNlZCBmZWF0dXJlcyBzdWNoCj4gPiBhcyBhdXRvIGhhcmR3YXJlIGFu
+ZCBzb2Z0d2FyZSBmbG93IGNvbnRyb2wsIGF1dG9tYXRpYyBSUy00ODUgc3VwcG9ydC4uLgo+ID4g
+Cj4gPiBTbyB3aHkgZG8geW91IHBvc2l0aW9uIHRoaXMgY2hpcCBhcyBSUzQ4NSBvbmx5PyBBdXRv
+bWF0aWMgZGlyZWN0aW9uIGZvcgo+ID4gUlM0ODUgaXMganVzdCBhIGZlYXR1cmUgYXMgYW4gYWRk
+aXRpb24gZm9yIHN0YW5kYXJ0IFVBUlQuCj4gCj4gWW91J3JlIHJpZ2h0LiBUaGlzIGlzIGp1c3Qg
+aG93IHdlIGFyZSB1c2luZyB0aGUgY2hpcCBpbiBvdXIgYm9hcmQuIFdvdWxkIGEgCj4gY29uZmln
+dXJhdGlvbiBmbGFnIGluIHBsYXRmb3JtX2RhdGEgbWFrZSBzZW5zZSB0byB1c2UgdGhlIGF1dG8g
+cnM0ODUgCj4gZGlyZWN0aW9uPwoKWW91IGRvbid0IG5lZWQgYSBmbGFnLCBqdXN0IHVzZSBJT0NU
+THMuCmh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC9saW51eC9rZXJuZWwvZ2l0L25leHQvbGlu
+dXgtbmV4dC5naXQvY29tbWl0L2RyaXZlcnMvdHR5L3NlcmlhbC9tYXgzMTB4LmM/aWQ9NTUzNjdj
+NjIwYWVkNmJjMjdhODJiYjE3NjMzNjY5MzFkN2YyZWU2NgoKPiBBbnkgdGhvdWdodHMgYXMgdG8g
+dGhlIGxhdGVuY3kgaXNzdWUgSSByZXBvcnQ/CgpJIGRvIG5vdCB1bmRlcnN0YW5kIHdoeSB5b3Ug
+Y2hvc2UgdGhlIHNjY254cCBkcml2ZXIgYXMgYSB0ZW1wbGF0ZS4KVXNlIGFzIGEgdGVtcGxhdGUg
+bWF4MzEweCBkcml2ZXIgZnJvbSBsaW51eC1uZXh0IGJyYW5jaC4KSSdtIHN1cmUgaXQgd2lsbCBi
+ZSBiZXR0ZXIuCgpBYm91dCBsYXRlbmN5LgpJJ20gbm90IGV4YWN0bHkgdW5kZXJzdGFuZCB0aGUg
+cHJvYmxlbSwgYnV0IEkgY2FuIHNheSB0aGUgZm9sbG93aW5nOgpTaW5jZSB5b3UncmUgdXNpbmcg
+dGhlIEkyQyBidXMsIG1heGltdW0gVUFSVCBkYXVkcmF0ZSBjYW4gYmUKcHJlZGljdGVkIGZyb20g
+dGhlIEkyQyBidXMgYmFuZHdpZHRoLgpDb3VudCBob3cgbWFueSBJMkMgY2xvY2tzIHNwZW50IG9u
+IHJlY2VwdGlvbiBhbmQgdHJhbnNtaXNzaW9uCm9mIG9uZSBieXRlIHRocm91Z2ggVUFSVC4KCi0t
+LQo=
