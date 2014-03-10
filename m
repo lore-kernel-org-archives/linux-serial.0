@@ -1,359 +1,581 @@
 From: Richard Genoud <noreply.rgenoud@gmail.com>
-Subject: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling modem lines
-Date: Mon, 10 Mar 2014 17:45:49 +0100
-Message-ID: <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+Subject: [PATCH v6 2/3] tty/serial: at91: use mctrl_gpio helpers
+Date: Mon, 10 Mar 2014 17:45:50 +0100
+Message-ID: <1394469951-21192-3-git-send-email-richard.genoud@gmail.com>
 References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f177.google.com ([74.125.82.177]:55496 "EHLO
-	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753290AbaCJQqP (ORCPT
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:37071 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752880AbaCJQqU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 10 Mar 2014 12:46:15 -0400
-Received: by mail-we0-f177.google.com with SMTP id u57so8702131wes.22
-        for <linux-serial@vger.kernel.org>; Mon, 10 Mar 2014 09:46:14 -0700 (PDT)
+	Mon, 10 Mar 2014 12:46:20 -0400
+Received: by mail-wg0-f46.google.com with SMTP id b13so2801988wgh.29
+        for <linux-serial@vger.kernel.org>; Mon, 10 Mar 2014 09:46:19 -0700 (PDT)
 In-Reply-To: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
-GPIO.
-This will be useful for many boards which have a serial controller that
-only handle CTS/RTS pins (or even just RX/TX).
+On sam9x5, dedicated CTS (and RTS) pins are unusable together with the
+LCDC, the EMAC, or the MMC because they share the same line.
+
+Moreover, the USART controller doesn't handle DTR/DSR/DCD/RI signals,
+so we have to control them via GPIO.
+
+This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
+signals.
 
 Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
- Documentation/serial/driver            |  25 ++++++
- drivers/tty/serial/Kconfig             |   3 +
- drivers/tty/serial/Makefile            |   3 +
- drivers/tty/serial/serial_mctrl_gpio.c | 143 +++++++++++++++++++++++++++++++++
- drivers/tty/serial/serial_mctrl_gpio.h | 110 +++++++++++++++++++++++++
- 5 files changed, 284 insertions(+)
- create mode 100644 drivers/tty/serial/serial_mctrl_gpio.c
- create mode 100644 drivers/tty/serial/serial_mctrl_gpio.h
+ .../devicetree/bindings/serial/atmel-usart.txt     |  12 ++-
+ arch/arm/mach-at91/at91rm9200_devices.c            |  16 ++--
+ arch/arm/mach-at91/at91sam9260_devices.c           |   7 --
+ arch/arm/mach-at91/at91sam9261_devices.c           |   4 -
+ arch/arm/mach-at91/at91sam9263_devices.c           |   4 -
+ arch/arm/mach-at91/at91sam9g45_devices.c           |   5 -
+ arch/arm/mach-at91/at91sam9rl_devices.c            |   5 -
+ drivers/tty/serial/Kconfig                         |   1 +
+ drivers/tty/serial/atmel_serial.c                  | 105 ++++++++++++++-------
+ include/linux/platform_data/atmel.h                |   1 -
+ 10 files changed, 90 insertions(+), 70 deletions(-)
 
-diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index c3a7689a90e6..3bba1aeb799c 100644
---- a/Documentation/serial/driver
-+++ b/Documentation/serial/driver
-@@ -429,3 +429,28 @@ thus:
- 		struct uart_port	port;
- 		int			my_stuff;
+diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+index 17c1042b2df8..a6391e70a8fd 100644
+--- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
++++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+@@ -13,8 +13,9 @@ Required properties:
+ Optional properties:
+ - atmel,use-dma-rx: use of PDC or DMA for receiving data
+ - atmel,use-dma-tx: use of PDC or DMA for transmitting data
+-- rts-gpios: specify a GPIO for RTS line. It will use specified PIO instead of the peripheral
+-  function pin for the USART RTS feature. If unsure, don't specify this property.
++- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD line respectively.
++  It will use specified PIO instead of the peripheral function pin for the USART feature.
++  If unsure, don't specify this property.
+ - add dma bindings for dma transfer:
+ 	- dmas: DMA specifier, consisting of a phandle to DMA controller node,
+ 		memory peripheral interface and USART DMA channel ID, FIFO configuration.
+@@ -35,7 +36,12 @@ Example:
+ 		clock-names = "usart";
+ 		atmel,use-dma-rx;
+ 		atmel,use-dma-tx;
+-		rts-gpios = <&pioD 15 0>;
++		rts-gpios = <&pioD 15 GPIO_ACTIVE_LOW>;
++		cts-gpios = <&pioD 16 GPIO_ACTIVE_LOW>;
++		dtr-gpios = <&pioD 17 GPIO_ACTIVE_LOW>;
++		dsr-gpios = <&pioD 18 GPIO_ACTIVE_LOW>;
++		dcd-gpios = <&pioD 20 GPIO_ACTIVE_LOW>;
++		rng-gpios = <&pioD 19 GPIO_ACTIVE_LOW>;
  	};
+ 
+ - use DMA:
+diff --git a/arch/arm/mach-at91/at91rm9200_devices.c b/arch/arm/mach-at91/at91rm9200_devices.c
+index f3f19f21352a..291a90a5b1d4 100644
+--- a/arch/arm/mach-at91/at91rm9200_devices.c
++++ b/arch/arm/mach-at91/at91rm9200_devices.c
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/dma-mapping.h>
+ #include <linux/gpio.h>
++#include <linux/gpio/driver.h>
+ #include <linux/platform_device.h>
+ #include <linux/i2c-gpio.h>
+ 
+@@ -923,7 +924,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -962,7 +962,14 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
++};
 +
-+Modem control lines via GPIO
-+----------------------------
-+
-+Some helpers are provided in order to set/get modem control lines via GPIO.
-+
-+mctrl_gpio_init(dev, idx):
-+	This will get the {cts,rts,...}-gpios from device tree if they are
-+	present and request them, set direction etc, and return an
-+	allocated structure. devm_* functions are used, so there's no need
-+	to call mctrl_gpio_free().
-+
-+mctrl_gpio_free(dev, gpios):
-+	This will free the requested gpios in mctrl_gpio_init().
-+	As devm_* function are used, there's generally no need to call
-+	this function.
-+
-+mctrl_gpio_to_gpiod(gpios, gidx)
-+	This returns the gpio structure associated to the modem line index.
-+
-+mctrl_gpio_set(gpios, mctrl):
-+	This will sets the gpios according to the mctrl state.
-+
-+mctrl_gpio_get(gpios, mctrl):
-+	This will update mctrl with the gpios values.
++static struct gpiod_lookup_table uart0_gpios_table = {
++	.dev_id = "atmel_usart",
++	.table = {
++		GPIO_LOOKUP("pioA", 21, "rts", GPIO_ACTIVE_LOW),
++		{ },
++	},
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -993,7 +1000,7 @@ static inline void configure_usart0_pins(unsigned pins)
+ 		 * We need to drive the pin manually. The serial driver will driver
+ 		 * this to high when initializing.
+ 		 */
+-		uart0_data.rts_gpio = AT91_PIN_PA21;
++		gpiod_add_lookup_table(&uart0_gpios_table);
+ 	}
+ }
+ 
+@@ -1013,7 +1020,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -1065,7 +1071,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+@@ -1109,7 +1114,6 @@ static struct resource uart3_resources[] = {
+ static struct atmel_uart_data uart3_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart3_dmamask = DMA_BIT_MASK(32);
+diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
+index 2ae7715f1309..a1b989eac8b8 100644
+--- a/arch/arm/mach-at91/at91sam9260_devices.c
++++ b/arch/arm/mach-at91/at91sam9260_devices.c
+@@ -820,7 +820,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -859,7 +858,6 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -911,7 +909,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -955,7 +952,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+@@ -999,7 +995,6 @@ static struct resource uart3_resources[] = {
+ static struct atmel_uart_data uart3_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart3_dmamask = DMA_BIT_MASK(32);
+@@ -1043,7 +1038,6 @@ static struct resource uart4_resources[] = {
+ static struct atmel_uart_data uart4_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart4_dmamask = DMA_BIT_MASK(32);
+@@ -1082,7 +1076,6 @@ static struct resource uart5_resources[] = {
+ static struct atmel_uart_data uart5_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart5_dmamask = DMA_BIT_MASK(32);
+diff --git a/arch/arm/mach-at91/at91sam9261_devices.c b/arch/arm/mach-at91/at91sam9261_devices.c
+index 80e35895d28f..b5f7a7226ff8 100644
+--- a/arch/arm/mach-at91/at91sam9261_devices.c
++++ b/arch/arm/mach-at91/at91sam9261_devices.c
+@@ -881,7 +881,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -920,7 +919,6 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -964,7 +962,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -1008,7 +1005,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+diff --git a/arch/arm/mach-at91/at91sam9263_devices.c b/arch/arm/mach-at91/at91sam9263_devices.c
+index 43d53d6156dd..39803c3296b2 100644
+--- a/arch/arm/mach-at91/at91sam9263_devices.c
++++ b/arch/arm/mach-at91/at91sam9263_devices.c
+@@ -1325,7 +1325,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -1364,7 +1363,6 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -1408,7 +1406,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -1452,7 +1449,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
+index 77b04c2edd78..4e53d8d9737b 100644
+--- a/arch/arm/mach-at91/at91sam9g45_devices.c
++++ b/arch/arm/mach-at91/at91sam9g45_devices.c
+@@ -1588,7 +1588,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -1627,7 +1626,6 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -1671,7 +1669,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -1715,7 +1712,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+@@ -1759,7 +1755,6 @@ static struct resource uart3_resources[] = {
+ static struct atmel_uart_data uart3_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart3_dmamask = DMA_BIT_MASK(32);
+diff --git a/arch/arm/mach-at91/at91sam9rl_devices.c b/arch/arm/mach-at91/at91sam9rl_devices.c
+index 428fc412aaf1..f75985062913 100644
+--- a/arch/arm/mach-at91/at91sam9rl_devices.c
++++ b/arch/arm/mach-at91/at91sam9rl_devices.c
+@@ -957,7 +957,6 @@ static struct resource dbgu_resources[] = {
+ static struct atmel_uart_data dbgu_data = {
+ 	.use_dma_tx	= 0,
+ 	.use_dma_rx	= 0,		/* DBGU not capable of receive DMA */
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 dbgu_dmamask = DMA_BIT_MASK(32);
+@@ -996,7 +995,6 @@ static struct resource uart0_resources[] = {
+ static struct atmel_uart_data uart0_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart0_dmamask = DMA_BIT_MASK(32);
+@@ -1048,7 +1046,6 @@ static struct resource uart1_resources[] = {
+ static struct atmel_uart_data uart1_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart1_dmamask = DMA_BIT_MASK(32);
+@@ -1092,7 +1089,6 @@ static struct resource uart2_resources[] = {
+ static struct atmel_uart_data uart2_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart2_dmamask = DMA_BIT_MASK(32);
+@@ -1136,7 +1132,6 @@ static struct resource uart3_resources[] = {
+ static struct atmel_uart_data uart3_data = {
+ 	.use_dma_tx	= 1,
+ 	.use_dma_rx	= 1,
+-	.rts_gpio	= -EINVAL,
+ };
+ 
+ static u64 uart3_dmamask = DMA_BIT_MASK(32);
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 2e6d8ddc4425..7e8f15cfb8d0 100644
+index 7e8f15cfb8d0..f4e20410a138 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
-@@ -1509,4 +1509,7 @@ config SERIAL_ST_ASC_CONSOLE
- 
- endmenu
- 
-+config SERIAL_MCTRL_GPIO
-+	tristate
-+
- endif # TTY
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 3680854fef41..bcf31da267dd 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -87,3 +87,6 @@ obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
- obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
- obj-$(CONFIG_SERIAL_RP2)	+= rp2.o
- obj-$(CONFIG_SERIAL_FSL_LPUART)	+= fsl_lpuart.o
-+
-+# GPIOLIB helpers for modem control lines
-+obj-$(CONFIG_SERIAL_MCTRL_GPIO) += serial_mctrl_gpio.o
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-new file mode 100644
-index 000000000000..bf9560ffe3f4
---- /dev/null
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -0,0 +1,143 @@
-+/*
-+ * Helpers for controlling modem lines via GPIO
-+ *
-+ * Copyright (C) 2014 Paratronic S.A.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/device.h>
+@@ -97,6 +97,7 @@ config SERIAL_ATMEL
+ 	bool "AT91 / AT32 on-chip serial port support"
+ 	depends on ARCH_AT91 || AVR32
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO
+ 	help
+ 	  This enables the driver for the on-chip UARTs of the Atmel
+ 	  AT91 and AT32 processors.
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 53eeea13ff16..43ca659c1d4b 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -43,6 +43,8 @@
+ #include <linux/platform_data/atmel.h>
+ #include <linux/timer.h>
+ #include <linux/gpio.h>
 +#include <linux/gpio/consumer.h>
-+#include <uapi/asm-generic/termios.h>
-+
++#include <linux/err.h>
+ 
+ #include <asm/io.h>
+ #include <asm/ioctls.h>
+@@ -57,6 +59,8 @@
+ 
+ #include <linux/serial_core.h>
+ 
 +#include "serial_mctrl_gpio.h"
 +
-+struct mctrl_gpios {
-+	struct gpio_desc *gpio[UART_GPIO_MAX];
-+};
-+
-+static const struct {
-+	const char *name;
-+	unsigned int mctrl;
-+	bool dir_out;
-+} mctrl_gpios_desc[UART_GPIO_MAX] = {
-+	{ "cts", TIOCM_CTS, false, },
-+	{ "dsr", TIOCM_DSR, false, },
-+	{ "dcd", TIOCM_CD, false, },
-+	{ "rng", TIOCM_RNG, false, },
-+	{ "rts", TIOCM_RTS, true, },
-+	{ "dtr", TIOCM_DTR, true, },
-+	{ "out1", TIOCM_OUT1, true, },
-+	{ "out2", TIOCM_OUT2, true, },
-+};
-+
-+void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+ static void atmel_start_rx(struct uart_port *port);
+ static void atmel_stop_rx(struct uart_port *port);
+ 
+@@ -162,7 +166,7 @@ struct atmel_uart_port {
+ 	struct circ_buf		rx_ring;
+ 
+ 	struct serial_rs485	rs485;		/* rs485 settings */
+-	int			rts_gpio;	/* optional RTS GPIO */
++	struct mctrl_gpios	*gpios;
+ 	unsigned int		tx_done_mask;
+ 	bool			is_usart;	/* usart or uart */
+ 	struct timer_list	uart_timer;	/* uart timer */
+@@ -237,6 +241,50 @@ static bool atmel_use_dma_rx(struct uart_port *port)
+ 	return atmel_port->use_dma_rx;
+ }
+ 
++static unsigned int atmel_get_lines_status(struct uart_port *port)
 +{
-+	enum mctrl_gpio_idx i;
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	unsigned int status, ret = 0;
 +
-+	if (IS_ERR_OR_NULL(gpios))
-+		return;
++	status = UART_GET_CSR(port);
 +
-+	for (i = 0; i < UART_GPIO_MAX; i++)
-+		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
-+		    mctrl_gpios_desc[i].dir_out)
-+			gpiod_set_value(gpios->gpio[i],
-+					!!(mctrl & mctrl_gpios_desc[i].mctrl));
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_set);
++	mctrl_gpio_get(atmel_port->gpios, &ret);
 +
-+struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
-+				      enum mctrl_gpio_idx gidx)
-+{
-+	if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
-+		return gpios->gpio[gidx];
-+	else
-+		return NULL;
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
-+
-+unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
-+{
-+	enum mctrl_gpio_idx i;
-+
-+	/*
-+	 * return it unchanged if the structure is not allocated
-+	 */
-+	if (IS_ERR_OR_NULL(gpios))
-+		return *mctrl;
-+
-+	for (i = 0; i < UART_GPIO_MAX; i++) {
-+		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
-+		    !mctrl_gpios_desc[i].dir_out) {
-+			if (gpiod_get_value(gpios->gpio[i]))
-+				*mctrl |= mctrl_gpios_desc[i].mctrl;
-+			else
-+				*mctrl &= ~mctrl_gpios_desc[i].mctrl;
-+		}
-+	}
-+
-+	return *mctrl;
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_get);
-+
-+struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
-+{
-+	struct mctrl_gpios *gpios;
-+	enum mctrl_gpio_idx i;
-+	int err;
-+
-+	gpios = devm_kzalloc(dev, sizeof(*gpios), GFP_KERNEL);
-+	if (!gpios)
-+		return ERR_PTR(-ENOMEM);
-+
-+	for (i = 0; i < UART_GPIO_MAX; i++) {
-+		gpios->gpio[i] = devm_gpiod_get_index(dev,
-+						      mctrl_gpios_desc[i].name,
-+						      idx);
-+
-+		/*
-+		 * The GPIOs are maybe not all filled,
-+		 * this is not an error.
-+		 */
-+		if (IS_ERR_OR_NULL(gpios->gpio[i]))
-+			continue;
-+
-+		if (mctrl_gpios_desc[i].dir_out)
-+			err = gpiod_direction_output(gpios->gpio[i], 0);
++	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
++						UART_GPIO_CTS))) {
++		if (ret & TIOCM_CTS)
++			status &= ~ATMEL_US_CTS;
 +		else
-+			err = gpiod_direction_input(gpios->gpio[i]);
-+		if (err) {
-+			dev_dbg(dev, "Unable to set direction for %s GPIO",
-+				mctrl_gpios_desc[i].name);
-+			devm_gpiod_put(dev, gpios->gpio[i]);
-+			gpios->gpio[i] = NULL;
-+		}
++			status |= ATMEL_US_CTS;
 +	}
 +
-+	return gpios;
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_init);
++	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
++						UART_GPIO_DSR))) {
++		if (ret & TIOCM_DSR)
++			status &= ~ATMEL_US_DSR;
++		else
++			status |= ATMEL_US_DSR;
++	}
 +
-+void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
++	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
++						UART_GPIO_RI))) {
++		if (ret & TIOCM_RI)
++			status &= ~ATMEL_US_RI;
++		else
++			status |= ATMEL_US_RI;
++	}
++
++	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
++						UART_GPIO_DCD))) {
++		if (ret & TIOCM_CD)
++			status &= ~ATMEL_US_DCD;
++		else
++			status |= ATMEL_US_DCD;
++	}
++
++	return status;
++}
++
+ /* Enable or disable the rs485 support */
+ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ {
+@@ -296,17 +344,6 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
+ 	unsigned int mode;
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 
+-	/*
+-	 * AT91RM9200 Errata #39: RTS0 is not internally connected
+-	 * to PA21. We need to drive the pin as a GPIO.
+-	 */
+-	if (gpio_is_valid(atmel_port->rts_gpio)) {
+-		if (mctrl & TIOCM_RTS)
+-			gpio_set_value(atmel_port->rts_gpio, 0);
+-		else
+-			gpio_set_value(atmel_port->rts_gpio, 1);
+-	}
+-
+ 	if (mctrl & TIOCM_RTS)
+ 		control |= ATMEL_US_RTSEN;
+ 	else
+@@ -319,6 +356,8 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
+ 
+ 	UART_PUT_CR(port, control);
+ 
++	mctrl_gpio_set(atmel_port->gpios, mctrl);
++
+ 	/* Local loopback mode? */
+ 	mode = UART_GET_MR(port) & ~ATMEL_US_CHMODE;
+ 	if (mctrl & TIOCM_LOOP)
+@@ -346,7 +385,8 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
+  */
+ static u_int atmel_get_mctrl(struct uart_port *port)
+ {
+-	unsigned int status, ret = 0;
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	unsigned int ret = 0, status;
+ 
+ 	status = UART_GET_CSR(port);
+ 
+@@ -362,7 +402,7 @@ static u_int atmel_get_mctrl(struct uart_port *port)
+ 	if (!(status & ATMEL_US_RI))
+ 		ret |= TIOCM_RI;
+ 
+-	return ret;
++	return mctrl_gpio_get(atmel_port->gpios, &ret);
+ }
+ 
+ /*
+@@ -1042,7 +1082,7 @@ static irqreturn_t atmel_interrupt(int irq, void *dev_id)
+ 	unsigned int status, pending, pass_counter = 0;
+ 
+ 	do {
+-		status = UART_GET_CSR(port);
++		status = atmel_get_lines_status(port);
+ 		pending = status & UART_GET_IMR(port);
+ 		if (!pending)
+ 			break;
+@@ -1568,7 +1608,7 @@ static int atmel_startup(struct uart_port *port)
+ 	}
+ 
+ 	/* Save current CSR for comparison in atmel_tasklet_func() */
+-	atmel_port->irq_status_prev = UART_GET_CSR(port);
++	atmel_port->irq_status_prev = atmel_get_lines_status(port);
+ 	atmel_port->irq_status = atmel_port->irq_status_prev;
+ 
+ 	/*
+@@ -2324,6 +2364,15 @@ static int atmel_serial_resume(struct platform_device *pdev)
+ #define atmel_serial_resume NULL
+ #endif
+ 
++static int atmel_init_gpios(struct atmel_uart_port *p, struct device *dev)
 +{
-+	enum mctrl_gpio_idx i;
++	p->gpios = mctrl_gpio_init(dev, 0);
++	if (IS_ERR_OR_NULL(p->gpios))
++		return -1;
 +
-+	if (IS_ERR_OR_NULL(gpios))
-+		return;
-+
-+	for (i = 0; i < UART_GPIO_MAX; i++)
-+		if (!IS_ERR_OR_NULL(gpios->gpio[i]))
-+			devm_gpiod_put(dev, gpios->gpio[i]);
-+	devm_kfree(dev, gpios);
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_free);
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-new file mode 100644
-index 000000000000..400ba0494a17
---- /dev/null
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -0,0 +1,110 @@
-+/*
-+ * Helpers for controlling modem lines via GPIO
-+ *
-+ * Copyright (C) 2014 Paratronic S.A.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#ifndef __SERIAL_MCTRL_GPIO__
-+#define __SERIAL_MCTRL_GPIO__
-+
-+#include <linux/err.h>
-+#include <linux/device.h>
-+#include <linux/gpio/consumer.h>
-+
-+enum mctrl_gpio_idx {
-+	UART_GPIO_CTS,
-+	UART_GPIO_DSR,
-+	UART_GPIO_DCD,
-+	UART_GPIO_RNG,
-+	UART_GPIO_RI = UART_GPIO_RNG,
-+	UART_GPIO_RTS,
-+	UART_GPIO_DTR,
-+	UART_GPIO_OUT1,
-+	UART_GPIO_OUT2,
-+	UART_GPIO_MAX,
-+};
-+
-+/*
-+ * Opaque descriptor for modem lines controlled by GPIOs
-+ */
-+struct mctrl_gpios;
-+
-+#ifdef CONFIG_GPIOLIB
-+
-+/*
-+ * Set state of the modem control output lines via GPIOs.
-+ */
-+void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl);
-+
-+/*
-+ * Get state of the modem control output lines from GPIOs.
-+ * The mctrl flags are updated and returned.
-+ */
-+unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl);
-+
-+/*
-+ * Returns the associated struct gpio_desc to the modem line gidx
-+ */
-+struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
-+				      enum mctrl_gpio_idx gidx);
-+
-+/*
-+ * Request and set direction of modem control lines GPIOs.
-+ * devm_* functions are used, so there's no need to call mctrl_gpio_free().
-+ * Returns a pointer to the allocated mctrl structure if ok, -ENOMEM on
-+ * allocation error.
-+ */
-+struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx);
-+
-+/*
-+ * Free the mctrl_gpios structure.
-+ * Normally, this function will not be called, as the GPIOs will
-+ * be disposed of by the resource management code.
-+ */
-+void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios);
-+
-+#else /* GPIOLIB */
-+
-+static inline
-+void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
-+{
++	return 0;
 +}
 +
-+static inline
-+unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
-+{
-+	return *mctrl;
-+}
+ static int atmel_serial_probe(struct platform_device *pdev)
+ {
+ 	struct atmel_uart_port *port;
+@@ -2359,25 +2408,11 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	port = &atmel_ports[ret];
+ 	port->backup_imr = 0;
+ 	port->uart.line = ret;
+-	port->rts_gpio = -EINVAL; /* Invalid, zero could be valid */
+-	if (pdata)
+-		port->rts_gpio = pdata->rts_gpio;
+-	else if (np)
+-		port->rts_gpio = of_get_named_gpio(np, "rts-gpios", 0);
+-
+-	if (gpio_is_valid(port->rts_gpio)) {
+-		ret = devm_gpio_request(&pdev->dev, port->rts_gpio, "RTS");
+-		if (ret) {
+-			dev_err(&pdev->dev, "error requesting RTS GPIO\n");
+-			goto err;
+-		}
+-		/* Default to 1 as RTS is active low */
+-		ret = gpio_direction_output(port->rts_gpio, 1);
+-		if (ret) {
+-			dev_err(&pdev->dev, "error setting up RTS GPIO\n");
+-			goto err;
+-		}
+-	}
 +
-+static inline
-+struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
-+				      enum mctrl_gpio_idx gidx)
-+{
-+	return ERR_PTR(-ENOSYS);
-+}
-+
-+static inline
-+struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
-+{
-+	return ERR_PTR(-ENOSYS);
-+}
-+
-+static inline
-+void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
-+{
-+}
-+
-+#endif /* GPIOLIB */
-+
-+#endif
++	ret = atmel_init_gpios(port, &pdev->dev);
++	if (ret < 0)
++		dev_err(&pdev->dev, "%s",
++			"Failed to initialize GPIOs. The serial port may not work as expected");
+ 
+ 	ret = atmel_init_port(port, pdev);
+ 	if (ret)
+diff --git a/include/linux/platform_data/atmel.h b/include/linux/platform_data/atmel.h
+index e26b0c14edea..cea9f70133c5 100644
+--- a/include/linux/platform_data/atmel.h
++++ b/include/linux/platform_data/atmel.h
+@@ -84,7 +84,6 @@ struct atmel_uart_data {
+ 	short			use_dma_rx;	/* use receive DMA? */
+ 	void __iomem		*regs;		/* virt. base address, if any */
+ 	struct serial_rs485	rs485;		/* rs485 settings */
+-	int			rts_gpio;	/* optional RTS GPIO */
+ };
+ 
+  /* Touchscreen Controller */
 -- 
 1.8.5.5
 
