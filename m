@@ -1,51 +1,72 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Suspecting kernel timing bug in ppp or tty drivers
-Date: Mon, 10 Mar 2014 12:40:07 -0700
-Message-ID: <20140310194007.GC3392@kroah.com>
-References: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-ppp-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>
-Sender: linux-ppp-owner@vger.kernel.org
-To: Mats =?iso-8859-1?Q?K=E4rrman?= <Mats.Karrman@tritech.se>
-Cc: "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH/RFC] serial_core: Fix pm imbalance on unbind
+Date: Mon, 10 Mar 2014 20:54:25 +0100
+Message-ID: <1394481265-7275-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from andre.telenet-ops.be ([195.130.132.53]:36366 "EHLO
+	andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753743AbaCJTyb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Mar 2014 15:54:31 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-On Mon, Mar 10, 2014 at 01:36:36PM +0000, Mats K=E4rrman wrote:
-> Hi Linux serial & PPP experts,
->=20
-> For a long time now I have been chasing a problem in my PPP connectio=
-n.
-> The fault scenario is as follows:
->=20
-> - After reboot establishing a PPP connection works OK
-> - Network communication over PPP works OK
-> - The PPP connection is restarted - could be for any of several reaso=
-ns; peer
->   drops the connection gracefully, local restart due to network probl=
-ems,
->   local restart due to user request, et.c.
-> - After closing down the connection, it is not possible to re-connect=
- again.
->   The Error messages from pppd looks something like:
->=20
-> Jan  1 01:04:42 mymachine local2.err chat[631]: Can't get terminal pa=
-rameters: Input/output error
-> Jan  1 01:04:42 mymachine daemon.debug pppd[629]: Script /usr/sbin/ch=
-at -v -f /etc/ppp/chats/gprs-conn -T my-apn (pid 630), status =3D 0x2
-> Jan  1 01:04:42 mymachine daemon.err pppd[629]: Connect script failed
->=20
->=20
-> Some data about the system:
-> - PPP daemon v2.4.5
-> - Linux kernel v3.2.51 (same error with v2.6.35 though)
+From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-That's a really old kernel version, can you try 3.13 or newer?  Lots of
-work has been done in the tty layer since 3.2 was released.
+When a serial port is closed, uart_close() takes care of shutting down the
+hardware, and powering it down.
 
-thanks,
+When a serial port is unbound while in use, uart_close() bypasses all of
+this, as this is supposed to be done through uart_hangup() (invoked via
+tty_vhangup() in uart_remove_one_port()).
 
-greg k-h
+However, uart_hangup() does not set the hardware's power state, leaving it
+powered up.  This may also lead to unbounded nesting counts in clock and
+power management, depending on their internal implementation.
+
+Make sure to power down the port in uart_hangup(), except when the port is
+used as a serial console. For serial consoles, this must be postponed until
+after their deregistration in uart_remove_one_port() (symmetry with
+registration in uart_configure_port(), invoked from uart_add_one_port()).
+
+After this, the module clock used by the sh-sci driver is disabled on
+unbind while the serial port is in use.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+---
+ drivers/tty/serial/serial_core.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 8ece7f14d89d..a91cc2dcb66a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1452,6 +1452,8 @@ static void uart_hangup(struct tty_struct *tty)
+ 		clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 		tty_port_tty_set(port, NULL);
++		if (!uart_console(state->uart_port))
++			uart_change_pm(state, UART_PM_STATE_OFF);
+ 		wake_up_interruptible(&port->open_wait);
+ 		wake_up_interruptible(&port->delta_msr_wait);
+ 	}
+@@ -2677,10 +2679,12 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 		tty_vhangup(port->tty);
+ 
+ 	/*
+-	 * If the port is used as a console, unregister it
++	 * If the port is used as a console, unregister it, and power it down
+ 	 */
+-	if (uart_console(uport))
++	if (uart_console(uport)) {
+ 		unregister_console(uport->cons);
++		uart_change_pm(state, UART_PM_STATE_OFF);
++	}
+ 
+ 	/*
+ 	 * Free the port IO and memory resources, if any.
+-- 
+1.7.9.5
+
