@@ -1,53 +1,45 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Suspecting kernel timing bug in ppp or tty drivers
-Date: Tue, 11 Mar 2014 11:50:19 -0700
-Message-ID: <20140311185019.GA32618@kroah.com>
-References: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>
- <20140310194007.GC3392@kroah.com>
- <ED3E0BCACD909541BA94A34C4A164D4C5B180A77@post.tritech.se>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gUkZDOiBXSVA6IHNjMTZpczd4eCBbdjAuNF0=?=
+Date: Tue, 11 Mar 2014 23:20:43 +0400
+Message-ID: <1394565643.97019339@f436.i.mail.ru>
+References: <1394432777-13005-1-git-send-email-jon@ringle.org>
+ <alpine.DEB.2.02.1403111401440.17021@jringle-ubuntu>
+ <alpine.DEB.2.02.1403111438010.21168@jringle-ubuntu>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-ppp-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ED3E0BCACD909541BA94A34C4A164D4C5B180A77@post.tritech.se>
-Sender: linux-ppp-owner@vger.kernel.org
-To: Mats =?iso-8859-1?Q?K=E4rrman?= <Mats.Karrman@tritech.se>
-Cc: "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback7.mail.ru ([94.100.176.135]:36419 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754150AbaCKTVy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Mar 2014 15:21:54 -0400
+In-Reply-To: <alpine.DEB.2.02.1403111438010.21168@jringle-ubuntu>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jon@ringle.org>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jringle@gridpoint.com>
 
-On Tue, Mar 11, 2014 at 09:41:56AM +0000, Mats K=E4rrman wrote:
-> On Monday, March 10, 2014 8:40 PM, Greg KH wrote:
-> > On Mon, Mar 10, 2014 at 01:36:36PM +0000, Mats K=E4rrman wrote:
-> >> Some data about the system:
-> >> - PPP daemon v2.4.5
-> >> - Linux kernel v3.2.51 (same error with v2.6.35 though)
-> >=20
-> > That's a really old kernel version, can you try 3.13 or newer?  Lot=
-s of
-> > work has been done in the tty layer since 3.2 was released.
-> >=20
->=20
-> Thanks for your reply Greg!
->=20
-> For various reasons I'd prefer to go to the long-term release 3.12.y,=
- would
-> that be sufficient or do you think the changes made to 3.13 are criti=
-cal?
-
-It's a good place to start testing, and better than 3.2 :)
-
-> (Btw. You recently set a tag for 3.12.14 but the tip of 3.12.y is 3.1=
-2.13
->  according to git pull and kernel.org cgit, how come?)
-
-I messed up and forgot to push the tree, should be fine now.
-
-> As the MPC5125 is not main-line and I have some drivers for proprieta=
-ry
-> hardware the porting and re-testing will take me at least a week I gu=
-ess.
-
-Why aren't these drivers and arch code upstream?
-
-greg k-h
+0JLRgtC+0YDQvdC40LosIDExINC80LDRgNGC0LAgMjAxNCwgMTQ6NDQgLTA0OjAwINC+0YIgSm9u
+IFJpbmdsZSA8am9uQHJpbmdsZS5vcmc+Ogo+IAo+IEkgbGVmdCBvdXQgc29tZSByZWxldmFudCBm
+dW5jdGlvbnMgKHNjMTZpczd4eF9wb3J0X3JlYWQoKSwgCj4gc2MxNmlzN3h4X3BvcnRfd3JpdGUo
+KSwgc2MxNmlzN3h4X3BvcnRfdXBkYXRlKCkpIGluIG15IHByZXZpb3VzIGVtYWlsLi4uCj4gCj4g
+T24gTW9uLCAxMCBNYXIgMjAxNCwgQWxleGFuZGVyIFNoaXlhbiB3cm90ZToKPiAKPiA+INCf0L7Q
+vdC10LTQtdC70YzQvdC40LosIDEwINC80LDRgNGC0LAgMjAxNCwgNzo1MCAtMDQ6MDAg0L7RgiBK
+b24gUmluZ2xlIDxqb25AcmluZ2xlLm9yZz46Cj4gPiA+IAo+ID4gPiBPbiBNb24sIDEwIE1hciAy
+MDE0LCBBbGV4YW5kZXIgU2hpeWFuIHdyb3RlOgo+ID4gSSBkbyBub3QgdW5kZXJzdGFuZCB3aHkg
+eW91IGNob3NlIHRoZSBzY2NueHAgZHJpdmVyIGFzIGEgdGVtcGxhdGUuCj4gPiBVc2UgYXMgYSB0
+ZW1wbGF0ZSBtYXgzMTB4IGRyaXZlciBmcm9tIGxpbnV4LW5leHQgYnJhbmNoLgo+ID4gSSdtIHN1
+cmUgaXQgd2lsbCBiZSBiZXR0ZXIuCgpIZXJlIGFyZSB0aGUgYXBwcm94aW1hdGUgY2hhbmdlczoK
+Cj4gI2RlZmluZSBTQzE2SVM3WFhfUkVHX1NISUZUCQkzCgogI2RlZmluZSBTQzE2SVM3WFhfUkVH
+X1NISUZUCQkyCgo+IHN0YXRpYyB1OCBzYzE2aXM3eHhfcG9ydF9yZWFkKHN0cnVjdCB1YXJ0X3Bv
+cnQgKnBvcnQsIHU4IHJlZykKPiB7Cj4gCXN0cnVjdCBzYzE2aXM3eHhfcG9ydCAqcyA9IGRldl9n
+ZXRfZHJ2ZGF0YShwb3J0LT5kZXYpOwo+IAl1bnNpZ25lZCBpbnQgdmFsID0gMDsKPiAKPiAJcmVn
+bWFwX3JlYWQocy0+cmVnbWFwLCByZWcgPDwgU0MxNklTN1hYX1JFR19TSElGVCwgJnZhbCk7Cgog
+CXJlZ21hcF9yZWFkKHMtPnJlZ21hcCwgKHJlZyA8PCBTQzE2SVM3WFhfUkVHX1NISUZUKSB8IHBv
+cnQtPmluZGV4LCAmdmFsKTsKClNhbWUgZm9yICJ3cml0ZSIgYW5kICJ1cGRhdGUiLgoKPiBzdGF0
+aWMgc3RydWN0IHJlZ21hcF9jb25maWcgcmVnY2ZnID0gewo+IAkucmVnX2JpdHMgPSA4LAoKIAku
+cmVnX2JpdHMgPSA3LAoKPiAJLnJlZ19zdHJpZGUgPSAoMSA8PCBTQzE2SVM3WFhfUkVHX1NISUZU
+KSwKCktpbGwgdGhpcyBsaW5lICgucmVnX3N0cmlkZSksIGJ1dCBhZGQ6CiAJLnBhZF9iaXRzID0g
+MSwgCgotLS0K
