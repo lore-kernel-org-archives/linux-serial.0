@@ -1,86 +1,151 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [PATCH v2 7/7] ARM: zynq: DT: Migrate UART to Cadence binding
-Date: Tue, 11 Mar 2014 08:48:47 -0700
-Message-ID: <fbca0284-8a38-4767-bd17-8e5f52b21ef7@CH1EHSMHS005.ehs.local>
-References: <1394487610-2419-1-git-send-email-soren.brinkmann@xilinx.com>
- <1394487610-2419-8-git-send-email-soren.brinkmann@xilinx.com>
- <62cd32ad-8743-4d49-a1b6-c178054a9756@CO9EHSMHS011.ehs.local>
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH] serial: sh-sci: Neaten dev_<level> uses
+Date: Tue, 11 Mar 2014 10:10:46 -0700
+Message-ID: <1394557846.21085.54.camel@joe-AO722>
+References: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
+	 <1394548060.21085.45.camel@joe-AO722>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:9165
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755133AbaCKPs5 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Mar 2014 11:48:57 -0400
-Content-Disposition: inline
-In-Reply-To: <62cd32ad-8743-4d49-a1b6-c178054a9756@CO9EHSMHS011.ehs.local>
+Received: from smtprelay0051.hostedemail.com ([216.40.44.51]:59585 "EHLO
+	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751648AbaCKRKu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Mar 2014 13:10:50 -0400
+In-Reply-To: <1394548060.21085.45.camel@joe-AO722>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms+renesas@verge.net.au>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-On Tue, 2014-03-11 at 09:52AM +0100, Michal Simek wrote:
-> On 03/10/2014 10:40 PM, Soren Brinkmann wrote:
-> > The Zynq UART is Cadence IP and the driver has been renamed accordi=
-ngly.
-> > Migrate the DT to use the new binding for the UART driver.
-> >=20
-> > Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> > Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
-> > Acked-by: Rob Herring <robh@kernel.org>
-> > ---
-> > This change depends on 'tty: xuartps: Rebrand driver as Cadence UAR=
-T',
-> > which introduces the new clock-names.
-> > ---
-> >  arch/arm/boot/dts/zynq-7000.dtsi | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> >=20
-> > diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/z=
-ynq-7000.dtsi
-> > index 8b67b19392ec..0ed0d4b0579a 100644
-> > --- a/arch/arm/boot/dts/zynq-7000.dtsi
-> > +++ b/arch/arm/boot/dts/zynq-7000.dtsi
-> > @@ -67,19 +67,19 @@
-> >  		};
-> > =20
-> >  		uart0: uart@e0000000 {
-> > -			compatible =3D "xlnx,xuartps";
-> > +			compatible =3D "xlnx,xuartps", "cdns,uart-r1p8";
-> >  			status =3D "disabled";
-> >  			clocks =3D <&clkc 23>, <&clkc 40>;
-> > -			clock-names =3D "ref_clk", "aper_clk";
-> > +			clock-names =3D "uart_clk", "pclk";
-> >  			reg =3D <0xE0000000 0x1000>;
-> >  			interrupts =3D <0 27 4>;
-> >  		};
-> > =20
-> >  		uart1: uart@e0001000 {
-> > -			compatible =3D "xlnx,xuartps";
-> > +			compatible =3D "xlnx,xuartps", "cdns,uart-r1p8";
-> >  			status =3D "disabled";
-> >  			clocks =3D <&clkc 24>, <&clkc 41>;
-> > -			clock-names =3D "ref_clk", "aper_clk";
-> > +			clock-names =3D "uart_clk", "pclk";
-> >  			reg =3D <0xE0001000 0x1000>;
-> >  			interrupts =3D <0 50 4>;
-> >  		};
->=20
-> This should be at least the part of 5/7 because between 5/7 and 7/7
-> driver will fail to probe.
+Add missing newlines and coalesce formats.
+Realign arguments.
 
-The driver should never fail to probe. The old bindings will continue t=
-o
-work. So, only dependency for this is, the new clock names must be
-merged in. So, it has to be rather late in the series.
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ drivers/tty/serial/sh-sci.c | 38 ++++++++++++++++++--------------------
+ 1 file changed, 18 insertions(+), 20 deletions(-)
 
-	S=C3=B6ren
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 0cb5237..eee159c 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -788,7 +788,7 @@ static int sci_handle_errors(struct uart_port *port)
+ 		if (tty_insert_flip_char(tport, 0, TTY_OVERRUN))
+ 			copied++;
+ 
+-		dev_notice(port->dev, "overrun error");
++		dev_notice(port->dev, "overrun error\n");
+ 	}
+ 
+ 	if (status & SCxSR_FER(port)) {
+@@ -830,7 +830,7 @@ static int sci_handle_errors(struct uart_port *port)
+ 		if (tty_insert_flip_char(tport, 0, TTY_PARITY))
+ 			copied++;
+ 
+-		dev_notice(port->dev, "parity error");
++		dev_notice(port->dev, "parity error\n");
+ 	}
+ 
+ 	if (copied)
+@@ -1290,7 +1290,8 @@ static void sci_dma_rx_complete(void *arg)
+ 	unsigned long flags;
+ 	int count;
+ 
+-	dev_dbg(port->dev, "%s(%d) active #%d\n", __func__, port->line, s->active_rx);
++	dev_dbg(port->dev, "%s(%d) active #%d\n",
++		__func__, port->line, s->active_rx);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -1366,8 +1367,8 @@ static void sci_submit_rx(struct sci_port *s)
+ 			sci_rx_dma_release(s, true);
+ 			return;
+ 		}
+-		dev_dbg(s->port.dev, "%s(): cookie %d to #%d\n", __func__,
+-			s->cookie_rx[i], i);
++		dev_dbg(s->port.dev, "%s(): cookie %d to #%d\n",
++			__func__, s->cookie_rx[i], i);
+ 	}
+ 
+ 	s->active_rx = s->cookie_rx[0];
+@@ -1426,8 +1427,8 @@ static void work_fn_rx(struct work_struct *work)
+ 
+ 	s->active_rx = s->cookie_rx[!new];
+ 
+-	dev_dbg(port->dev, "%s: cookie %d #%d, new active #%d\n", __func__,
+-		s->cookie_rx[new], new, s->active_rx);
++	dev_dbg(port->dev, "%s: cookie %d #%d, new active #%d\n",
++		__func__, s->cookie_rx[new], new, s->active_rx);
+ }
+ 
+ static void work_fn_tx(struct work_struct *work)
+@@ -1480,8 +1481,8 @@ static void work_fn_tx(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	dev_dbg(port->dev, "%s: %p: %d...%d, cookie %d\n", __func__,
+-		xmit->buf, xmit->tail, xmit->head, s->cookie_tx);
++	dev_dbg(port->dev, "%s: %p: %d...%d, cookie %d\n",
++		__func__, xmit->buf, xmit->tail, xmit->head, s->cookie_tx);
+ 
+ 	dma_async_issue_pending(chan);
+ }
+@@ -1600,8 +1601,8 @@ static bool filter(struct dma_chan *chan, void *slave)
+ {
+ 	struct sh_dmae_slave *param = slave;
+ 
+-	dev_dbg(chan->device->dev, "%s: slave ID %d\n", __func__,
+-		param->shdma_slave.slave_id);
++	dev_dbg(chan->device->dev, "%s: slave ID %d\n",
++		__func__, param->shdma_slave.slave_id);
+ 
+ 	chan->private = &param->shdma_slave;
+ 	return true;
+@@ -1630,8 +1631,7 @@ static void sci_request_dma(struct uart_port *port)
+ 	dma_cap_mask_t mask;
+ 	int nent;
+ 
+-	dev_dbg(port->dev, "%s: port %d\n", __func__,
+-		port->line);
++	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
+ 
+ 	if (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0)
+ 		return;
+@@ -1659,7 +1659,8 @@ static void sci_request_dma(struct uart_port *port)
+ 		if (!nent)
+ 			sci_tx_dma_release(s, false);
+ 		else
+-			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
++			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n",
++				__func__,
+ 				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
+ 				&sg_dma_address(&s->sg_tx));
+ 
+@@ -1933,8 +1934,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (s->chan_rx) {
+ 		s->rx_timeout = (port->timeout - HZ / 50) * s->buf_len_rx * 3 /
+ 			port->fifosize / 2;
+-		dev_dbg(port->dev,
+-			"DMA Rx t-out %ums, tty t-out %u jiffies\n",
++		dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
+ 			s->rx_timeout * 1000 / HZ, port->timeout);
+ 		if (s->rx_timeout < msecs_to_jiffies(20))
+ 			s->rx_timeout = msecs_to_jiffies(20);
+@@ -2502,11 +2502,9 @@ static int sci_probe_single(struct platform_device *dev,
+ 
+ 	/* Sanity check */
+ 	if (unlikely(index >= SCI_NPORTS)) {
+-		dev_notice(&dev->dev, "Attempting to register port "
+-			   "%d when only %d are available.\n",
++		dev_notice(&dev->dev, "Attempting to register port %d when only %d are available\n",
+ 			   index+1, SCI_NPORTS);
+-		dev_notice(&dev->dev, "Consider bumping "
+-			   "CONFIG_SERIAL_SH_SCI_NR_UARTS!\n");
++		dev_notice(&dev->dev, "Consider bumping CONFIG_SERIAL_SH_SCI_NR_UARTS!\n");
+ 		return -EINVAL;
+ 	}
+ 
 
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
