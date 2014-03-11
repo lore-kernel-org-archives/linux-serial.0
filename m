@@ -1,37 +1,34 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: serial core: crash / race condition on unbind
-Date: Tue, 11 Mar 2014 12:00:34 +0000
-Message-ID: <20140311120034.632ff833@alan.etchedpixels.co.uk>
-References: <CAMuHMdVV_NrQ3PPJwPNx7MoM9TWLdk02d+10zNipNcC7VC0HAA@mail.gmail.com>
-	<CAMuHMdVwpQEWAVHA5BO2xXzaNc1DTdteDMWFHQ=MFJoo4Afm_A@mail.gmail.com>
-	<531E7F81.20400@hurleysoftware.com>
-	<CAMuHMdUeUjuBe0tWpYBZqwqWT=euPAn6fwzmXMYCP573Q1BDXQ@mail.gmail.com>
-	<531EF864.5020104@hurleysoftware.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH 1/4] serial: sh-sci: Replace printk() by pr_*()
+Date: Tue, 11 Mar 2014 07:27:40 -0700
+Message-ID: <1394548060.21085.45.camel@joe-AO722>
+References: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:59812 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753584AbaCKMAo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Mar 2014 08:00:44 -0400
-In-Reply-To: <531EF864.5020104@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms+renesas@verge.net.au>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
 
-> > No one unbinds serial drivers using serial_core, as all these drivers are
-> > for fixed hardware?
+On Tue, 2014-03-11 at 11:11 +0100, Geert Uytterhoeven wrote:
+> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 > 
-> Yep, never tested until now :)
-> Do you need this to work?
-> 
-> > Hot-pluggable usb-serial doesn't use serial_core.
-> 
-> I guess none of the 8250 PCI adapters are hot-pluggable...
+> Make banner const while we're at it
 
-pcmcia 8250 certainly was and worked - but then I've not had pcmcia ports
-in years 8)
+One thing to consider is to add
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+before any #include to make sure all messages
+are appropriately prefixed by subsystem name.
+
+One day, I'd very much like to avoid this
+by making it the default.
+
+http://comments.gmane.org/gmane.linux.kernel/1052288
+
+
 
