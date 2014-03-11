@@ -1,40 +1,74 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH trivial 01/16] serial_core: Spelling s/contro/control/
-Date: Tue, 11 Mar 2014 11:23:35 +0100
-Message-ID: <1394533430-4746-1-git-send-email-geert@linux-m68k.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from andre.telenet-ops.be ([195.130.132.53]:49893 "EHLO
-	andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755157AbaCKKX6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Mar 2014 06:23:58 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 1/4] serial: sh-sci: Replace printk() by pr_*()
+Date: Tue, 11 Mar 2014 11:30:52 +0100
+Message-ID: <1738100.8MZc8BUIum@avalon>
+References: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms+renesas@verge.net.au>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Kosina <trivial@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+Hi Geert,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/serial_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for the patches.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index a91cc2dcb66a..6735e5f074cf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1764,7 +1764,7 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
- }
- 
- /**
-- *	uart_parse_options - Parse serial port baud/parity/bits/flow contro.
-+ *	uart_parse_options - Parse serial port baud/parity/bits/flow control.
-  *	@options: pointer to option string
-  *	@baud: pointer to an 'int' variable for the baud rate.
-  *	@parity: pointer to an 'int' variable for the parity.
+I had patches similar to 3/4 and 4/4 in my tree, that's a sign you're going in 
+the right direction (or at least the direction I consider to be right :-)). 
+For the whole series,
+
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+On Tuesday 11 March 2014 11:11:17 Geert Uytterhoeven wrote:
+> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+> 
+> Make banner const while we're at it
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+> ---
+>  drivers/tty/serial/sh-sci.c |    7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 7958115e6a51..24ec6ef67984 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -428,7 +428,7 @@ static int sci_probe_regmap(struct plat_sci_port *cfg)
+>  		cfg->regtype = SCIx_HSCIF_REGTYPE;
+>  		break;
+>  	default:
+> -		printk(KERN_ERR "Can't probe register map for given port\n");
+> +		pr_err("Can't probe register map for given port\n");
+>  		return -EINVAL;
+>  	}
+> 
+> @@ -2389,8 +2389,7 @@ static inline int sci_probe_earlyprintk(struct
+> platform_device *pdev)
+> 
+>  #endif /* CONFIG_SERIAL_SH_SCI_CONSOLE */
+> 
+> -static char banner[] __initdata =
+> -	KERN_INFO "SuperH (H)SCI(F) driver initialized\n";
+> +static const char banner[] __initconst = "SuperH (H)SCI(F) driver
+> initialized";
+> 
+>  static struct uart_driver sci_uart_driver = {
+>  	.owner		= THIS_MODULE,
+> @@ -2616,7 +2615,7 @@ static int __init sci_init(void)
+>  {
+>  	int ret;
+> 
+> -	printk(banner);
+> +	pr_info("%s\n", banner);
+> 
+>  	ret = uart_register_driver(&sci_uart_driver);
+>  	if (likely(ret == 0)) {
+
 -- 
-1.7.9.5
+Regards,
 
+Laurent Pinchart
