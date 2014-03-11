@@ -1,63 +1,54 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH v2 7/7] ARM: zynq: DT: Migrate UART to Cadence binding
-Date: Tue, 11 Mar 2014 09:52:35 +0100
-Message-ID: <62cd32ad-8743-4d49-a1b6-c178054a9756@CO9EHSMHS011.ehs.local>
-References: <1394487610-2419-1-git-send-email-soren.brinkmann@xilinx.com> <1394487610-2419-8-git-send-email-soren.brinkmann@xilinx.com>
+From: =?iso-8859-1?Q?Mats_K=E4rrman?= <Mats.Karrman@tritech.se>
+Subject: RE: Suspecting kernel timing bug in ppp or tty drivers
+Date: Tue, 11 Mar 2014 09:41:56 +0000
+Message-ID: <ED3E0BCACD909541BA94A34C4A164D4C5B180A77@post.tritech.se>
+References: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>,<20140310194007.GC3392@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1394487610-2419-8-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from tritech.se ([46.59.120.190]:64969 "EHLO tritech.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752010AbaCKJmG convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Mar 2014 05:42:06 -0400
+In-Reply-To: <20140310194007.GC3392@kroah.com>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On 03/10/2014 10:40 PM, Soren Brinkmann wrote:
-> The Zynq UART is Cadence IP and the driver has been renamed accordingly.
-> Migrate the DT to use the new binding for the UART driver.
-> 
-> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
-> This change depends on 'tty: xuartps: Rebrand driver as Cadence UART',
-> which introduces the new clock-names.
-> ---
->  arch/arm/boot/dts/zynq-7000.dtsi | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/zynq-7000.dtsi
-> index 8b67b19392ec..0ed0d4b0579a 100644
-> --- a/arch/arm/boot/dts/zynq-7000.dtsi
-> +++ b/arch/arm/boot/dts/zynq-7000.dtsi
-> @@ -67,19 +67,19 @@
->  		};
->  
->  		uart0: uart@e0000000 {
-> -			compatible = "xlnx,xuartps";
-> +			compatible = "xlnx,xuartps", "cdns,uart-r1p8";
->  			status = "disabled";
->  			clocks = <&clkc 23>, <&clkc 40>;
-> -			clock-names = "ref_clk", "aper_clk";
-> +			clock-names = "uart_clk", "pclk";
->  			reg = <0xE0000000 0x1000>;
->  			interrupts = <0 27 4>;
->  		};
->  
->  		uart1: uart@e0001000 {
-> -			compatible = "xlnx,xuartps";
-> +			compatible = "xlnx,xuartps", "cdns,uart-r1p8";
->  			status = "disabled";
->  			clocks = <&clkc 24>, <&clkc 41>;
-> -			clock-names = "ref_clk", "aper_clk";
-> +			clock-names = "uart_clk", "pclk";
->  			reg = <0xE0001000 0x1000>;
->  			interrupts = <0 50 4>;
->  		};
+On Monday, March 10, 2014 8:40 PM, Greg KH wrote:
+> On Mon, Mar 10, 2014 at 01:36:36PM +0000, Mats K=E4rrman wrote:
+>> Some data about the system:
+>> - PPP daemon v2.4.5
+>> - Linux kernel v3.2.51 (same error with v2.6.35 though)
+>=20
+> That's a really old kernel version, can you try 3.13 or newer?  Lots =
+of
+> work has been done in the tty layer since 3.2 was released.
+>=20
 
-This should be at least the part of 5/7 because between 5/7 and 7/7
-driver will fail to probe.
+Thanks for your reply Greg!
 
-Thanks,
-Michal
+=46or various reasons I'd prefer to go to the long-term release 3.12.y,=
+ would
+that be sufficient or do you think the changes made to 3.13 are critica=
+l?
+
+(Btw. You recently set a tag for 3.12.14 but the tip of 3.12.y is 3.12.=
+13
+ according to git pull and kernel.org cgit, how come?)
+
+As the MPC5125 is not main-line and I have some drivers for proprietary
+hardware the porting and re-testing will take me at least a week I gues=
+s.
+
+Best regards,
+Mats
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
