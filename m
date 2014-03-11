@@ -1,74 +1,96 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 1/4] serial: sh-sci: Replace printk() by pr_*()
-Date: Tue, 11 Mar 2014 11:30:52 +0100
-Message-ID: <1738100.8MZc8BUIum@avalon>
-References: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH v2 0/7] tty: xuartps: Rebranding + DT documentation
+Date: Tue, 11 Mar 2014 11:46:43 +0100
+Message-ID: <531EE993.80400@monstr.eu>
+References: <1394487610-2419-1-git-send-email-soren.brinkmann@xilinx.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms+renesas@verge.net.au>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="Uihq5Ov6SDStNcGpgA3iVBDBpLxmW1BK4"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ea0-f175.google.com ([209.85.215.175]:58855 "EHLO
+	mail-ea0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752504AbaCKKqx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Mar 2014 06:46:53 -0400
+Received: by mail-ea0-f175.google.com with SMTP id d10so4188931eaj.6
+        for <linux-serial@vger.kernel.org>; Tue, 11 Mar 2014 03:46:52 -0700 (PDT)
+In-Reply-To: <1394487610-2419-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-Hi Geert,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Uihq5Ov6SDStNcGpgA3iVBDBpLxmW1BK4
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for the patches.
+On 03/10/2014 10:40 PM, Soren Brinkmann wrote:
+> Hi,
+>=20
+> this series rebrands the Xilinx PS UART driver as Cadence UART and
+> documents its DT bindings (+ some clean up along the way).
+>=20
+> The rebranding goes as far as reasonable. Things like file name, kconfi=
+g
+> symbols and other things with user space impact are left as is. Please
+> refer to the discussion in the RFC threads[1-2] for more details.
+>=20
+> Similar the DT binding has been extended. In addition to the new and
+> preferred Cadence binding, the current xuartps binding is maintained.
+> Though, only the Cadence names for clock-names are documented.
+>=20
+> References:
+>  [1]  https://lkml.org/lkml/2014/3/4/405
+>  [2]  https://lkml.org/lkml/2014/3/7/450
+>=20
+> v2:
+>  - no changes regarding the patches
+>  - fixed (I sincerely hope) email recipients
+>=20
+> Changes from the latest RFC:
+>  - squashed function/symbol renaming into 'tty: xuartps: Rebrand driver=
 
-I had patches similar to 3/4 and 4/4 in my tree, that's a sign you're going in 
-the right direction (or at least the direction I consider to be right :-)). 
-For the whole series,
+>    as Cadence UART'
+>  - Revised the commit message of 'tty: xuartps: Don't write IRQ disable=
 
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>    register to enable interrupts' (was 'tty: xuartps: Remove bogus
+>    comment and register write'
 
-On Tuesday 11 March 2014 11:11:17 Geert Uytterhoeven wrote:
-> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-> 
-> Make banner const while we're at it
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-> ---
->  drivers/tty/serial/sh-sci.c |    7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 7958115e6a51..24ec6ef67984 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -428,7 +428,7 @@ static int sci_probe_regmap(struct plat_sci_port *cfg)
->  		cfg->regtype = SCIx_HSCIF_REGTYPE;
->  		break;
->  	default:
-> -		printk(KERN_ERR "Can't probe register map for given port\n");
-> +		pr_err("Can't probe register map for given port\n");
->  		return -EINVAL;
->  	}
-> 
-> @@ -2389,8 +2389,7 @@ static inline int sci_probe_earlyprintk(struct
-> platform_device *pdev)
-> 
->  #endif /* CONFIG_SERIAL_SH_SCI_CONSOLE */
-> 
-> -static char banner[] __initdata =
-> -	KERN_INFO "SuperH (H)SCI(F) driver initialized\n";
-> +static const char banner[] __initconst = "SuperH (H)SCI(F) driver
-> initialized";
-> 
->  static struct uart_driver sci_uart_driver = {
->  	.owner		= THIS_MODULE,
-> @@ -2616,7 +2615,7 @@ static int __init sci_init(void)
->  {
->  	int ret;
-> 
-> -	printk(banner);
-> +	pr_info("%s\n", banner);
-> 
->  	ret = uart_register_driver(&sci_uart_driver);
->  	if (likely(ret == 0)) {
+One more thing. I was thinking this is based on my 3 patches I have
+already sent to mainline. But as I see they are not applied yet.
 
--- 
-Regards,
+https://lkml.org/lkml/2014/1/21/107
+https://lkml.org/lkml/2014/1/21/101
+http://www.spinics.net/lists/arm-kernel/msg302796.html
 
-Laurent Pinchart
+Thanks,
+Michal
+
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--Uihq5Ov6SDStNcGpgA3iVBDBpLxmW1BK4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlMe6ZMACgkQykllyylKDCFrrwCfX/JsE2LZP0PX4Qk2Z4BmPGOV
+nyAAnjpT8J6IiMT2FGszoziPENhIZkNK
+=r6xw
+-----END PGP SIGNATURE-----
+
+--Uihq5Ov6SDStNcGpgA3iVBDBpLxmW1BK4--
