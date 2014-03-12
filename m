@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH v3 8/9] tty: cadence: Document DT binding
-Date: Wed, 12 Mar 2014 12:03:02 -0700
-Message-ID: <1394650983-24780-9-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH v3 5/9] tty: xuartps: Refactor read-modify-writes
+Date: Wed, 12 Mar 2014 12:02:59 -0700
+Message-ID: <1394650983-24780-6-git-send-email-soren.brinkmann@xilinx.com>
 References: <1394650983-24780-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1394650983-24780-1-git-send-email-soren.brinkmann@xilinx.com>
@@ -10,41 +10,125 @@ To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfound
 Cc: Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add binding documentation for the Cadence UART.
+A lot of read-modify-write sequences used a one-line statement which
+nests a readl() within a writel(). Convert this into code sequences that
+make the three steps more obvious.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/serial/cdns,uart.txt         | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.txt
+ drivers/tty/serial/xilinx_uartps.c | 52 ++++++++++++++++++--------------------
+ 1 file changed, 24 insertions(+), 28 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-new file mode 100644
-index 000000000000..a3eb154c32ca
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-@@ -0,0 +1,20 @@
-+Binding for Cadence UART Controller
-+
-+Required properties:
-+- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
-+- reg: Should contain UART controller registers location and length.
-+- interrupts: Should contain UART controller interrupts.
-+- clocks: Must contain phandles to the UART clocks
-+  See ../clocks/clock-bindings.txt for details.
-+- clock-names: Tuple to identify input clocks, must contain "uart_clk" and "pclk"
-+  See ../clocks/clock-bindings.txt for details.
-+
-+
-+Example:
-+	uart@e0000000 {
-+		compatible = "cdns,uart-r1p8";
-+		clocks = <&clkc 23>, <&clkc 40>;
-+		clock-names = "uart_clk", "pclk";
-+		reg = <0xE0000000 0x1000>;
-+		interrupts = <0 27 4>;
-+	};
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 814391038abb..b182ab8cfd07 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -437,9 +437,9 @@ static int xuartps_clk_notifier_cb(struct notifier_block *nb,
+ 		spin_lock_irqsave(&xuartps->port->lock, flags);
+ 
+ 		/* Disable the TX and RX to set baud rate */
+-		xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
+-				(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS),
+-				XUARTPS_CR_OFFSET);
++		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++		ctrl_reg |= XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS;
++		xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 		spin_unlock_irqrestore(&xuartps->port->lock, flags);
+ 
+@@ -464,9 +464,9 @@ static int xuartps_clk_notifier_cb(struct notifier_block *nb,
+ 			spin_lock_irqsave(&xuartps->port->lock, flags);
+ 
+ 		/* Set TX/RX Reset */
+-		xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
+-				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST),
+-				XUARTPS_CR_OFFSET);
++		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++		ctrl_reg |= XUARTPS_CR_TXRST | XUARTPS_CR_RXRST;
++		xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 		while (xuartps_readl(XUARTPS_CR_OFFSET) &
+ 				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST))
+@@ -479,10 +479,9 @@ static int xuartps_clk_notifier_cb(struct notifier_block *nb,
+ 		 */
+ 		xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
+ 		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
+-		xuartps_writel(
+-			(ctrl_reg & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS)) |
+-			(XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
+-			XUARTPS_CR_OFFSET);
++		ctrl_reg &= ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS);
++		ctrl_reg |= XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN;
++		xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 		spin_unlock_irqrestore(&xuartps->port->lock, flags);
+ 
+@@ -631,9 +630,9 @@ static void xuartps_set_termios(struct uart_port *port,
+ 	}
+ 
+ 	/* Disable the TX and RX to set baud rate */
+-	xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
+-			(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS),
+-			XUARTPS_CR_OFFSET);
++	ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++	ctrl_reg |= XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS;
++	xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 	/*
+ 	 * Min baud rate = 6bps and Max Baud Rate is 10Mbps for 100Mhz clk
+@@ -651,20 +650,18 @@ static void xuartps_set_termios(struct uart_port *port,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	/* Set TX/RX Reset */
+-	xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
+-			(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST),
+-			XUARTPS_CR_OFFSET);
+-
+ 	ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++	ctrl_reg |= XUARTPS_CR_TXRST | XUARTPS_CR_RXRST;
++	xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 	/*
+ 	 * Clear the RX disable and TX disable bits and then set the TX enable
+ 	 * bit and RX enable bit to enable the transmitter and receiver.
+ 	 */
+-	xuartps_writel(
+-		(ctrl_reg & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS))
+-			| (XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
+-			XUARTPS_CR_OFFSET);
++	ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++	ctrl_reg &= ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS);
++	ctrl_reg |= XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN;
++	xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 	xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
+ 
+@@ -1248,9 +1245,9 @@ static int xuartps_resume(struct device *device)
+ 		spin_lock_irqsave(&port->lock, flags);
+ 
+ 		/* Set TX/RX Reset */
+-		xuartps_writel(xuartps_readl(XUARTPS_CR_OFFSET) |
+-				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST),
+-				XUARTPS_CR_OFFSET);
++		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
++		ctrl_reg |= XUARTPS_CR_TXRST | XUARTPS_CR_RXRST;
++		xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 		while (xuartps_readl(XUARTPS_CR_OFFSET) &
+ 				(XUARTPS_CR_TXRST | XUARTPS_CR_RXRST))
+ 			cpu_relax();
+@@ -1259,10 +1256,9 @@ static int xuartps_resume(struct device *device)
+ 		xuartps_writel(rx_timeout, XUARTPS_RXTOUT_OFFSET);
+ 		/* Enable Tx/Rx */
+ 		ctrl_reg = xuartps_readl(XUARTPS_CR_OFFSET);
+-		xuartps_writel(
+-			(ctrl_reg & ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS)) |
+-			(XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN),
+-			XUARTPS_CR_OFFSET);
++		ctrl_reg &= ~(XUARTPS_CR_TX_DIS | XUARTPS_CR_RX_DIS);
++		ctrl_reg |= XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN;
++		xuartps_writel(ctrl_reg, XUARTPS_CR_OFFSET);
+ 
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 	} else {
 -- 
 1.9.0.1.g4196000
