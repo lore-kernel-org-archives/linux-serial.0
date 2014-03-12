@@ -1,43 +1,54 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: sh-sci: Neaten dev_<level> uses
-Date: Wed, 12 Mar 2014 19:55:50 +0100
-Message-ID: <CAMuHMdXkLkMOhoiqJ8cxZMUm6SnaxC5WV=a2w=bv1=KW6nyqwQ@mail.gmail.com>
-References: <1394532680-4264-1-git-send-email-geert@linux-m68k.org>
-	<1394548060.21085.45.camel@joe-AO722>
-	<1394557846.21085.54.camel@joe-AO722>
+From: Soren Brinkmann <soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v3 0/9] tty: xuartps: Rebranding + DT documentation
+Date: Wed, 12 Mar 2014 12:02:54 -0700
+Message-ID: <1394650983-24780-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:60390 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751110AbaCLSzv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Mar 2014 14:55:51 -0400
-In-Reply-To: <1394557846.21085.54.camel@joe-AO722>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Michal Simek <michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Peter Crosthwaite <peter.crosthwaite-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Soren Brinkmann <soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms+renesas@verge.net.au>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Hi Joe,
+Here is a fixed and extended v3. I picked up Michal's patches and
+incorporated them into the series. Those are the first two patches.
+The 'rebranding' patch is correspondingly extended to convert the new
+code as well.
 
-On Tue, Mar 11, 2014 at 6:10 PM, Joe Perches <joe@perches.com> wrote:
-> Add missing newlines and coalesce formats.
-> Realign arguments.
+The erroneously changed compatibility string has been reverted back to
+what it should be.
 
-Thanks!
+	S=C3=B6ren
 
-> Signed-off-by: Joe Perches <joe@perches.com>
+Michal Simek (2):
+  tty: xuartps: Fix kernel-doc errors in the driver
+  tty: xuartps: Initialize ports according to aliases
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Soren Brinkmann (7):
+  tty: xuartps: Clean up
+  tty: xuartps: Print warning in clock notifier
+  tty: xuartps: Refactor read-modify-writes
+  tty: xuartps: Don't write IRQ disable register to enable interrupts
+  tty: xuartps: Rebrand driver as Cadence UART
+  tty: cadence: Document DT binding
+  ARM: zynq: DT: Migrate UART to Cadence binding
 
-Gr{oetje,eeting}s,
+ .../devicetree/bindings/serial/cdns,uart.txt       |   20 +
+ arch/arm/boot/dts/zynq-7000.dtsi                   |    8 +-
+ drivers/tty/serial/Kconfig                         |    9 +-
+ drivers/tty/serial/xilinx_uartps.c                 | 1129 ++++++++++--=
+--------
+ include/uapi/linux/serial_core.h                   |    2 +-
+ 5 files changed, 570 insertions(+), 598 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.=
+txt
 
-                        Geert
+--=20
+1.9.0.1.g4196000
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
