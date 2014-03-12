@@ -1,37 +1,39 @@
-From: terry white <twhite@aniota.com>
-Subject: Re: Suspecting kernel timing bug in ppp or tty drivers
-Date: Wed, 12 Mar 2014 05:14:42 -0700 (PDT)
-Message-ID: <Pine.LNX.4.64.1403120452230.17831@yossarian>
-References: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>
- <20140310194007.GC3392@kroah.com> <ED3E0BCACD909541BA94A34C4A164D4C5B180A77@post.tritech.se>
- <20140311185019.GA32618@kroah.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dsl.aniota.com ([63.225.163.150]:2382 "EHLO aniota.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752487AbaCLNHs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Mar 2014 09:07:48 -0400
-In-Reply-To: <20140311185019.GA32618@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH -next] serial: max310x: Add missing #include <linux/uaccess.h>
+Date: Wed, 12 Mar 2014 15:01:54 +0100
+Message-ID: <1394632915-20585-1-git-send-email-geert@linux-m68k.org>
+References: <y>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <y>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-ppp@vger.kernel.org, linux-serial@vger.kernel.org
 
+cris allmodconfig:
 
-... ciao:
+drivers/tty/serial/max310x.c: In function 'max310x_ioctl':
+drivers/tty/serial/max310x.c:885:3: error: implicit declaration of function 'copy_from_user' [-Werror=implicit-function-declaration]
+drivers/tty/serial/max310x.c:916:3: error: implicit declaration of function 'copy_to_user' [-Werror=implicit-function-declaration]
 
-" Some data about the system:
-  - PPP daemon v2.4.5
-  - Linux kernel v3.2.51 (same error with v2.6.35 though)
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+http://kisskb.ellerman.id.au/kisskb/buildresult/10701747/
+---
+ drivers/tty/serial/max310x.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-  That's a really old kernel version, can you try 3.13 or newer?  
-  Lots of work has been done in the tty layer since 3.2 was released."
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 471dbc1e2b58..2a99d0c61b9e 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -27,6 +27,7 @@
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/spi/spi.h>
++#include <linux/uaccess.h>
  
-   my reading of this 'thread' suggests that "pppd" and/or "serial" have 
-started "DEMANDING" bleeding edge kernel versions.  if that 'correct', for 
-me anyway, it's going to prove problematic.  that aside, it doesn't seem 
-like the most elegant solution, to problems it's meant to address ...
-
+ #define MAX310X_NAME			"max310x"
+ #define MAX310X_MAJOR			204
 -- 
-... it's not what you see ,
-    but in stead , notice ...
+1.7.9.5
