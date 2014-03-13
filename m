@@ -1,66 +1,59 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: serial core: crash / race condition on unbind
-Date: Thu, 13 Mar 2014 08:55:36 +0100
-Message-ID: <CAMuHMdU+1p+Z5dbb3Fee+3JR2Zf=se3raE5su0Z5c2+ZTBCz2w@mail.gmail.com>
-References: <CAMuHMdVV_NrQ3PPJwPNx7MoM9TWLdk02d+10zNipNcC7VC0HAA@mail.gmail.com>
-	<CAMuHMdVwpQEWAVHA5BO2xXzaNc1DTdteDMWFHQ=MFJoo4Afm_A@mail.gmail.com>
-	<531E7F81.20400@hurleysoftware.com>
-	<CAMuHMdUeUjuBe0tWpYBZqwqWT=euPAn6fwzmXMYCP573Q1BDXQ@mail.gmail.com>
-	<531EF864.5020104@hurleysoftware.com>
-	<CAMuHMdVgg-AbhiRPFJt=nXpP6chPw7L+ZMu8a3rnC61gaSZ41A@mail.gmail.com>
-	<531F9540.4020906@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Dimitris Lampridis <dlampridis@logikonlabs.com>
+Subject: [PATCH 1/2] tty/serial: omap: fix RX interrupt enable/disable in half-duplex TX
+Date: Thu, 13 Mar 2014 15:11:46 +0200
+Message-ID: <1394716307-11248-2-git-send-email-dlampridis@logikonlabs.com>
+References: <1394716307-11248-1-git-send-email-dlampridis@logikonlabs.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:33029 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751777AbaCMHzg (ORCPT
+Received: from promitheas2.multiserver.gr ([144.76.157.92]:55133 "EHLO
+	promitheas2.multiserver.gr" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751154AbaCMNfs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Mar 2014 03:55:36 -0400
-In-Reply-To: <531F9540.4020906@hurleysoftware.com>
+	Thu, 13 Mar 2014 09:35:48 -0400
+In-Reply-To: <1394716307-11248-1-git-send-email-dlampridis@logikonlabs.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Dimitris Lampridis <dlampridis@logikonlabs.com>
 
-Hi Peter,
+Make sure that serial_omap_stop_rx() also disables RDI (Receiver Data Interrupt),
+otherwise the interrupt handler will call serial_omap_rdi() to read the new data,
+resulting in the transmission being echoed back.
 
-On Tue, Mar 11, 2014 at 11:59 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 03/11/2014 11:35 AM, Geert Uytterhoeven wrote:
->> On Tue, Mar 11, 2014 at 12:49 PM, Peter Hurley <peter@hurleysoftware.com>
->> wrote:
->>> On 03/11/2014 06:58 AM, Geert Uytterhoeven wrote:
->>>> On Tue, Mar 11, 2014 at 4:14 AM, Peter Hurley <peter@hurleysoftware.com>
->>>> wrote:
->>>>>>            state->uart_port = NULL;
->>>>>
->>>>> How did this ever work?
->>>>>
->>>>> Detaching the ll driver from the tty port in this manner is not ok;
->>>>> as you already note, it blows up if consoles are still running.
->>>>
->>>> No one unbinds serial drivers using serial_core, as all these drivers are
->>>> for fixed hardware?
->>>
->>> Yep, never tested until now :)
->>> Do you need this to work?
->>
->> Well, "need" may be a bit strong. Crashes are not so nice.
->
-> :)
->
-> What I meant was, 'is this a debug situation that I can eventually get to?'
-> or 'are you on the verge of shipping product and this is a priority?'
+When the half-duplex transmission is complete, in order to reverse the effects of
+serial_omap_stop_rx(), we should re-enable:
 
-"This is a debug situation that I can eventually get to?".
+  * the RX interrupts _without_ overwriting up->ier
 
-Gr{oetje,eeting}s,
+  * the UART_LSR_DR bit of the up->port.read_status_mask
 
-                        Geert
+Signed-off-by: Dimitris Lampridis <dlampridis@logikonlabs.com>
+---
+ drivers/tty/serial/omap-serial.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 77f0351..65abea2 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -342,7 +342,8 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 
+ 	if ((up->rs485.flags & SER_RS485_ENABLED) &&
+ 	    !(up->rs485.flags & SER_RS485_RX_DURING_TX)) {
+-		up->ier = UART_IER_RLSI | UART_IER_RDI;
++		up->ier |= UART_IER_RLSI | UART_IER_RDI;
++		up->port.read_status_mask |= UART_LSR_DR;
+ 		serial_out(up, UART_IER, up->ier);
+ 	}
+ 
+@@ -355,7 +356,7 @@ static void serial_omap_stop_rx(struct uart_port *port)
+ 	struct uart_omap_port *up = to_uart_omap_port(port);
+ 
+ 	pm_runtime_get_sync(up->dev);
+-	up->ier &= ~UART_IER_RLSI;
++	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
+ 	up->port.read_status_mask &= ~UART_LSR_DR;
+ 	serial_out(up, UART_IER, up->ier);
+ 	pm_runtime_mark_last_busy(up->dev);
+-- 
+1.7.10.4
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
