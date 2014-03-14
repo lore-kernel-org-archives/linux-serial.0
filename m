@@ -1,57 +1,57 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] serial: efm32: properly namespace location property
-Date: Fri, 14 Mar 2014 17:03:29 +0100
-Message-ID: <1394813009-22796-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Stanislav Meduna <stano@meduna.org>
+Subject: mxs-auart gives data from previous run after close and reopen
+Date: Fri, 14 Mar 2014 21:11:07 +0100
+Message-ID: <5323625B.4010203@meduna.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51960 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754743AbaCNQFb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Mar 2014 12:05:31 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, Wolfram Sang <wsa@the-dreams.de>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-While reviewing an i2c driver for efm32 that needs a similar property
-Wolfram Sang pointed out that "location" is a too generic name for some=
-thing
-that is efm32 specific. So add an appropriate namespace and fall back t=
-o the
-generic name in case of failure.
+Hi,
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/efm32-uart.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+following scenario:
 
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
--uart.c
-index 0eb5b5673ede..028582e924a5 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -671,7 +671,10 @@ static int efm32_uart_probe_dt(struct platform_dev=
-ice *pdev,
- 	if (!np)
- 		return 1;
-=20
--	ret =3D of_property_read_u32(np, "location", &location);
-+	ret =3D of_property_read_u32(np, "efm32,location", &location);
-+	if (ret)
-+		/* fall back to old and (wrongly) generic property "location" */
-+		ret =3D of_property_read_u32(np, "location", &location);
- 	if (!ret) {
- 		if (location > 5) {
- 			dev_err(&pdev->dev, "invalid location\n");
---=20
-1.9.0
+- a Freescale i.MX28 machine
+- RS232 AUART looped back Rx - Tx or two different ports cross-connected
+- a test program sending data in one thread and receiving in the other:
+  thread A periodically sends "Quick brown fox jumps over the lazy dog",
+  thread B receives
+- stop the program using ctrl-C
+- restart
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+=> sometimes the receiving thread gets "dogQuick", receiving
+   characters from the previous transmission
+
+The extra characters definitely come from the receiver - the transmission
+is OK. This was verified by a scope.
+
+My theory is that this behaviour is caused by mxs_auart_shutdown
+function gating and mxs_auart_startup reenabling the clock instead
+of doing a soft reset. If the clock is gated while the AUART already
+has something in the FIFO, but did not generate the interrupt yet,
+the internal state machine is frozen in this state. As soon as it
+is reenabled, the characters are delivered to a new user.
+
+I am using a 3.4.77 kernel, but the relevant code looks the same in
+the recent kernels (when not using DMA). I also backported patches
+waiting for the transmission FIFO to clear at mxs_auart_shutdown.
+
+I did not find any possibility to fully clear the receiver - even
+if one disables the AUART and reads everything from the FIFO,
+the character currently in transmit might be still somewhere (the
+reference manual states that disabling is effective after the
+current character is received). Which might be 1 ms at 9600 and one
+has no clue whether it is the case.
+
+Also note that the function mxs_auart_reset is in fact not doing
+a reset - it just makes sure that the AUART comes out of one after
+the initialization. Maybe a full reset at startup is the solution...
+
+Pleas Cc: me when answering.
+
+Regards
+-- 
+                                Stano
