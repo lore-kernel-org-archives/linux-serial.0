@@ -1,24 +1,40 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Subject: Re: [PATCH V3] serial/uart/8250: Add tunable RX interrupt trigger
  I/F of FIFO buffers
-Date: Fri, 14 Mar 2014 12:04:00 +0000
-Message-ID: <20140314120400.4e17c47a@alan.etchedpixels.co.uk>
+Date: Fri, 14 Mar 2014 16:16:02 +0200
+Message-ID: <20140314141602.GA11603@xps8300>
 References: <20140314022154.4345.23024.stgit@yunodevel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:36309 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753014AbaCNME1 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Mar 2014 08:04:27 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20140314022154.4345.23024.stgit@yunodevel>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan <gnomes@lxorguk.ukuu.org.uk>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+List-Id: linux-serial@vger.kernel.org
 
+Hi,
+
+On Fri, Mar 14, 2014 at 11:21:54AM +0900, Yoshihiro YUNOMAE wrote:
+>  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
+>  {
+> -	unsigned char fcr;
+> -
+>  	serial8250_clear_fifos(p);
+> -	fcr = uart_config[p->port.type].fcr;
+> -	serial_out(p, UART_FCR, fcr);
+> +	p->fcr = uart_config[p->port.type].fcr;
+> +	serial_out(p, UART_FCR, p->fcr);
+
+You should allow also the probe drivers to set this..
+
+        if (!p->fcr)
+                p->fcr = uart_config[p->port.type].fcr;
+
+>  }
+>  EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
+>  
 > @@ -2325,10 +2323,19 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
 >  		if ((baud < 2400 && !up->dma) || fifo_bug) {
 >  			fcr &= ~UART_FCR_TRIGGER_MASK;
@@ -26,80 +42,68 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.kro
 > +			/* Don't use user setting RX trigger */
 > +			up->fcr = 0;
 
-This breaks
+I don't know about this but..
 
-	set fcr via sysfs
-	set baud rate below 2400
-	set baud rate higher
+>  		}
+>  	}
+>  
+>  	/*
+> +	 * If up->fcr exists, a user has opened this port, changed RX trigger,
+> +	 * or read RX trigger before. So, we don't need to change up->fcr here.
+> +	 */
+> +	if (!up->fcr)
+> +		up->fcr = fcr;
 
-If baud < 2400 and the user has set a value then probably we should honour
-it. If fifo_bug is set then we should never honour it (and should perhaps
-eventually error it in the sysfs set).
+Why not just set fcr = up->fcr in the beginning of the function?
 
+<snip>
 
-> +static unsigned char convert_fcr2val(struct uart_8250_port *up,
-> +				     unsigned char fcr)
+> +static int do_set_rx_int_trig(struct tty_port *port, unsigned char val)
 > +{
-> +	unsigned char val = 0, trig_raw = fcr & UART_FCR_TRIGGER_MASK;
+> +	struct uart_state *state = container_of(port, struct uart_state, port);
+> +	struct uart_port *uport = state->uart_port;
+> +	struct uart_8250_port *up =
+> +		container_of(uport, struct uart_8250_port, port);
+> +	unsigned char fcr;
+> +	int rx_trig;
 > +
-> +	switch (up->port.type) {
-> +	case PORT_16550A:
-> +		if (trig_raw == UART_FCR_R_TRIG_00)
-> +			val = 1;
-> +		else if (trig_raw == UART_FCR_R_TRIG_01)
-> +			val = 4;
-> +		else if (trig_raw == UART_FCR_R_TRIG_10)
-> +			val = 8;
-> +		else if (trig_raw == UART_FCR_R_TRIG_11)
-> +			val = 14;
-> +		break;
+> +	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1)
+> +		return -EINVAL;
+> +
+> +	rx_trig = convert_val2rxtrig(up, val);
+> +	if (rx_trig < 0)
+> +		return rx_trig;
+> +
+> +	serial8250_clear_fifos(up);
+> +	if (!up->fcr)
+> +		/* termios is not set yet */
+> +		fcr = uart_config[up->port.type].fcr;
+> +	else
+> +		fcr = up->fcr;
+> +	fcr &= ~UART_FCR_TRIGGER_MASK;
+> +	fcr |= (unsigned char)rx_trig;
+> +	up->fcr = fcr;
+> +	serial_out(up, UART_FCR, up->fcr);
+> +	return 0;
+> +}
 
-Surely the default case should be returning 1 not 0 ?
+Where are you setting UART_FCR_ENABLE_FIFO bit? Am I missing
+something?
 
+> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+> index af47a8a..2ce1152 100644
+> --- a/include/linux/serial_8250.h
+> +++ b/include/linux/serial_8250.h
+> @@ -76,6 +76,7 @@ struct uart_8250_port {
+>  	unsigned short		bugs;		/* port bugs */
+>  	unsigned int		tx_loadsz;	/* transmit fifo load size */
+>  	unsigned char		acr;
+> +	unsigned char		fcr;
 
-> +static int convert_val2rxtrig(struct uart_8250_port *up, unsigned char val)
-> +{
-> +	switch (up->port.type) {
-> +	case PORT_16550A:
-> +		if (val == 1)
-> +			return UART_FCR_R_TRIG_00;
-> +		else if (val == 4)
-> +			return UART_FCR_R_TRIG_01;
-> +		else if (val == 8)
-> +			return UART_FCR_R_TRIG_10;
-> +		else if (val == 14)
-> +			return UART_FCR_R_TRIG_11;
+I do like to see fcr being added here, but because of a different
+reason. I want to be able to set it from the probe drivers.
 
-What happens if you specify a meaningless value. Doing exact matching
-means that you have to know the hardware exactly. How about
+Br,
 
-	if (val < 4)
-		return UART_FCR_R_TRIG_00;
-	else if (val < 8)
-		return UART_FCR_R_TRIG_01;
-	else if (val < 14)
-		return UART_FCR_R_TRIG_10;
-	else
-		return UART_FCR_R_TRIG_11;
-
-so you get the nearest lower value that the hardware can provide ?
-
-> +		break;
-> +	default:
-> +		pr_info("Not support RX-trigger setting for this serial %u\n",
-> +			up->port.type);
-
-That lets users spew into the logs. I think actually you just want
-
-	default:
-		return -EOPNOTSUPP;
-
-or similar
-
-
-
-Otherwise this looks good to me. The interface is sensible, it can be
-expanded easily to other devices and device types, and the logic looks
-right.
-
-Alan
+-- 
+heikki
