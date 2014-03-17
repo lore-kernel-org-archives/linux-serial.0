@@ -1,87 +1,139 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2] serial: efm32: properly namespace location property
-Date: Fri, 14 Mar 2014 21:42:11 +0100
-Message-ID: <1394829731-25402-1-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1394813009-22796-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Subject: Re: Re: [PATCH V3] serial/uart/8250: Add tunable RX interrupt
+ trigger I/F of FIFO buffers
+Date: Mon, 17 Mar 2014 12:03:09 +0900
+Message-ID: <532665ED.7090401@hitachi.com>
+References: <20140314022154.4345.23024.stgit@yunodevel> <20140314141602.GA11603@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:34579 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753570AbaCNUmZ (ORCPT
+Received: from mail9.hitachi.co.jp ([133.145.228.44]:38372 "EHLO
+	mail9.hitachi.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932188AbaCQDDN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 14 Mar 2014 16:42:25 -0400
-In-Reply-To: <1394813009-22796-1-git-send-email-u.kleine-koenig@pengutronix.de>
+	Sun, 16 Mar 2014 23:03:13 -0400
+In-Reply-To: <20140314141602.GA11603@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, Wolfram Sang <wsa@the-dreams.de>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan <gnomes@lxorguk.ukuu.org.uk>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-While reviewing an i2c driver for efm32 that needs a similar property
-Wolfram Sang pointed out that "location" is a too generic name for some=
-thing
-that is efm32 specific. So add an appropriate namespace and fall back t=
-o the
-generic name in case of failure.
+Hi Heikki,
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
-Changes since (implicit) v1, sent with
-Message-Id: 1394813009-22796-1-git-send-email-u.kleine-koenig@pengutron=
-ix.de:
+Thank you for your reply.
 
- - adapt dt binding document accordingly
+(2014/03/14 23:16), Heikki Krogerus wrote:
+> Hi,
+>
+> On Fri, Mar 14, 2014 at 11:21:54AM +0900, Yoshihiro YUNOMAE wrote:
+>>   void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
+>>   {
+>> -	unsigned char fcr;
+>> -
+>>   	serial8250_clear_fifos(p);
+>> -	fcr = uart_config[p->port.type].fcr;
+>> -	serial_out(p, UART_FCR, fcr);
+>> +	p->fcr = uart_config[p->port.type].fcr;
+>> +	serial_out(p, UART_FCR, p->fcr);
+>
+> You should allow also the probe drivers to set this..
+>
+>          if (!p->fcr)
+>                  p->fcr = uart_config[p->port.type].fcr;
 
- Documentation/devicetree/bindings/serial/efm32-uart.txt | 4 ++--
- drivers/tty/serial/efm32-uart.c                         | 5 ++++-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+Oh, I'll fix it.
 
-diff --git a/Documentation/devicetree/bindings/serial/efm32-uart.txt b/=
-Documentation/devicetree/bindings/serial/efm32-uart.txt
-index 8e080b893b49..1984bdfbd545 100644
---- a/Documentation/devicetree/bindings/serial/efm32-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/efm32-uart.txt
-@@ -6,7 +6,7 @@ Required properties:
- - interrupts : Should contain uart interrupt
-=20
- Optional properties:
--- location : Decides the location of the USART I/O pins.
-+- efm32,location : Decides the location of the USART I/O pins.
-   Allowed range : [0 .. 5]
-   Default: 0
-=20
-@@ -16,5 +16,5 @@ uart@0x4000c400 {
- 	compatible =3D "efm32,uart";
- 	reg =3D <0x4000c400 0x400>;
- 	interrupts =3D <15>;
--	location =3D <0>;
-+	efm32,location =3D <0>;
- };
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
--uart.c
-index 0eb5b5673ede..028582e924a5 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -671,7 +671,10 @@ static int efm32_uart_probe_dt(struct platform_dev=
-ice *pdev,
- 	if (!np)
- 		return 1;
-=20
--	ret =3D of_property_read_u32(np, "location", &location);
-+	ret =3D of_property_read_u32(np, "efm32,location", &location);
-+	if (ret)
-+		/* fall back to old and (wrongly) generic property "location" */
-+		ret =3D of_property_read_u32(np, "location", &location);
- 	if (!ret) {
- 		if (location > 5) {
- 			dev_err(&pdev->dev, "invalid location\n");
---=20
-1.9.0
+>>   }
+>>   EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
+>>
+>> @@ -2325,10 +2323,19 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+>>   		if ((baud < 2400 && !up->dma) || fifo_bug) {
+>>   			fcr &= ~UART_FCR_TRIGGER_MASK;
+>>   			fcr |= UART_FCR_TRIGGER_1;
+>> +			/* Don't use user setting RX trigger */
+>> +			up->fcr = 0;
+>
+> I don't know about this but..
+>
+>>   		}
+>>   	}
+>>
+>>   	/*
+>> +	 * If up->fcr exists, a user has opened this port, changed RX trigger,
+>> +	 * or read RX trigger before. So, we don't need to change up->fcr here.
+>> +	 */
+>> +	if (!up->fcr)
+>> +		up->fcr = fcr;
+>
+> Why not just set fcr = up->fcr in the beginning of the function?
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Ah, we don't need to set up->fcr = 0 in the previous flow when we
+implement as follows:
+
+unsigned char fcr = up->fcr;
+
+  ... <snip> ...
+
+     /*
+      * If fcr exists, a user has opened this port, changed RX
+      * trigger, or read RX trigger before. If so, we do not change
+      * fcr.
+      */
+     if (!fcr)
+         fcr = uart_config[port_type].fcr;
+     if ((baud < 2400 && !up->dma) || fifo_bug) {
+         fcr &= ~UART_FCR_TRIGGER_MASK;
+         fcr |= UART_FCR_TRIGGER_1;
+     }
+
+up->fcr = fcr;
+
+> <snip>
+>
+>> +static int do_set_rx_int_trig(struct tty_port *port, unsigned char val)
+>> +{
+>> +	struct uart_state *state = container_of(port, struct uart_state, port);
+>> +	struct uart_port *uport = state->uart_port;
+>> +	struct uart_8250_port *up =
+>> +		container_of(uport, struct uart_8250_port, port);
+>> +	unsigned char fcr;
+>> +	int rx_trig;
+>> +
+>> +	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1)
+>> +		return -EINVAL;
+>> +
+>> +	rx_trig = convert_val2rxtrig(up, val);
+>> +	if (rx_trig < 0)
+>> +		return rx_trig;
+>> +
+>> +	serial8250_clear_fifos(up);
+>> +	if (!up->fcr)
+>> +		/* termios is not set yet */
+>> +		fcr = uart_config[up->port.type].fcr;
+>> +	else
+>> +		fcr = up->fcr;
+>> +	fcr &= ~UART_FCR_TRIGGER_MASK;
+>> +	fcr |= (unsigned char)rx_trig;
+>> +	up->fcr = fcr;
+>> +	serial_out(up, UART_FCR, up->fcr);
+>> +	return 0;
+>> +}
+>
+> Where are you setting UART_FCR_ENABLE_FIFO bit? Am I missing
+> something?
+
+In these implementation, the driver sets up->fcr as
+uart_config[up->port.type].fcr first and changes only RX trigger. So,
+we don't need to set the bit in a direct way.
+
+Thank you,
+Yoshihiro YUNOMAE
+
+-- 
+Yoshihiro YUNOMAE
+Software Platform Research Dept. Linux Technology Center
+Hitachi, Ltd., Yokohama Research Laboratory
+E-mail: yoshihiro.yunomae.ez@hitachi.com
+
+
