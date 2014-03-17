@@ -1,137 +1,126 @@
-From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Subject: Re: Re: [PATCH V3] serial/uart/8250: Add tunable RX interrupt
- trigger I/F of FIFO buffers
-Date: Mon, 17 Mar 2014 15:04:06 +0900
-Message-ID: <53269056.6000903@hitachi.com>
-References: <20140314022154.4345.23024.stgit@yunodevel> <20140314120400.4e17c47a@alan.etchedpixels.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140314120400.4e17c47a@alan.etchedpixels.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 2/2] [RFC] serial_core: Avoid NULL pointer dereference in uart_close()
+Date: Mon, 17 Mar 2014 14:10:59 +0100
+Message-ID: <1395061859-15295-2-git-send-email-geert@linux-m68k.org>
+References: <1395061859-15295-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from albert.telenet-ops.be ([195.130.137.90]:34370 "EHLO
+	albert.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933042AbaCQNLF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Mar 2014 09:11:05 -0400
+In-Reply-To: <1395061859-15295-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Hi Alan,
+From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Thank you for your reply.
+When unbinding a serial driver that's being used as a serial console,
+the kernel may crash with a NULL pointer dereference in a uart_*() function
+called from uart_close () (e.g. uart_flush_buffer() or
+uart_chars_in_buffer()).
 
-(2014/03/14 21:04), One Thousand Gnomes wrote:
->> @@ -2325,10 +2323,19 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->>   		if ((baud < 2400 && !up->dma) || fifo_bug) {
->>   			fcr &= ~UART_FCR_TRIGGER_MASK;
->>   			fcr |= UART_FCR_TRIGGER_1;
->> +			/* Don't use user setting RX trigger */
->> +			up->fcr = 0;
->
-> This breaks
->
-> 	set fcr via sysfs
-> 	set baud rate below 2400
-> 	set baud rate higher
->
-> If baud < 2400 and the user has set a value then probably we should honour
+To fix this, let uart_close() check for port->count == 0. If this is the
+case, bail out early. Else tty_port_close_start() will make the port
+counts inconsistent, printing out warnings like
 
-OK, I'll add !up->fcr in this flow as follows:
+    tty_port_close_start: tty->count = 1 port count = 0.
 
-/* NOTE: If fifo_bug is not set, a user can set RX trigger. */
-if ((baud < 2400 && !up->dma && !up->fcr) || fifo_bug) {
-      fcr &= ~UART_TRIGGER_MASK;
-      fcr |= UART_FCR_TRIGGER_1;
-      up->fcr = 0;
-}
+and
 
-> it. If fifo_bug is set then we should never honour it (and should perhaps
-> eventually error it in the sysfs set).
+    tty_port_close_start: count = -1
 
-When fifo_bug is set to "1", we need to check not only
-whether (up->bugs & UART_BUG_PARITY) but whether parity is enabled.
-We can check whether parity is enable only in this function currently,
-so I think we need to store fifo_bug's value into up->fifo_bug and
-refer it in the sysfs set(do_set_rx_int_trig()) as follows:
+and once uport == NULL, it will also crash.
 
-@do_set_rx_int_trig()
-     if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1
-         || (up->fifo_bug & UART_BUG_PARITY))
-         return -EINVAL;
+Also fix the related crash in pr_debug() by checking for a non-NULL uport
+first.
 
->
->> +static unsigned char convert_fcr2val(struct uart_8250_port *up,
->> +				     unsigned char fcr)
->> +{
->> +	unsigned char val = 0, trig_raw = fcr & UART_FCR_TRIGGER_MASK;
->> +
->> +	switch (up->port.type) {
->> +	case PORT_16550A:
->> +		if (trig_raw == UART_FCR_R_TRIG_00)
->> +			val = 1;
->> +		else if (trig_raw == UART_FCR_R_TRIG_01)
->> +			val = 4;
->> +		else if (trig_raw == UART_FCR_R_TRIG_10)
->> +			val = 8;
->> +		else if (trig_raw == UART_FCR_R_TRIG_11)
->> +			val = 14;
->> +		break;
->
-> Surely the default case should be returning 1 not 0 ?
+Detailed description:
 
-In the default case, it returns "0" meaning error because "1" has
-other meaning (1 byte RX trigger). But, "0" is not instinctive value for
-the error, so it should return -EOPNOTSUPP here.
+On driver unbind, uart_remove_one_port() is called. Basically it;
+  - marks the port dead,
+  - calls tty_vhangup(),
+  - sets state->uart_port = NULL.
 
->
->> +static int convert_val2rxtrig(struct uart_8250_port *up, unsigned char val)
->> +{
->> +	switch (up->port.type) {
->> +	case PORT_16550A:
->> +		if (val == 1)
->> +			return UART_FCR_R_TRIG_00;
->> +		else if (val == 4)
->> +			return UART_FCR_R_TRIG_01;
->> +		else if (val == 8)
->> +			return UART_FCR_R_TRIG_10;
->> +		else if (val == 14)
->> +			return UART_FCR_R_TRIG_11;
->
-> What happens if you specify a meaningless value. Doing exact matching
-> means that you have to know the hardware exactly. How about
->
-> 	if (val < 4)
-> 		return UART_FCR_R_TRIG_00;
-> 	else if (val < 8)
-> 		return UART_FCR_R_TRIG_01;
-> 	else if (val < 14)
-> 		return UART_FCR_R_TRIG_10;
-> 	else
-> 		return UART_FCR_R_TRIG_11;
->
-> so you get the nearest lower value that the hardware can provide ?
+What will happen depends on whether the port is just in use by e.g. getty,
+or was also opened as a console.
 
-It is a good idea. I was concerned about the same thing which users
-must know the HW exactly.
+A. If the tty was not opened as a console:
 
-I'll implement it as you say.
+  - tty_vhangup() will (in __tty_hangup()):
+      - mark all file descriptors for this tty hung up by pointing them to
+	hung_up_tty_fops,
+      - call uart_hangup(), which sets port->count to 0.
 
->> +		break;
->> +	default:
->> +		pr_info("Not support RX-trigger setting for this serial %u\n",
->> +			up->port.type);
->
-> That lets users spew into the logs. I think actually you just want
->
-> 	default:
-> 		return -EOPNOTSUPP;
+  - A subsequent uart_open() (this may be through /dev/ttyS*, or through
+    /dev/console if this is a serial console) will fail with -ENXIO as the
+    port was marked dead,
+  - uart_close() after the failed uart_open() will return early, as
+    tty_hung_up_p() (called from tty_port_close_start()) will notice it was
+    hung up.
 
-OK, I'll use this.
+B. If the tty was also opened as a console:
 
-Thank you,
+  - tty_vhangup() will (in __tty_hangup()):
+      - mark non-console file descriptors for this tty hung up by pointing
+	them to hung_up_tty_fops,
+      - NOT call uart_hangup(), but instead call uart_close() for every
+        non-console file descriptor, so port->count will still have a
+	non-zero value afterwards.
 
-Yoshihiro YUNOMAE
+  - A subsequent uart_open() will fail with -ENXIO as the port was
+    marked dead,
+  - uart_close() after the failed uart_open() starts to misbehave:
+      - tty_hung_up_p() will not notice it was hung up,
+      - As port->count is non-zero, tty_port_close_start() will decrease
+        port->count, making the tty and port counts inconsistent. Later,
+	warnings like these will be printed:
 
+	    tty_port_close_start: tty->count = 1 port count = 0.
+
+	and
+	    tty_port_close_start: count = -1
+
+      - If all of this happens after state->uart_port was set to zero, a
+        NULL pointer dereference will happen.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+---
+This still doesn't fix everything, but avoids the NULL pointer dereference.
+
+In case B, port->count is still non-zero after tty_vhangup().  Hence when
+uart_close() is called after a failed uart_open(), it will decrement
+port->count, and, on reaching zero, it will close the port for real (incl.
+calling uart_shutdown()).  This doesn't seem to cause any harm, though.
+Besides, if uart_close() wouldn't do that, who else would shut down the
+port?
+
+As tty_open() always calls tty_release() on failure of ->open(),
+->close() is always called.
+How can uart_close() after a failed uart_open() know it should not do
+anything? Set a (new) flag in its port structure?
+---
+ drivers/tty/serial/serial_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 21084f0b8ea4..56dda84f82a5 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1319,9 +1319,9 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	uport = state->uart_port;
+ 	port = &state->port;
+ 
+-	pr_debug("uart_close(%d) called\n", uport->line);
++	pr_debug("uart_close(%d) called\n", uport ? uport->line : -1);
+ 
+-	if (tty_port_close_start(port, tty, filp) == 0)
++	if (!port->count || tty_port_close_start(port, tty, filp) == 0)
+ 		return;
+ 
+ 	/*
 -- 
-Yoshihiro YUNOMAE
-Software Platform Research Dept. Linux Technology Center
-Hitachi, Ltd., Yokohama Research Laboratory
-E-mail: yoshihiro.yunomae.ez@hitachi.com
+1.7.9.5
+
