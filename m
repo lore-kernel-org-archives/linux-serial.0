@@ -1,36 +1,35 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
- modem lines
-Date: Mon, 17 Mar 2014 16:23:59 -0700
-Message-ID: <20140317232359.GA8943@kroah.com>
-References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
- <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: USB, TTY, char/misc, and Staging trees now closed for 3.15
+Date: Mon, 17 Mar 2014 17:05:01 -0700
+Message-ID: <20140318000501.GA2694@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:49280 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751200AbaCQXV6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Mar 2014 19:21:58 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
 Content-Disposition: inline
-In-Reply-To: <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: driverdev-devel-bounces@linuxdriverproject.org
+To: devel@driverdev.osuosl.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <noreply.rgenoud@gmail.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-On Mon, Mar 10, 2014 at 05:45:49PM +0100, Richard Genoud wrote:
-> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
-> GPIO.
-> This will be useful for many boards which have a serial controller that
-> only handle CTS/RTS pins (or even just RX/TX).
-> 
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+Hi all,
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Given that 3.14 will be out in a few days, it's time to close my trees
+for new patches until 3.15-rc1 is out.
 
-I can't take this series through my tty tree as the non-tty patches
-don't apply, so feel free to take them through whatever tree is needed.
+Please feel free to send me patches for these trees, but note that I'll
+be ignoring them until 3.15-rc1 is out, at which point in time I'll
+start reviewing them again and applying them to the various places they
+belong.
+
+thanks,
 
 greg k-h
