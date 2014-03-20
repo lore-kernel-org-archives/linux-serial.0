@@ -1,60 +1,58 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: man termios
-Date: Thu, 20 Mar 2014 14:42:25 -0400
-Message-ID: <532B3691.1070602@hurleysoftware.com>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: hci_ldsic nested locking problem
+Date: Thu, 20 Mar 2014 11:45:44 -0700
+Message-ID: <20140320184544.GA1113@kroah.com>
+References: <20140320163435.GH32692@saruman.home>
+ <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com>
+ <20140320171621.GA2827@saruman.home>
+ <20140320172920.GC2827@saruman.home>
+ <532B26C1.8080806@hurleysoftware.com>
+ <20140320173518.GD2827@saruman.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:54212 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1757067AbaCTSm3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Mar 2014 14:42:29 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140320173518.GD2827-HgARHv6XitL9zxVx7UNMDg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Muralidharan Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Huang Shijie <b32955-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Michael Kerrisk <mtk.manpages@gmail.com>
-Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
 
-Hi Michael,
+On Thu, Mar 20, 2014 at 12:35:18PM -0500, Felipe Balbi wrote:
+> On Thu, Mar 20, 2014 at 01:34:57PM -0400, Peter Hurley wrote:
+> > [ +cc Huang Shijie ]
+> > 
+> > On 03/20/2014 01:29 PM, Felipe Balbi wrote:
+> > >then we need updates to Documentation:
+> > >
+> > >Documentation/serial/tty.txt::
+> > >
+> > >|  Driver Side Interfaces:
+> > >|
+> > >|  receive_buf()	-	Hand buffers of bytes from the driver to the ldisc
+> > >|  			for processing. Semantics currently rather
+> > >|  			mysterious 8(
+> > >|
+> > >|  write_wakeup()	-	May be called at any point between open and close.
+> > >|  			The TTY_DO_WRITE_WAKEUP flag indicates if a call
+> > >|  			is needed but always races versus calls. Thus the
+> > >|  			ldisc must be careful about setting order and to
+> > >|  			handle unexpected calls. Must not sleep.
+> > >|
+> > >|  			The driver is forbidden from calling this directly
+> > >|  			from the ->write call from the ldisc as the ldisc
+> > >|  			is permitted to call the driver write method from
+> > >|  			this function. In such a situation defer it.
+> > >
+> > >documentation says ldisc is allowed to call ->write() from
+> > >->write_wakeup(). huh ?
+> > 
+> > Patch submitted but never applied.
+> > 
+> > http://www.spinics.net/lists/linux-serial/msg11144.html
+> 
+> Thank you. For that patch:
+> 
+> Acked-by: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
 
-Some issues have arisen [1] regarding a discrepancy between the Linux behavior of
-read() on a tty and 'man termios' and 'Linux Programming Interface', Chapter 62.
-
-Firstly, if MIN==0 and TIME==0 and no input is available, read() returns 0,
-even if O_NONBLOCK is set. This is also true of the other non-canonical read()'s with
-timeout (TIME > 0).
-
-'man termios' is silent here, but 62.6.2 in LPI implies that O_NONBLOCK will return
--1 with errno==EAGAIN; it does not.
-
-This is unspecified by POSIX (11.1.7).
-
-Secondly, in all 4 of the non-canonical read() modes, the MIN value does not limit
-the number of bytes which may be returned by the read(). Only the 'count' parameter
-to read() has this effect.
-
-LPI has this to say (man-pages reads similar):
-
-"MIN > 0, TIME == 0 (blocking read)
-
-The read() blocks (possibly indefinitely) until the lesser of the number of bytes
-requested or MIN bytes are available, and returns the lesser of the two values."
-
-However, read() may unblock when MIN bytes are available but return up to the
-'count' parameter if more input arrives in between waking and copying into the
-user buffer.
-
-So, for example, if MIN == 5,
-
-   n = read(tty, &buffer, 30 /*sizeof(buffer)*/)
-
-n may be up to 30 on return.
-
-Finally, if the 'count' parameter is less than MIN, read() may return before MIN
-bytes have been received, if 'count' bytes have been received.
-
-Regards,
-Peter Hurley
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=71671
+Can someone resend it, this is lost in my tree for some reason...
