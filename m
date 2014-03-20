@@ -1,56 +1,65 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] serial_core: Fix pm imbalance on unbind
-Date: Thu, 20 Mar 2014 11:23:00 +0100
-Message-ID: <CAMuHMdVmrEoRkqUB=3mBRNrPEJiR701YUmr8C7HX1O6UxT_NUg@mail.gmail.com>
-References: <1394481265-7275-1-git-send-email-geert@linux-m68k.org>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH v3 0/9] tty: xuartps: Rebranding + DT documentation
+Date: Thu, 20 Mar 2014 12:43:06 +0100
+Message-ID: <532AD44A.90409@monstr.eu>
+References: <1394650983-24780-1-git-send-email-soren.brinkmann@xilinx.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1394481265-7275-1-git-send-email-geert@linux-m68k.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1394650983-24780-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Soren Brinkmann <soren.brinkmann@xilinx.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Greg,
 
-On Mon, Mar 10, 2014 at 8:54 PM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
->
-> When a serial port is closed, uart_close() takes care of shutting down the
-> hardware, and powering it down.
->
-> When a serial port is unbound while in use, uart_close() bypasses all of
-> this, as this is supposed to be done through uart_hangup() (invoked via
-> tty_vhangup() in uart_remove_one_port()).
->
-> However, uart_hangup() does not set the hardware's power state, leaving it
-> powered up.  This may also lead to unbounded nesting counts in clock and
-> power management, depending on their internal implementation.
->
-> Make sure to power down the port in uart_hangup(), except when the port is
-> used as a serial console. For serial consoles, this must be postponed until
-> after their deregistration in uart_remove_one_port() (symmetry with
-> registration in uart_configure_port(), invoked from uart_add_one_port()).
->
-> After this, the module clock used by the sh-sci driver is disabled on
-> unbind while the serial port is in use.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+On 03/12/2014 08:02 PM, Soren Brinkmann wrote:
+> Here is a fixed and extended v3. I picked up Michal's patches and
+> incorporated them into the series. Those are the first two patches.
+> The 'rebranding' patch is correspondingly extended to convert the new
+> code as well.
+>=20
+> The erroneously changed compatibility string has been reverted back t=
+o
+> what it should be.
+>=20
+> 	S=C3=B6ren
+>=20
+> Michal Simek (2):
+>   tty: xuartps: Fix kernel-doc errors in the driver
+>   tty: xuartps: Initialize ports according to aliases
+>=20
+> Soren Brinkmann (7):
+>   tty: xuartps: Clean up
+>   tty: xuartps: Print warning in clock notifier
+>   tty: xuartps: Refactor read-modify-writes
+>   tty: xuartps: Don't write IRQ disable register to enable interrupts
+>   tty: xuartps: Rebrand driver as Cadence UART
+>   tty: cadence: Document DT binding
+>   ARM: zynq: DT: Migrate UART to Cadence binding
 
-I noticed you have applied all serial patches I've sent, except for this one.
-Is there any specific reason you skipped this one?
+I have done boot test and console is still there
+that's why
+Tested-by: Michal Simek <michal.simek@xilinx.com>
 
-Thanks!
+I think that 1/9 - 8/9 should go through your tree
+and 9/9 should go through arm-soc because there could
+be some conflicts in dtsi.
 
-Gr{oetje,eeting}s,
+Can you please apply that patches and I will take the rest
+through arm-soc tree?
 
-                        Geert
+Thanks,
+Michal
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platfor=
+m
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
