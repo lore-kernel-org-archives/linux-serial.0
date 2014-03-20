@@ -1,59 +1,83 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH/RFC] serial_core: Fix pm imbalance on unbind
-Date: Thu, 20 Mar 2014 14:14:32 -0700
-Message-ID: <20140320211432.GA2813@kroah.com>
-References: <1394481265-7275-1-git-send-email-geert@linux-m68k.org>
- <CAMuHMdVmrEoRkqUB=3mBRNrPEJiR701YUmr8C7HX1O6UxT_NUg@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Possible software flow problem in serial_core
+Date: Thu, 20 Mar 2014 19:05:35 -0400
+Message-ID: <532B743F.2030705@hurleysoftware.com>
+References: <CF505B08.6E64%seth.bollinger@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:34454 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759676AbaCTVM2 (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53910 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1759160AbaCTXFh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Mar 2014 17:12:28 -0400
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVmrEoRkqUB=3mBRNrPEJiR701YUmr8C7HX1O6UxT_NUg@mail.gmail.com>
+	Thu, 20 Mar 2014 19:05:37 -0400
+In-Reply-To: <CF505B08.6E64%seth.bollinger@digi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+To: "Bollinger, Seth" <Seth.Bollinger@digi.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 
-On Thu, Mar 20, 2014 at 11:23:00AM +0100, Geert Uytterhoeven wrote:
-> Hi Greg,
-> 
-> On Mon, Mar 10, 2014 at 8:54 PM, Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> > From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-> >
-> > When a serial port is closed, uart_close() takes care of shutting down the
-> > hardware, and powering it down.
-> >
-> > When a serial port is unbound while in use, uart_close() bypasses all of
-> > this, as this is supposed to be done through uart_hangup() (invoked via
-> > tty_vhangup() in uart_remove_one_port()).
-> >
-> > However, uart_hangup() does not set the hardware's power state, leaving it
-> > powered up.  This may also lead to unbounded nesting counts in clock and
-> > power management, depending on their internal implementation.
-> >
-> > Make sure to power down the port in uart_hangup(), except when the port is
-> > used as a serial console. For serial consoles, this must be postponed until
-> > after their deregistration in uart_remove_one_port() (symmetry with
-> > registration in uart_configure_port(), invoked from uart_add_one_port()).
-> >
-> > After this, the module clock used by the sh-sci driver is disabled on
-> > unbind while the serial port is in use.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-> 
-> I noticed you have applied all serial patches I've sent, except for this one.
-> Is there any specific reason you skipped this one?
+[ +cc linux-serial ]
 
-It was marked "RFC" so I didn't think it was to be applied...
+On 03/20/2014 09:44 AM, Bollinger, Seth wrote:
+> Hello All,
+>
+> We=E2=80=99ve recently run into a possible problem with software flow=
+ control
+> handling in the serial_core layer.
+>
+> Here is the scenario:
+>
+> 1. Transmit from uart to remote device
+> 2. Remote device sends us an XOFF
+> 3. The tty layer receives the XOFF
+> 4. stop_tty() - The uart transmitter is stopped (ops->stop_tx) just a=
+s the
+> serial_core ring is cleared (this could trap a few bytes in the fifo)=
+=2E
+> 5. Remote device sends us an XON
+> 6. The tty layer receives the XON
+> 7. start_tty() - However, the serial_core ring is empty, so the call =
+to
+> start the uart transmitter (uart_start:ops->start_tx) is skipped
+>
+> Any window, however small, could leave bytes stuck in the transmitter
+> forever -- particularly if there will be no further transmission unti=
+l
+> receiving a response.
+>
+> I can't find any functionality in the drivers that accounts for this
+> possibility.  Can you help me find how Linux serial drivers manage th=
+is
+> eventuality?
+>
+> Thanks,
+>
+> Seth
 
-If it's ready, please resend.
+What hardware is this?
 
-thanks,
+A 16550 transmitter doesn't shut-off at uart->stop_tx(), so the remaini=
+ng
+data in the transmitter FIFO is still transmitted.
 
-greg k-h
+Some hardware has (relatively) big FIFOs and allows the transmitter to =
+be
+shutoff, but these should unconditionally re-enable the transmitter wit=
+hout
+clearing the xmit fifo.
+
+Are you seeing lost data? Maybe it's because soft flow-control is to
+slow to shutoff the sender?
+
+Regards,
+Peter Hurley
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
