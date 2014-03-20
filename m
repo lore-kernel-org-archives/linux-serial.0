@@ -1,17 +1,17 @@
-From: jon@ringle.org
-Subject: [PATCH] tty: serial: sc16is7xx
-Date: Thu, 20 Mar 2014 10:02:57 -0400
-Message-ID: <1395324177-15311-1-git-send-email-jon@ringle.org>
+From: jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org
+Subject: [PATCH v2] tty: serial: sc16is7xx
+Date: Thu, 20 Mar 2014 10:05:33 -0400
+Message-ID: <1395324333-21221-1-git-send-email-jon@ringle.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, shc_work@mail.ru, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Jon Ringle <jringle@gridpoint.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, shc_work-JGs/UdohzUI@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-=46rom: Jon Ringle <jringle@gridpoint.com>
+=46rom: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
 
 The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
 high performance UART. The SC16IS7xx=E2=80=99s internal register set is
@@ -21,14 +21,14 @@ The SC16IS7xx also provides additional advanced features such as
 auto hardware and software flow control, automatic RS-485 support, and
 software reset.
 
-Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+Signed-off-by: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
 ---
  drivers/tty/serial/Kconfig       |   10 +
  drivers/tty/serial/Makefile      |    1 +
- drivers/tty/serial/sc16is7xx.c   | 1258 ++++++++++++++++++++++++++++++=
+ drivers/tty/serial/sc16is7xx.c   | 1254 ++++++++++++++++++++++++++++++=
 ++++++++
  include/uapi/linux/serial_core.h |    3 +
- 4 files changed, 1272 insertions(+)
+ 4 files changed, 1268 insertions(+)
  create mode 100644 drivers/tty/serial/sc16is7xx.c
 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
@@ -67,15 +67,15 @@ index 3068c77..c3bac45 100644
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is=
 7xx.c
 new file mode 100644
-index 0000000..31a8424
+index 0000000..e4ba518
 --- /dev/null
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -0,0 +1,1258 @@
+@@ -0,0 +1,1254 @@
 +/*
 + * SC16IS7xx tty serial driver - Copyright (C) 2014 GridPoint
-+ * Author: Jon Ringle <jringle@gridpoint.com>
++ * Author: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
 + *
-+ *  Based on max310x.c, by Alexander Shiyan <shc_work@mail.ru>
++ *  Based on max310x.c, by Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
 + *
 + * This program is free software; you can redistribute it and/or modif=
 y
@@ -470,28 +470,24 @@ l)
 +	.name		=3D "SC16IS750",
 +	.nr_gpio	=3D 8,
 +	.nr_uart	=3D 1,
-+	.spi_max_hz	=3D 4000000,
 +};
 +
 +static const struct sc16is7xx_devtype sc16is752_devtype =3D {
 +	.name		=3D "SC16IS752",
 +	.nr_gpio	=3D 8,
 +	.nr_uart	=3D 2,
-+	.spi_max_hz	=3D 4000000,
 +};
 +
 +static const struct sc16is7xx_devtype sc16is760_devtype =3D {
 +	.name		=3D "SC16IS760",
 +	.nr_gpio	=3D 8,
 +	.nr_uart	=3D 1,
-+	.spi_max_hz	=3D 15000000,
 +};
 +
 +static const struct sc16is7xx_devtype sc16is762_devtype =3D {
 +	.name		=3D "SC16IS762",
 +	.nr_gpio	=3D 8,
 +	.nr_uart	=3D 2,
-+	.spi_max_hz	=3D 15000000,
 +};
 +
 +static bool sc16is7xx_regmap_writeable(struct device *dev, unsigned in=
@@ -1376,7 +1372,7 @@ e)
 +#endif
 +
 +MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
++MODULE_AUTHOR("Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>");
 +MODULE_DESCRIPTION("SC16IS7XX serial driver");
 diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/seri=
 al_core.h
@@ -1393,3 +1389,9 @@ index b47dba2..a37c79a 100644
  #endif /* _UAPILINUX_SERIAL_CORE_H */
 --=20
 1.8.5.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
