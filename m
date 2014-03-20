@@ -1,125 +1,184 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Felipe Balbi <balbi@ti.com>
 Subject: Re: hci_ldsic nested locking problem
-Date: Thu, 20 Mar 2014 14:54:59 -0400
-Message-ID: <532B3983.6040706@hurleysoftware.com>
-References: <20140320163435.GH32692@saruman.home> <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com> <20140320171621.GA2827@saruman.home> <20140320172920.GC2827@saruman.home> <532B26C1.8080806@hurleysoftware.com> <20140320173518.GD2827@saruman.home> <20140320184544.GA1113@kroah.com>
+Date: Thu, 20 Mar 2014 14:01:54 -0500
+Message-ID: <20140320190154.GF3959@saruman.home>
+References: <20140320163435.GH32692@saruman.home>
+ <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com>
+ <20140320171621.GA2827@saruman.home>
+ <532B25FC.3070408@hurleysoftware.com>
+ <20140320181145.GC3959@saruman.home>
+ <532B319D.4090208@hurleysoftware.com>
+ <20140320182528.GE3959@saruman.home>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="FeAIMMcddNRN4P4/"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140320184544.GA1113@kroah.com>
+Content-Disposition: inline
+In-Reply-To: <20140320182528.GE3959@saruman.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Felipe Balbi <balbi@ti.com>, Alan Cox <alan@linux.intel.com>, Marcel Holtmann <marcel@holtmann.org>, Muralidharan Karicheri <m-karicheri2@ti.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Huang Shijie <b32955@freescale.com>
+To: Felipe Balbi <balbi@ti.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Marcel Holtmann <marcel@holtmann.org>, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Muralidharan Karicheri <m-karicheri2@ti.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Huang Shijie <b32955@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/20/2014 02:45 PM, Greg KH wrote:
-> On Thu, Mar 20, 2014 at 12:35:18PM -0500, Felipe Balbi wrote:
->> On Thu, Mar 20, 2014 at 01:34:57PM -0400, Peter Hurley wrote:
->>> [ +cc Huang Shijie ]
->>>
->>> On 03/20/2014 01:29 PM, Felipe Balbi wrote:
->>>> then we need updates to Documentation:
->>>>
->>>> Documentation/serial/tty.txt::
->>>>
->>>> |  Driver Side Interfaces:
->>>> |
->>>> |  receive_buf()	-	Hand buffers of bytes from the driver to the ldisc
->>>> |  			for processing. Semantics currently rather
->>>> |  			mysterious 8(
->>>> |
->>>> |  write_wakeup()	-	May be called at any point between open and close.
->>>> |  			The TTY_DO_WRITE_WAKEUP flag indicates if a call
->>>> |  			is needed but always races versus calls. Thus the
->>>> |  			ldisc must be careful about setting order and to
->>>> |  			handle unexpected calls. Must not sleep.
->>>> |
->>>> |  			The driver is forbidden from calling this directly
->>>> |  			from the ->write call from the ldisc as the ldisc
->>>> |  			is permitted to call the driver write method from
->>>> |  			this function. In such a situation defer it.
->>>>
->>>> documentation says ldisc is allowed to call ->write() from
->>>> ->write_wakeup(). huh ?
->>>
->>> Patch submitted but never applied.
->>>
->>> http://www.spinics.net/lists/linux-serial/msg11144.html
->>
->> Thank you. For that patch:
->>
->> Acked-by: Felipe Balbi <balbi@ti.com>
->
-> Can someone resend it, this is lost in my tree for some reason...
+--FeAIMMcddNRN4P4/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Apologies if my mailer mangles this.
+On Thu, Mar 20, 2014 at 01:25:28PM -0500, Felipe Balbi wrote:
+> On Thu, Mar 20, 2014 at 02:21:17PM -0400, Peter Hurley wrote:
+> > On 03/20/2014 02:11 PM, Felipe Balbi wrote:
+> > >On Thu, Mar 20, 2014 at 01:31:40PM -0400, Peter Hurley wrote:
+> > >>[ +cc Huang Shijie ]
+> > >>
+> > >>On 03/20/2014 01:16 PM, Felipe Balbi wrote:
+> > >>>On Thu, Mar 20, 2014 at 04:42:16PM +0000, Alan Cox wrote:
+> > >>>>On Thu, 2014-03-20 at 11:34 -0500, Felipe Balbi wrote:
+> > >>>>>Hi,
+> > >>>>>
+> > >>>>>when 8250 driver calls uart_write_wakeup(), the tty port lock is a=
+lready
+> > >>>>>taken. hci_ldisc.c's implementation of ->write_wakeup() calls
+> > >>>>>tty->ops->write() to actually send the characters, but that call w=
+ill
+> > >>>>>try to acquire the same port lock again.
+> > >>>>>
+> > >>>>>Looking at other line disciplines that looks like a bug in hci_ldi=
+sc.c.
+> > >>>>>Am I correct to assume that ->write_wakeup() is supposed to *just*
+> > >>>>>wakeup the bottom half so we handle ->write() in another context ?
+> > >>>>>
+> > >>>>>Is it legal to call tty->ops->write() from within ->write_wakeup()=
+ ?
+> > >>>>
+> > >>>>It isn't because you might send all the bytes and go
+> > >>>>
+> > >>>>	write
+> > >>>>		write_wakeup
+> > >>>>			write
+> > >>>>				write wakeup
+> > >>>>					...
+> > >>>>
+> > >>>>and recurse
+> > >>>
+> > >>>cool, so there really is a bug in hci_ldisc. Marcel, any tips on how=
+ do
+> > >>>you want this to be sorted out ?
+> > >>
+> > >>hci_uart_tx_wakeup() should perform the I/O as work.
+> > >>FWIW, this was reported by Huang Shijie back on Dec 6.
+> > >>
+> > >>I'd fix it but I have no way to test it.
+> > >
+> > >here's a build-tested only patch which is waiting for testing from oth=
+er
+> > >colleagues who've got a platform to reproduce the problem:
+> >=20
+> > Where's the cancel_work_sync() on teardown?
+>=20
+> here, as a patch too this time:
+>=20
+> From 3ee6b74833f154df64a6164476b854846206a3f2 Mon Sep 17 00:00:00 2001
+> From: Felipe Balbi <balbi@ti.com>
+> Date: Thu, 20 Mar 2014 13:20:10 -0500
+> Subject: [PATCH] bluetooth: hci_ldisc: fix deadlock condition
+>=20
+> LDISCs shouldn't call tty->ops->write() from within
+> ->write_wakeup().
+>=20
+> ->write_wakeup() is called with port lock taken and
+> IRQs disabled, tty->ops->write() will try to acquire
+> the same port lock and we will deadlock.
+>=20
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> ---
+>  drivers/bluetooth/hci_ldisc.c | 20 +++++++++++++++-----
+>  drivers/bluetooth/hci_uart.h  |  1 +
+>  2 files changed, 16 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+> index 6e06f6f..ecdd765 100644
+> --- a/drivers/bluetooth/hci_ldisc.c
+> +++ b/drivers/bluetooth/hci_ldisc.c
+> @@ -118,10 +118,6 @@ static inline struct sk_buff *hci_uart_dequeue(struc=
+t hci_uart *hu)
+> =20
+>  int hci_uart_tx_wakeup(struct hci_uart *hu)
+>  {
+> -	struct tty_struct *tty =3D hu->tty;
+> -	struct hci_dev *hdev =3D hu->hdev;
+> -	struct sk_buff *skb;
+> -
+>  	if (test_and_set_bit(HCI_UART_SENDING, &hu->tx_state)) {
+>  		set_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
+>  		return 0;
+> @@ -129,6 +125,18 @@ int hci_uart_tx_wakeup(struct hci_uart *hu)
+> =20
+>  	BT_DBG("");
+> =20
+> +	schedule_work(&hu->write_work);
+> +
+> +	return 0;
+> +}
+> +
+> +static void hci_uart_write_work(struct work_struct *work)
+> +{
+> +	struct hci_uart *hu =3D container_of(work, struct hci_uart, init_ready);
+> +	struct tty_struct *tty =3D hu->tty;
+> +	struct hci_dev *hdev =3D hu->hdev;
+> +	struct sk_buff *skb;
+> +
+>  restart:
+>  	clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
+> =20
+> @@ -153,7 +161,6 @@ restart:
+>  		goto restart;
+> =20
+>  	clear_bit(HCI_UART_SENDING, &hu->tx_state);
+> -	return 0;
+>  }
+> =20
+>  static void hci_uart_init_work(struct work_struct *work)
+> @@ -281,6 +288,7 @@ static int hci_uart_tty_open(struct tty_struct *tty)
+>  	tty->receive_room =3D 65536;
+> =20
+>  	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+> +	INIT_WORK(&hu->write_work, hci_uart_write_work);
+> =20
+>  	spin_lock_init(&hu->rx_lock);
+> =20
+> @@ -318,6 +326,8 @@ static void hci_uart_tty_close(struct tty_struct *tty)
+>  	if (hdev)
+>  		hci_uart_close(hdev);
+> =20
+> +	cancel_work_sync(&hy->write_work);
 
---- >% ---
-From: Huang Shijie <b32955@freescale.com>
+forgot to commit, darn it
 
-In the uart_handle_cts_change(), uart_write_wakeup() is called after
-we call @uart_port->ops->start_tx().
+--=20
+balbi
 
-The Documentation/serial/driver tells us:
------------------------------------------------
-   start_tx(port)
-	Start transmitting characters.
+--FeAIMMcddNRN4P4/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-	Locking: port->lock taken.
-	Interrupts: locally disabled.
------------------------------------------------
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-So when the uart_write_wakeup() is called, the port->lock is taken by
-the upper. See the following callstack:
+iQIcBAEBAgAGBQJTKzsiAAoJEIaOsuA1yqREG7gP/0MBDdvlMWgEUAEAB1/bgcwq
+FnGpt/EeoiHBg8QpZtUgpQzeWW5hvJhcYoHQDPQQX6ch8+sA5h4Kp2V8Ol4643EV
+5umj3/6QdFrXGAfr7ibRLTRJgUe4F6wIxO2eDFB5xhob/1HQv005rYusRPlqZ4rG
+ITI1lKuqAlJSmM8KzS4ZXGCKhEWGiPoK7852d4uioziGm7pXA8Kmd1LPAAWC6Z1o
+1th5BSF0qvlVGSxRTTDgenBI3GqNcVvlzCZK0gjsfSitPNHPckz97iA74zNX5UsL
+otrQ32Vr125B8oZWhZIVUXcr6ALUFWdyLsV89AvsALVrZCqheICXlsiuOvuUFkqa
+V4Zyj7he7ZathUhq7qyJAWHKXLJUG9ZkhCW6Ya1Y1kUUCPfRQy7XwPQMLwfLp8at
+Ay6CDnfNMSk9qVJYaegeqOUZ+3W7hPwXa3rV8L47mrSWbYrrio34BLM1rJ7xqbRr
+FCz6/Gwf/8+5VYINlO5eHKfyyFXDm+9IRGBc+eVoSOEFyj9CfNoDHlh0O6L5XyPl
+E0YEk3lBQj7L9lQWaT/pmgz8HY+NYGqN0xcPs8qiI+Z7T7Kyaz9b65jntmN5Rsmj
+tmJ/wkIlHbVlQj/mi00azFAywPJyEjTVKE7ngS3P5Yuyadc5fcjiXe6auYuQlPl0
+5kqnuK+39sZtXi68L7yC
+=cIOD
+-----END PGP SIGNATURE-----
 
-	|_ uart_write_wakeup
-	   |_ tty_wakeup
-	      |_ ld->ops->write_wakeup
-
-With the port->lock held, we call the @write_wakeup. Some implemetation of
-the @write_wakeup does not notice that the port->lock is held, and it still
-tries to send data with uart_write() which will try to grab the prot->lock.
-A dead lock occurs, see the following log caught in the Bluetooth by uart:
-
---------------------------------------------------------------------
-BUG: spinlock lockup suspected on CPU#0, swapper/0/0
-  lock: 0xdc3f4410, .magic: dead4ead, .owner: swapper/0/0, .owner_cpu: 0
-CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W    3.10.17-16839-ge4a1bef #1320
-[<80014cbc>] (unwind_backtrace+0x0/0x138) from [<8001251c>] (show_stack+0x10/0x14)
-[<8001251c>] (show_stack+0x10/0x14) from [<802816ac>] (do_raw_spin_lock+0x108/0x184)
-[<802816ac>] (do_raw_spin_lock+0x108/0x184) from [<806a22b0>] (_raw_spin_lock_irqsave+0x54/0x60)
-[<806a22b0>] (_raw_spin_lock_irqsave+0x54/0x60) from [<802f5754>] (uart_write+0x38/0xe0)
-[<802f5754>] (uart_write+0x38/0xe0) from [<80455270>] (hci_uart_tx_wakeup+0xa4/0x168)
-[<80455270>] (hci_uart_tx_wakeup+0xa4/0x168) from [<802dab18>] (tty_wakeup+0x50/0x5c)
-[<802dab18>] (tty_wakeup+0x50/0x5c) from [<802f81a4>] (imx_rtsint+0x50/0x80)
-[<802f81a4>] (imx_rtsint+0x50/0x80) from [<802f88f4>] (imx_int+0x158/0x17c)
-[<802f88f4>] (imx_int+0x158/0x17c) from [<8007abe0>] (handle_irq_event_percpu+0x50/0x194)
-[<8007abe0>] (handle_irq_event_percpu+0x50/0x194) from [<8007ad60>] (handle_irq_event+0x3c/0x5c)
---------------------------------------------------------------------
-
-This patch adds more limits to the @write_wakeup, the one who wants to
-implemet the @write_wakeup should follow the limits which avoid the deadlock.
-
-Signed-off-by: Huang Shijie <b32955@freescale.com>
----
-  include/linux/tty_ldisc.h |    5 ++++-
-  1 files changed, 4 insertions(+), 1 deletions(-)
-
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index f15c898..539ccc5 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -91,7 +91,10 @@
-   *	This function is called by the low-level tty driver to signal
-   *	that line discpline should try to send more characters to the
-   *	low-level driver for transmission.  If the line discpline does
-- *	not have any more data to send, it can just return.
-+ *	not have any more data to send, it can just return. If the line
-+ *	discipline does have some data to send, please arise a tasklet
-+ *	or workqueue to do the real data transfer. Do not send data in
-+ *	this hook, it may leads to a deadlock.
-   *
-   * int (*hangup)(struct tty_struct *)
-   *
--- 1.7.2.rc3
+--FeAIMMcddNRN4P4/--
