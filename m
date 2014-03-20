@@ -1,199 +1,60 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: hci_ldsic nested locking problem
-Date: Thu, 20 Mar 2014 13:25:28 -0500
-Message-ID: <20140320182528.GE3959@saruman.home>
-References: <20140320163435.GH32692@saruman.home>
- <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com>
- <20140320171621.GA2827@saruman.home>
- <532B25FC.3070408@hurleysoftware.com>
- <20140320181145.GC3959@saruman.home>
- <532B319D.4090208@hurleysoftware.com>
-Reply-To: <balbi@ti.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: man termios
+Date: Thu, 20 Mar 2014 14:42:25 -0400
+Message-ID: <532B3691.1070602@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CGDBiGfvSTbxKZlW"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:45364 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751685AbaCTS1X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Mar 2014 14:27:23 -0400
-Content-Disposition: inline
-In-Reply-To: <532B319D.4090208@hurleysoftware.com>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:54212 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757067AbaCTSm3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Mar 2014 14:42:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: balbi@ti.com, Marcel Holtmann <marcel@holtmann.org>, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, Muralidharan Karicheri <m-karicheri2@ti.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Huang Shijie <b32955@freescale.com>
+To: Michael Kerrisk <mtk.manpages@gmail.com>
+Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
 
---CGDBiGfvSTbxKZlW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Michael,
 
-On Thu, Mar 20, 2014 at 02:21:17PM -0400, Peter Hurley wrote:
-> On 03/20/2014 02:11 PM, Felipe Balbi wrote:
-> >On Thu, Mar 20, 2014 at 01:31:40PM -0400, Peter Hurley wrote:
-> >>[ +cc Huang Shijie ]
-> >>
-> >>On 03/20/2014 01:16 PM, Felipe Balbi wrote:
-> >>>On Thu, Mar 20, 2014 at 04:42:16PM +0000, Alan Cox wrote:
-> >>>>On Thu, 2014-03-20 at 11:34 -0500, Felipe Balbi wrote:
-> >>>>>Hi,
-> >>>>>
-> >>>>>when 8250 driver calls uart_write_wakeup(), the tty port lock is alr=
-eady
-> >>>>>taken. hci_ldisc.c's implementation of ->write_wakeup() calls
-> >>>>>tty->ops->write() to actually send the characters, but that call will
-> >>>>>try to acquire the same port lock again.
-> >>>>>
-> >>>>>Looking at other line disciplines that looks like a bug in hci_ldisc=
-=2Ec.
-> >>>>>Am I correct to assume that ->write_wakeup() is supposed to *just*
-> >>>>>wakeup the bottom half so we handle ->write() in another context ?
-> >>>>>
-> >>>>>Is it legal to call tty->ops->write() from within ->write_wakeup() ?
-> >>>>
-> >>>>It isn't because you might send all the bytes and go
-> >>>>
-> >>>>	write
-> >>>>		write_wakeup
-> >>>>			write
-> >>>>				write wakeup
-> >>>>					...
-> >>>>
-> >>>>and recurse
-> >>>
-> >>>cool, so there really is a bug in hci_ldisc. Marcel, any tips on how do
-> >>>you want this to be sorted out ?
-> >>
-> >>hci_uart_tx_wakeup() should perform the I/O as work.
-> >>FWIW, this was reported by Huang Shijie back on Dec 6.
-> >>
-> >>I'd fix it but I have no way to test it.
-> >
-> >here's a build-tested only patch which is waiting for testing from other
-> >colleagues who've got a platform to reproduce the problem:
->=20
-> Where's the cancel_work_sync() on teardown?
+Some issues have arisen [1] regarding a discrepancy between the Linux behavior of
+read() on a tty and 'man termios' and 'Linux Programming Interface', Chapter 62.
 
-here, as a patch too this time:
+Firstly, if MIN==0 and TIME==0 and no input is available, read() returns 0,
+even if O_NONBLOCK is set. This is also true of the other non-canonical read()'s with
+timeout (TIME > 0).
 
-=46rom 3ee6b74833f154df64a6164476b854846206a3f2 Mon Sep 17 00:00:00 2001
-=46rom: Felipe Balbi <balbi@ti.com>
-Date: Thu, 20 Mar 2014 13:20:10 -0500
-Subject: [PATCH] bluetooth: hci_ldisc: fix deadlock condition
+'man termios' is silent here, but 62.6.2 in LPI implies that O_NONBLOCK will return
+-1 with errno==EAGAIN; it does not.
 
-LDISCs shouldn't call tty->ops->write() from within
-->write_wakeup().
+This is unspecified by POSIX (11.1.7).
 
-->write_wakeup() is called with port lock taken and
-IRQs disabled, tty->ops->write() will try to acquire
-the same port lock and we will deadlock.
+Secondly, in all 4 of the non-canonical read() modes, the MIN value does not limit
+the number of bytes which may be returned by the read(). Only the 'count' parameter
+to read() has this effect.
 
-Signed-off-by: Felipe Balbi <balbi@ti.com>
----
- drivers/bluetooth/hci_ldisc.c | 20 +++++++++++++++-----
- drivers/bluetooth/hci_uart.h  |  1 +
- 2 files changed, 16 insertions(+), 5 deletions(-)
+LPI has this to say (man-pages reads similar):
 
-diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index 6e06f6f..ecdd765 100644
---- a/drivers/bluetooth/hci_ldisc.c
-+++ b/drivers/bluetooth/hci_ldisc.c
-@@ -118,10 +118,6 @@ static inline struct sk_buff *hci_uart_dequeue(struct =
-hci_uart *hu)
-=20
- int hci_uart_tx_wakeup(struct hci_uart *hu)
- {
--	struct tty_struct *tty =3D hu->tty;
--	struct hci_dev *hdev =3D hu->hdev;
--	struct sk_buff *skb;
--
- 	if (test_and_set_bit(HCI_UART_SENDING, &hu->tx_state)) {
- 		set_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
- 		return 0;
-@@ -129,6 +125,18 @@ int hci_uart_tx_wakeup(struct hci_uart *hu)
-=20
- 	BT_DBG("");
-=20
-+	schedule_work(&hu->write_work);
-+
-+	return 0;
-+}
-+
-+static void hci_uart_write_work(struct work_struct *work)
-+{
-+	struct hci_uart *hu =3D container_of(work, struct hci_uart, init_ready);
-+	struct tty_struct *tty =3D hu->tty;
-+	struct hci_dev *hdev =3D hu->hdev;
-+	struct sk_buff *skb;
-+
- restart:
- 	clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
-=20
-@@ -153,7 +161,6 @@ restart:
- 		goto restart;
-=20
- 	clear_bit(HCI_UART_SENDING, &hu->tx_state);
--	return 0;
- }
-=20
- static void hci_uart_init_work(struct work_struct *work)
-@@ -281,6 +288,7 @@ static int hci_uart_tty_open(struct tty_struct *tty)
- 	tty->receive_room =3D 65536;
-=20
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
-+	INIT_WORK(&hu->write_work, hci_uart_write_work);
-=20
- 	spin_lock_init(&hu->rx_lock);
-=20
-@@ -318,6 +326,8 @@ static void hci_uart_tty_close(struct tty_struct *tty)
- 	if (hdev)
- 		hci_uart_close(hdev);
-=20
-+	cancel_work_sync(&hy->write_work);
-+
- 	if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {
- 		if (hdev) {
- 			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
-diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
-index fffa61f..12df101 100644
---- a/drivers/bluetooth/hci_uart.h
-+++ b/drivers/bluetooth/hci_uart.h
-@@ -68,6 +68,7 @@ struct hci_uart {
- 	unsigned long		hdev_flags;
-=20
- 	struct work_struct	init_ready;
-+	struct work_struct	write_work;
-=20
- 	struct hci_uart_proto	*proto;
- 	void			*priv;
---=20
-1.9.1.286.g5172cb3
+"MIN > 0, TIME == 0 (blocking read)
 
+The read() blocks (possibly indefinitely) until the lesser of the number of bytes
+requested or MIN bytes are available, and returns the lesser of the two values."
 
---=20
-balbi
+However, read() may unblock when MIN bytes are available but return up to the
+'count' parameter if more input arrives in between waking and copying into the
+user buffer.
 
---CGDBiGfvSTbxKZlW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+So, for example, if MIN == 5,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+   n = read(tty, &buffer, 30 /*sizeof(buffer)*/)
 
-iQIcBAEBAgAGBQJTKzKYAAoJEIaOsuA1yqREC7EQAJFT5/oRZkKd/rSs8NB8CMPU
-tR5WSxJdc1mAaHPrFPDq6jXPWI4O5dauUtCvNB4d/GIcM0kUuFLMpLGWLxVHZXze
-rmutr8Lh0dDFQcjnH5TkXFcWfctzD4k/IpxE5DRAJivz3GtYqtXGghb9/NoAQi8Q
-7R+NoDNQDO3KSGjF1PBTaCF3VQrQoVkb050tH0uj5RPOVsWfo2k8ra8+xkIHWXkm
-mx1hzfpNFygE//aliG1rWXoc7NqExZo4XUqjRAXUW6HtEYg69xSfxOAsiI+/ltwm
-lYvvdzZQbK5Ds8f6NKn5chqkVpAQm8LabmFKCsu1TKpPExRDgaA9/JkBRRcYAqK9
-NrcyIZEEVGzwv+5vLR7k5a08NEoS+o1W1JBkeEV7vF1EvWwvWUyRJBlJsPjGjBCK
-gDfQzekRgmovQtB6JYqsW1rCOYBLfGRaFVv2fP+WUJ98kdww55SxPXPUIk+wwB/H
-SA23Zwy96RsrXYlvX8dYOl4qCWAg+EoFYhjYvktGMMyqi5rq2N5asrlcy3tSo+BH
-2VUu0fRzgFij+TED7bs6nXRRs8v1msvSX6NLNKvZRXPIAWGbSHI9Q90ZzVupbBK9
-YT03BnuHMTv92bsiOe0UUhNxjObLDLsEkZKFqUVC/utC+9SAyF52BjTZWYn6oObN
-Bgg49FJgkPICNaxTDgmt
-=pIEh
------END PGP SIGNATURE-----
+n may be up to 30 on return.
 
---CGDBiGfvSTbxKZlW--
+Finally, if the 'count' parameter is less than MIN, read() may return before MIN
+bytes have been received, if 'count' bytes have been received.
+
+Regards,
+Peter Hurley
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=71671
