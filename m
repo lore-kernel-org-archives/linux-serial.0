@@ -1,72 +1,139 @@
-From: "Bollinger, Seth" <Seth.Bollinger@digi.com>
-Subject: Re: Possible software flow problem in serial_core
-Date: Thu, 20 Mar 2014 23:34:11 +0000
-Message-ID: <CF50E0EB.6E95%seth.bollinger@digi.com>
-References: <CF505B08.6E64%seth.bollinger@digi.com>
- <532B743F.2030705@hurleysoftware.com>
+From: Felipe Balbi <balbi@ti.com>
+Subject: UART 8250 and HW Flow Control
+Date: Thu, 20 Mar 2014 18:47:52 -0500
+Message-ID: <20140320234752.GA26964@saruman.home>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6TrnltStXW4iwmi0"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta12.messagelabs.com ([216.82.251.8]:54429 "EHLO
-	mail1.bemta12.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759365AbaCTXlF convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Mar 2014 19:41:05 -0400
-In-Reply-To: <532B743F.2030705@hurleysoftware.com>
-Content-Language: en-US
-Content-ID: <40F4F7B38E5B9E4FBEB8209D6928AC71@digi.com>
+Received: from comal.ext.ti.com ([198.47.26.152]:40686 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759695AbaCTXuL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Mar 2014 19:50:11 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
+To: Russell King <linux@arm.linux.org.uk>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, Greg KH <gregkh@linuxfoundation.org>, Muralidharan Karicheri <m-karicheri2@ti.com>
 
+--6TrnltStXW4iwmi0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->What hardware is this?
+Hi Russell,
 
-We=B9re using the Freescale mxs-auart driver (i.mx28).
+long ago you wrote a patch (see below) which converted TI16C750 flow
+control quirk into a capability flag followed by a fifosize check.
+
+I've tried to fully understand the rationale behind that commit and,
+specifically why 32 bytes. If I understood correctly the problem is that
+RTS goes low as soon as FIFO Trigger Level is reached which means that
+if the far end isn't fast enough, it might miss our Request To Send.
+
+But then, this causes a problem for UARTs with small FIFOs. I mean, if
+the far end _does_ use auto-CTS, then we could enable auto-RTS in our
+side, but that commit prevents that unless we patch that check.
+
+Right now we're dealing with a use case which is using a BT device over
+UART at 3Mbaud and the UART on the SoC has 16 bytes of FIFO (it's a
+16550a compatible UART).
+
+Our first (quickest, dirtiest, crappiest) option is to just change 32
+into 16 get it over with. HW Flow Control gets enabled and everybody is
+happy, soon after that "what ifs" started to pop :-)
+
+I wonder if a better (albeit with impact to performance, probably)
+approach would be to patch tty_{un,}throttle() so that we don't write
+an ammount >=3D FIFO_TRIGGER_LEVEL in affected UARTs, but that doesn't
+sound very nice either, or does it ?
+
+Do you have any extra insider's information about the reason for that
+patch and/or any suggestions on how to patch it in a better way ?
+
+I know it's an old commit (took it from historic Linux tree) but worth
+asking anyway.
+
+commit 1ad14ded82602e3753c724ce4647b44faf4dc658
+Author: Russell King <rmk@flint.arm.linux.org.uk>
+Date:   Tue Oct 19 16:37:05 2004 +0100
+
+    [SERIAL] Convert TI16C750 flow control into a port capability.
+   =20
+    Add UART_CAP_AFE, and use this to enable TI16C750 flow control,
+    but only if we have 32 bytes or more of FIFO.
+
+diff --git a/drivers/serial/8250.c b/drivers/serial/8250.c
+index 6e2e62d..7e63a7f 100644
+--- a/drivers/serial/8250.c
++++ b/drivers/serial/8250.c
+@@ -210,7 +210,7 @@ static const struct serial8250_config uart_config[] =3D=
+ {
+ 		.tx_loadsz	=3D 64,
+ 		.fcr		=3D UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
+ 				  UART_FCR7_64BYTE,
+-		.flags		=3D UART_CAP_FIFO | UART_CAP_SLEEP,
++		.flags		=3D UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_AFE,
+ 	},
+ 	[PORT_STARTECH] =3D {
+ 		.name		=3D "Startech",
+@@ -1584,11 +1584,14 @@ serial8250_set_termios(struct uart_port *port, stru=
+ct termios *termios,
+ 	}
 =20
->A 16550 transmitter doesn't shut-off at uart->stop_tx(), so the remain=
-ing
->data in the transmitter FIFO is still transmitted.
+ 	/*
+-	 * TI16C750: hardware flow control and 64 byte FIFOs. When AFE is
+-	 * enabled, RTS will be deasserted when the receive FIFO contains
+-	 * more characters than the trigger, or the MCR RTS bit is cleared.
++	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
++	 * deasserted when the receive FIFO contains more characters than
++	 * the trigger, or the MCR RTS bit is cleared.  In the case where
++	 * the remote UART is not using CTS auto flow control, we must
++	 * have sufficient FIFO entries for the latency of the remote
++	 * UART to respond.  IOW, at least 32 bytes of FIFO.
+ 	 */
+-	if (up->port.type =3D=3D PORT_16750) {
++	if (up->capabilities & UART_CAP_AFE && up->port.fifosize >=3D 32) {
+ 		up->mcr &=3D ~UART_MCR_AFE;
+ 		if (termios->c_cflag & CRTSCTS)
+ 			up->mcr |=3D UART_MCR_AFE;
+diff --git a/drivers/serial/8250.h b/drivers/serial/8250.h
+index bbf767d..dcf5859 100644
+--- a/drivers/serial/8250.h
++++ b/drivers/serial/8250.h
+@@ -47,6 +47,7 @@ struct serial8250_config {
+ #define UART_CAP_FIFO	(1 << 8)	/* UART has FIFO */
+ #define UART_CAP_EFR	(1 << 9)	/* UART has EFR */
+ #define UART_CAP_SLEEP	(1 << 10)	/* UART has IER sleep */
++#define UART_CAP_AFE	(1 << 11)	/* MCR-based hw flow control */
+=20
+ #undef SERIAL_DEBUG_PCI
+=20
 
-Ok, I just reviewed the 8250 driver and you=B9re correct, it appears th=
-e
-transmitter is only disabled on the 16C950.  I misread before (incorrec=
-tly
-saw 16C550)...
+--=20
+balbi
 
->Some hardware has (relatively) big FIFOs and allows the transmitter to=
- be
->shutoff, but these should unconditionally re-enable the transmitter
->without
->clearing the xmit fifo.
+--6TrnltStXW4iwmi0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Do you have a driver that would be a good example of this?  From lookin=
-g
-at serial_core.c:uart_start(), is seems that start_tx() is only called =
-if
-the serial_core ring buffer is not empty.  If we don=B9t stop the
-transmitter, we slew too many characters.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
->Are you seeing lost data? Maybe it's because soft flow-control is to
->slow to shutoff the sender?
+iQIcBAEBAgAGBQJTK34oAAoJEIaOsuA1yqREhjkQAKQmGvUlptzNURevEESrpwjj
+Mh2WvmiCXcBm7MtZa5UBlk+QrSqtXLk7v6U0qwwiVqrG5AnqHQTaaG70umTh7F31
+jmA5TVMJXhXOCU6qKINIwHMy0Oo1Lr3bCALhgUYNPzTdJjhJHLNDNJbW/9vo8Ruh
+z6Fla9IuY/uuDIu2UiCWVfM7zX4+BG1e9fpih/k6Kf01DPpZT6fCOXqwGSZ7puWM
+j1ch59ZTXbbCfMWSCHC1dLCaTcAbwvbvwbeX1cqurrkGPScf8dpHheTgMTWBVCL1
+uEePACaidbrIO9/jxE5v3nbUuD4H8myKSWHMhEHv7YAhivemZo2IszEPe+FTCdao
+t0MWQeP7CoHGpI6FdO1AwxE3h21ZJ+GzUFDE4383SlMTsNbVLamDrVqmvQUyy7Hi
+bpasY8kerdLS7uEgoppqCwe0h9d3RLw6L2Wtvy2NpI9/Z71pm0oT7/Owli2seIGc
+AR1wiC0gEt+tIJ9DJ9AxXXc0aT1FePVRfXb9omNrJfsX/KVKSwB2kb1iL/Q0Skfh
+5To9uExsK7gjHUCLl7xXs4erygWN/HviwYQCLaxkLErP13GAPfDYAyNKK4PXrmkI
+8HfuTlGmTc4vGTbvHH/EfIJJmdt3E7o+u63YlrwsXwGUpCHFEPApF+I8+UbKFDJ6
+k0LgRnvtD5TWTQ3wnoze
+=hjRy
+-----END PGP SIGNATURE-----
 
-No dropped bytes, but we do see a few bytes trapped in the fifo because=
- we
-received an XOFF.  When we receive the XON, start_tx() is never called
-because the serial_core ring buffer is empty, and we have no more data =
-to
-transmit.  When we enable the transmitter manually, these bytes will po=
-p
-out.
-
-Thanks for all of your help!
-
-Seth
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--6TrnltStXW4iwmi0--
