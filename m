@@ -1,58 +1,125 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: hci_ldsic nested locking problem
-Date: Thu, 20 Mar 2014 11:45:44 -0700
-Message-ID: <20140320184544.GA1113@kroah.com>
-References: <20140320163435.GH32692@saruman.home>
- <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com>
- <20140320171621.GA2827@saruman.home>
- <20140320172920.GC2827@saruman.home>
- <532B26C1.8080806@hurleysoftware.com>
- <20140320173518.GD2827@saruman.home>
+Date: Thu, 20 Mar 2014 14:54:59 -0400
+Message-ID: <532B3983.6040706@hurleysoftware.com>
+References: <20140320163435.GH32692@saruman.home> <1395333736.22077.32.camel@acox1-desk.ger.corp.intel.com> <20140320171621.GA2827@saruman.home> <20140320172920.GC2827@saruman.home> <532B26C1.8080806@hurleysoftware.com> <20140320173518.GD2827@saruman.home> <20140320184544.GA1113@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140320173518.GD2827-HgARHv6XitL9zxVx7UNMDg@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Muralidharan Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Huang Shijie <b32955-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140320184544.GA1113@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Felipe Balbi <balbi@ti.com>, Alan Cox <alan@linux.intel.com>, Marcel Holtmann <marcel@holtmann.org>, Muralidharan Karicheri <m-karicheri2@ti.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Huang Shijie <b32955@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 20, 2014 at 12:35:18PM -0500, Felipe Balbi wrote:
-> On Thu, Mar 20, 2014 at 01:34:57PM -0400, Peter Hurley wrote:
-> > [ +cc Huang Shijie ]
-> > 
-> > On 03/20/2014 01:29 PM, Felipe Balbi wrote:
-> > >then we need updates to Documentation:
-> > >
-> > >Documentation/serial/tty.txt::
-> > >
-> > >|  Driver Side Interfaces:
-> > >|
-> > >|  receive_buf()	-	Hand buffers of bytes from the driver to the ldisc
-> > >|  			for processing. Semantics currently rather
-> > >|  			mysterious 8(
-> > >|
-> > >|  write_wakeup()	-	May be called at any point between open and close.
-> > >|  			The TTY_DO_WRITE_WAKEUP flag indicates if a call
-> > >|  			is needed but always races versus calls. Thus the
-> > >|  			ldisc must be careful about setting order and to
-> > >|  			handle unexpected calls. Must not sleep.
-> > >|
-> > >|  			The driver is forbidden from calling this directly
-> > >|  			from the ->write call from the ldisc as the ldisc
-> > >|  			is permitted to call the driver write method from
-> > >|  			this function. In such a situation defer it.
-> > >
-> > >documentation says ldisc is allowed to call ->write() from
-> > >->write_wakeup(). huh ?
-> > 
-> > Patch submitted but never applied.
-> > 
-> > http://www.spinics.net/lists/linux-serial/msg11144.html
-> 
-> Thank you. For that patch:
-> 
-> Acked-by: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+On 03/20/2014 02:45 PM, Greg KH wrote:
+> On Thu, Mar 20, 2014 at 12:35:18PM -0500, Felipe Balbi wrote:
+>> On Thu, Mar 20, 2014 at 01:34:57PM -0400, Peter Hurley wrote:
+>>> [ +cc Huang Shijie ]
+>>>
+>>> On 03/20/2014 01:29 PM, Felipe Balbi wrote:
+>>>> then we need updates to Documentation:
+>>>>
+>>>> Documentation/serial/tty.txt::
+>>>>
+>>>> |  Driver Side Interfaces:
+>>>> |
+>>>> |  receive_buf()	-	Hand buffers of bytes from the driver to the ldisc
+>>>> |  			for processing. Semantics currently rather
+>>>> |  			mysterious 8(
+>>>> |
+>>>> |  write_wakeup()	-	May be called at any point between open and close.
+>>>> |  			The TTY_DO_WRITE_WAKEUP flag indicates if a call
+>>>> |  			is needed but always races versus calls. Thus the
+>>>> |  			ldisc must be careful about setting order and to
+>>>> |  			handle unexpected calls. Must not sleep.
+>>>> |
+>>>> |  			The driver is forbidden from calling this directly
+>>>> |  			from the ->write call from the ldisc as the ldisc
+>>>> |  			is permitted to call the driver write method from
+>>>> |  			this function. In such a situation defer it.
+>>>>
+>>>> documentation says ldisc is allowed to call ->write() from
+>>>> ->write_wakeup(). huh ?
+>>>
+>>> Patch submitted but never applied.
+>>>
+>>> http://www.spinics.net/lists/linux-serial/msg11144.html
+>>
+>> Thank you. For that patch:
+>>
+>> Acked-by: Felipe Balbi <balbi@ti.com>
+>
+> Can someone resend it, this is lost in my tree for some reason...
 
-Can someone resend it, this is lost in my tree for some reason...
+Apologies if my mailer mangles this.
+
+--- >% ---
+From: Huang Shijie <b32955@freescale.com>
+
+In the uart_handle_cts_change(), uart_write_wakeup() is called after
+we call @uart_port->ops->start_tx().
+
+The Documentation/serial/driver tells us:
+-----------------------------------------------
+   start_tx(port)
+	Start transmitting characters.
+
+	Locking: port->lock taken.
+	Interrupts: locally disabled.
+-----------------------------------------------
+
+So when the uart_write_wakeup() is called, the port->lock is taken by
+the upper. See the following callstack:
+
+	|_ uart_write_wakeup
+	   |_ tty_wakeup
+	      |_ ld->ops->write_wakeup
+
+With the port->lock held, we call the @write_wakeup. Some implemetation of
+the @write_wakeup does not notice that the port->lock is held, and it still
+tries to send data with uart_write() which will try to grab the prot->lock.
+A dead lock occurs, see the following log caught in the Bluetooth by uart:
+
+--------------------------------------------------------------------
+BUG: spinlock lockup suspected on CPU#0, swapper/0/0
+  lock: 0xdc3f4410, .magic: dead4ead, .owner: swapper/0/0, .owner_cpu: 0
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W    3.10.17-16839-ge4a1bef #1320
+[<80014cbc>] (unwind_backtrace+0x0/0x138) from [<8001251c>] (show_stack+0x10/0x14)
+[<8001251c>] (show_stack+0x10/0x14) from [<802816ac>] (do_raw_spin_lock+0x108/0x184)
+[<802816ac>] (do_raw_spin_lock+0x108/0x184) from [<806a22b0>] (_raw_spin_lock_irqsave+0x54/0x60)
+[<806a22b0>] (_raw_spin_lock_irqsave+0x54/0x60) from [<802f5754>] (uart_write+0x38/0xe0)
+[<802f5754>] (uart_write+0x38/0xe0) from [<80455270>] (hci_uart_tx_wakeup+0xa4/0x168)
+[<80455270>] (hci_uart_tx_wakeup+0xa4/0x168) from [<802dab18>] (tty_wakeup+0x50/0x5c)
+[<802dab18>] (tty_wakeup+0x50/0x5c) from [<802f81a4>] (imx_rtsint+0x50/0x80)
+[<802f81a4>] (imx_rtsint+0x50/0x80) from [<802f88f4>] (imx_int+0x158/0x17c)
+[<802f88f4>] (imx_int+0x158/0x17c) from [<8007abe0>] (handle_irq_event_percpu+0x50/0x194)
+[<8007abe0>] (handle_irq_event_percpu+0x50/0x194) from [<8007ad60>] (handle_irq_event+0x3c/0x5c)
+--------------------------------------------------------------------
+
+This patch adds more limits to the @write_wakeup, the one who wants to
+implemet the @write_wakeup should follow the limits which avoid the deadlock.
+
+Signed-off-by: Huang Shijie <b32955@freescale.com>
+---
+  include/linux/tty_ldisc.h |    5 ++++-
+  1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index f15c898..539ccc5 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -91,7 +91,10 @@
+   *	This function is called by the low-level tty driver to signal
+   *	that line discpline should try to send more characters to the
+   *	low-level driver for transmission.  If the line discpline does
+- *	not have any more data to send, it can just return.
++ *	not have any more data to send, it can just return. If the line
++ *	discipline does have some data to send, please arise a tasklet
++ *	or workqueue to do the real data transfer. Do not send data in
++ *	this hook, it may leads to a deadlock.
+   *
+   * int (*hangup)(struct tty_struct *)
+   *
+-- 1.7.2.rc3
