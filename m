@@ -1,65 +1,61 @@
-From: jon@ringle.org
-Subject: [PATCH 2/2] serial: sc16is7xx: Add bindings documentation for the SC16IS7XX UARTs
-Date: Thu, 20 Mar 2014 11:47:18 -0400
-Message-ID: <1395330438-13802-2-git-send-email-jon@ringle.org>
-References: <1395330438-13802-1-git-send-email-jon@ringle.org>
+From: Felipe Balbi <balbi@ti.com>
+Subject: hci_ldsic nested locking problem
+Date: Thu, 20 Mar 2014 11:34:35 -0500
+Message-ID: <20140320163435.GH32692@saruman.home>
+Reply-To: <balbi@ti.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RwGu8mu1E+uYXPWP"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1395330438-13802-1-git-send-email-jon@ringle.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, shc_work@mail.ru, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Jon Ringle <jringle@gridpoint.com>
+To: Marcel Holtmann <marcel@holtmann.org>, Alan Cox <alan@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>
+Cc: Muralidharan Karicheri <m-karicheri2@ti.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Jon Ringle <jringle@gridpoint.com>
+--RwGu8mu1E+uYXPWP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch adds the devicetree documentation for the NXP SC16IS7XX UARTs.
+Hi,
 
-Signed-off-by: Jon Ringle <jringle@gridpoint.com>
----
- .../devicetree/bindings/serial/nxp,sc16is7xx.txt   | 35 ++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+when 8250 driver calls uart_write_wakeup(), the tty port lock is already
+taken. hci_ldisc.c's implementation of ->write_wakeup() calls
+tty->ops->write() to actually send the characters, but that call will
+try to acquire the same port lock again.
 
-diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-new file mode 100644
-index 0000000..cd9ae33
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-@@ -0,0 +1,35 @@
-+* NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
-+
-+Required properties:
-+- compatible: Should be one of the following:
-+  - "nxp,sc16is740" for NXP SC16IS740,
-+  - "nxp,sc16is741" for NXP SC16IS741,
-+  - "nxp,sc16is750" for NXP SC16IS750,
-+  - "nxp,sc16is752" for NXP SC16IS752,
-+  - "nxp,sc16is760" for NXP SC16IS760,
-+  - "nxp,sc16is762" for NXP SC16IS762.
-+- reg: I2C address of the SC16IS7xx device.
-+- interrupt-parent: The phandle for the interrupt controller that
-+  services interrupts for this IC.
-+- interrupts: Specifies the interrupt source of the parent interrupt
-+  controller. The format of the interrupt specifier depends on the
-+  parent interrupt controller.
-+- clocks: phandle to the IC source clock.
-+
-+Optional properties:
-+- gpio-controller: Marks the device node as a GPIO controller.
-+- #gpio-cells: Should be two. The first cell is the GPIO number and
-+  the second cell is used to specify the GPIO polarity:
-+    0 = active high,
-+    1 = active low.
-+
-+Example:
-+        sc16is750: sc16is750@51 {
-+                compatible = "nxp,sc16is750";
-+                reg = <0x51>;
-+                clocks = <&clk20m>;
-+                interrupt-parent = <&gpio3>;
-+                interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+        };
--- 
-1.8.5.4
+Looking at other line disciplines that looks like a bug in hci_ldisc.c.
+Am I correct to assume that ->write_wakeup() is supposed to *just*
+wakeup the bottom half so we handle ->write() in another context ?
+
+Is it legal to call tty->ops->write() from within ->write_wakeup() ?
+
+cheers
+
+--=20
+balbi
+
+--RwGu8mu1E+uYXPWP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJTKxibAAoJEIaOsuA1yqREQ6wP/Rki7213nleViEF4e2iQPoiX
+Phn2KyCf70Mbly1abtLR9ilIqs4iebRg+VOowU2/64d6+SiiOzPupDlJRIrikHvR
+BT4gZB7YTQiUgYteO21vlIEKUBxRTr8ntujA6p+v0NOZqJv/BNcLcGuR8e774+fe
+j97ZcFlx+hbEb9q608bD5XbkGXftXBhhFx+llbM5AAK/ffDzFwwp9EgYzjSO4M0I
+lpIInSuT7NvOShU63Jx642D5BG2n1F5A6NgZacKGhXIC0FSJjHPN6eo1vNYPcqGe
+ubM8MgF/RbDrqJS7c0BRnr3qFvYah0NYeS0sEkWKcTlmXK8JX8fIXw+7+e49WaE1
+fc2ccmfJWfNneB1/kRfTZgt3Pxi6iwS2GzMrXKEelpI2BLrnhpm2Ew5TQmMaIfw3
+WLySiAtZG6zWuqxHzbAOUu8vMdH+NRxFRvTUhYXiSSJhUxQIrYL2IeOG3vecTkYQ
+4bRXLnK0OOCPPKC95IA3RyFP26rb4uMOYU+t/lbU5OD24L0mzwFAGl7i8AfoYTAy
+s3BywhZA5joQTqDKXDVQ9agz4VmiIG5tLcp1WPEMXRwS6/BRM/DI4oRRfKfjKpLB
+jLcGurJjdt04I7irLBMksVdMPqMRWn3b3ZgEGlJffEcxC4V9r2IPH8Pi9C4ccKTH
+17CbvpZMUjSUZoDkbPZT
+=eLjS
+-----END PGP SIGNATURE-----
+
+--RwGu8mu1E+uYXPWP--
