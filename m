@@ -1,63 +1,143 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
-Date: Fri, 21 Mar 2014 14:23:49 +0100
-Message-ID: <CAMuHMdUBiUzpvTzkhaguOQoDc8XJH7NvnNe2Z+jL6UeEitpJPg@mail.gmail.com>
-References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
-	<532C394A.3050408@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: man termios
+Date: Fri, 21 Mar 2014 10:03:41 -0400
+Message-ID: <532C46BD.1000208@hurleysoftware.com>
+References: <532B3691.1070602@hurleysoftware.com> <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com> <532C20B7.2070806@hurleysoftware.com> <532C3B6F.2000300@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <532C394A.3050408@hurleysoftware.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:38898 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1760353AbaCUODo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Mar 2014 10:03:44 -0400
+In-Reply-To: <532C3B6F.2000300@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
+Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
 
-Hi Peter,
+On 03/21/2014 09:15 AM, Michael Kerrisk (man-pages) wrote:
+> On 03/21/2014 12:21 PM, Peter Hurley wrote:
+>> On 03/21/2014 06:45 AM, Michael Kerrisk (man-pages) wrote:
 
-On Fri, Mar 21, 2014 at 2:06 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> @@ -2681,10 +2683,12 @@ int uart_remove_one_port(struct uart_driver *drv,
->> struct uart_port *uport)
->>         }
+>>>> Finally, if the 'count' parameter is less than MIN, read() may ret=
+urn before
+>>>> MIN bytes have been received, if 'count' bytes have been received.
+>>>
+>>> Yes. But it's not clear to me here: do you mean that something in t=
+he
+>>> man page (or in TLPI) needs fixing?
 >>
->>         /*
->> -        * If the port is used as a console, unregister it
->> +        * If the port is used as a console, unregister it, and power it
->> down
->>          */
->> -       if (uart_console(uport))
->> +       if (uart_console(uport)) {
->>                 unregister_console(uport->cons);
->> +               uart_change_pm(state, UART_PM_STATE_OFF);
+>> Well, what I mean here is that read() may also _not_ return until MI=
+N bytes have
+>> been received, even if 'count' bytes have been received.
 >
-> Won't this power off the port while tty consoles may still be open?
-
-I didn't see that actually happening.
-
-> I think the right thing here is to unregister_console then set uport->cons =
-> NULL
+> Ahh -- I see what you mean. And, it looks like there is a point here =
+where Linux
+> differs from POSIX and (at least) Solaris. See the current man-page t=
+ext below,
+> in particular the MIN>0, TIME>0 case. I've also attached a simple tes=
+t program
+> that I used, below.
 >
-> [uport->cons is properly reassigned when/if a port is re-added via
-> uart_add_one_port()).]
+>         In noncanonical mode input is available immediately (without =
+ the
+>         user  having  to  type a line-delimiter character), no input =
+pro=E2=80=90
+>         cessing is performed, and line editing is disabled.  The sett=
+ings
+>         of  MIN (c_cc[VMIN]) and TIME (c_cc[VTIME]) determine the cir=
+cum=E2=80=90
+>         stances in which a read(2) completes;  there  are  four  dist=
+inct
+>         cases:
+>
+>         MIN =3D=3D 0; TIME =3D=3D 0:
+>                If  data  is  available, read(2) returns immediately, =
+with
+>                the lesser of the number of bytes available, or the nu=
+mber
+>                of  bytes  requested.   If  no  data is available, rea=
+d(2)
+>                returns 0.
+>
+>         MIN > 0; TIME =3D=3D 0:
+>                read(2) blocks until MIN bytes are available, and  ret=
+urns
+>                up to the number of bytes requested.
+>
+>         MIN =3D=3D 0; TIME > 0:
+>                TIME  specifies  the limit for a timer in tenths of a =
+sec=E2=80=90
+>                ond.   The  timer  is  started  when  read(2)  is  cal=
+led.
+>                read(2)  returns  either when at least one byte of dat=
+a is
+>                available, or  when  the  timer  expires.   If  the  t=
+imer
+>                expires  without  any  input  becoming  available, rea=
+d(2)
+>                returns 0.  If data is already available at  the  time=
+  of
+>                the call to read() the call behaves as though the data=
+ was
+>                received immediately after the call.
+>
+>         MIN > 0; TIME > 0:
+>                TIME specifies the limit for a timer in tenths of  a  =
+sec=E2=80=90
+>                ond.  Once an initial byte of input becomes available,=
+ the
+>                timer is restarted after each further  byte  is  recei=
+ved.
+>                read(2)  returns  when  any of the following condition=
+s is
+>                met:
+>
+>                *  MIN bytes have been received.
+>
+>                *  The interbyte timer expires.
+>
+>                *  The number of  bytes  requested  by  read(2)  has  =
+been
+>                   received.   (POSIX  does  not  specify this termina=
+tion
+>                   condition, and on  some  other  implementations  re=
+ad()
+>                   does not return in this case.)
+>
+>                Because  the  timer is started only after the initial =
+byte
+>                becomes available, at least one byte  will  be  read. =
+  If
+>                data  is  already  available  at  the  time of the cal=
+l to
+>                read() the call behaves as though the  data  was  rece=
+ived
+>                immediately after the call.
+>
+>         POSIX does not specify whether the setting of the O_NONBLOCK =
+file
+>         status flag takes precedence over the MIN and TIME settings. =
+  If
+>         O_NONBLOCK is set, a read() in noncanonical mode may return i=
+mme=E2=80=90
+>         diately, regardless of the setting of MIN or TIME.   Furtherm=
+ore,
+>         if  no  data is available, POSIX permits a read() in noncanon=
+ical
+>         mode to return either 0, or -1 with errno set to EAGAIN.
 
-But indeed, for concistency/symmetry uport->state and uport->cons
-should be resend, but that's something separate.
+All looks good.
 
-> Then, uart_close() will power off the port when all ttys using the port have
-> been closed.
-
-uart_close() won't get that far, so uart_change_pm() won't be called.
-
-See also https://lkml.org/lkml/2014/3/10/651, and my workaround for the
-crash https://lkml.org/lkml/2014/3/17/231.
-
-Gr{oetje,eeting}s,
-
-                        Geert
+Thanks again,
+Peter Hurley
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
