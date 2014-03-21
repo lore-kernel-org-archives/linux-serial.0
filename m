@@ -1,36 +1,39 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [RFC] possible removal of omap-serial
-Date: Thu, 20 Mar 2014 17:12:28 -0700
-Message-ID: <20140321001228.GA18131@kroah.com>
-References: <20140320235210.GB26964@saruman.home>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Possible software flow problem in serial_core
+Date: Thu, 20 Mar 2014 20:34:38 -0400
+Message-ID: <532B891E.80705@hurleysoftware.com>
+References: <CF505B08.6E64%seth.bollinger@digi.com> <532B743F.2030705@hurleysoftware.com> <CF50E0EB.6E95%seth.bollinger@digi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140320235210.GB26964@saruman.home>
-Sender: linux-omap-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>, Alan Cox <alan@linux.intel.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CF50E0EB.6E95%seth.bollinger@digi.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Bollinger, Seth" <Seth.Bollinger@digi.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 20, 2014 at 06:52:10PM -0500, Felipe Balbi wrote:
-> Hi folks,
-> 
-> I've been toying with the idea of removing
-> drivers/tty/serial/omap-serial.c since that's, to put it bluntly, an
-> ungly copy of 8250 driver.
-> 
-> The original concern was wrt suspend/resume but I think it'd be a far
-> better approach to implement runtime PM in 8250 and write a rather small
-> 8250-omap.c glue (much like 8250-acorn.c or 8250-dw.c) just to get the
-> OMAP-specific details out of the way.
-> 
-> The question I have is: omap-serial.c calls the serial devnodes ttyO\d,
-> instead of ttyS\d so removing omap-serial.c would have a direct impact
-> in userland. I wonder if it's an acceptable "regression" considering
-> we'd be able to reuse 8250 gaining proper Flow Control support, proper
-> DMA support, years and years of bug-fixes, etc.
+On 03/20/2014 07:34 PM, Bollinger, Seth wrote:
+> Do you have a driver that would be a good example of this?  From look=
+ing
+> at serial_core.c:uart_start(), is seems that start_tx() is only calle=
+d if
+> the serial_core ring buffer is not empty.  If we don=C2=B9t stop the
+> transmitter, we slew too many characters.
 
-Breaking device node names is a contentious issue for serial ports, I
-don't think you can do that :(
+Yeah, you're right; thanks for catching this.
+(I was busy looking at the ll driver and completely missed the bug in
+the serial core).
 
+uart_start() should not be conditioning the call to start_tx() on
+the ring buffer being empty; ll drivers should already be able to handl=
+e
+that because CTS flow control change will start_tx regardless of the ri=
+ng
+buffer count.
+
+Will you send a patch?
+
+Regards,
+Peter Hurley
