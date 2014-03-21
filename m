@@ -1,73 +1,40 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH 0/8] Generic serial earlycon
-Date: Fri, 21 Mar 2014 16:08:40 -0500
-Message-ID: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f41.google.com ([209.85.219.41]:52224 "EHLO
-	mail-oa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750954AbaCUVJk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 17:09:40 -0400
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH 2/8] arm64: add FIXMAP_PAGE_NOCACHE definition
+Date: Fri, 21 Mar 2014 16:08:42 -0500
+Message-ID: <1395436128-11244-3-git-send-email-robherring2@gmail.com>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>
+List-Id: linux-serial@vger.kernel.org
 
 From: Rob Herring <robh@kernel.org>
 
-This started out as an attempt to add arm64's earlyprintk support to ARM
-in order to get an earlier, runtime setup console on multi-platform
-kernels. The first issue was needing the fixmap support which
-conveniently Mark Salter was working on and is mostly in place now. Like
-many things on ARM and arm64 now, it then became where do I put the now
-common, shared code. After digging more into various early console/printk
-support, it turns out the 8250_early.c setup code was the best starting
-point. 
+Similar to ioremap and ioremap_nocache, we want the same definition for
+both using PROT_DEVICE_nGnRE.
 
-This is based on Mark Salter's fixmap support currently in linux-next.
-This is tested on arm64 and ARM with pl011 and 8250. The ARM support
-also requires fixmap and fixed mapping support which are not yet in place.
-I have some patches in my tree to support fixmap, but they need some more
-work. Fortunately, once fixmap is in place, it is just a Kconfig option
-to enable earlycon support on ARM. A git tree is available here[1].
+Signed-off-by: Rob Herring <robh@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
+---
+ arch/arm64/include/asm/fixmap.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Based on this series, I would like to add support for doing earlycon
-setup using DT.
-
-Rob
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git earlycon
-
-Rob Herring (8):
-  x86: move FIX_EARLYCON_MEM kconfig into x86
-  arm64: add FIXMAP_PAGE_NOCACHE definition
-  arm64: enable FIX_EARLYCON_MEM kconfig
-  tty/serial: add generic serial earlycon
-  tty/serial: convert 8250 to generic earlycon
-  tty/serial: pl011: add generic earlycon support
-  tty/serial: add arm64 semihosting earlycon
-  arm64: remove arch specific earlyprintk
-
- Documentation/kernel-parameters.txt        |   6 +-
- arch/arm64/Kconfig                         |   3 +
- arch/arm64/Kconfig.debug                   |   9 --
- arch/arm64/include/asm/fixmap.h            |   3 +-
- arch/arm64/kernel/Makefile                 |   1 -
- arch/arm64/kernel/early_printk.c           | 158 -----------------------------
- arch/x86/Kconfig                           |   3 +
- drivers/tty/serial/8250/8250_early.c       | 138 +++----------------------
- drivers/tty/serial/8250/Kconfig            |   5 -
- drivers/tty/serial/Kconfig                 |  24 ++++-
- drivers/tty/serial/Makefile                |   3 +
- drivers/tty/serial/amba-pl011.c            |  30 +++++-
- drivers/tty/serial/earlycon-arm-semihost.c |  44 ++++++++
- drivers/tty/serial/earlycon.c              | 148 +++++++++++++++++++++++++++
- include/linux/serial_core.h                |  16 +++
- 15 files changed, 287 insertions(+), 304 deletions(-)
- delete mode 100644 arch/arm64/kernel/early_printk.c
- create mode 100644 drivers/tty/serial/earlycon-arm-semihost.c
- create mode 100644 drivers/tty/serial/earlycon.c
-
+diff --git a/arch/arm64/include/asm/fixmap.h b/arch/arm64/include/asm/fixmap.h
+index 5f7bfe6..68eab3c 100644
+--- a/arch/arm64/include/asm/fixmap.h
++++ b/arch/arm64/include/asm/fixmap.h
+@@ -54,7 +54,8 @@ enum fixed_addresses {
+ #define FIXADDR_SIZE	(__end_of_permanent_fixed_addresses << PAGE_SHIFT)
+ #define FIXADDR_START	(FIXADDR_TOP - FIXADDR_SIZE)
+ 
+-#define FIXMAP_PAGE_IO     __pgprot(PROT_DEVICE_nGnRE)
++#define FIXMAP_PAGE_IO		__pgprot(PROT_DEVICE_nGnRE)
++#define FIXMAP_PAGE_NOCACHE	__pgprot(PROT_DEVICE_nGnRE)
+ 
+ extern void __early_set_fixmap(enum fixed_addresses idx,
+ 			       phys_addr_t phys, pgprot_t flags);
 -- 
 1.8.3.2
-
