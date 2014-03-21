@@ -1,7 +1,7 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH 7/8] tty/serial: add arm64 semihosting earlycon
-Date: Fri, 21 Mar 2014 16:08:47 -0500
-Message-ID: <1395436128-11244-8-git-send-email-robherring2@gmail.com>
+Subject: [PATCH 8/8] arm64: remove arch specific earlyprintk
+Date: Fri, 21 Mar 2014 16:08:48 -0500
+Message-ID: <1395436128-11244-9-git-send-email-robherring2@gmail.com>
 References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
@@ -12,147 +12,214 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Rob Herring <robh@kernel.org>
 
-Add earlycon support for the arm64 semihosting debug serial interface.
-This allows enabling a debug console when early_params are processed.
-This is based on the arm64 earlyprintk smh support and is intended to
-replace it.
-
-This is named arm rather than arm64 in hopes it will be used for both,
-but only arm64 is supported ATM.
+Now that we have equivalent earlycon support, arm64's earlyprintk code
+can be removed.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
 ---
- Documentation/kernel-parameters.txt        |  1 +
- drivers/tty/serial/Kconfig                 | 17 +++++++++---
- drivers/tty/serial/Makefile                |  1 +
- drivers/tty/serial/earlycon-arm-semihost.c | 44 ++++++++++++++++++++++++++++++
- 4 files changed, 59 insertions(+), 4 deletions(-)
- create mode 100644 drivers/tty/serial/earlycon-arm-semihost.c
+ arch/arm64/Kconfig.debug         |   9 ---
+ arch/arm64/kernel/Makefile       |   1 -
+ arch/arm64/kernel/early_printk.c | 158 ---------------------------------------
+ 3 files changed, 168 deletions(-)
+ delete mode 100644 arch/arm64/kernel/early_printk.c
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 81bdd52..e96e2ba 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -888,6 +888,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 		uart[8250],mmio,<addr>[,options]
- 		uart[8250],mmio32,<addr>[,options]
- 		pl011,<addr>
-+		smh
- 			Start an early, polled-mode console on a serial port
- 			at the specified I/O port or MMIO address. 8250
- 			MMIO inter-register address stride is either 8-bit
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 1685189..8b8f40e 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -14,6 +14,15 @@ config SERIAL_EARLYCON
- 	  the console before standard serial driver is probed. The console is
- 	  enabled when early_param is processed.
+diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
+index 835c5597..7d7fb6f 100644
+--- a/arch/arm64/Kconfig.debug
++++ b/arch/arm64/Kconfig.debug
+@@ -6,15 +6,6 @@ config FRAME_POINTER
+ 	bool
+ 	default y
  
-+config SERIAL_EARLYCON_ARM_SEMIHOST
-+	bool "Early console using ARM64 semihosting"
-+	depends on ARM64
-+	help
-+	  Support for early debug console using ARM64 semihosting. This enables
-+	  the console before standard serial driver is probed. This is enabled
-+	  with "earlycon=smh" on the kernel command line. The console is
-+	  enabled when early_param is processed.
-+
- source "drivers/tty/serial/8250/Kconfig"
- 
- comment "Non-8250 serial port support"
-@@ -230,7 +239,7 @@ config SERIAL_SAMSUNG_UARTS
+-config EARLY_PRINTK
+-	bool "Early printk support"
+-	default y
+-	help
+-	  Say Y here if you want to have an early console using the
+-	  earlyprintk=<name>[,<addr>][,<options>] kernel parameter. It
+-	  is assumed that the early console device has been initialised
+-	  by the boot loader prior to starting the Linux kernel.
+-
+ config PID_IN_CONTEXTIDR
+ 	bool "Write the current PID to the CONTEXTIDR register"
  	help
- 	  Select the number of available UART ports for the Samsung S3C
- 	  serial driver
--	
-+
- config SERIAL_SAMSUNG_DEBUG
- 	bool "Samsung SoC serial debug"
- 	depends on SERIAL_SAMSUNG && DEBUG_LL
-@@ -666,8 +675,8 @@ config PDC_CONSOLE
- 	depends on PARISC && !SERIAL_MUX && VT
- 	default n
- 	help
--	  Saying Y here will enable the software based PDC console to be 
--	  used as the system console.  This is useful for machines in 
-+	  Saying Y here will enable the software based PDC console to be
-+	  used as the system console.  This is useful for machines in
- 	  which the hardware based console has not been written yet.  The
- 	  following steps must be competed to use the PDC console:
- 
-@@ -858,7 +867,7 @@ config SERIAL_CPM
- 	depends on CPM2 || 8xx
- 	select SERIAL_CORE
- 	help
--	  This driver supports the SCC and SMC serial ports on Motorola 
-+	  This driver supports the SCC and SMC serial ports on Motorola
- 	  embedded PowerPC that contain a CPM1 (8xx) or CPM2 (8xxx)
- 
- config SERIAL_CPM_CONSOLE
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 8af1415..9965b65 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_SERIAL_CORE) += serial_core.o
- obj-$(CONFIG_SERIAL_21285) += 21285.o
- 
- obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
-+obj-$(CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST) += earlycon-arm-semihost.o
- 
- # These Sparc drivers have to appear before others such as 8250
- # which share ttySx minor node space.  Otherwise console device
-diff --git a/drivers/tty/serial/earlycon-arm-semihost.c b/drivers/tty/serial/earlycon-arm-semihost.c
-new file mode 100644
-index 0000000..fecec9a
---- /dev/null
-+++ b/drivers/tty/serial/earlycon-arm-semihost.c
-@@ -0,0 +1,44 @@
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Catalin Marinas <catalin.marinas@arm.com>
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/console.h>
-+#include <linux/init.h>
-+#include <linux/serial_core.h>
-+
-+/*
-+ * Semihosting-based debug console
-+ */
-+static void smh_putc(struct uart_port *port, int c)
-+{
-+	asm volatile("mov  x1, %0\n"
-+		     "mov  x0, #3\n"
-+		     "hlt  0xf000\n"
-+		     : : "r" (&c) : "x0", "x1", "memory");
-+}
-+
-+static void smh_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+	uart_console_write(&dev->port, s, n, smh_putc);
-+}
-+
-+int __init early_smh_setup(struct earlycon_device *device, const char *opt)
-+{
-+	device->con->write = smh_write;
-+	return 0;
-+}
-+EARLYCON_DECLARE(smh, early_smh_setup);
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index 7d811d9..7a6fce5 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -18,7 +18,6 @@ arm64-obj-$(CONFIG_SMP)			+= smp.o smp_spin_table.o topology.o
+ arm64-obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o
+ arm64-obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o
+ arm64-obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
+-arm64-obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
+ arm64-obj-$(CONFIG_ARM64_CPU_SUSPEND)	+= sleep.o suspend.o
+ arm64-obj-$(CONFIG_JUMP_LABEL)		+= jump_label.o
+ arm64-obj-$(CONFIG_KGDB)		+= kgdb.o
+diff --git a/arch/arm64/kernel/early_printk.c b/arch/arm64/kernel/early_printk.c
+deleted file mode 100644
+index ffbbdde..0000000
+--- a/arch/arm64/kernel/early_printk.c
++++ /dev/null
+@@ -1,158 +0,0 @@
+-/*
+- * Earlyprintk support.
+- *
+- * Copyright (C) 2012 ARM Ltd.
+- * Author: Catalin Marinas <catalin.marinas@arm.com>
+- *
+- * This program is free software: you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+- */
+-#include <linux/kernel.h>
+-#include <linux/console.h>
+-#include <linux/init.h>
+-#include <linux/string.h>
+-#include <linux/mm.h>
+-#include <linux/io.h>
+-
+-#include <linux/amba/serial.h>
+-#include <linux/serial_reg.h>
+-
+-#include <asm/fixmap.h>
+-
+-static void __iomem *early_base;
+-static void (*printch)(char ch);
+-
+-/*
+- * PL011 single character TX.
+- */
+-static void pl011_printch(char ch)
+-{
+-	while (readl_relaxed(early_base + UART01x_FR) & UART01x_FR_TXFF)
+-		;
+-	writeb_relaxed(ch, early_base + UART01x_DR);
+-	while (readl_relaxed(early_base + UART01x_FR) & UART01x_FR_BUSY)
+-		;
+-}
+-
+-/*
+- * Semihosting-based debug console
+- */
+-static void smh_printch(char ch)
+-{
+-	asm volatile("mov  x1, %0\n"
+-		     "mov  x0, #3\n"
+-		     "hlt  0xf000\n"
+-		     : : "r" (&ch) : "x0", "x1", "memory");
+-}
+-
+-/*
+- * 8250/16550 (8-bit aligned registers) single character TX.
+- */
+-static void uart8250_8bit_printch(char ch)
+-{
+-	while (!(readb_relaxed(early_base + UART_LSR) & UART_LSR_THRE))
+-		;
+-	writeb_relaxed(ch, early_base + UART_TX);
+-}
+-
+-/*
+- * 8250/16550 (32-bit aligned registers) single character TX.
+- */
+-static void uart8250_32bit_printch(char ch)
+-{
+-	while (!(readl_relaxed(early_base + (UART_LSR << 2)) & UART_LSR_THRE))
+-		;
+-	writel_relaxed(ch, early_base + (UART_TX << 2));
+-}
+-
+-struct earlycon_match {
+-	const char *name;
+-	void (*printch)(char ch);
+-};
+-
+-static const struct earlycon_match earlycon_match[] __initconst = {
+-	{ .name = "pl011", .printch = pl011_printch, },
+-	{ .name = "smh", .printch = smh_printch, },
+-	{ .name = "uart8250-8bit", .printch = uart8250_8bit_printch, },
+-	{ .name = "uart8250-32bit", .printch = uart8250_32bit_printch, },
+-	{}
+-};
+-
+-static void early_write(struct console *con, const char *s, unsigned n)
+-{
+-	while (n-- > 0) {
+-		if (*s == '\n')
+-			printch('\r');
+-		printch(*s);
+-		s++;
+-	}
+-}
+-
+-static struct console early_console_dev = {
+-	.name =		"earlycon",
+-	.write =	early_write,
+-	.flags =	CON_PRINTBUFFER | CON_BOOT,
+-	.index =	-1,
+-};
+-
+-/*
+- * Parse earlyprintk=... parameter in the format:
+- *
+- *   <name>[,<addr>][,<options>]
+- *
+- * and register the early console. It is assumed that the UART has been
+- * initialised by the bootloader already.
+- */
+-static int __init setup_early_printk(char *buf)
+-{
+-	const struct earlycon_match *match = earlycon_match;
+-	phys_addr_t paddr = 0;
+-
+-	if (!buf) {
+-		pr_warning("No earlyprintk arguments passed.\n");
+-		return 0;
+-	}
+-
+-	while (match->name) {
+-		size_t len = strlen(match->name);
+-		if (!strncmp(buf, match->name, len)) {
+-			buf += len;
+-			break;
+-		}
+-		match++;
+-	}
+-	if (!match->name) {
+-		pr_warning("Unknown earlyprintk arguments: %s\n", buf);
+-		return 0;
+-	}
+-
+-	/* I/O address */
+-	if (!strncmp(buf, ",0x", 3)) {
+-		char *e;
+-		paddr = simple_strtoul(buf + 1, &e, 16);
+-		buf = e;
+-	}
+-	/* no options parsing yet */
+-
+-	if (paddr) {
+-		set_fixmap_io(FIX_EARLYCON_MEM_BASE, paddr);
+-		early_base = (void __iomem *)fix_to_virt(FIX_EARLYCON_MEM_BASE);
+-	}
+-
+-	printch = match->printch;
+-	early_console = &early_console_dev;
+-	register_console(&early_console_dev);
+-
+-	return 0;
+-}
+-
+-early_param("earlyprintk", setup_early_printk);
 -- 
 1.8.3.2
