@@ -1,92 +1,97 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: man termios
-Date: Fri, 21 Mar 2014 12:11:13 -0400
-Message-ID: <532C64A1.6090807@hurleysoftware.com>
-References: <532B3691.1070602@hurleysoftware.com> <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com> <532C20B7.2070806@hurleysoftware.com> <532C3B6F.2000300@gmail.com> <532C46BD.1000208@hurleysoftware.com> <CAKgNAkhg4-QLwQaVxve6KXR=yy0XQik_4+iz5XytE1d_6NjQaw@mail.gmail.com> <532C51F3.8030205@hurleysoftware.com> <CAKgNAkhRu7yZSn+uB1eTcL0gPGPcGsd5Z36pXgfdKOLBcdOoBw@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFC] possible removal of omap-serial
+Date: Fri, 21 Mar 2014 10:10:30 -0700
+Message-ID: <20140321171029.GC3842@atomide.com>
+References: <20140320235210.GB26964@saruman.home>
+ <20140321001228.GA18131@kroah.com>
+ <20140321013557.GB29691@saruman.home>
+ <20140321013729.GC29691@saruman.home>
+ <20140321023646.GB17404@kroah.com>
+ <CAOCHtYhwuAJy-=LJV=eFwzwqzDDPv5RngQ2dVJDOPhYT+J_Mvw@mail.gmail.com>
+ <20140321025238.GA31610@saruman.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53506 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751594AbaCUQLQ (ORCPT
+Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:57438 "EHLO
+	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751594AbaCURKf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 12:11:16 -0400
-In-Reply-To: <CAKgNAkhRu7yZSn+uB1eTcL0gPGPcGsd5Z36pXgfdKOLBcdOoBw@mail.gmail.com>
+	Fri, 21 Mar 2014 13:10:35 -0400
+Content-Disposition: inline
+In-Reply-To: <20140321025238.GA31610@saruman.home>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: mtk.manpages@gmail.com
-Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
+To: Felipe Balbi <balbi@ti.com>
+Cc: Robert Nelson <robertcnelson@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 
-On 03/21/2014 11:41 AM, Michael Kerrisk (man-pages) wrote:
->>> Peter, do you agree that Linux appears to differ from POSIX here? (Not
->>> sure if you tried my test program to verify...)
->>
->>
->> I did run the test program to validate that it's observed behavior is that
->> implemented by Linux, with which I'm very familiar.
->> I don't have a test setup for other *nixes.
->>
->> I would be interested to know the results of
->>
->>    ./noncanonical 0 5 3 0
->>    hello
->
-> Solaris 10:
-> read() completes when 5 bytes received.
-> OpenBSD 5.4
-> read() completes when 5 bytes received.
+* Felipe Balbi <balbi@ti.com> [140320 19:57]:
+> On Thu, Mar 20, 2014 at 09:45:42PM -0500, Robert Nelson wrote:
+> > On Thu, Mar 20, 2014 at 9:36 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > On Thu, Mar 20, 2014 at 08:37:29PM -0500, Felipe Balbi wrote:
+> > >> On Thu, Mar 20, 2014 at 08:35:57PM -0500, Felipe Balbi wrote:
+> > >> > Hi,
+> > >> >
+> > >> > On Thu, Mar 20, 2014 at 05:12:28PM -0700, Greg KH wrote:
+> > >> > > On Thu, Mar 20, 2014 at 06:52:10PM -0500, Felipe Balbi wrote:
+> > >> > > > Hi folks,
+> > >> > > >
+> > >> > > > I've been toying with the idea of removing
+> > >> > > > drivers/tty/serial/omap-serial.c since that's, to put it bluntly, an
+> > >> > > > ungly copy of 8250 driver.
+> > >> > > >
+> > >> > > > The original concern was wrt suspend/resume but I think it'd be a far
+> > >> > > > better approach to implement runtime PM in 8250 and write a rather small
+> > >> > > > 8250-omap.c glue (much like 8250-acorn.c or 8250-dw.c) just to get the
+> > >> > > > OMAP-specific details out of the way.
+> > >> > > >
+> > >> > > > The question I have is: omap-serial.c calls the serial devnodes ttyO\d,
+> > >> > > > instead of ttyS\d so removing omap-serial.c would have a direct impact
+> > >> > > > in userland. I wonder if it's an acceptable "regression" considering
+> > >> > > > we'd be able to reuse 8250 gaining proper Flow Control support, proper
+> > >> > > > DMA support, years and years of bug-fixes, etc.
+> > >> > >
+> > >> > > Breaking device node names is a contentious issue for serial ports, I
+> > >> > > don't think you can do that :(
+> > >> >
+> > >> > would an upstream udev rule creating a symbolic link from ttyO to ttyS
+> > >> > be enough ?
+> > >> >
+> > >> > I didn't test this yet but I guess this is enough (?)
+> > >> >
+> > >> > KERNEL=="ttyO[0-9]", GROUP="dialout", SYMLINK+="ttyS"
+> > >>
+> > >> or actually it should be to other way around, ttyS would be the real
+> > >> device:
+> > >>
+> > >> KERNEL=="ttyS[0-9]", GROUP="dialout", SYMLINK+="ttyO"
+> > >
+> > > As udev rules don't ship with the kernel, this might be tough to do :(
+> > >
+> > > Might be easier to make the 8250 driver handle different "names" like
+> > > Alan said.
+> 
+> I'll see if I find a way to avoid that or at least see if we find any
+> other way of creating a symlink... In any case, just switching back to
+> 8250, even if just maintaining ttyO name, is already a big benefit.
+> 
+> > On the support side, I'm not looking forward to this for beagle/panda
+> > users.  We've already converted them once from ttySx -> ttyOx back in
+> > 2.6.33/2.6.34? days.  That was an irc/email/u-boot/kernel nightmare...
+> 
+> that's exactly why we're talking about ways to maintain backwards
+> compatibility here. But I'm more interested in finding a way to switch
+> over to ttyS and have a symlink to ttyO, that way a simple debootstrap
+> (or any other ARM distro minimal rootfs) would work out of the box,
+> without any changes, just like in "normal" systems.
 
-Ok, Linux does the same.
+Yeah let's not break things. The symlink solution won't work for kernel
+console output so it needs to be dealt with some other way.
 
->> and
->>
->>    ./noncanonical 0 5 3 2
->>     hel
->
-> Solaris
-> read blocks()
-> OpenBSD
-> read blocks
-
-If you type fast, Linux will complete this read() with 3 bytes.
-
-> Plus my test case where Linux differs:
->
-> ./noncanonical 100 5 3 0
->
-> Linux: read() returns after 3 bytes input
->
-> Solaris: read() returns only after 5 bytes input
-> OpenBSD: read() returns only after 5 bytes input
-
-Ok, thanks for testing.
-
->> on other platforms.
->>
->> With respect to POSIX compliance, it's hard to say. I'm not sure the
->> spec contemplates the degenerate case where max bytes < MIN. And
->
-> Well, given the way the other implementations behave, I think it does
-> contemplate it, because it carefull avoids talking about the number of
-> bytes requested by read() in that case.
-
-I agree that's certainly a valid interpretation.
-I'll go back and see if this is a regression but I doubt it.
-
->> specifically
->> with regard to terminal i/o behavior, POSIX is essentially ex post facto,
->> and is really documenting existing behavior.
->>
->> Other than the degenerate case of max bytes < MIN, is there any other
->> variation between Solaris and Linux in non-canonical mode?
->
-> The only one I've seen is the one I noted. I haven't tested too
-> exhaustively though.
-
-Thanks again. Please feel free to direct mail my way if you find other
-variation.
+It seems that the biggest amount of work is making existing 8250
+support the missing features in a clean way and without breaking
+other platforms. Looks like 8250_dw.c has some pm_runtime_calls so
+obviously it's doable.
 
 Regards,
-Peter Hurley
 
+Tony
