@@ -1,175 +1,72 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: man termios
-Date: Fri, 21 Mar 2014 07:21:27 -0400
-Message-ID: <532C20B7.2070806@hurleysoftware.com>
-References: <532B3691.1070602@hurleysoftware.com> <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
+From: Jon Ringle <jon@ringle.org>
+Subject: Re: [PATCH v2] tty: serial: sc16is7xx
+Date: Fri, 21 Mar 2014 08:42:56 -0400
+Message-ID: <CAMwGMjxeiCNxFbz4v3eQzKL5-pcMHAjX2WiHoX8-uArz-q_tNA@mail.gmail.com>
+References: <1395324333-21221-1-git-send-email-jon@ringle.org>
+	<20140321082609.GA3801@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:41937 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1760185AbaCULVa (ORCPT
+Received: from mail-la0-f41.google.com ([209.85.215.41]:58636 "EHLO
+	mail-la0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760681AbaCUMm6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 07:21:30 -0400
-In-Reply-To: <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
+	Fri, 21 Mar 2014 08:42:58 -0400
+In-Reply-To: <20140321082609.GA3801@xps8300>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: mtk.manpages@gmail.com
-Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, Alexander Shiyan <shc_work@mail.ru>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
 
-On 03/21/2014 06:45 AM, Michael Kerrisk (man-pages) wrote:
->> This is also true of the other non-canonical
->> read()'s with timeout (TIME > 0).
+On Fri, Mar 21, 2014 at 4:26 AM, Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
+> Hi,
 >
-> Here, if I understand you correctly, you mean this case:
-> * TIME > 0
-> * MIN =3D=3D 0
-> * O_NONBLOCK set on the FD
-> * No input available
->
-> You are saying that read() returns 0 in this case? This doesn't appea=
-r
-> to me to be correct (on Linux). How did you verify this?
-
-Apologies, my mistake here.
-
-(aside: O_NONBLOCK can be changed while the reader is blocked, but that=
-'s
-not what I meant originally, and I wouldn't document it there)
-
->> 'man termios' is silent here, but 62.6.2 in LPI implies that O_NONBL=
-OCK will
->> return -1 with errno=3D=3DEAGAIN; it does not.
->
-> I guess you are referring to this text in TLPI:
-
-Yes.
-
-> [[
-> This mode is somewhat similar to setting the O_NONBLOCK flag for the
-> terminal (Section 5.9). However, with O_NONBLOCK, if no bytes are
-> available for reading, then read() returns =E2=80=931 with the error
-> EAGAIN.
-> ]]
->
-> Oops. The text was not meant to imply that. Rather the comparison was
-> intended to be with O_NONBLOCK *in canonical mode*. However, I agree
-> that I could have made that more explicit. (I'll add an erratum to
-> mention canonical mode.)
->
->> This is unspecified by POSIX (11.1.7).
->
-> Yep, I see. XBD 11.1.7 says:
->
-> [[
-> Therefore, if O_NONBLOCK is set, read( ) may return immediately,
-> regardless of the setting of MIN or TIME. Also, if no data is
-> available, read( ) may either return 0, or return -1 with errno set t=
-o
-> [EAGAIN].
-> ]]
->
-> So, it seems to be saying that either behavior is allowed, right?
-
-Exactly.
-
-> And as far as I can see, for the TIME>0 case on Linux, read() returns
-> -1 + EGAIN.
-
-You're right about the TIME>0 case.
-
-> In any case, I've added this text to termios(3):
->
->         POSIX  does  not  specify whether the setting of the O_NONBLO=
-CK
->         file status flag takes precedence over the MIN  and  TIME  se=
-t=E2=80=90
->         tings.  If O_NONBLOCK is set, a read() in noncanonical mode m=
-ay
->         return immediately, regardless of the setting of MIN  or  TIM=
-E.
->         Furthermore, if no data is available, POSIX permits a read() =
-in
->         noncanonical mode to return either 0, or -1 with errno  set  =
-to
->         EAGAIN.
-
-
-Great; I think that will really help clarify the usage wrt O_NONBLOCK.
-
-
->> Secondly, in all 4 of the non-canonical read() modes, the MIN value =
-does not
->> limit the number of bytes which may be returned by the read(). Only =
-the
->> 'count' parameter to read() has this effect.
+> On Thu, Mar 20, 2014 at 10:05:33AM -0400, jon@ringle.org wrote:
+>> From: Jon Ringle <jringle@gridpoint.com>
 >>
->> LPI has this to say (man-pages reads similar):
->>
->> "MIN > 0, TIME =3D=3D 0 (blocking read)
->>
->> The read() blocks (possibly indefinitely) until the lesser of the nu=
-mber of
->> bytes requested or MIN bytes are available, and returns the lesser o=
-f the
->> two values."
->>
->> However, read() may unblock when MIN bytes are available but return =
-up to
->> the 'count' parameter if more input arrives in between waking and co=
-pying
->> into the user buffer.
+>> The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
+>> high performance UART. The SC16IS7xx's internal register set is
+>> backward-compatible with the widely used and widely popular 16C450.
 >
-> Yup, you are obviously correct. It would make no sense for read() to
-> return the lesser of [MIN, count]. I got myself into a small thinko a=
-s
-> I wrote that text.
+> So couldn't this be just a probe driver for 8250?
+
+8250 UART has a MMIO-access, but this driver communicate through I2C
+bus (and potentially SPI bus, if anyone cares to add that support,
+which should be fairly easy to do). This is completely different
+handling.
+
+To achieve acceptable throughput, it is necessary to use threaded irq
+and also bulk i2c transfers for RX and TX using
+regmap_raw_{read,write}() to optimize the use of the i2c bus.
+
+This is not a good fit for 8250.
+
 >
-> I've applied this patch to the termios.3 page:
+>> +/* SC16IS7XX register definitions */
+>> +#define SC16IS7XX_RHR_REG            (0x00) /* RX FIFO */
+>> +#define SC16IS7XX_THR_REG            (0x00) /* TX FIFO */
+>> +#define SC16IS7XX_IER_REG            (0x01) /* Interrupt enable */
+>> +#define SC16IS7XX_IIR_REG            (0x02) /* Interrupt Identification */
+>> +#define SC16IS7XX_FCR_REG            (0x02) /* FIFO control */
+>> +#define SC16IS7XX_LCR_REG            (0x03) /* Line Control */
+>> +#define SC16IS7XX_MCR_REG            (0x04) /* Modem Control */
+>> +#define SC16IS7XX_LSR_REG            (0x05) /* Line Status */
+>> +#define SC16IS7XX_MSR_REG            (0x06) /* Modem Status */
+>> +#define SC16IS7XX_SPR_REG            (0x07) /* Scratch Pad */
 >
-> [[
-> diff --git a/man3/termios.3 b/man3/termios.3
-> index b069ec0..63aba07 100644
-> --- a/man3/termios.3
-> +++ b/man3/termios.3
-> @@ -728,8 +728,7 @@ completes; there are four distinct cases:
->   MIN =3D=3D 0; TIME =3D=3D 0:
->   If data is available,
->   .BR read (2)
-> -returns immediately, with the lesser of the number of bytes
-> -available, or the number of bytes requested.
-> +returns immediately, returning up to the number of bytes requested.
->   If no data is available,
->   .BR read (2)
->   returns 0.
-> ]]
->
-> I'll write a similar erratum for TLPI.
+> At least there should not be any need to redefine those register or
+> their bits. Just include serial_reg.h.
 
-Thanks.
+I started off doing that, but got frustrated enough by
+incompatibilities between the register bit definitions that I
+abandoned that and decided to make the driver self contained regarding
+the register and bit definitions. For example:
 
-> [...]
->
->> Finally, if the 'count' parameter is less than MIN, read() may retur=
-n before
->> MIN bytes have been received, if 'count' bytes have been received.
->
-> Yes. But it's not clear to me here: do you mean that something in the
-> man page (or in TLPI) needs fixing?
+serial_reg.h defines:
+#define UART_MCR_TCRTLR        0x40 /* Access TCR/TLR (TI16C752, EFR[4]=1) */
 
-Well, what I mean here is that read() may also _not_ return until MIN b=
-ytes have
-been received, even if 'count' bytes have been received.
+but this is wrong for sc16is7xx. I need:
+#define SC16IS7XX_MCR_TCRTLR_BIT    (1 << 2) /* TCR/TLR register enable */
 
-Regards,
-Peter Hurley
-
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Jon
