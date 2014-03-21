@@ -1,41 +1,63 @@
-From: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Subject: Re: [PATCH v2] tty: serial: sc16is7xx
-Date: Fri, 21 Mar 2014 13:22:37 +0000
-Message-ID: <20140321132237.7aebefcf@alan.etchedpixels.co.uk>
-References: <1395324333-21221-1-git-send-email-jon@ringle.org>
-	<20140321082609.GA3801@xps8300>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
+Date: Fri, 21 Mar 2014 14:23:49 +0100
+Message-ID: <CAMuHMdUBiUzpvTzkhaguOQoDc8XJH7NvnNe2Z+jL6UeEitpJPg@mail.gmail.com>
+References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
+	<532C394A.3050408@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140321082609.GA3801@xps8300>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, shc_work-JGs/UdohzUI@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <532C394A.3050408@hurleysoftware.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 21 Mar 2014 10:26:09 +0200
-Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+Hi Peter,
 
-> Hi,
->=20
-> On Thu, Mar 20, 2014 at 10:05:33AM -0400, jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org wrote:
-> > From: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
-> >=20
-> > The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
-> > high performance UART. The SC16IS7xx=E2=80=99s internal register se=
-t is
-> > backward-compatible with the widely used and widely popular 16C450.
->=20
-> So couldn't this be just a probe driver for 8250?
+On Fri, Mar 21, 2014 at 2:06 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> @@ -2681,10 +2683,12 @@ int uart_remove_one_port(struct uart_driver *drv,
+>> struct uart_port *uport)
+>>         }
+>>
+>>         /*
+>> -        * If the port is used as a console, unregister it
+>> +        * If the port is used as a console, unregister it, and power it
+>> down
+>>          */
+>> -       if (uart_console(uport))
+>> +       if (uart_console(uport)) {
+>>                 unregister_console(uport->cons);
+>> +               uart_change_pm(state, UART_PM_STATE_OFF);
+>
+> Won't this power off the port while tty consoles may still be open?
 
-That was my first thought but if you look at 8250 and its locking
-assumptions it is a very poor fit. Better for now it is separate I thin=
-k.
+I didn't see that actually happening.
 
-Alan
+> I think the right thing here is to unregister_console then set uport->cons =
+> NULL
+>
+> [uport->cons is properly reassigned when/if a port is re-added via
+> uart_add_one_port()).]
+
+But indeed, for concistency/symmetry uport->state and uport->cons
+should be resend, but that's something separate.
+
+> Then, uart_close() will power off the port when all ttys using the port have
+> been closed.
+
+uart_close() won't get that far, so uart_change_pm() won't be called.
+
+See also https://lkml.org/lkml/2014/3/10/651, and my workaround for the
+crash https://lkml.org/lkml/2014/3/17/231.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
