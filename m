@@ -1,172 +1,173 @@
-From: "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: man termios
-Date: Fri, 21 Mar 2014 11:45:28 +0100
-Message-ID: <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
-References: <532B3691.1070602@hurleysoftware.com>
-Reply-To: mtk.manpages@gmail.com
+Date: Fri, 21 Mar 2014 07:21:27 -0400
+Message-ID: <532C20B7.2070806@hurleysoftware.com>
+References: <532B3691.1070602@hurleysoftware.com> <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pb0-f42.google.com ([209.85.160.42]:60125 "EHLO
-	mail-pb0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933349AbaCUKpt convert rfc822-to-8bit (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:41937 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1760185AbaCULVa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 06:45:49 -0400
-In-Reply-To: <532B3691.1070602@hurleysoftware.com>
+	Fri, 21 Mar 2014 07:21:30 -0400
+In-Reply-To: <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
+To: mtk.manpages@gmail.com
 Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
 
-Hello Peter,
+On 03/21/2014 06:45 AM, Michael Kerrisk (man-pages) wrote:
+>> This is also true of the other non-canonical
+>> read()'s with timeout (TIME > 0).
+>
+> Here, if I understand you correctly, you mean this case:
+> * TIME > 0
+> * MIN =3D=3D 0
+> * O_NONBLOCK set on the FD
+> * No input available
+>
+> You are saying that read() returns 0 in this case? This doesn't appea=
+r
+> to me to be correct (on Linux). How did you verify this?
 
-On Thu, Mar 20, 2014 at 7:42 PM, Peter Hurley <peter@hurleysoftware.com=
-> wrote:
-> Hi Michael,
+Apologies, my mistake here.
+
+(aside: O_NONBLOCK can be changed while the reader is blocked, but that=
+'s
+not what I meant originally, and I wouldn't document it there)
+
+>> 'man termios' is silent here, but 62.6.2 in LPI implies that O_NONBL=
+OCK will
+>> return -1 with errno=3D=3DEAGAIN; it does not.
 >
-> Some issues have arisen [1] regarding a discrepancy between the Linux
-> behavior of
-> read() on a tty and 'man termios' and 'Linux Programming Interface', =
-Chapter
-> 62.
->
-> Firstly, if MIN=3D=3D0 and TIME=3D=3D0 and no input is available, rea=
-d() returns 0,
-> even if O_NONBLOCK is set.
+> I guess you are referring to this text in TLPI:
 
 Yes.
 
-> This is also true of the other non-canonical
-> read()'s with
-> timeout (TIME > 0).
-
-Here, if I understand you correctly, you mean this case:
-* TIME > 0
-* MIN =3D=3D 0
-* O_NONBLOCK set on the FD
-* No input available
-
-You are saying that read() returns 0 in this case? This doesn't appear
-to me to be correct (on Linux). How did you verify this?
-
-> 'man termios' is silent here, but 62.6.2 in LPI implies that O_NONBLO=
-CK will
-> return
-> -1 with errno=3D=3DEAGAIN; it does not.
-
-I guess you are referring to this text in TLPI:
-
-[[
-This mode is somewhat similar to setting the O_NONBLOCK flag for the
-terminal (Section 5.9). However, with O_NONBLOCK, if no bytes are
-available for reading, then read() returns =E2=80=931 with the error
-EAGAIN.
-]]
-
-Oops. The text was not meant to imply that. Rather the comparison was
-intended to be with O_NONBLOCK *in canonical mode*. However, I agree
-that I could have made that more explicit. (I'll add an erratum to
-mention canonical mode.)
-
-> This is unspecified by POSIX (11.1.7).
-
-Yep, I see. XBD 11.1.7 says:
-
-[[
-Therefore, if O_NONBLOCK is set, read( ) may return immediately,
-regardless of the setting of MIN or TIME. Also, if no data is
-available, read( ) may either return 0, or return -1 with errno set to
-[EAGAIN].
-]]
-
-So, it seems to be saying that either behavior is allowed, right? And
-as far as I can see, for the TIME>0 case on Linux, read() returns -1 +
-EGAIN.
-
-In any case, I've added this text to termios(3):
-
-       POSIX  does  not  specify whether the setting of the O_NONBLOCK
-       file status flag takes precedence over the MIN  and  TIME  set=E2=
-=80=90
-       tings.  If O_NONBLOCK is set, a read() in noncanonical mode may
-       return immediately, regardless of the setting of MIN  or  TIME.
-       Furthermore, if no data is available, POSIX permits a read() in
-       noncanonical mode to return either 0, or -1 with errno  set  to
-       EAGAIN.
-
-> Secondly, in all 4 of the non-canonical read() modes, the MIN value d=
-oes not
-> limit
-> the number of bytes which may be returned by the read(). Only the 'co=
-unt'
-> parameter
-> to read() has this effect.
+> [[
+> This mode is somewhat similar to setting the O_NONBLOCK flag for the
+> terminal (Section 5.9). However, with O_NONBLOCK, if no bytes are
+> available for reading, then read() returns =E2=80=931 with the error
+> EAGAIN.
+> ]]
 >
-> LPI has this to say (man-pages reads similar):
+> Oops. The text was not meant to imply that. Rather the comparison was
+> intended to be with O_NONBLOCK *in canonical mode*. However, I agree
+> that I could have made that more explicit. (I'll add an erratum to
+> mention canonical mode.)
 >
-> "MIN > 0, TIME =3D=3D 0 (blocking read)
+>> This is unspecified by POSIX (11.1.7).
 >
-> The read() blocks (possibly indefinitely) until the lesser of the num=
-ber of
-> bytes
-> requested or MIN bytes are available, and returns the lesser of the t=
-wo
-> values."
+> Yep, I see. XBD 11.1.7 says:
 >
-> However, read() may unblock when MIN bytes are available but return u=
-p to
-> the
-> 'count' parameter if more input arrives in between waking and copying=
- into
-> the
-> user buffer.
+> [[
+> Therefore, if O_NONBLOCK is set, read( ) may return immediately,
+> regardless of the setting of MIN or TIME. Also, if no data is
+> available, read( ) may either return 0, or return -1 with errno set t=
+o
+> [EAGAIN].
+> ]]
+>
+> So, it seems to be saying that either behavior is allowed, right?
 
-Yup, you are obviously correct. It would make no sense for read() to
-return the lesser of [MIN, count]. I got myself into a small thinko as
-I wrote that text.
+Exactly.
 
-I've applied this patch to the termios.3 page:
+> And as far as I can see, for the TIME>0 case on Linux, read() returns
+> -1 + EGAIN.
 
-[[
-diff --git a/man3/termios.3 b/man3/termios.3
-index b069ec0..63aba07 100644
---- a/man3/termios.3
-+++ b/man3/termios.3
-@@ -728,8 +728,7 @@ completes; there are four distinct cases:
- MIN =3D=3D 0; TIME =3D=3D 0:
- If data is available,
- .BR read (2)
--returns immediately, with the lesser of the number of bytes
--available, or the number of bytes requested.
-+returns immediately, returning up to the number of bytes requested.
- If no data is available,
- .BR read (2)
- returns 0.
-]]
+You're right about the TIME>0 case.
 
-I'll write a similar erratum for TLPI.
+> In any case, I've added this text to termios(3):
+>
+>         POSIX  does  not  specify whether the setting of the O_NONBLO=
+CK
+>         file status flag takes precedence over the MIN  and  TIME  se=
+t=E2=80=90
+>         tings.  If O_NONBLOCK is set, a read() in noncanonical mode m=
+ay
+>         return immediately, regardless of the setting of MIN  or  TIM=
+E.
+>         Furthermore, if no data is available, POSIX permits a read() =
+in
+>         noncanonical mode to return either 0, or -1 with errno  set  =
+to
+>         EAGAIN.
 
-[...]
 
-> Finally, if the 'count' parameter is less than MIN, read() may return=
- before
-> MIN
-> bytes have been received, if 'count' bytes have been received.
+Great; I think that will really help clarify the usage wrt O_NONBLOCK.
 
-Yes. But it's not clear to me here: do you mean that something in the
-man page (or in TLPI) needs fixing?
 
-Thanks for the report, Peter.
+>> Secondly, in all 4 of the non-canonical read() modes, the MIN value =
+does not
+>> limit the number of bytes which may be returned by the read(). Only =
+the
+>> 'count' parameter to read() has this effect.
+>>
+>> LPI has this to say (man-pages reads similar):
+>>
+>> "MIN > 0, TIME =3D=3D 0 (blocking read)
+>>
+>> The read() blocks (possibly indefinitely) until the lesser of the nu=
+mber of
+>> bytes requested or MIN bytes are available, and returns the lesser o=
+f the
+>> two values."
+>>
+>> However, read() may unblock when MIN bytes are available but return =
+up to
+>> the 'count' parameter if more input arrives in between waking and co=
+pying
+>> into the user buffer.
+>
+> Yup, you are obviously correct. It would make no sense for read() to
+> return the lesser of [MIN, count]. I got myself into a small thinko a=
+s
+> I wrote that text.
+>
+> I've applied this patch to the termios.3 page:
+>
+> [[
+> diff --git a/man3/termios.3 b/man3/termios.3
+> index b069ec0..63aba07 100644
+> --- a/man3/termios.3
+> +++ b/man3/termios.3
+> @@ -728,8 +728,7 @@ completes; there are four distinct cases:
+>   MIN =3D=3D 0; TIME =3D=3D 0:
+>   If data is available,
+>   .BR read (2)
+> -returns immediately, with the lesser of the number of bytes
+> -available, or the number of bytes requested.
+> +returns immediately, returning up to the number of bytes requested.
+>   If no data is available,
+>   .BR read (2)
+>   returns 0.
+> ]]
+>
+> I'll write a similar erratum for TLPI.
 
-Cheers,
+Thanks.
 
-Michael
+> [...]
+>
+>> Finally, if the 'count' parameter is less than MIN, read() may retur=
+n before
+>> MIN bytes have been received, if 'count' bytes have been received.
+>
+> Yes. But it's not clear to me here: do you mean that something in the
+> man page (or in TLPI) needs fixing?
 
---=20
-Michael Kerrisk
-Linux man-pages maintainer; http://www.kernel.org/doc/man-pages/
-Linux/UNIX System Programming Training: http://man7.org/training/
+Well, what I mean here is that read() may also _not_ return until MIN b=
+ytes have
+been received, even if 'count' bytes have been received.
+
+Regards,
+Peter Hurley
+
+
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-serial"=
  in
