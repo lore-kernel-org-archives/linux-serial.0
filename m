@@ -1,91 +1,162 @@
-From: "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
-Subject: Re: man termios
-Date: Fri, 21 Mar 2014 19:45:23 +0100
-Message-ID: <CAKgNAkiwLaHM1xzdO59_PB9YR=6QJfAeE_92Wc2kqTbPuL9ahQ@mail.gmail.com>
-References: <532B3691.1070602@hurleysoftware.com> <CAKgNAkisMs4A15B7ts+bAkUY5bcoTTGdE81ur10K3hZoFLxbxw@mail.gmail.com>
- <532C20B7.2070806@hurleysoftware.com> <532C3B6F.2000300@gmail.com>
- <532C46BD.1000208@hurleysoftware.com> <CAKgNAkhg4-QLwQaVxve6KXR=yy0XQik_4+iz5XytE1d_6NjQaw@mail.gmail.com>
- <532C51F3.8030205@hurleysoftware.com> <CAKgNAkhRu7yZSn+uB1eTcL0gPGPcGsd5Z36pXgfdKOLBcdOoBw@mail.gmail.com>
- <532C64A1.6090807@hurleysoftware.com>
-Reply-To: mtk.manpages@gmail.com
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 2/2] [RFC] serial_core: Avoid NULL pointer dereference
+ in uart_close()
+Date: Fri, 21 Mar 2014 16:29:54 -0400
+Message-ID: <532CA142.8060705@hurleysoftware.com>
+References: <1395061859-15295-1-git-send-email-geert@linux-m68k.org> <1395061859-15295-2-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:42118 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750733AbaCUSpt (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:41323 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750799AbaCUU37 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 14:45:49 -0400
-In-Reply-To: <532C64A1.6090807@hurleysoftware.com>
+	Fri, 21 Mar 2014 16:29:59 -0400
+In-Reply-To: <1395061859-15295-2-git-send-email-geert@linux-m68k.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux kernel <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Ivan <athlon_@mail.ru>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-Just double checked things....
-
-On Fri, Mar 21, 2014 at 5:11 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-
-[...]
-
->>> and
->>>
->>>    ./noncanonical 0 5 3 2
->>>     hel
->>
->>
->> Solaris
->> read blocks()
->> OpenBSD
->> read blocks
+On 03/17/2014 09:10 AM, Geert Uytterhoeven wrote:
+> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 >
+> When unbinding a serial driver that's being used as a serial console,
+> the kernel may crash with a NULL pointer dereference in a uart_*() function
+> called from uart_close () (e.g. uart_flush_buffer() or
+> uart_chars_in_buffer()).
 >
-> If you type fast, Linux will complete this read() with 3 bytes.
-
-Sorry -- I got this one wrong. I was not typing fast enough, Solaris
-and OpenBSD are the same as Linux.
-
-[...]
-
->>> on other platforms.
->>>
->>> With respect to POSIX compliance, it's hard to say. I'm not sure the
->>> spec contemplates the degenerate case where max bytes < MIN. And
->>
->>
->> Well, given the way the other implementations behave, I think it does
->> contemplate it, because it carefull avoids talking about the number of
->> bytes requested by read() in that case.
+> To fix this, let uart_close() check for port->count == 0. If this is the
+> case, bail out early. Else tty_port_close_start() will make the port
+> counts inconsistent, printing out warnings like
 >
+>      tty_port_close_start: tty->count = 1 port count = 0.
 >
-> I agree that's certainly a valid interpretation.
-> I'll go back and see if this is a regression but I doubt it.
-
-I doubt it too. I suspect it's been like that forever, but it's a
-corner case that no-one cares about.
-
->>> specifically
->>> with regard to terminal i/o behavior, POSIX is essentially ex post facto,
->>> and is really documenting existing behavior.
->>>
->>> Other than the degenerate case of max bytes < MIN, is there any other
->>> variation between Solaris and Linux in non-canonical mode?
->>
->>
->> The only one I've seen is the one I noted. I haven't tested too
->> exhaustively though.
+> and
 >
+>      tty_port_close_start: count = -1
+
+As you noted in the patch comments below, the tty core always closes
+a failed open.
+
+So the reason for the port->count mismatch is because tty_port_close_start()
+only handles the tty hangup condition -- all other failed opens are assumed
+to carry a port->count.
+
+A similar mismatch will occur if the mutex_lock in uart_open() is
+interrupted.
+
+This means that the port->count mismatch can occur even if port->count != 0;
+so the bug here is that uart_open() and uart_close() don't agree on
+who does what cleanup under what error conditions.
+
+So with respect to the port count mismatches, the conditions need careful
+auditing and fixing, separate from the tty console teardown problem.
+
+> and once uport == NULL, it will also crash.
+
+Ok, but so will basically every serial core function after
+uart_remove_one_port() assigns state->uart_port = NULL
+
+IOW, uart_close() is not the only serial core function that could be
+using state->uart_port after uart_remove_one_port() finishes.
+
+> Also fix the related crash in pr_debug() by checking for a non-NULL uport
+> first.
+
+So my point is that checking for NULL state->uart_port is simply not the fix,
+here or anywhere else.
+
+AFAICT, either reference-counting the uart_port structure or RCU
+are the only viable solutions to safe ll driver uart_port removal.
+
+Regards,
+Peter Hurley
+
+> Detailed description:
 >
-> Thanks again. Please feel free to direct mail my way if you find other
-> variation.
+> On driver unbind, uart_remove_one_port() is called. Basically it;
+>    - marks the port dead,
+>    - calls tty_vhangup(),
+>    - sets state->uart_port = NULL.
+>
+> What will happen depends on whether the port is just in use by e.g. getty,
+> or was also opened as a console.
+>
+> A. If the tty was not opened as a console:
+>
+>    - tty_vhangup() will (in __tty_hangup()):
+>        - mark all file descriptors for this tty hung up by pointing them to
+> 	hung_up_tty_fops,
+>        - call uart_hangup(), which sets port->count to 0.
+>
+>    - A subsequent uart_open() (this may be through /dev/ttyS*, or through
+>      /dev/console if this is a serial console) will fail with -ENXIO as the
+>      port was marked dead,
+>    - uart_close() after the failed uart_open() will return early, as
+>      tty_hung_up_p() (called from tty_port_close_start()) will notice it was
+>      hung up.
+>
+> B. If the tty was also opened as a console:
+>
+>    - tty_vhangup() will (in __tty_hangup()):
+>        - mark non-console file descriptors for this tty hung up by pointing
+> 	them to hung_up_tty_fops,
+>        - NOT call uart_hangup(), but instead call uart_close() for every
+>          non-console file descriptor, so port->count will still have a
+> 	non-zero value afterwards.
+>
+>    - A subsequent uart_open() will fail with -ENXIO as the port was
+>      marked dead,
+>    - uart_close() after the failed uart_open() starts to misbehave:
+>        - tty_hung_up_p() will not notice it was hung up,
+>        - As port->count is non-zero, tty_port_close_start() will decrease
+>          port->count, making the tty and port counts inconsistent. Later,
+> 	warnings like these will be printed:
+>
+> 	    tty_port_close_start: tty->count = 1 port count = 0.
+>
+> 	and
+> 	    tty_port_close_start: count = -1
+>
+>        - If all of this happens after state->uart_port was set to zero, a
+>          NULL pointer dereference will happen.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+> ---
+> This still doesn't fix everything, but avoids the NULL pointer dereference.
+>
+> In case B, port->count is still non-zero after tty_vhangup().  Hence when
+> uart_close() is called after a failed uart_open(), it will decrement
+> port->count, and, on reaching zero, it will close the port for real (incl.
+> calling uart_shutdown()).  This doesn't seem to cause any harm, though.
+> Besides, if uart_close() wouldn't do that, who else would shut down the
+> port?
+>
+> As tty_open() always calls tty_release() on failure of ->open(),
+> ->close() is always called.
+> How can uart_close() after a failed uart_open() know it should not do
+> anything? Set a (new) flag in its port structure?
+> ---
+>   drivers/tty/serial/serial_core.c |    4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 21084f0b8ea4..56dda84f82a5 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1319,9 +1319,9 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+>   	uport = state->uart_port;
+>   	port = &state->port;
+>
+> -	pr_debug("uart_close(%d) called\n", uport->line);
+> +	pr_debug("uart_close(%d) called\n", uport ? uport->line : -1);
+>
+> -	if (tty_port_close_start(port, tty, filp) == 0)
+> +	if (!port->count || tty_port_close_start(port, tty, filp) == 0)
+>   		return;
+>
+>   	/*
+>
 
-Okay.
-
-Cheers,
-
-Michael
-
--- 
-Michael Kerrisk
-Linux man-pages maintainer; http://www.kernel.org/doc/man-pages/
-Linux/UNIX System Programming Training: http://man7.org/training/
