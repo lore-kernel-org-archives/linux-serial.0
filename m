@@ -1,72 +1,90 @@
-From: Jon Ringle <jon@ringle.org>
-Subject: Re: [PATCH v2] tty: serial: sc16is7xx
-Date: Fri, 21 Mar 2014 08:42:56 -0400
-Message-ID: <CAMwGMjxeiCNxFbz4v3eQzKL5-pcMHAjX2WiHoX8-uArz-q_tNA@mail.gmail.com>
-References: <1395324333-21221-1-git-send-email-jon@ringle.org>
-	<20140321082609.GA3801@xps8300>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
+Date: Fri, 21 Mar 2014 09:06:18 -0400
+Message-ID: <532C394A.3050408@hurleysoftware.com>
+References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f41.google.com ([209.85.215.41]:58636 "EHLO
-	mail-la0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760681AbaCUMm6 (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:39138 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1760098AbaCUNGX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 08:42:58 -0400
-In-Reply-To: <20140321082609.GA3801@xps8300>
+	Fri, 21 Mar 2014 09:06:23 -0400
+In-Reply-To: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, Alexander Shiyan <shc_work@mail.ru>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
-On Fri, Mar 21, 2014 at 4:26 AM, Heikki Krogerus
-<heikki.krogerus@linux.intel.com> wrote:
-> Hi,
+On 03/21/2014 05:08 AM, Geert Uytterhoeven wrote:
+> From: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 >
-> On Thu, Mar 20, 2014 at 10:05:33AM -0400, jon@ringle.org wrote:
->> From: Jon Ringle <jringle@gridpoint.com>
->>
->> The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
->> high performance UART. The SC16IS7xx's internal register set is
->> backward-compatible with the widely used and widely popular 16C450.
+> When a serial port is closed, uart_close() takes care of shutting down the
+> hardware, and powering it down.
 >
-> So couldn't this be just a probe driver for 8250?
-
-8250 UART has a MMIO-access, but this driver communicate through I2C
-bus (and potentially SPI bus, if anyone cares to add that support,
-which should be fairly easy to do). This is completely different
-handling.
-
-To achieve acceptable throughput, it is necessary to use threaded irq
-and also bulk i2c transfers for RX and TX using
-regmap_raw_{read,write}() to optimize the use of the i2c bus.
-
-This is not a good fit for 8250.
-
+> When a serial port is unbound while in use, uart_close() bypasses all of
+> this, as this is supposed to be done through uart_hangup() (invoked via
+> tty_vhangup() in uart_remove_one_port()).
 >
->> +/* SC16IS7XX register definitions */
->> +#define SC16IS7XX_RHR_REG            (0x00) /* RX FIFO */
->> +#define SC16IS7XX_THR_REG            (0x00) /* TX FIFO */
->> +#define SC16IS7XX_IER_REG            (0x01) /* Interrupt enable */
->> +#define SC16IS7XX_IIR_REG            (0x02) /* Interrupt Identification */
->> +#define SC16IS7XX_FCR_REG            (0x02) /* FIFO control */
->> +#define SC16IS7XX_LCR_REG            (0x03) /* Line Control */
->> +#define SC16IS7XX_MCR_REG            (0x04) /* Modem Control */
->> +#define SC16IS7XX_LSR_REG            (0x05) /* Line Status */
->> +#define SC16IS7XX_MSR_REG            (0x06) /* Modem Status */
->> +#define SC16IS7XX_SPR_REG            (0x07) /* Scratch Pad */
+> However, uart_hangup() does not set the hardware's power state, leaving it
+> powered up.  This may also lead to unbounded nesting counts in clock and
+> power management, depending on their internal implementation.
 >
-> At least there should not be any need to redefine those register or
-> their bits. Just include serial_reg.h.
+> Make sure to power down the port in uart_hangup(), except when the port is
+> used as a serial console. For serial consoles, this must be postponed until
+> after their deregistration in uart_remove_one_port() (symmetry with
+> registration in uart_configure_port(), invoked from uart_add_one_port()).
+>
+> After this, the module clock used by the sh-sci driver is disabled on
+> unbind while the serial port is in use.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+> ---
+>   drivers/tty/serial/serial_core.c |    8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 2cf5649a6dc0..56dda84f82a5 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1452,6 +1452,8 @@ static void uart_hangup(struct tty_struct *tty)
+>   		clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
+>   		spin_unlock_irqrestore(&port->lock, flags);
+>   		tty_port_tty_set(port, NULL);
+> +		if (!uart_console(state->uart_port))
+> +			uart_change_pm(state, UART_PM_STATE_OFF);
 
-I started off doing that, but got frustrated enough by
-incompatibilities between the register bit definitions that I
-abandoned that and decided to make the driver self contained regarding
-the register and bit definitions. For example:
+Ok.
 
-serial_reg.h defines:
-#define UART_MCR_TCRTLR        0x40 /* Access TCR/TLR (TI16C752, EFR[4]=1) */
+>   		wake_up_interruptible(&port->open_wait);
+>   		wake_up_interruptible(&port->delta_msr_wait);
+>   	}
+> @@ -2681,10 +2683,12 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>   	}
+>
+>   	/*
+> -	 * If the port is used as a console, unregister it
+> +	 * If the port is used as a console, unregister it, and power it down
+>   	 */
+> -	if (uart_console(uport))
+> +	if (uart_console(uport)) {
+>   		unregister_console(uport->cons);
+> +		uart_change_pm(state, UART_PM_STATE_OFF);
 
-but this is wrong for sc16is7xx. I need:
-#define SC16IS7XX_MCR_TCRTLR_BIT    (1 << 2) /* TCR/TLR register enable */
+Won't this power off the port while tty consoles may still be open?
+I think the right thing here is to unregister_console then set uport->cons = NULL
 
-Jon
+[uport->cons is properly reassigned when/if a port is re-added via
+uart_add_one_port()).]
+
+Then, uart_close() will power off the port when all ttys using the port have
+been closed.
+
+> +	}
+>
+>   	/*
+>   	 * Free the port IO and memory resources, if any.
+>
+
