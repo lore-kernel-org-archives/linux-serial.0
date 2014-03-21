@@ -1,7 +1,7 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH 2/8] arm64: add FIXMAP_PAGE_NOCACHE definition
-Date: Fri, 21 Mar 2014 16:08:42 -0500
-Message-ID: <1395436128-11244-3-git-send-email-robherring2@gmail.com>
+Subject: [PATCH 3/8] arm64: enable FIX_EARLYCON_MEM kconfig
+Date: Fri, 21 Mar 2014 16:08:43 -0500
+Message-ID: <1395436128-11244-4-git-send-email-robherring2@gmail.com>
 References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
@@ -12,29 +12,29 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Rob Herring <robh@kernel.org>
 
-Similar to ioremap and ioremap_nocache, we want the same definition for
-both using PROT_DEVICE_nGnRE.
+In order to support earlycon on arm64, we need to enable earlycon fixmap
+support.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will.deacon@arm.com>
 ---
- arch/arm64/include/asm/fixmap.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/Kconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/include/asm/fixmap.h b/arch/arm64/include/asm/fixmap.h
-index 5f7bfe6..68eab3c 100644
---- a/arch/arm64/include/asm/fixmap.h
-+++ b/arch/arm64/include/asm/fixmap.h
-@@ -54,7 +54,8 @@ enum fixed_addresses {
- #define FIXADDR_SIZE	(__end_of_permanent_fixed_addresses << PAGE_SHIFT)
- #define FIXADDR_START	(FIXADDR_TOP - FIXADDR_SIZE)
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index e2424f9..a839444 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -112,6 +112,9 @@ config IOMMU_HELPER
+ config KERNEL_MODE_NEON
+ 	def_bool y
  
--#define FIXMAP_PAGE_IO     __pgprot(PROT_DEVICE_nGnRE)
-+#define FIXMAP_PAGE_IO		__pgprot(PROT_DEVICE_nGnRE)
-+#define FIXMAP_PAGE_NOCACHE	__pgprot(PROT_DEVICE_nGnRE)
++config FIX_EARLYCON_MEM
++	def_bool y
++
+ source "init/Kconfig"
  
- extern void __early_set_fixmap(enum fixed_addresses idx,
- 			       phys_addr_t phys, pgprot_t flags);
+ source "kernel/Kconfig.freezer"
 -- 
 1.8.3.2
