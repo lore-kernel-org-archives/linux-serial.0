@@ -1,7 +1,7 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH 8/8] arm64: remove arch specific earlyprintk
-Date: Fri, 21 Mar 2014 16:08:48 -0500
-Message-ID: <1395436128-11244-9-git-send-email-robherring2@gmail.com>
+Subject: [PATCH 6/8] tty/serial: pl011: add generic earlycon support
+Date: Fri, 21 Mar 2014 16:08:46 -0500
+Message-ID: <1395436128-11244-7-git-send-email-robherring2@gmail.com>
 References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
@@ -12,214 +12,82 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Rob Herring <robh@kernel.org>
 
-Now that we have equivalent earlycon support, arm64's earlyprintk code
-can be removed.
+Add earlycon support for the pl011 serial port. This allows enabling
+the pl011 for console when early_params are processed. This is based
+on the arm64 earlyprintk support and is intended to replace it.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
 ---
- arch/arm64/Kconfig.debug         |   9 ---
- arch/arm64/kernel/Makefile       |   1 -
- arch/arm64/kernel/early_printk.c | 158 ---------------------------------------
- 3 files changed, 168 deletions(-)
- delete mode 100644 arch/arm64/kernel/early_printk.c
+ Documentation/kernel-parameters.txt |  5 +++--
+ drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
+ 2 files changed, 32 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/Kconfig.debug b/arch/arm64/Kconfig.debug
-index 835c5597..7d7fb6f 100644
---- a/arch/arm64/Kconfig.debug
-+++ b/arch/arm64/Kconfig.debug
-@@ -6,15 +6,6 @@ config FRAME_POINTER
- 	bool
- 	default y
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 5ce8b7a..81bdd52 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -887,8 +887,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 		uart[8250],io,<addr>[,options]
+ 		uart[8250],mmio,<addr>[,options]
+ 		uart[8250],mmio32,<addr>[,options]
+-			Start an early, polled-mode console on the 8250/16550
+-			UART at the specified I/O port or MMIO address.
++		pl011,<addr>
++			Start an early, polled-mode console on a serial port
++			at the specified I/O port or MMIO address. 8250
+ 			MMIO inter-register address stride is either 8-bit
+ 			(mmio) or 32-bit (mmio32).
+ 			The options are the same as for ttyS, above.
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d4eda24..4227c0a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -303,7 +303,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
  
--config EARLY_PRINTK
--	bool "Early printk support"
--	default y
--	help
--	  Say Y here if you want to have an early console using the
--	  earlyprintk=<name>[,<addr>][,<options>] kernel parameter. It
--	  is assumed that the early console device has been initialised
--	  by the boot loader prior to starting the Linux kernel.
--
- config PID_IN_CONTEXTIDR
- 	bool "Write the current PID to the CONTEXTIDR register"
- 	help
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index 7d811d9..7a6fce5 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -18,7 +18,6 @@ arm64-obj-$(CONFIG_SMP)			+= smp.o smp_spin_table.o topology.o
- arm64-obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o
- arm64-obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o
- arm64-obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
--arm64-obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
- arm64-obj-$(CONFIG_ARM64_CPU_SUSPEND)	+= sleep.o suspend.o
- arm64-obj-$(CONFIG_JUMP_LABEL)		+= jump_label.o
- arm64-obj-$(CONFIG_KGDB)		+= kgdb.o
-diff --git a/arch/arm64/kernel/early_printk.c b/arch/arm64/kernel/early_printk.c
-deleted file mode 100644
-index ffbbdde..0000000
---- a/arch/arm64/kernel/early_printk.c
-+++ /dev/null
-@@ -1,158 +0,0 @@
--/*
-- * Earlyprintk support.
-- *
-- * Copyright (C) 2012 ARM Ltd.
-- * Author: Catalin Marinas <catalin.marinas@arm.com>
-- *
-- * This program is free software: you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-- */
--#include <linux/kernel.h>
--#include <linux/console.h>
--#include <linux/init.h>
--#include <linux/string.h>
--#include <linux/mm.h>
--#include <linux/io.h>
--
--#include <linux/amba/serial.h>
--#include <linux/serial_reg.h>
--
--#include <asm/fixmap.h>
--
--static void __iomem *early_base;
--static void (*printch)(char ch);
--
--/*
-- * PL011 single character TX.
-- */
--static void pl011_printch(char ch)
--{
--	while (readl_relaxed(early_base + UART01x_FR) & UART01x_FR_TXFF)
--		;
--	writeb_relaxed(ch, early_base + UART01x_DR);
--	while (readl_relaxed(early_base + UART01x_FR) & UART01x_FR_BUSY)
--		;
--}
--
--/*
-- * Semihosting-based debug console
-- */
--static void smh_printch(char ch)
--{
--	asm volatile("mov  x1, %0\n"
--		     "mov  x0, #3\n"
--		     "hlt  0xf000\n"
--		     : : "r" (&ch) : "x0", "x1", "memory");
--}
--
--/*
-- * 8250/16550 (8-bit aligned registers) single character TX.
-- */
--static void uart8250_8bit_printch(char ch)
--{
--	while (!(readb_relaxed(early_base + UART_LSR) & UART_LSR_THRE))
--		;
--	writeb_relaxed(ch, early_base + UART_TX);
--}
--
--/*
-- * 8250/16550 (32-bit aligned registers) single character TX.
-- */
--static void uart8250_32bit_printch(char ch)
--{
--	while (!(readl_relaxed(early_base + (UART_LSR << 2)) & UART_LSR_THRE))
--		;
--	writel_relaxed(ch, early_base + (UART_TX << 2));
--}
--
--struct earlycon_match {
--	const char *name;
--	void (*printch)(char ch);
--};
--
--static const struct earlycon_match earlycon_match[] __initconst = {
--	{ .name = "pl011", .printch = pl011_printch, },
--	{ .name = "smh", .printch = smh_printch, },
--	{ .name = "uart8250-8bit", .printch = uart8250_8bit_printch, },
--	{ .name = "uart8250-32bit", .printch = uart8250_32bit_printch, },
--	{}
--};
--
--static void early_write(struct console *con, const char *s, unsigned n)
--{
--	while (n-- > 0) {
--		if (*s == '\n')
--			printch('\r');
--		printch(*s);
--		s++;
--	}
--}
--
--static struct console early_console_dev = {
--	.name =		"earlycon",
--	.write =	early_write,
--	.flags =	CON_PRINTBUFFER | CON_BOOT,
--	.index =	-1,
--};
--
--/*
-- * Parse earlyprintk=... parameter in the format:
-- *
-- *   <name>[,<addr>][,<options>]
-- *
-- * and register the early console. It is assumed that the UART has been
-- * initialised by the bootloader already.
-- */
--static int __init setup_early_printk(char *buf)
--{
--	const struct earlycon_match *match = earlycon_match;
--	phys_addr_t paddr = 0;
--
--	if (!buf) {
--		pr_warning("No earlyprintk arguments passed.\n");
--		return 0;
--	}
--
--	while (match->name) {
--		size_t len = strlen(match->name);
--		if (!strncmp(buf, match->name, len)) {
--			buf += len;
--			break;
--		}
--		match++;
--	}
--	if (!match->name) {
--		pr_warning("Unknown earlyprintk arguments: %s\n", buf);
--		return 0;
--	}
--
--	/* I/O address */
--	if (!strncmp(buf, ",0x", 3)) {
--		char *e;
--		paddr = simple_strtoul(buf + 1, &e, 16);
--		buf = e;
--	}
--	/* no options parsing yet */
--
--	if (paddr) {
--		set_fixmap_io(FIX_EARLYCON_MEM_BASE, paddr);
--		early_base = (void __iomem *)fix_to_virt(FIX_EARLYCON_MEM_BASE);
--	}
--
--	printch = match->printch;
--	early_console = &early_console_dev;
--	register_console(&early_console_dev);
--
--	return 0;
--}
--
--early_param("earlyprintk", setup_early_printk);
+ 	/* Optionally make use of an RX channel as well */
+ 	chan = dma_request_slave_channel(dev, "rx");
+-	
++
+ 	if (!chan && plat->dma_rx_param) {
+ 		chan = dma_request_channel(mask, plat->dma_filter, plat->dma_rx_param);
+ 
+@@ -2045,6 +2045,34 @@ static struct console amba_console = {
+ };
+ 
+ #define AMBA_CONSOLE	(&amba_console)
++
++static void pl011_putc(struct uart_port *port, int c)
++{
++	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
++		;
++	writeb(c, port->membase + UART01x_DR);
++	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
++		;
++}
++
++static void pl011_early_write(struct console *con, const char *s, unsigned n)
++{
++	struct earlycon_device *dev = con->data;
++
++	uart_console_write(&dev->port, s, n, pl011_putc);
++}
++
++static int __init pl011_early_console_setup(struct earlycon_device *device,
++					    const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
++
++	device->con->write = pl011_early_write;
++	return 0;
++}
++EARLYCON_DECLARE(pl011, pl011_early_console_setup);
++
+ #else
+ #define AMBA_CONSOLE	NULL
+ #endif
 -- 
 1.8.3.2
