@@ -1,40 +1,37 @@
-From: Stanislav Meduna <stano@meduna.org>
-Subject: Re: mxs-auart gives data from previous run after close and reopen
-Date: Fri, 21 Mar 2014 09:21:41 +0100
-Message-ID: <532BF695.3030900@meduna.org>
-References: <5323625B.4010203@meduna.org> <532B985A.7060505@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Sanjay Singh Rawat <sanjay.rawat@linaro.org>
+Subject: [PATCH] serial: omap: free the wakeup settings in remove
+Date: Fri, 21 Mar 2014 13:55:10 +0530
+Message-ID: <1395390310-21602-1-git-send-email-sanjay.rawat@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.meduna.org ([92.240.244.38]:41025 "EHLO meduna.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755017AbaCUIVz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Mar 2014 04:21:55 -0400
-In-Reply-To: <532B985A.7060505@hurleysoftware.com>
+Received: from mail-pb0-f54.google.com ([209.85.160.54]:54402 "EHLO
+	mail-pb0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754063AbaCUIZ0 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 21 Mar 2014 04:25:26 -0400
+Received: by mail-pb0-f54.google.com with SMTP id ma3so2130032pbc.27
+        for <linux-serial@vger.kernel.org>; Fri, 21 Mar 2014 01:25:26 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+To: gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sanjay Singh Rawat <sanjay.rawat@linaro.org>
 
-On 21.03.2014 02:39, Peter Hurley wrote:
+Signed-off-by: Sanjay Singh Rawat <sanjay.rawat@linaro.org>
+---
+ drivers/tty/serial/omap-serial.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-> Does disabling the fifo on shutdown clear the fifo?
-
-I did not try this, but if my theory is correct, it would
-not help, as all this does is reducing the FIFO length
-to one character. So you'd still get up to two characters:
-one in the "FIFO" - it could get there a microsecond after
-you disable the FIFO before you gate the clock - and one
-being received into the shift register (garbled by shutting
-down the clock in the middle of the reception that was
-resumed when clock was resumed on startup). Note that one
-can get preempted here, so the instructions next to each
-other can be milliseconds apart in reality.
-
-IMHO we need a soft-reset here.
-
-Regards
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 77f0351..56b61d4 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1782,6 +1782,7 @@ static int serial_omap_remove(struct platform_device *dev)
+ 	pm_runtime_disable(up->dev);
+ 	uart_remove_one_port(&serial_omap_reg, &up->port);
+ 	pm_qos_remove_request(&up->pm_qos_request);
++	device_init_wakeup(&dev->dev, false);
+ 
+ 	return 0;
+ }
 -- 
-                                     Stano
+1.7.10.4
 
