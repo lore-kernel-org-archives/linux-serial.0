@@ -1,7 +1,7 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH 6/8] tty/serial: pl011: add generic earlycon support
-Date: Fri, 21 Mar 2014 16:08:46 -0500
-Message-ID: <1395436128-11244-7-git-send-email-robherring2@gmail.com>
+Subject: [PATCH 5/8] tty/serial: convert 8250 to generic earlycon
+Date: Fri, 21 Mar 2014 16:08:45 -0500
+Message-ID: <1395436128-11244-6-git-send-email-robherring2@gmail.com>
 References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
@@ -12,82 +12,204 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Rob Herring <robh@kernel.org>
 
-Add earlycon support for the pl011 serial port. This allows enabling
-the pl011 for console when early_params are processed. This is based
-on the arm64 earlyprintk support and is intended to replace it.
+With the generic earlycon infrastructure in place, convert the 8250
+early console to use it.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
-Cc: Russell King <linux@arm.linux.org.uk>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
 ---
- Documentation/kernel-parameters.txt |  5 +++--
- drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
- 2 files changed, 32 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
+ 1 file changed, 15 insertions(+), 123 deletions(-)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 5ce8b7a..81bdd52 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -887,8 +887,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
- 		uart[8250],mmio32,<addr>[,options]
--			Start an early, polled-mode console on the 8250/16550
--			UART at the specified I/O port or MMIO address.
-+		pl011,<addr>
-+			Start an early, polled-mode console on a serial port
-+			at the specified I/O port or MMIO address. 8250
- 			MMIO inter-register address stride is either 8-bit
- 			(mmio) or 32-bit (mmio32).
- 			The options are the same as for ttyS, above.
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d4eda24..4227c0a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -303,7 +303,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index c100d63..e83c9db 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -35,18 +35,8 @@
+ #include <linux/serial_8250.h>
+ #include <asm/io.h>
+ #include <asm/serial.h>
+-#ifdef CONFIG_FIX_EARLYCON_MEM
+-#include <asm/pgtable.h>
+-#include <asm/fixmap.h>
+-#endif
  
- 	/* Optionally make use of an RX channel as well */
- 	chan = dma_request_slave_channel(dev, "rx");
--	
-+
- 	if (!chan && plat->dma_rx_param) {
- 		chan = dma_request_channel(mask, plat->dma_filter, plat->dma_rx_param);
+-struct early_serial8250_device {
+-	struct uart_port port;
+-	char options[16];		/* e.g., 115200n8 */
+-	unsigned int baud;
+-};
+-
+-static struct early_serial8250_device early_device;
++static struct earlycon_device *early_device;
  
-@@ -2045,6 +2045,34 @@ static struct console amba_console = {
- };
+ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
+ {
+@@ -100,7 +90,7 @@ static void __init serial_putc(struct uart_port *port, int c)
+ static void __init early_serial8250_write(struct console *console,
+ 					const char *s, unsigned int count)
+ {
+-	struct uart_port *port = &early_device.port;
++	struct uart_port *port = &early_device->port;
+ 	unsigned int ier;
  
- #define AMBA_CONSOLE	(&amba_console)
-+
-+static void pl011_putc(struct uart_port *port, int c)
-+{
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-+		;
-+	writeb(c, port->membase + UART01x_DR);
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-+		;
-+}
-+
-+static void pl011_early_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, pl011_putc);
-+}
-+
-+static int __init pl011_early_console_setup(struct earlycon_device *device,
-+					    const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = pl011_early_write;
-+	return 0;
-+}
-+EARLYCON_DECLARE(pl011, pl011_early_console_setup);
-+
- #else
- #define AMBA_CONSOLE	NULL
- #endif
+ 	/* Save the IER and disable interrupts */
+@@ -129,7 +119,7 @@ static unsigned int __init probe_baud(struct uart_port *port)
+ 	return (port->uartclk / 16) / quot;
+ }
+ 
+-static void __init init_port(struct early_serial8250_device *device)
++static void __init init_port(struct earlycon_device *device)
+ {
+ 	struct uart_port *port = &device->port;
+ 	unsigned int divisor;
+@@ -148,128 +138,32 @@ static void __init init_port(struct early_serial8250_device *device)
+ 	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+ }
+ 
+-static int __init parse_options(struct early_serial8250_device *device,
+-								char *options)
+-{
+-	struct uart_port *port = &device->port;
+-	int mmio, mmio32, length;
+-
+-	if (!options)
+-		return -ENODEV;
+-
+-	port->uartclk = BASE_BAUD * 16;
+-
+-	mmio = !strncmp(options, "mmio,", 5);
+-	mmio32 = !strncmp(options, "mmio32,", 7);
+-	if (mmio || mmio32) {
+-		port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
+-		port->mapbase = simple_strtoul(options + (mmio ? 5 : 7),
+-					       &options, 0);
+-		if (mmio32)
+-			port->regshift = 2;
+-#ifdef CONFIG_FIX_EARLYCON_MEM
+-		set_fixmap_nocache(FIX_EARLYCON_MEM_BASE,
+-					port->mapbase & PAGE_MASK);
+-		port->membase =
+-			(void __iomem *)__fix_to_virt(FIX_EARLYCON_MEM_BASE);
+-		port->membase += port->mapbase & ~PAGE_MASK;
+-#else
+-		port->membase = ioremap_nocache(port->mapbase, 64);
+-		if (!port->membase) {
+-			printk(KERN_ERR "%s: Couldn't ioremap 0x%llx\n",
+-				__func__,
+-			       (unsigned long long) port->mapbase);
+-			return -ENOMEM;
+-		}
+-#endif
+-	} else if (!strncmp(options, "io,", 3)) {
+-		port->iotype = UPIO_PORT;
+-		port->iobase = simple_strtoul(options + 3, &options, 0);
+-		mmio = 0;
+-	} else
+-		return -EINVAL;
+-
+-	options = strchr(options, ',');
+-	if (options) {
+-		options++;
+-		device->baud = simple_strtoul(options, NULL, 0);
+-		length = min(strcspn(options, " ") + 1,
+-			     (size_t)(sizeof(device->options)));
+-		strlcpy(device->options, options, length);
+-	} else {
+-		device->baud = probe_baud(port);
+-		snprintf(device->options, sizeof(device->options), "%u",
+-			device->baud);
+-	}
+-
+-	if (mmio || mmio32)
+-		printk(KERN_INFO
+-		       "Early serial console at MMIO%s 0x%llx (options '%s')\n",
+-			mmio32 ? "32" : "",
+-			(unsigned long long)port->mapbase,
+-			device->options);
+-	else
+-		printk(KERN_INFO
+-		      "Early serial console at I/O port 0x%lx (options '%s')\n",
+-			port->iobase,
+-			device->options);
+-
+-	return 0;
+-}
+-
+-static struct console early_serial8250_console __initdata = {
+-	.name	= "uart",
+-	.write	= early_serial8250_write,
+-	.flags	= CON_PRINTBUFFER | CON_BOOT,
+-	.index	= -1,
+-};
+-
+-static int __init early_serial8250_setup(char *options)
++static int __init early_serial8250_setup(struct earlycon_device *device,
++					 const char *options)
+ {
+-	struct early_serial8250_device *device = &early_device;
+-	int err;
+-
+-	if (device->port.membase || device->port.iobase)
++	if (!(device->port.membase || device->port.iobase))
+ 		return 0;
+ 
+-	err = parse_options(device, options);
+-	if (err < 0)
+-		return err;
++	if (!device->baud)
++		device->baud = probe_baud(&device->port);
+ 
+ 	init_port(device);
+-	return 0;
+-}
+-
+-int __init setup_early_serial8250_console(char *cmdline)
+-{
+-	char *options;
+-	int err;
+-
+-	options = strstr(cmdline, "uart8250,");
+-	if (!options) {
+-		options = strstr(cmdline, "uart,");
+-		if (!options)
+-			return 0;
+-	}
+-
+-	options = strchr(cmdline, ',') + 1;
+-	err = early_serial8250_setup(options);
+-	if (err < 0)
+-		return err;
+-
+-	register_console(&early_serial8250_console);
+ 
++	early_device = device;
++	device->con->write = early_serial8250_write;
+ 	return 0;
+ }
++EARLYCON_DECLARE(uart8250, early_serial8250_setup);
++EARLYCON_DECLARE(uart, early_serial8250_setup);
+ 
+ int serial8250_find_port_for_earlycon(void)
+ {
+-	struct early_serial8250_device *device = &early_device;
+-	struct uart_port *port = &device->port;
++	struct earlycon_device *device = early_device;
++	struct uart_port *port = device ? &device->port : NULL;
+ 	int line;
+ 	int ret;
+ 
+-	if (!device->port.membase && !device->port.iobase)
++	if (!port || (!port->membase && !port->iobase))
+ 		return -ENODEV;
+ 
+ 	line = serial8250_find_port(port);
+@@ -284,5 +178,3 @@ int serial8250_find_port_for_earlycon(void)
+ 
+ 	return ret;
+ }
+-
+-early_param("earlycon", setup_early_serial8250_console);
 -- 
 1.8.3.2
