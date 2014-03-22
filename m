@@ -1,78 +1,58 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
-Date: Fri, 21 Mar 2014 18:41:19 -0400
-Message-ID: <532CC00F.3000501@hurleysoftware.com>
-References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>	<532C394A.3050408@hurleysoftware.com> <CAMuHMdUBiUzpvTzkhaguOQoDc8XJH7NvnNe2Z+jL6UeEitpJPg@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 0/8] Generic serial earlycon
+Date: Sat, 22 Mar 2014 10:54:39 +0100
+Message-ID: <201403221054.39799.arnd@arndb.de>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdUBiUzpvTzkhaguOQoDc8XJH7NvnNe2Z+jL6UeEitpJPg@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Friday 21 March 2014, Rob Herring wrote:
+> From: Rob Herring <robh@kernel.org>
+> 
+> This started out as an attempt to add arm64's earlyprintk support to ARM
+> in order to get an earlier, runtime setup console on multi-platform
+> kernels. The first issue was needing the fixmap support which
+> conveniently Mark Salter was working on and is mostly in place now. Like
+> many things on ARM and arm64 now, it then became where do I put the now
+> common, shared code. After digging more into various early console/printk
+> support, it turns out the 8250_early.c setup code was the best starting
+> point. 
+> 
+> This is based on Mark Salter's fixmap support currently in linux-next.
+> This is tested on arm64 and ARM with pl011 and 8250. The ARM support
+> also requires fixmap and fixed mapping support which are not yet in place.
+> I have some patches in my tree to support fixmap, but they need some more
+> work. Fortunately, once fixmap is in place, it is just a Kconfig option
+> to enable earlycon support on ARM. A git tree is available here[1].
+> 
+> Based on this series, I would like to add support for doing earlycon
+> setup using DT.
 
-On 03/21/2014 09:23 AM, Geert Uytterhoeven wrote:
-> Hi Peter,
->
-> On Fri, Mar 21, 2014 at 2:06 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>> @@ -2681,10 +2683,12 @@ int uart_remove_one_port(struct uart_driver *drv,
->>> struct uart_port *uport)
->>>          }
->>>
->>>          /*
->>> -        * If the port is used as a console, unregister it
->>> +        * If the port is used as a console, unregister it, and power it
->>> down
->>>           */
->>> -       if (uart_console(uport))
->>> +       if (uart_console(uport)) {
->>>                  unregister_console(uport->cons);
->>> +               uart_change_pm(state, UART_PM_STATE_OFF);
->>
->> Won't this power off the port while tty consoles may still be open?
->
-> I didn't see that actually happening.
+Hi Rob,
 
-Ok, but I still think this isn't right. See below.
+I like this series a lot, great work!
 
->> I think the right thing here is to unregister_console then set uport->cons =
->> NULL
->>
->> [uport->cons is properly reassigned when/if a port is re-added via
->> uart_add_one_port()).]
->
-> But indeed, for concistency/symmetry uport->state and uport->cons
-> should be resend, but that's something separate.
+I would consider the DT parsing support essential here, we should not
+merge the patches until that is done as well, because I don't want
+to see users pass earlycon command line options in DT when they can
+use the established "linux,stdout-path" property instead. I would
+expect that in almost every case in which we are booting using DT
+today, we can just use linux,stdout-path to locate the device that
+the boot loader has already set up and start usign it.
 
-I don't see this as being a "looks good" problem; I see this as being
-"what's the right way to teardown a uart device that's going away when
-a tty console is running on it", and there are too many problems with
-uart_remove_one_port() doing:
-
-      state->uart_port = NULL
-
-to keep with that solution.
-
->> Then, uart_close() will power off the port when all ttys using the port have
->> been closed.
->
-> uart_close() won't get that far, so uart_change_pm() won't be called.
-
-And this is the central problem: uart_close() must complete normally
-if a tty console is still running on a device.
-
-For example, if uart_shutdown() isn't getting called, then who's freeing
-the ring buffer page?
-
-
-> See also https://lkml.org/lkml/2014/3/10/651, and my workaround for the
-> crash https://lkml.org/lkml/2014/3/17/231.
-
-See my comments to the v2 patch there.
-
-Regards,
-Peter Hurley
+	Arnd
