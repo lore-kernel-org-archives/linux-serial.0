@@ -1,63 +1,58 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH v2] serial: efm32: properly namespace location property
-Date: Mon, 24 Mar 2014 14:42:38 +0100
-Message-ID: <20140324134238.GD2631@katana>
-References: <1394813009-22796-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1394829731-25402-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 4/8] tty/serial: add generic serial earlycon
+Date: Mon, 24 Mar 2014 16:42:02 +0100
+Message-ID: <21117957.8m9iUdR1VN@wuerfel>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com> <9368307.RXEGmQia1C@wuerfel> <CAL_JsqJh1R8wxReCvTfE7GecZa0vMaAqnGa0ZoRBMace9qtzvQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="rqzD5py0kzyFAOWN"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:58163 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752882AbaCXNmm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Mar 2014 09:42:42 -0400
-Content-Disposition: inline
-In-Reply-To: <1394829731-25402-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Received: from moutng.kundenserver.de ([212.227.17.24]:64070 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753220AbaCXPml (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 24 Mar 2014 11:42:41 -0400
+In-Reply-To: <CAL_JsqJh1R8wxReCvTfE7GecZa0vMaAqnGa0ZoRBMace9qtzvQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "x86@kernel.org" <x86@kernel.org>, Will Deacon <Will.Deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
+On Monday 24 March 2014 08:36:46 Rob Herring wrote:
+> On Mon, Mar 24, 2014 at 6:29 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Monday 24 March 2014 11:22:03 Catalin Marinas wrote:
+> >> On Fri, Mar 21, 2014 at 09:08:44PM +0000, Rob Herring wrote:
+> >> > diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> >> > new file mode 100644
+> >> > index 0000000..241757a
+> >> > --- /dev/null
+> >> > +++ b/drivers/tty/serial/earlycon.c
+> >> [...]
+> >> > +static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
+> >> > +{
+> >> > +   void __iomem *base;
+> >> > +#ifdef CONFIG_FIX_EARLYCON_MEM
+> >> > +   set_fixmap_nocache(FIX_EARLYCON_MEM_BASE, paddr & PAGE_MASK);
+> >> > +   base = (void __iomem *)__fix_to_virt(FIX_EARLYCON_MEM_BASE);
+> >> > +   base += paddr & ~PAGE_MASK;
+> >> > +#else
+> >> > +   base = ioremap_nocache(paddr, size);
+> >> > +#endif
+> >>
+> >> Just curious why not set_fixmap_io (and plain ioremap)?
+> >
+> > Good point. Note that ioremap_nocache() is the same as ioremap()
+> > on *all* architectures.
+> 
+> I investigated this before adding this to arm64. set_fixmap_io and
+> set_fixmap_nocache are not the same settings on x86. Whether the
+> mapping type really matters on x86 or not, I don't know. So I added
+> the nocache variant to arm64 to avoid a change to x86.
 
---rqzD5py0kzyFAOWN
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My best guess is that it's an x86 bug. ioremap() always uses an uncached
+mapping on x86, so it's strange to see early_ioremap() and set_fixmap_io()
+use a cached mapping. It probably doesn't matter as long as the mtrr is
+set up to treat all MMIO registers as non-cacheable, but I think there
+should not be a difference.
 
-On Fri, Mar 14, 2014 at 09:42:11PM +0100, Uwe Kleine-K=F6nig wrote:
-> While reviewing an i2c driver for efm32 that needs a similar property
-> Wolfram Sang pointed out that "location" is a too generic name for someth=
-ing
-> that is efm32 specific. So add an appropriate namespace and fall back to =
-the
-> generic name in case of failure.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
-
-
---rqzD5py0kzyFAOWN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTMDZOAAoJEBQN5MwUoCm2ruAP/RYhUgvNfJqmYJGIJ1MH/NjD
-+DaZVUR2Lyj/jAqHJnemSXCkBqubTUvGM/wMsW3VFfpLPVpYVGtsDQXVOltLQgln
-GBNADshA+JtuIPD99vaDbjT0JjxaIhvDjTuWTmfzp1tU1Z0nd1y2T0pJNE/9bZJr
-5l82nGbweHJzR/uiHDDsFeHlHwaZrfPGM1LiurL9Ch/oq75V0f2qLV/+H2H/1ukR
-HYiLrmSNAhBOUItOtAFtHMuYCvlpXip5kaQQcoowHEfBDyrtYTiHYO3tbYtHlOH2
-0TlIjSmMGR0Ej3qcuucSJS03Be1Pn2bpXC0XyZTb88WhUpd5QIPcYHhNvgaBcua+
-TR4UOVp9X4csi3l9l/aejvoYXc4Pk9ztPP4RTUV8rigw2A7nx5fZhfWG80FcMYQs
-mbmfBKDkXX5xB53gWd3msFji4GAveRjG8b7kXY/Q0yIc1d9Lphs2O4pyz0i+94JS
-FMk4g8aYfyL27jFZaARmb8zQTrNtlGkyMtoR9KPl904F9UHOnPy98Zq36nFUU3fI
-u/4AZU2tLO/4q8O+LWVb/Tc+CltoAxZRRVOSitYWdkwibxtdUdpBIBWvkvYlByxa
-2+FDjVIFj4mzieUFzBz6m3gYAzkC/9bmMulOW3JePfMvXKhs7DvirDS8kskrLPCi
-azFmWxK/yS6oEpzu6uUG
-=Gx+L
------END PGP SIGNATURE-----
-
---rqzD5py0kzyFAOWN--
+	Arnd
