@@ -1,45 +1,71 @@
-From: Seth Bollinger <sethb@digi.com>
-Subject: [PATCH] serial_core: Fix conditional start_tx on ring buffer not empty
-Date: Tue, 25 Mar 2014 12:55:37 -0500
-Message-ID: <1395770137-26421-1-git-send-email-sethb@digi.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: jon@ringle.org
+Subject: [PATCH v2 2/2] serial: sc16is7xx: Add bindings documentation for the SC16IS7XX UARTs
+Date: Tue, 25 Mar 2014 14:19:24 -0400
+Message-ID: <1395771564-30534-2-git-send-email-jon@ringle.org>
+References: <1395771564-30534-1-git-send-email-jon@ringle.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta7.messagelabs.com ([216.82.254.101]:61730 "EHLO
-	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755907AbaCYRzx (ORCPT
+Received: from mail-qc0-f172.google.com ([209.85.216.172]:52159 "EHLO
+	mail-qc0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752032AbaCYSTh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Mar 2014 13:55:53 -0400
+	Tue, 25 Mar 2014 14:19:37 -0400
+In-Reply-To: <1395771564-30534-1-git-send-email-jon@ringle.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, peter@hurleysoftware.com, Seth Bollinger <sethb@digi.com>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Jon Ringle <jringle@gridpoint.com>
 
-If the serial_core ring buffer empties just as the tty layer receives
-an XOFF, then start_tx will never be called when the tty layer
-receives an XON as the serial_core ring buffer is empty.  This will
-possibly leave a few bytes trapped in the fifo for drivers that
-disable the transmitter when flow controlled.
+From: Jon Ringle <jringle@gridpoint.com>
 
-Signed-off-by: Seth Bollinger <sethb@digi.com>
+This patch adds the devicetree documentation for the NXP SC16IS7XX UARTs.
+
+Signed-off-by: Jon Ringle <jringle@gridpoint.com>
 ---
- drivers/tty/serial/serial_core.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../devicetree/bindings/serial/nxp,sc16is7xx.txt   | 35 ++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index ece2049..b3e5907 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -89,8 +89,7 @@ static void __uart_start(struct tty_struct *tty)
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port = state->uart_port;
- 
--	if (!uart_circ_empty(&state->xmit) && state->xmit.buf &&
--	    !tty->stopped && !tty->hw_stopped)
-+	if (!tty->stopped && !tty->hw_stopped)
- 		port->ops->start_tx(port);
- }
- 
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+new file mode 100644
+index 0000000..cd9ae33
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+@@ -0,0 +1,35 @@
++* NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
++
++Required properties:
++- compatible: Should be one of the following:
++  - "nxp,sc16is740" for NXP SC16IS740,
++  - "nxp,sc16is741" for NXP SC16IS741,
++  - "nxp,sc16is750" for NXP SC16IS750,
++  - "nxp,sc16is752" for NXP SC16IS752,
++  - "nxp,sc16is760" for NXP SC16IS760,
++  - "nxp,sc16is762" for NXP SC16IS762.
++- reg: I2C address of the SC16IS7xx device.
++- interrupt-parent: The phandle for the interrupt controller that
++  services interrupts for this IC.
++- interrupts: Specifies the interrupt source of the parent interrupt
++  controller. The format of the interrupt specifier depends on the
++  parent interrupt controller.
++- clocks: phandle to the IC source clock.
++
++Optional properties:
++- gpio-controller: Marks the device node as a GPIO controller.
++- #gpio-cells: Should be two. The first cell is the GPIO number and
++  the second cell is used to specify the GPIO polarity:
++    0 = active high,
++    1 = active low.
++
++Example:
++        sc16is750: sc16is750@51 {
++                compatible = "nxp,sc16is750";
++                reg = <0x51>;
++                clocks = <&clk20m>;
++                interrupt-parent = <&gpio3>;
++                interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++                gpio-controller;
++                #gpio-cells = <2>;
++        };
 -- 
-1.7.10.4
+1.8.5.4
 
