@@ -1,85 +1,68 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2] serial: efm32: use $vendor,$device scheme for compatible string
-Date: Tue, 25 Mar 2014 15:53:12 +0100
-Message-ID: <1395759192-10797-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH v2] serial: efm32: use $vendor,$device scheme for
+ compatible string
+Date: Tue, 25 Mar 2014 17:19:16 +0100
+Message-ID: <20140325161916.GA6374@katana>
 References: <1395755954-18988-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1395759192-10797-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7AUc2qLy4jB3hD7Z"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:59174 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751854AbaCYOx2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Mar 2014 10:53:28 -0400
-In-Reply-To: <1395755954-18988-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Received: from sauhun.de ([89.238.76.85]:40448 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753421AbaCYQTU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Mar 2014 12:19:20 -0400
+Content-Disposition: inline
+In-Reply-To: <1395759192-10797-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, Wolfram Sang <wsa@the-dreams.de>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-Wolfgang Sang pointed out that "efm32,$device" is non-standard. So use =
-the
-common scheme and prefix device with "efm32-". The old compatible strin=
-g
-is left in place until arch/arm/boot/dts/efm32* is fixed.
 
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
----
-Changes since (implicit) v1, sent with
-Message-id:1395755954-18988-1-git-send-email-u.kleine-koenig@pengutroni=
-x.de:
- - fix binding doc accordingly
+--7AUc2qLy4jB3hD7Z
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- Documentation/devicetree/bindings/serial/efm32-uart.txt | 4 ++--
- drivers/tty/serial/efm32-uart.c                         | 3 +++
- 2 files changed, 5 insertions(+), 2 deletions(-)
+On Tue, Mar 25, 2014 at 03:53:12PM +0100, Uwe Kleine-K=F6nig wrote:
+> Wolfgang Sang pointed out that "efm32,$device" is non-standard. So use the
 
-diff --git a/Documentation/devicetree/bindings/serial/efm32-uart.txt b/=
-Documentation/devicetree/bindings/serial/efm32-uart.txt
-index 1984bdfbd545..3ca01336b837 100644
---- a/Documentation/devicetree/bindings/serial/efm32-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/efm32-uart.txt
-@@ -1,7 +1,7 @@
- * Energymicro efm32 UART
-=20
- Required properties:
--- compatible : Should be "efm32,uart"
-+- compatible : Should be "energymicro,efm32-uart"
- - reg : Address and length of the register set
- - interrupts : Should contain uart interrupt
-=20
-@@ -13,7 +13,7 @@ Optional properties:
- Example:
-=20
- uart@0x4000c400 {
--	compatible =3D "efm32,uart";
-+	compatible =3D "energymicro,efm32-uart";
- 	reg =3D <0x4000c400 0x400>;
- 	interrupts =3D <15>;
- 	efm32,location =3D <0>;
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
--uart.c
-index 028582e924a5..c167a710dc39 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -798,6 +798,9 @@ static int efm32_uart_remove(struct platform_device=
- *pdev)
-=20
- static const struct of_device_id efm32_uart_dt_ids[] =3D {
- 	{
-+		.compatible =3D "energymicro,efm32-uart",
-+	}, {
-+		/* doesn't follow the "vendor,device" scheme, don't use */
- 		.compatible =3D "efm32,uart",
- 	}, {
- 		/* sentinel */
---=20
-1.9.1
+"Wolfram", please. BTW, you could also use this to describe that :)
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Reported-by: Wolfram Sang <wsa@the-dreams.de>
+
+No need to resend from my side, though.
+
+> common scheme and prefix device with "efm32-". The old compatible string
+> is left in place until arch/arm/boot/dts/efm32* is fixed.
+>=20
+> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+
+
+--7AUc2qLy4jB3hD7Z
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.15 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTMayEAAoJEBQN5MwUoCm2CVQP/0R3kJeZ0PEnCWSvV6BbuQVh
+IFA9rcDquAGEs5A8EpOYWZhjBzDdMPCchyyrna6Mj8II2NDjrieJkoboyV6cX6rw
+NE/EU2QYEU5hLRS5TLpWqxldbx7SBgxAFSlPGXpjiEmXn2oB8/qV764KequFGrH+
+sG5cp48CGh0TTsKuK2CSk33l5LeZvDthhTyZOxLTT90aPPqDbtnzbsMwtvaNFLuN
+FBSu+FXCnebg/y4PqX7YkZ9tDJ0b9njPdxPcXa7dlsCi+DnxYJp48y1FwHK7C31Y
+bGiOkckKY8G5nPQDIrAt9+/KKb1TIy0xjA63ldtakLJsyEr12JrqgCpEPrQSCPSj
+gc0Y2J4GkJ8nXYqutfXQjdIrPApab3jf7Cv7H0p7XNmvrKnGbAs+1LHlQfHkDUaJ
+P0Om5R905muU2AGYC3Fi83BapaDRumPklP6+XdRWgzqvE7Al89IVMz5PGIqgtiXt
+NWJXtbDrub6ZTWOUISz8NcqfU7AMKxixySWH0sH9clF0BWgeyYdNzTorDuvR4+qN
+YxRhsO0PNQIA992EF9RALRWHq9+xg1rMPQ2wkYng7GOH5fRiXiis1MRY0EA3BCmS
+4UydfDGAHBKUTdbLS82sZ0dpbGHw8QgGLUHCQX9f3TOjIbM8b3/4sYPJyXE8i37V
+XLB0wZHk4BNR9zIojjlz
+=qVuW
+-----END PGP SIGNATURE-----
+
+--7AUc2qLy4jB3hD7Z--
