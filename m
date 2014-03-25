@@ -1,54 +1,45 @@
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-Subject: [PATCH] pch_uart: Add uart device to irq name
-Date: Tue, 25 Mar 2014 10:31:20 +0100
-Message-ID: <1395739880-8318-1-git-send-email-alexander.stein@systec-electronic.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from webbox1416.server-home.net ([77.236.96.61]:56600 "EHLO
-	webbox1416.server-home.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751218AbaCYJkS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Mar 2014 05:40:18 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: =?iso-8859-1?Q?Mats_K=E4rrman?= <Mats.Karrman@tritech.se>
+Subject: RE: Suspecting kernel timing bug in ppp or tty drivers
+Date: Tue, 25 Mar 2014 09:51:24 +0000
+Message-ID: <ED3E0BCACD909541BA94A34C4A164D4C5B3A5F4A@post.tritech.se>
+References: <ED3E0BCACD909541BA94A34C4A164D4C5B180258@post.tritech.se>
+ <20140310194007.GC3392@kroah.com>
+ <ED3E0BCACD909541BA94A34C4A164D4C5B180A77@post.tritech.se>,<20140311185019.GA32618@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-ppp-owner@vger.kernel.org>
+In-Reply-To: <20140311185019.GA32618@kroah.com>
+Content-Language: en-US
+Sender: linux-ppp-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, Alexander Stein <alexander.stein@systec-electronic.com>
 
-Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
----
- drivers/tty/serial/pch_uart.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+On Tuesday, March 11, 2014 7:50 PM, Greg KH wrote:
+> On Tue, Mar 11, 2014 at 09:41:56AM +0000, Mats K=E4rrman wrote:
+> > On Monday, March 10, 2014 8:40 PM, Greg KH wrote:
+> > > On Mon, Mar 10, 2014 at 01:36:36PM +0000, Mats K=E4rrman wrote:
+> > >> Some data about the system:
+> > >> - PPP daemon v2.4.5
+> > >> - Linux kernel v3.2.51 (same error with v2.6.35 though)
+> > >
+> > > That's a really old kernel version, can you try 3.13 or newer?  L=
+ots of
+> > > work has been done in the tty layer since 3.2 was released.
+> > >
+> >
+> > Thanks for your reply Greg!
+> >
+> > For various reasons I'd prefer to go to the long-term release 3.12.=
+y, would
+> > that be sufficient or do you think the changes made to 3.13 are cri=
+tical?
+>=20
+> It's a good place to start testing, and better than 3.2 :)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 8fa1134..f14630b 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -257,6 +257,8 @@ struct eg20t_port {
- 	dma_addr_t			rx_buf_dma;
- 
- 	struct dentry	*debugfs;
-+#define IRQ_NAME_SIZE 17
-+	char				irq_name[IRQ_NAME_SIZE];
- 
- 	/* protect the eg20t_port private structure and io access to membase */
- 	spinlock_t lock;
-@@ -1343,7 +1345,7 @@ static int pch_uart_startup(struct uart_port *port)
- 		return ret;
- 
- 	ret = request_irq(priv->port.irq, pch_uart_interrupt, IRQF_SHARED,
--			KBUILD_MODNAME, priv);
-+			priv->irq_name, priv);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1816,6 +1818,8 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	priv->port.line = board->line_no;
- 	priv->trigger = PCH_UART_HAL_TRIGGER_M;
- 
-+	snprintf(priv->irq_name, IRQ_NAME_SIZE, KBUILD_MODNAME ":" PCH_UART_DRIVER_DEVICE "%d", priv->port.line);
-+
- 	spin_lock_init(&priv->port.lock);
- 
- 	pci_set_drvdata(pdev, priv);
--- 
-1.8.3.2
+After porting to 3.12.14 and testing for about a week I have been unabl=
+e to
+reproduce the problem. Hopefully this means the issue is solved...
 
+BR // Mats
