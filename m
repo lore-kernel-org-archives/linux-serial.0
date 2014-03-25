@@ -1,58 +1,183 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 4/8] tty/serial: add generic serial earlycon
-Date: Mon, 24 Mar 2014 16:42:02 +0100
-Message-ID: <21117957.8m9iUdR1VN@wuerfel>
-References: <1395436128-11244-1-git-send-email-robherring2@gmail.com> <9368307.RXEGmQia1C@wuerfel> <CAL_JsqJh1R8wxReCvTfE7GecZa0vMaAqnGa0ZoRBMace9qtzvQ@mail.gmail.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH] serial: sirf: update copyright years to 2014
+Date: Tue, 25 Mar 2014 10:51:49 +0800
+Message-ID: <CAGsJ_4zVzgJF7T9sJco58Jcb4zzNrQ+BGCEwLa7_xF0qdFrcuQ@mail.gmail.com>
+References: <CAGsJ_4zuju7x06nvZOMKvU8xfULy5bgNTyENSfmPVNg6TcwRdQ@mail.gmail.com>
+ <20140212143744.GA10095@kroah.com> <CAGsJ_4xTfsYJMj7MkzKigQcdiyozK-fqq=JYosHMr9=jx7XQyQ@mail.gmail.com>
+ <20140212161230.GA22431@kroah.com> <CAGsJ_4yXjRFxcazwx+Zfxm4_2njhMeRVRKXEM2w4wKsGPas6yA@mail.gmail.com>
+ <20140212163810.GA22377@kroah.com> <CAGsJ_4x-9MiX_CMgQAhmUDQFXvCo0Nd2Y5AkVu+ePvurbefiFQ@mail.gmail.com>
+ <20140214171424.GA26194@kroah.com> <CAGsJ_4wu80_50Vb4tzBT6Uug+JaSgajdTA6N5fK-FtxvCRxxeQ@mail.gmail.com>
+ <CAGsJ_4yJACM9ZzzQvdNK3fVXW6-c6zaScYFx0Rcy_=rZkNHMjw@mail.gmail.com> <20140318023328.GA21938@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.24]:64070 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753220AbaCXPml (ORCPT
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:41327 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751229AbaCYCwL convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Mar 2014 11:42:41 -0400
-In-Reply-To: <CAL_JsqJh1R8wxReCvTfE7GecZa0vMaAqnGa0ZoRBMace9qtzvQ@mail.gmail.com>
+	Mon, 24 Mar 2014 22:52:11 -0400
+Received: by mail-pa0-f54.google.com with SMTP id lf10so6286252pab.41
+        for <linux-serial@vger.kernel.org>; Mon, 24 Mar 2014 19:52:10 -0700 (PDT)
+In-Reply-To: <20140318023328.GA21938@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "x86@kernel.org" <x86@kernel.org>, Will Deacon <Will.Deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-On Monday 24 March 2014 08:36:46 Rob Herring wrote:
-> On Mon, Mar 24, 2014 at 6:29 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Monday 24 March 2014 11:22:03 Catalin Marinas wrote:
-> >> On Fri, Mar 21, 2014 at 09:08:44PM +0000, Rob Herring wrote:
-> >> > diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> >> > new file mode 100644
-> >> > index 0000000..241757a
-> >> > --- /dev/null
-> >> > +++ b/drivers/tty/serial/earlycon.c
-> >> [...]
-> >> > +static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
-> >> > +{
-> >> > +   void __iomem *base;
-> >> > +#ifdef CONFIG_FIX_EARLYCON_MEM
-> >> > +   set_fixmap_nocache(FIX_EARLYCON_MEM_BASE, paddr & PAGE_MASK);
-> >> > +   base = (void __iomem *)__fix_to_virt(FIX_EARLYCON_MEM_BASE);
-> >> > +   base += paddr & ~PAGE_MASK;
-> >> > +#else
-> >> > +   base = ioremap_nocache(paddr, size);
-> >> > +#endif
-> >>
-> >> Just curious why not set_fixmap_io (and plain ioremap)?
-> >
-> > Good point. Note that ioremap_nocache() is the same as ioremap()
-> > on *all* architectures.
-> 
-> I investigated this before adding this to arm64. set_fixmap_io and
-> set_fixmap_nocache are not the same settings on x86. Whether the
-> mapping type really matters on x86 or not, I don't know. So I added
-> the nocache variant to arm64 to avoid a change to x86.
+2014-03-18 10:33 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
+> On Tue, Mar 18, 2014 at 10:25:50AM +0800, Barry Song wrote:
+>> 2014-02-19 13:16 GMT+08:00 Barry Song <21cnbao@gmail.com>:
+>> > 2014-02-15 1:14 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
+>> >> On Thu, Feb 13, 2014 at 10:27:17AM +0800, Barry Song wrote:
+>> >>> 2014-02-13 0:38 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
+>> >>> > On Thu, Feb 13, 2014 at 12:26:35AM +0800, Barry Song wrote:
+>> >>> >> > Well, your 2012 change doesn't seem to be "significant" to =
+warrent a
+>> >>> >> > normal copyright update, but the update is usually "less st=
+rict" than an
+>> >>> >> > original mark, so that might be ok, now that I review these=
+ closer.
+>> >>> >> >
+>> >>> >> > But I'd still prefer to get the opinion of your lawyer abou=
+t this.
+>> >>> >>
+>> >>> >> Greg, thanks. i will ask csr lawyer to give some feedback if =
+i can :-)
+>> >>> >>
+>> >>> >> i am not an expert of  copyright and i am really ignorant on =
+it. in my
+>> >>> >> shallow understand, it seems it is difficult to evaluate what=
+ is
+>> >>> >> "significant" and what is not important as it highly depends =
+on the
+>> >>> >> personal opinion? is this something like "there are a thousan=
+d Hamlets
+>> >>> >> in a thousand people's eyes"?
+>> >>> >
+>> >>> > It does "depend", but the "general" rule that most everyone fo=
+llows, and
+>> >>> > what I have been advised to stick to, is "1/3 of the file is
+>> >>> > modified/added to" by a company/developer.  If that happens, t=
+hen a
+>> >>> > copyright mark is allowed.  That has worked well over the many=
+ years of
+>> >>> > me having to deal with this, but the issue of "extending" the =
+mark
+>> >>> > hasn't really been discussed, so I don't know if that same rul=
+e applies
+>> >>> > here or not.
+>> >>> >
+>> >>> > Feedback from your lawyer would be great to have on this, than=
+ks.
+>> >>> >
+>> >>>
+>> >>> Greg, i am inviting our lawyer Cherrie into this, as she is mayb=
+e
+>> >>> busy, so we might wait some time.
+>> >>
+>> >> In my research, it's become apparent that the copyright notice sh=
+ould
+>> >> just be removed entirely from the files, as they don't mean anyth=
+ing
+>> >> from a legal standpoint, so updating them shouldn't really be don=
+e
+>> >> either, as they don't mean anything.  Although one could argue, i=
+f they
+>> >> don't mean anything, updating it shouldn't matter, but I don't th=
+ink
+>> >> that the transitive is true here...
+>> >>
+>> >> It will be interesting to find out what your lawyer says about th=
+is.
+>> >
+>> > Greg, all your comments have been forwarded to our layer and couns=
+el.
+>> > pls wait for some time :-)
+>>
+>> Greg,
+>>
+>> here i got some comments from the lawyer.
+>> "
+>> the reason that people want the copyright notice to include 2014 is =
+to
+>> ensure that the copyrighted works have the longest possible life
+>> available under copyright protection.
+>
+> But just putting a number in a file does not have anything to do with
+> the copyright of the file itself, right?  It can be a "hint", but a l=
+ot
+> of projects are doing away with these types of file "markings" entire=
+ly,
+> as it has been proven to not mean anything.
+>
+>> if the changes that have been made to CSR=E2=80=99s source code for =
+the driver
+>> program (which was originally authored in 2011 - entirely using CSR
+>> original source code) are insignificant =E2=80=94 for example, just =
+adding or
+>> editing a few lines of code among hundreds or thousands (or more)
+>> lines of code, those changes are unlikely to be seen as a "derivativ=
+e
+>> work" that would be the subject of independent copyright protection
+>> (for the changed portion) as of the year in which those changes were
+>> made.  If significant changes were made to the source code, such tha=
+t
+>> new functionality were added, or a similar upgrade (for efficiency,
+>> etc.), or something along those lines =E2=80=94 even if the changes =
+only
+>> amounted to 5 or 10% of the code total =E2=80=94 that could be deeme=
+d a
+>> derivative work that would be able to have its own copyright notice =
+in
+>> the year in which the changes were created/authored.  There is no ha=
+rd
+>> and fast rule on the percentage.
+>>
+>> for the general guideline that if one-third or more of the program=E2=
+=80=99s
+>> source code has been updated/changed/added, then an updated year can
+>> be set forth in the copyright notice.  That guideline, while useful =
+as
+>> a minor rule of thumb, is not required by law or anything else to my
+>> knowledge =E2=80=94 the crux of the issue is really whether the chan=
+ges amount
+>> to a derivative work."
+>
+> That's an interesting statement, but not what my lawyer has advised m=
+e
+> to abide by.
+>
+>> and after talking with the lawyer, if a new year is added in copyrig=
+ht
+>> notice, it is for protecting the changes in 2013. so "extend the
+>> copyright year" should be wrong. it is not extending the exiting
+>> copyright, it is a new year to protect the new codes changed in the
+>> year.
+>
+> But nothing was changed in your patch in the "code" section, right?
 
-My best guess is that it's an x86 bug. ioremap() always uses an uncached
-mapping on x86, so it's strange to see early_ioremap() and set_fixmap_io()
-use a cached mapping. It probably doesn't matter as long as the mtrr is
-set up to treat all MMIO registers as non-cacheable, but I think there
-should not be a difference.
+Greg, i think the changes in 2013 are important and we should have
+copyright protection for it.
+commit 5df831117b85a0 "serial: sirf: make the driver also support
+USP-based UART" we added support for a new port, USP port, it is a
+real code section.
 
-	Arnd
+and commit 8316d04c42b94e "serial: sirf: add DMA support using
+dmaengine APIs" added DMA support, which is also code section changes.
+
+>
+> Anyway, care to resend this patch, based on the above information, an=
+d
+> we can try this again?
+>
+> thanks,
+>
+> greg k-h
+
+-barry
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
