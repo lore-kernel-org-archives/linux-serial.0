@@ -1,92 +1,92 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] serial: omap: Fix missing pm_runtime_resume handling by
- simplifying code
-Date: Tue, 25 Mar 2014 12:28:42 -0700
-Message-ID: <20140325192841.GC31906@atomide.com>
-References: <20140325184846.GB31906@atomide.com>
- <20140325185237.GB7216@saruman.home>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: Add bindings documentation
+ for the SC16IS7XX UARTs
+Date: Wed, 26 Mar 2014 09:08:56 +0000
+Message-ID: <20140326090855.GP10341@e106331-lin.cambridge.arm.com>
+References: <1395771564-30534-1-git-send-email-jon@ringle.org>
+ <1395771564-30534-2-git-send-email-jon@ringle.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140325185237.GB7216@saruman.home>
-Sender: linux-omap-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Kevin Hilman <khilman@linaro.org>
+In-Reply-To: <1395771564-30534-2-git-send-email-jon@ringle.org>
+Content-Language: en-US
+Sender: linux-doc-owner@vger.kernel.org
+To: "jon@ringle.org" <jon@ringle.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Jon Ringle <jringle@gridpoint.com>
 List-Id: linux-serial@vger.kernel.org
 
-* Felipe Balbi <balbi@ti.com> [140325 11:57]:
-> On Tue, Mar 25, 2014 at 11:48:47AM -0700, Tony Lindgren wrote:
-> > The lack of pm_runtime_resume handling for the device state leads into
-> > device wake-up interrupts not working after a while for runtime PM.
-> > 
-> > Also, serial-omap is confused about the use of device_may_wakeup.
-> > The checks for device_may_wakeup should only be done for suspend and
-> > resume, not for pm_runtime_suspend and pm_runtime_resume. The wake-up
-> > events for PM runtime should always be enabled.
-> > 
-> > The lack of pm_runtime_resume handling leads into device wake-up
-> > interrupts not working after a while for runtime PM.
-> > 
-> > Rather than try to patch over the issue of adding complex tests to
-> > the pm_runtime_resume, let's fix the issues properly:
-> > 
-> > 1. Make serial_omap_enable_wakeup deal with all internal PM state
-> >    handling so we don't need to test for up->wakeups_enabled elsewhere.
-> > 
-> >    Later on once omap3 boots in device tree only mode we can also
-> >    remove the up->wakeups_enabled flag and rely on the wake-up
-> >    interrupt enable/disable state alone.
-> > 
-> > 2. Do the device_may_wakeup checks in suspend and resume only,
-> >    for runtime PM the wake-up events need to be always enabled.
-> > 
-> > 3. Finally just call serial_omap_enable_wakeup and make sure we
-> >    call it also in pm_runtime_resume.
-> > 
-> > 4. Note that we also have to use disable_irq_nosync as serial_omap_irq
-> >    calls pm_runtime_get_sync.
-> > 
-> > Fixes: 2a0b965cfb6e (serial: omap: Add support for optional wake-up)
-> > Cc: stable@vger.kernel.org # v3.13+
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > 
-> > --- a/drivers/tty/serial/omap-serial.c
-> > +++ b/drivers/tty/serial/omap-serial.c
-> > @@ -225,14 +225,19 @@ static inline void serial_omap_enable_wakeirq(struct uart_omap_port *up,
-> >  	if (enable)
-> >  		enable_irq(up->wakeirq);
-> >  	else
-> > -		disable_irq(up->wakeirq);
-> > +		disable_irq_nosync(up->wakeirq);
+On Tue, Mar 25, 2014 at 06:19:24PM +0000, jon@ringle.org wrote:
+> From: Jon Ringle <jringle@gridpoint.com>
 > 
-> looks to me liket his should be a separate fix of its own...
-
-I don't think fixing disable_irq_nosync here is not needed without
-fixing the rest. We're currently never calling serial_omap_enable_wakeup
-from the runtime PM resume path.
-
-So serial_omap_enable_wakeirq(up, 0) would only get called in the case
-of device_may_wakeup disabled from serial_omap_runtime_suspend, which is
-not called from the interrupt context.
- 
-> >  static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
-> >  {
-> >  	struct omap_uart_port_info *pdata = dev_get_platdata(up->dev);
-> >  
-> > +	if (enable == up->wakeups_enabled)
-> > +		return;
+> This patch adds the devicetree documentation for the NXP SC16IS7XX UARTs.
 > 
-> is there any case where you would call this function twice with the same
-> argument ?
+> Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+> ---
+>  .../devicetree/bindings/serial/nxp,sc16is7xx.txt   | 35 ++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> new file mode 100644
+> index 0000000..cd9ae33
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> @@ -0,0 +1,35 @@
+> +* NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
+> +
+> +Required properties:
+> +- compatible: Should be one of the following:
+> +  - "nxp,sc16is740" for NXP SC16IS740,
+> +  - "nxp,sc16is741" for NXP SC16IS741,
+> +  - "nxp,sc16is750" for NXP SC16IS750,
+> +  - "nxp,sc16is752" for NXP SC16IS752,
+> +  - "nxp,sc16is760" for NXP SC16IS760,
+> +  - "nxp,sc16is762" for NXP SC16IS762.
 
-Yes at least when serial-omap is runtime PM enabled and doing a suspend
-without device_may_wakeup being set.
+These all look fine.
 
-I'd like to get rid of the wakeups_enabled, but it's probably safest to do
-that when ripping out the remaining context_loos_cnt stuff after we've made
-omap3 to boot also in device tree only mode.
+> +- reg: I2C address of the SC16IS7xx device.
+> +- interrupt-parent: The phandle for the interrupt controller that
+> +  services interrupts for this IC.
+> +- interrupts: Specifies the interrupt source of the parent interrupt
+> +  controller. The format of the interrupt specifier depends on the
+> +  parent interrupt controller.
 
-Regards,
+Just describe what the device-specific interrupt logically is, not what
+the interrupts property means in general.
 
-Tony
+> +- clocks: phandle to the IC source clock.
+
+Nit: clocks aren't just referred to with phandles; there's a clock
+specifier too.
+
+Either correct the type here or don't mention the type at all, given
+this is a common property.
+
+> +
+> +Optional properties:
+> +- gpio-controller: Marks the device node as a GPIO controller.
+> +- #gpio-cells: Should be two. The first cell is the GPIO number and
+> +  the second cell is used to specify the GPIO polarity:
+> +    0 = active high,
+> +    1 = active low.
+> +
+> +Example:
+> +        sc16is750: sc16is750@51 {
+> +                compatible = "nxp,sc16is750";
+> +                reg = <0x51>;
+> +                clocks = <&clk20m>;
+> +                interrupt-parent = <&gpio3>;
+> +                interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+> +                gpio-controller;
+> +                #gpio-cells = <2>;
+> +        };
+> -- 
+> 1.8.5.4
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
