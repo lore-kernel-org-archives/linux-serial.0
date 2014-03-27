@@ -1,103 +1,73 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 10/11] Revert "serial: omap: unlock the port lock"
-Date: Wed, 26 Mar 2014 22:37:24 -0500
-Message-ID: <20140327033724.GB13038@saruman.home>
-References: <1395343807-21618-1-git-send-email-balbi@ti.com>
- <1395343807-21618-10-git-send-email-balbi@ti.com>
- <20140325182856.GA31906@atomide.com>
- <5333732F.6040803@hurleysoftware.com>
- <20140327021043.GB11651@saruman.home>
- <53338C81.3060600@hurleysoftware.com>
-Reply-To: <balbi@ti.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
+Date: Thu, 27 Mar 2014 09:38:36 +0100
+Message-ID: <CAMuHMdVQBTiZDdY_2Y+uaYUiAA9jVOCOf5okZuKj1QxVSMZVyQ@mail.gmail.com>
+References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
+	<532C394A.3050408@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="oC1+HKm2/end4ao3"
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:36762 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752124AbaC0DjW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Mar 2014 23:39:22 -0400
-Content-Disposition: inline
-In-Reply-To: <53338C81.3060600@hurleysoftware.com>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:37314 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752166AbaC0Iih (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Mar 2014 04:38:37 -0400
+In-Reply-To: <532C394A.3050408@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
-Cc: balbi@ti.com, Tony Lindgren <tony@atomide.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>
 
---oC1+HKm2/end4ao3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, Mar 21, 2014 at 2:06 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> When a serial port is closed, uart_close() takes care of shutting down the
+>> hardware, and powering it down.
+>>
+>> When a serial port is unbound while in use, uart_close() bypasses all of
+>> this, as this is supposed to be done through uart_hangup() (invoked via
+>> tty_vhangup() in uart_remove_one_port()).
+>>
+>> However, uart_hangup() does not set the hardware's power state, leaving it
+>> powered up.  This may also lead to unbounded nesting counts in clock and
+>> power management, depending on their internal implementation.
+>>
+>> Make sure to power down the port in uart_hangup(), except when the port is
+>> used as a serial console. For serial consoles, this must be postponed
+>> until
+>> after their deregistration in uart_remove_one_port() (symmetry with
+>> registration in uart_configure_port(), invoked from uart_add_one_port()).
+>>
+>> After this, the module clock used by the sh-sci driver is disabled on
+>> unbind while the serial port is in use.
+>>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
+>> ---
+>>   drivers/tty/serial/serial_core.c |    8 ++++++--
+>>   1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c
+>> b/drivers/tty/serial/serial_core.c
+>> index 2cf5649a6dc0..56dda84f82a5 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1452,6 +1452,8 @@ static void uart_hangup(struct tty_struct *tty)
+>>                 clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
+>>                 spin_unlock_irqrestore(&port->lock, flags);
+>>                 tty_port_tty_set(port, NULL);
+>> +               if (!uart_console(state->uart_port))
+>> +                       uart_change_pm(state, UART_PM_STATE_OFF);
+>
+>
+> Ok.
 
-Hi,
+Thanks, I'll send an updated patch handling the non-serial console case only.
 
-On Wed, Mar 26, 2014 at 10:27:13PM -0400, Peter Hurley wrote:
-> On 03/26/2014 10:10 PM, Felipe Balbi wrote:
-> >Hi,
-> >
-> >On Wed, Mar 26, 2014 at 08:39:11PM -0400, Peter Hurley wrote:
-> >>On 03/25/2014 02:28 PM, Tony Lindgren wrote:
-> >>>* Felipe Balbi <balbi@ti.com> [140320 12:39]:
-> >>>>This reverts commit 0324a821029e1f54e7a7f8fed48693cfce42dc0e.
-> >>>>
-> >>>>That commit tried to fix a deadlock problem when using
-> >>>>hci_ldisc, but it turns out the bug was in hci_ldsic
-> >>>>all along where it was calling ->write() from within
-> >>>>->write_wakeup() callback.
-> >>>>
-> >>>>The problem is that ->write_wakeup() was called with
-> >>>>port lock held and ->write() tried to grab the same
-> >>>>port lock.
-> >>>
-> >>>Should this and the next patch be earlier in the series
-> >>>as a fix for the v3.15-rc cycle? Should they be cc: stable
-> >>>as well?
-> >>
-> >>Well, right now the other fix has had _zero_ testing
-> >>so not really a -stable candidate just yet.
-> >
-> >how can you even say that ?
->=20
-> I misunderstood when you wrote:
->=20
-> On 03/20/2014 02:11 PM, Felipe Balbi wrote:
-> > here's a build-tested only patch which is waiting for testing from other
-> > colleagues who've got a platform to reproduce the problem:
->=20
-> and then the version I reviewed had no Tested-by: tags.
+Gr{oetje,eeting}s,
 
-I wouldn't add that tag myself, but Murali (in Cc) did help testing
-together with other colleagues.
+                        Geert
 
-> >How else would we have found the issue to start with ?
->=20
-> Bug report?
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-touch=E8 :-)
-
---=20
-balbi
-
---oC1+HKm2/end4ao3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTM5z0AAoJEIaOsuA1yqRE0bsP/iCy3V/lwOh3OUogVRSs6ydK
-G6/20Me4nY/LQSanabXL7doAVY3QS7u/A8foiyeDvYplqyXy17F+hddxolenlvaD
-5azuIcAiamm4D4T78D7nWZMB6bZ0nhNcEsPcN3u0VHDtyXZwGG40aR4M6dBED+bb
-QnpF8w3alnnWGHOfp87dbDAYXbJVBqdozAbhTXs8teFGbfPxfvHuXF+0upt2cPux
-yS/PlO1T54H9BE2Wyitx4od28va+9MFre5xAs9ENzPrhzbyYwMtuY55zRahfobID
-qrNQvpKTsMhsPc7nHtTrpbNjZoguHVctKDDibsFhSco7Vr3Uct3/vLgUnqWf5pSH
-BeDe3bnPf3mQDctXidvzJ531wB6qn5gzRVnm61OagVAYl9hsqqvl2x+W1HtmdBat
-atChme2C+g38zizPNc3NW2TUVyHfu1g/soLi6oBu9gMWHOBk5VN7bdJznee2S5Zs
-r13UN7mGyYsak0piDDVBEAGCldIqx5PnbIJQN5RHqdwc74Se8Pfw+FsYEYKyctI3
-uomzTcQ4NANKOWB13agtz7EprZhicezMx1m7fRNxD6DJ18ic33nCj/0Imw750KqR
-ckg17OW+jzrKdISJ/9utvTL8yxdUa1N+4lRBn4rEPtIrnkZCvBqlKHG6UNWwq9y1
-vXBBRCzY/IO8zBLsjIVu
-=IGOa
------END PGP SIGNATURE-----
-
---oC1+HKm2/end4ao3--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
