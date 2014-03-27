@@ -1,78 +1,58 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH] Revert "serial: clps711x: Give a chance to perform useful tasks during wait loop"
-Date: Thu, 27 Mar 2014 13:38:19 +0400
-Message-ID: <1395913099-30131-1-git-send-email-shc_work@mail.ru>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback5.mail.ru ([94.100.176.59]:36519 "EHLO
-	fallback5.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753406AbaC0Jkf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Mar 2014 05:40:35 -0400
-Received: from smtp2.mail.ru (smtp2.mail.ru [94.100.176.130])
-	by fallback5.mail.ru (mPOP.Fallback_MX) with ESMTP id EFAFD111D79DE
-	for <linux-serial@vger.kernel.org>; Thu, 27 Mar 2014 13:38:48 +0400 (MSK)
-Sender: linux-serial-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2] serial_core: Fix pm imbalance on unbind
+Date: Thu, 27 Mar 2014 11:40:39 +0100
+Message-ID: <1395916839-11502-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alexander Shiyan <shc_work@mail.ru>
 
-This reverts commit 63e3ad3252695a2b8c01b6f6c225e4537af08b85,
-since this not works as expected and produce runtime error:
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-BUG: sleeping function called from invalid context at drivers/tty/serial/clps711x.c:379
-in_atomic(): 0, irqs_disabled(): 128, pid: 287, name: mount
+When a serial port is closed, uart_close() takes care of shutting down the
+hardware, and powering it down.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+When a serial port is unbound while in use, uart_close() bypasses all of
+this, as this is supposed to be done through uart_hangup() (invoked via
+tty_vhangup() in uart_remove_one_port()).
+
+However, uart_hangup() does not set the hardware's power state, leaving it
+powered up.  This may also lead to unbounded nesting counts in clock and
+power management, depending on their internal implementation.
+
+Make sure to power down the port in uart_hangup(), except when the port is
+used as a serial console.
+
+For serial consoles, this operation must be postponed until after the port
+becomes completely unused. This case is not fixed yet, as it depends on a
+(future) fix for the tty->count vs. port->count imbalance on failed
+uart_open().
+
+After this, the module clock used by the sh-sci driver is disabled on
+unbind while the serial port is in use.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/clps711x.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+v2:
+  - Drop serial console case, as this needs other fixes first
 
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index 5e6fdb1..14aaea0 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -368,16 +368,12 @@ static const struct uart_ops uart_clps711x_ops = {
- static void uart_clps711x_console_putchar(struct uart_port *port, int ch)
- {
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
-+	u32 sysflg = 0;
- 
- 	/* Wait for FIFO is not full */
--	while (1) {
--		u32 sysflg = 0;
--
-+	do {
- 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
--		if (!(sysflg & SYSFLG_UTXFF))
--			break;
--		cond_resched();
--	}
-+	} while (sysflg & SYSFLG_UTXFF);
- 
- 	writew(ch, port->membase + UARTDR_OFFSET);
- }
-@@ -387,18 +383,14 @@ static void uart_clps711x_console_write(struct console *co, const char *c,
- {
- 	struct uart_port *port = clps711x_uart.state[co->index].uart_port;
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
-+	u32 sysflg = 0;
- 
- 	uart_console_write(port, c, n, uart_clps711x_console_putchar);
- 
- 	/* Wait for transmitter to become empty */
--	while (1) {
--		u32 sysflg = 0;
--
-+	do {
- 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
--		if (!(sysflg & SYSFLG_UBUSY))
--			break;
--		cond_resched();
--	}
-+	} while (sysflg & SYSFLG_UBUSY);
- }
- 
- static int uart_clps711x_console_setup(struct console *co, char *options)
+ drivers/tty/serial/serial_core.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2cf5649a6dc0..0cec51ce8902 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1452,6 +1452,8 @@ static void uart_hangup(struct tty_struct *tty)
+ 		clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 		tty_port_tty_set(port, NULL);
++		if (!uart_console(state->uart_port))
++			uart_change_pm(state, UART_PM_STATE_OFF);
+ 		wake_up_interruptible(&port->open_wait);
+ 		wake_up_interruptible(&port->delta_msr_wait);
+ 	}
 -- 
-1.8.3.2
+1.7.9.5
 
