@@ -1,64 +1,34 @@
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 4/7] tty: serial: replace del_timer by del_timer_sync
-Date: Wed, 26 Mar 2014 22:33:42 +0100
-Message-ID: <1395869625-15209-5-git-send-email-Julia.Lawall@lip6.fr>
-References: <1395869625-15209-1-git-send-email-Julia.Lawall@lip6.fr>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 10/11] Revert "serial: omap: unlock the port lock"
+Date: Wed, 26 Mar 2014 20:39:11 -0400
+Message-ID: <5333732F.6040803@hurleysoftware.com>
+References: <1395343807-21618-1-git-send-email-balbi@ti.com> <1395343807-21618-10-git-send-email-balbi@ti.com> <20140325182856.GA31906@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1395869625-15209-1-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <20140325182856.GA31906@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel-janitors@vger.kernel.org, tglx@linutronix.de, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+On 03/25/2014 02:28 PM, Tony Lindgren wrote:
+> * Felipe Balbi <balbi@ti.com> [140320 12:39]:
+>> This reverts commit 0324a821029e1f54e7a7f8fed48693cfce42dc0e.
+>>
+>> That commit tried to fix a deadlock problem when using
+>> hci_ldisc, but it turns out the bug was in hci_ldsic
+>> all along where it was calling ->write() from within
+>> ->write_wakeup() callback.
+>>
+>> The problem is that ->write_wakeup() was called with
+>> port lock held and ->write() tried to grab the same
+>> port lock.
+>
+> Should this and the next patch be earlier in the series
+> as a fix for the v3.15-rc cycle? Should they be cc: stable
+> as well?
 
-Use del_timer_sync to ensure that the timer is stopped on all CPUs before
-the driver exists.
-
-This change was suggested by Thomas Gleixner.
-
-The semantic patch that makes this change is as follows:
-(http://coccinelle.lip6.fr/)
-
-// <smpl>
-@r@
-declarer name module_exit;
-identifier ex;
-@@
-
-module_exit(ex);
-
-@@
-identifier r.ex;
-@@
-
-ex(...) {
-  <...
-- del_timer
-+ del_timer_sync
-    (...)
-  ...>
-}
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
----
-Not tested.
-
- drivers/tty/serial/mux.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
-index 7fd6aaa..19845e3 100644
---- a/drivers/tty/serial/mux.c
-+++ b/drivers/tty/serial/mux.c
-@@ -613,7 +613,7 @@ static void __exit mux_exit(void)
- {
- 	/* Delete the Mux timer. */
- 	if(port_cnt > 0) {
--		del_timer(&mux_timer);
-+		del_timer_sync(&mux_timer);
- #ifdef CONFIG_SERIAL_MUX_CONSOLE
- 		unregister_console(&mux_console);
- #endif
+Well, right now the other fix has had _zero_ testing
+so not really a -stable candidate just yet.
