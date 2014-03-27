@@ -1,17 +1,17 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH resend] serial_core: Fix pm imbalance on unbind
-Date: Thu, 27 Mar 2014 09:38:36 +0100
-Message-ID: <CAMuHMdVQBTiZDdY_2Y+uaYUiAA9jVOCOf5okZuKj1QxVSMZVyQ@mail.gmail.com>
+Date: Thu, 27 Mar 2014 09:38:06 +0100
+Message-ID: <CAMuHMdW5R=fQLQiiz8YHwn8ZJe3znrtGExRG52haUfUkzWzsyA@mail.gmail.com>
 References: <1395392905-29569-1-git-send-email-geert@linux-m68k.org>
 	<532C394A.3050408@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:37314 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752166AbaC0Iih (ORCPT
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:46530 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754338AbaC0IjC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Mar 2014 04:38:37 -0400
+	Thu, 27 Mar 2014 04:39:02 -0400
 In-Reply-To: <532C394A.3050408@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
