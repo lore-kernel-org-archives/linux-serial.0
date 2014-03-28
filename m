@@ -1,89 +1,55 @@
-From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
-Subject: RE: [PATCH 10/11] Revert "serial: omap: unlock the port lock"
-Date: Thu, 27 Mar 2014 14:54:49 +0000
-Message-ID: <3E54258959B69E4282D79E01AB1F32B7046EF530@DFLE11.ent.ti.com>
-References: <1395343807-21618-1-git-send-email-balbi@ti.com>
- <1395343807-21618-10-git-send-email-balbi@ti.com>
- <20140325182856.GA31906@atomide.com> <5333732F.6040803@hurleysoftware.com>
- <20140327021043.GB11651@saruman.home> <53338C81.3060600@hurleysoftware.com>
- <20140327033724.GB13038@saruman.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140327033724.GB13038@saruman.home>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Balbi, Felipe" <balbi@ti.com>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Tony Lindgren <tony@atomide.com>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>, "b32955@freescale.com" <b32955@freescale.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH] serial: st-asc: Fix SysRq char handling
+Date: Fri, 28 Mar 2014 10:51:12 +0000
+Message-ID: <1396003872-30188-1-git-send-email-daniel.thompson@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:62871 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751992AbaC1KvQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Mar 2014 06:51:16 -0400
+Received: by mail-wg0-f46.google.com with SMTP id b13so3464289wgh.29
+        for <linux-serial@vger.kernel.org>; Fri, 28 Mar 2014 03:51:15 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: daniel.thompson@linaro.org, linux-serial@vger.kernel.org
+Cc: patches@linaro.org, linaro-kernel@lists.linaro.org
 
->-----Original Message-----
->From: Balbi, Felipe
->Sent: Wednesday, March 26, 2014 11:37 PM
->To: Peter Hurley
->Cc: Balbi, Felipe; Tony Lindgren; Greg KH; linux-serial@vger.kernel.or=
-g; linux-
->bluetooth@vger.kernel.org; Karicheri, Muralidharan; b32955@freescale.c=
-om; Linux OMAP
->Mailing List; Linux Kernel Mailing List
->Subject: Re: [PATCH 10/11] Revert "serial: omap: unlock the port lock"
->
->Hi,
->
->On Wed, Mar 26, 2014 at 10:27:13PM -0400, Peter Hurley wrote:
->> On 03/26/2014 10:10 PM, Felipe Balbi wrote:
->> >Hi,
->> >
->> >On Wed, Mar 26, 2014 at 08:39:11PM -0400, Peter Hurley wrote:
->> >>On 03/25/2014 02:28 PM, Tony Lindgren wrote:
->> >>>* Felipe Balbi <balbi@ti.com> [140320 12:39]:
->> >>>>This reverts commit 0324a821029e1f54e7a7f8fed48693cfce42dc0e.
->> >>>>
->> >>>>That commit tried to fix a deadlock problem when using hci_ldisc=
-,
->> >>>>but it turns out the bug was in hci_ldsic all along where it was
->> >>>>calling ->write() from within
->> >>>>->write_wakeup() callback.
->> >>>>
->> >>>>The problem is that ->write_wakeup() was called with port lock
->> >>>>held and ->write() tried to grab the same port lock.
->> >>>
->> >>>Should this and the next patch be earlier in the series as a fix
->> >>>for the v3.15-rc cycle? Should they be cc: stable as well?
->> >>
->> >>Well, right now the other fix has had _zero_ testing so not really=
- a
->> >>-stable candidate just yet.
->> >
->> >how can you even say that ?
->>
->> I misunderstood when you wrote:
->>
->> On 03/20/2014 02:11 PM, Felipe Balbi wrote:
->> > here's a build-tested only patch which is waiting for testing from
->> > other colleagues who've got a platform to reproduce the problem:
->>
->> and then the version I reviewed had no Tested-by: tags.
->
->I wouldn't add that tag myself, but Murali (in Cc) did help testing to=
-gether with other
+This driver, like several others, uses the upper bits of the character
+to track both real and dummy state. Unfortunately it neglects to mask
+these bits properly when passing the character data around. This means
+neither break detection nor sysrq character handling work correctly.
 
-Yes. One of our customer did the test as the problem was reported by th=
-e
-customer. The deadlock fix patch from Balbi (hci_ldsic) fixed the issue=
-=20
-and customer confirmed that the issue is fixed.
+This patch adds the requires masking and has been tested to confirm
+that it correctly handles magic sysrq sequences on ST's B2020 board.
 
-Murali
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+ drivers/tty/serial/st-asc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->colleagues.
->
->> >How else would we have found the issue to start with ?
->>
->> Bug report?
->
->touch=E8 :-)
->
->--
->balbi
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 21e6e84..dd3a96e 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -295,7 +295,7 @@ static void asc_receive_chars(struct uart_port *port)
+ 			status & ASC_STA_OE) {
+ 
+ 			if (c & ASC_RXBUF_FE) {
+-				if (c == ASC_RXBUF_FE) {
++				if (c == (ASC_RXBUF_FE | ASC_RXBUF_DUMMY_RX)) {
+ 					port->icount.brk++;
+ 					if (uart_handle_break(port))
+ 						continue;
+@@ -325,7 +325,7 @@ static void asc_receive_chars(struct uart_port *port)
+ 				flag = TTY_FRAME;
+ 		}
+ 
+-		if (uart_handle_sysrq_char(port, c))
++		if (uart_handle_sysrq_char(port, c & 0xff))
+ 			continue;
+ 
+ 		uart_insert_char(port, c, ASC_RXBUF_DUMMY_OE, c & 0xff, flag);
+-- 
+1.9.0
+
