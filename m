@@ -1,19 +1,19 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: [PATCH] serial: st-asc: Fix SysRq char handling
-Date: Fri, 28 Mar 2014 10:51:12 +0000
-Message-ID: <1396003872-30188-1-git-send-email-daniel.thompson@linaro.org>
+Date: Fri, 28 Mar 2014 10:53:10 +0000
+Message-ID: <1396003990-30228-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f46.google.com ([74.125.82.46]:62871 "EHLO
-	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751992AbaC1KvQ (ORCPT
+Received: from mail-wi0-f169.google.com ([209.85.212.169]:49371 "EHLO
+	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751290AbaC1Kxv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Mar 2014 06:51:16 -0400
-Received: by mail-wg0-f46.google.com with SMTP id b13so3464289wgh.29
-        for <linux-serial@vger.kernel.org>; Fri, 28 Mar 2014 03:51:15 -0700 (PDT)
+	Fri, 28 Mar 2014 06:53:51 -0400
+Received: by mail-wi0-f169.google.com with SMTP id hm4so606561wib.2
+        for <linux-serial@vger.kernel.org>; Fri, 28 Mar 2014 03:53:49 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: daniel.thompson@linaro.org, linux-serial@vger.kernel.org
-Cc: patches@linaro.org, linaro-kernel@lists.linaro.org
+To: linux-serial@vger.kernel.org
+Cc: patches@linaro.org, linaro-kernel@lists.linaro.org, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
 This driver, like several others, uses the upper bits of the character
 to track both real and dummy state. Unfortunately it neglects to mask
