@@ -1,50 +1,74 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH] serial: mux: Align SUPPORT_SYSRQ behaviour with other drivers.
-Date: Fri, 28 Mar 2014 11:41:38 +0000
-Message-ID: <1396006898-31624-1-git-send-email-daniel.thompson@linaro.org>
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH 0/8] Generic serial earlycon
+Date: Fri, 28 Mar 2014 17:17:32 -0700
+Message-ID: <20140329001732.BECE2C41FF4@trevor.secretlab.ca>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com> < 201403221054.39799.arnd@arndb.de> < CAL_JsqKjGjyYypwneCmNc1qeKe0ZOG9gz3QSJ37-HwHXKu3iRA@mail.gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:34511 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751984AbaC1LmN (ORCPT
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:63561 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751368AbaC2ARh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 28 Mar 2014 07:42:13 -0400
-Received: by mail-wg0-f44.google.com with SMTP id m15so3416108wgh.3
-        for <linux-serial@vger.kernel.org>; Fri, 28 Mar 2014 04:42:12 -0700 (PDT)
+	Fri, 28 Mar 2014 20:17:37 -0400
+Received: by mail-ig0-f178.google.com with SMTP id hn18so1522584igb.11
+        for <linux-serial@vger.kernel.org>; Fri, 28 Mar 2014 17:17:36 -0700 (PDT)
+In-Reply-To: <CAL_JsqKjGjyYypwneCmNc1qeKe0ZOG9gz3QSJ37-HwHXKu3iRA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: patches@linaro.org, linaro-kernel@lists.linaro.org, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Jiri Kosina <trivial@kernel.org>
+To: Rob Herring <robherring2@gmail.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, "x86@kernel.org" <x86@kernel.org>
 
-The mux driver is anomalous among all the serial drivers that can
-define SUPPORT_SYSRQ because it can, with some configs, set
-SUPPORT_SYSRQ when SERIAL_CORE_CONSOLE is not set.
+On Sat, 22 Mar 2014 09:14:31 -0500, Rob Herring <robherring2@gmail.com> wrote:
+> On Sat, Mar 22, 2014 at 4:54 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Friday 21 March 2014, Rob Herring wrote:
+> >> From: Rob Herring <robh@kernel.org>
+> >>
+> >> This started out as an attempt to add arm64's earlyprintk support to ARM
+> >> in order to get an earlier, runtime setup console on multi-platform
+> >> kernels. The first issue was needing the fixmap support which
+> >> conveniently Mark Salter was working on and is mostly in place now. Like
+> >> many things on ARM and arm64 now, it then became where do I put the now
+> >> common, shared code. After digging more into various early console/printk
+> >> support, it turns out the 8250_early.c setup code was the best starting
+> >> point.
+> >>
+> >> This is based on Mark Salter's fixmap support currently in linux-next.
+> >> This is tested on arm64 and ARM with pl011 and 8250. The ARM support
+> >> also requires fixmap and fixed mapping support which are not yet in place.
+> >> I have some patches in my tree to support fixmap, but they need some more
+> >> work. Fortunately, once fixmap is in place, it is just a Kconfig option
+> >> to enable earlycon support on ARM. A git tree is available here[1].
+> >>
+> >> Based on this series, I would like to add support for doing earlycon
+> >> setup using DT.
+> >
+> > Hi Rob,
+> >
+> > I like this series a lot, great work!
+> >
+> > I would consider the DT parsing support essential here, we should not
+> > merge the patches until that is done as well, because I don't want
+> > to see users pass earlycon command line options in DT when they can
+> > use the established "linux,stdout-path" property instead. I would
+> > expect that in almost every case in which we are booting using DT
+> > today, we can just use linux,stdout-path to locate the device that
+> > the boot loader has already set up and start usign it.
+> 
+> I think this series stands on its own. It is largely refactoring
+> existing code and supporting existing command line options (arm64 just
+> changes from earlyprintk= to earlycon=). There will be cases where
+> changing the kernel command line is the only way to setup the
+> earlycon. Also, I think we would still want the kernel command line to
+> control whether or not we enable the earlycon (i.e. earlycon=dt).
+> There's not a standard way for how bootloaders would decide to set
+> "linux,stdout-path" or not.
 
-Not only does this impose a pointless (but tiny) runtime overhead for
-such configs but, more significantly, it adds needless complexity when
-doing a code review to check for unexpected side effects of any
-changes to the serial core.
+I agree. I really like this series and I don't think it needs to wait
+for DT parsing.
 
-This is (cross-)compile tested only because I do not have any PA-RISC
-hardware.
+Another issue is that the earlycon assumes the port is already set up,
+but the /chosen/stdout-path binding doesn't guarantee that. We'll have
+to make sure the kernel knows when it is valid to use
+/chosen/stdout-path before enabling an early console.
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
----
- drivers/tty/serial/mux.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
-index 7fd6aaa..9b27d34 100644
---- a/drivers/tty/serial/mux.c
-+++ b/drivers/tty/serial/mux.c
-@@ -29,7 +29,7 @@
- #include <asm/irq.h>
- #include <asm/parisc-device.h>
- 
--#ifdef CONFIG_MAGIC_SYSRQ
-+#if defined(CONFIG_SERIAL_MUX_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
- #include <linux/sysrq.h>
- #define SUPPORT_SYSRQ
- #endif
--- 
-1.9.0
+g.
 
