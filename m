@@ -1,65 +1,45 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: Re: [PATCH 1/2] TTY: pmac_zilog, check existence of ports in
- pmz_console_init()
-Date: Sun, 30 Mar 2014 17:46:27 +0100
-Message-ID: <1396197987.2898.107.camel@deadeye.wl.decadent.org.uk>
-References: <1385135247-9068-1-git-send-email-geert@linux-m68k.org>
-	 <CAMuHMdVcqiNQiMHD3pgRWUzt7n3+F0dwmeXVnmZtgCxyo=GmFw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-QLTcni1/4CI/WtFmZlQx"
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/1] serial: 8250, disable "too much work" messages
+Date: Tue,  1 Apr 2014 13:37:00 +0200
+Message-ID: <1396352220-5031-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdVcqiNQiMHD3pgRWUzt7n3+F0dwmeXVnmZtgCxyo=GmFw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, stable <stable@vger.kernel.org>, linux-serial@vger.kernel.org, Linux/m68k <linux-m68k@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Finn Thain <fthain@telegraphics.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
+The 8250 driver now reports many of these:
+  serial8250: too much work for irq4
+These messages turned out to be common these days with a use of
+virtualization. I tried to increase the limit of processed characters
+in commit e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial: 8250,
+increase PASS_LIMIT) in 2011. It was raised from 256 to 512, but it is
+still not enough, apparently.
 
---=-QLTcni1/4CI/WtFmZlQx
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+So disable the warning unless somebody turns on DEBUG (or
+DYNAMIC_DEBUG _and_ the message).
 
-On Tue, 2013-12-24 at 15:39 +0100, Geert Uytterhoeven wrote:
-> On Fri, Nov 22, 2013 at 4:47 PM, Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> > When booting a multi-platform m68k kernel on a non-Mac with "console=3D=
-ttyS0"
-> > on the kernel command line, it crashes with:
->=20
-> Can we please get this in stable, too?
->=20
-> commit dc1dc2f8a5dd863bf2e79f338fc3ae29e99c683a
-[...]
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: Martin Pluskal <mpluskal@suse.com>
+Reported-by: Takashi Iwai <tiwai@suse.com>
+References: https://bugzilla.novell.com/show_bug.cgi?id=868394
+---
+ drivers/tty/serial/8250/8250_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I've queued this up for 3.2; sorry for the delay.
-
-Ben.
-
---=20
-Ben Hutchings
-If more than one person is responsible for a bug, no one is at fault.
-
---=-QLTcni1/4CI/WtFmZlQx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIVAwUAUzhKY+e/yOyVhhEJAQoCgQ//d0eD2jEhagQ3aCkR/zgGpuaFKr8abPwy
-DnkrD2cXoFZ+ULvFK5mWlGsqR/rnwCjCfkZQ7W4MVUCb7zSOXZbPGTKbiwgmrrjr
-7KOZxtQqRlBdg1bEan5ZDzz1K0koJ+/7fXJHbweGfWZP1vLOT8uAW3C4Ltl58jJJ
-4iPceV6iKl35S+PLkCXwh+IPAV7Zv+KdQHkpE/U1ElGLvBI1RH1md1hzk4uBQ7me
-BomNsZjMcH1eN0tH+dfhMXPhHBE1ylstMG8FHvrVgC69q7Y7/cfRRtSIxTWP3rwL
-YjZvSiBy4skIEpB6MTqT1aYMtZY2vOuNrmnqhqabqWQJgKPRQRoszmLstCVniDob
-ruGXZlDLZ0w9GUHTlaSb8JmxTsOM1X7VdykIkaJto3VO20aHcmHAuoMrIogmG8ha
-fxO9XU21dAYLsvdAmkfu6SghUZngkke8YpTLPsxjIjqL+QGEgUMlRRY1Cz3/MrOv
-J8sc375x/U/gDSn6jMmLMXktlE1LezNXh7bi0bsONUuGouMPiuEGiL48vcnBr1IY
-uZCMW99vDY579UGbxBQHhs189xtAutx7zSB5g6nQUWVwfqKx3qobsqZelI/2fDHo
-Fs2ssq/7Lp8QyUjdIohEgmC+RjFza/4mjYYmxecY7v8A/5od2NaEBSUPGrf6ak8s
-tBvdUtaLxGk=
-=wZdD
------END PGP SIGNATURE-----
-
---=-QLTcni1/4CI/WtFmZlQx--
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 81f909c2101f..139ab1997e06 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1601,8 +1601,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 		l = l->next;
+ 
+ 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+-			/* If we hit this, we're dead. */
+-			printk_ratelimited(KERN_ERR
++			pr_debug_ratelimited(
+ 				"serial8250: too much work for irq%d\n", irq);
+ 			break;
+ 		}
+-- 
+1.9.1
