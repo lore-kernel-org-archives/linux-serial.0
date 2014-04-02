@@ -1,104 +1,71 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] RFC: MFD: driver for Atmel Microcontroller on iPaq h3xxx
-Date: Wed, 2 Apr 2014 13:14:40 +0100
-Message-ID: <20140402121440.GF18518@lee--X1>
-References: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
- <20140217092155.GB17875@lee--X1>
- <CACRpkdZ5YQoV3zxXiF5H-nxf-Kz_YiETvLsbJ9pkT=ueZ=VJSQ@mail.gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 1/1] serial: 8250, disable "too much work" messages
+Date: Wed, 02 Apr 2014 11:45:51 +0200
+Message-ID: <533BDC4F.3060903@suse.cz>
+References: <1396352220-5031-1-git-send-email-jslaby@suse.cz> <20140401144057.63b3ceb5@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f52.google.com ([74.125.82.52]:43335 "EHLO
-	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758609AbaDBMOq (ORCPT
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:56450 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758062AbaDBJpy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Apr 2014 08:14:46 -0400
-Received: by mail-wg0-f52.google.com with SMTP id k14so114891wgh.35
-        for <linux-serial@vger.kernel.org>; Wed, 02 Apr 2014 05:14:45 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CACRpkdZ5YQoV3zxXiF5H-nxf-Kz_YiETvLsbJ9pkT=ueZ=VJSQ@mail.gmail.com>
+	Wed, 2 Apr 2014 05:45:54 -0400
+In-Reply-To: <20140401144057.63b3ceb5@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Alessandro Gardich <gremlin@gremlin.it>, Dmitry Artamonow <mad_soft@inbox.ru>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> > Does it matter that you're using:
-> >
-> >   module_platform_driver();
-> >
-> > ... yet you can't build this as a module?
->=20
-> I think it's a conceptual thing. Module means two things (IIUC):
-> (a) it is a run-time loadable module
-> (b) it's a piece of compartmentalized code
->=20
-> In this case the macro refers to (b). module_platform_driver()
-> resolves to module_driver() from <linux/device.h>
-> and it's clearly a core part of the device core and available
-> no matter whether the file is used as module at runtime or not.
-> It just simplifies the initcalls and that's no different depending
-> on whether the code is compiled-in or used as module.
+On 04/01/2014 03:40 PM, One Thousand Gnomes wrote:
+> On Tue,  1 Apr 2014 13:37:00 +0200
+> Jiri Slaby <jslaby@suse.cz> wrote:
+> 
+>> The 8250 driver now reports many of these:
+>>   serial8250: too much work for irq4
+>> These messages turned out to be common these days with a use of
+>> virtualization. I tried to increase the limit of processed characters
+>> in commit e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial: 8250,
+>> increase PASS_LIMIT) in 2011. It was raised from 256 to 512, but it is
+>> still not enough, apparently.
+> 
+> A lot of emulations model the queue completely incorrectly. However
+> simply hiding it with a pr_debug is the wrong answer - it wants fixing.
+> 
+> If we set a large PASS_LIMIT then it's not going to be a big loss on real
+> hardware - we'll burp for a second or two and continue, but it ought to
+> cure the virtualisation case.
+> 
+> If it doesn't we've got a bigger problem because it means we are jammed
+> in the kernel spinning in an IRQ handler feeding data to a fake serial
+> port that never stops being an IRQ and we end up hanging the virtualised
+> OS for a long period
+> 
+> If that is happening then we need to actually workaround whatever
+> crapware emulator is triggering it so we don't hang the guest for long
+> periods if there is a big I/O.
+> 
+> If its a real port that is jammed our normal time around the loop on the
+> LPC bus is going to be a shade over 24uS (32uS if TX is jammed on)
+> 
+> So we certainly ought to be able to go a bit higher without major
+> crisis. Beyond that if it is still tripping then instead of whining we
+> need to set IIR_NO_INT and set a polling timer to turn the IRQ back on
+> next timer tick. That way a crappy emulated port can't hang the guest
+> with a continual stream of data and a busted real one might actually sort
+> out.
 
-=46air enough.
+So, according to Takashi's measurements, we would need over 15000 loops
+on a single port. Of course, this value is highly dependent on a system.
+On my system, it is like 7 times lower (2100). And it lasts ~300ms here.
 
-> >> +     case MSG_KEYBOARD:
-> >> +             if (micro->key !=3D NULL)
-> >
-> > !micro->key
->=20
-> I guess you mean if (micro->key) {} rather than the !invert,
-> but I get it, changed everywhere we check for !=3D NULL like this.
+I suppose a limit like 32k loops is way too much and I just should go
+and implement the polling. Or what about adding inter-character sleeps
+to qemu to correspond to the speed? I can do that too, but I am not sure
+if limiting the throughput will be accepted by them.
 
-Yes sorry, I'm so used to seeing (thing =3D=3D NULL), but you knew what=
- I
-meant.
-
-[...]
-
-> >> +static int micro_suspend(struct device *dev)
-> >> +{
-> >> +     return 0;
-> >> +}
-> >
-> > Doesn't the PM framework check for NULL .suspend?
->=20
-> No it's just like:
->=20
-> #ifdef CONFIG_SUSPEND
->         case PM_EVENT_SUSPEND:
->                 return ops->suspend;
->         case PM_EVENT_RESUME:
->                 return ops->resume;
-> #endif /* CONFIG_SUSPEND */
->=20
-> (drivers/power/main.c)
-
-  base/ ---^
-
-Right, but a NULL return _is_ valid from here and is subsequently dealt
-with in the correct way.
-
-[...]
-        callback =3D pm_op(dev->type->pm, state);
-        goto Driver;
-
-[...]
-
-Driver:
-       if (!callback && dev->driver && dev->driver->pm) {
-               info =3D "driver ";
-               callback =3D pm_op(dev->driver->pm, state);
-       }
-[...]
-
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+thanks,
+-- 
+js
+suse labs
