@@ -1,68 +1,197 @@
-From: jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org
-Subject: [PATCH v4 2/2] serial: sc16is7xx: Add bindings documentation for the SC16IS7XX UARTs
-Date: Thu,  3 Apr 2014 00:49:15 -0400
-Message-ID: <1396500555-28873-2-git-send-email-jon@ringle.org>
-References: <1396500555-28873-1-git-send-email-jon@ringle.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1396500555-28873-1-git-send-email-jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] RFC: MFD: driver for Atmel Microcontroller on iPaq h3xxx
+Date: Wed, 2 Apr 2014 09:38:47 +0200
+Message-ID: <CACRpkdZ5YQoV3zxXiF5H-nxf-Kz_YiETvLsbJ9pkT=ueZ=VJSQ@mail.gmail.com>
+References: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
+	<20140217092155.GB17875@lee--X1>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140217092155.GB17875@lee--X1>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Alessandro Gardich <gremlin@gremlin.it>, Dmitry Artamonow <mad_soft@inbox.ru>
 List-Id: linux-serial@vger.kernel.org
 
-From: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
+On Mon, Feb 17, 2014 at 10:21 AM, Lee Jones <lee.jones@linaro.org> wrote:
 
-This patch adds the devicetree documentation for the NXP SC16IS7XX UARTs.
+>> +#include <linux/module.h>
+>
+> Does it matter that you're using:
+>
+>   module_platform_driver();
+>
+> ... yet you can't build this as a module?
 
-Signed-off-by: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>
----
- .../devicetree/bindings/serial/nxp,sc16is7xx.txt   | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+I think it's a conceptual thing. Module means two things (IIUC):
+(a) it is a run-time loadable module
+(b) it's a piece of compartmentalized code
 
-diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-new file mode 100644
-index 0000000..246c795
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-@@ -0,0 +1,33 @@
-+* NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
-+
-+Required properties:
-+- compatible: Should be one of the following:
-+  - "nxp,sc16is740" for NXP SC16IS740,
-+  - "nxp,sc16is741" for NXP SC16IS741,
-+  - "nxp,sc16is750" for NXP SC16IS750,
-+  - "nxp,sc16is752" for NXP SC16IS752,
-+  - "nxp,sc16is760" for NXP SC16IS760,
-+  - "nxp,sc16is762" for NXP SC16IS762.
-+- reg: I2C address of the SC16IS7xx device.
-+- interrupt-parent: The phandle for the interrupt controller that
-+  services interrupts for this IC.
-+- interrupts: Should contain the UART interrupt
-+- clocks: Reference to the IC source clock.
-+
-+Optional properties:
-+- gpio-controller: Marks the device node as a GPIO controller.
-+- #gpio-cells: Should be two. The first cell is the GPIO number and
-+  the second cell is used to specify the GPIO polarity:
-+    0 = active high,
-+    1 = active low.
-+
-+Example:
-+        sc16is750: sc16is750@51 {
-+                compatible = "nxp,sc16is750";
-+                reg = <0x51>;
-+                clocks = <&clk20m>;
-+                interrupt-parent = <&gpio3>;
-+                interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+        };
--- 
-1.8.5.4
+In this case the macro refers to (b). module_platform_driver()
+resolves to module_driver() from <linux/device.h>
+and it's clearly a core part of the device core and available
+no matter whether the file is used as module at runtime or not.
+It just simplifies the initcalls and that's no different depending
+on whether the code is compiled-in or used as module.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> +     case MSG_KEYBOARD:
+>> +             if (micro->key != NULL)
+>
+> !micro->key
+
+I guess you mean if (micro->key) {} rather than the !invert,
+but I get it, changed everywhere we check for != NULL like this.
+
+>> +                     micro->key(micro->key_data, len, data);
+>> +             else
+>> +                     dev_dbg(micro->dev, "ipaq micro : key message ignored, "
+>> +                             "no handle \n");
+>
+> Log print spread over two lines. Doesn't Checkpatch complain about
+> this?
+
+Rather the other way around but you're right, it's better if
+we keep it on one line so changed messages to a single oneliner
+everywhere.
+
+>> +static void micro_tx_chars(struct ipaq_micro *micro)
+>> +{
+>> +     struct ipaq_micro_txdev *tx = &micro->tx;
+>> +     u32 val;
+>> +
+>> +     while ((tx->index < tx->len) &&
+>> +            (readl(micro->base + UTSR1) & UTSR1_TNF)) {
+>> +             writel(tx->buf[tx->index], micro->base + UTDR);
+>
+> This is pretty messy. Better broken out? Your call.
+
+The best I can think of is converting to a for-loop but that
+is just as hard to read I think :-/
+
+Breaking out the readl() invitably result in two lines of code
+like reading the flag before entering the while and once inside
+the loop which is nastier IMO.
+
+>> +static struct mfd_cell micro_cells[] = {
+>> +     {
+>> +             .name = "ipaq-micro-backlight",
+>> +     },
+>> +     {
+>> +             .name = "ipaq-micro-battery",
+>> +     },
+>> +     {
+>> +             .name = "ipaq-micro-keys",
+>> +     },
+>> +     {
+>> +             .name = "ipaq-micro-ts",
+>> +     },
+>> +     {
+>> +             .name = "ipaq-micro-leds",
+>> +     },
+>> +};
+>
+> Is Device Tree ever going to be supported on the iPAC?
+
+No clue.
+
+> If not, I think
+> it's okay for you to make these single line entries.
+
+OK doing that for now.
+
+>> +static int micro_suspend(struct device *dev)
+>> +{
+>> +     return 0;
+>> +}
+>
+> Doesn't the PM framework check for NULL .suspend?
+
+No it's just like:
+
+#ifdef CONFIG_SUSPEND
+        case PM_EVENT_SUSPEND:
+                return ops->suspend;
+        case PM_EVENT_RESUME:
+                return ops->resume;
+#endif /* CONFIG_SUSPEND */
+
+(drivers/power/main.c)
+
+>> +module_platform_driver(micro_device_driver);
+>
+> It may seem silly for these piece of h/w, but don't we have a 'no new
+> device drivers without DT support rule'?
+
+It's more like a "no new sub-architectures without DT support".
+
+The SA1100 systems (such as this H3600 iPAQ) are in a "legacy"
+category of architectures, that will probably never get converted
+over to device tree. But they are compartmentalized so they're OK.
+
+>> +static inline int
+>> +ipaq_micro_tx_msg_sync(struct ipaq_micro *micro,
+>> +                    struct ipaq_micro_msg *msg)
+>> +{
+>> +     int ret;
+>> +
+>> +     init_completion(&msg->ack);
+>> +     ret = ipaq_micro_tx_msg(micro, msg);
+>> +     wait_for_completion(&msg->ack);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static inline int
+>> +ipaq_micro_tx_msg_async(struct ipaq_micro *micro,
+>> +                     struct ipaq_micro_msg *msg)
+>> +{
+>> +     init_completion(&msg->ack);
+>> +     return ipaq_micro_tx_msg(micro, msg);
+>> +}
+>
+> Why are these in here? Where else are they called from?
+
+This MFD driver provided infrastructure for all the subdrivers, LEDs,
+keys etc.
+
+These may want to send messages through the core and wait for
+the message to come back, or they may want to send off a
+message and await its completion at another time. Since the
+most common is to send the message and then immediately
+wait for it to complete, but sometimes not, these inline helpers
+are provided.
+
+Example use in the battery driver:
+
+static void micro_battery_work(struct work_struct *work)
+{
+(...)
+        struct ipaq_micro_msg msg_battery = {
+                .id = MSG_BATTERY,
+        };
+(...)
+
+        /* First send battery message */
+        ipaq_micro_tx_msg_sync(mb->micro, &msg_battery);
+        if (msg_battery.rx_len < 4)
+                pr_info("ERROR");
+
+        /*
+         * Returned message format:
+         * byte 0:   0x00 = Not plugged in
+         *           0x01 = AC adapter plugged in
+         * byte 1:   chemistry
+         * byte 2:   voltage LSB
+         * byte 3:   voltage MSB
+         * byte 4:   flags
+         * byte 5-9: same for battery 2
+         */
+        mb->ac = msg_battery.rx_data[0];
+(...)
+
+All other comments are fixed up.
+
+I'm sending out a v2 targeted for v3.16.
+
+Yours,
+Linus Walleij
