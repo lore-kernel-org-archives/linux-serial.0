@@ -1,197 +1,58 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] RFC: MFD: driver for Atmel Microcontroller on iPaq h3xxx
-Date: Wed, 2 Apr 2014 09:38:47 +0200
-Message-ID: <CACRpkdZ5YQoV3zxXiF5H-nxf-Kz_YiETvLsbJ9pkT=ueZ=VJSQ@mail.gmail.com>
-References: <1391175275-27347-1-git-send-email-linus.walleij@linaro.org>
-	<20140217092155.GB17875@lee--X1>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
+ modem lines
+Date: Wed, 2 Apr 2014 16:13:15 -0700
+Message-ID: <20140402231315.GD24324@kroah.com>
+References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
+ <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+ <20140317232359.GA8943@kroah.com>
+ <533C280F.3060804@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140217092155.GB17875@lee--X1>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Alessandro Gardich <gremlin@gremlin.it>, Dmitry Artamonow <mad_soft@inbox.ru>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:51111 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161080AbaDBXWZ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 2 Apr 2014 19:22:25 -0400
+Content-Disposition: inline
+In-Reply-To: <533C280F.3060804@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Richard Genoud <noreply.rgenoud@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, Feb 17, 2014 at 10:21 AM, Lee Jones <lee.jones@linaro.org> wrote:
+On Wed, Apr 02, 2014 at 05:09:03PM +0200, Richard Genoud wrote:
+> On 18/03/2014 00:23, Greg Kroah-Hartman wrote:
+> > On Mon, Mar 10, 2014 at 05:45:49PM +0100, Richard Genoud wrote:
+> >> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
+> >> GPIO.
+> >> This will be useful for many boards which have a serial controller that
+> >> only handle CTS/RTS pins (or even just RX/TX).
+> >>
+> >> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> > 
+> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > 
+> > I can't take this series through my tty tree as the non-tty patches
+> > don't apply, so feel free to take them through whatever tree is needed.
+> > 
+> > greg k-h
+> > 
+> 
+> I guess this series won't make it for 3.15, as it doesn't apply on any tree.
+> However, I'd like to know if I did something wrong, or if there's no
+> solution when a series depends on several patches that are in different
+> trees ?
 
->> +#include <linux/module.h>
->
-> Does it matter that you're using:
->
->   module_platform_driver();
->
-> ... yet you can't build this as a module?
+That's a hard problem, either wait a release cycle for everything to get
+merged properly (like should be done in time for 3.15-rc1 now) and then
+submit the code, or ask for different maintainers to either allow other
+trees to take the patches, put the patches in different trees at the
+same time, or have "topic branches" that different maintainers can pull
+from.
 
-I think it's a conceptual thing. Module means two things (IIUC):
-(a) it is a run-time loadable module
-(b) it's a piece of compartmentalized code
+Care to send me the patches after 3.15-rc1 is out, as there should not
+be any dependancy issues then, right?
 
-In this case the macro refers to (b). module_platform_driver()
-resolves to module_driver() from <linux/device.h>
-and it's clearly a core part of the device core and available
-no matter whether the file is used as module at runtime or not.
-It just simplifies the initcalls and that's no different depending
-on whether the code is compiled-in or used as module.
-
->> +     case MSG_KEYBOARD:
->> +             if (micro->key != NULL)
->
-> !micro->key
-
-I guess you mean if (micro->key) {} rather than the !invert,
-but I get it, changed everywhere we check for != NULL like this.
-
->> +                     micro->key(micro->key_data, len, data);
->> +             else
->> +                     dev_dbg(micro->dev, "ipaq micro : key message ignored, "
->> +                             "no handle \n");
->
-> Log print spread over two lines. Doesn't Checkpatch complain about
-> this?
-
-Rather the other way around but you're right, it's better if
-we keep it on one line so changed messages to a single oneliner
-everywhere.
-
->> +static void micro_tx_chars(struct ipaq_micro *micro)
->> +{
->> +     struct ipaq_micro_txdev *tx = &micro->tx;
->> +     u32 val;
->> +
->> +     while ((tx->index < tx->len) &&
->> +            (readl(micro->base + UTSR1) & UTSR1_TNF)) {
->> +             writel(tx->buf[tx->index], micro->base + UTDR);
->
-> This is pretty messy. Better broken out? Your call.
-
-The best I can think of is converting to a for-loop but that
-is just as hard to read I think :-/
-
-Breaking out the readl() invitably result in two lines of code
-like reading the flag before entering the while and once inside
-the loop which is nastier IMO.
-
->> +static struct mfd_cell micro_cells[] = {
->> +     {
->> +             .name = "ipaq-micro-backlight",
->> +     },
->> +     {
->> +             .name = "ipaq-micro-battery",
->> +     },
->> +     {
->> +             .name = "ipaq-micro-keys",
->> +     },
->> +     {
->> +             .name = "ipaq-micro-ts",
->> +     },
->> +     {
->> +             .name = "ipaq-micro-leds",
->> +     },
->> +};
->
-> Is Device Tree ever going to be supported on the iPAC?
-
-No clue.
-
-> If not, I think
-> it's okay for you to make these single line entries.
-
-OK doing that for now.
-
->> +static int micro_suspend(struct device *dev)
->> +{
->> +     return 0;
->> +}
->
-> Doesn't the PM framework check for NULL .suspend?
-
-No it's just like:
-
-#ifdef CONFIG_SUSPEND
-        case PM_EVENT_SUSPEND:
-                return ops->suspend;
-        case PM_EVENT_RESUME:
-                return ops->resume;
-#endif /* CONFIG_SUSPEND */
-
-(drivers/power/main.c)
-
->> +module_platform_driver(micro_device_driver);
->
-> It may seem silly for these piece of h/w, but don't we have a 'no new
-> device drivers without DT support rule'?
-
-It's more like a "no new sub-architectures without DT support".
-
-The SA1100 systems (such as this H3600 iPAQ) are in a "legacy"
-category of architectures, that will probably never get converted
-over to device tree. But they are compartmentalized so they're OK.
-
->> +static inline int
->> +ipaq_micro_tx_msg_sync(struct ipaq_micro *micro,
->> +                    struct ipaq_micro_msg *msg)
->> +{
->> +     int ret;
->> +
->> +     init_completion(&msg->ack);
->> +     ret = ipaq_micro_tx_msg(micro, msg);
->> +     wait_for_completion(&msg->ack);
->> +
->> +     return ret;
->> +}
->> +
->> +static inline int
->> +ipaq_micro_tx_msg_async(struct ipaq_micro *micro,
->> +                     struct ipaq_micro_msg *msg)
->> +{
->> +     init_completion(&msg->ack);
->> +     return ipaq_micro_tx_msg(micro, msg);
->> +}
->
-> Why are these in here? Where else are they called from?
-
-This MFD driver provided infrastructure for all the subdrivers, LEDs,
-keys etc.
-
-These may want to send messages through the core and wait for
-the message to come back, or they may want to send off a
-message and await its completion at another time. Since the
-most common is to send the message and then immediately
-wait for it to complete, but sometimes not, these inline helpers
-are provided.
-
-Example use in the battery driver:
-
-static void micro_battery_work(struct work_struct *work)
-{
-(...)
-        struct ipaq_micro_msg msg_battery = {
-                .id = MSG_BATTERY,
-        };
-(...)
-
-        /* First send battery message */
-        ipaq_micro_tx_msg_sync(mb->micro, &msg_battery);
-        if (msg_battery.rx_len < 4)
-                pr_info("ERROR");
-
-        /*
-         * Returned message format:
-         * byte 0:   0x00 = Not plugged in
-         *           0x01 = AC adapter plugged in
-         * byte 1:   chemistry
-         * byte 2:   voltage LSB
-         * byte 3:   voltage MSB
-         * byte 4:   flags
-         * byte 5-9: same for battery 2
-         */
-        mb->ac = msg_battery.rx_data[0];
-(...)
-
-All other comments are fixed up.
-
-I'm sending out a v2 targeted for v3.16.
-
-Yours,
-Linus Walleij
+greg k-h
