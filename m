@@ -1,30 +1,66 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/1] serial: 8250, disable "too much work" messages
-Date: Wed, 2 Apr 2014 17:43:42 +0100
-Message-ID: <20140402174342.1f78a39e@alan.etchedpixels.co.uk>
-References: <1396352220-5031-1-git-send-email-jslaby@suse.cz>
-	<20140401144057.63b3ceb5@alan.etchedpixels.co.uk>
-	<533BDC4F.3060903@suse.cz>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2NCAxLzJdIHNlcmlhbDogc2MxNmlzN3h4?=
+Date: Thu, 03 Apr 2014 10:28:37 +0400
+Message-ID: <1396506517.887689599@f401.i.mail.ru>
+References: <1396500555-28873-1-git-send-email-jon@ringle.org>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <533BDC4F.3060903@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback7.mail.ru ([94.100.176.135]:56024 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933511AbaDCG26 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Apr 2014 02:28:58 -0400
+In-Reply-To: <1396500555-28873-1-git-send-email-jon@ringle.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: jon@ringle.org
+Cc: =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jringle@gridpoint.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, devicetree@vger.kernel.org
 
-> So, according to Takashi's measurements, we would need over 15000 loops
-> on a single port. Of course, this value is highly dependent on a system.
-> On my system, it is like 7 times lower (2100). And it lasts ~300ms here.
-> 
-> I suppose a limit like 32k loops is way too much and I just should go
-> and implement the polling. Or what about adding inter-character sleeps
-> to qemu to correspond to the speed? I can do that too, but I am not sure
-> if limiting the throughput will be accepted by them.
-
-The other option would be to detect qemu as a buggy uart, log a warning
-and ignore the test on it. I think polling might be better, and that
-would probably fix hang cases on real buggy uarts where right now we
-sometimes keel over.
+VGh1LCAgMyBBcHIgMjAxNCAwMDo0OToxNCAtMDQwMCDQvtGCIGpvbkByaW5nbGUub3JnOgo+IEZy
+b206IEpvbiBSaW5nbGUgPGpyaW5nbGVAZ3JpZHBvaW50LmNvbT4KPiAKPiBUaGUgU0MxNklTN3h4
+IGlzIGEgc2xhdmUgSTJDLWJ1cy9TUEkgaW50ZXJmYWNlIHRvIGEgc2luZ2xlLWNoYW5uZWwKPiBo
+aWdoIHBlcmZvcm1hbmNlIFVBUlQuIFRoZSBTQzE2SVM3eHjigJlzIGludGVybmFsIHJlZ2lzdGVy
+IHNldCBpcwo+IGJhY2t3YXJkLWNvbXBhdGlibGUgd2l0aCB0aGUgd2lkZWx5IHVzZWQgYW5kIHdp
+ZGVseSBwb3B1bGFyIDE2QzQ1MC4KPiAKPiBUaGUgU0MxNklTN3h4IGFsc28gcHJvdmlkZXMgYWRk
+aXRpb25hbCBhZHZhbmNlZCBmZWF0dXJlcyBzdWNoIGFzCj4gYXV0byBoYXJkd2FyZSBhbmQgc29m
+dHdhcmUgZmxvdyBjb250cm9sLCBhdXRvbWF0aWMgUlMtNDg1IHN1cHBvcnQsIGFuZAo+IHNvZnR3
+YXJlIHJlc2V0Lgo+IAo+IFNpZ25lZC1vZmYtYnk6IEpvbiBSaW5nbGUgPGpyaW5nbGVAZ3JpZHBv
+aW50LmNvbT4KPiAtLS0KLi4uCj4gKwl0cmlzdGF0ZSAiU0MxNklTN3h4IHNlcmlhbCBzdXBwb3J0
+Igo+ICsJc2VsZWN0IFNFUklBTF9DT1JFCj4gKwlzZWxlY3QgUkVHTUFQX0kyQyBpZiBJMkMKPiAr
+CWRlZmF1bHQgbgoKIm4iIGlzIGFscmVhZHkgZGVmYXVsdCBjaG9pY2UuIFRoZXJlIGlzIG5vIG5l
+ZWQgdG8gc3BlY2lmeSB0aGlzLgoKLi4uCj4gKyNpbmNsdWRlIDxsaW51eC9zZXJpYWwuaD4KPiAr
+I2luY2x1ZGUgPGxpbnV4L3NwaS9zcGkuaD4KCldoYXQgYSByZWFzb24gdG8gaW5jbHVkZSBTUEkg
+aGVhZGVyPwoKLi4uCj4gKyAqIFRoZSBwcm9ncmFtbWVyIG11c3QgcHJvZ3JhbSB0aGUgVENSIHN1
+Y2ggdGhhdCBUQ1JbMzowXSA+IFRDUls3OjRdLiBUaGVyZSBpcwo+ICsgKiBubyBidWlsdC1pbiBo
+YXJkd2FyZSBjaGVjayB0byBtYWtlIHN1cmUgdGhpcyBjb25kaXRpb24gaXMgbWV0LiBBbHNvLCB0
+aGUgVENSCj4gKyAqIG11c3QgYmUgcHJvZ3JhbW1lZCB3aXRoIHRoaXMgY29uZGl0aW9uIGJlZm9y
+ZSBhdXRvIFJUUyBvciBzb2Z0d2FyZSBmbG93Cj4gKyAqIGNvbnRyb2wgaXMgZW5hYmxlZCB0byBh
+dm9pZCBzcHVyaW91cyBvcGVyYXRpb24gb2YgdGhlIGRldmljZS4KPiArICovCj4gKyNkZWZpbmUg
+U0MxNklTN1hYX1RDUl9SWF9IQUxUKHdvcmRzKQkoKCh3b3JkcyAvIDQpICYgMHgwZikgPDwgMCkK
+PiArI2RlZmluZSBTQzE2SVM3WFhfVENSX1JYX1JFU1VNRSh3b3JkcykJKCgod29yZHMgLyA0KSAm
+IDB4MGYpIDw8IDQpCgoid29yZHMiIG9uIHRoZSByaWdodCBzaWRlIHNob3VsZCBiZSBmcmFtZWQg
+YnkgYnJhY2tldHMuCgouLi4KPiArICogV2hlbiBUTFIgaXMgdXNlZCBmb3IgUlggdHJpZ2dlciBs
+ZXZlbCBjb250cm9sLCBGQ1JbNzo2XSBzaG91bGQgYmUgbGVmdCBhdCB0aGUKPiArICogZGVmYXVs
+dCBzdGF0ZSwgdGhhdCBpcywg4oCYMDDigJkuCj4gKyAqLwo+ICsjZGVmaW5lIFNDMTZJUzdYWF9U
+TFJfVFhfVFJJR0dFUih3b3JkcykJKCgod29yZHMgLyA0KSAmIDB4MGYpIDw8IDApCj4gKyNkZWZp
+bmUgU0MxNklTN1hYX1RMUl9SWF9UUklHR0VSKHdvcmRzKQkoKCh3b3JkcyAvIDQpICYgMHgwZikg
+PDwgNCkKCkRpdHRvLgoKLi4uCj4gK3N0YXRpYyB2b2lkIHNjMTZpczd4eF9jb25maWdfcnM0ODUo
+c3RydWN0IHVhcnRfcG9ydCAqcG9ydCwKPiArCQkJCSAgIHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJz
+NDg1KQo+ICt7Cj4gKwlzdHJ1Y3Qgc2MxNmlzN3h4X29uZSAqb25lID0gdG9fc2MxNmlzN3h4X29u
+ZShwb3J0LCBwb3J0KTsKPiArCj4gKwlvbmUtPnJzNDg1ID0gKnJzNDg1Owo+ICsKPiArCWlmIChv
+bmUtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKPiArCQlzYzE2aXM3eHhfcG9y
+dF91cGRhdGUocG9ydCwgU0MxNklTN1hYX0VGQ1JfUkVHLAo+ICsJCQkJICAgICAgU0MxNklTN1hY
+X0VGQ1JfQVVUT19SUzQ4NV9CSVQsCj4gKwkJCQkgICAgICBTQzE2SVM3WFhfRUZDUl9BVVRPX1JT
+NDg1X0JJVCk7Cj4gKwl9IGVsc2Ugewo+ICsJCXNjMTZpczd4eF9wb3J0X3VwZGF0ZShwb3J0LCBT
+QzE2SVM3WFhfRUZDUl9SRUcsCj4gKwkJCQkgICAgICBTQzE2SVM3WFhfRUZDUl9BVVRPX1JTNDg1
+X0JJVCwKPiArCQkJCSAgICAgIDApOwo+ICsJfQo+ICt9CgpUaGlzIGZ1bmN0aW9uIHdpbGwgZ2V0
+ICJ1bnVzZWQiIHdhcm5pbmcgaWYgVElPQ1NSUzQ4NSBhbmQKVElPQ0dSUzQ4NSBpcyBub3QgZGVm
+aW5lZC4KCi4uLgo+ICtzdGF0aWMgaW50IHNjMTZpczd4eF9zdGFydHVwKHN0cnVjdCB1YXJ0X3Bv
+cnQgKnBvcnQpCj4gK3sKLi4uCj4gKwlzYzE2aXM3eHhfcG9ydF91cGRhdGUocG9ydCwgU0MxNklT
+N1hYX0VGQ1JfUkVHLAo+ICsJCQkgICAgICBTQzE2SVM3WFhfRUZDUl9BVVRPX1JTNDg1X0JJVCwK
+PiArCQkJICAgICAgU0MxNklTN1hYX0VGQ1JfQVVUT19SUzQ4NV9CSVQpOwoKWW91IHNob3VsZCBk
+byBub3Qgc2V0IG9wdGlvbmFsIFJTNDg1IG1vZGUgdW5jb25kaXRpb25hbGx5LgpTaW5jZSBJT0NU
+TCBmb3IgUlM0ODUgaXMgdXNlZCwgdGhpcyBzaG91bGQgYmUgZW5vdWdoLgoKLS0tCgo=
