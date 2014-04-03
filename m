@@ -1,71 +1,89 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 1/1] serial: 8250, disable "too much work" messages
-Date: Wed, 02 Apr 2014 11:45:51 +0200
-Message-ID: <533BDC4F.3060903@suse.cz>
-References: <1396352220-5031-1-git-send-email-jslaby@suse.cz> <20140401144057.63b3ceb5@alan.etchedpixels.co.uk>
+From: =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn-yOkvZcmFvRU@public.gmane.org>
+Subject: Re: usb_wwan regression in 3.6 kernel (bisected to bulk-urb allocation)
+Date: Thu, 03 Apr 2014 10:03:10 +0200
+Message-ID: <87wqf696wx.fsf@nemi.mork.no>
+References: <CACna6ry7WCou6kacACpQK6qhWffCGNGFyLQU8H9WbrVDLoB7Qg@mail.gmail.com>
+	<20140403071819.GE22587@localhost>
+	<CACna6rzgnU_=2Gg4v1xk3-KX+zx6G85NksoJiZvbzGyzf+GQ_g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f50.google.com ([74.125.82.50]:56450 "EHLO
-	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758062AbaDBJpy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Apr 2014 05:45:54 -0400
-In-Reply-To: <20140401144057.63b3ceb5@alan.etchedpixels.co.uk>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CACna6rzgnU_=2Gg4v1xk3-KX+zx6G85NksoJiZvbzGyzf+GQ_g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+	(=?utf-8?Q?=22Rafa=C5=82_Mi=C5=82ecki=22's?= message of "Thu, 3 Apr 2014
+ 09:23:40 +0200")
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Urlichs <smurf-ci3XGGwdvIcvfNposrsB4g@public.gmane.org>, "linux-usb@vger.kernel.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 04/01/2014 03:40 PM, One Thousand Gnomes wrote:
-> On Tue,  1 Apr 2014 13:37:00 +0200
-> Jiri Slaby <jslaby@suse.cz> wrote:
-> 
->> The 8250 driver now reports many of these:
->>   serial8250: too much work for irq4
->> These messages turned out to be common these days with a use of
->> virtualization. I tried to increase the limit of processed characters
->> in commit e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial: 8250,
->> increase PASS_LIMIT) in 2011. It was raised from 256 to 512, but it is
->> still not enough, apparently.
-> 
-> A lot of emulations model the queue completely incorrectly. However
-> simply hiding it with a pr_debug is the wrong answer - it wants fixing.
-> 
-> If we set a large PASS_LIMIT then it's not going to be a big loss on real
-> hardware - we'll burp for a second or two and continue, but it ought to
-> cure the virtualisation case.
-> 
-> If it doesn't we've got a bigger problem because it means we are jammed
-> in the kernel spinning in an IRQ handler feeding data to a fake serial
-> port that never stops being an IRQ and we end up hanging the virtualised
-> OS for a long period
-> 
-> If that is happening then we need to actually workaround whatever
-> crapware emulator is triggering it so we don't hang the guest for long
-> periods if there is a big I/O.
-> 
-> If its a real port that is jammed our normal time around the loop on the
-> LPC bus is going to be a shade over 24uS (32uS if TX is jammed on)
-> 
-> So we certainly ought to be able to go a bit higher without major
-> crisis. Beyond that if it is still tripping then instead of whining we
-> need to set IIR_NO_INT and set a polling timer to turn the IRQ back on
-> next timer tick. That way a crappy emulated port can't hang the guest
-> with a continual stream of data and a busted real one might actually sort
-> out.
+Rafa=C5=82 Mi=C5=82ecki <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
 
-So, according to Takashi's measurements, we would need over 15000 loops
-on a single port. Of course, this value is highly dependent on a system.
-On my system, it is like 7 times lower (2100). And it lasts ~300ms here.
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        0
+>       bAlternateSetting       0
+>       bNumEndpoints           0
+>       bInterfaceClass       255 Vendor Specific Class
+>       bInterfaceSubClass    255 Vendor Specific Subclass
+>       bInterfaceProtocol    255 Vendor Specific Protocol
+>       iInterface              0=20
+>       ** UNRECOGNIZED:  05 24 00 10 01
+>       ** UNRECOGNIZED:  05 24 15 00 01
+>       ** UNRECOGNIZED:  05 24 06 00 00
+>       ** UNRECOGNIZED:  15 24 12 20 01 98 b0 6a 49 b0 9e 48 96 94 46 =
+d9 9a 28 ca 4e 5d
+>       ** UNRECOGNIZED:  06 24 13 00 01 10
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        0
+>       bAlternateSetting       1
+>       bNumEndpoints           2
+>       bInterfaceClass       255 Vendor Specific Class
+>       bInterfaceSubClass    255 Vendor Specific Subclass
+>       bInterfaceProtocol    255 Vendor Specific Protocol
+>       iInterface              0=20
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x81  EP 1 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval              32
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x01  EP 1 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval              32
+>  =20
 
-I suppose a limit like 32k loops is way too much and I just should go
-and implement the polling. Or what about adding inter-character sleeps
-to qemu to correspond to the speed? I can do that too, but I am not sure
-if limiting the throughput will be accepted by them.
 
-thanks,
--- 
-js
-suse labs
+Hmm, AFAICS we never change altsettings in the option/usb_wwan/
+usb-serial probing, so this function ends up without any endpoints at a=
+ll.
+As such it should just have failed the probe.  But the option driver ha=
+s
+a static num_ports =3D 1, which looks like it is overriding the endpoin=
+t
+based calculation in usb_serial_probe() even for the case where
+num_bulk_out =3D=3D 0.  That cannot be right...
+
+I believe we should both change altsettings and fail if there still
+aren't enough endpoints available.
+
+
+Bj=C3=B8rn
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
