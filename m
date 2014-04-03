@@ -1,43 +1,33 @@
-From: Jean Delvare <jdelvare@suse.de>
-Subject: [PATCH] serial: timberdale: Depend on X86_32
-Date: Thu, 3 Apr 2014 11:36:22 +0200
-Message-ID: <20140403113622.16d51020@endymion.delvare>
+From: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Subject: Re: [PATCH] USB: usb_wwan: fix handling of missing bulk endpoints
+Date: Thu, 3 Apr 2014 13:32:19 +0200
+Message-ID: <CACna6rxGKz9=qGGanC9T6KTAnMPCYuTLJxxY+KG6NzdZKYmrzQ@mail.gmail.com>
+References: <20140403101729.GG22587@localhost>
+	<1396523206-19973-1-git-send-email-jhovold@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:59591 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751511AbaDCJgY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Apr 2014 05:36:24 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1396523206-19973-1-git-send-email-jhovold@gmail.com>
+Sender: stable-owner@vger.kernel.org
+To: Johan Hovold <jhovold@gmail.com>
+Cc: "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-serial@vger.kernel.org, Matthias Urlichs <smurf@smurf.noris.de>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-As far as I know the Timberdale chip was only used as a companion for
-Intel Atom E600 series processors. As such, its drivers are only
-useful on X86_32.
+2014-04-03 13:06 GMT+02:00 Johan Hovold <jhovold@gmail.com>:
+> Fix regression introduced by commit 8e493ca1767d ("USB: usb_wwan: fix
+> bulk-urb allocation") by making sure to require both bulk-in and out
+> endpoints during port probe.
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+Ohh, that was quick! :)
 
---- linux-3.14.orig/drivers/tty/serial/Kconfig	2014-03-31 05:40:15.000000000 +0200
-+++ linux-3.14/drivers/tty/serial/Kconfig	2014-04-03 10:09:03.356682369 +0200
-@@ -1226,6 +1226,7 @@ config SERIAL_BFIN_SPORT3_UART_CTSRTS
- config SERIAL_TIMBERDALE
- 	tristate "Support for timberdale UART"
- 	select SERIAL_CORE
-+	depends on X86_32 || COMPILE_TEST
- 	---help---
- 	Add support for UART controller on timberdale.
- 
+This patch works for me:
+[33050.103575] option 1-1.2:1.0: GSM modem (1-port) converter detected
+[33050.103617] [usb_wwan_port_probe] bulk_in_size:0 bulk_out_size:0
+[33050.103653] option 1-1.2:1.1: GSM modem (1-port) converter detected
+[33050.103676] [usb_wwan_port_probe] bulk_in_size:0 bulk_out_size:0
+[33050.103712] option 1-1.2:1.3: GSM modem (1-port) converter detected
+[33050.103737] [usb_wwan_port_probe] bulk_in_size:512 bulk_out_size:512
+[33050.103799] usb 1-1.2: GSM modem (1-port) converter now attached to ttyUSB2
+(out of curiosity I added one pr_info to print sizes).
 
-
--- 
-Jean Delvare
-SUSE L3 Support
+Thank you!
