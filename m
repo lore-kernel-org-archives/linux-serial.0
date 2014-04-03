@@ -1,46 +1,58 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
- modem lines
-Date: Wed, 02 Apr 2014 17:09:03 +0200
-Message-ID: <533C280F.3060804@gmail.com>
-References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com> <1394469951-21192-2-git-send-email-richard.genoud@gmail.com> <20140317232359.GA8943@kroah.com>
+From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: usb_wwan regression in 3.6 kernel (bisected to bulk-urb
+ allocation)
+Date: Thu, 3 Apr 2014 09:18:19 +0200
+Message-ID: <20140403071819.GE22587@localhost>
+References: <CACna6ry7WCou6kacACpQK6qhWffCGNGFyLQU8H9WbrVDLoB7Qg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:46380 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758641AbaDBPJX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 2 Apr 2014 11:09:23 -0400
-Received: by mail-wi0-f169.google.com with SMTP id hm4so6734729wib.0
-        for <linux-serial@vger.kernel.org>; Wed, 02 Apr 2014 08:09:22 -0700 (PDT)
-In-Reply-To: <20140317232359.GA8943@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CACna6ry7WCou6kacACpQK6qhWffCGNGFyLQU8H9WbrVDLoB7Qg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Urlichs <smurf-ci3XGGwdvIcvfNposrsB4g@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Richard Genoud <noreply.rgenoud@gmail.com>, =?ISO-8859-1?Q?Uwe_Klei?= =?ISO-8859-1?Q?ne-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 18/03/2014 00:23, Greg Kroah-Hartman wrote:
-> On Mon, Mar 10, 2014 at 05:45:49PM +0100, Richard Genoud wrote:
->> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
->> GPIO.
->> This will be useful for many boards which have a serial controller that
->> only handle CTS/RTS pins (or even just RX/TX).
->>
->> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> I can't take this series through my tty tree as the non-tty patches
-> don't apply, so feel free to take them through whatever tree is needed.
-> 
-> greg k-h
-> 
+On Thu, Apr 03, 2014 at 08:49:40AM +0200, Rafa=C5=82 Mi=C5=82ecki wrote=
+:
+> I recently wanted to use my ZTE MF636 modem 19d2:0031 and got NULL
+> pointer dereference in usb_wwan_write few seconds after plugging it.
+> This is 100% reproducible.
+>=20
+> BUG: unable to handle kernel NULL pointer dereference at 000000000000=
+0058
+> IP: [<ffffffffa07b9570>] usb_wwan_write+0xa0/0x2b0 [usb_wwan]
+>=20
+> I've bisected between 3.4 and 3.14 kernels and it has appeared to be =
+a
+> regression caused by:
+>=20
+> commit 8e493ca1767d4951ed1322abaa74d6edbca29918
+> Author: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Date: Fri Oct 26 18:44:20 2012 +0200
+>=20
+>     USB: usb_wwan: fix bulk-urb allocation
+>=20
+>     Make sure we do not allocate urbs if we do not have a bulk endpoi=
+nt.
+>=20
+>     Legacy code used incorrect assumption to test for bulk endpoints.
+>=20
+> Reverting above patch from the 3.14 release fixes the NULL pointer
+> dereference for me.
+>=20
+> Could you look into this, please? I can test any debug/fix patches yo=
+u provide.
 
-I guess this series won't make it for 3.15, as it doesn't apply on any tree.
-However, I'd like to know if I did something wrong, or if there's no
-solution when a series depends on several patches that are in different
-trees ?
+Thanks for the detailed report. Could you also provide the output of
 
-Richard.
+	lsusb -vd 19d2:0031
+
+Thanks,
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
