@@ -1,117 +1,75 @@
-From: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: usb_wwan regression in 3.6 kernel (bisected to bulk-urb
- allocation)
-Date: Thu, 3 Apr 2014 12:17:29 +0200
-Message-ID: <20140403101729.GG22587@localhost>
-References: <CACna6ry7WCou6kacACpQK6qhWffCGNGFyLQU8H9WbrVDLoB7Qg@mail.gmail.com>
- <20140403071819.GE22587@localhost>
- <CACna6rzgnU_=2Gg4v1xk3-KX+zx6G85NksoJiZvbzGyzf+GQ_g@mail.gmail.com>
- <87wqf696wx.fsf@nemi.mork.no>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
+ modem lines
+Date: Thu, 3 Apr 2014 11:35:01 +0200
+Message-ID: <CACQ1gAipPmbnHSZScFxdt=GisBaVV_hmGNcec-ZyyypmM3O4+Q@mail.gmail.com>
+References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
+ <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+ <20140317232359.GA8943@kroah.com> <533C280F.3060804@gmail.com> <20140402231315.GD24324@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <87wqf696wx.fsf-lbf33ChDnrE/G1V5fR+Y7Q@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn-yOkvZcmFvRU@public.gmane.org>
-Cc: =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Urlichs <smurf-ci3XGGwdvIcvfNposrsB4g@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f54.google.com ([209.85.215.54]:65503 "EHLO
+	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751726AbaDCJfX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Apr 2014 05:35:23 -0400
+Received: by mail-la0-f54.google.com with SMTP id mc6so1101530lab.41
+        for <linux-serial@vger.kernel.org>; Thu, 03 Apr 2014 02:35:21 -0700 (PDT)
+In-Reply-To: <20140402231315.GD24324@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Richard Genoud <noreply.rgenoud@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Thu, Apr 03, 2014 at 10:03:10AM +0200, Bj=C3=B8rn Mork wrote:
-> Rafa=C5=82 Mi=C5=82ecki <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
->=20
-> >     Interface Descriptor:
-> >       bLength                 9
-> >       bDescriptorType         4
-> >       bInterfaceNumber        0
-> >       bAlternateSetting       0
-> >       bNumEndpoints           0
-> >       bInterfaceClass       255 Vendor Specific Class
-> >       bInterfaceSubClass    255 Vendor Specific Subclass
-> >       bInterfaceProtocol    255 Vendor Specific Protocol
-> >       iInterface              0=20
-> >       ** UNRECOGNIZED:  05 24 00 10 01
-> >       ** UNRECOGNIZED:  05 24 15 00 01
-> >       ** UNRECOGNIZED:  05 24 06 00 00
-> >       ** UNRECOGNIZED:  15 24 12 20 01 98 b0 6a 49 b0 9e 48 96 94 4=
-6 d9 9a 28 ca 4e 5d
-> >       ** UNRECOGNIZED:  06 24 13 00 01 10
-> >     Interface Descriptor:
-> >       bLength                 9
-> >       bDescriptorType         4
-> >       bInterfaceNumber        0
-> >       bAlternateSetting       1
-> >       bNumEndpoints           2
-> >       bInterfaceClass       255 Vendor Specific Class
-> >       bInterfaceSubClass    255 Vendor Specific Subclass
-> >       bInterfaceProtocol    255 Vendor Specific Protocol
-> >       iInterface              0=20
-> >       Endpoint Descriptor:
-> >         bLength                 7
-> >         bDescriptorType         5
-> >         bEndpointAddress     0x81  EP 1 IN
-> >         bmAttributes            2
-> >           Transfer Type            Bulk
-> >           Synch Type               None
-> >           Usage Type               Data
-> >         wMaxPacketSize     0x0200  1x 512 bytes
-> >         bInterval              32
-> >       Endpoint Descriptor:
-> >         bLength                 7
-> >         bDescriptorType         5
-> >         bEndpointAddress     0x01  EP 1 OUT
-> >         bmAttributes            2
-> >           Transfer Type            Bulk
-> >           Synch Type               None
-> >           Usage Type               Data
-> >         wMaxPacketSize     0x0200  1x 512 bytes
-> >         bInterval              32
-> >  =20
->=20
->=20
-> Hmm, AFAICS we never change altsettings in the option/usb_wwan/
-> usb-serial probing, so this function ends up without any endpoints at=
- all.
-> As such it should just have failed the probe.  But the option driver =
-has
-> a static num_ports =3D 1, which looks like it is overriding the endpo=
-int
-> based calculation in usb_serial_probe() even for the case where
-> num_bulk_out =3D=3D 0.  That cannot be right...
+2014-04-03 1:13 GMT+02:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+> On Wed, Apr 02, 2014 at 05:09:03PM +0200, Richard Genoud wrote:
+>> On 18/03/2014 00:23, Greg Kroah-Hartman wrote:
+>> > On Mon, Mar 10, 2014 at 05:45:49PM +0100, Richard Genoud wrote:
+>> >> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
+>> >> GPIO.
+>> >> This will be useful for many boards which have a serial controller that
+>> >> only handle CTS/RTS pins (or even just RX/TX).
+>> >>
+>> >> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>> >
+>> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> >
+>> > I can't take this series through my tty tree as the non-tty patches
+>> > don't apply, so feel free to take them through whatever tree is needed.
+>> >
+>> > greg k-h
+>> >
+>>
+>> I guess this series won't make it for 3.15, as it doesn't apply on any tree.
+>> However, I'd like to know if I did something wrong, or if there's no
+>> solution when a series depends on several patches that are in different
+>> trees ?
+>
+> That's a hard problem, either wait a release cycle for everything to get
+> merged properly (like should be done in time for 3.15-rc1 now) and then
+> submit the code, or ask for different maintainers to either allow other
+> trees to take the patches, put the patches in different trees at the
+> same time, or have "topic branches" that different maintainers can pull
+> from.
+>
+> Care to send me the patches after 3.15-rc1 is out, as there should not
+> be any dependancy issues then, right?
+>
+> greg k-h
 
-You're right. We should probably require both bulk in and out endpoints
-in usb_wwan port_probe or return -ENODEV.
+Ok, I'll do that.
+Thanks for the explanation !
 
-The (original option) driver was apparently written under the assumptio=
-n
-that either endpoint could be missing. It would handle opening a device
-without bulk-in (but would blow up during resume which was likely
-implemented later), but not a missing bulk-out in write() (although it
-is handled in some places).
+I will just send a little patch for 3.15rc1 or rc2 to prevent a DTS
+ABI change in 3.16.
+Something like this in Documentation/devicetree/bindings/serial/atmel-usart.txt
+-rts-gpios = <&pioD 15 0>;
++rts-gpios = <&pioD 15 GPIO_ACTIVE_LOW>;
+I guess it could go in AT91 tree
+I'll send it soon.
 
-But since it also got the missing-end-point test wrong, this was never
-a (critical) issue...
+Thanks !
 
-> I believe we should both change altsettings and fail if there still
-> aren't enough endpoints available.
 
-The option driver currently does not implement changing altsettings for
-any device as you noted. And in fact, this wouldn't even be necessary
-for all 19d2:0031. A quick search for lsusb -v output reveals that not
-all devices have these altsettings. As we haven't heard of this issue
-before, my guess is that the device in question is the odd one.
-
-Would only using interface 3 be sufficient for now? I'd assume so as
-this is reported as a regression (which triggers the oops, but the firs=
-t
-two interfaces can obviously never have been used for anything).
-
-I'll cook up a patch for the end-point test during port_probe.
-
-Thanks,
-Johan
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Richard.
