@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [RESEND PATCH v3 6/9] tty: xuartps: Don't write IRQ disable register to enable interrupts
-Date: Fri,  4 Apr 2014 17:23:42 -0700
-Message-ID: <1396657425-31029-6-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [RESEND PATCH v3 9/9] ARM: zynq: DT: Migrate UART to Cadence binding
+Date: Fri,  4 Apr 2014 17:23:45 -0700
+Message-ID: <1396657425-31029-9-git-send-email-soren.brinkmann@xilinx.com>
 References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
@@ -10,46 +10,52 @@ To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutl
 Cc: Peter Crosthwaite <peter.crosthwaite@xilinx.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Soren Brinkmann <soren.brinkmann@xilinx.com>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-A comment states, that, according to the data sheet, to enable
-interrupts the disable register should be written, but the enable
-register could be left untouched. And it suspsects a HW bug requiring
-to write both.
-Reviewing the data sheet, these statements seem wrong. Just as one would
-expect. Writing to the enable/disable register enables/disables
-interrupts.
-Hence the misleading comment and needless write to the disable register
-are removed from the enable sequence.
+The Zynq UART is Cadence IP and the driver has been renamed accordingly.
+Migrate the DT to use the new binding for the UART driver.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
+Acked-by: Rob Herring <robh@kernel.org>
 Tested-by: Michal Simek <michal.simek@xilinx.com>
 ---
-I added a few lines to comment the change and altered the summary line.
-In case this causes issues it should show up a little easier as a
-candidate to revert.
+This change depends on 'tty: xuartps: Rebrand driver as Cadence UART',
+which introduces the new clock-names.
 
 Changes in v3: None
 Changes in v2: None
 
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/arm/boot/dts/zynq-7000.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index b182ab8cfd07..f9a2c2fc03c4 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1085,11 +1085,7 @@ static void xuartps_console_write(struct console *co, const char *s,
+diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/zynq-7000.dtsi
+index 789d0bacc110..d27eb5c21831 100644
+--- a/arch/arm/boot/dts/zynq-7000.dtsi
++++ b/arch/arm/boot/dts/zynq-7000.dtsi
+@@ -73,19 +73,19 @@
+ 		};
  
- 	xuartps_writel(ctrl, XUARTPS_CR_OFFSET);
+ 		uart0: uart@e0000000 {
+-			compatible = "xlnx,xuartps";
++			compatible = "xlnx,xuartps", "cdns,uart-r1p8";
+ 			status = "disabled";
+ 			clocks = <&clkc 23>, <&clkc 40>;
+-			clock-names = "ref_clk", "aper_clk";
++			clock-names = "uart_clk", "pclk";
+ 			reg = <0xE0000000 0x1000>;
+ 			interrupts = <0 27 4>;
+ 		};
  
--	/* restore interrupt state, it seems like there may be a h/w bug
--	 * in that the interrupt enable register should not need to be
--	 * written based on the data sheet
--	 */
--	xuartps_writel(~imr, XUARTPS_IDR_OFFSET);
-+	/* restore interrupt state */
- 	xuartps_writel(imr, XUARTPS_IER_OFFSET);
- 
- 	if (locked)
+ 		uart1: uart@e0001000 {
+-			compatible = "xlnx,xuartps";
++			compatible = "xlnx,xuartps", "cdns,uart-r1p8";
+ 			status = "disabled";
+ 			clocks = <&clkc 24>, <&clkc 41>;
+-			clock-names = "ref_clk", "aper_clk";
++			clock-names = "uart_clk", "pclk";
+ 			reg = <0xE0001000 0x1000>;
+ 			interrupts = <0 50 4>;
+ 		};
 -- 
 1.9.1.1.gbb9f595
