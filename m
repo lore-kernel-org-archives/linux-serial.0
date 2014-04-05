@@ -1,13 +1,11 @@
-From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [RESEND PATCH v3 8/9] tty: cadence: Document DT binding
-Date: Fri,  4 Apr 2014 17:23:44 -0700
-Message-ID: <1396657425-31029-8-git-send-email-soren.brinkmann@xilinx.com>
-References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH] serial: amba-pl011: fix regression, causing an Oops on rmmod
+Date: Sat, 5 Apr 2014 16:31:08 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.1404051629050.3518@axis700.grange>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,50 +15,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, Tushar Behera <tushar.behera@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add binding documentation for the Cadence UART.
+A recent commit ef2889f7ffee67f0aed49e854c72be63f1466759 "serial: pl011:
+Move uart_register_driver call to device probe" introduced a regression,
+causing the pl011 driver to Oops if more than 1 port have been probed. Fix
+the Oops by only calling uart_unregister_driver() once after the last port
+has been removed.
 
-Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Tested-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 ---
+ drivers/tty/serial/amba-pl011.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Changes in v3: None
-Changes in v2: None
-
- .../devicetree/bindings/serial/cdns,uart.txt         | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.txt
-
-diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-new file mode 100644
-index 000000000000..a3eb154c32ca
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-@@ -0,0 +1,20 @@
-+Binding for Cadence UART Controller
-+
-+Required properties:
-+- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
-+- reg: Should contain UART controller registers location and length.
-+- interrupts: Should contain UART controller interrupts.
-+- clocks: Must contain phandles to the UART clocks
-+  See ../clocks/clock-bindings.txt for details.
-+- clock-names: Tuple to identify input clocks, must contain "uart_clk" and "pclk"
-+  See ../clocks/clock-bindings.txt for details.
-+
-+
-+Example:
-+	uart@e0000000 {
-+		compatible = "cdns,uart-r1p8";
-+		clocks = <&clkc 23>, <&clkc 40>;
-+		clock-names = "uart_clk", "pclk";
-+		reg = <0xE0000000 0x1000>;
-+		interrupts = <0 27 4>;
-+	};
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d4eda24..07325f2 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2176,6 +2176,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ static int pl011_remove(struct amba_device *dev)
+ {
+ 	struct uart_amba_port *uap = amba_get_drvdata(dev);
++	bool busy = false;
+ 	int i;
+ 
+ 	uart_remove_one_port(&amba_reg, &uap->port);
+@@ -2183,9 +2184,12 @@ static int pl011_remove(struct amba_device *dev)
+ 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+ 		if (amba_ports[i] == uap)
+ 			amba_ports[i] = NULL;
++		else if (amba_ports[i])
++			busy = true;
+ 
+ 	pl011_dma_remove(uap);
+-	uart_unregister_driver(&amba_reg);
++	if (!busy)
++		uart_unregister_driver(&amba_reg);
+ 	return 0;
+ }
+ 
 -- 
-1.9.1.1.gbb9f595
+1.9.1
