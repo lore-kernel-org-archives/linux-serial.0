@@ -1,60 +1,37 @@
-From: Narasimharao Bolisetti <narasimharao.b@hcl.com>
-Subject: RE: system hang
-Date: Thu, 10 Apr 2014 07:59:38 +0000
-Message-ID: <62C418AB752FEF4D931AB8E89E46539F02878EC8@chn-hclt-mbs06.HCLT.CORP.HCL.IN>
-References: <62C418AB752FEF4D931AB8E89E46539F02878DFC@chn-hclt-mbs06.HCLT.CORP.HCL.IN>
- <1397113552.75117.YahooMailBasic@web160504.mail.bf1.yahoo.com>
- <20140410075539.GB25198@1wt.eu>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: post 3.14 serial regression
+Date: Thu, 10 Apr 2014 12:14:37 +0100
+Message-ID: <20140410121437.7d4dd9a1@alan.etchedpixels.co.uk>
+References: <5343416F.8010201@sr71.net>
+	<20140408122726.227f3da8@alan.etchedpixels.co.uk>
+	<5344642A.2020703@sr71.net>
+	<53446C57.5000504@intel.com>
+	<20140409003648.GB32273@kroah.com>
+	<CAMuHMdXSa0Ku2f1CR3j5pGOp_joQomc2Cnz=apGRR1K0Eb2qOQ@mail.gmail.com>
+	<5345A7B3.7020005@sr71.net>
+	<CAMuHMdXtz_W7LCJeOG9--ZmmH4js40-urueCTbS98t8oBgnYCw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-hotplug-owner@vger.kernel.org>
-In-Reply-To: <20140410075539.GB25198@1wt.eu>
-Content-Language: en-US
-Sender: linux-hotplug-owner@vger.kernel.org
-To: Willy Tarreau <w@1wt.eu>, narasimharo bolisetti <nrbolisetti@yahoo.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kernelnewbies@nl.linux.org" <kernelnewbies@nl.linux.org>, "devel@linuxdriverproject.org" <devel@linuxdriverproject.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-hotplug@vger.kernel.org" <linux-hotplug@vger.kernel.org>, "greg@kroah.com" <greg@kroah.com>, "nrbolisetti@gmail.com" <nrbolisetti@gmail.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:38672 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934795AbaDJLPA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Apr 2014 07:15:00 -0400
+In-Reply-To: <CAMuHMdXtz_W7LCJeOG9--ZmmH4js40-urueCTbS98t8oBgnYCw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Dave Hansen <dave@sr71.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dave Hansen <dave.hansen@intel.com>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
+> I also noticed that unbinding and rebinding the driver doesn't re-attach it
+> as a serial console.
 
-Hi,
+Correct. The serial "console" is not hot pluggable.
 
-I have checked the same in the recent kernel versions also. Issue is still remain.
+http://blog.gmane.org/gmane.linux.serial/month=20090301/page=5
 
-Regards,
-Narasimharao B
+related 2009 discussion ..
 
-
------Original Message-----
-From: Willy Tarreau [mailto:w@1wt.eu] 
-Sent: 10 April 2014 13:26
-To: narasimharo bolisetti
-Cc: linux-kernel@vger.kernel.org; kernelnewbies@nl.linux.org; devel@linuxdriverproject.org; linux-serial@vger.kernel.org; linux-hotplug@vger.kernel.org; greg@kroah.com; Narasimharao Bolisetti; nrbolisetti@gmail.com; stable@vger.kernel.org; linux-pci@vger.kernel.org; linux-usb@vger.kernel.org
-Subject: Re: system hang
-
-On Thu, Apr 10, 2014 at 12:05:52AM -0700, narasimharo bolisetti wrote:
->  My kernel version is:
->  2.6.35.6-45.fc14.i686
-
-Maintenance for this kernel has been dropped years ago, so it very likely contains many bugs that were fixed in more recent ones. You should definitely upgrade.
-
-Hoping this helps,
-Willy
-
-
-
-::DISCLAIMER::
-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-The contents of this e-mail and any attachment(s) are confidential and intended for the named recipient(s) only.
-E-mail transmission is not guaranteed to be secure or error-free as information could be intercepted, corrupted,
-lost, destroyed, arrive late or incomplete, or may contain viruses in transmission. The e mail and its contents
-(with or without referred errors) shall therefore not attach any liability on the originator or HCL or its affiliates.
-Views or opinions, if any, presented in this email are solely those of the author and may not necessarily reflect the
-views or opinions of HCL or its affiliates. Any form of reproduction, dissemination, copying, disclosure, modification,
-distribution and / or publication of this message without the prior written consent of authorized representative of
-HCL is strictly prohibited. If you have received this email in error please delete it and notify the sender immediately.
-Before opening any email and/or attachments, please check them for viruses and other defects.
-
-----------------------------------------------------------------------------------------------------------------------------------------------------
-
+Alan
