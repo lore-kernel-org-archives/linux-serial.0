@@ -1,177 +1,50 @@
-From: Loic Poulain <loic.poulain@intel.com>
-Subject: [PATCH] 8250_dw: Support all baudrates on baytrail
-Date: Thu, 10 Apr 2014 15:31:24 +0200
-Message-ID: <1397136684-11515-1-git-send-email-loic.poulain@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:26436 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1030546AbaDJNin (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Apr 2014 09:38:43 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: "greg@kroah.com" <greg@kroah.com>
+Subject: Re: system hang
+Date: Thu, 10 Apr 2014 08:59:27 -0700
+Message-ID: <20140410155927.GB10958@kroah.com>
+References: <62C418AB752FEF4D931AB8E89E46539F02878DFC@chn-hclt-mbs06.HCLT.CORP.HCL.IN>
+ <1397113552.75117.YahooMailBasic@web160504.mail.bf1.yahoo.com>
+ <20140410075539.GB25198@1wt.eu>
+ <62C418AB752FEF4D931AB8E89E46539F02878EC8@chn-hclt-mbs06.HCLT.CORP.HCL.IN>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <62C418AB752FEF4D931AB8E89E46539F02878EC8@chn-hclt-mbs06.HCLT.CORP.HCL.IN>
+Sender: linux-pci-owner@vger.kernel.org
+To: Narasimharao Bolisetti <narasimharao.b@hcl.com>
+Cc: Willy Tarreau <w@1wt.eu>, narasimharo bolisetti <nrbolisetti@yahoo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kernelnewbies@nl.linux.org" <kernelnewbies@nl.linux.org>, "devel@linuxdriverproject.org" <devel@linuxdriverproject.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-hotplug@vger.kernel.org" <linux-hotplug@vger.kernel.org>, "nrbolisetti@gmail.com" <nrbolisetti@gmail.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com
-Cc: linux-serial@vger.kernel.org, Loic Poulain <loic.poulain@intel.com>
 
-In the same manner as 8250_pci, 8250_dw needs
-some baytrail specific quirks to be used.
-The reference clock needs to be adjusted before
-divided in order to have the minimum error rate
-on the baudrate.
+On Thu, Apr 10, 2014 at 07:59:38AM +0000, Narasimharao Bolisetti wrote:
+> 
+> Hi,
+> 
+> I have checked the same in the recent kernel versions also. Issue is still remain.
 
-The specific byt setup function is stored in the
-driver_data field of the acpi device id via the
-dw8250_acpi_desc structure.
+What versions have you tried, and what are the logs from those versions?
 
-Signed-off-by: Loic Poulain <loic.poulain@intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 91 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 87 insertions(+), 4 deletions(-)
+> ::DISCLAIMER::
+> ----------------------------------------------------------------------------------------------------------------------------------------------------
+> 
+> The contents of this e-mail and any attachment(s) are confidential and intended for the named recipient(s) only.
+> E-mail transmission is not guaranteed to be secure or error-free as information could be intercepted, corrupted,
+> lost, destroyed, arrive late or incomplete, or may contain viruses in transmission. The e mail and its contents
+> (with or without referred errors) shall therefore not attach any liability on the originator or HCL or its affiliates.
+> Views or opinions, if any, presented in this email are solely those of the author and may not necessarily reflect the
+> views or opinions of HCL or its affiliates. Any form of reproduction, dissemination, copying, disclosure, modification,
+> distribution and / or publication of this message without the prior written consent of authorized representative of
+> HCL is strictly prohibited. If you have received this email in error please delete it and notify the sender immediately.
+> Before opening any email and/or attachments, please check them for viruses and other defects.
+> 
+> ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index ed31135..7d3e4d9 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -62,6 +62,77 @@ struct dw8250_data {
- 	struct uart_8250_dma	dma;
- };
- 
-+struct dw8250_acpi_desc {
-+	unsigned int uartclk;
-+	void (*setup)(struct uart_8250_port *up);
-+};
-+
-+#define BYT_PRV_CLK			0x800
-+#define BYT_PRV_CLK_EN			(1 << 0)
-+#define BYT_PRV_CLK_M_VAL_SHIFT		1
-+#define BYT_PRV_CLK_N_VAL_SHIFT		16
-+#define BYT_PRV_CLK_UPDATE		(1 << 31)
-+
-+static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
-+			    struct ktermios *old)
-+{
-+	unsigned int baud = tty_termios_baud_rate(termios);
-+	unsigned int m, n;
-+	u32 reg;
-+
-+	/*
-+	* For baud rates 0.5M, 1M, 1.5M, 2M, 2.5M, 3M, 3.5M and 4M the
-+	* dividers must be adjusted.
-+	*
-+	* uartclk = (m / n) * 100 MHz, where m <= n
-+	*/
-+	switch (baud) {
-+	case 500000:
-+	case 1000000:
-+	case 2000000:
-+	case 4000000:
-+		m = 64;
-+		n = 100;
-+		p->uartclk = 64000000;
-+		break;
-+	case 3500000:
-+		m = 56;
-+		n = 100;
-+		p->uartclk = 56000000;
-+		break;
-+	case 1500000:
-+	case 3000000:
-+		m = 48;
-+		n = 100;
-+		p->uartclk = 48000000;
-+		break;
-+	case 2500000:
-+		m = 40;
-+		n = 100;
-+		p->uartclk = 40000000;
-+		break;
-+	default:
-+		m = 2304;
-+		n = 3125;
-+		p->uartclk = 73728000;
-+	}
-+
-+	/* Reset the clock */
-+	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
-+	writel(reg, p->membase + BYT_PRV_CLK);
-+	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
-+	writel(reg, p->membase + BYT_PRV_CLK);
-+
-+	serial8250_do_set_termios(p, termios, old);
-+}
-+
-+static void byt_serial_setup(struct uart_8250_port *up)
-+{
-+	struct uart_port *p = &up->port;
-+
-+	p->set_termios = byt_set_termios;
-+}
-+
- static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
- {
- 	struct dw8250_data *d = p->private_data;
-@@ -278,6 +349,7 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
- {
- 	const struct acpi_device_id *id;
- 	struct uart_port *p = &up->port;
-+	struct dw8250_acpi_desc *acpi_desc;
- 
- 	dw8250_setup_port(up);
- 
-@@ -290,14 +362,21 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
- 	p->serial_out = dw8250_serial_out32;
- 	p->regshift = 2;
- 
--	if (!p->uartclk)
--		p->uartclk = (unsigned int)id->driver_data;
--
- 	up->dma = &data->dma;
- 
- 	up->dma->rxconf.src_maxburst = p->fifosize / 4;
- 	up->dma->txconf.dst_maxburst = p->fifosize / 4;
- 
-+	acpi_desc = (struct dw8250_acpi_desc *)id->driver_data;
-+	if (!acpi_desc)
-+		return 0;
-+
-+	if (!p->uartclk)
-+		p->uartclk = acpi_desc->uartclk;
-+
-+	if (acpi_desc->setup)
-+		acpi_desc->setup(up);
-+
- 	return 0;
- }
- 
-@@ -445,12 +524,16 @@ static const struct of_device_id dw8250_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
- 
-+static struct dw8250_acpi_desc byt_8250_desc = {
-+	.setup = byt_serial_setup,
-+};
-+
- static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "INT33C4", 0 },
- 	{ "INT33C5", 0 },
- 	{ "INT3434", 0 },
- 	{ "INT3435", 0 },
--	{ "80860F0A", 0 },
-+	{ "80860F0A", (kernel_ulong_t)&byt_8250_desc},
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
--- 
-1.8.3.2
 
----------------------------------------------------------------------
-Intel Corporation SAS (French simplified joint stock company)
-Registered headquarters: "Les Montalets"- 2, rue de Paris, 
-92196 Meudon Cedex, France
-Registration Number:  302 456 199 R.C.S. NANTERRE
-Capital: 4,572,000 Euros
+Oops, sorry, nope, I'm not allowed to respond to anyone with such an
+email footer, it's not compatible with Linux kernel development (Linux
+is not confidential.)
 
-This e-mail and any attachments may contain confidential material for
-the sole use of the intended recipient(s). Any review or distribution
-by others is strictly prohibited. If you are not the intended
-recipient, please contact the sender and delete all copies.
+Best of luck, I suggest you work with the vendor who is forcing you to
+stick with such an old kernel version.
 
+greg k-h
