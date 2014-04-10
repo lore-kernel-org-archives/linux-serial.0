@@ -1,37 +1,177 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: post 3.14 serial regression
-Date: Thu, 10 Apr 2014 12:14:37 +0100
-Message-ID: <20140410121437.7d4dd9a1@alan.etchedpixels.co.uk>
-References: <5343416F.8010201@sr71.net>
-	<20140408122726.227f3da8@alan.etchedpixels.co.uk>
-	<5344642A.2020703@sr71.net>
-	<53446C57.5000504@intel.com>
-	<20140409003648.GB32273@kroah.com>
-	<CAMuHMdXSa0Ku2f1CR3j5pGOp_joQomc2Cnz=apGRR1K0Eb2qOQ@mail.gmail.com>
-	<5345A7B3.7020005@sr71.net>
-	<CAMuHMdXtz_W7LCJeOG9--ZmmH4js40-urueCTbS98t8oBgnYCw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Loic Poulain <loic.poulain@intel.com>
+Subject: [PATCH] 8250_dw: Support all baudrates on baytrail
+Date: Thu, 10 Apr 2014 15:31:24 +0200
+Message-ID: <1397136684-11515-1-git-send-email-loic.poulain@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:38672 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934795AbaDJLPA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Apr 2014 07:15:00 -0400
-In-Reply-To: <CAMuHMdXtz_W7LCJeOG9--ZmmH4js40-urueCTbS98t8oBgnYCw@mail.gmail.com>
+Received: from mga01.intel.com ([192.55.52.88]:26436 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1030546AbaDJNin (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Apr 2014 09:38:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Dave Hansen <dave@sr71.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dave Hansen <dave.hansen@intel.com>, Geert Uytterhoeven <geert+renesas@linux-m68k.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com
+Cc: linux-serial@vger.kernel.org, Loic Poulain <loic.poulain@intel.com>
 
-> I also noticed that unbinding and rebinding the driver doesn't re-attach it
-> as a serial console.
+In the same manner as 8250_pci, 8250_dw needs
+some baytrail specific quirks to be used.
+The reference clock needs to be adjusted before
+divided in order to have the minimum error rate
+on the baudrate.
 
-Correct. The serial "console" is not hot pluggable.
+The specific byt setup function is stored in the
+driver_data field of the acpi device id via the
+dw8250_acpi_desc structure.
 
-http://blog.gmane.org/gmane.linux.serial/month=20090301/page=5
+Signed-off-by: Loic Poulain <loic.poulain@intel.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 91 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 87 insertions(+), 4 deletions(-)
 
-related 2009 discussion ..
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index ed31135..7d3e4d9 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -62,6 +62,77 @@ struct dw8250_data {
+ 	struct uart_8250_dma	dma;
+ };
+ 
++struct dw8250_acpi_desc {
++	unsigned int uartclk;
++	void (*setup)(struct uart_8250_port *up);
++};
++
++#define BYT_PRV_CLK			0x800
++#define BYT_PRV_CLK_EN			(1 << 0)
++#define BYT_PRV_CLK_M_VAL_SHIFT		1
++#define BYT_PRV_CLK_N_VAL_SHIFT		16
++#define BYT_PRV_CLK_UPDATE		(1 << 31)
++
++static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
++			    struct ktermios *old)
++{
++	unsigned int baud = tty_termios_baud_rate(termios);
++	unsigned int m, n;
++	u32 reg;
++
++	/*
++	* For baud rates 0.5M, 1M, 1.5M, 2M, 2.5M, 3M, 3.5M and 4M the
++	* dividers must be adjusted.
++	*
++	* uartclk = (m / n) * 100 MHz, where m <= n
++	*/
++	switch (baud) {
++	case 500000:
++	case 1000000:
++	case 2000000:
++	case 4000000:
++		m = 64;
++		n = 100;
++		p->uartclk = 64000000;
++		break;
++	case 3500000:
++		m = 56;
++		n = 100;
++		p->uartclk = 56000000;
++		break;
++	case 1500000:
++	case 3000000:
++		m = 48;
++		n = 100;
++		p->uartclk = 48000000;
++		break;
++	case 2500000:
++		m = 40;
++		n = 100;
++		p->uartclk = 40000000;
++		break;
++	default:
++		m = 2304;
++		n = 3125;
++		p->uartclk = 73728000;
++	}
++
++	/* Reset the clock */
++	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
++	writel(reg, p->membase + BYT_PRV_CLK);
++	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
++	writel(reg, p->membase + BYT_PRV_CLK);
++
++	serial8250_do_set_termios(p, termios, old);
++}
++
++static void byt_serial_setup(struct uart_8250_port *up)
++{
++	struct uart_port *p = &up->port;
++
++	p->set_termios = byt_set_termios;
++}
++
+ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+@@ -278,6 +349,7 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
+ {
+ 	const struct acpi_device_id *id;
+ 	struct uart_port *p = &up->port;
++	struct dw8250_acpi_desc *acpi_desc;
+ 
+ 	dw8250_setup_port(up);
+ 
+@@ -290,14 +362,21 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
+ 	p->serial_out = dw8250_serial_out32;
+ 	p->regshift = 2;
+ 
+-	if (!p->uartclk)
+-		p->uartclk = (unsigned int)id->driver_data;
+-
+ 	up->dma = &data->dma;
+ 
+ 	up->dma->rxconf.src_maxburst = p->fifosize / 4;
+ 	up->dma->txconf.dst_maxburst = p->fifosize / 4;
+ 
++	acpi_desc = (struct dw8250_acpi_desc *)id->driver_data;
++	if (!acpi_desc)
++		return 0;
++
++	if (!p->uartclk)
++		p->uartclk = acpi_desc->uartclk;
++
++	if (acpi_desc->setup)
++		acpi_desc->setup(up);
++
+ 	return 0;
+ }
+ 
+@@ -445,12 +524,16 @@ static const struct of_device_id dw8250_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, dw8250_of_match);
+ 
++static struct dw8250_acpi_desc byt_8250_desc = {
++	.setup = byt_serial_setup,
++};
++
+ static const struct acpi_device_id dw8250_acpi_match[] = {
+ 	{ "INT33C4", 0 },
+ 	{ "INT33C5", 0 },
+ 	{ "INT3434", 0 },
+ 	{ "INT3435", 0 },
+-	{ "80860F0A", 0 },
++	{ "80860F0A", (kernel_ulong_t)&byt_8250_desc},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+-- 
+1.8.3.2
 
-Alan
+---------------------------------------------------------------------
+Intel Corporation SAS (French simplified joint stock company)
+Registered headquarters: "Les Montalets"- 2, rue de Paris, 
+92196 Meudon Cedex, France
+Registration Number:  302 456 199 R.C.S. NANTERRE
+Capital: 4,572,000 Euros
+
+This e-mail and any attachments may contain confidential material for
+the sole use of the intended recipient(s). Any review or distribution
+by others is strictly prohibited. If you are not the intended
+recipient, please contact the sender and delete all copies.
+
