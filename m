@@ -1,23 +1,117 @@
-From: "Semple, Kylie M" <kms1037@sru.edu>
-Subject: SUSPECT: General web-mail maintenance
-Date: Fri, 11 Apr 2014 06:33:29 -0400
-Message-ID: <9A90E5A3B8A8104DBF80EE8CDD733B5F27A6B2D02F__37715.1173343465$1397212855$gmane$org@MSFEXCH05.srunet.sruad.edu>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: [PATCH] serial: uart: add hw flow control support configuration
+Date: Fri, 11 Apr 2014 15:17:57 -0400
+Message-ID: <1397243877-23234-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sruedge03.sru.edu ([205.149.70.121]:49073 "EHLO
-	SSFEXCHEDGE03.srunet.sruad.edu" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1756632AbaDKKjy convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Apr 2014 06:39:54 -0400
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: balbi@ti.com, Murali Karicheri <m-karicheri2@ti.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
-To: "employeedesk@webmaster.org" <employeedesk@webmaster.org>
 
-General web-mail maintenance
-Dear Account Owner,
- THIS MESSAGE IS DIRECTED TO THOSE USING Office Outlook Web Access Web-mail (2007 version). We want to upgrade all Microsoft Exchange email account scheduled for today as part of our duty to strengthen security of your mailbox. CLICK HERE<http://up-refere1.a.nf/> to upgrade your account to Outlook Web Apps 2014. If your settings is not updated today, your account will be inactive and cannot send or receive message any longer.
-Sincerely,
-IT Helpdesk DEPT
+8250 uart driver currently supports only software assisted hw flow
+control. The software assisted hw flow control maintains a hw_stopped
+flag in the tty structure to stop and start transmission and use modem
+status interrupt for the event to drive the handshake signals. This is
+not needed if hw has flow control capabilities. This patch adds a
+DT attribute for enabling hw flow control for a uart port. Also skip
+stop and start if this flag is present in flag field of the port
+structure.
+
+CC: Rob Herring <robh+dt@kernel.org>
+CC: Pawel Moll <pawel.moll@arm.com> 
+CC: Mark Rutland <mark.rutland@arm.com>
+CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
+CC: Kumar Gala <galak@codeaurora.org>
+CC: Randy Dunlap <rdunlap@infradead.org>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Jiri Slaby <jslaby@suse.cz>
+
+Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+---
+ .../devicetree/bindings/serial/of-serial.txt       |    2 ++
+ drivers/tty/serial/8250/8250_core.c                |    6 ++++--
+ drivers/tty/serial/of_serial.c                     |    4 ++++
+ drivers/tty/serial/serial_core.c                   |   12 +++++++++---
+ 4 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
+index 1928a3e..123de01 100644
+--- a/Documentation/devicetree/bindings/serial/of-serial.txt
++++ b/Documentation/devicetree/bindings/serial/of-serial.txt
+@@ -37,6 +37,8 @@ Optional properties:
+ - auto-flow-control: one way to enable automatic flow control support. The
+   driver is allowed to detect support for the capability even without this
+   property.
++- hw-flow-control: this enables pure hw flow control and no software
++  intervention needed.
+ 
+ Example:
+ 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 81f909c..6b1b868 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
+ 	 * the remote UART is not using CTS auto flow control, we must
+ 	 * have sufficient FIFO entries for the latency of the remote
+-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
++	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
++	 * AFE if hw flow control is supported
+ 	 */
+-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
++	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
++	    port->flags & UPF_HARD_FLOW) {
+ 		up->mcr &= ~UART_MCR_AFE;
+ 		if (termios->c_cflag & CRTSCTS)
+ 			up->mcr |= UART_MCR_AFE;
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 9924660..1a5f528 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 					  "auto-flow-control"))
+ 			port8250.capabilities |= UART_CAP_AFE;
+ 
++		if (of_property_read_bool(ofdev->dev.of_node,
++					  "hw-flow-control"))
++			port8250.port.flags |= UPF_HARD_FLOW;
++
+ 		ret = serial8250_register_8250_port(&port8250);
+ 		break;
+ 	}
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2cf5649..16e3615 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -170,8 +170,12 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 			if (tty->termios.c_cflag & CBAUD)
+ 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
+ 		}
+-
+-		if (tty_port_cts_enabled(port)) {
++		/*
++		 * if hw support flow control without software intervention,
++		 * then skip the below check
++		 */
++		if (tty_port_cts_enabled(port) &&
++		    !(uport->flags & UPF_HARD_FLOW)) {
+ 			spin_lock_irq(&uport->lock);
+ 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
+ 				tty->hw_stopped = 1;
+@@ -2768,7 +2772,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
+ 
+ 	uport->icount.cts++;
+ 
+-	if (tty_port_cts_enabled(port)) {
++	/* skip below code if the hw flow control is supported */
++	if (tty_port_cts_enabled(port) &&
++	    !(uport->flags & UPF_HARD_FLOW)) {
+ 		if (tty->hw_stopped) {
+ 			if (status) {
+ 				tty->hw_stopped = 0;
+-- 
+1.7.9.5
+
