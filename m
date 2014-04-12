@@ -1,29 +1,43 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: uart: add hw flow control support configuration
-Date: Sat, 12 Apr 2014 17:58:12 +0100
-Message-ID: <20140412175812.107ecbdf@alan.etchedpixels.co.uk>
-References: <1397243877-23234-1-git-send-email-m-karicheri2@ti.com>
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Subject: [PATCH] serial: pl011: change Rx burst size to half of trigger level
+Date: Sat, 12 Apr 2014 19:47:17 +0200 (CEST)
+Message-ID: <Pine.LNX.4.64.1404121945120.8725@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1397243877-23234-1-git-send-email-m-karicheri2@ti.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, balbi@ti.com, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.187]:59372 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751830AbaDLRrT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 12 Apr 2014 13:47:19 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>
 
-> not needed if hw has flow control capabilities. This patch adds a
-> DT attribute for enabling hw flow control for a uart port. Also skip
-> stop and start if this flag is present in flag field of the port
-> structure.
+The amba-pl011.c driver sets DMA burst size equal to FIFO trigger level.
+If now exactly DMA burst size bytes are received, the DMAC will retrieve
+them all and no Rx timeout interrupt will be generated. To fix that set
+the burst size to half the FIFO trigger level.
 
-That seems a sensible thing to add.
+Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+---
+ drivers/tty/serial/amba-pl011.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> -	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-> +	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
-> +	    port->flags & UPF_HARD_FLOW) {
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 07325f2..dacf0a0 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -318,7 +318,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
+ 			.src_addr = uap->port.mapbase + UART01x_DR,
+ 			.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
+ 			.direction = DMA_DEV_TO_MEM,
+-			.src_maxburst = uap->fifosize >> 1,
++			.src_maxburst = uap->fifosize >> 2,
+ 			.device_fc = false,
+ 		};
+ 
+-- 
+1.9.1
 
-Surely you want brackets on the port->flags & UPF_HARD_FLOW ??
-
-Alan
