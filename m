@@ -1,46 +1,56 @@
-From: Karl Palsson <karlp-PhA6lrgffZtPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: Driver CH341 USB Adapter Serial Port not Works in Linux
-Date: Mon, 14 Apr 2014 10:13:20 +0000
-Message-ID: <20140414101320.GA19305@palmtree.beeroclock.net>
-References: <CAMkwOQZXVQkQsLfbvZFKSLeqbYJZVVdRUDXT+UYe6As4NTtrMA@mail.gmail.com>
- <20140414012013.GA1882@kroah.com>
- <CAMkwOQa4Wm9vnyDce_tkf3J=h73A3NfX3oAwTaOUeEVduStC4Q@mail.gmail.com>
+From: "Poulain, Loic" <loic.poulain@intel.com>
+Subject: 8250_dw DMA issue with BYT ?
+Date: Mon, 14 Apr 2014 15:54:31 +0000
+Message-ID: <50C3158CF44D924791C15F1437EF2EC65D9BE7@HASMSX104.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAMkwOQa4Wm9vnyDce_tkf3J=h73A3NfX3oAwTaOUeEVduStC4Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Kijam =?iso-8859-1?Q?L=F3pez?= <kijamve-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:5995 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753569AbaDNPzf convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Apr 2014 11:55:35 -0400
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
+Hello Heikki,
 
+I contact you regarding the 8250_dw driver.
+My setup is an Asus T100TA (baytrail) + kernel 3.14.
+The UART controller is ACPI enumerated (ID is 80860F0A).
+(UART_CAP_AFE capable)
 
-On Sun, Apr 13, 2014 at 08:51:56PM -0430, Kijam L=F3pez wrote:
-> The following code works for me correctly in Windows, but Linux does
-> not work. I am using the same PC, both operating systems are installe=
-d
-> native. I do not use virtual machine. I need to work on Linux. I have
-> tried in different linux distributions and does not work anywhere.
-[snip]
->       if(!serial.setParity(QSerialPort::EvenParity))
->             qCritical()<<"Error in setParity";
+This uart is used to communicate with a BCM4324 bluetooth chip
+(HCI H4 over uart). However we have many bluetooth instabilities.
+These instabilities are due to the 'hardware error' HCI code sent
+by the BCM chip. This error means that the BCM received an invalid
+H4 packet header or an invalid sized packet => serial sync issue.
+Moreover, Increasing the baudrate increases the hardware error
+frequency.
 
-the ch34x driver does not (yet) support parities other than None.  It d=
-oesn't report a
-failure though, it just simply ignores it altogether.
+This problem seems due to the DMA usage. Indeed, when I disable
+the DMA manually in 8250_dw.c (up->dma = NULL), problem does not
+occur anymore, all baudrates are stable.
 
-If you're actually working with an even parity device, you're going to =
-have all sorts of
-not-fun.  I've got a patch here: http://www.spinics.net/lists/linux-usb=
-/msg105238.html
-but I've not (yet) resubmitted it after Johan Hovold's comments
+Do you think a specific 8250 DMA configuration could apply for the byt
+case ?
+How/Where can I debug to know if the 8250 DMA works as expected ?
 
-Cheers,
-Karl P
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks & Regards,
+Loic Poulain
+---------------------------------------------------------------------
+Intel Corporation SAS (French simplified joint stock company)
+Registered headquarters: "Les Montalets"- 2, rue de Paris, 
+92196 Meudon Cedex, France
+Registration Number:  302 456 199 R.C.S. NANTERRE
+Capital: 4,572,000 Euros
+
+This e-mail and any attachments may contain confidential material for
+the sole use of the intended recipient(s). Any review or distribution
+by others is strictly prohibited. If you are not the intended
+recipient, please contact the sender and delete all copies.
+
