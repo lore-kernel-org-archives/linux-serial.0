@@ -1,74 +1,46 @@
-From: Tushar Behera <tushar.behera@linaro.org>
-Subject: Re: [PATCH] serial: amba-pl011: fix regression, causing an Oops on rmmod
-Date: Mon, 14 Apr 2014 12:55:58 +0530
-Message-ID: <CAHbNUh0AfrbamzauMxEp=88+y=Q8BksikCXkYvp5z1YvpKtF7Q@mail.gmail.com>
-References: <Pine.LNX.4.64.1404051629050.3518@axis700.grange>
+From: Karl Palsson <karlp-PhA6lrgffZtPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: Driver CH341 USB Adapter Serial Port not Works in Linux
+Date: Mon, 14 Apr 2014 10:13:20 +0000
+Message-ID: <20140414101320.GA19305@palmtree.beeroclock.net>
+References: <CAMkwOQZXVQkQsLfbvZFKSLeqbYJZVVdRUDXT+UYe6As4NTtrMA@mail.gmail.com>
+ <20140414012013.GA1882@kroah.com>
+ <CAMkwOQa4Wm9vnyDce_tkf3J=h73A3NfX3oAwTaOUeEVduStC4Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f172.google.com ([209.85.214.172]:40478 "EHLO
-	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750768AbaDNHZ7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Apr 2014 03:25:59 -0400
-Received: by mail-ob0-f172.google.com with SMTP id wm4so8733370obc.3
-        for <linux-serial@vger.kernel.org>; Mon, 14 Apr 2014 00:25:58 -0700 (PDT)
-In-Reply-To: <Pine.LNX.4.64.1404051629050.3518@axis700.grange>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAMkwOQa4Wm9vnyDce_tkf3J=h73A3NfX3oAwTaOUeEVduStC4Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kijam =?iso-8859-1?Q?L=F3pez?= <kijamve-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg KH <greg@kroah.com>, linux-serial <linux-serial@vger.kernel.org>
-
-On 5 April 2014 20:01, Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
-> A recent commit ef2889f7ffee67f0aed49e854c72be63f1466759 "serial: pl011:
-> Move uart_register_driver call to device probe" introduced a regression,
-> causing the pl011 driver to Oops if more than 1 port have been probed. Fix
-> the Oops by only calling uart_unregister_driver() once after the last port
-> has been removed.
->
-> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-
-Sorry about this. There were some additional suggestion in following
-thread [1] about registering it once during first probe and then
-unregistering during the last remove.
-
-[1] http://linux-kernel.2935.n7.nabble.com/PATCH-0-2-serial-Move-uart-register-driver-call-to-device-probe-td789746.html#a790221
-
-> ---
->  drivers/tty/serial/amba-pl011.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index d4eda24..07325f2 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2176,6 +2176,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
->  static int pl011_remove(struct amba_device *dev)
->  {
->         struct uart_amba_port *uap = amba_get_drvdata(dev);
-> +       bool busy = false;
->         int i;
->
->         uart_remove_one_port(&amba_reg, &uap->port);
-> @@ -2183,9 +2184,12 @@ static int pl011_remove(struct amba_device *dev)
->         for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
->                 if (amba_ports[i] == uap)
->                         amba_ports[i] = NULL;
-> +               else if (amba_ports[i])
-> +                       busy = true;
->
->         pl011_dma_remove(uap);
-> -       uart_unregister_driver(&amba_reg);
-> +       if (!busy)
-> +               uart_unregister_driver(&amba_reg);
->         return 0;
->  }
->
-> --
-> 1.9.1
->
 
 
 
--- 
-Tushar Behera
+On Sun, Apr 13, 2014 at 08:51:56PM -0430, Kijam L=F3pez wrote:
+> The following code works for me correctly in Windows, but Linux does
+> not work. I am using the same PC, both operating systems are installe=
+d
+> native. I do not use virtual machine. I need to work on Linux. I have
+> tried in different linux distributions and does not work anywhere.
+[snip]
+>       if(!serial.setParity(QSerialPort::EvenParity))
+>             qCritical()<<"Error in setParity";
+
+the ch34x driver does not (yet) support parities other than None.  It d=
+oesn't report a
+failure though, it just simply ignores it altogether.
+
+If you're actually working with an even parity device, you're going to =
+have all sorts of
+not-fun.  I've got a patch here: http://www.spinics.net/lists/linux-usb=
+/msg105238.html
+but I've not (yet) resubmitted it after Johan Hovold's comments
+
+Cheers,
+Karl P
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
