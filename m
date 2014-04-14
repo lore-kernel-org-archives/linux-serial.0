@@ -1,100 +1,74 @@
-From: =?ISO-8859-1?Q?Kijam_L=F3pez?= <kijamve-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Driver CH341 USB Adapter Serial Port not Works in Linux
-Date: Mon, 14 Apr 2014 02:12:40 -0430
-Message-ID: <CAMkwOQZAFopifw=rUssXVyk1o1uXfpCmLS1j1pWccbmUkK-YVA@mail.gmail.com>
-References: <CAMkwOQZXVQkQsLfbvZFKSLeqbYJZVVdRUDXT+UYe6As4NTtrMA@mail.gmail.com>
- <20140414012013.GA1882@kroah.com> <CAMkwOQa4Wm9vnyDce_tkf3J=h73A3NfX3oAwTaOUeEVduStC4Q@mail.gmail.com>
- <20140414014410.GA5136@kroah.com> <CAMkwOQaqQgDzE430u3TOG85gtqrX-AK0nTWK9dYsJSk-JtK5Mg@mail.gmail.com>
- <20140414052323.GB11480@kroah.com> <CAMkwOQbscK+0qWAPLTJHQQg0H-jaGoSsGznw3Bssi_qAbEBedw@mail.gmail.com>
- <CAMkwOQZe2Gr8YFXGOqdBMiG6nTJj-waJRa9sR2xcnwRuLpRAOA@mail.gmail.com>
+From: Tushar Behera <tushar.behera@linaro.org>
+Subject: Re: [PATCH] serial: amba-pl011: fix regression, causing an Oops on rmmod
+Date: Mon, 14 Apr 2014 12:55:58 +0530
+Message-ID: <CAHbNUh0AfrbamzauMxEp=88+y=Q8BksikCXkYvp5z1YvpKtF7Q@mail.gmail.com>
+References: <Pine.LNX.4.64.1404051629050.3518@axis700.grange>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAMkwOQZe2Gr8YFXGOqdBMiG6nTJj-waJRa9sR2xcnwRuLpRAOA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ob0-f172.google.com ([209.85.214.172]:40478 "EHLO
+	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750768AbaDNHZ7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Apr 2014 03:25:59 -0400
+Received: by mail-ob0-f172.google.com with SMTP id wm4so8733370obc.3
+        for <linux-serial@vger.kernel.org>; Mon, 14 Apr 2014 00:25:58 -0700 (PDT)
+In-Reply-To: <Pine.LNX.4.64.1404051629050.3518@axis700.grange>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg KH <greg@kroah.com>, linux-serial <linux-serial@vger.kernel.org>
 
-As a side note, I mentioned in a previous post, but remember, the
-"delta =3D 0x01" I print, not the original driver.
+On 5 April 2014 20:01, Guennadi Liakhovetski <g.liakhovetski@gmx.de> wrote:
+> A recent commit ef2889f7ffee67f0aed49e854c72be63f1466759 "serial: pl011:
+> Move uart_register_driver call to device probe" introduced a regression,
+> causing the pl011 driver to Oops if more than 1 port have been probed. Fix
+> the Oops by only calling uart_unregister_driver() once after the last port
+> has been removed.
+>
+> Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 
-  In https://github.com/torvalds/linux/blob/master/drivers/usb/serial/c=
-h341.c
-file on line 464 approximately, I wrote:
+Sorry about this. There were some additional suggestion in following
+thread [1] about registering it once during first probe and then
+unregistering during the last remove.
 
-dev_info(&port->dev, "%s - delta=3D0x%02X\n", __func__, delta);
+[1] http://linux-kernel.2935.n7.nabble.com/PATCH-0-2-serial-Move-uart-register-driver-call-to-device-probe-td789746.html#a790221
+
+> ---
+>  drivers/tty/serial/amba-pl011.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index d4eda24..07325f2 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2176,6 +2176,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  static int pl011_remove(struct amba_device *dev)
+>  {
+>         struct uart_amba_port *uap = amba_get_drvdata(dev);
+> +       bool busy = false;
+>         int i;
+>
+>         uart_remove_one_port(&amba_reg, &uap->port);
+> @@ -2183,9 +2184,12 @@ static int pl011_remove(struct amba_device *dev)
+>         for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+>                 if (amba_ports[i] == uap)
+>                         amba_ports[i] = NULL;
+> +               else if (amba_ports[i])
+> +                       busy = true;
+>
+>         pl011_dma_remove(uap);
+> -       uart_unregister_driver(&amba_reg);
+> +       if (!busy)
+> +               uart_unregister_driver(&amba_reg);
+>         return 0;
+>  }
+>
+> --
+> 1.9.1
+>
 
 
-2014-04-14 2:06 GMT-04:30 Kijam L=F3pez <kijamve-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
-> By testing, sometimes even when ENQ command, if they leave these four=
- lines:
->
-> ch341_update_line_status - multiple status change
-> ch341_update_line_status - delta =3D 0x01
-> ch341_update_line_status - multiple status change
-> ch341_update_line_status - delta =3D 0x01
->
-> Always gives Timeout. Apparently there is the problem ... I think XD.
->
-> The problem with the driver gives me the kernel 3.12.6 original, a
-> despairing attempt to update the two files you mentioned, but still
-> always feel the same. Always respond timeout.
->
->
-> 2014-04-14 1:02 GMT-04:30 Kijam L=F3pez <kijamve-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
->> All commands and responses are formatted: STX data ETX LRC (I replac=
-e
->> No printable Char for [space]0xXX[space])
->>
->> If I sent a ENQ answers his state, which is 2 bytes, so replies:  0x=
-02
->> `@ 0x03 # (`@ is a two-byte mask representing the internal state of
->> the device)
->>
->> If sending the S1 command, which is " 0x02 S1 0x03 a", I should say
->> something like this:
->> " 0x02 S100 0x0A 00000000000000000 0x0A 00000479 0x0A 00000 0x0A
->> 00000330 0x0A 00000 0x0A 0061 0x0A 0000 0x0A X-XXXXXXXX 0x0A XXXXXXX=
-XX
->> 0x0A 221715 0x0A 120414 0x0A  0x03  0x1B "
->>
->> In Windows OS, it works perfectly with the same PC and the same USB
->> adapter. But Linux is not responding. Or respond but the driver is n=
-ot
->> interpreted correctly.
->>
->> My Kernel is 3.12.6, but i updated from GitHub this file an rebuild
->> this drivers:
->> https://github.com/torvalds/linux/blob/master/drivers/usb/serial/ch3=
-41.c
->> https://github.com/torvalds/linux/blob/master/drivers/usb/serial/usb=
--serial.c
->> (commit d9a38a8741fdffabc32e6d0943b1cdcf22712bec)
->>
->>
->> 2014-04-14 0:53 GMT-04:30 Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>:
->>> On Mon, Apr 14, 2014 at 12:16:40AM -0430, Kijam L=F3pez wrote:
->>>> I reported here:
->>>>
->>>>      https://bugreports.qt-project.org/browse/QTBUG-38305
->>>>
->>>> But just migrate my APP to ANSI C and is exactly the same.
->>>>
->>>> My code test in ANSI C:
->>>>
->>>>      <snip>
->>>>      Test command: Fail
->>>
->>> I'm confused, what should it do?
->>>
->>> And what kernel version are you using here?
->>>
->>> thanks,
->>>
->>> greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+Tushar Behera
