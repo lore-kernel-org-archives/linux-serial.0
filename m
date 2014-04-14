@@ -1,43 +1,20 @@
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Subject: [PATCH] serial: pl011: change Rx burst size to half of trigger level
-Date: Sat, 12 Apr 2014 19:47:17 +0200 (CEST)
-Message-ID: <Pine.LNX.4.64.1404121945120.8725@axis700.grange>
+From: =?ISO-8859-1?Q?Kijam_L=F3pez?= <kijamve@gmail.com>
+Subject: Driver CH341 USB Adapter Serial Port not Works in Linux
+Date: Sun, 13 Apr 2014 20:19:11 -0430
+Message-ID: <CAMkwOQZXVQkQsLfbvZFKSLeqbYJZVVdRUDXT+UYe6As4NTtrMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.187]:59372 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751830AbaDLRrT (ORCPT
+Received: from mail-oa0-f54.google.com ([209.85.219.54]:40366 "EHLO
+	mail-oa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750763AbaDNAtc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 12 Apr 2014 13:47:19 -0400
+	Sun, 13 Apr 2014 20:49:32 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>
+To: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 
-The amba-pl011.c driver sets DMA burst size equal to FIFO trigger level.
-If now exactly DMA burst size bytes are received, the DMAC will retrieve
-them all and no Rx timeout interrupt will be generated. To fix that set
-the burst size to half the FIFO trigger level.
+Hi!, I'm having trouble with this adapter, and lately I think it's the
+driver. Here I leave a link where I report the problem:
 
-Signed-off-by: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
----
- drivers/tty/serial/amba-pl011.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 07325f2..dacf0a0 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -318,7 +318,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
- 			.src_addr = uap->port.mapbase + UART01x_DR,
- 			.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
- 			.direction = DMA_DEV_TO_MEM,
--			.src_maxburst = uap->fifosize >> 1,
-+			.src_maxburst = uap->fifosize >> 2,
- 			.device_fc = false,
- 		};
- 
--- 
-1.9.1
-
+http://stackoverflow.com/questions/23040820/driver-ch341-usb-adapter-serial-port-or-qserialport-not-works-in-linux
