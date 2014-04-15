@@ -1,49 +1,28 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH V5.1] serial/uart/8250: Add tunable RX interrupt trigger
- I/F of FIFO buffers
-Date: Tue, 15 Apr 2014 11:10:33 +0100
-Message-ID: <20140415111033.102bc5af@alan.etchedpixels.co.uk>
-References: <20140415055216.14660.18270.stgit@yunodevel>
-	<20140415080649.19209.60645.stgit@yunodevel>
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: Question regarding serial_core.h port type
+Date: Tue, 15 Apr 2014 16:09:56 +0200
+Message-ID: <20140415140956.GA25718@jtlinux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:44443 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751148AbaDOKLC (ORCPT
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.141]:14044 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753244AbaDOORQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Apr 2014 06:11:02 -0400
-In-Reply-To: <20140415080649.19209.60645.stgit@yunodevel>
+	Tue, 15 Apr 2014 10:17:16 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+To: linux-serial@vger.kernel.org
+Cc: Johannes Thumshirn <johannes.thumshirn@men.de>
 
+Hi,
 
-> +static int convert_val2rxtrig(struct uart_8250_port *up, unsigned char val)
-> +{
-> +	const struct serial8250_config *conf_type = &uart_config[up->port.type];
-> +	int i;
-> +
-> +	if (!conf_type->rx_trig_byte[FCR_RX_TRIG_BITS(UART_FCR_R_TRIG_00)]) {
-> +		pr_info("Not support RX-trigger setting for this serial %s\n",
-> +			conf_type->name);
-> +		return -EOPNOTSUPP;
+I have a question regarding the port type constants in serial_core.h. Is there
+any "official" assignment scheme, or is it ok to just grab/append an unused
+number?
 
-We don't want the pr_info here - otherwise users can flood the logs. The
-err code is sufficient.
+Or is it even possible/allowed to reuse an existing number from the list?
 
-> +	for (i = 1; i < FCR_RX_TRIG_MAX_STATE; i++) {
-> +		if (val < conf_type->rx_trig_byte[i])
-> +			/* Use the nearest lower value */
-> +			return (--i) << FCR_RX_TRIG_OFFSET;
-
-Odd case here - your 16654 entry has a minimum of 8 so if I pass 1 then
-it'll return -1 ? I guess for that case the best we can do is to set 8.
-
-Other trivial thing to tweak - you have "uaser" in spot instead of "user".
-
-With those two fixed it looks good to me.
-
-Alan
+Regards,
+	Johannes
