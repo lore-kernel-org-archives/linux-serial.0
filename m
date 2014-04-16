@@ -1,51 +1,85 @@
-From: Loic Poulain <loic.poulain@intel.com>
-Subject: [PATCH] 8250_core: Fix unwanted TX chars write
-Date: Wed, 16 Apr 2014 18:48:51 +0200
-Message-ID: <1397666931-13605-1-git-send-email-loic.poulain@intel.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH V5.1] serial/uart/8250: Add tunable RX interrupt trigger
+ I/F of FIFO buffers
+Date: Wed, 16 Apr 2014 11:04:03 -0600
+Message-ID: <534EB803.5030101@wwwdotorg.org>
+References: <20140415055216.14660.18270.stgit@yunodevel> <20140415080649.19209.60645.stgit@yunodevel> <534D6EED.8000905@wwwdotorg.org> <534DE62C.3090300@hitachi.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:56377 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753590AbaDPQxj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Apr 2014 12:53:39 -0400
+Received: from avon.wwwdotorg.org ([70.85.31.133]:41926 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752221AbaDPREJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Apr 2014 13:04:09 -0400
+In-Reply-To: <534DE62C.3090300@hitachi.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Loic Poulain <loic.poulain@intel.com>
+To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On transmit-hold-register empty, serial8250_tx_chars
-should be called only if we don't use DMA.
-DMA has its own tx cycle.
+On 04/15/2014 08:08 PM, Yoshihiro YUNOMAE wrote:
+> Hi Stephen,
+> 
+> Thank you for your review.
+> 
+> (2014/04/16 2:39), Stephen Warren wrote:
+>> On 04/15/2014 02:06 AM, Yoshihiro YUNOMAE wrote:
+>>> /* I found a bug in V5, so I resend this as V5.1. Please do not
+>>> review V5. */
+>>>
+>>> Add tunable RX interrupt trigger I/F of FIFO buffers.
+>>> Serial devices are used as not only message communication devices but
+>>> control
+>>> or sending communication devices. For the latter uses, normally small
+>>> data
+>>> will be exchanged, so user applications want to receive data unit as
+>>> soon as
+>>> possible for real-time tendency. If we have a sensor which sends a 1
+>>> byte data
+>>> each time and must control a device based on the sensor feedback, the RX
+>>> interrupt should be triggered for each data.
+>>>
+>>> According to HW specification of serial UART devices, RX interrupt
+>>> trigger
+>>> can be changed, but the trigger is hard-coded. For example, RX
+>>> interrupt trigger
+>>> in 16550A can be set to 1, 4, 8, or 14 bytes for HW, but current
+>>> driver sets
+>>> the trigger to only 8bytes.
 
-Signed-off-by: Loic Poulain <loic.poulain@intel.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>>> diff --git a/drivers/tty/serial/8250/8250_core.c
+>>> b/drivers/tty/serial/8250/8250_core.c
+>>
+>>> @@ -2275,10 +2276,9 @@ serial8250_do_set_termios(struct uart_port
+>>> *port, struct ktermios *termios,
+>>
+>>>       if (up->capabilities & UART_CAP_FIFO && port->fifosize > 1) {
+>>> -        fcr = uart_config[port->type].fcr;
+>>> -        if ((baud < 2400 && !up->dma) || fifo_bug) {
+>>> -            fcr &= ~UART_FCR_TRIGGER_MASK;
+>>> -            fcr |= UART_FCR_TRIGGER_1;
+>>> +        /* NOTE: If fifo_bug is not set, a uaser can set RX_trigger. */
+>>> +        if ((baud < 2400 && !up->dma &&
+>>> +            (up->fcr == uart_config[port->type].fcr)) ||
+>>> up->fifo_bug) {
+>>> +            up->fcr &= ~UART_FCR_TRIGGER_MASK;
+>>> +            up->fcr |= UART_FCR_TRIGGER_1;
+>>>           }
+>>>       }
+>>
+>> Does the "(up->fcr == uart_config[port->type].fcr)" term prevent the
+>> user from changing the trigger level multiple times? Perhaps this is
+>> intended?
+> 
+> No, this means that if a user changed FCR value before setting termios,
+> use the changed value because the user think changed value is always
+> set. But, I thought this is not straightforward and it cannot help
+> when the user want to use default FCR value.
+> Could I add FCR changed flag(user_changed_fcr) in uart_8250_port
+> structure and check the flag here?
+> Or shouldn't the driver check the user changing?
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 81f909c..0e1bf88 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1520,7 +1520,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 			status = serial8250_rx_chars(up, status);
- 	}
- 	serial8250_modem_status(up);
--	if (status & UART_LSR_THRE)
-+	if (!up->dma && (status & UART_LSR_THRE))
- 		serial8250_tx_chars(up);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
--- 
-1.8.3.2
-
----------------------------------------------------------------------
-Intel Corporation SAS (French simplified joint stock company)
-Registered headquarters: "Les Montalets"- 2, rue de Paris, 
-92196 Meudon Cedex, France
-Registration Number:  302 456 199 R.C.S. NANTERRE
-Capital: 4,572,000 Euros
-
-This e-mail and any attachments may contain confidential material for
-the sole use of the intended recipient(s). Any review or distribution
-by others is strictly prohibited. If you are not the intended
-recipient, please contact the sender and delete all copies.
-
+Oh, I wasn't aware that the user could change FCR directly. To be
+honest, I'm not sure of the best way to resolve that kind of conflict...
