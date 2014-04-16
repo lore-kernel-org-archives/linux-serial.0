@@ -1,95 +1,109 @@
-From: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 12/21] serial: support for 16550A serial ports on LP-8x4x
-Date: Thu, 17 Apr 2014 00:32:12 +0400
-Message-ID: <560965e4-7201-43fd-9ad9-73036d50f576@email.android.com>
-References: <1397668411-27162-7-git-send-email-ynvich@gmail.com> <1397668667-27328-1-git-send-email-ynvich@gmail.com> <1397668667-27328-6-git-send-email-ynvich@gmail.com> <20140416193532.0782f045@alan.etchedpixels.co.uk> <c4533da6-30bd-4ea4-9011-a7e3b7258e62@email.android.com> <20140416210051.01bef49e@alan.etchedpixels.co.uk>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 6/8] tty/serial: pl011: add generic earlycon support
+Date: Wed, 16 Apr 2014 17:14:28 -0500
+Message-ID: <CAL_Jsq+rQA8p9oYk-Urh_z6MTqCy0RNr=k0nz7r0OTuMCPUNWA@mail.gmail.com>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
+	<1395436128-11244-7-git-send-email-robherring2@gmail.com>
+	<20140324112821.GE3850@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140416210051.01bef49e-mUKnrFFms3BCCTY1wZZT65JpZx93mCW/@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Stefan Seyfried <seife+kernel-shG/GajIFYoxoycv7ERPSQ@public.gmane.org>, James Cameron <quozl-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140324112821.GE3850@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, Will Deacon <Will.Deacon@arm.com>, "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org> wrote:
->On Wed, 16 Apr 2014 23:01:47 +0400
->Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+On Mon, Mar 24, 2014 at 6:28 AM, Catalin Marinas
+<catalin.marinas@arm.com> wrote:
+> On Fri, Mar 21, 2014 at 09:08:46PM +0000, Rob Herring wrote:
+>> From: Rob Herring <robh@kernel.org>
+>>
+>> Add earlycon support for the pl011 serial port. This allows enabling
+>> the pl011 for console when early_params are processed. This is based
+>> on the arm64 earlyprintk support and is intended to replace it.
+>>
+>> Signed-off-by: Rob Herring <robh@kernel.org>
+>> Cc: Russell King <linux@arm.linux.org.uk>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>  Documentation/kernel-parameters.txt |  5 +++--
+>>  drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
+>>  2 files changed, 32 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+>> index 5ce8b7a..81bdd52 100644
+>> --- a/Documentation/kernel-parameters.txt
+>> +++ b/Documentation/kernel-parameters.txt
+>> @@ -887,8 +887,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>>               uart[8250],io,<addr>[,options]
+>>               uart[8250],mmio,<addr>[,options]
+>>               uart[8250],mmio32,<addr>[,options]
+>> -                     Start an early, polled-mode console on the 8250/16550
+>> -                     UART at the specified I/O port or MMIO address.
+>> +             pl011,<addr>
+>> +                     Start an early, polled-mode console on a serial port
+>> +                     at the specified I/O port or MMIO address. 8250
+>>                       MMIO inter-register address stride is either 8-bit
+>>                       (mmio) or 32-bit (mmio32).
+>>                       The options are the same as for ttyS, above.
 >
->> One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org> wrote:
->> >> +	baud = uart_get_baud_rate(port, termios, old,
->> >> +				  port->uartclk / 16 / 0xffff,
->> >> +				  port->uartclk / 16);
->> >> +	switch (baud) {
->> >> +	case 2400:
->> >> +		len |= 1;
->> >> +		break;
->> >> +	case 4800:
->> >> +		len |= 2;
->> >> +		break;
->> >> +	case 19200:
->> >> +		len |= 4;
->> >> +		break;
->> >> +	case 38400:
->> >> +		len |= 5;
->> >> +		break;
->> >> +	case 57600:
->> >> +		len |= 6;
->> >> +		break;
->> >> +	case 115200:
->> >> +		len |= 7;
->> >> +		break;
->> >> +	case 9600:
->> >> +	default:
->> >> +		len |= 3;
->> >> +		break;
->> >> +	};
->> >
->> >Some explanation of this would be useful - eg why is it set to 7 for
->> >115200 baud and 3 for 115201 baud ?
->> 
->> I am not related to the device vendor in any way, so please take my
->answers for what they are worth.
->> 
->> It seems that there is not enough pins to properly connect the chips
->to the memory bus and just you the standard 8250 UART driver. Instead,
->clock divisor is set using this register.
->> 
->> So, if you know you're asking for (115200) you get it. If you don't
->or guess (115201), you get the default 9600.
+> I think the last line is a bit misleading. Or did you intend to leave it
+> with the uart[8250] parameter? See below:
+
+How about this (excuse the gmail lack of tabs):
+
+earlycon= [KNL] Output early console device and options.
+
+ uart[8250],io,<addr>[,options]
+ uart[8250],mmio,<addr>[,options]
+ uart[8250],mmio32,<addr>[,options]
+  Start an early, polled-mode console on an 8250 serial
+  port at the specified I/O port or MMIO address. 8250
+  MMIO inter-register address stride is either 8-bit
+  (mmio) or 32-bit (mmio32).
+
+  The options are the same as for ttyS, above.
+
+ pl011,<addr>
+  Start an early, polled-mode console on a pl011 serial
+  port at the specified address. The pl011 serial port
+  must already be setup and configured. Options are not
+  yet supported.
+
+ smh Use ARM semihosting calls for early console.
+
+
 >
->Thats not quite what the code actually implements though.
-
->> This is a policy, it may not be the right way to write a driver, but
->it is cheap and it works.
-
->If thats how the hardware works and only supports a few fixed rates
->then
->fine, but for default: you need to actually update he baudrate in the
->passed termios struct so that the userspace knows its request was not
->matched.
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index d4eda24..4227c0a 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+> [...]
+>> +static int __init pl011_early_console_setup(struct earlycon_device *device,
+>> +                                         const char *opt)
+>> +{
+>> +     if (!device->port.membase)
+>> +             return -ENODEV;
+>> +
+>> +     device->con->write = pl011_early_write;
+>> +     return 0;
+>> +}
+>> +EARLYCON_DECLARE(pl011, pl011_early_console_setup);
 >
->Take a look how the standard 8250 termios does it.
+> Here we expect the PL011 to be already initialised by the boot loader
+> and the kernel continues using the same settings. So maybe clarify this
+> in the pl011 kernel parameter doc and we can add proper configuration
+> using a separate patch.
 
-I will. I've tested the driver by setting termios from userspace. There was no chance to ask for arbitrary rate, so I didn't think much about this case.
+Enabling and setup would not be too hard, but either baud rate will
+always have to be configured or we'll have to specify the input clock
+rate too. The 8250 driver basically does the former or assumes a fixed
+clock.
 
->Also looking at this and some of the other serial bits I see no
->dependencies on the problematic DMA driver, so does that mean you've
->got
->a set of pieces that can be submitted anyway while the DMA driver
->discussion continues ?
+Adding any setup will also break any non-pl011 based SBSA compliant
+uart since the configuration registers are not standardized. I guess
+we can add "sbsauart" when/if that happens.
 
-Yes, getting each peace in will reduce the support burden.
-
-The degree of interdependence varies from feature to feature. rtc, mtd, irq and serial could be taken independently.
-
-The main patch is #8. It requires #1-7. The is problem with DMA is one of policy, not technical one. It is explained in #6-7 in details.
-
-Everything in the misc depends on bus. But the bus is very simple. There is even no interrupts.
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Rob
