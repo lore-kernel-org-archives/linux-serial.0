@@ -1,15 +1,15 @@
 From: Loic Poulain <loic.poulain@intel.com>
 Subject: [PATCH] 8250_core: Fix unwanted TX chars write
-Date: Wed, 16 Apr 2014 18:43:44 +0200
-Message-ID: <1397666624-13545-1-git-send-email-loic.poulain@intel.com>
+Date: Wed, 16 Apr 2014 18:48:51 +0200
+Message-ID: <1397666931-13605-1-git-send-email-loic.poulain@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:46551 "EHLO mga02.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:56377 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754290AbaDPQtM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Apr 2014 12:49:12 -0400
+	id S1753590AbaDPQxj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Apr 2014 12:53:39 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.orgg
+To: heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, Loic Poulain <loic.poulain@intel.com>
 
 On transmit-hold-register empty, serial8250_tx_chars
