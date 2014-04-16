@@ -1,1686 +1,306 @@
 From: Sergei Ianovich <ynvich@gmail.com>
-Subject: [PATCH v4 01/21] serial: rewrite pxa2xx-uart to use 8250_core
-Date: Wed, 16 Apr 2014 21:13:11 +0400
-Message-ID: <1397668411-27162-2-git-send-email-ynvich@gmail.com>
-References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
- <1397668411-27162-1-git-send-email-ynvich@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f169.google.com ([209.85.217.169]:43600 "EHLO
-	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752140AbaDPROU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Apr 2014 13:14:20 -0400
-In-Reply-To: <1397668411-27162-1-git-send-email-ynvich@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH v4 12/21] serial: support for 16550A serial ports on LP-8x4x
+Date: Wed, 16 Apr 2014 21:17:17 +0400
+Message-ID: <1397668667-27328-6-git-send-email-ynvich@gmail.com>
+References: <1397668411-27162-7-git-send-email-ynvich@gmail.com>
+ <1397668667-27328-1-git-send-email-ynvich@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1397668667-27328-1-git-send-email-ynvich@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Sergei Ianovich <ynvich@gmail.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, James Cameron <quozl@laptop.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Paul Bolle <pebolle@tiscali.nl>, Arnd Bergmann <arnd@arndb.de>, Randy Dunlap <rdunlap@infradead.org>, Stefan Seyfried <seife+kernel@b1-systems.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Cc: Sergei Ianovich <ynvich@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Paul Bolle <pebolle@tiscali.nl>, Stefan Seyfried <seife+kernel@b1-systems.com>, James Cameron <quozl@laptop.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+List-Id: linux-serial@vger.kernel.org
 
-pxa2xx-uart was a separate uart platform driver. It was declaring
-the same device names and numbers as 8250 driver. As a result,
-it was impossible to use 8250 driver on PXA SoCs.
+The patch adds support for 3 additional LP-8x4x built-in serial
+ports.
 
-Upon closer examination pxa2xx-uart turned out to be a clone of
-8250_core driver.
-
-Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
-Specification Update (April 19, 2010) is dropped. 8250_core reads
-from FIFO immediately after checking DR bit in LSR.
+The device can also host up to 8 extension cards with 4 serial ports
+on each card for a total of 35 ports. However, I don't have
+the hardware to test extension cards, so they are not supported, yet.
 
 Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
 Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: James Cameron <quozl@laptop.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Resenging together with the rest of the series as the series
- breaks without this one at [PATCH 12/21]
+   v3..v4
+   * move DTS bindings to a different patch (8/21) as suggested by
+     Heikki Krogerus
 
- no changes v3..v4
+   v2..v3
+   * no changes (except number 10/16 -> 12/21)
 
- changes v2..v3
- * remove devm_free/put as suggested by Heikki Krogerus
- * use SET_SYSTEM_SLEEP_PM_OPS macro to set pm ops as suggested
-   by Heikki Krogerus
+   v0..v2
+   * register platform driver instead of platform device
+   * use device tree
+   * use devm helpers where possible
 
- changes v1..v2
- * actually implement workaround for E74 in dl_write as spooted
-   by James Cameron
- * added comment about E19 in commit message
+ .../devicetree/bindings/serial/lp8x4x-serial.txt   |  35 +++++
+ arch/arm/configs/lp8x4x_defconfig                  |   1 +
+ drivers/tty/serial/8250/8250_lp8x4x.c              | 169 +++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig                    |  12 ++
+ drivers/tty/serial/8250/Makefile                   |   1 +
+ 5 files changed, 218 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
+ create mode 100644 drivers/tty/serial/8250/8250_lp8x4x.c
 
- arch/arm/configs/am200epdkit_defconfig    |   3 +-
- arch/arm/configs/cm_x2xx_defconfig        |   3 +-
- arch/arm/configs/cm_x300_defconfig        |   3 +-
- arch/arm/configs/colibri_pxa270_defconfig |   3 +-
- arch/arm/configs/colibri_pxa300_defconfig |   3 +-
- arch/arm/configs/corgi_defconfig          |   4 +-
- arch/arm/configs/em_x270_defconfig        |   3 +-
- arch/arm/configs/ezx_defconfig            |   3 +-
- arch/arm/configs/h5000_defconfig          |   3 +-
- arch/arm/configs/imote2_defconfig         |   3 +-
- arch/arm/configs/lpd270_defconfig         |   3 +-
- arch/arm/configs/lubbock_defconfig        |   3 +-
- arch/arm/configs/mainstone_defconfig      |   3 +-
- arch/arm/configs/mmp2_defconfig           |   3 +-
- arch/arm/configs/pcm027_defconfig         |   3 +-
- arch/arm/configs/pxa168_defconfig         |   3 +-
- arch/arm/configs/pxa255-idp_defconfig     |   3 +-
- arch/arm/configs/pxa3xx_defconfig         |   3 +-
- arch/arm/configs/pxa910_defconfig         |   3 +-
- arch/arm/configs/raumfeld_defconfig       |   3 +-
- arch/arm/configs/spitz_defconfig          |   4 +-
- arch/arm/configs/trizeps4_defconfig       |   3 +-
- arch/arm/configs/viper_defconfig          |   4 +-
- arch/arm/configs/xcep_defconfig           |   3 +-
- drivers/tty/serial/8250/8250_pxa.c        | 178 ++++++
- drivers/tty/serial/8250/Kconfig           |   9 +
- drivers/tty/serial/8250/Makefile          |   1 +
- drivers/tty/serial/Kconfig                |  23 -
- drivers/tty/serial/Makefile               |   1 -
- drivers/tty/serial/pxa.c                  | 971 ------------------------------
- 30 files changed, 236 insertions(+), 1022 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_pxa.c
- delete mode 100644 drivers/tty/serial/pxa.c
-
-diff --git a/arch/arm/configs/am200epdkit_defconfig b/arch/arm/configs/am200epdkit_defconfig
-index f0dea52..0cde234 100644
---- a/arch/arm/configs/am200epdkit_defconfig
-+++ b/arch/arm/configs/am200epdkit_defconfig
-@@ -60,8 +60,9 @@ CONFIG_BLK_DEV_IDECS=m
- CONFIG_NETDEVICES=y
- CONFIG_NET_ETHERNET=y
- CONFIG_SMC91X=m
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- # CONFIG_HWMON is not set
-diff --git a/arch/arm/configs/cm_x2xx_defconfig b/arch/arm/configs/cm_x2xx_defconfig
-index a93ff8d..b9fbe65 100644
---- a/arch/arm/configs/cm_x2xx_defconfig
-+++ b/arch/arm/configs/cm_x2xx_defconfig
-@@ -96,8 +96,9 @@ CONFIG_KEYBOARD_PXA27x=m
- CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_TOUCHSCREEN_UCB1400=m
- # CONFIG_SERIO_SERPORT is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_LEGACY_PTY_COUNT=16
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/cm_x300_defconfig b/arch/arm/configs/cm_x300_defconfig
-index f4b7672..53a82ae 100644
---- a/arch/arm/configs/cm_x300_defconfig
-+++ b/arch/arm/configs/cm_x300_defconfig
-@@ -80,8 +80,9 @@ CONFIG_TOUCHSCREEN_WM97XX=m
- # CONFIG_TOUCHSCREEN_WM9713 is not set
- # CONFIG_SERIO is not set
- # CONFIG_LEGACY_PTYS is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
- CONFIG_I2C_PXA=y
-diff --git a/arch/arm/configs/colibri_pxa270_defconfig b/arch/arm/configs/colibri_pxa270_defconfig
-index 2ef2c5e..1ce0409 100644
---- a/arch/arm/configs/colibri_pxa270_defconfig
-+++ b/arch/arm/configs/colibri_pxa270_defconfig
-@@ -103,8 +103,9 @@ CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=m
- CONFIG_SERIO_LIBPS2=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/arm/configs/colibri_pxa300_defconfig b/arch/arm/configs/colibri_pxa300_defconfig
-index b985334..f96bda0 100644
---- a/arch/arm/configs/colibri_pxa300_defconfig
-+++ b/arch/arm/configs/colibri_pxa300_defconfig
-@@ -31,8 +31,9 @@ CONFIG_INPUT_EVDEV=y
- # CONFIG_INPUT_MOUSE is not set
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_GPIO_ROTARY_ENCODER=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_DEBUG_GPIO=y
- # CONFIG_HWMON is not set
-diff --git a/arch/arm/configs/corgi_defconfig b/arch/arm/configs/corgi_defconfig
-index 1fd1d1d..bb4842d 100644
---- a/arch/arm/configs/corgi_defconfig
-+++ b/arch/arm/configs/corgi_defconfig
-@@ -131,10 +131,10 @@ CONFIG_TOUCHSCREEN_ADS7846=y
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=m
- # CONFIG_SERIO is not set
--CONFIG_SERIAL_8250=m
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_CS=m
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_I2C=y
- CONFIG_I2C_PXA=y
-diff --git a/arch/arm/configs/em_x270_defconfig b/arch/arm/configs/em_x270_defconfig
-index 60a21e0..ec0ec54 100644
---- a/arch/arm/configs/em_x270_defconfig
-+++ b/arch/arm/configs/em_x270_defconfig
-@@ -90,8 +90,9 @@ CONFIG_TOUCHSCREEN_WM97XX=m
- # CONFIG_TOUCHSCREEN_WM9705 is not set
- # CONFIG_TOUCHSCREEN_WM9713 is not set
- # CONFIG_SERIO_SERPORT is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_LEGACY_PTY_COUNT=16
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/ezx_defconfig b/arch/arm/configs/ezx_defconfig
-index d95763d..631e2ec 100644
---- a/arch/arm/configs/ezx_defconfig
-+++ b/arch/arm/configs/ezx_defconfig
-@@ -215,8 +215,9 @@ CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=y
- CONFIG_INPUT_PCAP=y
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_LEGACY_PTY_COUNT=8
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/h5000_defconfig b/arch/arm/configs/h5000_defconfig
-index 37903e3..655b735 100644
---- a/arch/arm/configs/h5000_defconfig
-+++ b/arch/arm/configs/h5000_defconfig
-@@ -47,8 +47,9 @@ CONFIG_MTD_PHYSMAP=y
- # CONFIG_INPUT_KEYBOARD is not set
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_LEGACY_PTY_COUNT=32
- # CONFIG_HW_RANDOM is not set
- # CONFIG_HWMON is not set
-diff --git a/arch/arm/configs/imote2_defconfig b/arch/arm/configs/imote2_defconfig
-index fd996bb..49d45e9 100644
---- a/arch/arm/configs/imote2_defconfig
-+++ b/arch/arm/configs/imote2_defconfig
-@@ -193,8 +193,9 @@ CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=y
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_LEGACY_PTY_COUNT=8
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/lpd270_defconfig b/arch/arm/configs/lpd270_defconfig
-index 1c8c9ee..c3927b6 100644
---- a/arch/arm/configs/lpd270_defconfig
-+++ b/arch/arm/configs/lpd270_defconfig
-@@ -38,8 +38,9 @@ CONFIG_SMC91X=y
- CONFIG_INPUT_EVDEV=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO_SERPORT is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_FB=y
- CONFIG_FB_PXA=y
-diff --git a/arch/arm/configs/lubbock_defconfig b/arch/arm/configs/lubbock_defconfig
-index c4ba274..c8b0436 100644
---- a/arch/arm/configs/lubbock_defconfig
-+++ b/arch/arm/configs/lubbock_defconfig
-@@ -37,8 +37,9 @@ CONFIG_PCMCIA_PCNET=y
- CONFIG_INPUT_EVDEV=y
- # CONFIG_SERIO_SERPORT is not set
- CONFIG_SERIO_SA1111=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_VGA_CONSOLE is not set
- CONFIG_USB_GADGET=y
- CONFIG_USB_G_SERIAL=m
-diff --git a/arch/arm/configs/mainstone_defconfig b/arch/arm/configs/mainstone_defconfig
-index 04efa1b..768892c 100644
---- a/arch/arm/configs/mainstone_defconfig
-+++ b/arch/arm/configs/mainstone_defconfig
-@@ -34,8 +34,9 @@ CONFIG_SMC91X=y
- CONFIG_INPUT_EVDEV=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO_SERPORT is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_FB=y
- CONFIG_FB_PXA=y
- # CONFIG_VGA_CONSOLE is not set
-diff --git a/arch/arm/configs/mmp2_defconfig b/arch/arm/configs/mmp2_defconfig
-index f1cb95e..1ced9df 100644
---- a/arch/arm/configs/mmp2_defconfig
-+++ b/arch/arm/configs/mmp2_defconfig
-@@ -44,8 +44,9 @@ CONFIG_SMC91X=y
- # CONFIG_INPUT_KEYBOARD is not set
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/pcm027_defconfig b/arch/arm/configs/pcm027_defconfig
-index 2f136c3..1280128 100644
---- a/arch/arm/configs/pcm027_defconfig
-+++ b/arch/arm/configs/pcm027_defconfig
-@@ -60,8 +60,9 @@ CONFIG_SMC91X=y
- # CONFIG_INPUT_KEYBOARD is not set
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/pxa168_defconfig b/arch/arm/configs/pxa168_defconfig
-index 74d7e01..1668dac 100644
---- a/arch/arm/configs/pxa168_defconfig
-+++ b/arch/arm/configs/pxa168_defconfig
-@@ -40,8 +40,9 @@ CONFIG_SMC91X=y
- # CONFIG_INPUT_KEYBOARD is not set
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- # CONFIG_HWMON is not set
-diff --git a/arch/arm/configs/pxa255-idp_defconfig b/arch/arm/configs/pxa255-idp_defconfig
-index 917a070..399a706 100644
---- a/arch/arm/configs/pxa255-idp_defconfig
-+++ b/arch/arm/configs/pxa255-idp_defconfig
-@@ -35,8 +35,9 @@ CONFIG_SMC91X=y
- CONFIG_INPUT_EVDEV=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO_SERPORT is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_FB=y
- CONFIG_FB_PXA=y
- # CONFIG_VGA_CONSOLE is not set
-diff --git a/arch/arm/configs/pxa3xx_defconfig b/arch/arm/configs/pxa3xx_defconfig
-index 60e3138..7c3e052 100644
---- a/arch/arm/configs/pxa3xx_defconfig
-+++ b/arch/arm/configs/pxa3xx_defconfig
-@@ -56,8 +56,9 @@ CONFIG_KEYBOARD_PXA27x=y
- CONFIG_KEYBOARD_PXA930_ROTARY=y
- CONFIG_MOUSE_PXA930_TRKBALL=y
- CONFIG_INPUT_TOUCHSCREEN=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
-diff --git a/arch/arm/configs/pxa910_defconfig b/arch/arm/configs/pxa910_defconfig
-index 3bb7771..cdacfcb 100644
---- a/arch/arm/configs/pxa910_defconfig
-+++ b/arch/arm/configs/pxa910_defconfig
-@@ -40,8 +40,9 @@ CONFIG_SMC91X=y
- # CONFIG_INPUT_KEYBOARD is not set
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_SPI=y
- CONFIG_FB=y
- CONFIG_MMP_DISP=y
-diff --git a/arch/arm/configs/raumfeld_defconfig b/arch/arm/configs/raumfeld_defconfig
-index f7caa90..f1e16f2 100644
---- a/arch/arm/configs/raumfeld_defconfig
-+++ b/arch/arm/configs/raumfeld_defconfig
-@@ -67,8 +67,9 @@ CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_TOUCHSCREEN_EETI=m
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_GPIO_ROTARY_ENCODER=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/arm/configs/spitz_defconfig b/arch/arm/configs/spitz_defconfig
-index 2e0419d..b6efcf5 100644
---- a/arch/arm/configs/spitz_defconfig
-+++ b/arch/arm/configs/spitz_defconfig
-@@ -128,10 +128,10 @@ CONFIG_TOUCHSCREEN_ADS7846=y
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=m
- # CONFIG_SERIO is not set
--CONFIG_SERIAL_8250=m
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_CS=m
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_SPI=y
- CONFIG_SPI_PXA2XX=y
-diff --git a/arch/arm/configs/trizeps4_defconfig b/arch/arm/configs/trizeps4_defconfig
-index 3162173..453c79c 100644
---- a/arch/arm/configs/trizeps4_defconfig
-+++ b/arch/arm/configs/trizeps4_defconfig
-@@ -132,8 +132,9 @@ CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=m
- CONFIG_SERIO_LIBPS2=y
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/arm/configs/viper_defconfig b/arch/arm/configs/viper_defconfig
-index d36e0d3..4efac06 100644
---- a/arch/arm/configs/viper_defconfig
-+++ b/arch/arm/configs/viper_defconfig
-@@ -101,11 +101,11 @@ CONFIG_INPUT_MISC=y
- CONFIG_INPUT_UINPUT=m
- # CONFIG_CONSOLE_TRANSLATIONS is not set
- # CONFIG_VT_CONSOLE is not set
--CONFIG_SERIAL_8250=m
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_NR_UARTS=5
- CONFIG_SERIAL_8250_RUNTIME_UARTS=5
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/arm/configs/xcep_defconfig b/arch/arm/configs/xcep_defconfig
-index 721832f..b67aeaf 100644
---- a/arch/arm/configs/xcep_defconfig
-+++ b/arch/arm/configs/xcep_defconfig
-@@ -60,8 +60,9 @@ CONFIG_NET_ETHERNET=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
- # CONFIG_DEVKMEM is not set
-+CONFIG_SERIAL_8250=y
-+CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_PXA=y
--CONFIG_SERIAL_PXA_CONSOLE=y
- # CONFIG_LEGACY_PTYS is not set
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=m
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+diff --git a/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt b/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
 new file mode 100644
-index 0000000..0da0d40
+index 0000000..5f9a4c1
 --- /dev/null
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -0,0 +1,178 @@
-+/*
-+ *  drivers/tty/serial/8250/8250_pxa.c -- driver for PXA on-board UARTS
-+ *  Copyright:	(C) 2013 Sergei Ianovich <ynvich@gmail.com>
-+ *
-+ *  replaces drivers/serial/pxa.c by Nicolas Pitre
-+ *  Created:	Feb 20, 2003
-+ *  Copyright:	(C) 2003 Monta Vista Software, Inc.
-+ *
-+ *  Based on drivers/serial/8250.c by Russell King.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ */
++++ b/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
+@@ -0,0 +1,35 @@
++UART ports on ICP DAS LP-8x4x
 +
-+#include <linux/device.h>
++ICP DAS LP-8x4x contains three additional serial ports interfaced via
++Analog Devices ADM213EA chips in addition to 3 serial ports on PXA CPU.
++
++Required properties:
++- compatible : should be "icpdas,uart-lp8x4x"
++
++- reg : should provide 16 byte man IO memory region and 1 byte region for
++	termios
++
++- interrupts : should provide interrupt
++
++- interrupt-parent : should provide a link to interrupt controller either
++		     explicitly or implicitly from a parent node
++
++Examples (from pxa27x-lp8x4x.dts):
++
++		uart@9050 {
++			compatible = "icpdas,uart-lp8x4x";
++			reg = <0x9050 0x10
++			       0x9030 0x02>;
++			interrupt-parent = <&fpgairg>;
++			interrupts = <13>;
++			status = "okay";
++		};
++
++		uart@9060 {
++			compatible = "icpdas,uart-lp8x4x";
++			reg = <0x9060 0x10
++			       0x9032 0x02>;
++			interrupt-parent = <&fpgairg>;
++			interrupts = <14>;
++			status = "okay";
++		};
+diff --git a/arch/arm/configs/lp8x4x_defconfig b/arch/arm/configs/lp8x4x_defconfig
+index 17a4e6f..9116ce1 100644
+--- a/arch/arm/configs/lp8x4x_defconfig
++++ b/arch/arm/configs/lp8x4x_defconfig
+@@ -112,6 +112,7 @@ CONFIG_SERIAL_8250_EXTENDED=y
+ CONFIG_SERIAL_8250_MANY_PORTS=y
+ CONFIG_SERIAL_8250_SHARE_IRQ=y
+ CONFIG_SERIAL_PXA=y
++CONFIG_SERIAL_8250_LP8X4X=m
+ CONFIG_HW_RANDOM=y
+ CONFIG_I2C=m
+ # CONFIG_I2C_COMPAT is not set
+diff --git a/drivers/tty/serial/8250/8250_lp8x4x.c b/drivers/tty/serial/8250/8250_lp8x4x.c
+new file mode 100644
+index 0000000..93e0f59
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_lp8x4x.c
+@@ -0,0 +1,169 @@
++/*  linux/drivers/tty/serial/8250/8250_lp8x4x.c
++ *
++ *  Support for 16550A serial ports on ICP DAS LP-8x4x
++ *
++ *  Copyright (C) 2013 Sergei Ianovich <ynvich@gmail.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2 as
++ *  published by the Free Software Foundation.
++ */
 +#include <linux/init.h>
 +#include <linux/io.h>
++#include <linux/irq.h>
 +#include <linux/module.h>
 +#include <linux/serial_8250.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
 +#include <linux/of.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_platform.h>
 +#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/clk.h>
-+#include <linux/pm_runtime.h>
 +
-+#include "8250.h"
-+
-+struct pxa8250_data {
++struct lp8x4x_serial_data {
 +	int			line;
-+	struct clk		*clk;
++	void			*ios_mem;
 +};
 +
-+#ifdef CONFIG_PM
-+static int serial_pxa_suspend(struct device *dev)
++static void lp8x4x_serial_set_termios(struct uart_port *port,
++		struct ktermios *termios, struct ktermios *old)
 +{
-+	struct pxa8250_data *data = dev_get_drvdata(dev);
++	unsigned int len;
++	unsigned int baud;
++	struct lp8x4x_serial_data *data = port->private_data;
 +
-+	serial8250_suspend_port(data->line);
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		len = 7;
++		break;
++	case CS6:
++		len = 8;
++		break;
++	case CS7:
++		len = 9;
++		break;
++	default:
++	case CS8:
++		len = 10;
++		break;
++	}
 +
-+	return 0;
-+}
-+
-+static int serial_pxa_resume(struct device *dev)
-+{
-+	struct pxa8250_data *data = dev_get_drvdata(dev);
-+
-+	serial8250_resume_port(data->line);
-+
-+	return 0;
-+}
++	if (termios->c_cflag & CSTOPB)
++		len++;
++	if (termios->c_cflag & PARENB)
++		len++;
++	if (!(termios->c_cflag & PARODD))
++		len++;
++#ifdef CMSPAR
++	if (termios->c_cflag & CMSPAR)
++		len++;
 +#endif
 +
-+static const struct dev_pm_ops serial_pxa_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(serial_pxa_suspend, serial_pxa_resume)
-+};
++	len -= 9;
++	len &= 3;
++	len <<= 3;
++	/*
++	 * Ask the core to calculate the divisor for us.
++	 */
++	baud = uart_get_baud_rate(port, termios, old,
++				  port->uartclk / 16 / 0xffff,
++				  port->uartclk / 16);
++	switch (baud) {
++	case 2400:
++		len |= 1;
++		break;
++	case 4800:
++		len |= 2;
++		break;
++	case 19200:
++		len |= 4;
++		break;
++	case 38400:
++		len |= 5;
++		break;
++	case 57600:
++		len |= 6;
++		break;
++	case 115200:
++		len |= 7;
++		break;
++	case 9600:
++	default:
++		len |= 3;
++		break;
++	};
++	iowrite8(len, data->ios_mem);
 +
-+static struct of_device_id serial_pxa_dt_ids[] = {
-+	{ .compatible = "mrvl,pxa-uart", },
-+	{ .compatible = "mrvl,mmp-uart", },
++	serial8250_do_set_termios(port, termios, old);
++}
++
++static struct of_device_id lp8x4x_serial_dt_ids[] = {
++	{ .compatible = "icpdas,uart-lp8x4x", },
 +	{}
 +};
-+MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
++MODULE_DEVICE_TABLE(of, lp8x4x_serial_dt_ids);
 +
-+/* Uart divisor latch write */
-+static void serial_pxa_dl_write(struct uart_8250_port *up, int value)
-+{
-+	unsigned int dll;
-+
-+	serial_out(up, UART_DLL, value & 0xff);
-+	/*
-+	 * work around Erratum #74 according to Marvel(R) PXA270M Processor
-+	 * Specification Update (April 19, 2010)
-+	 */
-+	dll = serial_in(up, UART_DLL);
-+	WARN_ON(dll != (value & 0xff));
-+
-+	serial_out(up, UART_DLM, value >> 8 & 0xff);
-+}
-+
-+
-+static void serial_pxa_pm(struct uart_port *port, unsigned int state,
-+	      unsigned int oldstate)
-+{
-+	struct pxa8250_data *data = port->private_data;
-+
-+	if (!state)
-+		clk_prepare_enable(data->clk);
-+	else
-+		clk_disable_unprepare(data->clk);
-+}
-+
-+static int serial_pxa_probe(struct platform_device *pdev)
++static int lp8x4x_serial_probe(struct platform_device *pdev)
 +{
 +	struct uart_8250_port uart = {};
-+	struct pxa8250_data *data;
-+	struct resource *mmres, *irqres;
++	struct lp8x4x_serial_data *data;
++	struct resource *mmres, *mires, *irqres;
 +	int ret;
 +
 +	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	mires = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 +	irqres = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	if (!mmres || !irqres)
++	if (!mmres || !mires || !irqres)
 +		return -ENODEV;
 +
 +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
 +	if (!data)
 +		return -ENOMEM;
 +
-+	data->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(data->clk))
-+		return PTR_ERR(data->clk);
++	data->ios_mem = devm_ioremap_resource(&pdev->dev, mires);
++	if (!data->ios_mem)
++		return -EFAULT;
 +
-+	ret = clk_prepare(data->clk);
-+	if (ret)
-+		return ret;
-+
-+	uart.port.type = PORT_XSCALE;
-+	uart.port.iotype = UPIO_MEM32;
++	uart.port.iotype = UPIO_MEM;
 +	uart.port.mapbase = mmres->start;
-+	uart.port.regshift = 2;
++	uart.port.iobase = mmres->start;
++	uart.port.regshift = 1;
 +	uart.port.irq = irqres->start;
-+	uart.port.fifosize = 64;
-+	uart.port.flags = UPF_IOREMAP | UPF_SKIP_TEST;
++	uart.port.flags = UPF_IOREMAP;
 +	uart.port.dev = &pdev->dev;
-+	uart.port.uartclk = clk_get_rate(data->clk);
-+	uart.port.pm = serial_pxa_pm;
++	uart.port.uartclk = 14745600;
++	uart.port.set_termios = lp8x4x_serial_set_termios;
 +	uart.port.private_data = data;
-+	uart.dl_write = serial_pxa_dl_write;
 +
 +	ret = serial8250_register_8250_port(&uart);
 +	if (ret < 0)
-+		goto err_clk;
++		return ret;
 +
 +	data->line = ret;
 +
 +	platform_set_drvdata(pdev, data);
 +
 +	return 0;
-+
-+ err_clk:
-+	clk_unprepare(data->clk);
-+	return ret;
 +}
 +
-+static int serial_pxa_remove(struct platform_device *pdev)
++static int lp8x4x_serial_remove(struct platform_device *pdev)
 +{
-+	struct pxa8250_data *data = platform_get_drvdata(pdev);
++	struct lp8x4x_serial_data *data = platform_get_drvdata(pdev);
 +
 +	serial8250_unregister_port(data->line);
-+
-+	clk_unprepare(data->clk);
 +
 +	return 0;
 +}
 +
-+static struct platform_driver serial_pxa_driver = {
-+	.probe          = serial_pxa_probe,
-+	.remove         = serial_pxa_remove,
++static struct platform_driver lp8x4x_serial_driver = {
++	.probe          = lp8x4x_serial_probe,
++	.remove         = lp8x4x_serial_remove,
 +
 +	.driver		= {
-+		.name	= "pxa2xx-uart",
++		.name	= "uart-lp8x4x",
 +		.owner	= THIS_MODULE,
-+		.pm	= &serial_pxa_pm_ops,
-+		.of_match_table = serial_pxa_dt_ids,
++		.of_match_table = lp8x4x_serial_dt_ids,
 +	},
 +};
 +
-+module_platform_driver(serial_pxa_driver);
++module_platform_driver(lp8x4x_serial_driver);
 +
 +MODULE_AUTHOR("Sergei Ianovich");
++MODULE_DESCRIPTION("8250 serial port module for LP-8x4x");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:pxa2xx-uart");
 diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 2332991..81bd7c9 100644
+index 81bd7c9..9fb0fbb 100644
 --- a/drivers/tty/serial/8250/Kconfig
 +++ b/drivers/tty/serial/8250/Kconfig
-@@ -302,3 +302,12 @@ config SERIAL_8250_RT288X
- 	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
- 	  serial port, say Y to this option. The driver can handle up to 2 serial
- 	  ports. If unsure, say N.
+@@ -311,3 +311,15 @@ config SERIAL_PXA
+ 	  can enable its onboard serial ports by enabling this option.
+ 
+ 	  If you choose M here, the module name will be 8250_pxa.
 +
-+config SERIAL_PXA
-+	tristate "PXA serial port support"
-+	depends on SERIAL_8250 && (ARCH_PXA || ARCH_MMP)
++config SERIAL_8250_LP8X4X
++	tristate "Support 16550A ports on ICP DAS LP-8x4x"
++	depends on OF && SERIAL_8250 && SERIAL_8250_MANY_PORTS && ARCH_PXA
++	select LP8X4X_IRQ
 +	help
-+	  If you have a machine based on an Intel XScale PXA2xx CPU you
-+	  can enable its onboard serial ports by enabling this option.
++	  In addition to serial ports on PXA270 SoC, LP-8x4x has 1 dual
++	  RS232/RS485 port, 1 RS485 port and 1 RS232 port.
 +
-+	  If you choose M here, the module name will be 8250_pxa.
++	  Say N here, unless you plan to run this kernel on a LP-8x4x system.
++
++	  If you choose M here, the module name will be 8250_lp8x4x.
 diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 36d68d0..b7d1b61 100644
+index b7d1b61..7370bfb 100644
 --- a/drivers/tty/serial/8250/Makefile
 +++ b/drivers/tty/serial/8250/Makefile
-@@ -20,3 +20,4 @@ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+@@ -17,6 +17,7 @@ obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
+ obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+ obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
+ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
++obj-$(CONFIG_SERIAL_8250_LP8X4X)	+= 8250_lp8x4x.o
  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
  obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
-+obj-$(CONFIG_SERIAL_PXA)		+= 8250_pxa.o
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 2e6d8dd..da46e31 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -395,29 +395,6 @@ config SERIAL_MPSC_CONSOLE
- 	help
- 	  Say Y here if you want to support a serial console on a Marvell MPSC.
- 
--config SERIAL_PXA
--	bool "PXA serial port support"
--	depends on ARCH_PXA || ARCH_MMP
--	select SERIAL_CORE
--	help
--	  If you have a machine based on an Intel XScale PXA2xx CPU you
--	  can enable its onboard serial ports by enabling this option.
--
--config SERIAL_PXA_CONSOLE
--	bool "Console on PXA serial port"
--	depends on SERIAL_PXA
--	select SERIAL_CORE_CONSOLE
--	help
--	  If you have enabled the serial port on the Intel XScale PXA
--	  CPU you can make it the console by answering Y to this option.
--
--	  Even if you say Y here, the currently visible virtual console
--	  (/dev/tty0) will still be used as the system console by default, but
--	  you can alter that using a kernel command line option such as
--	  "console=ttySA0". (Try "man bootparam" or see the documentation of
--	  your boot loader (lilo or loadlin) about how to pass options to the
--	  kernel at boot time.)
--
- config SERIAL_SA1100
- 	bool "SA1100 serial port support"
- 	depends on ARCH_SA1100
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 3680854..fd71d3f 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -20,7 +20,6 @@ obj-$(CONFIG_SERIAL_8250) += 8250/
- obj-$(CONFIG_SERIAL_AMBA_PL010) += amba-pl010.o
- obj-$(CONFIG_SERIAL_AMBA_PL011) += amba-pl011.o
- obj-$(CONFIG_SERIAL_CLPS711X) += clps711x.o
--obj-$(CONFIG_SERIAL_PXA) += pxa.o
- obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
- obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
- obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-deleted file mode 100644
-index f9f20f3..0000000
---- a/drivers/tty/serial/pxa.c
-+++ /dev/null
-@@ -1,971 +0,0 @@
--/*
-- *  Based on drivers/serial/8250.c by Russell King.
-- *
-- *  Author:	Nicolas Pitre
-- *  Created:	Feb 20, 2003
-- *  Copyright:	(C) 2003 Monta Vista Software, Inc.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * Note 1: This driver is made separate from the already too overloaded
-- * 8250.c because it needs some kirks of its own and that'll make it
-- * easier to add DMA support.
-- *
-- * Note 2: I'm too sick of device allocation policies for serial ports.
-- * If someone else wants to request an "official" allocation of major/minor
-- * for this driver please be my guest.  And don't forget that new hardware
-- * to come from Intel might have more than 3 or 4 of those UARTs.  Let's
-- * hope for a better port registration and dynamic device allocation scheme
-- * with the serial core maintainer satisfaction to appear soon.
-- */
--
--
--#if defined(CONFIG_SERIAL_PXA_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
--#endif
--
--#include <linux/module.h>
--#include <linux/ioport.h>
--#include <linux/init.h>
--#include <linux/console.h>
--#include <linux/sysrq.h>
--#include <linux/serial_reg.h>
--#include <linux/circ_buf.h>
--#include <linux/delay.h>
--#include <linux/interrupt.h>
--#include <linux/of.h>
--#include <linux/platform_device.h>
--#include <linux/tty.h>
--#include <linux/tty_flip.h>
--#include <linux/serial_core.h>
--#include <linux/clk.h>
--#include <linux/io.h>
--#include <linux/slab.h>
--
--#define PXA_NAME_LEN		8
--
--struct uart_pxa_port {
--	struct uart_port        port;
--	unsigned char           ier;
--	unsigned char           lcr;
--	unsigned char           mcr;
--	unsigned int            lsr_break_flag;
--	struct clk		*clk;
--	char			name[PXA_NAME_LEN];
--};
--
--static inline unsigned int serial_in(struct uart_pxa_port *up, int offset)
--{
--	offset <<= 2;
--	return readl(up->port.membase + offset);
--}
--
--static inline void serial_out(struct uart_pxa_port *up, int offset, int value)
--{
--	offset <<= 2;
--	writel(value, up->port.membase + offset);
--}
--
--static void serial_pxa_enable_ms(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	up->ier |= UART_IER_MSI;
--	serial_out(up, UART_IER, up->ier);
--}
--
--static void serial_pxa_stop_tx(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	if (up->ier & UART_IER_THRI) {
--		up->ier &= ~UART_IER_THRI;
--		serial_out(up, UART_IER, up->ier);
--	}
--}
--
--static void serial_pxa_stop_rx(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	up->ier &= ~UART_IER_RLSI;
--	up->port.read_status_mask &= ~UART_LSR_DR;
--	serial_out(up, UART_IER, up->ier);
--}
--
--static inline void receive_chars(struct uart_pxa_port *up, int *status)
--{
--	unsigned int ch, flag;
--	int max_count = 256;
--
--	do {
--		/* work around Errata #20 according to
--		 * Intel(R) PXA27x Processor Family
--		 * Specification Update (May 2005)
--		 *
--		 * Step 2
--		 * Disable the Reciever Time Out Interrupt via IER[RTOEI]
--		 */
--		up->ier &= ~UART_IER_RTOIE;
--		serial_out(up, UART_IER, up->ier);
--
--		ch = serial_in(up, UART_RX);
--		flag = TTY_NORMAL;
--		up->port.icount.rx++;
--
--		if (unlikely(*status & (UART_LSR_BI | UART_LSR_PE |
--				       UART_LSR_FE | UART_LSR_OE))) {
--			/*
--			 * For statistics only
--			 */
--			if (*status & UART_LSR_BI) {
--				*status &= ~(UART_LSR_FE | UART_LSR_PE);
--				up->port.icount.brk++;
--				/*
--				 * We do the SysRQ and SAK checking
--				 * here because otherwise the break
--				 * may get masked by ignore_status_mask
--				 * or read_status_mask.
--				 */
--				if (uart_handle_break(&up->port))
--					goto ignore_char;
--			} else if (*status & UART_LSR_PE)
--				up->port.icount.parity++;
--			else if (*status & UART_LSR_FE)
--				up->port.icount.frame++;
--			if (*status & UART_LSR_OE)
--				up->port.icount.overrun++;
--
--			/*
--			 * Mask off conditions which should be ignored.
--			 */
--			*status &= up->port.read_status_mask;
--
--#ifdef CONFIG_SERIAL_PXA_CONSOLE
--			if (up->port.line == up->port.cons->index) {
--				/* Recover the break flag from console xmit */
--				*status |= up->lsr_break_flag;
--				up->lsr_break_flag = 0;
--			}
--#endif
--			if (*status & UART_LSR_BI) {
--				flag = TTY_BREAK;
--			} else if (*status & UART_LSR_PE)
--				flag = TTY_PARITY;
--			else if (*status & UART_LSR_FE)
--				flag = TTY_FRAME;
--		}
--
--		if (uart_handle_sysrq_char(&up->port, ch))
--			goto ignore_char;
--
--		uart_insert_char(&up->port, *status, UART_LSR_OE, ch, flag);
--
--	ignore_char:
--		*status = serial_in(up, UART_LSR);
--	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
--	tty_flip_buffer_push(&up->port.state->port);
--
--	/* work around Errata #20 according to
--	 * Intel(R) PXA27x Processor Family
--	 * Specification Update (May 2005)
--	 *
--	 * Step 6:
--	 * No more data in FIFO: Re-enable RTO interrupt via IER[RTOIE]
--	 */
--	up->ier |= UART_IER_RTOIE;
--	serial_out(up, UART_IER, up->ier);
--}
--
--static void transmit_chars(struct uart_pxa_port *up)
--{
--	struct circ_buf *xmit = &up->port.state->xmit;
--	int count;
--
--	if (up->port.x_char) {
--		serial_out(up, UART_TX, up->port.x_char);
--		up->port.icount.tx++;
--		up->port.x_char = 0;
--		return;
--	}
--	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
--		serial_pxa_stop_tx(&up->port);
--		return;
--	}
--
--	count = up->port.fifosize / 2;
--	do {
--		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		up->port.icount.tx++;
--		if (uart_circ_empty(xmit))
--			break;
--	} while (--count > 0);
--
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
--		uart_write_wakeup(&up->port);
--
--
--	if (uart_circ_empty(xmit))
--		serial_pxa_stop_tx(&up->port);
--}
--
--static void serial_pxa_start_tx(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	if (!(up->ier & UART_IER_THRI)) {
--		up->ier |= UART_IER_THRI;
--		serial_out(up, UART_IER, up->ier);
--	}
--}
--
--static inline void check_modem_status(struct uart_pxa_port *up)
--{
--	int status;
--
--	status = serial_in(up, UART_MSR);
--
--	if ((status & UART_MSR_ANY_DELTA) == 0)
--		return;
--
--	if (status & UART_MSR_TERI)
--		up->port.icount.rng++;
--	if (status & UART_MSR_DDSR)
--		up->port.icount.dsr++;
--	if (status & UART_MSR_DDCD)
--		uart_handle_dcd_change(&up->port, status & UART_MSR_DCD);
--	if (status & UART_MSR_DCTS)
--		uart_handle_cts_change(&up->port, status & UART_MSR_CTS);
--
--	wake_up_interruptible(&up->port.state->port.delta_msr_wait);
--}
--
--/*
-- * This handles the interrupt from one port.
-- */
--static inline irqreturn_t serial_pxa_irq(int irq, void *dev_id)
--{
--	struct uart_pxa_port *up = dev_id;
--	unsigned int iir, lsr;
--
--	iir = serial_in(up, UART_IIR);
--	if (iir & UART_IIR_NO_INT)
--		return IRQ_NONE;
--	lsr = serial_in(up, UART_LSR);
--	if (lsr & UART_LSR_DR)
--		receive_chars(up, &lsr);
--	check_modem_status(up);
--	if (lsr & UART_LSR_THRE)
--		transmit_chars(up);
--	return IRQ_HANDLED;
--}
--
--static unsigned int serial_pxa_tx_empty(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned long flags;
--	unsigned int ret;
--
--	spin_lock_irqsave(&up->port.lock, flags);
--	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
--	spin_unlock_irqrestore(&up->port.lock, flags);
--
--	return ret;
--}
--
--static unsigned int serial_pxa_get_mctrl(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned char status;
--	unsigned int ret;
--
--	status = serial_in(up, UART_MSR);
--
--	ret = 0;
--	if (status & UART_MSR_DCD)
--		ret |= TIOCM_CAR;
--	if (status & UART_MSR_RI)
--		ret |= TIOCM_RNG;
--	if (status & UART_MSR_DSR)
--		ret |= TIOCM_DSR;
--	if (status & UART_MSR_CTS)
--		ret |= TIOCM_CTS;
--	return ret;
--}
--
--static void serial_pxa_set_mctrl(struct uart_port *port, unsigned int mctrl)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned char mcr = 0;
--
--	if (mctrl & TIOCM_RTS)
--		mcr |= UART_MCR_RTS;
--	if (mctrl & TIOCM_DTR)
--		mcr |= UART_MCR_DTR;
--	if (mctrl & TIOCM_OUT1)
--		mcr |= UART_MCR_OUT1;
--	if (mctrl & TIOCM_OUT2)
--		mcr |= UART_MCR_OUT2;
--	if (mctrl & TIOCM_LOOP)
--		mcr |= UART_MCR_LOOP;
--
--	mcr |= up->mcr;
--
--	serial_out(up, UART_MCR, mcr);
--}
--
--static void serial_pxa_break_ctl(struct uart_port *port, int break_state)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned long flags;
--
--	spin_lock_irqsave(&up->port.lock, flags);
--	if (break_state == -1)
--		up->lcr |= UART_LCR_SBC;
--	else
--		up->lcr &= ~UART_LCR_SBC;
--	serial_out(up, UART_LCR, up->lcr);
--	spin_unlock_irqrestore(&up->port.lock, flags);
--}
--
--static int serial_pxa_startup(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned long flags;
--	int retval;
--
--	if (port->line == 3) /* HWUART */
--		up->mcr |= UART_MCR_AFE;
--	else
--		up->mcr = 0;
--
--	up->port.uartclk = clk_get_rate(up->clk);
--
--	/*
--	 * Allocate the IRQ
--	 */
--	retval = request_irq(up->port.irq, serial_pxa_irq, 0, up->name, up);
--	if (retval)
--		return retval;
--
--	/*
--	 * Clear the FIFO buffers and disable them.
--	 * (they will be reenabled in set_termios())
--	 */
--	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
--	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO |
--			UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
--	serial_out(up, UART_FCR, 0);
--
--	/*
--	 * Clear the interrupt registers.
--	 */
--	(void) serial_in(up, UART_LSR);
--	(void) serial_in(up, UART_RX);
--	(void) serial_in(up, UART_IIR);
--	(void) serial_in(up, UART_MSR);
--
--	/*
--	 * Now, initialize the UART
--	 */
--	serial_out(up, UART_LCR, UART_LCR_WLEN8);
--
--	spin_lock_irqsave(&up->port.lock, flags);
--	up->port.mctrl |= TIOCM_OUT2;
--	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
--	spin_unlock_irqrestore(&up->port.lock, flags);
--
--	/*
--	 * Finally, enable interrupts.  Note: Modem status interrupts
--	 * are set via set_termios(), which will be occurring imminently
--	 * anyway, so we don't enable them here.
--	 */
--	up->ier = UART_IER_RLSI | UART_IER_RDI | UART_IER_RTOIE | UART_IER_UUE;
--	serial_out(up, UART_IER, up->ier);
--
--	/*
--	 * And clear the interrupt registers again for luck.
--	 */
--	(void) serial_in(up, UART_LSR);
--	(void) serial_in(up, UART_RX);
--	(void) serial_in(up, UART_IIR);
--	(void) serial_in(up, UART_MSR);
--
--	return 0;
--}
--
--static void serial_pxa_shutdown(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned long flags;
--
--	free_irq(up->port.irq, up);
--
--	/*
--	 * Disable interrupts from this port
--	 */
--	up->ier = 0;
--	serial_out(up, UART_IER, 0);
--
--	spin_lock_irqsave(&up->port.lock, flags);
--	up->port.mctrl &= ~TIOCM_OUT2;
--	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
--	spin_unlock_irqrestore(&up->port.lock, flags);
--
--	/*
--	 * Disable break condition and FIFOs
--	 */
--	serial_out(up, UART_LCR, serial_in(up, UART_LCR) & ~UART_LCR_SBC);
--	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO |
--				  UART_FCR_CLEAR_RCVR |
--				  UART_FCR_CLEAR_XMIT);
--	serial_out(up, UART_FCR, 0);
--}
--
--static void
--serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
--		       struct ktermios *old)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned char cval, fcr = 0;
--	unsigned long flags;
--	unsigned int baud, quot;
--	unsigned int dll;
--
--	switch (termios->c_cflag & CSIZE) {
--	case CS5:
--		cval = UART_LCR_WLEN5;
--		break;
--	case CS6:
--		cval = UART_LCR_WLEN6;
--		break;
--	case CS7:
--		cval = UART_LCR_WLEN7;
--		break;
--	default:
--	case CS8:
--		cval = UART_LCR_WLEN8;
--		break;
--	}
--
--	if (termios->c_cflag & CSTOPB)
--		cval |= UART_LCR_STOP;
--	if (termios->c_cflag & PARENB)
--		cval |= UART_LCR_PARITY;
--	if (!(termios->c_cflag & PARODD))
--		cval |= UART_LCR_EPAR;
--
--	/*
--	 * Ask the core to calculate the divisor for us.
--	 */
--	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
--	quot = uart_get_divisor(port, baud);
--
--	if ((up->port.uartclk / quot) < (2400 * 16))
--		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_PXAR1;
--	else if ((up->port.uartclk / quot) < (230400 * 16))
--		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_PXAR8;
--	else
--		fcr = UART_FCR_ENABLE_FIFO | UART_FCR_PXAR32;
--
--	/*
--	 * Ok, we're now changing the port state.  Do it with
--	 * interrupts disabled.
--	 */
--	spin_lock_irqsave(&up->port.lock, flags);
--
--	/*
--	 * Ensure the port will be enabled.
--	 * This is required especially for serial console.
--	 */
--	up->ier |= UART_IER_UUE;
--
--	/*
--	 * Update the per-port timeout.
--	 */
--	uart_update_timeout(port, termios->c_cflag, baud);
--
--	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
--	if (termios->c_iflag & INPCK)
--		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
--	if (termios->c_iflag & (BRKINT | PARMRK))
--		up->port.read_status_mask |= UART_LSR_BI;
--
--	/*
--	 * Characters to ignore
--	 */
--	up->port.ignore_status_mask = 0;
--	if (termios->c_iflag & IGNPAR)
--		up->port.ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
--	if (termios->c_iflag & IGNBRK) {
--		up->port.ignore_status_mask |= UART_LSR_BI;
--		/*
--		 * If we're ignoring parity and break indicators,
--		 * ignore overruns too (for real raw support).
--		 */
--		if (termios->c_iflag & IGNPAR)
--			up->port.ignore_status_mask |= UART_LSR_OE;
--	}
--
--	/*
--	 * ignore all characters if CREAD is not set
--	 */
--	if ((termios->c_cflag & CREAD) == 0)
--		up->port.ignore_status_mask |= UART_LSR_DR;
--
--	/*
--	 * CTS flow control flag and modem status interrupts
--	 */
--	up->ier &= ~UART_IER_MSI;
--	if (UART_ENABLE_MS(&up->port, termios->c_cflag))
--		up->ier |= UART_IER_MSI;
--
--	serial_out(up, UART_IER, up->ier);
--
--	if (termios->c_cflag & CRTSCTS)
--		up->mcr |= UART_MCR_AFE;
--	else
--		up->mcr &= ~UART_MCR_AFE;
--
--	serial_out(up, UART_LCR, cval | UART_LCR_DLAB);	/* set DLAB */
--	serial_out(up, UART_DLL, quot & 0xff);		/* LS of divisor */
--
--	/*
--	 * work around Errata #75 according to Intel(R) PXA27x Processor Family
--	 * Specification Update (Nov 2005)
--	 */
--	dll = serial_in(up, UART_DLL);
--	WARN_ON(dll != (quot & 0xff));
--
--	serial_out(up, UART_DLM, quot >> 8);		/* MS of divisor */
--	serial_out(up, UART_LCR, cval);			/* reset DLAB */
--	up->lcr = cval;					/* Save LCR */
--	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
--	serial_out(up, UART_FCR, fcr);
--	spin_unlock_irqrestore(&up->port.lock, flags);
--}
--
--static void
--serial_pxa_pm(struct uart_port *port, unsigned int state,
--	      unsigned int oldstate)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	if (!state)
--		clk_prepare_enable(up->clk);
--	else
--		clk_disable_unprepare(up->clk);
--}
--
--static void serial_pxa_release_port(struct uart_port *port)
--{
--}
--
--static int serial_pxa_request_port(struct uart_port *port)
--{
--	return 0;
--}
--
--static void serial_pxa_config_port(struct uart_port *port, int flags)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	up->port.type = PORT_PXA;
--}
--
--static int
--serial_pxa_verify_port(struct uart_port *port, struct serial_struct *ser)
--{
--	/* we don't want the core code to modify any port params */
--	return -EINVAL;
--}
--
--static const char *
--serial_pxa_type(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	return up->name;
--}
--
--static struct uart_pxa_port *serial_pxa_ports[4];
--static struct uart_driver serial_pxa_reg;
--
--#ifdef CONFIG_SERIAL_PXA_CONSOLE
--
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
--/*
-- *	Wait for transmitter & holding register to empty
-- */
--static inline void wait_for_xmitr(struct uart_pxa_port *up)
--{
--	unsigned int status, tmout = 10000;
--
--	/* Wait up to 10ms for the character(s) to be sent. */
--	do {
--		status = serial_in(up, UART_LSR);
--
--		if (status & UART_LSR_BI)
--			up->lsr_break_flag = UART_LSR_BI;
--
--		if (--tmout == 0)
--			break;
--		udelay(1);
--	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
--
--	/* Wait up to 1s for flow control if necessary */
--	if (up->port.flags & UPF_CONS_FLOW) {
--		tmout = 1000000;
--		while (--tmout &&
--		       ((serial_in(up, UART_MSR) & UART_MSR_CTS) == 0))
--			udelay(1);
--	}
--}
--
--static void serial_pxa_console_putchar(struct uart_port *port, int ch)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	wait_for_xmitr(up);
--	serial_out(up, UART_TX, ch);
--}
--
--/*
-- * Print a string to the serial port trying not to disturb
-- * any possible real use of the port...
-- *
-- *	The console_lock must be held when we get here.
-- */
--static void
--serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
--{
--	struct uart_pxa_port *up = serial_pxa_ports[co->index];
--	unsigned int ier;
--	unsigned long flags;
--	int locked = 1;
--
--	clk_enable(up->clk);
--	local_irq_save(flags);
--	if (up->port.sysrq)
--		locked = 0;
--	else if (oops_in_progress)
--		locked = spin_trylock(&up->port.lock);
--	else
--		spin_lock(&up->port.lock);
--
--	/*
--	 *	First save the IER then disable the interrupts
--	 */
--	ier = serial_in(up, UART_IER);
--	serial_out(up, UART_IER, UART_IER_UUE);
--
--	uart_console_write(&up->port, s, count, serial_pxa_console_putchar);
--
--	/*
--	 *	Finally, wait for transmitter to become empty
--	 *	and restore the IER
--	 */
--	wait_for_xmitr(up);
--	serial_out(up, UART_IER, ier);
--
--	if (locked)
--		spin_unlock(&up->port.lock);
--	local_irq_restore(flags);
--	clk_disable(up->clk);
--
--}
--
--#ifdef CONFIG_CONSOLE_POLL
--/*
-- * Console polling routines for writing and reading from the uart while
-- * in an interrupt or debug context.
-- */
--
--static int serial_pxa_get_poll_char(struct uart_port *port)
--{
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--	unsigned char lsr = serial_in(up, UART_LSR);
--
--	while (!(lsr & UART_LSR_DR))
--		lsr = serial_in(up, UART_LSR);
--
--	return serial_in(up, UART_RX);
--}
--
--
--static void serial_pxa_put_poll_char(struct uart_port *port,
--			 unsigned char c)
--{
--	unsigned int ier;
--	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
--
--	/*
--	 *	First save the IER then disable the interrupts
--	 */
--	ier = serial_in(up, UART_IER);
--	serial_out(up, UART_IER, UART_IER_UUE);
--
--	wait_for_xmitr(up);
--	/*
--	 *	Send the character out.
--	 *	If a LF, also do CR...
--	 */
--	serial_out(up, UART_TX, c);
--	if (c == 10) {
--		wait_for_xmitr(up);
--		serial_out(up, UART_TX, 13);
--	}
--
--	/*
--	 *	Finally, wait for transmitter to become empty
--	 *	and restore the IER
--	 */
--	wait_for_xmitr(up);
--	serial_out(up, UART_IER, ier);
--}
--
--#endif /* CONFIG_CONSOLE_POLL */
--
--static int __init
--serial_pxa_console_setup(struct console *co, char *options)
--{
--	struct uart_pxa_port *up;
--	int baud = 9600;
--	int bits = 8;
--	int parity = 'n';
--	int flow = 'n';
--
--	if (co->index == -1 || co->index >= serial_pxa_reg.nr)
--		co->index = 0;
--	up = serial_pxa_ports[co->index];
--	if (!up)
--		return -ENODEV;
--
--	if (options)
--		uart_parse_options(options, &baud, &parity, &bits, &flow);
--
--	return uart_set_options(&up->port, co, baud, parity, bits, flow);
--}
--
--static struct console serial_pxa_console = {
--	.name		= "ttyS",
--	.write		= serial_pxa_console_write,
--	.device		= uart_console_device,
--	.setup		= serial_pxa_console_setup,
--	.flags		= CON_PRINTBUFFER,
--	.index		= -1,
--	.data		= &serial_pxa_reg,
--};
--
--#define PXA_CONSOLE	&serial_pxa_console
--#else
--#define PXA_CONSOLE	NULL
--#endif
--
--static struct uart_ops serial_pxa_pops = {
--	.tx_empty	= serial_pxa_tx_empty,
--	.set_mctrl	= serial_pxa_set_mctrl,
--	.get_mctrl	= serial_pxa_get_mctrl,
--	.stop_tx	= serial_pxa_stop_tx,
--	.start_tx	= serial_pxa_start_tx,
--	.stop_rx	= serial_pxa_stop_rx,
--	.enable_ms	= serial_pxa_enable_ms,
--	.break_ctl	= serial_pxa_break_ctl,
--	.startup	= serial_pxa_startup,
--	.shutdown	= serial_pxa_shutdown,
--	.set_termios	= serial_pxa_set_termios,
--	.pm		= serial_pxa_pm,
--	.type		= serial_pxa_type,
--	.release_port	= serial_pxa_release_port,
--	.request_port	= serial_pxa_request_port,
--	.config_port	= serial_pxa_config_port,
--	.verify_port	= serial_pxa_verify_port,
--#ifdef CONFIG_CONSOLE_POLL
--	.poll_get_char = serial_pxa_get_poll_char,
--	.poll_put_char = serial_pxa_put_poll_char,
--#endif
--};
--
--static struct uart_driver serial_pxa_reg = {
--	.owner		= THIS_MODULE,
--	.driver_name	= "PXA serial",
--	.dev_name	= "ttyS",
--	.major		= TTY_MAJOR,
--	.minor		= 64,
--	.nr		= 4,
--	.cons		= PXA_CONSOLE,
--};
--
--#ifdef CONFIG_PM
--static int serial_pxa_suspend(struct device *dev)
--{
--        struct uart_pxa_port *sport = dev_get_drvdata(dev);
--
--        if (sport)
--                uart_suspend_port(&serial_pxa_reg, &sport->port);
--
--        return 0;
--}
--
--static int serial_pxa_resume(struct device *dev)
--{
--        struct uart_pxa_port *sport = dev_get_drvdata(dev);
--
--        if (sport)
--                uart_resume_port(&serial_pxa_reg, &sport->port);
--
--        return 0;
--}
--
--static const struct dev_pm_ops serial_pxa_pm_ops = {
--	.suspend	= serial_pxa_suspend,
--	.resume		= serial_pxa_resume,
--};
--#endif
--
--static struct of_device_id serial_pxa_dt_ids[] = {
--	{ .compatible = "mrvl,pxa-uart", },
--	{ .compatible = "mrvl,mmp-uart", },
--	{}
--};
--MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
--
--static int serial_pxa_probe_dt(struct platform_device *pdev,
--			       struct uart_pxa_port *sport)
--{
--	struct device_node *np = pdev->dev.of_node;
--	int ret;
--
--	if (!np)
--		return 1;
--
--	ret = of_alias_get_id(np, "serial");
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
--		return ret;
--	}
--	sport->port.line = ret;
--	return 0;
--}
--
--static int serial_pxa_probe(struct platform_device *dev)
--{
--	struct uart_pxa_port *sport;
--	struct resource *mmres, *irqres;
--	int ret;
--
--	mmres = platform_get_resource(dev, IORESOURCE_MEM, 0);
--	irqres = platform_get_resource(dev, IORESOURCE_IRQ, 0);
--	if (!mmres || !irqres)
--		return -ENODEV;
--
--	sport = kzalloc(sizeof(struct uart_pxa_port), GFP_KERNEL);
--	if (!sport)
--		return -ENOMEM;
--
--	sport->clk = clk_get(&dev->dev, NULL);
--	if (IS_ERR(sport->clk)) {
--		ret = PTR_ERR(sport->clk);
--		goto err_free;
--	}
--
--	ret = clk_prepare(sport->clk);
--	if (ret) {
--		clk_put(sport->clk);
--		goto err_free;
--	}
--
--	sport->port.type = PORT_PXA;
--	sport->port.iotype = UPIO_MEM;
--	sport->port.mapbase = mmres->start;
--	sport->port.irq = irqres->start;
--	sport->port.fifosize = 64;
--	sport->port.ops = &serial_pxa_pops;
--	sport->port.dev = &dev->dev;
--	sport->port.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
--	sport->port.uartclk = clk_get_rate(sport->clk);
--
--	ret = serial_pxa_probe_dt(dev, sport);
--	if (ret > 0)
--		sport->port.line = dev->id;
--	else if (ret < 0)
--		goto err_clk;
--	snprintf(sport->name, PXA_NAME_LEN - 1, "UART%d", sport->port.line + 1);
--
--	sport->port.membase = ioremap(mmres->start, resource_size(mmres));
--	if (!sport->port.membase) {
--		ret = -ENOMEM;
--		goto err_clk;
--	}
--
--	serial_pxa_ports[sport->port.line] = sport;
--
--	uart_add_one_port(&serial_pxa_reg, &sport->port);
--	platform_set_drvdata(dev, sport);
--
--	return 0;
--
-- err_clk:
--	clk_unprepare(sport->clk);
--	clk_put(sport->clk);
-- err_free:
--	kfree(sport);
--	return ret;
--}
--
--static int serial_pxa_remove(struct platform_device *dev)
--{
--	struct uart_pxa_port *sport = platform_get_drvdata(dev);
--
--	uart_remove_one_port(&serial_pxa_reg, &sport->port);
--
--	clk_unprepare(sport->clk);
--	clk_put(sport->clk);
--	kfree(sport);
--
--	return 0;
--}
--
--static struct platform_driver serial_pxa_driver = {
--        .probe          = serial_pxa_probe,
--        .remove         = serial_pxa_remove,
--
--	.driver		= {
--	        .name	= "pxa2xx-uart",
--		.owner	= THIS_MODULE,
--#ifdef CONFIG_PM
--		.pm	= &serial_pxa_pm_ops,
--#endif
--		.of_match_table = serial_pxa_dt_ids,
--	},
--};
--
--static int __init serial_pxa_init(void)
--{
--	int ret;
--
--	ret = uart_register_driver(&serial_pxa_reg);
--	if (ret != 0)
--		return ret;
--
--	ret = platform_driver_register(&serial_pxa_driver);
--	if (ret != 0)
--		uart_unregister_driver(&serial_pxa_reg);
--
--	return ret;
--}
--
--static void __exit serial_pxa_exit(void)
--{
--	platform_driver_unregister(&serial_pxa_driver);
--	uart_unregister_driver(&serial_pxa_reg);
--}
--
--module_init(serial_pxa_init);
--module_exit(serial_pxa_exit);
--
--MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:pxa2xx-uart");
 -- 
 1.8.4.2
-
