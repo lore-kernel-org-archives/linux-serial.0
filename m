@@ -1,73 +1,91 @@
-From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Subject: Re: Re: [PATCH V5.1] serial/uart/8250: Add tunable RX interrupt
- trigger I/F of FIFO buffers
-Date: Wed, 16 Apr 2014 10:06:14 +0900
-Message-ID: <534DD786.7090702@hitachi.com>
-References: <20140415055216.14660.18270.stgit@yunodevel> <20140415080649.19209.60645.stgit@yunodevel> <20140415111033.102bc5af@alan.etchedpixels.co.uk>
+From: "Jin, Yao" <yao.jin@intel.com>
+Subject: RE: 8250_dw DMA issue with BYT ?
+Date: Wed, 16 Apr 2014 01:33:41 +0000
+Message-ID: <0C6A3B2997299B4EAD81D386F36CD8C210C8AB23@shsmsx102.ccr.corp.intel.com>
+References: <50C3158CF44D924791C15F1437EF2EC65D9BE7@HASMSX104.ger.corp.intel.com>
+ <20140415065606.GA3368@xps8300>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140415111033.102bc5af@alan.etchedpixels.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:62361 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750893AbaDPBdp convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Apr 2014 21:33:45 -0400
+In-Reply-To: <20140415065606.GA3368@xps8300>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>, "Poulain, Loic" <loic.poulain@intel.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Hi Alan,
+Does this fix work? I don't have a T100 on hand. 
 
-Thank you for your review.
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -143,7 +143,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+         */
+        if (!state->xmit.buf) {
+                /* This is protected by the per port mutex */
+-               page = get_zeroed_page(GFP_KERNEL);
++               page = get_zeroed_page(GFP_KERNEL | GFP_DMA);
+                if (!page)
+                        return -ENOMEM;
 
-(2014/04/15 19:10), One Thousand Gnomes wrote:
->
->> +static int convert_val2rxtrig(struct uart_8250_port *up, unsigned char val)
->> +{
->> +	const struct serial8250_config *conf_type = &uart_config[up->port.type];
->> +	int i;
->> +
->> +	if (!conf_type->rx_trig_byte[FCR_RX_TRIG_BITS(UART_FCR_R_TRIG_00)]) {
->> +		pr_info("Not support RX-trigger setting for this serial %s\n",
->> +			conf_type->name);
->> +		return -EOPNOTSUPP;
->
-> We don't want the pr_info here - otherwise users can flood the logs. The
-> err code is sufficient.
+-----Original Message-----
+From: Heikki Krogerus [mailto:heikki.krogerus@linux.intel.com] 
+Sent: Tuesday, April 15, 2014 2:56 PM
+To: Poulain, Loic
+Cc: linux-serial@vger.kernel.org; Andy Shevchenko; Jin, Yao
+Subject: Re: 8250_dw DMA issue with BYT ?
 
-OK, I'll delete this pr_info().
+On Mon, Apr 14, 2014 at 03:54:31PM +0000, Poulain, Loic wrote:
+> Hello Heikki,
+> 
+> I contact you regarding the 8250_dw driver.
+> My setup is an Asus T100TA (baytrail) + kernel 3.14.
+> The UART controller is ACPI enumerated (ID is 80860F0A).
+> (UART_CAP_AFE capable)
+> 
+> This uart is used to communicate with a BCM4324 bluetooth chip (HCI H4 
+> over uart). However we have many bluetooth instabilities.
+> These instabilities are due to the 'hardware error' HCI code sent by 
+> the BCM chip. This error means that the BCM received an invalid
+> H4 packet header or an invalid sized packet => serial sync issue.
+> Moreover, Increasing the baudrate increases the hardware error 
+> frequency.
+> 
+> This problem seems due to the DMA usage. Indeed, when I disable the 
+> DMA manually in 8250_dw.c (up->dma = NULL), problem does not occur 
+> anymore, all baudrates are stable.
 
->> +	for (i = 1; i < FCR_RX_TRIG_MAX_STATE; i++) {
->> +		if (val < conf_type->rx_trig_byte[i])
->> +			/* Use the nearest lower value */
->> +			return (--i) << FCR_RX_TRIG_OFFSET;
->
-> Odd case here - your 16654 entry has a minimum of 8 so if I pass 1 then
-> it'll return -1 ? I guess for that case the best we can do is to set 8.
+I think this is the same issue Jin Yao (CC'd) already spotted. He made a bug for it:
+https://bugzilla.kernel.org/show_bug.cgi?id=73071
 
-No, in that case, this function returns 0.
+> Do you think a specific 8250 DMA configuration could apply for the byt 
+> case ?
+> How/Where can I debug to know if the 8250 DMA works as expected ?
 
-Note that the "i" starts from 1, so the minimal value is 0.
-Actually convert_val2rxtrig() returns the index of rx_trig_byte, and
-when val == 1, it returns 0 and caller gets rx_trig_byte[0] == 8.
+Adding Andy. He maintains the Designware DMA Engine driver that is used on BYT. He should be the best person to tell how to debug the DMA.
 
-> Other trivial thing to tweak - you have "uaser" in spot instead of "user".
+We are debugging an other issue where the DMA mask for the device is somehow set wrong. This does not exactly look like the same problem, but you newer know. Try getting the TX buffer page from the first 16M of memory..
 
-Oops, I'll fix it.
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -143,7 +143,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+         */
+        if (!state->xmit.buf) {
+                /* This is protected by the per port mutex */
+-               page = get_zeroed_page(GFP_KERNEL);
++               page = get_zeroed_page(GFP_KERNEL | GFP_DMA);
+                if (!page)
+                        return -ENOMEM;
+
+
+If the issue disappears, we know it's the same problem.
 
 Thanks,
-Yoshihiro YUNOMAE
 
-> With those two fixed it looks good to me.
->
-> Alan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
->
-
--- 
-Yoshihiro YUNOMAE
-Software Platform Research Dept. Linux Technology Center
-Hitachi, Ltd., Yokohama Research Laboratory
-E-mail: yoshihiro.yunomae.ez@hitachi.com
+--
+heikki
