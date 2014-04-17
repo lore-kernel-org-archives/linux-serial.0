@@ -1,116 +1,147 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty: serial: Add driver for MEN's 16z135 High Speed
- UART.
-Date: Thu, 17 Apr 2014 11:50:35 +0100
-Message-ID: <20140417115035.745b55c8@alan.etchedpixels.co.uk>
-References: <1397727894-10123-1-git-send-email-johannes.thumshirn@men.de>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH] 8250_dw: Support all baudrates on baytrail
+Date: Thu, 17 Apr 2014 14:19:54 +0300
+Message-ID: <20140417111953.GB17611@xps8300>
+References: <1397136684-11515-1-git-send-email-loic.poulain@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47928 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754845AbaDQKvW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Apr 2014 06:51:22 -0400
-In-Reply-To: <1397727894-10123-1-git-send-email-johannes.thumshirn@men.de>
+Received: from mga02.intel.com ([134.134.136.20]:22784 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751209AbaDQLT5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Apr 2014 07:19:57 -0400
+Content-Disposition: inline
+In-Reply-To: <1397136684-11515-1-git-send-email-loic.poulain@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Thomas Schnuerer <thomas.schnuerer@men.de>
+To: Loic Poulain <loic.poulain@intel.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 
+Hi Loic,
 
-> +static inline void men_z135_reg_set(struct men_z135_port *uart,
-> +				u32 addr, u32 val)
+On Thu, Apr 10, 2014 at 03:31:24PM +0200, Loic Poulain wrote:
+> In the same manner as 8250_pci, 8250_dw needs
+> some baytrail specific quirks to be used.
+> The reference clock needs to be adjusted before
+> divided in order to have the minimum error rate
+> on the baudrate.
+> 
+> The specific byt setup function is stored in the
+> driver_data field of the acpi device id via the
+> dw8250_acpi_desc structure.
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 91 +++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 87 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index ed31135..7d3e4d9 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -62,6 +62,77 @@ struct dw8250_data {
+>  	struct uart_8250_dma	dma;
+>  };
+>  
+> +struct dw8250_acpi_desc {
+> +	unsigned int uartclk;
+
+This one we could actually drop while at it. The uartclk was
+originally delivered as driver data in case of ACPI, but we now get a
+clk for ACPI enumerated boards.
+
+> +	void (*setup)(struct uart_8250_port *up);
+
+Why not just have the set_termios hook here?
+
+> +};
+> +
+> +#define BYT_PRV_CLK			0x800
+> +#define BYT_PRV_CLK_EN			(1 << 0)
+> +#define BYT_PRV_CLK_M_VAL_SHIFT		1
+> +#define BYT_PRV_CLK_N_VAL_SHIFT		16
+> +#define BYT_PRV_CLK_UPDATE		(1 << 31)
+> +
+> +static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
+> +			    struct ktermios *old)
 > +{
-> +	struct uart_port *port = &uart->port;
+> +	unsigned int baud = tty_termios_baud_rate(termios);
+> +	unsigned int m, n;
 > +	u32 reg;
 > +
-> +	reg = ioread32(port->membase + addr);
-> +	reg |= val;
-> +	iowrite32(reg, port->membase + addr);
+> +	/*
+> +	* For baud rates 0.5M, 1M, 1.5M, 2M, 2.5M, 3M, 3.5M and 4M the
+> +	* dividers must be adjusted.
+> +	*
+> +	* uartclk = (m / n) * 100 MHz, where m <= n
+> +	*/
+> +	switch (baud) {
+> +	case 500000:
+> +	case 1000000:
+> +	case 2000000:
+> +	case 4000000:
+> +		m = 64;
+> +		n = 100;
+> +		p->uartclk = 64000000;
+> +		break;
+> +	case 3500000:
+> +		m = 56;
+> +		n = 100;
+> +		p->uartclk = 56000000;
+> +		break;
+> +	case 1500000:
+> +	case 3000000:
+> +		m = 48;
+> +		n = 100;
+> +		p->uartclk = 48000000;
+> +		break;
+> +	case 2500000:
+> +		m = 40;
+> +		n = 100;
+> +		p->uartclk = 40000000;
+> +		break;
+> +	default:
+> +		m = 2304;
+> +		n = 3125;
+> +		p->uartclk = 73728000;
+> +	}
+> +
+> +	/* Reset the clock */
+> +	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
+> +	writel(reg, p->membase + BYT_PRV_CLK);
+> +	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
+> +	writel(reg, p->membase + BYT_PRV_CLK);
+> +
+> +	serial8250_do_set_termios(p, termios, old);
 > +}
 
-It's not clear what the locking model is to avoid multiple parallel reg
-sets overlapping ?
+Well, we are already handling this same refclk in the clk that is
+provided to this driver in case of BYT, so we should probable handle
+this in that as well. Then we could have a more generic set_termios
+where we do something like this..
+
+static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+                               struct ktermios *old)
+{
+        unsigned int baud = tty_termios_baud_rate(termios);
+        struct dw8250_data *d = p->private_data;
+        unsigned int rate;
+        int ret;
+
+        rate = clk_round_rate(d->clk, baud*16);
+        ret = clk_set_rate(d->clk, rate);
+        if (!ret)
+                p->uartclk = rate;
+        serial8250_do_set_termios(p, termios, old);
+}
+
+But I don't have a problem if we go ahead with this first. We can
+always change it later. In any case, I'll prepare the clock driver in
+drivers/acpi/acpi_lpss.c for this. Let's see what Rafael and Mika
+think about it.
 
 
-> +static void men_z135_handle_rx(struct men_z135_port *uart)
-> +{
-> +	struct uart_port *port = &uart->port;
-> +	struct tty_port *tport = &port->state->port;
-> +	int copied;
-> +	u16 size;
-> +	int room;
-> +
-> +	size = get_rx_fifo_content(uart);
-> +
-> +	if (size == 0)
-> +		return;
-> +
-> +	/* Avoid accidently accessing TX FIFO instead of RX FIFO. Last
-> +	 * longword in RX FIFO cannot be read.(0x004-0x3FF)
-> +	 */
-> +	if (size > MEN_Z135_FIFO_WATERMARK)
-> +		size = MEN_Z135_FIFO_WATERMARK;
-> +
-> +	room = tty_buffer_request_room(tport, size);
-> +	if (room != size)
-> +		pr_err("Not enough room in flip buffer, truncating to %d\n",
-> +			room);
+Thanks,
 
-dev_err would be better here, also we merely drop a few bytes so perhaps
-_warn if anything.
-
-> +	copied = tty_insert_flip_string(tport, uart->rxbuf, room);
-> +	if (copied != room)
-> +		pr_err("Only copied %d instead of %d bytes\n", copied, room);
-
-ditto (although it can't happen currently)
-
-
-> +/**
-> + * men_z135_set_mctrl() - Set modem control lines
-> + * @port: The UART port
-> + * @mctrl: The modem control lines
-> + *
-> + * This function sets the modem control lines for a port described by @port
-> + * to the state described by @mctrl
-> + */
-> +static void men_z135_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +	struct men_z135_port *uart = to_men_z135(port);
-> +	u32 conf_reg = 0;
-> +
-> +	if (mctrl & TIOCM_RTS)
-> +		conf_reg |= MEN_Z135_MCR_RTS;
-> +	if (mctrl & TIOCM_DTR)
-> +		conf_reg |= MEN_Z135_MCR_DTR;
-> +	if (mctrl & TIOCM_OUT1)
-> +		conf_reg |= MEN_Z135_MCR_OUT1;
-> +	if (mctrl & TIOCM_OUT2)
-> +		conf_reg |= MEN_Z135_MCR_OUT2;
-> +	if (mctrl & TIOCM_LOOP)
-> +		conf_reg |= MEN_Z135_MCR_LOOP;
-> +
-> +	men_z135_reg_set(uart, MEN_Z135_CONF_REG, conf_reg);
-
-What stops this and the tx thread trying to update CONF_REG at the same
-moment ? (or indeed quite a few other cases)
-
-Also for a register that's used a lot it may be much cheaper if you can
-simply cache the current value so you never read it. That makes
-updating it much cheaper.
-
-
-> +static void men_z135_set_termios(struct uart_port *port,
-> +				struct ktermios *termios,
-> +				struct ktermios *old)
-> +{
-
-If you don't support CMSPAR (mark/space parity) then clear the
-CMSPAR bit in the passed termios so userspace learns it was not accepted.
-
-You've also btw got at least one "prot" where I think you meant "port" 8)
-
-Alan
+-- 
+heikki
