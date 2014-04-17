@@ -1,81 +1,116 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: 8250_dw DMA issue with BYT ?
-Date: Thu, 17 Apr 2014 13:21:01 +0300
-Message-ID: <20140417102101.GA17611@xps8300>
-References: <50C3158CF44D924791C15F1437EF2EC65D9BE7@HASMSX104.ger.corp.intel.com>
- <20140415065606.GA3368@xps8300>
- <0C6A3B2997299B4EAD81D386F36CD8C210C8AB23@shsmsx102.ccr.corp.intel.com>
- <50C3158CF44D924791C15F1437EF2EC65DA634@HASMSX104.ger.corp.intel.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty: serial: Add driver for MEN's 16z135 High Speed
+ UART.
+Date: Thu, 17 Apr 2014 11:50:35 +0100
+Message-ID: <20140417115035.745b55c8@alan.etchedpixels.co.uk>
+References: <1397727894-10123-1-git-send-email-johannes.thumshirn@men.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:54223 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751227AbaDQKVH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Apr 2014 06:21:07 -0400
-Content-Disposition: inline
-In-Reply-To: <50C3158CF44D924791C15F1437EF2EC65DA634@HASMSX104.ger.corp.intel.com>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:47928 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754845AbaDQKvW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Apr 2014 06:51:22 -0400
+In-Reply-To: <1397727894-10123-1-git-send-email-johannes.thumshirn@men.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Poulain, Loic" <loic.poulain@intel.com>
-Cc: "Jin, Yao" <yao.jin@intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Hi Loic,
-
-On Wed, Apr 16, 2014 at 04:34:58PM +0000, Poulain, Loic wrote:
-> After analysis, here is my status:
-> 
-> The Bluetooth chip generates hardware errors due to unexpected
-> data. These unexpected data are caused by 8250 concurrent TX.
-> 
-> - Concurrent DMA TX (8250_dma.c):
-> 
-> After each DMA transfer, __dma_tx_complete() is called.
-> This function updates the circular buffer tail and calls
-> serial8250_tx_dma() if data remains.
-> 
-> However these operations are not protected against concurrent
-> call of serial8250_tx_dma() (via uart start_tx). So, this concurrent 
-> call may use non-updated tail index and may be called in parallel 
-> of an other serial8250_tx_dma().
-> 
-> 
-> - Concurrent Chars TX (8250_corec.c):
-> 
-> In the serial8250_handle_irq(), serial8250_tx_chars is called if
-> UART_LSR_THRE. However we should not call this function
-> if we are using the DMA. Moreover, for the same reason as above,
-> serial8250_tx_chars could be called with bad tail index or in parallel
-> of a serial8250_tx_dma.
-
-Nice job! Thanks a lot for the analysis!
-
-> I think two fixes are necessary:
-> 
-> to avoid tx chars usage:
-
-<snip>
-
-> The last one fixes TX issues but causes random freeze of my
-> platform (when uploading file via bluetooth). It seems to be a deadlock.
-> I have no kernel trace in my console, system is stuck.
-> 
-> To temporally workaround this, I simply moved "tx_running=0" after updating
-> tail index (in __dma_tx_complete) so that no dma_tx can happen before 
-> this update.
-> 
-> 	xmit->tail += dma->tx_size;
-> 	xmit->tail &= UART_XMIT_SIZE - 1;
-> 	p->port.icount.tx += dma->tx_size;
-> 
-> 	dma->tx_running = 0;
-
-As a side note. Since you are in any case playing with the tx_running
-flag, could you check if it's possible to drop it and just rely on the
-status from the dma engine (with dmaengine_tx_status())?
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Thomas Schnuerer <thomas.schnuerer@men.de>
 
 
-Thanks,
+> +static inline void men_z135_reg_set(struct men_z135_port *uart,
+> +				u32 addr, u32 val)
+> +{
+> +	struct uart_port *port = &uart->port;
+> +	u32 reg;
+> +
+> +	reg = ioread32(port->membase + addr);
+> +	reg |= val;
+> +	iowrite32(reg, port->membase + addr);
+> +}
 
--- 
-heikki
+It's not clear what the locking model is to avoid multiple parallel reg
+sets overlapping ?
+
+
+> +static void men_z135_handle_rx(struct men_z135_port *uart)
+> +{
+> +	struct uart_port *port = &uart->port;
+> +	struct tty_port *tport = &port->state->port;
+> +	int copied;
+> +	u16 size;
+> +	int room;
+> +
+> +	size = get_rx_fifo_content(uart);
+> +
+> +	if (size == 0)
+> +		return;
+> +
+> +	/* Avoid accidently accessing TX FIFO instead of RX FIFO. Last
+> +	 * longword in RX FIFO cannot be read.(0x004-0x3FF)
+> +	 */
+> +	if (size > MEN_Z135_FIFO_WATERMARK)
+> +		size = MEN_Z135_FIFO_WATERMARK;
+> +
+> +	room = tty_buffer_request_room(tport, size);
+> +	if (room != size)
+> +		pr_err("Not enough room in flip buffer, truncating to %d\n",
+> +			room);
+
+dev_err would be better here, also we merely drop a few bytes so perhaps
+_warn if anything.
+
+> +	copied = tty_insert_flip_string(tport, uart->rxbuf, room);
+> +	if (copied != room)
+> +		pr_err("Only copied %d instead of %d bytes\n", copied, room);
+
+ditto (although it can't happen currently)
+
+
+> +/**
+> + * men_z135_set_mctrl() - Set modem control lines
+> + * @port: The UART port
+> + * @mctrl: The modem control lines
+> + *
+> + * This function sets the modem control lines for a port described by @port
+> + * to the state described by @mctrl
+> + */
+> +static void men_z135_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +	struct men_z135_port *uart = to_men_z135(port);
+> +	u32 conf_reg = 0;
+> +
+> +	if (mctrl & TIOCM_RTS)
+> +		conf_reg |= MEN_Z135_MCR_RTS;
+> +	if (mctrl & TIOCM_DTR)
+> +		conf_reg |= MEN_Z135_MCR_DTR;
+> +	if (mctrl & TIOCM_OUT1)
+> +		conf_reg |= MEN_Z135_MCR_OUT1;
+> +	if (mctrl & TIOCM_OUT2)
+> +		conf_reg |= MEN_Z135_MCR_OUT2;
+> +	if (mctrl & TIOCM_LOOP)
+> +		conf_reg |= MEN_Z135_MCR_LOOP;
+> +
+> +	men_z135_reg_set(uart, MEN_Z135_CONF_REG, conf_reg);
+
+What stops this and the tx thread trying to update CONF_REG at the same
+moment ? (or indeed quite a few other cases)
+
+Also for a register that's used a lot it may be much cheaper if you can
+simply cache the current value so you never read it. That makes
+updating it much cheaper.
+
+
+> +static void men_z135_set_termios(struct uart_port *port,
+> +				struct ktermios *termios,
+> +				struct ktermios *old)
+> +{
+
+If you don't support CMSPAR (mark/space parity) then clear the
+CMSPAR bit in the passed termios so userspace learns it was not accepted.
+
+You've also btw got at least one "prot" where I think you meant "port" 8)
+
+Alan
