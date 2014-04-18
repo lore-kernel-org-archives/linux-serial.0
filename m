@@ -1,118 +1,118 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: [PATCH v2 4/7] tty/serial: pl011: add generic earlycon support
-Date: Fri, 18 Apr 2014 17:19:57 -0500
-Message-ID: <1397859600-11507-5-git-send-email-robherring2@gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>
+From: Larry Baker <baker@usgs.gov>
+Subject: Re: How can I help?
+Date: Fri, 18 Apr 2014 15:37:53 -0700
+Message-ID: <E4E661B3-7296-4666-8A59-D9D52BC3D6D0@usgs.gov>
+References: <8A1E86F6-47F2-44A7-A8DB-8A643FE9796B@usgs.gov> <20140418220903.GA22429@kroah.com>
+Mime-Version: 1.0 (Apple Message framework v1085)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from SMTP1.doi.gov ([137.227.82.11]:56407 "EHLO smtp1.doi.gov"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751807AbaDRWh7 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 18 Apr 2014 18:37:59 -0400
+Received: by mail-pa0-f53.google.com with SMTP id ld10so1837314pab.26
+        for <linux-serial@vger.kernel.org>; Fri, 18 Apr 2014 15:37:57 -0700
+ (PDT)
+In-Reply-To: <20140418220903.GA22429@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+Greg,
 
-Add earlycon support for the pl011 serial port. This allows enabling
-the pl011 for console when early_params are processed. This is based
-on the arm64 earlyprintk support and is intended to replace it.
+Any suggestions how to trace what is going on?  I see all the tracing debug code has been removed in the latest ftdi_sio driver.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Cc: Russell King <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
----
-v2:
-- Rework the kernel-parameters.txt description
+I think it will be easier to first try upgrading the kernel/drivers on the AtomPC, even though I want to run on an ARM SoC.  The ARM SoC I'm currently using requires some ARM ERRATA in the kernel; exactly which ones still seems to be a moving target.  As you say, the drivers should be architecture neutral.  If a fix for this problem can be found using an AtomPC, I am confident it will also apply to an ARM SoC.
 
- Documentation/kernel-parameters.txt |  7 +++++++
- drivers/tty/serial/Kconfig          |  1 +
- drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
- 3 files changed, 37 insertions(+), 1 deletion(-)
+The drivers I'm looking at are all in the usb/serial branch of the Linux kernel.  You recommend discussing this on the linux-usb@vger.kernel.org mailing list instead of this one?  CC this one?
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 03e50b4..15b5fcca 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -890,6 +890,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			which are not unmapped.
- 
- 	earlycon=	[KNL] Output early console device and options.
-+
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
- 		uart[8250],mmio32,<addr>[,options]
-@@ -899,6 +900,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			(mmio) or 32-bit (mmio32).
- 			The options are the same as for ttyS, above.
- 
-+		pl011,<addr>
-+			Start an early, polled-mode console on a pl011 serial
-+			port at the specified address. The pl011 serial port
-+			must already be setup and configured. Options are not
-+			yet supported.
-+
- 	earlyprintk=	[X86,SH,BLACKFIN,ARM]
- 			earlyprintk=vga
- 			earlyprintk=efi
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 3b7c19b..b1b23c2 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -60,6 +60,7 @@ config SERIAL_AMBA_PL011_CONSOLE
- 	bool "Support for console on AMBA serial port"
- 	depends on SERIAL_AMBA_PL011=y
- 	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
- 	---help---
- 	  Say Y here if you wish to use an AMBA PrimeCell UART as the system
- 	  console (the system console is the device which receives all kernel
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d4eda24..4227c0a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -303,7 +303,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
- 
- 	/* Optionally make use of an RX channel as well */
- 	chan = dma_request_slave_channel(dev, "rx");
--	
-+
- 	if (!chan && plat->dma_rx_param) {
- 		chan = dma_request_channel(mask, plat->dma_filter, plat->dma_rx_param);
- 
-@@ -2045,6 +2045,34 @@ static struct console amba_console = {
- };
- 
- #define AMBA_CONSOLE	(&amba_console)
-+
-+static void pl011_putc(struct uart_port *port, int c)
-+{
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-+		;
-+	writeb(c, port->membase + UART01x_DR);
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-+		;
-+}
-+
-+static void pl011_early_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, pl011_putc);
-+}
-+
-+static int __init pl011_early_console_setup(struct earlycon_device *device,
-+					    const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = pl011_early_write;
-+	return 0;
-+}
-+EARLYCON_DECLARE(pl011, pl011_early_console_setup);
-+
- #else
- #define AMBA_CONSOLE	NULL
- #endif
--- 
-1.9.1
+What about my question of vendor supported vs. reverse engineered USB serial drivers.  If there is a chip with (better) vendor Linux driver support, I can complain to them and they can fix it instead of us.  If you were to buy a USB-to-Serial adapter, which chip would you buy?
+
+Thank you for your prompt reply.
+
+Larry Baker
+US Geological Survey
+650-329-5608
+baker@usgs.gov
+
+
+
+On 18 Apr 2014, at 3:09 PM, Greg KH wrote:
+
+> On Fri, Apr 18, 2014 at 02:53:35PM -0700, Larry Baker wrote:
+>> Greg and Johan (via linux-serial@vger.kernel.org),
+>> 
+>> I am hoping you will have some good advice for me, and maybe I can help you.
+>> 
+>> I am migrating a serial data acquisition app from a PC platform to a lower cost/lower power ARM SoC platform.  The data come from the instrument over an RS-232 link that requires RTS/CTS handshaking.  It also uses a packet-based handshaking protocol in software.  Serial ports with hardware handshaking have been difficult to find on the SoC platforms I'm experimenting with, so I bought a USB-to-Serial adapter.  The one I bought is identified as an FTDI FT232RL.  It sort of works.  What happens is, after about 8 or 9 hours, the RX to the TTY port times out.  Sometimes it happens in only an hour, other times it takes about 14 hours.  After about 10 seconds, it seems to recover.  Too late, though, for the application; it has already started its abort sequence by then.
+>> 
+>> On the ARM SoC platform (CompuLab Utilite, Linux utilite
+>> 3.0.35-cm-fx6-5.5-rtscts-00002-g39389d3 #102 SMP Tue Apr 1 18:52:11
+>> IDT 2014 armv7l armv7l armv7l GNU/Linux), the ftdi_sio driver is
+>> v1.6.0. To eliminate the possibility it was a Linux ARM bug, I ran the
+>> same setup on an AtomPC.  I got the same result.  The AtomPC runs
+>> CentOS 6.5 (CompuLab fit-PC2i, Linux fit-pc2i.wr.usgs.gov
+>> 2.6.32-431.5.1.el6.i686 #1 SMP Tue Feb 11 21:56:33 UTC 2014 i686 i686
+>> i386 GNU/Linux), which has ftdi_sio driver v1.5.0.  I was blaming the
+>> instrument, until I hooked it up to the COM1 port on the AtomPC and
+>> everything ran fine.  (The full software handshaking protocol handling
+>> in my app is new; the other mode of operation is the device
+>> continuously streams its data.  This last test confirmed that my
+>> software handshaking was not at fault.)
+> 
+> The driver "version" number means nothing when it is within the kernel
+> tree itself.  Just go by the kernel version number instead.
+> 
+> All of the above listed kernels are very old, please try something
+> "modern", like the 3.14 kernel release, as there is nothing we can do
+> about these obsolete kernel versions, other than point you at the
+> company that is forcing you to use them to get support from.
+> 
+>> I have seen people complain about problems using FTDI chips and
+>> questions about ARM compatibility.  I think those were either pilot
+>> error or have been fixed by now.  (Though, I was surprised by a very
+>> recent post and a patch as a result to add parity support to one of
+>> the non-FTDI drivers.  I would have taken parity support for granted
+>> -- it seems pretty fundamental to serial data comm.)  The FTDI-based
+>> adapters seem to be the ones that most people like.  I just ordered a
+>> couple adapters with Prolific chips to try.
+> 
+> All of the usb-serial drivers should work on any platform that Linux
+> works on, there should not be any issues.  If there are, please let us
+> know.
+> 
+> And yes, some drivers aren't as "feature rich" as others are, that's
+> just the way it goes.  Parity settings were never used in the majority
+> of the places where the device you are referring to was used in
+> (embedded systems talking to specific hardware devices.)  So it was
+> never added, that doesn't mean the driver doesn't work well at all.
+> 
+>> If you would kindly point me to the correct web page or e-mail address
+>> to participate in debugging the FTDI or other USB-to-Serial drivers, I
+>> will help a much as I can.  I am suspicious, for example, that the CTS
+>> grant is getting lost.  When data starts to flow again after the
+>> timeout (there are shutdown commands being sent to the instrument), I
+>> see correctly formed packets (the ones that timed out earlier -- they
+>> were already in the device transmit queue); no runts, no checksum
+>> errors.  That fits with the scenario that CTS is not always being seen
+>> by the requester.  I don't have hardware like a logic analyzer; just
+>> an RS-232 break-out box.  I plan to try wiring RTS to CTS on the
+>> sender side, disable RTS/CTS flow control on the app side (I don't
+>> know how much the device driver vs. the chip is involved in the
+>> RTS/CTS handshaking; I want to disable any RTS/CTS state transitions
+>> all the way out to the chip, if the driver will do that), and see if
+>> the RX timeouts go away.  If so, that is a valuable data point and
+>> gives me a place to start probing in the driver (assuming it is not
+>> the chip itself that is the problem).
+> 
+> The linux-usb@vger.kernel.org place is usually the best for Linux USB
+> serial driver issues, unless it is serial/tty core related, and then
+> linux-serial like you used here should be fine.
+> 
+> thanks,
+> 
+> greg k-h
+
