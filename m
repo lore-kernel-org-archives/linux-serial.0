@@ -1,412 +1,182 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [RESEND PATCH v3 1/9] tty: xuartps: Fix kernel-doc errors in the
- driver
-Date: Fri, 18 Apr 2014 09:11:28 -0700
-Message-ID: <c1835108-0033-4219-89e9-2f02c82b1e27@VA3EHSMHS026.ehs.local>
-References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
+From: "maxime.ripard" <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: Re: [PATCH 7/7] ARM: sun7i: cubietruck: enable
+ bluetooth module
+Date: Fri, 18 Apr 2014 19:49:59 +0200
+Message-ID: <20140418174959.GH4132@lukather>
+References: <1397544101-18135-1-git-send-email-wens@csie.org>
+ <1397544101-18135-8-git-send-email-wens@csie.org>
+ <20140415144215.GG3207@lukather>
+ <CAGb2v643HyvFdhQ0znreB8ENXHWpcx6tFwdeU7VuU8KYWcT4ZA@mail.gmail.com>
+ <20140416094428.GK3207@lukather>
+ <CAGb2v67HzB22a3huRRZyufXkdTFE410MhXqAHyC-MmVo0-GCFA@mail.gmail.com>
+ <534E8102.4070404@redhat.com>
+ <534F862C.8010604@broadcom.com>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cVp8NMj01v+Em8Se"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBYHZYWNAKGQEB7IDW5I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Peter Crosthwaite <peter.crosthwaite@xilinx.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, Grant Likely <grant.likely@linaro.org>
+In-Reply-To: <534F862C.8010604-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: Arend van Spriel <arend-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, linux-wireless <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "John W. Linville" <linville-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Johannes Berg <johannes-cdvu00un1VgdHxzADdlk8Q@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>l
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
 
-did you have a chance to look at this yet?
+--cVp8NMj01v+Em8Se
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	Thanks,
-	S=C3=B6ren
+On Thu, Apr 17, 2014 at 09:43:40AM +0200, Arend van Spriel wrote:
+> + linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>=20
+> On 16/04/14 15:09, Hans de Goede wrote:
+> >Hi,
+> >
+> >On 04/16/2014 12:39 PM, Chen-Yu Tsai wrote:
+> >>Hi,
+> >>
+> >>On Wed, Apr 16, 2014 at 5:44 PM, Maxime Ripard
+> >><maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+> >>>Hi,
+> >>>
+> >>>Please try to keep me in CC, even though the ML doesn't make it easy..
+> >>
+> >>Sorry about that.
+> >>
+> >>>On Wed, Apr 16, 2014 at 12:06:59AM +0800, Chen-Yu Tsai wrote:
+> >>>>>>@@ -139,4 +152,16 @@
+> >>>>>>       reg_usb2_vbus: usb2-vbus {
+> >>>>>>               status =3D "okay";
+> >>>>>>       };
+> >>>>>>+
+> >>>>>>+     rfkill_bt {
+> >>>>>>+             compatible =3D "rfkill-gpio";
+> >>>>>>+             pinctrl-names =3D "default";
+> >>>>>>+             pinctrl-0 =3D <&bt_pwr_pin_cubietruck>, <&clk_out_a_p=
+ins_a>;
+> >>>>>>+             clocks =3D <&clk_out_a>;
+> >>>>>>+             clock-frequency =3D <32768>;
+> >>>>>>+             gpios =3D <&pio 7 18 0>; /* PH18 */
+> >>>>>>+             gpio-names =3D "reset";
+> >>>>>>+             rfkill-name =3D "bt";
+> >>>>>>+             rfkill-type =3D <2>;
+> >>>>>>+     };
+> >>>>>
+> >>>>>Hmmm, I don't think that's actually right.
+> >>>>>
+> >>>>>If you have such a device, then I'd expect it to be represented as a
+> >>>>>full device in the DT, probably with one part for the WiFi, one part
+> >>>>>for the Bluetooth, and here the definition of the rfkill device that
+> >>>>>controls it.
+> >>>>
+> >>>>The AP6210 is not one device, but 2 separate chips in one module. Each
+> >>>>chip has its own controls and interface. They just so happen to share
+> >>>>the same enclosure. Even 2-in-1 chips by Broadcom have separate contr=
+ols
+> >>>>and interfaces. The WiFi side is most likely connected via SDIO, while
+> >>>>the Bluetooth side is connected to a UART, and optionally I2S for sou=
+nd.
+> >>>
+> >>>It's even easier to represent then.
+> >>>
+> >>>>>But tying parts of the device to the rfkill that controls it, such as
+> >>>>>the clocks, or the frequency it runs at seems just wrong.
+> >>>>
+> >>>>I understand where you're coming from. For devices on buses that requ=
+ire
+> >>>>drivers (such as USB, SDIO) these properties probably should be tied =
+to
+> >>>>the device node.
+> >>>>
+> >>>>For our use case here, which is a bluetooth chip connected on the UAR=
+T,
+> >>>>there is no in kernel representation or driver to tie them to. Same g=
+oes
+> >>>>for UART based GPS chips. They just so happen to require toggling a G=
+PIO,
+> >>>>and maybe enabling a specific clock, to get it running. Afterwards,
+> >>>>accessing it is done solely from userspace. For our Broadcom chips, t=
+he
+> >>>>user has to upload its firmware first, then designate the tty as a Bl=
+uetooth
+> >>>>HCI using hciattach.
+> >>>>
+> >>>>We are using the rfkill device as a on-off switch.
+> >>>
+> >>>I understand your point, but the fact that it's implemented in
+> >>>user-space, or that UART is not a bus (which probably should be), is
+> >>>only a Linux specific story, and how it's implemented in Linux (even
+> >>>if the whole rfkill node is another one, but let's stay on topic).
+> >>
+> >>I gave it some thought last night. You are right. My whole approach
+> >>is wrong. But let's try to make it right.
+> >>
+> >>So considering the fact that it's primarily connected to a UART,
+> >>maybe I should make it a sub-node to the UART node it's actually
+> >>connected to? Something like:
+> >>
+> >>         uart2: serial@01c28800 {
+> >>                 pinctrl-names =3D "default";
+> >>                 pinctrl-0 =3D <&uart2_pins_a>;
+> >>                 status =3D "okay";
+> >>
+> >>                 bt: bt_hci {
+> >>                         compatible =3D "brcm,bcm20710";
+> >>                         /* maybe add some generic compatible */
+> >>                         pinctrl-names =3D "default";
+> >>                         pinctrl-0 =3D <&clk_out_a_pins_a>,
+> >><&bt_pwr_pin_cubietruck>;
+> >>                         clocks =3D <&clk_out_a>;
+> >>                         clock-frequency =3D <32768>;
+> >>                         gpios =3D <&pio 7 18 0>; /* PH18 */
+> >>                 };
+> >>         };
+> >>
+> >>And let the uart core handle power sequencing for sub-nodes.
+> >
+> >Great, I missed this reply when I typed my mail I send a few minutes
+> >ago. I agree that this approach is how thing should be.
+>=20
+> Regarding the device tree hierarchy this seems right, but powering
+> the sub-nodes seems outside the realm of uart core.
 
-On Fri, 2014-04-04 at 05:23PM -0700, Soren Brinkmann wrote:
-> From: Michal Simek <michal.simek@xilinx.com>
->=20
-> No functional changes.
->=20
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
->=20
-> Changes in v3: None
-> Changes in v2:
->  - this patch has been added
->=20
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 109 +++++++++++++++++----------=
-----------
->  1 file changed, 49 insertions(+), 60 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/=
-xilinx_uartps.c
-> index f619ad5b5eae..b2f929e48ddd 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -163,11 +163,11 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255=
-");
-> =20
->  /**
->   * struct xuartps - device data
-> - * @port		Pointer to the UART port
-> - * @refclk		Reference clock
-> - * @aperclk		APB clock
-> - * @baud		Current baud rate
-> - * @clk_rate_change_nb	Notifier block for clock changes
-> + * @port:		Pointer to the UART port
-> + * @refclk:		Reference clock
-> + * @aperclk:		APB clock
-> + * @baud:		Current baud rate
-> + * @clk_rate_change_nb:	Notifier block for clock changes
->   */
->  struct xuartps {
->  	struct uart_port	*port;
-> @@ -183,8 +183,8 @@ struct xuartps {
->   * @irq: Irq number
->   * @dev_id: Id of the port
->   *
-> - * Returns IRQHANDLED
-> - **/
-> + * Return: IRQHANDLED
-> + */
->  static irqreturn_t xuartps_isr(int irq, void *dev_id)
->  {
->  	struct uart_port *port =3D (struct uart_port *)dev_id;
-> @@ -325,7 +325,7 @@ static irqreturn_t xuartps_isr(int irq, void *dev=
-_id)
->   * @rbdiv: BDIV value (return value)
->   * @rcd: CD value (return value)
->   * @div8: Value for clk_sel bit in mod (return value)
-> - * Returns baud rate, requested baud when possible, or actual baud w=
-hen there
-> + * Return: baud rate, requested baud when possible, or actual baud w=
-hen there
->   *	was too much error, zero if no valid divisors are found.
->   *
->   * Formula to obtain baud rate is
-> @@ -384,7 +384,7 @@ static unsigned int xuartps_calc_baud_divs(unsign=
-ed int clk, unsigned int baud,
->   * xuartps_set_baud_rate - Calculate and set the baud rate
->   * @port: Handle to the uart port structure
->   * @baud: Baud rate to set
-> - * Returns baud rate, requested baud when possible, or actual baud w=
-hen there
-> + * Return: baud rate, requested baud when possible, or actual baud w=
-hen there
->   *	   was too much error, zero if no valid divisors are found.
->   */
->  static unsigned int xuartps_set_baud_rate(struct uart_port *port,
-> @@ -419,7 +419,7 @@ static unsigned int xuartps_set_baud_rate(struct =
-uart_port *port,
->   * @nb:		Notifier block
->   * @event:	Notify event
->   * @data:	Notifier data
-> - * Returns NOTIFY_OK on success, NOTIFY_BAD on error.
-> + * Return: NOTIFY_OK on success, NOTIFY_BAD on error.
->   */
->  static int xuartps_clk_notifier_cb(struct notifier_block *nb,
->  		unsigned long event, void *data)
-> @@ -514,8 +514,7 @@ static int xuartps_clk_notifier_cb(struct notifie=
-r_block *nb,
->  /**
->   * xuartps_start_tx -  Start transmitting bytes
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_start_tx(struct uart_port *port)
->  {
->  	unsigned int status, numbytes =3D port->fifosize;
-> @@ -562,8 +561,7 @@ static void xuartps_start_tx(struct uart_port *po=
-rt)
->  /**
->   * xuartps_stop_tx - Stop TX
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_stop_tx(struct uart_port *port)
->  {
->  	unsigned int regval;
-> @@ -577,8 +575,7 @@ static void xuartps_stop_tx(struct uart_port *por=
-t)
->  /**
->   * xuartps_stop_rx - Stop RX
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_stop_rx(struct uart_port *port)
->  {
->  	unsigned int regval;
-> @@ -593,8 +590,8 @@ static void xuartps_stop_rx(struct uart_port *por=
-t)
->   * xuartps_tx_empty -  Check whether TX is empty
->   * @port: Handle to the uart port structure
->   *
-> - * Returns TIOCSER_TEMT on success, 0 otherwise
-> - **/
-> + * Return: TIOCSER_TEMT on success, 0 otherwise
-> + */
->  static unsigned int xuartps_tx_empty(struct uart_port *port)
->  {
->  	unsigned int status;
-> @@ -608,8 +605,7 @@ static unsigned int xuartps_tx_empty(struct uart_=
-port *port)
->   *			transmitting char breaks
->   * @port: Handle to the uart port structure
->   * @ctl: Value based on which start or stop decision is taken
-> - *
-> - **/
-> + */
->  static void xuartps_break_ctl(struct uart_port *port, int ctl)
->  {
->  	unsigned int status;
-> @@ -636,8 +632,7 @@ static void xuartps_break_ctl(struct uart_port *p=
-ort, int ctl)
->   * @port: Handle to the uart port structure
->   * @termios: Handle to the input termios structure
->   * @old: Values of the previously saved termios structure
-> - *
-> - **/
-> + */
->  static void xuartps_set_termios(struct uart_port *port,
->  				struct ktermios *termios, struct ktermios *old)
->  {
-> @@ -761,8 +756,8 @@ static void xuartps_set_termios(struct uart_port =
-*port,
->   * xuartps_startup - Called when an application opens a xuartps port
->   * @port: Handle to the uart port structure
->   *
-> - * Returns 0 on success, negative error otherwise
-> - **/
-> + * Return: 0 on success, negative error otherwise
-> + */
->  static int xuartps_startup(struct uart_port *port)
->  {
->  	unsigned int retval =3D 0, status =3D 0;
-> @@ -824,8 +819,7 @@ static int xuartps_startup(struct uart_port *port=
-)
->  /**
->   * xuartps_shutdown - Called when an application closes a xuartps po=
-rt
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_shutdown(struct uart_port *port)
->  {
->  	int status;
-> @@ -844,8 +838,8 @@ static void xuartps_shutdown(struct uart_port *po=
-rt)
->   * xuartps_type - Set UART type to xuartps port
->   * @port: Handle to the uart port structure
->   *
-> - * Returns string on success, NULL otherwise
-> - **/
-> + * Return: string on success, NULL otherwise
-> + */
->  static const char *xuartps_type(struct uart_port *port)
->  {
->  	return port->type =3D=3D PORT_XUARTPS ? XUARTPS_NAME : NULL;
-> @@ -856,8 +850,8 @@ static const char *xuartps_type(struct uart_port =
-*port)
->   * @port: Handle to the uart port structure
->   * @ser: Handle to the structure whose members are compared
->   *
-> - * Returns 0 if success otherwise -EINVAL
-> - **/
-> + * Return: 0 if success otherwise -EINVAL
-> + */
->  static int xuartps_verify_port(struct uart_port *port,
->  					struct serial_struct *ser)
->  {
-> @@ -880,8 +874,8 @@ static int xuartps_verify_port(struct uart_port *=
-port,
->   *				uart_add_one_port()
->   * @port: Handle to the uart port structure
->   *
-> - * Returns 0, -ENOMEM if request fails
-> - **/
-> + * Return: 0, -ENOMEM if request fails
-> + */
->  static int xuartps_request_port(struct uart_port *port)
->  {
->  	if (!request_mem_region(port->mapbase, XUARTPS_REGISTER_SPACE,
-> @@ -903,8 +897,7 @@ static int xuartps_request_port(struct uart_port =
-*port)
->   *				port, called when the driver removes a xuartps
->   *				port via uart_remove_one_port().
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_release_port(struct uart_port *port)
->  {
->  	release_mem_region(port->mapbase, XUARTPS_REGISTER_SPACE);
-> @@ -917,8 +910,7 @@ static void xuartps_release_port(struct uart_port=
- *port)
->   *				xuartps port
->   * @port: Handle to the uart port structure
->   * @flags: If any
-> - *
-> - **/
-> + */
->  static void xuartps_config_port(struct uart_port *port, int flags)
->  {
->  	if (flags & UART_CONFIG_TYPE && xuartps_request_port(port) =3D=3D 0=
-)
-> @@ -930,9 +922,8 @@ static void xuartps_config_port(struct uart_port =
-*port, int flags)
->   *
->   * @port: Handle to the uart port structure
->   *
-> - * Returns the modem control state
-> - *
-> - **/
-> + * Return: the modem control state
-> + */
->  static unsigned int xuartps_get_mctrl(struct uart_port *port)
->  {
->  	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-> @@ -1040,8 +1031,8 @@ static struct uart_port xuartps_port[2];
->   * xuartps_get_port - Configure the port from the platform device re=
-source
->   *			info
->   *
-> - * Returns a pointer to a uart_port or NULL for failure
-> - **/
-> + * Return: a pointer to a uart_port or NULL for failure
-> + */
->  static struct uart_port *xuartps_get_port(void)
->  {
->  	struct uart_port *port;
-> @@ -1078,8 +1069,7 @@ static struct uart_port *xuartps_get_port(void)
->  /**
->   * xuartps_console_wait_tx - Wait for the TX to be full
->   * @port: Handle to the uart port structure
-> - *
-> - **/
-> + */
->  static void xuartps_console_wait_tx(struct uart_port *port)
->  {
->  	while ((xuartps_readl(XUARTPS_SR_OFFSET) & XUARTPS_SR_TXEMPTY)
-> @@ -1091,8 +1081,7 @@ static void xuartps_console_wait_tx(struct uart=
-_port *port)
->   * xuartps_console_putchar - write the character to the FIFO buffer
->   * @port: Handle to the uart port structure
->   * @ch: Character to be written
-> - *
-> - **/
-> + */
->  static void xuartps_console_putchar(struct uart_port *port, int ch)
->  {
->  	xuartps_console_wait_tx(port);
-> @@ -1101,10 +1090,10 @@ static void xuartps_console_putchar(struct ua=
-rt_port *port, int ch)
-> =20
->  /**
->   * xuartps_console_write - perform write operation
-> - * @port: Handle to the uart port structure
-> + * @co: Console handle
->   * @s: Pointer to character array
->   * @count: No of characters
-> - **/
-> + */
->  static void xuartps_console_write(struct console *co, const char *s,
->  				unsigned int count)
->  {
-> @@ -1151,8 +1140,8 @@ static void xuartps_console_write(struct consol=
-e *co, const char *s,
->   * @co: Console handle
->   * @options: Initial settings of uart
->   *
-> - * Returns 0, -ENODEV if no device
-> - **/
-> + * Return: 0, -ENODEV if no device
-> + */
->  static int __init xuartps_console_setup(struct console *co, char *op=
-tions)
->  {
->  	struct uart_port *port =3D &xuartps_port[co->index];
-> @@ -1190,8 +1179,8 @@ static struct console xuartps_console =3D {
->  /**
->   * xuartps_console_init - Initialization call
->   *
-> - * Returns 0 on success, negative error otherwise
-> - **/
-> + * Return: 0 on success, negative error otherwise
-> + */
->  static int __init xuartps_console_init(void)
->  {
->  	register_console(&xuartps_console);
-> @@ -1221,7 +1210,7 @@ static struct uart_driver xuartps_uart_driver =3D=
- {
->   * xuartps_suspend - suspend event
->   * @device: Pointer to the device structure
->   *
-> - * Returns 0
-> + * Return: 0
->   */
->  static int xuartps_suspend(struct device *device)
->  {
-> @@ -1269,7 +1258,7 @@ static int xuartps_suspend(struct device *devic=
-e)
->   * xuartps_resume - Resume after a previous suspend
->   * @device: Pointer to the device structure
->   *
-> - * Returns 0
-> + * Return: 0
->   */
->  static int xuartps_resume(struct device *device)
->  {
-> @@ -1336,8 +1325,8 @@ static SIMPLE_DEV_PM_OPS(xuartps_dev_pm_ops, xu=
-artps_suspend, xuartps_resume);
->   * xuartps_probe - Platform driver probe
->   * @pdev: Pointer to the platform device structure
->   *
-> - * Returns 0 on success, negative error otherwise
-> - **/
-> + * Return: 0 on success, negative error otherwise
-> + */
->  static int xuartps_probe(struct platform_device *pdev)
->  {
->  	int rc;
-> @@ -1437,8 +1426,8 @@ err_out_clk_dis_aper:
->   * xuartps_remove - called when the platform driver is unregistered
->   * @pdev: Pointer to the platform device structure
->   *
-> - * Returns 0 on success, negative error otherwise
-> - **/
-> + * Return: 0 on success, negative error otherwise
-> + */
->  static int xuartps_remove(struct platform_device *pdev)
->  {
->  	struct uart_port *port =3D platform_get_drvdata(pdev);
-> @@ -1481,8 +1470,8 @@ static struct platform_driver xuartps_platform_=
-driver =3D {
->  /**
->   * xuartps_init - Initial driver registration call
->   *
-> - * Returns whether the registration was successful or not
-> - **/
-> + * Return: whether the registration was successful or not
-> + */
->  static int __init xuartps_init(void)
->  {
->  	int retval =3D 0;
-> @@ -1502,7 +1491,7 @@ static int __init xuartps_init(void)
-> =20
->  /**
->   * xuartps_exit - Driver unregistration call
-> - **/
-> + */
->  static void __exit xuartps_exit(void)
->  {
->  	/* The order of unregistration is important. Unregister the
-> --=20
-> 1.9.1.1.gbb9f595
->=20
->=20
+Yet, a lot of devices are connected to an UART: GPS, BT chips, GSM
+modems, even some odd PMICs, so UART acting like a real bus might make
+sense.
 
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--cVp8NMj01v+Em8Se
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.14 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTUWXGAAoJEBx+YmzsjxAgc2EP/jNfZxEZ9Qr2rjo2mM00O31c
+cgpKfqeIK5dltqGbRH+XsguhSHejHHeUb5D2sIir+Lw1NGKSSSmYo6NkfOR+ZjEq
+Kll61JecGU9wCLxrGfYowzztskzIOWJyObV5So4js0/0vXrTEpDYrsCJyPUNqHLd
+Byc8sAIB3B29Wd9cERxAfKL/4Gr06vZvj6VgNR4L5ib2+m2HzXyskEzvKWvWzBgP
+pa90ilImsxFEU2gwslTt346GodkxI0LYncux6N5vbkSZVnsb24NBjNAdwyegahYt
+epkWdErdDJl1+kVRZ1mnhJm9U57+Luv2a6ctiP/w7cQou6YPItcMyUydTHqgGC1d
+vJ1HtEYSe5i1gQcCvtXUEas7RuCantM15DvbxQQNAww1D2+yGdtOoPHqCb5TvKiK
+a4FN7c8jjDFnaUdUp/lwOYc5IMpelM7UL3d1WSB5whVlXDJHTl/MRs2LvrUnc5hs
+PVW10WKKuh8XD/5MLbcFhG8d1WwJUQJxBnqRcY36yR5ohRq1fmT+NFHDu6eIyANP
+Y1pPu2FxBYEkSQfoicqD+SOz0J/HQkRu+46MOYmk29eY70KZw09dJ0Vyml4f93I1
+ZTWwUBJS41JiZQV2BT6blntiuxF2IPFAh1bQxD2WODvNdDzJyLHtb+A80a8kB3+m
+yAJvn86vDRsJXSty4zJe
+=dAfC
+-----END PGP SIGNATURE-----
+
+--cVp8NMj01v+Em8Se--
