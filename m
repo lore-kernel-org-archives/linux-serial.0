@@ -1,38 +1,66 @@
-From: Larry Baker <baker@usgs.gov>
-Subject: Re: How can I help?
-Date: Fri, 18 Apr 2014 16:43:52 -0700
-Message-ID: <38D023F2-DDC3-4F1F-BD2C-737AE1CB012C@usgs.gov>
-References: <8A1E86F6-47F2-44A7-A8DB-8A643FE9796B@usgs.gov> <20140418220903.GA22429@kroah.com> <E4E661B3-7296-4666-8A59-D9D52BC3D6D0@usgs.gov> <20140418224357.GA32442@kroah.com> <AD1ED14D-A603-4E02-8A2E-4E5113E20FBD@usgs.gov> <20140418231940.GA3833@kroah.com>
-Mime-Version: 1.0 (Apple Message framework v1085)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 4/8] tty/serial: add generic serial earlycon
+Date: Sat, 19 Apr 2014 13:32:24 +0200
+Message-ID: <201404191332.24392.arnd@arndb.de>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com> <21117957.8m9iUdR1VN@wuerfel> <CAL_JsqJwKQ_KuWWQNZHrMh8NwwiubB2jR+g-Y2n_dH4kJ5zVow@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from [137.227.28.12] ([137.227.28.12]:4082 "EHLO smtp6.doi.gov"
-	rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
-	id S1751691AbaDRXoV convert rfc822-to-8bit (ORCPT
+Received: from moutng.kundenserver.de ([212.227.17.24]:62654 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751081AbaDSLdT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 18 Apr 2014 19:44:21 -0400
-Received: by mail-pa0-f49.google.com with SMTP id lj1so1882744pab.36
-        for <linux-serial@vger.kernel.org>; Fri, 18 Apr 2014 16:43:57 -0700
- (PDT)
-In-Reply-To: <20140418231940.GA3833@kroah.com>
+	Sat, 19 Apr 2014 07:33:19 -0400
+In-Reply-To: <CAL_JsqJwKQ_KuWWQNZHrMh8NwwiubB2jR+g-Y2n_dH4kJ5zVow@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "x86@kernel.org" <x86@kernel.org>, Will Deacon <Will.Deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
-Greg,
+On Thursday 17 April 2014, Rob Herring wrote:
+> On Mon, Mar 24, 2014 at 10:42 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Monday 24 March 2014 08:36:46 Rob Herring wrote:
+> >> On Mon, Mar 24, 2014 at 6:29 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> >> > On Monday 24 March 2014 11:22:03 Catalin Marinas wrote:
+> >> >> On Fri, Mar 21, 2014 at 09:08:44PM +0000, Rob Herring wrote:
+> >> >> > diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> >> >> > new file mode 100644
+> >> >> > index 0000000..241757a
+> >> >> > --- /dev/null
+> >> >> > +++ b/drivers/tty/serial/earlycon.c
+> >> >> [...]
+> >> >> > +static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
+> >> >> > +{
+> >> >> > +   void __iomem *base;
+> >> >> > +#ifdef CONFIG_FIX_EARLYCON_MEM
+> >> >> > +   set_fixmap_nocache(FIX_EARLYCON_MEM_BASE, paddr & PAGE_MASK);
+> >> >> > +   base = (void __iomem *)__fix_to_virt(FIX_EARLYCON_MEM_BASE);
+> >> >> > +   base += paddr & ~PAGE_MASK;
+> >> >> > +#else
+> >> >> > +   base = ioremap_nocache(paddr, size);
+> >> >> > +#endif
+> >> >>
+> >> >> Just curious why not set_fixmap_io (and plain ioremap)?
+> >> >
+> >> > Good point. Note that ioremap_nocache() is the same as ioremap()
+> >> > on *all* architectures.
+> 
+> Did you mean "not the same"?
 
-> I'd go buy a few different types, of different cores, and try to find
-> one that works for your workload.  That's going to be the simplest, and
-> probably cheapest, way to do this.
+No
 
-Thanks a lot for your help.  I have to pick my poison.  The ARM SoC box I'm using has a UART, but their RTS/CTS is broken (as in, stty crtscts rejected; they fixed that, but I still get no data).  I can work on that driver or board configuration, and have a fix for a single platform.  Or, I can find a working or fix (questionable) a broken USB serial driver and have a solution good for multiple platforms.  I'd really like to give back and fix both.  Unfortunately, I don't have enough lifetimes.  As challenging and interesting as that may be, I have an actual job I have to do.  And my boss likes it better when I spend time on that. :)
+> Why are there 2 flavors if they are
+> always the same.
 
-I'll collect more data using adapters with different chips as well as a more recent kernel.  Then I can provide more useful information to the linux-usb@vger.kernel.org email list.
+I assume it's just a mistake someone made a long time ago and nobody
+ever changed it because they didn't want to break obscure code.
 
-Larry Baker
-US Geological Survey
-650-329-5608
-baker@usgs.gov
+x86 seems to be a bit odd here, because is has both page-table
+and MTRR method of setting up whether an access can be cached or not.
+This may have led to the introduction of the _nocache variant, when
+the regular ioremap was already uncached on all other architectures
+but cached on x86.
 
+	Arnd
