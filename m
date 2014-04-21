@@ -1,89 +1,136 @@
 From: Doug Anderson <dianders@chromium.org>
-Subject: [PATCH 1/3] serial: samsung: Use the passed in "port", fixing kgdb w/ no console
-Date: Mon, 21 Apr 2014 09:40:34 -0700
-Message-ID: <1398098436-31895-1-git-send-email-dianders@chromium.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f202.google.com ([209.85.220.202]:63671 "EHLO
-	mail-vc0-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753146AbaDUQkk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 21 Apr 2014 12:40:40 -0400
-Received: by mail-vc0-f202.google.com with SMTP id lh14so153053vcb.5
-        for <linux-serial@vger.kernel.org>; Mon, 21 Apr 2014 09:40:39 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+Subject: [PATCH v2] serial_core: Commonalize crlf when working w/ a non open console port
+Date: Mon, 21 Apr 2014 10:06:43 -0700
+Message-ID: <1398100003-4172-1-git-send-email-dianders@chromium.org>
+References: <1397841448-12942-1-git-send-email-dianders@chromium.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1397841448-12942-1-git-send-email-dianders@chromium.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jason Wessel <jason.wessel@windriver.com>, linux-samsung-soc@vger.kernel.org, olof@lixom.net, Doug Anderson <dianders@chromium.org>, jslaby@suse.cz, paul.gortmaker@windriver.com, jg1.han@samsung.com, asierra@xes-inc.com, swarren@nvidia.com, heikki.krogerus@linux.intel.com, jschultz@xes-inc.com, kyle@infradead.org, mingo@elte.hu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-samsung-soc@vger.kernel.org
-Cc: olof@lixom.net, Doug Anderson <dianders@chromium.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The two functions in the samsung serial driver used for writing
-characters out to the port were inconsistent about whether they used
-the passed in "port" or the global "cons_uart".  There was no reason
-to use the global and the use of the global in
-s3c24xx_serial_put_poll_char() caused a crash in the case where you
-used the serial port for kgdboc but not for console.
+In (efe2f29 kgdboc,kdb: Allow kdb to work on a non open console port)
+support was added to directly use the "write_char" functions when
+doing kdb over a non-open console port.  This is great, but it ends up
+bypassing the normal code in uart_console_write() that adds a carriage
+return before any newlines.
 
-Fix it so we used the passed in variable.
+There appears to have been a trend to add this support directly in
+some console driver's poll_put_char() functions.  This had a few side
+effects, including:
+- In this case we were doing LFCR, not CRLF.  This was fixed in
+  uart_console_write() back in (d358788 [SERIAL] kernel console should
+  send CRLF not LFCR)
+- Not all serial drivers had the LFCR code in their poll_put_char()
+  functions.  In my case I was running serial/samsung.c which lacked
+  it.
 
-Note that this doesn't fix all problems with the samsung serial
-driver.  Specifically:
-* s3c24xx_serial_console_putchar() is still 99% identical to
-  s3c24xx_serial_put_poll_char() (the function signature is different,
-  but that's about it).  A future patch will make them slightly less
-  identical and judging by other serial drivers we may need yet more
-  differences eventually.
-* The samsung serial driver still doesn't allow you to have more than
-  one console port since it still uses the global cons_uart in
-  s3c24xx_serial_console_write().
+I've moved the handling to uart_poll_put_char() to fix the above
+problems.  Now when I use kdb (and don't point console= to the same
+UART) I no longer get:
+
+[0]kdb>
+       [0]kdb>
+              [0]kdb>
 
 Signed-off-by: Doug Anderson <dianders@chromium.org>
 ---
- drivers/tty/serial/samsung.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Changes in v2:
+- Moved from kdb to serial_core
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 23f4596..a8e8b79 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1446,8 +1446,8 @@ static int s3c24xx_serial_get_poll_char(struct uart_port *port)
- static void s3c24xx_serial_put_poll_char(struct uart_port *port,
- 		unsigned char c)
- {
--	unsigned int ufcon = rd_regl(cons_uart, S3C2410_UFCON);
--	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+	unsigned int ufcon = rd_regl(port, S3C2410_UFCON);
-+	unsigned int ucon = rd_regl(port, S3C2410_UCON);
+ drivers/tty/serial/8250/8250_core.c | 5 -----
+ drivers/tty/serial/pch_uart.c       | 5 -----
+ drivers/tty/serial/pxa.c            | 5 -----
+ drivers/tty/serial/serial_core.c    | 3 +++
+ drivers/tty/serial/serial_txx9.c    | 5 -----
+ 5 files changed, 3 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 81f909c..ffee982 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1926,13 +1926,8 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 	wait_for_xmitr(up, BOTH_EMPTY);
+ 	/*
+ 	 *	Send the character out.
+-	 *	If a LF, also do CR...
+ 	 */
+ 	serial_port_out(port, UART_TX, c);
+-	if (c == 10) {
+-		wait_for_xmitr(up, BOTH_EMPTY);
+-		serial_port_out(port, UART_TX, 13);
+-	}
  
- 	/* not possible to xmit on unconfigured port */
- 	if (!s3c24xx_port_configured(ucon))
-@@ -1455,7 +1455,7 @@ static void s3c24xx_serial_put_poll_char(struct uart_port *port,
+ 	/*
+ 	 *	Finally, wait for transmitter to become empty
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 0931b3f..11e631d 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1588,13 +1588,8 @@ static void pch_uart_put_poll_char(struct uart_port *port,
+ 	wait_for_xmitr(priv, UART_LSR_THRE);
+ 	/*
+ 	 * Send the character out.
+-	 * If a LF, also do CR...
+ 	 */
+ 	iowrite8(c, priv->membase + PCH_UART_THR);
+-	if (c == 10) {
+-		wait_for_xmitr(priv, UART_LSR_THRE);
+-		iowrite8(13, priv->membase + PCH_UART_THR);
+-	}
  
- 	while (!s3c24xx_serial_console_txrdy(port, ufcon))
- 		cpu_relax();
--	wr_regb(cons_uart, S3C2410_UTXH, c);
-+	wr_regb(port, S3C2410_UTXH, c);
+ 	/*
+ 	 * Finally, wait for transmitter to become empty
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index f9f20f3..9e7ee39 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -711,13 +711,8 @@ static void serial_pxa_put_poll_char(struct uart_port *port,
+ 	wait_for_xmitr(up);
+ 	/*
+ 	 *	Send the character out.
+-	 *	If a LF, also do CR...
+ 	 */
+ 	serial_out(up, UART_TX, c);
+-	if (c == 10) {
+-		wait_for_xmitr(up);
+-		serial_out(up, UART_TX, 13);
+-	}
+ 
+ 	/*
+ 	 *	Finally, wait for transmitter to become empty
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f26834d..5dba976 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2236,6 +2236,9 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
+ 		return;
+ 
+ 	port = state->uart_port;
++
++	if (ch == '\n')
++		port->ops->poll_put_char(port, '\r');
+ 	port->ops->poll_put_char(port, ch);
  }
+ #endif
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index 90a080b..60f49b9 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -535,13 +535,8 @@ static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
+ 	wait_for_xmitr(up);
+ 	/*
+ 	 *	Send the character out.
+-	 *	If a LF, also do CR...
+ 	 */
+ 	sio_out(up, TXX9_SITFIFO, c);
+-	if (c == 10) {
+-		wait_for_xmitr(up);
+-		sio_out(up, TXX9_SITFIFO, 13);
+-	}
  
- #endif /* CONFIG_CONSOLE_POLL */
-@@ -1463,8 +1463,8 @@ static void s3c24xx_serial_put_poll_char(struct uart_port *port,
- static void
- s3c24xx_serial_console_putchar(struct uart_port *port, int ch)
- {
--	unsigned int ufcon = rd_regl(cons_uart, S3C2410_UFCON);
--	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+	unsigned int ufcon = rd_regl(port, S3C2410_UFCON);
-+	unsigned int ucon = rd_regl(port, S3C2410_UCON);
- 
- 	/* not possible to xmit on unconfigured port */
- 	if (!s3c24xx_port_configured(ucon))
-@@ -1472,7 +1472,7 @@ s3c24xx_serial_console_putchar(struct uart_port *port, int ch)
- 
- 	while (!s3c24xx_serial_console_txrdy(port, ufcon))
- 		barrier();
--	wr_regb(cons_uart, S3C2410_UTXH, ch);
-+	wr_regb(port, S3C2410_UTXH, ch);
- }
- 
- static void
+ 	/*
+ 	 *	Finally, wait for transmitter to become empty
 -- 
 1.9.1.423.g4596e3a
-
