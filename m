@@ -1,136 +1,38 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: [PATCH v2] serial_core: Commonalize crlf when working w/ a non open console port
-Date: Mon, 21 Apr 2014 10:06:43 -0700
-Message-ID: <1398100003-4172-1-git-send-email-dianders@chromium.org>
-References: <1397841448-12942-1-git-send-email-dianders@chromium.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1397841448-12942-1-git-send-email-dianders@chromium.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jason Wessel <jason.wessel@windriver.com>, linux-samsung-soc@vger.kernel.org, olof@lixom.net, Doug Anderson <dianders@chromium.org>, jslaby@suse.cz, paul.gortmaker@windriver.com, jg1.han@samsung.com, asierra@xes-inc.com, swarren@nvidia.com, heikki.krogerus@linux.intel.com, jschultz@xes-inc.com, kyle@infradead.org, mingo@elte.hu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH V6] serial/uart/8250: Add tunable RX interrupt trigger
+ I/F of FIFO buffers
+Date: Mon, 21 Apr 2014 13:39:01 -0600
+Message-ID: <535573D5.9050805@wwwdotorg.org>
+References: <20140417060644.27329.31663.stgit@yunodevel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:41274 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750973AbaDUTpP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 21 Apr 2014 15:45:15 -0400
+In-Reply-To: <20140417060644.27329.31663.stgit@yunodevel>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>
+Cc: Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-In (efe2f29 kgdboc,kdb: Allow kdb to work on a non open console port)
-support was added to directly use the "write_char" functions when
-doing kdb over a non-open console port.  This is great, but it ends up
-bypassing the normal code in uart_console_write() that adds a carriage
-return before any newlines.
+On 04/17/2014 12:06 AM, Yoshihiro YUNOMAE wrote:
+> Add tunable RX interrupt trigger I/F of FIFO buffers.
+> Serial devices are used as not only message communication devices but control
+> or sending communication devices. For the latter uses, normally small data
+> will be exchanged, so user applications want to receive data unit as soon as
+> possible for real-time tendency. If we have a sensor which sends a 1 byte data
+> each time and must control a device based on the sensor feedback, the RX
+> interrupt should be triggered for each data.
+> 
+> According to HW specification of serial UART devices, RX interrupt trigger
+> can be changed, but the trigger is hard-coded. For example, RX interrupt trigger
+> in 16550A can be set to 1, 4, 8, or 14 bytes for HW, but current driver sets
+> the trigger to only 8bytes.
+> 
+> This patch makes some devices change RX interrupt trigger from userland.
 
-There appears to have been a trend to add this support directly in
-some console driver's poll_put_char() functions.  This had a few side
-effects, including:
-- In this case we were doing LFCR, not CRLF.  This was fixed in
-  uart_console_write() back in (d358788 [SERIAL] kernel console should
-  send CRLF not LFCR)
-- Not all serial drivers had the LFCR code in their poll_put_char()
-  functions.  In my case I was running serial/samsung.c which lacked
-  it.
-
-I've moved the handling to uart_poll_put_char() to fix the above
-problems.  Now when I use kdb (and don't point console= to the same
-UART) I no longer get:
-
-[0]kdb>
-       [0]kdb>
-              [0]kdb>
-
-Signed-off-by: Doug Anderson <dianders@chromium.org>
----
-Changes in v2:
-- Moved from kdb to serial_core
-
- drivers/tty/serial/8250/8250_core.c | 5 -----
- drivers/tty/serial/pch_uart.c       | 5 -----
- drivers/tty/serial/pxa.c            | 5 -----
- drivers/tty/serial/serial_core.c    | 3 +++
- drivers/tty/serial/serial_txx9.c    | 5 -----
- 5 files changed, 3 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 81f909c..ffee982 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1926,13 +1926,8 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 	wait_for_xmitr(up, BOTH_EMPTY);
- 	/*
- 	 *	Send the character out.
--	 *	If a LF, also do CR...
- 	 */
- 	serial_port_out(port, UART_TX, c);
--	if (c == 10) {
--		wait_for_xmitr(up, BOTH_EMPTY);
--		serial_port_out(port, UART_TX, 13);
--	}
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 0931b3f..11e631d 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1588,13 +1588,8 @@ static void pch_uart_put_poll_char(struct uart_port *port,
- 	wait_for_xmitr(priv, UART_LSR_THRE);
- 	/*
- 	 * Send the character out.
--	 * If a LF, also do CR...
- 	 */
- 	iowrite8(c, priv->membase + PCH_UART_THR);
--	if (c == 10) {
--		wait_for_xmitr(priv, UART_LSR_THRE);
--		iowrite8(13, priv->membase + PCH_UART_THR);
--	}
- 
- 	/*
- 	 * Finally, wait for transmitter to become empty
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index f9f20f3..9e7ee39 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -711,13 +711,8 @@ static void serial_pxa_put_poll_char(struct uart_port *port,
- 	wait_for_xmitr(up);
- 	/*
- 	 *	Send the character out.
--	 *	If a LF, also do CR...
- 	 */
- 	serial_out(up, UART_TX, c);
--	if (c == 10) {
--		wait_for_xmitr(up);
--		serial_out(up, UART_TX, 13);
--	}
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index f26834d..5dba976 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2236,6 +2236,9 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
- 		return;
- 
- 	port = state->uart_port;
-+
-+	if (ch == '\n')
-+		port->ops->poll_put_char(port, '\r');
- 	port->ops->poll_put_char(port, ch);
- }
- #endif
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index 90a080b..60f49b9 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -535,13 +535,8 @@ static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
- 	wait_for_xmitr(up);
- 	/*
- 	 *	Send the character out.
--	 *	If a LF, also do CR...
- 	 */
- 	sio_out(up, TXX9_SITFIFO, c);
--	if (c == 10) {
--		wait_for_xmitr(up);
--		sio_out(up, TXX9_SITFIFO, 13);
--	}
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
--- 
-1.9.1.423.g4596e3a
+Reviewed-by: Stephen Warren <swarren@nvidia.com>
