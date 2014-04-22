@@ -1,103 +1,58 @@
-From: Yegor Yefremov <yegor_sub1@visionsystems.de>
-Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
- modem lines
-Date: Tue, 22 Apr 2014 15:08:43 +0200
-Message-ID: <535669DB.8010109@visionsystems.de>
-References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com> <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
-Reply-To: yegor_sub1@visionsystems.de
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 01/11] tty: serial: add missing braces
+Date: Tue, 22 Apr 2014 09:22:56 -0500
+Message-ID: <20140422142256.GC5524@saruman.home>
+References: <1395343807-21618-1-git-send-email-balbi@ti.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="+B+y8wtTXqdUj1xM"
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1395343807-21618-1-git-send-email-balbi@ti.com>
 Sender: linux-omap-owner@vger.kernel.org
-To: Richard Genoud <noreply.rgenoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexander Shiyan <shc_work@mail.ru>, Richard Genoud <richard.genoud@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, mpfj-list@newflow.co.uk, balbi@ti.com
+To: Felipe Balbi <balbi@ti.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, peter@hurleysoftware.com, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10.03.2014 17:45, Richard Genoud wrote:
-> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
-> GPIO.
-> This will be useful for many boards which have a serial controller that
-> only handle CTS/RTS pins (or even just RX/TX).
-> 
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+--+B+y8wtTXqdUj1xM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-....
+Hi,
 
-> +
-> +struct mctrl_gpios {
-> +	struct gpio_desc *gpio[UART_GPIO_MAX];
-> +};
-> +
-> +static const struct {
-> +	const char *name;
-> +	unsigned int mctrl;
-> +	bool dir_out;
-> +} mctrl_gpios_desc[UART_GPIO_MAX] = {
-> +	{ "cts", TIOCM_CTS, false, },
-> +	{ "dsr", TIOCM_DSR, false, },
-> +	{ "dcd", TIOCM_CD, false, },
-> +	{ "rng", TIOCM_RNG, false, },
-> +	{ "rts", TIOCM_RTS, true, },
-> +	{ "dtr", TIOCM_DTR, true, },
-> +	{ "out1", TIOCM_OUT1, true, },
-> +	{ "out2", TIOCM_OUT2, true, },
-> +};
-> +
-> +void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
-> +{
-> +	enum mctrl_gpio_idx i;
-> +
-> +	if (IS_ERR_OR_NULL(gpios))
-> +		return;
-> +
-> +	for (i = 0; i < UART_GPIO_MAX; i++)
-> +		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
-> +		    mctrl_gpios_desc[i].dir_out)
-> +			gpiod_set_value(gpios->gpio[i],
-> +					!!(mctrl & mctrl_gpios_desc[i].mctrl));
-> +}
-> +EXPORT_SYMBOL_GPL(mctrl_gpio_set);
-> +
-> +struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
-> +				      enum mctrl_gpio_idx gidx)
-> +{
-> +	if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
-> +		return gpios->gpio[gidx];
-> +	else
-> +		return NULL;
-> +}
-> +EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
-> +
-> +unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
-> +{
-> +	enum mctrl_gpio_idx i;
-> +
-> +	/*
-> +	 * return it unchanged if the structure is not allocated
-> +	 */
-> +	if (IS_ERR_OR_NULL(gpios))
-> +		return *mctrl;
-> +
-> +	for (i = 0; i < UART_GPIO_MAX; i++) {
-> +		if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
-> +		    !mctrl_gpios_desc[i].dir_out) {
-> +			if (gpiod_get_value(gpios->gpio[i]))
-> +				*mctrl |= mctrl_gpios_desc[i].mctrl;
-> +			else
-> +				*mctrl &= ~mctrl_gpios_desc[i].mctrl;
-> +		}
-> +	}
-> +
-> +	return *mctrl;
-> +}
-> +EXPORT_SYMBOL_GPL(mctrl_gpio_get);
+On Thu, Mar 20, 2014 at 02:29:57PM -0500, Felipe Balbi wrote:
+> per CodingStyle we should have those braces, no
+> functional changes.
+>=20
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
 
-Should this routine be renamed to msr_gpio_get() or perhaps better to give all values (inputs and outputs)?
+Greg, do you want me to refresh and resend this series ?
 
-I'm trying to port this approach to omap-serial to implement RS485 switching. I need to know if RTS is already on or not and set it accordingly.
+--=20
+balbi
 
-What would be the best solution for this task using this new API?
+--+B+y8wtTXqdUj1xM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Yegor
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJTVntAAAoJEIaOsuA1yqREYyUP/jA9FzIhfh8oc1uKvY4SuEA+
+MB4tjfDMN9z10dQqwsSnGp3fu9iTdcDfS8Ch5ujFEpQs6ufZ8L8FZCurjI5JW7nC
+Kh0uWeAgRbdAxRQUX2eZ1SQGN0Vs59hO5X5O0Uvi2sYfjLFUyhWSgVPSzccq/rcl
+lMwWYqaF/5NjRpdGMoOT5tUPT2ElC72JLLBzm0AVbyvFwlbl3hgA8420vGfiinNr
+dMV5UQl0YqdQpLdylDiv8RbplJVuEuucZPnMtHn07oO81loMOmk8YKgJV6w7fppP
+sWw7GmTrl+/h40kPKhzMFQbNZ7KTHOo0nsUAzafj/wcdFsh2ehhV3Ah82wT8G7L+
+q+YQN1rd5DjI7bQd0YqDoR7mFzKo9HMlNeXrKJZp4NFkHpbrO5mJr3LvA6s7wp4q
+E7GYIGy6oBJZ+k1UIX51Yot2z+iW/e9tdUXoWNt/3uL18YvBXbpkQlZjoc7vaY/i
+eOsc5cEkiRSYF5l87UBvpsf5JotPUnparWZysAR70bhrvSdZ9K6cVdNNQp1rdQiA
+MH5yhnU7MHuDrWIvs0HFGnilPqFoYB1H8oCrvmsqTGEy8gbElHaOyxjAeASU+mHw
+Uf+hcvD0ezaE+kCHyxxKKAxsxhZVoXy1n7d2zNVCNdijqNgDDJq6ed8m2lZLp6IQ
+NKbYgqTRGmBoOyEFUQRg
+=DQiI
+-----END PGP SIGNATURE-----
+
+--+B+y8wtTXqdUj1xM--
