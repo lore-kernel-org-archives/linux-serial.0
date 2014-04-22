@@ -1,68 +1,35 @@
-From: Richard Andrysek <richard.andrysek@rg-mechatronics.com>
-Subject: How can I setup a baudrate geater then 4Mbd?
-Date: Wed, 16 Apr 2014 15:59:50 +0000 (UTC)
-Message-ID: <loom.20140416T175911-139@post.gmane.org>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v2] serial_core: Commonalize crlf when working w/ a non
+ open console port
+Date: Tue, 22 Apr 2014 10:55:17 +0100
+Message-ID: <20140422105517.087a4459@alan.etchedpixels.co.uk>
+References: <1397841448-12942-1-git-send-email-dianders@chromium.org>
+	<1398100003-4172-1-git-send-email-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:38297 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752225AbaDVJFG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Apr 2014 05:05:06 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1WcWdS-0003wU-SN
-	for linux-serial@vger.kernel.org; Tue, 22 Apr 2014 11:05:02 +0200
-Received: from apollon.rg-mechatronics.com ([62.225.122.120])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2014 11:05:02 +0200
-Received: from richard.andrysek by apollon.rg-mechatronics.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2014 11:05:02 +0200
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:52756 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754356AbaDVJ5I (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 22 Apr 2014 05:57:08 -0400
+In-Reply-To: <1398100003-4172-1-git-send-email-dianders@chromium.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jason Wessel <jason.wessel@windriver.com>, linux-samsung-soc@vger.kernel.org, olof@lixom.net, jslaby@suse.cz, paul.gortmaker@windriver.com, jg1.han@samsung.com, asierra@xes-inc.com, swarren@nvidia.com, heikki.krogerus@linux.intel.com, jschultz@xes-inc.com, kyle@infradead.org, mingo@elte.hu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I am using a following command :
+> I've moved the handling to uart_poll_put_char() to fix the above
+> problems.  Now when I use kdb (and don't point console= to the same
+> UART) I no longer get:
+> 
+> [0]kdb>
+>        [0]kdb>
+>               [0]kdb>
+> 
+> Signed-off-by: Doug Anderson <dianders@chromium.org>
 
-BAUDRATE=3D8000000
-stty -F /dev/ttyS6 ispeed $BAUDRATE ospeed $BAUDRATE -ignpar cs8 -cstop=
-b =E2=80=93echo
+This seems sensible
 
-However it does not allow me to set anything above 4Mbd or at least it =
-is
-not shown with a following command:
-
-$ sudo stty -a -F /dev/ttyS6
-[sudo] password for ran:
--bash: c$: command not found
-speed 4000000 baud; rows 0; columns 0; line =3D 0;
-ran@rg-debian-09:~/src$ [sudo] password for ran:
-intr =3D <undef>; quit =3D <undef>; erase =3D <undef>; kill =3D <undef>=
-; eof =3D <undef>;
--bash: [sudo]: command not found
-eol =3D <undef>; eol2 =3D <undef>; swtch =3D <undef>; start =3D <undef>=
-; stop =3D <undef>;
-susp =3D <undef>; rprnt =3D <undef>; werase =3D <undef>; lnext =3D <und=
-ef>
-
-
- As you can see a speed is a last one from a settings before. Why?
-
-My system:
-
-RS232 card: Jetway ADMPEOX4CA
-Linux kernel :  3.2.53-rgm-rt75-nodebug #2 SMP PREEMPT RT
-
-By
-
-Richard
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Reviewed-by: Alan Cox <alan@linux.intel.com>
