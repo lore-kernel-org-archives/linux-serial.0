@@ -1,76 +1,116 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 08/13] tty: serial: omap: switch over to
- platform_get_resource
-Date: Wed, 23 Apr 2014 10:49:27 -0500
-Message-ID: <20140423154927.GK9593@saruman.home>
-References: <1398265117-11793-1-git-send-email-balbi@ti.com>
- <1398265117-11793-8-git-send-email-balbi@ti.com>
- <CAOMZO5AUn7FsUXbY4NBfkZyZUbRNm3hcP3DC6vOYHi89xbaVYw@mail.gmail.com>
-Reply-To: <balbi@ti.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH 6/8] tty/serial: pl011: add generic earlycon support
+Date: Wed, 23 Apr 2014 17:39:56 +0100
+Message-ID: <20140423163954.GA14426@localhost>
+References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
+ <1395436128-11244-7-git-send-email-robherring2@gmail.com>
+ <20140324112821.GE3850@arm.com>
+ <CAL_Jsq+rQA8p9oYk-Urh_z6MTqCy0RNr=k0nz7r0OTuMCPUNWA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="J2pR2RtFp0tAjF3C"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAOMZO5AUn7FsUXbY4NBfkZyZUbRNm3hcP3DC6vOYHi89xbaVYw@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+rQA8p9oYk-Urh_z6MTqCy0RNr=k0nz7r0OTuMCPUNWA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, gustavo@padovan.org, johan.hedberg@gmail.com, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-bluetooth@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>
+To: Rob Herring <robherring2@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, Will Deacon <Will.Deacon@arm.com>, "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
---J2pR2RtFp0tAjF3C
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, Apr 16, 2014 at 11:14:28PM +0100, Rob Herring wrote:
+> On Mon, Mar 24, 2014 at 6:28 AM, Catalin Marinas
+> <catalin.marinas@arm.com> wrote:
+> > On Fri, Mar 21, 2014 at 09:08:46PM +0000, Rob Herring wrote:
+> >> From: Rob Herring <robh@kernel.org>
+> >>
+> >> Add earlycon support for the pl011 serial port. This allows enabling
+> >> the pl011 for console when early_params are processed. This is based
+> >> on the arm64 earlyprintk support and is intended to replace it.
+> >>
+> >> Signed-off-by: Rob Herring <robh@kernel.org>
+> >> Cc: Russell King <linux@arm.linux.org.uk>
+> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> >> Cc: Jiri Slaby <jslaby@suse.cz>
+> >> ---
+> >>  Documentation/kernel-parameters.txt |  5 +++--
+> >>  drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
+> >>  2 files changed, 32 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> >> index 5ce8b7a..81bdd52 100644
+> >> --- a/Documentation/kernel-parameters.txt
+> >> +++ b/Documentation/kernel-parameters.txt
+> >> @@ -887,8 +887,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+> >>               uart[8250],io,<addr>[,options]
+> >>               uart[8250],mmio,<addr>[,options]
+> >>               uart[8250],mmio32,<addr>[,options]
+> >> -                     Start an early, polled-mode console on the 8250/16550
+> >> -                     UART at the specified I/O port or MMIO address.
+> >> +             pl011,<addr>
+> >> +                     Start an early, polled-mode console on a serial port
+> >> +                     at the specified I/O port or MMIO address. 8250
+> >>                       MMIO inter-register address stride is either 8-bit
+> >>                       (mmio) or 32-bit (mmio32).
+> >>                       The options are the same as for ttyS, above.
+> >
+> > I think the last line is a bit misleading. Or did you intend to leave it
+> > with the uart[8250] parameter? See below:
+> 
+> How about this (excuse the gmail lack of tabs):
+> 
+> earlycon= [KNL] Output early console device and options.
+> 
+>  uart[8250],io,<addr>[,options]
+>  uart[8250],mmio,<addr>[,options]
+>  uart[8250],mmio32,<addr>[,options]
+>   Start an early, polled-mode console on an 8250 serial
+>   port at the specified I/O port or MMIO address. 8250
+>   MMIO inter-register address stride is either 8-bit
+>   (mmio) or 32-bit (mmio32).
+> 
+>   The options are the same as for ttyS, above.
+> 
+>  pl011,<addr>
+>   Start an early, polled-mode console on a pl011 serial
+>   port at the specified address. The pl011 serial port
+>   must already be setup and configured. Options are not
+>   yet supported.
+> 
+>  smh Use ARM semihosting calls for early console.
 
-On Wed, Apr 23, 2014 at 12:27:59PM -0300, Fabio Estevam wrote:
-> On Wed, Apr 23, 2014 at 11:58 AM, Felipe Balbi <balbi@ti.com> wrote:
->=20
-> > @@ -1658,12 +1657,9 @@ static int serial_omap_probe(struct platform_dev=
-ice *pdev)
-> >                 omap_up_info =3D of_get_uart_port_info(&pdev->dev);
-> >                 pdev->dev.platform_data =3D omap_up_info;
-> >         } else {
-> > -               irq =3D platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> > -               if (!irq) {
-> > -                       dev_err(&pdev->dev, "no irq resource?\n");
-> > -                       return -ENODEV;
-> > -               }
-> > -               uartirq =3D irq->start;
-> > +               uartirq =3D platform_get_irq(pdev, 0);
-> > +               if (uartirq < 0)
-> > +                       return -EPROBE_DEFER;
->=20
->=20
-> Maybe you could just do a 'return uartirq' here instead.
+It looks fine.
 
-I don't mind either way, I'm only returning -EPROBE_DEFER because that's
-what the other branch of this conditional returns. Tony, what do you
-prefer ?
+> >> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> >> index d4eda24..4227c0a 100644
+> >> --- a/drivers/tty/serial/amba-pl011.c
+> >> +++ b/drivers/tty/serial/amba-pl011.c
+> > [...]
+> >> +static int __init pl011_early_console_setup(struct earlycon_device *device,
+> >> +                                         const char *opt)
+> >> +{
+> >> +     if (!device->port.membase)
+> >> +             return -ENODEV;
+> >> +
+> >> +     device->con->write = pl011_early_write;
+> >> +     return 0;
+> >> +}
+> >> +EARLYCON_DECLARE(pl011, pl011_early_console_setup);
+> >
+> > Here we expect the PL011 to be already initialised by the boot loader
+> > and the kernel continues using the same settings. So maybe clarify this
+> > in the pl011 kernel parameter doc and we can add proper configuration
+> > using a separate patch.
+> 
+> Enabling and setup would not be too hard, but either baud rate will
+> always have to be configured or we'll have to specify the input clock
+> rate too. The 8250 driver basically does the former or assumes a fixed
+> clock.
+> 
+> Adding any setup will also break any non-pl011 based SBSA compliant
+> uart since the configuration registers are not standardized. I guess
+> we can add "sbsauart" when/if that happens.
 
---=20
-balbi
+I think for now we can assume that the pl011 is initialised at the
+right baud rate prior to starting the kernel.
 
---J2pR2RtFp0tAjF3C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTV+EHAAoJEIaOsuA1yqREsN4P/i0xuTdhVsrVgVr3HvUFVmnZ
-TUTkZEwE6xdUhrL26PxI7VBepAbyG3B6LdWXiVzGTcItIeaOQ8+J70OnRLZWY403
-GVUXYCXj2zd7sQBrhVIvtVUpnAkkUe3cFvxvzVYxFQ7ahM6HQuqOr93kP+cZN0rS
-BcuxeWcU9xK/hLnj1Chf973MoO7m8iLZ+sQtIu1B/73wBL+VYWKeShQr/620kidb
-6ZWld6hJ5PyN1rQmdwZh+elbSnzKl0gu4Iqr5lXSjyNzWgZKdibBzjmP2e4RbGea
-IkJwWDyuI0P0u5n/xajonLv7fZFa53+psGMK2wmAYIaPP94K6qirkvivbCtvDsLA
-dERAYcMnJEMlSJtPDS1YVDeyKjoSGdiL4qF2GVi5XY0rKDH4VVLqqkCxfDRQNyYJ
-OcW06+x7A7ItZhZwpbnex9Ne8Md0tczYyaLaMSx3n2HCHMJFN9ceyN+GG7WT2eCD
-NvhWpo70w34k5seba57pcLoCm1e7xxNAbq8CEIBbHIcQ6qxi4uIuYCZjTkpLeAhV
-bs3mzXwXLXj18rP4K8/UGo8ammjeOAJ8Ar51UG6fsPUnJtDbr0Xrqe/tSJfBTkxO
-ejJONva8Gt5DRwiWyySUDSGU5S2cCTXuGLgs4ZYzB1k+7zdOQ6sbcCVaJUeoyITe
-2duSUx/J3t00jwDzS8CU
-=wEnj
------END PGP SIGNATURE-----
-
---J2pR2RtFp0tAjF3C--
+-- 
+Catalin
