@@ -1,71 +1,49 @@
 From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 01/11] tty: serial: add missing braces
-Date: Wed, 23 Apr 2014 09:53:05 -0500
-Message-ID: <20140423145305.GD9593@saruman.home>
-References: <1395343807-21618-1-git-send-email-balbi@ti.com>
- <20140422142256.GC5524@saruman.home>
- <20140423002843.GC24603@kroah.com>
-Reply-To: <balbi@ti.com>
+Subject: [PATCH 03/13] Revert "serial: omap: unlock the port lock"
+Date: Wed, 23 Apr 2014 09:58:27 -0500
+Message-ID: <1398265117-11793-3-git-send-email-balbi@ti.com>
+References: <1398265117-11793-1-git-send-email-balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gE7i1rD7pdK0Ng3j"
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140423002843.GC24603@kroah.com>
-Sender: linux-omap-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1398265117-11793-1-git-send-email-balbi@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, peter@hurleysoftware.com, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc: marcel@holtmann.org, gustavo@padovan.org, johan.hedberg@gmail.com, jslaby@suse.cz, grant.likely@linaro.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
---gE7i1rD7pdK0Ng3j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This reverts commit 0324a821029e1f54e7a7f8fed48693cfce42dc0e.
 
-On Tue, Apr 22, 2014 at 05:28:43PM -0700, Greg KH wrote:
-> On Tue, Apr 22, 2014 at 09:22:56AM -0500, Felipe Balbi wrote:
-> > Hi,
-> >=20
-> > On Thu, Mar 20, 2014 at 02:29:57PM -0500, Felipe Balbi wrote:
-> > > per CodingStyle we should have those braces, no
-> > > functional changes.
-> > >=20
-> > > Signed-off-by: Felipe Balbi <balbi@ti.com>
-> >=20
-> > Greg, do you want me to refresh and resend this series ?
->=20
-> If there are conflicts with my current tree, sure, I'd love to have
-> that.  I should be trying to dig out from my patch backlog for 3.16-rc1
-> by the end of this week...
+That commit tried to fix a deadlock problem when using
+hci_ldisc, but it turns out the bug was in hci_ldsic
+all along where it was calling ->write() from within
+->write_wakeup() callback.
 
-then I'll resend rebased on -rc2, should make your life a little easier,
-hopefully.
+The problem is that ->write_wakeup() was called with
+port lock held and ->write() tried to grab the same
+port lock.
 
-cheers
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+---
+ drivers/tty/serial/omap-serial.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---=20
-balbi
-
---gE7i1rD7pdK0Ng3j
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTV9PRAAoJEIaOsuA1yqRED6AP+wR8JhJKuLpQHyzWQ/BmV30D
-pO7rzivxYBmb6TVGVZ6DE1zlGlpblcI2p8Qgm3mYyJyk1stRui74YaZW1ZWX+mOT
-nM6LZxP9cfGPT2csc9xMNofmDu4GgJ/cHCjHbxsTnH5GTIeDm1aNs62vl0/eDHv3
-uGxcb6ReCfzjck3VNndqvC3icV3Li89H3bNSTVj2rbKqOfMhfhtFeR6z2o3GsOdD
-bAs8B9cFgISjYB5nETV1m1H2T1gr8nPFZN3Lg7VqmyjDNPniVDiKBQgFCVdhdaat
-1niKC5UroUoE1+cqG8d/zrIxOH1KwAvQRPGht3cd5pijz8PhPHcI9Ib46AXGQK8m
-f+70qBibEwAnuA0uWvUD6FAqsVdLKqdOJrkUXFCnzhVSZL3Uy8mUKNyDaSme+yrl
-Rv/FkMKFZsJ/K9umqb1Os0O4khq1bHy8snjUNuKjcNmPkk5f2ywf/vNfiYI/N74b
-Gc97+hCLRFevVqTP15u2N2AslxPm4p54GLYxCDGHkuVt6KzoUON2CAvAB7E9ZZuI
-KAzQwDPCVIuVGm3ejoEwKf0l5T7BTARQdDcy3xg7rdP7ogzqdGZjEDu6nESyegX8
-kus+TefmtswIuaY5HuXMgStge4vnQaVy1XoS7yqN2ydtDxneOZKem6aK7Yr9Wgzi
-4Ofo6GktXmU8oC1M88qq
-=yBKc
------END PGP SIGNATURE-----
-
---gE7i1rD7pdK0Ng3j--
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 08b6b94..837f6c1 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -398,11 +398,8 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 			break;
+ 	} while (--count > 0);
+ 
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
+-		spin_unlock(&up->port.lock);
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&up->port);
+-		spin_lock(&up->port.lock);
+-	}
+ 
+ 	if (uart_circ_empty(xmit))
+ 		serial_omap_stop_tx(&up->port);
+-- 
+1.9.2.459.g68773ac
