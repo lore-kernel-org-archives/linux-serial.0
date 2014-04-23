@@ -1,109 +1,76 @@
-From: Nishanth Menon <nm-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 10/13] tty: serial: omap: remove some dead code
-Date: Wed, 23 Apr 2014 10:35:04 -0500
-Message-ID: <5357DDA8.4040206@ti.com>
-References: <1398265117-11793-1-git-send-email-balbi@ti.com> <1398265117-11793-10-git-send-email-balbi@ti.com>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 08/13] tty: serial: omap: switch over to
+ platform_get_resource
+Date: Wed, 23 Apr 2014 10:49:27 -0500
+Message-ID: <20140423154927.GK9593@saruman.home>
+References: <1398265117-11793-1-git-send-email-balbi@ti.com>
+ <1398265117-11793-8-git-send-email-balbi@ti.com>
+ <CAOMZO5AUn7FsUXbY4NBfkZyZUbRNm3hcP3DC6vOYHi89xbaVYw@mail.gmail.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1398265117-11793-10-git-send-email-balbi-l0cyMroinI0@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, NeilBrown <neilb-l3A5Bk7waGM@public.gmane.org>
-Cc: marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="J2pR2RtFp0tAjF3C"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5AUn7FsUXbY4NBfkZyZUbRNm3hcP3DC6vOYHi89xbaVYw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, gustavo@padovan.org, johan.hedberg@gmail.com, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-bluetooth@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/23/2014 09:58 AM, Felipe Balbi wrote:
-> nobody passes a DTR_gpio to this driver, so
-> this code is not necessary.
-> 
-> Signed-off-by: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-> ---
+--J2pR2RtFp0tAjF3C
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Niel,
-this seems to revert the functionality introduced in
-commit 9574f36fb801035f6ab0fbb1b53ce2c12c17d100
-(OMAP/serial: Add support for driving a GPIO as DTR.)
+On Wed, Apr 23, 2014 at 12:27:59PM -0300, Fabio Estevam wrote:
+> On Wed, Apr 23, 2014 at 11:58 AM, Felipe Balbi <balbi@ti.com> wrote:
+>=20
+> > @@ -1658,12 +1657,9 @@ static int serial_omap_probe(struct platform_dev=
+ice *pdev)
+> >                 omap_up_info =3D of_get_uart_port_info(&pdev->dev);
+> >                 pdev->dev.platform_data =3D omap_up_info;
+> >         } else {
+> > -               irq =3D platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> > -               if (!irq) {
+> > -                       dev_err(&pdev->dev, "no irq resource?\n");
+> > -                       return -ENODEV;
+> > -               }
+> > -               uartirq =3D irq->start;
+> > +               uartirq =3D platform_get_irq(pdev, 0);
+> > +               if (uartirq < 0)
+> > +                       return -EPROBE_DEFER;
+>=20
+>=20
+> Maybe you could just do a 'return uartirq' here instead.
 
-would you like to Ack this change?
+I don't mind either way, I'm only returning -EPROBE_DEFER because that's
+what the other branch of this conditional returns. Tony, what do you
+prefer ?
 
->  drivers/tty/serial/omap-serial.c | 39 ---------------------------------------
->  1 file changed, 39 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index b46aaf3..6654682 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -163,10 +163,6 @@ struct uart_omap_port {
->  	u8			wakeups_enabled;
->  	u32			features;
->  
-> -	int			DTR_gpio;
-> -	int			DTR_inverted;
-> -	int			DTR_active;
-> -
->  	struct serial_rs485	rs485;
->  	int			rts_gpio;
->  
-> @@ -694,16 +690,6 @@ static void serial_omap_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  	serial_out(up, UART_MCR, up->mcr);
->  	pm_runtime_mark_last_busy(up->dev);
->  	pm_runtime_put_autosuspend(up->dev);
-> -
-> -	if (gpio_is_valid(up->DTR_gpio) &&
-> -	    !!(mctrl & TIOCM_DTR) != up->DTR_active) {
-> -		up->DTR_active = !up->DTR_active;
-> -		if (gpio_cansleep(up->DTR_gpio))
-> -			schedule_work(&up->qos_work);
-> -		else
-> -			gpio_set_value(up->DTR_gpio,
-> -				       up->DTR_active != up->DTR_inverted);
-> -	}
->  }
->  
->  static void serial_omap_break_ctl(struct uart_port *port, int break_state)
-> @@ -847,9 +833,6 @@ static void serial_omap_uart_qos_work(struct work_struct *work)
->  						qos_work);
->  
->  	pm_qos_update_request(&up->pm_qos_request, up->latency);
-> -	if (gpio_is_valid(up->DTR_gpio))
-> -		gpio_set_value_cansleep(up->DTR_gpio,
-> -					up->DTR_active != up->DTR_inverted);
->  }
->  
->  static void
-> @@ -1672,28 +1655,6 @@ static int serial_omap_probe(struct platform_device *pdev)
->  	if (IS_ERR(base))
->  		return PTR_ERR(base);
->  
-> -	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
-> -	    omap_up_info->DTR_present) {
-> -		ret = devm_gpio_request(&pdev->dev, omap_up_info->DTR_gpio,
-> -				"omap-serial");
-> -		if (ret < 0)
-> -			return ret;
-> -		ret = gpio_direction_output(omap_up_info->DTR_gpio,
-> -					    omap_up_info->DTR_inverted);
-> -		if (ret < 0)
-> -			return ret;
-> -	}
-> -
-> -	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
-> -	    omap_up_info->DTR_present) {
-> -		up->DTR_gpio = omap_up_info->DTR_gpio;
-> -		up->DTR_inverted = omap_up_info->DTR_inverted;
-> -	} else {
-> -		up->DTR_gpio = -EINVAL;
-> -	}
-> -
-> -	up->DTR_active = 0;
-> -
->  	up->dev = &pdev->dev;
->  	up->port.dev = &pdev->dev;
->  	up->port.type = PORT_OMAP;
-> 
+--=20
+balbi
 
+--J2pR2RtFp0tAjF3C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
--- 
-Regards,
-Nishanth Menon
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJTV+EHAAoJEIaOsuA1yqREsN4P/i0xuTdhVsrVgVr3HvUFVmnZ
+TUTkZEwE6xdUhrL26PxI7VBepAbyG3B6LdWXiVzGTcItIeaOQ8+J70OnRLZWY403
+GVUXYCXj2zd7sQBrhVIvtVUpnAkkUe3cFvxvzVYxFQ7ahM6HQuqOr93kP+cZN0rS
+BcuxeWcU9xK/hLnj1Chf973MoO7m8iLZ+sQtIu1B/73wBL+VYWKeShQr/620kidb
+6ZWld6hJ5PyN1rQmdwZh+elbSnzKl0gu4Iqr5lXSjyNzWgZKdibBzjmP2e4RbGea
+IkJwWDyuI0P0u5n/xajonLv7fZFa53+psGMK2wmAYIaPP94K6qirkvivbCtvDsLA
+dERAYcMnJEMlSJtPDS1YVDeyKjoSGdiL4qF2GVi5XY0rKDH4VVLqqkCxfDRQNyYJ
+OcW06+x7A7ItZhZwpbnex9Ne8Md0tczYyaLaMSx3n2HCHMJFN9ceyN+GG7WT2eCD
+NvhWpo70w34k5seba57pcLoCm1e7xxNAbq8CEIBbHIcQ6qxi4uIuYCZjTkpLeAhV
+bs3mzXwXLXj18rP4K8/UGo8ammjeOAJ8Ar51UG6fsPUnJtDbr0Xrqe/tSJfBTkxO
+ejJONva8Gt5DRwiWyySUDSGU5S2cCTXuGLgs4ZYzB1k+7zdOQ6sbcCVaJUeoyITe
+2duSUx/J3t00jwDzS8CU
+=wEnj
+-----END PGP SIGNATURE-----
+
+--J2pR2RtFp0tAjF3C--
