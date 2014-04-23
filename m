@@ -1,116 +1,163 @@
-From: Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH 6/8] tty/serial: pl011: add generic earlycon support
-Date: Wed, 23 Apr 2014 17:39:56 +0100
-Message-ID: <20140423163954.GA14426@localhost>
-References: <1395436128-11244-1-git-send-email-robherring2@gmail.com>
- <1395436128-11244-7-git-send-email-robherring2@gmail.com>
- <20140324112821.GE3850@arm.com>
- <CAL_Jsq+rQA8p9oYk-Urh_z6MTqCy0RNr=k0nz7r0OTuMCPUNWA@mail.gmail.com>
+From: NeilBrown <neilb-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 10/13] tty: serial: omap: remove some dead code
+Date: Thu, 24 Apr 2014 08:43:05 +1000
+Message-ID: <20140424084305.20c7f301@notabene.brown>
+References: <1398265117-11793-1-git-send-email-balbi@ti.com>
+	<1398265117-11793-10-git-send-email-balbi@ti.com>
+	<5357DDA8.4040206@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+rQA8p9oYk-Urh_z6MTqCy0RNr=k0nz7r0OTuMCPUNWA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, Will Deacon <Will.Deacon@arm.com>, "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/r2e.+PpvZfTEp5g4Q7HeCXI"; protocol="application/pgp-signature"
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5357DDA8.4040206-l0cyMroinI0@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Nishanth Menon <nm-l0cyMroinI0@public.gmane.org>
+Cc: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 16, 2014 at 11:14:28PM +0100, Rob Herring wrote:
-> On Mon, Mar 24, 2014 at 6:28 AM, Catalin Marinas
-> <catalin.marinas@arm.com> wrote:
-> > On Fri, Mar 21, 2014 at 09:08:46PM +0000, Rob Herring wrote:
-> >> From: Rob Herring <robh@kernel.org>
-> >>
-> >> Add earlycon support for the pl011 serial port. This allows enabling
-> >> the pl011 for console when early_params are processed. This is based
-> >> on the arm64 earlyprintk support and is intended to replace it.
-> >>
-> >> Signed-off-by: Rob Herring <robh@kernel.org>
-> >> Cc: Russell King <linux@arm.linux.org.uk>
-> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> Cc: Jiri Slaby <jslaby@suse.cz>
-> >> ---
-> >>  Documentation/kernel-parameters.txt |  5 +++--
-> >>  drivers/tty/serial/amba-pl011.c     | 30 +++++++++++++++++++++++++++++-
-> >>  2 files changed, 32 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-> >> index 5ce8b7a..81bdd52 100644
-> >> --- a/Documentation/kernel-parameters.txt
-> >> +++ b/Documentation/kernel-parameters.txt
-> >> @@ -887,8 +887,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
-> >>               uart[8250],io,<addr>[,options]
-> >>               uart[8250],mmio,<addr>[,options]
-> >>               uart[8250],mmio32,<addr>[,options]
-> >> -                     Start an early, polled-mode console on the 8250/16550
-> >> -                     UART at the specified I/O port or MMIO address.
-> >> +             pl011,<addr>
-> >> +                     Start an early, polled-mode console on a serial port
-> >> +                     at the specified I/O port or MMIO address. 8250
-> >>                       MMIO inter-register address stride is either 8-bit
-> >>                       (mmio) or 32-bit (mmio32).
-> >>                       The options are the same as for ttyS, above.
-> >
-> > I think the last line is a bit misleading. Or did you intend to leave it
-> > with the uart[8250] parameter? See below:
-> 
-> How about this (excuse the gmail lack of tabs):
-> 
-> earlycon= [KNL] Output early console device and options.
-> 
->  uart[8250],io,<addr>[,options]
->  uart[8250],mmio,<addr>[,options]
->  uart[8250],mmio32,<addr>[,options]
->   Start an early, polled-mode console on an 8250 serial
->   port at the specified I/O port or MMIO address. 8250
->   MMIO inter-register address stride is either 8-bit
->   (mmio) or 32-bit (mmio32).
-> 
->   The options are the same as for ttyS, above.
-> 
->  pl011,<addr>
->   Start an early, polled-mode console on a pl011 serial
->   port at the specified address. The pl011 serial port
->   must already be setup and configured. Options are not
->   yet supported.
-> 
->  smh Use ARM semihosting calls for early console.
+--Sig_/r2e.+PpvZfTEp5g4Q7HeCXI
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It looks fine.
+On Wed, 23 Apr 2014 10:35:04 -0500 Nishanth Menon <nm-l0cyMroinI0@public.gmane.org> wrote:
 
-> >> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> >> index d4eda24..4227c0a 100644
-> >> --- a/drivers/tty/serial/amba-pl011.c
-> >> +++ b/drivers/tty/serial/amba-pl011.c
-> > [...]
-> >> +static int __init pl011_early_console_setup(struct earlycon_device *device,
-> >> +                                         const char *opt)
-> >> +{
-> >> +     if (!device->port.membase)
-> >> +             return -ENODEV;
-> >> +
-> >> +     device->con->write = pl011_early_write;
-> >> +     return 0;
-> >> +}
-> >> +EARLYCON_DECLARE(pl011, pl011_early_console_setup);
-> >
-> > Here we expect the PL011 to be already initialised by the boot loader
-> > and the kernel continues using the same settings. So maybe clarify this
-> > in the pl011 kernel parameter doc and we can add proper configuration
-> > using a separate patch.
-> 
-> Enabling and setup would not be too hard, but either baud rate will
-> always have to be configured or we'll have to specify the input clock
-> rate too. The 8250 driver basically does the former or assumes a fixed
-> clock.
-> 
-> Adding any setup will also break any non-pl011 based SBSA compliant
-> uart since the configuration registers are not standardized. I guess
-> we can add "sbsauart" when/if that happens.
+> On 04/23/2014 09:58 AM, Felipe Balbi wrote:
+> > nobody passes a DTR_gpio to this driver, so
+> > this code is not necessary.
+> >=20
+> > Signed-off-by: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+> > ---
+>=20
+> Niel,
+> this seems to revert the functionality introduced in
+> commit 9574f36fb801035f6ab0fbb1b53ce2c12c17d100
+> (OMAP/serial: Add support for driving a GPIO as DTR.)
+>=20
+> would you like to Ack this change?
 
-I think for now we can assume that the pl011 is initialised at the
-right baud rate prior to starting the kernel.
+I have a couple of out-of-tree drivers that use this support.
 
--- 
-Catalin
+I hope to get back to working on that code one day and even get those drive=
+rs
+upstream.  So I would really prefer this code to remain if it isn't causing
+any actual problems.
+
+Of course, I can always re-submit it when I need it again, but that it just
+extra work all around.
+
+Sorry that I have pushed those drivers already, but sometimes life gets in
+the way :-)
+
+Thanks,
+NeilBrown
+
+
+>=20
+> >  drivers/tty/serial/omap-serial.c | 39 --------------------------------=
+-------
+> >  1 file changed, 39 deletions(-)
+> >=20
+> > diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap=
+-serial.c
+> > index b46aaf3..6654682 100644
+> > --- a/drivers/tty/serial/omap-serial.c
+> > +++ b/drivers/tty/serial/omap-serial.c
+> > @@ -163,10 +163,6 @@ struct uart_omap_port {
+> >  	u8			wakeups_enabled;
+> >  	u32			features;
+> > =20
+> > -	int			DTR_gpio;
+> > -	int			DTR_inverted;
+> > -	int			DTR_active;
+> > -
+> >  	struct serial_rs485	rs485;
+> >  	int			rts_gpio;
+> > =20
+> > @@ -694,16 +690,6 @@ static void serial_omap_set_mctrl(struct uart_port=
+ *port, unsigned int mctrl)
+> >  	serial_out(up, UART_MCR, up->mcr);
+> >  	pm_runtime_mark_last_busy(up->dev);
+> >  	pm_runtime_put_autosuspend(up->dev);
+> > -
+> > -	if (gpio_is_valid(up->DTR_gpio) &&
+> > -	    !!(mctrl & TIOCM_DTR) !=3D up->DTR_active) {
+> > -		up->DTR_active =3D !up->DTR_active;
+> > -		if (gpio_cansleep(up->DTR_gpio))
+> > -			schedule_work(&up->qos_work);
+> > -		else
+> > -			gpio_set_value(up->DTR_gpio,
+> > -				       up->DTR_active !=3D up->DTR_inverted);
+> > -	}
+> >  }
+> > =20
+> >  static void serial_omap_break_ctl(struct uart_port *port, int break_st=
+ate)
+> > @@ -847,9 +833,6 @@ static void serial_omap_uart_qos_work(struct work_s=
+truct *work)
+> >  						qos_work);
+> > =20
+> >  	pm_qos_update_request(&up->pm_qos_request, up->latency);
+> > -	if (gpio_is_valid(up->DTR_gpio))
+> > -		gpio_set_value_cansleep(up->DTR_gpio,
+> > -					up->DTR_active !=3D up->DTR_inverted);
+> >  }
+> > =20
+> >  static void
+> > @@ -1672,28 +1655,6 @@ static int serial_omap_probe(struct platform_dev=
+ice *pdev)
+> >  	if (IS_ERR(base))
+> >  		return PTR_ERR(base);
+> > =20
+> > -	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
+> > -	    omap_up_info->DTR_present) {
+> > -		ret =3D devm_gpio_request(&pdev->dev, omap_up_info->DTR_gpio,
+> > -				"omap-serial");
+> > -		if (ret < 0)
+> > -			return ret;
+> > -		ret =3D gpio_direction_output(omap_up_info->DTR_gpio,
+> > -					    omap_up_info->DTR_inverted);
+> > -		if (ret < 0)
+> > -			return ret;
+> > -	}
+> > -
+> > -	if (gpio_is_valid(omap_up_info->DTR_gpio) &&
+> > -	    omap_up_info->DTR_present) {
+> > -		up->DTR_gpio =3D omap_up_info->DTR_gpio;
+> > -		up->DTR_inverted =3D omap_up_info->DTR_inverted;
+> > -	} else {
+> > -		up->DTR_gpio =3D -EINVAL;
+> > -	}
+> > -
+> > -	up->DTR_active =3D 0;
+> > -
+> >  	up->dev =3D &pdev->dev;
+> >  	up->port.dev =3D &pdev->dev;
+> >  	up->port.type =3D PORT_OMAP;
+> >=20
+>=20
+>=20
+
+
+--Sig_/r2e.+PpvZfTEp5g4Q7HeCXI
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIVAwUBU1hB+Tnsnt1WYoG5AQJudw//fMcJIfOhr28LqdTNf4kM6D43LxeC3Dvz
+BOH3HqYpK45Jthy+Cr+igWbJpaU5Wmc6RVfG1ZPgIprU+gVdXuXe+Up0iC57R0tT
+7NemN5BCxYqCVsmDbOpRv485oz3r04LjMbenzDqaqE/s3KYvdNJJbHdXbxjAFn3w
+9p8MsFJBga+T0TjSJAH9SdprPB22fe6x/o+WqcKOsLcEodpWHjkKK1Rj65P1jKii
+40OTGHcKYYrO5HGwdd8JJWA0oawRgh1DE9S3pAGmZz4a+ocVOSQDMs6gABaV5KqL
+v/9/0sQ5XmL0i6R5n6PCt21Kgt3Di5wvUUoMeGI2YP4TU5fqqsHQnVuuLi+wCHHy
+4Bmxf2h8Zo1+5slTkg04g+hRGUB37x9CnRMdbe0DuDJnwyNQDJn0tMOcUNvihoy1
+BqUjCtE52vzPtu3ZX9GKT5eUaG+bpwKGGkDAjvbnTXNMdnKNRSV5Ns+5q1AM2r3r
+9gVYB87Y6qGnBQIlnot2zvDCzJ2hlzCvNq2t/DJoSyftXzOXc9JgyAsFDug0DN6t
+RaG/hF6IDbEskwLMrVAlPG7PoSSR39FN9ELLscAeon0W04l13bp+rL6lfiPXLzbi
+OhMHuUEsLI/EUf496CZHzSLMXBHpFVL++XhNJecNoQ3mDFd0VA2YuzVoCAhTe3c3
+BI1lgofwgdc=
+=cyuG
+-----END PGP SIGNATURE-----
+
+--Sig_/r2e.+PpvZfTEp5g4Q7HeCXI--
