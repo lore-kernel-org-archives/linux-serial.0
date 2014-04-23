@@ -1,78 +1,76 @@
 From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [RESEND PATCH v3 8/9] tty: cadence: Document DT binding
-Date: Wed, 23 Apr 2014 08:29:14 +0200
-Message-ID: <53575DBA.9070704@monstr.eu>
-References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com> <1396657425-31029-8-git-send-email-soren.brinkmann@xilinx.com>
+Subject: Re: [RESEND PATCH v3 9/9] ARM: zynq: DT: Migrate UART to Cadence
+ binding
+Date: Wed, 23 Apr 2014 08:29:24 +0200
+Message-ID: <53575DC4.6080008@monstr.eu>
+References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com> <1396657425-31029-9-git-send-email-soren.brinkmann@xilinx.com>
 Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
  protocol="application/pgp-signature";
- boundary="B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f50.google.com ([74.125.83.50]:48765 "EHLO
-	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753733AbaDWG3V (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Apr 2014 02:29:21 -0400
-Received: by mail-ee0-f50.google.com with SMTP id c13so351100eek.9
-        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2014 23:29:19 -0700 (PDT)
-In-Reply-To: <1396657425-31029-8-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+ boundary="ipujcCmbOhw5wbTsgMQGL1oEoJNNiIaW1"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1396657425-31029-9-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ
+--ipujcCmbOhw5wbTsgMQGL1oEoJNNiIaW1
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 On 04/05/2014 02:23 AM, Soren Brinkmann wrote:
-> Add binding documentation for the Cadence UART.
+> The Zynq UART is Cadence IP and the driver has been renamed accordingly=
+=2E
+> Migrate the DT to use the new binding for the UART driver.
 >=20
 > Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 > Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
 > Acked-by: Rob Herring <robh@kernel.org>
 > Tested-by: Michal Simek <michal.simek@xilinx.com>
 > ---
+> This change depends on 'tty: xuartps: Rebrand driver as Cadence UART',
+> which introduces the new clock-names.
 >=20
 > Changes in v3: None
 > Changes in v2: None
 >=20
->  .../devicetree/bindings/serial/cdns,uart.txt         | 20 ++++++++++++=
-++++++++
->  1 file changed, 20 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.=
-txt
+> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+> ---
+>  arch/arm/boot/dts/zynq-7000.dtsi | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >=20
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/D=
-ocumentation/devicetree/bindings/serial/cdns,uart.txt
-> new file mode 100644
-> index 000000000000..a3eb154c32ca
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> @@ -0,0 +1,20 @@
-> +Binding for Cadence UART Controller
-> +
-> +Required properties:
-> +- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
-> +- reg: Should contain UART controller registers location and length.
-> +- interrupts: Should contain UART controller interrupts.
-> +- clocks: Must contain phandles to the UART clocks
-> +  See ../clocks/clock-bindings.txt for details.
-> +- clock-names: Tuple to identify input clocks, must contain "uart_clk"=
- and "pclk"
-> +  See ../clocks/clock-bindings.txt for details.
-> +
-> +
-> +Example:
-> +	uart@e0000000 {
-> +		compatible =3D "cdns,uart-r1p8";
-> +		clocks =3D <&clkc 23>, <&clkc 40>;
-> +		clock-names =3D "uart_clk", "pclk";
-> +		reg =3D <0xE0000000 0x1000>;
-> +		interrupts =3D <0 27 4>;
-> +	};
+> diff --git a/arch/arm/boot/dts/zynq-7000.dtsi b/arch/arm/boot/dts/zynq-=
+7000.dtsi
+> index 789d0bacc110..d27eb5c21831 100644
+> --- a/arch/arm/boot/dts/zynq-7000.dtsi
+> +++ b/arch/arm/boot/dts/zynq-7000.dtsi
+> @@ -73,19 +73,19 @@
+>  		};
+> =20
+>  		uart0: uart@e0000000 {
+> -			compatible =3D "xlnx,xuartps";
+> +			compatible =3D "xlnx,xuartps", "cdns,uart-r1p8";
+>  			status =3D "disabled";
+>  			clocks =3D <&clkc 23>, <&clkc 40>;
+> -			clock-names =3D "ref_clk", "aper_clk";
+> +			clock-names =3D "uart_clk", "pclk";
+>  			reg =3D <0xE0000000 0x1000>;
+>  			interrupts =3D <0 27 4>;
+>  		};
+> =20
+>  		uart1: uart@e0001000 {
+> -			compatible =3D "xlnx,xuartps";
+> +			compatible =3D "xlnx,xuartps", "cdns,uart-r1p8";
+>  			status =3D "disabled";
+>  			clocks =3D <&clkc 24>, <&clkc 41>;
+> -			clock-names =3D "ref_clk", "aper_clk";
+> +			clock-names =3D "uart_clk", "pclk";
+>  			reg =3D <0xE0001000 0x1000>;
+>  			interrupts =3D <0 50 4>;
+>  		};
 >=20
 
 Applied to zynq/dt2 branch.
@@ -89,7 +87,7 @@ Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
 
 
 
---B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ
+--ipujcCmbOhw5wbTsgMQGL1oEoJNNiIaW1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -98,9 +96,9 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlNXXboACgkQykllyylKDCHGQgCbBXPncOPJ4uZXqZCWVlwCclpy
-6XYAoJcwcRXtlGohhciU6B07VH+No9aC
-=utSw
+iEYEARECAAYFAlNXXcQACgkQykllyylKDCHW9wCghT57+CmaEFZuaeDfMFT1ax04
+e8wAn2TPCGCyUm773W0cP6xAeeCYmXn4
+=Qb8/
 -----END PGP SIGNATURE-----
 
---B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ--
+--ipujcCmbOhw5wbTsgMQGL1oEoJNNiIaW1--
