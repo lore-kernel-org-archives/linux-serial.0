@@ -1,74 +1,84 @@
 From: Michal Simek <monstr@monstr.eu>
-Subject: [GIT PULL] serial: Cadence
-Date: Wed, 23 Apr 2014 08:11:15 +0200
-Message-ID: <53575983.3030508@monstr.eu>
+Subject: Re: [RESEND PATCH v3 8/9] tty: cadence: Document DT binding
+Date: Wed, 23 Apr 2014 08:29:14 +0200
+Message-ID: <53575DBA.9070704@monstr.eu>
+References: <1396657425-31029-1-git-send-email-soren.brinkmann@xilinx.com> <1396657425-31029-8-git-send-email-soren.brinkmann@xilinx.com>
 Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
  protocol="application/pgp-signature";
- boundary="e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
+ boundary="B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:48765 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753733AbaDWG3V (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Apr 2014 02:29:21 -0400
+Received: by mail-ee0-f50.google.com with SMTP id c13so351100eek.9
+        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2014 23:29:19 -0700 (PDT)
+In-Reply-To: <1396657425-31029-8-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Crosthwaite <peter.crosthwaite@xilinx.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3
+--B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
+On 04/05/2014 02:23 AM, Soren Brinkmann wrote:
+> Add binding documentation for the Cadence UART.
+>=20
+> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+> Acked-by: Peter Crosthwaite <peter.crosthwaite@xilinx.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Tested-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+>=20
+> Changes in v3: None
+> Changes in v2: None
+>=20
+>  .../devicetree/bindings/serial/cdns,uart.txt         | 20 ++++++++++++=
+++++++++
+>  1 file changed, 20 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.=
+txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/D=
+ocumentation/devicetree/bindings/serial/cdns,uart.txt
+> new file mode 100644
+> index 000000000000..a3eb154c32ca
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> @@ -0,0 +1,20 @@
+> +Binding for Cadence UART Controller
+> +
+> +Required properties:
+> +- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
+> +- reg: Should contain UART controller registers location and length.
+> +- interrupts: Should contain UART controller interrupts.
+> +- clocks: Must contain phandles to the UART clocks
+> +  See ../clocks/clock-bindings.txt for details.
+> +- clock-names: Tuple to identify input clocks, must contain "uart_clk"=
+ and "pclk"
+> +  See ../clocks/clock-bindings.txt for details.
+> +
+> +
+> +Example:
+> +	uart@e0000000 {
+> +		compatible =3D "cdns,uart-r1p8";
+> +		clocks =3D <&clkc 23>, <&clkc 40>;
+> +		clock-names =3D "uart_clk", "pclk";
+> +		reg =3D <0xE0000000 0x1000>;
+> +		interrupts =3D <0 27 4>;
+> +	};
+>=20
 
-this is around for a while and I would like to close it.
-I have applied patches 1-7 from v3.
-Patches 8 and 9 should go through arm-soc tree and I will add them
-to my zynq/dt branch.
-
-Please apply these patches to your tree.
-If this should go through different tree please let me know.
+Applied to zynq/dt2 branch.
 
 Thanks,
 Michal
-
-
-The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6=
-c5:
-
-  Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
-
-are available in the git repository at:
-
-  git://git.monstr.eu/linux-2.6-microblaze.git tags/cadence-uart-for-3.16=
-
-
-for you to fetch changes up to 05a06a30d212f76e7822ef1093fa002baac021a7:
-
-  tty: xuartps: Rebrand driver as Cadence UART (2014-04-23 08:00:10 +0200=
-)
-
-----------------------------------------------------------------
-tty: Cadence uart rebranding and cleanup
-
-----------------------------------------------------------------
-Michal Simek (2):
-      tty: xuartps: Fix kernel-doc errors in the driver
-      tty: xuartps: Initialize ports according to aliases
-
-Soren Brinkmann (5):
-      tty: xuartps: Clean up
-      tty: xuartps: Print warning in clock notifier
-      tty: xuartps: Refactor read-modify-writes
-      tty: xuartps: Don't write IRQ disable register to enable interrupts=
-
-      tty: xuartps: Rebrand driver as Cadence UART
-
- drivers/tty/serial/Kconfig         |    9 +-
- drivers/tty/serial/xilinx_uartps.c | 1129 ++++++++++++++++++++++++++++++=
-+++++--------------------------------------
- include/uapi/linux/serial_core.h   |    2 +-
- 3 files changed, 546 insertions(+), 594 deletions(-)
-
 
 --=20
 Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
@@ -79,7 +89,7 @@ Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
 
 
 
---e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3
+--B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -88,9 +98,9 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlNXWYMACgkQykllyylKDCGbOwCffEnLBND0yDgcejbQ4wxpW2YY
-+DEAn1T7ktyyS1Otfj0J4qTI44/4IETA
-=4rZ4
+iEYEARECAAYFAlNXXboACgkQykllyylKDCHGQgCbBXPncOPJ4uZXqZCWVlwCclpy
+6XYAoJcwcRXtlGohhciU6B07VH+No9aC
+=utSw
 -----END PGP SIGNATURE-----
 
---e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3--
+--B9e8ReJIVR2tKgi268NO71SxUBnKBFuDJ--
