@@ -1,39 +1,96 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 01/11] tty: serial: add missing braces
-Date: Tue, 22 Apr 2014 17:28:43 -0700
-Message-ID: <20140423002843.GC24603@kroah.com>
-References: <1395343807-21618-1-git-send-email-balbi@ti.com>
- <20140422142256.GC5524@saruman.home>
+From: Michal Simek <monstr@monstr.eu>
+Subject: [GIT PULL] serial: Cadence
+Date: Wed, 23 Apr 2014 08:11:15 +0200
+Message-ID: <53575983.3030508@monstr.eu>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50886 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750927AbaDWAZx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 22 Apr 2014 20:25:53 -0400
-Content-Disposition: inline
-In-Reply-To: <20140422142256.GC5524@saruman.home>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-arm <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, peter@hurleysoftware.com, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Tue, Apr 22, 2014 at 09:22:56AM -0500, Felipe Balbi wrote:
-> Hi,
-> 
-> On Thu, Mar 20, 2014 at 02:29:57PM -0500, Felipe Balbi wrote:
-> > per CodingStyle we should have those braces, no
-> > functional changes.
-> > 
-> > Signed-off-by: Felipe Balbi <balbi@ti.com>
-> 
-> Greg, do you want me to refresh and resend this series ?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-If there are conflicts with my current tree, sure, I'd love to have
-that.  I should be trying to dig out from my patch backlog for 3.16-rc1
-by the end of this week...
+Hi Greg,
 
-thanks,
+this is around for a while and I would like to close it.
+I have applied patches 1-7 from v3.
+Patches 8 and 9 should go through arm-soc tree and I will add them
+to my zynq/dt branch.
 
-greg k-h
+Please apply these patches to your tree.
+If this should go through different tree please let me know.
+
+Thanks,
+Michal
+
+
+The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6=
+c5:
+
+  Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
+
+are available in the git repository at:
+
+  git://git.monstr.eu/linux-2.6-microblaze.git tags/cadence-uart-for-3.16=
+
+
+for you to fetch changes up to 05a06a30d212f76e7822ef1093fa002baac021a7:
+
+  tty: xuartps: Rebrand driver as Cadence UART (2014-04-23 08:00:10 +0200=
+)
+
+----------------------------------------------------------------
+tty: Cadence uart rebranding and cleanup
+
+----------------------------------------------------------------
+Michal Simek (2):
+      tty: xuartps: Fix kernel-doc errors in the driver
+      tty: xuartps: Initialize ports according to aliases
+
+Soren Brinkmann (5):
+      tty: xuartps: Clean up
+      tty: xuartps: Print warning in clock notifier
+      tty: xuartps: Refactor read-modify-writes
+      tty: xuartps: Don't write IRQ disable register to enable interrupts=
+
+      tty: xuartps: Rebrand driver as Cadence UART
+
+ drivers/tty/serial/Kconfig         |    9 +-
+ drivers/tty/serial/xilinx_uartps.c | 1129 ++++++++++++++++++++++++++++++=
++++++--------------------------------------
+ include/uapi/linux/serial_core.h   |    2 +-
+ 3 files changed, 546 insertions(+), 594 deletions(-)
+
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlNXWYMACgkQykllyylKDCGbOwCffEnLBND0yDgcejbQ4wxpW2YY
++DEAn1T7ktyyS1Otfj0J4qTI44/4IETA
+=4rZ4
+-----END PGP SIGNATURE-----
+
+--e3rLcSE0UcFNNvF7TgBmlqXwWnkVF6uU3--
