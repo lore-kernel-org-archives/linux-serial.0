@@ -1,65 +1,41 @@
 From: Loic Poulain <loic.poulain@intel.com>
-Subject: [PATCHv2] serial: 8250: Fix thread unsafe __dma_tx_complete function
-Date: Thu, 24 Apr 2014 11:34:48 +0200
-Message-ID: <1398332088-4905-1-git-send-email-loic.poulain@intel.com>
+Subject: [RESEND PATCH] 8250_core: Fix unwanted TX chars write
+Date: Thu, 24 Apr 2014 11:38:56 +0200
+Message-ID: <1398332336-5053-1-git-send-email-loic.poulain@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:17561 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:45569 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752412AbaDXJfc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Apr 2014 05:35:32 -0400
+	id S1755173AbaDXJjW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Apr 2014 05:39:22 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com
 Cc: linux-serial@vger.kernel.org, Loic Poulain <loic.poulain@intel.com>
 
-__dma_tx_complete is not protected against concurrent
-call of serial8250_tx_dma. it can lead to circular tail
-index corruption or parallel call of serial_tx_dma on the
-same data portion.
-
-This patch fixes this issue by holding the port lock.
+On transmit-hold-register empty, serial8250_tx_chars
+should be called only if we don't use DMA.
+DMA has its own tx cycle.
 
 Signed-off-by: Loic Poulain <loic.poulain@intel.com>
 ---
- v2: extend lock to protect xmit tail (cf doc)
-     and tx_running. tx_running and tail have to
-     be updated atomically.
-     update commit message.
+ resend: just remove email footer disclaimer.
 
- drivers/tty/serial/8250/8250_dma.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 7046769..ab9096d 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -20,12 +20,15 @@ static void __dma_tx_complete(void *param)
- 	struct uart_8250_port	*p = param;
- 	struct uart_8250_dma	*dma = p->dma;
- 	struct circ_buf		*xmit = &p->port.state->xmit;
--
--	dma->tx_running = 0;
-+	unsigned long	flags;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 81f909c..0e1bf88 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1520,7 +1520,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 			status = serial8250_rx_chars(up, status);
+ 	}
+ 	serial8250_modem_status(up);
+-	if (status & UART_LSR_THRE)
++	if (!up->dma && (status & UART_LSR_THRE))
+ 		serial8250_tx_chars(up);
  
- 	dma_sync_single_for_cpu(dma->txchan->device->dev, dma->tx_addr,
- 				UART_XMIT_SIZE, DMA_TO_DEVICE);
- 
-+	spin_lock_irqsave(&p->port.lock, flags);
-+
-+	dma->tx_running = 0;
-+
- 	xmit->tail += dma->tx_size;
- 	xmit->tail &= UART_XMIT_SIZE - 1;
- 	p->port.icount.tx += dma->tx_size;
-@@ -35,6 +38,8 @@ static void __dma_tx_complete(void *param)
- 
- 	if (!uart_circ_empty(xmit) && !uart_tx_stopped(&p->port))
- 		serial8250_tx_dma(p);
-+
-+	spin_unlock_irqrestore(&p->port.lock, flags);
- }
- 
- static void __dma_rx_complete(void *param)
+ 	spin_unlock_irqrestore(&port->lock, flags);
 -- 
 1.8.3.2
 
