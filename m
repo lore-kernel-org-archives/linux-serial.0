@@ -1,102 +1,77 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [GIT PULL] serial: Cadence
-Date: Thu, 24 Apr 2014 07:30:48 +0200
-Message-ID: <5358A188.4080404@monstr.eu>
-References: <53575983.3030508@monstr.eu> <20140423234832.GB17827@kroah.com>
-Reply-To: monstr@monstr.eu
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="EOwMBtos0Rsh6IkbTsI2nNP9T61V8PKmh"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f171.google.com ([74.125.82.171]:51225 "EHLO
-	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751307AbaDXFa6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Apr 2014 01:30:58 -0400
-Received: by mail-we0-f171.google.com with SMTP id t61so1766858wes.30
-        for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2014 22:30:57 -0700 (PDT)
-In-Reply-To: <20140423234832.GB17827@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
+Date: Thu, 24 Apr 2014 15:54:44 +0900
+Message-ID: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EOwMBtos0Rsh6IkbTsI2nNP9T61V8PKmh
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+According to the platform data for the legacy-C initialisation of sh-sci
+for the r8a7779 SoC and my own testing the SCIx_SH4_SCIF_REGTYPE bit of
+scscr needs to be set.
 
-On 04/24/2014 01:48 AM, Greg Kroah-Hartman wrote:
-> On Wed, Apr 23, 2014 at 08:11:15AM +0200, Michal Simek wrote:
->> Hi Greg,
->>
->> this is around for a while and I would like to close it.
->> I have applied patches 1-7 from v3.
->> Patches 8 and 9 should go through arm-soc tree and I will add them
->> to my zynq/dt branch.
->>
->> Please apply these patches to your tree.
->> If this should go through different tree please let me know.
->>
->> Thanks,
->> Michal
->>
->>
->> The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297=
-fd6c5:
->>
->>   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
->>
->> are available in the git repository at:
->>
->>   git://git.monstr.eu/linux-2.6-microblaze.git tags/cadence-uart-for-3=
-=2E16
->=20
-> I can't take git pulles from random internet sites, sorry.  Just send
-> these as email and I will queue them up.
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 
-I wouldn't say random. This repo is listed in my Microblaze maintainer fr=
-agment
-and I used signed tag and you have sign my key that's why you can easily
-check it.
+---
 
-Anyway we have sent v3 patches via email twice.
-Origin v3:
-https://lkml.org/lkml/2014/3/12/499
+With the approach taken by this patch sh-sci may be initialised using the
+"renesas,scif-r8a7779" compat string but not the generic "renesas,scif"
+compat string.  An alternate approach would be to add a binding to allow
+setting of this bit to be controlled directly from DT.
+---
+ .../devicetree/bindings/serial/renesas,sci-serial.txt          |  1 +
+ drivers/tty/serial/sh-sci.c                                    | 10 +++++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-Resent v3:
-https://lkml.org/lkml/2014/4/4/523
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 53e6c17..bba86de 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -12,6 +12,7 @@ Required properties:
+     - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
+     - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
+     - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
++    - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif" for generic SCIF compatible UART.
+     - "renesas,scifa" for generic SCIFA compatible UART.
+     - "renesas,scifb" for generic SCIFB compatible UART.
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 88236da..3b5d2f6 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2419,6 +2419,7 @@ static int sci_remove(struct platform_device *dev)
+ struct sci_port_info {
+ 	unsigned int type;
+ 	unsigned int regtype;
++	unsigned int scscr_extra;
+ };
+ 
+ static const struct of_device_id of_sci_match[] = {
+@@ -2429,6 +2430,13 @@ static const struct of_device_id of_sci_match[] = {
+ 			.regtype = SCIx_SH4_SCIF_REGTYPE,
+ 		},
+ 	}, {
++		.compatible = "renesas,scif-r8a7779",
++		.data = (void *)&(const struct sci_port_info) {
++			.type = PORT_SCIF,
++			.regtype = SCIx_SH4_SCIF_REGTYPE,
++			.scscr_extra = SCSCR_CKE1,
++		},
++	}, {
+ 		.compatible = "renesas,scifa",
+ 		.data = &(const struct sci_port_info) {
+ 			.type = PORT_SCIFA,
+@@ -2488,7 +2496,7 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
+ 	p->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
+ 	p->type = info->type;
+ 	p->regtype = info->regtype;
+-	p->scscr = SCSCR_RE | SCSCR_TE;
++	p->scscr = SCSCR_RE | SCSCR_TE | info->scscr_extra;
+ 
+ 	return p;
+ }
+-- 
+1.8.5.2
 
-Patches 1-7 should go through your tree.
-That's why please apply these 7 patches to your tree. If you want
-to get just these 7 patches as v4, please let us know we can easily
-resent it.
-
-Thanks,
-Michal
-
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
-Maintainer of Linux kernel - Xilinx Zynq ARM architecture
-Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
-
-
-
---EOwMBtos0Rsh6IkbTsI2nNP9T61V8PKmh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlNYoYgACgkQykllyylKDCEZeQCcC2LTXzQusWpnOpmycB6ZcTKv
-VyMAnRPm7Xcdf+3mO8ga53gJmIk+bsMz
-=4rFF
------END PGP SIGNATURE-----
-
---EOwMBtos0Rsh6IkbTsI2nNP9T61V8PKmh--
