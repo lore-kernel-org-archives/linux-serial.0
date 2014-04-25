@@ -1,46 +1,68 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 17:48:48 +0100
-Message-ID: <20140425174848.7e79066e@alan.etchedpixels.co.uk>
+Date: Fri, 25 Apr 2014 10:26:40 -0700
+Message-ID: <20140425172640.GA27841@kroah.com>
 References: <1398387367-4047-1-git-send-email-jon@ringle.org>
-	<alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
-	<alpine.LRH.2.03.1404250941590.2625@frank.harvard.edu>
-	<CAMwGMjyqiC1DLKfz0LUFg-iN8mDKc54w+8AYKFHOydiwtXHrFQ@mail.gmail.com>
-	<alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Charles Coldwell <coldwell@gmail.com>
-Cc: Jon Ringle <jon@ringle.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Jon Ringle <jringle@gridpoint.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:48100 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751125AbaDYRXq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 13:23:46 -0400
+Content-Disposition: inline
+In-Reply-To: <1398387367-4047-1-git-send-email-jon@ringle.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: jon@ringle.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
 
-> Fair enough, but the 8250 framework does allow you to insert your own
-> irq service routine. "serial8250_default_handle_irq" is the default
-> (unsurprisingly), but if the uart_port has a non-NULL "handle_irq"
-> method it will be faithfully copied into the uart_8250_port
-> "handle_irq" method in 8250_core.c:early_serial_setup.
+On Thu, Apr 24, 2014 at 08:56:06PM -0400, jon@ringle.org wrote:
+> From: Jon Ringle <jringle@gridpoint.com>
+>=20
+> The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
+> high performance UART. The SC16IS7xx's internal register set is
+> backward-compatible with the widely used and widely popular 16C450.
+>=20
+> The SC16IS7xx also provides additional advanced features such as
+> auto hardware and software flow control, automatic RS-485 support, an=
+d
+> software reset.
+>=20
+> Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+> ---
+>  drivers/tty/serial/Kconfig       |    9 +
+>  drivers/tty/serial/Makefile      |    1 +
+>  drivers/tty/serial/sc16is7xx.c   | 1279 ++++++++++++++++++++++++++++=
+++++++++++
+>  include/uapi/linux/serial_core.h |    3 +
+>  4 files changed, 1292 insertions(+)
+>  create mode 100644 drivers/tty/serial/sc16is7xx.c
 
-It's nowhere near sufficient and this was discussed earlier in some depth.
+I get a few build warnings with this patch applied:
 
-> If that's really true, then I would say it argues in favor of a
-> revision of the 8250 code.  Certainly, this is not the last time that
-> a 16550-compatible UART will appear on a non-PCI, non-ISA bus.
+drivers/tty/serial/sc16is7xx.c:1059:12: warning: =E2=80=98sc16is7xx_pro=
+be=E2=80=99 defined but not used [-Wunused-function]
+ static int sc16is7xx_probe(struct device *dev,
+            ^
+drivers/tty/serial/sc16is7xx.c:1175:12: warning: =E2=80=98sc16is7xx_rem=
+ove=E2=80=99 defined but not used [-Wunused-function]
+ static int sc16is7xx_remove(struct device *dev)
+            ^
+drivers/tty/serial/sc16is7xx.c:1214:29: warning: =E2=80=98regcfg=E2=80=99=
+ defined but not used [-Wunused-variable]
+ static struct regmap_config regcfg =3D {
+                             ^
 
-The 8250 code has deep seated assumptions about locking and atomicity.
-Not only would it be very hard to unify the drivers the end result would
-probably be quite horrible to maintain.
+Can you send a follow-on patch to fix them?
 
-We should just merge the driver as is, as submitted in version 7. It's
-fine. The fact all the I/O accesses are asynchronous completely changes
-the way the driver is written. Architecturally from the 8250 driver's
-point of view its a completely unrelated piece of hardware that shares
-some constants.
+thanks,
 
-If there are other 16x50 i2c/spi uarts then yes merge them with the
-sc16is7xx driver.
-
-Alan
- 
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
