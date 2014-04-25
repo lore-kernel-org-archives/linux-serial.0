@@ -1,63 +1,114 @@
-From: jon@ringle.org
-Subject: [PATCH v7 2/2] serial: sc16is7xx: Add bindings documentation for the SC16IS7XX UARTs
-Date: Thu, 24 Apr 2014 20:56:07 -0400
-Message-ID: <1398387367-4047-2-git-send-email-jon@ringle.org>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1398387367-4047-1-git-send-email-jon@ringle.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [GIT PULL] serial: Cadence
+Date: Fri, 25 Apr 2014 07:04:44 +0200
+Message-ID: <5359ECEC.5050902@monstr.eu>
+References: <53575983.3030508@monstr.eu> <20140423234832.GB17827@kroah.com> <5358A188.4080404@monstr.eu> <20140424232332.GB10457@kroah.com>
+Reply-To: monstr@monstr.eu
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:43165 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750801AbaDYFEx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 01:04:53 -0400
+Received: by mail-ee0-f49.google.com with SMTP id c41so2388973eek.22
+        for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2014 22:04:52 -0700 (PDT)
+In-Reply-To: <20140424232332.GB10457@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-arm <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
 
-From: Jon Ringle <jringle@gridpoint.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This patch adds the devicetree documentation for the NXP SC16IS7XX UARTs.
+On 04/25/2014 01:23 AM, Greg Kroah-Hartman wrote:
+> On Thu, Apr 24, 2014 at 07:30:48AM +0200, Michal Simek wrote:
+>> On 04/24/2014 01:48 AM, Greg Kroah-Hartman wrote:
+>>> On Wed, Apr 23, 2014 at 08:11:15AM +0200, Michal Simek wrote:
+>>>> Hi Greg,
+>>>>
+>>>> this is around for a while and I would like to close it.
+>>>> I have applied patches 1-7 from v3.
+>>>> Patches 8 and 9 should go through arm-soc tree and I will add them
+>>>> to my zynq/dt branch.
+>>>>
+>>>> Please apply these patches to your tree.
+>>>> If this should go through different tree please let me know.
+>>>>
+>>>> Thanks,
+>>>> Michal
+>>>>
+>>>>
+>>>> The following changes since commit c9eaa447e77efe77b7fa4c953bd62de82=
+97fd6c5:
+>>>>
+>>>>   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
+>>>>
+>>>> are available in the git repository at:
+>>>>
+>>>>   git://git.monstr.eu/linux-2.6-microblaze.git tags/cadence-uart-for=
+-3.16
+>>>
+>>> I can't take git pulles from random internet sites, sorry.  Just send=
 
-Signed-off-by: Jon Ringle <jringle@gridpoint.com>
----
- .../devicetree/bindings/serial/nxp,sc16is7xx.txt   | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>> these as email and I will queue them up.
+>>
+>> I wouldn't say random. This repo is listed in my Microblaze maintainer=
+ fragment
+>> and I used signed tag and you have sign my key that's why you can easi=
+ly
+>> check it.
+>=20
+> If you have a signed key, why aren't you using git.kernel.org?  Again, =
+I
+> can't pull from any non-kernel.org sites, sorry.
 
-diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-new file mode 100644
-index 0000000..246c795
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-@@ -0,0 +1,33 @@
-+* NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
-+
-+Required properties:
-+- compatible: Should be one of the following:
-+  - "nxp,sc16is740" for NXP SC16IS740,
-+  - "nxp,sc16is741" for NXP SC16IS741,
-+  - "nxp,sc16is750" for NXP SC16IS750,
-+  - "nxp,sc16is752" for NXP SC16IS752,
-+  - "nxp,sc16is760" for NXP SC16IS760,
-+  - "nxp,sc16is762" for NXP SC16IS762.
-+- reg: I2C address of the SC16IS7xx device.
-+- interrupt-parent: The phandle for the interrupt controller that
-+  services interrupts for this IC.
-+- interrupts: Should contain the UART interrupt
-+- clocks: Reference to the IC source clock.
-+
-+Optional properties:
-+- gpio-controller: Marks the device node as a GPIO controller.
-+- #gpio-cells: Should be two. The first cell is the GPIO number and
-+  the second cell is used to specify the GPIO polarity:
-+    0 = active high,
-+    1 = active low.
-+
-+Example:
-+        sc16is750: sc16is750@51 {
-+                compatible = "nxp,sc16is750";
-+                reg = <0x51>;
-+                clocks = <&clk20m>;
-+                interrupt-parent = <&gpio3>;
-+                interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+        };
--- 
-1.8.5.4
+ok. I have never had a need to have git repo at kernel.org.
+But maybe I should asked for one.
+
+
+>> Anyway we have sent v3 patches via email twice.
+>> Origin v3:
+>> https://lkml.org/lkml/2014/3/12/499
+>>
+>> Resent v3:
+>> https://lkml.org/lkml/2014/4/4/523
+>>
+>> Patches 1-7 should go through your tree.
+>=20
+> I've now applied these, sorry for the delay.
+
+Thanks,
+Michal
+
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlNZ7OwACgkQykllyylKDCHxNQCeOUTnbxqDOAHjyizSmBI+yL1L
+p1oAn0cIpc6x8Tka/Y9akFOrzmYodnC7
+=DiIE
+-----END PGP SIGNATURE-----
+
+--Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk--
