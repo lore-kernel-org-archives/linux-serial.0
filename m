@@ -1,40 +1,69 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Line Discipline Kernel BUG when using usb-serial and mos7840 in
- v3.11
-Date: Fri, 25 Apr 2014 11:20:25 -0700
-Message-ID: <20140425182025.GA6331@kroah.com>
-References: <CAEBke53+w73+hBmNpafnaY9dYps=JayZGjYz2E=BrmTFsOfVmg@mail.gmail.com>
+From: Jon Ringle <jon@ringle.org>
+Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
+Date: Fri, 25 Apr 2014 14:24:23 -0400
+Message-ID: <CAMwGMjz+=rvYBVPpkC9f1bpW46_1srmokH8-PzDS+2Z2OqCOtQ@mail.gmail.com>
+References: <1398387367-4047-1-git-send-email-jon@ringle.org>
+	<20140425172640.GA27841@kroah.com>
+	<1398447618.26477952@f179.i.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:60955 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751342AbaDYSRd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 14:17:33 -0400
-Content-Disposition: inline
-In-Reply-To: <CAEBke53+w73+hBmNpafnaY9dYps=JayZGjYz2E=BrmTFsOfVmg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1398447618.26477952@f179.i.mail.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jon Ringle <jringle@gridpoint.com>
 List-Id: linux-serial@vger.kernel.org
-To: Coleman Brumley <coleman.brumley@gmail.com>
-Cc: linux-serial@vger.kernel.org
 
-On Fri, Apr 25, 2014 at 11:05:54AM -0400, Coleman Brumley wrote:
-> I'm working with a line discipline in v3.11.10.5 in Ubuntu 12.04 LTS.
-> The kernel has been modified to use a HZ of 1000. CONFIG_HZ_1000=y and
-> CONFIG_HZ=1000 in .config.
+On Fri, Apr 25, 2014 at 1:40 PM, Alexander Shiyan <shc_work@mail.ru> wr=
+ote:
+> Fri, 25 Apr 2014 10:26:40 -0700 =D0=BE=D1=82 Greg KH <gregkh@linuxfou=
+ndation.org>:
+>> On Thu, Apr 24, 2014 at 08:56:06PM -0400, jon@ringle.org wrote:
+>> > From: Jon Ringle <jringle@gridpoint.com>
+>> >
+>> > The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
+>> > high performance UART. The SC16IS7xx's internal register set is
+>> > backward-compatible with the widely used and widely popular 16C450=
+=2E
+>> >
+>> > The SC16IS7xx also provides additional advanced features such as
+>> > auto hardware and software flow control, automatic RS-485 support,=
+ and
+>> > software reset.
+>> >
+>> > Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+>> > ---
+>> >  drivers/tty/serial/Kconfig       |    9 +
+>> >  drivers/tty/serial/Makefile      |    1 +
+>> >  drivers/tty/serial/sc16is7xx.c   | 1279 +++++++++++++++++++++++++=
++++++++++++++
+>> >  include/uapi/linux/serial_core.h |    3 +
+>> >  4 files changed, 1292 insertions(+)
+>> >  create mode 100644 drivers/tty/serial/sc16is7xx.c
+>>
+>> I get a few build warnings with this patch applied:
+>>
+>> drivers/tty/serial/sc16is7xx.c:1059:12: warning: =E2=80=98sc16is7xx_=
+probe=E2=80=99 defined but not used [-Wunused-function]
+>>  static int sc16is7xx_probe(struct device *dev,
+>>             ^
+>> drivers/tty/serial/sc16is7xx.c:1175:12: warning: =E2=80=98sc16is7xx_=
+remove=E2=80=99 defined but not used [-Wunused-function]
+>>  static int sc16is7xx_remove(struct device *dev)
+>>             ^
+>> drivers/tty/serial/sc16is7xx.c:1214:29: warning: =E2=80=98regcfg=E2=80=
+=99 defined but not used [-Wunused-variable]
+>>  static struct regmap_config regcfg =3D {
+>>                              ^
+>>
+>> Can you send a follow-on patch to fix them?
+>
+> Seems this just should contain: "depends on I2C" in the Kconfig.
 
-3.11 is really old, can you try something that we can actually do
-something about, like 3.14 or Linus's tree?
+I can add "depends on I2C" in Kconfig for now, but I'm just wondering
+how would this be dealt with when sometime in the future this driver
+supports either I2C or SPI? Can the "depends on" be conditional
+somehow?
 
-Also, do you have a pointer to your line discipline code anywhere?
-There's been lots of changes in the tty layer over the past year or so.
-Odds are, you need to update your code to reflect the changes that we
-have made.
-
-Along those lines, why isn't your code merged into the main kernel tree?
-If you submit it, changes like this would be done automatically for you.
-
-thanks,
-
-greg k-h
+Jon
