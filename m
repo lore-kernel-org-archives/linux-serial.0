@@ -1,68 +1,40 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 10:26:40 -0700
-Message-ID: <20140425172640.GA27841@kroah.com>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Line Discipline Kernel BUG when using usb-serial and mos7840 in
+ v3.11
+Date: Fri, 25 Apr 2014 11:20:25 -0700
+Message-ID: <20140425182025.GA6331@kroah.com>
+References: <CAEBke53+w73+hBmNpafnaY9dYps=JayZGjYz2E=BrmTFsOfVmg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:48100 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751125AbaDYRXq (ORCPT
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:60955 "EHLO
+	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751342AbaDYSRd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 13:23:46 -0400
+	Fri, 25 Apr 2014 14:17:33 -0400
 Content-Disposition: inline
-In-Reply-To: <1398387367-4047-1-git-send-email-jon@ringle.org>
+In-Reply-To: <CAEBke53+w73+hBmNpafnaY9dYps=JayZGjYz2E=BrmTFsOfVmg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: jon@ringle.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
+To: Coleman Brumley <coleman.brumley@gmail.com>
+Cc: linux-serial@vger.kernel.org
 
-On Thu, Apr 24, 2014 at 08:56:06PM -0400, jon@ringle.org wrote:
-> From: Jon Ringle <jringle@gridpoint.com>
->=20
-> The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
-> high performance UART. The SC16IS7xx's internal register set is
-> backward-compatible with the widely used and widely popular 16C450.
->=20
-> The SC16IS7xx also provides additional advanced features such as
-> auto hardware and software flow control, automatic RS-485 support, an=
-d
-> software reset.
->=20
-> Signed-off-by: Jon Ringle <jringle@gridpoint.com>
-> ---
->  drivers/tty/serial/Kconfig       |    9 +
->  drivers/tty/serial/Makefile      |    1 +
->  drivers/tty/serial/sc16is7xx.c   | 1279 ++++++++++++++++++++++++++++=
-++++++++++
->  include/uapi/linux/serial_core.h |    3 +
->  4 files changed, 1292 insertions(+)
->  create mode 100644 drivers/tty/serial/sc16is7xx.c
+On Fri, Apr 25, 2014 at 11:05:54AM -0400, Coleman Brumley wrote:
+> I'm working with a line discipline in v3.11.10.5 in Ubuntu 12.04 LTS.
+> The kernel has been modified to use a HZ of 1000. CONFIG_HZ_1000=y and
+> CONFIG_HZ=1000 in .config.
 
-I get a few build warnings with this patch applied:
+3.11 is really old, can you try something that we can actually do
+something about, like 3.14 or Linus's tree?
 
-drivers/tty/serial/sc16is7xx.c:1059:12: warning: =E2=80=98sc16is7xx_pro=
-be=E2=80=99 defined but not used [-Wunused-function]
- static int sc16is7xx_probe(struct device *dev,
-            ^
-drivers/tty/serial/sc16is7xx.c:1175:12: warning: =E2=80=98sc16is7xx_rem=
-ove=E2=80=99 defined but not used [-Wunused-function]
- static int sc16is7xx_remove(struct device *dev)
-            ^
-drivers/tty/serial/sc16is7xx.c:1214:29: warning: =E2=80=98regcfg=E2=80=99=
- defined but not used [-Wunused-variable]
- static struct regmap_config regcfg =3D {
-                             ^
+Also, do you have a pointer to your line discipline code anywhere?
+There's been lots of changes in the tty layer over the past year or so.
+Odds are, you need to update your code to reflect the changes that we
+have made.
 
-Can you send a follow-on patch to fix them?
+Along those lines, why isn't your code merged into the main kernel tree?
+If you submit it, changes like this would be done automatically for you.
 
 thanks,
 
 greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
