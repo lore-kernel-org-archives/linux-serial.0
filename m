@@ -1,119 +1,57 @@
-From: Yegor Yefremov <yegorslists@googlemail.com>
-Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
- modem lines
-Date: Fri, 25 Apr 2014 20:37:10 +0200
-Message-ID: <CAGm1_kvd7G0HthX1dRqRK52nDSPfDqHwAZ2EDn+CUbSpzJv-Mw@mail.gmail.com>
-References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
- <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
- <535669DB.8010109@visionsystems.de> <CACQ1gAiDw3XcspRwSEEX9e9rH=qFMvyW2ic+SmugMDi8kNKEaQ@mail.gmail.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Line Discipline Kernel BUG when using usb-serial and mos7840 in
+ v3.11
+Date: Fri, 25 Apr 2014 12:24:05 -0700
+Message-ID: <20140425192405.GA32455@kroah.com>
+References: <CAEBke53+w73+hBmNpafnaY9dYps=JayZGjYz2E=BrmTFsOfVmg@mail.gmail.com>
+ <20140425182025.GA6331@kroah.com>
+ <CAEBke535FyNouGNg+2A3jeyO+F_Mfj8KG822SXBbH_rSzWm_6A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f180.google.com ([209.85.192.180]:63075 "EHLO
-	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751247AbaDYShb (ORCPT
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:38652 "EHLO
+	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754308AbaDYTVN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 14:37:31 -0400
-In-Reply-To: <CACQ1gAiDw3XcspRwSEEX9e9rH=qFMvyW2ic+SmugMDi8kNKEaQ@mail.gmail.com>
+	Fri, 25 Apr 2014 15:21:13 -0400
+Received: from compute1.internal (compute1.nyi.mail.srv.osa [10.202.2.41])
+	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 21A44215FD
+	for <linux-serial@vger.kernel.org>; Fri, 25 Apr 2014 15:21:11 -0400 (EDT)
+Content-Disposition: inline
+In-Reply-To: <CAEBke535FyNouGNg+2A3jeyO+F_Mfj8KG822SXBbH_rSzWm_6A@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Yegor Yefremov <yegor_sub1@visionsystems.de>, Richard Genoud <noreply.rgenoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, mpfj-list@newflow.co.uk, Felipe Balbi <balbi@ti.com>
+To: Coleman Brumley <coleman.brumley@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Fri, Apr 25, 2014 at 4:56 PM, Richard Genoud
-<richard.genoud@gmail.com> wrote:
-> 2014-04-22 15:08 GMT+02:00 Yegor Yefremov <yegor_sub1@visionsystems.de>:
->> On 10.03.2014 17:45, Richard Genoud wrote:
->>> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
->>> GPIO.
->>> This will be useful for many boards which have a serial controller that
->>> only handle CTS/RTS pins (or even just RX/TX).
->>>
->>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
->>
->> ....
->>
->>> +
->>> +struct mctrl_gpios {
->>> +     struct gpio_desc *gpio[UART_GPIO_MAX];
->>> +};
->>> +
->>> +static const struct {
->>> +     const char *name;
->>> +     unsigned int mctrl;
->>> +     bool dir_out;
->>> +} mctrl_gpios_desc[UART_GPIO_MAX] = {
->>> +     { "cts", TIOCM_CTS, false, },
->>> +     { "dsr", TIOCM_DSR, false, },
->>> +     { "dcd", TIOCM_CD, false, },
->>> +     { "rng", TIOCM_RNG, false, },
->>> +     { "rts", TIOCM_RTS, true, },
->>> +     { "dtr", TIOCM_DTR, true, },
->>> +     { "out1", TIOCM_OUT1, true, },
->>> +     { "out2", TIOCM_OUT2, true, },
->>> +};
->>> +
->>> +void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
->>> +{
->>> +     enum mctrl_gpio_idx i;
->>> +
->>> +     if (IS_ERR_OR_NULL(gpios))
->>> +             return;
->>> +
->>> +     for (i = 0; i < UART_GPIO_MAX; i++)
->>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
->>> +                 mctrl_gpios_desc[i].dir_out)
->>> +                     gpiod_set_value(gpios->gpio[i],
->>> +                                     !!(mctrl & mctrl_gpios_desc[i].mctrl));
->>> +}
->>> +EXPORT_SYMBOL_GPL(mctrl_gpio_set);
->>> +
->>> +struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
->>> +                                   enum mctrl_gpio_idx gidx)
->>> +{
->>> +     if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
->>> +             return gpios->gpio[gidx];
->>> +     else
->>> +             return NULL;
->>> +}
->>> +EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
->>> +
->>> +unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
->>> +{
->>> +     enum mctrl_gpio_idx i;
->>> +
->>> +     /*
->>> +      * return it unchanged if the structure is not allocated
->>> +      */
->>> +     if (IS_ERR_OR_NULL(gpios))
->>> +             return *mctrl;
->>> +
->>> +     for (i = 0; i < UART_GPIO_MAX; i++) {
->>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
->>> +                 !mctrl_gpios_desc[i].dir_out) {
->>> +                     if (gpiod_get_value(gpios->gpio[i]))
->>> +                             *mctrl |= mctrl_gpios_desc[i].mctrl;
->>> +                     else
->>> +                             *mctrl &= ~mctrl_gpios_desc[i].mctrl;
->>> +             }
->>> +     }
->>> +
->>> +     return *mctrl;
->>> +}
->>> +EXPORT_SYMBOL_GPL(mctrl_gpio_get);
->>
->> Should this routine be renamed to msr_gpio_get() or perhaps better to give all values (inputs and outputs)?
->>
->> I'm trying to port this approach to omap-serial to implement RS485 switching. I need to know if RTS is already on or not and set it accordingly.
->>
->> What would be the best solution for this task using this new API?
-> Sorry, but I don't really get what you're trying to do.
-> Could you explain a little bit more ?
+On Fri, Apr 25, 2014 at 03:09:16PM -0400, Coleman Brumley wrote:
+> 
+> 
+> On Friday, April 25, 2014, Greg KH <greg@kroah.com> wrote:
+> 
+>     On Fri, Apr 25, 2014 at 11:05:54AM -0400, Coleman Brumley wrote:
+>     > I'm working with a line discipline in v3.11.10.5 in Ubuntu 12.04 LTS.
+>     > The kernel has been modified to use a HZ of 1000. CONFIG_HZ_1000=y and
+>     > CONFIG_HZ=1000 in .config.
+> 
+>     3.11 is really old, can you try something that we can actually do
+>     something about, like 3.14 or Linus's tree
+> 
+> 
+> I can do that, it was just that 3.11 is what Ubuntu gave me.
 
-Never mind, I've solved this in this patch:
-http://www.spinics.net/lists/arm-kernel/msg325197.html via using
+We can't do anything with what Ubuntu gave you :)
 
-gpiod_set_value() and gpiod_get_value() directly.
+>     Also, do you have a pointer to your line discipline code anywhere?
+>     There's been lots of changes in the tty layer over the past year or so.
+> 
+> 
+> Can you point me to a document that outlines the changes, or a how to for
+> writing a line discipline for 3.14?
 
+Look at the kernel changes made from your last working version to today.
+It's all in our git history, no need for a "document".
 
-Yegor
+best of luck,
+
+greg k-h
