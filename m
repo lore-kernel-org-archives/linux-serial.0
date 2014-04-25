@@ -1,69 +1,119 @@
-From: Jon Ringle <jon@ringle.org>
-Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 14:24:23 -0400
-Message-ID: <CAMwGMjz+=rvYBVPpkC9f1bpW46_1srmokH8-PzDS+2Z2OqCOtQ@mail.gmail.com>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org>
-	<20140425172640.GA27841@kroah.com>
-	<1398447618.26477952@f179.i.mail.ru>
+From: Yegor Yefremov <yegorslists@googlemail.com>
+Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
+ modem lines
+Date: Fri, 25 Apr 2014 20:37:10 +0200
+Message-ID: <CAGm1_kvd7G0HthX1dRqRK52nDSPfDqHwAZ2EDn+CUbSpzJv-Mw@mail.gmail.com>
+References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
+ <1394469951-21192-2-git-send-email-richard.genoud@gmail.com>
+ <535669DB.8010109@visionsystems.de> <CACQ1gAiDw3XcspRwSEEX9e9rH=qFMvyW2ic+SmugMDi8kNKEaQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1398447618.26477952@f179.i.mail.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jon Ringle <jringle@gridpoint.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f180.google.com ([209.85.192.180]:63075 "EHLO
+	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751247AbaDYShb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 14:37:31 -0400
+In-Reply-To: <CACQ1gAiDw3XcspRwSEEX9e9rH=qFMvyW2ic+SmugMDi8kNKEaQ@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Yegor Yefremov <yegor_sub1@visionsystems.de>, Richard Genoud <noreply.rgenoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, mpfj-list@newflow.co.uk, Felipe Balbi <balbi@ti.com>
 
-On Fri, Apr 25, 2014 at 1:40 PM, Alexander Shiyan <shc_work@mail.ru> wr=
-ote:
-> Fri, 25 Apr 2014 10:26:40 -0700 =D0=BE=D1=82 Greg KH <gregkh@linuxfou=
-ndation.org>:
->> On Thu, Apr 24, 2014 at 08:56:06PM -0400, jon@ringle.org wrote:
->> > From: Jon Ringle <jringle@gridpoint.com>
->> >
->> > The SC16IS7xx is a slave I2C-bus/SPI interface to a single-channel
->> > high performance UART. The SC16IS7xx's internal register set is
->> > backward-compatible with the widely used and widely popular 16C450=
-=2E
->> >
->> > The SC16IS7xx also provides additional advanced features such as
->> > auto hardware and software flow control, automatic RS-485 support,=
- and
->> > software reset.
->> >
->> > Signed-off-by: Jon Ringle <jringle@gridpoint.com>
->> > ---
->> >  drivers/tty/serial/Kconfig       |    9 +
->> >  drivers/tty/serial/Makefile      |    1 +
->> >  drivers/tty/serial/sc16is7xx.c   | 1279 +++++++++++++++++++++++++=
-+++++++++++++
->> >  include/uapi/linux/serial_core.h |    3 +
->> >  4 files changed, 1292 insertions(+)
->> >  create mode 100644 drivers/tty/serial/sc16is7xx.c
+On Fri, Apr 25, 2014 at 4:56 PM, Richard Genoud
+<richard.genoud@gmail.com> wrote:
+> 2014-04-22 15:08 GMT+02:00 Yegor Yefremov <yegor_sub1@visionsystems.de>:
+>> On 10.03.2014 17:45, Richard Genoud wrote:
+>>> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
+>>> GPIO.
+>>> This will be useful for many boards which have a serial controller that
+>>> only handle CTS/RTS pins (or even just RX/TX).
+>>>
+>>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 >>
->> I get a few build warnings with this patch applied:
+>> ....
 >>
->> drivers/tty/serial/sc16is7xx.c:1059:12: warning: =E2=80=98sc16is7xx_=
-probe=E2=80=99 defined but not used [-Wunused-function]
->>  static int sc16is7xx_probe(struct device *dev,
->>             ^
->> drivers/tty/serial/sc16is7xx.c:1175:12: warning: =E2=80=98sc16is7xx_=
-remove=E2=80=99 defined but not used [-Wunused-function]
->>  static int sc16is7xx_remove(struct device *dev)
->>             ^
->> drivers/tty/serial/sc16is7xx.c:1214:29: warning: =E2=80=98regcfg=E2=80=
-=99 defined but not used [-Wunused-variable]
->>  static struct regmap_config regcfg =3D {
->>                              ^
+>>> +
+>>> +struct mctrl_gpios {
+>>> +     struct gpio_desc *gpio[UART_GPIO_MAX];
+>>> +};
+>>> +
+>>> +static const struct {
+>>> +     const char *name;
+>>> +     unsigned int mctrl;
+>>> +     bool dir_out;
+>>> +} mctrl_gpios_desc[UART_GPIO_MAX] = {
+>>> +     { "cts", TIOCM_CTS, false, },
+>>> +     { "dsr", TIOCM_DSR, false, },
+>>> +     { "dcd", TIOCM_CD, false, },
+>>> +     { "rng", TIOCM_RNG, false, },
+>>> +     { "rts", TIOCM_RTS, true, },
+>>> +     { "dtr", TIOCM_DTR, true, },
+>>> +     { "out1", TIOCM_OUT1, true, },
+>>> +     { "out2", TIOCM_OUT2, true, },
+>>> +};
+>>> +
+>>> +void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+>>> +{
+>>> +     enum mctrl_gpio_idx i;
+>>> +
+>>> +     if (IS_ERR_OR_NULL(gpios))
+>>> +             return;
+>>> +
+>>> +     for (i = 0; i < UART_GPIO_MAX; i++)
+>>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
+>>> +                 mctrl_gpios_desc[i].dir_out)
+>>> +                     gpiod_set_value(gpios->gpio[i],
+>>> +                                     !!(mctrl & mctrl_gpios_desc[i].mctrl));
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+>>> +
+>>> +struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+>>> +                                   enum mctrl_gpio_idx gidx)
+>>> +{
+>>> +     if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
+>>> +             return gpios->gpio[gidx];
+>>> +     else
+>>> +             return NULL;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+>>> +
+>>> +unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+>>> +{
+>>> +     enum mctrl_gpio_idx i;
+>>> +
+>>> +     /*
+>>> +      * return it unchanged if the structure is not allocated
+>>> +      */
+>>> +     if (IS_ERR_OR_NULL(gpios))
+>>> +             return *mctrl;
+>>> +
+>>> +     for (i = 0; i < UART_GPIO_MAX; i++) {
+>>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
+>>> +                 !mctrl_gpios_desc[i].dir_out) {
+>>> +                     if (gpiod_get_value(gpios->gpio[i]))
+>>> +                             *mctrl |= mctrl_gpios_desc[i].mctrl;
+>>> +                     else
+>>> +                             *mctrl &= ~mctrl_gpios_desc[i].mctrl;
+>>> +             }
+>>> +     }
+>>> +
+>>> +     return *mctrl;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(mctrl_gpio_get);
 >>
->> Can you send a follow-on patch to fix them?
->
-> Seems this just should contain: "depends on I2C" in the Kconfig.
+>> Should this routine be renamed to msr_gpio_get() or perhaps better to give all values (inputs and outputs)?
+>>
+>> I'm trying to port this approach to omap-serial to implement RS485 switching. I need to know if RTS is already on or not and set it accordingly.
+>>
+>> What would be the best solution for this task using this new API?
+> Sorry, but I don't really get what you're trying to do.
+> Could you explain a little bit more ?
 
-I can add "depends on I2C" in Kconfig for now, but I'm just wondering
-how would this be dealt with when sometime in the future this driver
-supports either I2C or SPI? Can the "depends on" be conditional
-somehow?
+Never mind, I've solved this in this patch:
+http://www.spinics.net/lists/arm-kernel/msg325197.html via using
 
-Jon
+gpiod_set_value() and gpiod_get_value() directly.
+
+
+Yegor
