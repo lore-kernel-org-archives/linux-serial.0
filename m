@@ -1,67 +1,56 @@
-From: Jon Ringle <jon@ringle.org>
-Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 10:41:39 -0400
-Message-ID: <CAMwGMjzTds3R+-HF72CYv-v6tZfavWnbZ+YHpzJfwMEJ3rM1UQ@mail.gmail.com>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org>
-	<alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
-	<alpine.LRH.2.03.1404250941590.2625@frank.harvard.edu>
-	<CAMwGMjyqiC1DLKfz0LUFg-iN8mDKc54w+8AYKFHOydiwtXHrFQ@mail.gmail.com>
-	<alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCH 0/5] tty/serial: Add helpers to use GPIOs to control modem lines and implement atmel_serial.c
+Date: Fri, 25 Apr 2014 16:52:36 +0200
+Message-ID: <1398437561-4289-1-git-send-email-richard.genoud@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f45.google.com ([209.85.215.45]:33037 "EHLO
-	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751422AbaDYOll (ORCPT
+Received: from mail-we0-f171.google.com ([74.125.82.171]:42960 "EHLO
+	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750840AbaDYOxE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 10:41:41 -0400
-In-Reply-To: <alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
+	Fri, 25 Apr 2014 10:53:04 -0400
+Received: by mail-we0-f171.google.com with SMTP id t61so3675623wes.2
+        for <linux-serial@vger.kernel.org>; Fri, 25 Apr 2014 07:53:02 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Charles Coldwell <coldwell@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Jon Ringle <jringle@gridpoint.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-On Fri, Apr 25, 2014 at 10:24 AM, Charles Coldwell <coldwell@gmail.com> wrote:
-> On Fri, 25 Apr 2014, Jon Ringle wrote:
->
->> On Fri, Apr 25, 2014 at 9:44 AM, Charles Coldwell <coldwell@gmail.com> wrote:
->> > On Fri, 25 Apr 2014, Charles Coldwell wrote:
->> >
->> >> On Thu, 24 Apr 2014, jon@ringle.org wrote:
->> >>
->> >> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
->> >>
->> >> Isn't this a lot of duplication?
->> >
->> > Actually, the whole thing seems like duplication to me.
->>
->> The fact that we need to reach over the SPI/I2C bus makes a big
->> difference in the way access is handled.
->>
->> To achieve acceptable throughput, it is necessary to use threaded irq
->> and also bulk i2c transfers for RX and TX using
->> regmap_raw_{read,write}() to optimize the use of the i2c bus.
->
-> Fair enough, but the 8250 framework does allow you to insert your own
-> irq service routine. "serial8250_default_handle_irq" is the default
-> (unsurprisingly), but if the uart_port has a non-NULL "handle_irq"
-> method it will be faithfully copied into the uart_8250_port
-> "handle_irq" method in 8250_core.c:early_serial_setup.
+This patch series is a leftover of http://www.spinics.net/lists/arm-kernel/msg314242.html
+that missed 3.15 because it caused merge conflicts.
 
-However, serial8250_interrupt() which is where port->handle_irq() is
-called is not a threaded irq.
+The 1st patch may be applied as a fix for 3.15-rc, since it correct a
+device tree binding documentation example.
 
->
->> This is not a good fit for 8250.
->
-> If that's really true, then I would say it argues in favor of a
-> revision of the 8250 code.  Certainly, this is not the last time that
-> a 16550-compatible UART will appear on a non-PCI, non-ISA bus.
+Greg, for you to decide if it's worth it or not !
 
-I have re-written this driver 4 times already to get to the version
-that is being presented. I don't have the time or energy to undergo
-yet another rewrite of this driver. If you'd like to take on this
-task, be my guest. I'd be happy to test what you come up with on my
-hardware.
+It's based on v3.15-rc2.
 
-Jon
+Richard Genoud (5):
+  tty/serial: atmel_serial: Fix device tree documetation
+  ARM: at91: gpio: implement get_direction
+  tty/serial: Add GPIOLIB helpers for controlling modem lines
+  tty/serial: at91: use mctrl_gpio helpers
+  tty/serial: at91: add interrupts for modem control lines
+
+ .../devicetree/bindings/serial/atmel-usart.txt     |  12 +-
+ Documentation/serial/driver                        |  25 +++
+ arch/arm/mach-at91/at91rm9200_devices.c            |  16 +-
+ arch/arm/mach-at91/at91sam9260_devices.c           |   7 -
+ arch/arm/mach-at91/at91sam9261_devices.c           |   4 -
+ arch/arm/mach-at91/at91sam9263_devices.c           |   4 -
+ arch/arm/mach-at91/at91sam9g45_devices.c           |   5 -
+ arch/arm/mach-at91/at91sam9rl_devices.c            |   5 -
+ arch/arm/mach-at91/gpio.c                          |  13 ++
+ drivers/tty/serial/Kconfig                         |   4 +
+ drivers/tty/serial/Makefile                        |   3 +
+ drivers/tty/serial/atmel_serial.c                  | 230 +++++++++++++++++----
+ drivers/tty/serial/serial_mctrl_gpio.c             | 143 +++++++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h             | 110 ++++++++++
+ include/linux/platform_data/atmel.h                |   1 -
+ 15 files changed, 509 insertions(+), 73 deletions(-)
+ create mode 100644 drivers/tty/serial/serial_mctrl_gpio.c
+ create mode 100644 drivers/tty/serial/serial_mctrl_gpio.h
+
+-- 
+1.8.5.5
+
