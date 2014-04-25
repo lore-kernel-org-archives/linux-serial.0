@@ -1,59 +1,53 @@
-From: Charles Coldwell <coldwell@gmail.com>
-Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 09:21:26 -0400 (EDT)
-Message-ID: <alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2NyAxLzJdIHNlcmlhbDogc2MxNmlzN3h4?=
+Date: Fri, 25 Apr 2014 17:35:35 +0400
+Message-ID: <1398432935.28366949@f70.i.mail.ru>
 References: <1398387367-4047-1-git-send-email-jon@ringle.org>
+ <alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-yh0-f51.google.com ([209.85.213.51]:42660 "EHLO
-	mail-yh0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752005AbaDYNVq (ORCPT
+Received: from fallback4.mail.ru ([94.100.176.42]:60774 "EHLO
+	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753040AbaDYNii (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 09:21:46 -0400
-In-Reply-To: <1398387367-4047-1-git-send-email-jon@ringle.org>
+	Fri, 25 Apr 2014 09:38:38 -0400
+In-Reply-To: <alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: jon@ringle.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
+To: =?UTF-8?B?Q2hhcmxlcyBDb2xkd2VsbA==?= <coldwell@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jringle@gridpoint.com>, jon@ringle.org
 
-On Thu, 24 Apr 2014, jon@ringle.org wrote:
-
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> new file mode 100644
-> index 0000000..ed139f5
-> --- /dev/null
-> +++ b/drivers/tty/serial/sc16is7xx.c
-
-> +
-> +/* SC16IS7XX register definitions */
-> +#define SC16IS7XX_RHR_REG		(0x00) /* RX FIFO */
-> +#define SC16IS7XX_THR_REG		(0x00) /* TX FIFO */
-> +#define SC16IS7XX_IER_REG		(0x01) /* Interrupt enable */
-> +#define SC16IS7XX_IIR_REG		(0x02) /* Interrupt Identification */
-> +#define SC16IS7XX_FCR_REG		(0x02) /* FIFO control */
-> +#define SC16IS7XX_LCR_REG		(0x03) /* Line Control */
-> +#define SC16IS7XX_MCR_REG		(0x04) /* Modem Control */
-> +#define SC16IS7XX_LSR_REG		(0x05) /* Line Status */
-> +#define SC16IS7XX_MSR_REG		(0x06) /* Modem Status */
-> +#define SC16IS7XX_SPR_REG		(0x07) /* Scratch Pad */
-
-Isn't this a lot of duplication?  We have already in 
-
-/*
- * include/linux/serial_reg.h
- *
-#define UART_RX		0	/* In:  Receive buffer */
-#define UART_TX		0	/* Out: Transmit buffer */
-#define UART_IER	1	/* Out: Interrupt Enable Register */
-#define UART_IIR	2	/* In:  Interrupt ID Register */
-#define UART_FCR	2	/* Out: FIFO Control Register */
-#define UART_LCR	3	/* Out: Line Control Register */
-#define UART_MCR	4	/* Out: Modem Control Register */
-#define UART_LSR	5	/* In:  Line Status Register */
-#define UART_MSR	6	/* In:  Modem Status Register */
-#define UART_SCR	7	/* I/O: Scratch Register */
-
-and the bit definitions, as well.
-
-
+RnJpLCAyNSBBcHIgMjAxNCAwOToyMToyNiAtMDQwMCAoRURUKSDQvtGCIENoYXJsZXMgQ29sZHdl
+bGwgPGNvbGR3ZWxsQGdtYWlsLmNvbT46Cj4gT24gVGh1LCAyNCBBcHIgMjAxNCwgam9uQHJpbmds
+ZS5vcmcgd3JvdGU6Cj4gCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZp
+czd4eC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCj4gPiBuZXcgZmlsZSBtb2Rl
+IDEwMDY0NAo+ID4gaW5kZXggMDAwMDAwMC4uZWQxMzlmNQo+ID4gLS0tIC9kZXYvbnVsbAo+ID4g
+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCj4gCj4gPiArCj4gPiArLyogU0Mx
+NklTN1hYIHJlZ2lzdGVyIGRlZmluaXRpb25zICovCj4gPiArI2RlZmluZSBTQzE2SVM3WFhfUkhS
+X1JFRwkJKDB4MDApIC8qIFJYIEZJRk8gKi8KPiA+ICsjZGVmaW5lIFNDMTZJUzdYWF9USFJfUkVH
+CQkoMHgwMCkgLyogVFggRklGTyAqLwo+ID4gKyNkZWZpbmUgU0MxNklTN1hYX0lFUl9SRUcJCSgw
+eDAxKSAvKiBJbnRlcnJ1cHQgZW5hYmxlICovCj4gPiArI2RlZmluZSBTQzE2SVM3WFhfSUlSX1JF
+RwkJKDB4MDIpIC8qIEludGVycnVwdCBJZGVudGlmaWNhdGlvbiAqLwo+ID4gKyNkZWZpbmUgU0Mx
+NklTN1hYX0ZDUl9SRUcJCSgweDAyKSAvKiBGSUZPIGNvbnRyb2wgKi8KPiA+ICsjZGVmaW5lIFND
+MTZJUzdYWF9MQ1JfUkVHCQkoMHgwMykgLyogTGluZSBDb250cm9sICovCj4gPiArI2RlZmluZSBT
+QzE2SVM3WFhfTUNSX1JFRwkJKDB4MDQpIC8qIE1vZGVtIENvbnRyb2wgKi8KPiA+ICsjZGVmaW5l
+IFNDMTZJUzdYWF9MU1JfUkVHCQkoMHgwNSkgLyogTGluZSBTdGF0dXMgKi8KPiA+ICsjZGVmaW5l
+IFNDMTZJUzdYWF9NU1JfUkVHCQkoMHgwNikgLyogTW9kZW0gU3RhdHVzICovCj4gPiArI2RlZmlu
+ZSBTQzE2SVM3WFhfU1BSX1JFRwkJKDB4MDcpIC8qIFNjcmF0Y2ggUGFkICovCj4gCj4gSXNuJ3Qg
+dGhpcyBhIGxvdCBvZiBkdXBsaWNhdGlvbj8gIFdlIGhhdmUgYWxyZWFkeSBpbiAKPiAKPiAvKgo+
+ICAqIGluY2x1ZGUvbGludXgvc2VyaWFsX3JlZy5oCj4gICoKPiAjZGVmaW5lIFVBUlRfUlgJCTAJ
+LyogSW46ICBSZWNlaXZlIGJ1ZmZlciAqLwo+ICNkZWZpbmUgVUFSVF9UWAkJMAkvKiBPdXQ6IFRy
+YW5zbWl0IGJ1ZmZlciAqLwo+ICNkZWZpbmUgVUFSVF9JRVIJMQkvKiBPdXQ6IEludGVycnVwdCBF
+bmFibGUgUmVnaXN0ZXIgKi8KPiAjZGVmaW5lIFVBUlRfSUlSCTIJLyogSW46ICBJbnRlcnJ1cHQg
+SUQgUmVnaXN0ZXIgKi8KPiAjZGVmaW5lIFVBUlRfRkNSCTIJLyogT3V0OiBGSUZPIENvbnRyb2wg
+UmVnaXN0ZXIgKi8KPiAjZGVmaW5lIFVBUlRfTENSCTMJLyogT3V0OiBMaW5lIENvbnRyb2wgUmVn
+aXN0ZXIgKi8KPiAjZGVmaW5lIFVBUlRfTUNSCTQJLyogT3V0OiBNb2RlbSBDb250cm9sIFJlZ2lz
+dGVyICovCj4gI2RlZmluZSBVQVJUX0xTUgk1CS8qIEluOiAgTGluZSBTdGF0dXMgUmVnaXN0ZXIg
+Ki8KPiAjZGVmaW5lIFVBUlRfTVNSCTYJLyogSW46ICBNb2RlbSBTdGF0dXMgUmVnaXN0ZXIgKi8K
+PiAjZGVmaW5lIFVBUlRfU0NSCTcJLyogSS9POiBTY3JhdGNoIFJlZ2lzdGVyICovCj4gCj4gYW5k
+IHRoZSBiaXQgZGVmaW5pdGlvbnMsIGFzIHdlbGwuCgpBbmQgaXQgd291bGQgYmUgbmljZSB0byBo
+YXZlIGEgc21hbGwgY2hhbmdlbG9nLApiZWNhdXNlIGl0IGlzIHVuY2xlYXIgd2hhdCBoYXMgY2hh
+bmdlZCB3aXRoIHZlcnNpb24gNi4KCi0tLQoK
