@@ -1,138 +1,177 @@
-From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Subject: Re: Re: [PATCH V6] serial/uart/8250: Add tunable RX interrupt
- trigger I/F of FIFO buffers
-Date: Fri, 25 Apr 2014 17:53:02 +0900
-Message-ID: <535A226E.7000608@hitachi.com>
-References: <20140417060644.27329.31663.stgit@yunodevel> <20140424231158.GA32250@kroah.com>
+From: NeilBrown <neilb@suse.de>
+Subject: Re: [PATCH 10/13] tty: serial: omap: remove some dead code
+Date: Fri, 25 Apr 2014 19:34:12 +1000
+Message-ID: <20140425193412.7d32e429@notabene.brown>
+References: <1398265117-11793-1-git-send-email-balbi@ti.com>
+	<1398265117-11793-10-git-send-email-balbi@ti.com>
+	<5357DDA8.4040206@ti.com>
+	<20140424084305.20c7f301@notabene.brown>
+	<20140423230121.GC10924@saruman.home>
+	<20140424101329.02e6a62f@notabene.brown>
+	<20140424012100.GB13374@saruman.home>
+	<20140424151914.6bc6463a@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/m+ZgphiZyPLk0G=ZXR0k0qV"; protocol="application/pgp-signature"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140424231158.GA32250@kroah.com>
+In-Reply-To: <20140424151914.6bc6463a@alan.etchedpixels.co.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: balbi@ti.com, Nishanth Menon <nm@ti.com>, Greg KH <gregkh@linuxfoundation.org>, marcel@holtmann.org, gustavo@padovan.org, johan.hedberg@gmail.com, jslaby@suse.cz, grant.likely@linaro.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+--Sig_/m+ZgphiZyPLk0G=ZXR0k0qV
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for your review.
+On Thu, 24 Apr 2014 15:19:14 +0100 One Thousand Gnomes
+<gnomes@lxorguk.ukuu.org.uk> wrote:
 
-(2014/04/25 8:11), Greg Kroah-Hartman wrote:
-> On Thu, Apr 17, 2014 at 03:06:44PM +0900, Yoshihiro YUNOMAE wrote:
-[snip]
->> +static DEVICE_ATTR(rx_int_trig, S_IRUSR | S_IWUSR | S_IRGRP,
->> +		   serial8250_get_attr_rx_int_trig,
->> +		   serial8250_set_attr_rx_int_trig);
->> +
->
-> As you are adding a new sysfs attribute, you have to add a
-> Documentation/ABI/ entry as well.
+> > > But I don't have discrete hardware.  I have a bunch of stuff soldered=
+ onto a
+> > > board with ad-hoc connections chosen to make the life of the hardware=
+ builder
+> > > easy rather than chosen to make the life of the software developer ea=
+sy
+> > > (which I think is the correct choice).
+> > >=20
+> > > So I need to tell DT "This device is plugged into this UART, and ther=
+e is no
+> > > DTR line, but when the UARTs DTR line would be asserted (if it had on=
+e), then
+> > > I need that regulator of there turned on". or maybe "I need to toggle=
+ this
+> > > GPIO  with exactly this pattern, while watching that GPIO to see if i=
+t is
+> > > working".
+> > >=20
+> > > So I thought:
+> > >=20
+> > >  1/ give the UART a "virtual" DTR so it could drive any GPIO
+> > >  2/ create a "gpio-to-regulator" driver which presented as a (virtual=
+) gpio
+> > >     and responded to state changes on that GPIO by turning on or off =
+the
+> > >     regulator
+> > >  3/ create a dedicated driver which knows how to toggle the magic GPI=
+O while
+> > >     watching the other GPIO to convince the silly device to wakeup, o=
+r go to
+> > >     sleep, as required, and have this appear as a (virtual) GPIO.
+>=20
+> Unless you are using it as a "real' DTR line then I think this is the
+> wrong approach. This problem actually is turning up in both PC class and
+> ARM boxes now all over the place for three reasons I am seeing.
+>=20
+> 1. We are getting a lot of hardware moving to serial attached
+> bluetooth/gps/etc because of the power win. In addition ACPI can describe
+> power relationships and what is on the other end of a UART embedded in
+> the device
+>=20
+> 2. We've got cheap hardware with modem lines being "retrofitted" via gpio
+>=20
+> 3. There are a subset of devices that have extra control lines beyond the
+> usual serial port ones. These range from additional control lines for
+> things like smartcard programmers to port muxing.
+>=20
+> > I have no problem either way, just that unused code doesn't have to be
+> > sitting in the tree and I'm not entirely sure this GPIO should be
+> > handled by omap-serial.c, perhaps something more generic inside
+> > serial-core so other UART drivers can benefit from it.
+>=20
+> serial-core provides power hooks. If the goal is that this comes on when
+> you power up the uart and goes away on the last close then the hooks are
+> there already.
 
-I added this attribute to /sys/dev/char/*, so the documentation
-may be sysfs-dev. However, any other attributes are not written
-at all. Should I add this description to it or is there another
-file?
+Could you be a bit more explicit, or point to an example user of these hook=
+s?
 
->> +static struct attribute *serial8250_dev_attrs[] = {
->> +	&dev_attr_rx_int_trig.attr,
->> +	NULL,
->> +	};
->> +
->> +static struct attribute_group serial8250_dev_attr_group = {
->> +	.attrs = serial8250_dev_attrs,
->> +	};
->
-> What's wrong with the macro to create a group?
+I had a quick look and I guess that uart_change_pm() is the most likely
+candidate for what you are referring to.
+I can see how that interfaces to the specific piece of uart hardware, such =
+as
+omap-serial.c
+But I cannot see how you would plumb that though to the device that was
+plugged in to the serial port.  I guess if that device could be registered =
+as
+a child of the omap_serial device, then power management inheritance might
+come in to play, but I cannot see any way to tell a serial port that it has
+some arbitrary child device.
 
-I'll explain about this below.
+So maybe I'm missing something.
 
->> +
->> +static void register_dev_spec_attr_grp(struct uart_8250_port *up)
->> +{
->> +	const struct serial8250_config *conf_type = &uart_config[up->port.type];
->> +
->> +	if (conf_type->rxtrig_bytes[0])
->> +		up->port.dev_spec_attr_group = &serial8250_dev_attr_group;
->> +}
->> +
->>   static void serial8250_config_port(struct uart_port *port, int flags)
->>   {
->>   	struct uart_8250_port *up =
->> @@ -2708,6 +2848,9 @@ static void serial8250_config_port(struct uart_port *port, int flags)
->>   	if ((port->type == PORT_XR17V35X) ||
->>   	   (port->type == PORT_XR17D15X))
->>   		port->handle_irq = exar_handle_irq;
->> +
->> +	register_dev_spec_attr_grp(up);
->> +	up->fcr = uart_config[up->port.type].fcr;
->>   }
->>
->>   static int
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->> index 2cf5649..41ac44b 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -2548,15 +2548,16 @@ static struct attribute *tty_dev_attrs[] = {
->>   	NULL,
->>   	};
->>
->> -static const struct attribute_group tty_dev_attr_group = {
->> +static struct attribute_group tty_dev_attr_group = {
->>   	.attrs = tty_dev_attrs,
->>   	};
->>
->> -static const struct attribute_group *tty_dev_attr_groups[] = {
->> -	&tty_dev_attr_group,
->> -	NULL
->> -	};
->> -
->> +static void make_uport_attr_grps(struct uart_port *uport)
->> +{
->> +	uport->attr_grps[0] = &tty_dev_attr_group;
->> +	if (uport->dev_spec_attr_group)
->> +		uport->attr_grps[1] = uport->dev_spec_attr_group;
->> +}
->>
->>   /**
->>    *	uart_add_one_port - attach a driver-defined port structure
->> @@ -2607,12 +2608,15 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->>
->>   	uart_configure_port(drv, state, uport);
->>
->> +	make_uport_attr_grps(uport);
->> +
->>   	/*
->>   	 * Register the port whether it's detected or not.  This allows
->>   	 * setserial to be used to alter this port's parameters.
->>   	 */
->>   	tty_dev = tty_port_register_device_attr(port, drv->tty_driver,
->> -			uport->line, uport->dev, port, tty_dev_attr_groups);
->> +			uport->line, uport->dev, port,
->> +			(const struct attribute_group **)uport->attr_grps);
->
-> If you have to cast that hard, something is wrong here, why are you
-> doing that?
+>                  If its ldisc specific then the tty layer also calls the
+> device on ldisc changes precisely so it can make hardware specific
+> twiddles in such cases.
+>=20
+> A set of gpios on the tty_port object would not go amiss and would also
+> address the PC case.
+>=20
+> > considering this is a BTUART device, why didn't you do this at the ldisc
+> > level ? hci_uart_open() sounds like a good choice from a quick thinking.
+>=20
+> ldiscs are hardware independent. Nothing about hardware belongs in an
+> ldisc. Any ldisc should within reason work on any port.
+>=20
+> What I propsed when it came up ages ago was to expose some gpio settings
+> in the tty, to provide ways for them to be set by default and also ioctls
+> to configure them. I still think this (but moved into the tty_port as its
+> a persistent hardware property) is a good idea now that we are starting
+> to see more use cases than weird dongles and muxes on pre-production
+> reference boards.
+>=20
+> With my tty and serial hat on I think a power gpio is a no-brainer even
+> without doing the other work and therefore it should probably be described
+> generically for a serial port in the DT as well as in the ACPI data. If
+> you should also be able to give it a regulator to use as well that also
+> seems to make complete sense.
 
-The attribute group in serial layer was defined as constant
-because serial layer has only common sysfs I/F. However, I want to
-change sysfs I/F for specific devices. So, I deleted 'const' from the
-definition of the attribute group in serial layer in order to make the
-attribute group be changeable. On the other hand, to pass the attribute
-group to tty layer, the group must be const because the 5th variable of
-tty_port_register_device_attr() is an attribute group with 'const', so
-I implemented like this. Although I investigated again,
-tty_port_register_device_attr() is used only here, and
-tty_register_device_attr() called by the function is called from 2
-locations (the one of them passes NULL in the 5th variable).
-Therefore, we can delete 'const' for those functions, I think.
-How do you think about this?
+In one case the "power on" sequence is substantially more complex that just=
+ a
+gpio or regulator.  I would need to write a device driver for the (GPS) chip
+which could receive a poweron/poweroff signal from the uart and do the
+required magic.
 
-Thank you,
-Yoshihiro YUNOMAE
+Having serial-core know about gpios and regulators and random other stuff
+seems wrong.
+I would really like to see the "runtime interpreted power sequences" become=
+ a
+real thing.  Then serial-core could activate a "RIPS", and that would have
+the flexibility to do whatever is needed without adding complexity to
+serial-core.
+Using a virtual GPIO was my poor-mans RIPS.  Using gpiolib, and driver can
+pretend to be a gpio so it is a simple "pipe" to send a power-on/power-off
+signal over.
 
--- 
-Yoshihiro YUNOMAE
-Software Platform Research Dept. Linux Technology Center
-Hitachi, Ltd., Yokohama Research Laboratory
-E-mail: yoshihiro.yunomae.ez@hitachi.com
+So ... with your "serial" hat on, if I were to write/test a patch to allow
+any serial port to have a "power-gpio" described in DT and the gpio would be
+driven in uart_change_pm(), would you consider accepting that patch, or did=
+ I
+misunderstand?
+
+Thanks,
+NeilBrown
+
+--Sig_/m+ZgphiZyPLk0G=ZXR0k0qV
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIVAwUBU1osFDnsnt1WYoG5AQIB/Q//Vs2BMgki7S2oBwveSFrNeCpAyFjXUreB
+R6XiZ8KrZf9n3ApGIKlspKAIRGu3ZJLjcYgs2QXmlllJzdoPU5kwsgB4GPsc1kxs
+55XaLcFcfPYqi1+IhjIB5233gAbnvxTR5dmqnecvpkeLU/7Rtg9/bmhDfTkXqkp9
+PJEomptKjt2MOOfKs03fJiUouy8kzpntE4A5TGSeFmjX+pGiOS99BngmUcakEwRV
+86T+XcquXFO4XFPwijnHYNfhDaQjxqM0sfQU8mEIq155KaTgNZge4Q9NueS9htFt
+uc0Bx26nDHRf0IYuyc/GpdHBMmRxVQGTIYJRtYevayyw86JZCVRplJ3350FHrFou
+v8l9363yFcqMgx380bhVkYa4StEcXvQ2d3P61RfKcbklzYk5iN9636OFJ50Ii/3p
+aoON1EqBRKpVVn2J/1bjRwP/+AoyeqmZQFXczUC/+ggAD8XGAWEJxaQ4FZDE7TnK
+74NE/jkZIph5GbroR1+YSfiLfoRpEq/KwQKxc4Cv/EJMmwB6emsy2MSCojOySshW
+DkAD4lRPGtfaECp/+CjWaCxDSUE+M/l8wDWWANXUf+9nYCDZ2BnEC5vQ6JuopStt
+3HDe2+khQ9+U7jRhI9TuLRX6pcQ8yZAFwJd/HgVAFQpHq1m1ivhADf/0dLp6k5yO
+Bau013ODwTw=
+=EdBs
+-----END PGP SIGNATURE-----
+
+--Sig_/m+ZgphiZyPLk0G=ZXR0k0qV--
