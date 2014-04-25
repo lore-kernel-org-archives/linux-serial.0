@@ -1,114 +1,154 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [GIT PULL] serial: Cadence
-Date: Fri, 25 Apr 2014 07:04:44 +0200
-Message-ID: <5359ECEC.5050902@monstr.eu>
-References: <53575983.3030508@monstr.eu> <20140423234832.GB17827@kroah.com> <5358A188.4080404@monstr.eu> <20140424232332.GB10457@kroah.com>
-Reply-To: monstr@monstr.eu
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
+Date: Fri, 25 Apr 2014 09:05:50 +0200
+Message-ID: <1922942.7jvlviEDpf@avalon>
+References: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au> <1418731.YSFS18bIMD@avalon> <20140425002641.GB31164@verge.net.au>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f49.google.com ([74.125.83.49]:43165 "EHLO
-	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750801AbaDYFEx (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 01:04:53 -0400
-Received: by mail-ee0-f49.google.com with SMTP id c41so2388973eek.22
-        for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2014 22:04:52 -0700 (PDT)
-In-Reply-To: <20140424232332.GB10457@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20140425002641.GB31164@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Simon,
 
-On 04/25/2014 01:23 AM, Greg Kroah-Hartman wrote:
-> On Thu, Apr 24, 2014 at 07:30:48AM +0200, Michal Simek wrote:
->> On 04/24/2014 01:48 AM, Greg Kroah-Hartman wrote:
->>> On Wed, Apr 23, 2014 at 08:11:15AM +0200, Michal Simek wrote:
->>>> Hi Greg,
->>>>
->>>> this is around for a while and I would like to close it.
->>>> I have applied patches 1-7 from v3.
->>>> Patches 8 and 9 should go through arm-soc tree and I will add them
->>>> to my zynq/dt branch.
->>>>
->>>> Please apply these patches to your tree.
->>>> If this should go through different tree please let me know.
->>>>
->>>> Thanks,
->>>> Michal
->>>>
->>>>
->>>> The following changes since commit c9eaa447e77efe77b7fa4c953bd62de82=
-97fd6c5:
->>>>
->>>>   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
->>>>
->>>> are available in the git repository at:
->>>>
->>>>   git://git.monstr.eu/linux-2.6-microblaze.git tags/cadence-uart-for=
--3.16
->>>
->>> I can't take git pulles from random internet sites, sorry.  Just send=
+On Friday 25 April 2014 09:26:42 Simon Horman wrote:
+> On Fri, Apr 25, 2014 at 01:33:29AM +0200, Laurent Pinchart wrote:
+> > Hi Simon,
+> > 
+> > Thank you for the patch.
+> > 
+> > On Thursday 24 April 2014 15:54:44 Simon Horman wrote:
+> > > According to the platform data for the legacy-C initialisation of sh-sci
+> > > for the r8a7779 SoC and my own testing the SCIx_SH4_SCIF_REGTYPE bit of
+> > > scscr needs to be set.
+> > > 
+> > > Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> > > 
+> > > ---
+> > > 
+> > > With the approach taken by this patch sh-sci may be initialised using
+> > > the "renesas,scif-r8a7779" compat string but not the generic
+> > > "renesas,scif" compat string.  An alternate approach would be to add a
+> > > binding to allow setting of this bit to be controlled directly from DT.
+> > 
+> > Handling the SCSCR bits properly with DT has been on my to-do list for
+> > some time. Thank you for volunteering to implement that :-D
+> > 
+> > The CKE bits control both the behaviour of the SCK pin and the SCIF input
+> > clock selection. The SCIF can use various internal and external clocks,
+> > with up to two baud rate generators (programmable dividers) chained.
+> > Whether the SoC is provided with an external clock for its serial ports
+> > is a board property, not an SoC property. I would thus like to implement
+> > support for this feature properly and avoid hardcoding the CKE bits like
+> > done below.
+> > 
+> > The Marzen board has an external clock generator connected to the SCIF_SCK
+> > pin that can be used as a clock source, but I don't really see a reason
+> > why we couldn't use the internal P clock instead. I don't want to delay
+> > integration of SCIF DT support until we have a proper solution to handle
+> > clock configuration, but couldn't we use the internal P clock on the
+> > Marzen board in the meantime ?
+> 
+> I think that approach sounds reasonable and I seem to have it working
+> without any driver changes. Could you confirm that the following
+> DT snippet is what you have in mind? (I intend to update it as per any
+> relevant changes you make when reposting your DT sci patch for the
+> r8a7791.)
 
->>> these as email and I will queue them up.
->>
->> I wouldn't say random. This repo is listed in my Microblaze maintainer=
- fragment
->> and I used signed tag and you have sign my key that's why you can easi=
-ly
->> check it.
->=20
-> If you have a signed key, why aren't you using git.kernel.org?  Again, =
-I
-> can't pull from any non-kernel.org sites, sorry.
+That's what I have in mind, but please see below for a small comment.
 
-ok. I have never had a need to have git repo at kernel.org.
-But maybe I should asked for one.
+> diff --git a/arch/arm/boot/dts/r8a7779.dtsi b/arch/arm/boot/dts/r8a7779.dtsi
+> index e924f96..3e9cca4 100644
+> --- a/arch/arm/boot/dts/r8a7779.dtsi
+> +++ b/arch/arm/boot/dts/r8a7779.dtsi
+> @@ -203,6 +203,66 @@
+>  		status = "disabled";
+>  	};
+> 
+> +	scif0: serial@ffe40000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe40000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 88 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
 
+Clock handling in the sh-sci driver should probably be improved. The driver 
+currently requires an "sci_ick" interface clock and supports an optional 
+"sci_fck" functional clock. In practice, as far as I can see, platforms that 
+provide both sci_ick and sci_fck set the two clocks to the same source. 
+Furthermore, some SCI* instances support a second internal clock source for 
+the baud rate generator. We don't support that at the moment.
 
->> Anyway we have sent v3 patches via email twice.
->> Origin v3:
->> https://lkml.org/lkml/2014/3/12/499
->>
->> Resent v3:
->> https://lkml.org/lkml/2014/4/4/523
->>
->> Patches 1-7 should go through your tree.
->=20
-> I've now applied these, sorry for the delay.
+This leads me to believe that we should merge the "sci_ick" and "sci_fck" 
+clocks for the DT case into a single clock that I would call "fck" (no need 
+for a "sci_" prefix), and later add support for the second baud rate clock. 
+This would require a small driver change. I can try to submit patches in the 
+next couple of days if you agree with the approach.
 
-Thanks,
-Michal
+> +		status = "disabled";
+> +	};
+> +
+> +	scif1: serial@ffe41000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe41000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 89 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
+> +		status = "disabled";
+> +	};
+> +
+> +	scif2: serial@ffe42000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe42000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 90 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
+> +		status = "disabled";
+> +	};
+> +
+> +	scif3: serial@ffe43000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe43000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 91 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
+> +		status = "disabled";
+> +	};
+> +
+> +	scif4: serial@ffe44000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe44000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 92 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
+> +		status = "disabled";
+> +	};
+> +
+> +	scif5: serial@ffe45000 {
+> +		compatible = "renesas,scif", "renesas,scif-r8a7779";
+> +		reg = <0xffe45000 265>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <0 93 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cpg_clocks R8A7779_CLK_P>;
+> +		clock-names = "sci_ick";
+> +		status = "disabled";
+> +	};
+> +
+>  	pfc: pfc@fffc0000 {
+>  		compatible = "renesas,pfc-r8a7779";
+>  		reg = <0xfffc0000 0x23c>;
 
+-- 
+Regards,
 
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
-Maintainer of Linux kernel - Xilinx Zynq ARM architecture
-Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+Laurent Pinchart
 
-
-
---Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlNZ7OwACgkQykllyylKDCHxNQCeOUTnbxqDOAHjyizSmBI+yL1L
-p1oAn0cIpc6x8Tka/Y9akFOrzmYodnC7
-=DiIE
------END PGP SIGNATURE-----
-
---Fcx92oxLRspdUiRXSEeCpRfPgd3Do7Gpk--
