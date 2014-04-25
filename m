@@ -1,31 +1,67 @@
-From: Charles Coldwell <coldwell@gmail.com>
+From: Jon Ringle <jon@ringle.org>
 Subject: Re: [PATCH v7 1/2] serial: sc16is7xx
-Date: Fri, 25 Apr 2014 10:36:37 -0400 (EDT)
-Message-ID: <alpine.LRH.2.03.1404251035560.2893@frank.harvard.edu>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org> <CAMwGMjyqiC1DLKfz0LUFg-iN8mDKc54w+8AYKFHOydiwtXHrFQ@mail.gmail.com> <alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu> <1398436409.315304910@f193.i.mail.ru>
+Date: Fri, 25 Apr 2014 10:41:39 -0400
+Message-ID: <CAMwGMjzTds3R+-HF72CYv-v6tZfavWnbZ+YHpzJfwMEJ3rM1UQ@mail.gmail.com>
+References: <1398387367-4047-1-git-send-email-jon@ringle.org>
+	<alpine.LRH.2.03.1404250914380.30160@frank.harvard.edu>
+	<alpine.LRH.2.03.1404250941590.2625@frank.harvard.edu>
+	<CAMwGMjyqiC1DLKfz0LUFg-iN8mDKc54w+8AYKFHOydiwtXHrFQ@mail.gmail.com>
+	<alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1398436409.315304910@f193.i.mail.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Jon Ringle <jringle@gridpoint.com>, Jon Ringle <jon@ringle.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f45.google.com ([209.85.215.45]:33037 "EHLO
+	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751422AbaDYOll (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 10:41:41 -0400
+In-Reply-To: <alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Charles Coldwell <coldwell@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Jon Ringle <jringle@gridpoint.com>
 
-On Fri, 25 Apr 2014, Alexander Shiyan wrote:
+On Fri, Apr 25, 2014 at 10:24 AM, Charles Coldwell <coldwell@gmail.com> wrote:
+> On Fri, 25 Apr 2014, Jon Ringle wrote:
+>
+>> On Fri, Apr 25, 2014 at 9:44 AM, Charles Coldwell <coldwell@gmail.com> wrote:
+>> > On Fri, 25 Apr 2014, Charles Coldwell wrote:
+>> >
+>> >> On Thu, 24 Apr 2014, jon@ringle.org wrote:
+>> >>
+>> >> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+>> >>
+>> >> Isn't this a lot of duplication?
+>> >
+>> > Actually, the whole thing seems like duplication to me.
+>>
+>> The fact that we need to reach over the SPI/I2C bus makes a big
+>> difference in the way access is handled.
+>>
+>> To achieve acceptable throughput, it is necessary to use threaded irq
+>> and also bulk i2c transfers for RX and TX using
+>> regmap_raw_{read,write}() to optimize the use of the i2c bus.
+>
+> Fair enough, but the 8250 framework does allow you to insert your own
+> irq service routine. "serial8250_default_handle_irq" is the default
+> (unsurprisingly), but if the uart_port has a non-NULL "handle_irq"
+> method it will be faithfully copied into the uart_8250_port
+> "handle_irq" method in 8250_core.c:early_serial_setup.
 
-> 
-> At this stage, I would suggest just move the driver code into serial/8250
-> to indicate the compatibility and then apply this patch and look for ways
-> to optimize similar functions.
+However, serial8250_interrupt() which is where port->handle_irq() is
+called is not a threaded irq.
 
-I suppose I could live with that.  This is really a wonderful UART,
-and I would like to see it supported in some fashion.
+>
+>> This is not a good fit for 8250.
+>
+> If that's really true, then I would say it argues in favor of a
+> revision of the 8250 code.  Certainly, this is not the last time that
+> a 16550-compatible UART will appear on a non-PCI, non-ISA bus.
 
--- 
-Charles M. Coldwell, W1CMC
-"Turn on, log in, tune out"
-Somerville, Massachusetts, New England (FN42kj)
+I have re-written this driver 4 times already to get to the version
+that is being presented. I don't have the time or energy to undergo
+yet another rewrite of this driver. If you'd like to take on this
+task, be my guest. I'd be happy to test what you come up with on my
+hardware.
 
-GPG ID:  852E052F
-GPG FPR: 77E5 2B51 4907 F08A 7E92  DE80 AFA9 9A8F 852E 052F
+Jon
