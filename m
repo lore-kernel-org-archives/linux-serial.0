@@ -1,63 +1,110 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2NyAxLzJdIHNlcmlhbDogc2MxNmlzN3h4?=
-Date: Fri, 25 Apr 2014 18:54:54 +0400
-Message-ID: <1398437694.563118280@f193.i.mail.ru>
-References: <1398387367-4047-1-git-send-email-jon@ringle.org>
- <alpine.LRH.2.03.1404251019300.2893@frank.harvard.edu>
- <CAMwGMjzTds3R+-HF72CYv-v6tZfavWnbZ+YHpzJfwMEJ3rM1UQ@mail.gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v6 1/3] tty/serial: Add GPIOLIB helpers for controlling
+ modem lines
+Date: Fri, 25 Apr 2014 16:56:31 +0200
+Message-ID: <CACQ1gAiDw3XcspRwSEEX9e9rH=qFMvyW2ic+SmugMDi8kNKEaQ@mail.gmail.com>
+References: <1394469951-21192-1-git-send-email-richard.genoud@gmail.com>
+ <1394469951-21192-2-git-send-email-richard.genoud@gmail.com> <535669DB.8010109@visionsystems.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from f193.i.mail.ru ([94.100.185.45]:47083 "EHLO f193.i.mail.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751238AbaDYOy5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 10:54:57 -0400
-In-Reply-To: <CAMwGMjzTds3R+-HF72CYv-v6tZfavWnbZ+YHpzJfwMEJ3rM1UQ@mail.gmail.com>
+Received: from mail-lb0-f182.google.com ([209.85.217.182]:40320 "EHLO
+	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751676AbaDYO4x (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 10:56:53 -0400
+In-Reply-To: <535669DB.8010109@visionsystems.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jon@ringle.org>
-Cc: =?UTF-8?B?bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw==?= <linux-serial@vger.kernel.org>, =?UTF-8?B?R3JlZyBLSA==?= <gregkh@linuxfoundation.org>, =?UTF-8?B?Sm9uIFJpbmdsZQ==?= <jringle@gridpoint.com>, =?UTF-8?B?Q2hhcmxlcyBDb2xkd2VsbA==?= <coldwell@gmail.com>
+To: yegor_sub1@visionsystems.de
+Cc: Richard Genoud <noreply.rgenoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>, Linus Walleij <linus.walleij@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, mpfj-list@newflow.co.uk, Felipe Balbi <balbi@ti.com>
 
-RnJpLCAyNSBBcHIgMjAxNCAxMDo0MTozOSAtMDQwMCDQvtGCIEpvbiBSaW5nbGUgPGpvbkByaW5n
-bGUub3JnPjoKPiBPbiBGcmksIEFwciAyNSwgMjAxNCBhdCAxMDoyNCBBTSwgQ2hhcmxlcyBDb2xk
-d2VsbCA8Y29sZHdlbGxAZ21haWwuY29tPiB3cm90ZToKPiA+IE9uIEZyaSwgMjUgQXByIDIwMTQs
-IEpvbiBSaW5nbGUgd3JvdGU6Cj4gPgo+ID4+IE9uIEZyaSwgQXByIDI1LCAyMDE0IGF0IDk6NDQg
-QU0sIENoYXJsZXMgQ29sZHdlbGwgPGNvbGR3ZWxsQGdtYWlsLmNvbT4gd3JvdGU6Cj4gPj4gPiBP
-biBGcmksIDI1IEFwciAyMDE0LCBDaGFybGVzIENvbGR3ZWxsIHdyb3RlOgo+ID4+ID4KPiA+PiA+
-PiBPbiBUaHUsIDI0IEFwciAyMDE0LCBqb25AcmluZ2xlLm9yZyB3cm90ZToKPiA+PiA+Pgo+ID4+
-ID4+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zYzE2aXM3eHguYyBiL2RyaXZl
-cnMvdHR5L3NlcmlhbC9zYzE2aXM3eHguYwo+ID4+ID4+Cj4gPj4gPj4gSXNuJ3QgdGhpcyBhIGxv
-dCBvZiBkdXBsaWNhdGlvbj8KPiA+PiA+Cj4gPj4gPiBBY3R1YWxseSwgdGhlIHdob2xlIHRoaW5n
-IHNlZW1zIGxpa2UgZHVwbGljYXRpb24gdG8gbWUuCj4gPj4KPiA+PiBUaGUgZmFjdCB0aGF0IHdl
-IG5lZWQgdG8gcmVhY2ggb3ZlciB0aGUgU1BJL0kyQyBidXMgbWFrZXMgYSBiaWcKPiA+PiBkaWZm
-ZXJlbmNlIGluIHRoZSB3YXkgYWNjZXNzIGlzIGhhbmRsZWQuCj4gPj4KPiA+PiBUbyBhY2hpZXZl
-IGFjY2VwdGFibGUgdGhyb3VnaHB1dCwgaXQgaXMgbmVjZXNzYXJ5IHRvIHVzZSB0aHJlYWRlZCBp
-cnEKPiA+PiBhbmQgYWxzbyBidWxrIGkyYyB0cmFuc2ZlcnMgZm9yIFJYIGFuZCBUWCB1c2luZwo+
-ID4+IHJlZ21hcF9yYXdfe3JlYWQsd3JpdGV9KCkgdG8gb3B0aW1pemUgdGhlIHVzZSBvZiB0aGUg
-aTJjIGJ1cy4KPiA+Cj4gPiBGYWlyIGVub3VnaCwgYnV0IHRoZSA4MjUwIGZyYW1ld29yayBkb2Vz
-IGFsbG93IHlvdSB0byBpbnNlcnQgeW91ciBvd24KPiA+IGlycSBzZXJ2aWNlIHJvdXRpbmUuICJz
-ZXJpYWw4MjUwX2RlZmF1bHRfaGFuZGxlX2lycSIgaXMgdGhlIGRlZmF1bHQKPiA+ICh1bnN1cnBy
-aXNpbmdseSksIGJ1dCBpZiB0aGUgdWFydF9wb3J0IGhhcyBhIG5vbi1OVUxMICJoYW5kbGVfaXJx
-Igo+ID4gbWV0aG9kIGl0IHdpbGwgYmUgZmFpdGhmdWxseSBjb3BpZWQgaW50byB0aGUgdWFydF84
-MjUwX3BvcnQKPiA+ICJoYW5kbGVfaXJxIiBtZXRob2QgaW4gODI1MF9jb3JlLmM6ZWFybHlfc2Vy
-aWFsX3NldHVwLgo+IAo+IEhvd2V2ZXIsIHNlcmlhbDgyNTBfaW50ZXJydXB0KCkgd2hpY2ggaXMg
-d2hlcmUgcG9ydC0+aGFuZGxlX2lycSgpIGlzCj4gY2FsbGVkIGlzIG5vdCBhIHRocmVhZGVkIGly
-cS4KPiAKPiA+Cj4gPj4gVGhpcyBpcyBub3QgYSBnb29kIGZpdCBmb3IgODI1MC4KPiA+Cj4gPiBJ
-ZiB0aGF0J3MgcmVhbGx5IHRydWUsIHRoZW4gSSB3b3VsZCBzYXkgaXQgYXJndWVzIGluIGZhdm9y
-IG9mIGEKPiA+IHJldmlzaW9uIG9mIHRoZSA4MjUwIGNvZGUuICBDZXJ0YWlubHksIHRoaXMgaXMg
-bm90IHRoZSBsYXN0IHRpbWUgdGhhdAo+ID4gYSAxNjU1MC1jb21wYXRpYmxlIFVBUlQgd2lsbCBh
-cHBlYXIgb24gYSBub24tUENJLCBub24tSVNBIGJ1cy4KPiAKPiBJIGhhdmUgcmUtd3JpdHRlbiB0
-aGlzIGRyaXZlciA0IHRpbWVzIGFscmVhZHkgdG8gZ2V0IHRvIHRoZSB2ZXJzaW9uCj4gdGhhdCBp
-cyBiZWluZyBwcmVzZW50ZWQuIEkgZG9uJ3QgaGF2ZSB0aGUgdGltZSBvciBlbmVyZ3kgdG8gdW5k
-ZXJnbwo+IHlldCBhbm90aGVyIHJld3JpdGUgb2YgdGhpcyBkcml2ZXIuIElmIHlvdSdkIGxpa2Ug
-dG8gdGFrZSBvbiB0aGlzCj4gdGFzaywgYmUgbXkgZ3Vlc3QuIEknZCBiZSBoYXBweSB0byB0ZXN0
-IHdoYXQgeW91IGNvbWUgdXAgd2l0aCBvbiBteQo+IGhhcmR3YXJlLgoKSm9uLCBkbyBub3QgcGFu
-aWMuIEkgaGVscGVkIHlvdSB0byBkbyBldmVyeSB2ZXJzaW9uIG9mIHRoaXMgZHJpdmVyLAphbHRo
-b3VnaCBJIGRvIG5vdCBoYXZlIHN1Y2ggaGFyZHdhcmUsIGFuZCB5b3UgYWxyZWFkeSBnaXZlIHVw
-LgoKSSBqdXN0IGFkdmlzZSB5b3UgdG8gdGFrZSB0aGUgdGltZSB0byBjcmVhdGUgdGhlIG5leHQg
-dmVyc2lvbiBhbmQKbGlzdGVuIHRvIGFsbCB0aGUgY29tbWVudHMgZm9yIHNvbWUgdGltZS4KCkxv
-b2sgYXQgeW91ciBjdXJyZW50IHJlc3VsdHMsIHlvdSByZXdyaXRlIHRoZSBkcml2ZXIgNCB0aW1l
-cywKZWFjaCB0aW1lIGl0IGdldHMgYmV0dGVyLiBJcyB0aGlzIG5vdCBhbiBpbmRpY2F0b3I/Cgot
-LS0KCg==
+2014-04-22 15:08 GMT+02:00 Yegor Yefremov <yegor_sub1@visionsystems.de>:
+> On 10.03.2014 17:45, Richard Genoud wrote:
+>> This patch add some helpers to control modem lines (CTS/RTS/DSR...) via
+>> GPIO.
+>> This will be useful for many boards which have a serial controller that
+>> only handle CTS/RTS pins (or even just RX/TX).
+>>
+>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>
+> ....
+>
+>> +
+>> +struct mctrl_gpios {
+>> +     struct gpio_desc *gpio[UART_GPIO_MAX];
+>> +};
+>> +
+>> +static const struct {
+>> +     const char *name;
+>> +     unsigned int mctrl;
+>> +     bool dir_out;
+>> +} mctrl_gpios_desc[UART_GPIO_MAX] = {
+>> +     { "cts", TIOCM_CTS, false, },
+>> +     { "dsr", TIOCM_DSR, false, },
+>> +     { "dcd", TIOCM_CD, false, },
+>> +     { "rng", TIOCM_RNG, false, },
+>> +     { "rts", TIOCM_RTS, true, },
+>> +     { "dtr", TIOCM_DTR, true, },
+>> +     { "out1", TIOCM_OUT1, true, },
+>> +     { "out2", TIOCM_OUT2, true, },
+>> +};
+>> +
+>> +void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+>> +{
+>> +     enum mctrl_gpio_idx i;
+>> +
+>> +     if (IS_ERR_OR_NULL(gpios))
+>> +             return;
+>> +
+>> +     for (i = 0; i < UART_GPIO_MAX; i++)
+>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
+>> +                 mctrl_gpios_desc[i].dir_out)
+>> +                     gpiod_set_value(gpios->gpio[i],
+>> +                                     !!(mctrl & mctrl_gpios_desc[i].mctrl));
+>> +}
+>> +EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+>> +
+>> +struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+>> +                                   enum mctrl_gpio_idx gidx)
+>> +{
+>> +     if (!IS_ERR_OR_NULL(gpios) && !IS_ERR_OR_NULL(gpios->gpio[gidx]))
+>> +             return gpios->gpio[gidx];
+>> +     else
+>> +             return NULL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+>> +
+>> +unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+>> +{
+>> +     enum mctrl_gpio_idx i;
+>> +
+>> +     /*
+>> +      * return it unchanged if the structure is not allocated
+>> +      */
+>> +     if (IS_ERR_OR_NULL(gpios))
+>> +             return *mctrl;
+>> +
+>> +     for (i = 0; i < UART_GPIO_MAX; i++) {
+>> +             if (!IS_ERR_OR_NULL(gpios->gpio[i]) &&
+>> +                 !mctrl_gpios_desc[i].dir_out) {
+>> +                     if (gpiod_get_value(gpios->gpio[i]))
+>> +                             *mctrl |= mctrl_gpios_desc[i].mctrl;
+>> +                     else
+>> +                             *mctrl &= ~mctrl_gpios_desc[i].mctrl;
+>> +             }
+>> +     }
+>> +
+>> +     return *mctrl;
+>> +}
+>> +EXPORT_SYMBOL_GPL(mctrl_gpio_get);
+>
+> Should this routine be renamed to msr_gpio_get() or perhaps better to give all values (inputs and outputs)?
+>
+> I'm trying to port this approach to omap-serial to implement RS485 switching. I need to know if RTS is already on or not and set it accordingly.
+>
+> What would be the best solution for this task using this new API?
+Sorry, but I don't really get what you're trying to do.
+Could you explain a little bit more ?
+
+Richard.
