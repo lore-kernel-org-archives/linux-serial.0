@@ -1,109 +1,54 @@
-From: jon@ringle.org
-Subject: [PATCH] serial: sc16is7xx: dynamically allocate tx/rx buffer
-Date: Fri, 25 Apr 2014 20:11:07 -0400
-Message-ID: <1398471067-3142-1-git-send-email-jon@ringle.org>
+From: Michael Welling <mwelling@ieee.org>
+Subject: [PATCH] tty: serial: 8250_core.c Bug fix for Exar chips.
+Date: Fri, 25 Apr 2014 19:27:48 -0500
+Message-ID: <1398472068-11762-1-git-send-email-mwelling@ieee.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f45.google.com ([209.85.192.45]:39869 "EHLO
-	mail-qg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750802AbaDZALT (ORCPT
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:55272 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751647AbaDZA2E (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 20:11:19 -0400
+	Fri, 25 Apr 2014 20:28:04 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Michael Welling <mwelling@ieee.org>
 
-From: Jon Ringle <jringle@gridpoint.com>
+The sleep function was updated to put the serial port to sleep only whe=
+n necessary.
+This appears to resolve the errant behavior of the driver as described =
+in
+Kernel Bug 61961 =E2=80=93 "My Exar Corp. XR17C/D152 Dual PCI UART mode=
+m does not
+work with 3.8.0".
 
-This fixes the warnings:
-
-   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_handle_rx':
->> drivers/tty/serial/sc16is7xx.c:548:1: warning: 'sc16is7xx_handle_rx' uses dynamic stack allocation [enabled by default]
-   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_handle_tx':
->> drivers/tty/serial/sc16is7xx.c:589:1: warning: 'sc16is7xx_handle_tx' uses dynamic stack allocation [enabled by default]
-
-Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+Signed-off-by: Michael Welling <mwelling@ieee.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/tty/serial/8250/8250_core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 7206a64..880cedd 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -317,6 +317,7 @@ struct sc16is7xx_port {
- #ifdef CONFIG_GPIOLIB
- 	struct gpio_chip		gpio;
- #endif
-+	unsigned char			buf[SC16IS7XX_FIFO_SIZE];
- 	struct sc16is7xx_one		p[0];
- };
- 
-@@ -471,16 +472,15 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
- {
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	unsigned int lsr = 0, ch, flag, bytes_read, i;
--	u8 buf[port->fifosize];
- 	bool read_lsr = (iir == SC16IS7XX_IIR_RLSE_SRC) ? true : false;
- 
--	if (unlikely(rxlen >= port->fifosize)) {
-+	if (unlikely(rxlen >= sizeof(s->buf))) {
- 		dev_warn_ratelimited(port->dev,
- 				     "Port %i: Possible RX FIFO overrun: %d\n",
- 				     port->line, rxlen);
- 		port->icount.buf_overrun++;
- 		/* Ensure sanity of RX level */
--		rxlen = port->fifosize;
-+		rxlen = sizeof(s->buf);
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8=
+250/8250_core.c
+index 81f909c..1d32355 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -555,7 +555,7 @@ static void serial8250_set_sleep(struct uart_8250_p=
+ort *p, int sleep)
+ 	 */
+ 	if ((p->port.type =3D=3D PORT_XR17V35X) ||
+ 	   (p->port.type =3D=3D PORT_XR17D15X)) {
+-		serial_out(p, UART_EXAR_SLEEP, 0xff);
++		serial_out(p, UART_EXAR_SLEEP, sleep ? 0xff : 0);
+ 		return;
  	}
- 
- 	while (rxlen) {
-@@ -493,12 +493,12 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
- 			lsr = 0;
- 
- 		if (read_lsr) {
--			buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
-+			s->buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
- 			bytes_read = 1;
- 		} else {
- 			regcache_cache_bypass(s->regmap, true);
- 			regmap_raw_read(s->regmap, SC16IS7XX_RHR_REG,
--					buf, rxlen);
-+					s->buf, rxlen);
- 			regcache_cache_bypass(s->regmap, false);
- 			bytes_read = rxlen;
- 		}
-@@ -532,7 +532,7 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
- 		}
- 
- 		for (i = 0; i < bytes_read; ++i) {
--			ch = buf[i];
-+			ch = s->buf[i];
- 			if (uart_handle_sysrq_char(port, ch))
- 				continue;
- 
-@@ -553,7 +553,6 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	struct circ_buf *xmit = &port->state->xmit;
- 	unsigned int txlen, to_send, i;
--	u8 buf[port->fifosize];
- 
- 	if (unlikely(port->x_char)) {
- 		sc16is7xx_port_write(port, SC16IS7XX_THR_REG, port->x_char);
-@@ -577,11 +576,11 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 
- 		/* Convert to linear buffer */
- 		for (i = 0; i < to_send; ++i) {
--			buf[i] = xmit->buf[xmit->tail];
-+			s->buf[i] = xmit->buf[xmit->tail];
- 			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
- 		}
- 		regcache_cache_bypass(s->regmap, true);
--		regmap_raw_write(s->regmap, SC16IS7XX_THR_REG, buf, to_send);
-+		regmap_raw_write(s->regmap, SC16IS7XX_THR_REG, s->buf, to_send);
- 		regcache_cache_bypass(s->regmap, false);
- 	}
- 
--- 
-1.8.5.4
+=20
+--=20
+1.7.9.5
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
