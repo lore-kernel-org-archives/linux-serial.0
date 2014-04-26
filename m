@@ -1,54 +1,44 @@
-From: Michael Welling <mwelling@ieee.org>
-Subject: [PATCH] tty: serial: 8250_core.c Bug fix for Exar chips.
-Date: Fri, 25 Apr 2014 19:27:48 -0500
-Message-ID: <1398472068-11762-1-git-send-email-mwelling@ieee.org>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Fri, 25 Apr 2014 23:19:59 -0700
+Message-ID: <CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ig0-f178.google.com ([209.85.213.178]:55272 "EHLO
-	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751647AbaDZA2E (ORCPT
+Received: from mail-ig0-f172.google.com ([209.85.213.172]:46342 "EHLO
+	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750785AbaDZGUA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Apr 2014 20:28:04 -0400
+	Sat, 26 Apr 2014 02:20:00 -0400
+In-Reply-To: <1397859600-11507-4-git-send-email-robherring2@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Michael Welling <mwelling@ieee.org>
+To: Rob Herring <robherring2@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 
-The sleep function was updated to put the serial port to sleep only whe=
-n necessary.
-This appears to resolve the errant behavior of the driver as described =
-in
-Kernel Bug 61961 =E2=80=93 "My Exar Corp. XR17C/D152 Dual PCI UART mode=
-m does not
-work with 3.8.0".
+On Fri, Apr 18, 2014 at 3:19 PM, Rob Herring <robherring2@gmail.com> wrote:
+> From: Rob Herring <robh@kernel.org>
+>
+> With the generic earlycon infrastructure in place, convert the 8250
+> early console to use it.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
+>  drivers/tty/serial/8250/Kconfig      |   1 +
+>  2 files changed, 16 insertions(+), 123 deletions(-)
 
-Signed-off-by: Michael Welling <mwelling@ieee.org>
----
- drivers/tty/serial/8250/8250_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Greg, Rob
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8=
-250/8250_core.c
-index 81f909c..1d32355 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -555,7 +555,7 @@ static void serial8250_set_sleep(struct uart_8250_p=
-ort *p, int sleep)
- 	 */
- 	if ((p->port.type =3D=3D PORT_XR17V35X) ||
- 	   (p->port.type =3D=3D PORT_XR17D15X)) {
--		serial_out(p, UART_EXAR_SLEEP, 0xff);
-+		serial_out(p, UART_EXAR_SLEEP, sleep ? 0xff : 0);
- 		return;
- 	}
-=20
---=20
-1.7.9.5
+This one in tty-next breaks booting: "console=uart8250,io,0x3f8,115200".
+No early console and regular console anymore.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+It should produce "early con and regular con".
+
+Thanks
+
+Yinghai
