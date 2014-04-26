@@ -1,63 +1,109 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 1/2] serial: sc16is7xx: depend on I2C
-Date: Fri, 25 Apr 2014 13:42:17 -0700
-Message-ID: <535AC8A9.9030303@infradead.org>
-References: <1398455590-4374-1-git-send-email-jon@ringle.org> <1398457576.792048107@f368.i.mail.ru> <20140425203528.GA15154@kroah.com> <1398458399.164274248@f343.i.mail.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1398458399.164274248@f343.i.mail.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>, Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, jon@ringle.org
+From: jon@ringle.org
+Subject: [PATCH] serial: sc16is7xx: dynamically allocate tx/rx buffer
+Date: Fri, 25 Apr 2014 20:11:07 -0400
+Message-ID: <1398471067-3142-1-git-send-email-jon@ringle.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qg0-f45.google.com ([209.85.192.45]:39869 "EHLO
+	mail-qg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750802AbaDZALT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Apr 2014 20:11:19 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, shc_work@mail.ru, Jon Ringle <jringle@gridpoint.com>
 
-On 04/25/14 13:39, Alexander Shiyan wrote:
-> Fri, 25 Apr 2014 13:35:28 -0700 =D0=BE=D1=82 Greg KH <gregkh@linuxfou=
-ndation.org>:
->> On Sat, Apr 26, 2014 at 12:26:16AM +0400, Alexander Shiyan wrote:
->>> Fri, 25 Apr 2014 13:23:15 -0700 =D0=BE=D1=82 Greg KH <gregkh@linuxf=
-oundation.org>:
->>>> On Fri, Apr 25, 2014 at 03:53:09PM -0400, jon@ringle.org wrote:
->>>>> From: Jon Ringle <jringle@gridpoint.com>
->>>>>
->>>>> Signed-off-by: Jon Ringle <jringle@gridpoint.com>
->>>>> ---
->>>>>  drivers/tty/serial/Kconfig | 1 +
->>>>>  1 file changed, 1 insertion(+)
->>>>>
->>>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kcon=
-fig
->>>>> index c3e2b32..64c5659 100644
->>>>> --- a/drivers/tty/serial/Kconfig
->>>>> +++ b/drivers/tty/serial/Kconfig
->>>>> @@ -1180,6 +1180,7 @@ config SERIAL_SCCNXP_CONSOLE
->>>>> =20
->>>>>  config SERIAL_SC16IS7XX
->>>>>  	tristate "SC16IS7xx serial support"
->>>>> +	depends on I2C
->>>>>  	select SERIAL_CORE
->>>>>  	select REGMAP_I2C if I2C
->>>>>  	help
->>>>> --=20
->>>>> 1.8.5.4
->>>>
->>>> Better, but I still have the build warnings :(
->>>
->>> I hope not same as before?
->>
->> Exactly the same.
->=20
-> Hmm...
->=20
-> In the source:
-> #ifdef CONFIG_REGMAP_I2C
-> Should be of course #ifdef CONFIG_I2C
-> But this should not provide such warnings...
+From: Jon Ringle <jringle@gridpoint.com>
 
-Can I see the warnings and .config file that causes them?
+This fixes the warnings:
 
+   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_handle_rx':
+>> drivers/tty/serial/sc16is7xx.c:548:1: warning: 'sc16is7xx_handle_rx' uses dynamic stack allocation [enabled by default]
+   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_handle_tx':
+>> drivers/tty/serial/sc16is7xx.c:589:1: warning: 'sc16is7xx_handle_tx' uses dynamic stack allocation [enabled by default]
 
---=20
-~Randy
+Signed-off-by: Jon Ringle <jringle@gridpoint.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7206a64..880cedd 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -317,6 +317,7 @@ struct sc16is7xx_port {
+ #ifdef CONFIG_GPIOLIB
+ 	struct gpio_chip		gpio;
+ #endif
++	unsigned char			buf[SC16IS7XX_FIFO_SIZE];
+ 	struct sc16is7xx_one		p[0];
+ };
+ 
+@@ -471,16 +472,15 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ {
+ 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	unsigned int lsr = 0, ch, flag, bytes_read, i;
+-	u8 buf[port->fifosize];
+ 	bool read_lsr = (iir == SC16IS7XX_IIR_RLSE_SRC) ? true : false;
+ 
+-	if (unlikely(rxlen >= port->fifosize)) {
++	if (unlikely(rxlen >= sizeof(s->buf))) {
+ 		dev_warn_ratelimited(port->dev,
+ 				     "Port %i: Possible RX FIFO overrun: %d\n",
+ 				     port->line, rxlen);
+ 		port->icount.buf_overrun++;
+ 		/* Ensure sanity of RX level */
+-		rxlen = port->fifosize;
++		rxlen = sizeof(s->buf);
+ 	}
+ 
+ 	while (rxlen) {
+@@ -493,12 +493,12 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ 			lsr = 0;
+ 
+ 		if (read_lsr) {
+-			buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
++			s->buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
+ 			bytes_read = 1;
+ 		} else {
+ 			regcache_cache_bypass(s->regmap, true);
+ 			regmap_raw_read(s->regmap, SC16IS7XX_RHR_REG,
+-					buf, rxlen);
++					s->buf, rxlen);
+ 			regcache_cache_bypass(s->regmap, false);
+ 			bytes_read = rxlen;
+ 		}
+@@ -532,7 +532,7 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ 		}
+ 
+ 		for (i = 0; i < bytes_read; ++i) {
+-			ch = buf[i];
++			ch = s->buf[i];
+ 			if (uart_handle_sysrq_char(port, ch))
+ 				continue;
+ 
+@@ -553,7 +553,6 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	unsigned int txlen, to_send, i;
+-	u8 buf[port->fifosize];
+ 
+ 	if (unlikely(port->x_char)) {
+ 		sc16is7xx_port_write(port, SC16IS7XX_THR_REG, port->x_char);
+@@ -577,11 +576,11 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 
+ 		/* Convert to linear buffer */
+ 		for (i = 0; i < to_send; ++i) {
+-			buf[i] = xmit->buf[xmit->tail];
++			s->buf[i] = xmit->buf[xmit->tail];
+ 			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		}
+ 		regcache_cache_bypass(s->regmap, true);
+-		regmap_raw_write(s->regmap, SC16IS7XX_THR_REG, buf, to_send);
++		regmap_raw_write(s->regmap, SC16IS7XX_THR_REG, s->buf, to_send);
+ 		regcache_cache_bypass(s->regmap, false);
+ 	}
+ 
+-- 
+1.8.5.4
+
