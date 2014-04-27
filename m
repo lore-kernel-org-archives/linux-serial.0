@@ -1,52 +1,58 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Fri, 25 Apr 2014 23:29:35 -0700
-Message-ID: <CAE9FiQVp5u-jF_xjCu68BgbZ=e0D508tn_-auoiT6cbkYtX8Og@mail.gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 3.15-rc3
+Date: Sat, 26 Apr 2014 17:37:23 -0700
+Message-ID: <20140427003723.GA3112@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ig0-f170.google.com ([209.85.213.170]:56113 "EHLO
-	mail-ig0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750785AbaDZG3f (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 26 Apr 2014 02:29:35 -0400
-In-Reply-To: <1397859600-11507-4-git-send-email-robherring2@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>
 
-On Fri, Apr 18, 2014 at 3:19 PM, Rob Herring <robherring2@gmail.com> wrote:
-> From: Rob Herring <robh@kernel.org>
->
-> With the generic earlycon infrastructure in place, convert the 8250
-> early console to use it.
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
->  drivers/tty/serial/8250/Kconfig      |   1 +
->  2 files changed, 16 insertions(+), 123 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-> index c100d63..e83c9db 100644
-> --- a/drivers/tty/serial/8250/8250_early.c
-> +++ b/drivers/tty/serial/8250/8250_early.c
-> @@ -35,18 +35,8 @@
-...
-> -
-> -int __init setup_early_serial8250_console(char *cmdline)
+The following changes since commit a798c10faf62a505d24e5f6213fbaf904a39623f:
 
-You removed global function, but still left declaration and calling...
+  Linux 3.15-rc2 (2014-04-20 11:08:50 -0700)
 
-arch/mips/mti-malta/malta-init.c:
-setup_early_serial8250_console(console_string);
-drivers/firmware/pcdp.c:        return setup_early_serial8250_console(options);
-include/linux/serial_8250.h:extern int
-setup_early_serial8250_console(char *cmdline);
+are available in the git repository at:
 
-Yinghai
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.15-rc3
+
+for you to fetch changes up to 7deb39ed8d9494ea541bcaa69b56036a94f79dc2:
+
+  serial_core: fix uart PORT_UNKNOWN handling (2014-04-24 15:38:22 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.15-rc3
+
+Here are a few tty/serial fixes for 3.15-rc3 that resolve a number of
+reported issues in the 8250 and samsung serial drivers, as well as a
+character loss fix for the tty core that was caused by the lock removal
+patches a release ago.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Doug Anderson (3):
+      serial: samsung: Use the passed in "port", fixing kgdb w/ no console
+      serial: samsung: don't check config for every character
+      serial: samsung: Change barrier() to cpu_relax() in console output
+
+Loic Poulain (2):
+      8250_core: Fix unwanted TX chars write
+      serial: 8250: Fix thread unsafe __dma_tx_complete function
+
+Manfred Schlaegl (1):
+      tty: Fix race condition between __tty_buffer_request_room and flush_to_ldisc
+
+Thomas Pfaff (1):
+      serial_core: fix uart PORT_UNKNOWN handling
+
+ drivers/tty/serial/8250/8250_core.c |  2 +-
+ drivers/tty/serial/8250/8250_dma.c  |  9 +++++++--
+ drivers/tty/serial/samsung.c        | 23 +++++++++++-----------
+ drivers/tty/serial/serial_core.c    | 39 ++++++++++++++++++++-----------------
+ drivers/tty/tty_buffer.c            | 16 +++++++++++++--
+ include/linux/tty.h                 |  1 +
+ 6 files changed, 56 insertions(+), 34 deletions(-)
