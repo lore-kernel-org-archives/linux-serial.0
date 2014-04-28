@@ -1,61 +1,63 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
-Date: Mon, 28 Apr 2014 16:07:49 +0900
-Message-ID: <20140428070748.GA24537@verge.net.au>
-References: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au>
- <CAMuHMdWB4ZnwyNFXMK_rdCKAMOXt+HRMZKG+j4O-tdfiP_-PLg@mail.gmail.com>
- <20140428000314.GK32087@verge.net.au>
- <2068512.62K6gPl1LN@avalon>
- <20140428011354.GA13324@verge.net.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140428011354.GA13324@verge.net.au>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: [PATCH] serial: 8250_dma: check the result of TX buffer mapping
+Date: Mon, 28 Apr 2014 15:59:56 +0300
+Message-ID: <1398689996-17182-1-git-send-email-heikki.krogerus@linux.intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:24337 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751400AbaD1NAX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Apr 2014 09:00:23 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
 
-On Mon, Apr 28, 2014 at 10:13:55AM +0900, Simon Horman wrote:
-> On Mon, Apr 28, 2014 at 02:08:16AM +0200, Laurent Pinchart wrote:
-> > Hi Simon,
-> > 
-> > On Monday 28 April 2014 09:03:14 Simon Horman wrote:
-> > > On Fri, Apr 25, 2014 at 09:11:06AM +0200, Geert Uytterhoeven wrote:
-> > > > On Fri, Apr 25, 2014 at 9:05 AM, Laurent Pinchart wrote:
-> > > > >> +     scif0: serial@ffe40000 {
-> > > > >> +             compatible = "renesas,scif", "renesas,scif-r8a7779";
-> > > > >> +             reg = <0xffe40000 265>;
-> > > > >> +             interrupt-parent = <&gic>;
-> > > > >> +             interrupts = <0 88 IRQ_TYPE_LEVEL_HIGH>;
-> > > > >> +             clocks = <&cpg_clocks R8A7779_CLK_P>;
-> > > > >> +             clock-names = "sci_ick";
-> > > > > 
-> > > > > Clock handling in the sh-sci driver should probably be improved. The
-> > > > > driver currently requires an "sci_ick" interface clock and supports an
-> > > > > optional "sci_fck" functional clock. In practice, as far as I can see,
-> > > > > platforms that provide both sci_ick and sci_fck set the two clocks to
-> > > > > the same source.
-> > >
-> > > > That's right. As a consequence, the clock's enable count is incremented
-> > > > 
-> > > > 3 times:
-> > > >   - once for fck,
-> > > >   - once for ick,
-> > > >   - once for generic Runtime PM using the "NULL" clock.
-> > > 
-> > > This approach is fine by me.
-> > > But I think you need to maintain compatibility with the old
-> > > binding ("sci_ick" required, "sci_fsk") as it seems that
-> > > was included in v3.14.
-> > 
-> > sci_fck isn't part of the DT bindings, so we can at least drop that one.
-> 
-> So long as its not used anywhere in-tree, which I believe is the case,
-> then that is fine by me.
+Using dma_mapping_error() to make sure the mapping did not
+fail.
 
-BTW, are you planning to make the above mentioned driver update
-before or after re-posting enablement patches for Koelsch and/or Lager?
-I ask because I would like to make such patches the basis for
-a patch for Marzen.
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dma.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index ab9096d..148ffe4 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -192,21 +192,28 @@ int serial8250_request_dma(struct uart_8250_port *p)
+ 
+ 	dma->rx_buf = dma_alloc_coherent(dma->rxchan->device->dev, dma->rx_size,
+ 					&dma->rx_addr, GFP_KERNEL);
+-	if (!dma->rx_buf) {
+-		dma_release_channel(dma->rxchan);
+-		dma_release_channel(dma->txchan);
+-		return -ENOMEM;
+-	}
++	if (!dma->rx_buf)
++		goto err;
+ 
+ 	/* TX buffer */
+ 	dma->tx_addr = dma_map_single(dma->txchan->device->dev,
+ 					p->port.state->xmit.buf,
+ 					UART_XMIT_SIZE,
+ 					DMA_TO_DEVICE);
++	if (dma_mapping_error(dma->txchan->device->dev, dma->tx_addr)) {
++		dma_free_coherent(dma->rxchan->device->dev, dma->rx_size,
++				  dma->rx_buf, dma->rx_addr);
++		goto err;
++	}
+ 
+ 	dev_dbg_ratelimited(p->port.dev, "got both dma channels\n");
+ 
+ 	return 0;
++err:
++	dma_release_channel(dma->rxchan);
++	dma_release_channel(dma->txchan);
++
++	return -ENOMEM;
+ }
+ EXPORT_SYMBOL_GPL(serial8250_request_dma);
+ 
+-- 
+2.0.0.rc0
+
