@@ -1,63 +1,105 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] serial: 8250_dma: check the result of TX buffer mapping
-Date: Mon, 28 Apr 2014 15:59:56 +0300
-Message-ID: <1398689996-17182-1-git-send-email-heikki.krogerus@linux.intel.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Mon, 28 Apr 2014 18:20:53 -0500
+Message-ID: <CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
+	<CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:24337 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751400AbaD1NAX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Apr 2014 09:00:23 -0400
+Received: from mail-vc0-f172.google.com ([209.85.220.172]:39940 "EHLO
+	mail-vc0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751672AbaD1XUy (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Apr 2014 19:20:54 -0400
+In-Reply-To: <CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+To: Yinghai Lu <yinghai@kernel.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
 
-Using dma_mapping_error() to make sure the mapping did not
-fail.
+On Sat, Apr 26, 2014 at 1:19 AM, Yinghai Lu <yinghai@kernel.org> wrote:
+> On Fri, Apr 18, 2014 at 3:19 PM, Rob Herring <robherring2@gmail.com> wrote:
+>> From: Rob Herring <robh@kernel.org>
+>>
+>> With the generic earlycon infrastructure in place, convert the 8250
+>> early console to use it.
+>>
+>> Signed-off-by: Rob Herring <robh@kernel.org>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>  drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
+>>  drivers/tty/serial/8250/Kconfig      |   1 +
+>>  2 files changed, 16 insertions(+), 123 deletions(-)
+>
+> Hi Greg, Rob
+>
+> This one in tty-next breaks booting: "console=uart8250,io,0x3f8,115200".
+> No early console and regular console anymore.
+>
+> It should produce "early con and regular con".
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dma.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+This is what I get for running checkpatch and converting
+simple_strtoul to kstrto* which are not so equivalent. kstrto* will
+not convert things such as 115200n8 to a number.
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index ab9096d..148ffe4 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -192,21 +192,28 @@ int serial8250_request_dma(struct uart_8250_port *p)
- 
- 	dma->rx_buf = dma_alloc_coherent(dma->rxchan->device->dev, dma->rx_size,
- 					&dma->rx_addr, GFP_KERNEL);
--	if (!dma->rx_buf) {
--		dma_release_channel(dma->rxchan);
--		dma_release_channel(dma->txchan);
--		return -ENOMEM;
--	}
-+	if (!dma->rx_buf)
-+		goto err;
- 
- 	/* TX buffer */
- 	dma->tx_addr = dma_map_single(dma->txchan->device->dev,
- 					p->port.state->xmit.buf,
- 					UART_XMIT_SIZE,
- 					DMA_TO_DEVICE);
-+	if (dma_mapping_error(dma->txchan->device->dev, dma->tx_addr)) {
-+		dma_free_coherent(dma->rxchan->device->dev, dma->rx_size,
-+				  dma->rx_buf, dma->rx_addr);
-+		goto err;
-+	}
- 
- 	dev_dbg_ratelimited(p->port.dev, "got both dma channels\n");
- 
- 	return 0;
-+err:
-+	dma_release_channel(dma->rxchan);
-+	dma_release_channel(dma->txchan);
-+
-+	return -ENOMEM;
- }
- EXPORT_SYMBOL_GPL(serial8250_request_dma);
- 
--- 
-2.0.0.rc0
+Greg, Do you want a fix or for me to respin the series? The fix looks like this:
 
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 73bf1e2..c92e830 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -53,7 +53,7 @@ static int __init parse_options(struct
+earlycon_device *device,
+                                char *options)
+ {
+        struct uart_port *port = &device->port;
+-       int mmio, mmio32, length, ret;
++       int mmio, mmio32, length;
+        unsigned long addr;
+
+        if (!options)
+@@ -64,25 +64,19 @@ static int __init parse_options(struct
+earlycon_device *device,
+        if (mmio || mmio32) {
+                port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
+                options += mmio ? 5 : 7;
+-               ret = kstrtoul(options, 0, &addr);
+-               if (ret)
+-                       return ret;
++               addr = simple_strtoul(options, NULL, 0);
+                port->mapbase = addr;
+                if (mmio32)
+                        port->regshift = 2;
+        } else if (!strncmp(options, "io,", 3)) {
+                port->iotype = UPIO_PORT;
+                options += 3;
+-               ret = kstrtoul(options, 0, &addr);
+-               if (ret)
+-                       return ret;
++               addr = simple_strtoul(options, NULL, 0);
+                port->iobase = addr;
+                mmio = 0;
+        } else if (!strncmp(options, "0x", 2)) {
+                port->iotype = UPIO_MEM;
+-               ret = kstrtoul(options, 0, &addr);
+-               if (ret)
+-                       return ret;
++               addr = simple_strtoul(options, NULL, 0);
+                port->mapbase = addr;
+        } else {
+                return -EINVAL;
+@@ -93,9 +87,7 @@ static int __init parse_options(struct
+earlycon_device *device,
+        options = strchr(options, ',');
+        if (options) {
+                options++;
+-               ret = kstrtouint(options, 0, &device->baud);
+-               if (ret)
+-                       return ret;
++               device->baud = simple_strtoul(options, NULL, 0);
+                length = min(strcspn(options, " ") + 1,
+                             (size_t)(sizeof(device->options)));
+                strlcpy(device->options, options, length);
