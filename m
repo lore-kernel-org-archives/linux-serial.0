@@ -1,90 +1,75 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Tue, 29 Apr 2014 15:41:45 -0500
-Message-ID: <CAL_JsqKCJvYSrFSBVCfijLhZEojm29JCY8ubQV1eAoyCCZDRZA@mail.gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
-	<CAE9FiQVp5u-jF_xjCu68BgbZ=e0D508tn_-auoiT6cbkYtX8Og@mail.gmail.com>
-	<CAL_JsqKiYmCNGrkiwS7m-OAt3rHZBq_yNGycen-AojbV-7famg@mail.gmail.com>
-	<CAE9FiQVdwumX7Dsmt8NJhw4uWsj2sjUKaKS1wJQujW1fn1szLw@mail.gmail.com>
-	<CAL_Jsq+uNunqfsvPNxZLQQ3y1ay_XMZKb4c=HNWvKtwuiZGQ0g@mail.gmail.com>
-	<CAE9FiQU40p-e8mqZKzaGg6nTuPdep3inRdpQtNu5txPOJ6Aw-Q@mail.gmail.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
+Date: Wed, 30 Apr 2014 06:48:50 +0900
+Message-ID: <20140429214846.GA27566@verge.net.au>
+References: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au>
+ <20140428011354.GA13324@verge.net.au>
+ <20140428070748.GA24537@verge.net.au>
+ <1986104.5bpNkKVN8D@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f174.google.com ([209.85.128.174]:51783 "EHLO
-	mail-ve0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933267AbaD2Ulq (ORCPT
+Received: from kirsty.vergenet.net ([202.4.237.240]:34447 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933390AbaD2Vsy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Apr 2014 16:41:46 -0400
-In-Reply-To: <CAE9FiQU40p-e8mqZKzaGg6nTuPdep3inRdpQtNu5txPOJ6Aw-Q@mail.gmail.com>
+	Tue, 29 Apr 2014 17:48:54 -0400
+Content-Disposition: inline
+In-Reply-To: <1986104.5bpNkKVN8D@avalon>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-On Tue, Apr 29, 2014 at 1:22 PM, Yinghai Lu <yinghai@kernel.org> wrote:
-> On Tue, Apr 29, 2014 at 8:16 AM, Rob Herring <robherring2@gmail.com> wrote:
->> On Mon, Apr 28, 2014 at 9:56 PM, Yinghai Lu <yinghai@kernel.org> wrote:
->>> On Mon, Apr 28, 2014 at 4:24 PM, Rob Herring <robherring2@gmail.com> wrote:
->>>> On Sat, Apr 26, 2014 at 1:29 AM, Yinghai Lu <yinghai@kernel.org> wrote:
->>>>
->>>> Thanks for finding these. I missed them in my build tests. This should fix them:
->>>>
->>>> diff --git a/drivers/tty/serial/8250/8250_early.c
->>>> b/drivers/tty/serial/8250/8250_early.c
->>>> index e83c9db..2094c3b 100644
->>>> --- a/drivers/tty/serial/8250/8250_early.c
->>>> +++ b/drivers/tty/serial/8250/8250_early.c
->>>> @@ -156,6 +156,11 @@ static int __init early_serial8250_setup(struct
->>>> earlycon_device *device,
->>>>  EARLYCON_DECLARE(uart8250, early_serial8250_setup);
->>>>  EARLYCON_DECLARE(uart, early_serial8250_setup);
->>>>
->>>> +int __init setup_early_serial8250_console(char *cmdline)
->>>> +{
->>>> +       return setup_earlycon(cmdline, "uart8250", early_serial8250_setup);
->>>> +}
->>>> +
->>>>  int serial8250_find_port_for_earlycon(void)
->>>>  {
->>>>         struct earlycon_device *device = early_device;
->>>
->>> that only handle "uart8250,", may need to add more lines to handle "uart,"
->>
->>
->> That is on purpose because the only 2 users use uart8250. I consider
->> this a legacy interface and use of "uart" is horrible because there
->> are lots of uarts which are not 8250.
->>
->> Rob
->>
->>>
->>> +int __init setup_early_serial8250_console(char *cmdline)
->>> +{
->>> +       char *options;
->>> +       options = strstr(cmdline, "uart8250,");
->>> +       if (options)
->>> +               return setup_earlycon(cmdline, "uart8250",
->>> early_serial8250_setup);
->>> +
->>> +       options = strstr(cmdline, "uart,");
->>> +       if (options)
->>> +              return setup_earlycon(cmdline, "uart", early_serial8250_setup);
->>> +
->>> +      return 0;
->>> +}
->
-> You want to obsolete "console=uart,io,0x3f8,115200n8" ?
->
->  Let's check with Andrew. He suggested to use uart and uart8250 at that time.
+On Tue, Apr 29, 2014 at 03:44:46PM +0200, Laurent Pinchart wrote:
+> Hi Simon,
+> 
+> On Monday 28 April 2014 16:07:49 Simon Horman wrote:
+> > On Mon, Apr 28, 2014 at 10:13:55AM +0900, Simon Horman wrote:
+> > > On Mon, Apr 28, 2014 at 02:08:16AM +0200, Laurent Pinchart wrote:
+> > > > On Monday 28 April 2014 09:03:14 Simon Horman wrote:
+> > > > > On Fri, Apr 25, 2014 at 09:11:06AM +0200, Geert Uytterhoeven wrote:
+> > > > > > On Fri, Apr 25, 2014 at 9:05 AM, Laurent Pinchart wrote:
+> > > > > > >> +     scif0: serial@ffe40000 {
+> > > > > > >> +             compatible = "renesas,scif",
+> > > > > > >> "renesas,scif-r8a7779";
+> > > > > > >> +             reg = <0xffe40000 265>;
+> > > > > > >> +             interrupt-parent = <&gic>;
+> > > > > > >> +             interrupts = <0 88 IRQ_TYPE_LEVEL_HIGH>;
+> > > > > > >> +             clocks = <&cpg_clocks R8A7779_CLK_P>;
+> > > > > > >> +             clock-names = "sci_ick";
+> > > > > > > 
+> > > > > > > Clock handling in the sh-sci driver should probably be improved.
+> > > > > > > The driver currently requires an "sci_ick" interface clock and
+> > > > > > > supports an optional "sci_fck" functional clock. In practice, as
+> > > > > > > far as I can see, platforms that provide both sci_ick and sci_fck
+> > > > > > > set the two clocks to the same source.
+> > > > > > 
+> > > > > > That's right. As a consequence, the clock's enable count is
+> > > > > > incremented
+> > > > > > 
+> > > > > > 3 times:
+> > > > > >   - once for fck,
+> > > > > >   - once for ick,
+> > > > > >   - once for generic Runtime PM using the "NULL" clock.
+> > > > > 
+> > > > > This approach is fine by me.
+> > > > > But I think you need to maintain compatibility with the old
+> > > > > binding ("sci_ick" required, "sci_fsk") as it seems that
+> > > > > was included in v3.14.
+> > > > 
+> > > > sci_fck isn't part of the DT bindings, so we can at least drop that one.
+> > > 
+> > > So long as its not used anywhere in-tree, which I believe is the case,
+> > > then that is fine by me.
+> > 
+> > BTW, are you planning to make the above mentioned driver update
+> > before or after re-posting enablement patches for Koelsch and/or Lager?
+> > I ask because I would like to make such patches the basis for
+> > a patch for Marzen.
+> 
+> I'll try to do so today, after my talk at the ELC :-)
 
-No, that is not what I'm saying. For the 2 callers of
-setup_early_serial8250_console which are crafting a console string
-from firmware data, they can and do use uart8250. I don't expect this
-mechanism for setting up early console to expand to other users. The
-whole point of this series is to allow any uart to be supported for
-earlycon. For anyone using the kernel command line, both uart and
-uart8250 are still supported.
-
-Rob
+I thought you might be a bit busy with ELC so I went
+ahead and made my Marzen patches. Hopefully they aren't
+too far away from what you have in mind for the Koelsch and Lager.
