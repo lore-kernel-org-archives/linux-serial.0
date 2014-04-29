@@ -1,45 +1,77 @@
 From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v2 0/7] Generic serial earlycon
-Date: Tue, 29 Apr 2014 10:12:35 -0500
-Message-ID: <CAL_JsqJtXeB55kv7VD4DRj4F2W9HsJ39JFuaDQtocZLzHE_RUw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Tue, 29 Apr 2014 10:16:27 -0500
+Message-ID: <CAL_Jsq+uNunqfsvPNxZLQQ3y1ay_XMZKb4c=HNWvKtwuiZGQ0g@mail.gmail.com>
 References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<20140429110950.GF17007@arm.com>
+	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
+	<CAE9FiQVp5u-jF_xjCu68BgbZ=e0D508tn_-auoiT6cbkYtX8Og@mail.gmail.com>
+	<CAL_JsqKiYmCNGrkiwS7m-OAt3rHZBq_yNGycen-AojbV-7famg@mail.gmail.com>
+	<CAE9FiQVdwumX7Dsmt8NJhw4uWsj2sjUKaKS1wJQujW1fn1szLw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f178.google.com ([209.85.220.178]:55083 "EHLO
-	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757679AbaD2PMg (ORCPT
+Received: from mail-vc0-f176.google.com ([209.85.220.176]:54391 "EHLO
+	mail-vc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751016AbaD2PQ1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Apr 2014 11:12:36 -0400
-In-Reply-To: <20140429110950.GF17007@arm.com>
+	Tue, 29 Apr 2014 11:16:27 -0400
+In-Reply-To: <CAE9FiQVdwumX7Dsmt8NJhw4uWsj2sjUKaKS1wJQujW1fn1szLw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, Will Deacon <Will.Deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>
+To: Yinghai Lu <yinghai@kernel.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>
 
-On Tue, Apr 29, 2014 at 6:09 AM, Catalin Marinas
-<catalin.marinas@arm.com> wrote:
-> On Fri, Apr 18, 2014 at 11:19:53PM +0100, Rob Herring wrote:
->> Rob Herring (7):
->>   x86: move FIX_EARLYCON_MEM kconfig into x86
->>   tty/serial: add generic serial earlycon
->>   tty/serial: convert 8250 to generic earlycon
->>   tty/serial: pl011: add generic earlycon support
->>   tty/serial: add arm/arm64 semihosting earlycon
->>   arm64: enable FIX_EARLYCON_MEM kconfig
->>   arm64: remove arch specific earlyprintk
+On Mon, Apr 28, 2014 at 9:56 PM, Yinghai Lu <yinghai@kernel.org> wrote:
+> On Mon, Apr 28, 2014 at 4:24 PM, Rob Herring <robherring2@gmail.com> wrote:
+>> On Sat, Apr 26, 2014 at 1:29 AM, Yinghai Lu <yinghai@kernel.org> wrote:
+>>
+>> Thanks for finding these. I missed them in my build tests. This should fix them:
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_early.c
+>> b/drivers/tty/serial/8250/8250_early.c
+>> index e83c9db..2094c3b 100644
+>> --- a/drivers/tty/serial/8250/8250_early.c
+>> +++ b/drivers/tty/serial/8250/8250_early.c
+>> @@ -156,6 +156,11 @@ static int __init early_serial8250_setup(struct
+>> earlycon_device *device,
+>>  EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+>>  EARLYCON_DECLARE(uart, early_serial8250_setup);
+>>
+>> +int __init setup_early_serial8250_console(char *cmdline)
+>> +{
+>> +       return setup_earlycon(cmdline, "uart8250", early_serial8250_setup);
+>> +}
+>> +
+>>  int serial8250_find_port_for_earlycon(void)
+>>  {
+>>         struct earlycon_device *device = early_device;
 >
-> The series looks fine, you can add:
->
-> Acked-by: Catalin Marinas <catalin.marinas@arm.com>
->
+> that only handle "uart8250,", may need to add more lines to handle "uart,"
 
-Thanks.
 
-> BTW, are you merging all of them via some other tree or would prefer me
-> to take the arm64-specific patches?
-
-Greg has taken it, but there were a few issues, so it may get reposted.
+That is on purpose because the only 2 users use uart8250. I consider
+this a legacy interface and use of "uart" is horrible because there
+are lots of uarts which are not 8250.
 
 Rob
+
+>
+> +int __init setup_early_serial8250_console(char *cmdline)
+> +{
+> +       char *options;
+> +       options = strstr(cmdline, "uart8250,");
+> +       if (options)
+> +               return setup_earlycon(cmdline, "uart8250",
+> early_serial8250_setup);
+> +
+> +       options = strstr(cmdline, "uart,");
+> +       if (options)
+> +              return setup_earlycon(cmdline, "uart", early_serial8250_setup);
+> +
+> +      return 0;
+> +}
+> +
+>
+> Thanks
+>
+> Yinghai
