@@ -1,67 +1,44 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Mon, 28 Apr 2014 19:56:54 -0700
-Message-ID: <CAE9FiQVdwumX7Dsmt8NJhw4uWsj2sjUKaKS1wJQujW1fn1szLw@mail.gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
-	<CAE9FiQVp5u-jF_xjCu68BgbZ=e0D508tn_-auoiT6cbkYtX8Og@mail.gmail.com>
-	<CAL_JsqKiYmCNGrkiwS7m-OAt3rHZBq_yNGycen-AojbV-7famg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH/RFC v2] serial: sh-sci: Add device tree support for r8a7779
+Date: Tue, 29 Apr 2014 16:20:11 +0900
+Message-ID: <1398756011-4672-1-git-send-email-horms+renesas@verge.net.au>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f177.google.com ([209.85.223.177]:48758 "EHLO
-	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751913AbaD2C4z (ORCPT
+Received: from kirsty.vergenet.net ([202.4.237.240]:42632 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751016AbaD2HUR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Apr 2014 22:56:55 -0400
-In-Reply-To: <CAL_JsqKiYmCNGrkiwS7m-OAt3rHZBq_yNGycen-AojbV-7famg@mail.gmail.com>
+	Tue, 29 Apr 2014 03:20:17 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 
-On Mon, Apr 28, 2014 at 4:24 PM, Rob Herring <robherring2@gmail.com> wrote:
-> On Sat, Apr 26, 2014 at 1:29 AM, Yinghai Lu <yinghai@kernel.org> wrote:
->
-> Thanks for finding these. I missed them in my build tests. This should fix them:
->
-> diff --git a/drivers/tty/serial/8250/8250_early.c
-> b/drivers/tty/serial/8250/8250_early.c
-> index e83c9db..2094c3b 100644
-> --- a/drivers/tty/serial/8250/8250_early.c
-> +++ b/drivers/tty/serial/8250/8250_early.c
-> @@ -156,6 +156,11 @@ static int __init early_serial8250_setup(struct
-> earlycon_device *device,
->  EARLYCON_DECLARE(uart8250, early_serial8250_setup);
->  EARLYCON_DECLARE(uart, early_serial8250_setup);
->
-> +int __init setup_early_serial8250_console(char *cmdline)
-> +{
-> +       return setup_earlycon(cmdline, "uart8250", early_serial8250_setup);
-> +}
-> +
->  int serial8250_find_port_for_earlycon(void)
->  {
->         struct earlycon_device *device = early_device;
+Simply document a new compat string.
+There appears to be no need for a driver updates.
 
-that only handle "uart8250,", may need to add more lines to handle "uart,"
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 
-+int __init setup_early_serial8250_console(char *cmdline)
-+{
-+       char *options;
-+       options = strstr(cmdline, "uart8250,");
-+       if (options)
-+               return setup_earlycon(cmdline, "uart8250",
-early_serial8250_setup);
-+
-+       options = strstr(cmdline, "uart,");
-+       if (options)
-+              return setup_earlycon(cmdline, "uart", early_serial8250_setup);
-+
-+      return 0;
-+}
-+
+---
 
-Thanks
+v2
+* Do not update the driver to set SCSCR_CKE1.
+  Instead DT may provide the P clock as the clock for the SCIF devices.
+---
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Yinghai
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 53e6c17..bba86de 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -12,6 +12,7 @@ Required properties:
+     - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
+     - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
+     - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
++    - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif" for generic SCIF compatible UART.
+     - "renesas,scifa" for generic SCIFA compatible UART.
+     - "renesas,scifb" for generic SCIFB compatible UART.
+-- 
+1.8.5.2
+
