@@ -1,124 +1,82 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: [PATCH v1] serial: uart: add hw flow control support configuration
-Date: Tue, 29 Apr 2014 13:22:02 -0400
-Message-ID: <1398792122-18592-1-git-send-email-m-karicheri2@ti.com>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Tue, 29 Apr 2014 11:22:28 -0700
+Message-ID: <CAE9FiQU40p-e8mqZKzaGg6nTuPdep3inRdpQtNu5txPOJ6Aw-Q@mail.gmail.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
+	<CAE9FiQVp5u-jF_xjCu68BgbZ=e0D508tn_-auoiT6cbkYtX8Og@mail.gmail.com>
+	<CAL_JsqKiYmCNGrkiwS7m-OAt3rHZBq_yNGycen-AojbV-7famg@mail.gmail.com>
+	<CAE9FiQVdwumX7Dsmt8NJhw4uWsj2sjUKaKS1wJQujW1fn1szLw@mail.gmail.com>
+	<CAL_Jsq+uNunqfsvPNxZLQQ3y1ay_XMZKb4c=HNWvKtwuiZGQ0g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:35726 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758306AbaD2RWs (ORCPT
+Received: from mail-ig0-f173.google.com ([209.85.213.173]:40193 "EHLO
+	mail-ig0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932491AbaD2SWa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Apr 2014 13:22:48 -0400
+	Tue, 29 Apr 2014 14:22:30 -0400
+In-Reply-To: <CAL_Jsq+uNunqfsvPNxZLQQ3y1ay_XMZKb4c=HNWvKtwuiZGQ0g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Murali Karicheri <m-karicheri2@ti.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Rob Herring <robherring2@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>
 
-8250 uart driver currently supports only software assisted hw flow
-control. The software assisted hw flow control maintains a hw_stopped
-flag in the tty structure to stop and start transmission and use modem
-status interrupt for the event to drive the handshake signals. This is
-not needed if hw has flow control capabilities. This patch adds a
-DT attribute for enabling hw flow control for a uart port. Also skip
-stop and start if this flag is present in flag field of the port
-structure.
+On Tue, Apr 29, 2014 at 8:16 AM, Rob Herring <robherring2@gmail.com> wrote:
+> On Mon, Apr 28, 2014 at 9:56 PM, Yinghai Lu <yinghai@kernel.org> wrote:
+>> On Mon, Apr 28, 2014 at 4:24 PM, Rob Herring <robherring2@gmail.com> wrote:
+>>> On Sat, Apr 26, 2014 at 1:29 AM, Yinghai Lu <yinghai@kernel.org> wrote:
+>>>
+>>> Thanks for finding these. I missed them in my build tests. This should fix them:
+>>>
+>>> diff --git a/drivers/tty/serial/8250/8250_early.c
+>>> b/drivers/tty/serial/8250/8250_early.c
+>>> index e83c9db..2094c3b 100644
+>>> --- a/drivers/tty/serial/8250/8250_early.c
+>>> +++ b/drivers/tty/serial/8250/8250_early.c
+>>> @@ -156,6 +156,11 @@ static int __init early_serial8250_setup(struct
+>>> earlycon_device *device,
+>>>  EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+>>>  EARLYCON_DECLARE(uart, early_serial8250_setup);
+>>>
+>>> +int __init setup_early_serial8250_console(char *cmdline)
+>>> +{
+>>> +       return setup_earlycon(cmdline, "uart8250", early_serial8250_setup);
+>>> +}
+>>> +
+>>>  int serial8250_find_port_for_earlycon(void)
+>>>  {
+>>>         struct earlycon_device *device = early_device;
+>>
+>> that only handle "uart8250,", may need to add more lines to handle "uart,"
+>
+>
+> That is on purpose because the only 2 users use uart8250. I consider
+> this a legacy interface and use of "uart" is horrible because there
+> are lots of uarts which are not 8250.
+>
+> Rob
+>
+>>
+>> +int __init setup_early_serial8250_console(char *cmdline)
+>> +{
+>> +       char *options;
+>> +       options = strstr(cmdline, "uart8250,");
+>> +       if (options)
+>> +               return setup_earlycon(cmdline, "uart8250",
+>> early_serial8250_setup);
+>> +
+>> +       options = strstr(cmdline, "uart,");
+>> +       if (options)
+>> +              return setup_earlycon(cmdline, "uart", early_serial8250_setup);
+>> +
+>> +      return 0;
+>> +}
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+You want to obsolete "console=uart,io,0x3f8,115200n8" ?
 
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Pawel Moll <pawel.moll@arm.com> 
-CC: Mark Rutland <mark.rutland@arm.com>
-CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
-CC: Kumar Gala <galak@codeaurora.org>
-CC: Randy Dunlap <rdunlap@infradead.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jiri Slaby <jslaby@suse.cz>
-CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
----
- - Fixed brackets around port->flags & UPF_HARD_FLOW as per comments 
- .../devicetree/bindings/serial/of-serial.txt       |    2 ++
- drivers/tty/serial/8250/8250_core.c                |    6 ++++--
- drivers/tty/serial/of_serial.c                     |    4 ++++
- drivers/tty/serial/serial_core.c                   |   12 +++++++++---
- 4 files changed, 19 insertions(+), 5 deletions(-)
+ Let's check with Andrew. He suggested to use uart and uart8250 at that time.
 
-diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
-index 1928a3e..123de01 100644
---- a/Documentation/devicetree/bindings/serial/of-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/of-serial.txt
-@@ -37,6 +37,8 @@ Optional properties:
- - auto-flow-control: one way to enable automatic flow control support. The
-   driver is allowed to detect support for the capability even without this
-   property.
-+- hw-flow-control: this enables pure hw flow control and no software
-+  intervention needed.
- 
- Example:
- 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 81f909c..f145103 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
- 	 * the remote UART is not using CTS auto flow control, we must
- 	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
-+	 * AFE if hw flow control is supported
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
-+	    (port->flags & UPF_HARD_FLOW)) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 9924660..1a5f528 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 					  "auto-flow-control"))
- 			port8250.capabilities |= UART_CAP_AFE;
- 
-+		if (of_property_read_bool(ofdev->dev.of_node,
-+					  "hw-flow-control"))
-+			port8250.port.flags |= UPF_HARD_FLOW;
-+
- 		ret = serial8250_register_8250_port(&port8250);
- 		break;
- 	}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2cf5649..16e3615 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -170,8 +170,12 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 			if (tty->termios.c_cflag & CBAUD)
- 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
- 		}
--
--		if (tty_port_cts_enabled(port)) {
-+		/*
-+		 * if hw support flow control without software intervention,
-+		 * then skip the below check
-+		 */
-+		if (tty_port_cts_enabled(port) &&
-+		    !(uport->flags & UPF_HARD_FLOW)) {
- 			spin_lock_irq(&uport->lock);
- 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
- 				tty->hw_stopped = 1;
-@@ -2768,7 +2772,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
- 
- 	uport->icount.cts++;
- 
--	if (tty_port_cts_enabled(port)) {
-+	/* skip below code if the hw flow control is supported */
-+	if (tty_port_cts_enabled(port) &&
-+	    !(uport->flags & UPF_HARD_FLOW)) {
- 		if (tty->hw_stopped) {
- 			if (status) {
- 				tty->hw_stopped = 0;
--- 
-1.7.9.5
+Thanks
 
+Yinghai
