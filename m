@@ -1,44 +1,36 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH/RFC v2] serial: sh-sci: Add device tree support for r8a7779
-Date: Tue, 29 Apr 2014 16:20:11 +0900
-Message-ID: <1398756011-4672-1-git-send-email-horms+renesas@verge.net.au>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v2 0/7] Generic serial earlycon
+Date: Tue, 29 Apr 2014 12:09:50 +0100
+Message-ID: <20140429110950.GF17007@arm.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:42632 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751016AbaD2HUR (ORCPT
+Received: from fw-tnat.austin.arm.com ([217.140.110.23]:21987 "EHLO
+	collaborate-mta1.arm.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S933004AbaD2LKf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Apr 2014 03:20:17 -0400
+	Tue, 29 Apr 2014 07:10:35 -0400
+Content-Disposition: inline
+In-Reply-To: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+To: Rob Herring <robherring2@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, Will Deacon <Will.Deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>
 
-Simply document a new compat string.
-There appears to be no need for a driver updates.
+On Fri, Apr 18, 2014 at 11:19:53PM +0100, Rob Herring wrote:
+> Rob Herring (7):
+>   x86: move FIX_EARLYCON_MEM kconfig into x86
+>   tty/serial: add generic serial earlycon
+>   tty/serial: convert 8250 to generic earlycon
+>   tty/serial: pl011: add generic earlycon support
+>   tty/serial: add arm/arm64 semihosting earlycon
+>   arm64: enable FIX_EARLYCON_MEM kconfig
+>   arm64: remove arch specific earlyprintk
 
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+The series looks fine, you can add:
 
----
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 
-v2
-* Do not update the driver to set SCSCR_CKE1.
-  Instead DT may provide the P clock as the clock for the SCIF devices.
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 53e6c17..bba86de 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -12,6 +12,7 @@ Required properties:
-     - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
-     - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
-     - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
-+    - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif" for generic SCIF compatible UART.
-     - "renesas,scifa" for generic SCIFA compatible UART.
-     - "renesas,scifb" for generic SCIFB compatible UART.
--- 
-1.8.5.2
-
+BTW, are you merging all of them via some other tree or would prefer me
+to take the arm64-specific patches?
