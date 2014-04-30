@@ -1,46 +1,129 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
-Date: Wed, 30 Apr 2014 10:45:09 +0900
-Message-ID: <20140430014508.GF24989@verge.net.au>
-References: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au>
- <1986104.5bpNkKVN8D@avalon>
- <20140429214846.GA27566@verge.net.au>
- <48241008.smQVDtv0CD@avalon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <48241008.smQVDtv0CD@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Jan Moskyto Matejka <mq@suse.cz>
+Subject: [PATCH] [linux-next] serial: sc16is7xx: fix defined-but-not-used warnings
+Date: Wed, 30 Apr 2014 15:07:04 +0200
+Message-ID: <1398863224-19900-1-git-send-email-mq@suse.cz>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:44738 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933638AbaD3NHJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Apr 2014 09:07:09 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jan Moskyto Matejka <mq@suse.cz>
 
-On Wed, Apr 30, 2014 at 02:59:46AM +0200, Laurent Pinchart wrote:
-> Hi Simon,
-> 
-> On Wednesday 30 April 2014 06:48:50 Simon Horman wrote:
-> > On Tue, Apr 29, 2014 at 03:44:46PM +0200, Laurent Pinchart wrote:
-> > > On Monday 28 April 2014 16:07:49 Simon Horman wrote:
-> 
-> [snip]
-> 
-> > > > BTW, are you planning to make the above mentioned driver update
-> > > > before or after re-posting enablement patches for Koelsch and/or Lager?
-> > > > I ask because I would like to make such patches the basis for
-> > > > a patch for Marzen.
-> > > 
-> > > I'll try to do so today, after my talk at the ELC :-)
-> > 
-> > I thought you might be a bit busy with ELC so I went
-> > ahead and made my Marzen patches. Hopefully they aren't
-> > too far away from what you have in mind for the Koelsch and Lager.
-> 
-> I was busy, but I've just sent the patches :-) Could you please test them ? If 
-> no problem is found I'd like the SCI patch to go in before this series, to 
-> avoid adding a dependency on sci_ick in the marzen DT.
+drivers/tty/serial/sc16is7xx.c:1060:12: warning: 'sc16is7xx_probe' defined but not used [-Wunused-function]
+ static int sc16is7xx_probe(struct device *dev,
+            ^
+drivers/tty/serial/sc16is7xx.c:1176:12: warning: 'sc16is7xx_remove' defined but not used [-Wunused-function]
+ static int sc16is7xx_remove(struct device *dev)
+            ^
+drivers/tty/serial/sc16is7xx.c:1215:29: warning: 'regcfg' defined but not used [-Wunused-variable]
+ static struct regmap_config regcfg = {
+                             ^
 
-Sure, will do.
+Fixed these warnings by #ifdef-ing them to CONFIG_REGMAP_I2C and
+recursively #ifdef-ing also some other functions that got defined but not used.
 
-As mentioned else where I'd prefer not do depend
-on the SCI patch. But lets continue that discussion elsewhere.
+Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
+---
+ drivers/tty/serial/sc16is7xx.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7206a64..bd76277 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -389,6 +389,7 @@ static const struct sc16is7xx_devtype sc16is762_devtype = {
+ 	.nr_uart	= 2,
+ };
+ 
++#ifdef CONFIG_REGMAP_I2C
+ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg >> SC16IS7XX_REG_SHIFT) {
+@@ -418,6 +419,7 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
+ 
+ 	return false;
+ }
++#endif
+ 
+ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ {
+@@ -466,6 +468,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ 	return DIV_ROUND_CLOSEST(clk / 16, div);
+ }
+ 
++#ifdef CONFIG_REGMAP_I2C
+ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ 				unsigned int iir)
+ {
+@@ -588,7 +591,9 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ }
++#endif
+ 
++#ifdef CONFIG_REGMAP_I2C
+ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ {
+ 	struct uart_port *port = &s->p[portno].port;
+@@ -651,6 +656,7 @@ static void sc16is7xx_wq_proc(struct work_struct *ws)
+ 	sc16is7xx_handle_tx(&one->port);
+ 	mutex_unlock(&s->mutex);
+ }
++#endif
+ 
+ static void sc16is7xx_stop_tx(struct uart_port* port)
+ {
+@@ -716,6 +722,7 @@ static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
+ 	return TIOCM_DSR | TIOCM_CAR;
+ }
+ 
++#ifdef CONFIG_REGMAP_I2C
+ static void sc16is7xx_md_proc(struct work_struct *ws)
+ {
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(ws, md_work);
+@@ -725,6 +732,7 @@ static void sc16is7xx_md_proc(struct work_struct *ws)
+ 			      (one->port.mctrl & TIOCM_LOOP) ?
+ 				      SC16IS7XX_MCR_LOOP_BIT : 0);
+ }
++#endif
+ 
+ static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+@@ -1006,6 +1014,7 @@ static const struct uart_ops sc16is7xx_ops = {
+ 	.pm		= sc16is7xx_pm,
+ };
+ 
++#ifdef CONFIG_REGMAP_I2C
+ #ifdef CONFIG_GPIOLIB
+ static int sc16is7xx_gpio_get(struct gpio_chip *chip, unsigned offset)
+ {
+@@ -1200,6 +1209,7 @@ static int sc16is7xx_remove(struct device *dev)
+ 
+ 	return ret;
+ }
++#endif
+ 
+ static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
+ 	{ .compatible = "nxp,sc16is740",	.data = &sc16is74x_devtype, },
+@@ -1212,6 +1222,7 @@ static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, sc16is7xx_dt_ids);
+ 
++#ifdef CONFIG_REGMAP_I2C
+ static struct regmap_config regcfg = {
+ 	.reg_bits = 7,
+ 	.pad_bits = 1,
+@@ -1221,7 +1232,6 @@ static struct regmap_config regcfg = {
+ 	.precious_reg = sc16is7xx_regmap_precious,
+ };
+ 
+-#ifdef CONFIG_REGMAP_I2C
+ static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+ 			       const struct i2c_device_id *id)
+ {
+-- 
+1.8.4.5
+
