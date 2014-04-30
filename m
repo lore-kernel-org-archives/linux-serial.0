@@ -1,78 +1,48 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v1] serial: uart: add hw flow control support
- configuration
-Date: Tue, 29 Apr 2014 15:27:57 -0700
-Message-ID: <20140429222756.GA2382@flaeskesteg>
-References: <1398792122-18592-1-git-send-email-m-karicheri2@ti.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7779
+Date: Wed, 30 Apr 2014 02:59:46 +0200
+Message-ID: <48241008.smQVDtv0CD@avalon>
+References: <1398322484-3630-1-git-send-email-horms+renesas@verge.net.au> <1986104.5bpNkKVN8D@avalon> <20140429214846.GA27566@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:63603 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751987AbaD2W2y (ORCPT
+Received: from perceval.ideasonboard.com ([95.142.166.194]:44020 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751676AbaD3A73 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Apr 2014 18:28:54 -0400
-Content-Disposition: inline
-In-Reply-To: <1398792122-18592-1-git-send-email-m-karicheri2@ti.com>
+	Tue, 29 Apr 2014 20:59:29 -0400
+In-Reply-To: <20140429214846.GA27566@verge.net.au>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+To: Simon Horman <horms@verge.net.au>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-Hi,
+Hi Simon,
 
-On Tue, Apr 29, 2014 at 06:22:02PM +0100, Murali Karicheri wrote:
-> 8250 uart driver currently supports only software assisted hw flow
-> control. The software assisted hw flow control maintains a hw_stopped
-> flag in the tty structure to stop and start transmission and use modem
-> status interrupt for the event to drive the handshake signals. This is
-> not needed if hw has flow control capabilities. This patch adds a
-> DT attribute for enabling hw flow control for a uart port. Also skip
-> stop and start if this flag is present in flag field of the port
-> structure.
+On Wednesday 30 April 2014 06:48:50 Simon Horman wrote:
+> On Tue, Apr 29, 2014 at 03:44:46PM +0200, Laurent Pinchart wrote:
+> > On Monday 28 April 2014 16:07:49 Simon Horman wrote:
+
+[snip]
+
+> > > BTW, are you planning to make the above mentioned driver update
+> > > before or after re-posting enablement patches for Koelsch and/or Lager?
+> > > I ask because I would like to make such patches the basis for
+> > > a patch for Marzen.
+> > 
+> > I'll try to do so today, after my talk at the ELC :-)
 > 
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-> 
-> CC: Rob Herring <robh+dt@kernel.org>
-> CC: Pawel Moll <pawel.moll@arm.com> 
-> CC: Mark Rutland <mark.rutland@arm.com>
-> CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
-> CC: Kumar Gala <galak@codeaurora.org>
-> CC: Randy Dunlap <rdunlap@infradead.org>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Jiri Slaby <jslaby@suse.cz>
-> CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
-> ---
->  - Fixed brackets around port->flags & UPF_HARD_FLOW as per comments 
->  .../devicetree/bindings/serial/of-serial.txt       |    2 ++
->  drivers/tty/serial/8250/8250_core.c                |    6 ++++--
->  drivers/tty/serial/of_serial.c                     |    4 ++++
->  drivers/tty/serial/serial_core.c                   |   12 +++++++++---
->  4 files changed, 19 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
-> index 1928a3e..123de01 100644
-> --- a/Documentation/devicetree/bindings/serial/of-serial.txt
-> +++ b/Documentation/devicetree/bindings/serial/of-serial.txt
-> @@ -37,6 +37,8 @@ Optional properties:
->  - auto-flow-control: one way to enable automatic flow control support. The
->    driver is allowed to detect support for the capability even without this
->    property.
-> +- hw-flow-control: this enables pure hw flow control and no software
-> +  intervention needed.
+> I thought you might be a bit busy with ELC so I went
+> ahead and made my Marzen patches. Hopefully they aren't
+> too far away from what you have in mind for the Koelsch and Lager.
 
->From the wording of the commit message, I believe this would be better worded
-something like:
+I was busy, but I've just sent the patches :-) Could you please test them ? If 
+no problem is found I'd like the SCI patch to go in before this series, to 
+avoid adding a dependency on sci_ick in the marzen DT.
 
-- hw-flow-control: the hardware has flow control capability.
+-- 
+Regards,
 
-While the OS needs to know that flow control is present if it wishes to make
-use of it, whether or not the OS does so is not a matter for the binding.
+Laurent Pinchart
 
-It might also be better worded as "has-hw-flow-control", which would make that
-distinction clearer.
-
-Otherwise this looks fine to me.
-
-Thanks,
-Mark.
