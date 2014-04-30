@@ -1,129 +1,47 @@
-From: Jan Moskyto Matejka <mq@suse.cz>
-Subject: [PATCH] [linux-next] serial: sc16is7xx: fix defined-but-not-used warnings
-Date: Wed, 30 Apr 2014 15:07:04 +0200
-Message-ID: <1398863224-19900-1-git-send-email-mq@suse.cz>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gW2xpbnV4LW5leHRdIHNlcmlhbDogc2MxNmlzN3h4OiBm?=
+ =?UTF-8?B?aXggZGVmaW5lZC1idXQtbm90LXVzZWQgd2FybmluZ3M=?=
+Date: Wed, 30 Apr 2014 17:10:03 +0400
+Message-ID: <1398863403.902420096@f316.i.mail.ru>
+References: <1398863224-19900-1-git-send-email-mq@suse.cz>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:44738 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933638AbaD3NHJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Apr 2014 09:07:09 -0400
+Received: from fallback7.mail.ru ([94.100.176.135]:55192 "EHLO
+	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933552AbaD3NMV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Apr 2014 09:12:21 -0400
+In-Reply-To: <1398863224-19900-1-git-send-email-mq@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Jan Moskyto Matejka <mq@suse.cz>
+To: =?UTF-8?B?SmFuIE1vc2t5dG8gTWF0ZWprYQ==?= <mq@suse.cz>
+Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-drivers/tty/serial/sc16is7xx.c:1060:12: warning: 'sc16is7xx_probe' defined but not used [-Wunused-function]
- static int sc16is7xx_probe(struct device *dev,
-            ^
-drivers/tty/serial/sc16is7xx.c:1176:12: warning: 'sc16is7xx_remove' defined but not used [-Wunused-function]
- static int sc16is7xx_remove(struct device *dev)
-            ^
-drivers/tty/serial/sc16is7xx.c:1215:29: warning: 'regcfg' defined but not used [-Wunused-variable]
- static struct regmap_config regcfg = {
-                             ^
-
-Fixed these warnings by #ifdef-ing them to CONFIG_REGMAP_I2C and
-recursively #ifdef-ing also some other functions that got defined but not used.
-
-Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
----
- drivers/tty/serial/sc16is7xx.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 7206a64..bd76277 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -389,6 +389,7 @@ static const struct sc16is7xx_devtype sc16is762_devtype = {
- 	.nr_uart	= 2,
- };
- 
-+#ifdef CONFIG_REGMAP_I2C
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- {
- 	switch (reg >> SC16IS7XX_REG_SHIFT) {
-@@ -418,6 +419,7 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
- 
- 	return false;
- }
-+#endif
- 
- static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- {
-@@ -466,6 +468,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	return DIV_ROUND_CLOSEST(clk / 16, div);
- }
- 
-+#ifdef CONFIG_REGMAP_I2C
- static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
- 				unsigned int iir)
- {
-@@ -588,7 +591,9 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- }
-+#endif
- 
-+#ifdef CONFIG_REGMAP_I2C
- static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- {
- 	struct uart_port *port = &s->p[portno].port;
-@@ -651,6 +656,7 @@ static void sc16is7xx_wq_proc(struct work_struct *ws)
- 	sc16is7xx_handle_tx(&one->port);
- 	mutex_unlock(&s->mutex);
- }
-+#endif
- 
- static void sc16is7xx_stop_tx(struct uart_port* port)
- {
-@@ -716,6 +722,7 @@ static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
- 	return TIOCM_DSR | TIOCM_CAR;
- }
- 
-+#ifdef CONFIG_REGMAP_I2C
- static void sc16is7xx_md_proc(struct work_struct *ws)
- {
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(ws, md_work);
-@@ -725,6 +732,7 @@ static void sc16is7xx_md_proc(struct work_struct *ws)
- 			      (one->port.mctrl & TIOCM_LOOP) ?
- 				      SC16IS7XX_MCR_LOOP_BIT : 0);
- }
-+#endif
- 
- static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
-@@ -1006,6 +1014,7 @@ static const struct uart_ops sc16is7xx_ops = {
- 	.pm		= sc16is7xx_pm,
- };
- 
-+#ifdef CONFIG_REGMAP_I2C
- #ifdef CONFIG_GPIOLIB
- static int sc16is7xx_gpio_get(struct gpio_chip *chip, unsigned offset)
- {
-@@ -1200,6 +1209,7 @@ static int sc16is7xx_remove(struct device *dev)
- 
- 	return ret;
- }
-+#endif
- 
- static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
- 	{ .compatible = "nxp,sc16is740",	.data = &sc16is74x_devtype, },
-@@ -1212,6 +1222,7 @@ static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, sc16is7xx_dt_ids);
- 
-+#ifdef CONFIG_REGMAP_I2C
- static struct regmap_config regcfg = {
- 	.reg_bits = 7,
- 	.pad_bits = 1,
-@@ -1221,7 +1232,6 @@ static struct regmap_config regcfg = {
- 	.precious_reg = sc16is7xx_regmap_precious,
- };
- 
--#ifdef CONFIG_REGMAP_I2C
- static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
- 			       const struct i2c_device_id *id)
- {
--- 
-1.8.4.5
-
+V2VkLCAzMCBBcHIgMjAxNCAxNTowNzowNCArMDIwMCDQvtGCIEphbiBNb3NreXRvIE1hdGVqa2Eg
+PG1xQHN1c2UuY3o+Ogo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zYzE2aXM3eHguYzoxMDYwOjEyOiB3
+YXJuaW5nOiAnc2MxNmlzN3h4X3Byb2JlJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQt
+ZnVuY3Rpb25dCj4gIHN0YXRpYyBpbnQgc2MxNmlzN3h4X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRl
+diwKPiAgICAgICAgICAgICBeCj4gZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jOjExNzY6
+MTI6IHdhcm5pbmc6ICdzYzE2aXM3eHhfcmVtb3ZlJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1
+bnVzZWQtZnVuY3Rpb25dCj4gIHN0YXRpYyBpbnQgc2MxNmlzN3h4X3JlbW92ZShzdHJ1Y3QgZGV2
+aWNlICpkZXYpCj4gICAgICAgICAgICAgXgo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zYzE2aXM3eHgu
+YzoxMjE1OjI5OiB3YXJuaW5nOiAncmVnY2ZnJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVz
+ZWQtdmFyaWFibGVdCj4gIHN0YXRpYyBzdHJ1Y3QgcmVnbWFwX2NvbmZpZyByZWdjZmcgPSB7Cj4g
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeCj4gCj4gRml4ZWQgdGhlc2Ugd2FybmluZ3Mg
+YnkgI2lmZGVmLWluZyB0aGVtIHRvIENPTkZJR19SRUdNQVBfSTJDIGFuZAo+IHJlY3Vyc2l2ZWx5
+ICNpZmRlZi1pbmcgYWxzbyBzb21lIG90aGVyIGZ1bmN0aW9ucyB0aGF0IGdvdCBkZWZpbmVkIGJ1
+dCBub3QgdXNlZC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBKYW4gTW9za3l0byBNYXRlamthIDxtcUBz
+dXNlLmN6Pgo+IC0tLQo+ICBkcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMgfCAxMiArKysr
+KysrKysrKy0KPiAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jIGIvZHJp
+dmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCj4gaW5kZXggNzIwNmE2NC4uYmQ3NjI3NyAxMDA2
+NDQKPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKPiArKysgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKPiBAQCAtMzg5LDYgKzM4OSw3IEBAIHN0YXRpYyBjb25z
+dCBzdHJ1Y3Qgc2MxNmlzN3h4X2RldnR5cGUgc2MxNmlzNzYyX2RldnR5cGUgPSB7Cj4gIAkubnJf
+dWFydAk9IDIsCj4gIH07Cj4gIAo+ICsjaWZkZWYgQ09ORklHX1JFR01BUF9JMkMKPiAgc3RhdGlj
+IGJvb2wgc2MxNmlzN3h4X3JlZ21hcF92b2xhdGlsZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHVuc2ln
+bmVkIGludCByZWcpCgpOby4gVGhpcyBpcyBub3QgYSBnb29kIHdheS4KVGhlIEtjb25maWcgIHNo
+b3VsZCBiZSBwYXRjaGVkIGZvciBkZXBlbmRlbmN5IG9mIEkyQy4KCi0tLQoK
