@@ -1,47 +1,58 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gW2xpbnV4LW5leHRdIHNlcmlhbDogc2MxNmlzN3h4OiBm?=
- =?UTF-8?B?aXggZGVmaW5lZC1idXQtbm90LXVzZWQgd2FybmluZ3M=?=
-Date: Wed, 30 Apr 2014 17:10:03 +0400
-Message-ID: <1398863403.902420096@f316.i.mail.ru>
-References: <1398863224-19900-1-git-send-email-mq@suse.cz>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+From: Rob Herring <robherring2@gmail.com>
+Subject: [PATCH 1/2] tty/serial: add back missing setup_early_serial8250_console
+Date: Wed, 30 Apr 2014 19:48:28 -0500
+Message-ID: <1398905309-24843-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback7.mail.ru ([94.100.176.135]:55192 "EHLO
-	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933552AbaD3NMV (ORCPT
+Received: from mail-oa0-f44.google.com ([209.85.219.44]:43830 "EHLO
+	mail-oa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750810AbaEAAsx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Apr 2014 09:12:21 -0400
-In-Reply-To: <1398863224-19900-1-git-send-email-mq@suse.cz>
+	Wed, 30 Apr 2014 20:48:53 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?SmFuIE1vc2t5dG8gTWF0ZWprYQ==?= <mq@suse.cz>
-Cc: =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-V2VkLCAzMCBBcHIgMjAxNCAxNTowNzowNCArMDIwMCDQvtGCIEphbiBNb3NreXRvIE1hdGVqa2Eg
-PG1xQHN1c2UuY3o+Ogo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zYzE2aXM3eHguYzoxMDYwOjEyOiB3
-YXJuaW5nOiAnc2MxNmlzN3h4X3Byb2JlJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQt
-ZnVuY3Rpb25dCj4gIHN0YXRpYyBpbnQgc2MxNmlzN3h4X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRl
-diwKPiAgICAgICAgICAgICBeCj4gZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jOjExNzY6
-MTI6IHdhcm5pbmc6ICdzYzE2aXM3eHhfcmVtb3ZlJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1
-bnVzZWQtZnVuY3Rpb25dCj4gIHN0YXRpYyBpbnQgc2MxNmlzN3h4X3JlbW92ZShzdHJ1Y3QgZGV2
-aWNlICpkZXYpCj4gICAgICAgICAgICAgXgo+IGRyaXZlcnMvdHR5L3NlcmlhbC9zYzE2aXM3eHgu
-YzoxMjE1OjI5OiB3YXJuaW5nOiAncmVnY2ZnJyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVz
-ZWQtdmFyaWFibGVdCj4gIHN0YXRpYyBzdHJ1Y3QgcmVnbWFwX2NvbmZpZyByZWdjZmcgPSB7Cj4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeCj4gCj4gRml4ZWQgdGhlc2Ugd2FybmluZ3Mg
-YnkgI2lmZGVmLWluZyB0aGVtIHRvIENPTkZJR19SRUdNQVBfSTJDIGFuZAo+IHJlY3Vyc2l2ZWx5
-ICNpZmRlZi1pbmcgYWxzbyBzb21lIG90aGVyIGZ1bmN0aW9ucyB0aGF0IGdvdCBkZWZpbmVkIGJ1
-dCBub3QgdXNlZC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBKYW4gTW9za3l0byBNYXRlamthIDxtcUBz
-dXNlLmN6Pgo+IC0tLQo+ICBkcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMgfCAxMiArKysr
-KysrKysrKy0KPiAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
-LSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jIGIvZHJp
-dmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCj4gaW5kZXggNzIwNmE2NC4uYmQ3NjI3NyAxMDA2
-NDQKPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKPiArKysgYi9kcml2ZXJz
-L3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKPiBAQCAtMzg5LDYgKzM4OSw3IEBAIHN0YXRpYyBjb25z
-dCBzdHJ1Y3Qgc2MxNmlzN3h4X2RldnR5cGUgc2MxNmlzNzYyX2RldnR5cGUgPSB7Cj4gIAkubnJf
-dWFydAk9IDIsCj4gIH07Cj4gIAo+ICsjaWZkZWYgQ09ORklHX1JFR01BUF9JMkMKPiAgc3RhdGlj
-IGJvb2wgc2MxNmlzN3h4X3JlZ21hcF92b2xhdGlsZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHVuc2ln
-bmVkIGludCByZWcpCgpOby4gVGhpcyBpcyBub3QgYSBnb29kIHdheS4KVGhlIEtjb25maWcgIHNo
-b3VsZCBiZSBwYXRjaGVkIGZvciBkZXBlbmRlbmN5IG9mIEkyQy4KCi0tLQoK
+From: Rob Herring <robh@kernel.org>
+
+Commit d2fd6810a823bcd (tty/serial: convert 8250 to generic earlycon)
+removed setup_early_serial8250_console, but there are still 2 callers
+in:
+
+arch/mips/mti-malta/malta-init.c
+drivers/firmware/pcdp.c
+
+Add back the function implemented as a wrapper to setup_earlycon.
+
+Reported-by: Yinghai Lu <yinghai@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/8250/8250_early.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index e83c9db..cfef801 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -156,6 +156,16 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
+ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+ EARLYCON_DECLARE(uart, early_serial8250_setup);
+ 
++int __init setup_early_serial8250_console(char *cmdline)
++{
++	char match[] = "uart8250";
++
++	if (cmdline && cmdline[4] == ',')
++		match[4] = '\0';
++
++	return setup_earlycon(cmdline, match, early_serial8250_setup);
++}
++
+ int serial8250_find_port_for_earlycon(void)
+ {
+ 	struct earlycon_device *device = early_device;
+-- 
+1.9.1
+
