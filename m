@@ -1,165 +1,90 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: Linux-3.15-rcX - PowerPC Serial Console woes.
-Date: Thu, 1 May 2014 16:05:32 +0200
-Message-ID: <CAMuHMdVzPSjtBBnWEXpeO-29qXsbCUEdL6mb=o6V2n9EfvufEA@mail.gmail.com>
-References: <1397960791-16320-1-git-send-email-davidlohr@hp.com>
-	<1397960791-16320-3-git-send-email-davidlohr@hp.com>
-	<CAMuHMdVBZSC3Kvwsw5pa-m8ZAUCjpkF8gjJH1XbOK2iFbU1KEg@mail.gmail.com>
-	<1398032896.19331.25.camel@buesod1.americas.hpqcorp.net>
-	<CAMuHMdV5HKvzE6H_JCH=01med8mVuXbVBz92tpNk7poH4ymXOQ@mail.gmail.com>
-	<OF5CEC4294.867C780E-ONCA257CCB.00315352-CA257CCB.003674E6@csc.com>
+From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
+Subject: RE: [PATCH v1] serial: uart: add hw flow control support
+ configuration
+Date: Thu, 1 May 2014 18:57:18 +0000
+Message-ID: <3E54258959B69E4282D79E01AB1F32B70472A714@DFLE11.ent.ti.com>
+References: <1398792122-18592-1-git-send-email-m-karicheri2@ti.com>
+ <20140429222756.GA2382@flaeskesteg>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:62847 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750839AbaEAOFd (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 1 May 2014 10:05:33 -0400
-Received: by mail-pa0-f45.google.com with SMTP id kq14so3739439pab.4
-        for <linux-serial@vger.kernel.org>; Thu, 01 May 2014 07:05:32 -0700 (PDT)
-In-Reply-To: <OF5CEC4294.867C780E-ONCA257CCB.00315352-CA257CCB.003674E6@csc.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20140429222756.GA2382@flaeskesteg>
+Content-Language: en-US
+Sender: linux-doc-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Stephen N Chivers <schivers@csc.com.au>
-Cc: Chris Proctor <cproctor@csc.com.au>, linux-serial@vger.kernel.org
 
-Hi Stephen
-
-CC linux-serial
-
-On Thu, May 1, 2014 at 11:54 AM, Stephen N Chivers <schivers@csc.com.au> wrote:
-> Geert,
+>-----Original Message-----
+>From: Mark Rutland [mailto:mark.rutland@arm.com]
+>Sent: Tuesday, April 29, 2014 6:28 PM
+>To: Karicheri, Muralidharan
+>Cc: linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+>devicetree@vger.kernel.org; Rob Herring; Ian Campbell; Kumar Gala; Randy Dunlap; Greg
+>Kroah-Hartman; Jiri Slaby; Shilimkar, Santosh
+>Subject: Re: [PATCH v1] serial: uart: add hw flow control support configuration
 >
-> I have a brace of PowerPC computers, most of which are
-> VME Single boards (MVME5100 and MVME4100),
-> but I also have some MPC8349MITX and a SAM440EP.
+>Hi,
 >
-> They are all operated diskless from a file server.
+>On Tue, Apr 29, 2014 at 06:22:02PM +0100, Murali Karicheri wrote:
+>> 8250 uart driver currently supports only software assisted hw flow
+>> control. The software assisted hw flow control maintains a hw_stopped
+>> flag in the tty structure to stop and start transmission and use modem
+>> status interrupt for the event to drive the handshake signals. This is
+>> not needed if hw has flow control capabilities. This patch adds a DT
+>> attribute for enabling hw flow control for a uart port. Also skip stop
+>> and start if this flag is present in flag field of the port structure.
+>>
+>> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+>>
+>> CC: Rob Herring <robh+dt@kernel.org>
+>> CC: Pawel Moll <pawel.moll@arm.com>
+>> CC: Mark Rutland <mark.rutland@arm.com>
+>> CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
+>> CC: Kumar Gala <galak@codeaurora.org>
+>> CC: Randy Dunlap <rdunlap@infradead.org>
+>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> CC: Jiri Slaby <jslaby@suse.cz>
+>> CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
+>> ---
+>>  - Fixed brackets around port->flags & UPF_HARD_FLOW as per comments
+>>  .../devicetree/bindings/serial/of-serial.txt       |    2 ++
+>>  drivers/tty/serial/8250/8250_core.c                |    6 ++++--
+>>  drivers/tty/serial/of_serial.c                     |    4 ++++
+>>  drivers/tty/serial/serial_core.c                   |   12 +++++++++---
+>>  4 files changed, 19 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt
+>> b/Documentation/devicetree/bindings/serial/of-serial.txt
+>> index 1928a3e..123de01 100644
+>> --- a/Documentation/devicetree/bindings/serial/of-serial.txt
+>> +++ b/Documentation/devicetree/bindings/serial/of-serial.txt
+>> @@ -37,6 +37,8 @@ Optional properties:
+>>  - auto-flow-control: one way to enable automatic flow control support. The
+>>    driver is allowed to detect support for the capability even without this
+>>    property.
+>> +- hw-flow-control: this enables pure hw flow control and no software
+>> +  intervention needed.
 >
-> None of them have a graphical consoles and so as usual
-> I am quite reliant on the serial console.
+>From the wording of the commit message, I believe this would be better worded
+>something like:
 >
-> I am having problems with the unexpected disabling of the
-> serial console during the boot process.
+>- hw-flow-control: the hardware has flow control capability.
 >
-> In all Linux-3.15 release candidates the serial console
-> is disabled during the boot process when the OF Platform
-> devices are registering.
+>While the OS needs to know that flow control is present if it wishes to make use of it,
+>whether or not the OS does so is not a matter for the binding.
 >
-> I will use the SAM440EP as an example, it is setup using
-> a defaultish configuration with, 8250 uarts configured,
-> serial console support, early printk, the "standardish"
-> UDBG console and the OF platform devices.
+>It might also be better worded as "has-hw-flow-control", which would make that
+>distinction clearer.
 >
-> The disabling of the serial console leads to the loss of
-> boot messages, this is ok for my present configuration as
-> (fortunately) the root file system is mounted and so the
-> boot messages are in /var/log/messages.
->
-> The tty (ttyS0) device is around as after the machine has gone to
-> run state 3, the console login prompt is present without
-> problems.
->
-> What is going on is:
->
-> UDBG does its stuff ok. It is the console:
->
-> bootconsole [udbg0] enabled
->
-> The 8250 driver wakes up:
->
-> Serial: 8250/16550 driver, 10 ports, IRQ sharing disabled
-> serial8250.0: ttyS0 at MMIO 0xef600300 (irq = 16, base_baud = 509259) is a
-> 16550A
-> console [ttyS0] enabled
-> console [ttyS0] enabled
-> bootconsole [udbg0] disabled
-> bootconsole [udbg0] disabled
+>Otherwise this looks fine to me.
 
-Here the legacy 8250 driver takes over, as expected.
+Fine. Will re-send with rewording as
 
-> serial8250.0: ttyS1 at MMIO 0xef600400 (irq = 17, base_baud = 509259) is a
-> 16550A
-> serial8250.0: ttyS2 at MMIO 0xef600500 (irq = 18, base_baud = 509259) is a
-> 16550A
-> serial8250.0: ttyS3 at MMIO 0xef600600 (irq = 19, base_baud = 509259) is a
-> 16550A
-> 0000:00:0c.0: ttyS4 at I/O 0x2000 (irq = 25, base_baud = 921600) is a
-> 16550A
-> 0000:00:0c.0: ttyS5 at I/O 0x2008 (irq = 25, base_baud = 921600) is a
-> 16550A
+has-hw-flow-control: the hardware has flow control capability.
+
+Murali
 >
-> The OF PLATFORM devices kick and disable the serial console:
->
-> console [ttyS0] disabled
-
-Here the OF 8250 driver takes over.
-
-> now, the OF serial devices are:
->
-> ef600300.serial: ttyS0 at MMIO 0xef600300 (irq = 16, base_baud = 509259)
-> is a 16550
-> ef600400.serial: ttyS1 at MMIO 0xef600400 (irq = 17, base_baud = 509259)
-> is a 16550
-> ef600500.serial: ttyS2 at MMIO 0xef600500 (irq = 18, base_baud = 509259)
-> is a 16550
-> ef600600.serial: ttyS3 at MMIO 0xef600600 (irq = 19, base_baud = 509259)
-> is a 16550
->
-> when the devices are registered as part of the platform device probe,
-> serial8250_register_8250_port in 8250_core.c finds that these devices
-> match the earlier ones and so the lines that read:
->
-> if (uart->port.dev)
-> uart_remove_one_port(&serial8250_reg, &uart->port);
->
-> are executed. Now uart_remove_one_port calls unregister_console,
-> and that is where the console get disabled.
->
-> In Linux-3.14 uart_remove_one_port does not call unregister_console
-> and so for that release the serial console remains active.
-
-That's correct.
-
-It was added in commit 5f5c9ae56c38942623f69c3e6dc6ec78e4da2076
-Author: Geert Uytterhoeven <geert+renesas@linux-m68k.org>
-Date:   Fri Feb 28 14:21:32 2014 +0100
-
-    serial_core: Unregister console in uart_remove_one_port()
-
-which fixed a crash on driver rmmod.
-
-> Taking CONFIG_OF_PLATFORM out of the configuration fixes this
-> problem. But, shouldn't serial8250_register_8250_port leave things
-> as they are if the ports match? I tried a few things along those lines
-> but the results are truly bad (the machine goes done to a "monitor"
-> that isn't U-Boot).
-
-I also don't like how the OF serial driver tries to unregister and
-register the same port.
-
-Currently this indeed removes the serial console, just like when doing
-a driver unbind or rmmod, followed by a bind or insmod.
-
-But this case is different, as no driver is actually unloaded.
-Can you check why the register_console() in uart_configure_port() is not
-called? If it's just due to a simple flag having the wrong state, perhaps
-it can be fixed easily.
-
-Is it due to port->type being reset to PORT_UNKNOWN in
-uart_remove_one_port()? It seems port->type should already have the
-right value when calling uart_add_one_port().
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>Thanks,
+>Mark.
