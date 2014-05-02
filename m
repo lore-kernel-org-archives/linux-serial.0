@@ -1,116 +1,57 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: [PATCH v2] serial: uart: add hw flow control support configuration
-Date: Thu, 1 May 2014 15:04:53 -0400
-Message-ID: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Murali Karicheri <m-karicheri2@ti.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+From: Jan Moskyto Matejka <mq@suse.cz>
+Subject: [PATCH] [linux-next] serial: sc16is7xx: compile I2C when REGMAP_I2C is module
+Date: Fri,  2 May 2014 14:02:25 +0200
+Message-ID: <1399032145-1055-1-git-send-email-mq@suse.cz>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:51373 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751860AbaEBMCq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 May 2014 08:02:46 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
+Cc: Jan Moskyto Matejka <mq@suse.cz>
 
-8250 uart driver currently supports only software assisted hw flow
-control. The software assisted hw flow control maintains a hw_stopped
-flag in the tty structure to stop and start transmission and use modem
-status interrupt for the event to drive the handshake signals. This is
-not needed if hw has flow control capabilities. This patch adds a
-DT attribute for enabling hw flow control for a uart port. Also skip
-stop and start if this flag is present in flag field of the port
-structure.
+drivers/tty/serial/sc16is7xx.c:1060:12: warning: 'sc16is7xx_probe' defined but not used [-Wunused-function]
+ static int sc16is7xx_probe(struct device *dev,
+            ^
+drivers/tty/serial/sc16is7xx.c:1176:12: warning: 'sc16is7xx_remove' defined but not used [-Wunused-function]
+ static int sc16is7xx_remove(struct device *dev)
+            ^
+drivers/tty/serial/sc16is7xx.c:1215:29: warning: 'regcfg' defined but not used [-Wunused-variable]
+ static struct regmap_config regcfg = {
+                             ^
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+Fixed these warnings by removing the `#ifdef CONFIG_REGMAP_I2C' around their
+calls as this driver selects REGMAP_I2C in Kconfig. This part of driver just
+didn't compile at all when REGMAP_I2C configured as module (CONFIG_REGMAP_I2C
+is not defined, just CONFIG_REGMAP_I2C_MODULE).
 
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Pawel Moll <pawel.moll@arm.com>
-CC: Mark Rutland <mark.rutland@arm.com>
-CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
-CC: Kumar Gala <galak@codeaurora.org>
-CC: Randy Dunlap <rdunlap@infradead.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jiri Slaby <jslaby@suse.cz>
-CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
 ---
- .../devicetree/bindings/serial/of-serial.txt       |    1 +
- drivers/tty/serial/8250/8250_core.c                |    6 ++++--
- drivers/tty/serial/of_serial.c                     |    4 ++++
- drivers/tty/serial/serial_core.c                   |   12 +++++++++---
- 4 files changed, 18 insertions(+), 5 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
-index 1928a3e..7705477 100644
---- a/Documentation/devicetree/bindings/serial/of-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/of-serial.txt
-@@ -37,6 +37,7 @@ Optional properties:
- - auto-flow-control: one way to enable automatic flow control support. The
-   driver is allowed to detect support for the capability even without this
-   property.
-+- has-hw-flow-control: the hardware has flow control capability.
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7206a64..80b0ca6 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1221,7 +1221,6 @@ static struct regmap_config regcfg = {
+ 	.precious_reg = sc16is7xx_regmap_precious,
+ };
  
- Example:
+-#ifdef CONFIG_REGMAP_I2C
+ static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+ 			       const struct i2c_device_id *id)
+ {
+@@ -1273,7 +1272,6 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ };
+ module_i2c_driver(sc16is7xx_i2c_uart_driver);
+ MODULE_ALIAS("i2c:sc16is7xx");
+-#endif
  
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 0e1bf88..b69aff2 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
- 	 * the remote UART is not using CTS auto flow control, we must
- 	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
-+	 * AFE if hw flow control is supported
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
-+	    (port->flags & UPF_HARD_FLOW)) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 9924660..77ec6a1 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 					  "auto-flow-control"))
- 			port8250.capabilities |= UART_CAP_AFE;
- 
-+		if (of_property_read_bool(ofdev->dev.of_node,
-+					  "has-hw-flow-control"))
-+			port8250.port.flags |= UPF_HARD_FLOW;
-+
- 		ret = serial8250_register_8250_port(&port8250);
- 		break;
- 	}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b68550d..851707a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 			if (tty->termios.c_cflag & CBAUD)
- 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
- 		}
--
--		if (tty_port_cts_enabled(port)) {
-+		/*
-+		 * if hw support flow control without software intervention,
-+		 * then skip the below check
-+		 */
-+		if (tty_port_cts_enabled(port) &&
-+		    !(uport->flags & UPF_HARD_FLOW)) {
- 			spin_lock_irq(&uport->lock);
- 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
- 				tty->hw_stopped = 1;
-@@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
- 
- 	uport->icount.cts++;
- 
--	if (tty_port_cts_enabled(port)) {
-+	/* skip below code if the hw flow control is supported */
-+	if (tty_port_cts_enabled(port) &&
-+	    !(uport->flags & UPF_HARD_FLOW)) {
- 		if (tty->hw_stopped) {
- 			if (status) {
- 				tty->hw_stopped = 0;
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
 -- 
-1.7.9.5
+1.8.4.5
+
