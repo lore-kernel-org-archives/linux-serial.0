@@ -1,57 +1,30 @@
-From: Jan Moskyto Matejka <mq@suse.cz>
-Subject: [PATCH] [linux-next] serial: sc16is7xx: compile I2C when REGMAP_I2C is module
-Date: Fri,  2 May 2014 14:02:25 +0200
-Message-ID: <1399032145-1055-1-git-send-email-mq@suse.cz>
+From: Cabina Sanitaria <cabinasanitaria@junin.gob.ar>
+Subject: Re
+Date: Sat, 3 May 2014 00:18:07 -0300 (ART)
+Message-ID: <1174741541.291288.1399087087021.JavaMail.zimbra__16942.8005036481$1399088163$gmane$org@junin.gob.ar>
+Reply-To: Ability Capital Finance <abiltycapitalfinance@citynew.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:51373 "EHLO mx2.suse.de"
+Received: from junin.gov.ar ([201.234.19.13]:55932 "EHLO mail.junin.gob.ar"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751860AbaEBMCq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 2 May 2014 08:02:46 -0400
+	id S1752386AbaECDfm convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 2 May 2014 23:35:42 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
-Cc: Jan Moskyto Matejka <mq@suse.cz>
 
-drivers/tty/serial/sc16is7xx.c:1060:12: warning: 'sc16is7xx_probe' defined but not used [-Wunused-function]
- static int sc16is7xx_probe(struct device *dev,
-            ^
-drivers/tty/serial/sc16is7xx.c:1176:12: warning: 'sc16is7xx_remove' defined but not used [-Wunused-function]
- static int sc16is7xx_remove(struct device *dev)
-            ^
-drivers/tty/serial/sc16is7xx.c:1215:29: warning: 'regcfg' defined but not used [-Wunused-variable]
- static struct regmap_config regcfg = {
-                             ^
 
-Fixed these warnings by removing the `#ifdef CONFIG_REGMAP_I2C' around their
-calls as this driver selects REGMAP_I2C in Kconfig. This part of driver just
-didn't compile at all when REGMAP_I2C configured as module (CONFIG_REGMAP_I2C
-is not defined, just CONFIG_REGMAP_I2C_MODULE).
 
-Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
----
- drivers/tty/serial/sc16is7xx.c | 2 --
- 1 file changed, 2 deletions(-)
+Noi oferim credite la rata dob=C3=A2nzii de 3% pentru toate scop. Ne e-=
+mail dac=C4=83 sunte=C8=9Bi interesat.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 7206a64..80b0ca6 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1221,7 +1221,6 @@ static struct regmap_config regcfg = {
- 	.precious_reg = sc16is7xx_regmap_precious,
- };
- 
--#ifdef CONFIG_REGMAP_I2C
- static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
- 			       const struct i2c_device_id *id)
- {
-@@ -1273,7 +1272,6 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
- };
- module_i2c_driver(sc16is7xx_i2c_uart_driver);
- MODULE_ALIAS("i2c:sc16is7xx");
--#endif
- 
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
--- 
-1.8.4.5
+We offer loans at 3% interest rate for all purpose. Email us if you are=
+ interested.
 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
