@@ -1,56 +1,57 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/5] tty/serial: Add helpers to use GPIOs to control
- modem lines and implement atmel_serial.c
-Date: Sat, 3 May 2014 18:09:49 -0400
-Message-ID: <20140503220949.GB10927@kroah.com>
-References: <1398437561-4289-1-git-send-email-richard.genoud@gmail.com>
- <20140425155847.GC22879@kroah.com>
- <CACQ1gAiyonHpg5YP4nSd3B=iiVQoTKQvYoC_JxbzA6Dmzr8+tw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Sat, 3 May 2014 18:16:58 -0400
+Message-ID: <20140503221658.GA13403@kroah.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+ <1397859600-11507-4-git-send-email-robherring2@gmail.com>
+ <CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
+ <CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
+ <20140503220731.GA10927@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:58481 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:58509 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752987AbaEDAwG (ORCPT
+	with ESMTP id S1752987AbaEDAxF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 3 May 2014 20:52:06 -0400
+	Sat, 3 May 2014 20:53:05 -0400
 Content-Disposition: inline
-In-Reply-To: <CACQ1gAiyonHpg5YP4nSd3B=iiVQoTKQvYoC_JxbzA6Dmzr8+tw@mail.gmail.com>
+In-Reply-To: <20140503220731.GA10927@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Rob Herring <robherring2@gmail.com>
+Cc: Yinghai Lu <yinghai@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
 
-On Sun, Apr 27, 2014 at 11:58:45AM +0200, Richard Genoud wrote:
-> 2014-04-25 17:58 GMT+02:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> > On Fri, Apr 25, 2014 at 04:52:36PM +0200, Richard Genoud wrote:
-> >> This patch series is a leftover of http://www.spinics.net/lists/arm-kernel/msg314242.html
-> >> that missed 3.15 because it caused merge conflicts.
-> >>
-> >> The 1st patch may be applied as a fix for 3.15-rc, since it correct a
-> >> device tree binding documentation example.
-> >>
-> >> Greg, for you to decide if it's worth it or not !
-> >
-> > Why am I the one tho decides if it is worth it?  If it's up to me, I'll
-> > just say "no", as I sure don't need this for any of my machines...
+On Sat, May 03, 2014 at 06:07:31PM -0400, Greg Kroah-Hartman wrote:
+> On Mon, Apr 28, 2014 at 06:20:53PM -0500, Rob Herring wrote:
+> > On Sat, Apr 26, 2014 at 1:19 AM, Yinghai Lu <yinghai@kernel.org> wrote:
+> > > On Fri, Apr 18, 2014 at 3:19 PM, Rob Herring <robherring2@gmail.com> wrote:
+> > >> From: Rob Herring <robh@kernel.org>
+> > >>
+> > >> With the generic earlycon infrastructure in place, convert the 8250
+> > >> early console to use it.
+> > >>
+> > >> Signed-off-by: Rob Herring <robh@kernel.org>
+> > >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > >> Cc: Jiri Slaby <jslaby@suse.cz>
+> > >> ---
+> > >>  drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
+> > >>  drivers/tty/serial/8250/Kconfig      |   1 +
+> > >>  2 files changed, 16 insertions(+), 123 deletions(-)
+> > >
+> > > Hi Greg, Rob
+> > >
+> > > This one in tty-next breaks booting: "console=uart8250,io,0x3f8,115200".
+> > > No early console and regular console anymore.
+> > >
+> > > It should produce "early con and regular con".
+> > 
+> > This is what I get for running checkpatch and converting
+> > simple_strtoul to kstrto* which are not so equivalent. kstrto* will
+> > not convert things such as 115200n8 to a number.
+> > 
+> > Greg, Do you want a fix or for me to respin the series? The fix looks like this:
 > 
-> Ok, let me reformulate :) :
-> 
-> This patch series is a leftover of
-> http://www.spinics.net/lists/arm-kernel/msg314242.html
-> that missed 3.15 because it caused merge conflicts (you acked the
-> series and ask me to resend it during 3.15-rc cycle).
-> 
-> I think that "[PATCH 1/5] tty/serial: atmel_serial: Fix device tree
-> documentation" should be applied on 3.15-rc,
-> since it corrects a device tree binding documentation example.
-> 
-> The patches 2-5/5 are for 3.16.
+> As this is in my tree now (right?), I need a fix to apply to it.
 
-Ok, can you resend these, with a note that the first one should make it
-to 3.15-final, and I'll queue them up?
-
-thanks,
-
-greg k-h
+Nevermind, you already sent it...
