@@ -1,81 +1,55 @@
-From: Peter Korsgaard <peter@korsgaard.com>
-Subject: Re: [PATCH] tty: serial: uartlite: Specify time for sending chars
-Date: Mon, 05 May 2014 17:03:12 +0200
-Message-ID: <874n14i7yn.fsf@dell.be.48ers.dk>
-References: <4c1854686987185d547d1d548f89248cb27ba40c.1399301297.git.michal.simek@xilinx.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 3.15-rc5
+Date: Mon, 5 May 2014 14:23:15 -0700
+Message-ID: <20140505212315.GA3885@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ee0-f50.google.com ([74.125.83.50]:49091 "EHLO
-	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933028AbaEEPDR (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:51161 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755766AbaEEVUJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 May 2014 11:03:17 -0400
-In-Reply-To: <4c1854686987185d547d1d548f89248cb27ba40c.1399301297.git.michal.simek@xilinx.com>
-	(Michal Simek's message of "Mon, 5 May 2014 16:48:26 +0200")
+	Mon, 5 May 2014 17:20:09 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, Michal Simek <monstr@monstr.eu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, arnd@arndb.de, Peter Korsgaard <jacmet@sunsite.dk>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Jiri Slaby <jslaby@suse.cz>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
->>>>> "Michal" == Michal Simek <michal.simek@xilinx.com> writes:
+The following changes since commit d1db0eea852497762cab43b905b879dfcd3b8987:
 
- > Xilinx MDM (Microblaze Debug Module) also contains
- > uart interface via JTAG which is compatible with
- > uartlite driver. This interface is really slow
- > that's why timeout is setup to 1s.
+  Linux 3.15-rc3 (2014-04-27 19:29:27 -0700)
 
- > Make this time delay not to be cpu speed dependent.
+are available in the git repository at:
 
- > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
- > ---
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.15-rc4
 
- > RFC sent here:
- > https://lkml.org/lkml/2013/9/30/250
- > I finally got HW design which is just slow to be able
- > to test it.
+for you to fetch changes up to 62a0d8d7c2b29f92850e4ee3c38e5dfd936e92b2:
 
- > ---
- >  drivers/tty/serial/uartlite.c | 10 ++++++++--
- >  1 file changed, 8 insertions(+), 2 deletions(-)
+  tty: Fix lockless tty buffer race (2014-05-03 18:14:28 -0400)
 
- > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
- > index 5f90ef24d475..723a6b79cd14 100644
- > --- a/drivers/tty/serial/uartlite.c
- > +++ b/drivers/tty/serial/uartlite.c
- > @@ -418,14 +418,20 @@ static struct uart_ops ulite_ops = {
- >  #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
- >  static void ulite_console_wait_tx(struct uart_port *port)
- >  {
- > -	int i;
- >  	u8 val;
- > +	unsigned long timeout;
+----------------------------------------------------------------
+TTY/Serial fixes for 3.15-rc4
 
- >  	/* Spin waiting for TX fifo to have space available */
- > -	for (i = 0; i < 100000; i++) {
+Here are some tty and serial driver fixes for things reported recently.
 
-It would be good to add a note about the slow jtag variant here.
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Otherwise:
+----------------------------------------------------------------
+Michael Welling (1):
+      tty: serial: 8250_core.c Bug fix for Exar chips.
 
-Acked-by: Peter Korsgaard <peter@korsgaard.com>
+Peter Hurley (3):
+      n_tty: Fix n_tty_write crash when echoing in raw mode
+      Revert "tty: Fix race condition between __tty_buffer_request_room and flush_to_ldisc"
+      tty: Fix lockless tty buffer race
 
- > +	timeout = jiffies + msecs_to_jiffies(1000);
- > +	while (1) {
- >  		val = uart_in32(ULITE_STATUS, port);
- >  		if ((val & ULITE_STATUS_TXFULL) == 0)
- >  			break;
- > +		if (time_after(jiffies, timeout)) {
- > +			dev_warn(port->dev,
- > +				 "timeout waiting for TX buffer empty\n");
- > +			break;
- > +		}
- >  		cpu_relax();
- >  	}
- >  }
- > --
- > 1.8.2.3
+Tomoki Sekiyama (1):
+      drivers/tty/hvc: don't free hvc_console_setup after init
 
-
--- 
-Bye, Peter Korsgaard
+ drivers/tty/hvc/hvc_console.c       |  2 +-
+ drivers/tty/n_tty.c                 |  4 ++++
+ drivers/tty/serial/8250/8250_core.c |  2 +-
+ drivers/tty/tty_buffer.c            | 29 ++++++++++++++---------------
+ include/linux/tty.h                 |  1 -
+ 5 files changed, 20 insertions(+), 18 deletions(-)
