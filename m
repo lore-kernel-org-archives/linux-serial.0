@@ -1,55 +1,101 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.15-rc5
-Date: Mon, 5 May 2014 14:23:15 -0700
-Message-ID: <20140505212315.GA3885@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v2] tty: serial: uartlite: Specify time for sending chars
+Date: Tue,  6 May 2014 06:46:15 +0200
+Message-ID: <f5c4b014d747ea39928d940a579cb4e44d6bbd9a.1399351570.git.michal.simek@xilinx.com>
+Content-Type: multipart/signed;
+    boundary="=_mimegpg-monstr-desktop-7379-1399351575-0001";
+    micalg=pgp-sha1; protocol="application/pgp-signature"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:51161 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755766AbaEEVUJ (ORCPT
+Received: from mail-we0-f177.google.com ([74.125.82.177]:41906 "EHLO
+	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751041AbaEFEqd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 5 May 2014 17:20:09 -0400
-Content-Disposition: inline
+	Tue, 6 May 2014 00:46:33 -0400
+Received: by mail-we0-f177.google.com with SMTP id x48so3135401wes.36
+        for <linux-serial@vger.kernel.org>; Mon, 05 May 2014 21:46:32 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Michal Simek <monstr@monstr.eu>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, arnd@arndb.de, Peter Korsgaard <jacmet@sunsite.dk>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Jiri Slaby <jslaby@suse.cz>
 
-The following changes since commit d1db0eea852497762cab43b905b879dfcd3b8987:
+This is a MIME GnuPG-signed message.  If you see this text, it means that
+your E-mail or Usenet software does not support MIME signed messages.
+The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
+To open this message correctly you will need to install E-mail or Usenet
+software that supports modern Internet standards.
 
-  Linux 3.15-rc3 (2014-04-27 19:29:27 -0700)
+--=_mimegpg-monstr-desktop-7379-1399351575-0001
 
-are available in the git repository at:
+Xilinx MDM (Microblaze Debug Module) also contains
+uart interface via JTAG which is compatible with
+uartlite driver. This interface is really slow
+that's why timeout is setup to 1s.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.15-rc4
+Make this time delay not to be cpu speed dependent.
 
-for you to fetch changes up to 62a0d8d7c2b29f92850e4ee3c38e5dfd936e92b2:
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Acked-by: Peter Korsgaard <peter@korsgaard.com>
+---
 
-  tty: Fix lockless tty buffer race (2014-05-03 18:14:28 -0400)
+Changes in v2:
+- Add Peter's ACK
+- Extend commentary
 
-----------------------------------------------------------------
-TTY/Serial fixes for 3.15-rc4
+RFC sent here:
+https://lkml.org/lkml/2013/9/30/250
+I finally got HW design which is just slow to be able
+to test it.
 
-Here are some tty and serial driver fixes for things reported recently.
+---
+ drivers/tty/serial/uartlite.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 5f90ef24d475..dce27f34937e 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -418,14 +418,23 @@ static struct uart_ops ulite_ops = {
+ #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+ static void ulite_console_wait_tx(struct uart_port *port)
+ {
+-	int i;
+ 	u8 val;
+-
+-	/* Spin waiting for TX fifo to have space available */
+-	for (i = 0; i < 100000; i++) {
++	unsigned long timeout;
++
++	/*
++	 * Spin waiting for TX fifo to have space available.
++	 * When using the Microblaze Debug Module this can take up to 1s
++	 */
++	timeout = jiffies + msecs_to_jiffies(1000);
++	while (1) {
+ 		val = uart_in32(ULITE_STATUS, port);
+ 		if ((val & ULITE_STATUS_TXFULL) == 0)
+ 			break;
++		if (time_after(jiffies, timeout)) {
++			dev_warn(port->dev,
++				 "timeout waiting for TX buffer empty\n");
++			break;
++		}
+ 		cpu_relax();
+ 	}
+ }
+--
+1.8.2.3
 
-----------------------------------------------------------------
-Michael Welling (1):
-      tty: serial: 8250_core.c Bug fix for Exar chips.
 
-Peter Hurley (3):
-      n_tty: Fix n_tty_write crash when echoing in raw mode
-      Revert "tty: Fix race condition between __tty_buffer_request_room and flush_to_ldisc"
-      tty: Fix lockless tty buffer race
+--=_mimegpg-monstr-desktop-7379-1399351575-0001
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
 
-Tomoki Sekiyama (1):
-      drivers/tty/hvc: don't free hvc_console_setup after init
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
 
- drivers/tty/hvc/hvc_console.c       |  2 +-
- drivers/tty/n_tty.c                 |  4 ++++
- drivers/tty/serial/8250/8250_core.c |  2 +-
- drivers/tty/tty_buffer.c            | 29 ++++++++++++++---------------
- include/linux/tty.h                 |  1 -
- 5 files changed, 20 insertions(+), 18 deletions(-)
+iEYEABECAAYFAlNoaRcACgkQykllyylKDCENEwCfcsU0iMxo8iGmkrcOdnJa/4UO
+iFQAniTB5hXs/tjFLOmm+cyoQB1zbvd/
+=CMoJ
+-----END PGP SIGNATURE-----
+
+--=_mimegpg-monstr-desktop-7379-1399351575-0001--
