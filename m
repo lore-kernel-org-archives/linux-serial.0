@@ -1,43 +1,85 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] serial: SERIAL_FSL_LPUART should depend on HAS_DMA
-Date: Tue,  6 May 2014 14:41:19 +0200
-Message-ID: <1399380079-2471-1-git-send-email-geert@linux-m68k.org>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH] tty: serial: uartlite: Specify time for sending chars
+Date: Tue, 06 May 2014 06:48:52 +0200
+Message-ID: <536869B4.3070506@monstr.eu>
+References: <4c1854686987185d547d1d548f89248cb27ba40c.1399301297.git.michal.simek@xilinx.com>	<874n14i7yn.fsf@dell.be.48ers.dk> <5367D76A.2040206@monstr.eu> <87wqe0gggo.fsf@dell.be.48ers.dk>
+Reply-To: monstr@monstr.eu
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="XjwSSeITTP7jUWG2ocG20HqJxRtOHGc30"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87wqe0gggo.fsf@dell.be.48ers.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yuan Yao <yao.yuan@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Peter Korsgaard <peter@korsgaard.com>
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, arnd@arndb.de, Peter Korsgaard <jacmet@sunsite.dk>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-If NO_DMA=y:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--XjwSSeITTP7jUWG2ocG20HqJxRtOHGc30
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-drivers/built-in.o: In function `lpuart_dma_rx_free':
-fsl_lpuart.c:(.text+0x7da28): undefined reference to `dma_unmap_single'
-drivers/built-in.o: In function `lpuart_dma_tx_free':
-fsl_lpuart.c:(.text+0x7da60): undefined reference to `dma_unmap_single'
-drivers/built-in.o: In function `lpuart_dma_rx':
-fsl_lpuart.c:(.text+0x7dab8): undefined reference to `dma_sync_single_for_cpu'
-drivers/built-in.o: In function `lpuart_dma_tx':
-fsl_lpuart.c:(.text+0x7db7e): undefined reference to `dma_sync_single_for_cpu'
-drivers/built-in.o: In function `lpuart_copy_rx_to_tty':
-fsl_lpuart.c:(.text+0x7dcd4): undefined reference to `dma_sync_single_for_cpu'
-make[3]: *** [vmlinux] Error 1
+On 05/05/2014 09:42 PM, Peter Korsgaard wrote:
+>>>>>> "Michal" =3D=3D Michal Simek <monstr@monstr.eu> writes:
+>=20
+> Hi,
+>=20
+>  >> > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/u=
+artlite.c
+>  >> > index 5f90ef24d475..723a6b79cd14 100644
+>  >> > --- a/drivers/tty/serial/uartlite.c
+>  >> > +++ b/drivers/tty/serial/uartlite.c
+>  >> > @@ -418,14 +418,20 @@ static struct uart_ops ulite_ops =3D {
+>  >> >  #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+>  >> >  static void ulite_console_wait_tx(struct uart_port *port)
+>  >> >  {
+>  >> > -	int i;
+>  >> >  	u8 val;
+>  >> > +	unsigned long timeout;
+>  >>=20
+>  >> >  	/* Spin waiting for TX fifo to have space available */
+>  >> > -	for (i =3D 0; i < 100000; i++) {
+>  >>=20
+>  >> It would be good to add a note about the slow jtag variant here.
+>=20
+>  > What exactly you would like to see here?
+>  > Just that this 1s is here because of mdm uart.
+>=20
+> Something like:
+>=20
+>  /*
+>   * Spin waiting for TX fifo to have space available.
+>   * When using the Microblaze Debug Module this can take up to 1s
+>   */
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- drivers/tty/serial/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+up to you. You are driver owner. :-)
+I have sent v2 with this change and I have added your ACK.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 5d9b01aa54f4..84b83d50e859 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1479,6 +1479,7 @@ config SERIAL_RP2_NR_UARTS
- 
- config SERIAL_FSL_LPUART
- 	tristate "Freescale lpuart serial port support"
-+	depends on HAS_DMA
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip lpuart on some Freescale SOCs.
--- 
-1.7.9.5
+Thanks,
+Michal
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--XjwSSeITTP7jUWG2ocG20HqJxRtOHGc30
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlNoabQACgkQykllyylKDCH7awCcCn3BY65V9bCn+tvq+0eaXYgl
+X8QAoI3FkjfoWNw2IJfz47ShrmQpaDaj
+=nDDA
+-----END PGP SIGNATURE-----
+
+--XjwSSeITTP7jUWG2ocG20HqJxRtOHGc30--
