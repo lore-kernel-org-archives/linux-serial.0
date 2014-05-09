@@ -1,106 +1,83 @@
-From: Guillermo Rodriguez <guille.rodriguez@gmail.com>
-Subject: Re: Fwd: Issues with parity error handling in s3c2410 serial driver
-Date: Fri, 09 May 2014 09:25:30 +0200
-Message-ID: <536C82EA.2060504@gmail.com>
-References: <CABDcavZnY8-uNhYZkvCEy5sdbAQB2vgcYq1PFiNwpvxj32Xn2Q@mail.gmail.com> <CABDcavZyCDPpt1MTGpJfgaYnG=oaHcmB-Sqe=PC1SWuQhf-iTg@mail.gmail.com> <20140508195510.GA8479@kroah.com>
+From: dean_jenkins@mentor.com
+Subject: [PATCH 3/5] serial: imx: avoid spinlock recursion deadlock
+Date: Fri,  9 May 2014 16:19:46 +0100
+Message-ID: <1399648788-26061-4-git-send-email-dean_jenkins@mentor.com>
+References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f51.google.com ([74.125.82.51]:49827 "EHLO
-	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751079AbaEIHZb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 9 May 2014 03:25:31 -0400
-Received: by mail-wg0-f51.google.com with SMTP id x13so3493668wgg.34
-        for <linux-serial@vger.kernel.org>; Fri, 09 May 2014 00:25:30 -0700 (PDT)
-In-Reply-To: <20140508195510.GA8479@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: dirk.behme@de.bosch.com, s.hauer@pengutronix.de, dean_jenkins@mentor.com, b32955@freescale.com, linux-arm-kernel@lists.infradead.org, shawn.guo@freescale.com
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-El 08/05/2014 21:55, Greg Kroah-Hartman escribi=F3:
-> On Thu, May 08, 2014 at 01:31:10PM +0200, Guillermo Rodriguez Garcia =
-wrote:
->> Hello all,
->>
->> I think I have found some issues with the handling of parity errors =
-in the
->> s3c2410 serial driver (drivers/tty/serial/samsung.c)
->>
->> 1.
->> The driver defines S3C2410_UERSTAT_PARITY as 0x1000
->> (see http://lxr.free-electrons.com/source/drivers/tty/serial/samsung=
-=2Ec#L265)
->>
->> However, at least in the S3C2440, the correct value should be 0x02.
->> This matches the definition in include/linux/serial_s3c.h for the S3=
-C2443 (see
->> http://lxr.free-electrons.com/source/include/linux/serial_s3c.h#L165=
-)
->>
->> 2.
->> The driver currently contains code to detect parity errors, but this=
- code is
->> guarded by the following check:
->>
->> if (unlikely(uerstat & S3C2410_UERSTAT_ANY)) {
->> ...
->> }
->>
->> And the definition of S3C2410_UERSTAT_ANY in include/linux/serial_s3=
-c.h
->> does not include the parity bit.
->>
->> This means that the code that currently checks for parity errors in =
-the serial
->> driver won't actually be run when a parity error occurs. I think tha=
-t this is a
->> bug and that S3C2410_UERSTAT_ANY should also contain the parity bit
->>
->> 3.
->> The code that detects parity errors does not increment the parity er=
-ror
->> counter in the serial_icounter_struct structure. Other errors (frami=
-ng and
->> overrun) are accounted for -- it is just the parity error that is no=
-t traced
->> (see http://lxr.free-electrons.com/source/drivers/tty/serial/samsung=
-=2Ec#L277).
->>
->> This means that parity errors will not be reported via the TIOCGICOU=
-NT
->> ioctl call.
->>
->>
->> Can someone comment on the above?
->=20
-> Can you make up a patch to resolve these and be sure to cc: the drive=
-r
-> authors and this list?
+From: Andy Lowe <andy_lowe@mentor.com>
 
-I think it would be a good idea to split this in two patches. Issue 3/ =
-above
-is trivial to fix and this can get through easily.
+The following deadlock has been observed:
 
-=46or 1/ and 2/ I am sure that the problem is _not_ specific to the s3c=
-2440
-(the way it is now, parity errors are never checked since S3C2410_UERST=
-AT_ANY
-only contains the overrun and framing bit masks). However I can only te=
-st on
-the s3c2440. Shall I make a patch specifically for the s3c2440, or shou=
-ld I
-try to make it generic? If the latter, I could use some help with testi=
-ng on
-other s3c SoCs.
+imx_int() {
+  imx_txint() {
+    spin_lock_irqsave(&sport->port.lock,flags);
+    /* ^^^uart_port spinlock taken in imx_txint */
+    imx_transmit_buffer() {
+      uart_write_wakeup(&sport->port) {
+        tty_wakeup() {
+          hci_uart_tty_wakeup() {
+            hci_uart_tx_wakeup() {
+              uart_write() {
+                spin_lock_irqsave(&port->lock, flags);
+                /* ^^^deadlock here when spinlock is taken again */
+                  .
+                  .
+                  .
+                spin_unlock_irqrestore(&port->lock, flags);
+              }
+            }
+          }
+        }
+      }
+    }
+    spin_unlock_irqrestore(&sport->port.lock,flags);
+  }
+}
 
-Thank you,
+To correct this call uart_write_wakeup() at the end of imx_txint() after
+the uart_port spinlock is unlocked.
 
-Guillermo Rodriguez
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Andy Lowe <andy_lowe@mentor.com>
+Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
+---
+ drivers/tty/serial/imx.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index abe31ad..cc79706 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -636,8 +636,13 @@ static irqreturn_t imx_txint(int irq, void *dev_id)
+ 
+ 	imx_transmit_buffer(sport);
+ 
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
++		spin_unlock_irqrestore(&sport->port.lock, flags);
+ 		uart_write_wakeup(&sport->port);
++	} else
++		spin_unlock_irqrestore(&sport->port.lock, flags);
++
++	return IRQ_HANDLED;
+ 
+ out:
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+-- 
+1.7.9.5
