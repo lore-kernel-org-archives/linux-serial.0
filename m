@@ -1,103 +1,136 @@
-From: dean_jenkins@mentor.com
-Subject: [PATCH 5/5] serial: imx: clean up imx_poll_get_char()
-Date: Fri,  9 May 2014 16:19:48 +0100
-Message-ID: <1399648788-26061-6-git-send-email-dean_jenkins@mentor.com>
-References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
+From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
+Subject: RE: [PATCH v2] serial: uart: add hw flow control support
+ configuration
+Date: Fri, 9 May 2014 15:30:02 +0000
+Message-ID: <3E54258959B69E4282D79E01AB1F32B704735082@DFLE11.ent.ti.com>
+References: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: dirk.behme@de.bosch.com, s.hauer@pengutronix.de, dean_jenkins@mentor.com, b32955@freescale.com, linux-arm-kernel@lists.infradead.org, shawn.guo@freescale.com
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Karicheri, Muralidharan" <m-karicheri2@ti.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Dirk Behme <dirk.behme@de.bosch.com>
+>-----Original Message-----
+>From: Karicheri, Muralidharan
+>Sent: Thursday, May 01, 2014 3:05 PM
+>To: devicetree@vger.kernel.org; linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org;
+>linux-serial@vger.kernel.org
+>Cc: Karicheri, Muralidharan; Rob Herring; Pawel Moll; Mark Rutland; Ian Campbell; Kumar
+>Gala; Randy Dunlap; Greg Kroah-Hartman; Jiri Slaby; Shilimkar, Santosh
+>Subject: [PATCH v2] serial: uart: add hw flow control support configuration
+>
+>8250 uart driver currently supports only software assisted hw flow control. The software
+>assisted hw flow control maintains a hw_stopped flag in the tty structure to stop and start
+>transmission and use modem status interrupt for the event to drive the handshake signals.
+>This is not needed if hw has flow control capabilities. This patch adds a DT attribute for
+>enabling hw flow control for a uart port. Also skip stop and start if this flag is present in flag
+>field of the port structure.
+>
+>Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+>
+>CC: Rob Herring <robh+dt@kernel.org>
+>CC: Pawel Moll <pawel.moll@arm.com>
+>CC: Mark Rutland <mark.rutland@arm.com>
+>CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
+>CC: Kumar Gala <galak@codeaurora.org>
+>CC: Randy Dunlap <rdunlap@infradead.org>
+>CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>CC: Jiri Slaby <jslaby@suse.cz>
+>CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
+>---
+> .../devicetree/bindings/serial/of-serial.txt       |    1 +
+> drivers/tty/serial/8250/8250_core.c                |    6 ++++--
+> drivers/tty/serial/of_serial.c                     |    4 ++++
+> drivers/tty/serial/serial_core.c                   |   12 +++++++++---
+> 4 files changed, 18 insertions(+), 5 deletions(-)
+>
+>diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt
+>b/Documentation/devicetree/bindings/serial/of-serial.txt
+>index 1928a3e..7705477 100644
+>--- a/Documentation/devicetree/bindings/serial/of-serial.txt
+>+++ b/Documentation/devicetree/bindings/serial/of-serial.txt
+>@@ -37,6 +37,7 @@ Optional properties:
+> - auto-flow-control: one way to enable automatic flow control support. The
+>   driver is allowed to detect support for the capability even without this
+>   property.
+>+- has-hw-flow-control: the hardware has flow control capability.
+>
+> Example:
+>
+>diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+>index 0e1bf88..b69aff2 100644
+>--- a/drivers/tty/serial/8250/8250_core.c
+>+++ b/drivers/tty/serial/8250/8250_core.c
+>@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct
+>ktermios *termios,
+> 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
+> 	 * the remote UART is not using CTS auto flow control, we must
+> 	 * have sufficient FIFO entries for the latency of the remote
+>-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
+>+	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
+>+	 * AFE if hw flow control is supported
+> 	 */
+>-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
+>+	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
+>+	    (port->flags & UPF_HARD_FLOW)) {
+> 		up->mcr &= ~UART_MCR_AFE;
+> 		if (termios->c_cflag & CRTSCTS)
+> 			up->mcr |= UART_MCR_AFE;
+>diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c index
+>9924660..77ec6a1 100644
+>--- a/drivers/tty/serial/of_serial.c
+>+++ b/drivers/tty/serial/of_serial.c
+>@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+> 					  "auto-flow-control"))
+> 			port8250.capabilities |= UART_CAP_AFE;
+>
+>+		if (of_property_read_bool(ofdev->dev.of_node,
+>+					  "has-hw-flow-control"))
+>+			port8250.port.flags |= UPF_HARD_FLOW;
+>+
+> 		ret = serial8250_register_8250_port(&port8250);
+> 		break;
+> 	}
+>diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+>index b68550d..851707a 100644
+>--- a/drivers/tty/serial/serial_core.c
+>+++ b/drivers/tty/serial/serial_core.c
+>@@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct *tty, struct
+>uart_state *state,
+> 			if (tty->termios.c_cflag & CBAUD)
+> 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
+> 		}
+>-
+>-		if (tty_port_cts_enabled(port)) {
+>+		/*
+>+		 * if hw support flow control without software intervention,
+>+		 * then skip the below check
+>+		 */
+>+		if (tty_port_cts_enabled(port) &&
+>+		    !(uport->flags & UPF_HARD_FLOW)) {
+> 			spin_lock_irq(&uport->lock);
+> 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
+> 				tty->hw_stopped = 1;
+>@@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned
+>int status)
+>
+> 	uport->icount.cts++;
+>
+>-	if (tty_port_cts_enabled(port)) {
+>+	/* skip below code if the hw flow control is supported */
+>+	if (tty_port_cts_enabled(port) &&
+>+	    !(uport->flags & UPF_HARD_FLOW)) {
+> 		if (tty->hw_stopped) {
+> 			if (status) {
+> 				tty->hw_stopped = 0;
+>--
+>1.7.9.5
 
-Looking at the get_poll_char() function of the 8250.c serial driver,
-we learn:
+Any idea who is going to pick this patch for merge?
 
-* poll_get_char() doesn't have to save/disable/restore the interrupt
-  registers. No interrupt handling is needed in this function at all.
-  Remove it.
-
-* Don't block in case there is no data available. So instead blocking
-  in the do {} while loop, just return with NO_POLL_CHAR, immediately .
-
-Additionally, while the i.MX6 register URXD[7-0] contain the RX_DATA,
-the upper bits of this register (URXD[15-10]) might contain some
-control flags. To ensure that these are not returned with the data
-read, just mask out URXD[7-0].
-
-These changes fix the 'hang' working with kdb:
-
-$ echo ttymxc3 > /sys/module/kgdboc/parameters/kgdboc
-$ echo g >/proc/sysrq-trigger
-[0]kdb> help
-...
-<hang>
-
-Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
----
- drivers/tty/serial/imx.c |   29 ++++-------------------------
- 1 file changed, 4 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 7b0ef85..9d59354 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -80,6 +80,7 @@
- #define URXD_FRMERR	(1<<12)
- #define URXD_BRK	(1<<11)
- #define URXD_PRERR	(1<<10)
-+#define URXD_RX_DATA	(0xFF<<0)
- #define UCR1_ADEN	(1<<15) /* Auto detect interrupt */
- #define UCR1_ADBR	(1<<14) /* Auto detect baud rate */
- #define UCR1_TRDYEN	(1<<13) /* Transmitter ready interrupt enable */
-@@ -1502,32 +1503,10 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
- #if defined(CONFIG_CONSOLE_POLL)
- static int imx_poll_get_char(struct uart_port *port)
- {
--	struct imx_port_ucrs old_ucr;
--	unsigned int status;
--	unsigned char c;
--
--	/* save control registers */
--	imx_port_ucrs_save(port, &old_ucr);
--
--	/* disable interrupts */
--	writel(UCR1_UARTEN, port->membase + UCR1);
--	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
--	       port->membase + UCR2);
--	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
--	       port->membase + UCR3);
--
--	/* poll */
--	do {
--		status = readl(port->membase + USR2);
--	} while (~status & USR2_RDR);
--
--	/* read */
--	c = readl(port->membase + URXD0);
--
--	/* restore control registers */
--	imx_port_ucrs_restore(port, &old_ucr);
-+	if (!(readl(port->membase + USR2) & USR2_RDR))
-+		return NO_POLL_CHAR;
- 
--	return c;
-+	return readl(port->membase + URXD0) & URXD_RX_DATA;
- }
- 
- static void imx_poll_put_char(struct uart_port *port, unsigned char c)
--- 
-1.7.9.5
+Murali
