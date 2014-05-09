@@ -1,8 +1,8 @@
 From: dean_jenkins@mentor.com
-Subject: [PATCH 2/5] serial: imx: remove uart_write_wakeup() from
- imx_transmit_buffer()
-Date: Fri,  9 May 2014 16:19:45 +0100
-Message-ID: <1399648788-26061-3-git-send-email-dean_jenkins@mentor.com>
+Subject: [PATCH 1/5] serial: imx: remove unneeded imx_transmit_buffer() from
+ imx_start_tx()
+Date: Fri,  9 May 2014 16:19:44 +0100
+Message-ID: <1399648788-26061-2-git-send-email-dean_jenkins@mentor.com>
 References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,29 +24,11 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Dirk Behme <dirk.behme@de.bosch.com>
 
-At the moment we have
-
-imx_transmit_buffer() {
-    ...
-    if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-        uart_write_wakeup();
-    ...
-}
-
-imx_txint() {
-    ...
-    imx_transmit_buffer();
-
-    if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-        uart_write_wakeup();
-    ...
-}
-
-With this, we are calling uart_write_wakeup() at the end of
-imx_transmit_buffer() and immediately again after returning
-from imx_transmit_buffer() in imx_txint(). Instead of calling
-uart_write_wakeup() two times this way, remove the first call
-and call uart_write_wakeup() only once in imx_txint().
+Use imx_start_tx() just to enable the TX interrupt. It's the job of the
+TX interrupt ISR to fill the transmit buffer, then. If the transmit buffer
+is empty, the TX interrupt should be executed as soon as the start_tx()
+enables the interrupt, so there is no reason for the extra
+imx_transmit_buffer() call, here. Remove it.
 
 Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
 Signed-off-by: Andy Lowe <andy_lowe@mentor.com>
@@ -55,18 +37,18 @@ Signed-off-by: Andy Lowe <andy_lowe@mentor.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 7b813b3..abe31ad 100644
+index 3b6c1a2..7b813b3 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -470,9 +470,6 @@ static inline void imx_transmit_buffer(struct imx_port *sport)
- 		sport->port.icount.tx++;
+@@ -600,9 +600,6 @@ static void imx_start_tx(struct uart_port *port)
+ 		imx_dma_tx(sport);
+ 		return;
  	}
- 
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
--		uart_write_wakeup(&sport->port);
 -
- 	if (uart_circ_empty(xmit))
- 		imx_stop_tx(&sport->port);
+-	if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
+-		imx_transmit_buffer(sport);
  }
+ 
+ static irqreturn_t imx_rtsint(int irq, void *dev_id)
 -- 
 1.7.9.5
