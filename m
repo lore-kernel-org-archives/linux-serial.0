@@ -1,8 +1,7 @@
 From: dean_jenkins@mentor.com
-Subject: [PATCH 1/5] serial: imx: remove unneeded imx_transmit_buffer() from
- imx_start_tx()
-Date: Fri,  9 May 2014 16:19:44 +0100
-Message-ID: <1399648788-26061-2-git-send-email-dean_jenkins@mentor.com>
+Subject: [PATCH 5/5] serial: imx: clean up imx_poll_get_char()
+Date: Fri,  9 May 2014 16:19:48 +0100
+Message-ID: <1399648788-26061-6-git-send-email-dean_jenkins@mentor.com>
 References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,31 +23,81 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Dirk Behme <dirk.behme@de.bosch.com>
 
-Use imx_start_tx() just to enable the TX interrupt. It's the job of the
-TX interrupt ISR to fill the transmit buffer, then. If the transmit buffer
-is empty, the TX interrupt should be executed as soon as the start_tx()
-enables the interrupt, so there is no reason for the extra
-imx_transmit_buffer() call, here. Remove it.
+Looking at the get_poll_char() function of the 8250.c serial driver,
+we learn:
+
+* poll_get_char() doesn't have to save/disable/restore the interrupt
+  registers. No interrupt handling is needed in this function at all.
+  Remove it.
+
+* Don't block in case there is no data available. So instead blocking
+  in the do {} while loop, just return with NO_POLL_CHAR, immediately .
+
+Additionally, while the i.MX6 register URXD[7-0] contain the RX_DATA,
+the upper bits of this register (URXD[15-10]) might contain some
+control flags. To ensure that these are not returned with the data
+read, just mask out URXD[7-0].
+
+These changes fix the 'hang' working with kdb:
+
+$ echo ttymxc3 > /sys/module/kgdboc/parameters/kgdboc
+$ echo g >/proc/sysrq-trigger
+[0]kdb> help
+...
+<hang>
 
 Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
-Signed-off-by: Andy Lowe <andy_lowe@mentor.com>
 ---
- drivers/tty/serial/imx.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/tty/serial/imx.c |   29 ++++-------------------------
+ 1 file changed, 4 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3b6c1a2..7b813b3 100644
+index 7b0ef85..9d59354 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -600,9 +600,6 @@ static void imx_start_tx(struct uart_port *port)
- 		imx_dma_tx(sport);
- 		return;
- 	}
+@@ -80,6 +80,7 @@
+ #define URXD_FRMERR	(1<<12)
+ #define URXD_BRK	(1<<11)
+ #define URXD_PRERR	(1<<10)
++#define URXD_RX_DATA	(0xFF<<0)
+ #define UCR1_ADEN	(1<<15) /* Auto detect interrupt */
+ #define UCR1_ADBR	(1<<14) /* Auto detect baud rate */
+ #define UCR1_TRDYEN	(1<<13) /* Transmitter ready interrupt enable */
+@@ -1502,32 +1503,10 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
+ #if defined(CONFIG_CONSOLE_POLL)
+ static int imx_poll_get_char(struct uart_port *port)
+ {
+-	struct imx_port_ucrs old_ucr;
+-	unsigned int status;
+-	unsigned char c;
 -
--	if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
--		imx_transmit_buffer(sport);
+-	/* save control registers */
+-	imx_port_ucrs_save(port, &old_ucr);
+-
+-	/* disable interrupts */
+-	writel(UCR1_UARTEN, port->membase + UCR1);
+-	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
+-	       port->membase + UCR2);
+-	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
+-	       port->membase + UCR3);
+-
+-	/* poll */
+-	do {
+-		status = readl(port->membase + USR2);
+-	} while (~status & USR2_RDR);
+-
+-	/* read */
+-	c = readl(port->membase + URXD0);
+-
+-	/* restore control registers */
+-	imx_port_ucrs_restore(port, &old_ucr);
++	if (!(readl(port->membase + USR2) & USR2_RDR))
++		return NO_POLL_CHAR;
+ 
+-	return c;
++	return readl(port->membase + URXD0) & URXD_RX_DATA;
  }
  
- static irqreturn_t imx_rtsint(int irq, void *dev_id)
+ static void imx_poll_put_char(struct uart_port *port, unsigned char c)
 -- 
 1.7.9.5
