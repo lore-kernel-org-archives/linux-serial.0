@@ -1,136 +1,97 @@
-From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
-Subject: RE: [PATCH v2] serial: uart: add hw flow control support
- configuration
-Date: Fri, 9 May 2014 15:30:02 +0000
-Message-ID: <3E54258959B69E4282D79E01AB1F32B704735082@DFLE11.ent.ti.com>
-References: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
+From: schivers@csc.com (Stephen Chivers)
+Subject: [PATCH] printk/of_serial: fix serial console cessation part way
+ through boot.
+Date: Sat, 10 May 2014 15:37:34 +1000
+Message-ID: <20140510053734.AF4E9E0692@canberra.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Karicheri, Muralidharan" <m-karicheri2@ti.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "Shilimkar, Santosh" <santosh.shilimkar@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail170.messagelabs.com ([216.82.253.227]:56466 "EHLO
+	mail170.messagelabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750775AbaEJFjx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 10 May 2014 01:39:53 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: geert@linux-m68k.org, jslaby@suse.cz, gregkh@linuxfoundation.org
+Cc: linuxppc-dev@lists.ozlabs.org, benh@kernel.crashing.org, devicetree@vger.kernel.org, rob+dt@kernel.org, grant.likely@linaro.org, linux-kernel@vger.kernel.org, cproctor@csc.com, linux-serial@vger.kernel.org, schivers@csc.com
 
->-----Original Message-----
->From: Karicheri, Muralidharan
->Sent: Thursday, May 01, 2014 3:05 PM
->To: devicetree@vger.kernel.org; linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org;
->linux-serial@vger.kernel.org
->Cc: Karicheri, Muralidharan; Rob Herring; Pawel Moll; Mark Rutland; Ian Campbell; Kumar
->Gala; Randy Dunlap; Greg Kroah-Hartman; Jiri Slaby; Shilimkar, Santosh
->Subject: [PATCH v2] serial: uart: add hw flow control support configuration
->
->8250 uart driver currently supports only software assisted hw flow control. The software
->assisted hw flow control maintains a hw_stopped flag in the tty structure to stop and start
->transmission and use modem status interrupt for the event to drive the handshake signals.
->This is not needed if hw has flow control capabilities. This patch adds a DT attribute for
->enabling hw flow control for a uart port. Also skip stop and start if this flag is present in flag
->field of the port structure.
->
->Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
->
->CC: Rob Herring <robh+dt@kernel.org>
->CC: Pawel Moll <pawel.moll@arm.com>
->CC: Mark Rutland <mark.rutland@arm.com>
->CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
->CC: Kumar Gala <galak@codeaurora.org>
->CC: Randy Dunlap <rdunlap@infradead.org>
->CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->CC: Jiri Slaby <jslaby@suse.cz>
->CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
->---
-> .../devicetree/bindings/serial/of-serial.txt       |    1 +
-> drivers/tty/serial/8250/8250_core.c                |    6 ++++--
-> drivers/tty/serial/of_serial.c                     |    4 ++++
-> drivers/tty/serial/serial_core.c                   |   12 +++++++++---
-> 4 files changed, 18 insertions(+), 5 deletions(-)
->
->diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt
->b/Documentation/devicetree/bindings/serial/of-serial.txt
->index 1928a3e..7705477 100644
->--- a/Documentation/devicetree/bindings/serial/of-serial.txt
->+++ b/Documentation/devicetree/bindings/serial/of-serial.txt
->@@ -37,6 +37,7 @@ Optional properties:
-> - auto-flow-control: one way to enable automatic flow control support. The
->   driver is allowed to detect support for the capability even without this
->   property.
->+- has-hw-flow-control: the hardware has flow control capability.
->
-> Example:
->
->diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->index 0e1bf88..b69aff2 100644
->--- a/drivers/tty/serial/8250/8250_core.c
->+++ b/drivers/tty/serial/8250/8250_core.c
->@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct
->ktermios *termios,
-> 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
-> 	 * the remote UART is not using CTS auto flow control, we must
-> 	 * have sufficient FIFO entries for the latency of the remote
->-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
->+	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
->+	 * AFE if hw flow control is supported
-> 	 */
->-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
->+	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
->+	    (port->flags & UPF_HARD_FLOW)) {
-> 		up->mcr &= ~UART_MCR_AFE;
-> 		if (termios->c_cflag & CRTSCTS)
-> 			up->mcr |= UART_MCR_AFE;
->diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c index
->9924660..77ec6a1 100644
->--- a/drivers/tty/serial/of_serial.c
->+++ b/drivers/tty/serial/of_serial.c
->@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
-> 					  "auto-flow-control"))
-> 			port8250.capabilities |= UART_CAP_AFE;
->
->+		if (of_property_read_bool(ofdev->dev.of_node,
->+					  "has-hw-flow-control"))
->+			port8250.port.flags |= UPF_HARD_FLOW;
->+
-> 		ret = serial8250_register_8250_port(&port8250);
-> 		break;
-> 	}
->diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->index b68550d..851707a 100644
->--- a/drivers/tty/serial/serial_core.c
->+++ b/drivers/tty/serial/serial_core.c
->@@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct *tty, struct
->uart_state *state,
-> 			if (tty->termios.c_cflag & CBAUD)
-> 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
-> 		}
->-
->-		if (tty_port_cts_enabled(port)) {
->+		/*
->+		 * if hw support flow control without software intervention,
->+		 * then skip the below check
->+		 */
->+		if (tty_port_cts_enabled(port) &&
->+		    !(uport->flags & UPF_HARD_FLOW)) {
-> 			spin_lock_irq(&uport->lock);
-> 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
-> 				tty->hw_stopped = 1;
->@@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned
->int status)
->
-> 	uport->icount.cts++;
->
->-	if (tty_port_cts_enabled(port)) {
->+	/* skip below code if the hw flow control is supported */
->+	if (tty_port_cts_enabled(port) &&
->+	    !(uport->flags & UPF_HARD_FLOW)) {
-> 		if (tty->hw_stopped) {
-> 			if (status) {
-> 				tty->hw_stopped = 0;
->--
->1.7.9.5
+Commit 5f5c9ae56c38942623f69c3e6dc6ec78e4da2076
+"serial_core: Unregister console in uart_remove_one_port()"
+fixed a crash where a serial port was removed but
+not deregistered as a console.
 
-Any idea who is going to pick this patch for merge?
+There is a side effect of that commit for platforms having serial consoles
+and of_serial configured (CONFIG_SERIAL_OF_PLATFORM). The serial console
+is disabled midway through the boot process.
 
-Murali
+This cessation of the serial console affects PowerPC computers
+such as the MVME5100 and SAM440EP.
+
+The sequence is:
+
+	bootconsole [udbg0] enabled
+	....
+	serial8250/16550 driver initialises and registers its UARTS,
+	one of these is the serial console.
+	console [ttyS0] enabled
+	....
+	of_serial probes "platform" devices, registering them as it goes.
+	One of these is the serial console.
+	console [ttyS0] disabled.
+
+The disabling of the serial console is due to:
+
+	a.  unregister_console in printk not clearing the
+	    CONS_ENABLED bit in the console flags,
+	    even though it has announced that the console is disabled; and
+
+	b.  of_platform_serial_probe in of_serial not setting the port type
+	    before it registers with serial8250_register_8250_port.
+
+This patch ensures that the serial console is re-enabled when of_serial
+registers a serial port that corresponds to the designated console.
+
+Signed-off-by: Stephen Chivers <schivers@csc.com>
+Tested-by: Stephen Chivers <schivers@csc.com>
+
+===
+The above failure was identified in Linux-3.15-rc2.
+
+Tested using MVME5100 and SAM440EP PowerPC computers with
+kernels built from Linux-3.15-rc5 and tty-next.
+
+The continued operation of the serial console is vital for computers
+such as the MVME5100 as that Single Board Computer does not
+have any grapical/display hardware.
+
+---
+ drivers/tty/serial/of_serial.c |    1 +
+ kernel/printk/printk.c         |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 9924660..27981e2 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -173,6 +173,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	{
+ 		struct uart_8250_port port8250;
+ 		memset(&port8250, 0, sizeof(port8250));
++		port.type = port_type;
+ 		port8250.port = port;
+ 
+ 		if (port.fifosize)
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 7228258..221229c 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2413,6 +2413,7 @@ int unregister_console(struct console *console)
+ 	if (console_drivers != NULL && console->flags & CON_CONSDEV)
+ 		console_drivers->flags |= CON_CONSDEV;
+ 
++	console->flags &= ~CON_ENABLED;
+ 	console_unlock();
+ 	console_sysfs_notify();
+ 	return res;
