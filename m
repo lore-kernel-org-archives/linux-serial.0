@@ -1,79 +1,54 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] printk/of_serial: fix serial console cessation part way
- through boot.
-Date: Mon, 12 May 2014 11:33:17 +0200
-Message-ID: <CAMuHMdXQaOewxwe4UoiWj4KoT2Lybug2Spg4TzXd5g_Mfi-1Dg@mail.gmail.com>
-References: <20140510053734.AF4E9E0692@canberra.localdomain>
+From: United Nations <maj@junin.gob.ar>
+Subject: =?utf-8?Q?Felicit=C4=83ri?=
+Date: Mon, 12 May 2014 12:22:58 -0300 (ART)
+Message-ID: <132381478.422760.1399908178095.JavaMail.zimbra__39725.4252610312$1399908958$gmane$org@junin.gob.ar>
+Reply-To: United Nations <unitednationsgrants@admin.in.th>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f179.google.com ([209.85.223.179]:64382 "EHLO
-	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752556AbaELJdS (ORCPT
+Received: from junin.gov.ar ([201.234.19.13]:52720 "EHLO mail.junin.gob.ar"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751692AbaELPfe convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 12 May 2014 05:33:18 -0400
-In-Reply-To: <20140510053734.AF4E9E0692@canberra.localdomain>
+	Mon, 12 May 2014 11:35:34 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Chivers <schivers@csc.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Greg KH <gregkh@linuxfoundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, rob+dt@kernel.org, Grant Likely <grant.likely@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Chris Proctor <cproctor@csc.com>, linux-serial@vger.kernel.org
 
-Hi Stephen,
 
-On Sat, May 10, 2014 at 7:37 AM, Stephen Chivers <schivers@csc.com> wrote:
-> Commit 5f5c9ae56c38942623f69c3e6dc6ec78e4da2076
-> "serial_core: Unregister console in uart_remove_one_port()"
-> fixed a crash where a serial port was removed but
-> not deregistered as a console.
->
-> There is a side effect of that commit for platforms having serial consoles
-> and of_serial configured (CONFIG_SERIAL_OF_PLATFORM). The serial console
-> is disabled midway through the boot process.
->
-> This cessation of the serial console affects PowerPC computers
-> such as the MVME5100 and SAM440EP.
->
-> The sequence is:
->
->         bootconsole [udbg0] enabled
->         ....
->         serial8250/16550 driver initialises and registers its UARTS,
->         one of these is the serial console.
->         console [ttyS0] enabled
->         ....
->         of_serial probes "platform" devices, registering them as it goes.
->         One of these is the serial console.
->         console [ttyS0] disabled.
->
-> The disabling of the serial console is due to:
->
->         a.  unregister_console in printk not clearing the
->             CONS_ENABLED bit in the console flags,
->             even though it has announced that the console is disabled; and
 
-This part re-attaches the serial console on unbind/bind with the sh-sci driver,
-too, which didn't work before. Cool, thanks!
+=46elicit=C4=83ri=20
 
->         b.  of_platform_serial_probe in of_serial not setting the port type
->             before it registers with serial8250_register_8250_port.
+Sunte=C8=9Bi unul dintre beneficiarii de pe ordinea de zi a Na=C8=9Biun=
+ilor Unite 2014/2015 Grant Award. Informa=C8=9Biile dvs. au fost verifi=
+cate =C8=99i suma de =C8=99ase milioane de euro (6.000.000,00) a fost a=
+cordat pentru a v=C4=83 =C3=AEn programul de granturi al Na=C8=9Biunilo=
+r Unite ca Date tale au fost listate pe lista c=C3=A2=C8=99tig=C4=83toa=
+re.=20
 
-This part I couldn't test.
+Aceast=C4=83 sum=C4=83 urmeaz=C4=83 a fi utilizate de dumneavoastr=C4=83=
+ pentru orice scop, de care vor beneficia foloseste comunitatea ta.=20
 
-> This patch ensures that the serial console is re-enabled when of_serial
-> registers a serial port that corresponds to the designated console.
->
-> Signed-off-by: Stephen Chivers <schivers@csc.com>
-> Tested-by: Stephen Chivers <schivers@csc.com>
+Informa=C8=9Biile de care avem nevoie pentru verificare sunt:=20
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> [unregister_console]
+Numele complet:=20
+adresa:=20
+Urm=C4=83tor de Kin:=20
 
-Gr{oetje,eeting}s,
+Va oferi, de asemenea, un cont bancar care premiile de finan=C8=9Bare a=
+r trebui s=C4=83 fie depus =C3=AEn. Ve=C8=9Bi avea nevoie, de asemenea,=
+ s=C4=83 pl=C4=83teasc=C4=83 doar o tax=C4=83 administrativ=C4=83 de 72=
+1 de euro (=C8=99apte sute dou=C4=83zeci =C8=99i unu de euro).=20
 
-                        Geert
+Ajunge =C3=AEnapoi la noi c=C3=A2t mai cur=C3=A2nd posibil, astfel =C3=AE=
+nc=C3=A2t s=C4=83 pute=C8=9Bi trimite certificatul c=C3=A2=C8=99tig=C4=83=
+toare.=20
+
+Biroul Organiza=C8=9Biei Na=C8=9Biunilor Unite.=20
+2014/2015
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
