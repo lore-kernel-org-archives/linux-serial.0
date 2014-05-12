@@ -1,51 +1,79 @@
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: [PATCH] tty: serial: men_z135_uart: Don't activate TX Space available IRQ on startup
-Date: Mon, 12 May 2014 10:34:59 +0200
-Message-ID: <1399883699-8925-1-git-send-email-johannes.thumshirn@men.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] printk/of_serial: fix serial console cessation part way
+ through boot.
+Date: Mon, 12 May 2014 11:33:17 +0200
+Message-ID: <CAMuHMdXQaOewxwe4UoiWj4KoT2Lybug2Spg4TzXd5g_Mfi-1Dg@mail.gmail.com>
+References: <20140510053734.AF4E9E0692@canberra.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Johannes Thumshirn <johannes.thumshirn@men.de>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ie0-f179.google.com ([209.85.223.179]:64382 "EHLO
+	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752556AbaELJdS (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 12 May 2014 05:33:18 -0400
+In-Reply-To: <20140510053734.AF4E9E0692@canberra.localdomain>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Stephen Chivers <schivers@csc.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Greg KH <gregkh@linuxfoundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, rob+dt@kernel.org, Grant Likely <grant.likely@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Chris Proctor <cproctor@csc.com>, linux-serial@vger.kernel.org
 
-Don't activate the TX Space available IRQ on startup, or a simple
-$ cat /dev/ttyHSU0
-will cause an endless amount of IRQs, as there is always space in
-the TX FIFO available if no data is going to be sent.
+Hi Stephen,
 
-Also correct comments for IRQ names (RX and TX swapped).
+On Sat, May 10, 2014 at 7:37 AM, Stephen Chivers <schivers@csc.com> wrote:
+> Commit 5f5c9ae56c38942623f69c3e6dc6ec78e4da2076
+> "serial_core: Unregister console in uart_remove_one_port()"
+> fixed a crash where a serial port was removed but
+> not deregistered as a console.
+>
+> There is a side effect of that commit for platforms having serial consoles
+> and of_serial configured (CONFIG_SERIAL_OF_PLATFORM). The serial console
+> is disabled midway through the boot process.
+>
+> This cessation of the serial console affects PowerPC computers
+> such as the MVME5100 and SAM440EP.
+>
+> The sequence is:
+>
+>         bootconsole [udbg0] enabled
+>         ....
+>         serial8250/16550 driver initialises and registers its UARTS,
+>         one of these is the serial console.
+>         console [ttyS0] enabled
+>         ....
+>         of_serial probes "platform" devices, registering them as it goes.
+>         One of these is the serial console.
+>         console [ttyS0] disabled.
+>
+> The disabling of the serial console is due to:
+>
+>         a.  unregister_console in printk not clearing the
+>             CONS_ENABLED bit in the console flags,
+>             even though it has announced that the console is disabled; and
 
-Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
----
- drivers/tty/serial/men_z135_uart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+This part re-attaches the serial console on unbind/bind with the sh-sci driver,
+too, which didn't work before. Cool, thanks!
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index d08eb5d..c9d1854 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -41,8 +41,8 @@
- #define IS_IRQ(x) ((x) & 1)
- #define IRQ_ID(x) (((x) >> 1) & 7)
+>         b.  of_platform_serial_probe in of_serial not setting the port type
+>             before it registers with serial8250_register_8250_port.
 
--#define MEN_Z135_IER_RXCIEN BIT(0)		/* TX Space IRQ */
--#define MEN_Z135_IER_TXCIEN BIT(1)		/* RX Space IRQ */
-+#define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
-+#define MEN_Z135_IER_TXCIEN BIT(1)		/* TX Space IRQ */
- #define MEN_Z135_IER_RLSIEN BIT(2)		/* Receiver Line Status IRQ */
- #define MEN_Z135_IER_MSIEN  BIT(3)		/* Modem Status IRQ */
- #define MEN_Z135_ALL_IRQS (MEN_Z135_IER_RXCIEN		\
-@@ -576,7 +576,8 @@ static int men_z135_startup(struct uart_port *port)
+This part I couldn't test.
 
- 	conf_reg = ioread32(port->membase + MEN_Z135_CONF_REG);
+> This patch ensures that the serial console is re-enabled when of_serial
+> registers a serial port that corresponds to the designated console.
+>
+> Signed-off-by: Stephen Chivers <schivers@csc.com>
+> Tested-by: Stephen Chivers <schivers@csc.com>
 
--	conf_reg |= MEN_Z135_ALL_IRQS;
-+	/* Activate all but TX space available IRQ */
-+	conf_reg |= MEN_Z135_ALL_IRQS & ~MEN_Z135_IER_TXCIEN;
- 	conf_reg &= ~(0xff << 16);
- 	conf_reg |= (txlvl << 16);
- 	conf_reg |= (rxlvl << 20);
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> [unregister_console]
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-1.9.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
