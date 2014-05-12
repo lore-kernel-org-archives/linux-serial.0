@@ -1,63 +1,43 @@
 From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 3/5] serial: imx: avoid spinlock recursion deadlock
-Date: Mon, 12 May 2014 11:12:15 +0800
-Message-ID: <53703C0F.20504@freescale.com>
+Subject: Re: [PATCH 1/5] serial: imx: remove unneeded imx_transmit_buffer()
+ from imx_start_tx()
+Date: Mon, 12 May 2014 11:40:37 +0800
+Message-ID: <537042B5.2040600@freescale.com>
 References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
- <1399648788-26061-4-git-send-email-dean_jenkins@mentor.com>
+ <1399648788-26061-2-git-send-email-dean_jenkins@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1399648788-26061-4-git-send-email-dean_jenkins@mentor.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: dean_jenkins@mentor.com
-Cc: dirk.behme@de.bosch.com, gregkh@linuxfoundation.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, shawn.guo@freescale.com
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-by2on0056.outbound.protection.outlook.com ([207.46.100.56]:30186
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751425AbaELDiV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Sun, 11 May 2014 23:38:21 -0400
+In-Reply-To: <1399648788-26061-2-git-send-email-dean_jenkins@mentor.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: dean_jenkins@mentor.com
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, dirk.behme@de.bosch.com, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, shawn.guo@freescale.com
 
-5LqOIDIwMTTlubQwNeaciDA55pelIDIzOjE5LCBkZWFuX2plbmtpbnNAbWVudG9yLmNvbSDlhpnp
-gZM6Cj4gRnJvbTogQW5keSBMb3dlPGFuZHlfbG93ZUBtZW50b3IuY29tPgo+Cj4gVGhlIGZvbGxv
-d2luZyBkZWFkbG9jayBoYXMgYmVlbiBvYnNlcnZlZDoKPgo+IGlteF9pbnQoKSB7Cj4gICAgaW14
-X3R4aW50KCkgewo+ICAgICAgc3Bpbl9sb2NrX2lycXNhdmUoJnNwb3J0LT5wb3J0LmxvY2ssZmxh
-Z3MpOwo+ICAgICAgLyogXl5edWFydF9wb3J0IHNwaW5sb2NrIHRha2VuIGluIGlteF90eGludCAq
-Lwo+ICAgICAgaW14X3RyYW5zbWl0X2J1ZmZlcigpIHsKPiAgICAgICAgdWFydF93cml0ZV93YWtl
-dXAoJnNwb3J0LT5wb3J0KSB7Cj4gICAgICAgICAgdHR5X3dha2V1cCgpIHsKPiAgICAgICAgICAg
-IGhjaV91YXJ0X3R0eV93YWtldXAoKSB7Cj4gICAgICAgICAgICAgIGhjaV91YXJ0X3R4X3dha2V1
-cCgpIHsKPiAgICAgICAgICAgICAgICB1YXJ0X3dyaXRlKCkgewo+ICAgICAgICAgICAgICAgICAg
-c3Bpbl9sb2NrX2lycXNhdmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsKPiAgICAgICAgICAgICAgICAg
-IC8qIF5eXmRlYWRsb2NrIGhlcmUgd2hlbiBzcGlubG9jayBpcyB0YWtlbiBhZ2FpbiAqLwo+ICAg
-ICAgICAgICAgICAgICAgICAuCj4gICAgICAgICAgICAgICAgICAgIC4KPiAgICAgICAgICAgICAg
-ICAgICAgLgo+ICAgICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcG9ydC0+
-bG9jaywgZmxhZ3MpOwo+ICAgICAgICAgICAgICAgIH0KPiAgICAgICAgICAgICAgfQo+ICAgICAg
-ICAgICAgfQo+ICAgICAgICAgIH0KPiAgICAgICAgfQo+ICAgICAgfQo+ICAgICAgc3Bpbl91bmxv
-Y2tfaXJxcmVzdG9yZSgmc3BvcnQtPnBvcnQubG9jayxmbGFncyk7Cj4gICAgfQo+IH0KPgo+IFRv
-IGNvcnJlY3QgdGhpcyBjYWxsIHVhcnRfd3JpdGVfd2FrZXVwKCkgYXQgdGhlIGVuZCBvZiBpbXhf
-dHhpbnQoKSBhZnRlcgo+IHRoZSB1YXJ0X3BvcnQgc3BpbmxvY2sgaXMgdW5sb2NrZWQuCj4KPiBT
-aWduZWQtb2ZmLWJ5OiBBbmR5IExvd2U8YW5keV9sb3dlQG1lbnRvci5jb20+Cj4gU2lnbmVkLW9m
-Zi1ieTogRGlyayBCZWhtZTxkaXJrLmJlaG1lQGRlLmJvc2NoLmNvbT4KPiAtLS0KPiAgIGRyaXZl
-cnMvdHR5L3NlcmlhbC9pbXguYyB8ICAgIDcgKysrKysrLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDYg
-aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+IGluZGV4IGFiZTMxYWQu
-LmNjNzk3MDYgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCj4gKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCj4gQEAgLTYzNiw4ICs2MzYsMTMgQEAgc3RhdGljIGly
-cXJldHVybl90IGlteF90eGludChpbnQgaXJxLCB2b2lkICpkZXZfaWQpCj4KPiAgIAlpbXhfdHJh
-bnNtaXRfYnVmZmVyKHNwb3J0KTsKPgo+IC0JaWYgKHVhcnRfY2lyY19jaGFyc19wZW5kaW5nKHht
-aXQpPCAgV0FLRVVQX0NIQVJTKQo+ICsJaWYgKHVhcnRfY2lyY19jaGFyc19wZW5kaW5nKHhtaXQp
-PCAgV0FLRVVQX0NIQVJTKSB7Cj4gKwkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmc3BvcnQtPnBv
-cnQubG9jaywgZmxhZ3MpOwo+ICAgCQl1YXJ0X3dyaXRlX3dha2V1cCgmc3BvcnQtPnBvcnQpOwo+
-ICsJfSBlbHNlCj4gKwkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmc3BvcnQtPnBvcnQubG9jaywg
-ZmxhZ3MpOwo+ICsKPiArCXJldHVybiBJUlFfSEFORExFRDsKPgo+ICAgb3V0Ogo+ICAgCXNwaW5f
-dW5sb2NrX2lycXJlc3RvcmUoJnNwb3J0LT5wb3J0LmxvY2ssIGZsYWdzKTsKSSB0aGluayB0aGlz
-IHBhdGNoIDoKCmh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE0LzMvMjAvNjIzCgpoYXMgZml4ZWQg
-dGhpcyBkZWFkbG9jay4KCldlIGNhbiBpZ25vcmUgdGhpcyBwYXRjaCBub3cuCgp0aGFua3MKSHVh
-bmcgU2hpamllCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmlu
-ZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9s
-aW51eC1hcm0ta2VybmVsCg==
+=E4=BA=8E 2014=E5=B9=B405=E6=9C=8809=E6=97=A5 23:19, dean_jenkins@mento=
+r.com =E5=86=99=E9=81=93:
+> Use imx_start_tx() just to enable the TX interrupt. It's the job of t=
+he
+> TX interrupt ISR to fill the transmit buffer, then. If the transmit b=
+uffer
+> is empty, the TX interrupt should be executed as soon as the start_tx=
+()
+> enables the interrupt, so there is no reason for the extra
+> imx_transmit_buffer() call, here. Remove it.
+I don't know why this patch needed?
+What problem this patch fix or improve?
+
+thanks
+Huang Shijie
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
