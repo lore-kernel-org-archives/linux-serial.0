@@ -1,242 +1,98 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH RESEND 5/5] tty/serial: at91: add interrupts for modem control lines
-Date: Tue, 13 May 2014 20:20:45 +0200
-Message-ID: <1400005245-11943-6-git-send-email-richard.genoud@gmail.com>
-References: <1400005245-11943-1-git-send-email-richard.genoud@gmail.com>
+From: schivers@csc.com (Stephen Chivers)
+Subject: Re: [PATCH] printk/of_serial: fix serial console cessation part way
+ through boot.
+Date: Wed, 14 May 2014 08:04:39 +1000
+Message-ID: <20140513220439.5A063E0692@canberra.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f41.google.com ([74.125.82.41]:38636 "EHLO
-	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753969AbaEMSVU (ORCPT
+Received: from mail87.messagelabs.com ([216.82.250.19]:45403 "EHLO
+	mail87.messagelabs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964789AbaEMWHA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 13 May 2014 14:21:20 -0400
-Received: by mail-wg0-f41.google.com with SMTP id z12so787091wgg.0
-        for <linux-serial@vger.kernel.org>; Tue, 13 May 2014 11:21:18 -0700 (PDT)
-In-Reply-To: <1400005245-11943-1-git-send-email-richard.genoud@gmail.com>
+	Tue, 13 May 2014 18:07:00 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Yegor Yefremov <yegor_sub1@visionsystems.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
+To: geert@linux-m68k.org, jslaby@suse.cz, gregkh@linuxfoundation.org
+Cc: linuxppc-dev@lists.ozlabs.org, benh@kernel.crashing.org, devicetree@vger.kernel.org, rob+dt@kernel.org, grant.likely@linaro.org, linux-kernel@vger.kernel.org, cproctor@csc.com, linux-serial@vger.kernel.org, schivers@csc.com
 
-Handle CTS/DSR/RI/DCD GPIO interrupts in atmel_serial.
+Commit 5f5c9ae56c38942623f69c3e6dc6ec78e4da2076
+"serial_core: Unregister console in uart_remove_one_port()"
+fixed a crash where a serial port was removed but
+not deregistered as a console.
 
-Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+There is a side effect of that commit for platforms having serial consoles
+and of_serial configured (CONFIG_SERIAL_OF_PLATFORM). The serial console
+is disabled midway through the boot process.
+
+This cessation of the serial console affects PowerPC computers
+such as the MVME5100 and SAM440EP.
+
+The sequence is:
+
+	bootconsole [udbg0] enabled
+	....
+	serial8250/16550 driver initialises and registers its UARTS,
+	one of these is the serial console.
+	console [ttyS0] enabled
+	....
+	of_serial probes "platform" devices, registering them as it goes.
+	One of these is the serial console.
+	console [ttyS0] disabled.
+
+The disabling of the serial console is due to:
+
+	a.  unregister_console in printk not clearing the
+	    CONS_ENABLED bit in the console flags,
+	    even though it has announced that the console is disabled; and
+
+	b.  of_platform_serial_probe in of_serial not setting the port type
+	    before it registers with serial8250_register_8250_port.
+
+This patch ensures that the serial console is re-enabled when of_serial
+registers a serial port that corresponds to the designated console.
+
+Signed-off-by: Stephen Chivers <schivers@csc.com>
+Tested-by: Stephen Chivers <schivers@csc.com>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> [unregister_console]
+
+===
+The above failure was identified in Linux-3.15-rc2.
+
+Tested using MVME5100 and SAM440EP PowerPC computers with
+kernels built from Linux-3.15-rc5 and tty-next.
+
+The continued operation of the serial console is vital for computers
+such as the MVME5100 as that Single Board Computer does not
+have any grapical/display hardware.
+
 ---
- drivers/tty/serial/atmel_serial.c |  125 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 122 insertions(+), 3 deletions(-)
+ drivers/tty/serial/of_serial.c |    1 +
+ kernel/printk/printk.c         |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 43ca659..3fceae0 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -45,6 +45,7 @@
- #include <linux/gpio.h>
- #include <linux/gpio/consumer.h>
- #include <linux/err.h>
-+#include <linux/irq.h>
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 9924660..27981e2 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -173,6 +173,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	{
+ 		struct uart_8250_port port8250;
+ 		memset(&port8250, 0, sizeof(port8250));
++		port.type = port_type;
+ 		port8250.port = port;
  
- #include <asm/io.h>
- #include <asm/ioctls.h>
-@@ -167,7 +168,9 @@ struct atmel_uart_port {
+ 		if (port.fifosize)
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 7228258..221229c 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2413,6 +2413,7 @@ int unregister_console(struct console *console)
+ 	if (console_drivers != NULL && console->flags & CON_CONSDEV)
+ 		console_drivers->flags |= CON_CONSDEV;
  
- 	struct serial_rs485	rs485;		/* rs485 settings */
- 	struct mctrl_gpios	*gpios;
-+	int			gpio_irq[UART_GPIO_MAX];
- 	unsigned int		tx_done_mask;
-+	bool			ms_irq_enabled;
- 	bool			is_usart;	/* usart or uart */
- 	struct timer_list	uart_timer;	/* uart timer */
- 	int (*prepare_rx)(struct uart_port *port);
-@@ -489,8 +492,38 @@ static void atmel_stop_rx(struct uart_port *port)
-  */
- static void atmel_enable_ms(struct uart_port *port)
- {
--	UART_PUT_IER(port, ATMEL_US_RIIC | ATMEL_US_DSRIC
--			| ATMEL_US_DCDIC | ATMEL_US_CTSIC);
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	uint32_t ier = 0;
-+
-+	/*
-+	 * Interrupt should not be enabled twice
-+	 */
-+	if (atmel_port->ms_irq_enabled)
-+		return;
-+
-+	atmel_port->ms_irq_enabled = true;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_CTS] >= 0)
-+		enable_irq(atmel_port->gpio_irq[UART_GPIO_CTS]);
-+	else
-+		ier |= ATMEL_US_CTSIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_DSR] >= 0)
-+		enable_irq(atmel_port->gpio_irq[UART_GPIO_DSR]);
-+	else
-+		ier |= ATMEL_US_DSRIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_RI] >= 0)
-+		enable_irq(atmel_port->gpio_irq[UART_GPIO_RI]);
-+	else
-+		ier |= ATMEL_US_RIIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_DCD] >= 0)
-+		enable_irq(atmel_port->gpio_irq[UART_GPIO_DCD]);
-+	else
-+		ier |= ATMEL_US_DCDIC;
-+
-+	UART_PUT_IER(port, ier);
- }
- 
- /*
-@@ -1079,11 +1112,31 @@ atmel_handle_status(struct uart_port *port, unsigned int pending,
- static irqreturn_t atmel_interrupt(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	unsigned int status, pending, pass_counter = 0;
-+	bool gpio_handled = false;
- 
- 	do {
- 		status = atmel_get_lines_status(port);
- 		pending = status & UART_GET_IMR(port);
-+		if (!gpio_handled) {
-+			/*
-+			 * Dealing with GPIO interrupt
-+			 */
-+			if (irq == atmel_port->gpio_irq[UART_GPIO_CTS])
-+				pending |= ATMEL_US_CTSIC;
-+
-+			if (irq == atmel_port->gpio_irq[UART_GPIO_DSR])
-+				pending |= ATMEL_US_DSRIC;
-+
-+			if (irq == atmel_port->gpio_irq[UART_GPIO_RI])
-+				pending |= ATMEL_US_RIIC;
-+
-+			if (irq == atmel_port->gpio_irq[UART_GPIO_DCD])
-+				pending |= ATMEL_US_DCDIC;
-+
-+			gpio_handled = true;
-+		}
- 		if (!pending)
- 			break;
- 
-@@ -1563,6 +1616,45 @@ static void atmel_get_ip_name(struct uart_port *port)
- 	}
- }
- 
-+static void atmel_free_gpio_irq(struct uart_port *port)
-+{
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	enum mctrl_gpio_idx i;
-+
-+	for (i = 0; i < UART_GPIO_MAX; i++)
-+		if (atmel_port->gpio_irq[i] >= 0)
-+			free_irq(atmel_port->gpio_irq[i], port);
-+}
-+
-+static int atmel_request_gpio_irq(struct uart_port *port)
-+{
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	int *irq = atmel_port->gpio_irq;
-+	enum mctrl_gpio_idx i;
-+	int err = 0;
-+
-+	for (i = 0; (i < UART_GPIO_MAX) && !err; i++) {
-+		if (irq[i] < 0)
-+			continue;
-+
-+		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
-+		err = request_irq(irq[i], atmel_interrupt, IRQ_TYPE_EDGE_BOTH,
-+				  "atmel_serial", port);
-+		if (err)
-+			dev_err(port->dev, "atmel_startup - Can't get %d irq\n",
-+				irq[i]);
-+	}
-+
-+	/*
-+	 * If something went wrong, rollback.
-+	 */
-+	while (err && (--i >= 0))
-+		if (irq[i] >= 0)
-+			free_irq(irq[i], port);
-+
-+	return err;
-+}
-+
- /*
-  * Perform initialization and enable port for reception
-  */
-@@ -1579,6 +1671,7 @@ static int atmel_startup(struct uart_port *port)
- 	 * handle an unexpected interrupt
- 	 */
- 	UART_PUT_IDR(port, -1);
-+	atmel_port->ms_irq_enabled = false;
- 
- 	/*
- 	 * Allocate the IRQ
-@@ -1591,6 +1684,13 @@ static int atmel_startup(struct uart_port *port)
- 	}
- 
- 	/*
-+	 * Get the GPIO lines IRQ
-+	 */
-+	retval = atmel_request_gpio_irq(port);
-+	if (retval)
-+		goto free_irq;
-+
-+	/*
- 	 * Initialize DMA (if necessary)
- 	 */
- 	atmel_init_property(atmel_port, pdev);
-@@ -1654,6 +1754,11 @@ static int atmel_startup(struct uart_port *port)
- 	}
- 
- 	return 0;
-+
-+free_irq:
-+	free_irq(port->irq, port);
-+
-+	return retval;
- }
- 
- /*
-@@ -1701,9 +1806,12 @@ static void atmel_shutdown(struct uart_port *port)
- 	atmel_port->rx_ring.tail = 0;
- 
- 	/*
--	 * Free the interrupt
-+	 * Free the interrupts
- 	 */
- 	free_irq(port->irq, port);
-+	atmel_free_gpio_irq(port);
-+
-+	atmel_port->ms_irq_enabled = false;
- }
- 
- /*
-@@ -2366,10 +2474,21 @@ static int atmel_serial_resume(struct platform_device *pdev)
- 
- static int atmel_init_gpios(struct atmel_uart_port *p, struct device *dev)
- {
-+	enum mctrl_gpio_idx i;
-+	struct gpio_desc *gpiod;
-+
- 	p->gpios = mctrl_gpio_init(dev, 0);
- 	if (IS_ERR_OR_NULL(p->gpios))
- 		return -1;
- 
-+	for (i = 0; i < UART_GPIO_MAX; i++) {
-+		gpiod = mctrl_gpio_to_gpiod(p->gpios, i);
-+		if (gpiod && (gpiod_get_direction(gpiod) == GPIOF_DIR_IN))
-+			p->gpio_irq[i] = gpiod_to_irq(gpiod);
-+		else
-+			p->gpio_irq[i] = -EINVAL;
-+	}
-+
- 	return 0;
- }
- 
--- 
-1.7.10.4
-
++	console->flags &= ~CON_ENABLED;
+ 	console_unlock();
+ 	console_sysfs_notify();
+ 	return res;
