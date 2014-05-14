@@ -1,37 +1,84 @@
-From: Jason Wessel <jason.wessel@windriver.com>
-Subject: Re: [PATCH 1/4] serial: core: Consistent LF handling for poll_put_char
-Date: Wed, 14 May 2014 10:08:07 -0500
-Message-ID: <537386D7.4060407@windriver.com>
-References: <1400079335-32125-1-git-send-email-daniel.thompson@linaro.org> <1400079335-32125-2-git-send-email-daniel.thompson@linaro.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [RFC 0/8] kgdb: NMI/FIQ support for ARM
+Date: Wed, 14 May 2014 16:58:37 +0100
+Message-ID: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1400079335-32125-2-git-send-email-daniel.thompson@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: patches@linaro.org, linaro-kernel@lists.linaro.org, linux-kernel@vger.kernel.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, kgdb-bugreport@lists.sourceforge.net, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@kernel.crashing.org>, Pantelis Antoniou <panto@intracom.gr>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Joe Schultz <jschultz@xes-inc.com>, Loic Poulain <loic.poulain@intel.com>, Kyle McMartin <kyle@infradead.org>, Stephen Warren <swarren@nvidia.com>, Ingo Molnar <mingo@elte.hu>, Paul Gortmaker <paul.gortmaker@windriver.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Jingoo Han <jg1.han@samsung.com>, Christophe Leroy <christophe.leroy@c-s.fr>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Frederic Weisbecker <fweisbec@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@lin>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/14/2014 09:55 AM, Daniel Thompson wrote:
-> The behaviour of the UART poll_put_char infrastructure is inconsistent
-> with respect to linefeed conversions. This in turn leads to difficulty
-> using kdb on serial ports that are not also consoles
-> (e.g. console=ttyAMA0,115200 kgdboc=ttyAMA1,115200).
->
-> The following drivers automatically convert '\n' to '\r\n' inside their
-> own poll functions but the remaining seventeen do not:
->
->     serial8250, cpm, pch_uart, serial_pxa, serial_txx9,
->
-> This can be made fully consistent but performing the conversion in
-> uart_poll_put_char(). A similar conversion is already made inside
-> uart_console_write() but it is optional for drivers to use this
-> function. Fortunately we can be confident the translation is safe
-> because the (very common) 8250 already does this translation.
-
-
-I'll have to take a look at some of the other drivers.  If all the instances of the function calls are going to coded per driver, it might make more sense to add variable to struct uart_port, vs changing the number of arguments to uart_poll_put_char.  And then the default can simply be coded in the struct initialization to the most common need.
-
-Cheers,
-Jason.
+VGhpcyBwYXRjaHNldCBtYWtlcyBpdCBwb3NzaWJsZSB0byB1c2UgdGhlIGtnZGIgTk1JIGluZnJh
+c3RydWN0dXJlCm9uIEFSTSBwbGF0Zm9ybXMuCgpUaGUga2dkYiBOTUkgaW5mcmFzdHJ1Y3R1cmUg
+d29ya3MgYnkgcmUtcm91dGluZyBhbiBVQVJUcyBpbnRlcnJ1cHQKc2lnbmFsIGZyb20gSVJRIHRv
+IEZJUS4gVGhlIFVBUlQgd2lsbCBubyBsb25nZXIgZnVuY3Rpb24gbm9ybWFsbHkKYW5kIHdpbGwg
+aW5zdGVhZCBiZSBtYW5hZ2VkIGJ5IGtnZGIgdXNpbmcgdGhlIHBvbGxlZCBJL08gZnVuY3Rpb25z
+LgpBbnkgY2hhcmFjdGVyIGRlbGl2ZXJlZCB0byB0aGUgVUFSVCBjYXVzZXMgdGhlIGtnZGIgaGFu
+ZGxlciBmdW5jdGlvbgp0byBiZSBjYWxsZWQuIEVhY2ggc2VyaWFsIGRyaXZlciBleHBsaWNpdGx5
+IGNvbnNlbnRzIChvciBub3QpIHRvIHRoaXMKYWJ1c2UgYnkgY2FsbGluZyB0aGUgYXBwcm9wcmlh
+dGUgcmVnaXN0cmF0aW9uIGZ1bmN0aW9ucy4KCltQQVRDSCAxLzhdIGFybTogZmlxOiBBbGxvdyBF
+T0kgdG8gYmUgY29tbXVuaWNhdGVkIHRvIHRoZSBpbnRjCltQQVRDSCAyLzhdIGlycWNoaXA6IGdp
+YzogUHJvdmlkZSBzdXBwb3J0IGZvciBpbnRlcnJ1cHQgZ3JvdXBpbmcKICAgIEJvdGggdGhlc2Ug
+cGF0Y2hlcyBsYXkgdGhlIGdyb3VuZCB3b3JrIHRvIGFsbG93IG1vZGVybiBBUk0KICAgIGludGVy
+cnVwdCBjb250cm9sbGVycyB0byBzdXBwb3J0IEZJUSBjb3JyZWN0bHkuCgpbUEFUQ0ggMy84XSBB
+Uk06IE1vdmUgc29tZSBtYWNyb3MgZnJvbSBlbnRyeS1hcm12IHRvIGVudHJ5LWhlYWRlcgpbUEFU
+Q0ggNC84XSBBUk06IEFkZCBLR0RCL0tEQiBGSVEgZGVidWdnZXIgZ2VuZXJpYyBjb2RlCiAgICBU
+aGlzIGlzIHRoZSBoZWFydCBvZiB0aGUgcGF0Y2ggc2VyaWVzLCBhbGxvd2luZyBGSVFzIHRvIGJl
+CiAgICByZWdpc3RlcmVkIHdpdGggS0dEQiBhbmQgaGFuZGxlZCBieSBLR0RCLgoKW1BBVENIIDUv
+OF0gc2VyaWFsOiBhbWJhLXBsMDExOiBQYXNzIG9uIEZJUSBpbmZvcm1hdGlvbiB0byBLR0RCLgpb
+UEFUQ0ggNi84XSBzZXJpYWw6IGFzYzogQWRkIHN1cHBvcnQgZm9yIEtHREIncyBGSVEvTk1JIG1v
+ZGUKICAgIEV4dGVuZCB0byBVQVJUIGRyaXZlcnMgdG8gYWxsb3cgdGhlIHJlZ2lzdGVyIHRoZSBh
+cHByb3ByaWF0ZSBGSVEKICAgIChpbXBsaWNpdGx5IHByb21pc2luZyB0byBiZWhhdmUgcHJvcGVy
+bHkgd2hlbiB0aGVpciBvd24gSVJRIGhhbmRsZXIgCiAgICBpcyBjdXQgb2ZmKS4KCgpbUEFUQ0gg
+Ny84XSBBUk06IFZJQzogQWRkIHZpY19zZXRfZmlxIGZ1bmN0aW9uIHRvIHNlbGVjdCBpZiBhbi4u
+LgpbUEFUQ0ggOC84XSBhcm06IGZpcTogSGFjayBGSVEgcm91dGluZyBiYWNrZG9vcnMgaW50byBH
+SUMgYW5kIFZJQwogICAgSGVyZSB3ZSBoaXQgdGhlIHNlcmlvdXMgcmVxdWVzdC1mb3ItY29tbWVu
+dCBzZWN0aW9uLiBJdCBpcyBub3QgCiAgICBjbGVhciB3aGF0IHRoZSBiZXN0IHdheSB0byBnZXQg
+dGhlIGludGVycnVwdCBjb250cm9sbGVyIHRvIHJlLXJvdXRlIAogICAgYW4gaW50ZXJydXB0IHNv
+dXJjZSBmcm9tIHRoZSBJUlEgc2lnbmFsIHRvIHRoZSBGSVEgc2lnbmFsLgogICAgCiAgICBDbGVh
+cmx5IHRoZSBhcHByb2FjaCBoZXJlIGlzIHdyb25nIGJ1dCBpdCBoYXMgYmVlbiBlbm91Z2ggZm9y
+IG1lCiAgICB0byB0ZXN0IG15IHdvcmsgc28gZmFyLgoKQW50b24gVm9yb250c292ICgyKToKICBB
+Uk06IE1vdmUgc29tZSBtYWNyb3MgZnJvbSBlbnRyeS1hcm12IHRvIGVudHJ5LWhlYWRlcgogIEFS
+TTogQWRkIEtHREIvS0RCIEZJUSBkZWJ1Z2dlciBnZW5lcmljIGNvZGUKCkFydmUgSGrDuG5uZXbD
+pWcgKDEpOgogIEFSTTogVklDOiBBZGQgdmljX3NldF9maXEgZnVuY3Rpb24gdG8gc2VsZWN0IGlm
+IGFuIGludGVycnVwdCBzaG91bGQKICAgIGdlbmVyYXRlIGFuIElSUSBvciBGSVEKCkRhbmllbCBU
+aG9tcHNvbiAoNSk6CiAgYXJtOiBmaXE6IEFsbG93IEVPSSB0byBiZSBjb21tdW5pY2F0ZWQgdG8g
+dGhlIGludGMKICBpcnFjaGlwOiBnaWM6IFByb3ZpZGUgc3VwcG9ydCBmb3IgaW50ZXJydXB0IGdy
+b3VwaW5nCiAgc2VyaWFsOiBhbWJhLXBsMDExOiBQYXNzIG9uIEZJUSBpbmZvcm1hdGlvbiB0byBL
+R0RCLgogIHNlcmlhbDogYXNjOiBBZGQgc3VwcG9ydCBmb3IgS0dEQidzIEZJUS9OTUkgbW9kZQog
+IGFybTogZmlxOiBIYWNrIEZJUSByb3V0aW5nIGJhY2tkb29ycyBpbnRvIEdJQyBhbmQgVklDCgog
+YXJjaC9hcm0vS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgIHwgICAyICsKIGFyY2gvYXJt
+L0tjb25maWcuZGVidWcgICAgICAgICAgICAgICAgICB8ICAxOCArKysrCiBhcmNoL2FybS9ib290
+L2R0cy9zdGloNDE2LmR0c2kgICAgICAgICAgfCAgIDIgKy0KIGFyY2gvYXJtL2Jvb3QvZHRzL3Zl
+eHByZXNzLXYybS1yczEuZHRzaSB8ICAgMiArLQogYXJjaC9hcm0vaW5jbHVkZS9hc20vZmlxLmgg
+ICAgICAgICAgICAgIHwgICAxICsKIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2tnZGIuaCAgICAgICAg
+ICAgICB8ICAgNyArKwogYXJjaC9hcm0va2VybmVsL01ha2VmaWxlICAgICAgICAgICAgICAgIHwg
+ICAxICsKIGFyY2gvYXJtL2tlcm5lbC9lbnRyeS1hcm12LlMgICAgICAgICAgICB8IDE1MSArLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogYXJjaC9hcm0va2VybmVsL2VudHJ5LWhlYWRlci5T
+ICAgICAgICAgIHwgMTY0ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiBhcmNoL2Fy
+bS9rZXJuZWwvZmlxLmMgICAgICAgICAgICAgICAgICAgfCAgNTAgKysrKysrKysrKwogYXJjaC9h
+cm0va2VybmVsL2tnZGJfZmlxLmMgICAgICAgICAgICAgIHwgMTE3ICsrKysrKysrKysrKysrKysr
+KysrKysrCiBhcmNoL2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUyAgICAgICAgfCAgODcgKysr
+KysrKysrKysrKysrKysKIGRyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLmMgICAgICAgICAgICAgICB8
+ICA2MiArKysrKysrKysrKy0KIGRyaXZlcnMvaXJxY2hpcC9pcnEtdmljLmMgICAgICAgICAgICAg
+ICB8ICAyMyArKysrKwogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyAgICAgICAgIHwg
+IDE4ICsrKy0KIGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYyAgICAgICAgICAgICB8ICAyNSAr
+KysrKwogaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1naWMuaCAgICAgICAgIHwgICAzICsKIGlu
+Y2x1ZGUvbGludXgvaXJxY2hpcC9hcm0tdmljLmggICAgICAgICB8ICAgMSArCiAxOCBmaWxlcyBj
+aGFuZ2VkLCA1NzYgaW5zZXJ0aW9ucygrKSwgMTU4IGRlbGV0aW9ucygtKQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IGFyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcS5jCiBjcmVhdGUgbW9kZSAxMDA2NDQgYXJj
+aC9hcm0va2VybmVsL2tnZGJfZmlxX2VudHJ5LlMKCi0tIAoxLjkuMAoKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
+ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
+aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
