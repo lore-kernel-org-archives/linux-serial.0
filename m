@@ -1,7 +1,7 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC 1/8] arm: fiq: Allow EOI to be communicated to the intc
-Date: Wed, 14 May 2014 16:58:38 +0100
-Message-ID: <1400083125-1464-2-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC 5/8] serial: amba-pl011: Pass on FIQ information to KGDB.
+Date: Wed, 14 May 2014 16:58:42 +0100
+Message-ID: <1400083125-1464-6-git-send-email-daniel.thompson@linaro.org>
 References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,64 +21,62 @@ To: Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.
 Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Frederic Weisbecker <fweisbec@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@lin>
 List-Id: linux-serial@vger.kernel.org
 
-Modern ARM systems require an EOI to be sent to the interrupt controller
-on completion of both IRQ and FIQ. The FIQ code currently does not permit
-this requiring nasty register poke hacks from the FIQ handler. This patch
-provides a simple interface for C based handlers to complete a FIQ.
+It is important this information comes from the serial driver because, by
+doing so, the driver offers "permission" for KGDB to route its interrupt
+signal from the drivers own handler to KGDBs FIQ handler (which will
+handle the interrupt signal by making polled I/O callbacks).
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
- arch/arm/include/asm/fiq.h |  1 +
- arch/arm/kernel/fiq.c      | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+ drivers/tty/serial/amba-pl011.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/fiq.h b/arch/arm/include/asm/fiq.h
-index d493d0b..5a2a9b9 100644
---- a/arch/arm/include/asm/fiq.h
-+++ b/arch/arm/include/asm/fiq.h
-@@ -38,6 +38,7 @@ extern void release_fiq(struct fiq_handler *f);
- extern void set_fiq_handler(void *start, unsigned int length);
- extern void enable_fiq(int fiq);
- extern void disable_fiq(int fiq);
-+extern void eoi_fiq(int fiq);
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index dacf0a0..aac817a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -58,6 +58,7 @@
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/sizes.h>
+ #include <linux/io.h>
++#include <linux/kgdb.h>
  
- /* helpers defined in fiqasm.S: */
- extern void __set_fiq_regs(unsigned long const *regs);
-diff --git a/arch/arm/kernel/fiq.c b/arch/arm/kernel/fiq.c
-index 918875d..defbe85 100644
---- a/arch/arm/kernel/fiq.c
-+++ b/arch/arm/kernel/fiq.c
-@@ -40,6 +40,7 @@
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/seq_file.h>
-+#include <linux/irq.h>
+ #define UART_NR			14
  
- #include <asm/cacheflush.h>
- #include <asm/cp15.h>
-@@ -139,6 +140,15 @@ void disable_fiq(int fiq)
- 	disable_irq(fiq + fiq_start);
+@@ -2091,6 +2092,18 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
+ 	return ret;
  }
  
-+void eoi_fiq(int fiq)
++#ifdef CONFIG_KGDB_FIQ
++/* Register with KGDB if there is a FIQ linked to this device */
++static void pl011_register_fiq(struct amba_device *dev)
 +{
-+	struct irq_data *irq_data = irq_get_irq_data(fiq + fiq_start);
-+	struct irq_chip *chip = irq_data_get_irq_chip(irq_data);
-+
-+	if (chip->irq_eoi)
-+			chip->irq_eoi(irq_data);
++	int fiq = dev->irq[1];
++	if (fiq > 0)
++		kgdb_register_fiq(fiq);
 +}
++#else
++static void pl011_register_fiq(struct platform_device *pdev) {}
++#endif
 +
- EXPORT_SYMBOL(set_fiq_handler);
- EXPORT_SYMBOL(__set_fiq_regs);	/* defined in fiqasm.S */
- EXPORT_SYMBOL(__get_fiq_regs);	/* defined in fiqasm.S */
-@@ -146,6 +156,7 @@ EXPORT_SYMBOL(claim_fiq);
- EXPORT_SYMBOL(release_fiq);
- EXPORT_SYMBOL(enable_fiq);
- EXPORT_SYMBOL(disable_fiq);
-+EXPORT_SYMBOL(eoi_fiq);
- 
- void __init init_FIQ(int start)
+ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
  {
+ 	struct uart_amba_port *uap;
+@@ -2164,11 +2177,14 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	}
+ 
+ 	ret = uart_add_one_port(&amba_reg, &uap->port);
+-	if (ret) {
++	if (0 == ret) {
++		pl011_register_fiq(dev);
++	} else {
+ 		amba_ports[i] = NULL;
+ 		uart_unregister_driver(&amba_reg);
+ 		pl011_dma_remove(uap);
+ 	}
++
+  out:
+ 	return ret;
+ }
 -- 
 1.9.0
