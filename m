@@ -1,11 +1,11 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC 3/8] ARM: Move some macros from entry-armv to entry-header
-Date: Wed, 14 May 2014 16:58:40 +0100
-Message-ID: <1400083125-1464-4-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC 4/8] ARM: Add KGDB/KDB FIQ debugger generic code
+Date: Wed, 14 May 2014 16:58:41 +0100
+Message-ID: <1400083125-1464-5-git-send-email-daniel.thompson@linaro.org>
 References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -21,385 +21,158 @@ To: Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.
 Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Frederic Weisbecker <fweisbec@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@lin>
 List-Id: linux-serial@vger.kernel.org
 
-From: Anton Vorontsov <anton.vorontsov@linaro.org>
-
-Just move the macros into header file as we would want to use them for
-KGDB FIQ entry code.
-
-The following macros were moved:
-
- - svc_entry
- - usr_entry
- - kuser_cmpxchg_check
- - vector_stub
-
-To make kuser_cmpxchg_check actually work across different files, we
-also have to make kuser_cmpxchg64_fixup global.
-
-Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
-Signed-off-by: John Stultz <john.stultz@linaro.org>
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
----
- arch/arm/kernel/entry-armv.S   | 151 +------------------------------------
- arch/arm/kernel/entry-header.S | 164 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 165 insertions(+), 150 deletions(-)
-
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 1879e8d..ed95b95 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -140,53 +140,6 @@ ENDPROC(__und_invalid)
-  * SVC mode handlers
-  */
- 
--#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
--#define SPFIX(code...) code
--#else
--#define SPFIX(code...)
--#endif
--
--	.macro	svc_entry, stack_hole=0
-- UNWIND(.fnstart		)
-- UNWIND(.save {r0 - pc}		)
--	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
--#ifdef CONFIG_THUMB2_KERNEL
-- SPFIX(	str	r0, [sp]	)	@ temporarily saved
-- SPFIX(	mov	r0, sp		)
-- SPFIX(	tst	r0, #4		)	@ test original stack alignment
-- SPFIX(	ldr	r0, [sp]	)	@ restored
--#else
-- SPFIX(	tst	sp, #4		)
--#endif
-- SPFIX(	subeq	sp, sp, #4	)
--	stmia	sp, {r1 - r12}
--
--	ldmia	r0, {r3 - r5}
--	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
--	mov	r6, #-1			@  ""  ""      ""       ""
--	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
-- SPFIX(	addeq	r2, r2, #4	)
--	str	r3, [sp, #-4]!		@ save the "real" r0 copied
--					@ from the exception stack
--
--	mov	r3, lr
--
--	@
--	@ We are now ready to fill in the remaining blanks on the stack:
--	@
--	@  r2 - sp_svc
--	@  r3 - lr_svc
--	@  r4 - lr_<exception>, already fixed up for correct return/restart
--	@  r5 - spsr_<exception>
--	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
--	@
--	stmia	r7, {r2 - r6}
--
--#ifdef CONFIG_TRACE_IRQFLAGS
--	bl	trace_hardirqs_off
--#endif
--	.endm
--
- 	.align	5
- __dabt_svc:
- 	svc_entry
-@@ -306,73 +259,8 @@ ENDPROC(__pabt_svc)
- 
- /*
-  * User mode handlers
-- *
-- * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
-  */
- 
--#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
--#error "sizeof(struct pt_regs) must be a multiple of 8"
--#endif
--
--	.macro	usr_entry
-- UNWIND(.fnstart	)
-- UNWIND(.cantunwind	)	@ don't unwind the user space
--	sub	sp, sp, #S_FRAME_SIZE
-- ARM(	stmib	sp, {r1 - r12}	)
-- THUMB(	stmia	sp, {r0 - r12}	)
--
--	ldmia	r0, {r3 - r5}
--	add	r0, sp, #S_PC		@ here for interlock avoidance
--	mov	r6, #-1			@  ""  ""     ""        ""
--
--	str	r3, [sp]		@ save the "real" r0 copied
--					@ from the exception stack
--
--	@
--	@ We are now ready to fill in the remaining blanks on the stack:
--	@
--	@  r4 - lr_<exception>, already fixed up for correct return/restart
--	@  r5 - spsr_<exception>
--	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
--	@
--	@ Also, separately save sp_usr and lr_usr
--	@
--	stmia	r0, {r4 - r6}
-- ARM(	stmdb	r0, {sp, lr}^			)
-- THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
--
--	@
--	@ Enable the alignment trap while in kernel mode
--	@
--	alignment_trap r0
--
--	@
--	@ Clear FP to mark the first stack frame
--	@
--	zero_fp
--
--#ifdef CONFIG_IRQSOFF_TRACER
--	bl	trace_hardirqs_off
--#endif
--	ct_user_exit save = 0
--	.endm
--
--	.macro	kuser_cmpxchg_check
--#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
--    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
--#ifndef CONFIG_MMU
--#warning "NPTL on non MMU needs fixing"
--#else
--	@ Make sure our user space atomic helper is restarted
--	@ if it was interrupted in a critical region.  Here we
--	@ perform a quick test inline since it should be false
--	@ 99.9999% of the time.  The rest is done out of line.
--	cmp	r4, #TASK_SIZE
--	blhs	kuser_cmpxchg64_fixup
--#endif
--#endif
--	.endm
--
- 	.align	5
- __dabt_usr:
- 	usr_entry
-@@ -819,6 +707,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
- 	ldmfd	sp!, {r4, r5, r6, pc}
- 
- 	.text
-+	.global kuser_cmpxchg64_fixup
- kuser_cmpxchg64_fixup:
- 	@ Called from kuser_cmpxchg_fixup.
- 	@ r4 = address of interrupted insn (must be preserved).
-@@ -960,44 +849,6 @@ __kuser_helper_end:
-  * SP points to a minimal amount of processor-private memory, the address
-  * of which is copied into r0 for the mode specific abort handler.
-  */
--	.macro	vector_stub, name, mode, correction=0
--	.align	5
--
--vector_\name:
--	.if \correction
--	sub	lr, lr, #\correction
--	.endif
--
--	@
--	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
--	@ (parent CPSR)
--	@
--	stmia	sp, {r0, lr}		@ save r0, lr
--	mrs	lr, spsr
--	str	lr, [sp, #8]		@ save spsr
--
--	@
--	@ Prepare for SVC32 mode.  IRQs remain disabled.
--	@
--	mrs	r0, cpsr
--	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
--	msr	spsr_cxsf, r0
--
--	@
--	@ the branch table must immediately follow this code
--	@
--	and	lr, lr, #0x0f
-- THUMB(	adr	r0, 1f			)
-- THUMB(	ldr	lr, [r0, lr, lsl #2]	)
--	mov	r0, sp
-- ARM(	ldr	lr, [pc, lr, lsl #2]	)
--	movs	pc, lr			@ branch to handler in SVC mode
--ENDPROC(vector_\name)
--
--	.align	2
--	@ handler addresses follow this label
--1:
--	.endm
- 
- 	.section .stubs, "ax", %progbits
- __stubs_start:
-diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
-index 1420725..ab04a67 100644
---- a/arch/arm/kernel/entry-header.S
-+++ b/arch/arm/kernel/entry-header.S
-@@ -352,3 +352,167 @@ scno	.req	r7		@ syscall number
- tbl	.req	r8		@ syscall table pointer
- why	.req	r8		@ Linux syscall (!= 0)
- tsk	.req	r9		@ current thread_info
-+
-+/*
-+ * SVC mode handler macros
-+ */
-+
-+#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
-+#define SPFIX(code...) code
-+#else
-+#define SPFIX(code...)
-+#endif
-+
-+	.macro	svc_entry, stack_hole=0
-+ UNWIND(.fnstart		)
-+ UNWIND(.save {r0 - pc}		)
-+	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
-+#ifdef CONFIG_THUMB2_KERNEL
-+ SPFIX(	str	r0, [sp]	)	@ temporarily saved
-+ SPFIX(	mov	r0, sp		)
-+ SPFIX(	tst	r0, #4		)	@ test original stack alignment
-+ SPFIX(	ldr	r0, [sp]	)	@ restored
-+#else
-+ SPFIX(	tst	sp, #4		)
-+#endif
-+ SPFIX(	subeq	sp, sp, #4	)
-+	stmia	sp, {r1 - r12}
-+
-+	ldmia	r0, {r3 - r5}
-+	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
-+	mov	r6, #-1			@  ""  ""      ""       ""
-+	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
-+ SPFIX(	addeq	r2, r2, #4	)
-+	str	r3, [sp, #-4]!		@ save the "real" r0 copied
-+					@ from the exception stack
-+
-+	mov	r3, lr
-+
-+	@
-+	@ We are now ready to fill in the remaining blanks on the stack:
-+	@
-+	@  r2 - sp_svc
-+	@  r3 - lr_svc
-+	@  r4 - lr_<exception>, already fixed up for correct return/restart
-+	@  r5 - spsr_<exception>
-+	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
-+	@
-+	stmia	r7, {r2 - r6}
-+
-+#ifdef CONFIG_TRACE_IRQFLAGS
-+	bl	trace_hardirqs_off
-+#endif
-+	.endm
-+
-+/*
-+ * User mode handler macros
-+ *
-+ * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
-+ */
-+
-+#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
-+#error "sizeof(struct pt_regs) must be a multiple of 8"
-+#endif
-+
-+	.macro	usr_entry
-+ UNWIND(.fnstart	)
-+ UNWIND(.cantunwind	)	@ don't unwind the user space
-+	sub	sp, sp, #S_FRAME_SIZE
-+ ARM(	stmib	sp, {r1 - r12}	)
-+ THUMB(	stmia	sp, {r0 - r12}	)
-+
-+	ldmia	r0, {r3 - r5}
-+	add	r0, sp, #S_PC		@ here for interlock avoidance
-+	mov	r6, #-1			@  ""  ""     ""        ""
-+
-+	str	r3, [sp]		@ save the "real" r0 copied
-+					@ from the exception stack
-+
-+	@
-+	@ We are now ready to fill in the remaining blanks on the stack:
-+	@
-+	@  r4 - lr_<exception>, already fixed up for correct return/restart
-+	@  r5 - spsr_<exception>
-+	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
-+	@
-+	@ Also, separately save sp_usr and lr_usr
-+	@
-+	stmia	r0, {r4 - r6}
-+ ARM(	stmdb	r0, {sp, lr}^			)
-+ THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
-+
-+	@
-+	@ Enable the alignment trap while in kernel mode
-+	@
-+	alignment_trap r0
-+
-+	@
-+	@ Clear FP to mark the first stack frame
-+	@
-+	zero_fp
-+
-+#ifdef CONFIG_IRQSOFF_TRACER
-+	bl	trace_hardirqs_off
-+#endif
-+	ct_user_exit save = 0
-+	.endm
-+
-+	.macro	kuser_cmpxchg_check
-+#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
-+    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
-+#ifndef CONFIG_MMU
-+#warning "NPTL on non MMU needs fixing"
-+#else
-+	@ Make sure our user space atomic helper is restarted
-+	@ if it was interrupted in a critical region.  Here we
-+	@ perform a quick test inline since it should be false
-+	@ 99.9999% of the time.  The rest is done out of line.
-+	cmp	r4, #TASK_SIZE
-+	blhs	kuser_cmpxchg64_fixup
-+#endif
-+#endif
-+	.endm
-+
-+/*
-+ * Vector stubs macro.
-+ */
-+	.macro	vector_stub, name, mode, correction=0
-+	.align	5
-+
-+vector_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@
-+	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
-+	@ (parent CPSR)
-+	@
-+	stmia	sp, {r0, lr}		@ save r0, lr
-+	mrs	lr, spsr
-+	str	lr, [sp, #8]		@ save spsr
-+
-+	@
-+	@ Prepare for SVC32 mode.  IRQs remain disabled.
-+	@
-+	mrs	r0, cpsr
-+	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
-+	msr	spsr_cxsf, r0
-+
-+	@
-+	@ the branch table must immediately follow this code
-+	@
-+	and	lr, lr, #0x0f
-+ THUMB(	adr	r0, 1f			)
-+ THUMB(	ldr	lr, [r0, lr, lsl #2]	)
-+	mov	r0, sp
-+ ARM(	ldr	lr, [pc, lr, lsl #2]	)
-+	movs	pc, lr			@ branch to handler in SVC mode
-+ENDPROC(vector_\name)
-+
-+	.align	2
-+	@ handler addresses follow this label
-+1:
-+	.endm
-+
-+
--- 
-1.9.0
+RnJvbTogQW50b24gVm9yb250c292IDxhbnRvbi52b3JvbnRzb3ZAbGluYXJvLm9yZz4KClRoZSBG
+SVEgZGVidWdnZXIgbWF5IGJlIHVzZWQgdG8gZGVidWcgc2l0dWF0aW9ucyB3aGVuIHRoZSBrZXJu
+ZWwgc3R1Y2sKaW4gdW5pbnRlcnJ1cHRhYmxlIHNlY3Rpb25zLCBlLmcuIHRoZSBrZXJuZWwgaW5m
+aW5pdGVseSBsb29wcyBvcgpkZWFkbG9ja2VkIGluIGFuIGludGVycnVwdCBvciB3aXRoIGludGVy
+cnVwdHMgZGlzYWJsZWQuCgpCeSBkZWZhdWx0IEtHREIgRklRIGlzIGRpc2FibGVkIGluIHJ1bnRp
+bWUsIGJ1dCBjYW4gYmUgZW5hYmxlZCB3aXRoCmtnZGJfZmlxLmVuYWJsZT0xIGtlcm5lbCBjb21t
+YW5kIGxpbmUgb3B0aW9uLgoKU2lnbmVkLW9mZi1ieTogQW50b24gVm9yb250c292IDxhbnRvbi52
+b3JvbnRzb3ZAbGluYXJvLm9yZz4KU2lnbmVkLW9mZi1ieTogSm9obiBTdHVsdHogPGpvaG4uc3R1
+bHR6QGxpbmFyby5vcmc+ClNpZ25lZC1vZmYtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRo
+b21wc29uQGxpbmFyby5vcmc+Ci0tLQogYXJjaC9hcm0vS2NvbmZpZyAgICAgICAgICAgICAgICAg
+fCAgIDIgKwogYXJjaC9hcm0vS2NvbmZpZy5kZWJ1ZyAgICAgICAgICAgfCAgMTggKysrKysrCiBh
+cmNoL2FybS9pbmNsdWRlL2FzbS9rZ2RiLmggICAgICB8ICAgNyArKysKIGFyY2gvYXJtL2tlcm5l
+bC9NYWtlZmlsZSAgICAgICAgIHwgICAxICsKIGFyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcS5jICAg
+ICAgIHwgMTE3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwogYXJjaC9h
+cm0va2VybmVsL2tnZGJfZmlxX2VudHJ5LlMgfCAgODcgKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysKIDYgZmlsZXMgY2hhbmdlZCwgMjMyIGluc2VydGlvbnMoKykKIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBhcmNoL2FybS9rZXJuZWwva2dkYl9maXEuYwogY3JlYXRlIG1vZGUgMTAwNjQ0IGFyY2gv
+YXJtL2tlcm5lbC9rZ2RiX2ZpcV9lbnRyeS5TCgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vS2NvbmZp
+ZyBiL2FyY2gvYXJtL0tjb25maWcKaW5kZXggZGIzYzU0MS4uNDE5ZmQwYSAxMDA2NDQKLS0tIGEv
+YXJjaC9hcm0vS2NvbmZpZworKysgYi9hcmNoL2FybS9LY29uZmlnCkBAIC0zMDcsNiArMzA3LDcg
+QEAgY2hvaWNlCiBjb25maWcgQVJDSF9NVUxUSVBMQVRGT1JNCiAJYm9vbCAiQWxsb3cgbXVsdGlw
+bGUgcGxhdGZvcm1zIHRvIGJlIHNlbGVjdGVkIgogCWRlcGVuZHMgb24gTU1VCisJc2VsZWN0IEFS
+Q0hfTUlHSFRfSEFWRV9LR0RCX0ZJUQogCXNlbGVjdCBBUkNIX1dBTlRfT1BUSU9OQUxfR1BJT0xJ
+QgogCXNlbGVjdCBBUk1fSEFTX1NHX0NIQUlOCiAJc2VsZWN0IEFSTV9QQVRDSF9QSFlTX1ZJUlQK
+QEAgLTM1Niw2ICszNTcsNyBAQCBjb25maWcgQVJDSF9SRUFMVklFVwogCiBjb25maWcgQVJDSF9W
+RVJTQVRJTEUKIAlib29sICJBUk0gTHRkLiBWZXJzYXRpbGUgZmFtaWx5IgorCXNlbGVjdCBBUkNI
+X01JR0hUX0hBVkVfS0dEQl9GSVEKIAlzZWxlY3QgQVJDSF9XQU5UX09QVElPTkFMX0dQSU9MSUIK
+IAlzZWxlY3QgQVJNX0FNQkEKIAlzZWxlY3QgQVJNX1RJTUVSX1NQODA0CmRpZmYgLS1naXQgYS9h
+cmNoL2FybS9LY29uZmlnLmRlYnVnIGIvYXJjaC9hcm0vS2NvbmZpZy5kZWJ1ZwppbmRleCA2YTJi
+Y2ZkLi4xZjFiZWMxIDEwMDY0NAotLS0gYS9hcmNoL2FybS9LY29uZmlnLmRlYnVnCisrKyBiL2Fy
+Y2gvYXJtL0tjb25maWcuZGVidWcKQEAgLTIsNiArMiwyNCBAQCBtZW51ICJLZXJuZWwgaGFja2lu
+ZyIKIAogc291cmNlICJsaWIvS2NvbmZpZy5kZWJ1ZyIKIAorY29uZmlnIEFSQ0hfTUlHSFRfSEFW
+RV9LR0RCX0ZJUQorCWJvb2wKKworY29uZmlnIEtHREJfRklRCisJYm9vbCAiS0dEQiBGSVEgc3Vw
+cG9ydCIKKwlkZXBlbmRzIG9uIEtHREJfS0RCICYmIEFSQ0hfTUlHSFRfSEFWRV9LR0RCX0ZJUSAm
+JiAhVEhVTUIyX0tFUk5FTAorCXNlbGVjdCBGSVEKKwloZWxwCisJICBUaGUgRklRIGRlYnVnZ2Vy
+IG1heSBiZSB1c2VkIHRvIGRlYnVnIHNpdHVhdGlvbnMgd2hlbiB0aGUKKwkgIGtlcm5lbCBzdHVj
+ayBpbiB1bmludGVycnVwdGFibGUgc2VjdGlvbnMsIGUuZy4gdGhlIGtlcm5lbAorCSAgaW5maW5p
+dGVseSBsb29wcyBvciBkZWFkbG9ja2VkIGluIGFuIGludGVycnVwdCBvciB3aXRoCisJICBpbnRl
+cnJ1cHRzIGRpc2FibGVkLgorCisJICBCeSBkZWZhdWx0IEtHREIgRklRIGlzIGRpc2FibGVkIGF0
+IHJ1bnRpbWUsIGJ1dCBjYW4gYmUKKwkgIGVuYWJsZWQgd2l0aCBrZ2RiX2ZpcS5lbmFibGU9MSBr
+ZXJuZWwgY29tbWFuZCBsaW5lIG9wdGlvbi4KKworCSAgSWYgdW5zdXJlLCBzYXkgTi4KKwogY29u
+ZmlnIEFSTV9QVERVTVAKIAlib29sICJFeHBvcnQga2VybmVsIHBhZ2V0YWJsZSBsYXlvdXQgdG8g
+dXNlcnNwYWNlIHZpYSBkZWJ1Z2ZzIgogCWRlcGVuZHMgb24gREVCVUdfS0VSTkVMCmRpZmYgLS1n
+aXQgYS9hcmNoL2FybS9pbmNsdWRlL2FzbS9rZ2RiLmggYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9r
+Z2RiLmgKaW5kZXggMGE5ZDVkZC4uNWRlMjFmMDEgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJtL2luY2x1
+ZGUvYXNtL2tnZGIuaAorKysgYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9rZ2RiLmgKQEAgLTExLDcg
+KzExLDkgQEAKICNkZWZpbmUgX19BUk1fS0dEQl9IX18KIAogI2luY2x1ZGUgPGxpbnV4L3B0cmFj
+ZS5oPgorI2luY2x1ZGUgPGxpbnV4L2xpbmthZ2UuaD4KICNpbmNsdWRlIDxhc20vb3Bjb2Rlcy5o
+PgorI2luY2x1ZGUgPGFzbS9leGNlcHRpb24uaD4KIAogLyoKICAqIEdEQiBhc3N1bWVzIHRoYXQg
+d2UncmUgYSB1c2VyIHByb2Nlc3MgYmVpbmcgZGVidWdnZWQsIHNvCkBAIC00OCw2ICs1MCwxMSBA
+QCBzdGF0aWMgaW5saW5lIHZvaWQgYXJjaF9rZ2RiX2JyZWFrcG9pbnQodm9pZCkKIGV4dGVybiB2
+b2lkIGtnZGJfaGFuZGxlX2J1c19lcnJvcih2b2lkKTsKIGV4dGVybiBpbnQga2dkYl9mYXVsdF9l
+eHBlY3RlZDsKIAorZXh0ZXJuIGNoYXIga2dkYl9maXFfaGFuZGxlcjsKK2V4dGVybiBjaGFyIGtn
+ZGJfZmlxX2hhbmRsZXJfZW5kOworYXNtbGlua2FnZSB2b2lkIF9fZXhjZXB0aW9uX2lycV9lbnRy
+eSBrZ2RiX2ZpcV9kb19oYW5kbGUoc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOworZXh0ZXJuIGludCBr
+Z2RiX3JlZ2lzdGVyX2ZpcSh1bnNpZ25lZCBpbnQgZmlxKTsKKwogI2VuZGlmIC8qICFfX0FTU0VN
+QkxZX18gKi8KIAogLyoKZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tlcm5lbC9NYWtlZmlsZSBiL2Fy
+Y2gvYXJtL2tlcm5lbC9NYWtlZmlsZQppbmRleCAwNDA2MTljLi4yNTFmNjUxIDEwMDY0NAotLS0g
+YS9hcmNoL2FybS9rZXJuZWwvTWFrZWZpbGUKKysrIGIvYXJjaC9hcm0va2VybmVsL01ha2VmaWxl
+CkBAIC02Nyw2ICs2Nyw3IEBAIGVuZGlmCiBvYmotJChDT05GSUdfT0FCSV9DT01QQVQpCSs9IHN5
+c19vYWJpLWNvbXBhdC5vCiBvYmotJChDT05GSUdfQVJNX1RIVU1CRUUpCSs9IHRodW1iZWUubwog
+b2JqLSQoQ09ORklHX0tHREIpCQkrPSBrZ2RiLm8KK29iai0kKENPTkZJR19LR0RCX0ZJUSkJCSs9
+IGtnZGJfZmlxX2VudHJ5Lm8ga2dkYl9maXEubwogb2JqLSQoQ09ORklHX0FSTV9VTldJTkQpCSs9
+IHVud2luZC5vCiBvYmotJChDT05GSUdfSEFWRV9UQ00pCQkrPSB0Y20ubwogb2JqLSQoQ09ORklH
+X09GKQkJKz0gZGV2dHJlZS5vCmRpZmYgLS1naXQgYS9hcmNoL2FybS9rZXJuZWwva2dkYl9maXEu
+YyBiL2FyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcS5jCm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4
+IDAwMDAwMDAuLmIyMzY0MDkKLS0tIC9kZXYvbnVsbAorKysgYi9hcmNoL2FybS9rZXJuZWwva2dk
+Yl9maXEuYwpAQCAtMCwwICsxLDExNyBAQAorLyoKKyAqIEtHREIgRklRCisgKgorICogQ29weXJp
+Z2h0IDIwMTAgR29vZ2xlLCBJbmMuCisgKgkJICBBcnZlIEhqw7hubmV2w6VnIDxhcnZlQGFuZHJv
+aWQuY29tPgorICoJCSAgQ29saW4gQ3Jvc3MgPGNjcm9zc0BhbmRyb2lkLmNvbT4KKyAqIENvcHly
+aWdodCAyMDEyIExpbmFybyBMdGQuCisgKgkJICBBbnRvbiBWb3JvbnRzb3YgPGFudG9uLnZvcm9u
+dHNvdkBsaW5hcm8ub3JnPgorICoKKyAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5
+b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0CisgKiB1bmRlciB0aGUgdGVy
+bXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcyBwdWJsaXNo
+ZWQKKyAqIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCisgKi8KKworI2luY2x1ZGUg
+PGxpbnV4L2tlcm5lbC5oPgorI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgorI2luY2x1ZGUgPGxp
+bnV4L2luaXQuaD4KKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+CisjaW5jbHVkZSA8bGludXgvZXJy
+bm8uaD4KKyNpbmNsdWRlIDxsaW51eC9oYXJkaXJxLmg+CisjaW5jbHVkZSA8bGludXgvYXRvbWlj
+Lmg+CisjaW5jbHVkZSA8bGludXgva2RiLmg+CisjaW5jbHVkZSA8bGludXgva2dkYi5oPgorI2lu
+Y2x1ZGUgPGFzbS9maXEuaD4KKyNpbmNsdWRlIDxhc20vZXhjZXB0aW9uLmg+CisKK3N0YXRpYyBp
+bnQga2dkYl9maXFfZW5hYmxlZDsKK21vZHVsZV9wYXJhbV9uYW1lZChlbmFibGUsIGtnZGJfZmlx
+X2VuYWJsZWQsIGludCwgMDYwMCk7CitNT0RVTEVfUEFSTV9ERVNDKGVuYWJsZSwgInNldCB0byAx
+IHRvIGVuYWJsZSBGSVEgS0dEQiIpOworCitzdGF0aWMgdW5zaWduZWQgaW50IGtnZGJfZmlxOwor
+Cithc21saW5rYWdlIHZvaWQgX19leGNlcHRpb25faXJxX2VudHJ5IGtnZGJfZmlxX2RvX2hhbmRs
+ZShzdHJ1Y3QgcHRfcmVncyAqcmVncykKK3sKKwlpZiAoa2dkYl9ubWlfcG9sbF9rbm9jaygpKSB7
+CisJCW5taV9lbnRlcigpOworCQlrZ2RiX2hhbmRsZV9leGNlcHRpb24oMSwgMCwgMCwgcmVncyk7
+CisJCW5taV9leGl0KCk7CisJfQorCisJZW9pX2ZpcShrZ2RiX2ZpcSk7Cit9CisKK3N0YXRpYyBz
+dHJ1Y3QgZmlxX2hhbmRsZXIga2dkYl9maXFfZGVzYyA9IHsKKwkubmFtZSA9ICJrZ2RiIiwKK307
+CisKK3N0YXRpYyBsb25nIGtnZGJfZmlxX3NldHVwX3N0YWNrKHZvaWQgKmluZm8pCit7CisJc3Ry
+dWN0IHB0X3JlZ3MgcmVnczsKKworCXJlZ3MuQVJNX3NwID0gX19nZXRfZnJlZV9wYWdlcyhHRlBf
+S0VSTkVMLCBUSFJFQURfU0laRV9PUkRFUikgKworCQkJVEhSRUFEX1NUQVJUX1NQOworCVdBUk5f
+T04oIXJlZ3MuQVJNX3NwKTsKKworCXNldF9maXFfcmVncygmcmVncyk7CisJcmV0dXJuIDA7Cit9
+CisKKy8qKgorICoga2dkYl9maXFfZW5hYmxlX25taSAtIE1hbmFnZSBOTUktdHJpZ2dlcmVkIGVu
+dHJ5IHRvIEtHREIKKyAqIEBvbjogRmxhZyB0byBlaXRoZXIgZW5hYmxlIG9yIGRpc2FibGUgYW4g
+Tk1JCisgKgorICogVGhpcyBmdW5jdGlvbiBtYW5hZ2VzIE5NSXMgdGhhdCB1c3VhbGx5IGNhdXNl
+IEtHREIgdG8gZW50ZXIuIFRoYXQgaXMsIG5vdAorICogYWxsIE5NSXMgc2hvdWxkIGJlIGVuYWJs
+ZWQgb3IgZGlzYWJsZWQsIGJ1dCBvbmx5IHRob3NlIHRoYXQgaXNzdWUKKyAqIGtnZGJfaGFuZGxl
+X2V4Y2VwdGlvbigpLgorICoKKyAqIFRoZSBjYWxsIGNvdW50cyBkaXNhYmxlIHJlcXVlc3RzLCBh
+bmQgdGh1cyBhbGxvd3MgdG8gbmVzdCBkaXNhYmxlcy4gQnV0CisgKiB0cnlpbmcgdG8gZW5hYmxl
+IGFscmVhZHkgZW5hYmxlZCBOTUkgaXMgYW4gZXJyb3IuCisgKi8KK3N0YXRpYyB2b2lkIGtnZGJf
+ZmlxX2VuYWJsZV9ubWkoYm9vbCBvbikKK3sKKwlzdGF0aWMgYXRvbWljX3QgY250OworCWludCBy
+ZXQ7CisKKwlyZXQgPSBhdG9taWNfYWRkX3JldHVybihvbiA/IDEgOiAtMSwgJmNudCk7CisJaWYg
+KHJldCA+IDEgJiYgb24pIHsKKwkJLyoKKwkJICogVGhlcmUgc2hvdWxkIGJlIG9ubHkgb25lIGlu
+c3RhbmNlIHRoYXQgY2FsbHMgdGhpcyBmdW5jdGlvbgorCQkgKiBpbiAiZW5hYmxlLCBkaXNhYmxl
+IiBvcmRlci4gQWxsIG90aGVyIHVzZXJzIG11c3QgY2FsbAorCQkgKiBkaXNhYmxlIGZpcnN0LCB0
+aGVuIGVuYWJsZS4gSWYgbm90LCBzb21ldGhpbmcgaXMgd3JvbmcuCisJCSAqLworCQlXQVJOX09O
+KDEpOworCQlyZXR1cm47CisJfQorCisJaWYgKHJldCA+IDApCisJCWVuYWJsZV9maXEoa2dkYl9m
+aXEpOworCWVsc2UKKwkJZGlzYWJsZV9maXEoa2dkYl9maXEpOworfQorCitpbnQga2dkYl9yZWdp
+c3Rlcl9maXEodW5zaWduZWQgaW50IGZpcSkKK3sKKwlpbnQgZXJyOworCWludCBjcHU7CisKKwlp
+ZiAoIWtnZGJfZmlxX2VuYWJsZWQpCisJCXJldHVybiAtRU5PREVWOworCisJa2dkYl9maXEgPSBm
+aXE7CisKKwllcnIgPSBjbGFpbV9maXEoJmtnZGJfZmlxX2Rlc2MpOworCWlmIChlcnIpIHsKKwkJ
+cHJfd2FybigiJXM6IHVuYWJsZSB0byBjbGFpbSBmaXEiLCBfX2Z1bmNfXyk7CisJCXJldHVybiBl
+cnI7CisJfQorCisJZm9yX2VhY2hfcG9zc2libGVfY3B1KGNwdSkKKwkJd29ya19vbl9jcHUoY3B1
+LCBrZ2RiX2ZpcV9zZXR1cF9zdGFjaywgTlVMTCk7CisKKwlzZXRfZmlxX2hhbmRsZXIoJmtnZGJf
+ZmlxX2hhbmRsZXIsCisJCQkma2dkYl9maXFfaGFuZGxlcl9lbmQgLSAma2dkYl9maXFfaGFuZGxl
+cik7CisKKwlhcmNoX2tnZGJfb3BzLmVuYWJsZV9ubWkgPSBrZ2RiX2ZpcV9lbmFibGVfbm1pOwor
+CXJldHVybiAwOworfQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0va2VybmVsL2tnZGJfZmlxX2VudHJ5
+LlMgYi9hcmNoL2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUwpuZXcgZmlsZSBtb2RlIDEwMDY0
+NAppbmRleCAwMDAwMDAwLi5kNmJlY2NhCi0tLSAvZGV2L251bGwKKysrIGIvYXJjaC9hcm0va2Vy
+bmVsL2tnZGJfZmlxX2VudHJ5LlMKQEAgLTAsMCArMSw4NyBAQAorLyoKKyAqIEtHREIgRklRIGVu
+dHJ5CisgKgorICogQ29weXJpZ2h0IDE5OTYsMTk5NywxOTk4IFJ1c3NlbGwgS2luZy4KKyAqIENv
+cHlyaWdodCAyMDEyIExpbmFybyBMdGQuCisgKgkJICBBbnRvbiBWb3JvbnRzb3YgPGFudG9uLnZv
+cm9udHNvdkBsaW5hcm8ub3JnPgorICoKKyAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJl
+OyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0CisgKiB1bmRlciB0aGUg
+dGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcyBwdWJs
+aXNoZWQKKyAqIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCisgKi8KKworI2luY2x1
+ZGUgPGxpbnV4L2xpbmthZ2UuaD4KKyNpbmNsdWRlIDxhc20vYXNzZW1ibGVyLmg+CisjaW5jbHVk
+ZSA8YXNtL21lbW9yeS5oPgorI2luY2x1ZGUgPGFzbS91bndpbmQuaD4KKyNpbmNsdWRlICJlbnRy
+eS1oZWFkZXIuUyIKKworCS50ZXh0CisKK0AgVGhpcyBpcyBuZWVkZWQgZm9yIHVzcl9lbnRyeS9h
+bGlnbm1lbnRfdHJhcAorLkxDY3JhbGlnbjoKKwkubG9uZwljcl9hbGlnbm1lbnQKKy5MQ2RvaGFu
+ZGxlOgorCS5sb25nCWtnZGJfZmlxX2RvX2hhbmRsZQorCisJLm1hY3JvCWZpcV9oYW5kbGVyCisJ
+bGRyCXIxLCA9LkxDZG9oYW5kbGUKKwltb3YJcjAsIHNwCisJYWRyCWxyLCBCU1lNKDk5OTdmKQor
+CWxkcglwYywgW3IxXQorOTk5NzoKKwkuZW5kbQorCisJLmFsaWduCTUKK19fZmlxX3N2YzoKKwlz
+dmNfZW50cnkKKwlmaXFfaGFuZGxlcgorCW1vdglyMCwgc3AKKwlsZG1pYglyMCwge3IxIC0gcjE0
+fQorCW1zcgljcHNyX2MsICNGSVFfTU9ERSB8IFBTUl9JX0JJVCB8IFBTUl9GX0JJVAorCWFkZAly
+OCwgcjAsICNTX1BDCisJbGRyCXI5LCBbcjAsICNTX1BTUl0KKwltc3IJc3Bzcl9jeHNmLCByOQor
+CWxkcglyMCwgW3IwLCAjU19SMF0KKwlsZG1pYQlyOCwge3BjfV4KKworIFVOV0lORCguZm5lbmQJ
+CSkKK0VORFBST0MoX19maXFfc3ZjKQorCS5sdG9yZworCisJLmFsaWduCTUKK19fZmlxX3VzcjoK
+Kwl1c3JfZW50cnkKKwlrdXNlcl9jbXB4Y2hnX2NoZWNrCisJZmlxX2hhbmRsZXIKKwlnZXRfdGhy
+ZWFkX2luZm8gdHNrCisJbW92CXdoeSwgIzAKKwliCXJldF90b191c2VyX2Zyb21faXJxCisgVU5X
+SU5EKC5mbmVuZAkJKQorRU5EUFJPQyhfX2ZpcV91c3IpCisJLmx0b3JnCisKKwkuZ2xvYmFsIGtn
+ZGJfZmlxX2hhbmRsZXIKK2tnZGJfZmlxX2hhbmRsZXI6CisKKwl2ZWN0b3Jfc3R1YglmaXEsIEZJ
+UV9NT0RFLCA0CisKKwkubG9uZwlfX2ZpcV91c3IJCQlAICAwICAoVVNSXzI2IC8gVVNSXzMyKQor
+CS5sb25nCV9fZmlxX3N2YwkJCUAgIDEgIChGSVFfMjYgLyBGSVFfMzIpCisJLmxvbmcJX19maXFf
+c3ZjCQkJQCAgMiAgKElSUV8yNiAvIElSUV8zMikKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICAzICAo
+U1ZDXzI2IC8gU1ZDXzMyKQorCS5sb25nCV9fZmlxX3N2YwkJCUAgIDQKKwkubG9uZwlfX2ZpcV9z
+dmMJCQlAICA1CisJLmxvbmcJX19maXFfc3ZjCQkJQCAgNgorCS5sb25nCV9fZmlxX3N2YwkJCUAg
+IDcKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICA4CisJLmxvbmcJX19maXFfc3ZjCQkJQCAgOQorCS5s
+b25nCV9fZmlxX3N2YwkJCUAgIGEKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICBiCisJLmxvbmcJX19m
+aXFfc3ZjCQkJQCAgYworCS5sb25nCV9fZmlxX3N2YwkJCUAgIGQKKwkubG9uZwlfX2ZpcV9zdmMJ
+CQlAICBlCisJLmxvbmcJX19maXFfc3ZjCQkJQCAgZgorCisJLmdsb2JhbCBrZ2RiX2ZpcV9oYW5k
+bGVyX2VuZAora2dkYl9maXFfaGFuZGxlcl9lbmQ6Ci0tIAoxLjkuMAoKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
+ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
+aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
