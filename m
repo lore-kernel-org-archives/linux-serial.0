@@ -1,7 +1,7 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC 2/8] irqchip: gic: Provide support for interrupt grouping
-Date: Wed, 14 May 2014 16:58:39 +0100
-Message-ID: <1400083125-1464-3-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC 3/8] ARM: Move some macros from entry-armv to entry-header
+Date: Wed, 14 May 2014 16:58:40 +0100
+Message-ID: <1400083125-1464-4-git-send-email-daniel.thompson@linaro.org>
 References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,120 +21,385 @@ To: Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.
 Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Frederic Weisbecker <fweisbec@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@lin>
 List-Id: linux-serial@vger.kernel.org
 
-GICv2+ implementions that do not implement security extensions (and
-devices that boot in secure mode by default) allow the interrupt group
-registers (used for FIQ/IRQ selection) to be accessed from kernel code.
-However the current gic support does not initialize the controller to
-make interrupt grouping effective.
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
 
-The registers involved are RAZ/WI when unimplemented or protected by
-security policy then it should be safe to set up the grouping
-unconditionally.
+Just move the macros into header file as we would want to use them for
+KGDB FIQ entry code.
 
-Tested on a (self-written) qemu GICv2 model (written from ARM spec) and
-an STiH416 (ARM Cortex A9).
+The following macros were moved:
 
+ - svc_entry
+ - usr_entry
+ - kuser_cmpxchg_check
+ - vector_stub
+
+To make kuser_cmpxchg_check actually work across different files, we
+also have to make kuser_cmpxchg64_fixup global.
+
+Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Acked-by: Dirk Behme <dirk.behme@de.bosch.com>
 ---
- drivers/irqchip/irq-gic.c       | 35 ++++++++++++++++++++++++++++++-----
- include/linux/irqchip/arm-gic.h |  3 +++
- 2 files changed, 33 insertions(+), 5 deletions(-)
+ arch/arm/kernel/entry-armv.S   | 151 +------------------------------------
+ arch/arm/kernel/entry-header.S | 164 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 165 insertions(+), 150 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
-index 57d165e..aa8efe4 100644
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -408,13 +408,27 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
- 		writel_relaxed(0xa0a0a0a0, base + GIC_DIST_PRI + i * 4 / 4);
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 1879e8d..ed95b95 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -140,53 +140,6 @@ ENDPROC(__und_invalid)
+  * SVC mode handlers
+  */
  
- 	/*
-+	 * Set all global interrupts to be group 1.
-+	 *
-+	 * If grouping is not available (not implemented or prohibited by
-+	 * security mode) these registers a read-as-zero/write-ignored.
-+	 */
-+	for (i = 32; i < gic_irqs; i += 32)
-+		writel_relaxed(0xffffffff, base + GIC_DIST_IGROUP + i * 4 / 32);
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+-#define SPFIX(code...) code
+-#else
+-#define SPFIX(code...)
+-#endif
+-
+-	.macro	svc_entry, stack_hole=0
+- UNWIND(.fnstart		)
+- UNWIND(.save {r0 - pc}		)
+-	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+-#ifdef CONFIG_THUMB2_KERNEL
+- SPFIX(	str	r0, [sp]	)	@ temporarily saved
+- SPFIX(	mov	r0, sp		)
+- SPFIX(	tst	r0, #4		)	@ test original stack alignment
+- SPFIX(	ldr	r0, [sp]	)	@ restored
+-#else
+- SPFIX(	tst	sp, #4		)
+-#endif
+- SPFIX(	subeq	sp, sp, #4	)
+-	stmia	sp, {r1 - r12}
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""      ""       ""
+-	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+- SPFIX(	addeq	r2, r2, #4	)
+-	str	r3, [sp, #-4]!		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	mov	r3, lr
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r2 - sp_svc
+-	@  r3 - lr_svc
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	stmia	r7, {r2 - r6}
+-
+-#ifdef CONFIG_TRACE_IRQFLAGS
+-	bl	trace_hardirqs_off
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_svc:
+ 	svc_entry
+@@ -306,73 +259,8 @@ ENDPROC(__pabt_svc)
+ 
+ /*
+  * User mode handlers
+- *
+- * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
+  */
+ 
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
+-#error "sizeof(struct pt_regs) must be a multiple of 8"
+-#endif
+-
+-	.macro	usr_entry
+- UNWIND(.fnstart	)
+- UNWIND(.cantunwind	)	@ don't unwind the user space
+-	sub	sp, sp, #S_FRAME_SIZE
+- ARM(	stmib	sp, {r1 - r12}	)
+- THUMB(	stmia	sp, {r0 - r12}	)
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r0, sp, #S_PC		@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""     ""        ""
+-
+-	str	r3, [sp]		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	@ Also, separately save sp_usr and lr_usr
+-	@
+-	stmia	r0, {r4 - r6}
+- ARM(	stmdb	r0, {sp, lr}^			)
+- THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
+-
+-	@
+-	@ Enable the alignment trap while in kernel mode
+-	@
+-	alignment_trap r0
+-
+-	@
+-	@ Clear FP to mark the first stack frame
+-	@
+-	zero_fp
+-
+-#ifdef CONFIG_IRQSOFF_TRACER
+-	bl	trace_hardirqs_off
+-#endif
+-	ct_user_exit save = 0
+-	.endm
+-
+-	.macro	kuser_cmpxchg_check
+-#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
+-    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
+-#ifndef CONFIG_MMU
+-#warning "NPTL on non MMU needs fixing"
+-#else
+-	@ Make sure our user space atomic helper is restarted
+-	@ if it was interrupted in a critical region.  Here we
+-	@ perform a quick test inline since it should be false
+-	@ 99.9999% of the time.  The rest is done out of line.
+-	cmp	r4, #TASK_SIZE
+-	blhs	kuser_cmpxchg64_fixup
+-#endif
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_usr:
+ 	usr_entry
+@@ -819,6 +707,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
+ 	ldmfd	sp!, {r4, r5, r6, pc}
+ 
+ 	.text
++	.global kuser_cmpxchg64_fixup
+ kuser_cmpxchg64_fixup:
+ 	@ Called from kuser_cmpxchg_fixup.
+ 	@ r4 = address of interrupted insn (must be preserved).
+@@ -960,44 +849,6 @@ __kuser_helper_end:
+  * SP points to a minimal amount of processor-private memory, the address
+  * of which is copied into r0 for the mode specific abort handler.
+  */
+-	.macro	vector_stub, name, mode, correction=0
+-	.align	5
+-
+-vector_\name:
+-	.if \correction
+-	sub	lr, lr, #\correction
+-	.endif
+-
+-	@
+-	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
+-	@ (parent CPSR)
+-	@
+-	stmia	sp, {r0, lr}		@ save r0, lr
+-	mrs	lr, spsr
+-	str	lr, [sp, #8]		@ save spsr
+-
+-	@
+-	@ Prepare for SVC32 mode.  IRQs remain disabled.
+-	@
+-	mrs	r0, cpsr
+-	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
+-	msr	spsr_cxsf, r0
+-
+-	@
+-	@ the branch table must immediately follow this code
+-	@
+-	and	lr, lr, #0x0f
+- THUMB(	adr	r0, 1f			)
+- THUMB(	ldr	lr, [r0, lr, lsl #2]	)
+-	mov	r0, sp
+- ARM(	ldr	lr, [pc, lr, lsl #2]	)
+-	movs	pc, lr			@ branch to handler in SVC mode
+-ENDPROC(vector_\name)
+-
+-	.align	2
+-	@ handler addresses follow this label
+-1:
+-	.endm
+ 
+ 	.section .stubs, "ax", %progbits
+ __stubs_start:
+diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
+index 1420725..ab04a67 100644
+--- a/arch/arm/kernel/entry-header.S
++++ b/arch/arm/kernel/entry-header.S
+@@ -352,3 +352,167 @@ scno	.req	r7		@ syscall number
+ tbl	.req	r8		@ syscall table pointer
+ why	.req	r8		@ Linux syscall (!= 0)
+ tsk	.req	r9		@ current thread_info
 +
-+	/*
- 	 * Disable all interrupts.  Leave the PPI and SGIs alone
- 	 * as these enables are banked registers.
- 	 */
- 	for (i = 32; i < gic_irqs; i += 32)
- 		writel_relaxed(0xffffffff, base + GIC_DIST_ENABLE_CLEAR + i * 4 / 32);
- 
--	writel_relaxed(1, base + GIC_DIST_CTRL);
-+	/*
-+	 * Set EnableGrp1/EnableGrp0 (bit 1 and 0) or EnableGrp (bit 0 only,
-+	 * bit 1 ignored)
-+	 */
-+	writel_relaxed(GIC_DIST_CTRL_ENABLE_GRP0_BIT |
-+		       GIC_DIST_CTRL_ENABLE_GRP1_BIT, base + GIC_DIST_CTRL);
- }
- 
- static void gic_cpu_init(struct gic_chip_data *gic)
-@@ -452,8 +466,16 @@ static void gic_cpu_init(struct gic_chip_data *gic)
- 	for (i = 0; i < 32; i += 4)
- 		writel_relaxed(0xa0a0a0a0, dist_base + GIC_DIST_PRI + i * 4 / 4);
- 
-+	/*
-+	 * Set all PPI and SGI interrupts to be group 1.
-+	 *
-+	 * If grouping is not available (not implemented or prohibited by
-+	 * security mode) these registers are read-as-zero/write-ignored.
-+	 */
-+	writel_relaxed(0xffffffff, dist_base + GIC_DIST_IGROUP + 0);
++/*
++ * SVC mode handler macros
++ */
 +
- 	writel_relaxed(0xf0, base + GIC_CPU_PRIMASK);
--	writel_relaxed(1, base + GIC_CPU_CTRL);
-+	writel_relaxed(0x1f, base + GIC_CPU_CTRL);
- }
- 
- void gic_cpu_if_down(void)
-@@ -537,7 +559,9 @@ static void gic_dist_restore(unsigned int gic_nr)
- 		writel_relaxed(gic_data[gic_nr].saved_spi_enable[i],
- 			dist_base + GIC_DIST_ENABLE_SET + i * 4);
- 
--	writel_relaxed(1, dist_base + GIC_DIST_CTRL);
-+	writel_relaxed(GIC_DIST_CTRL_ENABLE_GRP0_BIT |
-+			   GIC_DIST_CTRL_ENABLE_GRP1_BIT,
-+		       dist_base + GIC_DIST_CTRL);
- }
- 
- static void gic_cpu_save(unsigned int gic_nr)
-@@ -594,7 +618,7 @@ static void gic_cpu_restore(unsigned int gic_nr)
- 		writel_relaxed(0xa0a0a0a0, dist_base + GIC_DIST_PRI + i * 4);
- 
- 	writel_relaxed(0xf0, cpu_base + GIC_CPU_PRIMASK);
--	writel_relaxed(1, cpu_base + GIC_CPU_CTRL);
-+	writel_relaxed(0x1f, cpu_base + GIC_CPU_CTRL);
- }
- 
- static int gic_notifier(struct notifier_block *self, unsigned long cmd,	void *v)
-@@ -670,7 +694,8 @@ static void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
- 	dmb(ishst);
- 
- 	/* this always happens on GIC0 */
--	writel_relaxed(map << 16 | irq, gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
-+	writel_relaxed(map << 16 | irq | 0x8000,
-+		       gic_data_dist_base(&gic_data[0]) + GIC_DIST_SOFTINT);
- 
- 	raw_spin_unlock_irqrestore(&irq_controller_lock, flags);
- }
-diff --git a/include/linux/irqchip/arm-gic.h b/include/linux/irqchip/arm-gic.h
-index 7ed92d0..919502f 100644
---- a/include/linux/irqchip/arm-gic.h
-+++ b/include/linux/irqchip/arm-gic.h
-@@ -37,6 +37,9 @@
- #define GIC_DIST_SGI_PENDING_CLEAR	0xf10
- #define GIC_DIST_SGI_PENDING_SET	0xf20
- 
-+#define GIC_DIST_CTRL_ENABLE_GRP0_BIT	(1 << 0)
-+#define GIC_DIST_CTRL_ENABLE_GRP1_BIT	(1 << 1)
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
++#define SPFIX(code...) code
++#else
++#define SPFIX(code...)
++#endif
 +
- #define GICH_HCR			0x0
- #define GICH_VTR			0x4
- #define GICH_VMCR			0x8
++	.macro	svc_entry, stack_hole=0
++ UNWIND(.fnstart		)
++ UNWIND(.save {r0 - pc}		)
++	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++#ifdef CONFIG_THUMB2_KERNEL
++ SPFIX(	str	r0, [sp]	)	@ temporarily saved
++ SPFIX(	mov	r0, sp		)
++ SPFIX(	tst	r0, #4		)	@ test original stack alignment
++ SPFIX(	ldr	r0, [sp]	)	@ restored
++#else
++ SPFIX(	tst	sp, #4		)
++#endif
++ SPFIX(	subeq	sp, sp, #4	)
++	stmia	sp, {r1 - r12}
++
++	ldmia	r0, {r3 - r5}
++	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""      ""       ""
++	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++ SPFIX(	addeq	r2, r2, #4	)
++	str	r3, [sp, #-4]!		@ save the "real" r0 copied
++					@ from the exception stack
++
++	mov	r3, lr
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r2 - sp_svc
++	@  r3 - lr_svc
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	stmia	r7, {r2 - r6}
++
++#ifdef CONFIG_TRACE_IRQFLAGS
++	bl	trace_hardirqs_off
++#endif
++	.endm
++
++/*
++ * User mode handler macros
++ *
++ * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
++ */
++
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
++#error "sizeof(struct pt_regs) must be a multiple of 8"
++#endif
++
++	.macro	usr_entry
++ UNWIND(.fnstart	)
++ UNWIND(.cantunwind	)	@ don't unwind the user space
++	sub	sp, sp, #S_FRAME_SIZE
++ ARM(	stmib	sp, {r1 - r12}	)
++ THUMB(	stmia	sp, {r0 - r12}	)
++
++	ldmia	r0, {r3 - r5}
++	add	r0, sp, #S_PC		@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""     ""        ""
++
++	str	r3, [sp]		@ save the "real" r0 copied
++					@ from the exception stack
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	@ Also, separately save sp_usr and lr_usr
++	@
++	stmia	r0, {r4 - r6}
++ ARM(	stmdb	r0, {sp, lr}^			)
++ THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
++
++	@
++	@ Enable the alignment trap while in kernel mode
++	@
++	alignment_trap r0
++
++	@
++	@ Clear FP to mark the first stack frame
++	@
++	zero_fp
++
++#ifdef CONFIG_IRQSOFF_TRACER
++	bl	trace_hardirqs_off
++#endif
++	ct_user_exit save = 0
++	.endm
++
++	.macro	kuser_cmpxchg_check
++#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
++    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
++#ifndef CONFIG_MMU
++#warning "NPTL on non MMU needs fixing"
++#else
++	@ Make sure our user space atomic helper is restarted
++	@ if it was interrupted in a critical region.  Here we
++	@ perform a quick test inline since it should be false
++	@ 99.9999% of the time.  The rest is done out of line.
++	cmp	r4, #TASK_SIZE
++	blhs	kuser_cmpxchg64_fixup
++#endif
++#endif
++	.endm
++
++/*
++ * Vector stubs macro.
++ */
++	.macro	vector_stub, name, mode, correction=0
++	.align	5
++
++vector_\name:
++	.if \correction
++	sub	lr, lr, #\correction
++	.endif
++
++	@
++	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
++	@ (parent CPSR)
++	@
++	stmia	sp, {r0, lr}		@ save r0, lr
++	mrs	lr, spsr
++	str	lr, [sp, #8]		@ save spsr
++
++	@
++	@ Prepare for SVC32 mode.  IRQs remain disabled.
++	@
++	mrs	r0, cpsr
++	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
++	msr	spsr_cxsf, r0
++
++	@
++	@ the branch table must immediately follow this code
++	@
++	and	lr, lr, #0x0f
++ THUMB(	adr	r0, 1f			)
++ THUMB(	ldr	lr, [r0, lr, lsl #2]	)
++	mov	r0, sp
++ ARM(	ldr	lr, [pc, lr, lsl #2]	)
++	movs	pc, lr			@ branch to handler in SVC mode
++ENDPROC(vector_\name)
++
++	.align	2
++	@ handler addresses follow this label
++1:
++	.endm
++
++
 -- 
 1.9.0
