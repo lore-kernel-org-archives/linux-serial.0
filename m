@@ -1,125 +1,80 @@
-From: Dean Jenkins <Dean_Jenkins@mentor.com>
-Subject: Re: [PATCH 09/11] bluetooth: hci_ldisc: fix deadlock condition
-Date: Wed, 14 May 2014 17:42:38 +0100
-Message-ID: <53739CFE.8000201@mentor.com>
-References: <1395343807-21618-1-git-send-email-balbi@ti.com> <1395343807-21618-9-git-send-email-balbi@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] serial: imx: Disable new features of autobaud detection
+Date: Wed, 14 May 2014 15:55:03 -0300
+Message-ID: <1400093703-10128-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:49972 "EHLO
-	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754595AbaENQmk (ORCPT
+Received: from mail-yk0-f175.google.com ([209.85.160.175]:35757 "EHLO
+	mail-yk0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750822AbaENSzR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 14 May 2014 12:42:40 -0400
-In-Reply-To: <1395343807-21618-9-git-send-email-balbi@ti.com>
+	Wed, 14 May 2014 14:55:17 -0400
+Received: by mail-yk0-f175.google.com with SMTP id 131so1944550ykp.34
+        for <linux-serial@vger.kernel.org>; Wed, 14 May 2014 11:55:16 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>, Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-bluetooth@vger.kernel.org, peter@hurleysoftware.com, m-karicheri2@ti.com, b32955@freescale.com, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: eric.nelson@boundarydevices.com, troy.kisky@boundarydevices.com, shawn.guo@freescale.com, kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On 20/03/14 19:30, Felipe Balbi wrote:
-> LDISCs shouldn't call tty->ops->write() from within
-> ->write_wakeup().
->
-> ->write_wakeup() is called with port lock taken and
-> IRQs disabled, tty->ops->write() will try to acquire
-> the same port lock and we will deadlock.
->
-I think the work queue should be placed into hci_uart_tty_wakeup() and 
-not hci_uart_tx_wakeup() as added by this patch.
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-The reason is that the kernel thread hci_uart_send_frame() calls 
-hci_uart_tx_wakeup() and this patch unnecessarily introduces a work 
-queue in the program flow of that kernel thread.
+Bit 7 of UCR3 is described in the i.MX reference manuals (with the exception
+of i.MX1) as follows:
 
-In other words, I think this patch has undesirable side-effects such as 
-adding latency and increased processor loading for hci_uart_send_frame().
+ADNIMP: Autobaud Detection Not Improved-. Disables new features of
+	autobaud detection (See Baud Rate Automatic Detection
+	Protocol, for more details).
 
-Regards,
-Dean
+	0 Autobaud detection new features selected
+	1 Keep old autobaud detection mechanism
 
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-> Reported-by: Huang Shijie <b32955@freescale.com>
-> Signed-off-by: Felipe Balbi <balbi@ti.com>
-> ---
->   drivers/bluetooth/hci_ldisc.c | 24 +++++++++++++++++++-----
->   drivers/bluetooth/hci_uart.h  |  1 +
->   2 files changed, 20 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-> index 6e06f6f..77af52f 100644
-> --- a/drivers/bluetooth/hci_ldisc.c
-> +++ b/drivers/bluetooth/hci_ldisc.c
-> @@ -118,10 +118,6 @@ static inline struct sk_buff *hci_uart_dequeue(struct hci_uart *hu)
->   
->   int hci_uart_tx_wakeup(struct hci_uart *hu)
->   {
-> -	struct tty_struct *tty = hu->tty;
-> -	struct hci_dev *hdev = hu->hdev;
-> -	struct sk_buff *skb;
-> -
->   	if (test_and_set_bit(HCI_UART_SENDING, &hu->tx_state)) {
->   		set_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
->   		return 0;
-> @@ -129,6 +125,22 @@ int hci_uart_tx_wakeup(struct hci_uart *hu)
->   
->   	BT_DBG("");
->   
-> +	schedule_work(&hu->write_work);
-> +
-> +	return 0;
-> +}
-> +
-> +static void hci_uart_write_work(struct work_struct *work)
-> +{
-> +	struct hci_uart *hu = container_of(work, struct hci_uart, write_work);
-> +	struct tty_struct *tty = hu->tty;
-> +	struct hci_dev *hdev = hu->hdev;
-> +	struct sk_buff *skb;
-> +
-> +	/* REVISIT: should we cope with bad skbs or ->write() returning
-> +	 * and error value ?
-> +	 */
-> +
->   restart:
->   	clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
->   
-> @@ -153,7 +165,6 @@ restart:
->   		goto restart;
->   
->   	clear_bit(HCI_UART_SENDING, &hu->tx_state);
-> -	return 0;
->   }
->   
->   static void hci_uart_init_work(struct work_struct *work)
-> @@ -281,6 +292,7 @@ static int hci_uart_tty_open(struct tty_struct *tty)
->   	tty->receive_room = 65536;
->   
->   	INIT_WORK(&hu->init_ready, hci_uart_init_work);
-> +	INIT_WORK(&hu->write_work, hci_uart_write_work);
->   
->   	spin_lock_init(&hu->rx_lock);
->   
-> @@ -318,6 +330,8 @@ static void hci_uart_tty_close(struct tty_struct *tty)
->   	if (hdev)
->   		hci_uart_close(hdev);
->   
-> +	cancel_work_sync(&hu->write_work);
-> +
->   	if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {
->   		if (hdev) {
->   			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
-> diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
-> index fffa61f..12df101 100644
-> --- a/drivers/bluetooth/hci_uart.h
-> +++ b/drivers/bluetooth/hci_uart.h
-> @@ -68,6 +68,7 @@ struct hci_uart {
->   	unsigned long		hdev_flags;
->   
->   	struct work_struct	init_ready;
-> +	struct work_struct	write_work;
->   
->   	struct hci_uart_proto	*proto;
->   	void			*priv;
+The "new features" mechanism occasionally cause the receiver to get out of sync 
+and continuously produce received characters of '\xff'.
+
+In order to reproduce the problem:
+
+$ stty -F /dev/ttymxc0 19200
+
+- Change the terminal baudrate to 19200
+
+- Type in the console and it should look good
+
+- Change the terminal baudrate back to 115200
+
+- Type 'b' in the console, then a stream of garbage characters is seen.
+
+Also rename the bit definition as per the reference manual.
+
+Tested on mx6q, mx6dl, mx6solo and mx53.
+
+Based on a patch from Eric Nelson for U-boot.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/imx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 3b6c1a2..392154d 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -116,7 +116,7 @@
+ #define UCR3_DSR	(1<<10) /* Data set ready */
+ #define UCR3_DCD	(1<<9)	/* Data carrier detect */
+ #define UCR3_RI		(1<<8)	/* Ring indicator */
+-#define UCR3_TIMEOUTEN	(1<<7)	/* Timeout interrupt enable */
++#define UCR3_ADNIMP	(1<<7)	/* Autobaud Detection Not Improved */
+ #define UCR3_RXDSEN	(1<<6)	/* Receive status interrupt enable */
+ #define UCR3_AIRINTEN	(1<<5)	/* Async IR wake interrupt enable */
+ #define UCR3_AWAKEN	(1<<4)	/* Async wake interrupt enable */
+@@ -1174,7 +1174,7 @@ static int imx_startup(struct uart_port *port)
+ 
+ 	if (!is_imx1_uart(sport)) {
+ 		temp = readl(sport->port.membase + UCR3);
+-		temp |= IMX21_UCR3_RXDMUXSEL;
++		temp |= IMX21_UCR3_RXDMUXSEL | UCR3_ADNIMP;
+ 		writel(temp, sport->port.membase + UCR3);
+ 	}
+ 
+-- 
+1.8.3.2
 
