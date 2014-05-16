@@ -1,60 +1,45 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: linux-next: Tree for May 14 (tty/serial/men_z135_uart.c)
-Date: Thu, 15 May 2014 09:51:33 -0700
-Message-ID: <5374F095.3090107@infradead.org>
-References: <20140514182649.33e63e49@canb.auug.org.au> <53739A4E.2040009@infradead.org> <20140515061555.GA13254@jtlinux>
+From: Jean Delvare <jdelvare@suse.de>
+Subject: [PATCH] serial: pch_uart: Fix Kconfig dependencies
+Date: Fri, 16 May 2014 10:48:50 +0200
+Message-ID: <20140516104850.12c30fb4@endymion.delvare>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20140515061555.GA13254@jtlinux>
-Sender: linux-next-owner@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cantor2.suse.de ([195.135.220.15]:34850 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755616AbaEPIsx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 16 May 2014 04:48:53 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-On 05/14/2014 11:15 PM, Johannes Thumshirn wrote:
-> On Wed, May 14, 2014 at 09:31:10AM -0700, Randy Dunlap wrote:
->> On 05/14/2014 01:26 AM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> Changes since 20140513:
->>>
->>
->> on x86_64:
->>
->> CONFIG_SERIAL_CORE=m
->> but SERIAL_MEN_Z135=y.
->>
->> drivers/built-in.o: In function `men_z135_remove':
->> men_z135_uart.c:(.text+0x5bc53): undefined reference to `uart_remove_one_port'
->> drivers/built-in.o: In function `men_z135_set_termios':
->> men_z135_uart.c:(.text+0x5c3b5): undefined reference to `uart_get_baud_rate'
->> men_z135_uart.c:(.text+0x5c415): undefined reference to `uart_update_timeout'
->> drivers/built-in.o: In function `men_z135_handle_tx':
->> men_z135_uart.c:(.text+0x5c8f4): undefined reference to `uart_write_wakeup'
->> drivers/built-in.o: In function `men_z135_intr':
->> men_z135_uart.c:(.text+0x5ce28): undefined reference to `uart_handle_dcd_change'
->> men_z135_uart.c:(.text+0x5ce51): undefined reference to `uart_handle_cts_change'
->> drivers/built-in.o: In function `men_z135_probe':
->> men_z135_uart.c:(.text+0x5cf96): undefined reference to `uart_add_one_port'
->> drivers/built-in.o: In function `men_z135_init':
->> men_z135_uart.c:(.init.text+0x26e9): undefined reference to `uart_register_driver'
->> men_z135_uart.c:(.init.text+0x2766): undefined reference to `uart_unregister_driver'
->> drivers/built-in.o: In function `men_z135_exit':
->> men_z135_uart.c:(.exit.text+0xe4): undefined reference to `uart_unregister_driver'
->> make[1]: *** [vmlinux] Error 1
->>
-> 
-> Hi Randy,
-> 
-> There is a not yet merged patch from Arnd Bergmann, which can be found here:
-> https://lkml.org/lkml/2014/4/29/529
-> 
-> I've just checked and it resolves the problem at my place, can you please
-> verify it as well.
+The pch_uart driver is for a companion chip to the Intel Atom E600
+series processors. These are 32-bit x86 processors so the driver is
+only needed on X86_32. Add COMPILE_TEST as an alternative, so that the
+driver can still be build-tested elsewhere.
 
-Yes, that works for me also.  Thanks.
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-3.15-rc5.orig/drivers/tty/serial/Kconfig	2014-04-22 14:43:58.025637639 +0200
++++ linux-3.15-rc5/drivers/tty/serial/Kconfig	2014-05-16 10:41:03.629069889 +0200
+@@ -1323,7 +1323,7 @@ config SERIAL_IFX6X60
+ 
+ config SERIAL_PCH_UART
+ 	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
+-	depends on PCI
++	depends on PCI && (X86_32 || COMPILE_TEST)
+ 	select SERIAL_CORE
+ 	help
+ 	  This driver is for PCH(Platform controller Hub) UART of Intel EG20T
+
 
 -- 
-~Randy
+Jean Delvare
+SUSE L3 Support
