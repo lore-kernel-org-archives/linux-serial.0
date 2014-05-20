@@ -1,163 +1,140 @@
-From: "Karicheri, Muralidharan" <m-karicheri2@ti.com>
-Subject: FW: [PATCH v2] serial: uart: add hw flow control support
- configuration
-Date: Tue, 20 May 2014 20:06:53 +0000
-Message-ID: <3E54258959B69E4282D79E01AB1F32B70474968D@DFLE11.ent.ti.com>
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH] serial: samsung: Neaten dbg uses
+Date: Tue, 20 May 2014 14:05:50 -0700
+Message-ID: <1400619950.26709.39.camel@joe-AO725>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:60300 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750729AbaETUGz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 20 May 2014 16:06:55 -0400
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kukjin Kim <kgene.kim@samsung.com>, Jingoo Han <jg1.han@samsung.com>
+Cc: Doug Anderson <dianders@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
->-----Original Message-----
->From: Karicheri, Muralidharan
->Sent: Friday, May 09, 2014 11:30 AM
->To: Karicheri, Muralidharan; devicetree@vger.kernel.org; linux-doc@vger.kernel.org;
->linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
->Cc: Rob Herring; Pawel Moll; Mark Rutland; Ian Campbell; Kumar Gala; Randy Dunlap;
->Greg Kroah-Hartman; Jiri Slaby; Shilimkar, Santosh
->Subject: RE: [PATCH v2] serial: uart: add hw flow control support configuration
->
->>-----Original Message-----
->>From: Karicheri, Muralidharan
->>Sent: Thursday, May 01, 2014 3:05 PM
->>To: devicetree@vger.kernel.org; linux-doc@vger.kernel.org;
->>linux-kernel@vger.kernel.org; linux-serial@vger.kernel.org
->>Cc: Karicheri, Muralidharan; Rob Herring; Pawel Moll; Mark Rutland; Ian
->>Campbell; Kumar Gala; Randy Dunlap; Greg Kroah-Hartman; Jiri Slaby;
->>Shilimkar, Santosh
->>Subject: [PATCH v2] serial: uart: add hw flow control support
->>configuration
->>
->>8250 uart driver currently supports only software assisted hw flow
->>control. The software assisted hw flow control maintains a hw_stopped
->>flag in the tty structure to stop and start transmission and use modem status interrupt for
->the event to drive the handshake signals.
->>This is not needed if hw has flow control capabilities. This patch adds
->>a DT attribute for enabling hw flow control for a uart port. Also skip
->>stop and start if this flag is present in flag field of the port structure.
->>
->>Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
->>
->>CC: Rob Herring <robh+dt@kernel.org>
->>CC: Pawel Moll <pawel.moll@arm.com>
->>CC: Mark Rutland <mark.rutland@arm.com>
->>CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
->>CC: Kumar Gala <galak@codeaurora.org>
->>CC: Randy Dunlap <rdunlap@infradead.org>
->>CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>CC: Jiri Slaby <jslaby@suse.cz>
->>CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
->>---
->> .../devicetree/bindings/serial/of-serial.txt       |    1 +
->> drivers/tty/serial/8250/8250_core.c                |    6 ++++--
->> drivers/tty/serial/of_serial.c                     |    4 ++++
->> drivers/tty/serial/serial_core.c                   |   12 +++++++++---
->> 4 files changed, 18 insertions(+), 5 deletions(-)
->>
->>diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt
->>b/Documentation/devicetree/bindings/serial/of-serial.txt
->>index 1928a3e..7705477 100644
->>--- a/Documentation/devicetree/bindings/serial/of-serial.txt
->>+++ b/Documentation/devicetree/bindings/serial/of-serial.txt
->>@@ -37,6 +37,7 @@ Optional properties:
->> - auto-flow-control: one way to enable automatic flow control support. The
->>   driver is allowed to detect support for the capability even without this
->>   property.
->>+- has-hw-flow-control: the hardware has flow control capability.
->>
->> Example:
->>
->>diff --git a/drivers/tty/serial/8250/8250_core.c
->>b/drivers/tty/serial/8250/8250_core.c
->>index 0e1bf88..b69aff2 100644
->>--- a/drivers/tty/serial/8250/8250_core.c
->>+++ b/drivers/tty/serial/8250/8250_core.c
->>@@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port
->>*port, struct ktermios *termios,
->> 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
->> 	 * the remote UART is not using CTS auto flow control, we must
->> 	 * have sufficient FIFO entries for the latency of the remote
->>-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
->>+	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
->>+	 * AFE if hw flow control is supported
->> 	 */
->>-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
->>+	if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
->>+	    (port->flags & UPF_HARD_FLOW)) {
->> 		up->mcr &= ~UART_MCR_AFE;
->> 		if (termios->c_cflag & CRTSCTS)
->> 			up->mcr |= UART_MCR_AFE;
->>diff --git a/drivers/tty/serial/of_serial.c
->>b/drivers/tty/serial/of_serial.c index
->>9924660..77ec6a1 100644
->>--- a/drivers/tty/serial/of_serial.c
->>+++ b/drivers/tty/serial/of_serial.c
->>@@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device
->*ofdev)
->> 					  "auto-flow-control"))
->> 			port8250.capabilities |= UART_CAP_AFE;
->>
->>+		if (of_property_read_bool(ofdev->dev.of_node,
->>+					  "has-hw-flow-control"))
->>+			port8250.port.flags |= UPF_HARD_FLOW;
->>+
->> 		ret = serial8250_register_8250_port(&port8250);
->> 		break;
->> 	}
->>diff --git a/drivers/tty/serial/serial_core.c
->>b/drivers/tty/serial/serial_core.c
->>index b68550d..851707a 100644
->>--- a/drivers/tty/serial/serial_core.c
->>+++ b/drivers/tty/serial/serial_core.c
->>@@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct
->>*tty, struct uart_state *state,
->> 			if (tty->termios.c_cflag & CBAUD)
->> 				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
->> 		}
->>-
->>-		if (tty_port_cts_enabled(port)) {
->>+		/*
->>+		 * if hw support flow control without software intervention,
->>+		 * then skip the below check
->>+		 */
->>+		if (tty_port_cts_enabled(port) &&
->>+		    !(uport->flags & UPF_HARD_FLOW)) {
->> 			spin_lock_irq(&uport->lock);
->> 			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
->> 				tty->hw_stopped = 1;
->>@@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port
->>*uport, unsigned int status)
->>
->> 	uport->icount.cts++;
->>
->>-	if (tty_port_cts_enabled(port)) {
->>+	/* skip below code if the hw flow control is supported */
->>+	if (tty_port_cts_enabled(port) &&
->>+	    !(uport->flags & UPF_HARD_FLOW)) {
->> 		if (tty->hw_stopped) {
->> 			if (status) {
->> 				tty->hw_stopped = 0;
->>--
->>1.7.9.5
->
->Any idea who is going to pick this patch for merge?
->
->Murali
+Add format and argument checking and fix misuses in the dbg macro.
 
-Greg,
+Add __printf
+Use %pR for resource
+Add #include guard to samsung.h
+Move static functions from .h to .c
+Use vscnprintf instead of length unguarded vsprintf
 
-Could you please merge this patch to the tree? I assume you are the maintainer for serial driver. If not, please forward this to the right person.
+Signed-off-by: Joe Perches <joe@perches.com>
+---
 
-Thanks and regards,
+compiled (no warnings)/untested.
 
-Murali
+ drivers/tty/serial/samsung.c | 35 +++++++++++++++++++++++++++++------
+ drivers/tty/serial/samsung.h | 23 +++--------------------
+ 2 files changed, 32 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 1f5505e..3293377 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -53,6 +53,29 @@
+ 
+ #include "samsung.h"
+ 
++#if	defined(CONFIG_SERIAL_SAMSUNG_DEBUG) &&	\
++	defined(CONFIG_DEBUG_LL) &&		\
++	!defined(MODULE)
++
++extern void printascii(const char *);
++
++__printf(1, 2)
++static void dbg(const char *fmt, ...)
++{
++	va_list va;
++	char buff[256];
++
++	va_start(va, fmt);
++	vscnprintf(buff, sizeof(buf), fmt, va);
++	va_end(va);
++
++	printascii(buff);
++}
++
++#else
++#define dbg(fmt, ...) do { if (0) no_printk(fmt, ##__VA_ARGS__); } while (0)
++#endif
++
+ /* UART name and device definitions */
+ 
+ #define S3C24XX_SERIAL_NAME	"ttySAC"
+@@ -468,8 +491,8 @@ static int s3c24xx_serial_startup(struct uart_port *port)
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 	int ret;
+ 
+-	dbg("s3c24xx_serial_startup: port=%p (%08lx,%p)\n",
+-	    port->mapbase, port->membase);
++	dbg("s3c24xx_serial_startup: port=%p (%08llx,%p)\n",
++	    port, (unsigned long long)port->mapbase, port->membase);
+ 
+ 	rx_enabled(port) = 1;
+ 
+@@ -514,8 +537,8 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 	int ret;
+ 
+-	dbg("s3c64xx_serial_startup: port=%p (%08lx,%p)\n",
+-	    port->mapbase, port->membase);
++	dbg("s3c64xx_serial_startup: port=%p (%08llx,%p)\n",
++	    port, (unsigned long long)port->mapbase, port->membase);
+ 
+ 	wr_regl(port, S3C64XX_UINTM, 0xf);
+ 
+@@ -1160,7 +1183,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		return -EINVAL;
+ 	}
+ 
+-	dbg("resource %p (%lx..%lx)\n", res, res->start, res->end);
++	dbg("resource %pR)\n", res);
+ 
+ 	port->membase = devm_ioremap(port->dev, res->start, resource_size(res));
+ 	if (!port->membase) {
+@@ -1203,7 +1226,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		wr_regl(port, S3C64XX_UINTSP, 0xf);
+ 	}
+ 
+-	dbg("port: map=%08x, mem=%08x, irq=%d (%d,%d), clock=%ld\n",
++	dbg("port: map=%08x, mem=%p, irq=%d (%d,%d), clock=%u\n",
+ 	    port->mapbase, port->membase, port->irq,
+ 	    ourport->rx_irq, ourport->tx_irq, port->uartclk);
+ 
+diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+index 8827e54..eb071dd 100644
+--- a/drivers/tty/serial/samsung.h
++++ b/drivers/tty/serial/samsung.h
+@@ -1,3 +1,6 @@
++#ifndef __SAMSUNG_H
++#define __SAMSUNG_H
++
+ /*
+  * Driver for Samsung SoC onboard UARTs.
+  *
+@@ -77,24 +80,4 @@ struct s3c24xx_uart_port {
+ #define wr_regb(port, reg, val) __raw_writeb(val, portaddr(port, reg))
+ #define wr_regl(port, reg, val) __raw_writel(val, portaddr(port, reg))
+ 
+-#if defined(CONFIG_SERIAL_SAMSUNG_DEBUG) && \
+-    defined(CONFIG_DEBUG_LL) && \
+-    !defined(MODULE)
+-
+-extern void printascii(const char *);
+-
+-static void dbg(const char *fmt, ...)
+-{
+-	va_list va;
+-	char buff[256];
+-
+-	va_start(va, fmt);
+-	vsprintf(buff, fmt, va);
+-	va_end(va);
+-
+-	printascii(buff);
+-}
+-
+-#else
+-#define dbg(x...) do { } while (0)
+ #endif
