@@ -1,84 +1,54 @@
 From: Huang Shijie <b32955@freescale.com>
-Subject: [PATCH 1/2 bugfix] serial: imx: reset the uart port all the time
-Date: Wed, 21 May 2014 08:56:28 +0800
-Message-ID: <1400633789-31979-1-git-send-email-b32955@freescale.com>
+Subject: [PATCH 2/2 v2] serial: imx: remove the redundant code
+Date: Wed, 21 May 2014 09:09:47 +0800
+Message-ID: <1400634587-513-1-git-send-email-b32955@freescale.com>
+References: <1400633789-31979-2-git-send-email-b32955@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: Huang Shijie <b32955@freescale.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bn1lp0141.outbound.protection.outlook.com ([207.46.163.141]:43537
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751417AbaEUC2R (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 20 May 2014 22:28:17 -0400
+In-Reply-To: <1400633789-31979-2-git-send-email-b32955@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Huang Shijie <b32955@freescale.com>
 
-Current code resets the uart port only when it supports the irda mode.
-In actually, we also need to reset the uart port in the non-irda mode.
-A hang was caught in the following case:
+In the imx_startup(), we will reset the uart port which will reset all
+the FIFOs, including the URXD.
 
-    UART A transmits data to the other end. But the transmission maybe
-    terminated. In some corner case, the TX FIFO maybe not empty.
-
-The kernel will hang at the imx_set_termios():
-	............................................................
-	while (!(readl(sport->port.membase + USR2) & USR2_TXDC))
-		barrier();
-	............................................................
-
-This patch resets the uart port all the time in the imx_startup().
-And fix the hang.
+So the code to clear the RX FIFO is redundant. Just remove it.
 
 Signed-off-by: Huang Shijie <b32955@freescale.com>
 ---
- drivers/tty/serial/imx.c |   22 ++++++++++------------
- 1 files changed, 10 insertions(+), 12 deletions(-)
+fix the typo.
+---
+ drivers/tty/serial/imx.c |    9 ---------
+ 1 files changed, 0 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3b6c1a2..64901d0 100644
+index 64901d0..febf400 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1070,7 +1070,7 @@ static void imx_disable_dma(struct imx_port *sport)
- static int imx_startup(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
--	int retval;
-+	int retval, i;
- 	unsigned long flags, temp;
- 
- 	retval = clk_prepare_enable(sport->clk_per);
-@@ -1098,17 +1098,15 @@ static int imx_startup(struct uart_port *port)
- 
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+@@ -1161,15 +1161,6 @@ static int imx_startup(struct uart_port *port)
+ 		temp |= UCR2_IRTS;
+ 	writel(temp, sport->port.membase + UCR2);
  
 -	if (USE_IRDA(sport)) {
--		/* reset fifo's and state machines */
--		int i = 100;
--		temp = readl(sport->port.membase + UCR2);
--		temp &= ~UCR2_SRST;
--		writel(temp, sport->port.membase + UCR2);
--		while (!(readl(sport->port.membase + UCR2) & UCR2_SRST) &&
--		    (--i > 0)) {
--			udelay(1);
+-		/* clear RX-FIFO */
+-		int i = 64;
+-		while ((--i > 0) &&
+-			(readl(sport->port.membase + URXD0) & URXD_CHARRDY)) {
+-			barrier();
 -		}
 -	}
-+	/* Reset fifo's and state machines */
-+	i = 100;
-+
-+	temp = readl(sport->port.membase + UCR2);
-+	temp &= ~UCR2_SRST;
-+	writel(temp, sport->port.membase + UCR2);
-+
-+	while (!(readl(sport->port.membase + UCR2) & UCR2_SRST) && (--i > 0))
-+		udelay(1);
- 
- 	/*
- 	 * Allocate the IRQ(s) i.MX1 has three interrupts whereas later
+-
+ 	if (!is_imx1_uart(sport)) {
+ 		temp = readl(sport->port.membase + UCR3);
+ 		temp |= IMX21_UCR3_RXDMUXSEL;
 -- 
 1.7.8
+
