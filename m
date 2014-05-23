@@ -1,8 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART
- (sun6i/sun8i)
-Date: Fri, 23 May 2014 15:51:22 +0800
-Message-ID: <1400831485-28576-20-git-send-email-wens@csie.org>
+Subject: [PATCH 11/22] ARM: sun6i: DT: Add PLL6 multiple outputs
+Date: Fri, 23 May 2014 15:51:14 +0800
+Message-ID: <1400831485-28576-12-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,49 +21,129 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-sun6i/sun8i have a UART in the RTC block group, which can be used
-as an early console. This is most useful on sun8i as UART0 is muxed
-with MMC0, which is not available if we boot from MMC.
+PLL6 on sun6i has multiple outputs, just like the other sunxi platforms.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- arch/arm/Kconfig.debug | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm/boot/dts/sun6i-a31.dtsi | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index eab8ecb..9e22708 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -694,6 +694,14 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on Allwinner A1X based platforms on the UART1.
+diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
+index 0f4ea49..d9643fa 100644
+--- a/arch/arm/boot/dts/sun6i-a31.dtsi
++++ b/arch/arm/boot/dts/sun6i-a31.dtsi
+@@ -95,11 +95,11 @@
+ 		};
  
-+	config DEBUG_SUNXI_R_UART
-+		bool "Kernel low-level debugging messages via sunXi R_UART"
-+		depends on ARCH_SUNXI
-+		select DEBUG_UART_8250
-+		help
-+		  Say Y here if you want kernel low-level debugging support
-+		  on Allwinner A31 based platforms on the R_UART.
-+
- 	config TEGRA_DEBUG_UART_AUTO_ODMDATA
- 		bool "Kernel low-level debugging messages via Tegra UART via ODMDATA"
- 		depends on ARCH_TEGRA
-@@ -1007,6 +1015,7 @@ config DEBUG_UART_PHYS
- 	default 0x01c28400 if DEBUG_SUNXI_UART1
- 	default 0x01d0c000 if DEBUG_DAVINCI_DA8XX_UART1
- 	default 0x01d0d000 if DEBUG_DAVINCI_DA8XX_UART2
-+	default 0x01f02800 if DEBUG_SUNXI_R_UART
- 	default 0x02530c00 if DEBUG_KEYSTONE_UART0
- 	default 0x02531000 if DEBUG_KEYSTONE_UART1
- 	default 0x03010fe0 if ARCH_RPC
-@@ -1072,6 +1081,7 @@ config DEBUG_UART_VIRT
- 	default 0xf1600000 if ARCH_INTEGRATOR
- 	default 0xf1c28000 if DEBUG_SUNXI_UART0
- 	default 0xf1c28400 if DEBUG_SUNXI_UART1
-+	default 0xf1f02800 if DEBUG_SUNXI_R_UART
- 	default 0xf2100000 if DEBUG_PXA_UART1
- 	default 0xf4090000 if ARCH_LPC32XX
- 	default 0xf4200000 if ARCH_GEMINI
+ 		pll6: clk@01c20028 {
+-			#clock-cells = <0>;
++			#clock-cells = <1>;
+ 			compatible = "allwinner,sun6i-a31-pll6-clk";
+ 			reg = <0x01c20028 0x4>;
+ 			clocks = <&osc24M>;
+-			clock-output-names = "pll6";
++			clock-output-names = "pll6_other", "pll6";
+ 		};
+ 
+ 		cpu: cpu@01c20050 {
+@@ -129,7 +129,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun6i-a31-ahb1-mux-clk";
+ 			reg = <0x01c20054 0x4>;
+-			clocks = <&osc32k>, <&osc24M>, <&axi>, <&pll6>;
++			clocks = <&osc32k>, <&osc24M>, <&axi>, <&pll6 0>;
+ 			clock-output-names = "ahb1_mux";
+ 		};
+ 
+@@ -184,7 +184,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-apb1-mux-clk";
+ 			reg = <0x01c20058 0x4>;
+-			clocks = <&osc32k>, <&osc24M>, <&pll6>, <&pll6>;
++			clocks = <&osc32k>, <&osc24M>, <&pll6 0>, <&pll6 0>;
+ 			clock-output-names = "apb2_mux";
+ 		};
+ 
+@@ -211,7 +211,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c20088 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "mmc0";
+ 		};
+ 
+@@ -219,7 +219,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c2008c 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "mmc1";
+ 		};
+ 
+@@ -227,7 +227,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c20090 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "mmc2";
+ 		};
+ 
+@@ -235,7 +235,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c20094 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "mmc3";
+ 		};
+ 
+@@ -243,7 +243,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c200a0 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "spi0";
+ 		};
+ 
+@@ -251,7 +251,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c200a4 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "spi1";
+ 		};
+ 
+@@ -259,7 +259,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c200a8 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "spi2";
+ 		};
+ 
+@@ -267,7 +267,7 @@
+ 			#clock-cells = <0>;
+ 			compatible = "allwinner,sun4i-a10-mod0-clk";
+ 			reg = <0x01c200ac 0x4>;
+-			clocks = <&osc24M>, <&pll6>;
++			clocks = <&osc24M>, <&pll6 0>;
+ 			clock-output-names = "spi3";
+ 		};
+ 
+@@ -695,7 +695,7 @@
+ 			ar100: ar100_clk {
+ 				compatible = "allwinner,sun6i-a31-ar100-clk";
+ 				#clock-cells = <0>;
+-				clocks = <&osc32k>, <&osc24M>, <&pll6>, <&pll6>;
++				clocks = <&osc32k>, <&osc24M>, <&pll6 0>, <&pll6 0>;
+ 				clock-output-names = "ar100";
+ 			};
+ 
 -- 
 2.0.0.rc2
