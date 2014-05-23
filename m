@@ -1,8 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 09/22] clk: sunxi: Implement A31 PLL6 as a divs clock for 2x
- output
-Date: Fri, 23 May 2014 15:51:12 +0800
-Message-ID: <1400831485-28576-10-git-send-email-wens@csie.org>
+Subject: [PATCH 22/22] ARM: sun8i: dt: Add Ippo-q8h v5 support
+Date: Fri, 23 May 2014 15:51:25 +0800
+Message-ID: <1400831485-28576-23-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,59 +21,89 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Some clock modules on the A31 use PLL6x2 as one of their inputs.
-This patch changes the PLL6 implementation for A31 to a divs clock,
-i.e. clock with multiple outputs that have different dividers.
+The Ippo-q8h is a tablet circiut board commonly found in cheap Android
+tablets with A23 SoCs. There are at least 2 versions of the board, with
+different peripherals, such as WiFi chips.
 
-This behavior is consistent with previous SoC's by Allwinner.
+This patch add supports for v5 of such boards, which has a ESP8089 WiFi
+chip (not supported) connected to mmc1.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/clk/sunxi/clk-sunxi.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/Makefile                  |  2 ++
+ arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts | 51 +++++++++++++++++++++++++++++
+ 2 files changed, 53 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
 
-diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
-index 6857c6e..339cabc 100644
---- a/drivers/clk/sunxi/clk-sunxi.c
-+++ b/drivers/clk/sunxi/clk-sunxi.c
-@@ -496,6 +496,7 @@ static const struct factors_data sun6i_a31_pll6_data __initconst = {
- 	.enable = 31,
- 	.table = &sun6i_a31_pll6_config,
- 	.getter = sun6i_a31_get_pll6_factors,
-+	.name = "pll6",
- };
- 
- static const struct factors_data sun4i_apb1_data __initconst = {
-@@ -969,6 +970,14 @@ static const struct divs_data pll6_divs_data __initconst = {
- 	}
- };
- 
-+static const struct divs_data sun6i_a31_pll6_divs_data __initconst = {
-+	.factors = &sun6i_a31_pll6_data,
-+	.ndivs = 1,
-+	.div = {
-+		{ .fixed = 2 }, /* P, other */
-+	}
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 6967393..f809a53 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -354,6 +354,8 @@ dtb-$(CONFIG_MACH_SUN7I) += \
+ 	sun7i-a20-cubietruck.dtb \
+ 	sun7i-a20-i12-tvbox.dtb \
+ 	sun7i-a20-olinuxino-micro.dtb
++dtb-$(CONFIG_MACH_SUN8I) += \
++	sun8i-a23-ippo-q8h-v5.dtb
+ dtb-$(CONFIG_ARCH_TEGRA) += tegra20-harmony.dtb \
+ 	tegra20-iris-512.dtb \
+ 	tegra20-medcom-wide.dtb \
+diff --git a/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+new file mode 100644
+index 0000000..7d0bd97
+--- /dev/null
++++ b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+@@ -0,0 +1,51 @@
++/*
++ * Copyright 2014 Chen-Yu Tsai
++ *
++ * Chen-Yu Tsai <wens@csie.org>
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++/include/ "sun8i-a23.dtsi"
++
++/ {
++	model = "Ippo Q8H Dual Core Tablet (v5)";
++	compatible = "ippo,q8h-v5", "allwinner,sun8i-a23";
++
++	chosen {
++		bootargs = "earlyprintk console=ttyS0,115200";
++	};
++
++	soc@01c00000 {
++		uart0: serial@01c28000 {
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart0_pins_a>;
++			status = "okay";
++		};
++
++		i2c0: i2c@01c2ac00 {
++			pinctrl-names = "default";
++			pinctrl-0 = <&i2c0_pins_a>;
++			status = "okay";
++		};
++
++		i2c1: i2c@01c2b000 {
++			pinctrl-names = "default";
++			pinctrl-0 = <&i2c1_pins_a>;
++			status = "okay";
++		};
++
++		r_uart: serial@01f02800 {
++			pinctrl-names = "default";
++			pinctrl-0 = <&r_uart_pins_a>;
++			status = "okay";
++		};
++	};
 +};
 +
- /**
-  * sunxi_divs_clk_setup() - Setup function for leaf divisors on clocks
-  *
-@@ -1108,7 +1117,6 @@ static const struct of_device_id clk_factors_match[] __initconst = {
- 	{.compatible = "allwinner,sun4i-a10-pll1-clk", .data = &sun4i_pll1_data,},
- 	{.compatible = "allwinner,sun6i-a31-pll1-clk", .data = &sun6i_a31_pll1_data,},
- 	{.compatible = "allwinner,sun7i-a20-pll4-clk", .data = &sun7i_a20_pll4_data,},
--	{.compatible = "allwinner,sun6i-a31-pll6-clk", .data = &sun6i_a31_pll6_data,},
- 	{.compatible = "allwinner,sun4i-a10-apb1-clk", .data = &sun4i_apb1_data,},
- 	{.compatible = "allwinner,sun4i-a10-mod0-clk", .data = &sun4i_mod0_data,},
- 	{.compatible = "allwinner,sun7i-a20-out-clk", .data = &sun7i_a20_out_data,},
-@@ -1128,6 +1136,7 @@ static const struct of_device_id clk_div_match[] __initconst = {
- static const struct of_device_id clk_divs_match[] __initconst = {
- 	{.compatible = "allwinner,sun4i-a10-pll5-clk", .data = &pll5_divs_data,},
- 	{.compatible = "allwinner,sun4i-a10-pll6-clk", .data = &pll6_divs_data,},
-+	{.compatible = "allwinner,sun6i-a31-pll6-clk", .data = &sun6i_a31_pll6_divs_data,},
- 	{}
- };
- 
 -- 
 2.0.0.rc2
