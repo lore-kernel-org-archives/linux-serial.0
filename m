@@ -1,8 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 06/22] clk: sunxi: Support factor clocks with N multiplier
- factor starting from 1
-Date: Fri, 23 May 2014 15:51:09 +0800
-Message-ID: <1400831485-28576-7-git-send-email-wens@csie.org>
+Subject: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
+Date: Fri, 23 May 2014 15:51:20 +0800
+Message-ID: <1400831485-28576-18-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +21,82 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The PLLs on newer Allwinner SoC's, such as the A31 and A23, have a
-N multiplier factor that starts from 1, not 0.
+The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
+The differences are the AR100 clock can no longer be modified,
+and the APB0 clock has different divisors.
 
-This patch adds an option to the clock driver's config data structures
-to define the difference.
+This patch adds a compatible with a modified subdevice list for
+the A23.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/clk/sunxi/clk-factors.c | 5 ++++-
- drivers/clk/sunxi/clk-factors.h | 1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
+ drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/sunxi/clk-factors.c b/drivers/clk/sunxi/clk-factors.c
-index 3806d97..399cf4d 100644
---- a/drivers/clk/sunxi/clk-factors.c
-+++ b/drivers/clk/sunxi/clk-factors.c
-@@ -62,7 +62,10 @@ static unsigned long clk_factors_recalc_rate(struct clk_hw *hw,
- 		p = FACTOR_GET(config->pshift, config->pwidth, reg);
+diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+index 1f5a31f..03c5a55 100644
+--- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
++++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+@@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
+ (like clks and reset controllers).
  
- 	/* Calculate the rate */
--	rate = (parent_rate * n * (k + 1) >> p) / (m + 1);
-+	if (config->n_from_one)
-+		rate = (parent_rate * (n + 1) * (k + 1) >> p) / (m + 1);
-+	else
-+		rate = (parent_rate * n * (k + 1) >> p) / (m + 1);
+ Required properties:
+- - compatible: "allwinner,sun6i-a31-prcm"
++ - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
+  - reg: The PRCM registers range
  
- 	return rate;
- }
-diff --git a/drivers/clk/sunxi/clk-factors.h b/drivers/clk/sunxi/clk-factors.h
-index 02e1a43..0484a48 100644
---- a/drivers/clk/sunxi/clk-factors.h
-+++ b/drivers/clk/sunxi/clk-factors.h
-@@ -15,6 +15,7 @@ struct clk_factors_config {
- 	u8 mwidth;
- 	u8 pshift;
- 	u8 pwidth;
-+	u8 n_from_one;
+ The prcm node may contain several subdevices definitions:
+diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
+index 718fc4d..c96bb6c 100644
+--- a/drivers/mfd/sun6i-prcm.c
++++ b/drivers/mfd/sun6i-prcm.c
+@@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
+ 	},
  };
  
- struct clk_factors {
++static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
++	{
++		.name = "sun6i-a31-apb0-clk",
++		.of_compatible = "allwinner,sun8i-a23-apb0-clk",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
++		.resources = sun6i_a31_apb0_clk_res,
++	},
++	{
++		.name = "sun6i-a31-apb0-gates-clk",
++		.of_compatible = "allwinner,sun6i-a31-apb0-gates-clk",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
++		.resources = sun6i_a31_apb0_gates_clk_res,
++	},
++	{
++		.name = "sun6i-a31-apb0-clock-reset",
++		.of_compatible = "allwinner,sun6i-a31-clock-reset",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_rstc_res),
++		.resources = sun6i_a31_apb0_rstc_res,
++	},
++};
++
+ static const struct prcm_data sun6i_a31_prcm_data = {
+ 	.nsubdevs = ARRAY_SIZE(sun6i_a31_prcm_subdevs),
+ 	.subdevs = sun6i_a31_prcm_subdevs,
+ };
+ 
++static const struct prcm_data sun8i_a23_prcm_data = {
++	.nsubdevs = ARRAY_SIZE(sun8i_a23_prcm_subdevs),
++	.subdevs = sun8i_a23_prcm_subdevs,
++};
++
+ static const struct of_device_id sun6i_prcm_dt_ids[] = {
+ 	{
+ 		.compatible = "allwinner,sun6i-a31-prcm",
+ 		.data = &sun6i_a31_prcm_data,
+ 	},
++	{
++		.compatible = "allwinner,sun8i-a23-prcm",
++		.data = &sun8i_a23_prcm_data,
++	},
+ 	{ /* sentinel */ },
+ };
+ 
 -- 
 2.0.0.rc2
