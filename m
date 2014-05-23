@@ -1,7 +1,8 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 22/22] ARM: sun8i: dt: Add Ippo-q8h v5 support
-Date: Fri, 23 May 2014 15:51:25 +0800
-Message-ID: <1400831485-28576-23-git-send-email-wens@csie.org>
+Subject: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART
+ (sun6i/sun8i)
+Date: Fri, 23 May 2014 15:51:22 +0800
+Message-ID: <1400831485-28576-20-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,89 +22,49 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Ippo-q8h is a tablet circiut board commonly found in cheap Android
-tablets with A23 SoCs. There are at least 2 versions of the board, with
-different peripherals, such as WiFi chips.
-
-This patch add supports for v5 of such boards, which has a ESP8089 WiFi
-chip (not supported) connected to mmc1.
+sun6i/sun8i have a UART in the RTC block group, which can be used
+as an early console. This is most useful on sun8i as UART0 is muxed
+with MMC0, which is not available if we boot from MMC.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- arch/arm/boot/dts/Makefile                  |  2 ++
- arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts | 51 +++++++++++++++++++++++++++++
- 2 files changed, 53 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+ arch/arm/Kconfig.debug | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 6967393..f809a53 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -354,6 +354,8 @@ dtb-$(CONFIG_MACH_SUN7I) += \
- 	sun7i-a20-cubietruck.dtb \
- 	sun7i-a20-i12-tvbox.dtb \
- 	sun7i-a20-olinuxino-micro.dtb
-+dtb-$(CONFIG_MACH_SUN8I) += \
-+	sun8i-a23-ippo-q8h-v5.dtb
- dtb-$(CONFIG_ARCH_TEGRA) += tegra20-harmony.dtb \
- 	tegra20-iris-512.dtb \
- 	tegra20-medcom-wide.dtb \
-diff --git a/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
-new file mode 100644
-index 0000000..7d0bd97
---- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
-@@ -0,0 +1,51 @@
-+/*
-+ * Copyright 2014 Chen-Yu Tsai
-+ *
-+ * Chen-Yu Tsai <wens@csie.org>
-+ *
-+ * The code contained herein is licensed under the GNU General Public
-+ * License. You may obtain a copy of the GNU General Public License
-+ * Version 2 or later at the following locations:
-+ *
-+ * http://www.opensource.org/licenses/gpl-license.html
-+ * http://www.gnu.org/copyleft/gpl.html
-+ */
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index eab8ecb..9e22708 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -694,6 +694,14 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on Allwinner A1X based platforms on the UART1.
+ 
++	config DEBUG_SUNXI_R_UART
++		bool "Kernel low-level debugging messages via sunXi R_UART"
++		depends on ARCH_SUNXI
++		select DEBUG_UART_8250
++		help
++		  Say Y here if you want kernel low-level debugging support
++		  on Allwinner A31 based platforms on the R_UART.
 +
-+/dts-v1/;
-+/include/ "sun8i-a23.dtsi"
-+
-+/ {
-+	model = "Ippo Q8H Dual Core Tablet (v5)";
-+	compatible = "ippo,q8h-v5", "allwinner,sun8i-a23";
-+
-+	chosen {
-+		bootargs = "earlyprintk console=ttyS0,115200";
-+	};
-+
-+	soc@01c00000 {
-+		uart0: serial@01c28000 {
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&uart0_pins_a>;
-+			status = "okay";
-+		};
-+
-+		i2c0: i2c@01c2ac00 {
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&i2c0_pins_a>;
-+			status = "okay";
-+		};
-+
-+		i2c1: i2c@01c2b000 {
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&i2c1_pins_a>;
-+			status = "okay";
-+		};
-+
-+		r_uart: serial@01f02800 {
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&r_uart_pins_a>;
-+			status = "okay";
-+		};
-+	};
-+};
-+
+ 	config TEGRA_DEBUG_UART_AUTO_ODMDATA
+ 		bool "Kernel low-level debugging messages via Tegra UART via ODMDATA"
+ 		depends on ARCH_TEGRA
+@@ -1007,6 +1015,7 @@ config DEBUG_UART_PHYS
+ 	default 0x01c28400 if DEBUG_SUNXI_UART1
+ 	default 0x01d0c000 if DEBUG_DAVINCI_DA8XX_UART1
+ 	default 0x01d0d000 if DEBUG_DAVINCI_DA8XX_UART2
++	default 0x01f02800 if DEBUG_SUNXI_R_UART
+ 	default 0x02530c00 if DEBUG_KEYSTONE_UART0
+ 	default 0x02531000 if DEBUG_KEYSTONE_UART1
+ 	default 0x03010fe0 if ARCH_RPC
+@@ -1072,6 +1081,7 @@ config DEBUG_UART_VIRT
+ 	default 0xf1600000 if ARCH_INTEGRATOR
+ 	default 0xf1c28000 if DEBUG_SUNXI_UART0
+ 	default 0xf1c28400 if DEBUG_SUNXI_UART1
++	default 0xf1f02800 if DEBUG_SUNXI_R_UART
+ 	default 0xf2100000 if DEBUG_PXA_UART1
+ 	default 0xf4090000 if ARCH_LPC32XX
+ 	default 0xf4200000 if ARCH_GEMINI
 -- 
 2.0.0.rc2
