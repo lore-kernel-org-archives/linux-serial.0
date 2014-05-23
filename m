@@ -1,7 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 16/22] pinctrl: sunxi: Add A23 R_PIO controller support
-Date: Fri, 23 May 2014 15:51:19 +0800
-Message-ID: <1400831485-28576-17-git-send-email-wens@csie.org>
+Subject: [PATCH 21/22] ARM: sunxi: Add Allwinner A23 dtsi
+Date: Fri, 23 May 2014 15:51:24 +0800
+Message-ID: <1400831485-28576-22-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,173 +21,544 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The A23 has a R_PIO pin controller, similar to the one found on the A31 SoC.
-Add support for the pins controlled by the R_PIO controller.
+The Allwinner A23 is a tablet oriented SoC with 2 Cortex-A7 cores
+and a Mali-400MP2 GPU.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/pinctrl/sunxi/Kconfig               |   4 +
- drivers/pinctrl/sunxi/Makefile              |   1 +
- drivers/pinctrl/sunxi/pinctrl-sun8i-a23-r.c | 129 ++++++++++++++++++++++++++++
- 3 files changed, 134 insertions(+)
- create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun8i-a23-r.c
+ arch/arm/boot/dts/sun8i-a23.dtsi | 524 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 524 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-a23.dtsi
 
-diff --git a/drivers/pinctrl/sunxi/Kconfig b/drivers/pinctrl/sunxi/Kconfig
-index 17a4281..3058d32 100644
---- a/drivers/pinctrl/sunxi/Kconfig
-+++ b/drivers/pinctrl/sunxi/Kconfig
-@@ -36,4 +36,8 @@ config PINCTRL_SUN8I_A23
-        def_bool PINCTRL_SUNXI || MACH_SUN8I
-        select PINCTRL_SUNXI_COMMON
- 
-+config PINCTRL_SUN8I_A23_R
-+       def_bool PINCTRL_SUNXI || MACH_SUN8I
-+       select PINCTRL_SUNXI_COMMON
-+
- endif
-diff --git a/drivers/pinctrl/sunxi/Makefile b/drivers/pinctrl/sunxi/Makefile
-index 850cd50..e797efb 100644
---- a/drivers/pinctrl/sunxi/Makefile
-+++ b/drivers/pinctrl/sunxi/Makefile
-@@ -9,3 +9,4 @@ obj-$(CONFIG_PINCTRL_SUN6I_A31)		+= pinctrl-sun6i-a31.o
- obj-$(CONFIG_PINCTRL_SUN6I_A31_R)	+= pinctrl-sun6i-a31-r.o
- obj-$(CONFIG_PINCTRL_SUN7I_A20)		+= pinctrl-sun7i-a20.o
- obj-$(CONFIG_PINCTRL_SUN8I_A23)		+= pinctrl-sun8i-a23.o
-+obj-$(CONFIG_PINCTRL_SUN8I_A23_R)	+= pinctrl-sun8i-a23-r.o
-diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a23-r.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-a23-r.c
+diff --git a/arch/arm/boot/dts/sun8i-a23.dtsi b/arch/arm/boot/dts/sun8i-a23.dtsi
 new file mode 100644
-index 0000000..ae17888
+index 0000000..1cff087
 --- /dev/null
-+++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a23-r.c
-@@ -0,0 +1,129 @@
++++ b/arch/arm/boot/dts/sun8i-a23.dtsi
+@@ -0,0 +1,524 @@
 +/*
-+ * Allwinner A23 SoCs special pins pinctrl driver.
++ * Copyright 2014 Chen-Yu Tsai
 + *
-+ * Copyright (C) 2014 Chen-Yu Tsai
 + * Chen-Yu Tsai <wens@csie.org>
 + *
-+ * Copyright (C) 2014 Boris Brezillon
-+ * Boris Brezillon <boris.brezillon@free-electrons.com>
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
 + *
-+ * Copyright (C) 2014 Maxime Ripard
-+ * Maxime Ripard <maxime.ripard@free-electrons.com>
-+ *
-+ * This file is licensed under the terms of the GNU General Public
-+ * License version 2.  This program is licensed "as is" without any
-+ * warranty of any kind, whether express or implied.
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
 + */
 +
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/pinctrl/pinctrl.h>
-+#include <linux/reset.h>
++/include/ "skeleton.dtsi"
 +
-+#include "pinctrl-sunxi.h"
++/ {
++	interrupt-parent = <&gic>;
 +
-+static const struct sunxi_desc_pin sun8i_a23_r_pins[] = {
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 0),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_rsb"),		/* SCK */
-+		  SUNXI_FUNCTION(0x3, "s_twi")),	/* SCK */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 1),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_rsb"),		/* SDA */
-+		  SUNXI_FUNCTION(0x3, "s_twi")),	/* SDA */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 2),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_uart")),	/* TX */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 3),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_uart")),	/* RX */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 4),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x3, "s_jtag")),	/* MS */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 5),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x3, "s_jtag")),	/* CK */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 6),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x3, "s_jtag")),	/* DO */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 7),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x3, "s_jtag")),	/* DI */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 8),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_twi")),	/* SCK */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 9),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_twi")),	/* SDA */
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 10),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out"),
-+		  SUNXI_FUNCTION(0x2, "s_pwm")),
-+	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 11),
-+		  SUNXI_FUNCTION(0x0, "gpio_in"),
-+		  SUNXI_FUNCTION(0x1, "gpio_out")),
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++		serial2 = &uart2;
++		serial3 = &uart3;
++		serial4 = &uart4;
++		serial5 = &r_uart;
++	};
++
++
++	cpus {
++		enable-method = "allwinner,sun8i-a23";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu@0 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <0>;
++			clocks = <&cpu>;
++		};
++
++		cpu@1 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <1>;
++			clocks = <&cpu>;
++		};
++	};
++
++	memory {
++		reg = <0x40000000 0x80000000>;
++	};
++
++	pmu {
++		compatible = "arm,cortex-a7-pmu", "arm,cortex-a15-pmu";
++		interrupts = <0 120 4>,
++			     <0 121 4>,
++			     <0 122 4>,
++			     <0 123 4>;
++	};
++
++	clocks {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		osc24M: osc24M_clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++			clock-frequency = <24000000>;
++			clock-output-names = "osc24M";
++		};
++
++		osc32k: osc32k_clk {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++			clock-frequency = <32768>;
++			clock-output-names = "osc32k";
++		};
++
++		pll1: clk@01c20000 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun8i-a23-pll1-clk";
++			reg = <0x01c20000 0x4>;
++			clocks = <&osc24M>;
++			clock-output-names = "pll1";
++		};
++
++		pll6: clk@01c20028 {
++			#clock-cells = <1>;
++			compatible = "allwinner,sun6i-a31-pll6-clk";
++			reg = <0x01c20028 0x4>;
++			clocks = <&osc24M>;
++			clock-output-names = "pll6_other", "pll6";
++		};
++
++		cpu: cpu_clk@01c20050 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-cpu-clk";
++			reg = <0x01c20050 0x4>;
++
++			/*
++			 * PLL1 is listed twice here.
++			 * While it looks suspicious, it's actually documented
++			 * that way both in the datasheet and in the code from
++			 * Allwinner.
++			 */
++			clocks = <&osc32k>, <&osc24M>, <&pll1>, <&pll1>;
++			clock-output-names = "cpu";
++		};
++
++		axi: axi_clk@01c20050 {
++			#clock-cells = <0>;
++			/*
++			 * AXI clock on A23 is actually wider,
++			 * but extra bit is useless for divider
++			 */
++			compatible = "allwinner,sun4i-a10-axi-clk";
++			reg = <0x01c20050 0x4>;
++			clocks = <&cpu>;
++			clock-output-names = "axi";
++		};
++
++		ahb1_pll6: ahb1_pll6_clk@01c20054 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun6i-a31-ahb1-pll6-clk";
++			reg = <0x01c20054 0x4>;
++			clocks = <&pll6 0>;
++			clock-output-names = "ahb1_pll6";
++		};
++
++		ahb1_mux: ahb1_mux_clk@01c20054 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun6i-a31-ahb1-mux-clk";
++			reg = <0x01c20054 0x4>;
++			clocks = <&osc32k>, <&osc24M>, <&axi>, <&ahb1_pll6>;
++			clock-output-names = "ahb1_mux";
++		};
++
++		ahb1: ahb1_clk@01c20054 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-ahb-clk";
++			reg = <0x01c20054 0x4>;
++			clocks = <&ahb1_mux>;
++			clock-output-names = "ahb1";
++		};
++
++		ahb1_gates: clk@01c20060 {
++			#clock-cells = <1>;
++			compatible = "allwinner,sun8i-a23-ahb1-gates-clk";
++			reg = <0x01c20060 0x8>;
++			clocks = <&ahb1>;
++			clock-output-names = "ahb1_mipidsi", "ahb1_dma",
++					"ahb1_mmc0", "ahb1_mmc1", "ahb1_mmc2",
++					"ahb1_nand", "ahb1_sdram",
++					"ahb1_hstimer", "ahb1_spi0",
++					"ahb1_spi1", "ahb1_otg", "ahb1_ehci",
++					"ahb1_ohci", "ahb1_ve", "ahb1_lcd",
++					"ahb1_csi", "ahb1_be",	"ahb1_fe",
++					"ahb1_gpu", "ahb1_spinlock",
++					"ahb1_drc";
++		};
++
++		apb1: apb1_clk@01c20054 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-apb0-clk";
++			reg = <0x01c20054 0x4>;
++			clocks = <&ahb1>;
++			clock-output-names = "apb1";
++		};
++
++		apb1_gates: clk@01c20068 {
++			#clock-cells = <1>;
++			compatible = "allwinner,sun8i-a23-apb1-gates-clk";
++			reg = <0x01c20068 0x4>;
++			clocks = <&apb1>;
++			clock-output-names = "apb1_codec", "apb1_pio",
++					"apb1_daudio0",	"apb1_daudio1";
++		};
++
++		apb2_mux: apb2_mux@01c20058 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-apb1-mux-clk";
++			reg = <0x01c20058 0x4>;
++			clocks = <&osc32k>, <&osc24M>, <&pll6 0>, <&pll6 0>;
++			clock-output-names = "apb2_mux";
++		};
++
++		apb2: apb2@01c20058 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun6i-a31-apb2-div-clk";
++			reg = <0x01c20058 0x4>;
++			clocks = <&apb2_mux>;
++			clock-output-names = "apb2";
++		};
++
++		apb2_gates: clk@01c2006c {
++			#clock-cells = <1>;
++			compatible = "allwinner,sun8i-a23-apb2-gates-clk";
++			reg = <0x01c2006c 0x4>;
++			clocks = <&apb2>;
++			clock-output-names = "apb2_i2c0", "apb2_i2c1",
++					"apb2_i2c2", "apb2_uart0",
++					"apb2_uart1", "apb2_uart2",
++					"apb2_uart3", "apb2_uart4";
++		};
++
++		mmc0_clk: clk@01c20088 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-mod0-clk";
++			reg = <0x01c20088 0x4>;
++			clocks = <&osc24M>, <&pll6 0>;
++			clock-output-names = "mmc0";
++		};
++
++		mmc1_clk: clk@01c2008c {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-mod0-clk";
++			reg = <0x01c2008c 0x4>;
++			clocks = <&osc24M>, <&pll6 0>;
++			clock-output-names = "mmc1";
++		};
++
++		mmc2_clk: clk@01c20090 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-mod0-clk";
++			reg = <0x01c20090 0x4>;
++			clocks = <&osc24M>, <&pll6 0>;
++			clock-output-names = "mmc2";
++		};
++
++		spi0_clk: clk@01c200a0 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-mod0-clk";
++			reg = <0x01c200a0 0x4>;
++			clocks = <&osc24M>, <&pll6 0>;
++			clock-output-names = "spi0";
++		};
++
++		spi1_clk: clk@01c200a4 {
++			#clock-cells = <0>;
++			compatible = "allwinner,sun4i-a10-mod0-clk";
++			reg = <0x01c200a4 0x4>;
++			clocks = <&osc24M>, <&pll6 0>;
++			clock-output-names = "spi1";
++		};
++	};
++
++	soc@01c00000 {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		pio: pinctrl@01c20800 {
++			compatible = "allwinner,sun8i-a23-pinctrl";
++			reg = <0x01c20800 0x400>;
++			interrupts = <0 11 4>,
++				     <0 15 4>,
++				     <0 17 4>;
++			clocks = <&apb1_gates 5>;
++			gpio-controller;
++			interrupt-controller;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			#gpio-cells = <3>;
++
++			uart0_pins_a: uart0@0 {
++				allwinner,pins = "PF2", "PF4";
++				allwinner,function = "uart0";
++				allwinner,drive = <0>;
++				allwinner,pull = <0>;
++			};
++
++			i2c0_pins_a: i2c0@0 {
++				allwinner,pins = "PH2", "PH3";
++				allwinner,function = "i2c0";
++				allwinner,drive = <0>;
++				allwinner,pull = <0>;
++			};
++
++			i2c1_pins_a: i2c1@0 {
++				allwinner,pins = "PH4", "PH5";
++				allwinner,function = "i2c1";
++				allwinner,drive = <0>;
++				allwinner,pull = <0>;
++			};
++		};
++
++		ahb1_rst: reset@01c202c0 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-ahb1-reset";
++			reg = <0x01c202c0 0xc>;
++		};
++
++		apb1_rst: reset@01c202d0 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-clock-reset";
++			reg = <0x01c202d0 0x4>;
++		};
++
++		apb2_rst: reset@01c202d8 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-clock-reset";
++			reg = <0x01c202d8 0x4>;
++		};
++
++		timer@01c20c00 {
++			compatible = "allwinner,sun4i-a10-timer";
++			reg = <0x01c20c00 0xa0>;
++			interrupts = <0 18 4>,
++				     <0 19 4>;
++			clocks = <&osc24M>;
++		};
++
++		wdt0: watchdog@01c20ca0 {
++			compatible = "allwinner,sun6i-a31-wdt";
++			reg = <0x01c20ca0 0x20>;
++			interrupts = <0 25 4>;
++		};
++
++		uart0: serial@01c28000 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01c28000 0x400>;
++			interrupts = <0 0 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb2_gates 16>;
++			resets = <&apb2_rst 16>;
++			status = "disabled";
++		};
++
++		uart1: serial@01c28400 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01c28400 0x400>;
++			interrupts = <0 1 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb2_gates 17>;
++			resets = <&apb2_rst 17>;
++			status = "disabled";
++		};
++
++		uart2: serial@01c28800 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01c28800 0x400>;
++			interrupts = <0 2 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb2_gates 18>;
++			resets = <&apb2_rst 18>;
++			status = "disabled";
++		};
++
++		uart3: serial@01c28c00 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01c28c00 0x400>;
++			interrupts = <0 3 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb2_gates 19>;
++			resets = <&apb2_rst 19>;
++			status = "disabled";
++		};
++
++		uart4: serial@01c29000 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01c29000 0x400>;
++			interrupts = <0 4 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb2_gates 20>;
++			resets = <&apb2_rst 20>;
++			status = "disabled";
++		};
++
++		i2c0: i2c@01c2ac00 {
++			compatible = "allwinner,sun6i-a31-i2c";
++			reg = <0x01c2ac00 0x400>;
++			interrupts = <0 6 4>;
++			clocks = <&apb2_gates 0>;
++			clock-frequency = <100000>;
++			resets = <&apb2_rst 0>;
++			status = "disabled";
++		};
++
++		i2c1: i2c@01c2b000 {
++			compatible = "allwinner,sun6i-a31-i2c";
++			reg = <0x01c2b000 0x400>;
++			interrupts = <0 7 4>;
++			clocks = <&apb2_gates 1>;
++			clock-frequency = <100000>;
++			resets = <&apb2_rst 1>;
++			status = "disabled";
++		};
++
++		i2c2: i2c@01c2b400 {
++			compatible = "allwinner,sun6i-a31-i2c";
++			reg = <0x01c2b400 0x400>;
++			interrupts = <0 8 4>;
++			clocks = <&apb2_gates 2>;
++			clock-frequency = <100000>;
++			resets = <&apb2_rst 2>;
++			status = "disabled";
++		};
++
++		spi0: spi@01c68000 {
++			compatible = "allwinner,sun6i-a31-spi";
++			reg = <0x01c68000 0x1000>;
++			interrupts = <0 65 4>;
++			clocks = <&ahb1_gates 20>, <&spi0_clk>;
++			clock-names = "ahb", "mod";
++			resets = <&ahb1_rst 20>;
++			status = "disabled";
++		};
++
++		spi1: spi@01c69000 {
++			compatible = "allwinner,sun6i-a31-spi";
++			reg = <0x01c69000 0x1000>;
++			interrupts = <0 66 4>;
++			clocks = <&ahb1_gates 21>, <&spi1_clk>;
++			clock-names = "ahb", "mod";
++			resets = <&ahb1_rst 21>;
++			status = "disabled";
++		};
++
++		gic: interrupt-controller@01c81000 {
++			compatible = "arm,cortex-a7-gic", "arm,cortex-a15-gic";
++			reg = <0x01c81000 0x1000>,
++			      <0x01c82000 0x1000>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++		};
++
++		nmi_intc: interrupt-controller@01f00c0c {
++			compatible = "allwinner,sun6i-a31-sc-nmi";
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			reg = <0x01f00c0c 0x38>;
++			interrupts = <0 32 4>;
++		};
++
++		prcm@01f01400 {
++			compatible = "allwinner,sun8i-a23-prcm";
++			reg = <0x01f01400 0x200>;
++
++			ar100: ar100_clk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clock-div = <1>;
++				clock-mult = <1>;
++				clocks = <&osc24M>;
++				clock-output-names = "ar100";
++			};
++
++			ahb0: ahb0_clk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clock-div = <1>;
++				clock-mult = <1>;
++				clocks = <&ar100>;
++				clock-output-names = "ahb0";
++			};
++
++			apb0: apb0_clk {
++				compatible = "allwinner,sun8i-a23-apb0-clk";
++				#clock-cells = <0>;
++				clocks = <&ahb0>;
++				clock-output-names = "apb0";
++			};
++
++			apb0_gates: apb0_gates_clk {
++				compatible = "allwinner,sun6i-a31-apb0-gates-clk";
++				#clock-cells = <1>;
++				clocks = <&apb0>;
++				clock-indices = <0>, <2>, <3>, <4>, <6>;
++				clock-output-names = "apb0_pio", "apb0_timer",
++						"apb0_rsb", "apb0_uart",
++						"apb0_i2c";
++			};
++
++			apb0_rst: apb0_rst {
++				compatible = "allwinner,sun6i-a31-clock-reset";
++				#reset-cells = <1>;
++			};
++		};
++
++		cpucfg@01f01c00 {
++			compatible = "allwinner,sun8i-a23-cpuconfig";
++			reg = <0x01f01c00 0x300>;
++		};
++
++		r_uart: serial@01f02800 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x01f02800 0x400>;
++			interrupts = <0 38 4>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&apb0_gates 4>;
++			resets = <&apb0_rst 4>;
++			status = "disabled";
++		};
++
++		r_pio: pinctrl@01f02c00 {
++			compatible = "allwinner,sun8i-a23-r-pinctrl";
++			reg = <0x01f02c00 0x400>;
++			interrupts = <0 45 4>;
++			clocks = <&apb0_gates 0>;
++			resets = <&apb0_rst 0>;
++			gpio-controller;
++			interrupt-controller;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			#gpio-cells = <3>;
++
++			r_uart_pins_a: r_uart@0 {
++				allwinner,pins = "PL2", "PL3";
++				allwinner,function = "s_uart";
++				allwinner,drive = <0>;
++				allwinner,pull = <0>;
++			};
++
++		};
++	};
 +};
-+
-+static const struct sunxi_pinctrl_desc sun8i_a23_r_pinctrl_data = {
-+	.pins = sun8i_a23_r_pins,
-+	.npins = ARRAY_SIZE(sun8i_a23_r_pins),
-+	.pin_base = PL_BASE,
-+};
-+
-+static int sun8i_a23_r_pinctrl_probe(struct platform_device *pdev)
-+{
-+	struct reset_control *rstc;
-+	int ret;
-+
-+	rstc = devm_reset_control_get(&pdev->dev, NULL);
-+	if (IS_ERR(rstc)) {
-+		dev_err(&pdev->dev, "Reset controller missing\n");
-+		return PTR_ERR(rstc);
-+	}
-+
-+	ret = reset_control_deassert(rstc);
-+	if (ret)
-+		return ret;
-+
-+	ret = sunxi_pinctrl_init(pdev,
-+				 &sun8i_a23_r_pinctrl_data);
-+
-+	if (ret)
-+		reset_control_assert(rstc);
-+
-+	return ret;
-+}
-+
-+static struct of_device_id sun8i_a23_r_pinctrl_match[] = {
-+	{ .compatible = "allwinner,sun8i-a23-r-pinctrl", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, sun8i_a23_r_pinctrl_match);
-+
-+static struct platform_driver sun8i_a23_r_pinctrl_driver = {
-+	.probe	= sun8i_a23_r_pinctrl_probe,
-+	.driver	= {
-+		.name		= "sun8i-a23-r-pinctrl",
-+		.owner		= THIS_MODULE,
-+		.of_match_table	= sun8i_a23_r_pinctrl_match,
-+	},
-+};
-+module_platform_driver(sun8i_a23_r_pinctrl_driver);
-+
-+MODULE_AUTHOR("Chen-Yu Tsai <wens@csie.org>");
-+MODULE_AUTHOR("Boris Brezillon <boris.brezillon@free-electrons.com");
-+MODULE_AUTHOR("Maxime Ripard <maxime.ripard@free-electrons.com");
-+MODULE_DESCRIPTION("Allwinner A23 R_PIO pinctrl driver");
-+MODULE_LICENSE("GPL");
 -- 
 2.0.0.rc2
