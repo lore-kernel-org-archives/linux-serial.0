@@ -1,67 +1,123 @@
-From: Dirk Behme <dirk.behme@de.bosch.com>
-Subject: Re: [PATCH 2/2] serial: imx: disable the receiver ready interrupt
- for imx_stop_rx
-Date: Fri, 23 May 2014 08:10:36 +0200
-Message-ID: <537EE65C.5010700@de.bosch.com>
-References: <1400819575-20435-1-git-send-email-b32955@freescale.com> <1400819575-20435-2-git-send-email-b32955@freescale.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: [PATCH 14/22] clk: sunxi: Add A23 APB0 support to sun6i-a31-apb0-clk
+Date: Fri, 23 May 2014 15:51:17 +0800
+Message-ID: <1400831485-28576-15-git-send-email-wens@csie.org>
+References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp6-v.fe.bosch.de ([139.15.237.11]:60934 "EHLO
-	smtp6-v.fe.bosch.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752115AbaEWGLv (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 23 May 2014 02:11:51 -0400
-In-Reply-To: <1400819575-20435-2-git-send-email-b32955@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1400831485-28576-1-git-send-email-wens@csie.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>
+Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On 23.05.2014 06:32, Huang Shijie wrote:
-> This patch disables the receiver ready interrupt for imx_stop_rx.
-> It reduces the interrupt numbers when the uart is going to close
-> or suspend.
->
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-> ---
->   drivers/tty/serial/imx.c |    4 ++++
->   1 files changed, 4 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index ed6cdf7..6026101 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -440,6 +440,10 @@ static void imx_stop_rx(struct uart_port *port)
->
->   	temp = readl(sport->port.membase + UCR2);
->   	writel(temp & ~UCR2_RXEN, sport->port.membase + UCR2);
-> +
-> +	/* disable the `Receiver Ready Interrrupt` */
-> +	temp = readl(sport->port.membase + UCR1);
-> +	writel(temp & ~UCR1_RRDYEN, sport->port.membase + UCR1);
->   }
+The A23 has an almost identical PRCM clock tree. The difference in
+the APB0 clock is the smallest divisor is 1, instead of 2.
 
-While this is about the RX irq, I've a slightly off-topic general 
-question regarding the usage of the *TX* irq in TX DMA mode:
+This patch extends the sun6i-a31-apb0-clk driver to take divider
+tables associated to compatibles, and adds a compatible for the A23
+variant.
 
-It seems to me that the TX irq is kept enabled while the TX DMA is 
-running/enabled? Looking e.g. into the amba-pl011.c there it seems there 
-the logic is:
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+---
+ Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
+ drivers/clk/sunxi/clk-sun6i-apb0.c                | 28 ++++++++++++++++++-----
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-- Set up/start the TX DMA
-- Disable the TX irq while the TX DMA is running (only waiting for the 
-TX DMA callback, then)
-- Re-enable the TX irq in the TX DMA callback
-- Let the TX irq fire, then. And if there are still data, set up the TX 
-DMA again.
-
-This sounds quite more logical than the implementation in imx.c.
-
-Or is my understanding completely wrong, here?
-
-Thanks
-
-Dirk
-
+diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Documentation/devicetree/bindings/clock/sunxi.txt
+index fa927ba..ae94bbf 100644
+--- a/Documentation/devicetree/bindings/clock/sunxi.txt
++++ b/Documentation/devicetree/bindings/clock/sunxi.txt
+@@ -29,6 +29,7 @@ Required properties:
+ 	"allwinner,sun8i-a23-ahb1-gates-clk" - for the AHB1 gates on A23
+ 	"allwinner,sun4i-a10-apb0-clk" - for the APB0 clock
+ 	"allwinner,sun6i-a31-apb0-clk" - for the APB0 clock on A31
++	"allwinner,sun8i-a23-apb0-clk" - for the APB0 clock on A23
+ 	"allwinner,sun4i-a10-apb0-gates-clk" - for the APB0 gates on A10
+ 	"allwinner,sun5i-a13-apb0-gates-clk" - for the APB0 gates on A13
+ 	"allwinner,sun5i-a10s-apb0-gates-clk" - for the APB0 gates on A10s
+diff --git a/drivers/clk/sunxi/clk-sun6i-apb0.c b/drivers/clk/sunxi/clk-sun6i-apb0.c
+index 11f17c3..2197ac7 100644
+--- a/drivers/clk/sunxi/clk-sun6i-apb0.c
++++ b/drivers/clk/sunxi/clk-sun6i-apb0.c
+@@ -11,6 +11,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ 
+ /*
+@@ -28,6 +29,21 @@ static const struct clk_div_table sun6i_a31_apb0_divs[] = {
+ 	{ /* sentinel */ },
+ };
+ 
++/* The A23 APB0 clock has a standard power of 2 divisor */
++static const struct clk_div_table sun8i_a23_apb0_divs[] = {
++	{ .val = 0, .div = 1, },
++	{ .val = 1, .div = 2, },
++	{ .val = 2, .div = 4, },
++	{ .val = 3, .div = 8, },
++	{ /* sentinel */ },
++};
++
++const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] = {
++	{ .compatible = "allwinner,sun6i-a31-apb0-clk", .data = &sun6i_a31_apb0_divs },
++	{ .compatible = "allwinner,sun8i-a23-apb0-clk", .data = &sun8i_a23_apb0_divs },
++	{ /* sentinel */ }
++};
++
+ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+@@ -36,12 +52,17 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
+ 	struct resource *r;
+ 	void __iomem *reg;
+ 	struct clk *clk;
++	const struct of_device_id *device;
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	reg = devm_ioremap_resource(&pdev->dev, r);
+ 	if (IS_ERR(reg))
+ 		return PTR_ERR(reg);
+ 
++	device = of_match_device(sun6i_a31_apb0_clk_dt_ids, &pdev->dev);
++	if (!device)
++		return -EINVAL;
++
+ 	clk_parent = of_clk_get_parent_name(np, 0);
+ 	if (!clk_parent)
+ 		return -EINVAL;
+@@ -49,7 +70,7 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
+ 	of_property_read_string(np, "clock-output-names", &clk_name);
+ 
+ 	clk = clk_register_divider_table(&pdev->dev, clk_name, clk_parent,
+-					 0, reg, 0, 2, 0, sun6i_a31_apb0_divs,
++					 0, reg, 0, 2, 0, device->data,
+ 					 NULL);
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
+@@ -57,11 +78,6 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
+ 	return of_clk_add_provider(np, of_clk_src_simple_get, clk);
+ }
+ 
+-const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] = {
+-	{ .compatible = "allwinner,sun6i-a31-apb0-clk" },
+-	{ /* sentinel */ }
+-};
+-
+ static struct platform_driver sun6i_a31_apb0_clk_driver = {
+ 	.driver = {
+ 		.name = "sun6i-a31-apb0-clk",
+-- 
+2.0.0.rc2
