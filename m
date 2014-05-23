@@ -1,7 +1,7 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC v2 03/10] irqchip: gic: Introduce shadow irqs for FIQ
-Date: Fri, 23 May 2014 14:57:51 +0100
-Message-ID: <1400853478-5824-4-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC v2 04/10] ARM: vexpress: Extend UART with FIQ support
+Date: Fri, 23 May 2014 14:57:52 +0100
+Message-ID: <1400853478-5824-5-git-send-email-daniel.thompson@linaro.org>
 References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
  <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
@@ -19,145 +19,143 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Nicolas Pitre <nicolas.pitre@linaro.org>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Sricharan R <r.sricharan@ti.com>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Jason Cooper <jason@lakedaemon.net>, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfou>
 List-Id: linux-serial@vger.kernel.org
 
-This patch registers two virqs for each interrupt source it supports.
-Using multiple virqs allows the GIC driver to automatically modify the group
-register, allowing the new virqs to be used as argument to enable_fiq().
-This also allows FIQ resources to be described in the device tree's
-interrupt list using a special flag (currently 0x80).
-
-Both these aspects combine and allow a driver to deploy a FIQ handler
-without any machine specific knowledge; it can be used effectively on
-multi-arch kernels.
+This patch provides the UART with a second interrupt resource that can
+be used to route the UARTs interrupt to FIQ. The size of the interrupt
+map is doubled and new mappings for the FIQ shadows added (demarked by
+setting bit 7 in the final item in the tuple).
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc:: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Christoffer Dall <christoffer.dall@linaro.org>
-Cc: Sricharan R <r.sricharan@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Pawel Moll <pawel.moll@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+Cc: Kumar Gala <galak@codeaurora.org>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: devicetree@vger.kernel.org
 ---
- drivers/irqchip/irq-gic.c | 46 +++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 41 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/vexpress-v2m-rs1.dtsi     |  8 ++++----
+ arch/arm/boot/dts/vexpress-v2p-ca15-tc1.dts | 10 ++++++++--
+ arch/arm/boot/dts/vexpress-v2p-ca15_a7.dts  |  8 +++++++-
+ arch/arm/boot/dts/vexpress-v2p-ca5s.dts     | 10 ++++++++--
+ 4 files changed, 27 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
-index aa8efe4..0c259ac 100644
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -48,6 +48,8 @@
+diff --git a/arch/arm/boot/dts/vexpress-v2m-rs1.dtsi b/arch/arm/boot/dts/vexpress-v2m-rs1.dtsi
+index ac870fb..e86936c 100644
+--- a/arch/arm/boot/dts/vexpress-v2m-rs1.dtsi
++++ b/arch/arm/boot/dts/vexpress-v2m-rs1.dtsi
+@@ -140,7 +140,7 @@
+ 			v2m_serial0: uart@090000 {
+ 				compatible = "arm,pl011", "arm,primecell";
+ 				reg = <0x090000 0x1000>;
+-				interrupts = <5>;
++				interrupts = <5>, <69>;
+ 				clocks = <&v2m_oscclk2>, <&smbclk>;
+ 				clock-names = "uartclk", "apb_pclk";
+ 			};
+@@ -148,7 +148,7 @@
+ 			v2m_serial1: uart@0a0000 {
+ 				compatible = "arm,pl011", "arm,primecell";
+ 				reg = <0x0a0000 0x1000>;
+-				interrupts = <6>;
++				interrupts = <6>, <70>;
+ 				clocks = <&v2m_oscclk2>, <&smbclk>;
+ 				clock-names = "uartclk", "apb_pclk";
+ 			};
+@@ -156,7 +156,7 @@
+ 			v2m_serial2: uart@0b0000 {
+ 				compatible = "arm,pl011", "arm,primecell";
+ 				reg = <0x0b0000 0x1000>;
+-				interrupts = <7>;
++				interrupts = <7>, <71>;
+ 				clocks = <&v2m_oscclk2>, <&smbclk>;
+ 				clock-names = "uartclk", "apb_pclk";
+ 			};
+@@ -164,7 +164,7 @@
+ 			v2m_serial3: uart@0c0000 {
+ 				compatible = "arm,pl011", "arm,primecell";
+ 				reg = <0x0c0000 0x1000>;
+-				interrupts = <8>;
++				interrupts = <8>, <72>;
+ 				clocks = <&v2m_oscclk2>, <&smbclk>;
+ 				clock-names = "uartclk", "apb_pclk";
+ 			};
+diff --git a/arch/arm/boot/dts/vexpress-v2p-ca15-tc1.dts b/arch/arm/boot/dts/vexpress-v2p-ca15-tc1.dts
+index 9420053..9c489fa 100644
+--- a/arch/arm/boot/dts/vexpress-v2p-ca15-tc1.dts
++++ b/arch/arm/boot/dts/vexpress-v2p-ca15-tc1.dts
+@@ -233,7 +233,7 @@
+ 			 <5 0 0 0x10000000 0x04000000>;
  
- #include "irqchip.h"
- 
-+#define GIC_INTSPEC_IRQ_IS_FIQ (1 << 7)
+ 		#interrupt-cells = <1>;
+-		interrupt-map-mask = <0 0 63>;
++		interrupt-map-mask = <0 0 127>;
+ 		interrupt-map = <0 0  0 &gic 0  0 4>,
+ 				<0 0  1 &gic 0  1 4>,
+ 				<0 0  2 &gic 0  2 4>,
+@@ -276,7 +276,13 @@
+ 				<0 0 39 &gic 0 39 4>,
+ 				<0 0 40 &gic 0 40 4>,
+ 				<0 0 41 &gic 0 41 4>,
+-				<0 0 42 &gic 0 42 4>;
++				<0 0 42 &gic 0 42 4>,
 +
- union gic_base {
- 	void __iomem *common_base;
- 	void __percpu * __iomem *percpu_base;
-@@ -65,6 +67,7 @@ struct gic_chip_data {
- #endif
- 	struct irq_domain *domain;
- 	unsigned int gic_irqs;
-+	unsigned int fiq_shadow_offset;
- #ifdef CONFIG_GIC_NON_BANKED
- 	void __iomem *(*get_base)(union gic_base *);
- #endif
-@@ -143,11 +146,34 @@ static inline void __iomem *gic_cpu_base(struct irq_data *d)
- 	return gic_data_cpu_base(gic_data);
- }
++				/* FIQ shadow routings */
++				<0 0 69 &gic 0 5 0x84>,
++				<0 0 70 &gic 0 6 0x84>,
++				<0 0 71 &gic 0 7 0x84>,
++				<0 0 72 &gic 0 8 0x84>;
  
-+static inline bool gic_is_fiq(struct irq_data *d)
-+{
-+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
-+	return d->hwirq > gic_data->gic_irqs;
-+}
+ 		/include/ "vexpress-v2m-rs1.dtsi"
+ 	};
+diff --git a/arch/arm/boot/dts/vexpress-v2p-ca15_a7.dts b/arch/arm/boot/dts/vexpress-v2p-ca15_a7.dts
+index 15f98cb..75821d2 100644
+--- a/arch/arm/boot/dts/vexpress-v2p-ca15_a7.dts
++++ b/arch/arm/boot/dts/vexpress-v2p-ca15_a7.dts
+@@ -390,7 +390,13 @@
+ 				<0 0 39 &gic 0 39 4>,
+ 				<0 0 40 &gic 0 40 4>,
+ 				<0 0 41 &gic 0 41 4>,
+-				<0 0 42 &gic 0 42 4>;
++				<0 0 42 &gic 0 42 4>,
 +
- static inline unsigned int gic_irq(struct irq_data *d)
- {
-+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
-+	if (gic_is_fiq(d))
-+		return d->hwirq - gic_data->fiq_shadow_offset;
- 	return d->hwirq;
- }
++				/* FIQ shadow routings */
++				<0 0 69 &gic 0 5 0x84>,
++				<0 0 70 &gic 0 6 0x84>,
++				<0 0 71 &gic 0 7 0x84>,
++				<0 0 72 &gic 0 8 0x84>;
  
-+static void gic_set_group_irq(struct irq_data *d, int group)
-+{
-+	unsigned int reg = gic_irq(d) / 32 * 4;
-+	u32 mask = 1 << (gic_irq(d) % 32);
-+	u32 val;
+ 		/include/ "vexpress-v2m-rs1.dtsi"
+ 	};
+diff --git a/arch/arm/boot/dts/vexpress-v2p-ca5s.dts b/arch/arm/boot/dts/vexpress-v2p-ca5s.dts
+index c544a55..930e2ef 100644
+--- a/arch/arm/boot/dts/vexpress-v2p-ca5s.dts
++++ b/arch/arm/boot/dts/vexpress-v2p-ca5s.dts
+@@ -195,7 +195,7 @@
+ 			 <5 0 0x10000000 0x04000000>;
+ 
+ 		#interrupt-cells = <1>;
+-		interrupt-map-mask = <0 0 63>;
++		interrupt-map-mask = <0 0 127>;
+ 		interrupt-map = <0 0  0 &gic 0  0 4>,
+ 				<0 0  1 &gic 0  1 4>,
+ 				<0 0  2 &gic 0  2 4>,
+@@ -238,7 +238,13 @@
+ 				<0 0 39 &gic 0 39 4>,
+ 				<0 0 40 &gic 0 40 4>,
+ 				<0 0 41 &gic 0 41 4>,
+-				<0 0 42 &gic 0 42 4>;
++				<0 0 42 &gic 0 42 4>,
 +
-+	val = readl_relaxed(gic_dist_base(d) + GIC_DIST_IGROUP + reg);
-+	if (group)
-+		val |= mask;
-+	else
-+		val &= ~mask;
-+	writel_relaxed(val, gic_dist_base(d) + GIC_DIST_IGROUP + reg);
-+}
-+
- /*
-  * Routines to acknowledge, disable and enable interrupts
-  */
-@@ -159,6 +185,8 @@ static void gic_mask_irq(struct irq_data *d)
- 	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_CLEAR + (gic_irq(d) / 32) * 4);
- 	if (gic_arch_extn.irq_mask)
- 		gic_arch_extn.irq_mask(d);
-+	if (gic_is_fiq(d))
-+		gic_set_group_irq(d, 1);
- 	raw_spin_unlock(&irq_controller_lock);
- }
++				/* FIQ shadow routings */
++				<0 0 69 &gic 0 5 0x84>,
++				<0 0 70 &gic 0 6 0x84>,
++				<0 0 71 &gic 0 7 0x84>,
++				<0 0 72 &gic 0 8 0x84>;
  
-@@ -167,6 +195,8 @@ static void gic_unmask_irq(struct irq_data *d)
- 	u32 mask = 1 << (gic_irq(d) % 32);
- 
- 	raw_spin_lock(&irq_controller_lock);
-+	if (gic_is_fiq(d))
-+		gic_set_group_irq(d, 0);
- 	if (gic_arch_extn.irq_unmask)
- 		gic_arch_extn.irq_unmask(d);
- 	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_SET + (gic_irq(d) / 32) * 4);
-@@ -940,7 +970,12 @@ static int gic_routable_irq_domain_xlate(struct irq_domain *d,
- 				unsigned long *out_hwirq,
- 				unsigned int *out_type)
- {
-+	struct gic_chip_data *gic_data = d->host_data;
- 	*out_hwirq += 16;
-+
-+	if (intspec[2] & GIC_INTSPEC_IRQ_IS_FIQ)
-+		*out_hwirq += gic_data->fiq_shadow_offset;
-+
- 	return 0;
- }
- 
-@@ -1026,10 +1061,11 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
- 	gic->gic_irqs = gic_irqs;
- 
- 	gic_irqs -= hwirq_base; /* calculate # of irqs to allocate */
-+	gic->fiq_shadow_offset = gic_irqs;
- 
- 	if (of_property_read_u32(node, "arm,routable-irqs",
- 				 &nr_routable_irqs)) {
--		irq_base = irq_alloc_descs(irq_start, 16, gic_irqs,
-+		irq_base = irq_alloc_descs(irq_start, 16, 2 * gic_irqs,
- 					   numa_node_id());
- 		if (IS_ERR_VALUE(irq_base)) {
- 			WARN(1, "Cannot allocate irq_descs @ IRQ%d, assuming pre-allocated\n",
-@@ -1037,12 +1073,12 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
- 			irq_base = irq_start;
- 		}
- 
--		gic->domain = irq_domain_add_legacy(node, gic_irqs, irq_base,
--					hwirq_base, &gic_irq_domain_ops, gic);
-+		gic->domain =
-+		    irq_domain_add_legacy(node, 2 * gic_irqs, irq_base,
-+					  hwirq_base, &gic_irq_domain_ops, gic);
- 	} else {
- 		gic->domain = irq_domain_add_linear(node, nr_routable_irqs,
--						    &gic_irq_domain_ops,
--						    gic);
-+						    &gic_irq_domain_ops, gic);
- 	}
- 
- 	if (WARN_ON(!gic->domain))
+ 		/include/ "vexpress-v2m-rs1.dtsi"
+ 	};
 -- 
 1.9.0
