@@ -1,7 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 07/22] clk: sunxi: Fix PLL6 calculation on sun6i
-Date: Fri, 23 May 2014 15:51:10 +0800
-Message-ID: <1400831485-28576-8-git-send-email-wens@csie.org>
+Subject: [PATCH 05/22] clk: sunxi: Fix gate indexing for sun6i-a31-apb0-gates
+Date: Fri, 23 May 2014 15:51:08 +0800
+Message-ID: <1400831485-28576-6-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,46 +21,48 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The N factor for PLL6 counts from 1 to 32, as specified in the A23
-manual, and shown in Allwinner's original code.
+sun6i-a31-apb0-gates supports using clock-indices for holes between
+individual gates. However, the driver passes the number of gates
+registered in clk_data->clk_num, which of_clk_src_onecell_get uses
+to recognize the range of valid indices a consumer can use.
 
-This patch fixes the N factor in the clock driver, as well as the
-comment describing it.
+This patch makes the driver pass the maximum gate index + 1, so
+of_clk_src_onecell_get does not complain about indices greater
+than gates registered.
+
+This was tested on the A23 SoC, which has a similar APB0 clock,
+but has holes for gates to removed IP blocks.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/clk/sunxi/clk-sunxi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/clk/sunxi/clk-sun6i-apb0-gates.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
-index b2c6d12..6500a1b 100644
---- a/drivers/clk/sunxi/clk-sunxi.c
-+++ b/drivers/clk/sunxi/clk-sunxi.c
-@@ -198,7 +198,7 @@ static void sun4i_get_pll5_factors(u32 *freq, u32 parent_rate,
- /**
-  * sun6i_a31_get_pll6_factors() - calculates n, k factors for A31 PLL6
-  * PLL6 rate is calculated as follows
-- * rate = parent_rate * n * (k + 1) / 2
-+ * rate = parent_rate * (n + 1) * (k + 1) / 2
-  * parent_rate is always 24Mhz
-  */
+diff --git a/drivers/clk/sunxi/clk-sun6i-apb0-gates.c b/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
+index 44cd27c..b342f2a 100644
+--- a/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
++++ b/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
+@@ -25,6 +25,7 @@ static int sun6i_a31_apb0_gates_clk_probe(struct platform_device *pdev)
+ 	void __iomem *reg;
+ 	int gate_id;
+ 	int ngates;
++	int gate_max = 0;
+ 	int i;
  
-@@ -225,7 +225,7 @@ static void sun6i_a31_get_pll6_factors(u32 *freq, u32 parent_rate,
- 	if (*k > 3)
- 		*k = 3;
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -72,9 +73,12 @@ static int sun6i_a31_apb0_gates_clk_probe(struct platform_device *pdev)
+ 							    reg, gate_id,
+ 							    0, NULL);
+ 		WARN_ON(IS_ERR(clk_data->clks[gate_id]));
++
++		if (gate_id > gate_max)
++			gate_max = gate_id;
+ 	}
  
--	*n = DIV_ROUND_UP(div, (*k+1));
-+	*n = DIV_ROUND_UP(div, (*k+1)) - 1;
+-	clk_data->clk_num = ngates;
++	clk_data->clk_num = gate_max + 1;
+ 
+ 	return of_clk_add_provider(np, of_clk_src_onecell_get, clk_data);
  }
- 
- /**
-@@ -434,6 +434,7 @@ static struct clk_factors_config sun6i_a31_pll6_config = {
- 	.nwidth = 5,
- 	.kshift = 4,
- 	.kwidth = 2,
-+	.n_from_one = 1,
- };
- 
- static struct clk_factors_config sun4i_apb1_config = {
 -- 
 2.0.0.rc2
