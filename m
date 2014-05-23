@@ -1,7 +1,8 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 01/22] serial: 8250_dw: Add optional reset control support
-Date: Fri, 23 May 2014 15:51:04 +0800
-Message-ID: <1400831485-28576-2-git-send-email-wens@csie.org>
+Subject: [PATCH 08/22] clk: sunxi: Specify number of child clocks for divs
+ clocks
+Date: Fri, 23 May 2014 15:51:11 +0800
+Message-ID: <1400831485-28576-9-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,77 +22,71 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Allwinner A31 and A23 SoCs have a reset controller
-maintaining the UART in reset by default.
+Currently sunxi_divs_clk_setup assumes the number of child clocks
+to be the same as the number of clock-output-names, and a maximum
+of SUNXI_DIVS_MAX_QTY child clocks.
 
-This patch adds optional reset support to the driver.
+On sun6i, PLL6 only has 1 child clock, but the parent would be used
+as well, thereby also having it's own clock-output-names entry. This
+results in an extra bogus clock being registered.
+
+This patch adds an entry for the number of child clocks alongside
+the data structures for them.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt |  1 +
- drivers/tty/serial/8250/8250_dw.c                             | 10 ++++++++++
- 2 files changed, 11 insertions(+)
+ drivers/clk/sunxi/clk-sunxi.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-index f13f1c5..cb9af84 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-@@ -7,6 +7,7 @@ Required properties:
- - clock-frequency : the input clock frequency for the UART.
+diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+index 6500a1b..6857c6e 100644
+--- a/drivers/clk/sunxi/clk-sunxi.c
++++ b/drivers/clk/sunxi/clk-sunxi.c
+@@ -933,6 +933,7 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
  
- Optional properties:
-+- resets : phandle to the parent reset controller.
- - reg-shift : quantity to shift the register offsets by.  If this property is
-   not present then the register offsets are not shifted.
- - reg-io-width : the size (in bytes) of the IO accesses that should be
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index ed31135..d0c6d080 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/clk.h>
-+#include <linux/reset.h>
- #include <linux/pm_runtime.h>
+ struct divs_data {
+ 	const struct factors_data *factors; /* data for the factor clock */
++	int ndivs; /* number of children */
+ 	struct {
+ 		u8 fixed; /* is it a fixed divisor? if not... */
+ 		struct clk_div_table *table; /* is it a table based divisor? */
+@@ -952,6 +953,7 @@ static struct clk_div_table pll6_sata_tbl[] = {
  
- #include <asm/byteorder.h>
-@@ -59,6 +60,7 @@ struct dw8250_data {
- 	int			last_mcr;
- 	int			line;
- 	struct clk		*clk;
-+	struct reset_control	*rst;
- 	struct uart_8250_dma	dma;
- };
+ static const struct divs_data pll5_divs_data __initconst = {
+ 	.factors = &sun4i_pll5_data,
++	.ndivs = 2,
+ 	.div = {
+ 		{ .shift = 0, .pow = 0, }, /* M, DDR */
+ 		{ .shift = 16, .pow = 1, }, /* P, other */
+@@ -960,6 +962,7 @@ static const struct divs_data pll5_divs_data __initconst = {
  
-@@ -259,6 +261,8 @@ static int dw8250_probe_of(struct uart_port *p,
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift = val;
+ static const struct divs_data pll6_divs_data __initconst = {
+ 	.factors = &sun4i_pll6_data,
++	.ndivs = 2,
+ 	.div = {
+ 		{ .shift = 0, .table = pll6_sata_tbl, .gate = 14 }, /* M, SATA */
+ 		{ .fixed = 2 }, /* P, other */
+@@ -990,7 +993,7 @@ static void __init sunxi_divs_clk_setup(struct device_node *node,
+ 	struct clk_fixed_factor *fix_factor;
+ 	struct clk_divider *divider;
+ 	void *reg;
+-	int i = 0;
++	int ndivs = SUNXI_DIVS_MAX_QTY, i = 0;
+ 	int flags, clkflags;
  
-+	data->rst = devm_reset_control_get_optional(p->dev, NULL);
+ 	/* Set up factor clock that we will be dividing */
+@@ -1013,7 +1016,11 @@ static void __init sunxi_divs_clk_setup(struct device_node *node,
+ 	 * our RAM clock! */
+ 	clkflags = !strcmp("pll5", parent) ? 0 : CLK_SET_RATE_PARENT;
+ 
+-	for (i = 0; i < SUNXI_DIVS_MAX_QTY; i++) {
++	/* if number of children known, use it */
++	if (data->ndivs)
++		ndivs = data->ndivs;
 +
- 	/* clock got configured through clk api, all done */
- 	if (p->uartclk)
- 		return 0;
-@@ -362,6 +366,9 @@ static int dw8250_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	if (!IS_ERR_OR_NULL(data->rst))
-+		reset_control_deassert(data->rst);
-+
- 	data->line = serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
- 		return data->line;
-@@ -382,6 +389,9 @@ static int dw8250_remove(struct platform_device *pdev)
- 
- 	serial8250_unregister_port(data->line);
- 
-+	if (!IS_ERR_OR_NULL(data->rst))
-+		reset_control_assert(data->rst);
-+
- 	if (!IS_ERR(data->clk))
- 		clk_disable_unprepare(data->clk);
- 
++	for (i = 0; i < ndivs; i++) {
+ 		if (of_property_read_string_index(node, "clock-output-names",
+ 						  i, &clk_name) != 0)
+ 			break;
 -- 
 2.0.0.rc2
