@@ -1,7 +1,8 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 04/22] clk: sunxi: move "ahb_sdram" to protected clock list
-Date: Fri, 23 May 2014 15:51:07 +0800
-Message-ID: <1400831485-28576-5-git-send-email-wens@csie.org>
+Subject: [PATCH 09/22] clk: sunxi: Implement A31 PLL6 as a divs clock for 2x
+ output
+Date: Fri, 23 May 2014 15:51:12 +0800
+Message-ID: <1400831485-28576-10-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,61 +22,59 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-With sunxi_gates clocks registered with clkdev, we can use the
-protected clocks list to enable the "ahb_sdram" clock, instead
-of looking for it and adding CLK_IGNORE_UNUSED inline in the
-clock setup code.
+Some clock modules on the A31 use PLL6x2 as one of their inputs.
+This patch changes the PLL6 implementation for A31 to a divs clock,
+i.e. clock with multiple outputs that have different dividers.
+
+This behavior is consistent with previous SoC's by Allwinner.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/clk/sunxi/clk-sunxi.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/clk/sunxi/clk-sunxi.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
-index 3e33bc1..b2c6d12 100644
+index 6857c6e..339cabc 100644
 --- a/drivers/clk/sunxi/clk-sunxi.c
 +++ b/drivers/clk/sunxi/clk-sunxi.c
-@@ -870,7 +870,6 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
- 	int qty;
- 	int i = 0;
- 	int j = 0;
--	int ignore;
+@@ -496,6 +496,7 @@ static const struct factors_data sun6i_a31_pll6_data __initconst = {
+ 	.enable = 31,
+ 	.table = &sun6i_a31_pll6_config,
+ 	.getter = sun6i_a31_get_pll6_factors,
++	.name = "pll6",
+ };
  
- 	reg = of_iomap(node, 0);
- 
-@@ -891,15 +890,12 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
- 		of_property_read_string_index(node, "clock-output-names",
- 					      j, &clk_name);
- 
--		/* No driver claims this clock, but it should remain gated */
--		ignore = !strcmp("ahb_sdram", clk_name) ? CLK_IGNORE_UNUSED : 0;
--
- 		clk_data->clks[i] = clk_register_gate(NULL, clk_name,
--						      clk_parent, ignore,
-+						      clk_parent, 0,
- 						      reg + 4 * (i/32), i % 32,
- 						      0, &clk_lock);
- 		WARN_ON(IS_ERR(clk_data->clks[i]));
--		clk_register_clkdev(clks[i], clk_name, NULL);
-+		clk_register_clkdev(clk_data->clks[i], clk_name, NULL);
- 
- 		j++;
+ static const struct factors_data sun4i_apb1_data __initconst = {
+@@ -969,6 +970,14 @@ static const struct divs_data pll6_divs_data __initconst = {
  	}
-@@ -1204,6 +1200,7 @@ static void __init sunxi_init_clocks(const char *clocks[], int nclocks)
- 
- static const char *sun4i_a10_critical_clocks[] __initdata = {
- 	"pll5_ddr",
-+	"ahb_sdram",
  };
  
- static void __init sun4i_a10_init_clocks(void)
-@@ -1216,6 +1213,7 @@ CLK_OF_DECLARE(sun4i_a10_clk_init, "allwinner,sun4i-a10", sun4i_a10_init_clocks)
- static const char *sun5i_critical_clocks[] __initdata = {
- 	"mbus",
- 	"pll5_ddr",
-+	"ahb_sdram",
++static const struct divs_data sun6i_a31_pll6_divs_data __initconst = {
++	.factors = &sun6i_a31_pll6_data,
++	.ndivs = 1,
++	.div = {
++		{ .fixed = 2 }, /* P, other */
++	}
++};
++
+ /**
+  * sunxi_divs_clk_setup() - Setup function for leaf divisors on clocks
+  *
+@@ -1108,7 +1117,6 @@ static const struct of_device_id clk_factors_match[] __initconst = {
+ 	{.compatible = "allwinner,sun4i-a10-pll1-clk", .data = &sun4i_pll1_data,},
+ 	{.compatible = "allwinner,sun6i-a31-pll1-clk", .data = &sun6i_a31_pll1_data,},
+ 	{.compatible = "allwinner,sun7i-a20-pll4-clk", .data = &sun7i_a20_pll4_data,},
+-	{.compatible = "allwinner,sun6i-a31-pll6-clk", .data = &sun6i_a31_pll6_data,},
+ 	{.compatible = "allwinner,sun4i-a10-apb1-clk", .data = &sun4i_apb1_data,},
+ 	{.compatible = "allwinner,sun4i-a10-mod0-clk", .data = &sun4i_mod0_data,},
+ 	{.compatible = "allwinner,sun7i-a20-out-clk", .data = &sun7i_a20_out_data,},
+@@ -1128,6 +1136,7 @@ static const struct of_device_id clk_div_match[] __initconst = {
+ static const struct of_device_id clk_divs_match[] __initconst = {
+ 	{.compatible = "allwinner,sun4i-a10-pll5-clk", .data = &pll5_divs_data,},
+ 	{.compatible = "allwinner,sun4i-a10-pll6-clk", .data = &pll6_divs_data,},
++	{.compatible = "allwinner,sun6i-a31-pll6-clk", .data = &sun6i_a31_pll6_divs_data,},
+ 	{}
  };
  
- static void __init sun5i_init_clocks(void)
 -- 
 2.0.0.rc2
