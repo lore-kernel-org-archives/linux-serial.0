@@ -1,12 +1,12 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC v2 08/10] ARM: Add KGDB/KDB FIQ debugger generic code
-Date: Fri, 23 May 2014 14:57:56 +0100
-Message-ID: <1400853478-5824-9-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC v2 10/10] serial: asc: Add support for KGDB's FIQ/NMI mode
+Date: Fri, 23 May 2014 14:57:58 +0100
+Message-ID: <1400853478-5824-11-git-send-email-daniel.thompson@linaro.org>
 References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
  <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -19,163 +19,103 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, Dave Martin <Dave.Martin@arm.com>, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradea
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogQW50b24gVm9yb250c292IDxhbnRvbi52b3JvbnRzb3ZAbGluYXJvLm9yZz4KClRoZSBG
-SVEgZGVidWdnZXIgbWF5IGJlIHVzZWQgdG8gZGVidWcgc2l0dWF0aW9ucyB3aGVuIHRoZSBrZXJu
-ZWwgc3R1Y2sKaW4gdW5pbnRlcnJ1cHRhYmxlIHNlY3Rpb25zLCBlLmcuIHRoZSBrZXJuZWwgaW5m
-aW5pdGVseSBsb29wcyBvcgpkZWFkbG9ja2VkIGluIGFuIGludGVycnVwdCBvciB3aXRoIGludGVy
-cnVwdHMgZGlzYWJsZWQuCgpCeSBkZWZhdWx0IEtHREIgRklRIGlzIGRpc2FibGVkIGluIHJ1bnRp
-bWUsIGJ1dCBjYW4gYmUgZW5hYmxlZCB3aXRoCmtnZGJfZmlxLmVuYWJsZT0xIGtlcm5lbCBjb21t
-YW5kIGxpbmUgb3B0aW9uLgoKU2lnbmVkLW9mZi1ieTogQW50b24gVm9yb250c292IDxhbnRvbi52
-b3JvbnRzb3ZAbGluYXJvLm9yZz4KU2lnbmVkLW9mZi1ieTogSm9obiBTdHVsdHogPGpvaG4uc3R1
-bHR6QGxpbmFyby5vcmc+ClNpZ25lZC1vZmYtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRo
-b21wc29uQGxpbmFyby5vcmc+CkNjOiBSdXNzZWxsIEtpbmcgPGxpbnV4QGFybS5saW51eC5vcmcu
-dWs+CkNjOiBCZW4gRG9va3MgPGJlbi5kb29rc0Bjb2RldGhpbmsuY28udWs+CkNjOiBEYXZlIE1h
-cnRpbiA8RGF2ZS5NYXJ0aW5AYXJtLmNvbT4KLS0tCiBhcmNoL2FybS9LY29uZmlnICAgICAgICAg
-ICAgICAgICB8ICAgMiArCiBhcmNoL2FybS9LY29uZmlnLmRlYnVnICAgICAgICAgICB8ICAxOCAr
-KysrKysKIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2tnZGIuaCAgICAgIHwgICA3ICsrKwogYXJjaC9h
-cm0va2VybmVsL01ha2VmaWxlICAgICAgICAgfCAgIDEgKwogYXJjaC9hcm0va2VybmVsL2tnZGJf
-ZmlxLmMgICAgICAgfCAxMTcgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-CiBhcmNoL2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUyB8ICA4NyArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKwogNiBmaWxlcyBjaGFuZ2VkLCAyMzIgaW5zZXJ0aW9ucygrKQogY3JlYXRl
-IG1vZGUgMTAwNjQ0IGFyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcS5jCiBjcmVhdGUgbW9kZSAxMDA2
-NDQgYXJjaC9hcm0va2VybmVsL2tnZGJfZmlxX2VudHJ5LlMKCmRpZmYgLS1naXQgYS9hcmNoL2Fy
-bS9LY29uZmlnIGIvYXJjaC9hcm0vS2NvbmZpZwppbmRleCBkYjNjNTQxLi40MTlmZDBhIDEwMDY0
-NAotLS0gYS9hcmNoL2FybS9LY29uZmlnCisrKyBiL2FyY2gvYXJtL0tjb25maWcKQEAgLTMwNyw2
-ICszMDcsNyBAQCBjaG9pY2UKIGNvbmZpZyBBUkNIX01VTFRJUExBVEZPUk0KIAlib29sICJBbGxv
-dyBtdWx0aXBsZSBwbGF0Zm9ybXMgdG8gYmUgc2VsZWN0ZWQiCiAJZGVwZW5kcyBvbiBNTVUKKwlz
-ZWxlY3QgQVJDSF9NSUdIVF9IQVZFX0tHREJfRklRCiAJc2VsZWN0IEFSQ0hfV0FOVF9PUFRJT05B
-TF9HUElPTElCCiAJc2VsZWN0IEFSTV9IQVNfU0dfQ0hBSU4KIAlzZWxlY3QgQVJNX1BBVENIX1BI
-WVNfVklSVApAQCAtMzU2LDYgKzM1Nyw3IEBAIGNvbmZpZyBBUkNIX1JFQUxWSUVXCiAKIGNvbmZp
-ZyBBUkNIX1ZFUlNBVElMRQogCWJvb2wgIkFSTSBMdGQuIFZlcnNhdGlsZSBmYW1pbHkiCisJc2Vs
-ZWN0IEFSQ0hfTUlHSFRfSEFWRV9LR0RCX0ZJUQogCXNlbGVjdCBBUkNIX1dBTlRfT1BUSU9OQUxf
-R1BJT0xJQgogCXNlbGVjdCBBUk1fQU1CQQogCXNlbGVjdCBBUk1fVElNRVJfU1A4MDQKZGlmZiAt
-LWdpdCBhL2FyY2gvYXJtL0tjb25maWcuZGVidWcgYi9hcmNoL2FybS9LY29uZmlnLmRlYnVnCmlu
-ZGV4IDZhMmJjZmQuLjFmMWJlYzEgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJtL0tjb25maWcuZGVidWcK
-KysrIGIvYXJjaC9hcm0vS2NvbmZpZy5kZWJ1ZwpAQCAtMiw2ICsyLDI0IEBAIG1lbnUgIktlcm5l
-bCBoYWNraW5nIgogCiBzb3VyY2UgImxpYi9LY29uZmlnLmRlYnVnIgogCitjb25maWcgQVJDSF9N
-SUdIVF9IQVZFX0tHREJfRklRCisJYm9vbAorCitjb25maWcgS0dEQl9GSVEKKwlib29sICJLR0RC
-IEZJUSBzdXBwb3J0IgorCWRlcGVuZHMgb24gS0dEQl9LREIgJiYgQVJDSF9NSUdIVF9IQVZFX0tH
-REJfRklRICYmICFUSFVNQjJfS0VSTkVMCisJc2VsZWN0IEZJUQorCWhlbHAKKwkgIFRoZSBGSVEg
-ZGVidWdnZXIgbWF5IGJlIHVzZWQgdG8gZGVidWcgc2l0dWF0aW9ucyB3aGVuIHRoZQorCSAga2Vy
-bmVsIHN0dWNrIGluIHVuaW50ZXJydXB0YWJsZSBzZWN0aW9ucywgZS5nLiB0aGUga2VybmVsCisJ
-ICBpbmZpbml0ZWx5IGxvb3BzIG9yIGRlYWRsb2NrZWQgaW4gYW4gaW50ZXJydXB0IG9yIHdpdGgK
-KwkgIGludGVycnVwdHMgZGlzYWJsZWQuCisKKwkgIEJ5IGRlZmF1bHQgS0dEQiBGSVEgaXMgZGlz
-YWJsZWQgYXQgcnVudGltZSwgYnV0IGNhbiBiZQorCSAgZW5hYmxlZCB3aXRoIGtnZGJfZmlxLmVu
-YWJsZT0xIGtlcm5lbCBjb21tYW5kIGxpbmUgb3B0aW9uLgorCisJICBJZiB1bnN1cmUsIHNheSBO
-LgorCiBjb25maWcgQVJNX1BURFVNUAogCWJvb2wgIkV4cG9ydCBrZXJuZWwgcGFnZXRhYmxlIGxh
-eW91dCB0byB1c2Vyc3BhY2UgdmlhIGRlYnVnZnMiCiAJZGVwZW5kcyBvbiBERUJVR19LRVJORUwK
-ZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2luY2x1ZGUvYXNtL2tnZGIuaCBiL2FyY2gvYXJtL2luY2x1
-ZGUvYXNtL2tnZGIuaAppbmRleCAwYTlkNWRkLi41ZGUyMWYwMSAxMDA2NDQKLS0tIGEvYXJjaC9h
-cm0vaW5jbHVkZS9hc20va2dkYi5oCisrKyBiL2FyY2gvYXJtL2luY2x1ZGUvYXNtL2tnZGIuaApA
-QCAtMTEsNyArMTEsOSBAQAogI2RlZmluZSBfX0FSTV9LR0RCX0hfXwogCiAjaW5jbHVkZSA8bGlu
-dXgvcHRyYWNlLmg+CisjaW5jbHVkZSA8bGludXgvbGlua2FnZS5oPgogI2luY2x1ZGUgPGFzbS9v
-cGNvZGVzLmg+CisjaW5jbHVkZSA8YXNtL2V4Y2VwdGlvbi5oPgogCiAvKgogICogR0RCIGFzc3Vt
-ZXMgdGhhdCB3ZSdyZSBhIHVzZXIgcHJvY2VzcyBiZWluZyBkZWJ1Z2dlZCwgc28KQEAgLTQ4LDYg
-KzUwLDExIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBhcmNoX2tnZGJfYnJlYWtwb2ludCh2b2lkKQog
-ZXh0ZXJuIHZvaWQga2dkYl9oYW5kbGVfYnVzX2Vycm9yKHZvaWQpOwogZXh0ZXJuIGludCBrZ2Ri
-X2ZhdWx0X2V4cGVjdGVkOwogCitleHRlcm4gY2hhciBrZ2RiX2ZpcV9oYW5kbGVyOworZXh0ZXJu
-IGNoYXIga2dkYl9maXFfaGFuZGxlcl9lbmQ7Cithc21saW5rYWdlIHZvaWQgX19leGNlcHRpb25f
-aXJxX2VudHJ5IGtnZGJfZmlxX2RvX2hhbmRsZShzdHJ1Y3QgcHRfcmVncyAqcmVncyk7CitleHRl
-cm4gaW50IGtnZGJfcmVnaXN0ZXJfZmlxKHVuc2lnbmVkIGludCBmaXEpOworCiAjZW5kaWYgLyog
-IV9fQVNTRU1CTFlfXyAqLwogCiAvKgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0va2VybmVsL01ha2Vm
-aWxlIGIvYXJjaC9hcm0va2VybmVsL01ha2VmaWxlCmluZGV4IDA0MDYxOWMuLjI1MWY2NTEgMTAw
-NjQ0Ci0tLSBhL2FyY2gvYXJtL2tlcm5lbC9NYWtlZmlsZQorKysgYi9hcmNoL2FybS9rZXJuZWwv
-TWFrZWZpbGUKQEAgLTY3LDYgKzY3LDcgQEAgZW5kaWYKIG9iai0kKENPTkZJR19PQUJJX0NPTVBB
-VCkJKz0gc3lzX29hYmktY29tcGF0Lm8KIG9iai0kKENPTkZJR19BUk1fVEhVTUJFRSkJKz0gdGh1
-bWJlZS5vCiBvYmotJChDT05GSUdfS0dEQikJCSs9IGtnZGIubworb2JqLSQoQ09ORklHX0tHREJf
-RklRKQkJKz0ga2dkYl9maXFfZW50cnkubyBrZ2RiX2ZpcS5vCiBvYmotJChDT05GSUdfQVJNX1VO
-V0lORCkJKz0gdW53aW5kLm8KIG9iai0kKENPTkZJR19IQVZFX1RDTSkJCSs9IHRjbS5vCiBvYmot
-JChDT05GSUdfT0YpCQkrPSBkZXZ0cmVlLm8KZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tlcm5lbC9r
-Z2RiX2ZpcS5jIGIvYXJjaC9hcm0va2VybmVsL2tnZGJfZmlxLmMKbmV3IGZpbGUgbW9kZSAxMDA2
-NDQKaW5kZXggMDAwMDAwMC4uYjIzNjQwOQotLS0gL2Rldi9udWxsCisrKyBiL2FyY2gvYXJtL2tl
-cm5lbC9rZ2RiX2ZpcS5jCkBAIC0wLDAgKzEsMTE3IEBACisvKgorICogS0dEQiBGSVEKKyAqCisg
-KiBDb3B5cmlnaHQgMjAxMCBHb29nbGUsIEluYy4KKyAqCQkgIEFydmUgSGrDuG5uZXbDpWcgPGFy
-dmVAYW5kcm9pZC5jb20+CisgKgkJICBDb2xpbiBDcm9zcyA8Y2Nyb3NzQGFuZHJvaWQuY29tPgor
-ICogQ29weXJpZ2h0IDIwMTIgTGluYXJvIEx0ZC4KKyAqCQkgIEFudG9uIFZvcm9udHNvdiA8YW50
-b24udm9yb250c292QGxpbmFyby5vcmc+CisgKgorICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29m
-dHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQKKyAqIHVuZGVy
-IHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgdmVyc2lvbiAyIGFz
-IHB1Ymxpc2hlZAorICogYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4KKyAqLworCisj
-aW5jbHVkZSA8bGludXgva2VybmVsLmg+CisjaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+CisjaW5j
-bHVkZSA8bGludXgvaW5pdC5oPgorI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KKyNpbmNsdWRlIDxs
-aW51eC9lcnJuby5oPgorI2luY2x1ZGUgPGxpbnV4L2hhcmRpcnEuaD4KKyNpbmNsdWRlIDxsaW51
-eC9hdG9taWMuaD4KKyNpbmNsdWRlIDxsaW51eC9rZGIuaD4KKyNpbmNsdWRlIDxsaW51eC9rZ2Ri
-Lmg+CisjaW5jbHVkZSA8YXNtL2ZpcS5oPgorI2luY2x1ZGUgPGFzbS9leGNlcHRpb24uaD4KKwor
-c3RhdGljIGludCBrZ2RiX2ZpcV9lbmFibGVkOworbW9kdWxlX3BhcmFtX25hbWVkKGVuYWJsZSwg
-a2dkYl9maXFfZW5hYmxlZCwgaW50LCAwNjAwKTsKK01PRFVMRV9QQVJNX0RFU0MoZW5hYmxlLCAi
-c2V0IHRvIDEgdG8gZW5hYmxlIEZJUSBLR0RCIik7CisKK3N0YXRpYyB1bnNpZ25lZCBpbnQga2dk
-Yl9maXE7CisKK2FzbWxpbmthZ2Ugdm9pZCBfX2V4Y2VwdGlvbl9pcnFfZW50cnkga2dkYl9maXFf
-ZG9faGFuZGxlKHN0cnVjdCBwdF9yZWdzICpyZWdzKQoreworCWlmIChrZ2RiX25taV9wb2xsX2tu
-b2NrKCkpIHsKKwkJbm1pX2VudGVyKCk7CisJCWtnZGJfaGFuZGxlX2V4Y2VwdGlvbigxLCAwLCAw
-LCByZWdzKTsKKwkJbm1pX2V4aXQoKTsKKwl9CisKKwllb2lfZmlxKGtnZGJfZmlxKTsKK30KKwor
-c3RhdGljIHN0cnVjdCBmaXFfaGFuZGxlciBrZ2RiX2ZpcV9kZXNjID0geworCS5uYW1lID0gImtn
-ZGIiLAorfTsKKworc3RhdGljIGxvbmcga2dkYl9maXFfc2V0dXBfc3RhY2sodm9pZCAqaW5mbykK
-K3sKKwlzdHJ1Y3QgcHRfcmVncyByZWdzOworCisJcmVncy5BUk1fc3AgPSBfX2dldF9mcmVlX3Bh
-Z2VzKEdGUF9LRVJORUwsIFRIUkVBRF9TSVpFX09SREVSKSArCisJCQlUSFJFQURfU1RBUlRfU1A7
-CisJV0FSTl9PTighcmVncy5BUk1fc3ApOworCisJc2V0X2ZpcV9yZWdzKCZyZWdzKTsKKwlyZXR1
-cm4gMDsKK30KKworLyoqCisgKiBrZ2RiX2ZpcV9lbmFibGVfbm1pIC0gTWFuYWdlIE5NSS10cmln
-Z2VyZWQgZW50cnkgdG8gS0dEQgorICogQG9uOiBGbGFnIHRvIGVpdGhlciBlbmFibGUgb3IgZGlz
-YWJsZSBhbiBOTUkKKyAqCisgKiBUaGlzIGZ1bmN0aW9uIG1hbmFnZXMgTk1JcyB0aGF0IHVzdWFs
-bHkgY2F1c2UgS0dEQiB0byBlbnRlci4gVGhhdCBpcywgbm90CisgKiBhbGwgTk1JcyBzaG91bGQg
-YmUgZW5hYmxlZCBvciBkaXNhYmxlZCwgYnV0IG9ubHkgdGhvc2UgdGhhdCBpc3N1ZQorICoga2dk
-Yl9oYW5kbGVfZXhjZXB0aW9uKCkuCisgKgorICogVGhlIGNhbGwgY291bnRzIGRpc2FibGUgcmVx
-dWVzdHMsIGFuZCB0aHVzIGFsbG93cyB0byBuZXN0IGRpc2FibGVzLiBCdXQKKyAqIHRyeWluZyB0
-byBlbmFibGUgYWxyZWFkeSBlbmFibGVkIE5NSSBpcyBhbiBlcnJvci4KKyAqLworc3RhdGljIHZv
-aWQga2dkYl9maXFfZW5hYmxlX25taShib29sIG9uKQoreworCXN0YXRpYyBhdG9taWNfdCBjbnQ7
-CisJaW50IHJldDsKKworCXJldCA9IGF0b21pY19hZGRfcmV0dXJuKG9uID8gMSA6IC0xLCAmY250
-KTsKKwlpZiAocmV0ID4gMSAmJiBvbikgeworCQkvKgorCQkgKiBUaGVyZSBzaG91bGQgYmUgb25s
-eSBvbmUgaW5zdGFuY2UgdGhhdCBjYWxscyB0aGlzIGZ1bmN0aW9uCisJCSAqIGluICJlbmFibGUs
-IGRpc2FibGUiIG9yZGVyLiBBbGwgb3RoZXIgdXNlcnMgbXVzdCBjYWxsCisJCSAqIGRpc2FibGUg
-Zmlyc3QsIHRoZW4gZW5hYmxlLiBJZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4KKwkJICovCisJ
-CVdBUk5fT04oMSk7CisJCXJldHVybjsKKwl9CisKKwlpZiAocmV0ID4gMCkKKwkJZW5hYmxlX2Zp
-cShrZ2RiX2ZpcSk7CisJZWxzZQorCQlkaXNhYmxlX2ZpcShrZ2RiX2ZpcSk7Cit9CisKK2ludCBr
-Z2RiX3JlZ2lzdGVyX2ZpcSh1bnNpZ25lZCBpbnQgZmlxKQoreworCWludCBlcnI7CisJaW50IGNw
-dTsKKworCWlmICgha2dkYl9maXFfZW5hYmxlZCkKKwkJcmV0dXJuIC1FTk9ERVY7CisKKwlrZ2Ri
-X2ZpcSA9IGZpcTsKKworCWVyciA9IGNsYWltX2ZpcSgma2dkYl9maXFfZGVzYyk7CisJaWYgKGVy
-cikgeworCQlwcl93YXJuKCIlczogdW5hYmxlIHRvIGNsYWltIGZpcSIsIF9fZnVuY19fKTsKKwkJ
-cmV0dXJuIGVycjsKKwl9CisKKwlmb3JfZWFjaF9wb3NzaWJsZV9jcHUoY3B1KQorCQl3b3JrX29u
-X2NwdShjcHUsIGtnZGJfZmlxX3NldHVwX3N0YWNrLCBOVUxMKTsKKworCXNldF9maXFfaGFuZGxl
-cigma2dkYl9maXFfaGFuZGxlciwKKwkJCSZrZ2RiX2ZpcV9oYW5kbGVyX2VuZCAtICZrZ2RiX2Zp
-cV9oYW5kbGVyKTsKKworCWFyY2hfa2dkYl9vcHMuZW5hYmxlX25taSA9IGtnZGJfZmlxX2VuYWJs
-ZV9ubWk7CisJcmV0dXJuIDA7Cit9CmRpZmYgLS1naXQgYS9hcmNoL2FybS9rZXJuZWwva2dkYl9m
-aXFfZW50cnkuUyBiL2FyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcV9lbnRyeS5TCm5ldyBmaWxlIG1v
-ZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAuLmQ2YmVjY2EKLS0tIC9kZXYvbnVsbAorKysgYi9hcmNo
-L2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUwpAQCAtMCwwICsxLDg3IEBACisvKgorICogS0dE
-QiBGSVEgZW50cnkKKyAqCisgKiBDb3B5cmlnaHQgMTk5NiwxOTk3LDE5OTggUnVzc2VsbCBLaW5n
-LgorICogQ29weXJpZ2h0IDIwMTIgTGluYXJvIEx0ZC4KKyAqCQkgIEFudG9uIFZvcm9udHNvdiA8
-YW50b24udm9yb250c292QGxpbmFyby5vcmc+CisgKgorICogVGhpcyBwcm9ncmFtIGlzIGZyZWUg
-c29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQKKyAqIHVu
-ZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgdmVyc2lvbiAy
-IGFzIHB1Ymxpc2hlZAorICogYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4KKyAqLwor
-CisjaW5jbHVkZSA8bGludXgvbGlua2FnZS5oPgorI2luY2x1ZGUgPGFzbS9hc3NlbWJsZXIuaD4K
-KyNpbmNsdWRlIDxhc20vbWVtb3J5Lmg+CisjaW5jbHVkZSA8YXNtL3Vud2luZC5oPgorI2luY2x1
-ZGUgImVudHJ5LWhlYWRlci5TIgorCisJLnRleHQKKworQCBUaGlzIGlzIG5lZWRlZCBmb3IgdXNy
-X2VudHJ5L2FsaWdubWVudF90cmFwCisuTENjcmFsaWduOgorCS5sb25nCWNyX2FsaWdubWVudAor
-LkxDZG9oYW5kbGU6CisJLmxvbmcJa2dkYl9maXFfZG9faGFuZGxlCisKKwkubWFjcm8JZmlxX2hh
-bmRsZXIKKwlsZHIJcjEsID0uTENkb2hhbmRsZQorCW1vdglyMCwgc3AKKwlhZHIJbHIsIEJTWU0o
-OTk5N2YpCisJbGRyCXBjLCBbcjFdCis5OTk3OgorCS5lbmRtCisKKwkuYWxpZ24JNQorX19maXFf
-c3ZjOgorCXN2Y19lbnRyeQorCWZpcV9oYW5kbGVyCisJbW92CXIwLCBzcAorCWxkbWliCXIwLCB7
-cjEgLSByMTR9CisJbXNyCWNwc3JfYywgI0ZJUV9NT0RFIHwgUFNSX0lfQklUIHwgUFNSX0ZfQklU
-CisJYWRkCXI4LCByMCwgI1NfUEMKKwlsZHIJcjksIFtyMCwgI1NfUFNSXQorCW1zcglzcHNyX2N4
-c2YsIHI5CisJbGRyCXIwLCBbcjAsICNTX1IwXQorCWxkbWlhCXI4LCB7cGN9XgorCisgVU5XSU5E
-KC5mbmVuZAkJKQorRU5EUFJPQyhfX2ZpcV9zdmMpCisJLmx0b3JnCisKKwkuYWxpZ24JNQorX19m
-aXFfdXNyOgorCXVzcl9lbnRyeQorCWt1c2VyX2NtcHhjaGdfY2hlY2sKKwlmaXFfaGFuZGxlcgor
-CWdldF90aHJlYWRfaW5mbyB0c2sKKwltb3YJd2h5LCAjMAorCWIJcmV0X3RvX3VzZXJfZnJvbV9p
-cnEKKyBVTldJTkQoLmZuZW5kCQkpCitFTkRQUk9DKF9fZmlxX3VzcikKKwkubHRvcmcKKworCS5n
-bG9iYWwga2dkYl9maXFfaGFuZGxlcgora2dkYl9maXFfaGFuZGxlcjoKKworCXZlY3Rvcl9zdHVi
-CWZpcSwgRklRX01PREUsIDQKKworCS5sb25nCV9fZmlxX3VzcgkJCUAgIDAgIChVU1JfMjYgLyBV
-U1JfMzIpCisJLmxvbmcJX19maXFfc3ZjCQkJQCAgMSAgKEZJUV8yNiAvIEZJUV8zMikKKwkubG9u
-ZwlfX2ZpcV9zdmMJCQlAICAyICAoSVJRXzI2IC8gSVJRXzMyKQorCS5sb25nCV9fZmlxX3N2YwkJ
-CUAgIDMgIChTVkNfMjYgLyBTVkNfMzIpCisJLmxvbmcJX19maXFfc3ZjCQkJQCAgNAorCS5sb25n
-CV9fZmlxX3N2YwkJCUAgIDUKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICA2CisJLmxvbmcJX19maXFf
-c3ZjCQkJQCAgNworCS5sb25nCV9fZmlxX3N2YwkJCUAgIDgKKwkubG9uZwlfX2ZpcV9zdmMJCQlA
-ICA5CisJLmxvbmcJX19maXFfc3ZjCQkJQCAgYQorCS5sb25nCV9fZmlxX3N2YwkJCUAgIGIKKwku
-bG9uZwlfX2ZpcV9zdmMJCQlAICBjCisJLmxvbmcJX19maXFfc3ZjCQkJQCAgZAorCS5sb25nCV9f
-ZmlxX3N2YwkJCUAgIGUKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICBmCisKKwkuZ2xvYmFsIGtnZGJf
-ZmlxX2hhbmRsZXJfZW5kCitrZ2RiX2ZpcV9oYW5kbGVyX2VuZDoKLS0gCjEuOS4wCgoKX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5l
-bCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6
-Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+If the platform bus has provided the st-asc with a FIQ resource (i.e. a
+second IRQ) then speculatively register it with KGDB when the polling
+driver is initialized.
+
+By providing this information to KGDB the serial driver offers
+"permission" for KGDB to route the UART interrupt signal from the
+drivers own handler to KGDBs FIQ handler (which will eventually use the
+UART's polled I/O callbacks to interact with the user). This permission
+also implies the st-asc driver has already unmasked RX interrupts
+(otherwise the FIQ handler will never trigger). This unmask is copied
+from similar code in amba-pl011.c .
+
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+Cc: Maxime Coquelin <maxime.coquelin@st.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: kernel@stlinux.com
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/st-asc.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index c7f61ac..328720f 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -30,6 +30,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/serial_core.h>
+ #include <linux/clk.h>
++#include <linux/kgdb.h>
+ 
+ #define DRIVER_NAME "st-asc"
+ #define ASC_SERIAL_NAME "ttyAS"
+@@ -39,6 +40,7 @@
+ struct asc_port {
+ 	struct uart_port port;
+ 	struct clk *clk;
++	int fiq;
+ 	unsigned int hw_flow_control:1;
+ 	unsigned int force_m1:1;
+ };
+@@ -613,6 +615,26 @@ asc_verify_port(struct uart_port *port, struct serial_struct *ser)
+ }
+ 
+ #ifdef CONFIG_CONSOLE_POLL
++
++#ifdef CONFIG_KGDB_FIQ
++/*
++ * Prepare the UART to be used from kgdb's NMI support.
++ */
++static int asc_poll_init(struct uart_port *port)
++{
++	struct asc_port *ascport = container_of(port, struct asc_port, port);
++
++	/* register the FIQ with kgdb */
++	if (ascport->fiq >= 0)
++		kgdb_register_fiq(ascport->fiq);
++
++	/* enable RX interrupts in case the interrupt is used for NMI entry. */
++	asc_enable_rx_interrupts(port);
++
++	return 0;
++}
++#endif /* CONFIG_KGDB_FIQ */
++
+ /*
+  * Console polling routines for writing and reading from the uart while
+  * in an interrupt or debug context (i.e. kgdb).
+@@ -656,11 +678,15 @@ static struct uart_ops asc_uart_ops = {
+ 	.verify_port	= asc_verify_port,
+ 	.pm		= asc_pm,
+ #ifdef CONFIG_CONSOLE_POLL
++#ifdef CONFIG_KGDB_FIQ
++	.poll_init     = asc_poll_init,
++#endif /* CONFIG_KGDB_FIQ */
+ 	.poll_get_char = asc_get_poll_char,
+ 	.poll_put_char = asc_put_poll_char,
+ #endif /* CONFIG_CONSOLE_POLL */
+ };
+ 
++
+ static int asc_init_port(struct asc_port *ascport,
+ 			  struct platform_device *pdev)
+ {
+@@ -673,6 +699,7 @@ static int asc_init_port(struct asc_port *ascport,
+ 	port->fifosize	= ASC_FIFO_SIZE;
+ 	port->dev	= &pdev->dev;
+ 	port->irq	= platform_get_irq(pdev, 0);
++	ascport->fiq    = platform_get_irq(pdev, 1);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	port->membase = devm_ioremap_resource(&pdev->dev, res);
+-- 
+1.9.0
