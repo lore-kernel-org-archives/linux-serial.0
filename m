@@ -1,7 +1,7 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
-Date: Fri, 23 May 2014 15:51:20 +0800
-Message-ID: <1400831485-28576-18-git-send-email-wens@csie.org>
+Subject: [PATCH 04/22] clk: sunxi: move "ahb_sdram" to protected clock list
+Date: Fri, 23 May 2014 15:51:07 +0800
+Message-ID: <1400831485-28576-5-git-send-email-wens@csie.org>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,82 +21,61 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.i
 Cc: devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
-The differences are the AR100 clock can no longer be modified,
-and the APB0 clock has different divisors.
-
-This patch adds a compatible with a modified subdevice list for
-the A23.
+With sunxi_gates clocks registered with clkdev, we can use the
+protected clocks list to enable the "ahb_sdram" clock, instead
+of looking for it and adding CLK_IGNORE_UNUSED inline in the
+clock setup code.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
- drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
+ drivers/clk/sunxi/clk-sunxi.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-index 1f5a31f..03c5a55 100644
---- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-+++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-@@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
- (like clks and reset controllers).
+diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+index 3e33bc1..b2c6d12 100644
+--- a/drivers/clk/sunxi/clk-sunxi.c
++++ b/drivers/clk/sunxi/clk-sunxi.c
+@@ -870,7 +870,6 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
+ 	int qty;
+ 	int i = 0;
+ 	int j = 0;
+-	int ignore;
  
- Required properties:
-- - compatible: "allwinner,sun6i-a31-prcm"
-+ - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
-  - reg: The PRCM registers range
+ 	reg = of_iomap(node, 0);
  
- The prcm node may contain several subdevices definitions:
-diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
-index 718fc4d..c96bb6c 100644
---- a/drivers/mfd/sun6i-prcm.c
-+++ b/drivers/mfd/sun6i-prcm.c
-@@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
- 	},
+@@ -891,15 +890,12 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
+ 		of_property_read_string_index(node, "clock-output-names",
+ 					      j, &clk_name);
+ 
+-		/* No driver claims this clock, but it should remain gated */
+-		ignore = !strcmp("ahb_sdram", clk_name) ? CLK_IGNORE_UNUSED : 0;
+-
+ 		clk_data->clks[i] = clk_register_gate(NULL, clk_name,
+-						      clk_parent, ignore,
++						      clk_parent, 0,
+ 						      reg + 4 * (i/32), i % 32,
+ 						      0, &clk_lock);
+ 		WARN_ON(IS_ERR(clk_data->clks[i]));
+-		clk_register_clkdev(clks[i], clk_name, NULL);
++		clk_register_clkdev(clk_data->clks[i], clk_name, NULL);
+ 
+ 		j++;
+ 	}
+@@ -1204,6 +1200,7 @@ static void __init sunxi_init_clocks(const char *clocks[], int nclocks)
+ 
+ static const char *sun4i_a10_critical_clocks[] __initdata = {
+ 	"pll5_ddr",
++	"ahb_sdram",
  };
  
-+static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
-+	{
-+		.name = "sun6i-a31-apb0-clk",
-+		.of_compatible = "allwinner,sun8i-a23-apb0-clk",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
-+		.resources = sun6i_a31_apb0_clk_res,
-+	},
-+	{
-+		.name = "sun6i-a31-apb0-gates-clk",
-+		.of_compatible = "allwinner,sun6i-a31-apb0-gates-clk",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
-+		.resources = sun6i_a31_apb0_gates_clk_res,
-+	},
-+	{
-+		.name = "sun6i-a31-apb0-clock-reset",
-+		.of_compatible = "allwinner,sun6i-a31-clock-reset",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_rstc_res),
-+		.resources = sun6i_a31_apb0_rstc_res,
-+	},
-+};
-+
- static const struct prcm_data sun6i_a31_prcm_data = {
- 	.nsubdevs = ARRAY_SIZE(sun6i_a31_prcm_subdevs),
- 	.subdevs = sun6i_a31_prcm_subdevs,
+ static void __init sun4i_a10_init_clocks(void)
+@@ -1216,6 +1213,7 @@ CLK_OF_DECLARE(sun4i_a10_clk_init, "allwinner,sun4i-a10", sun4i_a10_init_clocks)
+ static const char *sun5i_critical_clocks[] __initdata = {
+ 	"mbus",
+ 	"pll5_ddr",
++	"ahb_sdram",
  };
  
-+static const struct prcm_data sun8i_a23_prcm_data = {
-+	.nsubdevs = ARRAY_SIZE(sun8i_a23_prcm_subdevs),
-+	.subdevs = sun8i_a23_prcm_subdevs,
-+};
-+
- static const struct of_device_id sun6i_prcm_dt_ids[] = {
- 	{
- 		.compatible = "allwinner,sun6i-a31-prcm",
- 		.data = &sun6i_a31_prcm_data,
- 	},
-+	{
-+		.compatible = "allwinner,sun8i-a23-prcm",
-+		.data = &sun8i_a23_prcm_data,
-+	},
- 	{ /* sentinel */ },
- };
- 
+ static void __init sun5i_init_clocks(void)
 -- 
 2.0.0.rc2
