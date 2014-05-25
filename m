@@ -1,37 +1,52 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 03/22] clk: sunxi: add "pll6" to sun6i protected clock
- list
-Date: Sun, 25 May 2014 20:48:08 +0200
-Message-ID: <20140525184808.GP10768@lukather>
+Subject: Re: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART
+ (sun6i/sun8i)
+Date: Sun, 25 May 2014 20:46:37 +0200
+Message-ID: <20140525184636.GN10768@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-4-git-send-email-wens@csie.org>
+ <1400831485-28576-20-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1LW0Rr0Uq98qh6Rv"
+	protocol="application/pgp-signature"; boundary="uMPAU7A2Er6+wvsD"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1400831485-28576-4-git-send-email-wens@csie.org>
+In-Reply-To: <1400831485-28576-20-git-send-email-wens@csie.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Chen-Yu Tsai <wens@csie.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 List-Id: linux-serial@vger.kernel.org
 
 
---1LW0Rr0Uq98qh6Rv
+--uMPAU7A2Er6+wvsD
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 23, 2014 at 03:51:06PM +0800, Chen-Yu Tsai wrote:
-> PLL6 is used by some important but undocumented module, most likely
-> memory related, such as mbus or the actual memory controller. As we
-> do not have a driver for that, add pll6 to the list of protected
-> clocks, so that it won't be disabled and leave us with a non-responsive
-> system.
+Hi,
 
-What issue have you seen?
+On Fri, May 23, 2014 at 03:51:22PM +0800, Chen-Yu Tsai wrote:
+> sun6i/sun8i have a UART in the RTC block group, which can be used
+> as an early console. This is most useful on sun8i as UART0 is muxed
+> with MMC0, which is not available if we boot from MMC.
+>=20
+> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+> ---
+>  arch/arm/Kconfig.debug | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>=20
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index eab8ecb..9e22708 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -694,6 +694,14 @@ choice
+>  		  Say Y here if you want kernel low-level debugging support
+>  		  on Allwinner A1X based platforms on the UART1.
+> =20
+> +	config DEBUG_SUNXI_R_UART
+> +		bool "Kernel low-level debugging messages via sunXi R_UART"
+> +		depends on ARCH_SUNXI
 
-The system actually works pretty great on the A31.
+It should rather depend on MACH_SUN8I.
 
 Maxime
 
@@ -40,26 +55,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---1LW0Rr0Uq98qh6Rv
+--uMPAU7A2Er6+wvsD
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJTgjroAAoJEBx+YmzsjxAgKwEQALNAU8JHnvZys1+eK7PK58Xl
-C3U1cEp16rinFV87yxQV/U6vA9v8h+pEP6lDaGKPlIFp2Kk4/kXs0v7VKtCM1Q/+
-F1zSD3uuL0oI5uQleSXbgZ6++VC/3Oa08IvJ7KYOv3MCtYc44QlswOu5N2pErw9q
-yrZ2eBMjzc02QxvvBdzL+ZdzPBJPfK7V7b96B61PxMbdtPEUQL0OPywLgg/N+CZt
-4s1g3/esZDqAOgJ0Lc7hKSpP76iae8fv7jMYUr63+uWaZwXUvLLRQPRP1/ClaTAR
-wjP6eoZVFxPoOVph6Dq0ndZwvkGCbY13PzdvIjg2J9HU8uMIiXFrrE6vvzzfgwx/
-N9KXDkVfuJP5wkD4P+KfZL9JCmkPO+npB6WQw04LuLZIgkCOMErRey3pHNBbMJVj
-g2AhyKnodoey/uOiMDMfxf+N5mFNUvY3Ryd9A3B/CYLvT8KLGUGH44lbgGZxCj4W
-3+xqZLaR1Pj6PnIGWkUJVDAWesq/XcPbNujPhgVySbD89ADMI9AArajF2HtZOFHt
-DdskeTmEE7aH+zFvqioKUtmgec34uGZhE+b2MoyO4WasJYBnVtmKegPheNveww0Y
-Cbj1vsprNkw7mJlk7CEjNkvAedQaFeiodlRRenL21vxb7slHrKRqFI2vxNJavuwj
-vIUcDCf+m2tDa7y2KDsz
-=dqUG
+iQIcBAEBAgAGBQJTgjqMAAoJEBx+YmzsjxAg/aIQAJE2zxfOsXS85Br6iceb6YRJ
+gBNG3L83F1beFXUuIL2B+ptBTJx6xeRjxnkpVCrWEzAdzhI/9ny9cwDgJCNGl0gy
+WrcG/aHyps68muQZKVhv68C/OYrGzAZcBc2o9+Me8J5riPwHP8WRqW+BOx8J6aIL
+MV15bJAsaPQOyGADy+oXqGvHsNokt3D2MnjHL61nkkOx55XkdTNkge7Yi7L3jI6x
+wwLdkKi9wQgc4/RqZM7fuHWth3M0o6mB6kQQhVgqAm68mKVlAqtA7cxWeo19GHEl
+jzXzgrMngjKti7sPx0JPe9J5OnLbd2YO5M9t8E1Av1rPUhcYfGjSXRe0FJSHp5Jx
+7/PEdkAS0LivxX3lO6XzTytkTbX0TJJwhFjKVXvXboRrz9cvMK6wtKqrQ2bv1HIL
+zs4gZ+1i8Md3rpr5PMylWpqnkbAO5OeBE3hgY7gf+ia/LCIrXFCEbNmZhEEpXCHD
+YfvWxl+5W/HvA54cx5VmacmG4InoyE3PZYdn7+RFJG+odjHoSLebOFn5CGca5S59
+4Keu0y9WjSZ6hw+EaCNeSCTrBtCT/+Kiyt/U+zxnL09UY4e+a03UvGPuYhXbX7u7
+uZhc8ycMpAuDAC/QC7EJy05SaFg3yy8msG6Iq59XLZrBUl5fpdURO29/t8LSnw7u
+AOztEeoNmMDDxuE10HNM
+=N9BP
 -----END PGP SIGNATURE-----
 
---1LW0Rr0Uq98qh6Rv--
+--uMPAU7A2Er6+wvsD--
