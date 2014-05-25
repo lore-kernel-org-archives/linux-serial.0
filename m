@@ -1,75 +1,70 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: UART_IIR_BUSY set for 16550A
-Date: Sun, 25 May 2014 08:04:09 -0400
-Message-ID: <20140525120409.GG6946@thunk.org>
-References: <CAGXD9Ocoo_sUnFmd-pfU52yUQ5oPjWxAHXjvP8facuMiOSUn5w@mail.gmail.com>
- <20140525003642.GC6946@thunk.org>
- <CAGXD9Odvyd_go-x9-gR7Q7_etYPLHekDM3SKRN+PCvDHc__LHg@mail.gmail.com>
- <20140525024414.GF6946@thunk.org>
- <CAGXD9Of8-v9TJ-0uuQ3TDzo5QYhB3uA=B5kMGQkiABSzFrWDng@mail.gmail.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 07/22] clk: sunxi: Fix PLL6 calculation on sun6i
+Date: Sun, 25 May 2014 20:43:35 +0200
+Message-ID: <20140525184335.GL10768@lukather>
+References: <1400831485-28576-1-git-send-email-wens@csie.org>
+ <1400831485-28576-8-git-send-email-wens@csie.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HBg0C3yr6HVa1ZCc"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from imap.thunk.org ([74.207.234.97]:59796 "EHLO imap.thunk.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750859AbaEYMEM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Sun, 25 May 2014 08:04:12 -0400
+Received: from top.free-electrons.com ([176.31.233.9]:33470 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751027AbaEYTmX (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 25 May 2014 15:42:23 -0400
 Content-Disposition: inline
-In-Reply-To: <CAGXD9Of8-v9TJ-0uuQ3TDzo5QYhB3uA=B5kMGQkiABSzFrWDng@mail.gmail.com>
+In-Reply-To: <1400831485-28576-8-git-send-email-wens@csie.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Prasad Koya <prasad.koya@gmail.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
-On Sat, May 24, 2014 at 11:21:38PM -0700, Prasad Koya wrote:
-> IIR as 0xc2 and LSR as 0x21 and it read 2 chars in that iteration and
-> sent 1 byte of data.
-> 
-> Since the interrupt handler services all ports before it returns, in
-> next iteration it sees:
-> 
-> [  480.972102] BUG1027: I1: 1571:0xcc 1551:0x0
-> 
-> and it continues to see that till iteration 349. and nothing was read
-> from FIFO or transmitted from iteration 1 to 349.
 
-If there's nothing in the receive FIFO to read, and assuming the
-serial driver is correctly determining that fact (i.e., UART_LSR_DR is
-zero), then something is buggy with your UART.  If IIR is 0xcc, that
-means that the UART is signalling that there is a receive interrupt
-pending, with the FIFO level being below the trigger level but that
-the characters have been in the FIFO long enough that they should get
-picked up.
+--HBg0C3yr6HVa1ZCc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-When the serial driver reads all of the characters from the receive
-buffer, by checking UART_LSR for the UART_LSR_DR bit, and if it is
-set, reading from the receive buffer via serial_in(up, UART_RX), that
-should clear the IIR register of the receive interrupt.
+On Fri, May 23, 2014 at 03:51:10PM +0800, Chen-Yu Tsai wrote:
+> The N factor for PLL6 counts from 1 to 32, as specified in the A23
+> manual, and shown in Allwinner's original code.
+>=20
+> This patch fixes the N factor in the clock driver, as well as the
+> comment describing it.
+>=20
+> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 
-> At next iteration it had 0x60 in LSR and again nothing is read or sent
-> out. This continues till we see that "too much work".
-> 
-> [  480.972526] BUG1027: I350: 1571:0xcc 1551:0x60
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-Yep, buggy UART.  Unfortunately there are lot of crappy
-reimplementations of the 8250/16550A UART's out there.  :-(
+Thanks,
+Maxime
 
-Which is precisely why we have the "too much work" safety check.  If
-we didn't, your system would be locked up forever, looping in the
-serial driver.  There is, alas, a lot of crappy hardware out there,
-which is why the serial driver was coded so defensively.
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-In any case, combination of LSR with the UART_LSR_DR bit clear and IIR
-set to 0xcc is one of these "this should never happen, under any
-circumstances, with a correctly implemented 8250/16550A compatible
-UART".  Which is why I can't really tell you how to reset the UART,
-since at least in theory, this should never happen, and if it does
-happen, without having access to the hardware and doing a lot of
-frustating testing to reverse engineer the exact nature of the buggy
-hardware, it's hard to figure out how to work around the brain damage.
-Which is one of the reasons I was happy to get out of the serial
-driver maintenance business.  :-)
+--HBg0C3yr6HVa1ZCc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Cheers,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-					- Ted
+iQIcBAEBAgAGBQJTgjnXAAoJEBx+YmzsjxAgOqYP/1V+CTV299p7d/ZBKkVhZo2z
+xWiKkVBkI4C3oNr2xA2M7BLmSf5jLUyhTztz8+KcH97sI3zfy561vDDNvNfx9C8n
+ign9G/u8uYRSHNX27aLAVWJ7eJUkeMecWrv5yb/XPXDAqvXY9qnI2VHj/qexrrRR
+KuCXAa5fIaTmSHvq6/9fvA0DgHQoiWKxeZhyZ0q4S0Cp1vWHnHXUKcoh/5LkOhGt
+UiAHzhk/dyF8IPo6edaP7SuFfIhFfozX3UM+9ozAnol6a6yFl9DWYNIsp28XChOh
+NmptIUYwiypUyCyhMRQ3rVIDpsGEhadH56e/iWusUyeg2sQ+43PKr7hTBcxzUUeO
+VmtMERJgnxLSFlp6hcopfVBbaiGoyX5kZhdImfUspF6YFgIaFnh7DXiIyE2ZcdPF
+w4o5HcJ83t1ZG5vj3hswvc5rOrOPmmiijLNd7Gg9ZkR7RCgyC1VnfcFE974lLhOH
+nnY6ZAo6lL/mLt6Acrn+DDOQyTcTBcS12jDsacrsZBCdsoI6roXY0KXI+JQ04Kdi
+JgvJMeiBt8+9v3Gh3rjC68fbWMScWaSc9oYkeeU101mlJGx1IejB+YL1kCbwDywj
+zlnKxrk1jeszbi5W+r0oVa3kEI0qNMhx8V8+dx5ml0Zj4A589JiF3bFydTALrOXi
+sqbtBe2f2/rhDMJuCrDg
+=G7xQ
+-----END PGP SIGNATURE-----
+
+--HBg0C3yr6HVa1ZCc--
