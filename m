@@ -1,43 +1,38 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 07/22] clk: sunxi: Fix PLL6 calculation on sun6i
-Date: Sun, 25 May 2014 20:43:35 +0200
-Message-ID: <20140525184335.GL10768@lukather>
+Subject: Re: [PATCH 03/22] clk: sunxi: add "pll6" to sun6i protected clock
+ list
+Date: Sun, 25 May 2014 20:48:08 +0200
+Message-ID: <20140525184808.GP10768@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-8-git-send-email-wens@csie.org>
+ <1400831485-28576-4-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HBg0C3yr6HVa1ZCc"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:33470 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751027AbaEYTmX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 25 May 2014 15:42:23 -0400
+	protocol="application/pgp-signature"; boundary="1LW0Rr0Uq98qh6Rv"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1400831485-28576-8-git-send-email-wens@csie.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+In-Reply-To: <1400831485-28576-4-git-send-email-wens@csie.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Chen-Yu Tsai <wens@csie.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
+List-Id: linux-serial@vger.kernel.org
 
 
---HBg0C3yr6HVa1ZCc
+--1LW0Rr0Uq98qh6Rv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 23, 2014 at 03:51:10PM +0800, Chen-Yu Tsai wrote:
-> The N factor for PLL6 counts from 1 to 32, as specified in the A23
-> manual, and shown in Allwinner's original code.
->=20
-> This patch fixes the N factor in the clock driver, as well as the
-> comment describing it.
->=20
-> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+On Fri, May 23, 2014 at 03:51:06PM +0800, Chen-Yu Tsai wrote:
+> PLL6 is used by some important but undocumented module, most likely
+> memory related, such as mbus or the actual memory controller. As we
+> do not have a driver for that, add pll6 to the list of protected
+> clocks, so that it won't be disabled and leave us with a non-responsive
+> system.
 
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+What issue have you seen?
 
-Thanks,
+The system actually works pretty great on the A31.
+
 Maxime
 
 --=20
@@ -45,26 +40,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---HBg0C3yr6HVa1ZCc
+--1LW0Rr0Uq98qh6Rv
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJTgjnXAAoJEBx+YmzsjxAgOqYP/1V+CTV299p7d/ZBKkVhZo2z
-xWiKkVBkI4C3oNr2xA2M7BLmSf5jLUyhTztz8+KcH97sI3zfy561vDDNvNfx9C8n
-ign9G/u8uYRSHNX27aLAVWJ7eJUkeMecWrv5yb/XPXDAqvXY9qnI2VHj/qexrrRR
-KuCXAa5fIaTmSHvq6/9fvA0DgHQoiWKxeZhyZ0q4S0Cp1vWHnHXUKcoh/5LkOhGt
-UiAHzhk/dyF8IPo6edaP7SuFfIhFfozX3UM+9ozAnol6a6yFl9DWYNIsp28XChOh
-NmptIUYwiypUyCyhMRQ3rVIDpsGEhadH56e/iWusUyeg2sQ+43PKr7hTBcxzUUeO
-VmtMERJgnxLSFlp6hcopfVBbaiGoyX5kZhdImfUspF6YFgIaFnh7DXiIyE2ZcdPF
-w4o5HcJ83t1ZG5vj3hswvc5rOrOPmmiijLNd7Gg9ZkR7RCgyC1VnfcFE974lLhOH
-nnY6ZAo6lL/mLt6Acrn+DDOQyTcTBcS12jDsacrsZBCdsoI6roXY0KXI+JQ04Kdi
-JgvJMeiBt8+9v3Gh3rjC68fbWMScWaSc9oYkeeU101mlJGx1IejB+YL1kCbwDywj
-zlnKxrk1jeszbi5W+r0oVa3kEI0qNMhx8V8+dx5ml0Zj4A589JiF3bFydTALrOXi
-sqbtBe2f2/rhDMJuCrDg
-=G7xQ
+iQIcBAEBAgAGBQJTgjroAAoJEBx+YmzsjxAgKwEQALNAU8JHnvZys1+eK7PK58Xl
+C3U1cEp16rinFV87yxQV/U6vA9v8h+pEP6lDaGKPlIFp2Kk4/kXs0v7VKtCM1Q/+
+F1zSD3uuL0oI5uQleSXbgZ6++VC/3Oa08IvJ7KYOv3MCtYc44QlswOu5N2pErw9q
+yrZ2eBMjzc02QxvvBdzL+ZdzPBJPfK7V7b96B61PxMbdtPEUQL0OPywLgg/N+CZt
+4s1g3/esZDqAOgJ0Lc7hKSpP76iae8fv7jMYUr63+uWaZwXUvLLRQPRP1/ClaTAR
+wjP6eoZVFxPoOVph6Dq0ndZwvkGCbY13PzdvIjg2J9HU8uMIiXFrrE6vvzzfgwx/
+N9KXDkVfuJP5wkD4P+KfZL9JCmkPO+npB6WQw04LuLZIgkCOMErRey3pHNBbMJVj
+g2AhyKnodoey/uOiMDMfxf+N5mFNUvY3Ryd9A3B/CYLvT8KLGUGH44lbgGZxCj4W
+3+xqZLaR1Pj6PnIGWkUJVDAWesq/XcPbNujPhgVySbD89ADMI9AArajF2HtZOFHt
+DdskeTmEE7aH+zFvqioKUtmgec34uGZhE+b2MoyO4WasJYBnVtmKegPheNveww0Y
+Cbj1vsprNkw7mJlk7CEjNkvAedQaFeiodlRRenL21vxb7slHrKRqFI2vxNJavuwj
+vIUcDCf+m2tDa7y2KDsz
+=dqUG
 -----END PGP SIGNATURE-----
 
---HBg0C3yr6HVa1ZCc--
+--1LW0Rr0Uq98qh6Rv--
