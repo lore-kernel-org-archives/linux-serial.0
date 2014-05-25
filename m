@@ -1,77 +1,126 @@
-From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 18/22] ARM: sunxi: Introduce Allwinner A23 support
-Date: Sun, 25 May 2014 21:22:50 +0200
-Message-ID: <20140525192250.GY10768@lukather>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 22/22] ARM: sun8i: dt: Add Ippo-q8h v5 support
+Date: Sun, 25 May 2014 21:39:55 +0200
+Message-ID: <20140525193955.GB10768@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-19-git-send-email-wens@csie.org>
+ <1400831485-28576-23-git-send-email-wens@csie.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="B7FF+pnjRCrp0ISR"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="JoJCGVnM/36AiBh+"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:33650 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751408AbaEYTnl (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 25 May 2014 15:43:41 -0400
 Content-Disposition: inline
-In-Reply-To: <1400831485-28576-19-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <1400831485-28576-23-git-send-email-wens@csie.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
 
---B7FF+pnjRCrp0ISR
+--JoJCGVnM/36AiBh+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 23, 2014 at 03:51:21PM +0800, Chen-Yu Tsai wrote:
-> The Allwinner A23 is a dual-core Cortex-A7-based SoC. It re-uses most of
-> the IPs found in previous SoCs, notably the A31.
+On Fri, May 23, 2014 at 03:51:25PM +0800, Chen-Yu Tsai wrote:
+> The Ippo-q8h is a tablet circiut board commonly found in cheap Android
+> tablets with A23 SoCs. There are at least 2 versions of the board, with
+> different peripherals, such as WiFi chips.
 >=20
-> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> This patch add supports for v5 of such boards, which has a ESP8089 WiFi
+> chip (not supported) connected to mmc1.
+>=20
+> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 > ---
->  arch/arm/mach-sunxi/Kconfig |  8 ++++++++
->  arch/arm/mach-sunxi/sunxi.c | 12 ++++++++++++
->  2 files changed, 20 insertions(+)
+>  arch/arm/boot/dts/Makefile                  |  2 ++
+>  arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts | 51 +++++++++++++++++++++++=
+++++++
+>  2 files changed, 53 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
 >=20
-> diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
-> index 0fbd4f1..6434e3b 100644
-> --- a/arch/arm/mach-sunxi/Kconfig
-> +++ b/arch/arm/mach-sunxi/Kconfig
-> @@ -35,4 +35,12 @@ config MACH_SUN7I
->  	select HAVE_ARM_ARCH_TIMER
->  	select SUN5I_HSTIMER
-> =20
-> +config MACH_SUN8I
-> +	bool "Allwinner A23 (sun8i) SoCs support"
-> +	default ARCH_SUNXI
-> +	select ARCH_HAS_RESET_CONTROLLER
-> +	select ARM_GIC
-> +	select MFD_SUN6I_PRCM
-> +	select RESET_CONTROLLER
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 6967393..f809a53 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -354,6 +354,8 @@ dtb-$(CONFIG_MACH_SUN7I) +=3D \
+>  	sun7i-a20-cubietruck.dtb \
+>  	sun7i-a20-i12-tvbox.dtb \
+>  	sun7i-a20-olinuxino-micro.dtb
+> +dtb-$(CONFIG_MACH_SUN8I) +=3D \
+> +	sun8i-a23-ippo-q8h-v5.dtb
+>  dtb-$(CONFIG_ARCH_TEGRA) +=3D tegra20-harmony.dtb \
+>  	tegra20-iris-512.dtb \
+>  	tegra20-medcom-wide.dtb \
+> diff --git a/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts b/arch/arm/boot/=
+dts/sun8i-a23-ippo-q8h-v5.dts
+> new file mode 100644
+> index 0000000..7d0bd97
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+> @@ -0,0 +1,51 @@
+> +/*
+> + * Copyright 2014 Chen-Yu Tsai
+> + *
+> + * Chen-Yu Tsai <wens@csie.org>
+> + *
+> + * The code contained herein is licensed under the GNU General Public
+> + * License. You may obtain a copy of the GNU General Public License
+> + * Version 2 or later at the following locations:
+> + *
+> + * http://www.opensource.org/licenses/gpl-license.html
+> + * http://www.gnu.org/copyleft/gpl.html
+> + */
 > +
->  endif
-> diff --git a/arch/arm/mach-sunxi/sunxi.c b/arch/arm/mach-sunxi/sunxi.c
-> index df906e3..a43b295 100644
-> --- a/arch/arm/mach-sunxi/sunxi.c
-> +++ b/arch/arm/mach-sunxi/sunxi.c
-> @@ -159,3 +159,15 @@ DT_MACHINE_START(SUN7I_DT, "Allwinner sun7i (A20) Fa=
-mily")
->  	.dt_compat	=3D sun7i_board_dt_compat,
->  	.restart	=3D sun4i_restart,
->  MACHINE_END
+> +/dts-v1/;
+> +/include/ "sun8i-a23.dtsi"
 > +
-> +static const char * const sun8i_board_dt_compat[] =3D {
-> +	"allwinner,sun8i-a23",
-> +	NULL,
+> +/ {
+> +	model =3D "Ippo Q8H Dual Core Tablet (v5)";
+> +	compatible =3D "ippo,q8h-v5", "allwinner,sun8i-a23";
+> +
+> +	chosen {
+> +		bootargs =3D "earlyprintk console=3DttyS0,115200";
+> +	};
+
+You should probably add the memory node here too.
+
+> +
+> +	soc@01c00000 {
+> +		uart0: serial@01c28000 {
+> +			pinctrl-names =3D "default";
+> +			pinctrl-0 =3D <&uart0_pins_a>;
+> +			status =3D "okay";
+> +		};
+> +
+> +		i2c0: i2c@01c2ac00 {
+> +			pinctrl-names =3D "default";
+> +			pinctrl-0 =3D <&i2c0_pins_a>;
+> +			status =3D "okay";
+> +		};
+> +
+> +		i2c1: i2c@01c2b000 {
+> +			pinctrl-names =3D "default";
+> +			pinctrl-0 =3D <&i2c1_pins_a>;
+> +			status =3D "okay";
+> +		};
+
+What are the two i2c busses wired to?
+
+> +		r_uart: serial@01f02800 {
+> +			pinctrl-names =3D "default";
+> +			pinctrl-0 =3D <&r_uart_pins_a>;
+> +			status =3D "okay";
+> +		};
+> +	};
 > +};
 > +
-> +DT_MACHINE_START(SUN8I_DT, "Allwinner sun8i (A23) Family")
-> +	.init_machine	=3D sunxi_dt_init,
-> +	.init_time	=3D sun6i_timer_init,
-> +	.dt_compat	=3D sun8i_board_dt_compat,
-> +	.restart	=3D sun6i_restart,
-> +MACHINE_END
-
-You should rebase on top of the latest changes that got merged into
-arm-soc, or sunxi-next, most of these functions are gone now.
+> --=20
+> 2.0.0.rc2
+>=20
 
 Thanks,
 Maxime
@@ -81,30 +130,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---B7FF+pnjRCrp0ISR
+--JoJCGVnM/36AiBh+
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJTgkMKAAoJEBx+YmzsjxAgEckQAL4GqQbGTuJKjwaeFGOdedNE
-kjUodvUxbDJxKQB+tteF1mFTeI77e8RZy/4kAdk7Sfu7xJ/83QaFDle5NKLonx88
-DoHo8h+wUkgCLlvApqIs1iGrJDtocrra/aTNU/yZLNvP/IXw6zPxuPJ+HuI839yQ
-xEIvJrEDtCd5YYQ1Um+I3ANVw7UIHrJhTrpY8ok0+KashmweQ3Y1YSarrCUM1eqD
-Hin6QldeLmqwuNRO9pPGJn3Yw0q6FMFV8FUi9ixNpib4EcABolak/2dlcp3aNqbh
-xE0j4ryZjVanImnFRHzo3SJ6iJ9jUCPlDCH6HuG8IWNt3ImvZuPuQ0W7p1UgeovS
-N1dyXLIq2sym4LCiKHn5pEU6Kss4kzmEuJhcd5h4g5isQTxlmIRzQ2N3DkPjaeKt
-V4akx/PLWdZuGLAAkdbnWZqTzIh6Fk3MPDcXuiEqjbS1FehrOWaogPN5c2L4Srr3
-pNxHFc+a633xTwfMfwKxPPC077kRI0GQrLoppPPcHBwO3L46cKF6dSTSa43bQGnY
-xDu8mX+i+Nu4AyuvzbtjjegpD3DAbVl6jhAUlrIUP97bjF/z1QjEAlb+whSZHcn4
-2ItU3lmr9Lfb+O9G5VdJqM/xAUogREssFQlxGLCLdhFA6omKBHQgU4/7WrUYSD+I
-CrFWQ588oNaoOh2t0L9q
-=aCbO
+iQIcBAEBAgAGBQJTgkcLAAoJEBx+YmzsjxAgMewP/j3gNNEr2DrVxSSiPcKCYp2k
+kCORsgpAeST/lhnHS8U7FJZAObgpfOh3y0gveiMnR0H5nycJWL+1sRZCK+TcUy1/
+VqgxH19iJ6Ja2WSJJMLSz/otGaF+YeTRBr+ESE3/yo2TPkqZjkjPb9qQUH5DlEIM
+pAMj1/1fXq8vUoddsTQWxo//cEebDE+Io3dlxEBPsYyrVlSUcsNNSVCjL1kTTAk/
+0xVEvo84ttgD908RcIPgIJ04s3XFk/2c/uA0wUmKdyL6Z+A7NtZvdaoo56TZbbrp
+aoWT/6D2CYFSUYq9439LJRa69vPnodKqRhnFcZHM4U2xjZPqV6ZuqG76pNPPRm9k
+xX2AxiAeXH2bkJSkK8j1Y2Oi7iZKdhNLv9JWf3Y53dwS5RZOVg5VRiQ9ooB5uqQ5
+ptyJywshobS5lY/BEepJ9F4/n3M4cLsurGdyiPbDMGW8KhYZzsMaIE0yGWKFBiNl
+mVwyCEv7DV1bJGQhrjw8/XI9cER8TLNHEl1nezAEX7nqyzgmlXRZ+ZGaDbHRG4so
+9Lctq8ZLWqHqRT/bQMGifS49CzFZk8+l1kQD0c47ultwVh4TBW998AAu7abaCotn
+rjbM6uimChfTu/A/EcQwPuP/OIYc4e13DYmuNndW50xo6NXIcBBIt2fkPBRex8XW
+wbf4FsDOiyOgyDGzT01d
+=fJnx
 -----END PGP SIGNATURE-----
 
---B7FF+pnjRCrp0ISR--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--JoJCGVnM/36AiBh+--
