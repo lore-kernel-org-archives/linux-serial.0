@@ -1,53 +1,71 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART (sun6i/sun8i)
-Date: Mon, 26 May 2014 17:25:43 +0800
-Message-ID: <CAGb2v66jL5-rmSy0W38og6bLiNkGu0wekEZfOuh0Fn2oOsJpaQ@mail.gmail.com>
+Subject: Re: [PATCH 04/22] clk: sunxi: move "ahb_sdram" to protected clock list
+Date: Mon, 26 May 2014 17:43:14 +0800
+Message-ID: <CAGb2v64T6QYu1YNYMkd-R-=uK1XSR0-jKC5W6drK+9yHTrp6JQ@mail.gmail.com>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-20-git-send-email-wens@csie.org> <20140525184636.GN10768@lukather>
+ <1400831485-28576-5-git-send-email-wens@csie.org> <20140525185101.GQ10768@lukather>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f181.google.com ([209.85.128.181]:39799 "EHLO
-	mail-ve0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751524AbaEZJ0G (ORCPT
+Received: from mail-vc0-f176.google.com ([209.85.220.176]:32785 "EHLO
+	mail-vc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751827AbaEZJnf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 26 May 2014 05:26:06 -0400
-In-Reply-To: <20140525184636.GN10768@lukather>
+	Mon, 26 May 2014 05:43:35 -0400
+In-Reply-To: <20140525185101.GQ10768@lukather>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Maxime Ripard <maxime.ripard@free-electrons.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
-On Mon, May 26, 2014 at 2:46 AM, Maxime Ripard
+On Mon, May 26, 2014 at 2:51 AM, Maxime Ripard
 <maxime.ripard@free-electrons.com> wrote:
-> Hi,
->
-> On Fri, May 23, 2014 at 03:51:22PM +0800, Chen-Yu Tsai wrote:
->> sun6i/sun8i have a UART in the RTC block group, which can be used
->> as an early console. This is most useful on sun8i as UART0 is muxed
->> with MMC0, which is not available if we boot from MMC.
+> On Fri, May 23, 2014 at 03:51:07PM +0800, Chen-Yu Tsai wrote:
+>> With sunxi_gates clocks registered with clkdev, we can use the
+>> protected clocks list to enable the "ahb_sdram" clock, instead
+>> of looking for it and adding CLK_IGNORE_UNUSED inline in the
+>> clock setup code.
 >>
 >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 >> ---
->>  arch/arm/Kconfig.debug | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
+>>  drivers/clk/sunxi/clk-sunxi.c | 10 ++++------
+>>  1 file changed, 4 insertions(+), 6 deletions(-)
 >>
->> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
->> index eab8ecb..9e22708 100644
->> --- a/arch/arm/Kconfig.debug
->> +++ b/arch/arm/Kconfig.debug
->> @@ -694,6 +694,14 @@ choice
->>                 Say Y here if you want kernel low-level debugging support
->>                 on Allwinner A1X based platforms on the UART1.
+>> diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+>> index 3e33bc1..b2c6d12 100644
+>> --- a/drivers/clk/sunxi/clk-sunxi.c
+>> +++ b/drivers/clk/sunxi/clk-sunxi.c
+>> @@ -870,7 +870,6 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
+>>       int qty;
+>>       int i = 0;
+>>       int j = 0;
+>> -     int ignore;
 >>
->> +     config DEBUG_SUNXI_R_UART
->> +             bool "Kernel low-level debugging messages via sunXi R_UART"
->> +             depends on ARCH_SUNXI
+>>       reg = of_iomap(node, 0);
+>>
+>> @@ -891,15 +890,12 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
+>>               of_property_read_string_index(node, "clock-output-names",
+>>                                             j, &clk_name);
+>>
+>> -             /* No driver claims this clock, but it should remain gated */
+>> -             ignore = !strcmp("ahb_sdram", clk_name) ? CLK_IGNORE_UNUSED : 0;
+>> -
+>>               clk_data->clks[i] = clk_register_gate(NULL, clk_name,
+>> -                                                   clk_parent, ignore,
+>> +                                                   clk_parent, 0,
+>>                                                     reg + 4 * (i/32), i % 32,
+>>                                                     0, &clk_lock);
+>>               WARN_ON(IS_ERR(clk_data->clks[i]));
+>> -             clk_register_clkdev(clks[i], clk_name, NULL);
+>> +             clk_register_clkdev(clk_data->clks[i], clk_name, NULL);
 >
-> It should rather depend on MACH_SUN8I.
+> I'm fine with the change itself, but shouldn't this part of it be in
+> the patch that actually add this line?
+>
+> Looks broken to me otherwise.
 
-I assume no sun6i devices would use it, or have pads available for it?
-If so, then MACH_SUN8I makes sense.
+Brain fart on my part. I squashed a fixup for patch 2 into this one.
 
 
+Thanks
 ChenYu
