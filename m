@@ -1,43 +1,53 @@
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: Re: [PATCH 03/22] clk: sunxi: add "pll6" to sun6i protected clock list
-Date: Mon, 26 May 2014 12:47:30 +0800
-Message-ID: <CAGb2v643UmK6GfuDVfywVUeo_g7FpdZC_7SgeY-UMZ_k_-2N9Q@mail.gmail.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART (sun6i/sun8i)
+Date: Mon, 26 May 2014 17:25:43 +0800
+Message-ID: <CAGb2v66jL5-rmSy0W38og6bLiNkGu0wekEZfOuh0Fn2oOsJpaQ@mail.gmail.com>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-4-git-send-email-wens@csie.org> <20140525184808.GP10768@lukather>
+ <1400831485-28576-20-git-send-email-wens@csie.org> <20140525184636.GN10768@lukather>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140525184808.GP10768@lukather>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ve0-f181.google.com ([209.85.128.181]:39799 "EHLO
+	mail-ve0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751524AbaEZJ0G (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 26 May 2014 05:26:06 -0400
+In-Reply-To: <20140525184636.GN10768@lukather>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
-On Mon, May 26, 2014 at 2:48 AM, Maxime Ripard
-<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> On Fri, May 23, 2014 at 03:51:06PM +0800, Chen-Yu Tsai wrote:
->> PLL6 is used by some important but undocumented module, most likely
->> memory related, such as mbus or the actual memory controller. As we
->> do not have a driver for that, add pll6 to the list of protected
->> clocks, so that it won't be disabled and leave us with a non-responsive
->> system.
+On Mon, May 26, 2014 at 2:46 AM, Maxime Ripard
+<maxime.ripard@free-electrons.com> wrote:
+> Hi,
 >
-> What issue have you seen?
+> On Fri, May 23, 2014 at 03:51:22PM +0800, Chen-Yu Tsai wrote:
+>> sun6i/sun8i have a UART in the RTC block group, which can be used
+>> as an early console. This is most useful on sun8i as UART0 is muxed
+>> with MMC0, which is not available if we boot from MMC.
+>>
+>> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+>> ---
+>>  arch/arm/Kconfig.debug | 10 ++++++++++
+>>  1 file changed, 10 insertions(+)
+>>
+>> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+>> index eab8ecb..9e22708 100644
+>> --- a/arch/arm/Kconfig.debug
+>> +++ b/arch/arm/Kconfig.debug
+>> @@ -694,6 +694,14 @@ choice
+>>                 Say Y here if you want kernel low-level debugging support
+>>                 on Allwinner A1X based platforms on the UART1.
+>>
+>> +     config DEBUG_SUNXI_R_UART
+>> +             bool "Kernel low-level debugging messages via sunXi R_UART"
+>> +             depends on ARCH_SUNXI
+>
+> It should rather depend on MACH_SUN8I.
 
-Completely unresponsive after PLL6 is gated (on the A23).
-
-> The system actually works pretty great on the A31.
-
-Does it work when there aren't any other PLL6 consumers?
-Maybe the boot0 on A31 and A23 setup some DRAM-related modules differently.
-
-If the A31 works without protecting PLL6, I'll add a separate list
-for the A23.
+I assume no sun6i devices would use it, or have pads available for it?
+If so, then MACH_SUN8I makes sense.
 
 
-Thanks,
 ChenYu
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
