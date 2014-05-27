@@ -1,163 +1,136 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 22/22] ARM: sun8i: dt: Add Ippo-q8h v5 support
-Date: Tue, 27 May 2014 10:22:16 +0200
-Message-ID: <20140527082216.GD4730@lukather>
+Subject: Re: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
+Date: Tue, 27 May 2014 10:30:21 +0200
+Message-ID: <20140527083021.GE4730@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-23-git-send-email-wens@csie.org>
- <20140525193955.GB10768@lukather>
- <CAGb2v64EHLsj-cy13yf28K8vkTJUCv95q=x-7c2yiHQ=uBm-sw@mail.gmail.com>
+ <1400831485-28576-18-git-send-email-wens@csie.org>
+ <20140525191434.GX10768@lukather>
+ <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RYJh/3oyKhIjGcML"
+	protocol="application/pgp-signature"; boundary="gDGSpKKIBgtShtf+"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:41616 "EHLO
+Received: from top.free-electrons.com ([176.31.233.9]:41778 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752074AbaE0IZF (ORCPT
+	with ESMTP id S1751617AbaE0IfF (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 May 2014 04:25:05 -0400
+	Tue, 27 May 2014 04:35:05 -0400
 Content-Disposition: inline
-In-Reply-To: <CAGb2v64EHLsj-cy13yf28K8vkTJUCv95q=x-7c2yiHQ=uBm-sw@mail.gmail.com>
+In-Reply-To: <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Chen-Yu Tsai <wens@csie.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
 
---RYJh/3oyKhIjGcML
+--gDGSpKKIBgtShtf+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 26, 2014 at 12:23:09PM +0800, Chen-Yu Tsai wrote:
-> On Mon, May 26, 2014 at 3:39 AM, Maxime Ripard
+On Mon, May 26, 2014 at 12:36:38PM +0800, Chen-Yu Tsai wrote:
+> On Mon, May 26, 2014 at 3:14 AM, Maxime Ripard
 > <maxime.ripard@free-electrons.com> wrote:
-> > On Fri, May 23, 2014 at 03:51:25PM +0800, Chen-Yu Tsai wrote:
-> >> The Ippo-q8h is a tablet circiut board commonly found in cheap Android
-> >> tablets with A23 SoCs. There are at least 2 versions of the board, with
-> >> different peripherals, such as WiFi chips.
+> > On Fri, May 23, 2014 at 03:51:20PM +0800, Chen-Yu Tsai wrote:
+> >> The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
+> >> The differences are the AR100 clock can no longer be modified,
+> >> and the APB0 clock has different divisors.
 > >>
-> >> This patch add supports for v5 of such boards, which has a ESP8089 WiFi
-> >> chip (not supported) connected to mmc1.
+> >> This patch adds a compatible with a modified subdevice list for
+> >> the A23.
 > >>
 > >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 > >> ---
-> >>  arch/arm/boot/dts/Makefile                  |  2 ++
-> >>  arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts | 51 ++++++++++++++++++++=
+> >>  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
+> >>  drivers/mfd/sun6i-prcm.c                           | 30 +++++++++++++=
 +++++++++
-> >>  2 files changed, 53 insertions(+)
-> >>  create mode 100644 arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+> >>  2 files changed, 31 insertions(+), 1 deletion(-)
 > >>
-> >> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> >> index 6967393..f809a53 100644
-> >> --- a/arch/arm/boot/dts/Makefile
-> >> +++ b/arch/arm/boot/dts/Makefile
-> >> @@ -354,6 +354,8 @@ dtb-$(CONFIG_MACH_SUN7I) +=3D \
-> >>       sun7i-a20-cubietruck.dtb \
-> >>       sun7i-a20-i12-tvbox.dtb \
-> >>       sun7i-a20-olinuxino-micro.dtb
-> >> +dtb-$(CONFIG_MACH_SUN8I) +=3D \
-> >> +     sun8i-a23-ippo-q8h-v5.dtb
-> >>  dtb-$(CONFIG_ARCH_TEGRA) +=3D tegra20-harmony.dtb \
-> >>       tegra20-iris-512.dtb \
-> >>       tegra20-medcom-wide.dtb \
-> >> diff --git a/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts b/arch/arm/bo=
-ot/dts/sun8i-a23-ippo-q8h-v5.dts
-> >> new file mode 100644
-> >> index 0000000..7d0bd97
-> >> --- /dev/null
-> >> +++ b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
-> >> @@ -0,0 +1,51 @@
-> >> +/*
-> >> + * Copyright 2014 Chen-Yu Tsai
-> >> + *
-> >> + * Chen-Yu Tsai <wens@csie.org>
-> >> + *
-> >> + * The code contained herein is licensed under the GNU General Public
-> >> + * License. You may obtain a copy of the GNU General Public License
-> >> + * Version 2 or later at the following locations:
-> >> + *
-> >> + * http://www.opensource.org/licenses/gpl-license.html
-> >> + * http://www.gnu.org/copyleft/gpl.html
-> >> + */
-> >> +
-> >> +/dts-v1/;
-> >> +/include/ "sun8i-a23.dtsi"
-> >> +
-> >> +/ {
-> >> +     model =3D "Ippo Q8H Dual Core Tablet (v5)";
-> >> +     compatible =3D "ippo,q8h-v5", "allwinner,sun8i-a23";
-> >> +
-> >> +     chosen {
-> >> +             bootargs =3D "earlyprintk console=3DttyS0,115200";
-> >> +     };
+> >> diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Do=
+cumentation/devicetree/bindings/mfd/sun6i-prcm.txt
+> >> index 1f5a31f..03c5a55 100644
+> >> --- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+> >> +++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+> >> @@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Managemen=
+t related devices
+> >>  (like clks and reset controllers).
+> >>
+> >>  Required properties:
+> >> - - compatible: "allwinner,sun6i-a31-prcm"
+> >> + - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prc=
+m"
+> >>   - reg: The PRCM registers range
+> >>
+> >>  The prcm node may contain several subdevices definitions:
+> >> diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
+> >> index 718fc4d..c96bb6c 100644
+> >> --- a/drivers/mfd/sun6i-prcm.c
+> >> +++ b/drivers/mfd/sun6i-prcm.c
+> >> @@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdev=
+s[] =3D {
+> >>       },
+> >>  };
+> >>
+> >> +static const struct mfd_cell sun8i_a23_prcm_subdevs[] =3D {
+> >> +     {
+> >> +             .name =3D "sun6i-a31-apb0-clk",
+> >> +             .of_compatible =3D "allwinner,sun8i-a23-apb0-clk",
+> >> +             .num_resources =3D ARRAY_SIZE(sun6i_a31_apb0_clk_res),
+> >> +             .resources =3D sun6i_a31_apb0_clk_res,
+> >> +     },
+> >> +     {
+> >> +             .name =3D "sun6i-a31-apb0-gates-clk",
+> >> +             .of_compatible =3D "allwinner,sun6i-a31-apb0-gates-clk",
+> >> +             .num_resources =3D ARRAY_SIZE(sun6i_a31_apb0_gates_clk_r=
+es),
+> >> +             .resources =3D sun6i_a31_apb0_gates_clk_res,
+> >> +     },
 > >
-> > You should probably add the memory node here too.
+> > Did I just have a brainfart, or didn't you just introduced an
+> > sun8i-a23-apb0-gates-clk driver?
 >=20
-> OK.
->=20
-> >> +
-> >> +     soc@01c00000 {
-> >> +             uart0: serial@01c28000 {
-> >> +                     pinctrl-names =3D "default";
-> >> +                     pinctrl-0 =3D <&uart0_pins_a>;
-> >> +                     status =3D "okay";
-> >> +             };
-> >> +
-> >> +             i2c0: i2c@01c2ac00 {
-> >> +                     pinctrl-names =3D "default";
-> >> +                     pinctrl-0 =3D <&i2c0_pins_a>;
-> >> +                     status =3D "okay";
-> >> +             };
-> >> +
-> >> +             i2c1: i2c@01c2b000 {
-> >> +                     pinctrl-names =3D "default";
-> >> +                     pinctrl-0 =3D <&i2c1_pins_a>;
-> >> +                     status =3D "okay";
-> >> +             };
-> >
-> > What are the two i2c busses wired to?
->=20
-> i2c0 has the capacitive touch panel controller gsl1680 @ 0x40.
->=20
-> i2c1 has something (gsensor maybe) connected @ 0x15.
-> The FEX file lists the gsensor on i2c1, but with the address as 0x18.
-> I may need to boot back to stock Android to figure it out.
->=20
-> i2c2 has the camera sensor (GC0309) control connected to it @ 0x66.
-> I didn't list it because I overlooked it, and i2cdetect hangs.
-> It seems to need AXP PMIC support to activate the regulators.
->=20
-> AFAIK, the kernel doesn't have drivers for these devices,
-> so how would we list them?
+> My bad, I missed this one. The one in the DT is correct.
+> It actually works, so I'm a bit confused here.
+> Which one does the driver core actually use?
 
-We don't need to list them yet. We can just wait for the drivers, it
-was just out of curiosity.
+Actually, it will use both, and will match the of_compatible string
+try to match it against the mfd-sub-nodes compatibles. If nothing
+matches, it won't fill the dev.of_node field.
+
+>=20
+> > And there's no ar100 and ahb0 clocks ?
+>=20
+> The ahb0 is a fixed-factor (1:1) clock. There are no controls for it.
+> The ar100 clock on the A23 has no controls either, so fixed-factor
+> clock again.
+
+Ack.
 
 --=20
 Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---RYJh/3oyKhIjGcML
+--gDGSpKKIBgtShtf+
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJThEs4AAoJEBx+YmzsjxAgfpYP/R0OjC8+UkOsZ/SuC/cGmS2Z
-ocnz0z1qkoRwCv3dNV93lo5OhFBjyDrgioXYHVzQ2dzjZDcxfGkJvKfnvGJAF12J
-8WS3g2+D7QOTAKfVWxOQcO4Fd+t0S+hZmQOAU6IVYSQjnKCoJAXVCCxfYKF8WH3W
-olYWjR1NxLr5FoAyOZfcngHInKDujT+yyrtHnLhSZ/3CWYYva0YqQUuhgf+niEDc
-L3ZyYphq8h05E2VXlTEHtMq+M4S0Iaa1WdRPZkFQsjZSvIvqR12yGDSXURyJIKiz
-gMnszdbh6ufMAic/xffOzJtyacSGecPdpjyNxGKq6nQbmnE5evaSuSqqvbMAGrHh
-KuixGccvNjklsMb8li8EIPaoZ3X/uVXghirHqsl96gyucXbbAtj12SYlI4OIgVWV
-wkKbHR/TefukV3Zcz1Vn8bCXBh6JLosTBwuVWmJeCF8S0b2BiFD78/+HKUb4vSSR
-qI3vGCfYqJ9HuvL2/gLM/iBKkeyiMusDBZE4fH/0aUC4bsuvPzWQYO5DP8dgpMhj
-PYJR39PnbkAAzLFnaKN2k/6XQ+DCLF7LgWv+zW8zHuVfX1mPBjLFEfRUzJd55Jai
-W6IC1uST3g3r1fo8Q7ik5ubYsLV3KDyvFH/psfG9JIx8XSzA5EyJ70ey1HEfBRa+
-L+d+2x1Ypu7ZjcoHfMd4
-=MJF0
+iQIcBAEBAgAGBQJThE0dAAoJEBx+YmzsjxAg38EP/035jkjbn8xrfVMZTORgZYE1
+rU9ATQ7Z6mMqajcZ7Ut+RnKJtBcPnQvG6AtHnj4B/WUn1ho6blt3/5MJ8mEJCslR
+hZv/4ZpQUeRwUh186RIl3A1/AGvsSC0q9mAoXcLMm4gwTk5GcUEc8ojhYwmYFIu1
+Ws67Uf/5eKC58d53XZUPP0h1PyI6EvBzjFPL1XnbVRlD9gEN+gmt4MAWF3ZJMrIv
+OyT+j0YoftiE7/DI9mzTDEeRbenqGFKVeyYbB0rsuuQA7GtENQa5Jj6klJxYbtl+
+lMt2/3QohxB8zue5F3gD+1d9hW9p/Mqqhsc5yAqISw8IrnE1gY2q6tUhqElwe0eR
+7ef7h1avfXeYfiNR3FCgO0jhIWhz9B9kK8zwOgj34Pe0WB4bdBPLy2MOsn5WAz7F
+HLd1goDCmefpFWJyAaaDl8pvv+nogn//ZdsDGXb0CQdhrsWlRxqDs1HcTuJn1Gp5
+qdtnbPsVdaJu7J3aXC8vElimGg+KBF7ckCl0JDe0PW4Psp6ppN+riXWuLDxi/QcP
+E20egYnNxecDn/UpgoU15X5hWSpzgaRjiqYrwKTOMVJrnVEd0+tGYqEUFVKXDNsD
+YXeFB2CQV+LhTcsyZUqXiYIZnFve3aj0XanFVEQnNV+fCqf5XTpZyBykepx2A3/n
+r20ywd4ETfW546zevAOP
+=2LgE
 -----END PGP SIGNATURE-----
 
---RYJh/3oyKhIjGcML--
+--gDGSpKKIBgtShtf+--
