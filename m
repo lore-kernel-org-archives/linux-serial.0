@@ -1,136 +1,97 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
-Date: Tue, 27 May 2014 10:30:21 +0200
-Message-ID: <20140527083021.GE4730@lukather>
+Subject: Re: [PATCH 19/22] ARM: sunxi: Add earlyprintk support using R_UART
+ (sun6i/sun8i)
+Date: Tue, 27 May 2014 10:34:50 +0200
+Message-ID: <20140527083450.GG4730@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-18-git-send-email-wens@csie.org>
- <20140525191434.GX10768@lukather>
- <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com>
+ <1400831485-28576-20-git-send-email-wens@csie.org>
+ <20140525184636.GN10768@lukather>
+ <CAGb2v66jL5-rmSy0W38og6bLiNkGu0wekEZfOuh0Fn2oOsJpaQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gDGSpKKIBgtShtf+"
+	protocol="application/pgp-signature"; boundary="kjpMrWxdCilgNbo1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:41778 "EHLO
+Received: from top.free-electrons.com ([176.31.233.9]:41800 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751617AbaE0IfF (ORCPT
+	with ESMTP id S1751795AbaE0IfH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 27 May 2014 04:35:05 -0400
+	Tue, 27 May 2014 04:35:07 -0400
 Content-Disposition: inline
-In-Reply-To: <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com>
+In-Reply-To: <CAGb2v66jL5-rmSy0W38og6bLiNkGu0wekEZfOuh0Fn2oOsJpaQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Chen-Yu Tsai <wens@csie.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
 
---gDGSpKKIBgtShtf+
+--kjpMrWxdCilgNbo1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 26, 2014 at 12:36:38PM +0800, Chen-Yu Tsai wrote:
-> On Mon, May 26, 2014 at 3:14 AM, Maxime Ripard
+On Mon, May 26, 2014 at 05:25:43PM +0800, Chen-Yu Tsai wrote:
+> On Mon, May 26, 2014 at 2:46 AM, Maxime Ripard
 > <maxime.ripard@free-electrons.com> wrote:
-> > On Fri, May 23, 2014 at 03:51:20PM +0800, Chen-Yu Tsai wrote:
-> >> The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
-> >> The differences are the AR100 clock can no longer be modified,
-> >> and the APB0 clock has different divisors.
-> >>
-> >> This patch adds a compatible with a modified subdevice list for
-> >> the A23.
+> > Hi,
+> >
+> > On Fri, May 23, 2014 at 03:51:22PM +0800, Chen-Yu Tsai wrote:
+> >> sun6i/sun8i have a UART in the RTC block group, which can be used
+> >> as an early console. This is most useful on sun8i as UART0 is muxed
+> >> with MMC0, which is not available if we boot from MMC.
 > >>
 > >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 > >> ---
-> >>  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
-> >>  drivers/mfd/sun6i-prcm.c                           | 30 +++++++++++++=
-+++++++++
-> >>  2 files changed, 31 insertions(+), 1 deletion(-)
+> >>  arch/arm/Kconfig.debug | 10 ++++++++++
+> >>  1 file changed, 10 insertions(+)
 > >>
-> >> diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Do=
-cumentation/devicetree/bindings/mfd/sun6i-prcm.txt
-> >> index 1f5a31f..03c5a55 100644
-> >> --- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-> >> +++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-> >> @@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Managemen=
-t related devices
-> >>  (like clks and reset controllers).
+> >> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> >> index eab8ecb..9e22708 100644
+> >> --- a/arch/arm/Kconfig.debug
+> >> +++ b/arch/arm/Kconfig.debug
+> >> @@ -694,6 +694,14 @@ choice
+> >>                 Say Y here if you want kernel low-level debugging supp=
+ort
+> >>                 on Allwinner A1X based platforms on the UART1.
 > >>
-> >>  Required properties:
-> >> - - compatible: "allwinner,sun6i-a31-prcm"
-> >> + - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prc=
-m"
-> >>   - reg: The PRCM registers range
-> >>
-> >>  The prcm node may contain several subdevices definitions:
-> >> diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
-> >> index 718fc4d..c96bb6c 100644
-> >> --- a/drivers/mfd/sun6i-prcm.c
-> >> +++ b/drivers/mfd/sun6i-prcm.c
-> >> @@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdev=
-s[] =3D {
-> >>       },
-> >>  };
-> >>
-> >> +static const struct mfd_cell sun8i_a23_prcm_subdevs[] =3D {
-> >> +     {
-> >> +             .name =3D "sun6i-a31-apb0-clk",
-> >> +             .of_compatible =3D "allwinner,sun8i-a23-apb0-clk",
-> >> +             .num_resources =3D ARRAY_SIZE(sun6i_a31_apb0_clk_res),
-> >> +             .resources =3D sun6i_a31_apb0_clk_res,
-> >> +     },
-> >> +     {
-> >> +             .name =3D "sun6i-a31-apb0-gates-clk",
-> >> +             .of_compatible =3D "allwinner,sun6i-a31-apb0-gates-clk",
-> >> +             .num_resources =3D ARRAY_SIZE(sun6i_a31_apb0_gates_clk_r=
-es),
-> >> +             .resources =3D sun6i_a31_apb0_gates_clk_res,
-> >> +     },
+> >> +     config DEBUG_SUNXI_R_UART
+> >> +             bool "Kernel low-level debugging messages via sunXi R_UA=
+RT"
+> >> +             depends on ARCH_SUNXI
 > >
-> > Did I just have a brainfart, or didn't you just introduced an
-> > sun8i-a23-apb0-gates-clk driver?
+> > It should rather depend on MACH_SUN8I.
 >=20
-> My bad, I missed this one. The one in the DT is correct.
-> It actually works, so I'm a bit confused here.
-> Which one does the driver core actually use?
+> I assume no sun6i devices would use it, or have pads available for
+> it?  If so, then MACH_SUN8I makes sense.
 
-Actually, it will use both, and will match the of_compatible string
-try to match it against the mfd-sub-nodes compatibles. If nothing
-matches, it won't fill the dev.of_node field.
+Then a depends on MACH_SUN6I || MACH_SUN8I.
 
->=20
-> > And there's no ar100 and ahb0 clocks ?
->=20
-> The ahb0 is a fixed-factor (1:1) clock. There are no controls for it.
-> The ar100 clock on the A23 has no controls either, so fixed-factor
-> clock again.
-
-Ack.
+Maxime
 
 --=20
 Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---gDGSpKKIBgtShtf+
+--kjpMrWxdCilgNbo1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJThE0dAAoJEBx+YmzsjxAg38EP/035jkjbn8xrfVMZTORgZYE1
-rU9ATQ7Z6mMqajcZ7Ut+RnKJtBcPnQvG6AtHnj4B/WUn1ho6blt3/5MJ8mEJCslR
-hZv/4ZpQUeRwUh186RIl3A1/AGvsSC0q9mAoXcLMm4gwTk5GcUEc8ojhYwmYFIu1
-Ws67Uf/5eKC58d53XZUPP0h1PyI6EvBzjFPL1XnbVRlD9gEN+gmt4MAWF3ZJMrIv
-OyT+j0YoftiE7/DI9mzTDEeRbenqGFKVeyYbB0rsuuQA7GtENQa5Jj6klJxYbtl+
-lMt2/3QohxB8zue5F3gD+1d9hW9p/Mqqhsc5yAqISw8IrnE1gY2q6tUhqElwe0eR
-7ef7h1avfXeYfiNR3FCgO0jhIWhz9B9kK8zwOgj34Pe0WB4bdBPLy2MOsn5WAz7F
-HLd1goDCmefpFWJyAaaDl8pvv+nogn//ZdsDGXb0CQdhrsWlRxqDs1HcTuJn1Gp5
-qdtnbPsVdaJu7J3aXC8vElimGg+KBF7ckCl0JDe0PW4Psp6ppN+riXWuLDxi/QcP
-E20egYnNxecDn/UpgoU15X5hWSpzgaRjiqYrwKTOMVJrnVEd0+tGYqEUFVKXDNsD
-YXeFB2CQV+LhTcsyZUqXiYIZnFve3aj0XanFVEQnNV+fCqf5XTpZyBykepx2A3/n
-r20ywd4ETfW546zevAOP
-=2LgE
+iQIcBAEBAgAGBQJThE4pAAoJEBx+YmzsjxAg9bgQAJ6wN7wClFZJeI8Pr/dLovxw
+CptfI8BcsIBGJ5m2D+MrySJoPSvHqNRrDCwVBSM27CkpUAOQ3zejZRuPDympYD6j
+1DbuF5C/6d73VO07NIdeImFyeqvUVQU+foACehvJOhN5gyLkkDOCD57dwNdjtMbZ
+XKW5g8XdMMZTjWGhzxxJ2FVnO51PTehwJpFuCr05WBFaR5ubsigJD5f6OJADXda1
+/bO5RiZLS5rfHJCVI0gWuE/rXsbl1ywt8J0dF4JRGas0a3h5VPmobcGCoSLkeTaZ
+nBVtGNFWUrEL+zB1mG4MbFHbiut6c+eAAq920VticCFQBvPx6nfxeNTE1uUH9VVs
+jEw/0GVIWZEbxeZrtJ8WVuXCXclDsMfvGF4r8TKAwawRKxSES+CxqEcdh3aMJZpM
+yFpMDmg0pK/jBZKnVjm/FN58eD+YmbAAVGOThXJSh6Lh4EjGWwsLJuXptvSQrm6q
+N23FSagrclXYYW9K6EoZojHoOrJJHWmFPfwVG3I55vz3pSPy/7dw453JIM35CB/G
+sVp27Ukd3xSRrxW0c0k8zCccxvOPzvgH0b6w/Y00tGWfUnRbE+noLZyFt1N1mIRC
+hUWH4tQiWKkzaWmtSutk5GuWvOOfY7FzMaF5DfRDJ/7uFNvyYTZDwwdCvXOBTbcV
+Y0tFqeRS3MjFBiQzYArA
+=4UfM
 -----END PGP SIGNATURE-----
 
---gDGSpKKIBgtShtf+--
+--kjpMrWxdCilgNbo1--
