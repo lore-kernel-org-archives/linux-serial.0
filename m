@@ -1,146 +1,163 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH 20/22] ARM: sun8i: Add SMP support for the Allwinner A23
-Date: Tue, 27 May 2014 09:09:13 +0100
-Message-ID: <53844829.5050005@arm.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 22/22] ARM: sun8i: dt: Add Ippo-q8h v5 support
+Date: Tue, 27 May 2014 10:22:16 +0200
+Message-ID: <20140527082216.GD4730@lukather>
 References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-21-git-send-email-wens@csie.org>
- <20140525192652.GZ10768@lukather>
- <CAGb2v653DqF38OfbhLRbjM-D=mzm-+HGJYcFoVZQVJBv-hoJ6w@mail.gmail.com>
+ <1400831485-28576-23-git-send-email-wens@csie.org>
+ <20140525193955.GB10768@lukather>
+ <CAGb2v64EHLsj-cy13yf28K8vkTJUCv95q=x-7c2yiHQ=uBm-sw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAGb2v653DqF38OfbhLRbjM-D=mzm-+HGJYcFoVZQVJBv-hoJ6w@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Chen-Yu Tsai <wens@csie.org>
-Cc: devicetree <devicetree@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Emilio Lopez <emilio@elopez.com.ar>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Rob Herring <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Lee Jones <lee.jones@linaro.org>, Luc Verhaegen <libv@skynet.be>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RYJh/3oyKhIjGcML"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:41616 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752074AbaE0IZF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 27 May 2014 04:25:05 -0400
+Content-Disposition: inline
+In-Reply-To: <CAGb2v64EHLsj-cy13yf28K8vkTJUCv95q=x-7c2yiHQ=uBm-sw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 
-On 26/05/14 04:57, Chen-Yu Tsai wrote:
-> On Mon, May 26, 2014 at 3:26 AM, Maxime Ripard
+
+--RYJh/3oyKhIjGcML
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, May 26, 2014 at 12:23:09PM +0800, Chen-Yu Tsai wrote:
+> On Mon, May 26, 2014 at 3:39 AM, Maxime Ripard
 > <maxime.ripard@free-electrons.com> wrote:
->> On Fri, May 23, 2014 at 03:51:23PM +0800, Chen-Yu Tsai wrote:
->>> The A23 is a dual Cortex-A7. Add the logic to use the IPs used to
->>> control the CPU configuration and the CPU power so that we can
->>> bring up secondary CPUs at boot.
->>>
->>> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
->>> ---
->>>  arch/arm/mach-sunxi/platsmp.c | 69 +++++++++++++++++++++++++++++++++++++++++++
->>>  1 file changed, 69 insertions(+)
->>>
->>> diff --git a/arch/arm/mach-sunxi/platsmp.c b/arch/arm/mach-sunxi/platsmp.c
->>> index c53077b..688faaf 100644
->>> --- a/arch/arm/mach-sunxi/platsmp.c
->>> +++ b/arch/arm/mach-sunxi/platsmp.c
->>> @@ -121,3 +121,72 @@ struct smp_operations sun6i_smp_ops __initdata = {
->>>       .smp_boot_secondary     = sun6i_smp_boot_secondary,
->>>  };
->>>  CPU_METHOD_OF_DECLARE(sun6i_smp, "allwinner,sun6i-a31", &sun6i_smp_ops);
->>> +
->>> +static void __init sun8i_smp_prepare_cpus(unsigned int max_cpus)
->>> +{
->>> +     struct device_node *node;
->>> +
->>> +     node = of_find_compatible_node(NULL, NULL, "allwinner,sun8i-a23-prcm");
->>> +     if (!node) {
->>> +             pr_err("Missing A23 PRCM node in the device tree\n");
->>> +             return;
->>> +     }
->>> +
->>> +     prcm_membase = of_iomap(node, 0);
->>> +     if (!prcm_membase) {
->>> +             pr_err("Couldn't map A23 PRCM registers\n");
->>> +             return;
->>> +     }
->>> +
->>> +     node = of_find_compatible_node(NULL, NULL,
->>> +                                    "allwinner,sun8i-a23-cpuconfig");
->>> +     if (!node) {
->>> +             pr_err("Missing A23 CPU config node in the device tree\n");
->>> +             return;
->>> +     }
->>> +
->>> +     cpucfg_membase = of_iomap(node, 0);
->>> +     if (!cpucfg_membase)
->>> +             pr_err("Couldn't map A23 CPU config registers\n");
->>> +
->>> +}
->>> +
->>> +static int sun8i_smp_boot_secondary(unsigned int cpu,
->>> +                                 struct task_struct *idle)
->>> +{
->>> +     u32 reg;
->>> +
->>> +     if (!(prcm_membase && cpucfg_membase))
->>> +             return -EFAULT;
->>> +
->>> +     spin_lock(&cpu_lock);
->>> +
->>> +     /* Set CPU boot address */
->>> +     writel(virt_to_phys(secondary_startup),
->>> +            cpucfg_membase + CPUCFG_PRIVATE0_REG);
->>> +
->>> +     /* Assert the CPU core in reset */
->>> +     writel(0, cpucfg_membase + CPUCFG_CPU_RST_CTRL_REG(cpu));
->>> +
->>> +     /* Assert the L1 cache in reset */
->>> +     reg = readl(cpucfg_membase + CPUCFG_GEN_CTRL_REG);
->>> +     writel(reg & ~BIT(cpu), cpucfg_membase + CPUCFG_GEN_CTRL_REG);
->>> +
->>> +     /* Clear CPU power-off gating */
->>> +     reg = readl(prcm_membase + PRCM_CPU_PWROFF_REG);
->>> +     writel(reg & ~BIT(cpu), prcm_membase + PRCM_CPU_PWROFF_REG);
->>> +     mdelay(1);
->>> +
->>> +     /* Deassert the CPU core reset */
->>> +     writel(3, cpucfg_membase + CPUCFG_CPU_RST_CTRL_REG(cpu));
->>> +
->>> +     spin_unlock(&cpu_lock);
->>> +
->>> +     return 0;
->>> +}
->>> +
->>> +struct smp_operations sun8i_smp_ops __initdata = {
->>> +     .smp_prepare_cpus       = sun8i_smp_prepare_cpus,
->>> +     .smp_boot_secondary     = sun8i_smp_boot_secondary,
->>> +};
->>> +CPU_METHOD_OF_DECLARE(sun8i_smp, "allwinner,sun8i-a23", &sun8i_smp_ops);
->>
->> You forgot to document the new enable-method.
-> 
-> I will add it.
-> 
->> Also, is there any plan to hae a working u-boot? I'd much prefer to
->> use PSCI if possible.
-> 
-> IIRC PSCI needs a secure SRAM block to store its program code.
-> Unfortunately the A23 doesn't have secure SRAM. I think it is
-> missing other security related features as well.
-> 
-> Or could it just live in generic SRAM, and the kernel marks it
-> as reserved or something.
-> 
-> Maybe Marc Zyngier (CCed) can shed some light on this?
+> > On Fri, May 23, 2014 at 03:51:25PM +0800, Chen-Yu Tsai wrote:
+> >> The Ippo-q8h is a tablet circiut board commonly found in cheap Android
+> >> tablets with A23 SoCs. There are at least 2 versions of the board, with
+> >> different peripherals, such as WiFi chips.
+> >>
+> >> This patch add supports for v5 of such boards, which has a ESP8089 WiFi
+> >> chip (not supported) connected to mmc1.
+> >>
+> >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+> >> ---
+> >>  arch/arm/boot/dts/Makefile                  |  2 ++
+> >>  arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts | 51 ++++++++++++++++++++=
++++++++++
+> >>  2 files changed, 53 insertions(+)
+> >>  create mode 100644 arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+> >>
+> >> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> >> index 6967393..f809a53 100644
+> >> --- a/arch/arm/boot/dts/Makefile
+> >> +++ b/arch/arm/boot/dts/Makefile
+> >> @@ -354,6 +354,8 @@ dtb-$(CONFIG_MACH_SUN7I) +=3D \
+> >>       sun7i-a20-cubietruck.dtb \
+> >>       sun7i-a20-i12-tvbox.dtb \
+> >>       sun7i-a20-olinuxino-micro.dtb
+> >> +dtb-$(CONFIG_MACH_SUN8I) +=3D \
+> >> +     sun8i-a23-ippo-q8h-v5.dtb
+> >>  dtb-$(CONFIG_ARCH_TEGRA) +=3D tegra20-harmony.dtb \
+> >>       tegra20-iris-512.dtb \
+> >>       tegra20-medcom-wide.dtb \
+> >> diff --git a/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts b/arch/arm/bo=
+ot/dts/sun8i-a23-ippo-q8h-v5.dts
+> >> new file mode 100644
+> >> index 0000000..7d0bd97
+> >> --- /dev/null
+> >> +++ b/arch/arm/boot/dts/sun8i-a23-ippo-q8h-v5.dts
+> >> @@ -0,0 +1,51 @@
+> >> +/*
+> >> + * Copyright 2014 Chen-Yu Tsai
+> >> + *
+> >> + * Chen-Yu Tsai <wens@csie.org>
+> >> + *
+> >> + * The code contained herein is licensed under the GNU General Public
+> >> + * License. You may obtain a copy of the GNU General Public License
+> >> + * Version 2 or later at the following locations:
+> >> + *
+> >> + * http://www.opensource.org/licenses/gpl-license.html
+> >> + * http://www.gnu.org/copyleft/gpl.html
+> >> + */
+> >> +
+> >> +/dts-v1/;
+> >> +/include/ "sun8i-a23.dtsi"
+> >> +
+> >> +/ {
+> >> +     model =3D "Ippo Q8H Dual Core Tablet (v5)";
+> >> +     compatible =3D "ippo,q8h-v5", "allwinner,sun8i-a23";
+> >> +
+> >> +     chosen {
+> >> +             bootargs =3D "earlyprintk console=3DttyS0,115200";
+> >> +     };
+> >
+> > You should probably add the memory node here too.
+>=20
+> OK.
+>=20
+> >> +
+> >> +     soc@01c00000 {
+> >> +             uart0: serial@01c28000 {
+> >> +                     pinctrl-names =3D "default";
+> >> +                     pinctrl-0 =3D <&uart0_pins_a>;
+> >> +                     status =3D "okay";
+> >> +             };
+> >> +
+> >> +             i2c0: i2c@01c2ac00 {
+> >> +                     pinctrl-names =3D "default";
+> >> +                     pinctrl-0 =3D <&i2c0_pins_a>;
+> >> +                     status =3D "okay";
+> >> +             };
+> >> +
+> >> +             i2c1: i2c@01c2b000 {
+> >> +                     pinctrl-names =3D "default";
+> >> +                     pinctrl-0 =3D <&i2c1_pins_a>;
+> >> +                     status =3D "okay";
+> >> +             };
+> >
+> > What are the two i2c busses wired to?
+>=20
+> i2c0 has the capacitive touch panel controller gsl1680 @ 0x40.
+>=20
+> i2c1 has something (gsensor maybe) connected @ 0x15.
+> The FEX file lists the gsensor on i2c1, but with the address as 0x18.
+> I may need to boot back to stock Android to figure it out.
+>=20
+> i2c2 has the camera sensor (GC0309) control connected to it @ 0x66.
+> I didn't list it because I overlooked it, and i2cdetect hangs.
+> It seems to need AXP PMIC support to activate the regulators.
+>=20
+> AFAIK, the kernel doesn't have drivers for these devices,
+> so how would we list them?
 
-No secure SRAM is required. You can normal SRAM, or even a normal region
-of RAM that is accessed from secure mode. Not as nice as having proper
-SRAM as on sun7i, but still perfectly functional.
+We don't need to list them yet. We can just wait for the drivers, it
+was just out of curiosity.
 
-Please consider having a proper PSCI implementation instead of always
-adding more code that will effectively lock people out of using the
-virtualization features the core has.
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-Thanks,
+--RYJh/3oyKhIjGcML
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-	M.
--- 
-Jazz is not dead. It just smells funny...
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJThEs4AAoJEBx+YmzsjxAgfpYP/R0OjC8+UkOsZ/SuC/cGmS2Z
+ocnz0z1qkoRwCv3dNV93lo5OhFBjyDrgioXYHVzQ2dzjZDcxfGkJvKfnvGJAF12J
+8WS3g2+D7QOTAKfVWxOQcO4Fd+t0S+hZmQOAU6IVYSQjnKCoJAXVCCxfYKF8WH3W
+olYWjR1NxLr5FoAyOZfcngHInKDujT+yyrtHnLhSZ/3CWYYva0YqQUuhgf+niEDc
+L3ZyYphq8h05E2VXlTEHtMq+M4S0Iaa1WdRPZkFQsjZSvIvqR12yGDSXURyJIKiz
+gMnszdbh6ufMAic/xffOzJtyacSGecPdpjyNxGKq6nQbmnE5evaSuSqqvbMAGrHh
+KuixGccvNjklsMb8li8EIPaoZ3X/uVXghirHqsl96gyucXbbAtj12SYlI4OIgVWV
+wkKbHR/TefukV3Zcz1Vn8bCXBh6JLosTBwuVWmJeCF8S0b2BiFD78/+HKUb4vSSR
+qI3vGCfYqJ9HuvL2/gLM/iBKkeyiMusDBZE4fH/0aUC4bsuvPzWQYO5DP8dgpMhj
+PYJR39PnbkAAzLFnaKN2k/6XQ+DCLF7LgWv+zW8zHuVfX1mPBjLFEfRUzJd55Jai
+W6IC1uST3g3r1fo8Q7ik5ubYsLV3KDyvFH/psfG9JIx8XSzA5EyJ70ey1HEfBRa+
+L+d+2x1Ypu7ZjcoHfMd4
+=MJF0
+-----END PGP SIGNATURE-----
+
+--RYJh/3oyKhIjGcML--
