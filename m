@@ -1,57 +1,34 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [RFC v2 01/10] arm: fiq: Allow EOI to be communicated to the intc
-Date: Wed, 28 May 2014 16:47:08 +0100
-Message-ID: <538604FC.8070102@linaro.org>
-References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
- <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
- <1400853478-5824-2-git-send-email-daniel.thompson@linaro.org>
- <20140523150022.GW3693@n2100.arm.linux.org.uk>
+From: Support <jobt@agroolive.com>
+Subject: Work.Begins.Today-linux-serial@vger.kernel.org
+Date: 28 May 2014 21:13:32 +0200
+Message-ID: <20140528211332.FCC707BACBBCA132@agroolive.com>
+Reply-To: elenfraks142@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20140523150022.GW3693@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Catalin Marinas <catalin.marinas@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundati>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from u15320412.onlinehome-server.com ([74.208.148.190]:45053 "EHLO
+	u15320412.onlinehome-server.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751158AbaE1TUM (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 28 May 2014 15:20:12 -0400
+Received: from agroolive.com (unknown [185.7.214.34])
+	by u15320412.onlinehome-server.com (Postfix) with ESMTPA id 81102E3A70D
+	for <linux-serial@vger.kernel.org>; Wed, 28 May 2014 15:13:28 -0400 (EDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 23/05/14 16:00, Russell King - ARM Linux wrote:
-> On Fri, May 23, 2014 at 02:57:49PM +0100, Daniel Thompson wrote:
->> +void eoi_fiq(int fiq)
->> +{
->> +	struct irq_data *irq_data = irq_get_irq_data(fiq + fiq_start);
->> +	struct irq_chip *chip = irq_data_get_irq_chip(irq_data);
->> +
->> +	if (chip->irq_eoi)
->> +			chip->irq_eoi(irq_data);
->> +}
-> 
-> So what if the IRQ chip takes a spinlock?  You can't take spinlocks in
-> FIQ context...  Who checks for that kind of stuff - just hoping that
-> the IRQ driver doesn't take a spinlock sounds real fragile.
+Dear linux-serial,
 
-I'll certainly do a better code review before pushing on. I certainly
-did overlook a spinlock in the GIC code which (I think) is actually
-reachable on a Tegra platform. I'll have to do something about that.
+The  position we currently have available is the Financial-Agent-
+position, a job that
 
-I've spent a bit of time this week seeing whether lock dep can be
-provoked into triggering if it sees a spin lock in this code but that
-isn't turning out very well (it needs CONFIG_LOCKDEP_DEBUG, relies on
-lockdep believing the FIQ handling state isn't a hardirq and still
-doesn't work properly).
+you can do from home, no previous experience need, low working 
+hours and you can work full or part time.
+You will receive a salary around $8,000/ month plus bonuses.
 
-Fortunately architectures using EOI appear to be pretty rare (I count
-five in drivers/irqchip/ and three in arch/arm/) so traditional code
-review and yelling might be sufficient.
+Please reply if you are interested in hearing more.
 
-
-Daniel.
+Agrotek.Olives
+5/28/2014 21:13:32
