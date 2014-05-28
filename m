@@ -1,161 +1,159 @@
 From: Abhijit Lamsoge <abhijitelinux@gmail.com>
-Subject: Serial Core crash in tty_open
-Date: Wed, 28 May 2014 14:25:06 +0530
-Message-ID: <CAKnSG-bhcO6x309aiE2nwgBjXU=0u=3dXH-GgKQvjK=6S-q1JA@mail.gmail.com>
+Subject: Re: Serial Core crash in tty_open
+Date: Wed, 28 May 2014 14:34:07 +0530
+Message-ID: <CAKnSG-bX89qBe-TJUAJBTBGS1Y9sq3sc4L9GBrwKpxUxE2QHKw@mail.gmail.com>
+References: <CAKnSG-bhcO6x309aiE2nwgBjXU=0u=3dXH-GgKQvjK=6S-q1JA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=001a11c36ae20ce69804fa71f815
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f42.google.com ([209.85.215.42]:57121 "EHLO
-	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752013AbaE1IzJ (ORCPT
+Received: from mail-lb0-f172.google.com ([209.85.217.172]:35259 "EHLO
+	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754512AbaE1JEJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 04:55:09 -0400
-Received: by mail-la0-f42.google.com with SMTP id el20so7235137lab.1
-        for <linux-serial@vger.kernel.org>; Wed, 28 May 2014 01:55:06 -0700 (PDT)
+	Wed, 28 May 2014 05:04:09 -0400
+Received: by mail-lb0-f172.google.com with SMTP id l4so5696477lbv.3
+        for <linux-serial@vger.kernel.org>; Wed, 28 May 2014 02:04:07 -0700 (PDT)
+In-Reply-To: <CAKnSG-bhcO6x309aiE2nwgBjXU=0u=3dXH-GgKQvjK=6S-q1JA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 
---001a11c36ae20ce69804fa71f815
-Content-Type: text/plain; charset=UTF-8
-
 Hi All,
-I had written a char/serial driver for Kernel 3.0 to 3.1 in old times
-and it used to work absolutely fine.
-Now I need this driver for some bluetooth, virtual mount-point for
-data transfer to and fro to mobile,
-for kernel version 3.8 onwards, however, there is a big crash, when I
-do any data transfer on the uart_port created by this driver.
-I have attached the crash file dmesg here.
-I am not sure, where the problem is, whether it's the kernel or the driver.
+Crash Starts here.
 
-Please let me know if anybody gets any idea from the crash.
+ 1498.722292] ------------[ cut here ]------------
+[ 1498.722305] WARNING: CPU: 3 PID: 5029 at
+/build/buildd/linux-3.13.0/drivers/tty/tty_io.c:1474
+tty_init_dev+0x1d0/0x1e0()
+[ 1498.722308] tty_init_dev:  driver does not set tty->port. This will
+crash the kernel later. Fix the driver!
+[ 1498.722310] Modules linked in: lvsd(OF) nls_utf8 isofs pci_stub
+vboxpci(OF) vboxnetadp(OF) vboxnetflt(OF) vboxdrv(OF) bnep rfcomm
+snd_hda_codec_hdmi snd_hda_codec_realtek uvcvideo videobuf2_vmalloc
+videobuf2_memops videobuf2_core videodev btusb bluetooth joydev arc4
+iwldvm mac80211 intel_rapl x86_pkg_temp_thermal intel_powerclamp
+coretemp kvm crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
+aesni_intel aes_x86_64 lrw gf128mul glue_helper ablk_helper cryptd
+psmouse serio_raw iwlwifi snd_hda_intel snd_hda_codec thinkpad_acpi
+lpc_ich nvram snd_hwdep cfg80211 snd_pcm snd_seq_midi
+snd_seq_midi_event snd_rawmidi snd_page_alloc snd_seq mei_me mei
+snd_seq_device snd_timer snd soundcore i915 parport_pc drm_kms_helper
+drm ppdev video i2c_algo_bit wmi lp parport mac_hid hid_generic usbhid
+hid e1000e ahci sdhci_pci libahci ptp sdhci pps_core
+[ 1498.722401] CPU: 3 PID: 5029 Comm: prj Tainted: GF          O
+3.13.0-24-generic #46-Ubuntu
+[ 1498.722403] Hardware name: LENOVO 242962Q/242962Q, BIOS G4ET97WW
+(2.57 ) 10/17/2013
+[ 1498.722406]  0000000000000009 ffff8800c82adb48 ffffffff81715a64
+ffff8800c82adb90
+[ 1498.722413]  ffff8800c82adb80 ffffffff810676bd ffff8800ac727800
+ffff8800a18556c0
+[ 1498.722418]  0000000000000001 ffffffff81863320 0000000000000000
+ffff8800c82adbe0
+[ 1498.722423] Call Trace:
+[ 1498.722432]  [<ffffffff81715a64>] dump_stack+0x45/0x56
+[ 1498.722438]  [<ffffffff810676bd>] warn_slowpath_common+0x7d/0xa0
+[ 1498.722443]  [<ffffffff8106772c>] warn_slowpath_fmt+0x4c/0x50
+[ 1498.722450]  [<ffffffff81362e63>] ? ___ratelimit+0x93/0x100
+[ 1498.722455]  [<ffffffff814428e0>] tty_init_dev+0x1d0/0x1e0
+[ 1498.722460]  [<ffffffff81443593>] tty_open+0x2f3/0x600
+[ 1498.722467]  [<ffffffff811bdebf>] chrdev_open+0x9f/0x1d0
+[ 1498.722472]  [<ffffffff811b6997>] do_dentry_open+0x1c7/0x2e0
+[ 1498.722477]  [<ffffffff811bde20>] ? cdev_put+0x30/0x30
+[ 1498.722481]  [<ffffffff811b6d39>] vfs_open+0x49/0x50
+[ 1498.722486]  [<ffffffff811c6c61>] do_last+0x561/0x1200
+[ 1498.722494]  [<ffffffff8130e23b>] ? apparmor_file_alloc_security+0x5b/0x180
+[ 1498.722500]  [<ffffffff811c8d7b>] path_openat+0xbb/0x620
+[ 1498.722506]  [<ffffffff8115683a>] ? __free_pages+0x5a/0x60
+[ 1498.722511]  [<ffffffff811ca13a>] do_filp_open+0x3a/0x90
+[ 1498.722517]  [<ffffffff811d6f27>] ? __alloc_fd+0xa7/0x130
+[ 1498.722522]  [<ffffffff811b8859>] do_sys_open+0x129/0x280
+[ 1498.722529]  [<ffffffff81020d35>] ? syscall_trace_enter+0x145/0x250
+[ 1498.722534]  [<ffffffff811b89ce>] SyS_open+0x1e/0x20
+[ 1498.722539]  [<ffffffff8172663f>] tracesys+0xe1/0xe6
+[ 1498.722542] ---[ end trace 97728bd8c9f8c14b ]---
+[ 1498.722552] BUG: unable to handle kernel NULL pointer dereference
+at 0000000000000090
+[ 1498.722624] IP: [<ffffffff814427b5>] tty_init_dev+0xa5/0x1e0
+[ 1498.722672] PGD b678f067 PUD 8b650067 PMD 0
+[ 1498.722715] Oops: 0002 [#1] SMP
+[ 1498.722749] Modules linked in: lvsd(OF) nls_utf8 isofs pci_stub
+vboxpci(OF) vboxnetadp(OF) vboxnetflt(OF) vboxdrv(OF) bnep rfcomm
+snd_hda_codec_hdmi snd_hda_codec_realtek uvcvideo videobuf2_vmalloc
+videobuf2_memops videobuf2_core videodev btusb bluetooth joydev arc4
+iwldvm mac80211 intel_rapl x86_pkg_temp_thermal intel_powerclamp
+coretemp kvm crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
+aesni_intel aes_x86_64 lrw gf128mul glue_helper ablk_helper cryptd
+psmouse serio_raw iwlwifi snd_hda_intel snd_hda_codec thinkpad_acpi
+lpc_ich nvram snd_hwdep cfg80211 snd_pcm snd_seq_midi
+snd_seq_midi_event snd_rawmidi snd_page_alloc snd_seq mei_me mei
+snd_seq_device snd_timer snd soundcore i915 parport_pc drm_kms_helper
+drm ppdev video i2c_algo_bit wmi lp parport mac_hid hid_generic usbhid
+hid e1000e ahci sdhci_pci libahci ptp sdhci pps_core
+[ 1498.723552] CPU: 3 PID: 5029 Comm: prj Tainted: GF       W  O
+3.13.0-24-generic #46-Ubuntu
+[ 1498.723612] Hardware name: LENOVO 242962Q/242962Q, BIOS G4ET97WW
+(2.57 ) 10/17/2013
+[ 1498.723668] task: ffff880114b82fe0 ti: ffff8800c82ac000 task.ti:
+ffff8800c82ac000
+[ 1498.723722] RIP: 0010:[<ffffffff814427b5>]  [<ffffffff814427b5>]
+tty_init_dev+0xa5/0x1e0
+[ 1498.723786] RSP: 0018:ffff8800c82adbf0  EFLAGS: 00010296
+[ 1498.723825] RAX: 0000000000000000 RBX: ffff8800ac727800 RCX: 0000000000000006
+[ 1498.723877] RDX: 0000000000000007 RSI: 0000000000000000 RDI: 0000000000000009
+[ 1498.723929] RBP: ffff8800c82adc10 R08: 0000000000000096 R09: 00000000000003f7
+[ 1498.723981] R10: 0000000000000000 R11: ffff8800c82ad876 R12: ffff8800a18556c0
+[ 1498.724033] R13: 0000000000000001 R14: ffffffff81863320 R15: 0000000000000000
+[ 1498.724086] FS:  00007fe64bee4740(0000) GS:ffff88011e2c0000(0000)
+knlGS:0000000000000000
+[ 1498.724145] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1498.724187] CR2: 0000000000000090 CR3: 00000000989b9000 CR4: 00000000001407e0
+[ 1498.724239] Stack:
+[ 1498.724256]  ffff880098acff10 ffff880098acff00 0000000000000000
+ffff8800a18556c0
+[ 1498.724323]  ffff8800c82adc68 ffffffff81443593 ffff8800960edd38
+ffff880114b82fe0
+[ 1498.724387]  2580000100008002 00000001c82adc7c ffff8800a1a1c068
+ffff8800960edd38
+[ 1498.724452] Call Trace:
+[ 1498.724476]  [<ffffffff81443593>] tty_open+0x2f3/0x600
+[ 1498.724518]  [<ffffffff811bdebf>] chrdev_open+0x9f/0x1d0
+[ 1498.724560]  [<ffffffff811b6997>] do_dentry_open+0x1c7/0x2e0
+[ 1498.724606]  [<ffffffff811bde20>] ? cdev_put+0x30/0x30
+[ 1498.724646]  [<ffffffff811b6d39>] vfs_open+0x49/0x50
+[ 1498.724686]  [<ffffffff811c6c61>] do_last+0x561/0x1200
+[ 1498.724728]  [<ffffffff8130e23b>] ? apparmor_file_alloc_security+0x5b/0x180
+[ 1498.724781]  [<ffffffff811c8d7b>] path_openat+0xbb/0x620
+[ 1498.724824]  [<ffffffff8115683a>] ? __free_pages+0x5a/0x60
+[ 1498.724868]  [<ffffffff811ca13a>] do_filp_open+0x3a/0x90
+[ 1498.724912]  [<ffffffff811d6f27>] ? __alloc_fd+0xa7/0x130
+[ 1498.724954]  [<ffffffff811b8859>] do_sys_open+0x129/0x280
+[ 1498.724998]  [<ffffffff81020d35>] ? syscall_trace_enter+0x145/0x250
+[ 1498.725047]  [<ffffffff811b89ce>] SyS_open+0x1e/0x20
+[ 1498.725087]  [<ffffffff8172663f>] tracesys+0xe1/0xe6
+[ 1498.725125] Code: 84 24 a0 00 00 00 48 89 de 4c 89 e7 48 8b 40 08
+48 85 c0 74 79 ff d0 85 c0 78 7b 48 8b 83 b8 02 00 00 48 85 c0 0f 84
+9b 00 00 00 <48> 89 98 90 00 00 00 48 8b b3 f8 01 00 00 48 89 df e8 65
+83 00
+[ 1498.725494] RIP  [<ffffffff814427b5>] tty_init_dev+0xa5/0x1e0
+[ 1498.725547]  RSP <ffff8800c82adbf0>
+[ 1498.725574] CR2: 0000000000000090
+[ 1498.739706] ---[ end trace 97728bd8c9f8c14c ]---
+root@hacked:~/work/mydr#
 
-
-Abhijit
-
---001a11c36ae20ce69804fa71f815
-Content-Type: application/octet-stream; name=ubuntu-dmesg
-Content-Disposition: attachment; filename=ubuntu-dmesg
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_hvqeb3i10
-
-CgogMTQ5OC43MjIyOTJdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQpbIDE0
-OTguNzIyMzA1XSBXQVJOSU5HOiBDUFU6IDMgUElEOiA1MDI5IGF0IC9idWlsZC9idWlsZGQvbGlu
-dXgtMy4xMy4wL2RyaXZlcnMvdHR5L3R0eV9pby5jOjE0NzQgdHR5X2luaXRfZGV2KzB4MWQwLzB4
-MWUwKCkKWyAxNDk4LjcyMjMwOF0gdHR5X2luaXRfZGV2OiAgZHJpdmVyIGRvZXMgbm90IHNldCB0
-dHktPnBvcnQuIFRoaXMgd2lsbCBjcmFzaCB0aGUga2VybmVsIGxhdGVyLiBGaXggdGhlIGRyaXZl
-ciEKWyAxNDk4LjcyMjMxMF0gTW9kdWxlcyBsaW5rZWQgaW46IGx2c2QoT0YpIG5sc191dGY4IGlz
-b2ZzIHBjaV9zdHViIHZib3hwY2koT0YpIHZib3huZXRhZHAoT0YpIHZib3huZXRmbHQoT0YpIHZi
-b3hkcnYoT0YpIGJuZXAgcmZjb21tIHNuZF9oZGFfY29kZWNfaGRtaSBzbmRfaGRhX2NvZGVjX3Jl
-YWx0ZWsgdXZjdmlkZW8gdmlkZW9idWYyX3ZtYWxsb2MgdmlkZW9idWYyX21lbW9wcyB2aWRlb2J1
-ZjJfY29yZSB2aWRlb2RldiBidHVzYiBibHVldG9vdGggam95ZGV2IGFyYzQgaXdsZHZtIG1hYzgw
-MjExIGludGVsX3JhcGwgeDg2X3BrZ190ZW1wX3RoZXJtYWwgaW50ZWxfcG93ZXJjbGFtcCBjb3Jl
-dGVtcCBrdm0gY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgZ2hhc2hfY2xtdWxuaV9pbnRl
-bCBhZXNuaV9pbnRlbCBhZXNfeDg2XzY0IGxydyBnZjEyOG11bCBnbHVlX2hlbHBlciBhYmxrX2hl
-bHBlciBjcnlwdGQgcHNtb3VzZSBzZXJpb19yYXcgaXdsd2lmaSBzbmRfaGRhX2ludGVsIHNuZF9o
-ZGFfY29kZWMgdGhpbmtwYWRfYWNwaSBscGNfaWNoIG52cmFtIHNuZF9od2RlcCBjZmc4MDIxMSBz
-bmRfcGNtIHNuZF9zZXFfbWlkaSBzbmRfc2VxX21pZGlfZXZlbnQgc25kX3Jhd21pZGkgc25kX3Bh
-Z2VfYWxsb2Mgc25kX3NlcSBtZWlfbWUgbWVpIHNuZF9zZXFfZGV2aWNlIHNuZF90aW1lciBzbmQg
-c291bmRjb3JlIGk5MTUgcGFycG9ydF9wYyBkcm1fa21zX2hlbHBlciBkcm0gcHBkZXYgdmlkZW8g
-aTJjX2FsZ29fYml0IHdtaSBscCBwYXJwb3J0IG1hY19oaWQgaGlkX2dlbmVyaWMgdXNiaGlkIGhp
-ZCBlMTAwMGUgYWhjaSBzZGhjaV9wY2kgbGliYWhjaSBwdHAgc2RoY2kgcHBzX2NvcmUKWyAxNDk4
-LjcyMjQwMV0gQ1BVOiAzIFBJRDogNTAyOSBDb21tOiBwcmogVGFpbnRlZDogR0YgICAgICAgICAg
-TyAzLjEzLjAtMjQtZ2VuZXJpYyAjNDYtVWJ1bnR1ClsgMTQ5OC43MjI0MDNdIEhhcmR3YXJlIG5h
-bWU6IExFTk9WTyAyNDI5NjJRLzI0Mjk2MlEsIEJJT1MgRzRFVDk3V1cgKDIuNTcgKSAxMC8xNy8y
-MDEzClsgMTQ5OC43MjI0MDZdICAwMDAwMDAwMDAwMDAwMDA5IGZmZmY4ODAwYzgyYWRiNDggZmZm
-ZmZmZmY4MTcxNWE2NCBmZmZmODgwMGM4MmFkYjkwClsgMTQ5OC43MjI0MTNdICBmZmZmODgwMGM4
-MmFkYjgwIGZmZmZmZmZmODEwNjc2YmQgZmZmZjg4MDBhYzcyNzgwMCBmZmZmODgwMGExODU1NmMw
-ClsgMTQ5OC43MjI0MThdICAwMDAwMDAwMDAwMDAwMDAxIGZmZmZmZmZmODE4NjMzMjAgMDAwMDAw
-MDAwMDAwMDAwMCBmZmZmODgwMGM4MmFkYmUwClsgMTQ5OC43MjI0MjNdIENhbGwgVHJhY2U6Clsg
-MTQ5OC43MjI0MzJdICBbPGZmZmZmZmZmODE3MTVhNjQ+XSBkdW1wX3N0YWNrKzB4NDUvMHg1Ngpb
-IDE0OTguNzIyNDM4XSAgWzxmZmZmZmZmZjgxMDY3NmJkPl0gd2Fybl9zbG93cGF0aF9jb21tb24r
-MHg3ZC8weGEwClsgMTQ5OC43MjI0NDNdICBbPGZmZmZmZmZmODEwNjc3MmM+XSB3YXJuX3Nsb3dw
-YXRoX2ZtdCsweDRjLzB4NTAKWyAxNDk4LjcyMjQ1MF0gIFs8ZmZmZmZmZmY4MTM2MmU2Mz5dID8g
-X19fcmF0ZWxpbWl0KzB4OTMvMHgxMDAKWyAxNDk4LjcyMjQ1NV0gIFs8ZmZmZmZmZmY4MTQ0Mjhl
-MD5dIHR0eV9pbml0X2RldisweDFkMC8weDFlMApbIDE0OTguNzIyNDYwXSAgWzxmZmZmZmZmZjgx
-NDQzNTkzPl0gdHR5X29wZW4rMHgyZjMvMHg2MDAKWyAxNDk4LjcyMjQ2N10gIFs8ZmZmZmZmZmY4
-MTFiZGViZj5dIGNocmRldl9vcGVuKzB4OWYvMHgxZDAKWyAxNDk4LjcyMjQ3Ml0gIFs8ZmZmZmZm
-ZmY4MTFiNjk5Nz5dIGRvX2RlbnRyeV9vcGVuKzB4MWM3LzB4MmUwClsgMTQ5OC43MjI0NzddICBb
-PGZmZmZmZmZmODExYmRlMjA+XSA/IGNkZXZfcHV0KzB4MzAvMHgzMApbIDE0OTguNzIyNDgxXSAg
-WzxmZmZmZmZmZjgxMWI2ZDM5Pl0gdmZzX29wZW4rMHg0OS8weDUwClsgMTQ5OC43MjI0ODZdICBb
-PGZmZmZmZmZmODExYzZjNjE+XSBkb19sYXN0KzB4NTYxLzB4MTIwMApbIDE0OTguNzIyNDk0XSAg
-WzxmZmZmZmZmZjgxMzBlMjNiPl0gPyBhcHBhcm1vcl9maWxlX2FsbG9jX3NlY3VyaXR5KzB4NWIv
-MHgxODAKWyAxNDk4LjcyMjUwMF0gIFs8ZmZmZmZmZmY4MTFjOGQ3Yj5dIHBhdGhfb3BlbmF0KzB4
-YmIvMHg2MjAKWyAxNDk4LjcyMjUwNl0gIFs8ZmZmZmZmZmY4MTE1NjgzYT5dID8gX19mcmVlX3Bh
-Z2VzKzB4NWEvMHg2MApbIDE0OTguNzIyNTExXSAgWzxmZmZmZmZmZjgxMWNhMTNhPl0gZG9fZmls
-cF9vcGVuKzB4M2EvMHg5MApbIDE0OTguNzIyNTE3XSAgWzxmZmZmZmZmZjgxMWQ2ZjI3Pl0gPyBf
-X2FsbG9jX2ZkKzB4YTcvMHgxMzAKWyAxNDk4LjcyMjUyMl0gIFs8ZmZmZmZmZmY4MTFiODg1OT5d
-IGRvX3N5c19vcGVuKzB4MTI5LzB4MjgwClsgMTQ5OC43MjI1MjldICBbPGZmZmZmZmZmODEwMjBk
-MzU+XSA/IHN5c2NhbGxfdHJhY2VfZW50ZXIrMHgxNDUvMHgyNTAKWyAxNDk4LjcyMjUzNF0gIFs8
-ZmZmZmZmZmY4MTFiODljZT5dIFN5U19vcGVuKzB4MWUvMHgyMApbIDE0OTguNzIyNTM5XSAgWzxm
-ZmZmZmZmZjgxNzI2NjNmPl0gdHJhY2VzeXMrMHhlMS8weGU2ClsgMTQ5OC43MjI1NDJdIC0tLVsg
-ZW5kIHRyYWNlIDk3NzI4YmQ4YzlmOGMxNGIgXS0tLQpbIDE0OTguNzIyNTUyXSBCVUc6IHVuYWJs
-ZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCAwMDAwMDAwMDAw
-MDAwMDkwClsgMTQ5OC43MjI2MjRdIElQOiBbPGZmZmZmZmZmODE0NDI3YjU+XSB0dHlfaW5pdF9k
-ZXYrMHhhNS8weDFlMApbIDE0OTguNzIyNjcyXSBQR0QgYjY3OGYwNjcgUFVEIDhiNjUwMDY3IFBN
-RCAwIApbIDE0OTguNzIyNzE1XSBPb3BzOiAwMDAyIFsjMV0gU01QIApbIDE0OTguNzIyNzQ5XSBN
-b2R1bGVzIGxpbmtlZCBpbjogbHZzZChPRikgbmxzX3V0ZjggaXNvZnMgcGNpX3N0dWIgdmJveHBj
-aShPRikgdmJveG5ldGFkcChPRikgdmJveG5ldGZsdChPRikgdmJveGRydihPRikgYm5lcCByZmNv
-bW0gc25kX2hkYV9jb2RlY19oZG1pIHNuZF9oZGFfY29kZWNfcmVhbHRlayB1dmN2aWRlbyB2aWRl
-b2J1ZjJfdm1hbGxvYyB2aWRlb2J1ZjJfbWVtb3BzIHZpZGVvYnVmMl9jb3JlIHZpZGVvZGV2IGJ0
-dXNiIGJsdWV0b290aCBqb3lkZXYgYXJjNCBpd2xkdm0gbWFjODAyMTEgaW50ZWxfcmFwbCB4ODZf
-cGtnX3RlbXBfdGhlcm1hbCBpbnRlbF9wb3dlcmNsYW1wIGNvcmV0ZW1wIGt2bSBjcmN0MTBkaWZf
-cGNsbXVsIGNyYzMyX3BjbG11bCBnaGFzaF9jbG11bG5pX2ludGVsIGFlc25pX2ludGVsIGFlc194
-ODZfNjQgbHJ3IGdmMTI4bXVsIGdsdWVfaGVscGVyIGFibGtfaGVscGVyIGNyeXB0ZCBwc21vdXNl
-IHNlcmlvX3JhdyBpd2x3aWZpIHNuZF9oZGFfaW50ZWwgc25kX2hkYV9jb2RlYyB0aGlua3BhZF9h
-Y3BpIGxwY19pY2ggbnZyYW0gc25kX2h3ZGVwIGNmZzgwMjExIHNuZF9wY20gc25kX3NlcV9taWRp
-IHNuZF9zZXFfbWlkaV9ldmVudCBzbmRfcmF3bWlkaSBzbmRfcGFnZV9hbGxvYyBzbmRfc2VxIG1l
-aV9tZSBtZWkgc25kX3NlcV9kZXZpY2Ugc25kX3RpbWVyIHNuZCBzb3VuZGNvcmUgaTkxNSBwYXJw
-b3J0X3BjIGRybV9rbXNfaGVscGVyIGRybSBwcGRldiB2aWRlbyBpMmNfYWxnb19iaXQgd21pIGxw
-IHBhcnBvcnQgbWFjX2hpZCBoaWRfZ2VuZXJpYyB1c2JoaWQgaGlkIGUxMDAwZSBhaGNpIHNkaGNp
-X3BjaSBsaWJhaGNpIHB0cCBzZGhjaSBwcHNfY29yZQpbIDE0OTguNzIzNTUyXSBDUFU6IDMgUElE
-OiA1MDI5IENvbW06IHByaiBUYWludGVkOiBHRiAgICAgICBXICBPIDMuMTMuMC0yNC1nZW5lcmlj
-ICM0Ni1VYnVudHUKWyAxNDk4LjcyMzYxMl0gSGFyZHdhcmUgbmFtZTogTEVOT1ZPIDI0Mjk2MlEv
-MjQyOTYyUSwgQklPUyBHNEVUOTdXVyAoMi41NyApIDEwLzE3LzIwMTMKWyAxNDk4LjcyMzY2OF0g
-dGFzazogZmZmZjg4MDExNGI4MmZlMCB0aTogZmZmZjg4MDBjODJhYzAwMCB0YXNrLnRpOiBmZmZm
-ODgwMGM4MmFjMDAwClsgMTQ5OC43MjM3MjJdIFJJUDogMDAxMDpbPGZmZmZmZmZmODE0NDI3YjU+
-XSAgWzxmZmZmZmZmZjgxNDQyN2I1Pl0gdHR5X2luaXRfZGV2KzB4YTUvMHgxZTAKWyAxNDk4Ljcy
-Mzc4Nl0gUlNQOiAwMDE4OmZmZmY4ODAwYzgyYWRiZjAgIEVGTEFHUzogMDAwMTAyOTYKWyAxNDk4
-LjcyMzgyNV0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjg4MDBhYzcyNzgwMCBSQ1g6
-IDAwMDAwMDAwMDAwMDAwMDYKWyAxNDk4LjcyMzg3N10gUkRYOiAwMDAwMDAwMDAwMDAwMDA3IFJT
-STogMDAwMDAwMDAwMDAwMDAwMCBSREk6IDAwMDAwMDAwMDAwMDAwMDkKWyAxNDk4LjcyMzkyOV0g
-UkJQOiBmZmZmODgwMGM4MmFkYzEwIFIwODogMDAwMDAwMDAwMDAwMDA5NiBSMDk6IDAwMDAwMDAw
-MDAwMDAzZjcKWyAxNDk4LjcyMzk4MV0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogZmZmZjg4
-MDBjODJhZDg3NiBSMTI6IGZmZmY4ODAwYTE4NTU2YzAKWyAxNDk4LjcyNDAzM10gUjEzOiAwMDAw
-MDAwMDAwMDAwMDAxIFIxNDogZmZmZmZmZmY4MTg2MzMyMCBSMTU6IDAwMDAwMDAwMDAwMDAwMDAK
-WyAxNDk4LjcyNDA4Nl0gRlM6ICAwMDAwN2ZlNjRiZWU0NzQwKDAwMDApIEdTOmZmZmY4ODAxMWUy
-YzAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMApbIDE0OTguNzI0MTQ1XSBDUzogIDAw
-MTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzClsgMTQ5OC43MjQxODdd
-IENSMjogMDAwMDAwMDAwMDAwMDA5MCBDUjM6IDAwMDAwMDAwOTg5YjkwMDAgQ1I0OiAwMDAwMDAw
-MDAwMTQwN2UwClsgMTQ5OC43MjQyMzldIFN0YWNrOgpbIDE0OTguNzI0MjU2XSAgZmZmZjg4MDA5
-OGFjZmYxMCBmZmZmODgwMDk4YWNmZjAwIDAwMDAwMDAwMDAwMDAwMDAgZmZmZjg4MDBhMTg1NTZj
-MApbIDE0OTguNzI0MzIzXSAgZmZmZjg4MDBjODJhZGM2OCBmZmZmZmZmZjgxNDQzNTkzIGZmZmY4
-ODAwOTYwZWRkMzggZmZmZjg4MDExNGI4MmZlMApbIDE0OTguNzI0Mzg3XSAgMjU4MDAwMDEwMDAw
-ODAwMiAwMDAwMDAwMWM4MmFkYzdjIGZmZmY4ODAwYTFhMWMwNjggZmZmZjg4MDA5NjBlZGQzOApb
-IDE0OTguNzI0NDUyXSBDYWxsIFRyYWNlOgpbIDE0OTguNzI0NDc2XSAgWzxmZmZmZmZmZjgxNDQz
-NTkzPl0gdHR5X29wZW4rMHgyZjMvMHg2MDAKWyAxNDk4LjcyNDUxOF0gIFs8ZmZmZmZmZmY4MTFi
-ZGViZj5dIGNocmRldl9vcGVuKzB4OWYvMHgxZDAKWyAxNDk4LjcyNDU2MF0gIFs8ZmZmZmZmZmY4
-MTFiNjk5Nz5dIGRvX2RlbnRyeV9vcGVuKzB4MWM3LzB4MmUwClsgMTQ5OC43MjQ2MDZdICBbPGZm
-ZmZmZmZmODExYmRlMjA+XSA/IGNkZXZfcHV0KzB4MzAvMHgzMApbIDE0OTguNzI0NjQ2XSAgWzxm
-ZmZmZmZmZjgxMWI2ZDM5Pl0gdmZzX29wZW4rMHg0OS8weDUwClsgMTQ5OC43MjQ2ODZdICBbPGZm
-ZmZmZmZmODExYzZjNjE+XSBkb19sYXN0KzB4NTYxLzB4MTIwMApbIDE0OTguNzI0NzI4XSAgWzxm
-ZmZmZmZmZjgxMzBlMjNiPl0gPyBhcHBhcm1vcl9maWxlX2FsbG9jX3NlY3VyaXR5KzB4NWIvMHgx
-ODAKWyAxNDk4LjcyNDc4MV0gIFs8ZmZmZmZmZmY4MTFjOGQ3Yj5dIHBhdGhfb3BlbmF0KzB4YmIv
-MHg2MjAKWyAxNDk4LjcyNDgyNF0gIFs8ZmZmZmZmZmY4MTE1NjgzYT5dID8gX19mcmVlX3BhZ2Vz
-KzB4NWEvMHg2MApbIDE0OTguNzI0ODY4XSAgWzxmZmZmZmZmZjgxMWNhMTNhPl0gZG9fZmlscF9v
-cGVuKzB4M2EvMHg5MApbIDE0OTguNzI0OTEyXSAgWzxmZmZmZmZmZjgxMWQ2ZjI3Pl0gPyBfX2Fs
-bG9jX2ZkKzB4YTcvMHgxMzAKWyAxNDk4LjcyNDk1NF0gIFs8ZmZmZmZmZmY4MTFiODg1OT5dIGRv
-X3N5c19vcGVuKzB4MTI5LzB4MjgwClsgMTQ5OC43MjQ5OThdICBbPGZmZmZmZmZmODEwMjBkMzU+
-XSA/IHN5c2NhbGxfdHJhY2VfZW50ZXIrMHgxNDUvMHgyNTAKWyAxNDk4LjcyNTA0N10gIFs8ZmZm
-ZmZmZmY4MTFiODljZT5dIFN5U19vcGVuKzB4MWUvMHgyMApbIDE0OTguNzI1MDg3XSAgWzxmZmZm
-ZmZmZjgxNzI2NjNmPl0gdHJhY2VzeXMrMHhlMS8weGU2ClsgMTQ5OC43MjUxMjVdIENvZGU6IDg0
-IDI0IGEwIDAwIDAwIDAwIDQ4IDg5IGRlIDRjIDg5IGU3IDQ4IDhiIDQwIDA4IDQ4IDg1IGMwIDc0
-IDc5IGZmIGQwIDg1IGMwIDc4IDdiIDQ4IDhiIDgzIGI4IDAyIDAwIDAwIDQ4IDg1IGMwIDBmIDg0
-IDliIDAwIDAwIDAwIDw0OD4gODkgOTggOTAgMDAgMDAgMDAgNDggOGIgYjMgZjggMDEgMDAgMDAg
-NDggODkgZGYgZTggNjUgODMgMDAgClsgMTQ5OC43MjU0OTRdIFJJUCAgWzxmZmZmZmZmZjgxNDQy
-N2I1Pl0gdHR5X2luaXRfZGV2KzB4YTUvMHgxZTAKWyAxNDk4LjcyNTU0N10gIFJTUCA8ZmZmZjg4
-MDBjODJhZGJmMD4KWyAxNDk4LjcyNTU3NF0gQ1IyOiAwMDAwMDAwMDAwMDAwMDkwClsgMTQ5OC43
-Mzk3MDZdIC0tLVsgZW5kIHRyYWNlIDk3NzI4YmQ4YzlmOGMxNGMgXS0tLQpyb290QGhhY2tlZDp+
-L3dvcmsvbXlkciMgCgo=
---001a11c36ae20ce69804fa71f815--
+On Wed, May 28, 2014 at 2:25 PM, Abhijit Lamsoge
+<abhijitelinux@gmail.com> wrote:
+> Hi All,
+> I had written a char/serial driver for Kernel 3.0 to 3.1 in old times
+> and it used to work absolutely fine.
+> Now I need this driver for some bluetooth, virtual mount-point for
+> data transfer to and fro to mobile,
+> for kernel version 3.8 onwards, however, there is a big crash, when I
+> do any data transfer on the uart_port created by this driver.
+> I have attached the crash file dmesg here.
+> I am not sure, where the problem is, whether it's the kernel or the driver.
+>
+> Please let me know if anybody gets any idea from the crash.
+>
+>
+> Abhijit
