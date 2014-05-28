@@ -1,147 +1,48 @@
-From: Dann Frazier <dann.frazier@canonical.com>
-Subject: Re: [PATCH v2] serial: uart: add hw flow control support configuration
-Date: Wed, 28 May 2014 14:04:29 -0600
-Message-ID: <CALdTtnvTtjKv6NQd=NCZATHnKLURKYMfnQaGR7MA=_kafBP=JQ@mail.gmail.com>
-References: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH V7] serial/uart/8250: Add tunable RX interrupt trigger
+ I/F of FIFO buffers
+Date: Wed, 28 May 2014 13:13:27 -0700
+Message-ID: <20140528201327.GA19249@kroah.com>
+References: <20140527050921.17672.97365.stgit@yunodevel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:40215 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752882AbaE1UJw (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 28 May 2014 16:09:52 -0400
+Content-Disposition: inline
+In-Reply-To: <20140527050921.17672.97365.stgit@yunodevel>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On Thu, May 1, 2014 at 1:04 PM, Murali Karicheri <m-karicheri2@ti.com> wrote:
-> 8250 uart driver currently supports only software assisted hw flow
-> control. The software assisted hw flow control maintains a hw_stopped
-> flag in the tty structure to stop and start transmission and use modem
-> status interrupt for the event to drive the handshake signals. This is
-> not needed if hw has flow control capabilities. This patch adds a
-> DT attribute for enabling hw flow control for a uart port. Also skip
-> stop and start if this flag is present in flag field of the port
-> structure.
+On Tue, May 27, 2014 at 02:09:21PM +0900, Yoshihiro YUNOMAE wrote:
+> Add tunable RX interrupt trigger I/F of FIFO buffers.
+> 
+> Serial devices are used as not only message communication devices but control
+> or sending communication devices. For the latter uses, normally small data
+> will be exchanged, so user applications want to receive data unit as soon as
+> possible for real-time tendency. If we have a sensor which sends a 1 byte data
+> each time and must control a device based on the sensor feedback, the RX
+> interrupt should be triggered for each data.
+> 
+> According to HW specification of serial UART devices, RX interrupt trigger
+> can be changed, but the trigger is hard-coded. For example, RX interrupt trigger
+> in 16550A can be set to 1, 4, 8, or 14 bytes for HW, but current driver sets
+> the trigger to only 8bytes.
+> 
+> This patch makes some devices change RX interrupt trigger from userland.
 
-ubuntu@hwflow:~$ sudo stty -a --file /dev/ttyS0 |tr ' ' '\n' | grep crtscts
-crtscts
-ubuntu@hwflow:~$ ls /proc/device-tree/soc/serial@1c021000/has-hw-flow-control
-/proc/device-tree/soc/serial@1c021000/has-hw-flow-control
-ubuntu@hwflow:~$ python
-Python 2.7.6 (default, Mar 22 2014, 22:58:30)
-[GCC 4.8.2] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> UPF_HARDWARE_FLOW = 1 << 21
->>> if 0xB9200000 & UPF_HARDWARE_FLOW:
-...     print "OK"
-...
-OK
+I'd prefer it if you could split the attr_grps logic out into a separate
+patch, the first one in a 2 patch series.  I don't think it is quite
+correct what you are doing here, but given the other changes going on at
+the same time, it's hard to pick it apart.
 
-Hope that's a reasonable test case. Test fails when booted w/o
-has-hw-flow-control attribute.
+So, can you split this up into 2 patches and resend please?
 
-Tested-by: dann frazier <dann.frazier@canonical.com>
+thanks,
 
->
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
->
-> CC: Rob Herring <robh+dt@kernel.org>
-> CC: Pawel Moll <pawel.moll@arm.com>
-> CC: Mark Rutland <mark.rutland@arm.com>
-> CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
-> CC: Kumar Gala <galak@codeaurora.org>
-> CC: Randy Dunlap <rdunlap@infradead.org>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Jiri Slaby <jslaby@suse.cz>
-> CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
-> ---
->  .../devicetree/bindings/serial/of-serial.txt       |    1 +
->  drivers/tty/serial/8250/8250_core.c                |    6 ++++--
->  drivers/tty/serial/of_serial.c                     |    4 ++++
->  drivers/tty/serial/serial_core.c                   |   12 +++++++++---
->  4 files changed, 18 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
-> index 1928a3e..7705477 100644
-> --- a/Documentation/devicetree/bindings/serial/of-serial.txt
-> +++ b/Documentation/devicetree/bindings/serial/of-serial.txt
-> @@ -37,6 +37,7 @@ Optional properties:
->  - auto-flow-control: one way to enable automatic flow control support. The
->    driver is allowed to detect support for the capability even without this
->    property.
-> +- has-hw-flow-control: the hardware has flow control capability.
->
->  Example:
->
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 0e1bf88..b69aff2 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -2338,9 +2338,11 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->          * the trigger, or the MCR RTS bit is cleared.  In the case where
->          * the remote UART is not using CTS auto flow control, we must
->          * have sufficient FIFO entries for the latency of the remote
-> -        * UART to respond.  IOW, at least 32 bytes of FIFO.
-> +        * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
-> +        * AFE if hw flow control is supported
->          */
-> -       if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-> +       if ((up->capabilities & UART_CAP_AFE && (port->fifosize >= 32)) ||
-> +           (port->flags & UPF_HARD_FLOW)) {
->                 up->mcr &= ~UART_MCR_AFE;
->                 if (termios->c_cflag & CRTSCTS)
->                         up->mcr |= UART_MCR_AFE;
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 9924660..77ec6a1 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -182,6 +182,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
->                                           "auto-flow-control"))
->                         port8250.capabilities |= UART_CAP_AFE;
->
-> +               if (of_property_read_bool(ofdev->dev.of_node,
-> +                                         "has-hw-flow-control"))
-> +                       port8250.port.flags |= UPF_HARD_FLOW;
-> +
->                 ret = serial8250_register_8250_port(&port8250);
->                 break;
->         }
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index b68550d..851707a 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->                         if (tty->termios.c_cflag & CBAUD)
->                                 uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
->                 }
-> -
-> -               if (tty_port_cts_enabled(port)) {
-> +               /*
-> +                * if hw support flow control without software intervention,
-> +                * then skip the below check
-> +                */
-> +               if (tty_port_cts_enabled(port) &&
-> +                   !(uport->flags & UPF_HARD_FLOW)) {
->                         spin_lock_irq(&uport->lock);
->                         if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
->                                 tty->hw_stopped = 1;
-> @@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
->
->         uport->icount.cts++;
->
-> -       if (tty_port_cts_enabled(port)) {
-> +       /* skip below code if the hw flow control is supported */
-> +       if (tty_port_cts_enabled(port) &&
-> +           !(uport->flags & UPF_HARD_FLOW)) {
->                 if (tty->hw_stopped) {
->                         if (status) {
->                                 tty->hw_stopped = 0;
-> --
-> 1.7.9.5
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
->
->
+greg k-h
