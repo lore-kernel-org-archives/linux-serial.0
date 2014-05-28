@@ -1,141 +1,161 @@
-From: Prasad Koya <prasad.koya@gmail.com>
-Subject: Re: UART_IIR_BUSY set for 16550A
-Date: Tue, 27 May 2014 22:47:05 -0700
-Message-ID: <CAGXD9OdyXxpVZVR44N-ZKe5Nwz9EVbH_YgZncVbskRfsAq6Htw@mail.gmail.com>
-References: <CAGXD9Ocoo_sUnFmd-pfU52yUQ5oPjWxAHXjvP8facuMiOSUn5w@mail.gmail.com>
-	<20140525003642.GC6946@thunk.org>
-	<CAGXD9Odvyd_go-x9-gR7Q7_etYPLHekDM3SKRN+PCvDHc__LHg@mail.gmail.com>
-	<20140525024414.GF6946@thunk.org>
-	<CAGXD9Of8-v9TJ-0uuQ3TDzo5QYhB3uA=B5kMGQkiABSzFrWDng@mail.gmail.com>
-	<20140525120409.GG6946@thunk.org>
-	<CAGXD9OcNT6m+HUJU=E9-DB-UwBVd1Pz_EmcQDzTwou0i7ayKQg@mail.gmail.com>
-	<20140528050339.GA18258@thunk.org>
+From: Abhijit Lamsoge <abhijitelinux@gmail.com>
+Subject: Serial Core crash in tty_open
+Date: Wed, 28 May 2014 14:25:06 +0530
+Message-ID: <CAKnSG-bhcO6x309aiE2nwgBjXU=0u=3dXH-GgKQvjK=6S-q1JA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/mixed; boundary=001a11c36ae20ce69804fa71f815
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ve0-f178.google.com ([209.85.128.178]:33916 "EHLO
-	mail-ve0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751155AbaE1FrG (ORCPT
+Received: from mail-la0-f42.google.com ([209.85.215.42]:57121 "EHLO
+	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752013AbaE1IzJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 01:47:06 -0400
-Received: by mail-ve0-f178.google.com with SMTP id sa20so12103818veb.9
-        for <linux-serial@vger.kernel.org>; Tue, 27 May 2014 22:47:05 -0700 (PDT)
-In-Reply-To: <20140528050339.GA18258@thunk.org>
+	Wed, 28 May 2014 04:55:09 -0400
+Received: by mail-la0-f42.google.com with SMTP id el20so7235137lab.1
+        for <linux-serial@vger.kernel.org>; Wed, 28 May 2014 01:55:06 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+To: linux-serial@vger.kernel.org
 
-Hi Ted,
+--001a11c36ae20ce69804fa71f815
+Content-Type: text/plain; charset=UTF-8
 
-this UART is from intel board. here is the data sheet i referred to earlier:
+Hi All,
+I had written a char/serial driver for Kernel 3.0 to 3.1 in old times
+and it used to work absolutely fine.
+Now I need this driver for some bluetooth, virtual mount-point for
+data transfer to and fro to mobile,
+for kernel version 3.8 onwards, however, there is a big crash, when I
+do any data transfer on the uart_port created by this driver.
+I have attached the crash file dmesg here.
+I am not sure, where the problem is, whether it's the kernel or the driver.
 
-http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/intel-communications-chipset-89xx-series-datasheet.pdf
-
-we ship AMD based boards as well that has integrated UART but we
-haven't seen this on AMD boards.
-
-yes, the code i am talking about could be something like this that
-should get enabled in last resort:
-
-if ( pass_counter == (PASS_LIMIT - 1) ) {
-      if ( iir == 0xcc and ! (status & UART_LSR_DR) ) {
-          status |= UART_LSR_DR;
-      }
-}
-
-and let it fall through:
-
-        if (status & (UART_LSR_DR | UART_LSR_BI)) {
-                status = serial8250_rx_chars(up, status);
-        }
-
-if character received is garbage i'm thinking it should be caught in
-our test scripts.
-
-its hacky. i am trying to be optimistic, give that a try and see if helps.
-
-if char received is garbage then as you hinted it must be that
-transmit ready interrupt that is not getting set. in the first
-iteration of this interrupt handling (at the random time where it
-eventually hits PASS_LIMIT), LSR is 0x21 and it always received 2
-chars and sent 1 char. this has been consistent in all occurrences of
-the bug.
-
-when this happens i'm also wondering if 'stty' can help in resetting the UART.
-
-thanks again.
+Please let me know if anybody gets any idea from the crash.
 
 
+Abhijit
 
-On Tue, May 27, 2014 at 10:03 PM, Theodore Ts'o <tytso@mit.edu> wrote:
-> On Tue, May 27, 2014 at 04:33:58PM -0700, Prasad Koya wrote:
->>
->> From what I understand, there is a character in recv FIFO and no other
->> characters have been received in last 4 chars time. So why wouldn't
->> that set UART_LSR_DR?
->>
->> #define UART_LSR_DR             0x01 /* Receiver data ready */
->
-> It is supposed to set UART_LSR_DR.  But your own debugging printk's
-> have shown that it doesn't in some cases.  Hence my assertion that you
-> have a buggy UART.
->
->> If my understanding is correct and there is a byte in recv FIFO to be
->> read, why isn't the driver coded to pick up that byte if IIR is 0xcc.
->> maybe not all 16550A compatible UARTs don't do this and thats why its
->> left out?
->
-> The problem is you have to sample UART_LSR_DR to determine when the
-> FIFO is empty, because just because the receive interrupt bit is set
-> in the IIR, you don't know how many characters are in the Receive
-> FIFO.  So you have to trust the UART_LSR_DR to tell you when the
-> receive FIFO is empty.
->
-> Now, I suppose you could check to see if the first time through the
-> loop, if UART_LSR_DR is clear, maybe you should try anyway, but that
-> means adding a lot of extra complexity that historically has never
-> been needed.
->
-> What UART is this, and is there some way we can shame the manufacturer
-> into fixing it?  It would be a shame to have to put in even more hair
-> just for one outlier.  Now, if some major manufacturer is shippping
-> huge numbers of buggy UART's, maybe we should work around it --- but
-> at this point, I think it would be useful to understand who the guilty
-> party might be, and whether this is a systemic problem, or whether
-> your specific chip is buggy.
->
-> In general, making chages to the uart core is always fragile, because
-> a workaround for one buggy manufacturer could introduce problems for
-> other buggy UARTs....
->
->> Infact, if i type a char on console and let it go idle, I'm seeing IIR
->> register as 0xCC and LSR as 0x61. Since bit 0 of LSR is set, that byte
->> is getting picked up. So I wonder why at a random time, UART sets IIR
->> as 0xCC and leaves LSR as 0 and LSR becomes 0x60 after about 350
->> iterations in that loop and stays that way. For a buggy UART like
->> that, sounds like one could use that condition as exception to go
->> ahead and read the receive buffer. What do you say?
->
-> The other question is we don't know whether it's the IIR which is
-> buggy, or the DR bit which is buggy.  Maybe the receive FIFO really is
-> empty, but it's the transmit interrupt which is stuck.  So we don't
-> know whether the right thing to do is to read from the RX register and
-> put it into the buffer.  It could be that might not do anything, and
-> just cause a stream of null's, or garbage, or the last character read
-> from the FIFO to be jam up the incoming tty receive buffer.
->
-> So if you were going to implement something which says, "ignore the DR
-> bit being clear, just read from the FIFO anyway, because the IIR tells
-> me so, there had better be some limiter where if the IIR doesn't
-> change even after you try reading from the receive buffer, at some
-> point you really do want to give up."
->
-> Basically, the best way to program the serial driver is very
-> defensively.  Assume that the UART firmware is written by monkeys, and
-> malicious monkeys at that.  Because sooner or later, you will come
-> across some UART which really is crappier than you know or can imagine....
->
-> Cheers,
->
->                                                 - Ted
+--001a11c36ae20ce69804fa71f815
+Content-Type: application/octet-stream; name=ubuntu-dmesg
+Content-Disposition: attachment; filename=ubuntu-dmesg
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hvqeb3i10
+
+CgogMTQ5OC43MjIyOTJdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQpbIDE0
+OTguNzIyMzA1XSBXQVJOSU5HOiBDUFU6IDMgUElEOiA1MDI5IGF0IC9idWlsZC9idWlsZGQvbGlu
+dXgtMy4xMy4wL2RyaXZlcnMvdHR5L3R0eV9pby5jOjE0NzQgdHR5X2luaXRfZGV2KzB4MWQwLzB4
+MWUwKCkKWyAxNDk4LjcyMjMwOF0gdHR5X2luaXRfZGV2OiAgZHJpdmVyIGRvZXMgbm90IHNldCB0
+dHktPnBvcnQuIFRoaXMgd2lsbCBjcmFzaCB0aGUga2VybmVsIGxhdGVyLiBGaXggdGhlIGRyaXZl
+ciEKWyAxNDk4LjcyMjMxMF0gTW9kdWxlcyBsaW5rZWQgaW46IGx2c2QoT0YpIG5sc191dGY4IGlz
+b2ZzIHBjaV9zdHViIHZib3hwY2koT0YpIHZib3huZXRhZHAoT0YpIHZib3huZXRmbHQoT0YpIHZi
+b3hkcnYoT0YpIGJuZXAgcmZjb21tIHNuZF9oZGFfY29kZWNfaGRtaSBzbmRfaGRhX2NvZGVjX3Jl
+YWx0ZWsgdXZjdmlkZW8gdmlkZW9idWYyX3ZtYWxsb2MgdmlkZW9idWYyX21lbW9wcyB2aWRlb2J1
+ZjJfY29yZSB2aWRlb2RldiBidHVzYiBibHVldG9vdGggam95ZGV2IGFyYzQgaXdsZHZtIG1hYzgw
+MjExIGludGVsX3JhcGwgeDg2X3BrZ190ZW1wX3RoZXJtYWwgaW50ZWxfcG93ZXJjbGFtcCBjb3Jl
+dGVtcCBrdm0gY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgZ2hhc2hfY2xtdWxuaV9pbnRl
+bCBhZXNuaV9pbnRlbCBhZXNfeDg2XzY0IGxydyBnZjEyOG11bCBnbHVlX2hlbHBlciBhYmxrX2hl
+bHBlciBjcnlwdGQgcHNtb3VzZSBzZXJpb19yYXcgaXdsd2lmaSBzbmRfaGRhX2ludGVsIHNuZF9o
+ZGFfY29kZWMgdGhpbmtwYWRfYWNwaSBscGNfaWNoIG52cmFtIHNuZF9od2RlcCBjZmc4MDIxMSBz
+bmRfcGNtIHNuZF9zZXFfbWlkaSBzbmRfc2VxX21pZGlfZXZlbnQgc25kX3Jhd21pZGkgc25kX3Bh
+Z2VfYWxsb2Mgc25kX3NlcSBtZWlfbWUgbWVpIHNuZF9zZXFfZGV2aWNlIHNuZF90aW1lciBzbmQg
+c291bmRjb3JlIGk5MTUgcGFycG9ydF9wYyBkcm1fa21zX2hlbHBlciBkcm0gcHBkZXYgdmlkZW8g
+aTJjX2FsZ29fYml0IHdtaSBscCBwYXJwb3J0IG1hY19oaWQgaGlkX2dlbmVyaWMgdXNiaGlkIGhp
+ZCBlMTAwMGUgYWhjaSBzZGhjaV9wY2kgbGliYWhjaSBwdHAgc2RoY2kgcHBzX2NvcmUKWyAxNDk4
+LjcyMjQwMV0gQ1BVOiAzIFBJRDogNTAyOSBDb21tOiBwcmogVGFpbnRlZDogR0YgICAgICAgICAg
+TyAzLjEzLjAtMjQtZ2VuZXJpYyAjNDYtVWJ1bnR1ClsgMTQ5OC43MjI0MDNdIEhhcmR3YXJlIG5h
+bWU6IExFTk9WTyAyNDI5NjJRLzI0Mjk2MlEsIEJJT1MgRzRFVDk3V1cgKDIuNTcgKSAxMC8xNy8y
+MDEzClsgMTQ5OC43MjI0MDZdICAwMDAwMDAwMDAwMDAwMDA5IGZmZmY4ODAwYzgyYWRiNDggZmZm
+ZmZmZmY4MTcxNWE2NCBmZmZmODgwMGM4MmFkYjkwClsgMTQ5OC43MjI0MTNdICBmZmZmODgwMGM4
+MmFkYjgwIGZmZmZmZmZmODEwNjc2YmQgZmZmZjg4MDBhYzcyNzgwMCBmZmZmODgwMGExODU1NmMw
+ClsgMTQ5OC43MjI0MThdICAwMDAwMDAwMDAwMDAwMDAxIGZmZmZmZmZmODE4NjMzMjAgMDAwMDAw
+MDAwMDAwMDAwMCBmZmZmODgwMGM4MmFkYmUwClsgMTQ5OC43MjI0MjNdIENhbGwgVHJhY2U6Clsg
+MTQ5OC43MjI0MzJdICBbPGZmZmZmZmZmODE3MTVhNjQ+XSBkdW1wX3N0YWNrKzB4NDUvMHg1Ngpb
+IDE0OTguNzIyNDM4XSAgWzxmZmZmZmZmZjgxMDY3NmJkPl0gd2Fybl9zbG93cGF0aF9jb21tb24r
+MHg3ZC8weGEwClsgMTQ5OC43MjI0NDNdICBbPGZmZmZmZmZmODEwNjc3MmM+XSB3YXJuX3Nsb3dw
+YXRoX2ZtdCsweDRjLzB4NTAKWyAxNDk4LjcyMjQ1MF0gIFs8ZmZmZmZmZmY4MTM2MmU2Mz5dID8g
+X19fcmF0ZWxpbWl0KzB4OTMvMHgxMDAKWyAxNDk4LjcyMjQ1NV0gIFs8ZmZmZmZmZmY4MTQ0Mjhl
+MD5dIHR0eV9pbml0X2RldisweDFkMC8weDFlMApbIDE0OTguNzIyNDYwXSAgWzxmZmZmZmZmZjgx
+NDQzNTkzPl0gdHR5X29wZW4rMHgyZjMvMHg2MDAKWyAxNDk4LjcyMjQ2N10gIFs8ZmZmZmZmZmY4
+MTFiZGViZj5dIGNocmRldl9vcGVuKzB4OWYvMHgxZDAKWyAxNDk4LjcyMjQ3Ml0gIFs8ZmZmZmZm
+ZmY4MTFiNjk5Nz5dIGRvX2RlbnRyeV9vcGVuKzB4MWM3LzB4MmUwClsgMTQ5OC43MjI0NzddICBb
+PGZmZmZmZmZmODExYmRlMjA+XSA/IGNkZXZfcHV0KzB4MzAvMHgzMApbIDE0OTguNzIyNDgxXSAg
+WzxmZmZmZmZmZjgxMWI2ZDM5Pl0gdmZzX29wZW4rMHg0OS8weDUwClsgMTQ5OC43MjI0ODZdICBb
+PGZmZmZmZmZmODExYzZjNjE+XSBkb19sYXN0KzB4NTYxLzB4MTIwMApbIDE0OTguNzIyNDk0XSAg
+WzxmZmZmZmZmZjgxMzBlMjNiPl0gPyBhcHBhcm1vcl9maWxlX2FsbG9jX3NlY3VyaXR5KzB4NWIv
+MHgxODAKWyAxNDk4LjcyMjUwMF0gIFs8ZmZmZmZmZmY4MTFjOGQ3Yj5dIHBhdGhfb3BlbmF0KzB4
+YmIvMHg2MjAKWyAxNDk4LjcyMjUwNl0gIFs8ZmZmZmZmZmY4MTE1NjgzYT5dID8gX19mcmVlX3Bh
+Z2VzKzB4NWEvMHg2MApbIDE0OTguNzIyNTExXSAgWzxmZmZmZmZmZjgxMWNhMTNhPl0gZG9fZmls
+cF9vcGVuKzB4M2EvMHg5MApbIDE0OTguNzIyNTE3XSAgWzxmZmZmZmZmZjgxMWQ2ZjI3Pl0gPyBf
+X2FsbG9jX2ZkKzB4YTcvMHgxMzAKWyAxNDk4LjcyMjUyMl0gIFs8ZmZmZmZmZmY4MTFiODg1OT5d
+IGRvX3N5c19vcGVuKzB4MTI5LzB4MjgwClsgMTQ5OC43MjI1MjldICBbPGZmZmZmZmZmODEwMjBk
+MzU+XSA/IHN5c2NhbGxfdHJhY2VfZW50ZXIrMHgxNDUvMHgyNTAKWyAxNDk4LjcyMjUzNF0gIFs8
+ZmZmZmZmZmY4MTFiODljZT5dIFN5U19vcGVuKzB4MWUvMHgyMApbIDE0OTguNzIyNTM5XSAgWzxm
+ZmZmZmZmZjgxNzI2NjNmPl0gdHJhY2VzeXMrMHhlMS8weGU2ClsgMTQ5OC43MjI1NDJdIC0tLVsg
+ZW5kIHRyYWNlIDk3NzI4YmQ4YzlmOGMxNGIgXS0tLQpbIDE0OTguNzIyNTUyXSBCVUc6IHVuYWJs
+ZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCAwMDAwMDAwMDAw
+MDAwMDkwClsgMTQ5OC43MjI2MjRdIElQOiBbPGZmZmZmZmZmODE0NDI3YjU+XSB0dHlfaW5pdF9k
+ZXYrMHhhNS8weDFlMApbIDE0OTguNzIyNjcyXSBQR0QgYjY3OGYwNjcgUFVEIDhiNjUwMDY3IFBN
+RCAwIApbIDE0OTguNzIyNzE1XSBPb3BzOiAwMDAyIFsjMV0gU01QIApbIDE0OTguNzIyNzQ5XSBN
+b2R1bGVzIGxpbmtlZCBpbjogbHZzZChPRikgbmxzX3V0ZjggaXNvZnMgcGNpX3N0dWIgdmJveHBj
+aShPRikgdmJveG5ldGFkcChPRikgdmJveG5ldGZsdChPRikgdmJveGRydihPRikgYm5lcCByZmNv
+bW0gc25kX2hkYV9jb2RlY19oZG1pIHNuZF9oZGFfY29kZWNfcmVhbHRlayB1dmN2aWRlbyB2aWRl
+b2J1ZjJfdm1hbGxvYyB2aWRlb2J1ZjJfbWVtb3BzIHZpZGVvYnVmMl9jb3JlIHZpZGVvZGV2IGJ0
+dXNiIGJsdWV0b290aCBqb3lkZXYgYXJjNCBpd2xkdm0gbWFjODAyMTEgaW50ZWxfcmFwbCB4ODZf
+cGtnX3RlbXBfdGhlcm1hbCBpbnRlbF9wb3dlcmNsYW1wIGNvcmV0ZW1wIGt2bSBjcmN0MTBkaWZf
+cGNsbXVsIGNyYzMyX3BjbG11bCBnaGFzaF9jbG11bG5pX2ludGVsIGFlc25pX2ludGVsIGFlc194
+ODZfNjQgbHJ3IGdmMTI4bXVsIGdsdWVfaGVscGVyIGFibGtfaGVscGVyIGNyeXB0ZCBwc21vdXNl
+IHNlcmlvX3JhdyBpd2x3aWZpIHNuZF9oZGFfaW50ZWwgc25kX2hkYV9jb2RlYyB0aGlua3BhZF9h
+Y3BpIGxwY19pY2ggbnZyYW0gc25kX2h3ZGVwIGNmZzgwMjExIHNuZF9wY20gc25kX3NlcV9taWRp
+IHNuZF9zZXFfbWlkaV9ldmVudCBzbmRfcmF3bWlkaSBzbmRfcGFnZV9hbGxvYyBzbmRfc2VxIG1l
+aV9tZSBtZWkgc25kX3NlcV9kZXZpY2Ugc25kX3RpbWVyIHNuZCBzb3VuZGNvcmUgaTkxNSBwYXJw
+b3J0X3BjIGRybV9rbXNfaGVscGVyIGRybSBwcGRldiB2aWRlbyBpMmNfYWxnb19iaXQgd21pIGxw
+IHBhcnBvcnQgbWFjX2hpZCBoaWRfZ2VuZXJpYyB1c2JoaWQgaGlkIGUxMDAwZSBhaGNpIHNkaGNp
+X3BjaSBsaWJhaGNpIHB0cCBzZGhjaSBwcHNfY29yZQpbIDE0OTguNzIzNTUyXSBDUFU6IDMgUElE
+OiA1MDI5IENvbW06IHByaiBUYWludGVkOiBHRiAgICAgICBXICBPIDMuMTMuMC0yNC1nZW5lcmlj
+ICM0Ni1VYnVudHUKWyAxNDk4LjcyMzYxMl0gSGFyZHdhcmUgbmFtZTogTEVOT1ZPIDI0Mjk2MlEv
+MjQyOTYyUSwgQklPUyBHNEVUOTdXVyAoMi41NyApIDEwLzE3LzIwMTMKWyAxNDk4LjcyMzY2OF0g
+dGFzazogZmZmZjg4MDExNGI4MmZlMCB0aTogZmZmZjg4MDBjODJhYzAwMCB0YXNrLnRpOiBmZmZm
+ODgwMGM4MmFjMDAwClsgMTQ5OC43MjM3MjJdIFJJUDogMDAxMDpbPGZmZmZmZmZmODE0NDI3YjU+
+XSAgWzxmZmZmZmZmZjgxNDQyN2I1Pl0gdHR5X2luaXRfZGV2KzB4YTUvMHgxZTAKWyAxNDk4Ljcy
+Mzc4Nl0gUlNQOiAwMDE4OmZmZmY4ODAwYzgyYWRiZjAgIEVGTEFHUzogMDAwMTAyOTYKWyAxNDk4
+LjcyMzgyNV0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjg4MDBhYzcyNzgwMCBSQ1g6
+IDAwMDAwMDAwMDAwMDAwMDYKWyAxNDk4LjcyMzg3N10gUkRYOiAwMDAwMDAwMDAwMDAwMDA3IFJT
+STogMDAwMDAwMDAwMDAwMDAwMCBSREk6IDAwMDAwMDAwMDAwMDAwMDkKWyAxNDk4LjcyMzkyOV0g
+UkJQOiBmZmZmODgwMGM4MmFkYzEwIFIwODogMDAwMDAwMDAwMDAwMDA5NiBSMDk6IDAwMDAwMDAw
+MDAwMDAzZjcKWyAxNDk4LjcyMzk4MV0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogZmZmZjg4
+MDBjODJhZDg3NiBSMTI6IGZmZmY4ODAwYTE4NTU2YzAKWyAxNDk4LjcyNDAzM10gUjEzOiAwMDAw
+MDAwMDAwMDAwMDAxIFIxNDogZmZmZmZmZmY4MTg2MzMyMCBSMTU6IDAwMDAwMDAwMDAwMDAwMDAK
+WyAxNDk4LjcyNDA4Nl0gRlM6ICAwMDAwN2ZlNjRiZWU0NzQwKDAwMDApIEdTOmZmZmY4ODAxMWUy
+YzAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMApbIDE0OTguNzI0MTQ1XSBDUzogIDAw
+MTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzClsgMTQ5OC43MjQxODdd
+IENSMjogMDAwMDAwMDAwMDAwMDA5MCBDUjM6IDAwMDAwMDAwOTg5YjkwMDAgQ1I0OiAwMDAwMDAw
+MDAwMTQwN2UwClsgMTQ5OC43MjQyMzldIFN0YWNrOgpbIDE0OTguNzI0MjU2XSAgZmZmZjg4MDA5
+OGFjZmYxMCBmZmZmODgwMDk4YWNmZjAwIDAwMDAwMDAwMDAwMDAwMDAgZmZmZjg4MDBhMTg1NTZj
+MApbIDE0OTguNzI0MzIzXSAgZmZmZjg4MDBjODJhZGM2OCBmZmZmZmZmZjgxNDQzNTkzIGZmZmY4
+ODAwOTYwZWRkMzggZmZmZjg4MDExNGI4MmZlMApbIDE0OTguNzI0Mzg3XSAgMjU4MDAwMDEwMDAw
+ODAwMiAwMDAwMDAwMWM4MmFkYzdjIGZmZmY4ODAwYTFhMWMwNjggZmZmZjg4MDA5NjBlZGQzOApb
+IDE0OTguNzI0NDUyXSBDYWxsIFRyYWNlOgpbIDE0OTguNzI0NDc2XSAgWzxmZmZmZmZmZjgxNDQz
+NTkzPl0gdHR5X29wZW4rMHgyZjMvMHg2MDAKWyAxNDk4LjcyNDUxOF0gIFs8ZmZmZmZmZmY4MTFi
+ZGViZj5dIGNocmRldl9vcGVuKzB4OWYvMHgxZDAKWyAxNDk4LjcyNDU2MF0gIFs8ZmZmZmZmZmY4
+MTFiNjk5Nz5dIGRvX2RlbnRyeV9vcGVuKzB4MWM3LzB4MmUwClsgMTQ5OC43MjQ2MDZdICBbPGZm
+ZmZmZmZmODExYmRlMjA+XSA/IGNkZXZfcHV0KzB4MzAvMHgzMApbIDE0OTguNzI0NjQ2XSAgWzxm
+ZmZmZmZmZjgxMWI2ZDM5Pl0gdmZzX29wZW4rMHg0OS8weDUwClsgMTQ5OC43MjQ2ODZdICBbPGZm
+ZmZmZmZmODExYzZjNjE+XSBkb19sYXN0KzB4NTYxLzB4MTIwMApbIDE0OTguNzI0NzI4XSAgWzxm
+ZmZmZmZmZjgxMzBlMjNiPl0gPyBhcHBhcm1vcl9maWxlX2FsbG9jX3NlY3VyaXR5KzB4NWIvMHgx
+ODAKWyAxNDk4LjcyNDc4MV0gIFs8ZmZmZmZmZmY4MTFjOGQ3Yj5dIHBhdGhfb3BlbmF0KzB4YmIv
+MHg2MjAKWyAxNDk4LjcyNDgyNF0gIFs8ZmZmZmZmZmY4MTE1NjgzYT5dID8gX19mcmVlX3BhZ2Vz
+KzB4NWEvMHg2MApbIDE0OTguNzI0ODY4XSAgWzxmZmZmZmZmZjgxMWNhMTNhPl0gZG9fZmlscF9v
+cGVuKzB4M2EvMHg5MApbIDE0OTguNzI0OTEyXSAgWzxmZmZmZmZmZjgxMWQ2ZjI3Pl0gPyBfX2Fs
+bG9jX2ZkKzB4YTcvMHgxMzAKWyAxNDk4LjcyNDk1NF0gIFs8ZmZmZmZmZmY4MTFiODg1OT5dIGRv
+X3N5c19vcGVuKzB4MTI5LzB4MjgwClsgMTQ5OC43MjQ5OThdICBbPGZmZmZmZmZmODEwMjBkMzU+
+XSA/IHN5c2NhbGxfdHJhY2VfZW50ZXIrMHgxNDUvMHgyNTAKWyAxNDk4LjcyNTA0N10gIFs8ZmZm
+ZmZmZmY4MTFiODljZT5dIFN5U19vcGVuKzB4MWUvMHgyMApbIDE0OTguNzI1MDg3XSAgWzxmZmZm
+ZmZmZjgxNzI2NjNmPl0gdHJhY2VzeXMrMHhlMS8weGU2ClsgMTQ5OC43MjUxMjVdIENvZGU6IDg0
+IDI0IGEwIDAwIDAwIDAwIDQ4IDg5IGRlIDRjIDg5IGU3IDQ4IDhiIDQwIDA4IDQ4IDg1IGMwIDc0
+IDc5IGZmIGQwIDg1IGMwIDc4IDdiIDQ4IDhiIDgzIGI4IDAyIDAwIDAwIDQ4IDg1IGMwIDBmIDg0
+IDliIDAwIDAwIDAwIDw0OD4gODkgOTggOTAgMDAgMDAgMDAgNDggOGIgYjMgZjggMDEgMDAgMDAg
+NDggODkgZGYgZTggNjUgODMgMDAgClsgMTQ5OC43MjU0OTRdIFJJUCAgWzxmZmZmZmZmZjgxNDQy
+N2I1Pl0gdHR5X2luaXRfZGV2KzB4YTUvMHgxZTAKWyAxNDk4LjcyNTU0N10gIFJTUCA8ZmZmZjg4
+MDBjODJhZGJmMD4KWyAxNDk4LjcyNTU3NF0gQ1IyOiAwMDAwMDAwMDAwMDAwMDkwClsgMTQ5OC43
+Mzk3MDZdIC0tLVsgZW5kIHRyYWNlIDk3NzI4YmQ4YzlmOGMxNGMgXS0tLQpyb290QGhhY2tlZDp+
+L3dvcmsvbXlkciMgCgo=
+--001a11c36ae20ce69804fa71f815--
