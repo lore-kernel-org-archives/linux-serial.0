@@ -1,61 +1,74 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/5] serial: imx: fixes
-Date: Wed, 28 May 2014 12:34:42 -0700
-Message-ID: <20140528193442.GA7066@kroah.com>
-References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
+Subject: Re: [PATCH] serial: Add support for Advantech PCM-3614I/PCM-3618I
+ serial expansion cards
+Date: Wed, 28 May 2014 12:38:53 -0700
+Message-ID: <20140528193853.GA13611@kroah.com>
+References: <AA40FFC7EE521F4AB21A1671B51B7A510E7E7E56@hqsvrex.tmcdesigncorp.local>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:39663 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39745 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751268AbaE1TbH (ORCPT
+	with ESMTP id S1751158AbaE1TfR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 15:31:07 -0400
+	Wed, 28 May 2014 15:35:17 -0400
 Content-Disposition: inline
-In-Reply-To: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
+In-Reply-To: <AA40FFC7EE521F4AB21A1671B51B7A510E7E7E56@hqsvrex.tmcdesigncorp.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: dean_jenkins@mentor.com
-Cc: linux-serial@vger.kernel.org, dirk.behme@de.bosch.com, linux-arm-kernel@lists.infradead.org, shawn.guo@freescale.com, s.hauer@pengutronix.de, b32955@freescale.com
+To: Thomas Wright <TWright@tmcdesign.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Fri, May 09, 2014 at 04:19:43PM +0100, dean_jenkins@mentor.com wrote:
-> From: Dean Jenkins <Dean_Jenkins@mentor.com>
+On Mon, May 19, 2014 at 08:30:51PM +0000, Thomas Wright wrote:
+> From: Thomee Wright <TWright@TMCDesign.com>
 > 
-> The following set of patches were tested on an i.MX6 multi-core platform.
+> Add support for Advantech PCM-3614I/PCM-3618I serial expansion cards
 > 
-> Patches 1 to 4 were tested using a Bluetooth BCSP UART connection at 115.2kbps
-> and 4Mbps. The fixes were needed because the i.MX6 UART driver caused spinlock
-> deadlocks with the HCI TTY layer.
+> Advantech makes a variety of serial port expansion cards, including the
+> PCM-3614 and PCM-3618
+> (http://www.advantech.com/products/1-2JKLU5/PCM-3618/mod_5DF8DE5A-6B49-4429-BB2F-CB35FE1D168D.aspx).
+> They have a driver available which was forked from the kernel driver
+> ages ago and has not been maintained in quite some time, available at
+> http://support.advantech.com.tw/Support/DownloadSRDetail_New.aspx?SR_ID=1-1W8FZ5&Doc_Source=Download
+> Their driver added several features to aid in communications at higher
+> baud rates, but at normal serial port speeds, the standard 8250_pci
+> driver functions just fine. This patch adds the necessary PCI IDs to
+> recognize this card.
 > 
-> Patch 5 improves the i.MX6 UART driver for use with kdb.
+> See bug 75681 (https://bugzilla.kernel.org/show_bug.cgi?id=75681)
 > 
-> Patch 1: serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
-> Patch 2: serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
-> Patch 3: serial: imx: avoid spinlock recursion deadlock
-> Patch 4: serial: imx: move imx_transmit_buffer() into imx_txint()
-> Patch 5: serial: imx: clean up imx_poll_get_char()
+> Signed-off-by: Thomee Wright <TWright@TMCDesign.com>
+> ---
 > 
-> The patches are based off 3.15-rc4.
 > 
-> ----------------------------------------------------------------
-> Andy Lowe (1):
->       serial: imx: avoid spinlock recursion deadlock
-> 
-> Dirk Behme (4):
->       serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
->       serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
->       serial: imx: move imx_transmit_buffer() into imx_txint()
->       serial: imx: clean up imx_poll_get_char()
-> 
->  drivers/tty/serial/imx.c |   73 ++++++++++++++--------------------------------
->  1 file changed, 22 insertions(+), 51 deletions(-)
+> --- linux-3.13.0/drivers/tty/serial/8250/8250_pci.c.orig        2014-05-07 10:46:44.034975484 -0700
+> +++ linux-3.13.0/drivers/tty/serial/8250/8250_pci.c     2014-05-07 10:46:52.346975113 -0700
+> @@ -1732,6 +1732,8 @@ pci_wch_ch353_setup(struct serial_privat
+>  #define PCI_VENDOR_ID_ADVANTECH                0x13fe
+>  #define PCI_DEVICE_ID_INTEL_CE4100_UART 0x2e66
+>  #define PCI_DEVICE_ID_ADVANTECH_PCI3620        0x3620
+> +#define PCI_DEVICE_ID_ADVANTECH_PCI3618 0x3618
+> +#define PCI_DEVICE_ID_ADVANTECH_PCIf618 0xf618
+>  #define PCI_DEVICE_ID_TITAN_200I       0x8028
+>  #define PCI_DEVICE_ID_TITAN_400I       0x8048
+>  #define PCI_DEVICE_ID_TITAN_800I       0x8088
+> @@ -3855,6 +3857,13 @@ static struct pci_device_id serial_pci_t
+>         {       PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
+>                 PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
+>                 pbn_b2_8_921600 },
+> +       /* Advantech also use 0x3618 and 0xf618 */
+> +       {       PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3618,
+> +               PCI_DEVICE_ID_ADVANTECH_PCI3618, PCI_ANY_ID, 0, 0,
+> +               pbn_b0_4_921600 },
+> +       {       PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCIf618,
+> +               PCI_DEVICE_ID_ADVANTECH_PCI3618, PCI_ANY_ID, 0, 0,
+> +               pbn_b0_4_921600 },
+>         {       PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
+>                 PCI_SUBVENDOR_ID_CONNECT_TECH,
+>                 PCI_SUBDEVICE_ID_CONNECT_TECH_BH8_232, 0, 0,
 
-Given the rather confusing threads based on these patches, I don't know
-what to apply.
-
-Dean, can you respin what patches you want applied and resend them so
-I'm not so confused?
-
-thanks,
+Your email client ate the tabs and spit out spaces, making this
+impossible to apply.  I've fixed it up by hand, but for future patches,
+you should fix up your email program.
 
 greg k-h
