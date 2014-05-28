@@ -1,80 +1,61 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: samsung: Neaten dbg uses
-Date: Wed, 28 May 2014 12:29:21 -0700
-Message-ID: <20140528192921.GA32241@kroah.com>
-References: <1400619950.26709.39.camel@joe-AO725>
- <20140528192713.GA24902@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/5] serial: imx: fixes
+Date: Wed, 28 May 2014 12:34:42 -0700
+Message-ID: <20140528193442.GA7066@kroah.com>
+References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:39413 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39663 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751338AbaE1TZq (ORCPT
+	with ESMTP id S1751268AbaE1TbH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 15:25:46 -0400
+	Wed, 28 May 2014 15:31:07 -0400
 Content-Disposition: inline
-In-Reply-To: <20140528192713.GA24902@kroah.com>
+In-Reply-To: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Kukjin Kim <kgene.kim@samsung.com>, Jingoo Han <jg1.han@samsung.com>, Doug Anderson <dianders@chromium.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: dean_jenkins@mentor.com
+Cc: linux-serial@vger.kernel.org, dirk.behme@de.bosch.com, linux-arm-kernel@lists.infradead.org, shawn.guo@freescale.com, s.hauer@pengutronix.de, b32955@freescale.com
 
-On Wed, May 28, 2014 at 12:27:13PM -0700, Greg Kroah-Hartman wrote:
-> On Tue, May 20, 2014 at 02:05:50PM -0700, Joe Perches wrote:
-> > Add format and argument checking and fix misuses in the dbg macro.
-> > 
-> > Add __printf
-> > Use %pR for resource
-> > Add #include guard to samsung.h
-> > Move static functions from .h to .c
-> > Use vscnprintf instead of length unguarded vsprintf
-> > 
-> > Signed-off-by: Joe Perches <joe@perches.com>
-> > ---
-> > 
-> > compiled (no warnings)/untested.
-> > 
-> >  drivers/tty/serial/samsung.c | 35 +++++++++++++++++++++++++++++------
-> >  drivers/tty/serial/samsung.h | 23 +++--------------------
-> >  2 files changed, 32 insertions(+), 26 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> > index 1f5505e..3293377 100644
-> > --- a/drivers/tty/serial/samsung.c
-> > +++ b/drivers/tty/serial/samsung.c
-> > @@ -53,6 +53,29 @@
-> >  
-> >  #include "samsung.h"
-> >  
-> > +#if	defined(CONFIG_SERIAL_SAMSUNG_DEBUG) &&	\
-> > +	defined(CONFIG_DEBUG_LL) &&		\
-> > +	!defined(MODULE)
-> > +
-> > +extern void printascii(const char *);
-> > +
-> > +__printf(1, 2)
-> > +static void dbg(const char *fmt, ...)
-> > +{
-> > +	va_list va;
-> > +	char buff[256];
-> > +
-> > +	va_start(va, fmt);
-> > +	vscnprintf(buff, sizeof(buf), fmt, va);
-> > +	va_end(va);
-> > +
-> > +	printascii(buff);
-> > +}
-> > +
-> > +#else
-> > +#define dbg(fmt, ...) do { if (0) no_printk(fmt, ##__VA_ARGS__); } while (0)
-> > +#endif
+On Fri, May 09, 2014 at 04:19:43PM +0100, dean_jenkins@mentor.com wrote:
+> From: Dean Jenkins <Dean_Jenkins@mentor.com>
 > 
-> Ick, what a mess.  I'll take this, but I think I'll just convert this to
-> dev_dbg() instead of dealing with a config option mess...
+> The following set of patches were tested on an i.MX6 multi-core platform.
+> 
+> Patches 1 to 4 were tested using a Bluetooth BCSP UART connection at 115.2kbps
+> and 4Mbps. The fixes were needed because the i.MX6 UART driver caused spinlock
+> deadlocks with the HCI TTY layer.
+> 
+> Patch 5 improves the i.MX6 UART driver for use with kdb.
+> 
+> Patch 1: serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
+> Patch 2: serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
+> Patch 3: serial: imx: avoid spinlock recursion deadlock
+> Patch 4: serial: imx: move imx_transmit_buffer() into imx_txint()
+> Patch 5: serial: imx: clean up imx_poll_get_char()
+> 
+> The patches are based off 3.15-rc4.
+> 
+> ----------------------------------------------------------------
+> Andy Lowe (1):
+>       serial: imx: avoid spinlock recursion deadlock
+> 
+> Dirk Behme (4):
+>       serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
+>       serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
+>       serial: imx: move imx_transmit_buffer() into imx_txint()
+>       serial: imx: clean up imx_poll_get_char()
+> 
+>  drivers/tty/serial/imx.c |   73 ++++++++++++++--------------------------------
+>  1 file changed, 22 insertions(+), 51 deletions(-)
 
-Hm, nevermind, in looking at this further, it's hard to debug a driver
-with a console command if the driver is the console itself :)
+Given the rather confusing threads based on these patches, I don't know
+what to apply.
 
-I'll just leave this as-is after applying this patch.
+Dean, can you respin what patches you want applied and resend them so
+I'm not so confused?
+
+thanks,
 
 greg k-h
