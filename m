@@ -1,34 +1,57 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Serial Core crash in tty_open
-Date: Wed, 28 May 2014 07:37:26 -0700
-Message-ID: <20140528143726.GD24698@kroah.com>
-References: <CAKnSG-bhcO6x309aiE2nwgBjXU=0u=3dXH-GgKQvjK=6S-q1JA@mail.gmail.com>
- <CAKnSG-bX89qBe-TJUAJBTBGS1Y9sq3sc4L9GBrwKpxUxE2QHKw@mail.gmail.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [RFC v2 01/10] arm: fiq: Allow EOI to be communicated to the intc
+Date: Wed, 28 May 2014 16:47:08 +0100
+Message-ID: <538604FC.8070102@linaro.org>
+References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
+ <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
+ <1400853478-5824-2-git-send-email-daniel.thompson@linaro.org>
+ <20140523150022.GW3693@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:41920 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753791AbaE1Oh2 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 10:37:28 -0400
-Content-Disposition: inline
-In-Reply-To: <CAKnSG-bX89qBe-TJUAJBTBGS1Y9sq3sc4L9GBrwKpxUxE2QHKw@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140523150022.GW3693@n2100.arm.linux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, Catalin Marinas <catalin.marinas@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundati>
 List-Id: linux-serial@vger.kernel.org
-To: Abhijit Lamsoge <abhijitelinux@gmail.com>
-Cc: linux-serial@vger.kernel.org
 
-On Wed, May 28, 2014 at 02:34:07PM +0530, Abhijit Lamsoge wrote:
-> Hi All,
-> Crash Starts here.
+On 23/05/14 16:00, Russell King - ARM Linux wrote:
+> On Fri, May 23, 2014 at 02:57:49PM +0100, Daniel Thompson wrote:
+>> +void eoi_fiq(int fiq)
+>> +{
+>> +	struct irq_data *irq_data = irq_get_irq_data(fiq + fiq_start);
+>> +	struct irq_chip *chip = irq_data_get_irq_chip(irq_data);
+>> +
+>> +	if (chip->irq_eoi)
+>> +			chip->irq_eoi(irq_data);
+>> +}
 > 
->  1498.722292] ------------[ cut here ]------------
-> [ 1498.722305] WARNING: CPU: 3 PID: 5029 at
-> /build/buildd/linux-3.13.0/drivers/tty/tty_io.c:1474
-> tty_init_dev+0x1d0/0x1e0()
-> [ 1498.722308] tty_init_dev:  driver does not set tty->port. This will
-> crash the kernel later. Fix the driver!
+> So what if the IRQ chip takes a spinlock?  You can't take spinlocks in
+> FIQ context...  Who checks for that kind of stuff - just hoping that
+> the IRQ driver doesn't take a spinlock sounds real fragile.
 
-Doesn't this explain the issue well enough?
+I'll certainly do a better code review before pushing on. I certainly
+did overlook a spinlock in the GIC code which (I think) is actually
+reachable on a Tegra platform. I'll have to do something about that.
 
+I've spent a bit of time this week seeing whether lock dep can be
+provoked into triggering if it sees a spin lock in this code but that
+isn't turning out very well (it needs CONFIG_LOCKDEP_DEBUG, relies on
+lockdep believing the FIQ handling state isn't a hardirq and still
+doesn't work properly).
+
+Fortunately architectures using EOI appear to be pretty rare (I count
+five in drivers/irqchip/ and three in arch/arm/) so traditional code
+review and yelling might be sufficient.
+
+
+Daniel.
