@@ -1,15 +1,17 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v6] serial: sirf: Fix compilation failure
-Date: Thu, 29 May 2014 11:03:34 +0100
-Message-ID: <1401357814-15772-1-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH tty-next] serial: sirf: Fix compilation failure
+Date: Thu, 29 May 2014 11:13:43 +0100
+Message-ID: <1401358423-31532-1-git-send-email-daniel.thompson@linaro.org>
+References: <1396010535-2654-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f41.google.com ([74.125.82.41]:44843 "EHLO
-	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756608AbaE2KDp (ORCPT
+Received: from mail-we0-f178.google.com ([74.125.82.178]:36472 "EHLO
+	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751264AbaE2KNw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 May 2014 06:03:45 -0400
-Received: by mail-wg0-f41.google.com with SMTP id z12so125834wgg.24
-        for <linux-serial@vger.kernel.org>; Thu, 29 May 2014 03:03:44 -0700 (PDT)
+	Thu, 29 May 2014 06:13:52 -0400
+Received: by mail-we0-f178.google.com with SMTP id u56so137168wes.23
+        for <linux-serial@vger.kernel.org>; Thu, 29 May 2014 03:13:51 -0700 (PDT)
+In-Reply-To: <1396010535-2654-1-git-send-email-daniel.thompson@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -29,6 +31,13 @@ Cc: Qipan Li <Qipan.Li@csr.com>
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
+
+Notes:
+    Sorry to resend within a few minutes. Patch is identical to parent but the
+    subject line has been corrected. The original 'v6' was just utterly
+    wrong! This patch is a not-previously-shared patch to fix a build
+    regression that appears in tty-next.
+
  drivers/tty/serial/sirfsoc_uart.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
