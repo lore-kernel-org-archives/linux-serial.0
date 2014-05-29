@@ -1,66 +1,62 @@
-From: Barry Song <baohua@kernel.org>
-Subject: Re: [PATCH tty-next] serial: sirf: Fix compilation failure
-Date: Thu, 29 May 2014 20:14:02 +0800
-Message-ID: <CAGsJ_4ypSdP-i35BaQaciPo-g=+8Z5-T2MV5zgDP98BMciGbGw@mail.gmail.com>
-References: <1396010535-2654-1-git-send-email-daniel.thompson@linaro.org> <1401358423-31532-1-git-send-email-daniel.thompson@linaro.org>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [RFC v2 04/10] ARM: vexpress: Extend UART with FIQ support
+Date: Thu, 29 May 2014 08:44:00 -0500
+Message-ID: <CAL_JsqL0pYOEiyo8KfJA1aO_MOmwvn6a4hibZcamm0Jcw4Q6bA@mail.gmail.com>
+References: <1400083125-1464-1-git-send-email-daniel.thompson@linaro.org>
+ <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
+ <1400853478-5824-5-git-send-email-daniel.thompson@linaro.org>
+ <20140523150452.GX3693@n2100.arm.linux.org.uk>
+ <53870C8C.1070108@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f47.google.com ([209.85.192.47]:57494 "EHLO
-	mail-qg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756254AbaE2MOY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 29 May 2014 08:14:24 -0400
-In-Reply-To: <1401358423-31532-1-git-send-email-daniel.thompson@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <53870C8C.1070108@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, Qipan Li <Qipan.Li@csr.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Linaro Patches <patches@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz>
+List-Id: linux-serial@vger.kernel.org
 
-2014-05-29 18:13 GMT+08:00 Daniel Thompson <daniel.thompson@linaro.org>:
-> After 07d410e0) serial: sirf: fix spinlock deadlock issue it is no longer
-> possiblet to compile this driver. The rename of one of the spinlocks is
-> faulty. After looking at the original patch I believe this is the correct
-> fix.
->
-> Compile tested using ARM's multi_v7_defconfig
->
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: Barry Song <baohua@kernel.org>
-> Cc: Qipan Li <Qipan.Li@csr.com>
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+On Thu, May 29, 2014 at 5:31 AM, Daniel Thompson
+<daniel.thompson@linaro.org> wrote:
+> On 23/05/14 16:04, Russell King - ARM Linux wrote:
+>> On Fri, May 23, 2014 at 02:57:52PM +0100, Daniel Thompson wrote:
+>>> @@ -140,7 +140,7 @@
+>>>                      v2m_serial0: uart@090000 {
+>>>                              compatible = "arm,pl011", "arm,primecell";
+>>>                              reg = <0x090000 0x1000>;
+>>> -                            interrupts = <5>;
+>>> +                            interrupts = <5>, <69>;
+>>
+>> NAK.  This is obviously a Linux implementation detail - the second
+>> number is your "FIQ" number which you've decided will be offset by
+>> 64.
 
-Qipan prepared a same patch to fix this. since you have sent,
++1
 
-Acked-by: Barry Song <baohua@kernel.org>
+> Certainly the offset of 64 is a more or less meaningless magic number
+> that I decided on, however I don't think it originates within Linux. It
+> is both introduced and consumed within the device tree itself.
+>
+> I've proposed adding a flag to the gic bindings to mark a FIQ; the GIC
+> calls interrupt 69 (above) <0 5 0x84> (where 0x80 is the flag to request
+> FIQ routing alongside 0x04 which is the trigger type).
 
+That would be better than the magic number, but I'm not convinced that
+belongs in the DT either.
 
-> ---
->
-> Notes:
->     Sorry to resend within a few minutes. Patch is identical to parent but the
->     subject line has been corrected. The original 'v6' was just utterly
->     wrong! This patch is a not-previously-shared patch to fix a build
->     regression that appears in tty-next.
->
->  drivers/tty/serial/sirfsoc_uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-> index 236f892..1f2be48 100644
-> --- a/drivers/tty/serial/sirfsoc_uart.c
-> +++ b/drivers/tty/serial/sirfsoc_uart.c
-> @@ -704,7 +704,7 @@ static void sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
->         struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
->         unsigned long flags;
->         struct dma_tx_state tx_state;
-> -       spin_lock_irqsave(&port->rx_lock, flags);
-> +       spin_lock_irqsave(&port->lock, flags);
->         while (DMA_COMPLETE == dmaengine_tx_status(sirfport->rx_dma_chan,
->                         sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)) {
->                 sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
-> --
-> 1.9.0
->
+Whether the uart uses FIQ is not dependent on this DT setting, but
+based on whether the user wants to use the uart for kdb or not. You
+have enough information already to figure out which interrupt. What's
+missing is whether you have the capability to use FIQ or not. I don't
+recall if you can tell that from the GIC or not.
+
+Rob
