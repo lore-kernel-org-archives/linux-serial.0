@@ -1,110 +1,77 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH tty-next v2 3/4] serial: kgdb_nmi: Switch from tasklets to real timers
-Date: Thu, 29 May 2014 09:48:45 +0100
-Message-ID: <1401353326-14148-4-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH tty-next v2 1/4] serial: cpm_uart: No LF conversion in put_poll_char()
+Date: Thu, 29 May 2014 09:48:43 +0100
+Message-ID: <1401353326-14148-2-git-send-email-daniel.thompson@linaro.org>
 References: <20140528200344.GA2750@kroah.com>
  <1401353326-14148-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1401353326-14148-1-git-send-email-daniel.thompson@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-serial@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, linux-kernel@vger.kernel.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-serial@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, linux-kernel@vger.kernel.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Doug Anderson <dianders@chromium.org>, Christophe Leroy <christophe.leroy@c-s.fr>
 List-Id: linux-serial@vger.kernel.org
 
-kgdb_nmi uses tasklets on the assumption they will not be scheduled
-until the next timer tick. This assumption is invalid and can lead to
-live lock, continually servicing the kgdb_nmi tasklet. This is fixed
-by using the timer API instead.
+In (c7d44a02a serial_core: Commonalize crlf when working w/ a non open
+console port) the core was modified to make the UART poll_put_char()
+automatically convert LF to CRLF. This driver's poll_put_char() adds a
+CR itself and this was not disabled by the above patch meaning
+currently it sends two CR characters.
+
+The code to issue a character is shared by the console write code (where
+driver must do LF to CRLF conversion, although it can make use of the
+uart_console_write() helper function) and the poll_put_char (where
+driver must not do the conversion). For that reason we add a flag rather
+than simply rip out the conversion code.
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Doug Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>
+Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/kgdb_nmi.c | 30 +++++++++---------------------
- 1 file changed, 9 insertions(+), 21 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index d51b2a1..20d21d0 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -80,24 +80,10 @@ static struct console kgdb_nmi_console = {
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index 7d76214..aa60e6d 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -971,7 +971,7 @@ static void cpm_uart_config_port(struct uart_port *port, int flags)
+  * Note that this is called with interrupts already disabled
+  */
+ static void cpm_uart_early_write(struct uart_cpm_port *pinfo,
+-		const char *string, u_int count)
++		const char *string, u_int count, bool handle_linefeed)
+ {
+ 	unsigned int i;
+ 	cbd_t __iomem *bdp, *bdbase;
+@@ -1013,7 +1013,7 @@ static void cpm_uart_early_write(struct uart_cpm_port *pinfo,
+ 			bdp++;
  
- struct kgdb_nmi_tty_priv {
- 	struct tty_port port;
--	struct tasklet_struct tlet;
-+	struct timer_list timer;
- 	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
- };
+ 		/* if a LF, also do CR... */
+-		if (*string == 10) {
++		if (handle_linefeed && *string == 10) {
+ 			while ((in_be16(&bdp->cbd_sc) & BD_SC_READY) != 0)
+ 				;
  
--/*
-- * Our debugging console is polled in a tasklet, so we'll check for input
-- * every tick. In HZ-less mode, we should program the next tick.  We have
-- * to use the lowlevel stuff as no locks should be grabbed.
-- */
--#ifdef CONFIG_HIGH_RES_TIMERS
--static void kgdb_tty_poke(void)
--{
--	tick_program_event(ktime_get(), 0);
--}
--#else
--static inline void kgdb_tty_poke(void) {}
--#endif
--
- static struct tty_port *kgdb_nmi_port;
+@@ -1111,7 +1111,7 @@ static void cpm_put_poll_char(struct uart_port *port,
+ 	static char ch[2];
  
- static void kgdb_tty_recv(int ch)
-@@ -108,14 +94,13 @@ static void kgdb_tty_recv(int ch)
- 	if (!kgdb_nmi_port || ch < 0)
- 		return;
- 	/*
--	 * Can't use port->tty->driver_data as tty might be not there. Tasklet
-+	 * Can't use port->tty->driver_data as tty might be not there. Timer
- 	 * will check for tty and will get the ref, but here we don't have to
- 	 * do that, and actually, we can't: we're in NMI context, no locks are
- 	 * possible.
- 	 */
- 	priv = container_of(kgdb_nmi_port, struct kgdb_nmi_tty_priv, port);
- 	kfifo_in(&priv->fifo, &c, 1);
--	kgdb_tty_poke();
+ 	ch[0] = (char)c;
+-	cpm_uart_early_write(pinfo, ch, 1);
++	cpm_uart_early_write(pinfo, ch, 1, false);
  }
+ #endif /* CONFIG_CONSOLE_POLL */
  
- static int kgdb_nmi_poll_one_knock(void)
-@@ -199,7 +184,8 @@ static void kgdb_nmi_tty_receiver(unsigned long data)
- 	struct kgdb_nmi_tty_priv *priv = (void *)data;
- 	char ch;
+@@ -1275,7 +1275,7 @@ static void cpm_uart_console_write(struct console *co, const char *s,
+ 		spin_lock_irqsave(&pinfo->port.lock, flags);
+ 	}
  
--	tasklet_schedule(&priv->tlet);
-+	priv->timer.expires = jiffies + (HZ/100);
-+	add_timer(&priv->timer);
+-	cpm_uart_early_write(pinfo, s, count);
++	cpm_uart_early_write(pinfo, s, count, true);
  
- 	if (likely(!kgdb_nmi_tty_enabled || !kfifo_len(&priv->fifo)))
- 		return;
-@@ -215,7 +201,9 @@ static int kgdb_nmi_tty_activate(struct tty_port *port, struct tty_struct *tty)
- 	    container_of(port, struct kgdb_nmi_tty_priv, port);
- 
- 	kgdb_nmi_port = port;
--	tasklet_schedule(&priv->tlet);
-+	priv->timer.expires = jiffies + (HZ/100);
-+	add_timer(&priv->timer);
-+
- 	return 0;
- }
- 
-@@ -224,7 +212,7 @@ static void kgdb_nmi_tty_shutdown(struct tty_port *port)
- 	struct kgdb_nmi_tty_priv *priv =
- 	    container_of(port, struct kgdb_nmi_tty_priv, port);
- 
--	tasklet_kill(&priv->tlet);
-+	del_timer(&priv->timer);
- 	kgdb_nmi_port = NULL;
- }
- 
-@@ -243,7 +231,7 @@ static int kgdb_nmi_tty_install(struct tty_driver *drv, struct tty_struct *tty)
- 		return -ENOMEM;
- 
- 	INIT_KFIFO(priv->fifo);
--	tasklet_init(&priv->tlet, kgdb_nmi_tty_receiver, (unsigned long)priv);
-+	setup_timer(&priv->timer, kgdb_nmi_tty_receiver, (unsigned long)priv);
- 	tty_port_init(&priv->port);
- 	priv->port.ops = &kgdb_nmi_tty_port_ops;
- 	tty->driver_data = priv;
+ 	if (unlikely(nolock)) {
+ 		local_irq_restore(flags);
 -- 
 1.9.0
