@@ -1,48 +1,101 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V7] serial/uart/8250: Add tunable RX interrupt trigger
- I/F of FIFO buffers
-Date: Wed, 28 May 2014 13:13:27 -0700
-Message-ID: <20140528201327.GA19249@kroah.com>
-References: <20140527050921.17672.97365.stgit@yunodevel>
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
+Date: Thu, 29 May 2014 12:23:58 +0800
+Message-ID: <CAGb2v65v7rqBwFbn1JtQv44nQxepAq-ciwsBdHaELbzWXQNU9g@mail.gmail.com>
+References: <1400831485-28576-1-git-send-email-wens@csie.org>
+ <1400831485-28576-18-git-send-email-wens@csie.org> <20140525191434.GX10768@lukather>
+ <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com> <20140527083021.GE4730@lukather>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:40215 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752882AbaE1UJw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 28 May 2014 16:09:52 -0400
-Content-Disposition: inline
-In-Reply-To: <20140527050921.17672.97365.stgit@yunodevel>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140527083021.GE4730@lukather>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
 List-Id: linux-serial@vger.kernel.org
-To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On Tue, May 27, 2014 at 02:09:21PM +0900, Yoshihiro YUNOMAE wrote:
-> Add tunable RX interrupt trigger I/F of FIFO buffers.
-> 
-> Serial devices are used as not only message communication devices but control
-> or sending communication devices. For the latter uses, normally small data
-> will be exchanged, so user applications want to receive data unit as soon as
-> possible for real-time tendency. If we have a sensor which sends a 1 byte data
-> each time and must control a device based on the sensor feedback, the RX
-> interrupt should be triggered for each data.
-> 
-> According to HW specification of serial UART devices, RX interrupt trigger
-> can be changed, but the trigger is hard-coded. For example, RX interrupt trigger
-> in 16550A can be set to 1, 4, 8, or 14 bytes for HW, but current driver sets
-> the trigger to only 8bytes.
-> 
-> This patch makes some devices change RX interrupt trigger from userland.
+On Tue, May 27, 2014 at 4:30 PM, Maxime Ripard
+<maxime.ripard@free-electrons.com> wrote:
+> On Mon, May 26, 2014 at 12:36:38PM +0800, Chen-Yu Tsai wrote:
+>> On Mon, May 26, 2014 at 3:14 AM, Maxime Ripard
+>> <maxime.ripard@free-electrons.com> wrote:
+>> > On Fri, May 23, 2014 at 03:51:20PM +0800, Chen-Yu Tsai wrote:
+>> >> The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
+>> >> The differences are the AR100 clock can no longer be modified,
+>> >> and the APB0 clock has different divisors.
+>> >>
+>> >> This patch adds a compatible with a modified subdevice list for
+>> >> the A23.
+>> >>
+>> >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+>> >> ---
+>> >>  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
+>> >>  drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
+>> >>  2 files changed, 31 insertions(+), 1 deletion(-)
+>> >>
+>> >> diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+>> >> index 1f5a31f..03c5a55 100644
+>> >> --- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+>> >> +++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+>> >> @@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
+>> >>  (like clks and reset controllers).
+>> >>
+>> >>  Required properties:
+>> >> - - compatible: "allwinner,sun6i-a31-prcm"
+>> >> + - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
+>> >>   - reg: The PRCM registers range
+>> >>
+>> >>  The prcm node may contain several subdevices definitions:
+>> >> diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
+>> >> index 718fc4d..c96bb6c 100644
+>> >> --- a/drivers/mfd/sun6i-prcm.c
+>> >> +++ b/drivers/mfd/sun6i-prcm.c
+>> >> @@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
+>> >>       },
+>> >>  };
+>> >>
+>> >> +static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
+>> >> +     {
+>> >> +             .name = "sun6i-a31-apb0-clk",
+>> >> +             .of_compatible = "allwinner,sun8i-a23-apb0-clk",
+>> >> +             .num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
+>> >> +             .resources = sun6i_a31_apb0_clk_res,
+>> >> +     },
+>> >> +     {
+>> >> +             .name = "sun6i-a31-apb0-gates-clk",
+>> >> +             .of_compatible = "allwinner,sun6i-a31-apb0-gates-clk",
+>> >> +             .num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
+>> >> +             .resources = sun6i_a31_apb0_gates_clk_res,
+>> >> +     },
+>> >
+>> > Did I just have a brainfart, or didn't you just introduced an
+>> > sun8i-a23-apb0-gates-clk driver?
+>>
+>> My bad, I missed this one. The one in the DT is correct.
+>> It actually works, so I'm a bit confused here.
+>> Which one does the driver core actually use?
+>
+> Actually, it will use both, and will match the of_compatible string
+> try to match it against the mfd-sub-nodes compatibles. If nothing
+> matches, it won't fill the dev.of_node field.
 
-I'd prefer it if you could split the attr_grps logic out into a separate
-patch, the first one in a 2 patch series.  I don't think it is quite
-correct what you are doing here, but given the other changes going on at
-the same time, it's hard to pick it apart.
+So actually it was supposed to use "allwinner,sun6i-a31-apb0-gates-clk",
+as that clk driver takes clock-indices, so no need to define gate masks
+and tie them to some new compatible.
 
-So, can you split this up into 2 patches and resend please?
+There was no sun8i-a23-apb0-gates-clk driver.
 
-thanks,
+I must not be getting enough sleep.
 
-greg k-h
+>> > And there's no ar100 and ahb0 clocks ?
+>>
+>> The ahb0 is a fixed-factor (1:1) clock. There are no controls for it.
+>> The ar100 clock on the A23 has no controls either, so fixed-factor
+>> clock again.
+>
+> Ack.
+>
+> --
+> Maxime Ripard, Free Electrons
+> Embedded Linux, Kernel and Android engineering
+> http://free-electrons.com
