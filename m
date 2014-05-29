@@ -1,72 +1,47 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH tty-next v2 2/4] serial: kgdb_nmi: Use container_of() to locate private data
-Date: Thu, 29 May 2014 09:48:44 +0100
-Message-ID: <1401353326-14148-3-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH tty-next v2 0/4] serial: kgdb_nmi: Allow ttyNMIX to act as primary console
+Date: Thu, 29 May 2014 09:48:42 +0100
+Message-ID: <1401353326-14148-1-git-send-email-daniel.thompson@linaro.org>
 References: <20140528200344.GA2750@kroah.com>
- <1401353326-14148-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1401353326-14148-1-git-send-email-daniel.thompson@linaro.org>
+In-Reply-To: <20140528200344.GA2750@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-serial@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, linux-kernel@vger.kernel.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>
 List-Id: linux-serial@vger.kernel.org
 
-This corrects a crash in kgdb_nmi_tty_shutdown() which occurs when
-the function is called with port->tty set to NULL.
+This patchset contains a number of fixes to make it possible to use
+ttyNMIX as the primary console (providing you also have that the
+additional architecture specific code which is proposed in a 
+different patch set).
 
-All conversions between struct tty_port and struct kgdb_nmi_tty_priv
-have been switched to direct calls to container_of() to improve code
-clarity and consistancy.
+The first patch fixes a bug in the cpm poll_put_char() driver. This
+is not strictly related to ttyNMIX but appears in this patch series
+for historical reasons (it was part of a patch that did impact ttyNMIX
+but most of that patch is already in the kernel thanks to an 
+independent patch from Doug Anderson).
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
----
- drivers/tty/serial/kgdb_nmi.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+The remaining patches are specific to kgdb_nmi and have no effect on
+any other part of the kernel.
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 5f673b7..d51b2a1 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -84,11 +84,6 @@ struct kgdb_nmi_tty_priv {
- 	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
- };
- 
--static struct kgdb_nmi_tty_priv *kgdb_nmi_port_to_priv(struct tty_port *port)
--{
--	return container_of(port, struct kgdb_nmi_tty_priv, port);
--}
--
- /*
-  * Our debugging console is polled in a tasklet, so we'll check for input
-  * every tick. In HZ-less mode, we should program the next tick.  We have
-@@ -118,7 +113,7 @@ static void kgdb_tty_recv(int ch)
- 	 * do that, and actually, we can't: we're in NMI context, no locks are
- 	 * possible.
- 	 */
--	priv = kgdb_nmi_port_to_priv(kgdb_nmi_port);
-+	priv = container_of(kgdb_nmi_port, struct kgdb_nmi_tty_priv, port);
- 	kfifo_in(&priv->fifo, &c, 1);
- 	kgdb_tty_poke();
- }
-@@ -216,7 +211,8 @@ static void kgdb_nmi_tty_receiver(unsigned long data)
- 
- static int kgdb_nmi_tty_activate(struct tty_port *port, struct tty_struct *tty)
- {
--	struct kgdb_nmi_tty_priv *priv = tty->driver_data;
-+	struct kgdb_nmi_tty_priv *priv =
-+	    container_of(port, struct kgdb_nmi_tty_priv, port);
- 
- 	kgdb_nmi_port = port;
- 	tasklet_schedule(&priv->tlet);
-@@ -225,7 +221,8 @@ static int kgdb_nmi_tty_activate(struct tty_port *port, struct tty_struct *tty)
- 
- static void kgdb_nmi_tty_shutdown(struct tty_port *port)
- {
--	struct kgdb_nmi_tty_priv *priv = port->tty->driver_data;
-+	struct kgdb_nmi_tty_priv *priv =
-+	    container_of(port, struct kgdb_nmi_tty_priv, port);
- 
- 	tasklet_kill(&priv->tlet);
- 	kgdb_nmi_port = NULL;
+The series has been runtime tested on ARM and compile tested on
+x86 and powerpc.
+
+Changes since v1:
+
+- Trimmed down the first patch to the remaining fragments as described 
+  above.
+- Rebased on tty-next as requested by Greg KH.
+
+Daniel Thompson (4):
+  serial: cpm_uart: No LF conversion in put_poll_char()
+  serial: kgdb_nmi: Use container_of() to locate private data
+  serial: kgdb_nmi: Switch from tasklets to real timers
+  serial: kgdb_nmi: Improve console integration with KDB I/O
+
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c |  8 ++--
+ drivers/tty/serial/kgdb_nmi.c               | 59 +++++++++++++----------------
+ 2 files changed, 31 insertions(+), 36 deletions(-)
+
 -- 
 1.9.0
