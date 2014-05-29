@@ -1,101 +1,70 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH 17/22] mfd: sun6i-prcm: Add support for Allwinner A23 PRCM
-Date: Thu, 29 May 2014 12:23:58 +0800
-Message-ID: <CAGb2v65v7rqBwFbn1JtQv44nQxepAq-ciwsBdHaELbzWXQNU9g@mail.gmail.com>
-References: <1400831485-28576-1-git-send-email-wens@csie.org>
- <1400831485-28576-18-git-send-email-wens@csie.org> <20140525191434.GX10768@lukather>
- <CAGb2v66cV_nRpHhrtDUYzncO5wimx+vRBW6BFcU0Kz=bKkNs+g@mail.gmail.com> <20140527083021.GE4730@lukather>
+From: Dirk Behme <dirk.behme@gmail.com>
+Subject: Re: [PATCH 0/5] serial: imx: fixes
+Date: Thu, 29 May 2014 06:58:55 +0200
+Message-ID: <5386BE8F.20605@gmail.com>
+References: <1399648788-26061-1-git-send-email-dean_jenkins@mentor.com> <20140528193442.GA7066@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140527083021.GE4730@lukather>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mike Turquette <mturquette@linaro.org>, Emilio Lopez <emilio@elopez.com.ar>, Linus Walleij <linus.walleij@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Luc Verhaegen <libv@skynet.be>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:51367 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933040AbaE2E7F (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 29 May 2014 00:59:05 -0400
+Received: by mail-wg0-f46.google.com with SMTP id n12so11997640wgh.17
+        for <linux-serial@vger.kernel.org>; Wed, 28 May 2014 21:59:03 -0700 (PDT)
+In-Reply-To: <20140528193442.GA7066@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: dean_jenkins@mentor.com
+Cc: Greg KH <gregkh@linuxfoundation.org>, dirk.behme@de.bosch.com, s.hauer@pengutronix.de, b32955@freescale.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, shawn.guo@freescale.com
 
-On Tue, May 27, 2014 at 4:30 PM, Maxime Ripard
-<maxime.ripard@free-electrons.com> wrote:
-> On Mon, May 26, 2014 at 12:36:38PM +0800, Chen-Yu Tsai wrote:
->> On Mon, May 26, 2014 at 3:14 AM, Maxime Ripard
->> <maxime.ripard@free-electrons.com> wrote:
->> > On Fri, May 23, 2014 at 03:51:20PM +0800, Chen-Yu Tsai wrote:
->> >> The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
->> >> The differences are the AR100 clock can no longer be modified,
->> >> and the APB0 clock has different divisors.
->> >>
->> >> This patch adds a compatible with a modified subdevice list for
->> >> the A23.
->> >>
->> >> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
->> >> ---
->> >>  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
->> >>  drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
->> >>  2 files changed, 31 insertions(+), 1 deletion(-)
->> >>
->> >> diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
->> >> index 1f5a31f..03c5a55 100644
->> >> --- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
->> >> +++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
->> >> @@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
->> >>  (like clks and reset controllers).
->> >>
->> >>  Required properties:
->> >> - - compatible: "allwinner,sun6i-a31-prcm"
->> >> + - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
->> >>   - reg: The PRCM registers range
->> >>
->> >>  The prcm node may contain several subdevices definitions:
->> >> diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
->> >> index 718fc4d..c96bb6c 100644
->> >> --- a/drivers/mfd/sun6i-prcm.c
->> >> +++ b/drivers/mfd/sun6i-prcm.c
->> >> @@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
->> >>       },
->> >>  };
->> >>
->> >> +static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
->> >> +     {
->> >> +             .name = "sun6i-a31-apb0-clk",
->> >> +             .of_compatible = "allwinner,sun8i-a23-apb0-clk",
->> >> +             .num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
->> >> +             .resources = sun6i_a31_apb0_clk_res,
->> >> +     },
->> >> +     {
->> >> +             .name = "sun6i-a31-apb0-gates-clk",
->> >> +             .of_compatible = "allwinner,sun6i-a31-apb0-gates-clk",
->> >> +             .num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
->> >> +             .resources = sun6i_a31_apb0_gates_clk_res,
->> >> +     },
->> >
->> > Did I just have a brainfart, or didn't you just introduced an
->> > sun8i-a23-apb0-gates-clk driver?
+Am 28.05.2014 21:34, schrieb Greg KH:
+> On Fri, May 09, 2014 at 04:19:43PM +0100, dean_jenkins@mentor.com wrote:
+>> From: Dean Jenkins <Dean_Jenkins@mentor.com>
 >>
->> My bad, I missed this one. The one in the DT is correct.
->> It actually works, so I'm a bit confused here.
->> Which one does the driver core actually use?
->
-> Actually, it will use both, and will match the of_compatible string
-> try to match it against the mfd-sub-nodes compatibles. If nothing
-> matches, it won't fill the dev.of_node field.
-
-So actually it was supposed to use "allwinner,sun6i-a31-apb0-gates-clk",
-as that clk driver takes clock-indices, so no need to define gate masks
-and tie them to some new compatible.
-
-There was no sun8i-a23-apb0-gates-clk driver.
-
-I must not be getting enough sleep.
-
->> > And there's no ar100 and ahb0 clocks ?
+>> The following set of patches were tested on an i.MX6 multi-core platform.
 >>
->> The ahb0 is a fixed-factor (1:1) clock. There are no controls for it.
->> The ar100 clock on the A23 has no controls either, so fixed-factor
->> clock again.
+>> Patches 1 to 4 were tested using a Bluetooth BCSP UART connection at 115.2kbps
+>> and 4Mbps. The fixes were needed because the i.MX6 UART driver caused spinlock
+>> deadlocks with the HCI TTY layer.
+>>
+>> Patch 5 improves the i.MX6 UART driver for use with kdb.
+>>
+>> Patch 1: serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
+>> Patch 2: serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
+>> Patch 3: serial: imx: avoid spinlock recursion deadlock
+>> Patch 4: serial: imx: move imx_transmit_buffer() into imx_txint()
+>> Patch 5: serial: imx: clean up imx_poll_get_char()
+>>
+>> The patches are based off 3.15-rc4.
+>>
+>> ----------------------------------------------------------------
+>> Andy Lowe (1):
+>>        serial: imx: avoid spinlock recursion deadlock
+>>
+>> Dirk Behme (4):
+>>        serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
+>>        serial: imx: remove uart_write_wakeup() from imx_transmit_buffer()
+>>        serial: imx: move imx_transmit_buffer() into imx_txint()
+>>        serial: imx: clean up imx_poll_get_char()
+>>
+>>   drivers/tty/serial/imx.c |   73 ++++++++++++++--------------------------------
+>>   1 file changed, 22 insertions(+), 51 deletions(-)
 >
-> Ack.
+> Given the rather confusing threads based on these patches, I don't know
+> what to apply.
 >
-> --
-> Maxime Ripard, Free Electrons
-> Embedded Linux, Kernel and Android engineering
-> http://free-electrons.com
+> Dean, can you respin what patches you want applied
+
+Well, we think patches #1-#4 are correct and should be applied, but 
+Huang has the opinion that this is fixed already in the BT stack. If 
+Huang doesn't change his mind, then let's drop #1-#4.
+
+Patch #5 addresses an other topic and therefore should be resent, then.
+
+Best regards
+
+Dirk
+
