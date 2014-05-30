@@ -1,58 +1,106 @@
-From: Dirk Behme <dirk.behme@gmail.com>
-Subject: Re: [PATCH 2/2] serial: imx: disable the receiver ready interrupt
- for imx_stop_rx
-Date: Fri, 30 May 2014 07:52:25 +0200
-Message-ID: <53881C99.1090207@gmail.com>
-References: <1400819575-20435-1-git-send-email-b32955@freescale.com> <1400819575-20435-2-git-send-email-b32955@freescale.com>
+From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Subject: [PATCH V8 0/2] serial/uart/8250: Introduce tunable RX trigger I/F
+Date: Fri, 30 May 2014 15:16:17 +0900
+Message-ID: <20140530061617.21929.25777.stgit@yunodevel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:49062 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752679AbaE3Fw2 (ORCPT
+Received: from mail7.hitachi.co.jp ([133.145.228.42]:45544 "EHLO
+	mail7.hitachi.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754509AbaE3GQV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 30 May 2014 01:52:28 -0400
-In-Reply-To: <1400819575-20435-2-git-send-email-b32955@freescale.com>
+	Fri, 30 May 2014 02:16:21 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Huang Shijie <b32955@freescale.com>
-Cc: gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>
+Cc: Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On 23.05.2014 06:32, Huang Shijie wrote:
-> This patch disables the receiver ready interrupt for imx_stop_rx.
-> It reduces the interrupt numbers when the uart is going to close
-> or suspend.
->
-> Signed-off-by: Huang Shijie <b32955@freescale.com>
-> ---
->   drivers/tty/serial/imx.c |    4 ++++
->   1 files changed, 4 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index ed6cdf7..6026101 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -440,6 +440,10 @@ static void imx_stop_rx(struct uart_port *port)
->
->   	temp = readl(sport->port.membase + UCR2);
->   	writel(temp & ~UCR2_RXEN, sport->port.membase + UCR2);
-> +
-> +	/* disable the `Receiver Ready Interrrupt` */
-> +	temp = readl(sport->port.membase + UCR1);
-> +	writel(temp & ~UCR1_RRDYEN, sport->port.membase + UCR1);
+Hi Greg,
 
-Will this change cause a loss or a processing delay of RX characters 
-pending in the RX FIFO ?
+This patch set introduces tunable RX interrupt trigger I/F for 8250 serials.
+I just split V7's patch up into 2 patches, and all functions are not changed
+from previous version. V6 patch was reviewed by Stephen Warren and acked, 
+but I removed the 'Reviewed-by' for this patch set just in case.
 
-It is not clear whether disabling the receiver will clear the RX FIFO. 
-My guess is that the contents of the RX FIFO will remain intact when 
-the receiver is disabled. The RX interrupt has an opportunity to mop 
-up these pending characters in the RX FIFO but disabling the RX 
-interrupt has potential to leave those characters in the RX FIFO. Does 
-it matter ?
+Thanks!
 
-Thanks
+<Change log>
 
-Dirk
+Changed in V2:
+ - Use _IOW for TIOCSFIFORTRIG definition
+ - Pass the interrupt trigger value itself
 
+Changes in V3:
+ - Change I/F from ioctl(2) to sysfs(rx_int_trig)
+
+Changes in V4:
+ - Introduce fifo_bug flag in uart_8250_port structure
+   This is enabled only when parity is enabled and UART_BUG_PARITY is enabled
+   for up->bugs. If this flag is enabled, user cannot set RX trigger.
+ - Return -EOPNOTSUPP when it does not support device at convert_fcr2val() and
+   at convert_val2rxtrig()
+ - Set the nearest lower RX trigger when users input a meaningless value at
+   convert_val2rxtrig()
+ - Check whether p->fcr is existing at serial8250_clear_and_reinit_fifos()
+ - Set fcr = up->fcr in the begging of serial8250_do_set_termios()
+
+Changes in V5:
+ - Support Tegra, 16650V2, 16654, and 16750
+ - Store default FCR value to up->fcr when the port is first created
+ - Add rx_trig_byte[] in uart_config[] for each device and use rx_trig_byte[]
+   in convert_fcr2val() and convert_val2rxtrig()
+
+Changes in V5.1:
+ - Fix FCR_RX_TRIG_MAX_STATE definition
+
+Changes in V6:
+ - Move FCR_RX_TRIG_* definition in 8250.h to include/uapi/linux/serial_reg.h,
+   rename those to UART_FCR_R_TRIG_*, and use UART_FCR_TRIGGER_MASK to
+   UART_FCR_R_TRIG_BITS()
+ - Change following function names:
+    convert_fcr2val() => fcr_get_rxtrig_bytes()
+    convert_val2rxtrig() => bytes_to_fcr_rxtrig()
+ - Fix typo in serial8250_do_set_termios()
+ - Delete the verbose error message pr_info() in bytes_to_fcr_rxtrig()
+ - Rename *rx_int_trig/rx_trig* to *rxtrig* for several functions or variables
+   (but UI remains rx_int_trig)
+ - Change the meaningless variable name 'val' to 'bytes' following functions:
+    fcr_get_rxtrig_bytes(), bytes_to_fcr_rxtrig(), do_set_rxtrig(),
+    do_serial8250_set_rxtrig(), and serial8250_set_attr_rxtrig()
+ - Use up->fcr in order to get rxtrig_bytes instead of rx_trig_raw in
+   fcr_get_rxtrig_bytes()
+ - Use conf_type->rxtrig_bytes[0] instead of switch statement for support check
+   in register_dev_spec_attr_grp()
+ - Delete the checking whether a user changed FCR or not when minimum buffer
+   is needed in serial8250_do_set_termios()
+
+Changes in V7:
+ - Add Documentation
+ - Change I/F name from rx_int_trig to rx_trig_bytes because the name
+   rx_int_trig is hard to understand how users specify the value
+
+Changes in V8:
+ - Split V7's patch up into 2 patches
+
+---
+
+Yoshihiro YUNOMAE (2):
+      serial/uart: Introduce device specific attribute group to uart_port structure
+      serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers
+
+
+ Documentation/ABI/testing/sysfs-tty |   16 +++
+ drivers/tty/serial/8250/8250.h      |    2 
+ drivers/tty/serial/8250/8250_core.c |  173 ++++++++++++++++++++++++++++++++---
+ drivers/tty/serial/serial_core.c    |   18 ++--
+ include/linux/serial_8250.h         |    2 
+ include/linux/serial_core.h         |    4 +
+ include/uapi/linux/serial_reg.h     |    5 +
+ 7 files changed, 198 insertions(+), 22 deletions(-)
+
+-- 
+Yoshihiro YUNOMAE
+Software Platform Research Dept. Linux Technology Center
+Hitachi, Ltd., Yokohama Research Laboratory
+E-mail: yoshihiro.yunomae.ez@hitachi.com
