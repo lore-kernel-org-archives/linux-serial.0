@@ -1,48 +1,43 @@
-From: Barry Song <baohua@kernel.org>
-Subject: Re: [PATCH tty-next] serial: sirf: Fix compilation failure
-Date: Fri, 30 May 2014 18:02:53 +0800
-Message-ID: <CAGsJ_4z7zikhK5ba22OzWEXOKmHCnazyYHwMUVCGRs5Ca-Wi8g@mail.gmail.com>
-References: <1396010535-2654-1-git-send-email-daniel.thompson@linaro.org>
- <1401358423-31532-1-git-send-email-daniel.thompson@linaro.org>
- <CAGsJ_4ypSdP-i35BaQaciPo-g=+8Z5-T2MV5zgDP98BMciGbGw@mail.gmail.com> <20140529182524.GA22969@kroah.com>
+From: Huang Shijie <b32955@freescale.com>
+Subject: Re: [PATCH 1/2] serial: imx: remove the DMA wait queue
+Date: Fri, 30 May 2014 17:01:30 +0800
+Message-ID: <20140530090128.GA4380@shlinux1.ap.freescale.net>
+References: <1400819575-20435-1-git-send-email-b32955@freescale.com>
+ <857E9EDCA6C0904DB3357321AA9123EBE14B5A2C@NA-MBX-03.mgc.mentorg.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f54.google.com ([209.85.192.54]:34240 "EHLO
-	mail-qg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755177AbaE3KDO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 30 May 2014 06:03:14 -0400
-In-Reply-To: <20140529182524.GA22969@kroah.com>
+Received: from mail-bn1blp0186.outbound.protection.outlook.com ([207.46.163.186]:57959
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1755275AbaE3KXD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 30 May 2014 06:23:03 -0400
+Content-Disposition: inline
+In-Reply-To: <857E9EDCA6C0904DB3357321AA9123EBE14B5A2C@NA-MBX-03.mgc.mentorg.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, LKML <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, Qipan Li <Qipan.Li@csr.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: "Wang, Jiada (ESD)" <Jiada_Wang@mentor.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Behme, Dirk - Bosch" <dirk.behme@de.bosch.com>
 
-2014-05-30 2:25 GMT+08:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> On Thu, May 29, 2014 at 08:14:02PM +0800, Barry Song wrote:
->> 2014-05-29 18:13 GMT+08:00 Daniel Thompson <daniel.thompson@linaro.org>:
->> > After 07d410e0) serial: sirf: fix spinlock deadlock issue it is no longer
->> > possiblet to compile this driver. The rename of one of the spinlocks is
->> > faulty. After looking at the original patch I believe this is the correct
->> > fix.
->> >
->> > Compile tested using ARM's multi_v7_defconfig
->> >
->> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> > Cc: Jiri Slaby <jslaby@suse.cz>
->> > Cc: Barry Song <baohua@kernel.org>
->> > Cc: Qipan Li <Qipan.Li@csr.com>
->> > Cc: linux-serial@vger.kernel.org
->> > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
->>
->> Qipan prepared a same patch to fix this.
->
-> Why didn't he send it?
+On Fri, May 30, 2014 at 09:27:20AM +0000, Wang, Jiada (ESD) wrote:
+> Hi Shijie
+> 
+> After apply this patch into our kernel,
+> We are facing data hang issue when sending big size file (2M used in test) to uart port
+> Note: Rx port is also keep receiving data.
+> 
+> After read the implementation of uart_stop(),
+> I feel like, stop_tx() is used to perform flow control when like a XOFF is received.
+> Which means no data should be dropped, as they may need to be sent out,
+> When next start_tx() is called.
+> 
+> But by calling dmaengine_termiate_all(), the data already be submitted to DMA engine,
+> May be lost, thus cause data hang.
+> 
+> What do you think?
+This patch has been reverted by Greg.
 
-it is not that he didn't want to send, it is because Daniel has sent
-the same patch earlier.
+I also noticed the data loss issue. 
 
->
-
--barry
+thanks
+Huang Shijie
