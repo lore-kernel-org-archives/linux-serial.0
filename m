@@ -1,43 +1,34 @@
-From: Huang Shijie <b32955@freescale.com>
-Subject: Re: [PATCH 1/2] serial: imx: remove the DMA wait queue
-Date: Fri, 30 May 2014 17:01:30 +0800
-Message-ID: <20140530090128.GA4380@shlinux1.ap.freescale.net>
-References: <1400819575-20435-1-git-send-email-b32955@freescale.com>
- <857E9EDCA6C0904DB3357321AA9123EBE14B5A2C@NA-MBX-03.mgc.mentorg.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1blp0186.outbound.protection.outlook.com ([207.46.163.186]:57959
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1755275AbaE3KXD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 30 May 2014 06:23:03 -0400
-Content-Disposition: inline
-In-Reply-To: <857E9EDCA6C0904DB3357321AA9123EBE14B5A2C@NA-MBX-03.mgc.mentorg.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Subject: [PATCH] tty: serial: msm_serial.c:  Cleaning up uninitialized variables
+Date: Sun,  1 Jun 2014 15:38:24 +0200
+Message-ID: <1401629904-19492-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>
+Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "Wang, Jiada (ESD)" <Jiada_Wang@mentor.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Behme, Dirk - Bosch" <dirk.behme@de.bosch.com>
 
-On Fri, May 30, 2014 at 09:27:20AM +0000, Wang, Jiada (ESD) wrote:
-> Hi Shijie
-> 
-> After apply this patch into our kernel,
-> We are facing data hang issue when sending big size file (2M used in test) to uart port
-> Note: Rx port is also keep receiving data.
-> 
-> After read the implementation of uart_stop(),
-> I feel like, stop_tx() is used to perform flow control when like a XOFF is received.
-> Which means no data should be dropped, as they may need to be sent out,
-> When next start_tx() is called.
-> 
-> But by calling dmaengine_termiate_all(), the data already be submitted to DMA engine,
-> May be lost, thus cause data hang.
-> 
-> What do you think?
-This patch has been reverted by Greg.
+There is a risk that the variable will be used without being initialized.
 
-I also noticed the data loss issue. 
+This was largely found by using a static code analysis program called cppcheck.
 
-thanks
-Huang Shijie
+Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+---
+ drivers/tty/serial/msm_serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 053b98e..c67f5c5 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -962,7 +962,7 @@ static int __init msm_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *port;
+ 	struct msm_port *msm_port;
+-	int baud, flow, bits, parity;
++	int baud = 0, flow, bits, parity;
+ 
+ 	if (unlikely(co->index >= UART_NR || co->index < 0))
+ 		return -ENXIO;
+-- 
+1.7.10.4
