@@ -1,52 +1,51 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/2] serial: core: Preserve termios c_cflag for console
- resume
-Date: Wed, 04 Jun 2014 10:48:37 -0400
-Message-ID: <538F31C5.3090901@hurleysoftware.com>
-References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it> <1401891371-4946-1-git-send-email-peter@hurleysoftware.com> <1401891371-4946-2-git-send-email-peter@hurleysoftware.com> <20140604142232.GB1008@kroah.com> <538F3150.6040102@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] serial: samsung: Use %pa to print 'resource_size_t' type
+Date: Wed,  4 Jun 2014 20:06:41 -0300
+Message-ID: <1401923201-5477-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:42004 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752182AbaFDOsi (ORCPT
+Received: from mail-yh0-f50.google.com ([209.85.213.50]:59423 "EHLO
+	mail-yh0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751362AbaFDXHE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jun 2014 10:48:38 -0400
-In-Reply-To: <538F3150.6040102@hurleysoftware.com>
+	Wed, 4 Jun 2014 19:07:04 -0400
+Received: by mail-yh0-f50.google.com with SMTP id 29so181232yhl.23
+        for <linux-serial@vger.kernel.org>; Wed, 04 Jun 2014 16:07:03 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Valerio Vanni <valerio.vanni@inwind.it>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: gregkh@linuxfoundation.org
+Cc: jg1.han@samsung.com, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On 06/04/2014 10:46 AM, Peter Hurley wrote:
-> On 06/04/2014 10:22 AM, Greg Kroah-Hartman wrote:
->> On Wed, Jun 04, 2014 at 10:16:11AM -0400, Peter Hurley wrote:
->>> When a tty is opened for the serial console, the termios c_cflag
->>> settings are inherited from the console line settings.
->>> However, if the tty is subsequently closed, the termios settings
->>> are lost. This results in a garbled console if the console is later
->>> suspended and resumed.
->>>
->>> Preserve the termios c_cflag for the serial console when the tty
->>> is shutdown; this reflects the most recent line settings.
->>>
->>> Fixes: Bugzilla #69751, 'serial console does not wake from S3'
->>> Reported-by: Valerio Vanni <valerio.vanni@inwind.it>
->>> Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
->>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->>> ---
->>>   drivers/tty/serial/serial_core.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>
->> Same as before, regression, or just a normal "new feature"?
->
-> This was reported as a regression since 2.6.24, but that was likely
-> misreported, and more likely due to a userspace update which triggers
-> the bug.
->
-> I would be surprised if console resume _never_ worked if the serial tty
-> was opened then closed, but it probably has worked for a long time.
-                                          ^^^^^
-                                          hasn't
+From: Fabio Estevam <fabio.estevam@freescale.com>
+
+When building multi_v7_defconfig with CONFIG_ARM_LPAE=y the following warning
+is seen:
+
+drivers/tty/serial/samsung.c: In function 's3c24xx_serial_init_port':
+drivers/tty/serial/samsung.c:1229:2: warning: format '%x' expects argument of type 'unsigned int', but argument 2 has type 'resource_size_t' [-Wformat]
+
+Use %pa to print 'resource_size_t' type to fix the warning.
+
+Reported-by: Olof's autobuilder <build@lixom.net>
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/samsung.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 3293377..b7b8185 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1226,8 +1226,8 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		wr_regl(port, S3C64XX_UINTSP, 0xf);
+ 	}
+ 
+-	dbg("port: map=%08x, mem=%p, irq=%d (%d,%d), clock=%u\n",
+-	    port->mapbase, port->membase, port->irq,
++	dbg("port: map=%pa, mem=%p, irq=%d (%d,%d), clock=%u\n",
++	    &port->mapbase, port->membase, port->irq,
+ 	    ourport->rx_irq, ourport->tx_irq, port->uartclk);
+ 
+ 	/* reset the fifos (and setup the uart) */
+-- 
+1.8.3.2
 
