@@ -1,70 +1,58 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH] serial: samsung: Use %pa to print 'resource_size_t' type
-Date: Thu, 05 Jun 2014 10:12:56 +0900
-Message-ID: <006f01cf805b$48589d60$d909d820$%han@samsung.com>
-References: <1401923201-5477-1-git-send-email-festevam@gmail.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH] serial: samsung: fix typo in debug code
+Date: Wed, 04 Jun 2014 18:20:41 -0700
+Message-ID: <1401931241.26329.16.camel@joe-AO725>
+References: <10455941.RzodM59Z3O@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:12362 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751387AbaFEBM7 (ORCPT
+Received: from smtprelay0018.hostedemail.com ([216.40.44.18]:36747 "EHLO
+	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753334AbaFEBUp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jun 2014 21:12:59 -0400
-Received: from epcpsbgr2.samsung.com
- (u142.gpu120.samsung.co.kr [203.254.230.142])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N6O0049O8PKGM50@mailout3.samsung.com> for
- linux-serial@vger.kernel.org; Thu, 05 Jun 2014 10:12:56 +0900 (KST)
-In-reply-to: <1401923201-5477-1-git-send-email-festevam@gmail.com>
-Content-language: ko
+	Wed, 4 Jun 2014 21:20:45 -0400
+In-Reply-To: <10455941.RzodM59Z3O@wuerfel>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Fabio Estevam' <festevam@gmail.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, 'Fabio Estevam' <fabio.estevam@freescale.com>, 'Jingoo Han' <jg1.han@samsung.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Kukjin Kim <kgene.kim@samsung.com>
 
-On Thursday, June 05, 2014 8:07 AM, Fabio Estevam wrote:
+On Tue, 2014-06-03 at 11:53 +0200, Arnd Bergmann wrote:
+> commit e4ac92df2791 ("serial: samsung: Neaten dbg uses") introduced
+> a regression in the conversion from vsprintf to vsnprintf.
 > 
-> From: Fabio Estevam <fabio.estevam@freescale.com>
+> This fixes the build error by passing the correct variable name.
 > 
-> When building multi_v7_defconfig with CONFIG_ARM_LPAE=y the following warning
-> is seen:
-> 
-> drivers/tty/serial/samsung.c: In function 's3c24xx_serial_init_port':
-> drivers/tty/serial/samsung.c:1229:2: warning: format '%x' expects argument of type 'unsigned int', but
-> argument 2 has type 'resource_size_t' [-Wformat]
-> 
-> Use %pa to print 'resource_size_t' type to fix the warning.
-> 
-> Reported-by: Olof's autobuilder <build@lixom.net>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-
-Reviewed-by: Jingoo Han <jg1.han@samsung.com>
-
-Best regards,
-Jingoo Han
-
-> ---
->  drivers/tty/serial/samsung.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Cc: Joe Perches <joe@perches.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Doug Anderson <dianders@chromium.org>
+> Cc: Kukjin Kim <kgene.kim@samsung.com>
 > 
 > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index 3293377..b7b8185 100644
+> index 3293377..c1d3ebd 100644
 > --- a/drivers/tty/serial/samsung.c
 > +++ b/drivers/tty/serial/samsung.c
-> @@ -1226,8 +1226,8 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
->  		wr_regl(port, S3C64XX_UINTSP, 0xf);
->  	}
-> 
-> -	dbg("port: map=%08x, mem=%p, irq=%d (%d,%d), clock=%u\n",
-> -	    port->mapbase, port->membase, port->irq,
-> +	dbg("port: map=%pa, mem=%p, irq=%d (%d,%d), clock=%u\n",
-> +	    &port->mapbase, port->membase, port->irq,
->  	    ourport->rx_irq, ourport->tx_irq, port->uartclk);
-> 
->  	/* reset the fifos (and setup the uart) */
-> --
-> 1.8.3.2
+> @@ -66,7 +66,7 @@ static void dbg(const char *fmt, ...)
+>  	char buff[256];
+>  
+>  	va_start(va, fmt);
+> -	vscnprintf(buff, sizeof(buf), fmt, va);
+> +	vscnprintf(buff, sizeof(buff), fmt, va);
+>  	va_end(va);
+>  
+>  	printascii(buff);
+
+Greg?
+
+The original has ended up in Linus' -next branch.
+
+Can you please apply this sooner rather than later?
+
+Sorry for the bother.  Dunno how it happened.
+
+I thought I compiled it with the appropriate CONFIG
+settings.
+
 
