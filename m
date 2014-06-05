@@ -1,184 +1,64 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] serial: 8250_dw: clock rate handling for all ACPI platforms
-Date: Thu,  5 Jun 2014 16:51:40 +0300
-Message-ID: <1401976300-2569-1-git-send-email-heikki.krogerus@linux.intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:29565 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751409AbaFENvr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 5 Jun 2014 09:51:47 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Nicolas Pitre <nicolas.pitre@linaro.org>
+Subject: Re: [RFC v3 3/9] irqchip: gic: Provide support for interrupt grouping
+Date: Thu, 5 Jun 2014 15:50:12 -0400 (EDT)
+Message-ID: <alpine.LFD.2.11.1406051545380.25775@knanqh.ubzr>
+References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-4-git-send-email-daniel.thompson@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1401961994-18033-4-git-send-email-daniel.thompson@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Sricharan R <r.sricharan@ti.com>, Colin Cross <ccross@android.com>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Jason Cooper <jason@lakedaemon.net>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-This replaces the Baytrail specific custom set_termios hook
-with a more generic one where the clock framework is used to
-set the rate. The method also doesn't need to be limited to
-just Baytrail, so it's used with all ACPI platforms.
+On Thu, 5 Jun 2014, Daniel Thompson wrote:
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 103 +++++++++++---------------------------
- 1 file changed, 28 insertions(+), 75 deletions(-)
+> diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+> index 57d165e..aa8efe4 100644
+> --- a/drivers/irqchip/irq-gic.c
+> +++ b/drivers/irqchip/irq-gic.c
+> @@ -408,13 +408,27 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
+>  		writel_relaxed(0xa0a0a0a0, base + GIC_DIST_PRI + i * 4 / 4);
+>  
+>  	/*
+> +	 * Set all global interrupts to be group 1.
+> +	 *
+> +	 * If grouping is not available (not implemented or prohibited by
+> +	 * security mode) these registers a read-as-zero/write-ignored.
+> +	 */
+> +	for (i = 32; i < gic_irqs; i += 32)
+> +		writel_relaxed(0xffffffff, base + GIC_DIST_IGROUP + i * 4 / 32);
+> +
+> +	/*
+>  	 * Disable all interrupts.  Leave the PPI and SGIs alone
+>  	 * as these enables are banked registers.
+>  	 */
+>  	for (i = 32; i < gic_irqs; i += 32)
+>  		writel_relaxed(0xffffffff, base + GIC_DIST_ENABLE_CLEAR + i * 4 / 32);
+>  
+> -	writel_relaxed(1, base + GIC_DIST_CTRL);
+> +	/*
+> +	 * Set EnableGrp1/EnableGrp0 (bit 1 and 0) or EnableGrp (bit 0 only,
+> +	 * bit 1 ignored)
+> +	 */
+> +	writel_relaxed(GIC_DIST_CTRL_ENABLE_GRP0_BIT |
+> +		       GIC_DIST_CTRL_ENABLE_GRP1_BIT, base + GIC_DIST_CTRL);
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 51b307a..b8e4eb3 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -62,70 +62,12 @@ struct dw8250_data {
- 	struct uart_8250_dma	dma;
- };
- 
--struct dw8250_acpi_desc {
--	void (*set_termios)(struct uart_port *p, struct ktermios *termios,
--			    struct ktermios *old);
--};
--
- #define BYT_PRV_CLK			0x800
- #define BYT_PRV_CLK_EN			(1 << 0)
- #define BYT_PRV_CLK_M_VAL_SHIFT		1
- #define BYT_PRV_CLK_N_VAL_SHIFT		16
- #define BYT_PRV_CLK_UPDATE		(1 << 31)
- 
--static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
--			    struct ktermios *old)
--{
--	unsigned int baud = tty_termios_baud_rate(termios);
--	unsigned int m, n;
--	u32 reg;
--
--	/*
--	* For baud rates 0.5M, 1M, 1.5M, 2M, 2.5M, 3M, 3.5M and 4M the
--	* dividers must be adjusted.
--	*
--	* uartclk = (m / n) * 100 MHz, where m <= n
--	*/
--	switch (baud) {
--	case 500000:
--	case 1000000:
--	case 2000000:
--	case 4000000:
--		m = 64;
--		n = 100;
--		p->uartclk = 64000000;
--		break;
--	case 3500000:
--		m = 56;
--		n = 100;
--		p->uartclk = 56000000;
--		break;
--	case 1500000:
--	case 3000000:
--		m = 48;
--		n = 100;
--		p->uartclk = 48000000;
--		break;
--	case 2500000:
--		m = 40;
--		n = 100;
--		p->uartclk = 40000000;
--		break;
--	default:
--		m = 2304;
--		n = 3125;
--		p->uartclk = 73728000;
--	}
--
--	/* Reset the clock */
--	reg = (m << BYT_PRV_CLK_M_VAL_SHIFT) | (n << BYT_PRV_CLK_N_VAL_SHIFT);
--	writel(reg, p->membase + BYT_PRV_CLK);
--	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
--	writel(reg, p->membase + BYT_PRV_CLK);
--
--	serial8250_do_set_termios(p, termios, old);
--}
--
- static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
- {
- 	struct dw8250_data *d = p->private_data;
-@@ -242,6 +184,32 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- 		pm_runtime_put_sync_suspend(port->dev);
- }
- 
-+static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
-+			       struct ktermios *old)
-+{
-+	unsigned int baud = tty_termios_baud_rate(termios);
-+	struct dw8250_data *d = p->private_data;
-+	unsigned int rate;
-+	int ret;
-+
-+	if (IS_ERR(d->clk) || !old)
-+		goto out;
-+
-+	/* Not requesting clock rates below 1.8432Mhz */
-+	if (baud < 115200)
-+		baud = 115200;
-+
-+	clk_disable_unprepare(d->clk);
-+	rate = clk_round_rate(d->clk, baud * 16);
-+	ret = clk_set_rate(d->clk, rate);
-+	clk_prepare_enable(d->clk);
-+
-+	if (!ret)
-+		p->uartclk = rate;
-+out:
-+	serial8250_do_set_termios(p, termios, old);
-+}
-+
- static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
- {
- 	struct dw8250_data *data = param;
-@@ -340,16 +308,10 @@ static int dw8250_probe_of(struct uart_port *p,
- static int dw8250_probe_acpi(struct uart_8250_port *up,
- 			     struct dw8250_data *data)
- {
--	const struct acpi_device_id *id;
- 	struct uart_port *p = &up->port;
--	struct dw8250_acpi_desc *acpi_desc;
- 
- 	dw8250_setup_port(up);
- 
--	id = acpi_match_device(p->dev->driver->acpi_match_table, p->dev);
--	if (!id)
--		return -ENODEV;
--
- 	p->iotype = UPIO_MEM32;
- 	p->serial_in = dw8250_serial_in32;
- 	p->serial_out = dw8250_serial_out32;
-@@ -360,12 +322,7 @@ static int dw8250_probe_acpi(struct uart_8250_port *up,
- 	up->dma->rxconf.src_maxburst = p->fifosize / 4;
- 	up->dma->txconf.dst_maxburst = p->fifosize / 4;
- 
--	acpi_desc = (struct dw8250_acpi_desc *)id->driver_data;
--	if (!acpi_desc)
--		return 0;
--
--	if (acpi_desc->set_termios)
--		p->set_termios = acpi_desc->set_termios;
-+	up->port.set_termios = dw8250_set_termios;
- 
- 	return 0;
- }
-@@ -514,16 +471,12 @@ static const struct of_device_id dw8250_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
- 
--static struct dw8250_acpi_desc byt_8250_desc = {
--	.set_termios = byt_set_termios,
--};
--
- static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "INT33C4", 0 },
- 	{ "INT33C5", 0 },
- 	{ "INT3434", 0 },
- 	{ "INT3435", 0 },
--	{ "80860F0A", (kernel_ulong_t)&byt_8250_desc},
-+	{ "80860F0A", 0 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
--- 
-2.0.0.rc4
+Could there be more meaningful defines than GIC_DIST_CTRL_ENABLE_GRP0_BIT
+and GIC_DIST_CTRL_ENABLE_GRP1_BIT for those bits?  Otherwise the code 
+would look just as clear and possibly cleaner by simply using 0x3.
 
+
+Nicolas
