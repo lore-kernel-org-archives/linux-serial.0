@@ -1,58 +1,43 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: samsung: fix typo in debug code
-Date: Wed, 4 Jun 2014 19:55:01 -0700
-Message-ID: <20140605025500.GA27555@kroah.com>
-References: <10455941.RzodM59Z3O@wuerfel>
- <1401931241.26329.16.camel@joe-AO725>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Valerio Vanni" <valerio@valeriovanni.com>
+Subject: Re: [PATCH 2/2] serial: core: Preserve termios c_cflag for console resume
+Date: Thu, 5 Jun 2014 10:58:37 +0200
+Message-ID: <lmpbg8$l79$1@ger.gmane.org>
+References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it> <1401891371-4946-1-git-send-email-peter@hurleysoftware.com> <1401891371-4946-2-git-send-email-peter@hurleysoftware.com> <20140604142232.GB1008@kroah.com> <538F3150.6040102@hurleysoftware.com> <lmoa97$q3h$1@ger.gmane.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42627 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751339AbaFECzC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jun 2014 22:55:02 -0400
-Content-Disposition: inline
-In-Reply-To: <1401931241.26329.16.camel@joe-AO725>
+Received: from plane.gmane.org ([80.91.229.3]:43670 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751159AbaFEI7E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 5 Jun 2014 04:59:04 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1WsTVn-0000Ra-99
+	for linux-serial@vger.kernel.org; Thu, 05 Jun 2014 10:59:03 +0200
+Received: from 81-174-24-37.v4.ngi.it ([81.174.24.37])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 05 Jun 2014 10:59:03 +0200
+Received: from valerio by 81-174-24-37.v4.ngi.it with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Thu, 05 Jun 2014 10:59:03 +0200
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Kukjin Kim <kgene.kim@samsung.com>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-On Wed, Jun 04, 2014 at 06:20:41PM -0700, Joe Perches wrote:
-> On Tue, 2014-06-03 at 11:53 +0200, Arnd Bergmann wrote:
-> > commit e4ac92df2791 ("serial: samsung: Neaten dbg uses") introduced
-> > a regression in the conversion from vsprintf to vsnprintf.
-> > 
-> > This fixes the build error by passing the correct variable name.
-> > 
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Joe Perches <joe@perches.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Doug Anderson <dianders@chromium.org>
-> > Cc: Kukjin Kim <kgene.kim@samsung.com>
-> > 
-> > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> > index 3293377..c1d3ebd 100644
-> > --- a/drivers/tty/serial/samsung.c
-> > +++ b/drivers/tty/serial/samsung.c
-> > @@ -66,7 +66,7 @@ static void dbg(const char *fmt, ...)
-> >  	char buff[256];
-> >  
-> >  	va_start(va, fmt);
-> > -	vscnprintf(buff, sizeof(buf), fmt, va);
-> > +	vscnprintf(buff, sizeof(buff), fmt, va);
-> >  	va_end(va);
-> >  
-> >  	printascii(buff);
-> 
-> Greg?
-> 
-> The original has ended up in Linus' -next branch.
-> 
-> Can you please apply this sooner rather than later?
+"Valerio Vanni" <valerio@valeriovanni.com> ha scritto nel messaggio
+news:lmoa97$q3h$1@ger.gmane.org
+> "Peter Hurley" <peter@hurleysoftware.com> ha scritto nel messaggio
+> news:538F3150.6040102@hurleysoftware.com
 
-Let me work through these 3.4-stable patches first, so give me a day or
-so, thanks.
+> The patches you sent are for -next? for -rc? for stable?
+> Can I try them on 3.13.11? (at the moment I'm using this)
 
-greg k-h
+I've tried the patches on 3.13.11, 3.14.5 and 3.15-rc8.
+They work. Thanks for the fix :-)
+
+When I tried to apply them to serial-core.c I got an error (in all three 
+kernels "Hunk #1 FAILED at 239.").
+I had to apply them by hand (with copy and past).
+
+
+
