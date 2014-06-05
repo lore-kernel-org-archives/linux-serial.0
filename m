@@ -1,12 +1,12 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC v3 7/9] ARM: Add KGDB/KDB FIQ debugger generic code
-Date: Thu,  5 Jun 2014 10:53:12 +0100
-Message-ID: <1401961994-18033-8-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC v3 8/9] serial: amba-pl011: Pass on FIQ information to KGDB.
+Date: Thu,  5 Jun 2014 10:53:13 +0100
+Message-ID: <1401961994-18033-9-git-send-email-daniel.thompson@linaro.org>
 References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
  <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -19,166 +19,168 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, Dave Martin <Dave.Martin@arm.com>, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfou>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogQW50b24gVm9yb250c292IDxhbnRvbi52b3JvbnRzb3ZAbGluYXJvLm9yZz4KClRoZSBG
-SVEgZGVidWdnZXIgbWF5IGJlIHVzZWQgdG8gZGVidWcgc2l0dWF0aW9ucyB3aGVuIHRoZSBrZXJu
-ZWwgc3R1Y2sKaW4gdW5pbnRlcnJ1cHRhYmxlIHNlY3Rpb25zLCBlLmcuIHRoZSBrZXJuZWwgaW5m
-aW5pdGVseSBsb29wcyBvcgpkZWFkbG9ja2VkIGluIGFuIGludGVycnVwdCBvciB3aXRoIGludGVy
-cnVwdHMgZGlzYWJsZWQuCgpCeSBkZWZhdWx0IEtHREIgRklRIGlzIGRpc2FibGVkIGluIHJ1bnRp
-bWUsIGJ1dCBjYW4gYmUgZW5hYmxlZCB3aXRoCmtnZGJfZmlxLmVuYWJsZT0xIGtlcm5lbCBjb21t
-YW5kIGxpbmUgb3B0aW9uLgoKU2lnbmVkLW9mZi1ieTogQW50b24gVm9yb250c292IDxhbnRvbi52
-b3JvbnRzb3ZAbGluYXJvLm9yZz4KU2lnbmVkLW9mZi1ieTogSm9obiBTdHVsdHogPGpvaG4uc3R1
-bHR6QGxpbmFyby5vcmc+ClNpZ25lZC1vZmYtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRo
-b21wc29uQGxpbmFyby5vcmc+CkNjOiBSdXNzZWxsIEtpbmcgPGxpbnV4QGFybS5saW51eC5vcmcu
-dWs+CkNjOiBCZW4gRG9va3MgPGJlbi5kb29rc0Bjb2RldGhpbmsuY28udWs+CkNjOiBEYXZlIE1h
-cnRpbiA8RGF2ZS5NYXJ0aW5AYXJtLmNvbT4KLS0tCiBhcmNoL2FybS9LY29uZmlnICAgICAgICAg
-ICAgICAgICB8ICAgMiArCiBhcmNoL2FybS9LY29uZmlnLmRlYnVnICAgICAgICAgICB8ICAxOCAr
-KysrKysKIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2tnZGIuaCAgICAgIHwgICA3ICsrKwogYXJjaC9h
-cm0va2VybmVsL01ha2VmaWxlICAgICAgICAgfCAgIDEgKwogYXJjaC9hcm0va2VybmVsL2tnZGJf
-ZmlxLmMgICAgICAgfCAxMjQgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-CiBhcmNoL2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUyB8ICA4NyArKysrKysrKysrKysrKysr
-KysrKysrKysrKysKIDYgZmlsZXMgY2hhbmdlZCwgMjM5IGluc2VydGlvbnMoKykKIGNyZWF0ZSBt
-b2RlIDEwMDY0NCBhcmNoL2FybS9rZXJuZWwva2dkYl9maXEuYwogY3JlYXRlIG1vZGUgMTAwNjQ0
-IGFyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcV9lbnRyeS5TCgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0v
-S2NvbmZpZyBiL2FyY2gvYXJtL0tjb25maWcKaW5kZXggZGIzYzU0MS4uNDE5ZmQwYSAxMDA2NDQK
-LS0tIGEvYXJjaC9hcm0vS2NvbmZpZworKysgYi9hcmNoL2FybS9LY29uZmlnCkBAIC0zMDcsNiAr
-MzA3LDcgQEAgY2hvaWNlCiBjb25maWcgQVJDSF9NVUxUSVBMQVRGT1JNCiAJYm9vbCAiQWxsb3cg
-bXVsdGlwbGUgcGxhdGZvcm1zIHRvIGJlIHNlbGVjdGVkIgogCWRlcGVuZHMgb24gTU1VCisJc2Vs
-ZWN0IEFSQ0hfTUlHSFRfSEFWRV9LR0RCX0ZJUQogCXNlbGVjdCBBUkNIX1dBTlRfT1BUSU9OQUxf
-R1BJT0xJQgogCXNlbGVjdCBBUk1fSEFTX1NHX0NIQUlOCiAJc2VsZWN0IEFSTV9QQVRDSF9QSFlT
-X1ZJUlQKQEAgLTM1Niw2ICszNTcsNyBAQCBjb25maWcgQVJDSF9SRUFMVklFVwogCiBjb25maWcg
-QVJDSF9WRVJTQVRJTEUKIAlib29sICJBUk0gTHRkLiBWZXJzYXRpbGUgZmFtaWx5IgorCXNlbGVj
-dCBBUkNIX01JR0hUX0hBVkVfS0dEQl9GSVEKIAlzZWxlY3QgQVJDSF9XQU5UX09QVElPTkFMX0dQ
-SU9MSUIKIAlzZWxlY3QgQVJNX0FNQkEKIAlzZWxlY3QgQVJNX1RJTUVSX1NQODA0CmRpZmYgLS1n
-aXQgYS9hcmNoL2FybS9LY29uZmlnLmRlYnVnIGIvYXJjaC9hcm0vS2NvbmZpZy5kZWJ1ZwppbmRl
-eCA2YTJiY2ZkLi4xZjFiZWMxIDEwMDY0NAotLS0gYS9hcmNoL2FybS9LY29uZmlnLmRlYnVnCisr
-KyBiL2FyY2gvYXJtL0tjb25maWcuZGVidWcKQEAgLTIsNiArMiwyNCBAQCBtZW51ICJLZXJuZWwg
-aGFja2luZyIKIAogc291cmNlICJsaWIvS2NvbmZpZy5kZWJ1ZyIKIAorY29uZmlnIEFSQ0hfTUlH
-SFRfSEFWRV9LR0RCX0ZJUQorCWJvb2wKKworY29uZmlnIEtHREJfRklRCisJYm9vbCAiS0dEQiBG
-SVEgc3VwcG9ydCIKKwlkZXBlbmRzIG9uIEtHREJfS0RCICYmIEFSQ0hfTUlHSFRfSEFWRV9LR0RC
-X0ZJUSAmJiAhVEhVTUIyX0tFUk5FTAorCXNlbGVjdCBGSVEKKwloZWxwCisJICBUaGUgRklRIGRl
-YnVnZ2VyIG1heSBiZSB1c2VkIHRvIGRlYnVnIHNpdHVhdGlvbnMgd2hlbiB0aGUKKwkgIGtlcm5l
-bCBzdHVjayBpbiB1bmludGVycnVwdGFibGUgc2VjdGlvbnMsIGUuZy4gdGhlIGtlcm5lbAorCSAg
-aW5maW5pdGVseSBsb29wcyBvciBkZWFkbG9ja2VkIGluIGFuIGludGVycnVwdCBvciB3aXRoCisJ
-ICBpbnRlcnJ1cHRzIGRpc2FibGVkLgorCisJICBCeSBkZWZhdWx0IEtHREIgRklRIGlzIGRpc2Fi
-bGVkIGF0IHJ1bnRpbWUsIGJ1dCBjYW4gYmUKKwkgIGVuYWJsZWQgd2l0aCBrZ2RiX2ZpcS5lbmFi
-bGU9MSBrZXJuZWwgY29tbWFuZCBsaW5lIG9wdGlvbi4KKworCSAgSWYgdW5zdXJlLCBzYXkgTi4K
-KwogY29uZmlnIEFSTV9QVERVTVAKIAlib29sICJFeHBvcnQga2VybmVsIHBhZ2V0YWJsZSBsYXlv
-dXQgdG8gdXNlcnNwYWNlIHZpYSBkZWJ1Z2ZzIgogCWRlcGVuZHMgb24gREVCVUdfS0VSTkVMCmRp
-ZmYgLS1naXQgYS9hcmNoL2FybS9pbmNsdWRlL2FzbS9rZ2RiLmggYi9hcmNoL2FybS9pbmNsdWRl
-L2FzbS9rZ2RiLmgKaW5kZXggMGE5ZDVkZC4uNWRlMjFmMDEgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJt
-L2luY2x1ZGUvYXNtL2tnZGIuaAorKysgYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9rZ2RiLmgKQEAg
-LTExLDcgKzExLDkgQEAKICNkZWZpbmUgX19BUk1fS0dEQl9IX18KIAogI2luY2x1ZGUgPGxpbnV4
-L3B0cmFjZS5oPgorI2luY2x1ZGUgPGxpbnV4L2xpbmthZ2UuaD4KICNpbmNsdWRlIDxhc20vb3Bj
-b2Rlcy5oPgorI2luY2x1ZGUgPGFzbS9leGNlcHRpb24uaD4KIAogLyoKICAqIEdEQiBhc3N1bWVz
-IHRoYXQgd2UncmUgYSB1c2VyIHByb2Nlc3MgYmVpbmcgZGVidWdnZWQsIHNvCkBAIC00OCw2ICs1
-MCwxMSBAQCBzdGF0aWMgaW5saW5lIHZvaWQgYXJjaF9rZ2RiX2JyZWFrcG9pbnQodm9pZCkKIGV4
-dGVybiB2b2lkIGtnZGJfaGFuZGxlX2J1c19lcnJvcih2b2lkKTsKIGV4dGVybiBpbnQga2dkYl9m
-YXVsdF9leHBlY3RlZDsKIAorZXh0ZXJuIGNoYXIga2dkYl9maXFfaGFuZGxlcjsKK2V4dGVybiBj
-aGFyIGtnZGJfZmlxX2hhbmRsZXJfZW5kOworYXNtbGlua2FnZSB2b2lkIF9fZXhjZXB0aW9uX2ly
-cV9lbnRyeSBrZ2RiX2ZpcV9kb19oYW5kbGUoc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOworZXh0ZXJu
-IGludCBrZ2RiX3JlZ2lzdGVyX2ZpcSh1bnNpZ25lZCBpbnQgZmlxKTsKKwogI2VuZGlmIC8qICFf
-X0FTU0VNQkxZX18gKi8KIAogLyoKZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tlcm5lbC9NYWtlZmls
-ZSBiL2FyY2gvYXJtL2tlcm5lbC9NYWtlZmlsZQppbmRleCAwNDA2MTljLi4yNTFmNjUxIDEwMDY0
-NAotLS0gYS9hcmNoL2FybS9rZXJuZWwvTWFrZWZpbGUKKysrIGIvYXJjaC9hcm0va2VybmVsL01h
-a2VmaWxlCkBAIC02Nyw2ICs2Nyw3IEBAIGVuZGlmCiBvYmotJChDT05GSUdfT0FCSV9DT01QQVQp
-CSs9IHN5c19vYWJpLWNvbXBhdC5vCiBvYmotJChDT05GSUdfQVJNX1RIVU1CRUUpCSs9IHRodW1i
-ZWUubwogb2JqLSQoQ09ORklHX0tHREIpCQkrPSBrZ2RiLm8KK29iai0kKENPTkZJR19LR0RCX0ZJ
-USkJCSs9IGtnZGJfZmlxX2VudHJ5Lm8ga2dkYl9maXEubwogb2JqLSQoQ09ORklHX0FSTV9VTldJ
-TkQpCSs9IHVud2luZC5vCiBvYmotJChDT05GSUdfSEFWRV9UQ00pCQkrPSB0Y20ubwogb2JqLSQo
-Q09ORklHX09GKQkJKz0gZGV2dHJlZS5vCmRpZmYgLS1naXQgYS9hcmNoL2FybS9rZXJuZWwva2dk
-Yl9maXEuYyBiL2FyY2gvYXJtL2tlcm5lbC9rZ2RiX2ZpcS5jCm5ldyBmaWxlIG1vZGUgMTAwNjQ0
-CmluZGV4IDAwMDAwMDAuLjQ1ZjJhNzkKLS0tIC9kZXYvbnVsbAorKysgYi9hcmNoL2FybS9rZXJu
-ZWwva2dkYl9maXEuYwpAQCAtMCwwICsxLDEyNCBAQAorLyoKKyAqIEtHREIgRklRCisgKgorICog
-Q29weXJpZ2h0IDIwMTAgR29vZ2xlLCBJbmMuCisgKgkJICBBcnZlIEhqw7hubmV2w6VnIDxhcnZl
-QGFuZHJvaWQuY29tPgorICoJCSAgQ29saW4gQ3Jvc3MgPGNjcm9zc0BhbmRyb2lkLmNvbT4KKyAq
-IENvcHlyaWdodCAyMDEyIExpbmFybyBMdGQuCisgKgkJICBBbnRvbiBWb3JvbnRzb3YgPGFudG9u
-LnZvcm9udHNvdkBsaW5hcm8ub3JnPgorICoKKyAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3
-YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0CisgKiB1bmRlciB0
-aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcyBw
-dWJsaXNoZWQKKyAqIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCisgKi8KKworI2lu
-Y2x1ZGUgPGxpbnV4L2tlcm5lbC5oPgorI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgorI2luY2x1
-ZGUgPGxpbnV4L2luaXQuaD4KKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+CisjaW5jbHVkZSA8bGlu
-dXgvZXJybm8uaD4KKyNpbmNsdWRlIDxsaW51eC9oYXJkaXJxLmg+CisjaW5jbHVkZSA8bGludXgv
-YXRvbWljLmg+CisjaW5jbHVkZSA8bGludXgva2RiLmg+CisjaW5jbHVkZSA8bGludXgva2dkYi5o
-PgorI2luY2x1ZGUgPGFzbS9maXEuaD4KKyNpbmNsdWRlIDxhc20vZXhjZXB0aW9uLmg+CisKK3N0
-YXRpYyBpbnQga2dkYl9maXFfZW5hYmxlZDsKK21vZHVsZV9wYXJhbV9uYW1lZChlbmFibGUsIGtn
-ZGJfZmlxX2VuYWJsZWQsIGludCwgMDYwMCk7CitNT0RVTEVfUEFSTV9ERVNDKGVuYWJsZSwgInNl
-dCB0byAxIHRvIGVuYWJsZSBGSVEgS0dEQiIpOworCitzdGF0aWMgdW5zaWduZWQgaW50IGtnZGJf
-ZmlxOworCithc21saW5rYWdlIHZvaWQgX19leGNlcHRpb25faXJxX2VudHJ5IGtnZGJfZmlxX2Rv
-X2hhbmRsZShzdHJ1Y3QgcHRfcmVncyAqcmVncykKK3sKKwlpZiAoa2dkYl9ubWlfcG9sbF9rbm9j
-aygpKSB7CisJCW5taV9lbnRlcigpOworCQlrZ2RiX2hhbmRsZV9leGNlcHRpb24oMSwgMCwgMCwg
-cmVncyk7CisJCW5taV9leGl0KCk7CisJfQorCisJZW9pX2ZpcShrZ2RiX2ZpcSk7Cit9CisKK3N0
-YXRpYyBzdHJ1Y3QgZmlxX2hhbmRsZXIga2dkYl9maXFfZGVzYyA9IHsKKwkubmFtZSA9ICJrZ2Ri
-IiwKK307CisKK3N0YXRpYyBsb25nIGtnZGJfZmlxX3NldHVwX3N0YWNrKHZvaWQgKmluZm8pCit7
-CisJc3RydWN0IHB0X3JlZ3MgcmVnczsKKworCXJlZ3MuQVJNX3NwID0gX19nZXRfZnJlZV9wYWdl
-cyhHRlBfS0VSTkVMLCBUSFJFQURfU0laRV9PUkRFUikgKworCQkJVEhSRUFEX1NUQVJUX1NQOwor
-CVdBUk5fT04oIXJlZ3MuQVJNX3NwKTsKKworCXNldF9maXFfcmVncygmcmVncyk7CisJcmV0dXJu
-IDA7Cit9CisKKy8qKgorICoga2dkYl9maXFfZW5hYmxlX25taSAtIE1hbmFnZSBOTUktdHJpZ2dl
-cmVkIGVudHJ5IHRvIEtHREIKKyAqIEBvbjogRmxhZyB0byBlaXRoZXIgZW5hYmxlIG9yIGRpc2Fi
-bGUgYW4gTk1JCisgKgorICogVGhpcyBmdW5jdGlvbiBtYW5hZ2VzIE5NSXMgdGhhdCB1c3VhbGx5
-IGNhdXNlIEtHREIgdG8gZW50ZXIuIFRoYXQgaXMsIG5vdAorICogYWxsIE5NSXMgc2hvdWxkIGJl
-IGVuYWJsZWQgb3IgZGlzYWJsZWQsIGJ1dCBvbmx5IHRob3NlIHRoYXQgaXNzdWUKKyAqIGtnZGJf
-aGFuZGxlX2V4Y2VwdGlvbigpLgorICoKKyAqIFRoZSBjYWxsIGNvdW50cyBkaXNhYmxlIHJlcXVl
-c3RzLCBhbmQgdGh1cyBhbGxvd3MgdG8gbmVzdCBkaXNhYmxlcy4gQnV0CisgKiB0cnlpbmcgdG8g
-ZW5hYmxlIGFscmVhZHkgZW5hYmxlZCBOTUkgaXMgYW4gZXJyb3IuCisgKi8KK3N0YXRpYyB2b2lk
-IGtnZGJfZmlxX2VuYWJsZV9ubWkoYm9vbCBvbikKK3sKKwlzdGF0aWMgYXRvbWljX3QgY250Owor
-CWludCByZXQ7CisKKwlyZXQgPSBhdG9taWNfYWRkX3JldHVybihvbiA/IDEgOiAtMSwgJmNudCk7
-CisJaWYgKHJldCA+IDEgJiYgb24pIHsKKwkJLyoKKwkJICogVGhlcmUgc2hvdWxkIGJlIG9ubHkg
-b25lIGluc3RhbmNlIHRoYXQgY2FsbHMgdGhpcyBmdW5jdGlvbgorCQkgKiBpbiAiZW5hYmxlLCBk
-aXNhYmxlIiBvcmRlci4gQWxsIG90aGVyIHVzZXJzIG11c3QgY2FsbAorCQkgKiBkaXNhYmxlIGZp
-cnN0LCB0aGVuIGVuYWJsZS4gSWYgbm90LCBzb21ldGhpbmcgaXMgd3JvbmcuCisJCSAqLworCQlX
-QVJOX09OKDEpOworCQlyZXR1cm47CisJfQorCisJaWYgKHJldCA+IDApCisJCWVuYWJsZV9maXEo
-a2dkYl9maXEpOworCWVsc2UKKwkJZGlzYWJsZV9maXEoa2dkYl9maXEpOworfQorCitpbnQga2dk
-Yl9yZWdpc3Rlcl9maXEodW5zaWduZWQgaW50IGZpcSkKK3sKKwlpbnQgZXJyOworCWludCBjcHU7
-CisKKwlpZiAoIWtnZGJfZmlxX2VuYWJsZWQpCisJCXJldHVybiAtRU5PREVWOworCisJaWYgKCFs
-b29rdXBfZmlxX2lycV9kYXRhKGZpcSkpIHsKKwkJcHJfd2FybigKKwkJICAgICIlczogQ2Fubm90
-IHJlZ2lzdGVyICV1IChubyBGSVEgd2l0aCB0aGlzIG51bWJlcilcbiIsCisJCSAgICBfX2Z1bmNf
-XywgZmlxKTsKKwkJcmV0dXJuIC1FTk9ERVY7CisJfQorCisJa2dkYl9maXEgPSBmaXE7CisKKwll
-cnIgPSBjbGFpbV9maXEoJmtnZGJfZmlxX2Rlc2MpOworCWlmIChlcnIpIHsKKwkJcHJfd2Fybigi
-JXM6IHVuYWJsZSB0byBjbGFpbSBmaXEiLCBfX2Z1bmNfXyk7CisJCXJldHVybiBlcnI7CisJfQor
-CisJZm9yX2VhY2hfcG9zc2libGVfY3B1KGNwdSkKKwkJd29ya19vbl9jcHUoY3B1LCBrZ2RiX2Zp
-cV9zZXR1cF9zdGFjaywgTlVMTCk7CisKKwlzZXRfZmlxX2hhbmRsZXIoJmtnZGJfZmlxX2hhbmRs
-ZXIsCisJCQkma2dkYl9maXFfaGFuZGxlcl9lbmQgLSAma2dkYl9maXFfaGFuZGxlcik7CisKKwlh
-cmNoX2tnZGJfb3BzLmVuYWJsZV9ubWkgPSBrZ2RiX2ZpcV9lbmFibGVfbm1pOworCXJldHVybiAw
-OworfQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0va2VybmVsL2tnZGJfZmlxX2VudHJ5LlMgYi9hcmNo
-L2FybS9rZXJuZWwva2dkYl9maXFfZW50cnkuUwpuZXcgZmlsZSBtb2RlIDEwMDY0NAppbmRleCAw
-MDAwMDAwLi5kNmJlY2NhCi0tLSAvZGV2L251bGwKKysrIGIvYXJjaC9hcm0va2VybmVsL2tnZGJf
-ZmlxX2VudHJ5LlMKQEAgLTAsMCArMSw4NyBAQAorLyoKKyAqIEtHREIgRklRIGVudHJ5CisgKgor
-ICogQ29weXJpZ2h0IDE5OTYsMTk5NywxOTk4IFJ1c3NlbGwgS2luZy4KKyAqIENvcHlyaWdodCAy
-MDEyIExpbmFybyBMdGQuCisgKgkJICBBbnRvbiBWb3JvbnRzb3YgPGFudG9uLnZvcm9udHNvdkBs
-aW5hcm8ub3JnPgorICoKKyAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2Fu
-IHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0CisgKiB1bmRlciB0aGUgdGVybXMgb2Yg
-dGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcyBwdWJsaXNoZWQKKyAq
-IGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCisgKi8KKworI2luY2x1ZGUgPGxpbnV4
-L2xpbmthZ2UuaD4KKyNpbmNsdWRlIDxhc20vYXNzZW1ibGVyLmg+CisjaW5jbHVkZSA8YXNtL21l
-bW9yeS5oPgorI2luY2x1ZGUgPGFzbS91bndpbmQuaD4KKyNpbmNsdWRlICJlbnRyeS1oZWFkZXIu
-UyIKKworCS50ZXh0CisKK0AgVGhpcyBpcyBuZWVkZWQgZm9yIHVzcl9lbnRyeS9hbGlnbm1lbnRf
-dHJhcAorLkxDY3JhbGlnbjoKKwkubG9uZwljcl9hbGlnbm1lbnQKKy5MQ2RvaGFuZGxlOgorCS5s
-b25nCWtnZGJfZmlxX2RvX2hhbmRsZQorCisJLm1hY3JvCWZpcV9oYW5kbGVyCisJbGRyCXIxLCA9
-LkxDZG9oYW5kbGUKKwltb3YJcjAsIHNwCisJYWRyCWxyLCBCU1lNKDk5OTdmKQorCWxkcglwYywg
-W3IxXQorOTk5NzoKKwkuZW5kbQorCisJLmFsaWduCTUKK19fZmlxX3N2YzoKKwlzdmNfZW50cnkK
-KwlmaXFfaGFuZGxlcgorCW1vdglyMCwgc3AKKwlsZG1pYglyMCwge3IxIC0gcjE0fQorCW1zcglj
-cHNyX2MsICNGSVFfTU9ERSB8IFBTUl9JX0JJVCB8IFBTUl9GX0JJVAorCWFkZAlyOCwgcjAsICNT
-X1BDCisJbGRyCXI5LCBbcjAsICNTX1BTUl0KKwltc3IJc3Bzcl9jeHNmLCByOQorCWxkcglyMCwg
-W3IwLCAjU19SMF0KKwlsZG1pYQlyOCwge3BjfV4KKworIFVOV0lORCguZm5lbmQJCSkKK0VORFBS
-T0MoX19maXFfc3ZjKQorCS5sdG9yZworCisJLmFsaWduCTUKK19fZmlxX3VzcjoKKwl1c3JfZW50
-cnkKKwlrdXNlcl9jbXB4Y2hnX2NoZWNrCisJZmlxX2hhbmRsZXIKKwlnZXRfdGhyZWFkX2luZm8g
-dHNrCisJbW92CXdoeSwgIzAKKwliCXJldF90b191c2VyX2Zyb21faXJxCisgVU5XSU5EKC5mbmVu
-ZAkJKQorRU5EUFJPQyhfX2ZpcV91c3IpCisJLmx0b3JnCisKKwkuZ2xvYmFsIGtnZGJfZmlxX2hh
-bmRsZXIKK2tnZGJfZmlxX2hhbmRsZXI6CisKKwl2ZWN0b3Jfc3R1YglmaXEsIEZJUV9NT0RFLCA0
-CisKKwkubG9uZwlfX2ZpcV91c3IJCQlAICAwICAoVVNSXzI2IC8gVVNSXzMyKQorCS5sb25nCV9f
-ZmlxX3N2YwkJCUAgIDEgIChGSVFfMjYgLyBGSVFfMzIpCisJLmxvbmcJX19maXFfc3ZjCQkJQCAg
-MiAgKElSUV8yNiAvIElSUV8zMikKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICAzICAoU1ZDXzI2IC8g
-U1ZDXzMyKQorCS5sb25nCV9fZmlxX3N2YwkJCUAgIDQKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICA1
-CisJLmxvbmcJX19maXFfc3ZjCQkJQCAgNgorCS5sb25nCV9fZmlxX3N2YwkJCUAgIDcKKwkubG9u
-ZwlfX2ZpcV9zdmMJCQlAICA4CisJLmxvbmcJX19maXFfc3ZjCQkJQCAgOQorCS5sb25nCV9fZmlx
-X3N2YwkJCUAgIGEKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICBiCisJLmxvbmcJX19maXFfc3ZjCQkJ
-QCAgYworCS5sb25nCV9fZmlxX3N2YwkJCUAgIGQKKwkubG9uZwlfX2ZpcV9zdmMJCQlAICBlCisJ
-LmxvbmcJX19maXFfc3ZjCQkJQCAgZgorCisJLmdsb2JhbCBrZ2RiX2ZpcV9oYW5kbGVyX2VuZAor
-a2dkYl9maXFfaGFuZGxlcl9lbmQ6Ci0tIAoxLjkuMAoKCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0Cmxp
-bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+If the AMBA bus has provided the pl011 with a FIQ resource (i.e. a
+second IRQ) then speculatively register it with KGDB when the polling
+driver is initialized.
+
+By providing this information to KGDB the serial driver offers
+"permission" for KGDB to route the UART interrupt signal from the
+drivers own handler to KGDBs FIQ handler (which will eventually use the
+UART's polled I/O callbacks to interact with the user). This permission
+also implies the amba-pl011 driver has already unmasked RX interrupts
+(otherwise the FIQ handler will never trigger).
+
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/amba-pl011.c | 99 ++++++++++++++++++++++++-----------------
+ 1 file changed, 58 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index dacf0a0..778fd38 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -58,6 +58,7 @@
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/sizes.h>
+ #include <linux/io.h>
++#include <linux/kgdb.h>
+ 
+ #define UART_NR			14
+ 
+@@ -1416,8 +1417,63 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
+ 	spin_unlock_irqrestore(&uap->port.lock, flags);
+ }
+ 
++static int pl011_hwinit(struct uart_port *port)
++{
++	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	int retval;
++
++	/* Optionaly enable pins to be muxed in and configured */
++	pinctrl_pm_select_default_state(port->dev);
++
++	/*
++	 * Try to enable the clock producer.
++	 */
++	retval = clk_prepare_enable(uap->clk);
++	if (retval)
++		goto out;
++
++	uap->port.uartclk = clk_get_rate(uap->clk);
++
++	/* Clear pending error and receive interrupts */
++	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
++	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
++
++	/*
++	 * Save interrupts enable mask, and enable RX interrupts in case if
++	 * the interrupt is used for NMI entry.
++	 */
++	uap->im = readw(uap->port.membase + UART011_IMSC);
++	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
++
++	if (dev_get_platdata(uap->port.dev)) {
++		struct amba_pl011_data *plat;
++
++		plat = dev_get_platdata(uap->port.dev);
++		if (plat->init)
++			plat->init();
++	}
++	return 0;
++ out:
++	return retval;
++}
++
+ #ifdef CONFIG_CONSOLE_POLL
+ 
++static int pl011_poll_init(struct uart_port *port)
++{
++	struct uart_amba_port *uap = (struct uart_amba_port *)port;
++	int retval;
++
++	retval = pl011_hwinit(port);
++
++#ifdef CONFIG_KGDB_FIQ
++	if (retval == 0)
++		kgdb_register_fiq(uap->port.irq);
++#endif
++
++	return retval;
++}
++
+ static void pl011_quiesce_irqs(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+@@ -1471,46 +1527,6 @@ static void pl011_put_poll_char(struct uart_port *port,
+ 
+ #endif /* CONFIG_CONSOLE_POLL */
+ 
+-static int pl011_hwinit(struct uart_port *port)
+-{
+-	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+-	int retval;
+-
+-	/* Optionaly enable pins to be muxed in and configured */
+-	pinctrl_pm_select_default_state(port->dev);
+-
+-	/*
+-	 * Try to enable the clock producer.
+-	 */
+-	retval = clk_prepare_enable(uap->clk);
+-	if (retval)
+-		goto out;
+-
+-	uap->port.uartclk = clk_get_rate(uap->clk);
+-
+-	/* Clear pending error and receive interrupts */
+-	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+-	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+-
+-	/*
+-	 * Save interrupts enable mask, and enable RX interrupts in case if
+-	 * the interrupt is used for NMI entry.
+-	 */
+-	uap->im = readw(uap->port.membase + UART011_IMSC);
+-	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
+-
+-	if (dev_get_platdata(uap->port.dev)) {
+-		struct amba_pl011_data *plat;
+-
+-		plat = dev_get_platdata(uap->port.dev);
+-		if (plat->init)
+-			plat->init();
+-	}
+-	return 0;
+- out:
+-	return retval;
+-}
+-
+ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+ {
+ 	writew(lcr_h, uap->port.membase + uap->lcrh_rx);
+@@ -1890,7 +1906,7 @@ static struct uart_ops amba_pl011_pops = {
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
+-	.poll_init     = pl011_hwinit,
++	.poll_init     = pl011_poll_init,
+ 	.poll_get_char = pl011_get_poll_char,
+ 	.poll_put_char = pl011_put_poll_char,
+ #endif
+@@ -2169,6 +2185,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		uart_unregister_driver(&amba_reg);
+ 		pl011_dma_remove(uap);
+ 	}
++
+  out:
+ 	return ret;
+ }
+-- 
+1.9.0
