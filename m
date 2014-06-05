@@ -1,52 +1,70 @@
-From: "Valerio Vanni" <valerio@valeriovanni.com>
-Subject: Re: [PATCH 2/2] serial: core: Preserve termios c_cflag for console resume
-Date: Thu, 5 Jun 2014 01:31:43 +0200
-Message-ID: <lmoa97$q3h$1@ger.gmane.org>
-References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it> <1401891371-4946-1-git-send-email-peter@hurleysoftware.com> <1401891371-4946-2-git-send-email-peter@hurleysoftware.com> <20140604142232.GB1008@kroah.com> <538F3150.6040102@hurleysoftware.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH] serial: samsung: Use %pa to print 'resource_size_t' type
+Date: Thu, 05 Jun 2014 10:12:56 +0900
+Message-ID: <006f01cf805b$48589d60$d909d820$%han@samsung.com>
+References: <1401923201-5477-1-git-send-email-festevam@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:51687 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754675AbaFDXcH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 4 Jun 2014 19:32:07 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1WsKf7-0000bs-Fz
-	for linux-serial@vger.kernel.org; Thu, 05 Jun 2014 01:32:05 +0200
-Received: from 81-174-24-37.v4.ngi.it ([81.174.24.37])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 05 Jun 2014 01:32:05 +0200
-Received: from valerio by 81-174-24-37.v4.ngi.it with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 05 Jun 2014 01:32:05 +0200
+Received: from mailout3.samsung.com ([203.254.224.33]:12362 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751387AbaFEBM7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 4 Jun 2014 21:12:59 -0400
+Received: from epcpsbgr2.samsung.com
+ (u142.gpu120.samsung.co.kr [203.254.230.142])
+ by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N6O0049O8PKGM50@mailout3.samsung.com> for
+ linux-serial@vger.kernel.org; Thu, 05 Jun 2014 10:12:56 +0900 (KST)
+In-reply-to: <1401923201-5477-1-git-send-email-festevam@gmail.com>
+Content-language: ko
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+To: 'Fabio Estevam' <festevam@gmail.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, 'Fabio Estevam' <fabio.estevam@freescale.com>, 'Jingoo Han' <jg1.han@samsung.com>
 
-"Peter Hurley" <peter@hurleysoftware.com> ha scritto nel messaggio
-news:538F3150.6040102@hurleysoftware.com
-> On 06/04/2014 10:22 AM, Greg Kroah-Hartman wrote:
->> Same as before, regression, or just a normal "new feature"?
->
-> This was reported as a regression since 2.6.24, but that was likely
-> misreported, and more likely due to a userspace update which triggers
-> the bug.
->
-> I would be surprised if console resume _never_ worked if the serial
-> tty was opened then closed, but it probably has worked for a long
-> time.
+On Thursday, June 05, 2014 8:07 AM, Fabio Estevam wrote:
+> 
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> When building multi_v7_defconfig with CONFIG_ARM_LPAE=y the following warning
+> is seen:
+> 
+> drivers/tty/serial/samsung.c: In function 's3c24xx_serial_init_port':
+> drivers/tty/serial/samsung.c:1229:2: warning: format '%x' expects argument of type 'unsigned int', but
+> argument 2 has type 'resource_size_t' [-Wformat]
+> 
+> Use %pa to print 'resource_size_t' type to fix the warning.
+> 
+> Reported-by: Olof's autobuilder <build@lixom.net>
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 
-I don't know what was my initial mistake, but I realized very soon it was 
-not a regression and took away the "regression" flag from bugzilla.
-I tried many and many kernels and all were failing. I tried also to go 
-down from 2.6.24 version, but I had to stop rather early because at some 
-point the kernels were incompatible with distribution (I don't remember 
-the details since I did these tests some month ago, and later I tested 
-only newer kernel versions).
+Reviewed-by: Jingoo Han <jg1.han@samsung.com>
 
-The patches you sent are for -next? for -rc? for stable?
-Can I try them on 3.13.11? (at the moment I'm using this) 
+Best regards,
+Jingoo Han
 
-
+> ---
+>  drivers/tty/serial/samsung.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index 3293377..b7b8185 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1226,8 +1226,8 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+>  		wr_regl(port, S3C64XX_UINTSP, 0xf);
+>  	}
+> 
+> -	dbg("port: map=%08x, mem=%p, irq=%d (%d,%d), clock=%u\n",
+> -	    port->mapbase, port->membase, port->irq,
+> +	dbg("port: map=%pa, mem=%p, irq=%d (%d,%d), clock=%u\n",
+> +	    &port->mapbase, port->membase, port->irq,
+>  	    ourport->rx_irq, ourport->tx_irq, port->uartclk);
+> 
+>  	/* reset the fifos (and setup the uart) */
+> --
+> 1.8.3.2
 
