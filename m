@@ -1,7 +1,7 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [RFC v3 4/9] irqchip: gic: Introduce shadow irqs for FIQ
-Date: Thu,  5 Jun 2014 10:53:09 +0100
-Message-ID: <1401961994-18033-5-git-send-email-daniel.thompson@linaro.org>
+Subject: [RFC v3 6/9] ARM: Move some macros from entry-armv to entry-header
+Date: Thu,  5 Jun 2014 10:53:11 +0100
+Message-ID: <1401961994-18033-7-git-send-email-daniel.thompson@linaro.org>
 References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
  <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
@@ -19,171 +19,392 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jason Wessel <jason.wessel@windriver.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Nicolas Pitre <nicolas.pitre@linaro.org>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Sricharan R <r.sricharan@ti.com>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Jason Cooper <jason@lakedaemon.net>, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfou>
 List-Id: linux-serial@vger.kernel.org
 
-This patch registers two virqs for each interrupt source it supports.
-Using multiple virqs allows the GIC driver to automatically modify the group
-register, allowing the new virqs to be used as argument to enable_fiq().
-This also allows FIQ resources to be described in the device tree's
-interrupt list using a special flag (currently 0x80).
+From: Anton Vorontsov <anton.vorontsov@linaro.org>
 
-Both these aspects combine and allow a driver to deploy a FIQ handler
-without any machine specific knowledge; it can be used effectively on
-multi-arch kernels.
+Just move the macros into header file as we would want to use them for
+KGDB FIQ entry code.
 
+The following macros were moved:
+
+ - svc_entry
+ - usr_entry
+ - kuser_cmpxchg_check
+ - vector_stub
+
+To make kuser_cmpxchg_check actually work across different files, we
+also have to make kuser_cmpxchg64_fixup global.
+
+Signed-off-by: Anton Vorontsov <anton.vorontsov@linaro.org>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Christoffer Dall <christoffer.dall@linaro.org>
-Cc: Sricharan R <r.sricharan@ti.com>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Nicolas Pitre <nico@linaro.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
 ---
- drivers/irqchip/irq-gic.c | 62 ++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 56 insertions(+), 6 deletions(-)
+ arch/arm/kernel/entry-armv.S   | 151 +------------------------------------
+ arch/arm/kernel/entry-header.S | 164 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 165 insertions(+), 150 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
-index aa8efe4..9a4712d 100644
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -42,12 +42,17 @@
- #include <linux/irqchip/chained_irq.h>
- #include <linux/irqchip/arm-gic.h>
- 
-+#ifdef CONFIG_FIQ
-+#include <asm/fiq.h>
-+#endif
- #include <asm/irq.h>
- #include <asm/exception.h>
- #include <asm/smp_plat.h>
- 
- #include "irqchip.h"
- 
-+#define GIC_INTSPEC_IRQ_IS_FIQ (1 << 7)
-+
- union gic_base {
- 	void __iomem *common_base;
- 	void __percpu * __iomem *percpu_base;
-@@ -65,6 +70,7 @@ struct gic_chip_data {
- #endif
- 	struct irq_domain *domain;
- 	unsigned int gic_irqs;
-+	unsigned int fiq_shadow_offset;
- #ifdef CONFIG_GIC_NON_BANKED
- 	void __iomem *(*get_base)(union gic_base *);
- #endif
-@@ -143,11 +149,34 @@ static inline void __iomem *gic_cpu_base(struct irq_data *d)
- 	return gic_data_cpu_base(gic_data);
- }
- 
-+static inline bool gic_is_fiq(struct irq_data *d)
-+{
-+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
-+	return d->hwirq > gic_data->gic_irqs;
-+}
-+
- static inline unsigned int gic_irq(struct irq_data *d)
- {
-+	struct gic_chip_data *gic_data = irq_data_get_irq_chip_data(d);
-+	if (gic_is_fiq(d))
-+		return d->hwirq - gic_data->fiq_shadow_offset;
- 	return d->hwirq;
- }
- 
-+static void gic_set_group_irq(struct irq_data *d, int group)
-+{
-+	unsigned int reg = gic_irq(d) / 32 * 4;
-+	u32 mask = 1 << (gic_irq(d) % 32);
-+	u32 val;
-+
-+	val = readl_relaxed(gic_dist_base(d) + GIC_DIST_IGROUP + reg);
-+	if (group)
-+		val |= mask;
-+	else
-+		val &= ~mask;
-+	writel_relaxed(val, gic_dist_base(d) + GIC_DIST_IGROUP + reg);
-+}
-+
- /*
-  * Routines to acknowledge, disable and enable interrupts
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 1879e8d..ed95b95 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -140,53 +140,6 @@ ENDPROC(__und_invalid)
+  * SVC mode handlers
   */
-@@ -159,6 +188,8 @@ static void gic_mask_irq(struct irq_data *d)
- 	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_CLEAR + (gic_irq(d) / 32) * 4);
- 	if (gic_arch_extn.irq_mask)
- 		gic_arch_extn.irq_mask(d);
-+	if (gic_is_fiq(d))
-+		gic_set_group_irq(d, 1);
- 	raw_spin_unlock(&irq_controller_lock);
- }
  
-@@ -167,6 +198,8 @@ static void gic_unmask_irq(struct irq_data *d)
- 	u32 mask = 1 << (gic_irq(d) % 32);
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+-#define SPFIX(code...) code
+-#else
+-#define SPFIX(code...)
+-#endif
+-
+-	.macro	svc_entry, stack_hole=0
+- UNWIND(.fnstart		)
+- UNWIND(.save {r0 - pc}		)
+-	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+-#ifdef CONFIG_THUMB2_KERNEL
+- SPFIX(	str	r0, [sp]	)	@ temporarily saved
+- SPFIX(	mov	r0, sp		)
+- SPFIX(	tst	r0, #4		)	@ test original stack alignment
+- SPFIX(	ldr	r0, [sp]	)	@ restored
+-#else
+- SPFIX(	tst	sp, #4		)
+-#endif
+- SPFIX(	subeq	sp, sp, #4	)
+-	stmia	sp, {r1 - r12}
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""      ""       ""
+-	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
+- SPFIX(	addeq	r2, r2, #4	)
+-	str	r3, [sp, #-4]!		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	mov	r3, lr
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r2 - sp_svc
+-	@  r3 - lr_svc
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	stmia	r7, {r2 - r6}
+-
+-#ifdef CONFIG_TRACE_IRQFLAGS
+-	bl	trace_hardirqs_off
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_svc:
+ 	svc_entry
+@@ -306,73 +259,8 @@ ENDPROC(__pabt_svc)
  
- 	raw_spin_lock(&irq_controller_lock);
-+	if (gic_is_fiq(d))
-+		gic_set_group_irq(d, 0);
- 	if (gic_arch_extn.irq_unmask)
- 		gic_arch_extn.irq_unmask(d);
- 	writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_SET + (gic_irq(d) / 32) * 4);
-@@ -940,7 +973,12 @@ static int gic_routable_irq_domain_xlate(struct irq_domain *d,
- 				unsigned long *out_hwirq,
- 				unsigned int *out_type)
- {
-+	struct gic_chip_data *gic_data = d->host_data;
- 	*out_hwirq += 16;
+ /*
+  * User mode handlers
+- *
+- * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
+  */
+ 
+-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
+-#error "sizeof(struct pt_regs) must be a multiple of 8"
+-#endif
+-
+-	.macro	usr_entry
+- UNWIND(.fnstart	)
+- UNWIND(.cantunwind	)	@ don't unwind the user space
+-	sub	sp, sp, #S_FRAME_SIZE
+- ARM(	stmib	sp, {r1 - r12}	)
+- THUMB(	stmia	sp, {r0 - r12}	)
+-
+-	ldmia	r0, {r3 - r5}
+-	add	r0, sp, #S_PC		@ here for interlock avoidance
+-	mov	r6, #-1			@  ""  ""     ""        ""
+-
+-	str	r3, [sp]		@ save the "real" r0 copied
+-					@ from the exception stack
+-
+-	@
+-	@ We are now ready to fill in the remaining blanks on the stack:
+-	@
+-	@  r4 - lr_<exception>, already fixed up for correct return/restart
+-	@  r5 - spsr_<exception>
+-	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
+-	@
+-	@ Also, separately save sp_usr and lr_usr
+-	@
+-	stmia	r0, {r4 - r6}
+- ARM(	stmdb	r0, {sp, lr}^			)
+- THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
+-
+-	@
+-	@ Enable the alignment trap while in kernel mode
+-	@
+-	alignment_trap r0
+-
+-	@
+-	@ Clear FP to mark the first stack frame
+-	@
+-	zero_fp
+-
+-#ifdef CONFIG_IRQSOFF_TRACER
+-	bl	trace_hardirqs_off
+-#endif
+-	ct_user_exit save = 0
+-	.endm
+-
+-	.macro	kuser_cmpxchg_check
+-#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
+-    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
+-#ifndef CONFIG_MMU
+-#warning "NPTL on non MMU needs fixing"
+-#else
+-	@ Make sure our user space atomic helper is restarted
+-	@ if it was interrupted in a critical region.  Here we
+-	@ perform a quick test inline since it should be false
+-	@ 99.9999% of the time.  The rest is done out of line.
+-	cmp	r4, #TASK_SIZE
+-	blhs	kuser_cmpxchg64_fixup
+-#endif
+-#endif
+-	.endm
+-
+ 	.align	5
+ __dabt_usr:
+ 	usr_entry
+@@ -819,6 +707,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
+ 	ldmfd	sp!, {r4, r5, r6, pc}
+ 
+ 	.text
++	.global kuser_cmpxchg64_fixup
+ kuser_cmpxchg64_fixup:
+ 	@ Called from kuser_cmpxchg_fixup.
+ 	@ r4 = address of interrupted insn (must be preserved).
+@@ -960,44 +849,6 @@ __kuser_helper_end:
+  * SP points to a minimal amount of processor-private memory, the address
+  * of which is copied into r0 for the mode specific abort handler.
+  */
+-	.macro	vector_stub, name, mode, correction=0
+-	.align	5
+-
+-vector_\name:
+-	.if \correction
+-	sub	lr, lr, #\correction
+-	.endif
+-
+-	@
+-	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
+-	@ (parent CPSR)
+-	@
+-	stmia	sp, {r0, lr}		@ save r0, lr
+-	mrs	lr, spsr
+-	str	lr, [sp, #8]		@ save spsr
+-
+-	@
+-	@ Prepare for SVC32 mode.  IRQs remain disabled.
+-	@
+-	mrs	r0, cpsr
+-	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
+-	msr	spsr_cxsf, r0
+-
+-	@
+-	@ the branch table must immediately follow this code
+-	@
+-	and	lr, lr, #0x0f
+- THUMB(	adr	r0, 1f			)
+- THUMB(	ldr	lr, [r0, lr, lsl #2]	)
+-	mov	r0, sp
+- ARM(	ldr	lr, [pc, lr, lsl #2]	)
+-	movs	pc, lr			@ branch to handler in SVC mode
+-ENDPROC(vector_\name)
+-
+-	.align	2
+-	@ handler addresses follow this label
+-1:
+-	.endm
+ 
+ 	.section .stubs, "ax", %progbits
+ __stubs_start:
+diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
+index efb208d..5d794d6 100644
+--- a/arch/arm/kernel/entry-header.S
++++ b/arch/arm/kernel/entry-header.S
+@@ -356,3 +356,167 @@ scno	.req	r7		@ syscall number
+ tbl	.req	r8		@ syscall table pointer
+ why	.req	r8		@ Linux syscall (!= 0)
+ tsk	.req	r9		@ current thread_info
 +
-+	if (intspec[2] & GIC_INTSPEC_IRQ_IS_FIQ)
-+		*out_hwirq += gic_data->fiq_shadow_offset;
++/*
++ * SVC mode handler macros
++ */
 +
- 	return 0;
- }
- 
-@@ -1026,10 +1064,11 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
- 	gic->gic_irqs = gic_irqs;
- 
- 	gic_irqs -= hwirq_base; /* calculate # of irqs to allocate */
-+	gic->fiq_shadow_offset = gic_irqs;
- 
- 	if (of_property_read_u32(node, "arm,routable-irqs",
- 				 &nr_routable_irqs)) {
--		irq_base = irq_alloc_descs(irq_start, 16, gic_irqs,
-+		irq_base = irq_alloc_descs(irq_start, 16, 2 * gic_irqs,
- 					   numa_node_id());
- 		if (IS_ERR_VALUE(irq_base)) {
- 			WARN(1, "Cannot allocate irq_descs @ IRQ%d, assuming pre-allocated\n",
-@@ -1037,17 +1076,28 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
- 			irq_base = irq_start;
- 		}
- 
--		gic->domain = irq_domain_add_legacy(node, gic_irqs, irq_base,
--					hwirq_base, &gic_irq_domain_ops, gic);
-+		gic->domain =
-+		    irq_domain_add_legacy(node, 2 * gic_irqs, irq_base,
-+					  hwirq_base, &gic_irq_domain_ops, gic);
- 	} else {
--		gic->domain = irq_domain_add_linear(node, nr_routable_irqs,
--						    &gic_irq_domain_ops,
--						    gic);
-+		gic->domain = irq_domain_add_linear(node, 2 * nr_routable_irqs,
-+						    &gic_irq_domain_ops, gic);
- 	}
- 
- 	if (WARN_ON(!gic->domain))
- 		return;
- 
-+#ifdef CONFIG_FIQ
-+	/* FIQ can only be supported on platforms without an extended irq_eoi
-+	 * method (otherwise we take a lock during irq_eoi handling).
-+	 */
-+	if (!gic_arch_extn.irq_eoi)
-+		fiq_add_mapping(
-+		    irq_linear_revmap(gic->domain, hwirq_base),
-+		    irq_linear_revmap(gic->domain, hwirq_base + gic_irqs),
-+		    gic_irqs);
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
++#define SPFIX(code...) code
++#else
++#define SPFIX(code...)
 +#endif
 +
- 	if (gic_nr == 0) {
- #ifdef CONFIG_SMP
- 		set_smp_cross_call(gic_raise_softirq);
++	.macro	svc_entry, stack_hole=0
++ UNWIND(.fnstart		)
++ UNWIND(.save {r0 - pc}		)
++	sub	sp, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++#ifdef CONFIG_THUMB2_KERNEL
++ SPFIX(	str	r0, [sp]	)	@ temporarily saved
++ SPFIX(	mov	r0, sp		)
++ SPFIX(	tst	r0, #4		)	@ test original stack alignment
++ SPFIX(	ldr	r0, [sp]	)	@ restored
++#else
++ SPFIX(	tst	sp, #4		)
++#endif
++ SPFIX(	subeq	sp, sp, #4	)
++	stmia	sp, {r1 - r12}
++
++	ldmia	r0, {r3 - r5}
++	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""      ""       ""
++	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
++ SPFIX(	addeq	r2, r2, #4	)
++	str	r3, [sp, #-4]!		@ save the "real" r0 copied
++					@ from the exception stack
++
++	mov	r3, lr
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r2 - sp_svc
++	@  r3 - lr_svc
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	stmia	r7, {r2 - r6}
++
++#ifdef CONFIG_TRACE_IRQFLAGS
++	bl	trace_hardirqs_off
++#endif
++	.endm
++
++/*
++ * User mode handler macros
++ *
++ * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
++ */
++
++#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (S_FRAME_SIZE & 7)
++#error "sizeof(struct pt_regs) must be a multiple of 8"
++#endif
++
++	.macro	usr_entry
++ UNWIND(.fnstart	)
++ UNWIND(.cantunwind	)	@ don't unwind the user space
++	sub	sp, sp, #S_FRAME_SIZE
++ ARM(	stmib	sp, {r1 - r12}	)
++ THUMB(	stmia	sp, {r0 - r12}	)
++
++	ldmia	r0, {r3 - r5}
++	add	r0, sp, #S_PC		@ here for interlock avoidance
++	mov	r6, #-1			@  ""  ""     ""        ""
++
++	str	r3, [sp]		@ save the "real" r0 copied
++					@ from the exception stack
++
++	@
++	@ We are now ready to fill in the remaining blanks on the stack:
++	@
++	@  r4 - lr_<exception>, already fixed up for correct return/restart
++	@  r5 - spsr_<exception>
++	@  r6 - orig_r0 (see pt_regs definition in ptrace.h)
++	@
++	@ Also, separately save sp_usr and lr_usr
++	@
++	stmia	r0, {r4 - r6}
++ ARM(	stmdb	r0, {sp, lr}^			)
++ THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
++
++	@
++	@ Enable the alignment trap while in kernel mode
++	@
++	alignment_trap r0
++
++	@
++	@ Clear FP to mark the first stack frame
++	@
++	zero_fp
++
++#ifdef CONFIG_IRQSOFF_TRACER
++	bl	trace_hardirqs_off
++#endif
++	ct_user_exit save = 0
++	.endm
++
++	.macro	kuser_cmpxchg_check
++#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS) && \
++    !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
++#ifndef CONFIG_MMU
++#warning "NPTL on non MMU needs fixing"
++#else
++	@ Make sure our user space atomic helper is restarted
++	@ if it was interrupted in a critical region.  Here we
++	@ perform a quick test inline since it should be false
++	@ 99.9999% of the time.  The rest is done out of line.
++	cmp	r4, #TASK_SIZE
++	blhs	kuser_cmpxchg64_fixup
++#endif
++#endif
++	.endm
++
++/*
++ * Vector stubs macro.
++ */
++	.macro	vector_stub, name, mode, correction=0
++	.align	5
++
++vector_\name:
++	.if \correction
++	sub	lr, lr, #\correction
++	.endif
++
++	@
++	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
++	@ (parent CPSR)
++	@
++	stmia	sp, {r0, lr}		@ save r0, lr
++	mrs	lr, spsr
++	str	lr, [sp, #8]		@ save spsr
++
++	@
++	@ Prepare for SVC32 mode.  IRQs remain disabled.
++	@
++	mrs	r0, cpsr
++	eor	r0, r0, #(\mode ^ SVC_MODE | PSR_ISETSTATE)
++	msr	spsr_cxsf, r0
++
++	@
++	@ the branch table must immediately follow this code
++	@
++	and	lr, lr, #0x0f
++ THUMB(	adr	r0, 1f			)
++ THUMB(	ldr	lr, [r0, lr, lsl #2]	)
++	mov	r0, sp
++ ARM(	ldr	lr, [pc, lr, lsl #2]	)
++	movs	pc, lr			@ branch to handler in SVC mode
++ENDPROC(vector_\name)
++
++	.align	2
++	@ handler addresses follow this label
++1:
++	.endm
++
++
 -- 
 1.9.0
