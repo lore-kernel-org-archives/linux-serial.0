@@ -1,46 +1,46 @@
-From: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 1/2] serial: tegra: update tx_circular buffer only when TX_DMA is in progress
-Date: Fri, 6 Jun 2014 16:48:08 +0530
-Message-ID: <1402053489-21262-1-git-send-email-ldewangan@nvidia.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 2/2] serial: tegra: ack the rx dma desc after transfer terminated
+Date: Fri, 6 Jun 2014 16:48:09 +0530
+Message-ID: <1402053489-21262-2-git-send-email-ldewangan@nvidia.com>
+References: <1402053489-21262-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:9462 "EHLO
-	hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752366AbaFFLSs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 6 Jun 2014 07:18:48 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1402053489-21262-1-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pradeep Goudagunta <pgoudagunta-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: swarren@wwwdotorg.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Pradeep Goudagunta <pgoudagunta@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>
 
-From: Pradeep Goudagunta <pgoudagunta@nvidia.com>
+From: Pradeep Goudagunta <pgoudagunta-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-When channel is require to stop transmit then update the Tx circular
-buffer only when DMA based transfer is in progress. If there is no
-DMA based transfer then no need to update the Tx buffer.
+The Rx dma descriptor allocated without the DMA_ACK flags so that
+once after tarnsfer done or terminated, client can ack the descriptor
+to free it for later use.
 
-Signed-off-by: Pradeep Goudagunta <pgoudagunta@nvidia.com>
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+If the Rx DMA is terminated for some reason then rx-dma descriptor
+is not getting acked which causes the memory leak and list of usage
+desc to grow continuously.
+
+Hence, acknowledge the rx-dma descriptor once transfer is terminated
+to avoid memory leak and desc list to grow.
+
+Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/tty/serial/serial-tegra.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/serial-tegra.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index d5c2a28..117d8d1 100644
+index 117d8d1..53d7c31 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -482,6 +482,9 @@ static void tegra_uart_stop_tx(struct uart_port *u)
- 	struct dma_tx_state state;
- 	int count;
+@@ -602,6 +602,7 @@ static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup,
  
-+	if (tup->tx_in_progress != TEGRA_UART_TX_DMA)
-+		return;
-+
- 	dmaengine_terminate_all(tup->tx_dma_chan);
- 	dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
- 	count = tup->tx_bytes_requested - state.residue;
+ 	dmaengine_terminate_all(tup->rx_dma_chan);
+ 	dmaengine_tx_status(tup->rx_dma_chan,  tup->rx_cookie, &state);
++	async_tx_ack(tup->rx_dma_desc);
+ 	count = tup->rx_bytes_requested - state.residue;
+ 
+ 	/* If we are here, DMA is stopped */
 -- 
 1.8.1.5
-
