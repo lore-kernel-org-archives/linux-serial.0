@@ -1,45 +1,35 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/2] serial: core: Don't drop DTR if system console
-Date: Mon, 9 Jun 2014 14:08:23 +0100
-Message-ID: <20140609140823.6013838d@alan.etchedpixels.co.uk>
-References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it>
-	<1401891371-4946-1-git-send-email-peter@hurleysoftware.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch] serial: txx9: remove duplicate TXX9_SIFCR_TDIL_MASK define
+Date: Mon, 9 Jun 2014 18:11:21 +0300
+Message-ID: <20140609151121.GF9600@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:58327 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752662AbaFINIk (ORCPT
+Received: from userp1040.oracle.com ([156.151.31.81]:48423 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933184AbaFIPLd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Jun 2014 09:08:40 -0400
-In-Reply-To: <1401891371-4946-1-git-send-email-peter@hurleysoftware.com>
+	Mon, 9 Jun 2014 11:11:33 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Valerio Vanni <valerio.vanni@inwind.it>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 
-On Wed,  4 Jun 2014 10:16:10 -0400
-Peter Hurley <peter@hurleysoftware.com> wrote:
+The TXX9_SIFCR_TDIL_MASK define is cut and pasted twice so we can delete
+the second instance.
 
-> If a tty is opened on a serial console, don't drop DTR on
-> last tty close, on tty hangup, or when resetting port hardware
-> via TIOCSSERIAL and TIOCSERCONFIG ioctls.
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-NAK
-
-This introduces a security flaw.
-
-If you have a system with a remote console you dial into then with this
-patch applied a modem drop eg from a bad line will no longer drop any
-live session and ensure a login is required as it was before.
-
-That's a pretty bad regression case.
-
-If you are running a serial console and want to leave DTR high either
-wire the cable that way or don't set HUPCL in the first place. The
-technology for fixing this problem already exists!
-
-Alan
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index 60f49b9..9878bd3 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -142,7 +142,6 @@ struct uart_txx9_port {
+ #define TXX9_SIFCR_RDIL_12	0x00000180
+ #define TXX9_SIFCR_RDIL_MAX	0x00000180
+ #define TXX9_SIFCR_TDIL_MASK	0x00000018
+-#define TXX9_SIFCR_TDIL_MASK	0x00000018
+ #define TXX9_SIFCR_TDIL_1	0x00000000
+ #define TXX9_SIFCR_TDIL_4	0x00000001
+ #define TXX9_SIFCR_TDIL_8	0x00000010
