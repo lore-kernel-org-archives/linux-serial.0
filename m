@@ -1,64 +1,41 @@
 From: Tony Luck <tony.luck@gmail.com>
 Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Mon, 9 Jun 2014 15:25:37 -0700
-Message-ID: <CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
+Date: Mon, 9 Jun 2014 15:35:40 -0700
+Message-ID: <CA+8MBbKE1E2uq9LefiDAV9hv2Z8OTkjx9mkXjE6_--F_emRC8A@mail.gmail.com>
 References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
 	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
 	<CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
 	<CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
 	<20140503220731.GA10927@kroah.com>
 	<20140503221658.GA13403@kroah.com>
+	<CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f178.google.com ([209.85.220.178]:49009 "EHLO
-	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932402AbaFIWZh (ORCPT
+Received: from mail-vc0-f181.google.com ([209.85.220.181]:43719 "EHLO
+	mail-vc0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932184AbaFIWfl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Jun 2014 18:25:37 -0400
-In-Reply-To: <20140503221658.GA13403@kroah.com>
+	Mon, 9 Jun 2014 18:35:41 -0400
+In-Reply-To: <CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Rob Herring <robherring2@gmail.com>, Yinghai Lu <yinghai@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
 
-On Sat, May 3, 2014 at 3:16 PM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->> > >>  drivers/tty/serial/8250/8250_early.c | 138 ++++-------------------------------
->> > >>  drivers/tty/serial/8250/Kconfig      |   1 +
->> > >>  2 files changed, 16 insertions(+), 123 deletions(-)
->> > >
->> > > Hi Greg, Rob
->> > >
->> > > This one in tty-next breaks booting: "console=uart8250,io,0x3f8,115200".
->> > > No early console and regular console anymore.
->> > >
->> > > It should produce "early con and regular con".
->> >
->> > This is what I get for running checkpatch and converting
->> > simple_strtoul to kstrto* which are not so equivalent. kstrto* will
->> > not convert things such as 115200n8 to a number.
->> >
->> > Greg, Do you want a fix or for me to respin the series? The fix looks like this:
->>
->> As this is in my tree now (right?), I need a fix to apply to it.
->
-> Nevermind, you already sent it...
+On Mon, Jun 9, 2014 at 3:25 PM, Tony Luck <tony.luck@gmail.com> wrote:
+> Linus' tree (HEAD=963649d735c8) is spitting out all sorts of garbage
+> on the serial console - as if the baud rate is being periodically set
+> to something weird, and then back to 112500.  I see over a dozen
+> blocks of junk interspersed with good output.
 
-Linus' tree (HEAD=963649d735c8) is spitting out all sorts of garbage
-on the serial console - as if the baud rate is being periodically set
-to something weird, and then back to 112500.  I see over a dozen
-blocks of junk interspersed with good output.
+Ah - it seems that I need to be more specific on the cmdline
 
-This in on ia64 with "console=uart,io,0x3f8" on the command line.
+     console=uart8250,io,0x3f8,115200
 
-git bisect pointed me here:
+makes all the garbage disappear.
 
-d2fd6810a823bcde1ee232668f5689837aafa772 is first bad commit
-commit d2fd6810a823bcde1ee232668f5689837aafa772
-Author: Rob Herring <robh@kernel.org>
-Date:   Fri Apr 18 17:19:56 2014 -0500
-
-    tty/serial: convert 8250 to generic earlycon
+Do I need to update: Documentation/ia64/serial.txt
+which has the example of "console=uart,io,0x3f8"?
 
 -Tony
