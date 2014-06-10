@@ -1,71 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 1/2] serial: core: Don't drop DTR if system console
-Date: Tue, 10 Jun 2014 08:30:45 -0400
-Message-ID: <5396FA75.8020400@hurleysoftware.com>
-References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it>	<1401891371-4946-1-git-send-email-peter@hurleysoftware.com>	<20140609140823.6013838d@alan.etchedpixels.co.uk>	<53965D53.3010107@hurleysoftware.com> <20140610120136.2c2cb881@alan.etchedpixels.co.uk>
+From: Tony Luck <tony.luck@gmail.com>
+Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
+Date: Tue, 10 Jun 2014 13:52:08 -0700
+Message-ID: <CA+8MBbLooWm9xys+gYa5uL1eVTH-qzaR+RaZgsrqV-8XkqGadQ@mail.gmail.com>
+References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
+	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
+	<CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
+	<CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
+	<20140503220731.GA10927@kroah.com>
+	<20140503221658.GA13403@kroah.com>
+	<CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
+	<CA+8MBbKE1E2uq9LefiDAV9hv2Z8OTkjx9mkXjE6_--F_emRC8A@mail.gmail.com>
+	<CAL_JsqKvoO9acX==-LdD6boO=B3xr=ijra_G0uqRZGzACZZUJg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:46031 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750888AbaFJMas (ORCPT
+Received: from mail-ve0-f178.google.com ([209.85.128.178]:62187 "EHLO
+	mail-ve0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753038AbaFJUwJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 10 Jun 2014 08:30:48 -0400
-In-Reply-To: <20140610120136.2c2cb881@alan.etchedpixels.co.uk>
+	Tue, 10 Jun 2014 16:52:09 -0400
+In-Reply-To: <CAL_JsqKvoO9acX==-LdD6boO=B3xr=ijra_G0uqRZGzACZZUJg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Valerio Vanni <valerio.vanni@inwind.it>
+To: Rob Herring <robherring2@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yinghai Lu <yinghai@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
 
-On 06/10/2014 07:01 AM, One Thousand Gnomes wrote:
->> This patch only affects the line state if the last tty reference is closed
->> or the tty is hung up by software (like on controlling process exit).
->> In this case, any login session is already dying, and it would not be possible
->> to hijack a live session. A successful re-login is still required.
->
-> It breaks the other direction - yes sorry.
->
->> Notwithstanding what I wrote above, this patch does change behavior
->> with remote consoles, which may be unacceptable.
->
->> For example, if the remote user logs out, the current behavior hangs up
->> the modem (if HUPCL), whereas the patch behavior just presents a new
->> login prompt.
->
-> which means the modem will probably no longer answer calls.
+On Mon, Jun 9, 2014 at 4:18 PM, Rob Herring <robherring2@gmail.com> wrote:
+> It should do auto detect of the baud-rate if it is not specified which
+> for 8250 is just reading the baud-rate divider and calculating the
+> baud-rate using the uart clock. It should just reprogram the divider
+> with the same divider value. I don't see anything obvious why this
+> would have broken.
 
-I would expect the vast majority of modems to be configured to hang-up
-after carrier loss (when the remote user hangs up).
+Something very weird is happening.  Output is good so long as I put the
+trailing ",115200" on the command line.
 
-I think the more significant impact is that killing the login process
-(by the sysadmin) wouldn't disconnect a malicious user (but would still
-force the re-login). I see this as more nuisance value than any
-realistic DoS.
+But I made early_serial8250_setup() printk() the return value it got
+from probe_baud() - in case is was somehow getting 115201 or some
+other silly value ... nope. Exactly 115200.
 
->> So yeah, I agree; this patch should be dropped.
->
-> Possibly we should also fix this the other way in tty_port_shutdown,
-> which does wrongly skip dtr/rts handling of consoles.
->
-> As far as I can see providing HUPCL is clear the desired console
-> behaviour for most situations with a remote console link is obtained.
+I also can't explain why the "noise" comes and goes a dozen
+times during boot,
 
-I agree that serial core and tty port should handle the console
-identically, so if the serial core defaults are the expected behavior,
-then, yes, tty_port_shutdown() should not skip dropping dtr/rts.
+Does some other place in the kernel look at the "uart..." command
+line argument?
 
-However, a console on USB tty is much more likely to be local, rather
-than remote, so changing dtr/rts handling could impact these setups.
-
-Since the termios c_cflag is inherited from the console, what about adding
-new flow control flag decodes to uart_set_options(); eg.,
-  'r'     =  CRTSCTS |  HUPCL  /* existing */
-  'R'     =  CRTSCTS | !HUPCL
-  default = !CRTSCTS |  HUPCL
-  'd'     = !CRTSCTS | !HUPCL
-?
-
-Regards,
-Peter Hurley
-
+-Tony
