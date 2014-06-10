@@ -1,49 +1,65 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Mon, 9 Jun 2014 18:18:59 -0500
-Message-ID: <CAL_JsqKvoO9acX==-LdD6boO=B3xr=ijra_G0uqRZGzACZZUJg@mail.gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
-	<CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
-	<CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
-	<20140503220731.GA10927@kroah.com>
-	<20140503221658.GA13403@kroah.com>
-	<CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
-	<CA+8MBbKE1E2uq9LefiDAV9hv2Z8OTkjx9mkXjE6_--F_emRC8A@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/2] serial: core: Don't drop DTR if system console
+Date: Mon, 09 Jun 2014 21:20:19 -0400
+Message-ID: <53965D53.3010107@hurleysoftware.com>
+References: <7EC4C3FDEFF6492F91DEE16AEE0831E6@vanni.it>	<1401891371-4946-1-git-send-email-peter@hurleysoftware.com> <20140609140823.6013838d@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-vc0-f169.google.com ([209.85.220.169]:63724 "EHLO
-	mail-vc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751388AbaFIXTB (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:43628 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751388AbaFJBUX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 9 Jun 2014 19:19:01 -0400
-In-Reply-To: <CA+8MBbKE1E2uq9LefiDAV9hv2Z8OTkjx9mkXjE6_--F_emRC8A@mail.gmail.com>
+	Mon, 9 Jun 2014 21:20:23 -0400
+In-Reply-To: <20140609140823.6013838d@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Luck <tony.luck@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yinghai Lu <yinghai@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Valerio Vanni <valerio.vanni@inwind.it>
 
-On Mon, Jun 9, 2014 at 5:35 PM, Tony Luck <tony.luck@gmail.com> wrote:
-> On Mon, Jun 9, 2014 at 3:25 PM, Tony Luck <tony.luck@gmail.com> wrote:
->> Linus' tree (HEAD=963649d735c8) is spitting out all sorts of garbage
->> on the serial console - as if the baud rate is being periodically set
->> to something weird, and then back to 112500.  I see over a dozen
->> blocks of junk interspersed with good output.
+On 06/09/2014 09:08 AM, One Thousand Gnomes wrote:
+> On Wed,  4 Jun 2014 10:16:10 -0400
+> Peter Hurley <peter@hurleysoftware.com> wrote:
 >
-> Ah - it seems that I need to be more specific on the cmdline
+>> If a tty is opened on a serial console, don't drop DTR on
+>> last tty close, on tty hangup, or when resetting port hardware
+>> via TIOCSSERIAL and TIOCSERCONFIG ioctls.
+>>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 >
->      console=uart8250,io,0x3f8,115200
+> NAK
 >
-> makes all the garbage disappear.
+> This introduces a security flaw.
 >
-> Do I need to update: Documentation/ia64/serial.txt
-> which has the example of "console=uart,io,0x3f8"?
+> If you have a system with a remote console you dial into then with this
+> patch applied a modem drop eg from a bad line will no longer drop any
+> live session and ensure a login is required as it was before.
 
-It should do auto detect of the baud-rate if it is not specified which
-for 8250 is just reading the baud-rate divider and calculating the
-baud-rate using the uart clock. It should just reprogram the divider
-with the same divider value. I don't see anything obvious why this
-would have broken.
+There's no security flaw here.
 
-Rob
+The situation you're referring to above is managed by the CLOCAL termios
+setting (which by default does _not_ hangup the tty on carrier loss).
+
+This patch only affects the line state if the last tty reference is closed
+or the tty is hung up by software (like on controlling process exit).
+In this case, any login session is already dying, and it would not be possible
+to hijack a live session. A successful re-login is still required.
+
+> That's a pretty bad regression case.
+>
+> If you are running a serial console and want to leave DTR high either
+> wire the cable that way or don't set HUPCL in the first place. The
+> technology for fixing this problem already exists!
+
+Notwithstanding what I wrote above, this patch does change behavior
+with remote consoles, which may be unacceptable.
+
+For example, if the remote user logs out, the current behavior hangs up
+the modem (if HUPCL), whereas the patch behavior just presents a new
+login prompt.
+
+So yeah, I agree; this patch should be dropped.
+
+Regards,
+Peter Hurley
