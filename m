@@ -1,163 +1,53 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH 8/9] ARC: [arcfpga] RIP early uart platform device stuff
-Date: Thu, 12 Jun 2014 16:01:38 +0530
-Message-ID: <1402569099-9900-9-git-send-email-vgupta@synopsys.com>
+From: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 9/9] serial/arc: Add DT based earlycon support
+Date: Thu, 12 Jun 2014 16:01:39 +0530
+Message-ID: <1402569099-9900-10-git-send-email-vgupta@synopsys.com>
 References: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1402569099-9900-1-git-send-email-vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Francois.Bedard-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-With ARC uart driver switching to generic earlycon, we no longer need
-this ugliness. You won't be missed.
-
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
 ---
- arch/arc/plat-arcfpga/Kconfig    |  7 ---
- arch/arc/plat-arcfpga/platform.c | 97 +---------------------------------------
- 2 files changed, 2 insertions(+), 102 deletions(-)
+ arch/arc/boot/dts/angel4.dts  | 3 ++-
+ drivers/tty/serial/arc_uart.c | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arc/plat-arcfpga/Kconfig b/arch/arc/plat-arcfpga/Kconfig
-index e27bb5cc3c1e..b9f34cf55acf 100644
---- a/arch/arc/plat-arcfpga/Kconfig
-+++ b/arch/arc/plat-arcfpga/Kconfig
-@@ -41,11 +41,4 @@ config ISS_SMP_EXTN
- 	  -XTL (To enable CPU start/stop/set-PC for another CPU)
- 	  It doesn't provide coherent Caches and/or Atomic Ops (LLOCK/SCOND)
+diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
+index 6b57475967a6..e9fc270d1e0b 100644
+--- a/arch/arc/boot/dts/angel4.dts
++++ b/arch/arc/boot/dts/angel4.dts
+@@ -17,7 +17,8 @@
+ 	interrupt-parent = <&intc>;
  
--config ARC_SERIAL_BAUD
--	int "UART Baud rate"
--	default "115200"
--	depends on SERIAL_ARC || SERIAL_ARC_CONSOLE
--	help
--	  Baud rate for the ARC UART
--
- endif
-diff --git a/arch/arc/plat-arcfpga/platform.c b/arch/arc/plat-arcfpga/platform.c
-index 61c7e5997387..b8d0d456627f 100644
---- a/arch/arc/plat-arcfpga/platform.c
-+++ b/arch/arc/plat-arcfpga/platform.c
-@@ -22,115 +22,22 @@
- #include <plat/smp.h>
- #include <plat/irq.h>
+ 	chosen {
+-		bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
++		bootargs = "earlycon console=ttyARC0,115200n8";
++		stdout-path = &arcuart0;
+ 	};
  
--/*----------------------- Platform Devices -----------------------------*/
--
--#if IS_ENABLED(CONFIG_SERIAL_ARC)
--static unsigned long arc_uart_info[] = {
--	0,	/* uart->is_emulated (runtime @running_on_hw) */
--	0,	/* uart->port.uartclk */
--	0,	/* uart->baud */
--	0
--};
--
--#if defined(CONFIG_SERIAL_ARC_CONSOLE)
--/*
-- * static platform data - but only for early serial
-- * TBD: derive this from a special DT node
-- */
--static struct resource arc_uart0_res[] = {
--	{
--		.start = UART0_BASE,
--		.end   = UART0_BASE + 0xFF,
--		.flags = IORESOURCE_MEM,
--	},
--	{
--		.start = UART0_IRQ,
--		.end   = UART0_IRQ,
--		.flags = IORESOURCE_IRQ,
--	},
--};
--
--static struct platform_device arc_uart0_dev = {
--	.name = "arc-uart",
--	.id = 0,
--	.num_resources = ARRAY_SIZE(arc_uart0_res),
--	.resource = arc_uart0_res,
--	.dev = {
--		.platform_data = &arc_uart_info,
--	},
--};
--
--static struct platform_device *fpga_early_devs[] __initdata = {
--	&arc_uart0_dev,
--};
--#endif	/* CONFIG_SERIAL_ARC_CONSOLE */
--
--static void arc_fpga_serial_init(void)
--{
--	/* To let driver workaround ISS bug: baudh Reg can't be set to 0 */
--	arc_uart_info[0] = !running_on_hw;
--
--	arc_uart_info[1] = arc_get_core_freq();
--
--	arc_uart_info[2] = CONFIG_ARC_SERIAL_BAUD;
--
--#if defined(CONFIG_SERIAL_ARC_CONSOLE)
--	early_platform_add_devices(fpga_early_devs,
--				   ARRAY_SIZE(fpga_early_devs));
--
--	/*
--	 * ARC console driver registers (build time) as an early platform driver
--	 * of class "earlyprintk". However it needs explicit cmdline toggle
--	 * "earlyprintk=ttyARC0" to be successfuly runtime registered.
--	 * Otherwise the early probe below fails to find the driver
--	 */
--	early_platform_driver_probe("earlyprintk", 1, 0);
--
--	/*
--	 * This is to make sure that arc uart would be preferred console
--	 * despite one/more of following:
--	 *   -command line lacked "console=ttyARC0" or
--	 *   -CONFIG_VT_CONSOLE was enabled (for no reason whatsoever)
--	 * Note that this needs to be done after above early console is reg,
--	 * otherwise the early console never gets a chance to run.
--	 */
--	add_preferred_console("ttyARC", 0, "115200");
--#endif	/* CONFIG_SERIAL_ARC_CONSOLE */
--}
--#else	/* !IS_ENABLED(CONFIG_SERIAL_ARC) */
--static void arc_fpga_serial_init(void)
--{
--}
--#endif
--
- static void __init plat_fpga_early_init(void)
- {
- 	pr_info("[plat-arcfpga]: registering early dev resources\n");
- 
--	arc_fpga_serial_init();
--
- #ifdef CONFIG_ISS_SMP_EXTN
- 	iss_model_init_early_smp();
- #endif
+ 	aliases {
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 435de4f2af3b..d9900cb3e7b6 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -579,6 +579,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
+ 	return 0;
  }
+ EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
++OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
  
--static struct of_dev_auxdata plat_auxdata_lookup[] __initdata = {
--#if IS_ENABLED(CONFIG_SERIAL_ARC)
--	OF_DEV_AUXDATA("snps,arc-uart", UART0_BASE, "arc-uart", arc_uart_info),
--#endif
--	{}
--};
--
- static void __init plat_fpga_populate_dev(void)
- {
--	pr_info("[plat-arcfpga]: registering device resources\n");
--
- 	/*
- 	 * Traverses flattened DeviceTree - registering platform devices
--	 * complete with their resources
-+	 * (if any) complete with their resources
- 	 */
--	of_platform_populate(NULL, of_default_bus_match_table,
--			     plat_auxdata_lookup, NULL);
-+	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
- }
+ #endif	/* CONFIG_SERIAL_ARC_CONSOLE */
  
- /*----------------------- Machine Descriptions ------------------------------
 -- 
 1.8.3.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
