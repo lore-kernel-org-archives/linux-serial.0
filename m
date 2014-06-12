@@ -1,144 +1,74 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH 7/9] serial/arc: inline the probe helper
-Date: Thu, 12 Jun 2014 16:01:37 +0530
-Message-ID: <1402569099-9900-8-git-send-email-vgupta@synopsys.com>
-References: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH] serial: 8250_dma: sync regions for device before transfer
+Date: Thu, 12 Jun 2014 18:51:18 +0300
+Message-ID: <1402588278-15109-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay.synopsys.com ([198.182.44.111]:44107 "EHLO
-	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932907AbaFLKiq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jun 2014 06:38:46 -0400
-In-Reply-To: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
+Received: from mga03.intel.com ([143.182.124.21]:12799 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756075AbaFLPvp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jun 2014 11:51:45 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+The documentation says that we have to sync DMA regions after CPU access and
+before any DMA transfer is going on. The actual DMA for buffer happens when we
+call dmaengine_submit() (*). The original code syncs data after this call which
+might lead to the corrupted data in actual stream.
+
+(*) Accordingly to the Documentation/dmaengine.txt the dmaengine_submit call
+shouldn't do the transfer, but some DMA controller drivers abuse this rule.
+Thus, we would like to have this patch until all DMA controller drivers will be
+fixed. Even after that it will be harmless.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/arc_uart.c | 90 +++++++++++++++++++------------------------
- 1 file changed, 40 insertions(+), 50 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index dc3d5db37dc4..435de4f2af3b 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -496,50 +496,6 @@ static struct uart_ops arc_serial_pops = {
- #endif
- };
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 148ffe4..f70ee29 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -76,6 +76,8 @@ int serial8250_tx_dma(struct uart_8250_port *p)
  
--static int
--arc_uart_init_one(struct platform_device *pdev, int dev_id)
--{
--	struct device_node *np = pdev->dev.of_node;
--	struct arc_uart_port *uart = &arc_uart_ports[dev_id];
--	struct uart_port *port = &uart->port;
--	u32 val;
--
--	if (of_property_read_u32(np, "clock-frequency", &val)) {
--		dev_err(&pdev->dev, "clock-frequency property NOTset\n");
--		return -EINVAL;
--	}
--	port->uartclk = val;
--
--	if (of_property_read_u32(np, "current-speed", &val)) {
--		dev_err(&pdev->dev, "current-speed property NOT set\n");
--		return -EINVAL;
--	}
--	uart->baud = val;
--
--	port->membase = of_iomap(np, 0);
--	if (!port->membase)
--		/* No point of dev_err since UART itself is hosed here */
--		return -ENXIO;
--
--	port->irq = irq_of_parse_and_map(np, 0);
--
--	port->dev = &pdev->dev;
--	port->iotype = UPIO_MEM;
--	port->flags = UPF_BOOT_AUTOCONF;
--	port->line = dev_id;
--	port->ops = &arc_serial_pops;
--
--	port->fifosize = ARC_UART_TX_FIFO_SIZE;
--
--	/*
--	 * uart_insert_char( ) uses it in decideding whether to ignore a
--	 * char or not. Explicitly setting it here, removes the subtelty
--	 */
--	port->ignore_status_mask = 0;
--
--	return 0;
--}
--
- #ifdef CONFIG_SERIAL_ARC_CONSOLE
+ 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
  
- static int arc_serial_console_setup(struct console *co, char *options)
-@@ -628,8 +584,11 @@ EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
++	dma_sync_single_for_device(dma->txchan->device->dev, dma->tx_addr,
++				   UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 	desc = dmaengine_prep_slave_single(dma->txchan,
+ 					   dma->tx_addr + xmit->tail,
+ 					   dma->tx_size, DMA_MEM_TO_DEV,
+@@ -90,9 +92,6 @@ int serial8250_tx_dma(struct uart_8250_port *p)
  
- static int arc_serial_probe(struct platform_device *pdev)
- {
--	int rc, dev_id;
- 	struct device_node *np = pdev->dev.of_node;
-+	struct arc_uart_port *uart;
-+	struct uart_port *port;
-+	int dev_id;
-+	u32 val;
+ 	dma->tx_cookie = dmaengine_submit(desc);
  
- 	/* no device tree device */
- 	if (!np)
-@@ -639,12 +598,43 @@ static int arc_serial_probe(struct platform_device *pdev)
- 	if (dev_id < 0)
- 		dev_id = 0;
+-	dma_sync_single_for_device(dma->txchan->device->dev, dma->tx_addr,
+-				   UART_XMIT_SIZE, DMA_TO_DEVICE);
+-
+ 	dma_async_issue_pending(dma->txchan);
  
--	rc = arc_uart_init_one(pdev, dev_id);
--	if (rc)
--		return rc;
-+	uart = &arc_uart_ports[dev_id];
-+	port = &uart->port;
-+
-+	if (of_property_read_u32(np, "clock-frequency", &val)) {
-+		dev_err(&pdev->dev, "clock-frequency property NOTset\n");
-+		return -EINVAL;
-+	}
-+	port->uartclk = val;
-+
-+	if (of_property_read_u32(np, "current-speed", &val)) {
-+		dev_err(&pdev->dev, "current-speed property NOT set\n");
-+		return -EINVAL;
-+	}
-+	uart->baud = val;
-+
-+	port->membase = of_iomap(np, 0);
-+	if (!port->membase)
-+		/* No point of dev_err since UART itself is hosed here */
-+		return -ENXIO;
-+
-+	port->irq = irq_of_parse_and_map(np, 0);
-+
-+	port->dev = &pdev->dev;
-+	port->iotype = UPIO_MEM;
-+	port->flags = UPF_BOOT_AUTOCONF;
-+	port->line = dev_id;
-+	port->ops = &arc_serial_pops;
-+
-+	port->fifosize = ARC_UART_TX_FIFO_SIZE;
-+
-+	/*
-+	 * uart_insert_char( ) uses it in decideding whether to ignore a
-+	 * char or not. Explicitly setting it here, removes the subtelty
-+	 */
-+	port->ignore_status_mask = 0;
+ 	return 0;
+@@ -129,6 +128,8 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+ 	if (dma_status)
+ 		return 0;
  
--	rc = uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
--	return rc;
-+	return uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
- }
++	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
++				   dma->rx_size, DMA_FROM_DEVICE);
+ 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+ 					   dma->rx_size, DMA_DEV_TO_MEM,
+ 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+@@ -140,9 +141,6 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
  
- static int arc_serial_remove(struct platform_device *pdev)
+ 	dma->rx_cookie = dmaengine_submit(desc);
+ 
+-	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
+-				   dma->rx_size, DMA_FROM_DEVICE);
+-
+ 	dma_async_issue_pending(dma->rxchan);
+ 
+ 	return 0;
 -- 
-1.8.3.2
+2.0.0
 
