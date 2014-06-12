@@ -1,74 +1,73 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH] serial: 8250_dma: sync regions for device before transfer
-Date: Thu, 12 Jun 2014 18:51:18 +0300
-Message-ID: <1402588278-15109-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: [PATCH] tty/serial: fix 8250 early console option passing to regular console
+Date: Thu, 12 Jun 2014 12:52:44 -0500
+Message-ID: <1402595564-23755-1-git-send-email-robherring2@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:12799 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756075AbaFLPvp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 12 Jun 2014 11:51:45 -0400
+Received: from mail-ob0-f178.google.com ([209.85.214.178]:50753 "EHLO
+	mail-ob0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750862AbaFLRxG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jun 2014 13:53:06 -0400
+Received: by mail-ob0-f178.google.com with SMTP id wn1so1710112obc.9
+        for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2014 10:53:04 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tony Luck <tony.luck@intel.com>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-The documentation says that we have to sync DMA regions after CPU access and
-before any DMA transfer is going on. The actual DMA for buffer happens when we
-call dmaengine_submit() (*). The original code syncs data after this call which
-might lead to the corrupted data in actual stream.
+From: Rob Herring <robh@kernel.org>
 
-(*) Accordingly to the Documentation/dmaengine.txt the dmaengine_submit call
-shouldn't do the transfer, but some DMA controller drivers abuse this rule.
-Thus, we would like to have this patch until all DMA controller drivers will be
-fixed. Even after that it will be harmless.
+In the conversion to generic early console, the passing of options from
+the early 8250 console to the regular ttyS console was broken. This
+resulted in the baud rate changing when switching consoles during boot.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+This feature allows specifying a single console option on the kernel
+command line rather than both an early console and regular serial tty
+console. It would be nice to generalize this feature. However, it only
+works if the correct baud rate can be probed early which is not the
+case on many platforms which have non-standard UART clock rates. So for
+now, this is left as an 8250 specific feature.
+
+Reported-and-tested-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/8250/8250_dma.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_early.c | 5 ++++-
+ drivers/tty/serial/earlycon.c        | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 148ffe4..f70ee29 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -76,6 +76,8 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 
- 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
- 
-+	dma_sync_single_for_device(dma->txchan->device->dev, dma->tx_addr,
-+				   UART_XMIT_SIZE, DMA_TO_DEVICE);
- 	desc = dmaengine_prep_slave_single(dma->txchan,
- 					   dma->tx_addr + xmit->tail,
- 					   dma->tx_size, DMA_MEM_TO_DEV,
-@@ -90,9 +92,6 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 
- 	dma->tx_cookie = dmaengine_submit(desc);
- 
--	dma_sync_single_for_device(dma->txchan->device->dev, dma->tx_addr,
--				   UART_XMIT_SIZE, DMA_TO_DEVICE);
--
- 	dma_async_issue_pending(dma->txchan);
- 
- 	return 0;
-@@ -129,6 +128,8 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 	if (dma_status)
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index cfef801..4858b8a 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -144,8 +144,11 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
+ 	if (!(device->port.membase || device->port.iobase))
  		return 0;
  
-+	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
-+				   dma->rx_size, DMA_FROM_DEVICE);
- 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
- 					   dma->rx_size, DMA_DEV_TO_MEM,
- 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-@@ -140,9 +141,6 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+-	if (!device->baud)
++	if (!device->baud) {
+ 		device->baud = probe_baud(&device->port);
++		snprintf(device->options, sizeof(device->options), "%u",
++			 device->baud);
++	}
  
- 	dma->rx_cookie = dmaengine_submit(desc);
+ 	init_port(device);
  
--	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
--				   dma->rx_size, DMA_FROM_DEVICE);
--
- 	dma_async_issue_pending(dma->rxchan);
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 5131b5e..a514ee6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -25,7 +25,7 @@
+ #include <asm/serial.h>
  
- 	return 0;
+ static struct console early_con = {
+-	.name =		"earlycon",
++	.name =		"uart", /* 8250 console switch requires this name */
+ 	.flags =	CON_PRINTBUFFER | CON_BOOT,
+ 	.index =	-1,
+ };
 -- 
-2.0.0
+1.9.1
 
