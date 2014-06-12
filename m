@@ -1,80 +1,65 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v2 3/7] tty/serial: convert 8250 to generic earlycon
-Date: Wed, 11 Jun 2014 16:44:48 -0700
-Message-ID: <CAE9FiQWxghRU62OwGU6-nvxMdEakPKQY_yGWvcVa6vsQcA=-sg@mail.gmail.com>
-References: <1397859600-11507-1-git-send-email-robherring2@gmail.com>
-	<1397859600-11507-4-git-send-email-robherring2@gmail.com>
-	<CAE9FiQVrwypK4u5yTCt-AxMuBnOn7jv=V3d4Zb3cd9JDNEUVPw@mail.gmail.com>
-	<CAL_JsqKux+BTHeYo6XEzzQMAFJZHVjbURM973oHT=t698GbJbA@mail.gmail.com>
-	<20140503220731.GA10927@kroah.com>
-	<20140503221658.GA13403@kroah.com>
-	<CA+8MBb+7f1bOnJjJWj1vxa0UNuQwz7OGRDR_QFTxOT=9cynabQ@mail.gmail.com>
-	<CA+8MBbKE1E2uq9LefiDAV9hv2Z8OTkjx9mkXjE6_--F_emRC8A@mail.gmail.com>
-	<CAL_JsqKvoO9acX==-LdD6boO=B3xr=ijra_G0uqRZGzACZZUJg@mail.gmail.com>
-	<CA+8MBbLooWm9xys+gYa5uL1eVTH-qzaR+RaZgsrqV-8XkqGadQ@mail.gmail.com>
-	<539898C3.8090903@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [RFC v3 1/9] arm: fiq: arbitrary mappings from IRQ to FIQ virqs
+Date: Thu, 12 Jun 2014 10:37:32 +0200
+Message-ID: <CACRpkdaQnpk5FQWOjWXGhhXrnWjNKJo0=mHf2c9YZcrxTGoEPA@mail.gmail.com>
+References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f177.google.com ([209.85.223.177]:54338 "EHLO
-	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752625AbaFKXot (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 11 Jun 2014 19:44:49 -0400
-In-Reply-To: <539898C3.8090903@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, Patch Tracking <patches@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linaro-kernel <linaro-kernel@lists.linaro.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@l>
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Tony Luck <tony.luck@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Catalin Marinas <catalin.marinas@arm.com>, Russell King <linux@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
 
-On Wed, Jun 11, 2014 at 10:58 AM, Rob Herring <robherring2@gmail.com> wrote:
-> On 06/10/2014 03:52 PM, Tony Luck wrote:
-> I think I figured it out. The function
-> serial8250_find_port_for_earlycon is failing to match 'uart' console to
-> 'ttyS' console and transfer the options. It was also failing to create
-> an option string when the baud rate is probed. Can you try out the
-> below patch?
->
-> Rob
->
-> 8<-------------------------------------------------------------------
-> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-> index cfef801..4858b8a 100644
-> --- a/drivers/tty/serial/8250/8250_early.c
-> +++ b/drivers/tty/serial/8250/8250_early.c
-> @@ -144,8 +144,11 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
->         if (!(device->port.membase || device->port.iobase))
->                 return 0;
->
-> -       if (!device->baud)
-> +       if (!device->baud) {
->                 device->baud = probe_baud(&device->port);
-> +               snprintf(device->options, sizeof(device->options), "%u",
-> +                        device->baud);
-> +       }
->
->         init_port(device);
->
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 5131b5e..d20e6d8 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -25,7 +25,7 @@
->  #include <asm/serial.h>
->
->  static struct console early_con = {
-> -       .name =         "earlycon",
-> +       .name =         "uart",
->         .flags =        CON_PRINTBUFFER | CON_BOOT,
->         .index =        -1,
->  };
->
+On Thu, Jun 5, 2014 at 11:53 AM, Daniel Thompson
+<daniel.thompson@linaro.org> wrote:
 
-Yes, that is right fix.
+> Currently enable_fiq/disable_fiq use a simple offset to convert an IRQ
+> virq into a FIQ virq. This is too inflexible for multi-platform kernels
+> and makes runtime error checking impossible.
+>
+> We solve this by introducing a flexible mapping that allows interrupt
+> controllers that support FIQ to register those mappings. This, in turn,
+> makes it much possible for drivers in DT kernels to gain access to
+> FIQ virqs.
 
-For the name in early_con with "uart", please add some comments that
-serial8250_find_port_for_earlycon() will look for "uart"...
+I always had a big problem with the term "virq" which I take to mean
+"virtual IRQ".
 
-Thanks
+The distinction is:
 
-Yinghai
+- Hardware IRQ offsets/numbers - a number encoded in HW
+  specs which we usually call hwirqs
+
+- Linux IRQ numbers - just some number
+
+Sometimes, just sometimes, the Linux IRQ number matches the
+HW numbers, and then I guess the IRQ is regarded "non-virtual".
+The only real effect being that the numbers shown in
+/proc/interrupts are the same in both columns... the leftmost
+column with the Linux IRQ number and the one right next to
+the IRQ controller name which is the hwirq local offset.
+
+But all Linux IRQ numbers are virtual by definition. It's just some
+number that the kernel use as a cookie to look up the irq_desc.
+And one day we may get rid of IRQ numbers altogether.
+
+I would prefer just to s/virq/irq/g on this patch or if that is
+disturbing something more to the point like s/virq/linux_irq/g.
+
+Maybe this is a pointless battle, but still...
+
+Yours,
+Linus Walleij
