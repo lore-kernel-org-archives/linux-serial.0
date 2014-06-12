@@ -1,53 +1,144 @@
-From: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 9/9] serial/arc: Add DT based earlycon support
-Date: Thu, 12 Jun 2014 16:01:39 +0530
-Message-ID: <1402569099-9900-10-git-send-email-vgupta@synopsys.com>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH 7/9] serial/arc: inline the probe helper
+Date: Thu, 12 Jun 2014 16:01:37 +0530
+Message-ID: <1402569099-9900-8-git-send-email-vgupta@synopsys.com>
 References: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1402569099-9900-1-git-send-email-vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Francois.Bedard-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtprelay.synopsys.com ([198.182.44.111]:44107 "EHLO
+	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932907AbaFLKiq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 12 Jun 2014 06:38:46 -0400
+In-Reply-To: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 
-Signed-off-by: Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- arch/arc/boot/dts/angel4.dts  | 3 ++-
- drivers/tty/serial/arc_uart.c | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/arc_uart.c | 90 +++++++++++++++++++------------------------
+ 1 file changed, 40 insertions(+), 50 deletions(-)
 
-diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
-index 6b57475967a6..e9fc270d1e0b 100644
---- a/arch/arc/boot/dts/angel4.dts
-+++ b/arch/arc/boot/dts/angel4.dts
-@@ -17,7 +17,8 @@
- 	interrupt-parent = <&intc>;
- 
- 	chosen {
--		bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
-+		bootargs = "earlycon console=ttyARC0,115200n8";
-+		stdout-path = &arcuart0;
- 	};
- 
- 	aliases {
 diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 435de4f2af3b..d9900cb3e7b6 100644
+index dc3d5db37dc4..435de4f2af3b 100644
 --- a/drivers/tty/serial/arc_uart.c
 +++ b/drivers/tty/serial/arc_uart.c
-@@ -579,6 +579,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
- 	return 0;
+@@ -496,50 +496,6 @@ static struct uart_ops arc_serial_pops = {
+ #endif
+ };
+ 
+-static int
+-arc_uart_init_one(struct platform_device *pdev, int dev_id)
+-{
+-	struct device_node *np = pdev->dev.of_node;
+-	struct arc_uart_port *uart = &arc_uart_ports[dev_id];
+-	struct uart_port *port = &uart->port;
+-	u32 val;
+-
+-	if (of_property_read_u32(np, "clock-frequency", &val)) {
+-		dev_err(&pdev->dev, "clock-frequency property NOTset\n");
+-		return -EINVAL;
+-	}
+-	port->uartclk = val;
+-
+-	if (of_property_read_u32(np, "current-speed", &val)) {
+-		dev_err(&pdev->dev, "current-speed property NOT set\n");
+-		return -EINVAL;
+-	}
+-	uart->baud = val;
+-
+-	port->membase = of_iomap(np, 0);
+-	if (!port->membase)
+-		/* No point of dev_err since UART itself is hosed here */
+-		return -ENXIO;
+-
+-	port->irq = irq_of_parse_and_map(np, 0);
+-
+-	port->dev = &pdev->dev;
+-	port->iotype = UPIO_MEM;
+-	port->flags = UPF_BOOT_AUTOCONF;
+-	port->line = dev_id;
+-	port->ops = &arc_serial_pops;
+-
+-	port->fifosize = ARC_UART_TX_FIFO_SIZE;
+-
+-	/*
+-	 * uart_insert_char( ) uses it in decideding whether to ignore a
+-	 * char or not. Explicitly setting it here, removes the subtelty
+-	 */
+-	port->ignore_status_mask = 0;
+-
+-	return 0;
+-}
+-
+ #ifdef CONFIG_SERIAL_ARC_CONSOLE
+ 
+ static int arc_serial_console_setup(struct console *co, char *options)
+@@ -628,8 +584,11 @@ EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
+ 
+ static int arc_serial_probe(struct platform_device *pdev)
+ {
+-	int rc, dev_id;
+ 	struct device_node *np = pdev->dev.of_node;
++	struct arc_uart_port *uart;
++	struct uart_port *port;
++	int dev_id;
++	u32 val;
+ 
+ 	/* no device tree device */
+ 	if (!np)
+@@ -639,12 +598,43 @@ static int arc_serial_probe(struct platform_device *pdev)
+ 	if (dev_id < 0)
+ 		dev_id = 0;
+ 
+-	rc = arc_uart_init_one(pdev, dev_id);
+-	if (rc)
+-		return rc;
++	uart = &arc_uart_ports[dev_id];
++	port = &uart->port;
++
++	if (of_property_read_u32(np, "clock-frequency", &val)) {
++		dev_err(&pdev->dev, "clock-frequency property NOTset\n");
++		return -EINVAL;
++	}
++	port->uartclk = val;
++
++	if (of_property_read_u32(np, "current-speed", &val)) {
++		dev_err(&pdev->dev, "current-speed property NOT set\n");
++		return -EINVAL;
++	}
++	uart->baud = val;
++
++	port->membase = of_iomap(np, 0);
++	if (!port->membase)
++		/* No point of dev_err since UART itself is hosed here */
++		return -ENXIO;
++
++	port->irq = irq_of_parse_and_map(np, 0);
++
++	port->dev = &pdev->dev;
++	port->iotype = UPIO_MEM;
++	port->flags = UPF_BOOT_AUTOCONF;
++	port->line = dev_id;
++	port->ops = &arc_serial_pops;
++
++	port->fifosize = ARC_UART_TX_FIFO_SIZE;
++
++	/*
++	 * uart_insert_char( ) uses it in decideding whether to ignore a
++	 * char or not. Explicitly setting it here, removes the subtelty
++	 */
++	port->ignore_status_mask = 0;
+ 
+-	rc = uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
+-	return rc;
++	return uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
  }
- EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
-+OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
  
- #endif	/* CONFIG_SERIAL_ARC_CONSOLE */
- 
+ static int arc_serial_remove(struct platform_device *pdev)
 -- 
 1.8.3.2
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
