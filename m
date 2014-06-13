@@ -1,56 +1,42 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH 9/9] serial/arc: Add DT based earlycon support
-Date: Fri, 13 Jun 2014 14:10:41 +0000
-Message-ID: <C2D7FE5348E1B147BCA15975FBA230751A6B772C@IN01WEMBXA.internal.synopsys.com>
-References: <1402569099-9900-1-git-send-email-vgupta@synopsys.com>
- <1402569099-9900-10-git-send-email-vgupta@synopsys.com>
- <CAL_Jsq+wf-nwzw_sYk4FiZxRr2advvjkd7i32arqVAFptDeVGA@mail.gmail.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [RFC v3 1/9] arm: fiq: arbitrary mappings from IRQ to FIQ virqs
+Date: Fri, 13 Jun 2014 09:29:16 -0500
+Message-ID: <CAL_JsqK-jCQjCCw4qfJOCfNKLVRDTAYSYsGpmYLDzoSVsBaHrA@mail.gmail.com>
+References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
+ <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay4.synopsys.com ([198.182.44.111]:38382 "EHLO
-	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752026AbaFMOKt convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 13 Jun 2014 10:10:49 -0400
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, Linaro Patches <patches@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Francois.Bedard@synopsys.com" <Francois.Bedard@synopsys.com>
 
-On Friday 13 June 2014 06:57 AM, Rob Herring wrote:
-> On Thu, Jun 12, 2014 at 5:31 AM, Vineet Gupta
-> <Vineet.Gupta1@synopsys.com> wrote:
->> > Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
->> > ---
-> Nice series!
+On Thu, Jun 5, 2014 at 4:53 AM, Daniel Thompson
+<daniel.thompson@linaro.org> wrote:
+> Currently enable_fiq/disable_fiq use a simple offset to convert an IRQ
+> virq into a FIQ virq. This is too inflexible for multi-platform kernels
+> and makes runtime error checking impossible.
 >
->> >  arch/arc/boot/dts/angel4.dts  | 3 ++-
->> >  drivers/tty/serial/arc_uart.c | 1 +
->> >  2 files changed, 3 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
->> > index 6b57475967a6..e9fc270d1e0b 100644
->> > --- a/arch/arc/boot/dts/angel4.dts
->> > +++ b/arch/arc/boot/dts/angel4.dts
->> > @@ -17,7 +17,8 @@
->> >         interrupt-parent = <&intc>;
->> >
->> >         chosen {
->> > -               bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
->> > +               bootargs = "earlycon console=ttyARC0,115200n8";
->> > +               stdout-path = &arcuart0;
-> Just FYI, Grant has a series to pickup the normal console from
-> stdout-path which would mean you can remove console param as well.
-> I've kicked him to respin it.
+> We solve this by introducing a flexible mapping that allows interrupt
+> controllers that support FIQ to register those mappings. This, in turn,
+> makes it much possible for drivers in DT kernels to gain access to
+> FIQ virqs.
 
-OK ! I can split up 9/9 into driver chg and DT change.
+I don't get why you need a separate linux irq numbers for FIQ. Isn't
+enabling FIQ simply a property of an irq like edge vs. level trigger?
+Also, given the constraints on FIQ, we can't really have more that 1
+IRQ assigned to FIQ.
 
-In the mean time could you take a look at the driver patches which switch to
-earlycon and DT earlycon
-and possibly provide Ack/Reviewed by.
-
-Thx,
--Vineet
+Rob
