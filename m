@@ -1,69 +1,57 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 9/9] serial/arc: Add DT based earlycon support
-Date: Thu, 12 Jun 2014 20:26:44 -0500
-Message-ID: <CAL_Jsq+wf-nwzw_sYk4FiZxRr2advvjkd7i32arqVAFptDeVGA@mail.gmail.com>
-References: <1402569099-9900-1-git-send-email-vgupta@synopsys.com> <1402569099-9900-10-git-send-email-vgupta@synopsys.com>
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH] tty: serial: men_z135_uart: Wakeup UART after transmitting
+Date: Fri, 13 Jun 2014 08:06:06 +0200
+Message-ID: <1402639566-15493-1-git-send-email-johannes.thumshirn@men.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1402569099-9900-10-git-send-email-vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Cc: Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Francois.Bedard-HKixBCOQz3hWk0Htik3J/w@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.153]:10389 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751653AbaFMGLP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 13 Jun 2014 02:11:15 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, Jun Shih <Jun.Shih@pason.com>, Johannes Thumshirn <johanes.thumshirn@men.de>, Johannes Thumshirn <johannes.thumshirn@men.de>
 
-On Thu, Jun 12, 2014 at 5:31 AM, Vineet Gupta
-<Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org> wrote:
-> Signed-off-by: Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-> ---
+From: Johannes Thumshirn <johanes.thumshirn@men.de>
 
-Nice series!
+Call uart_write_wakeup() after writing the hardware FIFO and updateing the FIFO
+pointers.
 
->  arch/arc/boot/dts/angel4.dts  | 3 ++-
->  drivers/tty/serial/arc_uart.c | 1 +
->  2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
-> index 6b57475967a6..e9fc270d1e0b 100644
-> --- a/arch/arc/boot/dts/angel4.dts
-> +++ b/arch/arc/boot/dts/angel4.dts
-> @@ -17,7 +17,8 @@
->         interrupt-parent = <&intc>;
->
->         chosen {
-> -               bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
-> +               bootargs = "earlycon console=ttyARC0,115200n8";
-> +               stdout-path = &arcuart0;
+This fixes high latency and jitter on PPP over Serial links.
 
-Just FYI, Grant has a series to pickup the normal console from
-stdout-path which would mean you can remove console param as well.
-I've kicked him to respin it.
+Reported-by: Jun Shih <Jun.Shih@pason.com>
+Tested-by: Jun Shih <Jun.Shih@pason.com>
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+---
+ drivers/tty/serial/men_z135_uart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Rob
+diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+index c9d1854..30e9e60 100644
+--- a/drivers/tty/serial/men_z135_uart.c
++++ b/drivers/tty/serial/men_z135_uart.c
+@@ -308,9 +308,6 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
+ 	if (port->x_char)
+ 		goto out;
 
->         };
->
->         aliases {
-> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-> index 435de4f2af3b..d9900cb3e7b6 100644
-> --- a/drivers/tty/serial/arc_uart.c
-> +++ b/drivers/tty/serial/arc_uart.c
-> @@ -579,6 +579,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
->         return 0;
->  }
->  EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
-> +OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
->
->  #endif /* CONFIG_SERIAL_ARC_CONSOLE */
->
-> --
-> 1.8.3.2
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(port);
+-
+ 	/* calculate bytes to copy */
+ 	qlen = uart_circ_chars_pending(xmit);
+ 	if (qlen <= 0)
+@@ -357,6 +354,9 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
+
+ 	port->icount.tx += n;
+
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
+ irq_en:
+ 	if (!uart_circ_empty(xmit))
+ 		men_z135_reg_set(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_TXCIEN);
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1.9.1
