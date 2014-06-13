@@ -1,42 +1,72 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [RFC v3 1/9] arm: fiq: arbitrary mappings from IRQ to FIQ virqs
-Date: Fri, 13 Jun 2014 09:29:16 -0500
-Message-ID: <CAL_JsqK-jCQjCCw4qfJOCfNKLVRDTAYSYsGpmYLDzoSVsBaHrA@mail.gmail.com>
-References: <1400853478-5824-1-git-send-email-daniel.thompson@linaro.org>
- <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
- <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial: men_z135_uart: Wakeup UART after
+ transmitting
+Date: Fri, 13 Jun 2014 11:27:33 -0700
+Message-ID: <20140613182733.GB24180@kroah.com>
+References: <1402639566-15493-1-git-send-email-johannes.thumshirn@men.de>
+ <20140613062137.GA15556@jtlinux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1401961994-18033-2-git-send-email-daniel.thompson@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, Linaro Patches <patches@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:47988 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753420AbaFMSXk (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 13 Jun 2014 14:23:40 -0400
+Content-Disposition: inline
+In-Reply-To: <20140613062137.GA15556@jtlinux>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Jun Shih <Jun.Shih@pason.com>
 
-On Thu, Jun 5, 2014 at 4:53 AM, Daniel Thompson
-<daniel.thompson@linaro.org> wrote:
-> Currently enable_fiq/disable_fiq use a simple offset to convert an IRQ
-> virq into a FIQ virq. This is too inflexible for multi-platform kernels
-> and makes runtime error checking impossible.
->
-> We solve this by introducing a flexible mapping that allows interrupt
-> controllers that support FIQ to register those mappings. This, in turn,
-> makes it much possible for drivers in DT kernels to gain access to
-> FIQ virqs.
+On Fri, Jun 13, 2014 at 08:21:38AM +0200, Johannes Thumshirn wrote:
+> On Fri, Jun 13, 2014 at 08:06:06AM +0200, Johannes Thumshirn wrote:
+> > From: Johannes Thumshirn <johanes.thumshirn@men.de>
+> >
+> > Call uart_write_wakeup() after writing the hardware FIFO and updateing the FIFO
+> > pointers.
+> >
+> > This fixes high latency and jitter on PPP over Serial links.
+> >
+> > Reported-by: Jun Shih <Jun.Shih@pason.com>
+> > Tested-by: Jun Shih <Jun.Shih@pason.com>
+> > Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+> > ---
+> >  drivers/tty/serial/men_z135_uart.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+> > index c9d1854..30e9e60 100644
+> > --- a/drivers/tty/serial/men_z135_uart.c
+> > +++ b/drivers/tty/serial/men_z135_uart.c
+> > @@ -308,9 +308,6 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
+> >  	if (port->x_char)
+> >  		goto out;
+> >
+> > -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> > -		uart_write_wakeup(port);
+> > -
+> >  	/* calculate bytes to copy */
+> >  	qlen = uart_circ_chars_pending(xmit);
+> >  	if (qlen <= 0)
+> > @@ -357,6 +354,9 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
+> >
+> >  	port->icount.tx += n;
+> >
+> > +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> > +		uart_write_wakeup(port);
+> > +
+> >  irq_en:
+> >  	if (!uart_circ_empty(xmit))
+> >  		men_z135_reg_set(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_TXCIEN);
+> > --
+> > 1.9.1
+> 
+> Somehow I managed to mistype my name in my gitconifg's email filed...
+> 
+> Should I re-send the patch?
 
-I don't get why you need a separate linux irq numbers for FIQ. Isn't
-enabling FIQ simply a property of an irq like edge vs. level trigger?
-Also, given the constraints on FIQ, we can't really have more that 1
-IRQ assigned to FIQ.
+Please do as I do not understand what went wrong...
 
-Rob
+greg k-h
