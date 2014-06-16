@@ -1,32 +1,152 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next 11/22] tty: Call hangup method in modern style
-Date: Mon, 16 Jun 2014 09:17:08 -0400
-Message-ID: <1402924639-5164-12-git-send-email-peter@hurleysoftware.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Subject: [PATCH] serial: 8250_dw: add ability to handle the peripheral clock
+Date: Mon, 16 Jun 2014 15:25:17 +0200
+Message-ID: <3755576.qE86Ikox0a@diego>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+First try to find the named clock variants then fall back to the already
+existing handling of a nameless declared baudclk.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 3411071..714320b 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -688,7 +688,7 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
- 			for (n = 0; n < closecount; n++)
- 				tty->ops->close(tty, cons_filp);
- 	} else if (tty->ops->hangup)
--		(tty->ops->hangup)(tty);
-+		tty->ops->hangup(tty);
- 	/*
- 	 * We don't want to have driver/ldisc interactions beyond
- 	 * the ones we did here. The driver layer expects no
+This also adds the missing documentation for this already existing variant.
+
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../bindings/serial/snps-dw-apb-uart.txt           | 31 ++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_dw.c                  | 31 +++++++++++++++++++---
+ 2 files changed, 59 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
+index f13f1c5..3601399 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
+@@ -4,7 +4,15 @@ Required properties:
+ - compatible : "snps,dw-apb-uart"
+ - reg : offset and length of the register set for the device.
+ - interrupts : should contain uart interrupt.
++
++Clock handling:
++The clock rate of the input clock needs to be supplied by one of
+ - clock-frequency : the input clock frequency for the UART.
++- clocks : phandle to the input clock
++
++The supplying peripheral clock can also be handled, needing a second property
++- clock-names: tuple listing input clock names.
++	Required elements: "baudclk", "apb_pclk"
+ 
+ Optional properties:
+ - reg-shift : quantity to shift the register offsets by.  If this property is
+@@ -23,3 +31,26 @@ Example:
+ 		reg-shift = <2>;
+ 		reg-io-width = <4>;
+ 	};
++
++Example with one clock:
++
++	uart@80230000 {
++		compatible = "snps,dw-apb-uart";
++		reg = <0x80230000 0x100>;
++		clocks = <&baudclk>;
++		interrupts = <10>;
++		reg-shift = <2>;
++		reg-io-width = <4>;
++	};
++
++Example with two clocks:
++
++	uart@80230000 {
++		compatible = "snps,dw-apb-uart";
++		reg = <0x80230000 0x100>;
++		clocks = <&baudclk>, <&apb_pclk>;
++		clock-names = "baudclk", "apb_pclk";
++		interrupts = <10>;
++		reg-shift = <2>;
++		reg-io-width = <4>;
++	};
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 51b307a..024cd58 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -59,6 +59,7 @@ struct dw8250_data {
+ 	int			last_mcr;
+ 	int			line;
+ 	struct clk		*clk;
++	struct clk		*pclk;
+ 	struct uart_8250_dma	dma;
+ };
+ 
+@@ -402,10 +403,25 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	data->usr_reg = DW_UART_USR;
+-	data->clk = devm_clk_get(&pdev->dev, NULL);
++	data->clk = devm_clk_get(&pdev->dev, "baudclk");
++	if (IS_ERR(data->clk))
++		data->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (!IS_ERR(data->clk)) {
+-		clk_prepare_enable(data->clk);
+-		uart.port.uartclk = clk_get_rate(data->clk);
++		err = clk_prepare_enable(data->clk);
++		if (err)
++			dev_warn(&pdev->dev, "could not enable optional baudclk: %d\n",
++				 err);
++		else
++			uart.port.uartclk = clk_get_rate(data->clk);
++	}
++
++	data->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
++	if (!IS_ERR(data->pclk)) {
++		err = clk_prepare_enable(data->pclk);
++		if (err) {
++			dev_err(&pdev->dev, "could not enable apb_pclk\n");
++			return err;
++		}
+ 	}
+ 
+ 	data->dma.rx_chan_id = -1;
+@@ -451,6 +467,9 @@ static int dw8250_remove(struct platform_device *pdev)
+ 
+ 	serial8250_unregister_port(data->line);
+ 
++	if (!IS_ERR(data->pclk))
++		clk_disable_unprepare(data->pclk);
++
+ 	if (!IS_ERR(data->clk))
+ 		clk_disable_unprepare(data->clk);
+ 
+@@ -488,6 +507,9 @@ static int dw8250_runtime_suspend(struct device *dev)
+ 	if (!IS_ERR(data->clk))
+ 		clk_disable_unprepare(data->clk);
+ 
++	if (!IS_ERR(data->pclk))
++		clk_disable_unprepare(data->pclk);
++
+ 	return 0;
+ }
+ 
+@@ -495,6 +517,9 @@ static int dw8250_runtime_resume(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+ 
++	if (!IS_ERR(data->pclk))
++		clk_prepare_enable(data->pclk);
++
+ 	if (!IS_ERR(data->clk))
+ 		clk_prepare_enable(data->clk);
+ 
 -- 
-2.0.0
+1.9.0
