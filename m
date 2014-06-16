@@ -1,61 +1,72 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next 08/22] serial: Use UPF_* constants with struct uart_port flags
-Date: Mon, 16 Jun 2014 09:17:05 -0400
-Message-ID: <1402924639-5164-9-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH tty-next 05/22] tty: Document locking for tty_port_hangup()
+Date: Mon, 16 Jun 2014 09:17:02 -0400
+Message-ID: <1402924639-5164-6-git-send-email-peter@hurleysoftware.com>
 References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fix ASYNC_* constant usage that should be the corresponding UPF_*
-constant.
+The tty lock is held when the tty driver's hangup() method is called
+(from the lone call-site, __tty_hangup()). The call-tree audit [1]
+of tty_port_hangup() is a closed graph of the callers of
+tty_port_hangup(); ie., all callers originate only from __tty_hangup().
 
-CC: Grant Likely <grant.likely@linaro.org>
-CC: Rob Herring <robh+dt@kernel.org>
-CC: devicetree@vger.kernel.org
+Of these callers, none drop the tty lock prior to calling
+tty_port_hangup().
+
+[1]
+Call-tree audit of tty_port_hangup()
+
+__tty_hangup()
+  tty->ops->hangup() --+
+                       |
+        rs_hangup():arch/ia64/hp/sim/simserial.c
+        line_hangup():arch/um/drivers/line.c
+        gdm_tty_hangup():drivers/staging/gdm724x/gdm_tty.c
+        fwtty_hangup():drivers/staging/fwserial/fwserial.c
+        acm_tty_hangup():drivers/usb/class/cdc-acm.c
+        serial_hangup():drivers/usb/serial/usb-serial.c
+        ipoctal_hangup():drivers/ipack/devices/ipoctal.c
+        cy_hangup():drivers/tty/cyclades.c
+        isicom_hangup():drivers/tty/isicom.c
+        rp_hangup():drivers/tty/rocket.c
+        dashtty_hangup():drivers/tty/metag_da.c
+        moxa_hangup():drivers/tty/moxa.c
+        gsmtty_hangup():drivers/tty/n_gsm.c
+        goldfish_tty_hangup():drivers/tty/goldfish.c
+        ehv_bc_tty_hangup():drivers/tty/ehv_bytechan.c
+        mxser_hangup():drivers/tty/mxser.c
+        kgdb_nmi_tty_hangup():drivers/tty/serial/kgdb_nmi.c
+        ifx_spi_hangup():drivers/tty/serial/ifx6x60.c
+        ntty_hangup():drivers/tty/nozomi.c
+        capinc_tty_hangup():drivers/isdn/capi/capi.c
+        mgslpc_hangup():drivers/char/pcmcia/synclink_cs.c
+        sdio_uart_hangup():drivers/mmc/card/sdio_uart.c
+        rfcomm_tty_hangup():net/bluetooth/rfcomm/tty.c
+                       |
+                       +- tty_port_hangup()
+
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/lantiq.c | 2 +-
- drivers/tty/serial/mcf.c    | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/tty_port.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 88d01e0..6e29b01 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -709,7 +709,7 @@ lqasc_probe(struct platform_device *pdev)
- 	port = &ltq_port->port;
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 69e072b..7309594 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -227,6 +227,8 @@ out:
+  *
+  *	Perform port level tty hangup flag and count changes. Drop the tty
+  *	reference.
++ *
++ *	Caller holds tty lock.
+  */
  
- 	port->iotype	= SERIAL_IO_MEM;
--	port->flags	= ASYNC_BOOT_AUTOCONF | UPF_IOREMAP;
-+	port->flags	= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
- 	port->ops	= &lqasc_pops;
- 	port->fifosize	= 16;
- 	port->type	= PORT_LTQ_ASC,
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index 0edfaf8..1e59faf 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -538,7 +538,7 @@ int __init early_mcf_setup(struct mcf_platform_uart *platp)
- 		port->iotype = SERIAL_IO_MEM;
- 		port->irq = platp[i].irq;
- 		port->uartclk = MCF_BUSCLK;
--		port->flags = ASYNC_BOOT_AUTOCONF;
-+		port->flags = UPF_BOOT_AUTOCONF;
- 		port->ops = &mcf_uart_ops;
- 	}
- 
-@@ -663,7 +663,7 @@ static int mcf_probe(struct platform_device *pdev)
- 		port->irq = platp[i].irq;
- 		port->uartclk = MCF_BUSCLK;
- 		port->ops = &mcf_uart_ops;
--		port->flags = ASYNC_BOOT_AUTOCONF;
-+		port->flags = UPF_BOOT_AUTOCONF;
- 
- 		uart_add_one_port(&mcf_driver, port);
- 	}
+ void tty_port_hangup(struct tty_port *port)
 -- 
 2.0.0
