@@ -1,46 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH tty-next 15/22] isdn: tty: Use private flag for ASYNC_CLOSING
-Date: Mon, 16 Jun 2014 17:01:28 -0400
-Message-ID: <539F5B28.9080000@hurleysoftware.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-16-git-send-email-peter@hurleysoftware.com> <063D6719AE5E284EB5DD2968C1650D6D1725D13A@AcuExch.aculab.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: samsung: Fix compile error with
+ SERIAL_SAMSUNG_DEBUG
+Date: Mon, 16 Jun 2014 14:29:14 -0700
+Message-ID: <20140616212914.GA2309@kroah.com>
+References: <1402776434-31613-1-git-send-email-cengelma@gmx.at>
+ <1402778036.2756.24.camel@joe-AO725>
+ <CAK5sBcGu2vFQFxqETgbLnu0AoMAhn9Zq5SEWNNzX=mr0yuWRdg@mail.gmail.com>
+ <1402854416.2695.12.camel@joe-AO725>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:59965 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755835AbaFPVBd (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:45556 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932379AbaFPV3X (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 16 Jun 2014 17:01:33 -0400
-In-Reply-To: <063D6719AE5E284EB5DD2968C1650D6D1725D13A@AcuExch.aculab.com>
+	Mon, 16 Jun 2014 17:29:23 -0400
+Content-Disposition: inline
+In-Reply-To: <1402854416.2695.12.camel@joe-AO725>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Laight <David.Laight@ACULAB.COM>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+To: Joe Perches <joe@perches.com>
+Cc: Sachin Kamat <spk.linux@gmail.com>, Christian Engelmayer <cengelma@gmx.at>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org
 
-Hi David,
+On Sun, Jun 15, 2014 at 10:46:56AM -0700, Joe Perches wrote:
+> On Sun, 2014-06-15 at 23:06 +0530, Sachin Kamat wrote:
+> > On Sun, Jun 15, 2014 at 2:03 AM, Joe Perches <joe@perches.com> wrote:
+> > > Greg?  Can you please apply this soon?
+> > 
+> > A similar patch has already been posted [1]. Probably Greg will apply it
+> > once 3.16-rc1 is out.
+> > 
+> > [1] http://www.spinics.net/lists/linux-serial/msg12843.html
+> 
+> I know.  It was just another prompt to Greg.
+> 
+> It's just unfortunate to have a compile failure path
+> in Linus' tree.  Especially one I introduced.
+> 
+> He'd said 10 days ago or so it'd be a day or two.
+> 
+> http://www.spinics.net/lists/linux-serial/msg12859.html
 
-On 06/16/2014 11:37 AM, David Laight wrote:
-> From: Of Peter Hurley
->> ASYNC_CLOSING is no longer used in the tty core; use private flag
->> info->closing as substitute.
-> ...
->> @@ -311,6 +311,7 @@ typedef struct atemu {
->>   typedef struct modem_info {
->>     int			magic;
->>     struct tty_port	port;
->> +  int			closing:1;	 /* port count has dropped to 0    */
->>     int			x_char;		 /* xon/xoff character             */
->>     int			mcr;		 /* Modem control register         */
->>     int                   msr;             /* Modem status register          */
->
-> That should probably be a bool and set to true/false.
-> You are probably adding a load of padding.
+Life gets in the way, I'll get it merged in time for 3.16-rc2 or -3.
 
-struct modem_info is over 1K, with several existing int-as-bool fields.
-An array of 64 struct modem_info are statically allocated with every isdn device.
+thanks,
 
-It doesn't look like memory consumption has been a consideration with the isdn driver.
-
-Regards,
-Peter Hurley
+greg k-h
