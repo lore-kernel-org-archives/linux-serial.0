@@ -1,68 +1,100 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH tty-next 2/2] tty: Correct INPCK handling
-Date: Mon, 16 Jun 2014 08:10:42 -0400
-Message-ID: <1402920642-4855-2-git-send-email-peter@hurleysoftware.com>
-References: <1402920642-4855-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1402920642-4855-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Ivan <athlon_@mail.ru>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH tty-next 00/22] tty/serial fixes for 3.17
+Date: Mon, 16 Jun 2014 09:16:57 -0400
+Message-ID: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40622 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751679AbaFPNRo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 16 Jun 2014 09:17:44 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 
-If INPCK is not set, input parity detection should be disabled. This means
-parity errors should not be received from the tty driver, and the data
-received should be treated normally.
+Hi Greg,
 
-SUS v3, 11.2.2, General Terminal Interface - Input Modes, states:
-  "If INPCK is set, input parity checking shall be enabled. If INPCK is
-   not set, input parity checking shall be disabled, allowing output parity
-   generation without input parity errors. Note that whether input parity
-   checking is enabled or disabled is independent of whether parity detection
-   is enabled or disabled (see Control Modes). If parity detection is enabled
-   but input parity checking is disabled, the hardware to which the terminal
-   is connected shall recognize the parity bit, but the terminal special file
-   shall not check whether or not this bit is correctly set."
+These patches are the accumulation of fixes resulting from audits
+of the tty and serial cores; mostly cleanups of open() and close().
+Most of the changes remove condition testing and handling which
+cannot occur because the tty lock is held for the tty driver open()
+call.
 
-Ignore parity errors reported by the tty driver when INPCK is not set, and
-handle the received data normally.
+The exceptions are the last 3 patches which address API design and
+locking issues for uart drivers.
 
-Fixes: Bugzilla #71681, 'Improvement of n_tty_receive_parity_error from n_tty.c'
-Reported-by: Ivan <athlon_@mail.ru>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/n_tty.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+At least 4 known bugs remain:
+1. Several drivers mishandle the start_tx() method; I hope to finish
+   an audit of these soon for fixing in 3.16.
+2. uart_open() mismanages the port count if an error occurs,
+   because uart_close() is always called even if open() returns
+   an error
+3. Most of the port->flags usage is SMP-unsafe; atomics are mixed
+   with spinlock-protected updates.
+4. uart_remove_one_port() is unsafe, as there is no provision for
+   preventing in-use port removal.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index fe9d129..0391f17 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1214,15 +1214,16 @@ static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
--	if (I_IGNPAR(tty))
--		return;
--	if (I_PARMRK(tty)) {
--		put_tty_queue('\377', ldata);
--		put_tty_queue('\0', ldata);
--		put_tty_queue(c, ldata);
--	} else	if (I_INPCK(tty))
--		put_tty_queue('\0', ldata);
--	else
-+	if (I_INPCK(tty)) {
-+		if (I_IGNPAR(tty))
-+			return;
-+		if (I_PARMRK(tty)) {
-+			put_tty_queue('\377', ldata);
-+			put_tty_queue('\0', ldata);
-+			put_tty_queue(c, ldata);
-+		} else
-+			put_tty_queue('\0', ldata);
-+	} else
- 		put_tty_queue(c, ldata);
- 	if (waitqueue_active(&tty->read_wait))
- 		wake_up_interruptible(&tty->read_wait);
+Regards,
+
+Peter Hurley (22):
+  tty: Document locking for tty driver methods
+  tty: Document locking for tty_port_close{,start,end}()
+  tty: Document locking for tty_port_open()
+  tty: Document locking for tty_port_block_til_ready()
+  tty: Document locking for tty_port_hangup()
+  tty: Move tty->closing from port lock critical section
+  tty: ipwireless: Remove tty->closing abort from ipw_open()
+  serial: Use UPF_* constants with struct uart_port flags
+  tty: Remove tty_hung_up_p() tests from tty drivers' open()
+  char: synclink: Remove WARN_ON for bad port count
+  tty: Call hangup method in modern style
+  tty: serial: Fix termios/port flags mismatch
+  serial: blackfin: Fix CTS flow control
+  tty: Remove tty_wait_until_sent_from_close()
+  isdn: tty: Use private flag for ASYNC_CLOSING
+  tty: mxser: Use tty->closing for ASYNC_CLOSING
+  tty: Remove ASYNC_CLOSING
+  tty: Move tty hung up check from port->lock critical section
+  serial: Style fix
+  serial: Refactor uart_flush_buffer() from uart_close()
+  serial: core: Remove superfluous ldisc flush from uart_close()
+  serial: Fix locking for uart driver set_termios() method
+
+ Documentation/serial/driver          |  6 ++--
+ drivers/char/pcmcia/synclink_cs.c    | 11 -------
+ drivers/isdn/i4l/isdn_tty.c          | 16 +++++-----
+ drivers/s390/char/con3215.c          |  3 +-
+ drivers/staging/dgrp/dgrp_tty.c      | 10 -------
+ drivers/tty/cyclades.c               |  9 ------
+ drivers/tty/hvc/hvc_console.c        |  2 +-
+ drivers/tty/hvc/hvcs.c               |  2 +-
+ drivers/tty/ipwireless/tty.c         |  5 ----
+ drivers/tty/mxser.c                  |  6 ++--
+ drivers/tty/rocket.c                 | 14 +--------
+ drivers/tty/serial/68328serial.c     |  2 --
+ drivers/tty/serial/amba-pl011.c      |  1 +
+ drivers/tty/serial/atmel_serial.c    |  2 ++
+ drivers/tty/serial/bfin_sport_uart.c | 11 +++++--
+ drivers/tty/serial/bfin_uart.c       | 13 ++++----
+ drivers/tty/serial/crisv10.c         | 47 ++++-------------------------
+ drivers/tty/serial/lantiq.c          |  2 +-
+ drivers/tty/serial/mcf.c             |  4 +--
+ drivers/tty/serial/serial-tegra.c    |  2 ++
+ drivers/tty/serial/serial_core.c     | 31 ++++++++-----------
+ drivers/tty/serial/timbuart.c        |  2 ++
+ drivers/tty/synclink.c               | 26 ++++------------
+ drivers/tty/synclink_gt.c            | 22 +++-----------
+ drivers/tty/synclinkmp.c             | 23 +++-----------
+ drivers/tty/tty_io.c                 |  2 +-
+ drivers/tty/tty_port.c               | 58 ++++++++++++++++++++----------------
+ include/linux/isdn.h                 |  1 +
+ include/linux/tty.h                  | 18 -----------
+ include/linux/tty_driver.h           |  8 +++--
+ include/uapi/linux/tty_flags.h       |  2 --
+ net/irda/ircomm/ircomm_tty.c         | 39 ++----------------------
+ 32 files changed, 117 insertions(+), 283 deletions(-)
+
 -- 
 2.0.0
+
