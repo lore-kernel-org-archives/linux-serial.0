@@ -1,43 +1,55 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH] serial: samsung: Fix compile error with
- SERIAL_SAMSUNG_DEBUG
-Date: Sun, 15 Jun 2014 10:46:56 -0700
-Message-ID: <1402854416.2695.12.camel@joe-AO725>
-References: <1402776434-31613-1-git-send-email-cengelma@gmx.at>
-	 <1402778036.2756.24.camel@joe-AO725>
-	 <CAK5sBcGu2vFQFxqETgbLnu0AoMAhn9Zq5SEWNNzX=mr0yuWRdg@mail.gmail.com>
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH RESEND] tty: serial: men_z135_uart: Wakeup UART after transmitting
+Date: Mon, 16 Jun 2014 07:33:38 +0200
+Message-ID: <1402896818-18267-1-git-send-email-johannes.thumshirn@men.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay0237.hostedemail.com ([216.40.44.237]:58301 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751723AbaFORrA (ORCPT
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.148]:60070 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753518AbaFPFcx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 15 Jun 2014 13:47:00 -0400
-In-Reply-To: <CAK5sBcGu2vFQFxqETgbLnu0AoMAhn9Zq5SEWNNzX=mr0yuWRdg@mail.gmail.com>
+	Mon, 16 Jun 2014 01:32:53 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sachin Kamat <spk.linux@gmail.com>
-Cc: Christian Engelmayer <cengelma@gmx.at>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, Jun Shih <Jun.Shih@pason.com>, Johannes Thumshirn <johannes.thumshirn@men.de>
 
-On Sun, 2014-06-15 at 23:06 +0530, Sachin Kamat wrote:
-> On Sun, Jun 15, 2014 at 2:03 AM, Joe Perches <joe@perches.com> wrote:
-> > Greg?  Can you please apply this soon?
-> 
-> A similar patch has already been posted [1]. Probably Greg will apply it
-> once 3.16-rc1 is out.
-> 
-> [1] http://www.spinics.net/lists/linux-serial/msg12843.html
+Call uart_write_wakeup() after writing the hardware FIFO and updateing the FIFO
+pointers.
 
-I know.  It was just another prompt to Greg.
+This fixes high latency and jitter on PPP over Serial links.
 
-It's just unfortunate to have a compile failure path
-in Linus' tree.  Especially one I introduced.
+Reported-by: Jun Shih <Jun.Shih@pason.com>
+Tested-by: Jun Shih <Jun.Shih@pason.com>
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+---
+ drivers/tty/serial/men_z135_uart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-He'd said 10 days ago or so it'd be a day or two.
+diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+index c9d1854..30e9e60 100644
+--- a/drivers/tty/serial/men_z135_uart.c
++++ b/drivers/tty/serial/men_z135_uart.c
+@@ -308,9 +308,6 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
+ 	if (port->x_char)
+ 		goto out;
 
-http://www.spinics.net/lists/linux-serial/msg12859.html
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(port);
+-
+ 	/* calculate bytes to copy */
+ 	qlen = uart_circ_chars_pending(xmit);
+ 	if (qlen <= 0)
+@@ -357,6 +354,9 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
 
-cheers, Joe
+ 	port->icount.tx += n;
 
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
+ irq_en:
+ 	if (!uart_circ_empty(xmit))
+ 		men_z135_reg_set(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_TXCIEN);
+--
+1.9.1
