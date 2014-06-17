@@ -1,48 +1,37 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: samsung: Fix compile error with
- SERIAL_SAMSUNG_DEBUG
-Date: Mon, 16 Jun 2014 14:29:14 -0700
-Message-ID: <20140616212914.GA2309@kroah.com>
-References: <1402776434-31613-1-git-send-email-cengelma@gmx.at>
- <1402778036.2756.24.camel@joe-AO725>
- <CAK5sBcGu2vFQFxqETgbLnu0AoMAhn9Zq5SEWNNzX=mr0yuWRdg@mail.gmail.com>
- <1402854416.2695.12.camel@joe-AO725>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH tty-next 14/22] tty: Remove tty_wait_until_sent_from_close()
+Date: Tue, 17 Jun 2014 10:00:59 +0200
+Message-ID: <4575870.N9RCpZ4UMg@wuerfel>
+References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:45556 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932379AbaFPV3X (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 16 Jun 2014 17:29:23 -0400
-Content-Disposition: inline
-In-Reply-To: <1402854416.2695.12.camel@joe-AO725>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Sachin Kamat <spk.linux@gmail.com>, Christian Engelmayer <cengelma@gmx.at>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org
 
-On Sun, Jun 15, 2014 at 10:46:56AM -0700, Joe Perches wrote:
-> On Sun, 2014-06-15 at 23:06 +0530, Sachin Kamat wrote:
-> > On Sun, Jun 15, 2014 at 2:03 AM, Joe Perches <joe@perches.com> wrote:
-> > > Greg?  Can you please apply this soon?
-> > 
-> > A similar patch has already been posted [1]. Probably Greg will apply it
-> > once 3.16-rc1 is out.
-> > 
-> > [1] http://www.spinics.net/lists/linux-serial/msg12843.html
+On Monday 16 June 2014 09:17:11 Peter Hurley wrote:
+> tty_wait_until_sent_from_close() drops the tty lock while waiting
+> for the tty driver to finish sending previously accepted data (ie.,
+> data remaining in its write buffer and transmit fifo).
 > 
-> I know.  It was just another prompt to Greg.
+> However, dropping the tty lock is a hold-over from when the tty
+> lock was system-wide; ie., one lock for all ttys.
 > 
-> It's just unfortunate to have a compile failure path
-> in Linus' tree.  Especially one I introduced.
+> Since commit 89c8d91e31f267703e365593f6bfebb9f6d2ad01,
+> 'tty: localise the lock', dropping the tty lock has not been necessary.
 > 
-> He'd said 10 days ago or so it'd be a day or two.
-> 
-> http://www.spinics.net/lists/linux-serial/msg12859.html
+> CC: Karsten Keil <isdn@linux-pingi.de>
+> CC: linuxppc-dev@lists.ozlabs.org
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-Life gets in the way, I'll get it merged in time for 3.16-rc2 or -3.
+I don't understand the second half of the changelog, it doesn't seem
+to fit here: there deadlock that we are trying to avoid here happens
+when the *same* tty needs the lock to complete the function that
+sends the pending data. I don't think we do still do that any more,
+but it doesn't seem related to the tty lock being system-wide or not.
 
-thanks,
-
-greg k-h
+	Arnd
