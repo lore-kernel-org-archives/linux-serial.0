@@ -1,7 +1,8 @@
 From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v2 17/20] ARM: sunxi: Introduce Allwinner A23 support
-Date: Tue, 17 Jun 2014 22:52:54 +0800
-Message-ID: <1403016777-15121-18-git-send-email-wens@csie.org>
+Subject: [PATCH v2 16/20] mfd: sun6i-prcm: Add support for
+ Allwinner A23 PRCM
+Date: Tue, 17 Jun 2014 22:52:53 +0800
+Message-ID: <1403016777-15121-17-git-send-email-wens@csie.org>
 References: <1403016777-15121-1-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
@@ -18,49 +19,83 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The Allwinner A23 is a dual-core Cortex-A7-based SoC. It re-uses most of
-the IPs found in previous SoCs, notably the A31.
+The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
+The differences are the AR100 clock can no longer be modified,
+the APB0 clock has different divisors, and some clock gates are
+gone.
+
+This patch adds a compatible with a modified subdevice list for
+the A23.
 
 Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 ---
- arch/arm/mach-sunxi/Kconfig |  8 ++++++++
- arch/arm/mach-sunxi/sunxi.c | 10 ++++++++++
- 2 files changed, 18 insertions(+)
+ .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
+ drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
-index 0fbd4f1..6434e3b 100644
---- a/arch/arm/mach-sunxi/Kconfig
-+++ b/arch/arm/mach-sunxi/Kconfig
-@@ -35,4 +35,12 @@ config MACH_SUN7I
- 	select HAVE_ARM_ARCH_TIMER
- 	select SUN5I_HSTIMER
+diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+index 1f5a31f..03c5a55 100644
+--- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
++++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
+@@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
+ (like clks and reset controllers).
  
-+config MACH_SUN8I
-+	bool "Allwinner A23 (sun8i) SoCs support"
-+	default ARCH_SUNXI
-+	select ARCH_HAS_RESET_CONTROLLER
-+	select ARM_GIC
-+	select MFD_SUN6I_PRCM
-+	select RESET_CONTROLLER
-+
- endif
-diff --git a/arch/arm/mach-sunxi/sunxi.c b/arch/arm/mach-sunxi/sunxi.c
-index 3f9587b..962ff30 100644
---- a/arch/arm/mach-sunxi/sunxi.c
-+++ b/arch/arm/mach-sunxi/sunxi.c
-@@ -53,3 +53,13 @@ static const char * const sun7i_board_dt_compat[] = {
- DT_MACHINE_START(SUN7I_DT, "Allwinner sun7i (A20) Family")
- 	.dt_compat	= sun7i_board_dt_compat,
- MACHINE_END
-+
-+static const char * const sun8i_board_dt_compat[] = {
-+	"allwinner,sun8i-a23",
-+	NULL,
+ Required properties:
+- - compatible: "allwinner,sun6i-a31-prcm"
++ - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
+  - reg: The PRCM registers range
+ 
+ The prcm node may contain several subdevices definitions:
+diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
+index 718fc4d..7a198d3 100644
+--- a/drivers/mfd/sun6i-prcm.c
++++ b/drivers/mfd/sun6i-prcm.c
+@@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
+ 	},
+ };
+ 
++static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
++	{
++		.name = "sun6i-a31-apb0-clk",
++		.of_compatible = "allwinner,sun8i-a23-apb0-clk",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
++		.resources = sun6i_a31_apb0_clk_res,
++	},
++	{
++		.name = "sun6i-a31-apb0-gates-clk",
++		.of_compatible = "allwinner,sun8i-a23-apb0-gates-clk",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
++		.resources = sun6i_a31_apb0_gates_clk_res,
++	},
++	{
++		.name = "sun6i-a31-apb0-clock-reset",
++		.of_compatible = "allwinner,sun6i-a31-clock-reset",
++		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_rstc_res),
++		.resources = sun6i_a31_apb0_rstc_res,
++	},
 +};
 +
-+DT_MACHINE_START(SUN8I_DT, "Allwinner sun8i (A23) Family")
-+	.init_time	= sun6i_timer_init,
-+	.dt_compat	= sun8i_board_dt_compat,
-+MACHINE_END
+ static const struct prcm_data sun6i_a31_prcm_data = {
+ 	.nsubdevs = ARRAY_SIZE(sun6i_a31_prcm_subdevs),
+ 	.subdevs = sun6i_a31_prcm_subdevs,
+ };
+ 
++static const struct prcm_data sun8i_a23_prcm_data = {
++	.nsubdevs = ARRAY_SIZE(sun8i_a23_prcm_subdevs),
++	.subdevs = sun8i_a23_prcm_subdevs,
++};
++
+ static const struct of_device_id sun6i_prcm_dt_ids[] = {
+ 	{
+ 		.compatible = "allwinner,sun6i-a31-prcm",
+ 		.data = &sun6i_a31_prcm_data,
+ 	},
++	{
++		.compatible = "allwinner,sun8i-a23-prcm",
++		.data = &sun8i_a23_prcm_data,
++	},
+ 	{ /* sentinel */ },
+ };
+ 
 -- 
 2.0.0
