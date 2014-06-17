@@ -1,116 +1,52 @@
-From: Laurent Vivier <Laurent@Vivier.EU>
-Subject: Re: Broken serial port
-Date: Tue, 17 Jun 2014 23:05:23 +0200
-Message-ID: <53A0AD93.7080705@Vivier.EU>
-References: <53A08D64.1060800@Vivier.EU> <53A096C2.7060800@hurleysoftware.com>
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 05/20] clk: sunxi: Support factor clocks
+ with N multiplier factor starting from 1
+Date: Tue, 17 Jun 2014 16:23:02 -0500
+Message-ID: <CAL_JsqLyXwQzd9Oxj9pb49fWqzMjV9=1Nx3i+9bN-rwfEMqwcQ@mail.gmail.com>
+References: <1403016777-15121-1-git-send-email-wens@csie.org> <1403016777-15121-6-git-send-email-wens@csie.org>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="88dWb3lPfMksJe1haGWxIPPPVX6LExqpE"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:50598 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965386AbaFQVUI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jun 2014 17:20:08 -0400
-In-Reply-To: <53A096C2.7060800@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seth Bollinger <sethb@digi.com>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---88dWb3lPfMksJe1haGWxIPPPVX6LExqpE
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-sunxi+bncBD62P6P6EQIMXY4CTUCRUBA4RSHJG-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+In-Reply-To: <1403016777-15121-6-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+List-Id: linux-serial@vger.kernel.org
 
-Le 17/06/2014 21:28, Peter Hurley a =C3=A9crit :
-> On 06/17/2014 02:48 PM, Laurent Vivier wrote:
->> Hi,
->>
->> I'm not subscribed to these mailing lists, so CC: me.
->>
->> I'm playing for some days with a kernel 3.15 on an old mac performa 57=
-5
->> and it seems that the serial port is broken. When I log on using the
->> console on the serial port it seems there is an screen refresh added
->> after each character I send.
->=20
-> What uart driver is this happening on?
->=20
-> This is a known bug being worked on for these uart drivers:
-> sunsab
-> sunzilog
-> ip22zilog
-> pmac_zilog
+On Tue, Jun 17, 2014 at 9:52 AM, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org> wrote:
+> The PLLs on newer Allwinner SoC's, such as the A31 and A23, have a
+> N multiplier factor that starts from 1, not 0.
+>
+> This patch adds an option to the clock driver's config data structures
+> to define the difference.
+>
+> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> ---
+>  drivers/clk/sunxi/clk-factors.c | 5 ++++-
+>  drivers/clk/sunxi/clk-factors.h | 1 +
+>  2 files changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/clk/sunxi/clk-factors.c b/drivers/clk/sunxi/clk-factors.c
+> index 3806d97..399cf4d 100644
+> --- a/drivers/clk/sunxi/clk-factors.c
+> +++ b/drivers/clk/sunxi/clk-factors.c
+> @@ -62,7 +62,10 @@ static unsigned long clk_factors_recalc_rate(struct clk_hw *hw,
+>                 p = FACTOR_GET(config->pshift, config->pwidth, reg);
+>
+>         /* Calculate the rate */
+> -       rate = (parent_rate * n * (k + 1) >> p) / (m + 1);
+> +       if (config->n_from_one)
+> +               rate = (parent_rate * (n + 1) * (k + 1) >> p) / (m + 1);
+> +       else
+> +               rate = (parent_rate * n * (k + 1) >> p) / (m + 1);
 
-Seems to be pmac_zilog, from dmesg :
+This can be simplified and support any base with:
 
-pmac_zilog: 0.6 (Benjamin Herrenschmidt <benh@kernel.crashing.org>)
-scc.0: ttyS0 at MMIO 0x50f0c022 (irq =3D 4, base_baud =3D 230400) is a
-Z85c30 ESCC -
- Serial port
-scc.1: ttyS1 at MMIO 0x50f0c020 (irq =3D 4, base_baud =3D 230400) is a
-Z85c30 ESCC -
- Serial port
-
-If needed, I can test the fix.
-
-Thank you.
-
-Regards,
-Laurent
-
-> Regards,
-> Peter Hurley
->=20
->> A little demo :
->>
->> http://asciinema.org/a/10211 [at 3:20]
->>
->> I bisect and I found this commit :
->>
->> commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c
->> Author: Seth Bollinger <sethb@digi.com>
->> Date:   Tue Mar 25 12:55:37 2014 -0500
->>
->>      serial_core: Fix conditional start_tx on ring buffer not empty
->>
->>      If the serial_core ring buffer empties just as the tty layer
->> receives
->>      an XOFF, then start_tx will never be called when the tty layer
->>      receives an XON as the serial_core ring buffer is empty.  This wi=
-ll
->>      possibly leave a few bytes trapped in the fifo for drivers that
->>      disable the transmitter when flow controlled.
->>
->>      Signed-off-by: Seth Bollinger <sethb@digi.com>
->>      Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>
->>
->> If I revert it, all works fine :
->>
->> http://asciinema.org/a/10212
->>
->> Regards,
->> Laurent
->>
->=20
-
-
-
---88dWb3lPfMksJe1haGWxIPPPVX6LExqpE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlOgrZQACgkQNKT2yavzbFMIrQCfYf7YTmRSs+s8oud/W08w/Gc6
-SioAoIeOSWLAe7h6U4Ngk5gVd1X8bOZm
-=l6tV
------END PGP SIGNATURE-----
-
---88dWb3lPfMksJe1haGWxIPPPVX6LExqpE--
+rate = (parent_rate * (n + config->n_base) * (k + 1) >> p) / (m + 1);
