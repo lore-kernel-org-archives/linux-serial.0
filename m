@@ -1,65 +1,116 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Laurent Vivier <Laurent@Vivier.EU>
 Subject: Re: Broken serial port
-Date: Tue, 17 Jun 2014 15:28:02 -0400
-Message-ID: <53A096C2.7060800@hurleysoftware.com>
-References: <53A08D64.1060800@Vivier.EU>
+Date: Tue, 17 Jun 2014 23:05:23 +0200
+Message-ID: <53A0AD93.7080705@Vivier.EU>
+References: <53A08D64.1060800@Vivier.EU> <53A096C2.7060800@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <53A08D64.1060800@Vivier.EU>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Vivier <Laurent@Vivier.EU>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seth Bollinger <sethb@digi.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="88dWb3lPfMksJe1haGWxIPPPVX6LExqpE"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:50598 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965386AbaFQVUI (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 17 Jun 2014 17:20:08 -0400
+In-Reply-To: <53A096C2.7060800@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seth Bollinger <sethb@digi.com>
 
-On 06/17/2014 02:48 PM, Laurent Vivier wrote:
-> Hi,
->
-> I'm not subscribed to these mailing lists, so CC: me.
->
-> I'm playing for some days with a kernel 3.15 on an old mac performa 575
-> and it seems that the serial port is broken. When I log on using the
-> console on the serial port it seems there is an screen refresh added
-> after each character I send.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--88dWb3lPfMksJe1haGWxIPPPVX6LExqpE
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-What uart driver is this happening on?
+Le 17/06/2014 21:28, Peter Hurley a =C3=A9crit :
+> On 06/17/2014 02:48 PM, Laurent Vivier wrote:
+>> Hi,
+>>
+>> I'm not subscribed to these mailing lists, so CC: me.
+>>
+>> I'm playing for some days with a kernel 3.15 on an old mac performa 57=
+5
+>> and it seems that the serial port is broken. When I log on using the
+>> console on the serial port it seems there is an screen refresh added
+>> after each character I send.
+>=20
+> What uart driver is this happening on?
+>=20
+> This is a known bug being worked on for these uart drivers:
+> sunsab
+> sunzilog
+> ip22zilog
+> pmac_zilog
 
-This is a known bug being worked on for these uart drivers:
-sunsab
-sunzilog
-ip22zilog
-pmac_zilog
+Seems to be pmac_zilog, from dmesg :
+
+pmac_zilog: 0.6 (Benjamin Herrenschmidt <benh@kernel.crashing.org>)
+scc.0: ttyS0 at MMIO 0x50f0c022 (irq =3D 4, base_baud =3D 230400) is a
+Z85c30 ESCC -
+ Serial port
+scc.1: ttyS1 at MMIO 0x50f0c020 (irq =3D 4, base_baud =3D 230400) is a
+Z85c30 ESCC -
+ Serial port
+
+If needed, I can test the fix.
+
+Thank you.
 
 Regards,
-Peter Hurley
+Laurent
 
-> A little demo :
->
-> http://asciinema.org/a/10211 [at 3:20]
->
-> I bisect and I found this commit :
->
-> commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c
-> Author: Seth Bollinger <sethb@digi.com>
-> Date:   Tue Mar 25 12:55:37 2014 -0500
->
->      serial_core: Fix conditional start_tx on ring buffer not empty
->
->      If the serial_core ring buffer empties just as the tty layer receives
->      an XOFF, then start_tx will never be called when the tty layer
->      receives an XON as the serial_core ring buffer is empty.  This will
->      possibly leave a few bytes trapped in the fifo for drivers that
->      disable the transmitter when flow controlled.
->
->      Signed-off-by: Seth Bollinger <sethb@digi.com>
->      Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
->
-> If I revert it, all works fine :
->
-> http://asciinema.org/a/10212
->
 > Regards,
-> Laurent
->
+> Peter Hurley
+>=20
+>> A little demo :
+>>
+>> http://asciinema.org/a/10211 [at 3:20]
+>>
+>> I bisect and I found this commit :
+>>
+>> commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c
+>> Author: Seth Bollinger <sethb@digi.com>
+>> Date:   Tue Mar 25 12:55:37 2014 -0500
+>>
+>>      serial_core: Fix conditional start_tx on ring buffer not empty
+>>
+>>      If the serial_core ring buffer empties just as the tty layer
+>> receives
+>>      an XOFF, then start_tx will never be called when the tty layer
+>>      receives an XON as the serial_core ring buffer is empty.  This wi=
+ll
+>>      possibly leave a few bytes trapped in the fifo for drivers that
+>>      disable the transmitter when flow controlled.
+>>
+>>      Signed-off-by: Seth Bollinger <sethb@digi.com>
+>>      Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>
+>>
+>> If I revert it, all works fine :
+>>
+>> http://asciinema.org/a/10212
+>>
+>> Regards,
+>> Laurent
+>>
+>=20
+
+
+
+--88dWb3lPfMksJe1haGWxIPPPVX6LExqpE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlOgrZQACgkQNKT2yavzbFMIrQCfYf7YTmRSs+s8oud/W08w/Gc6
+SioAoIeOSWLAe7h6U4Ngk5gVd1X8bOZm
+=l6tV
+-----END PGP SIGNATURE-----
+
+--88dWb3lPfMksJe1haGWxIPPPVX6LExqpE--
