@@ -1,51 +1,92 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH tty-next 14/22] tty: Remove
- tty_wait_until_sent_from_close()
-Date: Tue, 17 Jun 2014 08:18:03 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1725D868@AcuExch.aculab.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
- <1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
- <4575870.N9RCpZ4UMg@wuerfel>
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Subject: Re: [PATCH 15/22] pinctrl: sunxi: Add A23 PIO controller support
+Date: Tue, 17 Jun 2014 18:25:14 +0800
+Message-ID: <CAGb2v670r+imY1PPKXOvLGjHOTzgXaaUqP6SstsvrXFhMozAzA@mail.gmail.com>
+References: <1400831485-28576-1-git-send-email-wens@csie.org>
+ <1400831485-28576-16-git-send-email-wens@csie.org> <20140525190827.GV10768@lukather>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx0.aculab.com ([213.249.233.131]:44098 "HELO mx0.aculab.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1753304AbaFQITQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 17 Jun 2014 04:19:16 -0400
-Received: from mx0.aculab.com ([127.0.0.1])
- by localhost (mx0.aculab.com [127.0.0.1]) (amavisd-new, port 10024) with SMTP
- id 14794-06 for <linux-serial@vger.kernel.org>;
- Tue, 17 Jun 2014 09:19:14 +0100 (BST)
-In-Reply-To: <4575870.N9RCpZ4UMg@wuerfel>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20140525190827.GV10768@lukather>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: 'Arnd Bergmann' <arnd@arndb.de>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-RnJvbTogQXJuZCBCZXJnbWFubg0KPiBPbiBNb25kYXkgMTYgSnVuZSAyMDE0IDA5OjE3OjExIFBl
-dGVyIEh1cmxleSB3cm90ZToNCj4gPiB0dHlfd2FpdF91bnRpbF9zZW50X2Zyb21fY2xvc2UoKSBk
-cm9wcyB0aGUgdHR5IGxvY2sgd2hpbGUgd2FpdGluZw0KPiA+IGZvciB0aGUgdHR5IGRyaXZlciB0
-byBmaW5pc2ggc2VuZGluZyBwcmV2aW91c2x5IGFjY2VwdGVkIGRhdGEgKGllLiwNCj4gPiBkYXRh
-IHJlbWFpbmluZyBpbiBpdHMgd3JpdGUgYnVmZmVyIGFuZCB0cmFuc21pdCBmaWZvKS4NCj4gPg0K
-PiA+IEhvd2V2ZXIsIGRyb3BwaW5nIHRoZSB0dHkgbG9jayBpcyBhIGhvbGQtb3ZlciBmcm9tIHdo
-ZW4gdGhlIHR0eQ0KPiA+IGxvY2sgd2FzIHN5c3RlbS13aWRlOyBpZS4sIG9uZSBsb2NrIGZvciBh
-bGwgdHR5cy4NCj4gPg0KPiA+IFNpbmNlIGNvbW1pdCA4OWM4ZDkxZTMxZjI2NzcwM2UzNjU1OTNm
-NmJmZWJiOWY2ZDJhZDAxLA0KPiA+ICd0dHk6IGxvY2FsaXNlIHRoZSBsb2NrJywgZHJvcHBpbmcg
-dGhlIHR0eSBsb2NrIGhhcyBub3QgYmVlbiBuZWNlc3NhcnkuDQo+ID4NCj4gPiBDQzogS2Fyc3Rl
-biBLZWlsIDxpc2RuQGxpbnV4LXBpbmdpLmRlPg0KPiA+IENDOiBsaW51eHBwYy1kZXZAbGlzdHMu
-b3psYWJzLm9yZw0KPiA+IFNpZ25lZC1vZmYtYnk6IFBldGVyIEh1cmxleSA8cGV0ZXJAaHVybGV5
-c29mdHdhcmUuY29tPg0KPiANCj4gSSBkb24ndCB1bmRlcnN0YW5kIHRoZSBzZWNvbmQgaGFsZiBv
-ZiB0aGUgY2hhbmdlbG9nLCBpdCBkb2Vzbid0IHNlZW0NCj4gdG8gZml0IGhlcmU6IHRoZXJlIGRl
-YWRsb2NrIHRoYXQgd2UgYXJlIHRyeWluZyB0byBhdm9pZCBoZXJlIGhhcHBlbnMNCj4gd2hlbiB0
-aGUgKnNhbWUqIHR0eSBuZWVkcyB0aGUgbG9jayB0byBjb21wbGV0ZSB0aGUgZnVuY3Rpb24gdGhh
-dA0KPiBzZW5kcyB0aGUgcGVuZGluZyBkYXRhLiBJIGRvbid0IHRoaW5rIHdlIGRvIHN0aWxsIGRv
-IHRoYXQgYW55IG1vcmUsDQo+IGJ1dCBpdCBkb2Vzbid0IHNlZW0gcmVsYXRlZCB0byB0aGUgdHR5
-IGxvY2sgYmVpbmcgc3lzdGVtLXdpZGUgb3Igbm90Lg0KDQpXaGlsZSBJJ3ZlIG5vdCBsb29rZWQg
-YXQgdGhlIGNvZGUgaW4gcXVlc3Rpb247IG15IHRob3VnaHRzIHdlcmUgdGhhdA0KaG9sZGluZyBh
-bnkgbG9jayB3aGlsZSB3YWl0aW5nIGZvciBvdXRwdXQgdG8gZHJhaW4gKG9yIGFueXRoaW5nIGVs
-c2UNCnJlYWxseSkgcHJvYmFibHkgaXNuJ3QgYSBnb29kIGlkZWEuDQpZb3UgbWlnaHQgZmluZCB0
-aGF0IHNvbWV0aGluZyBlbHNlIG5lZWRzIHRoZSBsb2NrIC0gZXZlbiBpZiBvbmx5DQpzb21lIGtp
-bmQgb2Ygc3RhdHVzIHJlcXVlc3QuDQoNCglEYXZpZA0KDQo=
+Hi,
+
+On Mon, May 26, 2014 at 3:08 AM, Maxime Ripard
+<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+> On Fri, May 23, 2014 at 03:51:18PM +0800, Chen-Yu Tsai wrote:
+>> The A23 uses the same pin controller as previous SoC's from Allwinner.
+>> Add support for the pins controlled by the main PIO controller.
+>>
+>> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+>> ---
+>>  .../bindings/pinctrl/allwinner,sunxi-pinctrl.txt   |   2 +
+>>  drivers/pinctrl/sunxi/Kconfig                      |   4 +
+>>  drivers/pinctrl/sunxi/Makefile                     |   1 +
+>>  drivers/pinctrl/sunxi/pinctrl-sun8i-a23.c          | 562 +++++++++++++++++++++
+>>  4 files changed, 569 insertions(+)
+>>  create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun8i-a23.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/pinctrl/allwinner,sunxi-pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/allwinner,sunxi-pinctrl.txt
+>> index d8d0656..93ce12e 100644
+>> --- a/Documentation/devicetree/bindings/pinctrl/allwinner,sunxi-pinctrl.txt
+>> +++ b/Documentation/devicetree/bindings/pinctrl/allwinner,sunxi-pinctrl.txt
+>> @@ -13,6 +13,8 @@ Required properties:
+>>    "allwinner,sun6i-a31-pinctrl"
+>>    "allwinner,sun6i-a31-r-pinctrl"
+>>    "allwinner,sun7i-a20-pinctrl"
+>> +  "allwinner,sun8i-a23-pinctrl"
+>> +  "allwinner,sun8i-a23-r-pinctrl"
+>
+> This last line belongs in the R_PIO patch :)
+>
+>>  - reg: Should contain the register physical address and length for the
+>>    pin controller.
+>>
+>> diff --git a/drivers/pinctrl/sunxi/Kconfig b/drivers/pinctrl/sunxi/Kconfig
+>> index da1e830..17a4281 100644
+>> --- a/drivers/pinctrl/sunxi/Kconfig
+>> +++ b/drivers/pinctrl/sunxi/Kconfig
+>> @@ -32,4 +32,8 @@ config PINCTRL_SUN7I_A20
+>>       def_bool PINCTRL_SUNXI || MACH_SUN7I
+>>       select PINCTRL_SUNXI_COMMON
+>>
+>> +config PINCTRL_SUN8I_A23
+>> +       def_bool PINCTRL_SUNXI || MACH_SUN8I
+>> +       select PINCTRL_SUNXI_COMMON
+>
+> Since it's going to be merged in 3.16, you can just depend on MACH_SUN8I.
+
+Just want to make sure before I send v2 of the whole series, this should be
+
+        def_bool MACH_SUN8I
+        select PINCTRL_SUNXI_COMMON
+
+correct?
+
+Or should it be
+
+        bool
+        depends on MACH_SUN8I
+        select PINCTRL_SUNXI_COMMON
+
+and MACH_SUN8I selects PINCTRL_SUN8I_A23
+
+I'm not sure what the transition plan was.
+
+>>  endif
+
+[...]
+
+v2 will also have EINT support.
+
+
+Thanks
+ChenYu
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
