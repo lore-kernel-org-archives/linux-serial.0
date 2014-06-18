@@ -1,17 +1,16 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 03/20] clk: sunxi: move "ahb_sdram" to
- protected clock list
-Date: Wed, 18 Jun 2014 11:10:06 +0200
-Message-ID: <20140618091006.GI19730@lukather>
+Subject: Re: [PATCH v2 04/20] clk: sunxi: Fix gate indexing for sun6i-a31-apb0-gates
+Date: Wed, 18 Jun 2014 11:38:50 +0200
+Message-ID: <20140618093850.GJ19730@lukather>
 References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-4-git-send-email-wens@csie.org>
+ <1403016777-15121-5-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yzvKDKJiLNESc64M"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBRFRQWOQKGQESEUZNLI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="tKy6e3LXpfmanBFM"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRB7V4QWOQKGQE5OFJBUA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403016777-15121-4-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1403016777-15121-5-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi>
@@ -23,16 +22,23 @@ Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 
---yzvKDKJiLNESc64M
+--tKy6e3LXpfmanBFM
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 17, 2014 at 10:52:40PM +0800, Chen-Yu Tsai wrote:
-> With sunxi_gates clocks registered with clkdev, we can use the
-> protected clocks list to enable the "ahb_sdram" clock, instead
-> of looking for it and adding CLK_IGNORE_UNUSED inline in the
-> clock setup code.
+On Tue, Jun 17, 2014 at 10:52:41PM +0800, Chen-Yu Tsai wrote:
+> sun6i-a31-apb0-gates supports using clock-indices for holes between
+> individual gates. However, the driver passes the number of gates
+> registered in clk_data->clk_num, which of_clk_src_onecell_get uses
+> to recognize the range of valid indices a consumer can use.
+>=20
+> This patch makes the driver pass the maximum gate index + 1, so
+> of_clk_src_onecell_get does not complain about indices greater
+> than gates registered.
+>=20
+> This was tested on the A23 SoC, which has a similar APB0 clock,
+> but has holes for gates to removed IP blocks.
 >=20
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 
@@ -45,26 +51,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---yzvKDKJiLNESc64M
+--tKy6e3LXpfmanBFM
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJToVduAAoJEBx+YmzsjxAgtaMP/jYzR7hHj+anXBPwRlYhm2iZ
-ld/VmhxkOZnOKfeElrXRyZeV9Ks3PiplhHxhOyAFZG7Ep95jlgfvXoT7P4cUgp6F
-vwtxDsFdjLUtuwRw9uutphn51IzKOc9tiqBUC8wwcLnvkLw7y5aJkRkPB++LEf0h
-5PSwCybbCjFcCKJ6W0u0P5d/ECMRbioOMxRqbwz4tmL01EGq5Gw8xtAjY5cQzN7T
-twJGtsPIsxh9okTAw6VRq3OhNRp8C0t53lWBRlgPoiXJMIy4OEdWuVZBD405g3Vh
-hHky5SW2wKDBFstDB/XWueb24rDH30LYWGseeOL+CImPktfBEyHSfqLrKYzreEfT
-/MDOkke5uJ4aSAb1HdQNe/F2V4VfqKamhkqoEF4E8+c7WQxXvwA7fRgjQwgCUyO3
-B/9sa6NNVZlMq3Ceom8G5nokb5vWOAaPnmWkmcLIgTIhRVE9taxeLtBuazIqegZ+
-/Xi1sDh6STgBn8KE5Cm/W97WS3tvqVyDDFTlYmozTFBsjR7xFO1Z8Ny/XZYxcX/K
-LJFyJVFzvL4J6x4vnSIh59Glp8IDZLaR9+D1sOgvWVs/FYMUXeT3EC0o4SlST7FA
-alOOaGq1W2UlwYv9fok28vVCN+t4mwHMmoNG4PtinM+Ph0Z3Y1hpjtxHvRdZCXYG
-VNcKO+52NA/6J7a1231i
-=2KR7
+iQIcBAEBAgAGBQJToV4qAAoJEBx+YmzsjxAgLb4P+wRQ/AAQw6rsywCFTZY8xj5Z
+e9shBl7/VbZXetPPo40yuk9QS4H2Fy6iYyx9SBYM22ToQvtyXtIQXpoRgOQnY/2i
+l2rf8C7II7qlSZklSQsYTEr+0WtPjQPp7i7t0i2mqp3xWII8wP66pLmKJ8RH3XU4
+5hmkZZJ+1ViR1MPHbtA3RY6GlIZ43+tYFJiEvzyKVJ0WzpIEcSShyb6DWUxM8Y/6
+GEIlFslFJds9oDRqy/paFsgW5EyfiPm4O4kgA/C2JV4KHB5Zs8hOnREE+3Bjw67m
+exirHbAjUVaLda9bv/6JS6s8DrmjAlJYdAY/LnzUkea+sR2O61O8sN7+BNjaDXKN
+zo65CDf3G/tdjF0c2sZ0SH0SO6MS+1LXmOB7fOQttEOnFzipVZtHYb5y84TLEi5k
+SWaip6Csy2eRiTD/P6GAXDsLoQLVzelCXLJuOtowshD72uMuA6qGC8B8L+zv+CjQ
+zX5T1SsNfXPEHCLyRoeUTsUYZPueR26BKstTVvfiaCqfETCCsHygNpTI4qI/wP+b
+RxT7CT93QlU/S98lln/M23o6CTWbXMTu6ui2E1gehxBH+BxznZGd8Y8Ftc5a23Be
+3f7soY8nmuaR3hcPE/onOq8iq/geJ5wuR5ffksemQRGNdIBWMDCMHormXLm5l+DP
+rVKmBl8rdbYL8t6GkVYM
+=SWQl
 -----END PGP SIGNATURE-----
 
---yzvKDKJiLNESc64M--
+--tKy6e3LXpfmanBFM--
