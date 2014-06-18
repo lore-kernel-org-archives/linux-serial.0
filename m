@@ -1,16 +1,17 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 04/20] clk: sunxi: Fix gate indexing for sun6i-a31-apb0-gates
-Date: Wed, 18 Jun 2014 11:38:50 +0200
-Message-ID: <20140618093850.GJ19730@lukather>
+Subject: Re: [PATCH v2 05/20] clk: sunxi: Support factor clocks
+ with N multiplier factor starting from 1
+Date: Wed, 18 Jun 2014 11:42:51 +0200
+Message-ID: <20140618094251.GK19730@lukather>
 References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-5-git-send-email-wens@csie.org>
+ <1403016777-15121-6-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tKy6e3LXpfmanBFM"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRB7V4QWOQKGQE5OFJBUA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="8kI7hWEHMS8Z+7/0"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBPF7QWOQKGQEDWFHTOQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403016777-15121-5-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1403016777-15121-6-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi>
@@ -22,27 +23,64 @@ Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 
---tKy6e3LXpfmanBFM
+--8kI7hWEHMS8Z+7/0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 17, 2014 at 10:52:41PM +0800, Chen-Yu Tsai wrote:
-> sun6i-a31-apb0-gates supports using clock-indices for holes between
-> individual gates. However, the driver passes the number of gates
-> registered in clk_data->clk_num, which of_clk_src_onecell_get uses
-> to recognize the range of valid indices a consumer can use.
+On Tue, Jun 17, 2014 at 10:52:42PM +0800, Chen-Yu Tsai wrote:
+> The PLLs on newer Allwinner SoC's, such as the A31 and A23, have a
+> N multiplier factor that starts from 1, not 0.
 >=20
-> This patch makes the driver pass the maximum gate index + 1, so
-> of_clk_src_onecell_get does not complain about indices greater
-> than gates registered.
->=20
-> This was tested on the A23 SoC, which has a similar APB0 clock,
-> but has holes for gates to removed IP blocks.
+> This patch adds an option to the clock driver's config data structures
+> to define the difference.
 >=20
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> ---
+>  drivers/clk/sunxi/clk-factors.c | 5 ++++-
+>  drivers/clk/sunxi/clk-factors.h | 1 +
+>  2 files changed, 5 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/clk/sunxi/clk-factors.c b/drivers/clk/sunxi/clk-fact=
+ors.c
+> index 3806d97..399cf4d 100644
+> --- a/drivers/clk/sunxi/clk-factors.c
+> +++ b/drivers/clk/sunxi/clk-factors.c
+> @@ -62,7 +62,10 @@ static unsigned long clk_factors_recalc_rate(struct cl=
+k_hw *hw,
+>  		p =3D FACTOR_GET(config->pshift, config->pwidth, reg);
+> =20
+>  	/* Calculate the rate */
+> -	rate =3D (parent_rate * n * (k + 1) >> p) / (m + 1);
+> +	if (config->n_from_one)
+> +		rate =3D (parent_rate * (n + 1) * (k + 1) >> p) / (m + 1);
+> +	else
+> +		rate =3D (parent_rate * n * (k + 1) >> p) / (m + 1);
 
-Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Thinking a bit more about this, I wonder wether it wouldn't be better
+to just have a n_start variable or something, and just use (n +
+n_start) instead.
+
+That would avoid having to declare twice the same function.
+
+Maxime
+
+> =20
+>  	return rate;
+>  }
+> diff --git a/drivers/clk/sunxi/clk-factors.h b/drivers/clk/sunxi/clk-fact=
+ors.h
+> index 02e1a43..0484a48 100644
+> --- a/drivers/clk/sunxi/clk-factors.h
+> +++ b/drivers/clk/sunxi/clk-factors.h
+> @@ -15,6 +15,7 @@ struct clk_factors_config {
+>  	u8 mwidth;
+>  	u8 pshift;
+>  	u8 pwidth;
+> +	u8 n_from_one;
+
+Especially when you declare it as an u8, and not a bool.
 
 Maxime
 
@@ -51,26 +89,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---tKy6e3LXpfmanBFM
+--8kI7hWEHMS8Z+7/0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJToV4qAAoJEBx+YmzsjxAgLb4P+wRQ/AAQw6rsywCFTZY8xj5Z
-e9shBl7/VbZXetPPo40yuk9QS4H2Fy6iYyx9SBYM22ToQvtyXtIQXpoRgOQnY/2i
-l2rf8C7II7qlSZklSQsYTEr+0WtPjQPp7i7t0i2mqp3xWII8wP66pLmKJ8RH3XU4
-5hmkZZJ+1ViR1MPHbtA3RY6GlIZ43+tYFJiEvzyKVJ0WzpIEcSShyb6DWUxM8Y/6
-GEIlFslFJds9oDRqy/paFsgW5EyfiPm4O4kgA/C2JV4KHB5Zs8hOnREE+3Bjw67m
-exirHbAjUVaLda9bv/6JS6s8DrmjAlJYdAY/LnzUkea+sR2O61O8sN7+BNjaDXKN
-zo65CDf3G/tdjF0c2sZ0SH0SO6MS+1LXmOB7fOQttEOnFzipVZtHYb5y84TLEi5k
-SWaip6Csy2eRiTD/P6GAXDsLoQLVzelCXLJuOtowshD72uMuA6qGC8B8L+zv+CjQ
-zX5T1SsNfXPEHCLyRoeUTsUYZPueR26BKstTVvfiaCqfETCCsHygNpTI4qI/wP+b
-RxT7CT93QlU/S98lln/M23o6CTWbXMTu6ui2E1gehxBH+BxznZGd8Y8Ftc5a23Be
-3f7soY8nmuaR3hcPE/onOq8iq/geJ5wuR5ffksemQRGNdIBWMDCMHormXLm5l+DP
-rVKmBl8rdbYL8t6GkVYM
-=SWQl
+iQIcBAEBAgAGBQJToV8bAAoJEBx+YmzsjxAgbYgP/29N2qaoTZgDspG2y/ONavEK
+J2+gHRXZj3kfAWPv7yKhieB/E10O/1k/ww0r8iFPsOoarIlRkBM+G2Hm3ntosN50
+IxzjbJz9vuBQgMhIobF4NAmo7IVJ0BoGiJ1kN6a5SFLGlg7RbmNVhpX57dM+VsUB
+nOXIyAMWLnsuOSGyS1Jn22AeUXEZ/hnentjkGPNEryvqKvU/0CuDefXvuBTyIHyR
+rhKefTQOrIl25YUUMgy/nHt51kQD16CrDJ2mFcyL6LaUy7RgXmjVZzGbXn1ysmot
+z6y/2cx+LUnvYjx0AhMeIZ8cdt+X6/8DsIiQCOVkg1DsBvLNILA463FnwIXAl7V9
+kmlnq8VRSnusG65cP4CgOln/RX+XpHKSnRFR4q5CVVMtdl4QClxQIDRJ6zwBxwJp
++3pyGhML6BtMuw0x/Gu/cD9nxLt3wep2yHOtXvDncMDeAUVvPdB51yusHYvIPoAn
+KMZ5nQ4yPUrEtK5yzZgdhiLXpPwtkuRcqCSgxGVT+cxYCD9QVZ8AxlFMcQ/Cl4YP
+++WuhCwhNWjf3ISxDAUYb5V+u5UFuR86ri1t/6sUiX9mYD7xE951IOttgCqUfFx0
+IDjyiD9g6W4muuAFdCDFkVPA8BkMo4Pi42F/d8KYcjafbvnfR0ZvAmlYs4rCkx9h
+qnTNudYVOA9BesBmREwj
+=7aXV
 -----END PGP SIGNATURE-----
 
---tKy6e3LXpfmanBFM--
+--8kI7hWEHMS8Z+7/0--
