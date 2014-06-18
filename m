@@ -1,17 +1,16 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 08/20] ARM: sun6i: DT: Rename PLL6 to
- PLL6x2 and add fixed-factor-clock for PLL6
-Date: Wed, 18 Jun 2014 11:57:59 +0200
-Message-ID: <20140618095759.GL19730@lukather>
+Subject: Re: [PATCH v2 09/20] clk: sunxi: Add sun6i MBUS clock support
+Date: Wed, 18 Jun 2014 12:04:04 +0200
+Message-ID: <20140618100404.GM19730@lukather>
 References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-9-git-send-email-wens@csie.org>
+ <1403016777-15121-10-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pFej7zHSL6C5fFIz"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBLGGQWOQKGQEWFPBKBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="YS7t75H5cNTCpbja"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRB6GIQWOQKGQEYUQ4KQQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403016777-15121-9-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1403016777-15121-10-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi>
@@ -23,53 +22,91 @@ Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 
---pFej7zHSL6C5fFIz
+--YS7t75H5cNTCpbja
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 17, 2014 at 10:52:45PM +0800, Chen-Yu Tsai wrote:
-> The PLL6 clock driver actually manages the PLL6x2 output of PLL6, so
-> rename the node accordingly, and add a halved fixed-factor-clock for
-> normal PLL6 output used by most modules.
->=20
+On Tue, Jun 17, 2014 at 10:52:46PM +0800, Chen-Yu Tsai wrote:
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 > ---
->  arch/arm/boot/dts/sun6i-a31.dtsi | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
+>  drivers/clk/sunxi/clk-sunxi.c                     | 44 +++++++++++++++++=
+++++++
+>  2 files changed, 45 insertions(+)
 >=20
-> diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a=
-31.dtsi
-> index a9dfa12..12d558b 100644
-> --- a/arch/arm/boot/dts/sun6i-a31.dtsi
-> +++ b/arch/arm/boot/dts/sun6i-a31.dtsi
-> @@ -94,11 +94,20 @@
->  			clock-output-names =3D "pll1";
->  		};
+> diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Document=
+ation/devicetree/bindings/clock/sunxi.txt
+> index b9ec668..7b2ba41 100644
+> --- a/Documentation/devicetree/bindings/clock/sunxi.txt
+> +++ b/Documentation/devicetree/bindings/clock/sunxi.txt
+> @@ -40,6 +40,7 @@ Required properties:
+>  	"allwinner,sun6i-a31-apb2-div-clk" - for the APB2 gates on A31
+>  	"allwinner,sun6i-a31-apb2-gates-clk" - for the APB2 gates on A31
+>  	"allwinner,sun4i-a10-mod0-clk" - for the module 0 family of clocks
+> +	"allwinner,sun6i-a31-mbus-clk" - for the MBUS clocks on A31 / A23
+>  	"allwinner,sun7i-a20-out-clk" - for the external output clocks
+>  	"allwinner,sun7i-a20-gmac-clk" - for the GMAC clock module on A20/A31
+>  	"allwinner,sun4i-a10-usb-clk" - for usb gates + resets on A10 / A20
+> diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+> index eca3c6e..a086b5b 100644
+> --- a/drivers/clk/sunxi/clk-sunxi.c
+> +++ b/drivers/clk/sunxi/clk-sunxi.c
+> @@ -307,6 +307,37 @@ static void sun4i_get_mod0_factors(u32 *freq, u32 pa=
+rent_rate,
 > =20
-> -		pll6: clk@01c20028 {
-> +		pll6x2: clk@01c20028 {
->  			#clock-cells =3D <0>;
->  			compatible =3D "allwinner,sun6i-a31-pll6-clk";
->  			reg =3D <0x01c20028 0x4>;
->  			clocks =3D <&osc24M>;
-> +			clock-output-names =3D "pll6x2";
-> +		};
+> =20
+>  /**
+> + * sun6i_a31_get_mbus_factors() - calculates m factor for MBUS clocks
+> + * MBUS rate is calculated as follows
+> + * rate =3D parent_rate / (m + 1);
+> + */
 > +
-> +		pll6: pll6_clk {
-> +			#clock-cells =3D <0>;
-> +			compatible =3D "fixed-factor-clock";
-> +			clock-div =3D <2>;
-> +			clock-mult =3D <1>;
-> +			clocks =3D <&pll6x2>;
->  			clock-output-names =3D "pll6";
->  		};
+> +static void sun6i_a31_get_mbus_factors(u32 *freq, u32 parent_rate,
+> +				       u8 *n, u8 *k, u8 *m, u8 *p)
+> +{
+> +	u8 div;
+> +
+> +	/* These clocks can only divide, so we will never be able to achieve
+> +	 * frequencies higher than the parent frequency */
+> +	if (*freq > parent_rate)
+> +		*freq =3D parent_rate;
+> +
+> +	div =3D DIV_ROUND_UP(parent_rate, *freq);
+> +
+> +	if (div > 8)
+> +		div =3D 8;
+> +
+> +	*freq =3D parent_rate / div;
+> +
+> +	/* we were called to round the frequency, we can now return */
+> +	if (n =3D=3D NULL)
 
-Hmm, nope. The output of PLL6 is 24M * N * K / 2, and this is what we
-support in the driver.
+s/n/m/ ?
 
-This change is backward, and should be the other way around. Have PLL6
-running at it's usual speed, and then have PLL62X be a fixed-factor.
+> +		return;
+> +
+> +	*m =3D div - 1;
+> +}
+> +
+> +
+> +/**
+>   * sun7i_a20_get_out_factors() - calculates m, p factors for CLK_OUT_A/B
+>   * CLK_OUT rate is calculated as follows
+>   * rate =3D (parent_rate >> p) / (m + 1);
+> @@ -447,6 +478,11 @@ static struct clk_factors_config sun4i_mod0_config =
+=3D {
+>  	.pwidth =3D 2,
+>  };
+> =20
+> +static struct clk_factors_config sun6i_a31_mbus_config =3D {
+> +	.mshift =3D 0,
+> +	.mwidth =3D 3,
+
+Actually, the A31 has an extra N factor.
+
+So this mbus clock looks like it's only about the A23, and not the A31
+at all.
 
 Maxime
 
@@ -78,26 +115,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---pFej7zHSL6C5fFIz
+--YS7t75H5cNTCpbja
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJToWKmAAoJEBx+YmzsjxAgkckP+wer6Qink/KWyr0pU+No7aAg
-fLWZ4xU7VVMWcrUHgj7Iv2L2Yb8kPlhv24+YtlNsBG0RnTUijtYfRL6YT7T/EE/U
-jRoq2oCPM+zFl4h1JQ5PAITIqMkCpHP5Oa1Vo5drFRZZc57I19ugKZxgZQe8rif6
-Jrp1uhGZuZ4IpelSpgfCqnqdXiiuj73Unn1hl4x5Fxthq1LjOm6+rywai+9ex5Z1
-CBrCRpEAfffV94ewAQsj2/Wa/APChkW1RLhnKxG7jFG0GMu/dscKy/p9ppEld3gb
-+j2Q/V1j6o6KAJkKidWckC1ok/NHmzlTO8cDSYQGAZ3D+ZSiZnutODQluP63zCwr
-ydYWJqnACiwZh6EkolAsf5zZlLhIf33nehdlSd24GDdYfeMLoTC0kY5VWIvIi3Uz
-WsIPdlA81c6Zc244JC7Tww24fVygx7oVT0uDUhLMqKzApiNimA6RSAoQYfsTSbcH
-9e66R+qlpndn4TJg5BSQS7ASSBEA4+VI4JJ/Mz6KZwgJ2MJF+CzXP1BfKhjWlZfJ
-EAc+7aps+yqPVd+XR/3DXjdlUrjsjyZ1+jTK/F5gCpI2H19WM+xBwOFTD/1yIEER
-frGvpvoHOR1ttzWeby/QTIao3H6SqOADDKZ8/lss784PMEfNFk+DKH50bST7DQmd
-WKEDWrdNMDye25i5BV3z
-=TEtl
+iQIcBAEBAgAGBQJToWQUAAoJEBx+YmzsjxAgIdEP/1gAozfujWyTTDlj3feS84m0
+HgRkqz7DMEbZ6Nr0rN2QQCAEx03d1qsCCMkQLQHR9FD2Lq+Oc1DSlYtY1e/j1HiO
+Dzxm2OVoPaTCEHiPttzg/TSziF6OquHyPFDGGm/9ZOhTw4LneeY93P6Mo4Br6qfL
+fXnc06L7cqp+EYh+Nfn/ah7AbP3Yysc6/kQfFYi/MWs9PM2pIMcEWL4mD+6gG9Zh
+iuCwZ06t1o7a3gFBeX1lOgIl3M3qPtFc3C/R9+k/mgOEx/9h953S93JAU3ZxbWMB
+l4yZ8sp6uQVwjQDvLyowVTc8cLNZgUuVaAStioxV6JnYdcpEta0JoPBNvriNvaj0
+ayZhcyB5u/Chow0gSl36BBiaRpclPaIvRoHXelS0WSgaUVEl1mRnIRwK9QGRUlc7
+a6WZo7hKEXOeDEHeeokE++/3IqwbueCVfeQmBX893mSoLzlaiRliYzwbAzZLdUT3
+CSvgA/t7h2JsggpC4Q8hOFCcuyYSTGxpUGI8RtQq9U0qaaIyc+isxgML9xuDnnVi
+mTcXJfPa/UIrY3hEtge5E0zXHw/+xdz20Cd5/qsTWUJEOwfqpgmQaFVcfjbswM3V
+l4KJu2x5bp2T9HSWjNxRYeDK/4Mf8h7E6fTZz40tK9zT93rx0XAJjgV8FN6LH0Fq
+ykj3fIdB/tq0YoqOVUQr
+=LZTy
 -----END PGP SIGNATURE-----
 
---pFej7zHSL6C5fFIz--
+--YS7t75H5cNTCpbja--
