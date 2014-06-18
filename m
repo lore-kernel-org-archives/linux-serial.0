@@ -1,17 +1,17 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 05/20] clk: sunxi: Support factor clocks
- with N multiplier factor starting from 1
-Date: Wed, 18 Jun 2014 11:42:51 +0200
-Message-ID: <20140618094251.GK19730@lukather>
+Subject: Re: [PATCH v2 08/20] ARM: sun6i: DT: Rename PLL6 to
+ PLL6x2 and add fixed-factor-clock for PLL6
+Date: Wed, 18 Jun 2014 11:57:59 +0200
+Message-ID: <20140618095759.GL19730@lukather>
 References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-6-git-send-email-wens@csie.org>
+ <1403016777-15121-9-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8kI7hWEHMS8Z+7/0"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBPF7QWOQKGQEDWFHTOQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="pFej7zHSL6C5fFIz"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBLGGQWOQKGQEWFPBKBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403016777-15121-6-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1403016777-15121-9-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi>
@@ -23,64 +23,53 @@ Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 
---8kI7hWEHMS8Z+7/0
+--pFej7zHSL6C5fFIz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 17, 2014 at 10:52:42PM +0800, Chen-Yu Tsai wrote:
-> The PLLs on newer Allwinner SoC's, such as the A31 and A23, have a
-> N multiplier factor that starts from 1, not 0.
->=20
-> This patch adds an option to the clock driver's config data structures
-> to define the difference.
+On Tue, Jun 17, 2014 at 10:52:45PM +0800, Chen-Yu Tsai wrote:
+> The PLL6 clock driver actually manages the PLL6x2 output of PLL6, so
+> rename the node accordingly, and add a halved fixed-factor-clock for
+> normal PLL6 output used by most modules.
 >=20
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-> Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 > ---
->  drivers/clk/sunxi/clk-factors.c | 5 ++++-
->  drivers/clk/sunxi/clk-factors.h | 1 +
->  2 files changed, 5 insertions(+), 1 deletion(-)
+>  arch/arm/boot/dts/sun6i-a31.dtsi | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 >=20
-> diff --git a/drivers/clk/sunxi/clk-factors.c b/drivers/clk/sunxi/clk-fact=
-ors.c
-> index 3806d97..399cf4d 100644
-> --- a/drivers/clk/sunxi/clk-factors.c
-> +++ b/drivers/clk/sunxi/clk-factors.c
-> @@ -62,7 +62,10 @@ static unsigned long clk_factors_recalc_rate(struct cl=
-k_hw *hw,
->  		p =3D FACTOR_GET(config->pshift, config->pwidth, reg);
+> diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a=
+31.dtsi
+> index a9dfa12..12d558b 100644
+> --- a/arch/arm/boot/dts/sun6i-a31.dtsi
+> +++ b/arch/arm/boot/dts/sun6i-a31.dtsi
+> @@ -94,11 +94,20 @@
+>  			clock-output-names =3D "pll1";
+>  		};
 > =20
->  	/* Calculate the rate */
-> -	rate =3D (parent_rate * n * (k + 1) >> p) / (m + 1);
-> +	if (config->n_from_one)
-> +		rate =3D (parent_rate * (n + 1) * (k + 1) >> p) / (m + 1);
-> +	else
-> +		rate =3D (parent_rate * n * (k + 1) >> p) / (m + 1);
+> -		pll6: clk@01c20028 {
+> +		pll6x2: clk@01c20028 {
+>  			#clock-cells =3D <0>;
+>  			compatible =3D "allwinner,sun6i-a31-pll6-clk";
+>  			reg =3D <0x01c20028 0x4>;
+>  			clocks =3D <&osc24M>;
+> +			clock-output-names =3D "pll6x2";
+> +		};
+> +
+> +		pll6: pll6_clk {
+> +			#clock-cells =3D <0>;
+> +			compatible =3D "fixed-factor-clock";
+> +			clock-div =3D <2>;
+> +			clock-mult =3D <1>;
+> +			clocks =3D <&pll6x2>;
+>  			clock-output-names =3D "pll6";
+>  		};
 
-Thinking a bit more about this, I wonder wether it wouldn't be better
-to just have a n_start variable or something, and just use (n +
-n_start) instead.
+Hmm, nope. The output of PLL6 is 24M * N * K / 2, and this is what we
+support in the driver.
 
-That would avoid having to declare twice the same function.
-
-Maxime
-
-> =20
->  	return rate;
->  }
-> diff --git a/drivers/clk/sunxi/clk-factors.h b/drivers/clk/sunxi/clk-fact=
-ors.h
-> index 02e1a43..0484a48 100644
-> --- a/drivers/clk/sunxi/clk-factors.h
-> +++ b/drivers/clk/sunxi/clk-factors.h
-> @@ -15,6 +15,7 @@ struct clk_factors_config {
->  	u8 mwidth;
->  	u8 pshift;
->  	u8 pwidth;
-> +	u8 n_from_one;
-
-Especially when you declare it as an u8, and not a bool.
+This change is backward, and should be the other way around. Have PLL6
+running at it's usual speed, and then have PLL62X be a fixed-factor.
 
 Maxime
 
@@ -89,26 +78,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---8kI7hWEHMS8Z+7/0
+--pFej7zHSL6C5fFIz
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJToV8bAAoJEBx+YmzsjxAgbYgP/29N2qaoTZgDspG2y/ONavEK
-J2+gHRXZj3kfAWPv7yKhieB/E10O/1k/ww0r8iFPsOoarIlRkBM+G2Hm3ntosN50
-IxzjbJz9vuBQgMhIobF4NAmo7IVJ0BoGiJ1kN6a5SFLGlg7RbmNVhpX57dM+VsUB
-nOXIyAMWLnsuOSGyS1Jn22AeUXEZ/hnentjkGPNEryvqKvU/0CuDefXvuBTyIHyR
-rhKefTQOrIl25YUUMgy/nHt51kQD16CrDJ2mFcyL6LaUy7RgXmjVZzGbXn1ysmot
-z6y/2cx+LUnvYjx0AhMeIZ8cdt+X6/8DsIiQCOVkg1DsBvLNILA463FnwIXAl7V9
-kmlnq8VRSnusG65cP4CgOln/RX+XpHKSnRFR4q5CVVMtdl4QClxQIDRJ6zwBxwJp
-+3pyGhML6BtMuw0x/Gu/cD9nxLt3wep2yHOtXvDncMDeAUVvPdB51yusHYvIPoAn
-KMZ5nQ4yPUrEtK5yzZgdhiLXpPwtkuRcqCSgxGVT+cxYCD9QVZ8AxlFMcQ/Cl4YP
-++WuhCwhNWjf3ISxDAUYb5V+u5UFuR86ri1t/6sUiX9mYD7xE951IOttgCqUfFx0
-IDjyiD9g6W4muuAFdCDFkVPA8BkMo4Pi42F/d8KYcjafbvnfR0ZvAmlYs4rCkx9h
-qnTNudYVOA9BesBmREwj
-=7aXV
+iQIcBAEBAgAGBQJToWKmAAoJEBx+YmzsjxAgkckP+wer6Qink/KWyr0pU+No7aAg
+fLWZ4xU7VVMWcrUHgj7Iv2L2Yb8kPlhv24+YtlNsBG0RnTUijtYfRL6YT7T/EE/U
+jRoq2oCPM+zFl4h1JQ5PAITIqMkCpHP5Oa1Vo5drFRZZc57I19ugKZxgZQe8rif6
+Jrp1uhGZuZ4IpelSpgfCqnqdXiiuj73Unn1hl4x5Fxthq1LjOm6+rywai+9ex5Z1
+CBrCRpEAfffV94ewAQsj2/Wa/APChkW1RLhnKxG7jFG0GMu/dscKy/p9ppEld3gb
++j2Q/V1j6o6KAJkKidWckC1ok/NHmzlTO8cDSYQGAZ3D+ZSiZnutODQluP63zCwr
+ydYWJqnACiwZh6EkolAsf5zZlLhIf33nehdlSd24GDdYfeMLoTC0kY5VWIvIi3Uz
+WsIPdlA81c6Zc244JC7Tww24fVygx7oVT0uDUhLMqKzApiNimA6RSAoQYfsTSbcH
+9e66R+qlpndn4TJg5BSQS7ASSBEA4+VI4JJ/Mz6KZwgJ2MJF+CzXP1BfKhjWlZfJ
+EAc+7aps+yqPVd+XR/3DXjdlUrjsjyZ1+jTK/F5gCpI2H19WM+xBwOFTD/1yIEER
+frGvpvoHOR1ttzWeby/QTIao3H6SqOADDKZ8/lss784PMEfNFk+DKH50bST7DQmd
+WKEDWrdNMDye25i5BV3z
+=TEtl
 -----END PGP SIGNATURE-----
 
---8kI7hWEHMS8Z+7/0--
+--pFej7zHSL6C5fFIz--
