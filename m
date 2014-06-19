@@ -1,194 +1,218 @@
-From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 12/20] clk: sunxi: Add A23 APB0 support
- to sun6i-a31-apb0-clk
-Date: Thu, 19 Jun 2014 11:28:47 +0200
-Message-ID: <20140619092847.GW19730@lukather>
-References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-13-git-send-email-wens@csie.org>
- <20140618102623.GQ19730@lukather>
- <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ@mail.gmail.com>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH v4 01/13] arm: fiq: Add callbacks to manage FIQ routings
+Date: Thu, 19 Jun 2014 11:38:11 +0100
+Message-ID: <1403174303-25456-2-git-send-email-daniel.thompson@linaro.org>
+References: <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
+ <1403174303-25456-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="9I0HVnGRacHebCDW"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBHO3RKOQKGQEWZZBF5I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1403174303-25456-1-git-send-email-daniel.thompson@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jason Wessel <jason.wessel@windriver.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Thompson <daniel.thompson@linaro.org>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, Fabio Estevam <festevam@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, patches@linaro.org, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+Currently enable_fiq/disable_fiq use a simple offset to convert an IRQ
+virq into a FIQ virq. This is too inflexible for multi-platform kernels
+and makes runtime error checking impossible.
 
---9I0HVnGRacHebCDW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We solve this by introducing a flexible mapping that allows interrupt
+controllers that support FIQ to register those mappings. This, in turn,
+makes it much possible for drivers in DT kernels to install FIQ handlers
+without knowing anything about the interrupt controller.
 
-On Thu, Jun 19, 2014 at 12:33:41PM +0800, Chen-Yu Tsai wrote:
-> On Wed, Jun 18, 2014 at 6:26 PM, Maxime Ripard
-> <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> > On Tue, Jun 17, 2014 at 10:52:49PM +0800, Chen-Yu Tsai wrote:
-> >> The A23 has an almost identical PRCM clock tree. The difference in
-> >> the APB0 clock is the smallest divisor is 1, instead of 2.
-> >>
-> >> This patch extends the sun6i-a31-apb0-clk driver to take divider
-> >> tables associated to compatibles, and adds a compatible for the A23
-> >> variant.
-> >>
-> >> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-> >> ---
-> >>  Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
-> >>  drivers/clk/sunxi/clk-sun6i-apb0.c                | 28 ++++++++++++++=
-++++-----
-> >>  2 files changed, 23 insertions(+), 6 deletions(-)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Docum=
-entation/devicetree/bindings/clock/sunxi.txt
-> >> index af9e47d..e3a47ec 100644
-> >> --- a/Documentation/devicetree/bindings/clock/sunxi.txt
-> >> +++ b/Documentation/devicetree/bindings/clock/sunxi.txt
-> >> @@ -28,6 +28,7 @@ Required properties:
-> >>       "allwinner,sun8i-a23-ahb1-gates-clk" - for the AHB1 gates on A23
-> >>       "allwinner,sun4i-a10-apb0-clk" - for the APB0 clock
-> >>       "allwinner,sun6i-a31-apb0-clk" - for the APB0 clock on A31
-> >> +     "allwinner,sun8i-a23-apb0-clk" - for the APB0 clock on A23
-> >>       "allwinner,sun4i-a10-apb0-gates-clk" - for the APB0 gates on A10
-> >>       "allwinner,sun5i-a13-apb0-gates-clk" - for the APB0 gates on A13
-> >>       "allwinner,sun5i-a10s-apb0-gates-clk" - for the APB0 gates on A1=
-0s
-> >> diff --git a/drivers/clk/sunxi/clk-sun6i-apb0.c b/drivers/clk/sunxi/cl=
-k-sun6i-apb0.c
-> >> index 11f17c3..2197ac7 100644
-> >> --- a/drivers/clk/sunxi/clk-sun6i-apb0.c
-> >> +++ b/drivers/clk/sunxi/clk-sun6i-apb0.c
-> >> @@ -11,6 +11,7 @@
-> >>  #include <linux/clk-provider.h>
-> >>  #include <linux/module.h>
-> >>  #include <linux/of.h>
-> >> +#include <linux/of_device.h>
-> >>  #include <linux/platform_device.h>
-> >>
-> >>  /*
-> >> @@ -28,6 +29,21 @@ static const struct clk_div_table sun6i_a31_apb0_di=
-vs[] =3D {
->=20
-> For reference:
->=20
-> static const struct clk_div_table sun6i_a31_apb0_divs[] =3D {
->         { .val =3D 0, .div =3D 2, },
->         { .val =3D 1, .div =3D 2, },
->         { .val =3D 2, .div =3D 4, },
->         { .val =3D 3, .div =3D 8, },
->         { /* sentinel */ },
-> };
->=20
->=20
-> >>       { /* sentinel */ },
-> >>  };
-> >>
-> >> +/* The A23 APB0 clock has a standard power of 2 divisor */
-> >
-> > Why not just pass CLK_DIVIDER_POWER_OF_TWO then, instead of a table?
->=20
-> The A31 APB0 clock uses a table for the odd /2 divisor for value 0.
-> The standard table I'm using for the A23 is just to keep it simple
-> and alike.
->=20
-> >> +static const struct clk_div_table sun8i_a23_apb0_divs[] =3D {
-> >> +     { .val =3D 0, .div =3D 1, },
-> >> +     { .val =3D 1, .div =3D 2, },
-> >> +     { .val =3D 2, .div =3D 4, },
-> >> +     { .val =3D 3, .div =3D 8, },
-> >> +     { /* sentinel */ },
-> >> +};
-> >> +
-> >> +const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] =3D {
-> >> +     { .compatible =3D "allwinner,sun6i-a31-apb0-clk", .data =3D &sun=
-6i_a31_apb0_divs },
-> >> +     { .compatible =3D "allwinner,sun8i-a23-apb0-clk", .data =3D &sun=
-8i_a23_apb0_divs },
-> >> +     { /* sentinel */ }
-> >> +};
-> >> +
-> >>  static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
-> >>  {
-> >>       struct device_node *np =3D pdev->dev.of_node;
-> >> @@ -36,12 +52,17 @@ static int sun6i_a31_apb0_clk_probe(struct platfor=
-m_device *pdev)
-> >>       struct resource *r;
-> >>       void __iomem *reg;
-> >>       struct clk *clk;
-> >> +     const struct of_device_id *device;
-> >>
-> >>       r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >>       reg =3D devm_ioremap_resource(&pdev->dev, r);
-> >>       if (IS_ERR(reg))
-> >>               return PTR_ERR(reg);
-> >>
-> >> +     device =3D of_match_device(sun6i_a31_apb0_clk_dt_ids, &pdev->dev=
-);
-> >> +     if (!device)
-> >> +             return -EINVAL;
-> >> +
-> >>       clk_parent =3D of_clk_get_parent_name(np, 0);
-> >>       if (!clk_parent)
-> >>               return -EINVAL;
-> >> @@ -49,7 +70,7 @@ static int sun6i_a31_apb0_clk_probe(struct platform_=
-device *pdev)
-> >>       of_property_read_string(np, "clock-output-names", &clk_name);
-> >>
-> >>       clk =3D clk_register_divider_table(&pdev->dev, clk_name, clk_par=
-ent,
-> >> -                                      0, reg, 0, 2, 0, sun6i_a31_apb0=
-_divs,
-> >> +                                      0, reg, 0, 2, 0, device->data,
-> >
-> > I'm not sure that it will actually work for the A31, since it does
-> > define some dividers anyway, and the divider table is !NULL, even
-> > though there's actually no dividers defined.
->=20
-> I'm not following. The A31 does have a table defined. It's just cut
-> off in this patch. I asked Boris to add the table when he was working
-> on the A31 PRCM clocks. See above.
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Nicolas Pitre <nico@linaro.org>
+---
+ arch/arm/include/asm/fiq.h |   7 +++
+ arch/arm/kernel/fiq.c      | 103 ++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 108 insertions(+), 2 deletions(-)
 
-Ah right. My bad.
-
-If these two clocks are these different though, maybe it would just be
-easier to add a new driver. These are trivial enough anyway.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---9I0HVnGRacHebCDW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJToq1PAAoJEBx+YmzsjxAg5tUP/2stiaLgscHuFsIat0WDUwmt
-5nhU0wKP5YyskkDpsLncJizyBggF9DS6/CopS6Lr76v2R9B4s4knGHtSOsQ8YNFR
-/Ea1NNRd4zhwQSFX0MVH2JA/XcfQ0/54rXjEBqmoXTyH4IdJgkqrLyr98ayqBgtA
-txE2rxpHTlns8H4LhqCDu/D+pcch45MCcn5UP8Irwu8wZPfhgxr3XXDqO6MDdenX
-02m53fKzIKHUtZXt2TE2Dr65Rrz2hloCUEZ2sbey6s6D73CTNwK019Xkm/3IOeri
-Mzg4Ielz14mKZf2UeLUzjBPllabdnk1QyE1wEBcDPqDF/ihtHASXEKmow2tydkt/
-a3/gGQD26RgrhMEujW0xQCeS52l6lIAG8QQA7ExPKhOp4J+D43u53SPy8Sv8T00O
-1JCawxb4lGHFTdZx4hCqazWZQFKFo2YV6KkJUzmjNeQzH1Ful1ljHYCcE11Zy6H/
-loRC/irv+SOozuNosRo65/jU+XR9baLc+R9rz/jX6PWRPqXsJ3HirJBChIElOYGG
-mZjeHmnpfhrj4hTku/Yxaz5R1dDpBcQnXIFPc/6RzW2t2sjtjdJaUE7F5p46rgBj
-V+W5OSTdEyCJwda5ZVBYUXXQfkr+ahmCfEbzEf5XFPite1rr8LATA3zWUUyNx9EE
-LUbrLpFI9jgRTybvZiq7
-=01Zg
------END PGP SIGNATURE-----
-
---9I0HVnGRacHebCDW--
+diff --git a/arch/arm/include/asm/fiq.h b/arch/arm/include/asm/fiq.h
+index d493d0b..a7806ef 100644
+--- a/arch/arm/include/asm/fiq.h
++++ b/arch/arm/include/asm/fiq.h
+@@ -18,6 +18,11 @@
+ 
+ #include <asm/ptrace.h>
+ 
++struct fiq_chip {
++	void (*fiq_enable)(struct irq_data *data);
++	void (*fiq_disable)(struct irq_data *data);
++};
++
+ struct fiq_handler {
+ 	struct fiq_handler *next;
+ 	/* Name
+@@ -38,6 +43,8 @@ extern void release_fiq(struct fiq_handler *f);
+ extern void set_fiq_handler(void *start, unsigned int length);
+ extern void enable_fiq(int fiq);
+ extern void disable_fiq(int fiq);
++extern bool has_fiq(int fiq);
++extern void fiq_register_mapping(int irq, struct fiq_chip *chip);
+ 
+ /* helpers defined in fiqasm.S: */
+ extern void __set_fiq_regs(unsigned long const *regs);
+diff --git a/arch/arm/kernel/fiq.c b/arch/arm/kernel/fiq.c
+index 918875d..567f8fd 100644
+--- a/arch/arm/kernel/fiq.c
++++ b/arch/arm/kernel/fiq.c
+@@ -40,6 +40,9 @@
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/seq_file.h>
++#include <linux/irq.h>
++#include <linux/radix-tree.h>
++#include <linux/slab.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/cp15.h>
+@@ -52,7 +55,15 @@
+ 		(unsigned)&vector_fiq_offset;		\
+ 	})
+ 
++struct fiq_data {
++	struct fiq_chip *fiq_chip;
++	struct irq_data *irq_data;
++};
++
+ static unsigned long no_fiq_insn;
++static int fiq_start = -1;
++static RADIX_TREE(fiq_data_tree, GFP_KERNEL);
++static DEFINE_MUTEX(fiq_data_mutex);
+ 
+ /* Default reacquire function
+  * - we always relinquish FIQ control
+@@ -127,18 +138,65 @@ void release_fiq(struct fiq_handler *f)
+ 	while (current_fiq->fiq_op(current_fiq->dev_id, 0));
+ }
+ 
+-static int fiq_start;
++static struct fiq_data *lookup_fiq_data(int fiq)
++{
++	struct fiq_data *data;
++
++	rcu_read_lock();
++	data = radix_tree_lookup(&fiq_data_tree, fiq);
++	rcu_read_unlock();
++
++	return data;
++}
+ 
+ void enable_fiq(int fiq)
+ {
++	struct fiq_data *data = lookup_fiq_data(fiq);
++
++	if (data) {
++		if (data->fiq_chip->fiq_enable)
++			data->fiq_chip->fiq_enable(data->irq_data);
++		enable_irq(fiq);
++		return;
++	}
++
++	if (WARN_ON(fiq_start == -1))
++		return;
++
+ 	enable_irq(fiq + fiq_start);
+ }
+ 
+ void disable_fiq(int fiq)
+ {
++	struct fiq_data *data = lookup_fiq_data(fiq);
++
++	if (data) {
++		if (data->fiq_chip->fiq_disable)
++			data->fiq_chip->fiq_disable(data->irq_data);
++		disable_irq(fiq);
++		return;
++	}
++
++	if (WARN_ON(fiq_start == -1))
++		return;
++
+ 	disable_irq(fiq + fiq_start);
+ }
+ 
++bool has_fiq(int fiq)
++{
++	struct fiq_data *data = lookup_fiq_data(fiq);
++
++	if (data)
++		return true;
++
++	if (fiq_start == -1)
++		return false;
++
++	return fiq > fiq_start;
++}
++EXPORT_SYMBOL(has_fiq);
++
+ EXPORT_SYMBOL(set_fiq_handler);
+ EXPORT_SYMBOL(__set_fiq_regs);	/* defined in fiqasm.S */
+ EXPORT_SYMBOL(__get_fiq_regs);	/* defined in fiqasm.S */
+@@ -147,9 +205,50 @@ EXPORT_SYMBOL(release_fiq);
+ EXPORT_SYMBOL(enable_fiq);
+ EXPORT_SYMBOL(disable_fiq);
+ 
++/*
++ * Add a mapping from a Linux irq to the fiq data.
++ */
++void fiq_register_mapping(int irq, struct fiq_chip *chip)
++{
++	struct fiq_data *fiq_data = NULL;
++	int res;
++
++	/* fiq_register_mapping can't be mixed with init_FIQ */
++	BUG_ON(fiq_start != -1);
++
++	fiq_data = kmalloc(sizeof(*fiq_data), GFP_KERNEL);
++	if (!fiq_data)
++		goto err;
++
++	fiq_data->fiq_chip = chip;
++	fiq_data->irq_data = irq_get_irq_data(irq);
++	BUG_ON(!fiq_data->irq_data);
++
++	mutex_lock(&fiq_data_mutex);
++	res = radix_tree_insert(&fiq_data_tree, irq, fiq_data);
++	mutex_unlock(&fiq_data_mutex);
++	if (res)
++		goto err;
++
++	return;
++
++err:
++	kfree(fiq_data);
++	pr_err("fiq: Cannot register mapping %d\n", irq);
++}
++
++/*
++ * Set the offset between normal IRQs and their FIQ shadows.
++ */
+ void __init init_FIQ(int start)
+ {
++	fiq_start = start;
++}
++
++static int __init init_default_fiq_handler(void)
++{
+ 	unsigned offset = FIQ_OFFSET;
+ 	no_fiq_insn = *(unsigned long *)(0xffff0000 + offset);
+-	fiq_start = start;
++	return 0;
+ }
++pure_initcall(init_default_fiq_handler);
+-- 
+1.9.3
