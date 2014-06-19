@@ -1,466 +1,194 @@
-From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Subject: [RESEND PATCH V8 2/2] serial/uart/8250: Add tunable RX interrupt
- trigger I/F of FIFO buffers
-Date: Thu, 19 Jun 2014 07:55:35 +0000
-Message-ID: <20140619075535.12636.92251.stgit@yuno-kbuild.novalocal>
-References: <20140619075529.12636.38266.stgit@yuno-kbuild.novalocal>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2 12/20] clk: sunxi: Add A23 APB0 support
+ to sun6i-a31-apb0-clk
+Date: Thu, 19 Jun 2014 11:28:47 +0200
+Message-ID: <20140619092847.GW19730@lukather>
+References: <1403016777-15121-1-git-send-email-wens@csie.org>
+ <1403016777-15121-13-git-send-email-wens@csie.org>
+ <20140618102623.GQ19730@lukather>
+ <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ@mail.gmail.com>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140619075529.12636.38266.stgit@yuno-kbuild.novalocal>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>
-Cc: Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="9I0HVnGRacHebCDW"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBHO3RKOQKGQEWZZBF5I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add tunable RX interrupt trigger I/F of FIFO buffers.
 
-Serial devices are used as not only message communication devices but control
-or sending communication devices. For the latter uses, normally small data
-will be exchanged, so user applications want to receive data unit as soon as
-possible for real-time tendency. If we have a sensor which sends a 1 byte data
-each time and must control a device based on the sensor feedback, the RX
-interrupt should be triggered for each data.
+--9I0HVnGRacHebCDW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-According to HW specification of serial UART devices, RX interrupt trigger
-can be changed, but the trigger is hard-coded. For example, RX interrupt trigger
-in 16550A can be set to 1, 4, 8, or 14 bytes for HW, but current driver sets
-the trigger to only 8bytes.
+On Thu, Jun 19, 2014 at 12:33:41PM +0800, Chen-Yu Tsai wrote:
+> On Wed, Jun 18, 2014 at 6:26 PM, Maxime Ripard
+> <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+> > On Tue, Jun 17, 2014 at 10:52:49PM +0800, Chen-Yu Tsai wrote:
+> >> The A23 has an almost identical PRCM clock tree. The difference in
+> >> the APB0 clock is the smallest divisor is 1, instead of 2.
+> >>
+> >> This patch extends the sun6i-a31-apb0-clk driver to take divider
+> >> tables associated to compatibles, and adds a compatible for the A23
+> >> variant.
+> >>
+> >> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> >> ---
+> >>  Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
+> >>  drivers/clk/sunxi/clk-sun6i-apb0.c                | 28 ++++++++++++++=
+++++-----
+> >>  2 files changed, 23 insertions(+), 6 deletions(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Docum=
+entation/devicetree/bindings/clock/sunxi.txt
+> >> index af9e47d..e3a47ec 100644
+> >> --- a/Documentation/devicetree/bindings/clock/sunxi.txt
+> >> +++ b/Documentation/devicetree/bindings/clock/sunxi.txt
+> >> @@ -28,6 +28,7 @@ Required properties:
+> >>       "allwinner,sun8i-a23-ahb1-gates-clk" - for the AHB1 gates on A23
+> >>       "allwinner,sun4i-a10-apb0-clk" - for the APB0 clock
+> >>       "allwinner,sun6i-a31-apb0-clk" - for the APB0 clock on A31
+> >> +     "allwinner,sun8i-a23-apb0-clk" - for the APB0 clock on A23
+> >>       "allwinner,sun4i-a10-apb0-gates-clk" - for the APB0 gates on A10
+> >>       "allwinner,sun5i-a13-apb0-gates-clk" - for the APB0 gates on A13
+> >>       "allwinner,sun5i-a10s-apb0-gates-clk" - for the APB0 gates on A1=
+0s
+> >> diff --git a/drivers/clk/sunxi/clk-sun6i-apb0.c b/drivers/clk/sunxi/cl=
+k-sun6i-apb0.c
+> >> index 11f17c3..2197ac7 100644
+> >> --- a/drivers/clk/sunxi/clk-sun6i-apb0.c
+> >> +++ b/drivers/clk/sunxi/clk-sun6i-apb0.c
+> >> @@ -11,6 +11,7 @@
+> >>  #include <linux/clk-provider.h>
+> >>  #include <linux/module.h>
+> >>  #include <linux/of.h>
+> >> +#include <linux/of_device.h>
+> >>  #include <linux/platform_device.h>
+> >>
+> >>  /*
+> >> @@ -28,6 +29,21 @@ static const struct clk_div_table sun6i_a31_apb0_di=
+vs[] =3D {
+>=20
+> For reference:
+>=20
+> static const struct clk_div_table sun6i_a31_apb0_divs[] =3D {
+>         { .val =3D 0, .div =3D 2, },
+>         { .val =3D 1, .div =3D 2, },
+>         { .val =3D 2, .div =3D 4, },
+>         { .val =3D 3, .div =3D 8, },
+>         { /* sentinel */ },
+> };
+>=20
+>=20
+> >>       { /* sentinel */ },
+> >>  };
+> >>
+> >> +/* The A23 APB0 clock has a standard power of 2 divisor */
+> >
+> > Why not just pass CLK_DIVIDER_POWER_OF_TWO then, instead of a table?
+>=20
+> The A31 APB0 clock uses a table for the odd /2 divisor for value 0.
+> The standard table I'm using for the A23 is just to keep it simple
+> and alike.
+>=20
+> >> +static const struct clk_div_table sun8i_a23_apb0_divs[] =3D {
+> >> +     { .val =3D 0, .div =3D 1, },
+> >> +     { .val =3D 1, .div =3D 2, },
+> >> +     { .val =3D 2, .div =3D 4, },
+> >> +     { .val =3D 3, .div =3D 8, },
+> >> +     { /* sentinel */ },
+> >> +};
+> >> +
+> >> +const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] =3D {
+> >> +     { .compatible =3D "allwinner,sun6i-a31-apb0-clk", .data =3D &sun=
+6i_a31_apb0_divs },
+> >> +     { .compatible =3D "allwinner,sun8i-a23-apb0-clk", .data =3D &sun=
+8i_a23_apb0_divs },
+> >> +     { /* sentinel */ }
+> >> +};
+> >> +
+> >>  static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
+> >>  {
+> >>       struct device_node *np =3D pdev->dev.of_node;
+> >> @@ -36,12 +52,17 @@ static int sun6i_a31_apb0_clk_probe(struct platfor=
+m_device *pdev)
+> >>       struct resource *r;
+> >>       void __iomem *reg;
+> >>       struct clk *clk;
+> >> +     const struct of_device_id *device;
+> >>
+> >>       r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >>       reg =3D devm_ioremap_resource(&pdev->dev, r);
+> >>       if (IS_ERR(reg))
+> >>               return PTR_ERR(reg);
+> >>
+> >> +     device =3D of_match_device(sun6i_a31_apb0_clk_dt_ids, &pdev->dev=
+);
+> >> +     if (!device)
+> >> +             return -EINVAL;
+> >> +
+> >>       clk_parent =3D of_clk_get_parent_name(np, 0);
+> >>       if (!clk_parent)
+> >>               return -EINVAL;
+> >> @@ -49,7 +70,7 @@ static int sun6i_a31_apb0_clk_probe(struct platform_=
+device *pdev)
+> >>       of_property_read_string(np, "clock-output-names", &clk_name);
+> >>
+> >>       clk =3D clk_register_divider_table(&pdev->dev, clk_name, clk_par=
+ent,
+> >> -                                      0, reg, 0, 2, 0, sun6i_a31_apb0=
+_divs,
+> >> +                                      0, reg, 0, 2, 0, device->data,
+> >
+> > I'm not sure that it will actually work for the A31, since it does
+> > define some dividers anyway, and the divider table is !NULL, even
+> > though there's actually no dividers defined.
+>=20
+> I'm not following. The A31 does have a table defined. It's just cut
+> off in this patch. I asked Boris to add the table when he was working
+> on the A31 PRCM clocks. See above.
 
-This patch makes some devices change RX interrupt trigger from userland.
+Ah right. My bad.
 
-<How to use>
-- Read current setting
- # cat /sys/class/tty/ttyS0/rx_trig_bytes
- 8
+If these two clocks are these different though, maybe it would just be
+easier to add a new driver. These are trivial enough anyway.
 
-- Write user setting
- # echo 1 > /sys/class/tty/ttyS0/rx_trig_bytes
- # cat /sys/class/tty/ttyS0/rx_trig_bytes
- 1
+Maxime
 
-<Support uart devices>
-- 16550A and Tegra (1, 4, 8, or 14 bytes)
-- 16650V2 (8, 16, 24, or 28 bytes)
-- 16654 (8, 16, 56, or 60 bytes)
-- 16750 (1, 16, 32, or 56 bytes)
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-<Change log>
-Changes in V8:
- - Divide this patch from V7's patch based on Greg's comment
+--9I0HVnGRacHebCDW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Changes in V7:
- - Add Documentation
- - Change I/F name from rx_int_trig to rx_trig_bytes because the name
-   rx_int_trig is hard to understand how users specify the value
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Changes in V6:
- - Move FCR_RX_TRIG_* definition in 8250.h to include/uapi/linux/serial_reg.h,
-   rename those to UART_FCR_R_TRIG_*, and use UART_FCR_TRIGGER_MASK to
-   UART_FCR_R_TRIG_BITS()
- - Change following function names:
-    convert_fcr2val() => fcr_get_rxtrig_bytes()
-    convert_val2rxtrig() => bytes_to_fcr_rxtrig()
- - Fix typo in serial8250_do_set_termios()
- - Delete the verbose error message pr_info() in bytes_to_fcr_rxtrig()
- - Rename *rx_int_trig/rx_trig* to *rxtrig* for several functions or variables
-   (but UI remains rx_int_trig)
- - Change the meaningless variable name 'val' to 'bytes' following functions:
-    fcr_get_rxtrig_bytes(), bytes_to_fcr_rxtrig(), do_set_rxtrig(),
-    do_serial8250_set_rxtrig(), and serial8250_set_attr_rxtrig()
- - Use up->fcr in order to get rxtrig_bytes instead of rx_trig_raw in
-   fcr_get_rxtrig_bytes()
- - Use conf_type->rxtrig_bytes[0] instead of switch statement for support check
-   in register_dev_spec_attr_grp()
- - Delete the checking whether a user changed FCR or not when minimum buffer
-   is needed in serial8250_do_set_termios()
+iQIcBAEBAgAGBQJToq1PAAoJEBx+YmzsjxAg5tUP/2stiaLgscHuFsIat0WDUwmt
+5nhU0wKP5YyskkDpsLncJizyBggF9DS6/CopS6Lr76v2R9B4s4knGHtSOsQ8YNFR
+/Ea1NNRd4zhwQSFX0MVH2JA/XcfQ0/54rXjEBqmoXTyH4IdJgkqrLyr98ayqBgtA
+txE2rxpHTlns8H4LhqCDu/D+pcch45MCcn5UP8Irwu8wZPfhgxr3XXDqO6MDdenX
+02m53fKzIKHUtZXt2TE2Dr65Rrz2hloCUEZ2sbey6s6D73CTNwK019Xkm/3IOeri
+Mzg4Ielz14mKZf2UeLUzjBPllabdnk1QyE1wEBcDPqDF/ihtHASXEKmow2tydkt/
+a3/gGQD26RgrhMEujW0xQCeS52l6lIAG8QQA7ExPKhOp4J+D43u53SPy8Sv8T00O
+1JCawxb4lGHFTdZx4hCqazWZQFKFo2YV6KkJUzmjNeQzH1Ful1ljHYCcE11Zy6H/
+loRC/irv+SOozuNosRo65/jU+XR9baLc+R9rz/jX6PWRPqXsJ3HirJBChIElOYGG
+mZjeHmnpfhrj4hTku/Yxaz5R1dDpBcQnXIFPc/6RzW2t2sjtjdJaUE7F5p46rgBj
+V+W5OSTdEyCJwda5ZVBYUXXQfkr+ahmCfEbzEf5XFPite1rr8LATA3zWUUyNx9EE
+LUbrLpFI9jgRTybvZiq7
+=01Zg
+-----END PGP SIGNATURE-----
 
-Changes in V5.1:
- - Fix FCR_RX_TRIG_MAX_STATE definition
-
-Changes in V5:
- - Support Tegra, 16650V2, 16654, and 16750
- - Store default FCR value to up->fcr when the port is first created
- - Add rx_trig_byte[] in uart_config[] for each device and use rx_trig_byte[]
-   in convert_fcr2val() and convert_val2rxtrig()
-
-Changes in V4:
- - Introduce fifo_bug flag in uart_8250_port structure
-   This is enabled only when parity is enabled and UART_BUG_PARITY is enabled
-   for up->bugs. If this flag is enabled, user cannot set RX trigger.
- - Return -EOPNOTSUPP when it does not support device at convert_fcr2val() and
-   at convert_val2rxtrig()
- - Set the nearest lower RX trigger when users input a meaningless value at
-   convert_val2rxtrig()
- - Check whether p->fcr is existing at serial8250_clear_and_reinit_fifos()
- - Set fcr = up->fcr in the begging of serial8250_do_set_termios()
-
-Changes in V3:
- - Change I/F from ioctl(2) to sysfs(rx_int_trig)
-
-Changed in V2:
- - Use _IOW for TIOCSFIFORTRIG definition
- - Pass the interrupt trigger value itself
-
-Signed-off-by: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
----
- Documentation/ABI/testing/sysfs-tty |   16 +++
- drivers/tty/serial/8250/8250.h      |    2 
- drivers/tty/serial/8250/8250_core.c |  173 ++++++++++++++++++++++++++++++++---
- include/linux/serial_8250.h         |    2 
- include/uapi/linux/serial_reg.h     |    5 +
- 5 files changed, 183 insertions(+), 15 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
-index ad22fb0..9eb3c2b 100644
---- a/Documentation/ABI/testing/sysfs-tty
-+++ b/Documentation/ABI/testing/sysfs-tty
-@@ -138,3 +138,19 @@ Description:
- 
- 		 These sysfs values expose the TIOCGSERIAL interface via
- 		 sysfs rather than via ioctls.
-+
-+What:		/sys/class/tty/ttyS0/rx_trig_bytes
-+Date:		May 2014
-+Contact:	Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-+Description:
-+		 Shows current RX interrupt trigger bytes or sets the
-+		 user specified value to change it for the FIFO buffer.
-+		 Users can show or set this value regardless of opening the
-+		 serial device file or not.
-+
-+		 The RX trigger can be set one of four kinds of values for UART
-+		 serials. When users input a meaning less value to this I/F,
-+		 the RX trigger is changed to the nearest lower value for the
-+		 device specification. For example, when user sets 7bytes on
-+		 16550A, which has 1/4/8/14 bytes trigger, the RX trigger is
-+		 automatically changed to 4 bytes.
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 1ebf853..1b08c91 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -12,6 +12,7 @@
-  */
- 
- #include <linux/serial_8250.h>
-+#include <linux/serial_reg.h>
- #include <linux/dmaengine.h>
- 
- struct uart_8250_dma {
-@@ -60,6 +61,7 @@ struct serial8250_config {
- 	unsigned short	fifo_size;
- 	unsigned short	tx_loadsz;
- 	unsigned char	fcr;
-+	unsigned char	rxtrig_bytes[UART_FCR_R_TRIG_MAX_STATE];
- 	unsigned int	flags;
- };
- 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 27f7ad6..442d518 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -31,7 +31,6 @@
- #include <linux/tty.h>
- #include <linux/ratelimit.h>
- #include <linux/tty_flip.h>
--#include <linux/serial_reg.h>
- #include <linux/serial_core.h>
- #include <linux/serial.h>
- #include <linux/serial_8250.h>
-@@ -161,6 +160,7 @@ static const struct serial8250_config uart_config[] = {
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
- 	[PORT_CIRRUS] = {
-@@ -180,6 +180,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 |
- 				  UART_FCR_T_TRIG_00,
-+		.rxtrig_bytes	= {8, 16, 24, 28},
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
- 	[PORT_16750] = {
-@@ -188,6 +189,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 64,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
- 				  UART_FCR7_64BYTE,
-+		.rxtrig_bytes	= {1, 16, 32, 56},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_AFE,
- 	},
- 	[PORT_STARTECH] = {
-@@ -209,6 +211,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 32,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 |
- 				  UART_FCR_T_TRIG_10,
-+		.rxtrig_bytes	= {8, 16, 56, 60},
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
- 	[PORT_16850] = {
-@@ -266,6 +269,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 8,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 |
- 				  UART_FCR_T_TRIG_01,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO | UART_CAP_RTOIE,
- 	},
- 	[PORT_XR17D15X] = {
-@@ -531,11 +535,8 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
- 
- void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
- {
--	unsigned char fcr;
--
- 	serial8250_clear_fifos(p);
--	fcr = uart_config[p->port.type].fcr;
--	serial_out(p, UART_FCR, fcr);
-+	serial_out(p, UART_FCR, p->fcr);
- }
- EXPORT_SYMBOL_GPL(serial8250_clear_and_reinit_fifos);
- 
-@@ -2270,10 +2271,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- {
- 	struct uart_8250_port *up =
- 		container_of(port, struct uart_8250_port, port);
--	unsigned char cval, fcr = 0;
-+	unsigned char cval;
- 	unsigned long flags;
- 	unsigned int baud, quot;
--	int fifo_bug = 0;
- 
- 	switch (termios->c_cflag & CSIZE) {
- 	case CS5:
-@@ -2296,7 +2296,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (termios->c_cflag & PARENB) {
- 		cval |= UART_LCR_PARITY;
- 		if (up->bugs & UART_BUG_PARITY)
--			fifo_bug = 1;
-+			up->fifo_bug = true;
- 	}
- 	if (!(termios->c_cflag & PARODD))
- 		cval |= UART_LCR_EPAR;
-@@ -2320,10 +2320,10 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		quot++;
- 
- 	if (up->capabilities & UART_CAP_FIFO && port->fifosize > 1) {
--		fcr = uart_config[port->type].fcr;
--		if ((baud < 2400 && !up->dma) || fifo_bug) {
--			fcr &= ~UART_FCR_TRIGGER_MASK;
--			fcr |= UART_FCR_TRIGGER_1;
-+		/* NOTE: If fifo_bug is not set, a user can set RX_trigger. */
-+		if ((baud < 2400 && !up->dma) || up->fifo_bug) {
-+			up->fcr &= ~UART_FCR_TRIGGER_MASK;
-+			up->fcr |= UART_FCR_TRIGGER_1;
- 		}
- 	}
- 
-@@ -2456,15 +2456,15 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * is written without DLAB set, this mode will be disabled.
- 	 */
- 	if (port->type == PORT_16750)
--		serial_port_out(port, UART_FCR, fcr);
-+		serial_port_out(port, UART_FCR, up->fcr);
- 
- 	serial_port_out(port, UART_LCR, cval);		/* reset DLAB */
- 	up->lcr = cval;					/* Save LCR */
- 	if (port->type != PORT_16750) {
- 		/* emulated UARTs (Lucent Venus 167x) need two steps */
--		if (fcr & UART_FCR_ENABLE_FIFO)
-+		if (up->fcr & UART_FCR_ENABLE_FIFO)
- 			serial_port_out(port, UART_FCR, UART_FCR_ENABLE_FIFO);
--		serial_port_out(port, UART_FCR, fcr);		/* set fcr */
-+		serial_port_out(port, UART_FCR, up->fcr);	/* set fcr */
- 	}
- 	serial8250_set_mctrl(port, port->mctrl);
- 	spin_unlock_irqrestore(&port->lock, flags);
-@@ -2657,6 +2657,146 @@ static int serial8250_request_port(struct uart_port *port)
- 	return ret;
- }
- 
-+static int fcr_get_rxtrig_bytes(struct uart_8250_port *up)
-+{
-+	const struct serial8250_config *conf_type = &uart_config[up->port.type];
-+	unsigned char bytes;
-+
-+	bytes = conf_type->rxtrig_bytes[UART_FCR_R_TRIG_BITS(up->fcr)];
-+
-+	return bytes ? bytes : -EOPNOTSUPP;
-+}
-+
-+static int bytes_to_fcr_rxtrig(struct uart_8250_port *up, unsigned char bytes)
-+{
-+	const struct serial8250_config *conf_type = &uart_config[up->port.type];
-+	int i;
-+
-+	if (!conf_type->rxtrig_bytes[UART_FCR_R_TRIG_BITS(UART_FCR_R_TRIG_00)])
-+		return -EOPNOTSUPP;
-+
-+	for (i = 1; i < UART_FCR_R_TRIG_MAX_STATE; i++) {
-+		if (bytes < conf_type->rxtrig_bytes[i])
-+			/* Use the nearest lower value */
-+			return (--i) << UART_FCR_R_TRIG_SHIFT;
-+	}
-+
-+	return UART_FCR_R_TRIG_11;
-+}
-+
-+static int do_get_rxtrig(struct tty_port *port)
-+{
-+	struct uart_state *state = container_of(port, struct uart_state, port);
-+	struct uart_port *uport = state->uart_port;
-+	struct uart_8250_port *up =
-+		container_of(uport, struct uart_8250_port, port);
-+
-+	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1)
-+		return -EINVAL;
-+
-+	return fcr_get_rxtrig_bytes(up);
-+}
-+
-+static int do_serial8250_get_rxtrig(struct tty_port *port)
-+{
-+	int rxtrig_bytes;
-+
-+	mutex_lock(&port->mutex);
-+	rxtrig_bytes = do_get_rxtrig(port);
-+	mutex_unlock(&port->mutex);
-+
-+	return rxtrig_bytes;
-+}
-+
-+static ssize_t serial8250_get_attr_rx_trig_bytes(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct tty_port *port = dev_get_drvdata(dev);
-+	int rxtrig_bytes;
-+
-+	rxtrig_bytes = do_serial8250_get_rxtrig(port);
-+	if (rxtrig_bytes < 0)
-+		return rxtrig_bytes;
-+
-+	return snprintf(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
-+}
-+
-+static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
-+{
-+	struct uart_state *state = container_of(port, struct uart_state, port);
-+	struct uart_port *uport = state->uart_port;
-+	struct uart_8250_port *up =
-+		container_of(uport, struct uart_8250_port, port);
-+	int rxtrig;
-+
-+	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1 ||
-+	    up->fifo_bug)
-+		return -EINVAL;
-+
-+	rxtrig = bytes_to_fcr_rxtrig(up, bytes);
-+	if (rxtrig < 0)
-+		return rxtrig;
-+
-+	serial8250_clear_fifos(up);
-+	up->fcr &= ~UART_FCR_TRIGGER_MASK;
-+	up->fcr |= (unsigned char)rxtrig;
-+	serial_out(up, UART_FCR, up->fcr);
-+	return 0;
-+}
-+
-+static int do_serial8250_set_rxtrig(struct tty_port *port, unsigned char bytes)
-+{
-+	int ret;
-+
-+	mutex_lock(&port->mutex);
-+	ret = do_set_rxtrig(port, bytes);
-+	mutex_unlock(&port->mutex);
-+
-+	return ret;
-+}
-+
-+static ssize_t serial8250_set_attr_rx_trig_bytes(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct tty_port *port = dev_get_drvdata(dev);
-+	unsigned char bytes;
-+	int ret;
-+
-+	if (!count)
-+		return -EINVAL;
-+
-+	ret = kstrtou8(buf, 10, &bytes);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = do_serial8250_set_rxtrig(port, bytes);
-+	if (ret < 0)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR(rx_trig_bytes, S_IRUSR | S_IWUSR | S_IRGRP,
-+		   serial8250_get_attr_rx_trig_bytes,
-+		   serial8250_set_attr_rx_trig_bytes);
-+
-+static struct attribute *serial8250_dev_attrs[] = {
-+	&dev_attr_rx_trig_bytes.attr,
-+	NULL,
-+	};
-+
-+static struct attribute_group serial8250_dev_attr_group = {
-+	.attrs = serial8250_dev_attrs,
-+	};
-+
-+static void register_dev_spec_attr_grp(struct uart_8250_port *up)
-+{
-+	const struct serial8250_config *conf_type = &uart_config[up->port.type];
-+
-+	if (conf_type->rxtrig_bytes[0])
-+		up->port.dev_spec_attr_group = &serial8250_dev_attr_group;
-+}
-+
- static void serial8250_config_port(struct uart_port *port, int flags)
- {
- 	struct uart_8250_port *up =
-@@ -2705,6 +2845,9 @@ static void serial8250_config_port(struct uart_port *port, int flags)
- 	if ((port->type == PORT_XR17V35X) ||
- 	   (port->type == PORT_XR17D15X))
- 		port->handle_irq = exar_handle_irq;
-+
-+	register_dev_spec_attr_grp(up);
-+	up->fcr = uart_config[up->port.type].fcr;
- }
- 
- static int
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index af47a8a..8d0c215 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -74,8 +74,10 @@ struct uart_8250_port {
- 	struct list_head	list;		/* ports on this IRQ */
- 	unsigned short		capabilities;	/* port capabilities */
- 	unsigned short		bugs;		/* port bugs */
-+	bool			fifo_bug;	/* min RX trigger if enabled */
- 	unsigned int		tx_loadsz;	/* transmit fifo load size */
- 	unsigned char		acr;
-+	unsigned char		fcr;
- 	unsigned char		ier;
- 	unsigned char		lcr;
- 	unsigned char		mcr;
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index 99b4705..df6c9ab 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -88,6 +88,11 @@
- #define UART_FCR6_T_TRIGGER_30	0x30 /* Mask for transmit trigger set at 30 */
- #define UART_FCR7_64BYTE	0x20 /* Go into 64 byte mode (TI16C750) */
- 
-+#define UART_FCR_R_TRIG_SHIFT		6
-+#define UART_FCR_R_TRIG_BITS(x)		\
-+	(((x) & UART_FCR_TRIGGER_MASK) >> UART_FCR_R_TRIG_SHIFT)
-+#define UART_FCR_R_TRIG_MAX_STATE	4
-+
- #define UART_LCR	3	/* Out: Line Control Register */
- /*
-  * Note: if the word length is 5 bits (UART_LCR_WLEN5), then setting 
+--9I0HVnGRacHebCDW--
