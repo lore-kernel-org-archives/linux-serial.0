@@ -1,139 +1,109 @@
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: Re: [PATCH v2 12/20] clk: sunxi: Add A23 APB0 support
- to sun6i-a31-apb0-clk
-Date: Thu, 19 Jun 2014 12:33:41 +0800
-Message-ID: <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ@mail.gmail.com>
-References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-13-git-send-email-wens@csie.org> <20140618102623.GQ19730@lukather>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Subject: [RESEND PATCH V8 0/2] serial/uart/8250: Introduce tunable RX
+ trigger I/F
+Date: Thu, 19 Jun 2014 07:55:30 +0000
+Message-ID: <20140619075529.12636.38266.stgit@yuno-kbuild.novalocal>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBOOQRGOQKGQETSTTHNQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20140618102623.GQ19730@lukather>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail7.hitachi.co.jp ([133.145.228.42]:33439 "EHLO
+	mail7.hitachi.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750975AbaFSHzf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 19 Jun 2014 03:55:35 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>
+Cc: Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On Wed, Jun 18, 2014 at 6:26 PM, Maxime Ripard
-<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> On Tue, Jun 17, 2014 at 10:52:49PM +0800, Chen-Yu Tsai wrote:
->> The A23 has an almost identical PRCM clock tree. The difference in
->> the APB0 clock is the smallest divisor is 1, instead of 2.
->>
->> This patch extends the sun6i-a31-apb0-clk driver to take divider
->> tables associated to compatibles, and adds a compatible for the A23
->> variant.
->>
->> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
->> ---
->>  Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
->>  drivers/clk/sunxi/clk-sun6i-apb0.c                | 28 ++++++++++++++++++-----
->>  2 files changed, 23 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Documentation/devicetree/bindings/clock/sunxi.txt
->> index af9e47d..e3a47ec 100644
->> --- a/Documentation/devicetree/bindings/clock/sunxi.txt
->> +++ b/Documentation/devicetree/bindings/clock/sunxi.txt
->> @@ -28,6 +28,7 @@ Required properties:
->>       "allwinner,sun8i-a23-ahb1-gates-clk" - for the AHB1 gates on A23
->>       "allwinner,sun4i-a10-apb0-clk" - for the APB0 clock
->>       "allwinner,sun6i-a31-apb0-clk" - for the APB0 clock on A31
->> +     "allwinner,sun8i-a23-apb0-clk" - for the APB0 clock on A23
->>       "allwinner,sun4i-a10-apb0-gates-clk" - for the APB0 gates on A10
->>       "allwinner,sun5i-a13-apb0-gates-clk" - for the APB0 gates on A13
->>       "allwinner,sun5i-a10s-apb0-gates-clk" - for the APB0 gates on A10s
->> diff --git a/drivers/clk/sunxi/clk-sun6i-apb0.c b/drivers/clk/sunxi/clk-sun6i-apb0.c
->> index 11f17c3..2197ac7 100644
->> --- a/drivers/clk/sunxi/clk-sun6i-apb0.c
->> +++ b/drivers/clk/sunxi/clk-sun6i-apb0.c
->> @@ -11,6 +11,7 @@
->>  #include <linux/clk-provider.h>
->>  #include <linux/module.h>
->>  #include <linux/of.h>
->> +#include <linux/of_device.h>
->>  #include <linux/platform_device.h>
->>
->>  /*
->> @@ -28,6 +29,21 @@ static const struct clk_div_table sun6i_a31_apb0_divs[] = {
+Hi Greg,
 
-For reference:
+This patch set introduces tunable RX interrupt trigger I/F for 8250 serials.
+I just split V7's patch up into 2 patches, and all functions are not changed
+from previous version. V6 patch was reviewed by Stephen Warren and acked, 
+but I removed the 'Reviewed-by' for this patch set just in case.
 
-static const struct clk_div_table sun6i_a31_apb0_divs[] = {
-        { .val = 0, .div = 2, },
-        { .val = 1, .div = 2, },
-        { .val = 2, .div = 4, },
-        { .val = 3, .div = 8, },
-        { /* sentinel */ },
-};
+Would you review this patch set?
 
+Thanks!
 
->>       { /* sentinel */ },
->>  };
->>
->> +/* The A23 APB0 clock has a standard power of 2 divisor */
->
-> Why not just pass CLK_DIVIDER_POWER_OF_TWO then, instead of a table?
+<Change log>
 
-The A31 APB0 clock uses a table for the odd /2 divisor for value 0.
-The standard table I'm using for the A23 is just to keep it simple
-and alike.
+Changes in V8:
+ - Split V7's patch up into 2 patches
 
->> +static const struct clk_div_table sun8i_a23_apb0_divs[] = {
->> +     { .val = 0, .div = 1, },
->> +     { .val = 1, .div = 2, },
->> +     { .val = 2, .div = 4, },
->> +     { .val = 3, .div = 8, },
->> +     { /* sentinel */ },
->> +};
->> +
->> +const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] = {
->> +     { .compatible = "allwinner,sun6i-a31-apb0-clk", .data = &sun6i_a31_apb0_divs },
->> +     { .compatible = "allwinner,sun8i-a23-apb0-clk", .data = &sun8i_a23_apb0_divs },
->> +     { /* sentinel */ }
->> +};
->> +
->>  static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
->>  {
->>       struct device_node *np = pdev->dev.of_node;
->> @@ -36,12 +52,17 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
->>       struct resource *r;
->>       void __iomem *reg;
->>       struct clk *clk;
->> +     const struct of_device_id *device;
->>
->>       r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>       reg = devm_ioremap_resource(&pdev->dev, r);
->>       if (IS_ERR(reg))
->>               return PTR_ERR(reg);
->>
->> +     device = of_match_device(sun6i_a31_apb0_clk_dt_ids, &pdev->dev);
->> +     if (!device)
->> +             return -EINVAL;
->> +
->>       clk_parent = of_clk_get_parent_name(np, 0);
->>       if (!clk_parent)
->>               return -EINVAL;
->> @@ -49,7 +70,7 @@ static int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)
->>       of_property_read_string(np, "clock-output-names", &clk_name);
->>
->>       clk = clk_register_divider_table(&pdev->dev, clk_name, clk_parent,
->> -                                      0, reg, 0, 2, 0, sun6i_a31_apb0_divs,
->> +                                      0, reg, 0, 2, 0, device->data,
->
-> I'm not sure that it will actually work for the A31, since it does
-> define some dividers anyway, and the divider table is !NULL, even
-> though there's actually no dividers defined.
+Changes in V7:
+ - Add Documentation
+ - Change I/F name from rx_int_trig to rx_trig_bytes because the name
+   rx_int_trig is hard to understand how users specify the value
 
-I'm not following. The A31 does have a table defined. It's just cut
-off in this patch. I asked Boris to add the table when he was working
-on the A31 PRCM clocks. See above.
+Changes in V6:
+ - Move FCR_RX_TRIG_* definition in 8250.h to include/uapi/linux/serial_reg.h,
+   rename those to UART_FCR_R_TRIG_*, and use UART_FCR_TRIGGER_MASK to
+   UART_FCR_R_TRIG_BITS()
+ - Change following function names:
+    convert_fcr2val() => fcr_get_rxtrig_bytes()
+    convert_val2rxtrig() => bytes_to_fcr_rxtrig()
+ - Fix typo in serial8250_do_set_termios()
+ - Delete the verbose error message pr_info() in bytes_to_fcr_rxtrig()
+ - Rename *rx_int_trig/rx_trig* to *rxtrig* for several functions or variables
+   (but UI remains rx_int_trig)
+ - Change the meaningless variable name 'val' to 'bytes' following functions:
+    fcr_get_rxtrig_bytes(), bytes_to_fcr_rxtrig(), do_set_rxtrig(),
+    do_serial8250_set_rxtrig(), and serial8250_set_attr_rxtrig()
+ - Use up->fcr in order to get rxtrig_bytes instead of rx_trig_raw in
+   fcr_get_rxtrig_bytes()
+ - Use conf_type->rxtrig_bytes[0] instead of switch statement for support check
+   in register_dev_spec_attr_grp()
+ - Delete the checking whether a user changed FCR or not when minimum buffer
+   is needed in serial8250_do_set_termios()
+
+Changes in V5.1:
+ - Fix FCR_RX_TRIG_MAX_STATE definition
+
+Changes in V5:
+ - Support Tegra, 16650V2, 16654, and 16750
+ - Store default FCR value to up->fcr when the port is first created
+ - Add rx_trig_byte[] in uart_config[] for each device and use rx_trig_byte[]
+   in convert_fcr2val() and convert_val2rxtrig()
+
+Changes in V4:
+ - Introduce fifo_bug flag in uart_8250_port structure
+   This is enabled only when parity is enabled and UART_BUG_PARITY is enabled
+   for up->bugs. If this flag is enabled, user cannot set RX trigger.
+ - Return -EOPNOTSUPP when it does not support device at convert_fcr2val() and
+   at convert_val2rxtrig()
+ - Set the nearest lower RX trigger when users input a meaningless value at
+   convert_val2rxtrig()
+ - Check whether p->fcr is existing at serial8250_clear_and_reinit_fifos()
+ - Set fcr = up->fcr in the begging of serial8250_do_set_termios()
+
+Changes in V3:
+ - Change I/F from ioctl(2) to sysfs(rx_int_trig)
+
+Changed in V2:
+ - Use _IOW for TIOCSFIFORTRIG definition
+ - Pass the interrupt trigger value itself
+
+---
+
+Yoshihiro YUNOMAE (2):
+      serial/uart: Introduce device specific attribute group to uart_port structure
+      serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers
 
 
-Cheers
-ChenYu
+ Documentation/ABI/testing/sysfs-tty |   16 +++
+ drivers/tty/serial/8250/8250.h      |    2 
+ drivers/tty/serial/8250/8250_core.c |  173 ++++++++++++++++++++++++++++++++---
+ drivers/tty/serial/serial_core.c    |   18 ++--
+ include/linux/serial_8250.h         |    2 
+ include/linux/serial_core.h         |    4 +
+ include/uapi/linux/serial_reg.h     |    5 +
+ 7 files changed, 198 insertions(+), 22 deletions(-)
+
+-- 
+Yoshihiro YUNOMAE
+Software Platform Research Dept. Linux Technology Center
+Hitachi, Ltd., Yokohama Research Laboratory
+E-mail: yoshihiro.yunomae.ez@hitachi.com
