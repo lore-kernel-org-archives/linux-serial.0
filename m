@@ -1,17 +1,16 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v4 11/13] serial: asc: Adopt readl_/writel_relaxed()
-Date: Thu, 19 Jun 2014 14:12:01 +0100
-Message-ID: <53A2E1A1.3010705@linaro.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 10/13] serial: asc: Add support for KGDB's FIQ/NMI mode
+Date: Thu, 19 Jun 2014 17:36:09 -0700
+Message-ID: <20140620003609.GB30850@kroah.com>
 References: <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
  <1403174303-25456-1-git-send-email-daniel.thompson@linaro.org>
- <1403174303-25456-12-git-send-email-daniel.thompson@linaro.org>
- <53A2C9A3.9090507@linaro.org> <53A2CD8D.1050106@linaro.org>
- <53A2D135.4020700@linaro.org>
+ <1403174303-25456-11-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <53A2D135.4020700@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <1403174303-25456-11-git-send-email-daniel.thompson@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,62 +20,28 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Jason Wessel <jason.wessel@windriver.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Colin Cross <ccross@android.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Maxime Coquelin <maxime.coquelin@st.com>, Greg
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.o
 List-Id: linux-serial@vger.kernel.org
 
-On 19/06/14 13:01, Srinivas Kandagatla wrote:
->>> Why are we concern about x86 for this driver?
->>> As per my understanding this IP is only seen on ARM and SH based CPUs so
->>> why cant we just use relaxed versions, why ifdefs?
->>> I think, this would involve fixing the kconfig and make it depend on SH
->>> and ARM based platforms only.
->>
->> You mean just drop the COMPILE_TEST?
->>
->> In generally I like as much code as possible to compile on x86. Its
->> worthwhile protection against the excessive/accidental ARMisms which
->> could easily impact less common architectures (such as SH).
+On Thu, Jun 19, 2014 at 11:38:20AM +0100, Daniel Thompson wrote:
+> Add a .poll_init() function that enables UART RX and registers the
+> UART's irq with KGDB. By providing this information to KGDB the serial
+> driver offers "permission" for KGDB to route the UART interrupt signal
+> from the drivers own handler to KGDBs FIQ handler (which will eventually
+> use the UART's polled I/O callbacks to interact with the user).
 > 
-> That's fair. Does this mean that we are going do similar changes to
-> other ST drivers too?
-
-I didn't give any thought at all to other ST drivers. I don't see why a
-*general* preference (of mine or anyone else) would override what is
-right for any particular driver.
-
-I don't think "both manage ST peripherals" means drivers have much in
-common.
-
-
->>> On the other hand, This patch looks more generic and applicable to most
->>> of the drivers. Am not sure which way is the right one.
->>
->> I'm particularly keen on doing the right thing where readl_relaxed() is
->> concerned because this function has a compiler barrier on ARM but not on
->> x86.
->>
-> My only concern is code duplication all across ST drivers.
-
-I really struggle to understand this. Why would anyone copy code out of
-the asc driver into the network driver (or any other ST driver)?
-
-
->> Since having asc_in/asc_out made it easy to portably make these changes
->> I decided is was better to be redundantly exemplary than conceal secret
->> portability issues.
-> Your change would fit in nicely with as asc_in/out are wrappers and fix
-> st-asc but this would be just for asc driver.
-> What about other drivers which fall in same category?
+> Note that the RX is not only enabled but also unmasked. This is required
+> because otherwise the FIQ handler could never trigger. This unmask is
+> copied from similar code in amba-pl011.c .
 > 
-> So I think we should just drop COMPILE_TEST and possibly make it
-> specific to ARM and SH or ARM only.
-
-I'm slightly uneasy about this primarily because all the rationale above
-describes a concern about drivers other than the one I seek to change.
-They ought to be outside the scope of this change.
-
-Nevertheless, since I said I don't feel that strongly about it, as you
-wish...
-
-I'll change this in v5.
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+> Cc: Maxime Coquelin <maxime.coquelin@st.com>
+> Cc: Patrice Chotard <patrice.chotard@st.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: kernel@stlinux.com
+> Cc: linux-serial@vger.kernel.org
+> ---
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
