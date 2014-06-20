@@ -1,46 +1,78 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 09/13] serial: amba-pl011: Pass FIQ information to KGDB.
-Date: Thu, 19 Jun 2014 17:36:03 -0700
-Message-ID: <20140620003603.GA30850@kroah.com>
-References: <1401961994-18033-1-git-send-email-daniel.thompson@linaro.org>
- <1403174303-25456-1-git-send-email-daniel.thompson@linaro.org>
- <1403174303-25456-10-git-send-email-daniel.thompson@linaro.org>
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Subject: Re: Re: [PATCH v2 17/20] ARM: sunxi: Introduce
+ Allwinner A23 support
+Date: Fri, 20 Jun 2014 13:56:54 +0800
+Message-ID: <CAGb2v67zkwvspdDr-rKv=5uT5mvP4e1ZyzHSSOXmvaiOxA+7OA@mail.gmail.com>
+References: <1403016777-15121-1-git-send-email-wens@csie.org>
+ <1403016777-15121-18-git-send-email-wens@csie.org> <20140618122646.GS19730@lukather>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1403174303-25456-10-git-send-email-daniel.thompson@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, kernel@stlinux.com, kgdb-bugreport@lists.sourceforge.net, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Dirk Behme <dirk.behme@de.bosch.com>, Russell King <linux@arm.linux.org.uk>, Nicolas Pitre <nico@linaro.org>, patches@linaro.org, Anton Vorontsov <anton.vorontsov@linaro.org>, Kumar Gala <galak@codeaurora.org>, "David A. Long" <dave.long@linaro.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, kernel-team@android.com, devicetree@vger.kernel.org, linaro-kernel@lists.linaro.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jason Wessel <jason.wessel@windriver.com>, Rob Herring <robh+dt@kernel.org>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Colin
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sunxi+bncBCMILY6JWQBBBO42R6OQKGQEGM5PWUQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20140618122646.GS19730@lukather>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 19, 2014 at 11:38:19AM +0100, Daniel Thompson wrote:
-> If the AMBA bus has provided the pl011 with a FIQ resource (i.e. a
-> second IRQ) then speculatively register it with KGDB when the polling
-> driver is initialized.
-> 
-> By providing this information to KGDB the serial driver offers
-> "permission" for KGDB to route the UART interrupt signal from the
-> drivers own handler to KGDBs FIQ handler (which will eventually use the
-> UART's polled I/O callbacks to interact with the user). This permission
-> also implies the amba-pl011 driver has already unmasked RX interrupts
-> (otherwise the FIQ handler will never trigger).
-> 
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Russell King <linux@arm.linux.org.uk>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> ---
+On Wed, Jun 18, 2014 at 8:26 PM, Maxime Ripard
+<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+> On Tue, Jun 17, 2014 at 10:52:54PM +0800, Chen-Yu Tsai wrote:
+>> The Allwinner A23 is a dual-core Cortex-A7-based SoC. It re-uses most of
+>> the IPs found in previous SoCs, notably the A31.
+>>
+>> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+>> ---
+>>  arch/arm/mach-sunxi/Kconfig |  8 ++++++++
+>>  arch/arm/mach-sunxi/sunxi.c | 10 ++++++++++
+>>  2 files changed, 18 insertions(+)
+>>
+>> diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+>> index 0fbd4f1..6434e3b 100644
+>> --- a/arch/arm/mach-sunxi/Kconfig
+>> +++ b/arch/arm/mach-sunxi/Kconfig
+>> @@ -35,4 +35,12 @@ config MACH_SUN7I
+>>       select HAVE_ARM_ARCH_TIMER
+>>       select SUN5I_HSTIMER
+>>
+>> +config MACH_SUN8I
+>> +     bool "Allwinner A23 (sun8i) SoCs support"
+>> +     default ARCH_SUNXI
+>> +     select ARCH_HAS_RESET_CONTROLLER
+>> +     select ARM_GIC
+>> +     select MFD_SUN6I_PRCM
+>> +     select RESET_CONTROLLER
+>> +
+>>  endif
+>> diff --git a/arch/arm/mach-sunxi/sunxi.c b/arch/arm/mach-sunxi/sunxi.c
+>> index 3f9587b..962ff30 100644
+>> --- a/arch/arm/mach-sunxi/sunxi.c
+>> +++ b/arch/arm/mach-sunxi/sunxi.c
+>> @@ -53,3 +53,13 @@ static const char * const sun7i_board_dt_compat[] = {
+>>  DT_MACHINE_START(SUN7I_DT, "Allwinner sun7i (A20) Family")
+>>       .dt_compat      = sun7i_board_dt_compat,
+>>  MACHINE_END
+>> +
+>> +static const char * const sun8i_board_dt_compat[] = {
+>> +     "allwinner,sun8i-a23",
+>> +     NULL,
+>> +};
+>> +
+>> +DT_MACHINE_START(SUN8I_DT, "Allwinner sun8i (A23) Family")
+>> +     .init_time      = sun6i_timer_init,
+>
+> I haven't seen anything in your code that needed to use this
+> function. Am I missing something?
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+My mistake. From the log I thought all timers needed the reset
+controller. Turns out only the high speed timer does.
+
+I'll remove the call in the next version.
+
+
+ChenYu
