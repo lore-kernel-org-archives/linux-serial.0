@@ -1,58 +1,85 @@
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: Re: [PATCH v2 16/20] mfd: sun6i-prcm: Add support for
- Allwinner A23 PRCM
-Date: Fri, 20 Jun 2014 15:38:38 +0800
-Message-ID: <CAGb2v67M1FV8UPrg8bK9HDz6v72pL8-G97b-PHtOtCFurPjyrw@mail.gmail.com>
-References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-17-git-send-email-wens@csie.org> <20140618082953.GO21030@lee--X1>
- <20140618122438.GR19730@lukather>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 3.16-rc2
+Date: Fri, 20 Jun 2014 12:57:37 -0700
+Message-ID: <20140620195737.GA28616@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBFGKR6OQKGQEE62ELDA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20140618122438.GR19730@lukather>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 18, 2014 at 8:24 PM, Maxime Ripard
-<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> On Wed, Jun 18, 2014 at 09:29:53AM +0100, Lee Jones wrote:
->> > The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
->> > The differences are the AR100 clock can no longer be modified,
->> > the APB0 clock has different divisors, and some clock gates are
->> > gone.
->> >
->> > This patch adds a compatible with a modified subdevice list for
->> > the A23.
->> >
->> > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
->> > ---
->> >  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
->> >  drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
->> >  2 files changed, 31 insertions(+), 1 deletion(-)
->>
->> The patch looks fine to me, but I'm concerned about the size of the
->> patch set and the amount of subsystems it touches.
->>
->> I am guessing that this patch can just be taken independently though.
->> Please correct me if I'm wrong.
->
-> I have a bit of the same concern. We have several comments on the
-> previous patches, so I'm not even sure this patch can go as is.
->
-> It would be much easier if you (ChenYu) could introduce first a very
-> basic with just the UART support, and then, as separate series,
-> clocks, PRCM, MMC, and so on.
+The following changes since commit 7171511eaec5bf23fb06078f59784a3a0626b38f:
 
-OK. I will do that. I'll also try to send some of the independent
-fixes separately.
+  Linux 3.16-rc1 (2014-06-15 17:45:28 -1000)
 
+are available in the git repository at:
 
-ChenYu
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.16-rc2
+
+for you to fetch changes up to 60efcf0414be5876d81276e3c1fd12680ba2ce71:
+
+  tty/serial: fix 8250 early console option passing to regular console (2014-06-19 13:07:26 -0700)
+
+----------------------------------------------------------------
+TTY/Serial bugfixes for 3.16-rc2
+
+Here are some tty / serial driver bugfixes for 3.16-rc2 that resolve
+some reported issues.  The samsung driver build error itself has been
+reported by a bunch of people, sorry about that one.  The others are all
+tiny and everyone seems to like them in linux-next so far.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Peter Hurley (2):
+      serial: Fix IGNBRK handling
+      tty: Correct INPCK handling
+
+Rob Herring (1):
+      tty/serial: fix 8250 early console option passing to regular console
+
+Sachin Kamat (1):
+      serial: samsung: Fix build error
+
+ drivers/tty/n_tty.c                  | 19 ++++++++++---------
+ drivers/tty/serial/8250/8250_core.c  |  2 +-
+ drivers/tty/serial/8250/8250_early.c |  5 ++++-
+ drivers/tty/serial/altera_uart.c     |  6 ++++++
+ drivers/tty/serial/amba-pl010.c      |  2 +-
+ drivers/tty/serial/amba-pl011.c      |  2 +-
+ drivers/tty/serial/atmel_serial.c    |  2 +-
+ drivers/tty/serial/bcm63xx_uart.c    |  2 +-
+ drivers/tty/serial/bfin_uart.c       |  2 +-
+ drivers/tty/serial/dz.c              |  2 +-
+ drivers/tty/serial/earlycon.c        |  2 +-
+ drivers/tty/serial/efm32-uart.c      |  2 +-
+ drivers/tty/serial/fsl_lpuart.c      |  2 +-
+ drivers/tty/serial/ip22zilog.c       |  2 +-
+ drivers/tty/serial/m32r_sio.c        |  2 +-
+ drivers/tty/serial/max310x.c         |  2 +-
+ drivers/tty/serial/mcf.c             |  6 ++++++
+ drivers/tty/serial/mfd.c             |  2 +-
+ drivers/tty/serial/mpsc.c            |  2 +-
+ drivers/tty/serial/msm_serial.c      |  2 +-
+ drivers/tty/serial/mxs-auart.c       |  2 +-
+ drivers/tty/serial/netx-serial.c     |  2 +-
+ drivers/tty/serial/pmac_zilog.c      |  2 +-
+ drivers/tty/serial/pnx8xxx_uart.c    |  2 +-
+ drivers/tty/serial/pxa.c             |  2 +-
+ drivers/tty/serial/samsung.c         |  2 +-
+ drivers/tty/serial/sb1250-duart.c    |  2 +-
+ drivers/tty/serial/sccnxp.c          |  2 +-
+ drivers/tty/serial/serial_ks8695.c   |  2 +-
+ drivers/tty/serial/serial_txx9.c     |  2 +-
+ drivers/tty/serial/sirfsoc_uart.c    |  2 +-
+ drivers/tty/serial/st-asc.c          |  2 +-
+ drivers/tty/serial/sunsab.c          |  2 +-
+ drivers/tty/serial/sunsu.c           |  2 +-
+ drivers/tty/serial/sunzilog.c        |  2 +-
+ drivers/tty/serial/ucc_uart.c        |  2 +-
+ drivers/tty/serial/vr41xx_siu.c      |  2 +-
+ drivers/tty/serial/zs.c              |  2 +-
+ 38 files changed, 60 insertions(+), 44 deletions(-)
