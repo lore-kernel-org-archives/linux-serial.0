@@ -1,85 +1,112 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.16-rc2
-Date: Fri, 20 Jun 2014 12:57:37 -0700
-Message-ID: <20140620195737.GA28616@kroah.com>
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Subject: Re: [PATCH v2 09/20] clk: sunxi: Add sun6i MBUS clock support
+Date: Mon, 23 Jun 2014 12:44:25 +0800
+Message-ID: <CAGb2v64GobnAM+J7QxbZxWretA5632Xn9=-pkrobUQWrGHn_ig@mail.gmail.com>
+References: <1403016777-15121-1-git-send-email-wens@csie.org>
+ <1403016777-15121-10-git-send-email-wens@csie.org> <20140618100404.GM19730@lukather>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sunxi+bncBCMILY6JWQBBBPXBT2OQKGQEZJKP4OA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20140618100404.GM19730@lukather>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 7171511eaec5bf23fb06078f59784a3a0626b38f:
+On Wed, Jun 18, 2014 at 6:04 PM, Maxime Ripard
+<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+> On Tue, Jun 17, 2014 at 10:52:46PM +0800, Chen-Yu Tsai wrote:
+>> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+>> ---
+>>  Documentation/devicetree/bindings/clock/sunxi.txt |  1 +
+>>  drivers/clk/sunxi/clk-sunxi.c                     | 44 +++++++++++++++++++++++
+>>  2 files changed, 45 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Documentation/devicetree/bindings/clock/sunxi.txt
+>> index b9ec668..7b2ba41 100644
+>> --- a/Documentation/devicetree/bindings/clock/sunxi.txt
+>> +++ b/Documentation/devicetree/bindings/clock/sunxi.txt
+>> @@ -40,6 +40,7 @@ Required properties:
+>>       "allwinner,sun6i-a31-apb2-div-clk" - for the APB2 gates on A31
+>>       "allwinner,sun6i-a31-apb2-gates-clk" - for the APB2 gates on A31
+>>       "allwinner,sun4i-a10-mod0-clk" - for the module 0 family of clocks
+>> +     "allwinner,sun6i-a31-mbus-clk" - for the MBUS clocks on A31 / A23
+>>       "allwinner,sun7i-a20-out-clk" - for the external output clocks
+>>       "allwinner,sun7i-a20-gmac-clk" - for the GMAC clock module on A20/A31
+>>       "allwinner,sun4i-a10-usb-clk" - for usb gates + resets on A10 / A20
+>> diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+>> index eca3c6e..a086b5b 100644
+>> --- a/drivers/clk/sunxi/clk-sunxi.c
+>> +++ b/drivers/clk/sunxi/clk-sunxi.c
+>> @@ -307,6 +307,37 @@ static void sun4i_get_mod0_factors(u32 *freq, u32 parent_rate,
+>>
+>>
+>>  /**
+>> + * sun6i_a31_get_mbus_factors() - calculates m factor for MBUS clocks
+>> + * MBUS rate is calculated as follows
+>> + * rate = parent_rate / (m + 1);
+>> + */
+>> +
+>> +static void sun6i_a31_get_mbus_factors(u32 *freq, u32 parent_rate,
+>> +                                    u8 *n, u8 *k, u8 *m, u8 *p)
+>> +{
+>> +     u8 div;
+>> +
+>> +     /* These clocks can only divide, so we will never be able to achieve
+>> +      * frequencies higher than the parent frequency */
+>> +     if (*freq > parent_rate)
+>> +             *freq = parent_rate;
+>> +
+>> +     div = DIV_ROUND_UP(parent_rate, *freq);
+>> +
+>> +     if (div > 8)
+>> +             div = 8;
+>> +
+>> +     *freq = parent_rate / div;
+>> +
+>> +     /* we were called to round the frequency, we can now return */
+>> +     if (n == NULL)
+>
+> s/n/m/ ?
 
-  Linux 3.16-rc1 (2014-06-15 17:45:28 -1000)
+The factors clk driver passes all or none pointers.
+But I will change this to avoid the confusion.
 
-are available in the git repository at:
+>> +             return;
+>> +
+>> +     *m = div - 1;
+>> +}
+>> +
+>> +
+>> +/**
+>>   * sun7i_a20_get_out_factors() - calculates m, p factors for CLK_OUT_A/B
+>>   * CLK_OUT rate is calculated as follows
+>>   * rate = (parent_rate >> p) / (m + 1);
+>> @@ -447,6 +478,11 @@ static struct clk_factors_config sun4i_mod0_config = {
+>>       .pwidth = 2,
+>>  };
+>>
+>> +static struct clk_factors_config sun6i_a31_mbus_config = {
+>> +     .mshift = 0,
+>> +     .mwidth = 3,
+>
+> Actually, the A31 has an extra N factor.
+>
+> So this mbus clock looks like it's only about the A23, and not the A31
+> at all.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.16-rc2
+I checked original sun6i code and sun6i code found in the A23 SDK.
+The original code uses the module 0 clock driver for mbus, so yes
+there's an extra N factor. The new code in the A23 SDK does not.
 
-for you to fetch changes up to 60efcf0414be5876d81276e3c1fd12680ba2ce71:
+Unfortunately I haven't been able to get my Hummingbird A31 up yet,
+so I can't poke around to check it.
 
-  tty/serial: fix 8250 early console option passing to regular console (2014-06-19 13:07:26 -0700)
 
-----------------------------------------------------------------
-TTY/Serial bugfixes for 3.16-rc2
-
-Here are some tty / serial driver bugfixes for 3.16-rc2 that resolve
-some reported issues.  The samsung driver build error itself has been
-reported by a bunch of people, sorry about that one.  The others are all
-tiny and everyone seems to like them in linux-next so far.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Peter Hurley (2):
-      serial: Fix IGNBRK handling
-      tty: Correct INPCK handling
-
-Rob Herring (1):
-      tty/serial: fix 8250 early console option passing to regular console
-
-Sachin Kamat (1):
-      serial: samsung: Fix build error
-
- drivers/tty/n_tty.c                  | 19 ++++++++++---------
- drivers/tty/serial/8250/8250_core.c  |  2 +-
- drivers/tty/serial/8250/8250_early.c |  5 ++++-
- drivers/tty/serial/altera_uart.c     |  6 ++++++
- drivers/tty/serial/amba-pl010.c      |  2 +-
- drivers/tty/serial/amba-pl011.c      |  2 +-
- drivers/tty/serial/atmel_serial.c    |  2 +-
- drivers/tty/serial/bcm63xx_uart.c    |  2 +-
- drivers/tty/serial/bfin_uart.c       |  2 +-
- drivers/tty/serial/dz.c              |  2 +-
- drivers/tty/serial/earlycon.c        |  2 +-
- drivers/tty/serial/efm32-uart.c      |  2 +-
- drivers/tty/serial/fsl_lpuart.c      |  2 +-
- drivers/tty/serial/ip22zilog.c       |  2 +-
- drivers/tty/serial/m32r_sio.c        |  2 +-
- drivers/tty/serial/max310x.c         |  2 +-
- drivers/tty/serial/mcf.c             |  6 ++++++
- drivers/tty/serial/mfd.c             |  2 +-
- drivers/tty/serial/mpsc.c            |  2 +-
- drivers/tty/serial/msm_serial.c      |  2 +-
- drivers/tty/serial/mxs-auart.c       |  2 +-
- drivers/tty/serial/netx-serial.c     |  2 +-
- drivers/tty/serial/pmac_zilog.c      |  2 +-
- drivers/tty/serial/pnx8xxx_uart.c    |  2 +-
- drivers/tty/serial/pxa.c             |  2 +-
- drivers/tty/serial/samsung.c         |  2 +-
- drivers/tty/serial/sb1250-duart.c    |  2 +-
- drivers/tty/serial/sccnxp.c          |  2 +-
- drivers/tty/serial/serial_ks8695.c   |  2 +-
- drivers/tty/serial/serial_txx9.c     |  2 +-
- drivers/tty/serial/sirfsoc_uart.c    |  2 +-
- drivers/tty/serial/st-asc.c          |  2 +-
- drivers/tty/serial/sunsab.c          |  2 +-
- drivers/tty/serial/sunsu.c           |  2 +-
- drivers/tty/serial/sunzilog.c        |  2 +-
- drivers/tty/serial/ucc_uart.c        |  2 +-
- drivers/tty/serial/vr41xx_siu.c      |  2 +-
- drivers/tty/serial/zs.c              |  2 +-
- 38 files changed, 60 insertions(+), 44 deletions(-)
+ChenYu
