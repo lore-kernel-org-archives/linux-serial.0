@@ -1,104 +1,49 @@
 From: Tushar Behera <tushar.b@samsung.com>
-Subject: [PATCH 2/2] serial: amba-pl010: Use devres APIs
-Date: Mon, 23 Jun 2014 11:29:11 +0530
-Message-ID: <1403503151-4166-3-git-send-email-tushar.b@samsung.com>
-References: <1403503151-4166-1-git-send-email-tushar.b@samsung.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1403503151-4166-1-git-send-email-tushar.b@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, linux@arm.linux.org.uk
-Cc: trblinux@gmail.com
+Subject: [PATCH] serial: samsung: Remove redundant label
+Date: Mon, 23 Jun 2014 11:32:14 +0530
+Message-ID: <1403503334-4816-1-git-send-email-tushar.b@samsung.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f41.google.com ([209.85.220.41]:39045 "EHLO
+	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751365AbaFWGFY (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 23 Jun 2014 02:05:24 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: jslaby@suse.cz, gregkh@linuxfoundation.org
 
-Migrating to use devres managed APIs devm_kzalloc, devm_ioremap and
-devm_clk_get.
+probe_err label only returns the error code. This label can be removed
+and the error code can be returned directly.
 
 Signed-off-by: Tushar Behera <tushar.b@samsung.com>
 ---
- drivers/tty/serial/amba-pl010.c |   46 ++++++++++++++-------------------------
- 1 file changed, 16 insertions(+), 30 deletions(-)
+ drivers/tty/serial/samsung.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 971af1e..af8deba 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -46,6 +46,7 @@
- #include <linux/amba/serial.h>
- #include <linux/clk.h>
- #include <linux/slab.h>
-+#include <linux/io.h>
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index c1d3ebd..bf93010 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1303,7 +1303,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
  
- #include <asm/io.h>
+ 	ret = s3c24xx_serial_init_port(ourport, pdev);
+ 	if (ret < 0)
+-		goto probe_err;
++		return ret;
  
-@@ -688,28 +689,22 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
- 		if (amba_ports[i] == NULL)
- 			break;
+ 	if (!s3c24xx_uart_drv.state) {
+ 		ret = uart_register_driver(&s3c24xx_uart_drv);
+@@ -1335,9 +1335,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
  
--	if (i == ARRAY_SIZE(amba_ports)) {
--		ret = -EBUSY;
--		goto out;
--	}
-+	if (i == ARRAY_SIZE(amba_ports))
-+		return -EBUSY;
- 
--	uap = kzalloc(sizeof(struct uart_amba_port), GFP_KERNEL);
--	if (!uap) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
-+			   GFP_KERNEL);
-+	if (!uap)
-+		return -ENOMEM;
- 
--	base = ioremap(dev->res.start, resource_size(&dev->res));
--	if (!base) {
--		ret = -ENOMEM;
--		goto free;
--	}
-+	base = devm_ioremap(&dev->dev, dev->res.start,
-+			    resource_size(&dev->res));
-+	if (!base)
-+		return -ENOMEM;
- 
--	uap->clk = clk_get(&dev->dev, NULL);
--	if (IS_ERR(uap->clk)) {
--		ret = PTR_ERR(uap->clk);
--		goto unmap;
--	}
-+	uap->clk = devm_clk_get(&dev->dev, NULL);
-+	if (IS_ERR(uap->clk))
-+		return PTR_ERR(uap->clk);
- 
- 	uap->port.dev = &dev->dev;
- 	uap->port.mapbase = dev->res.start;
-@@ -727,15 +722,9 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
- 
- 	amba_set_drvdata(dev, uap);
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
--	if (ret) {
-+	if (ret)
- 		amba_ports[i] = NULL;
--		clk_put(uap->clk);
-- unmap:
--		iounmap(base);
-- free:
--		kfree(uap);
--	}
-- out:
-+
- 	return ret;
- }
- 
-@@ -750,9 +739,6 @@ static int pl010_remove(struct amba_device *dev)
- 		if (amba_ports[i] == uap)
- 			amba_ports[i] = NULL;
- 
--	iounmap(uap->port.membase);
--	clk_put(uap->clk);
--	kfree(uap);
  	return 0;
+-
+- probe_err:
+-	return ret;
  }
  
+ static int s3c24xx_serial_remove(struct platform_device *dev)
 -- 
 1.7.9.5
+
