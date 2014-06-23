@@ -1,55 +1,97 @@
-From: Sachin Kamat <sachin.kamat@samsung.com>
-Subject: Re: [PATCH] serial: samsung: Remove redundant label
-Date: Mon, 23 Jun 2014 11:42:16 +0530
-Message-ID: <CAK5sBcFn6vJQNDnQ-Pta0b09icFt9Qdx24iUQLcBe0vCkL1oig@mail.gmail.com>
-References: <1403503334-4816-1-git-send-email-tushar.b@samsung.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 1/2] serial: amba-pl011: Remove redundant label
+Date: Mon, 23 Jun 2014 13:37:13 +0100
+Message-ID: <53A81F79.4080903@linaro.org>
+References: <1403503151-4166-1-git-send-email-tushar.b@samsung.com> <1403503151-4166-2-git-send-email-tushar.b@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f173.google.com ([209.85.217.173]:47874 "EHLO
-	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751697AbaFWGMS (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Jun 2014 02:12:18 -0400
-In-Reply-To: <1403503334-4816-1-git-send-email-tushar.b@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1403503151-4166-2-git-send-email-tushar.b@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tushar Behera <tushar.b@samsung.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, linux@arm.linux.org.uk
+Cc: trblinux@gmail.com
 List-Id: linux-serial@vger.kernel.org
-To: Tushar Behera <tushar.b@samsung.com>
-Cc: open list <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Mon, Jun 23, 2014 at 11:32 AM, Tushar Behera <tushar.b@samsung.com> wrote:
-> probe_err label only returns the error code. This label can be removed
-> and the error code can be returned directly.
->
+On 23/06/14 06:59, Tushar Behera wrote:
+> The label 'out' is only used to return the error code. We can return the
+> error code directly and remove 'out' label.
+> 
 > Signed-off-by: Tushar Behera <tushar.b@samsung.com>
 > ---
->  drivers/tty/serial/samsung.c |    5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index c1d3ebd..bf93010 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1303,7 +1303,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->
->         ret = s3c24xx_serial_init_port(ourport, pdev);
->         if (ret < 0)
-> -               goto probe_err;
-> +               return ret;
->
->         if (!s3c24xx_uart_drv.state) {
->                 ret = uart_register_driver(&s3c24xx_uart_drv);
-> @@ -1335,9 +1335,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->                 dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
->
->         return 0;
-> -
-> - probe_err:
-> -       return ret;
+>  drivers/tty/serial/amba-pl011.c |   30 ++++++++++--------------------
+>  1 file changed, 10 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 0e26dcb..8572f2a 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1484,7 +1484,7 @@ static int pl011_hwinit(struct uart_port *port)
+>  	 */
+>  	retval = clk_prepare_enable(uap->clk);
+>  	if (retval)
+> -		goto out;
+> +		return retval;
+>  
+>  	uap->port.uartclk = clk_get_rate(uap->clk);
+>  
+> @@ -1507,8 +1507,6 @@ static int pl011_hwinit(struct uart_port *port)
+>  			plat->init();
+>  	}
+>  	return 0;
+> - out:
+> -	return retval;
 >  }
->
->  static int s3c24xx_serial_remove(struct platform_device *dev)
-> --
+>  
+>  static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+> @@ -2131,32 +2129,24 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  		if (amba_ports[i] == NULL)
+>  			break;
+>  
+> -	if (i == ARRAY_SIZE(amba_ports)) {
+> -		ret = -EBUSY;
+> -		goto out;
+> -	}
+> +	if (i == ARRAY_SIZE(amba_ports))
+> +		return -EBUSY;
+>  
+>  	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
+>  			   GFP_KERNEL);
+> -	if (uap == NULL) {
+> -		ret = -ENOMEM;
+> -		goto out;
+> -	}
+> +	if (uap == NULL)
+> +		return -ENOMEM;
+>  
+>  	i = pl011_probe_dt_alias(i, &dev->dev);
+>  
+>  	base = devm_ioremap(&dev->dev, dev->res.start,
+>  			    resource_size(&dev->res));
+> -	if (!base) {
+> -		ret = -ENOMEM;
+> -		goto out;
+> -	}
+> +	if (!base)
+> +		return -ENOMEM;
+>  
+>  	uap->clk = devm_clk_get(&dev->dev, NULL);
+> -	if (IS_ERR(uap->clk)) {
+> -		ret = PTR_ERR(uap->clk);
+> -		goto out;
+> -	}
+> +	if (IS_ERR(uap->clk))
+> +		return PTR_ERR(uap->clk);
+>  
+>  	uap->vendor = vendor;
+>  	uap->lcrh_rx = vendor->lcrh_rx;
+> @@ -2198,7 +2188,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  		uart_unregister_driver(&amba_reg);
+>  		pl011_dma_remove(uap);
+>  	}
+> - out:
+> +
+>  	return ret;
+>  }
 
-Looks good.
-Reviewed-by: Sachin Kamat <sachin.kamat@samsung.com>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
