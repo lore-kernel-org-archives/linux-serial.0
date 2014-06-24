@@ -1,7 +1,7 @@
 From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH v2 REBASED 10/10] ARC: [arcfpga] stdout-path now suffices for earlycon/console
-Date: Tue, 24 Jun 2014 13:55:15 +0530
-Message-ID: <1403598315-1429-11-git-send-email-vgupta@synopsys.com>
+Subject: [PATCH v2 REBASED 09/10] serial/arc: Enable DT based earlycon
+Date: Tue, 24 Jun 2014 13:55:14 +0530
+Message-ID: <1403598315-1429-10-git-send-email-vgupta@synopsys.com>
 References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,29 +12,25 @@ To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutl
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-With recent improvements to serial/of core from Grant and Rob,
-stdout-path alone suffices for setting up earlycon/console.
-
-arc_uart driver is already equipped to handle that, switch the DT now.
+This allows a param less earlycon to pick up the earlyconsole from
+chosen/stdout-path
 
 Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- arch/arc/boot/dts/angel4.dts | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/arc_uart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
-index 6b57475967a6..298a46daa633 100644
---- a/arch/arc/boot/dts/angel4.dts
-+++ b/arch/arc/boot/dts/angel4.dts
-@@ -17,7 +17,8 @@
- 	interrupt-parent = <&intc>;
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 435de4f2af3b..d9900cb3e7b6 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -579,6 +579,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
+ 	return 0;
+ }
+ EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
++OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
  
- 	chosen {
--		bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
-+		bootargs = "earlycon";
-+		stdout-path = &arcuart0;
- 	};
+ #endif	/* CONFIG_SERIAL_ARC_CONSOLE */
  
- 	aliases {
 -- 
 1.8.3.2
