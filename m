@@ -1,59 +1,78 @@
 From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH v2 REBASED 00/10] Generic earlyconsole for ARC UART Driver
-Date: Tue, 24 Jun 2014 13:55:05 +0530
-Message-ID: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
+Subject: [PATCH v2 REBASED 01/10] serial/arc: use uart_console_write() helper
+Date: Tue, 24 Jun 2014 13:55:06 +0530
+Message-ID: <1403598315-1429-2-git-send-email-vgupta@synopsys.com>
+References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+---
+ drivers/tty/serial/arc_uart.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
-This is slightly modified repost of series posted last week
-http://www.spinics.net/lists/linux-serial/msg12884.html
-
-This series switches ARC UART from custom earlyprintk support to generic
-earlycon (many thanks to Rob for doing that). And also build on Grant's recent
-work for using DT stdout-path as default console.
-
-The motivation is to get rid of the early platform code, which in turn
-would help consolidate the init code across several ARC platforms.
-
-First 3 patches are general cleanup/refactoring, not necesarily related to
-earlycon.
-
-v2 <- v1
---------
-* Rebased on linux-next: 20140623
-* Patch 9 split into 9 and 10 for driver/platform changes
-* Patch 10 also uses the DT stdout-path so no need for console=
-
-
-Thx,
--Vineet
-
-
-Vineet Gupta (10):
-  serial/arc: use uart_console_write() helper
-  serial/arc: Refactor by referencing to uart_port where possible
-  serial/arc: Remove the workaround for legacy ISS
-  serial/arc: Use generic earlycon infrastructure
-  serial/arc: remove earlyprintk support and switch to earlycon
-  serial/arc: remove last remanants of platform data
-  serial/arc: inline the probe helper
-  ARC: [arcfpga] RIP early uart platform device stuff
-  serial/arc: Enable DT based earlycon
-  ARC: [arcfpga] stdout-path now suffices for earlycon/console
-
- arch/arc/boot/dts/angel4.dts     |   3 +-
- arch/arc/plat-arcfpga/Kconfig    |   7 -
- arch/arc/plat-arcfpga/platform.c |  97 +-----------
- drivers/tty/serial/Kconfig       |   1 +
- drivers/tty/serial/arc_uart.c    | 329 ++++++++++++++-------------------------
- 5 files changed, 123 insertions(+), 314 deletions(-)
-
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index c9f5c9dcc15c..32fb8b94ff7c 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -478,14 +478,14 @@ static void arc_serial_config_port(struct uart_port *port, int flags)
+ 
+ #if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_ARC_CONSOLE)
+ 
+-static void arc_serial_poll_putchar(struct uart_port *port, unsigned char chr)
++static void arc_serial_poll_putchar(struct uart_port *port, int chr)
+ {
+ 	struct arc_uart_port *uart = to_arc_port(port);
+ 
+ 	while (!(UART_GET_STATUS(uart) & TXEMPTY))
+ 		cpu_relax();
+ 
+-	UART_SET_DATA(uart, chr);
++	UART_SET_DATA(uart, (unsigned char)chr);
+ }
+ #endif
+ 
+@@ -622,11 +622,6 @@ static int arc_serial_console_setup(struct console *co, char *options)
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
+-static void arc_serial_console_putchar(struct uart_port *port, int ch)
+-{
+-	arc_serial_poll_putchar(port, (unsigned char)ch);
+-}
+-
+ /*
+  * Interrupts are disabled on entering
+  */
+@@ -637,7 +632,7 @@ static void arc_serial_console_write(struct console *co, const char *s,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	uart_console_write(port, s, count, arc_serial_console_putchar);
++	uart_console_write(port, s, count, arc_serial_poll_putchar);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+@@ -655,13 +650,8 @@ static __init void early_serial_write(struct console *con, const char *s,
+ 					unsigned int n)
+ {
+ 	struct uart_port *port = &arc_uart_ports[con->index].port;
+-	unsigned int i;
+ 
+-	for (i = 0; i < n; i++, s++) {
+-		if (*s == '\n')
+-			arc_serial_poll_putchar(port, '\r');
+-		arc_serial_poll_putchar(port, *s);
+-	}
++	uart_console_write(port, s, n, arc_serial_poll_putchar);
+ }
+ 
+ static struct console arc_early_serial_console __initdata = {
 -- 
 1.8.3.2
