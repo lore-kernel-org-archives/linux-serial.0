@@ -1,36 +1,68 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH v2 REBASED 09/10] serial/arc: Enable DT based earlycon
-Date: Tue, 24 Jun 2014 13:55:14 +0530
-Message-ID: <1403598315-1429-10-git-send-email-vgupta@synopsys.com>
-References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH v2 REBASED 06/10] serial/arc: remove last remanants of
+ platform data
+Date: Tue, 24 Jun 2014 16:01:27 -0500
+Message-ID: <CAL_JsqLpLKs0+u2a0VvgYW_0bGDpQCOEJSqKDqpYTO=KuO6uhg@mail.gmail.com>
+References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com> <1403598315-1429-7-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ve0-f178.google.com ([209.85.128.178]:37990 "EHLO
+	mail-ve0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752802AbaFXVBs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 24 Jun 2014 17:01:48 -0400
+In-Reply-To: <1403598315-1429-7-git-send-email-vgupta@synopsys.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Francois.Bedard@synopsys.com
 
-This allows a param less earlycon to pick up the earlyconsole from
-chosen/stdout-path
+On Tue, Jun 24, 2014 at 3:25 AM, Vineet Gupta
+<Vineet.Gupta1@synopsys.com> wrote:
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+> ---
+>  drivers/tty/serial/arc_uart.c | 22 ++++++----------------
+>  1 file changed, 6 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+> index 2ffaf099691a..dc3d5db37dc4 100644
+> --- a/drivers/tty/serial/arc_uart.c
+> +++ b/drivers/tty/serial/arc_uart.c
 
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
----
- drivers/tty/serial/arc_uart.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 435de4f2af3b..d9900cb3e7b6 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -579,6 +579,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
- 	return 0;
- }
- EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
-+OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
- 
- #endif	/* CONFIG_SERIAL_ARC_CONSOLE */
- 
--- 
-1.8.3.2
+> @@ -518,21 +516,13 @@ arc_uart_init_one(struct platform_device *pdev, int dev_id)
+>         }
+>         uart->baud = val;
+>
+> -       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -       if (!res)
+> -               return -ENODEV;
+> -
+> -       res2 = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -       if (!res2)
+> -               return -ENODEV;
+> -
+> -       port->mapbase = res->start;
+> -       port->membase = ioremap_nocache(res->start, resource_size(res));
+> +       port->membase = of_iomap(np, 0);
+
+ioremap is preferred over of_iomap as it is not OF specific. Perhaps
+use devm_request_and_ioremap instead.
+
+>         if (!port->membase)
+>                 /* No point of dev_err since UART itself is hosed here */
+>                 return -ENXIO;
+>
+> -       port->irq = res2->start;
+> +       port->irq = irq_of_parse_and_map(np, 0);
+> +
+
+platform_get_irq should be used here.
+
+>         port->dev = &pdev->dev;
+>         port->iotype = UPIO_MEM;
+>         port->flags = UPF_BOOT_AUTOCONF;
+> --
+> 1.8.3.2
+>
