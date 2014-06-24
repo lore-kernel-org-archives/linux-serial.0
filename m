@@ -1,38 +1,59 @@
-From: "Carmen Rofriguez" <carlfern@canada-11.com>
-Subject: You've won a Prize
-Date: Mon, 23 Jun 2014 16:33:22 +0200
-Message-ID: <201406231432.s5NEWE5x031789__6888.19665597311$1403534883$gmane$org@comx2.bbmail.com.hk>
-Reply-To: <payingroll446@yahoo.com.hk>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH v2 REBASED 00/10] Generic earlyconsole for ARC UART Driver
+Date: Tue, 24 Jun 2014 13:55:05 +0530
+Message-ID: <1403598315-1429-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailer11.incnets.com ([210.6.92.70]:46405 "EHLO
-	mailer11.incnets.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754060AbaFWOq4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 23 Jun 2014 10:46:56 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Francois.Bedard@synopsys.com, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-You've won a Prize
-MICROSOFT IBERICA SL"
-YOU 'VE WON.
-ATTN:MICROSOFT IBERICA SL
-Your email has won (EUR244,000,00)
-(TWO HUNDRED AND FOURTY FOUR THOUSAND EURO)
-Batch number:XL73276498AM
-Ref number:QR352899526KC
-This is a millennium scientific computer game in which
-email addresses were used.It is a promotional program aimed at
-encouraging internet users,therefore you do not need to buy ticket to enter
-for it.
-For further development,clarification and procedure please
-Contact:Dr Eduardo Sanchez (Foreign Service Manager
-Email contact:payingroll446@yahoo.com.hk
+Hi,
 
-Regards
-Carmen Rodriguez
-Lottery Co-ordinator
+This is slightly modified repost of series posted last week
+http://www.spinics.net/lists/linux-serial/msg12884.html
 
+This series switches ARC UART from custom earlyprintk support to generic
+earlycon (many thanks to Rob for doing that). And also build on Grant's recent
+work for using DT stdout-path as default console.
+
+The motivation is to get rid of the early platform code, which in turn
+would help consolidate the init code across several ARC platforms.
+
+First 3 patches are general cleanup/refactoring, not necesarily related to
+earlycon.
+
+v2 <- v1
+--------
+* Rebased on linux-next: 20140623
+* Patch 9 split into 9 and 10 for driver/platform changes
+* Patch 10 also uses the DT stdout-path so no need for console=
+
+
+Thx,
+-Vineet
+
+
+Vineet Gupta (10):
+  serial/arc: use uart_console_write() helper
+  serial/arc: Refactor by referencing to uart_port where possible
+  serial/arc: Remove the workaround for legacy ISS
+  serial/arc: Use generic earlycon infrastructure
+  serial/arc: remove earlyprintk support and switch to earlycon
+  serial/arc: remove last remanants of platform data
+  serial/arc: inline the probe helper
+  ARC: [arcfpga] RIP early uart platform device stuff
+  serial/arc: Enable DT based earlycon
+  ARC: [arcfpga] stdout-path now suffices for earlycon/console
+
+ arch/arc/boot/dts/angel4.dts     |   3 +-
+ arch/arc/plat-arcfpga/Kconfig    |   7 -
+ arch/arc/plat-arcfpga/platform.c |  97 +-----------
+ drivers/tty/serial/Kconfig       |   1 +
+ drivers/tty/serial/arc_uart.c    | 329 ++++++++++++++-------------------------
+ 5 files changed, 123 insertions(+), 314 deletions(-)
+
+-- 
+1.8.3.2
