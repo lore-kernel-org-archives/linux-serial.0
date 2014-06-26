@@ -1,84 +1,124 @@
-From: "maxime.ripard" <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: Re: [PATCH v2 12/20] clk: sunxi: Add A23 APB0
- support to sun6i-a31-apb0-clk
-Date: Wed, 25 Jun 2014 18:41:07 +0200
-Message-ID: <20140625164107.GA19569@lukather>
-References: <1403016777-15121-1-git-send-email-wens@csie.org>
- <1403016777-15121-13-git-send-email-wens@csie.org>
- <20140618102623.GQ19730@lukather>
- <CAGb2v64D6qBtXGXzn25443s_oj_=Z-u_P6+-MX52Lz54+9bQyQ@mail.gmail.com>
- <20140619092847.GW19730@lukather>
- <CAGb2v64hFc7oVdydoNzKVqjnyNUxuqMXX2AiV3aJLFizKvkOPA@mail.gmail.com>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Tushar Behera <trblinux@gmail.com>
+Subject: Re: [PATCH 2/2] serial: amba-pl010: Use devres APIs
+Date: Thu, 26 Jun 2014 15:07:52 +0530
+Message-ID: <53ABE9F0.9090003@gmail.com>
+References: <1403503151-4166-1-git-send-email-tushar.b@samsung.com> <1403503151-4166-3-git-send-email-tushar.b@samsung.com> <53A821B7.2000702@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBFPZVOOQKGQELDW6GRQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAGb2v64hFc7oVdydoNzKVqjnyNUxuqMXX2AiV3aJLFizKvkOPA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Luc Verhaegen <libv-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pb0-f50.google.com ([209.85.160.50]:37320 "EHLO
+	mail-pb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752758AbaFZJh5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 26 Jun 2014 05:37:57 -0400
+In-Reply-To: <53A821B7.2000702@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>, Tushar Behera <tushar.b@samsung.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, linux@arm.linux.org.uk
 
+On 06/23/2014 06:16 PM, Daniel Thompson wrote:
+> On 23/06/14 06:59, Tushar Behera wrote:
+>> Migrating to use devres managed APIs devm_kzalloc, devm_ioremap and
+>> devm_clk_get.
+>>
+>> Signed-off-by: Tushar Behera <tushar.b@samsung.com>
+>> ---
+>>  drivers/tty/serial/amba-pl010.c |   46 ++++++++++++++-------------------------
+>>  1 file changed, 16 insertions(+), 30 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+>> index 971af1e..af8deba 100644
+>> --- a/drivers/tty/serial/amba-pl010.c
+>> +++ b/drivers/tty/serial/amba-pl010.c
+>> @@ -46,6 +46,7 @@
+>>  #include <linux/amba/serial.h>
+>>  #include <linux/clk.h>
+>>  #include <linux/slab.h>
+>> +#include <linux/io.h>
+>>  
+>>  #include <asm/io.h>
+> 
+> Adding <linux/io.h> makes including <asm/io.h> redundant.
+> 
 
---BOKacYhQ+x31HxR3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Okay, I will remove the <asm/io.h> in next iteration.
 
-On Fri, Jun 20, 2014 at 02:13:58PM +0800, Chen-Yu Tsai wrote:
-> > If these two clocks are these different though, maybe it would just be
-> > easier to add a new driver. These are trivial enough anyway.
->=20
-> Yes it is. But it adds more of the same boilerplate code than actual
-> differences of the hardware.
->=20
-> I'm inclined to keep it as it is for now, unless someone strongly
-> objects.
+> 
+>> @@ -688,28 +689,22 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
+>>  		if (amba_ports[i] == NULL)
+>>  			break;
+>>  
+>> -	if (i == ARRAY_SIZE(amba_ports)) {
+>> -		ret = -EBUSY;
+>> -		goto out;
+>> -	}
+>> +	if (i == ARRAY_SIZE(amba_ports))
+>> +		return -EBUSY;
+>>  
+>> -	uap = kzalloc(sizeof(struct uart_amba_port), GFP_KERNEL);
+>> -	if (!uap) {
+>> -		ret = -ENOMEM;
+>> -		goto out;
+>> -	}
+>> +	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
+>> +			   GFP_KERNEL);
+>> +	if (!uap)
+>> +		return -ENOMEM;
+>>  
+>> -	base = ioremap(dev->res.start, resource_size(&dev->res));
+>> -	if (!base) {
+>> -		ret = -ENOMEM;
+>> -		goto free;
+>> -	}
+>> +	base = devm_ioremap(&dev->dev, dev->res.start,
+>> +			    resource_size(&dev->res));
+>> +	if (!base)
+>> +		return -ENOMEM;
+>>  
+>> -	uap->clk = clk_get(&dev->dev, NULL);
+>> -	if (IS_ERR(uap->clk)) {
+>> -		ret = PTR_ERR(uap->clk);
+>> -		goto unmap;
+>> -	}
+>> +	uap->clk = devm_clk_get(&dev->dev, NULL);
+>> +	if (IS_ERR(uap->clk))
+>> +		return PTR_ERR(uap->clk);
+>>  
+>>  	uap->port.dev = &dev->dev;
+>>  	uap->port.mapbase = dev->res.start;
+>> @@ -727,15 +722,9 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
+>>  
+>>  	amba_set_drvdata(dev, uap);
+>>  	ret = uart_add_one_port(&amba_reg, &uap->port);
+>> -	if (ret) {
+>> +	if (ret)
+>>  		amba_ports[i] = NULL;
+>> -		clk_put(uap->clk);
+>> - unmap:
+>> -		iounmap(base);
+>> - free:
+>> -		kfree(uap);
+>> -	}
+>> - out:
+>> +
+>>  	return ret;
+>>  }
+>>  
+>> @@ -750,9 +739,6 @@ static int pl010_remove(struct amba_device *dev)
+>>  		if (amba_ports[i] == uap)
+>>  			amba_ports[i] = NULL;
+>>  
+>> -	iounmap(uap->port.membase);
+>> -	clk_put(uap->clk);
+>> -	kfree(uap);
+>>  	return 0;
+>>  }
+> 
+> Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+> 
 
-I'm not strongly objecting, but I'd strongly prefer to go with two
-drivers.
+Thanks for reviewing.
 
-I don't really want to end up in the same case than with clk-sunxi.c,
-which handles a lot of weird corner case for one particular clock,
-while most of them are just a single-bit gate.
-
-Especially when they have nothing in common, which is pretty much the
-case here.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---BOKacYhQ+x31HxR3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTqvujAAoJEBx+YmzsjxAgIdEP/2M8UjpshuzvSXZrCUTplpYy
-lwDLn1Nnmo/ycspMBwqi/rCcD/0e3QjAuy/EwlpR9Y4RPPRy2Rt5mNQZ7uLq3Cj3
-C4UPo5Qjf4b4x9lYU5LR6FcKn9QWE/wQhI6Kta0AqWfuh948RVER9kIQZYDyFqq4
-MFUaG3lpZcxIWc6alq0B3oxaKfwHUFZVd/f+8m8Xb/VKxlMh5ATtMmKjjMXKcGkO
-liNacaPJCagQlj77V0zvsFwlOlXIa7jKg1NS4UiUCxItjbcRnjfcim/aS8wqs9Qz
-4wmwIwPSPlaT/HRisz2pVUncwXDycEHLoAmJPbsCZfv+aHU7pRFInHhZ0uBbWzyJ
-etzNQjw/9XSxzjGOG/ZdMHPRNReYkibiqzRK2UTdTAB103hHqR1FH/WPpZCAUu44
-wDoo5epV0RTUiQxRRf4QMivDjQJXingrfylQjp5trNjS/B9E6RsT9p0POmP53RgO
-wojJFE8K9B55ws23QEGVpQj5e2sfTcOgJjY679UCk7UBC0xPtfStVEbsvGZJpBVy
-8NGPMmkP32vPgajAQwDf+jeU1Gora+M4J/4K2/f5wHUR9DmWHEvzdJpVxbijOHel
-K0EasHgc84P2PRVnIqDgMavq8hqexzD0hJtIxEBah6nh4BJQjZX2o3K/BiF8JUxK
-IZpi4gkMaHKLY8GH4TEc
-=Peqk
------END PGP SIGNATURE-----
-
---BOKacYhQ+x31HxR3--
+-- 
+Tushar Behera
