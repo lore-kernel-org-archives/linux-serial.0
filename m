@@ -1,7 +1,7 @@
 From: Tomasz Figa <t.figa@samsung.com>
-Subject: [PATCH 2/3] serial: samsung: Consider DT alias when probing ports
-Date: Thu, 26 Jun 2014 13:24:34 +0200
-Message-ID: <1403781875-5425-3-git-send-email-t.figa@samsung.com>
+Subject: [PATCH 1/3] Documentation: devicetree: Update samsung UART bindings
+Date: Thu, 26 Jun 2014 13:24:33 +0200
+Message-ID: <1403781875-5425-2-git-send-email-t.figa@samsung.com>
 References: <1403781875-5425-1-git-send-email-t.figa@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-reply-to: <1403781875-5425-1-git-send-email-t.figa@samsung.com>
@@ -10,53 +10,79 @@ To: linux-samsung-soc@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Drake <drake@endlessm.com>, Tomasz Figa <tomasz.figa@gmail.com>, Tomasz Figa <t.figa@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-Current driver code relies on probe order of particular samsung-uart
-instances, which makes it impossible to get proper initialization of
-ports when not all ports are available on board, not even saying of
-deterministic device naming.
-
-This patch fixes this on DT-enabled systems by using DT aliases for
-ports as instance ID, if specified, or falling back to legacy method
-otherwise to provide backwards compatibility.
+The primary purpose of this patch is to add information about (now
+required) aliases of UART ports. However the documentation currently is
+heavily outdated and so this patch also takes care of this.
 
 Signed-off-by: Tomasz Figa <t.figa@samsung.com>
 ---
- drivers/tty/serial/samsung.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/serial/samsung_uart.txt    | 52 +++++++++++++++++++---
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index c1d3ebd..a9bf024 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1275,11 +1275,18 @@ static inline struct s3c24xx_serial_drv_data *s3c24xx_get_driver_data(
- static int s3c24xx_serial_probe(struct platform_device *pdev)
- {
- 	struct s3c24xx_uart_port *ourport;
-+	int index = probe_index;
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.txt b/Documentation/devicetree/bindings/serial/samsung_uart.txt
+index 2c8a17c..85e8ee2 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.txt
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.txt
+@@ -1,14 +1,54 @@
+ * Samsung's UART Controller
  
--	dbg("s3c24xx_serial_probe(%p) %d\n", pdev, probe_index);
-+	if (pdev->dev.of_node) {
-+		ret = of_alias_get_id(pdev->dev.of_node, "serial");
-+		if (ret >= 0)
-+			index = ret;
-+	}
+-The Samsung's UART controller is used for interfacing SoC with serial communicaion
+-devices.
++The Samsung's UART controller is used for interfacing SoC with serial
++communicaion devices.
+ 
+ Required properties:
+-- compatible: should be
+-  - "samsung,exynos4210-uart", for UART's compatible with Exynos4210 uart ports.
++- compatible: should be one of following:
++  - "samsung,exynos4210-uart" -  Exynos4210 SoC,
++  - "samsung,s3c2410-uart" - compatible with ports present on S3C2410 SoC,
++  - "samsung,s3c2412-uart" - compatible with ports present on S3C2412 SoC,
++  - "samsung,s3c2440-uart" - compatible with ports present on S3C2440 SoC,
++  - "samsung,s3c6400-uart" - compatible with ports present on S3C6400 SoC,
++  - "samsung,s5pv210-uart" - compatible with ports present on S5PV210 SoC.
+ 
+ - reg: base physical address of the controller and length of memory mapped
+   region.
+ 
+-- interrupts: interrupt number to the cpu. The interrupt specifier format depends
+-  on the interrupt controller parent.
++- interrupts: a single interrupt signal to SoC interrupt controller,
++  according to interrupt bindings documentation [1].
 +
-+	dbg("s3c24xx_serial_probe(%p) %d\n", pdev, index);
- 
--	ourport = &s3c24xx_serial_ports[probe_index];
-+	ourport = &s3c24xx_serial_ports[index];
- 
- 	ourport->drv_data = s3c24xx_get_driver_data(pdev);
- 	if (!ourport->drv_data) {
-@@ -1295,7 +1302,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 
- 	ourport->port.fifosize = (ourport->info->fifosize) ?
- 		ourport->info->fifosize :
--		ourport->drv_data->fifosize[probe_index];
-+		ourport->drv_data->fifosize[index];
- 
- 	probe_index++;
- 
++- clock-names: input names of clocks used by the controller:
++  - "uart" - controller bus clock,
++  - "clk_uart_baudN" - Nth baud base clock input (N = 0, 1, ...),
++    according to SoC User's Manual (only N = 0 is allowedfor SoCs without
++    internal baud clock mux).
++- clocks: phandles and specifiers for all clocks specified in "clock-names"
++  property, in the same order, according to clock bindings documentation [2].
++
++[1] Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
++[2] Documentation/devicetree/bindings/clock/clock-bindings.txt
++
++Note: Each Samsung UART should have an alias correctly numbered in the
++"aliases" node, according to serialN format, where N is the port number
++(non-negative decimal integer) as specified by User's Manual of respective
++SoC.
++
++Example:
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++		serial2 = &uart2;
++	};
++
++Example:
++	uart1: serial@7f005400 {
++		compatible = "samsung,s3c6400-uart";
++		reg = <0x7f005400 0x100>;
++		interrupt-parent = <&vic1>;
++		interrupts = <6>;
++		clock-names = "uart", "clk_uart_baud2",
++				"clk_uart_baud3";
++		clocks = <&clocks PCLK_UART1>, <&clocks PCLK_UART1>,
++				<&clocks SCLK_UART>;
++	};
 -- 
 1.9.3
