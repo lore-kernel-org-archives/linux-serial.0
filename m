@@ -1,68 +1,95 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH 0/3] Deterministic UART numbering on Samsung SoCs
-Date: Thu, 26 Jun 2014 14:02:20 +0200
-Message-ID: <53AC0BCC.1010608@samsung.com>
-References: <1403781875-5425-1-git-send-email-t.figa@samsung.com>
- <20140626113939.GP32514@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Alex Elder <elder@linaro.org>
+Subject: [PATCH] serial: 8250_dw: support high baudrates if possible
+Date: Fri, 27 Jun 2014 12:25:20 -0500
+Message-ID: <1403889920-1127-1-git-send-email-elder@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout3.w1.samsung.com ([210.118.77.13]:59551 "EHLO
-	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757114AbaFZMCr (ORCPT
+Received: from mail-ig0-f179.google.com ([209.85.213.179]:57978 "EHLO
+	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751493AbaF0RZV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 26 Jun 2014 08:02:47 -0400
-In-reply-to: <20140626113939.GP32514@n2100.arm.linux.org.uk>
+	Fri, 27 Jun 2014 13:25:21 -0400
+Received: by mail-ig0-f179.google.com with SMTP id uq10so2203008igb.0
+        for <linux-serial@vger.kernel.org>; Fri, 27 Jun 2014 10:25:21 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Daniel Drake <drake@endlessm.com>, Tomasz Figa <tomasz.figa@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 26.06.2014 13:39, Russell King - ARM Linux wrote:
-> On Thu, Jun 26, 2014 at 01:24:32PM +0200, Tomasz Figa wrote:
->> Current Samsung UART driver relies on probe order of particular
->> samsung-uart instances, which makes it impossible to get proper
->> initialization of ports when not all ports are available on board,
->> not even saying of deterministic device naming.
->>
->> This series intends to fix this situation by adding support to parse
->> aliases from device tree and use them to assign instance IDs to
->> particular port instances.
-> 
-> How about instead exporting the path/id information so that userspace
-> can create /dev/serial/by-{path,id}/... for internal devices instead?
-> 
-> The problem you're raising is very much the same problem you have when
-> there are multiple USB serial devices connected to the machine - you
-> just get a bunch of /dev/ttyUSB* devices which are unordered (they can
-> change on each boot, or change order if you disconnect and reconnect
-> them.)
-> 
-> /dev/serial/by-{path,id}/ allows for a much more stable path.
-> 
+Currently the Synopsys DesignWare 8250 driver assumes its UART clock
+runs at a fixed rate.  If a "real" clock was set up using the common
+clock framework, and that clock's rate is adjustable, it may be
+possible to support a wider range of baud rates by changing the
+UART clock rate.
 
-The problem being solved has slightly different constraints than the one
-with USB serials you mentioned:
+This is done by setting up a uart_port->set_termios method that
+requests a clock rate change if a different rate might make it
+more likely to achieve a specified baud.
 
-- basically Samsung UART already has its own namespace (ttySAC) and the
-order inside it is well-defined - instance ID shall be the hardware
-instance number as specified by documentation. The ports vary in certain
-aspects and the ID is important knowledge of the driver. The problem
-here was broken implementation of assigning IDs based on probe order,
-which worked only because on all Exynos platforms all ports have been
-always registered (which we want to change now and keep unused ones
-"disabled" in DT),
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+This patch is also available here:
+    http://git.linaro.org/landing-teams/working/broadcom/kernel.git
+    Branch review/dw8250_clock
 
-- we already have a lot of userspace depending on the aforementioned
-ttySAC namespace and proper ordering of instances there. While I believe
-the proper solution as of today would be to go back to standard ttyS
-namespace and make userspace use a smarter way of identifying the
-instances (e.g. by path or id, as you suggested), I don't think this
-will make anyone's life easier with current assumptions,
+ drivers/tty/serial/8250/8250_dw.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-- correct me if I'm wrong, but I don't think the
-/dev/serial/by-{path,id} would be handled in kernel's console= parameter.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 51b307a..013aa9b 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -242,6 +242,43 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+ 		pm_runtime_put_sync_suspend(port->dev);
+ }
+ 
++/*
++ * If our clock was configured through the common clock framework we
++ * might be able to support a wider range of baud rates by changing
++ * its frequency.  For the "traditional" baud rates (115200 or
++ * less), request the conventional 1.8432 MHz clock.  The clock
++ * frequency needs to be at least 16 times the baud rate, so
++ * use 16 times the requested rate for those higher than 115200.
++ */
++static void
++dw8250_set_termios(struct uart_port *p, struct ktermios *new,
++			struct ktermios *old)
++{
++	struct dw8250_data *data = p->private_data;
++
++	if (!IS_ERR(data->clk)) {
++		speed_t baud;
++		unsigned int rate;
++
++		baud = tty_termios_baud_rate(new);
++		BUG_ON(baud > (speed_t)UINT_MAX);
++		rate = 16 * max(115200U, (unsigned int)baud);
++
++		/*
++		 * Request a different clock rate if necessary, and
++		 * record it if successful.
++		 */
++		if (rate != p->uartclk) {
++			BUG_ON(!data->clk);
++			if (!clk_set_rate(data->clk, (unsigned long)rate))
++				p->uartclk = rate;
++		}
++	}
++
++	/* The standard code does most of the work. */
++	serial8250_do_set_termios(p, new, old);
++}
++
+ static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
+ {
+ 	struct dw8250_data *data = param;
+@@ -417,6 +454,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	uart.port.iotype = UPIO_MEM;
+ 	uart.port.serial_in = dw8250_serial_in;
+ 	uart.port.serial_out = dw8250_serial_out;
++	uart.port.set_termios = dw8250_set_termios;
+ 	uart.port.private_data = data;
+ 
+ 	if (pdev->dev.of_node) {
+-- 
+1.9.1
 
-Best regards,
-Tomasz
