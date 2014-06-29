@@ -1,49 +1,36 @@
-From: Alex Elder <elder@linaro.org>
-Subject: Re: [PATCH] serial: 8250_dw: support high baudrates if possible
-Date: Sat, 28 Jun 2014 15:15:56 -0500
-Message-ID: <53AF227C.3000102@linaro.org>
-References: <1403889920-1127-1-git-send-email-elder@linaro.org> <20140628163608.0c5536a9@alan.etchedpixels.co.uk>
+From: Mr Harick Yazu <missviviankipkalya20@gmail.com>
+Subject: Dear Partner,
+Date: Sun, 29 Jun 2014 19:52:07 +0200
+Message-ID: <CAJtoQb=OP55zv2Op+OmMYX+GtE5k9VQrrOQSMC=Mnm+DVBFMTQ@mail.gmail.com>
+Reply-To: harick.yazu@yahoo.fr
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140628163608.0c5536a9@alan.etchedpixels.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f65.google.com ([209.85.215.65]:46038 "EHLO
+	mail-la0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752770AbaF2RwK convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 29 Jun 2014 13:52:10 -0400
+Received: by mail-la0-f65.google.com with SMTP id e16so1420674lan.0
+        for <linux-serial@vger.kernel.org>; Sun, 29 Jun 2014 10:52:08 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 06/28/2014 10:36 AM, One Thousand Gnomes wrote:
-> On Fri, 27 Jun 2014 12:25:20 -0500
->> +		rate = 16 * max(115200U, (unsigned int)baud);
->> +
-> 
-> This assumes an arbitarily configurable clock, which is not I think the
-> usual case. 
+Dear Partner,
 
-If the clock's rate can't change, this will return an error,
-and the recorded rate (p->uartclk) will not be changed.
+Please consider this mail serious despite the fact that you did not
+expect it. Hope you are doing well. I am Mr.Harick Yazu, the Manager
+of head op=E9rations department of our bank in Burkina Faso. I
+discovered a risk-free deal of US$9.9 million from my department which
+was left unclaimed as a result of non existing body.Provided you will
+put trust forward, let us share the deal if you are interested, urgent
+reply is needed for more details,
 
-This should only matter when attempting to set a baud rate higher
-than 115200.  It *is* possible that some particular high rate
-will realize a better signal rate than whatever results from
-requesting 16 times the baud (or even 16 * 115200).
-
-I could make this work *only* for my particular part(s) by
-relying on a different device tree compatible string and
-setting a flag.  It would be nice if other implementations
-could benefit from this though.
-
-					-Alex
-
->> +		/*
->> +		 * Request a different clock rate if necessary, and
->> +		 * record it if successful.
->> +		 */
->> +		if (rate != p->uartclk) {
->> +			BUG_ON(!data->clk);
->> +			if (!clk_set_rate(data->clk, (unsigned long)rate))
->> +				p->uartclk = rate;
->> +		}
-> 
-> 
+Regards.
+Mr Harick Yazu.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
