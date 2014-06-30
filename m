@@ -1,36 +1,22 @@
-From: Mr Harick Yazu <missviviankipkalya20@gmail.com>
-Subject: Dear Partner,
-Date: Sun, 29 Jun 2014 19:52:07 +0200
-Message-ID: <CAJtoQb=OP55zv2Op+OmMYX+GtE5k9VQrrOQSMC=Mnm+DVBFMTQ@mail.gmail.com>
-Reply-To: harick.yazu@yahoo.fr
+From: Chi Wang Chan <pmab@mp.pa.gov.br>
+Subject: I just hope this e-mail acct. is still in use?
+Date: Mon, 30 Jun 2014 16:10:36 -0300 (BRT)
+Message-ID: <690411026.8681171.1404155436248.JavaMail.root__25809.1907403015$1404156033$gmane$org@mp.pa.gov.br>
+Reply-To: Chi Wang Chan <ki773-chanproposal101@yahoo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f65.google.com ([209.85.215.65]:46038 "EHLO
-	mail-la0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752770AbaF2RwK convert rfc822-to-8bit (ORCPT
+Received: from zimbraproxy.mp.pa.gov.br ([177.74.57.67]:42854 "EHLO
+	zimbraproxy.mp.pa.gov.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754425AbaF3TUU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 29 Jun 2014 13:52:10 -0400
-Received: by mail-la0-f65.google.com with SMTP id e16so1420674lan.0
-        for <linux-serial@vger.kernel.org>; Sun, 29 Jun 2014 10:52:08 -0700 (PDT)
+	Mon, 30 Jun 2014 15:20:20 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Dear Partner,
 
-Please consider this mail serious despite the fact that you did not
-expect it. Hope you are doing well. I am Mr.Harick Yazu, the Manager
-of head op=E9rations department of our bank in Burkina Faso. I
-discovered a risk-free deal of US$9.9 million from my department which
-was left unclaimed as a result of non existing body.Provided you will
-put trust forward, let us share the deal if you are interested, urgent
-reply is needed for more details,
 
-Regards.
-Mr Harick Yazu.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I am seeking your permission to discuss with you a confidential/lucrative deal [worth USD48.8M] that require foreign assistance.
+
+Chi
