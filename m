@@ -1,44 +1,54 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] serial: 8250_dw: support high baudrates if possible
-Date: Tue, 1 Jul 2014 23:02:59 +0100
-Message-ID: <20140701230259.23f2f452@alan.etchedpixels.co.uk>
-References: <1403889920-1127-1-git-send-email-elder@linaro.org>
-	<20140628163608.0c5536a9@alan.etchedpixels.co.uk>
-	<53AF227C.3000102@linaro.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 0/3] s/FOOTBRIDGE/ARCH_FOOTBRIDGE/
+Date: Tue, 1 Jul 2014 23:14:28 +0100
+Message-ID: <20140701221428.GC32514@n2100.arm.linux.org.uk>
+References: <1404247026-379-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <53AF227C.3000102@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Elder <elder@linaro.org>
-Cc: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:50499 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752959AbaGAWOo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 1 Jul 2014 18:14:44 -0400
+Content-Disposition: inline
+In-Reply-To: <1404247026-379-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Wim Van Sebroeck <wim@iguana.be>, linux-watchdog@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On Sat, 28 Jun 2014 15:15:56 -0500
-Alex Elder <elder@linaro.org> wrote:
+On Tue, Jul 01, 2014 at 10:37:03PM +0200, Uwe Kleine-K=F6nig wrote:
+> Hello Russell,
+>=20
+> I'm not sure that FOOTBRIDGE and ARCH_FOOTBRIDGE are semantically
+> identical; if not, feel free to nack this series.
 
-> On 06/28/2014 10:36 AM, One Thousand Gnomes wrote:
-> > On Fri, 27 Jun 2014 12:25:20 -0500
-> >> +		rate = 16 * max(115200U, (unsigned int)baud);
-> >> +
-> > 
-> > This assumes an arbitarily configurable clock, which is not I think the
-> > usual case. 
-> 
-> If the clock's rate can't change, this will return an error,
-> and the recorded rate (p->uartclk) will not be changed.
+CONFIG_FOOTBRIDGE means that we have a DC21285 in the system.  We
+used to have ARCH_FOOTBRIDGE and ARCH_CO285 which both selected
+CONFIG_FOOTBRIDGE.
 
-Which assumes an arbitrarily configurable clock, whereas you want to find
-the correct clock and multiplier combination for the baud rate.
+ARCH_FOOTBRIDGE was for either host or addin mode using a PAGE_OFFSET
+of 0xc0000000.  ARCH_CO285 had a PAGE_OFFSET of 0x80000000 as they
+wanted to be able to map almost all of PCI memory space.
 
-Most of these ports are wired to fixed clocks (which is fine) or clocks
-with limited numbers of supported frequencies (which is not).
+So think of CONFIG_FOOTBRIDGE as meaning that we have the physical
+device, and CONFIG_ARCH_FOOTBRIDGE meaning that we want to support
+boards with the device on.
 
-Your patch is an improvement but doesn't really fix the overall problem.
-If we have enough devices with variable clocks for it to be useful then
-fine - but can we merge it with a big FIXME note so that whoever comes
-along wondering why their clock doesn't work or behaves very oddly can
-figure it out and fix that case ?
+So, it may make sense to rename CONFIG_FOOTBRIDGE to CONFIG_DC21285
+if that makes the configuration symbol intention clearer.
 
-Alan
+This is why I prefer even hidden symbols to have a help text - having
+the help text explains why they exist...
+
+--=20
+=46TTC broadband for 0.8mile line: now at 9.7Mbps down 460kbps up... sl=
+owly
+improving, and getting towards what was expected from it.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
