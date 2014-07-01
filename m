@@ -1,47 +1,44 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 0/3] s/FOOTBRIDGE/ARCH_FOOTBRIDGE/
-Date: Tue,  1 Jul 2014 22:37:03 +0200
-Message-ID: <1404247026-379-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: 8250_dw: support high baudrates if possible
+Date: Tue, 1 Jul 2014 23:02:59 +0100
+Message-ID: <20140701230259.23f2f452@alan.etchedpixels.co.uk>
+References: <1403889920-1127-1-git-send-email-elder@linaro.org>
+	<20140628163608.0c5536a9@alan.etchedpixels.co.uk>
+	<53AF227C.3000102@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:39451 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751569AbaGAUiM (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Jul 2014 16:38:12 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <53AF227C.3000102@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Elder <elder@linaro.org>
+Cc: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>
-Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Wim Van Sebroeck <wim@iguana.be>, linux-watchdog@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-Hello Russell,
+On Sat, 28 Jun 2014 15:15:56 -0500
+Alex Elder <elder@linaro.org> wrote:
 
-I'm not sure that FOOTBRIDGE and ARCH_FOOTBRIDGE are semantically
-identical; if not, feel free to nack this series.
+> On 06/28/2014 10:36 AM, One Thousand Gnomes wrote:
+> > On Fri, 27 Jun 2014 12:25:20 -0500
+> >> +		rate = 16 * max(115200U, (unsigned int)baud);
+> >> +
+> > 
+> > This assumes an arbitarily configurable clock, which is not I think the
+> > usual case. 
+> 
+> If the clock's rate can't change, this will return an error,
+> and the recorded rate (p->uartclk) will not be changed.
 
-Best regards
-Uwe
+Which assumes an arbitrarily configurable clock, whereas you want to find
+the correct clock and multiplier combination for the baud rate.
 
-Uwe Kleine-K=C3=B6nig (3):
-  serial: DC21285: depend on ARCH_FOOTBRIDGE instead of FOOTBRIDGE
-  watchdog: get rid of FOOTBRIDGE in dependencies
-  ARM: drop Kconfig symbol FOOTBRIDGE
+Most of these ports are wired to fixed clocks (which is fine) or clocks
+with limited numbers of supported frequencies (which is not).
 
- arch/arm/Kconfig                 |  1 -
- arch/arm/Kconfig.debug           | 14 +++++++-------
- arch/arm/mach-footbridge/Kconfig |  4 ----
- drivers/tty/serial/Kconfig       |  2 +-
- drivers/watchdog/Kconfig         |  4 ++--
- 5 files changed, 10 insertions(+), 15 deletions(-)
+Your patch is an improvement but doesn't really fix the overall problem.
+If we have enough devices with variable clocks for it to be useful then
+fine - but can we merge it with a big FIXME note so that whoever comes
+along wondering why their clock doesn't work or behaves very oddly can
+figure it out and fix that case ?
 
---=20
-2.0.0
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Alan
