@@ -1,65 +1,33 @@
-From: Alex Elder <elder@linaro.org>
-Subject: Re: [PATCH] serial: 8250_dw: support high baudrates if possible
-Date: Tue, 01 Jul 2014 19:15:21 -0500
-Message-ID: <53B34F19.9060608@linaro.org>
-References: <1403889920-1127-1-git-send-email-elder@linaro.org>	<20140628163608.0c5536a9@alan.etchedpixels.co.uk>	<53AF227C.3000102@linaro.org> <20140701230259.23f2f452@alan.etchedpixels.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f170.google.com ([209.85.223.170]:61602 "EHLO
-	mail-ie0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752929AbaGBAPW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 1 Jul 2014 20:15:22 -0400
-Received: by mail-ie0-f170.google.com with SMTP id tr6so8902204ieb.29
-        for <linux-serial@vger.kernel.org>; Tue, 01 Jul 2014 17:15:21 -0700 (PDT)
-In-Reply-To: <20140701230259.23f2f452@alan.etchedpixels.co.uk>
-Sender: linux-serial-owner@vger.kernel.org
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH/RFC] serial: sh-sci: Add device tree support for r8a7778
+Date: Wed,  2 Jul 2014 06:19:06 +0200
+Message-ID: <1404274746-26098-1-git-send-email-horms+renesas@verge.net.au>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 07/01/2014 05:02 PM, One Thousand Gnomes wrote:
-> On Sat, 28 Jun 2014 15:15:56 -0500
-> Alex Elder <elder@linaro.org> wrote:
-> 
->> On 06/28/2014 10:36 AM, One Thousand Gnomes wrote:
->>> On Fri, 27 Jun 2014 12:25:20 -0500
->>>> +		rate = 16 * max(115200U, (unsigned int)baud);
->>>> +
->>>
->>> This assumes an arbitarily configurable clock, which is not I think the
->>> usual case. 
->>
->> If the clock's rate can't change, this will return an error,
->> and the recorded rate (p->uartclk) will not be changed.
-> 
-> Which assumes an arbitrarily configurable clock, whereas you want to find
-> the correct clock and multiplier combination for the baud rate.
-> 
-> Most of these ports are wired to fixed clocks (which is fine) or clocks
-> with limited numbers of supported frequencies (which is not).
+Simply document a new compat string.
+There appears to be no need for a driver updates.
 
-Yes, I acknowledged that in my earlier response.  But over
-the weekend I decided to abandon hope that I'd be able to
-verify there are no problems for affected machines, and
-re-formulated my patch.
-    https://lkml.org/lkml/2014/7/1/323
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+---
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Your patch is an improvement but doesn't really fix the overall problem.
-> If we have enough devices with variable clocks for it to be useful then
-> fine - but can we merge it with a big FIXME note so that whoever comes
-> along wondering why their clock doesn't work or behaves very oddly can
-> figure it out and fix that case ?
-
-What I've done now is define a dw8250_adjustable_clk() predicate
-that indicates the UART baud can be adjusted by changing the
-clock rate.  Anyone who wants to activate this functionality
-can just modify that function to recognize their device.
-
-							-Alex
-
-> Alan
-> 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 64fd7de..8a50a2e 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -4,6 +4,7 @@ Required properties:
+ 
+   - compatible: Must contain one of the following:
+ 
++    - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
+     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
+-- 
+2.0.0.rc2
 
