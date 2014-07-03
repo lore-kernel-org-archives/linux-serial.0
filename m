@@ -1,80 +1,44 @@
-From: Felipe Balbi <balbi@ti.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
 Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
-Date: Thu, 3 Jul 2014 12:08:22 -0500
-Message-ID: <20140703170822.GB5814@saruman.home>
-References: <20140702190944.GA567@drone.musicnaut.iki.fi>
- <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
- <20140703073411.GX28884@atomide.com>
- <20140703132509.GA5814@saruman.home>
- <CAOCHtYi0JwRO12gHa+KFGH1k7pPk4TL40igwhzRRxutw-tqf6A@mail.gmail.com>
- <20140703140736.GF5814@saruman.home>
- <20140703154425.GC23309@earth.universe>
- <20140703155240.GU5814@saruman.home>
- <20140703160622.GE23309@earth.universe>
- <CABxcv=nGPyK7SeQZ+W1ZEfBPQ-RraVTawyYuKOGz02df0g=6Qg@mail.gmail.com>
-Reply-To: <balbi@ti.com>
+Date: Thu, 3 Jul 2014 14:48:08 -0400
+Message-ID: <20140703184808.GD17769@csclub.uwaterloo.ca>
+References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tRjCiSMHexiP9I5N"
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CABxcv=nGPyK7SeQZ+W1ZEfBPQ-RraVTawyYuKOGz02df0g=6Qg@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Javier Martinez Canillas <javier@dowhile0.org>
-Cc: Sebastian Reichel <sre@kernel.org>, Felipe Balbi <balbi@ti.com>, Robert Nelson <robertcnelson@gmail.com>, Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
-List-Id: linux-serial@vger.kernel.org
-
---tRjCiSMHexiP9I5N
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.csclub.uwaterloo.ca ([129.97.134.52]:58741 "EHLO
+	mail.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752864AbaGCSzv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Jul 2014 14:55:51 -0400
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Felipe Balbi <balbi@ti.com>
 
-On Thu, Jul 03, 2014 at 06:19:47PM +0200, Javier Martinez Canillas wrote:
-> On Thu, Jul 3, 2014 at 6:06 PM, Sebastian Reichel <sre@kernel.org> wrote:
-> > Hi,
-> >
-> > On Thu, Jul 03, 2014 at 10:52:40AM -0500, Felipe Balbi wrote:
-> >> > DT is supposed to contain information about the hardware, so it
-> >> > should stay the same? I think there is no non-hackish way to decide
-> >>
-> >> compatible would change, at a minimum.
-> >
-> > why? I would expect it to stay the same (and the current patch uses
-> > the same compatible strings).
-> >
->=20
-> Exactly, the new driver must support all the compatible strings
-> defined in Documentation/devicetree/bindings/serial/omap_serial.tx
-> (which already does as you pointed out).
->=20
-> Otherwise the current drivers/tty/serial/omap-serial.c could never be
-> removed since that would mean breaking DT backward compatibility.
+On Wed, Jul 02, 2014 at 06:00:09PM +0200, Sebastian Andrzej Siewior wrote:
+> This patch provides a 8250-core based UART driver for the internal OMAP
+> UART. The longterm goal is to provide the same functionality as the
+> current OMAP uart driver and hopefully DMA support which could borrowed
+> from the 8250-core.
 
-that settles it then... good. I'll start testing this next week.
+This sounds interesting.  We are currently finding the omap serial driver
+awefully slow at handling serial traffic with ti's 3.12.y kernel branch,
+while the 3.8.y was seemingly a bit better (on the dra7xx eval board).
+Haven't had time to really investigate that yet though.
 
---=20
-balbi
+> The whole PM-Runtime part is currently missing.
+> It has been only tested as console UART.
+> The tty name is ttyS based instead of ttyO. How big is the pain here,
+> what could be the easiest way to provide compatibility?
 
---tRjCiSMHexiP9I5N
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+I would certainly love to see ttyS instead of ttyO.  But of course I am
+working on a new system that isn't released yet so changing things is
+a complete non issue for me. :)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+I should give this driver a try and see how it compares so far.
 
-iQIcBAEBAgAGBQJTtY4GAAoJEIaOsuA1yqREm0YP/j/hpexePJe1EtVF2/Q9g595
-hLO3AT927yMX/kpxtzLrM53nOtJTtLRy2QTPKLZ/m/6TVhTteESAh7dCm+MFGQTt
-MUSKuvtZo2WSxruxLwLgG8JW4fspGv2dCWk30MYSXS8zq1YJsPT0dLV2ahWAz5c9
-sAnLI2n9DmSBFNRdEJ65VMg1x3lDlQEunq7/FEe6zXfiWKEEFsrYwbCMvGKqJmY6
-NzZVnPuv/aL2oR3ga3dL15EVBCyu1n/g+slELHHLnPwg1JzFGwdzoCZpM+q/o05u
-z09pRzqIA41ogjQIZrKw8UvBFdyc7hP2yq4oVpNu+OxkK2djgR9Q79OQJKlPygEU
-TbilykpkV2N4108UwYM6K5IQ28/QbQ8Fj8CPfkeXsRRYNYbPKjVL13YAnyOMsWIH
-YAEZSaiBKm+uES9dex78dL9XGb/iZuX3ZTE4obdxtKAZHo1z8ghCHXmoWhxwve0p
-vIV8s/DLorBG49yGZlR+Zyrt+uzghu2uIsLR3czmvIiHPafSVd0kEyflNl/fVGh/
-JN3uuXjXWviD/Sak58dPVw0cogk75Yil0fLciYDg1zeebiSPC12lHoot5nunbcwC
-F7GzPABNJOlJ7OL/p4/KqhoreulbzGlwQxF3a+/B+9O/3raITq4IBj113AcIP3Z+
-UsjOuPaDFoKFpx7HFAsA
-=1yn1
------END PGP SIGNATURE-----
-
---tRjCiSMHexiP9I5N--
+-- 
+Len Sorensen
