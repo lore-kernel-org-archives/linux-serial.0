@@ -1,84 +1,80 @@
-From: "Harri J Rantanen" <metr@mbnet.fi>
-Subject: PLEASE VIEW WONGA LOAN DETAILS
-Date: Thu, 3 Jul 2014 19:58:43 +0300 (EEST)
-Message-ID: <49004.197.228.146.15.1404406723.squirrel@webmail.mbnet.fi>
-Reply-To: wonga.loans-sa@admin.in.th
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
+Date: Thu, 3 Jul 2014 12:08:22 -0500
+Message-ID: <20140703170822.GB5814@saruman.home>
+References: <20140702190944.GA567@drone.musicnaut.iki.fi>
+ <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
+ <20140703073411.GX28884@atomide.com>
+ <20140703132509.GA5814@saruman.home>
+ <CAOCHtYi0JwRO12gHa+KFGH1k7pPk4TL40igwhzRRxutw-tqf6A@mail.gmail.com>
+ <20140703140736.GF5814@saruman.home>
+ <20140703154425.GC23309@earth.universe>
+ <20140703155240.GU5814@saruman.home>
+ <20140703160622.GE23309@earth.universe>
+ <CABxcv=nGPyK7SeQZ+W1ZEfBPQ-RraVTawyYuKOGz02df0g=6Qg@mail.gmail.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20140703195843_29223"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sd-mail-sa-02.sanoma.fi ([158.127.30.135]:23105 "EHLO
-	sd-mail-sa-02.sanoma.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752324AbaGCRC6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Jul 2014 13:02:58 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="tRjCiSMHexiP9I5N"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CABxcv=nGPyK7SeQZ+W1ZEfBPQ-RraVTawyYuKOGz02df0g=6Qg@mail.gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier@dowhile0.org>
+Cc: Sebastian Reichel <sre@kernel.org>, Felipe Balbi <balbi@ti.com>, Robert Nelson <robertcnelson@gmail.com>, Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-------=_20140703195843_29223
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8bit
+--tRjCiSMHexiP9I5N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Jul 03, 2014 at 06:19:47PM +0200, Javier Martinez Canillas wrote:
+> On Thu, Jul 3, 2014 at 6:06 PM, Sebastian Reichel <sre@kernel.org> wrote:
+> > Hi,
+> >
+> > On Thu, Jul 03, 2014 at 10:52:40AM -0500, Felipe Balbi wrote:
+> >> > DT is supposed to contain information about the hardware, so it
+> >> > should stay the same? I think there is no non-hackish way to decide
+> >>
+> >> compatible would change, at a minimum.
+> >
+> > why? I would expect it to stay the same (and the current patch uses
+> > the same compatible strings).
+> >
+>=20
+> Exactly, the new driver must support all the compatible strings
+> defined in Documentation/devicetree/bindings/serial/omap_serial.tx
+> (which already does as you pointed out).
+>=20
+> Otherwise the current drivers/tty/serial/omap-serial.c could never be
+> removed since that would mean breaking DT backward compatibility.
 
+that settles it then... good. I'll start testing this next week.
 
+--=20
+balbi
 
-ATTN:
+--tRjCiSMHexiP9I5N
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-PLEASE VIEW WONGA LOAN DETAILS.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-MANAGEMENT.
-------=_20140703195843_29223
-Content-Type: text/plain; name="VALUED CUSTOMERS.txt"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: attachment; filename="VALUED CUSTOMERS.txt"
+iQIcBAEBAgAGBQJTtY4GAAoJEIaOsuA1yqREm0YP/j/hpexePJe1EtVF2/Q9g595
+hLO3AT927yMX/kpxtzLrM53nOtJTtLRy2QTPKLZ/m/6TVhTteESAh7dCm+MFGQTt
+MUSKuvtZo2WSxruxLwLgG8JW4fspGv2dCWk30MYSXS8zq1YJsPT0dLV2ahWAz5c9
+sAnLI2n9DmSBFNRdEJ65VMg1x3lDlQEunq7/FEe6zXfiWKEEFsrYwbCMvGKqJmY6
+NzZVnPuv/aL2oR3ga3dL15EVBCyu1n/g+slELHHLnPwg1JzFGwdzoCZpM+q/o05u
+z09pRzqIA41ogjQIZrKw8UvBFdyc7hP2yq4oVpNu+OxkK2djgR9Q79OQJKlPygEU
+TbilykpkV2N4108UwYM6K5IQ28/QbQ8Fj8CPfkeXsRRYNYbPKjVL13YAnyOMsWIH
+YAEZSaiBKm+uES9dex78dL9XGb/iZuX3ZTE4obdxtKAZHo1z8ghCHXmoWhxwve0p
+vIV8s/DLorBG49yGZlR+Zyrt+uzghu2uIsLR3czmvIiHPafSVd0kEyflNl/fVGh/
+JN3uuXjXWviD/Sak58dPVw0cogk75Yil0fLciYDg1zeebiSPC12lHoot5nunbcwC
+F7GzPABNJOlJ7OL/p4/KqhoreulbzGlwQxF3a+/B+9O/3raITq4IBj113AcIP3Z+
+UsjOuPaDFoKFpx7HFAsA
+=1yn1
+-----END PGP SIGNATURE-----
 
-Flexible, short term loans that give you lots of control 
-Dear VALUED CUSTOMER, 
-Have you ever searched for fund, loans, financial assistance or need an accredited lender to help you meet up 
-with your needs and demands? Do you want to buy a Car or any other property? Or have your bank turned 
-you down? Are they delaying your plans with too much paper work? Is your monthly income disappearing 
-due to high interest rate on your Loans, Credit or Bonds? Have you been Blacklisted? or you want to make 
-Consolidations? 
-Then you have no alternative than to get an instant and reliable service from our Loaning Agency. We offer 
-Personal Loans @ 3.5% P.A ranging from (R2,000.00 – R500,000.00). While Business Loans @ 4.5% 
-P.A ranging from (R250,000.00 – R10,000,000.00). Loan duration is 1 to 120months (Maximum) very easy 
-and all you need to do is to apply by sending us your personal details f irst. 
-Your Full Name * Surname * ID Number * Cell No * Email Address * Nationality * 
-TO: wonga.loans-sa@admin.in.th OR Contact us +27(0) 86 750 3927 
-We will always do our best to determine what you can comfortably afford to repay by tak ing your current 
-personal financial circumstances into consideration and then set your loan amount accordingly. Refer to the 
-Loan Options Table below which was calculated at 3.5% P.A Personal Loan as a mere guide. Choose the 
-installment and loan term that suits you. 
-LOAN 
-AMOUNT 
-24 
-Months 
-Total amount 
-repayable 36 Months 
-Total amount 
-repayable 48 Months 
-Total amount 
-repayable 60 Months 
-Total amount 
-repayable 
-R 5 000 R 216 R 5,184 R 146 R 5,274 R 111 R 5,365 R 90.96 R 5,457 
-R 15 000 R 648 R 15,552 R 439 R 15,823 R 335 R 16,096 R 272 R 16,372 
-R 30 000 
-R 
-1,296 R 31,105 R 879 R 31,646 R 670 R 32,192 R 545 R 32,745 
-R 60 000 
-R 
-2,592 R 62,211 R 1,758 R 63,292 R 1,341 R 64,385 R 1,091 R 65,490 
-R 80 000 
-R 
-3,456 R 82,949 R 2,344 R 84,089 R 1,788 R 85,847 R 1,455 R 87,320 
-R 100 000 
-R 
-4,320 R 103,686 R 2,930 R 105,487 R 2,235 R 107,308 R 1,819 R 109,150 
-R 120 000 
-R 
-5,184 R 124,423 R 3,516 R 126,543 R 2,682 R 128,770 R 2,183 R 130,980 
-Wonga Finance SA(Pty)Company No.2010/015269/07. A registered Credit P rovider.NCRCP5033
-
-------=_20140703195843_29223--
-
-
+--tRjCiSMHexiP9I5N--
