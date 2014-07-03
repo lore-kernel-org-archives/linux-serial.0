@@ -1,8 +1,8 @@
 From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v3 5/9] serial: 8250_dw: Add optional reset
- control support
-Date: Thu,  3 Jul 2014 22:55:45 +0800
-Message-ID: <1404399349-20237-6-git-send-email-wens@csie.org>
+Subject: [PATCH v3 7/9] ARM: sunxi: select MFD_SUN6I_PRCM when
+ sun8i arch support is enabled
+Date: Thu,  3 Jul 2014 22:55:47 +0800
+Message-ID: <1404399349-20237-8-git-send-email-wens@csie.org>
 References: <1404399349-20237-1-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
@@ -19,70 +19,30 @@ To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.o
 Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The Allwinner A31 and A23 SoCs have a reset controller
-maintaining the UART in reset by default.
+Select the MFD_SUN6I_PRCM option when sun8i arch is enabled in order to
+get the PRCM (Power/Reset/Clock Management) related drivers compiled.
 
-This patch adds optional reset support to the driver.
+Also select ARCH_HAS_RESET_CONTROLLER and RESET_CONTROLLER to make sure
+the reset controller drivers are compiled.
 
 Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt | 1 +
- drivers/tty/serial/8250/8250_dw.c                             | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ arch/arm/mach-sunxi/Kconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-index f13f1c5..cb9af84 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-@@ -7,6 +7,7 @@ Required properties:
- - clock-frequency : the input clock frequency for the UART.
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index f776c5f..6434e3b 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -38,6 +38,9 @@ config MACH_SUN7I
+ config MACH_SUN8I
+ 	bool "Allwinner A23 (sun8i) SoCs support"
+ 	default ARCH_SUNXI
++	select ARCH_HAS_RESET_CONTROLLER
+ 	select ARM_GIC
++	select MFD_SUN6I_PRCM
++	select RESET_CONTROLLER
  
- Optional properties:
-+- resets : phandle to the parent reset controller.
- - reg-shift : quantity to shift the register offsets by.  If this property is
-   not present then the register offsets are not shifted.
- - reg-io-width : the size (in bytes) of the IO accesses that should be
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 51b307a..cb1b3dc 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/clk.h>
-+#include <linux/reset.h>
- #include <linux/pm_runtime.h>
- 
- #include <asm/byteorder.h>
-@@ -59,6 +60,7 @@ struct dw8250_data {
- 	int			last_mcr;
- 	int			line;
- 	struct clk		*clk;
-+	struct reset_control	*rst;
- 	struct uart_8250_dma	dma;
- };
- 
-@@ -408,6 +410,10 @@ static int dw8250_probe(struct platform_device *pdev)
- 		uart.port.uartclk = clk_get_rate(data->clk);
- 	}
- 
-+	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
-+	if (!IS_ERR(data->rst))
-+		reset_control_deassert(data->rst);
-+
- 	data->dma.rx_chan_id = -1;
- 	data->dma.tx_chan_id = -1;
- 	data->dma.rx_param = data;
-@@ -451,6 +457,9 @@ static int dw8250_remove(struct platform_device *pdev)
- 
- 	serial8250_unregister_port(data->line);
- 
-+	if (!IS_ERR(data->rst))
-+		reset_control_assert(data->rst);
-+
- 	if (!IS_ERR(data->clk))
- 		clk_disable_unprepare(data->clk);
- 
+ endif
 -- 
 2.0.1
