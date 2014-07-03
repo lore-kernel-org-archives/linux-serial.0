@@ -1,66 +1,60 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH] serial: sirf: transfer more bytes once to decrease interrupts
-Date: Thu,  3 Jul 2014 21:26:59 +0800
-Message-ID: <1404394019-24475-1-git-send-email-21cnbao@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:48810 "EHLO
-	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932445AbaGCN1L (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 3 Jul 2014 09:27:11 -0400
-Received: by mail-pd0-f172.google.com with SMTP id w10so222287pde.17
-        for <linux-serial@vger.kernel.org>; Thu, 03 Jul 2014 06:27:11 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+From: Robert Nelson <robertcnelson@gmail.com>
+Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
+Date: Thu, 3 Jul 2014 08:34:44 -0500
+Message-ID: <CAOCHtYi0JwRO12gHa+KFGH1k7pPk4TL40igwhzRRxutw-tqf6A@mail.gmail.com>
+References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
+	<20140702160932.GF5541@saruman.home>
+	<20140702190944.GA567@drone.musicnaut.iki.fi>
+	<CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
+	<20140703073411.GX28884@atomide.com>
+	<20140703132509.GA5814@saruman.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140703132509.GA5814@saruman.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-From: Qipan Li <Qipan.Li@csr.com>
+On Thu, Jul 3, 2014 at 8:25 AM, Felipe Balbi <balbi@ti.com> wrote:
+> On Thu, Jul 03, 2014 at 12:34:11AM -0700, Tony Lindgren wrote:
+>> * Robert Nelson <robertcnelson@gmail.com> [140702 12:27]:
+>> > On Wed, Jul 2, 2014 at 2:09 PM, Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
+>> > > Hi,
+>> > >
+>> > > On Wed, Jul 02, 2014 at 11:09:32AM -0500, Felipe Balbi wrote:
+>> > >> > It has been only tested as console UART.
+>> > >> > The tty name is ttyS based instead of ttyO. How big is the pain here,
+>> > >> > what could be the easiest way to provide compatibility?
+>> > >>
+>> > >> have been considering that myself for months. You could pass an optional
+>> > >> argument to serial8250_register_8250_port() but that only solves part of
+>> > >> the problem :-(
+>>
+>> Some kind of compability layer sure would be nice.
+>>
+>> > > When ttyS -> ttyO change was done on OMAP, compatibility was not an issue.
+>> > > Why should we care about it now?
+>> >
+>> > It would be a good opportunity to force everyone to update their bootloader. ;)
+>> >
+>> > Besides the BeagleBoard forum is quiet now, no one is complaining
+>> > about that old (ttyS -> ttyO) transition anymore..
+>>
+>> How about a Kconfig option to provide ttyO by default? The not even
+>> do that if kernel has cmdline option nottyomap.
+>
+> what about single zImage ? I don't want to use ttyO on my
+> Allwinner/Exynos/Snapdragon/whatever SoC just because OMAP is in the
+> same image ;-)
 
-the current codes send 1 bytes, then after getting TX done interrupt,
-send subsequent bytes. it causes redundant interrupts.
-for example, if we have 3 bytes in TX buffer, the TX flow is:
-1. send 1 byte
-2. get TX down interrupt
-3. send the left 2 bytes
-4. get TX down interrupt
+What if we just kept it simple, leave the ttyO driver enabled and add
+a warning (pr_info) that it's deprecated.  It's not like it's broken,
+it just won't get later features or devices support added.
 
-this patch moves to send more bytes and decrease interrupts, the new
-flow is:
-1. send 3 bytes
-2. get TX down interrupt
+Regards,
 
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
----
- drivers/tty/serial/sirfsoc_uart.c | 3 ++-
- drivers/tty/serial/sirfsoc_uart.h | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 9b4d71c..4102192 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -290,7 +290,8 @@ static void sirfsoc_uart_start_tx(struct uart_port *port)
- 	if (sirfport->tx_dma_chan)
- 		sirfsoc_uart_tx_with_dma(sirfport);
- 	else {
--		sirfsoc_uart_pio_tx_chars(sirfport, 1);
-+		sirfsoc_uart_pio_tx_chars(sirfport,
-+			SIRFSOC_UART_IO_TX_REASONABLE_CNT);
- 		wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_START);
- 		if (!sirfport->is_marco)
- 			wr_regl(port, ureg->sirfsoc_int_en_reg,
-diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
-index 69a62eb..6a7ebf7 100644
---- a/drivers/tty/serial/sirfsoc_uart.h
-+++ b/drivers/tty/serial/sirfsoc_uart.h
-@@ -449,4 +449,4 @@ struct sirfsoc_uart_port {
- 
- /* I/O Mode */
- #define SIRFSOC_UART_IO_RX_MAX_CNT		256
--#define SIRFSOC_UART_IO_TX_REASONABLE_CNT	6
-+#define SIRFSOC_UART_IO_TX_REASONABLE_CNT	256
 -- 
-1.9.3
-
+Robert Nelson
+http://www.rcn-ee.com/
