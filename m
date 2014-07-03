@@ -1,97 +1,120 @@
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v3 8/9] ARM: sun8i: Add PRCM clock and reset
- controller nodes to the DTSI
-Date: Thu,  3 Jul 2014 22:55:48 +0800
-Message-ID: <1404399349-20237-9-git-send-email-wens@csie.org>
-References: <1404399349-20237-1-git-send-email-wens@csie.org>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
+Date: Thu, 3 Jul 2014 17:44:26 +0200
+Message-ID: <20140703154425.GC23309@earth.universe>
+References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
+ <20140702160932.GF5541@saruman.home>
+ <20140702190944.GA567@drone.musicnaut.iki.fi>
+ <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
+ <20140703073411.GX28884@atomide.com>
+ <20140703132509.GA5814@saruman.home>
+ <CAOCHtYi0JwRO12gHa+KFGH1k7pPk4TL40igwhzRRxutw-tqf6A@mail.gmail.com>
+ <20140703140736.GF5814@saruman.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBBG62WOQKGQEQH7UMHQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-In-Reply-To: <1404399349-20237-1-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="69pVuxX8awAiJ7fD"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:39609 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932231AbaGCPoc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 3 Jul 2014 11:44:32 -0400
+Content-Disposition: inline
+In-Reply-To: <20140703140736.GF5814@saruman.home>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Felipe Balbi <balbi@ti.com>
+Cc: Robert Nelson <robertcnelson@gmail.com>, Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 
-With sun8i PRCM support available, we can add the PRCM clock and
-reset controller nodes to the DTSI. Also update R_UART's clock
-phandle and add it's reset control phandle.
 
-Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
----
- arch/arm/boot/dts/sun8i-a23.dtsi | 48 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+--69pVuxX8awAiJ7fD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/arm/boot/dts/sun8i-a23.dtsi b/arch/arm/boot/dts/sun8i-a23.dtsi
-index 79c4083..e10c708 100644
---- a/arch/arm/boot/dts/sun8i-a23.dtsi
-+++ b/arch/arm/boot/dts/sun8i-a23.dtsi
-@@ -262,13 +262,59 @@
- 			interrupts = <1 9 0xf04>;
- 		};
- 
-+		prcm@01f01400 {
-+			compatible = "allwinner,sun8i-a23-prcm";
-+			reg = <0x01f01400 0x200>;
-+
-+			ar100: ar100_clk {
-+				compatible = "fixed-factor-clock";
-+				#clock-cells = <0>;
-+				clock-div = <1>;
-+				clock-mult = <1>;
-+				clocks = <&osc24M>;
-+				clock-output-names = "ar100";
-+			};
-+
-+			ahb0: ahb0_clk {
-+				compatible = "fixed-factor-clock";
-+				#clock-cells = <0>;
-+				clock-div = <1>;
-+				clock-mult = <1>;
-+				clocks = <&ar100>;
-+				clock-output-names = "ahb0";
-+			};
-+
-+			apb0: apb0_clk {
-+				compatible = "allwinner,sun8i-a23-apb0-clk";
-+				#clock-cells = <0>;
-+				clocks = <&ahb0>;
-+				clock-output-names = "apb0";
-+			};
-+
-+			apb0_gates: apb0_gates_clk {
-+				compatible = "allwinner,sun8i-a23-apb0-gates-clk";
-+				#clock-cells = <1>;
-+				clocks = <&apb0>;
-+				clock-indices = <0>, <2>, <3>, <4>, <6>;
-+				clock-output-names = "apb0_pio", "apb0_timer",
-+						"apb0_rsb", "apb0_uart",
-+						"apb0_i2c";
-+			};
-+
-+			apb0_rst: apb0_rst {
-+				compatible = "allwinner,sun6i-a31-clock-reset";
-+				#reset-cells = <1>;
-+			};
-+		};
-+
- 		r_uart: serial@01f02800 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01f02800 0x400>;
- 			interrupts = <0 38 4>;
- 			reg-shift = <2>;
- 			reg-io-width = <4>;
--			clocks = <&osc24M>;
-+			clocks = <&apb0_gates 4>;
-+			resets = <&apb0_rst 4>;
- 			status = "disabled";
- 		};
- 	};
--- 
-2.0.1
+Hi,
+
+On Thu, Jul 03, 2014 at 09:07:36AM -0500, Felipe Balbi wrote:
+> On Thu, Jul 03, 2014 at 08:34:44AM -0500, Robert Nelson wrote:
+> > On Thu, Jul 3, 2014 at 8:25 AM, Felipe Balbi <balbi@ti.com> wrote:
+> > > On Thu, Jul 03, 2014 at 12:34:11AM -0700, Tony Lindgren wrote:
+> > >> * Robert Nelson <robertcnelson@gmail.com> [140702 12:27]:
+> > >> > On Wed, Jul 2, 2014 at 2:09 PM, Aaro Koskinen <aaro.koskinen@iki.f=
+i> wrote:
+> > >> > > Hi,
+> > >> > >
+> > >> > > On Wed, Jul 02, 2014 at 11:09:32AM -0500, Felipe Balbi wrote:
+> > >> > >> > It has been only tested as console UART.
+> > >> > >> > The tty name is ttyS based instead of ttyO. How big is the pa=
+in here,
+> > >> > >> > what could be the easiest way to provide compatibility?
+> > >> > >>
+> > >> > >> have been considering that myself for months. You could pass an=
+ optional
+> > >> > >> argument to serial8250_register_8250_port() but that only solve=
+s part of
+> > >> > >> the problem :-(
+> > >>
+> > >> Some kind of compability layer sure would be nice.
+> > >>
+> > >> > > When ttyS -> ttyO change was done on OMAP, compatibility was not=
+ an issue.
+> > >> > > Why should we care about it now?
+> > >> >
+> > >> > It would be a good opportunity to force everyone to update their b=
+ootloader. ;)
+> > >> >
+> > >> > Besides the BeagleBoard forum is quiet now, no one is complaining
+> > >> > about that old (ttyS -> ttyO) transition anymore..
+> > >>
+> > >> How about a Kconfig option to provide ttyO by default? The not even
+> > >> do that if kernel has cmdline option nottyomap.
+> > >
+> > > what about single zImage ? I don't want to use ttyO on my
+> > > Allwinner/Exynos/Snapdragon/whatever SoC just because OMAP is in the
+> > > same image ;-)
+> >=20
+> > What if we just kept it simple, leave the ttyO driver enabled and add
+> > a warning (pr_info) that it's deprecated.  It's not like it's broken,
+> > it just won't get later features or devices support added.
+>=20
+> Fine by me, I'd switch to 8250 as soon as it's merged though :-) would
+> be nice to get an example DTS change just so I can start testing on the
+> boards I have around.
+
+DT is supposed to contain information about the hardware, so it
+should stay the same? I think there is no non-hackish way to decide
+at runtime which driver should be loaded.
+
+One possible solution is:
+ * Keep both drivers for a couple of kernel releases
+ * Add the deprecation warning to the older one
+ * Add a conflict between both drivers in Kconfig
+
+Thus its decided at build-time, which driver should be used. This
+would keep existing .config files working for a couple of releases.
+
+-- Sebastian
+
+--69pVuxX8awAiJ7fD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJTtXpZAAoJENju1/PIO/qappYP/R9wu/GOonPfQo6uZ7gohmIW
+opHVKIl8XNOPMQ6PGjV849jl8INwcnSFSfIf9ToseGDR3mlarPSORmNb80NddTBL
+WDjHjiajxQHfOn3gvFt/g4T/MWL7TvaubcdjGrrPYHqFbmSf8+Du4jil/74Le4Wc
+D3gK37AivYXv6E81dAlLRmxbusKkLvGJ8oa+t0vV+tM5ScdZyUzoZ512oYLqcC/J
+B8hypu3Ug12nA7qREpVAysdMf0tQmAn06+cwUQkQfWjMgLXwE3U9bu3kJC5BpgZe
+4iEyLYj6291PhDasQJp6akml5aKfZcaqmuhjqu2/fv9guYzb4Mc9Vl4hFJZONoBR
+KcyESrGFqDFxULTTbDhrpW6SlYSg1lAAD0wCrWHld6Lsnz7DNqjIc6TDlmkN+Pqg
+X/ZvcsHXC6MyG1VcXSruGoveafqPhODMVr4Lx4HSAh2LCUDaN/U7pHDuMlo1wBpQ
+sFhO/sWR4mcfk4WNnxaMhSmrU8ShsF6SMCAYhcCgXM8kg/g8FuD9qQ5rg/Hs9A0l
+kmT4bJZ8Etqx4hfLxq6LIvmeN1ZLILBdQ7VkqkoenpwIkAOSxDo0vAIAHu8kC65S
+I9fbZWn7c0R8UDuvbJlInSnPq4lckE2t+Nr7wHFh6K2/31lmqAIr6evNn9+GWfQC
+7kKld0rXUe2YVhZwhCBV
+=cZXg
+-----END PGP SIGNATURE-----
+
+--69pVuxX8awAiJ7fD--
