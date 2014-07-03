@@ -1,8 +1,8 @@
 From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v3 3/9] clk: sunxi: Add A23 specific compatible
- to sun6i-a31-apb0-gates-clk
-Date: Thu,  3 Jul 2014 22:55:43 +0800
-Message-ID: <1404399349-20237-4-git-send-email-wens@csie.org>
+Subject: [PATCH v3 5/9] serial: 8250_dw: Add optional reset
+ control support
+Date: Thu,  3 Jul 2014 22:55:45 +0800
+Message-ID: <1404399349-20237-6-git-send-email-wens@csie.org>
 References: <1404399349-20237-1-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
@@ -19,44 +19,70 @@ To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.o
 Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The sun6i-a31-apb0-gates-clk driver is generic in that it supports
-the "clock-indicies" DT property with "clock-output-names" to list
-the valid clock gate bits.
+The Allwinner A31 and A23 SoCs have a reset controller
+maintaining the UART in reset by default.
 
-However this might lead one to assume that the clock in the A23 is
-the same as the A31. To make it clear, we add a new compatible for
-the A23, "allwinner,sun8i-a23-apb0-gates-clk".
+This patch adds optional reset support to the driver.
 
 Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- Documentation/devicetree/bindings/clock/sunxi.txt | 1 +
- drivers/clk/sunxi/clk-sun6i-apb0-gates.c          | 1 +
- 2 files changed, 2 insertions(+)
+ Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt | 1 +
+ drivers/tty/serial/8250/8250_dw.c                             | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/clock/sunxi.txt b/Documentation/devicetree/bindings/clock/sunxi.txt
-index 68dbd3d..d3a5c3c 100644
---- a/Documentation/devicetree/bindings/clock/sunxi.txt
-+++ b/Documentation/devicetree/bindings/clock/sunxi.txt
-@@ -34,6 +34,7 @@ Required properties:
- 	"allwinner,sun5i-a10s-apb0-gates-clk" - for the APB0 gates on A10s
- 	"allwinner,sun6i-a31-apb0-gates-clk" - for the APB0 gates on A31
- 	"allwinner,sun7i-a20-apb0-gates-clk" - for the APB0 gates on A20
-+	"allwinner,sun8i-a23-apb0-gates-clk" - for the APB0 gates on A23
- 	"allwinner,sun4i-a10-apb1-clk" - for the APB1 clock
- 	"allwinner,sun4i-a10-apb1-mux-clk" - for the APB1 clock muxing
- 	"allwinner,sun4i-a10-apb1-gates-clk" - for the APB1 gates on A10
-diff --git a/drivers/clk/sunxi/clk-sun6i-apb0-gates.c b/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
-index b342f2a..f147fee 100644
---- a/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
-+++ b/drivers/clk/sunxi/clk-sun6i-apb0-gates.c
-@@ -85,6 +85,7 @@ static int sun6i_a31_apb0_gates_clk_probe(struct platform_device *pdev)
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
+index f13f1c5..cb9af84 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
+@@ -7,6 +7,7 @@ Required properties:
+ - clock-frequency : the input clock frequency for the UART.
  
- const struct of_device_id sun6i_a31_apb0_gates_clk_dt_ids[] = {
- 	{ .compatible = "allwinner,sun6i-a31-apb0-gates-clk" },
-+	{ .compatible = "allwinner,sun8i-a23-apb0-gates-clk" },
- 	{ /* sentinel */ }
+ Optional properties:
++- resets : phandle to the parent reset controller.
+ - reg-shift : quantity to shift the register offsets by.  If this property is
+   not present then the register offsets are not shifted.
+ - reg-io-width : the size (in bytes) of the IO accesses that should be
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 51b307a..cb1b3dc 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -26,6 +26,7 @@
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+ #include <linux/clk.h>
++#include <linux/reset.h>
+ #include <linux/pm_runtime.h>
+ 
+ #include <asm/byteorder.h>
+@@ -59,6 +60,7 @@ struct dw8250_data {
+ 	int			last_mcr;
+ 	int			line;
+ 	struct clk		*clk;
++	struct reset_control	*rst;
+ 	struct uart_8250_dma	dma;
  };
+ 
+@@ -408,6 +410,10 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		uart.port.uartclk = clk_get_rate(data->clk);
+ 	}
+ 
++	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
++	if (!IS_ERR(data->rst))
++		reset_control_deassert(data->rst);
++
+ 	data->dma.rx_chan_id = -1;
+ 	data->dma.tx_chan_id = -1;
+ 	data->dma.rx_param = data;
+@@ -451,6 +457,9 @@ static int dw8250_remove(struct platform_device *pdev)
+ 
+ 	serial8250_unregister_port(data->line);
+ 
++	if (!IS_ERR(data->rst))
++		reset_control_assert(data->rst);
++
+ 	if (!IS_ERR(data->clk))
+ 		clk_disable_unprepare(data->clk);
  
 -- 
 2.0.1
