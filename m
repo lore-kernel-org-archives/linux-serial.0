@@ -1,13 +1,13 @@
 From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v3 4/9] mfd: sun6i-prcm: Add support for
- Allwinner A23 PRCM
-Date: Thu,  3 Jul 2014 22:55:44 +0800
-Message-ID: <1404399349-20237-5-git-send-email-wens@csie.org>
+Subject: [PATCH v3 9/9] ARM: sun8i: Add reset controller nodes
+ to the DTSI
+Date: Thu,  3 Jul 2014 22:55:49 +0800
+Message-ID: <1404399349-20237-10-git-send-email-wens@csie.org>
 References: <1404399349-20237-1-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBA662WOQKGQEYELLW6I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCMILY6JWQBBBBG62WOQKGQEQH7UMHQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 In-Reply-To: <1404399349-20237-1-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -19,83 +19,92 @@ To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.o
 Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
-The differences are the AR100 clock can no longer be modified,
-the APB0 clock has different divisors, and some clock gates are
-gone.
+The A23 has the same MMIO reset controllers matching the clocks gates,
+just like in the A31. This patch adds the reset controller nodes and
+the reset control phandles for the peripherals needing them to the
+DTSI.
 
-This patch adds a compatible with a modified subdevice list for
-the A23.
+Unlike the sun6i DTSI, this patch uses sun6i-a31-clock-reset for
+ahb1_rst. sun6i-a31-ahb-reset is for early init, and requires some
+additions to the machine code. It is used to support the hstimer.
+However the hstimer on sun8i only has 1 timer, which is somewhat
+useless. Support for it will probably not be added. Hence the
+decision to use sun6i-a31-clock-reset here to avoid the changes to
+sun8i machine code.
 
 Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 ---
- .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
- drivers/mfd/sun6i-prcm.c                           | 30 ++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/sun8i-a23.dtsi | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-index 1f5a31f..03c5a55 100644
---- a/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-+++ b/Documentation/devicetree/bindings/mfd/sun6i-prcm.txt
-@@ -4,7 +4,7 @@ PRCM is an MFD device exposing several Power Management related devices
- (like clks and reset controllers).
+diff --git a/arch/arm/boot/dts/sun8i-a23.dtsi b/arch/arm/boot/dts/sun8i-a23.dtsi
+index e10c708..7d47933 100644
+--- a/arch/arm/boot/dts/sun8i-a23.dtsi
++++ b/arch/arm/boot/dts/sun8i-a23.dtsi
+@@ -187,6 +187,24 @@
+ 		#size-cells = <1>;
+ 		ranges;
  
- Required properties:
-- - compatible: "allwinner,sun6i-a31-prcm"
-+ - compatible: "allwinner,sun6i-a31-prcm" or "allwinner,sun8i-a23-prcm"
-  - reg: The PRCM registers range
- 
- The prcm node may contain several subdevices definitions:
-diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
-index 718fc4d..283ab8d 100644
---- a/drivers/mfd/sun6i-prcm.c
-+++ b/drivers/mfd/sun6i-prcm.c
-@@ -76,16 +76,46 @@ static const struct mfd_cell sun6i_a31_prcm_subdevs[] = {
- 	},
- };
- 
-+static const struct mfd_cell sun8i_a23_prcm_subdevs[] = {
-+	{
-+		.name = "sun8i-a23-apb0-clk",
-+		.of_compatible = "allwinner,sun8i-a23-apb0-clk",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_clk_res),
-+		.resources = sun6i_a31_apb0_clk_res,
-+	},
-+	{
-+		.name = "sun6i-a31-apb0-gates-clk",
-+		.of_compatible = "allwinner,sun8i-a23-apb0-gates-clk",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_gates_clk_res),
-+		.resources = sun6i_a31_apb0_gates_clk_res,
-+	},
-+	{
-+		.name = "sun6i-a31-apb0-clock-reset",
-+		.of_compatible = "allwinner,sun6i-a31-clock-reset",
-+		.num_resources = ARRAY_SIZE(sun6i_a31_apb0_rstc_res),
-+		.resources = sun6i_a31_apb0_rstc_res,
-+	},
-+};
++		ahb1_rst: reset@01c202c0 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-clock-reset";
++			reg = <0x01c202c0 0xc>;
++		};
 +
- static const struct prcm_data sun6i_a31_prcm_data = {
- 	.nsubdevs = ARRAY_SIZE(sun6i_a31_prcm_subdevs),
- 	.subdevs = sun6i_a31_prcm_subdevs,
- };
- 
-+static const struct prcm_data sun8i_a23_prcm_data = {
-+	.nsubdevs = ARRAY_SIZE(sun8i_a23_prcm_subdevs),
-+	.subdevs = sun8i_a23_prcm_subdevs,
-+};
++		apb1_rst: reset@01c202d0 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-clock-reset";
++			reg = <0x01c202d0 0x4>;
++		};
 +
- static const struct of_device_id sun6i_prcm_dt_ids[] = {
- 	{
- 		.compatible = "allwinner,sun6i-a31-prcm",
- 		.data = &sun6i_a31_prcm_data,
- 	},
-+	{
-+		.compatible = "allwinner,sun8i-a23-prcm",
-+		.data = &sun8i_a23_prcm_data,
-+	},
- 	{ /* sentinel */ },
- };
++		apb2_rst: reset@01c202d8 {
++			#reset-cells = <1>;
++			compatible = "allwinner,sun6i-a31-clock-reset";
++			reg = <0x01c202d8 0x4>;
++		};
++
+ 		timer@01c20c00 {
+ 			compatible = "allwinner,sun4i-a10-timer";
+ 			reg = <0x01c20c00 0xa0>;
+@@ -208,6 +226,7 @@
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+ 			clocks = <&apb2_gates 16>;
++			resets = <&apb2_rst 16>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -218,6 +237,7 @@
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+ 			clocks = <&apb2_gates 17>;
++			resets = <&apb2_rst 17>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -228,6 +248,7 @@
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+ 			clocks = <&apb2_gates 18>;
++			resets = <&apb2_rst 18>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -238,6 +259,7 @@
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+ 			clocks = <&apb2_gates 19>;
++			resets = <&apb2_rst 19>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -248,6 +270,7 @@
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+ 			clocks = <&apb2_gates 20>;
++			resets = <&apb2_rst 20>;
+ 			status = "disabled";
+ 		};
  
 -- 
 2.0.1
