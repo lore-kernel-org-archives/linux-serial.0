@@ -1,88 +1,57 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH v2 REBASED 00/10] Generic earlyconsole for ARC UART Driver
-Date: Fri, 4 Jul 2014 12:35:57 +0530
-Message-ID: <53B65255.9000303@synopsys.com>
-References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com> <CAL_JsqJF-a3K+dUHpwgSLNrwZTHLp2uj44bZaNboVpTtc8a-RA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay2.synopsys.com ([198.182.60.111]:37670 "EHLO
-	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751011AbaGDHGX (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Jul 2014 03:06:23 -0400
-In-Reply-To: <CAL_JsqJF-a3K+dUHpwgSLNrwZTHLp2uj44bZaNboVpTtc8a-RA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [RFC PATCH 1/4] tty: serial: 8250 core: provide a function to export uart_8250_port
+Date: Fri,  4 Jul 2014 18:34:08 +0200
+Message-ID: <1404491651-1388-1-git-send-email-bigeasy@linutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Francois.Bedard@synopsys.com
 
-Hi Greg,
+There is no access to access a struct uart_8250_port for a specific
+line. This is only required outside of the 8250/uart callbacks like for
+devices' suspend & remove callbacks. For those the 8250-core provides
+wrapper like serial8250_unregister_port() which passes the struct
+to the proper function based on the line argument.
 
-On Wednesday 25 June 2014 02:35 AM, Rob Herring wrote:
-> On Tue, Jun 24, 2014 at 3:25 AM, Vineet Gupta
-> <Vineet.Gupta1@synopsys.com> wrote:
->> Hi,
->>
->> This is slightly modified repost of series posted last week
->> http://www.spinics.net/lists/linux-serial/msg12884.html
->>
->> This series switches ARC UART from custom earlyprintk support to generic
->> earlycon (many thanks to Rob for doing that). And also build on Grant's recent
->> work for using DT stdout-path as default console.
->>
->> The motivation is to get rid of the early platform code, which in turn
->> would help consolidate the init code across several ARC platforms.
->>
->> First 3 patches are general cleanup/refactoring, not necesarily related to
->> earlycon.
-> 
-> Other than my comment on patch 6:
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
+For runtime suspend I need access to this struct not only to make
+serial_out() work but also to properly restore up->ier and up->mcr.
 
-Is something else needed for this to me merged in tty-next for 3.17.
-I've had only 1 minor comment from Rob, and my reply to him never reached completion.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250.h      | 2 ++
+ drivers/tty/serial/8250/8250_core.c | 6 ++++++
+ 2 files changed, 8 insertions(+)
 
-Thx,
--Vineet
-
-> 
->>
->> v2 <- v1
->> --------
->> * Rebased on linux-next: 20140623
->> * Patch 9 split into 9 and 10 for driver/platform changes
->> * Patch 10 also uses the DT stdout-path so no need for console=
->>
->>
->> Thx,
->> -Vineet
->>
->>
->> Vineet Gupta (10):
->>   serial/arc: use uart_console_write() helper
->>   serial/arc: Refactor by referencing to uart_port where possible
->>   serial/arc: Remove the workaround for legacy ISS
->>   serial/arc: Use generic earlycon infrastructure
->>   serial/arc: remove earlyprintk support and switch to earlycon
->>   serial/arc: remove last remanants of platform data
->>   serial/arc: inline the probe helper
->>   ARC: [arcfpga] RIP early uart platform device stuff
->>   serial/arc: Enable DT based earlycon
->>   ARC: [arcfpga] stdout-path now suffices for earlycon/console
->>
->>  arch/arc/boot/dts/angel4.dts     |   3 +-
->>  arch/arc/plat-arcfpga/Kconfig    |   7 -
->>  arch/arc/plat-arcfpga/platform.c |  97 +-----------
->>  drivers/tty/serial/Kconfig       |   1 +
->>  drivers/tty/serial/arc_uart.c    | 329 ++++++++++++++-------------------------
->>  5 files changed, 123 insertions(+), 314 deletions(-)
->>
->> --
->> 1.8.3.2
->>
-> 
-> 
-
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 1ebf853..34c3cd1 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -110,6 +110,8 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
+ 	up->dl_write(up, value);
+ }
+ 
++struct uart_8250_port *serial8250_get_port(int line);
++
+ #if defined(__alpha__) && !defined(CONFIG_PCI)
+ /*
+  * Digital did something really horribly wrong with the OUT1 and OUT2
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 7a91c6d..0c90160 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -2755,6 +2755,12 @@ static struct uart_ops serial8250_pops = {
+ 
+ static struct uart_8250_port serial8250_ports[UART_NR];
+ 
++struct uart_8250_port *serial8250_get_port(int line)
++{
++	return &serial8250_ports[line];
++}
++EXPORT_SYMBOL_GPL(serial8250_get_port);
++
+ static void (*serial8250_isa_config)(int port, struct uart_port *up,
+ 	unsigned short *capabilities);
+ 
+-- 
+2.0.0
