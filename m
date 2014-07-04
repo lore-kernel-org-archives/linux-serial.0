@@ -1,62 +1,88 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
-Date: Thu, 3 Jul 2014 23:30:10 -0700
-Message-ID: <20140704063010.GY28884@atomide.com>
-References: <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
- <20140703073411.GX28884@atomide.com>
- <20140703132509.GA5814@saruman.home>
- <CAOCHtYi0JwRO12gHa+KFGH1k7pPk4TL40igwhzRRxutw-tqf6A@mail.gmail.com>
- <20140703140736.GF5814@saruman.home>
- <20140703154425.GC23309@earth.universe>
- <20140703155240.GU5814@saruman.home>
- <20140703160622.GE23309@earth.universe>
- <CABxcv=nGPyK7SeQZ+W1ZEfBPQ-RraVTawyYuKOGz02df0g=6Qg@mail.gmail.com>
- <20140703170822.GB5814@saruman.home>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [PATCH v2 REBASED 00/10] Generic earlyconsole for ARC UART Driver
+Date: Fri, 4 Jul 2014 12:35:57 +0530
+Message-ID: <53B65255.9000303@synopsys.com>
+References: <1403598315-1429-1-git-send-email-vgupta@synopsys.com> <CAL_JsqJF-a3K+dUHpwgSLNrwZTHLp2uj44bZaNboVpTtc8a-RA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:62554 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755361AbaGDGaX (ORCPT
+Received: from smtprelay2.synopsys.com ([198.182.60.111]:37670 "EHLO
+	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751011AbaGDHGX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 4 Jul 2014 02:30:23 -0400
-Content-Disposition: inline
-In-Reply-To: <20140703170822.GB5814@saruman.home>
+	Fri, 4 Jul 2014 03:06:23 -0400
+In-Reply-To: <CAL_JsqJF-a3K+dUHpwgSLNrwZTHLp2uj44bZaNboVpTtc8a-RA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Javier Martinez Canillas <javier@dowhile0.org>, Sebastian Reichel <sre@kernel.org>, Robert Nelson <robertcnelson@gmail.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
+To: Rob Herring <robherring2@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Francois.Bedard@synopsys.com
 
-* Felipe Balbi <balbi@ti.com> [140703 10:10]:
-> On Thu, Jul 03, 2014 at 06:19:47PM +0200, Javier Martinez Canillas wrote:
-> > On Thu, Jul 3, 2014 at 6:06 PM, Sebastian Reichel <sre@kernel.org> wrote:
-> > > Hi,
-> > >
-> > > On Thu, Jul 03, 2014 at 10:52:40AM -0500, Felipe Balbi wrote:
-> > >> > DT is supposed to contain information about the hardware, so it
-> > >> > should stay the same? I think there is no non-hackish way to decide
-> > >>
-> > >> compatible would change, at a minimum.
-> > >
-> > > why? I would expect it to stay the same (and the current patch uses
-> > > the same compatible strings).
-> > >
-> > 
-> > Exactly, the new driver must support all the compatible strings
-> > defined in Documentation/devicetree/bindings/serial/omap_serial.tx
-> > (which already does as you pointed out).
-> > 
-> > Otherwise the current drivers/tty/serial/omap-serial.c could never be
-> > removed since that would mean breaking DT backward compatibility.
+Hi Greg,
+
+On Wednesday 25 June 2014 02:35 AM, Rob Herring wrote:
+> On Tue, Jun 24, 2014 at 3:25 AM, Vineet Gupta
+> <Vineet.Gupta1@synopsys.com> wrote:
+>> Hi,
+>>
+>> This is slightly modified repost of series posted last week
+>> http://www.spinics.net/lists/linux-serial/msg12884.html
+>>
+>> This series switches ARC UART from custom earlyprintk support to generic
+>> earlycon (many thanks to Rob for doing that). And also build on Grant's recent
+>> work for using DT stdout-path as default console.
+>>
+>> The motivation is to get rid of the early platform code, which in turn
+>> would help consolidate the init code across several ARC platforms.
+>>
+>> First 3 patches are general cleanup/refactoring, not necesarily related to
+>> earlycon.
 > 
-> that settles it then... good. I'll start testing this next week.
+> Other than my comment on patch 6:
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Yeah full compability is the way to go here.
+Is something else needed for this to me merged in tty-next for 3.17.
+I've had only 1 minor comment from Rob, and my reply to him never reached completion.
 
-FYI we cannot switch over completely until runtime PM works as it
-will block the deeper idle states for omaps and make it impossible
-to debug PM features.
+Thx,
+-Vineet
 
-Regards,
+> 
+>>
+>> v2 <- v1
+>> --------
+>> * Rebased on linux-next: 20140623
+>> * Patch 9 split into 9 and 10 for driver/platform changes
+>> * Patch 10 also uses the DT stdout-path so no need for console=
+>>
+>>
+>> Thx,
+>> -Vineet
+>>
+>>
+>> Vineet Gupta (10):
+>>   serial/arc: use uart_console_write() helper
+>>   serial/arc: Refactor by referencing to uart_port where possible
+>>   serial/arc: Remove the workaround for legacy ISS
+>>   serial/arc: Use generic earlycon infrastructure
+>>   serial/arc: remove earlyprintk support and switch to earlycon
+>>   serial/arc: remove last remanants of platform data
+>>   serial/arc: inline the probe helper
+>>   ARC: [arcfpga] RIP early uart platform device stuff
+>>   serial/arc: Enable DT based earlycon
+>>   ARC: [arcfpga] stdout-path now suffices for earlycon/console
+>>
+>>  arch/arc/boot/dts/angel4.dts     |   3 +-
+>>  arch/arc/plat-arcfpga/Kconfig    |   7 -
+>>  arch/arc/plat-arcfpga/platform.c |  97 +-----------
+>>  drivers/tty/serial/Kconfig       |   1 +
+>>  drivers/tty/serial/arc_uart.c    | 329 ++++++++++++++-------------------------
+>>  5 files changed, 123 insertions(+), 314 deletions(-)
+>>
+>> --
+>> 1.8.3.2
+>>
+> 
+> 
 
-Tony
