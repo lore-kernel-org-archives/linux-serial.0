@@ -1,20 +1,66 @@
-From: "Norman .Chan." <norman@hkma.gov.hk>
-Subject: ATTN:
-Date: Sun, 06 Jul 2014 11:33:43 +0800
-Message-ID: <20140706033404.5F06918AE4@mail.vera.es>
-Reply-To: nchhg@qq.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/2] fixes for empty tx buffer breakage
+Date: Sun,  6 Jul 2014 11:29:51 -0400
+Message-ID: <1404660593-12172-1-git-send-email-peter@hurleysoftware.com>
+References: <20140609205917.GA913@drone.musicnaut.iki.fi>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.vera.es ([213.0.86.45]:60465 "HELO mail.vera.es"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-	id S1750912AbaGFEUq convert rfc822-to-8bit (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:38714 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751067AbaGFPaK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Jul 2014 00:20:46 -0400
-Content-Description: Mail message body
+	Sun, 6 Jul 2014 11:30:10 -0400
+In-Reply-To: <20140609205917.GA913@drone.musicnaut.iki.fi>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Recipients <norman@hkma.gov.hk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Seth Bollinger <sethb@digi.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Sam Ravnborg <sam@ravnborg.org>, "David S. Miller" <davem@davemloft.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-Hello, I'm Norman Chan, Tak-Lam, S.B.S., J.P, Chief Executive, Hong Kong Monetary Authority (HKMA). I have a monetary proposal worth $47.1M for you to handle with me. Contact me for more details. 
+Cc: Seth Bollinger <sethb@digi.com>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+
+Greg,
+
+I completed the audit of serial drivers after reports that
+several Sun serial drivers were broken by
+commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c,
+'serial_core: Fix conditional start_tx on ring buffer not empty'.
+
+I apologize for not submitting this sooner. The delay was due to
+an ongoing analysis of serial flow control prompted by Sam Ravnborg's
+question:
+
+On 06/10/2014 03:24 PM, Sam Ravnborg wrote:
+> I also noticed the typical pattern is:
+> 
+>      if (uart_circ_empty(xmit) || uart_tx_stopped(port))
+> 
+> Should you use this pattern also in sunsab.c?
+
+Unfortunately, that analysis revealed that tx flow control is
+largely SMP-unsafe, and it's fairly easy to corrupt the hardware
+state wrt. the tty flow control state.
+
+I'm still working on the solutions to that; they're too
+extensive to submit for 3.16 anyway.
+
+Regards,
+
+Peter Hurley (2):
+  serial: Test for no tx data on tx restart
+  serial: arc_uart: Use uart_circ_empty() for open-coded comparison
+
+ drivers/tty/serial/arc_uart.c   | 2 +-
+ drivers/tty/serial/imx.c        | 3 +++
+ drivers/tty/serial/ip22zilog.c  | 2 ++
+ drivers/tty/serial/m32r_sio.c   | 8 +++++---
+ drivers/tty/serial/pmac_zilog.c | 3 +++
+ drivers/tty/serial/sunsab.c     | 3 +++
+ drivers/tty/serial/sunzilog.c   | 2 ++
+ 7 files changed, 19 insertions(+), 4 deletions(-)
+
+-- 
+2.0.0
+
