@@ -1,150 +1,70 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 1/2] serial: Test for no tx data on tx restart
-Date: Sun,  6 Jul 2014 11:29:52 -0400
-Message-ID: <1404660593-12172-2-git-send-email-peter@hurleysoftware.com>
-References: <20140609205917.GA913@drone.musicnaut.iki.fi>
- <1404660593-12172-1-git-send-email-peter@hurleysoftware.com>
+From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Subject: [PATCH v2] tty: serial: msm_serial.c:  Cleaning up uninitialized variables
+Date: Sun,  6 Jul 2014 18:47:12 +0200
+Message-ID: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:33818 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751138AbaGFPaM (ORCPT
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:47062 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751188AbaGFQp6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Jul 2014 11:30:12 -0400
-In-Reply-To: <1404660593-12172-1-git-send-email-peter@hurleysoftware.com>
+	Sun, 6 Jul 2014 12:45:58 -0400
+Received: by mail-wg0-f41.google.com with SMTP id k14so710531wgh.24
+        for <linux-serial@vger.kernel.org>; Sun, 06 Jul 2014 09:45:57 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Seth Bollinger <sethb@digi.com>, "David S. Miller" <davem@davemloft.net>, Sam Ravnborg <sam@ravnborg.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>
+Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 
-Commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c,
-'serial_core: Fix conditional start_tx on ring buffer not empty'
-exposes an incorrect assumption in several drivers' start_tx methods;
-the tx ring buffer can, in fact, be empty when restarting tx while
-performing flow control.
+Set reasonable initial value of some variables, in case
+they do not get set to something otherwise.
+And I've also added a plausibility control of the values.
 
-Affected drivers:
-sunsab.c
-ip22zilog.c
-pmac_zilog.c
-sunzilog.c
-m32r_sio.c
-imx.c
-
-Other in-tree serial drivers either are not affected or already
-test for empty tx ring buffer before transmitting.
-
-Test for empty tx ring buffer in start_tx() method, after transmitting
-x_char (if applicable).
-
-Reported-by: Aaro Koskinen <aaro.koskinen@iki.fi>
-Cc: Seth Bollinger <sethb@digi.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
 ---
- drivers/tty/serial/imx.c        | 3 +++
- drivers/tty/serial/ip22zilog.c  | 2 ++
- drivers/tty/serial/m32r_sio.c   | 8 +++++---
- drivers/tty/serial/pmac_zilog.c | 3 +++
- drivers/tty/serial/sunsab.c     | 3 +++
- drivers/tty/serial/sunzilog.c   | 2 ++
- 6 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/tty/serial/msm_serial.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3b6c1a2..23c1dae 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -563,6 +563,9 @@ static void imx_start_tx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
- 	unsigned long temp;
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 72000a6..4491108 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -917,7 +917,7 @@ static int __init msm_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *port;
+ 	struct msm_port *msm_port;
+-	int baud, flow, bits, parity;
++	int baud = 115200, flow = 'n', bits = 8, parity = 'n';
  
-+	if (uart_circ_empty(&port.state->xmit))
-+		return;
-+
- 	if (USE_IRDA(sport)) {
- 		/* half duplex in IrDA mode; have to disable receive mode */
- 		temp = readl(sport->port.membase + UCR4);
-diff --git a/drivers/tty/serial/ip22zilog.c b/drivers/tty/serial/ip22zilog.c
-index 1efd4c3..99b7b86 100644
---- a/drivers/tty/serial/ip22zilog.c
-+++ b/drivers/tty/serial/ip22zilog.c
-@@ -603,6 +603,8 @@ static void ip22zilog_start_tx(struct uart_port *port)
- 	} else {
- 		struct circ_buf *xmit = &port->state->xmit;
+ 	if (unlikely(co->index >= UART_NR || co->index < 0))
+ 		return -ENXIO;
+@@ -930,17 +930,21 @@ static int __init msm_console_setup(struct console *co, char *options)
  
-+		if (uart_circ_empty(xmit))
-+			return;
- 		writeb(xmit->buf[xmit->tail], &channel->data);
- 		ZSDELAY();
- 		ZS_WSYNC(channel);
-diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index 68f2c53..5702828 100644
---- a/drivers/tty/serial/m32r_sio.c
-+++ b/drivers/tty/serial/m32r_sio.c
-@@ -266,9 +266,11 @@ static void m32r_sio_start_tx(struct uart_port *port)
- 	if (!(up->ier & UART_IER_THRI)) {
- 		up->ier |= UART_IER_THRI;
- 		serial_out(up, UART_IER, up->ier);
--		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		up->port.icount.tx++;
-+		if (!uart_circ_empty(xmit)) {
-+			serial_out(up, UART_TX, xmit->buf[xmit->tail]);
-+			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+			up->port.icount.tx++;
-+		}
- 	}
- 	while((serial_in(up, UART_LSR) & UART_EMPTY) != UART_EMPTY);
- #else
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index 8193635..f7ad5b9 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -653,6 +653,8 @@ static void pmz_start_tx(struct uart_port *port)
- 	} else {
- 		struct circ_buf *xmit = &port->state->xmit;
+ 	msm_init_clock(port);
  
-+		if (uart_circ_empty(xmit))
-+			goto out;
- 		write_zsdata(uap, xmit->buf[xmit->tail]);
- 		zssync(uap);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-@@ -661,6 +663,7 @@ static void pmz_start_tx(struct uart_port *port)
- 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 			uart_write_wakeup(&uap->port);
- 	}
-+ out:
- 	pmz_debug("pmz: start_tx() done.\n");
- }
+-	if (options)
++	if (options) {
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
++		if (baud < 300 || baud > 115200)
++			baud = 115200;
++		if (NULL == strchr("noeNOE", parity))
++			parity = 'n';
++		if (bits != 7)
++			bits = 8;
++		if (flow != 'r')
++			flow = 'n';
++	}
  
-diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
-index 80a58ec..2f57df9 100644
---- a/drivers/tty/serial/sunsab.c
-+++ b/drivers/tty/serial/sunsab.c
-@@ -427,6 +427,9 @@ static void sunsab_start_tx(struct uart_port *port)
- 	struct circ_buf *xmit = &up->port.state->xmit;
- 	int i;
+-	bits = 8;
+-	parity = 'n';
+-	flow = 'n';
+ 	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
+ 		  UART_MR2);	/* 8N1 */
  
-+	if (uart_circ_empty(xmit))
-+		return;
-+
- 	up->interrupt_mask1 &= ~(SAB82532_IMR1_ALLS|SAB82532_IMR1_XPR);
- 	writeb(up->interrupt_mask1, &up->regs->w.imr1);
- 	
-diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-index a85db8b..02df394 100644
---- a/drivers/tty/serial/sunzilog.c
-+++ b/drivers/tty/serial/sunzilog.c
-@@ -703,6 +703,8 @@ static void sunzilog_start_tx(struct uart_port *port)
- 	} else {
- 		struct circ_buf *xmit = &port->state->xmit;
+-	if (baud < 300 || baud > 115200)
+-		baud = 115200;
+ 	msm_set_baud_rate(port, baud);
  
-+		if (uart_circ_empty(xmit))
-+			return;
- 		writeb(xmit->buf[xmit->tail], &channel->data);
- 		ZSDELAY();
- 		ZS_WSYNC(channel);
+ 	msm_reset(port);
 -- 
-2.0.0
+1.7.10.4
 
