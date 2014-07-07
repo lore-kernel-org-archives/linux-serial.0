@@ -1,46 +1,68 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC PATCH 3/4] tty: serial: 8250 core: add runtime pm
-Date: Mon, 7 Jul 2014 14:20:56 +0100
-Message-ID: <20140707142056.46f61cf9@alan.etchedpixels.co.uk>
-References: <1404491651-1388-1-git-send-email-bigeasy@linutronix.de>
-	<1404491651-1388-3-git-send-email-bigeasy@linutronix.de>
+Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
+Date: Mon, 7 Jul 2014 14:26:34 +0100
+Message-ID: <20140707142634.0f5cb8c3@alan.etchedpixels.co.uk>
+References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
+	<20140702160932.GF5541@saruman.home>
+	<20140702190944.GA567@drone.musicnaut.iki.fi>
+	<CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
+	<20140703073411.GX28884@atomide.com>
+	<53B6DB74.2050401@linutronix.de>
+	<CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:35838 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:35851 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752953AbaGGNVl (ORCPT
+	with ESMTP id S1753304AbaGGN1k convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Jul 2014 09:21:41 -0400
-In-Reply-To: <1404491651-1388-3-git-send-email-bigeasy@linutronix.de>
+	Mon, 7 Jul 2014 09:27:40 -0400
+In-Reply-To: <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, mika.westerberg@linux.intel.com
+To: Robert Nelson <robertcnelson@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Felipe Balbi <balbi@ti.com>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 
-On Fri,  4 Jul 2014 18:34:10 +0200
-Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+On Fri, 4 Jul 2014 11:57:40 -0500
+Robert Nelson <robertcnelson@gmail.com> wrote:
 
-> While comparing the OMAP-serial and the 8250 part of this I noticed that
-> the the latter does not use runtime-pm.
+> On Fri, Jul 4, 2014 at 11:51 AM, Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+> > On 07/03/2014 09:34 AM, Tony Lindgren wrote:
+> >> Heh. Just to summarize the reason ttyO needs to be a separate name
+> >> and device entry from ttyS is because we also have external 8250
+> >> devices on GPMC and hotplug busses.
+> >
+> > So the GPMC devices will first get a higher minor/device number. Th=
+e
+> > internal serial ports should show up first. I don't see the problem
+> > (yet).
+> >
+> > If you need a separate major number (and name) like we do have it n=
+ow
+> > (between ttySx and ttyOx) then one of requirements would be to tell
+> > Kconfig that one driver can be active at a time.
+> >
+> > For me the ttyS vs ttyO thing is purely cosmetic. I personally don'=
+t
+> > like that it is different on different platforms like ttymxc, ttySC=
+,
+> > ttyTHS, =E2=80=A6
+>=20
+> Maybe it's time to migrate them all to one name? (ttyS)  Does the end
+> user really care if they have a soc with an omap/imx serial port
+> driver? Or do they just want to access /dev/ttySx and connect to thei=
+r
+> device?
 
-Yes it does, but 8250 parts (generally - omap presumably is special
-here ?) need to be powered on to transmit/receive not just for register
-access. The core uart layer implements a "pm" operation for this.
-
-As 8250_dw uses runtime pm to implement the pm operation it's not as
-simple as assumign it won't get triggered.
-
-I *think* this is ok because the designware and other cases would take a
-reference on open and drop it on close, so avoiding any confusion, but
-for the register accesses on a closed port it would benefit from a
-further double check with Mika especially as the suspend/resume on the
-LPSS block on some Intel devices is a little bit too "interesting" for
-comfort.
-
-Otherwise however I think this is good.
+Userspace question. Actual userspace visible device naming policy belon=
+gs
+to udev.
 
 Alan
-
-
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
