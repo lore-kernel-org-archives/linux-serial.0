@@ -1,76 +1,70 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
-Date: Mon, 7 Jul 2014 00:26:21 -0700
-Message-ID: <20140707072621.GE28884@atomide.com>
-References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
- <20140702160932.GF5541@saruman.home>
- <20140702190944.GA567@drone.musicnaut.iki.fi>
- <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
- <20140703073411.GX28884@atomide.com>
- <53B6DB74.2050401@linutronix.de>
- <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3 1/9] clk: sunxi: Add A23 APB0 divider
+ clock support
+Date: Mon, 7 Jul 2014 10:47:00 +0200
+Message-ID: <20140707084700.GD16262@lukather>
+References: <1404399349-20237-1-git-send-email-wens@csie.org>
+ <1404399349-20237-2-git-send-email-wens@csie.org>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:30932 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751401AbaGGH0a (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Jul 2014 03:26:30 -0400
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2Z2K0IlrPCVsbNpk"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBPV65GOQKGQEOUTC76Y-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1404399349-20237-2-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Robert Nelson <robertcnelson@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Aaro Koskinen <aaro.koskinen@iki.fi>, Felipe Balbi <balbi@ti.com>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 
-* Robert Nelson <robertcnelson@gmail.com> [140704 09:59]:
-> On Fri, Jul 4, 2014 at 11:51 AM, Sebastian Andrzej Siewior
-> <bigeasy@linutronix.de> wrote:
-> > On 07/03/2014 09:34 AM, Tony Lindgren wrote:
-> >> Heh. Just to summarize the reason ttyO needs to be a separate name
-> >> and device entry from ttyS is because we also have external 8250
-> >> devices on GPMC and hotplug busses.
-> >
-> > So the GPMC devices will first get a higher minor/device number. Th=
-e
-> > internal serial ports should show up first. I don't see the problem
-> > (yet).
-> >
-> > If you need a separate major number (and name) like we do have it n=
-ow
-> > (between ttySx and ttyOx) then one of requirements would be to tell
-> > Kconfig that one driver can be active at a time.
-> >
-> > For me the ttyS vs ttyO thing is purely cosmetic. I personally don'=
-t
-> > like that it is different on different platforms like ttymxc, ttySC=
-,
-> > ttyTHS, =E2=80=A6
 
-The dev entry had to be different with serial-omap as it was not
-using 8250 code. With the code moving back to using 8250 code
-there are no dev conflicts so ttyS is just fine as the 8250 code
-handles allocating the devices.
-=20
-> Maybe it's time to migrate them all to one name? (ttyS)  Does the end
-> user really care if they have a soc with an omap/imx serial port
-> driver? Or do they just want to access /dev/ttySx and connect to thei=
-r
-> device?
+--2Z2K0IlrPCVsbNpk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes the 8250 code should always use ttyS. Then maybe we could
-have also ttyO dev entries created by the driver for compability.
+On Thu, Jul 03, 2014 at 10:55:41PM +0800, Chen-Yu Tsai wrote:
+> The A23 has an almost identical PRCM clock tree. The difference in
+> the APB0 clock is the smallest divisor is 1, instead of 2.
+>=20
+> This patch adds a separate sun8i-a23-apb0-clk driver to support it.
+>=20
+> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 
-Earlier serial-omap could not provide the ttyS compability easily
-because they were separate drivers.
+Just applied, thanks!
 
-Regards,
+Maxime
 
-Tony
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--2Z2K0IlrPCVsbNpk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJTul6EAAoJEBx+YmzsjxAg7BkP/Ryw4VVKsXOnPCEuo2gN5ux/
+Glp3BY3abD7KQRSbSQZnZF1UwcAbnwWtopM/54G2xuTD1xuczitgHPppwKATsZV6
+XNksLoWtAdWsv6QZHMJuKV13kCy+3FtqHJs24pmt3mNAa863j06bBd0oCmbUGu7M
+oAjGWvqiR+/SPnCs4D9R0odoNPepsnFO4sVDxvNnXHOwIP0ubp5HjHC2EKFSGDKm
+7EtDjU2AB56VLerwfpJc0KDWP0P/vEtFmc7jBgOatkVArgWhQxjzt2v2Mb/Gy3ra
+wxKlh08ghmBE70HMoSp7sh9OE4B/qwFHonDOcwn3iy4TebIWjU0mxWnaazWqtn9n
+bqT9cX2LFm3L77Rx6JrmSzlJehyAe3ir0ovup+fY9M0MPWPM/IVDGrgbouM07C0L
+YbjcQ7IW5sB1VFVZ7MN2GrMnJwGDLHl5dW5Gb3fs+kD5V1lyx5TJ80ILlwOZyKAj
+60OEahyJqdQ2yv4wpUGEOkBpBsYV5IJpanzxyVqxpXBfpUxRfx/+6DJpb+ns5aE2
+dl9VBmg/4S/WmBxVisAaN9tw/Z9VprxVnEL9nFLdBXKj8LgSqrnH+920ZYXjSIdW
+TVBWUcDMgd6J2/Bn6O6iJlHAs3ugmQh2N3S81CbyAPY9YTCZNM9utOXCPRBUbFF6
+HEaZXk9GGc1pKG9o0kB5
+=s84I
+-----END PGP SIGNATURE-----
+
+--2Z2K0IlrPCVsbNpk--
