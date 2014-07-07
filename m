@@ -1,70 +1,48 @@
-From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-Subject: [PATCH v2] tty: serial: msm_serial.c:  Cleaning up uninitialized variables
-Date: Sun,  6 Jul 2014 18:47:12 +0200
-Message-ID: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH v2] serial: sh-sci: Add device tree support for r8a7{778,740,3a4} and sh73a0
+Date: Mon,  7 Jul 2014 08:40:17 +0200
+Message-ID: <1404715217-30632-1-git-send-email-horms+renesas@verge.net.au>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f41.google.com ([74.125.82.41]:47062 "EHLO
-	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751188AbaGFQp6 (ORCPT
+Received: from kirsty.vergenet.net ([202.4.237.240]:58722 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751846AbaGGGkg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 6 Jul 2014 12:45:58 -0400
-Received: by mail-wg0-f41.google.com with SMTP id k14so710531wgh.24
-        for <linux-serial@vger.kernel.org>; Sun, 06 Jul 2014 09:45:57 -0700 (PDT)
+	Mon, 7 Jul 2014 02:40:36 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>
-Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 
-Set reasonable initial value of some variables, in case
-they do not get set to something otherwise.
-And I've also added a plausibility control of the values.
+Simply document new compat strings.
+There appears to be no need for a driver updates.
 
-Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+
+--
+v2
+* Added r8a73a4, r8a7740 and sh73a0 support
 ---
- drivers/tty/serial/msm_serial.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 72000a6..4491108 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -917,7 +917,7 @@ static int __init msm_console_setup(struct console *co, char *options)
- {
- 	struct uart_port *port;
- 	struct msm_port *msm_port;
--	int baud, flow, bits, parity;
-+	int baud = 115200, flow = 'n', bits = 8, parity = 'n';
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 64fd7de..b355660 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -4,6 +4,13 @@ Required properties:
  
- 	if (unlikely(co->index >= UART_NR || co->index < 0))
- 		return -ENXIO;
-@@ -930,17 +930,21 @@ static int __init msm_console_setup(struct console *co, char *options)
+   - compatible: Must contain one of the following:
  
- 	msm_init_clock(port);
- 
--	if (options)
-+	if (options) {
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+		if (baud < 300 || baud > 115200)
-+			baud = 115200;
-+		if (NULL == strchr("noeNOE", parity))
-+			parity = 'n';
-+		if (bits != 7)
-+			bits = 8;
-+		if (flow != 'r')
-+			flow = 'n';
-+	}
- 
--	bits = 8;
--	parity = 'n';
--	flow = 'n';
- 	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
- 		  UART_MR2);	/* 8N1 */
- 
--	if (baud < 300 || baud > 115200)
--		baud = 115200;
- 	msm_set_baud_rate(port, baud);
- 
- 	msm_reset(port);
++    - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
++    - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
++    - "renesas,scifa-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFA compatible UART.
++    - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
++    - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
++    - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
++    - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
+     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
 -- 
-1.7.10.4
+2.0.0.rc2
 
