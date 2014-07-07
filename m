@@ -1,48 +1,76 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH v2] serial: sh-sci: Add device tree support for r8a7{778,740,3a4} and sh73a0
-Date: Mon,  7 Jul 2014 08:40:17 +0200
-Message-ID: <1404715217-30632-1-git-send-email-horms+renesas@verge.net.au>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
+Date: Mon, 7 Jul 2014 00:26:21 -0700
+Message-ID: <20140707072621.GE28884@atomide.com>
+References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
+ <20140702160932.GF5541@saruman.home>
+ <20140702190944.GA567@drone.musicnaut.iki.fi>
+ <CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
+ <20140703073411.GX28884@atomide.com>
+ <53B6DB74.2050401@linutronix.de>
+ <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:58722 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751846AbaGGGkg (ORCPT
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:30932 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751401AbaGGH0a (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Jul 2014 02:40:36 -0400
+	Mon, 7 Jul 2014 03:26:30 -0400
+Content-Disposition: inline
+In-Reply-To: <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+To: Robert Nelson <robertcnelson@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Aaro Koskinen <aaro.koskinen@iki.fi>, Felipe Balbi <balbi@ti.com>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
 
-Simply document new compat strings.
-There appears to be no need for a driver updates.
+* Robert Nelson <robertcnelson@gmail.com> [140704 09:59]:
+> On Fri, Jul 4, 2014 at 11:51 AM, Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+> > On 07/03/2014 09:34 AM, Tony Lindgren wrote:
+> >> Heh. Just to summarize the reason ttyO needs to be a separate name
+> >> and device entry from ttyS is because we also have external 8250
+> >> devices on GPMC and hotplug busses.
+> >
+> > So the GPMC devices will first get a higher minor/device number. Th=
+e
+> > internal serial ports should show up first. I don't see the problem
+> > (yet).
+> >
+> > If you need a separate major number (and name) like we do have it n=
+ow
+> > (between ttySx and ttyOx) then one of requirements would be to tell
+> > Kconfig that one driver can be active at a time.
+> >
+> > For me the ttyS vs ttyO thing is purely cosmetic. I personally don'=
+t
+> > like that it is different on different platforms like ttymxc, ttySC=
+,
+> > ttyTHS, =E2=80=A6
 
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+The dev entry had to be different with serial-omap as it was not
+using 8250 code. With the code moving back to using 8250 code
+there are no dev conflicts so ttyS is just fine as the 8250 code
+handles allocating the devices.
+=20
+> Maybe it's time to migrate them all to one name? (ttyS)  Does the end
+> user really care if they have a soc with an omap/imx serial port
+> driver? Or do they just want to access /dev/ttySx and connect to thei=
+r
+> device?
 
+Yes the 8250 code should always use ttyS. Then maybe we could
+have also ttyO dev entries created by the driver for compability.
+
+Earlier serial-omap could not provide the ttyS compability easily
+because they were separate drivers.
+
+Regards,
+
+Tony
 --
-v2
-* Added r8a73a4, r8a7740 and sh73a0 support
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 64fd7de..b355660 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -4,6 +4,13 @@ Required properties:
- 
-   - compatible: Must contain one of the following:
- 
-+    - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-+    - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
-+    - "renesas,scifa-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFA compatible UART.
-+    - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
-+    - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
-+    - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
-     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
-     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
--- 
-2.0.0.rc2
-
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
