@@ -1,68 +1,70 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC PATCH] tty: serial: Add 8250-core based omap driver
-Date: Mon, 7 Jul 2014 14:26:34 +0100
-Message-ID: <20140707142634.0f5cb8c3@alan.etchedpixels.co.uk>
-References: <1404316809-20637-1-git-send-email-bigeasy@linutronix.de>
-	<20140702160932.GF5541@saruman.home>
-	<20140702190944.GA567@drone.musicnaut.iki.fi>
-	<CAOCHtYgxMeA+Arfe40XeFDEKuCJ8qo1RqNR0hYBGr_Wp6sRfdA@mail.gmail.com>
-	<20140703073411.GX28884@atomide.com>
-	<53B6DB74.2050401@linutronix.de>
-	<CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
+From: Daniel Drake <drake@endlessm.com>
+Subject: Re: [PATCH 0/3] Deterministic UART numbering on Samsung SoCs
+Date: Tue, 8 Jul 2014 09:32:02 +0100
+Message-ID: <CAD8Lp45MvDLsxehayx8uuGt3w3O0vGskiFjb1vdvtOyOv2nG2w@mail.gmail.com>
+References: <1403781875-5425-1-git-send-email-t.figa@samsung.com>
+	<20140626113939.GP32514@n2100.arm.linux.org.uk>
+	<53AC0BCC.1010608@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:35851 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753304AbaGGN1k convert rfc822-to-8bit (ORCPT
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:48130 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753413AbaGHIcE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 7 Jul 2014 09:27:40 -0400
-In-Reply-To: <CAOCHtYhJODfoB10VXKtGC=_UaB4uVSZOtDwYG-XxL1wvcxi+fA@mail.gmail.com>
+	Tue, 8 Jul 2014 04:32:04 -0400
+Received: by mail-wi0-f181.google.com with SMTP id n3so517590wiv.2
+        for <linux-serial@vger.kernel.org>; Tue, 08 Jul 2014 01:32:02 -0700 (PDT)
+In-Reply-To: <53AC0BCC.1010608@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Robert Nelson <robertcnelson@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Felipe Balbi <balbi@ti.com>, linux kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Linux ARM Kernel Mailing List <linux-arm-kernel@lists.infradead.org>
+To: Tomasz Figa <t.figa@samsung.com>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Tomasz Figa <tomasz.figa@gmail.com>
 
-On Fri, 4 Jul 2014 11:57:40 -0500
-Robert Nelson <robertcnelson@gmail.com> wrote:
+Hi,
 
-> On Fri, Jul 4, 2014 at 11:51 AM, Sebastian Andrzej Siewior
-> <bigeasy@linutronix.de> wrote:
-> > On 07/03/2014 09:34 AM, Tony Lindgren wrote:
-> >> Heh. Just to summarize the reason ttyO needs to be a separate name
-> >> and device entry from ttyS is because we also have external 8250
-> >> devices on GPMC and hotplug busses.
-> >
-> > So the GPMC devices will first get a higher minor/device number. Th=
-e
-> > internal serial ports should show up first. I don't see the problem
-> > (yet).
-> >
-> > If you need a separate major number (and name) like we do have it n=
-ow
-> > (between ttySx and ttyOx) then one of requirements would be to tell
-> > Kconfig that one driver can be active at a time.
-> >
-> > For me the ttyS vs ttyO thing is purely cosmetic. I personally don'=
-t
-> > like that it is different on different platforms like ttymxc, ttySC=
-,
-> > ttyTHS, =E2=80=A6
->=20
-> Maybe it's time to migrate them all to one name? (ttyS)  Does the end
-> user really care if they have a soc with an omap/imx serial port
-> driver? Or do they just want to access /dev/ttySx and connect to thei=
-r
-> device?
+How can we move forward here?
 
-Userspace question. Actual userspace visible device naming policy belon=
-gs
-to udev.
+On Thu, Jun 26, 2014 at 1:02 PM, Tomasz Figa <t.figa@samsung.com> wrote:
+> - basically Samsung UART already has its own namespace (ttySAC) and the
+> order inside it is well-defined - instance ID shall be the hardware
+> instance number as specified by documentation. The ports vary in certain
+> aspects and the ID is important knowledge of the driver. The problem
+> here was broken implementation of assigning IDs based on probe order,
+> which worked only because on all Exynos platforms all ports have been
+> always registered (which we want to change now and keep unused ones
+> "disabled" in DT),
 
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yes, the kernel help text documents this quite well:
+
+config SERIAL_SAMSUNG
+    tristate "Samsung SoC serial support"
+    depends on PLAT_SAMSUNG
+    select SERIAL_CORE
+    help
+      Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+      providing /dev/ttySAC0, 1 and 2 (note, some machines may not
+      provide all of these ports, depending on how the serial port
+      pins are configured.
+
+> - we already have a lot of userspace depending on the aforementioned
+> ttySAC namespace and proper ordering of instances there. While I believe
+> the proper solution as of today would be to go back to standard ttyS
+> namespace and make userspace use a smarter way of identifying the
+> instances (e.g. by path or id, as you suggested), I don't think this
+> will make anyone's life easier with current assumptions,
+
+I like the sound of going to the standard ttyS notation and only
+providing ports for ones that exist, but is this userspace-visible
+naming change OK? You could argue that userspace that relies on fixed
+device paths is a bit broken, but that argument would be a bit cloudy
+given the kernel documentation for the ttySAC devices above.
+
+> - correct me if I'm wrong, but I don't think the
+> /dev/serial/by-{path,id} would be handled in kernel's console= parameter.
+
+That's right, that problem is left to the user, but at least we'd be
+consistent with other SoCs (and open to generic solutions to that
+inconvenience).
+
+Daniel
