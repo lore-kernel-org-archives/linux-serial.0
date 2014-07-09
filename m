@@ -1,72 +1,80 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH v2] tty: serial: msm_serial.c:  Cleaning up uninitialized
- variables
-Date: Wed, 09 Jul 2014 11:02:00 -0700
-Message-ID: <53BD8398.6020507@codeaurora.org>
-References: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Subject: Re: [PATCH 5/6] tty: serial: 8250-core: add rs485 support
+Date: Wed, 9 Jul 2014 15:01:44 -0400
+Message-ID: <20140709190143.GF17769@csclub.uwaterloo.ca>
+References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>
+ <1404928177-26554-6-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.11.231]:47817 "EHLO
-	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752746AbaGISCD (ORCPT
+Received: from mail.csclub.uwaterloo.ca ([129.97.134.52]:60345 "EHLO
+	mail.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756644AbaGITBw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jul 2014 14:02:03 -0400
-In-Reply-To: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+	Wed, 9 Jul 2014 15:01:52 -0400
+Content-Disposition: inline
+In-Reply-To: <1404928177-26554-6-git-send-email-bigeasy@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 07/06/14 09:47, Rickard Strandqvist wrote:
-> Set reasonable initial value of some variables, in case
-> they do not get set to something otherwise.
-> And I've also added a plausibility control of the values.
->
-> Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+On Wed, Jul 09, 2014 at 07:49:36PM +0200, Sebastian Andrzej Siewior wrote:
+> So after I stuffed the rs485 support from the omap-serial into
+> 8250-omap, I've been looking at it and the only omap specific part was
+> the OMAP_UART_SCR_TX_EMPTY part. The driver has always TX_EMPTY set
+> because the 8250 core expects an interrupt after the TX fifo + shift
+> register is empty. The rs485 parts seems to wait for half fifo and then
+> again for the empty fifo. With this change gone it fits fine as generic
+> code and here it is.
+> 
+> It is expected that the potential rs485 user invokes
+> serial_omap_probe_rs485() to configure atleast RTS gpio which is a must
+> have property. The code has been taken from omap-serial driver and
+> received limited tested due to -ENODEV (the compiler said it works).
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 > ---
-
-This patch doesn't look right...
-
-> @@ -930,17 +930,21 @@ static int __init msm_console_setup(struct console *co, char *options)
+>  drivers/tty/serial/8250/8250_core.c | 171 ++++++++++++++++++++++++++++++++++++
+>  include/linux/serial_8250.h         |   6 ++
+>  2 files changed, 177 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index c7c3bf7..bf06a4c 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -39,6 +39,8 @@
+>  #include <linux/mutex.h>
+>  #include <linux/slab.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/gpio.h>
+> +#include <linux/of_gpio.h>
+>  #ifdef CONFIG_SPARC
+>  #include <linux/sunserialcore.h>
+>  #endif
+> @@ -1281,10 +1283,34 @@ static void autoconfig_irq(struct uart_8250_port *up)
 >  
->  	msm_init_clock(port);
->  
-> -	if (options)
-> +	if (options) {
->  		uart_parse_options(options, &baud, &parity, &bits, &flow);
-> +		if (baud < 300 || baud > 115200)
-> +			baud = 115200;
-> +		if (NULL == strchr("noeNOE", parity))
-> +			parity = 'n';
-> +		if (bits != 7)
-> +			bits = 8;
-> +		if (flow != 'r')
-> +			flow = 'n';
-> +	}
->  
-> -	bits = 8;
-> -	parity = 'n';
-> -	flow = 'n';
->  	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
->  		  UART_MR2);	/* 8N1 */
->  
+>  static inline void __stop_tx(struct uart_8250_port *p)
+>  {
+> +	if (p->rs485.flags & SER_RS485_ENABLED) {
+> +		int ret;
+> +
+> +		ret = (p->rs485.flags & SER_RS485_RTS_AFTER_SEND) ? 1 : 0;
+> +		if (gpio_get_value(p->rts_gpio) != ret) {
+> +			if (p->rs485.delay_rts_after_send > 0)
+> +				mdelay(p->rs485.delay_rts_after_send);
+> +			gpio_set_value(p->rts_gpio, ret);
 
-because this code is overriding whatever is parsed from
-uart_parse_options() on purpose. The hardware is configured for 8 bits,
-no parity, no flow control with this msm_write() statement. Maybe we
-should extend the code to configure the parity and flow control bits
-instead.
+Usually the delay for RS485 is done in bit times, not msec.  Not sure
+how you expect this to work.  Not sure doing it in software is precise
+enough either.  It probably should be calculated based on the current
+baudrate with a bit time rather than msec in the DT data.  No one wants
+to have to change the DT data to change the baud rate.  After all this
+is very often used with modbus and the modbus rules specify turn around
+times in bit times.
 
-> -	if (baud < 300 || baud > 115200)
-> -		baud = 115200;
->  	msm_set_baud_rate(port, baud);
->  
->  	msm_reset(port);
-
+I hope TI puts this into the UART in future designs where it belongs
+(similar to what Exar and many others already did).
 
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
-
+Len Sorensen
