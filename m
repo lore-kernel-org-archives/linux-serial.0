@@ -1,40 +1,66 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v2] serial: core: Preserve termios c_cflag for console
- resume
-Date: Wed, 9 Jul 2014 14:28:21 +0100
-Message-ID: <20140709142821.7cd9bb15@alan.etchedpixels.co.uk>
-References: <1404912074-9729-1-git-send-email-peter@hurleysoftware.com>
-	<1404912074-9729-2-git-send-email-peter@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH tty-next 14/22] tty: Remove tty_wait_until_sent_from_close()
+Date: Wed, 09 Jul 2014 09:57:50 -0400
+Message-ID: <53BD4A5E.90608@hurleysoftware.com>
+References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-15-git-send-email-peter@hurleysoftware.com> <4575870.N9RCpZ4UMg@wuerfel> <53A01F02.7000202@hurleysoftware.com> <063D6719AE5E284EB5DD2968C1650D6D1725DAF6@AcuExch.aculab.com> <53A0273F.70400@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:39299 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752301AbaGIN2e (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:36446 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754886AbaGIN5z (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 9 Jul 2014 09:28:34 -0400
-In-Reply-To: <1404912074-9729-2-git-send-email-peter@hurleysoftware.com>
+	Wed, 9 Jul 2014 09:57:55 -0400
+In-Reply-To: <53A0273F.70400@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: David Laight <David.Laight@ACULAB.COM>, Arnd Bergmann <arnd@arndb.de>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karsten Keil <isdn@linux-pingi.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Wed,  9 Jul 2014 09:21:14 -0400
-Peter Hurley <peter@hurleysoftware.com> wrote:
+On 06/17/2014 07:32 AM, Peter Hurley wrote:
+> On 06/17/2014 07:03 AM, David Laight wrote:
+>> From: Peter Hurley
+>> ...
+>>>> I don't understand the second half of the changelog, it doesn't seem
+>>>> to fit here: there deadlock that we are trying to avoid here happens
+>>>> when the *same* tty needs the lock to complete the function that
+>>>> sends the pending data. I don't think we do still do that any more,
+>>>> but it doesn't seem related to the tty lock being system-wide or not.
+>>>
+>>> The tty lock is not used in the i/o path; it's purpose is to
+>>> mutually exclude state changes in open(), close() and hangup().
+>>>
+>>> The commit that added this [1] comments that _other_ ttys may wait
+>>> for this tty to complete, and comments in the code note that this
+>>> function should be removed when the system-wide tty mutex was removed
+>>> (which happened with the commit noted in the changelog).
+>>
+>> What happens if another process tries to do a non-blocking open
+>> while you are sleeping in close waiting for output to drain?
+>>
+>> Hopefully this returns before that data has drained.
+>
+> Good point.
+>
+> tty_open() should be trylocking both mutexes anyway in O_NONBLOCK.
 
-> When a tty is opened for the serial console, the termios c_cflag
-> settings are inherited from the console line settings.
-> However, if the tty is subsequently closed, the termios settings
-> are lost. This results in a garbled console if the console is later
-> suspended and resumed.
-> 
-> Preserve the termios c_cflag for the serial console when the tty
-> is shutdown; this reflects the most recent line settings.
-> 
-> Fixes: Bugzilla #69751, 'serial console does not wake from S3'
-> Reported-by: Valerio Vanni <valerio.vanni@inwind.it>
-> Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Further, the tty lock should not be nested within the tty_mutex lock
+in a reopen, regardless of O_NONBLOCK.
 
-Acked-by: Alan Cox <alan@linux.intel.com>
+AFAICT, the tty_mutex in the reopen scenario is only protecting the
+tty count bump of the linked tty (if the tty is a pty).
+
+I think with some refactoring and returning with a tty reference held
+from both tty_open_current_tty() and tty_driver_lookup_tty(), the tty
+lock in tty_open() can be attempted without nesting in the tty_mutex.
+
+Regardless, I'll be splitting this series and I'll be sure to cc
+you all when I resubmit these changes (after testing).
+
+Regards,
+Peter Hurley
+
+
+
+
