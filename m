@@ -1,29 +1,40 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 0/3] Deterministic UART numbering on Samsung SoCs
-Date: Wed, 9 Jul 2014 14:23:33 +0100
-Message-ID: <20140709142333.503a9e39@alan.etchedpixels.co.uk>
-References: <1403781875-5425-1-git-send-email-t.figa@samsung.com>
-	<20140626113939.GP32514@n2100.arm.linux.org.uk>
-	<53AC0BCC.1010608@samsung.com>
-	<CAD8Lp45MvDLsxehayx8uuGt3w3O0vGskiFjb1vdvtOyOv2nG2w@mail.gmail.com>
+Subject: Re: [PATCH v2] serial: core: Preserve termios c_cflag for console
+ resume
+Date: Wed, 9 Jul 2014 14:28:21 +0100
+Message-ID: <20140709142821.7cd9bb15@alan.etchedpixels.co.uk>
+References: <1404912074-9729-1-git-send-email-peter@hurleysoftware.com>
+	<1404912074-9729-2-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAD8Lp45MvDLsxehayx8uuGt3w3O0vGskiFjb1vdvtOyOv2nG2w@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Daniel Drake <drake@endlessm.com>
-Cc: Tomasz Figa <t.figa@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Tomasz Figa <tomasz.figa@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:39299 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752301AbaGIN2e (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Jul 2014 09:28:34 -0400
+In-Reply-To: <1404912074-9729-2-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-> I like the sound of going to the standard ttyS notation and only
-> providing ports for ones that exist, but is this userspace-visible
+On Wed,  9 Jul 2014 09:21:14 -0400
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-ttyS is 8250 compatible UARTS.
+> When a tty is opened for the serial console, the termios c_cflag
+> settings are inherited from the console line settings.
+> However, if the tty is subsequently closed, the termios settings
+> are lost. This results in a garbled console if the console is later
+> suspended and resumed.
+> 
+> Preserve the termios c_cflag for the serial console when the tty
+> is shutdown; this reflects the most recent line settings.
+> 
+> Fixes: Bugzilla #69751, 'serial console does not wake from S3'
+> Reported-by: Valerio Vanni <valerio.vanni@inwind.it>
+> Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-If the Samsung is not an 8250 compatible UART then it doesn't belong as
-ttyS from the kernel perspective.
-
-How your udev handles it is up to you.
-
-Alan
+Acked-by: Alan Cox <alan@linux.intel.com>
