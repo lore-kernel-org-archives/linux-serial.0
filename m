@@ -1,96 +1,57 @@
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v4 6/6] ARM: sun8i: Add PRCM clock and reset
- controller nodes to the DTSI
-Date: Wed,  9 Jul 2014 15:54:39 +0800
-Message-ID: <1404892479-12222-7-git-send-email-wens@csie.org>
-References: <1404892479-12222-1-git-send-email-wens@csie.org>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFC PATCH 3/4] tty: serial: 8250 core: add runtime pm
+Date: Wed, 9 Jul 2014 04:17:05 -0700
+Message-ID: <20140709111705.GR28884@atomide.com>
+References: <1404491651-1388-1-git-send-email-bigeasy@linutronix.de>
+ <1404491651-1388-3-git-send-email-bigeasy@linutronix.de>
+ <20140707142056.46f61cf9@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBSPK6OOQKGQEUOYEJTQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-In-Reply-To: <1404892479-12222-1-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:27914 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755017AbaGILRL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Jul 2014 07:17:11 -0400
+Content-Disposition: inline
+In-Reply-To: <20140707142056.46f61cf9@alan.etchedpixels.co.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, mika.westerberg@linux.intel.com
 
-With sun8i PRCM support available, we can add the PRCM clock and
-reset controller nodes to the DTSI. Also update R_UART's clock
-phandle and add it's reset control phandle.
+* One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk> [140707 06:22]:
+> On Fri,  4 Jul 2014 18:34:10 +0200
+> Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+> 
+> > While comparing the OMAP-serial and the 8250 part of this I noticed that
+> > the the latter does not use runtime-pm.
+> 
+> Yes it does, but 8250 parts (generally - omap presumably is special
+> here ?) need to be powered on to transmit/receive not just for register
+> access. The core uart layer implements a "pm" operation for this.
 
-Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
----
- arch/arm/boot/dts/sun8i-a23.dtsi | 47 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 46 insertions(+), 1 deletion(-)
+At least for omaps the UARTs need to be idled for the SoC to
+hit off-idle where the SoC is powered off and rebooted during
+idle.
 
-diff --git a/arch/arm/boot/dts/sun8i-a23.dtsi b/arch/arm/boot/dts/sun8i-a23.dtsi
-index 886776d..54ac0787 100644
---- a/arch/arm/boot/dts/sun8i-a23.dtsi
-+++ b/arch/arm/boot/dts/sun8i-a23.dtsi
-@@ -285,13 +285,58 @@
- 			interrupts = <1 9 0xf04>;
- 		};
- 
-+		prcm@01f01400 {
-+			compatible = "allwinner,sun8i-a23-prcm";
-+			reg = <0x01f01400 0x200>;
-+
-+			ar100: ar100_clk {
-+				compatible = "fixed-factor-clock";
-+				#clock-cells = <0>;
-+				clock-div = <1>;
-+				clock-mult = <1>;
-+				clocks = <&osc24M>;
-+				clock-output-names = "ar100";
-+			};
-+
-+			ahb0: ahb0_clk {
-+				compatible = "fixed-factor-clock";
-+				#clock-cells = <0>;
-+				clock-div = <1>;
-+				clock-mult = <1>;
-+				clocks = <&ar100>;
-+				clock-output-names = "ahb0";
-+			};
-+
-+			apb0: apb0_clk {
-+				compatible = "allwinner,sun8i-a23-apb0-clk";
-+				#clock-cells = <0>;
-+				clocks = <&ahb0>;
-+				clock-output-names = "apb0";
-+			};
-+
-+			apb0_gates: apb0_gates_clk {
-+				compatible = "allwinner,sun8i-a23-apb0-gates-clk";
-+				#clock-cells = <1>;
-+				clocks = <&apb0>;
-+				clock-output-names = "apb0_pio", "apb0_timer",
-+						"apb0_rsb", "apb0_uart",
-+						"apb0_i2c";
-+			};
-+
-+			apb0_rst: apb0_rst {
-+				compatible = "allwinner,sun6i-a31-clock-reset";
-+				#reset-cells = <1>;
-+			};
-+		};
-+
- 		r_uart: serial@01f02800 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01f02800 0x400>;
- 			interrupts = <0 38 4>;
- 			reg-shift = <2>;
- 			reg-io-width = <4>;
--			clocks = <&osc24M>;
-+			clocks = <&apb0_gates 4>;
-+			resets = <&apb0_rst 4>;
- 			status = "disabled";
- 		};
- 	};
--- 
-2.0.1
+So we can certainly enable this in a generic way, however, this
+can only be done under the following conditions:
+
+1. We can save and restore the serial register context and detect
+   when context was lost in the serial driver. The context loss
+   can be detected by looking at some registers that are only
+   initialized during init.
+
+2. There's a way for the serial RX pin to wake the SoC. On some
+   omaps there's a separate pin specific wake-up interrupt that
+   can be used for that.
+
+3. The serial PM features must be only enabled if requested by
+   the user via sysfs. Typically extra latency and loss of the
+   first RX character occur which is not acceptable to most
+   applications.
+
+Regards,
+
+Tony
