@@ -1,13 +1,13 @@
 From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Subject: [PATCH v4 5/6] serial: 8250_dw: Add support for
- deferred probing
-Date: Wed,  9 Jul 2014 15:54:38 +0800
-Message-ID: <1404892479-12222-6-git-send-email-wens@csie.org>
+Subject: [PATCH v4 6/6] ARM: sun8i: Add PRCM clock and reset
+ controller nodes to the DTSI
+Date: Wed,  9 Jul 2014 15:54:39 +0800
+Message-ID: <1404892479-12222-7-git-send-email-wens@csie.org>
 References: <1404892479-12222-1-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-sunxi+bncBCMILY6JWQBBBRXK6OOQKGQEDKHOKYA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCMILY6JWQBBBSPK6OOQKGQEUOYEJTQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 In-Reply-To: <1404892479-12222-1-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -19,53 +19,78 @@ To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.o
 Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The 8250_dw driver fails to probe if the specified clock isn't
-registered at probe time. Even if a clock frequency is given,
-the required clock might be gated because it wasn't properly
-enabled.
-
-This happened to me when the device is registered through DT,
-and the clock was part of an MFD, the PRCM found on A31 and A23
-SoCs. Unlike core clocks that are registered with OF_CLK_DECLARE,
-which happen almost immediately after the kernel starts, the
-clocks are registered as sub-devices of the PRCM MFD platform
-device. Even though devices are registered in the order they are
-found in the DT, the drivers are registered in a different,
-arbitrary order. It is possible that the 8250_dw driver is
-registered, and thus associated with the device and probed, before
-the clock driver is registered and probed.
-
-8250_dw then reports unable to get the clock, and fails. Without
-a working console, the kernel panics.
-
-This patch adds support for deferred probe handling for the clock
-and reset controller.
+With sun8i PRCM support available, we can add the PRCM clock and
+reset controller nodes to the DTSI. Also update R_UART's clock
+phandle and add it's reset control phandle.
 
 Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 ---
- drivers/tty/serial/8250/8250_dw.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/sun8i-a23.dtsi | 47 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index cb1b3dc..d9eeed7 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -405,12 +405,16 @@ static int dw8250_probe(struct platform_device *pdev)
+diff --git a/arch/arm/boot/dts/sun8i-a23.dtsi b/arch/arm/boot/dts/sun8i-a23.dtsi
+index 886776d..54ac0787 100644
+--- a/arch/arm/boot/dts/sun8i-a23.dtsi
++++ b/arch/arm/boot/dts/sun8i-a23.dtsi
+@@ -285,13 +285,58 @@
+ 			interrupts = <1 9 0xf04>;
+ 		};
  
- 	data->usr_reg = DW_UART_USR;
- 	data->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER)
-+		return -EPROBE_DEFER;
- 	if (!IS_ERR(data->clk)) {
- 		clk_prepare_enable(data->clk);
- 		uart.port.uartclk = clk_get_rate(data->clk);
- 	}
- 
- 	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(data->rst) && PTR_ERR(data->rst) == -EPROBE_DEFER)
-+		return -EPROBE_DEFER;
- 	if (!IS_ERR(data->rst))
- 		reset_control_deassert(data->rst);
- 
++		prcm@01f01400 {
++			compatible = "allwinner,sun8i-a23-prcm";
++			reg = <0x01f01400 0x200>;
++
++			ar100: ar100_clk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clock-div = <1>;
++				clock-mult = <1>;
++				clocks = <&osc24M>;
++				clock-output-names = "ar100";
++			};
++
++			ahb0: ahb0_clk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clock-div = <1>;
++				clock-mult = <1>;
++				clocks = <&ar100>;
++				clock-output-names = "ahb0";
++			};
++
++			apb0: apb0_clk {
++				compatible = "allwinner,sun8i-a23-apb0-clk";
++				#clock-cells = <0>;
++				clocks = <&ahb0>;
++				clock-output-names = "apb0";
++			};
++
++			apb0_gates: apb0_gates_clk {
++				compatible = "allwinner,sun8i-a23-apb0-gates-clk";
++				#clock-cells = <1>;
++				clocks = <&apb0>;
++				clock-output-names = "apb0_pio", "apb0_timer",
++						"apb0_rsb", "apb0_uart",
++						"apb0_i2c";
++			};
++
++			apb0_rst: apb0_rst {
++				compatible = "allwinner,sun6i-a31-clock-reset";
++				#reset-cells = <1>;
++			};
++		};
++
+ 		r_uart: serial@01f02800 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x01f02800 0x400>;
+ 			interrupts = <0 38 4>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+-			clocks = <&osc24M>;
++			clocks = <&apb0_gates 4>;
++			resets = <&apb0_rst 4>;
+ 			status = "disabled";
+ 		};
+ 	};
 -- 
 2.0.1
