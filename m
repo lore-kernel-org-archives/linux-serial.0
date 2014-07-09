@@ -1,29 +1,72 @@
-From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Subject: [RFC v3] 8250-core based serial driver for OMAP
-Date: Wed, 9 Jul 2014 19:58:25 +0200
-Message-ID: <20140709175825.GA26622@breakpoint.cc>
-References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH v2] tty: serial: msm_serial.c:  Cleaning up uninitialized
+ variables
+Date: Wed, 09 Jul 2014 11:02:00 -0700
+Message-ID: <53BD8398.6020507@codeaurora.org>
+References: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.codeaurora.org ([198.145.11.231]:47817 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752746AbaGISCD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 9 Jul 2014 14:02:03 -0400
+In-Reply-To: <1404665232-14311-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 
-+Subject
-On 2014-07-09 19:49:31 [+0200], Sebastian Andrzej Siewior wrote:
-> This is version three of the patch set. Unless something serious come=
-s up
-> I would drop the RFC on the next post.
->=20
-> So far I should have everything covered up comparing to the omap-seri=
-al
-> driver except for the throttle callbacks. And now I would slowly star=
-t
-> looking into DMA support=E2=80=A6
->=20
-Sebastian
+On 07/06/14 09:47, Rickard Strandqvist wrote:
+> Set reasonable initial value of some variables, in case
+> they do not get set to something otherwise.
+> And I've also added a plausibility control of the values.
+>
+> Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+> ---
+
+This patch doesn't look right...
+
+> @@ -930,17 +930,21 @@ static int __init msm_console_setup(struct console *co, char *options)
+>  
+>  	msm_init_clock(port);
+>  
+> -	if (options)
+> +	if (options) {
+>  		uart_parse_options(options, &baud, &parity, &bits, &flow);
+> +		if (baud < 300 || baud > 115200)
+> +			baud = 115200;
+> +		if (NULL == strchr("noeNOE", parity))
+> +			parity = 'n';
+> +		if (bits != 7)
+> +			bits = 8;
+> +		if (flow != 'r')
+> +			flow = 'n';
+> +	}
+>  
+> -	bits = 8;
+> -	parity = 'n';
+> -	flow = 'n';
+>  	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
+>  		  UART_MR2);	/* 8N1 */
+>  
+
+because this code is overriding whatever is parsed from
+uart_parse_options() on purpose. The hardware is configured for 8 bits,
+no parity, no flow control with this msm_write() statement. Maybe we
+should extend the code to configure the parity and flow control bits
+instead.
+
+> -	if (baud < 300 || baud > 115200)
+> -		baud = 115200;
+>  	msm_set_baud_rate(port, baud);
+>  
+>  	msm_reset(port);
+
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
+
