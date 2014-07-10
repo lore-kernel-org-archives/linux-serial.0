@@ -1,32 +1,27 @@
-From: Carlos Hernandez <ceh@ti.com>
+From: "menon.nishanth@gmail.com" <menon.nishanth@gmail.com>
 Subject: Re: [PATCH 6/6] tty: serial: Add 8250-core based omap driver
-Date: Thu, 10 Jul 2014 12:03:29 -0400
-Message-ID: <53BEB951.2040207@ti.com>
-References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de> <1404928177-26554-7-git-send-email-bigeasy@linutronix.de> <20140710070948.GH28884@atomide.com> <53BEB5AF.7010604@linutronix.de>
+Date: Thu, 10 Jul 2014 11:14:28 -0500
+Message-ID: <CAGo_u6r57s6kpF81W-hq96PFizOp3m+XEh3bmzJOp0oPHYRNCg@mail.gmail.com>
+References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>
+	<1404928177-26554-7-git-send-email-bigeasy@linutronix.de>
+	<20140710070948.GH28884@atomide.com>
+	<53BEB5AF.7010604@linutronix.de>
+	<53BEB951.2040207@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:35013 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751882AbaGJQEB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Jul 2014 12:04:01 -0400
-In-Reply-To: <53BEB5AF.7010604@linutronix.de>
+Received: from mail-we0-f174.google.com ([74.125.82.174]:59981 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751119AbaGJQOg (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 10 Jul 2014 12:14:36 -0400
+In-Reply-To: <53BEB951.2040207@ti.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Carlos Hernandez <ceh@ti.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, lkml <linux-kernel@vger.kernel.org>, Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On 07/10/2014 11:47 AM, Sebastian Andrzej Siewior wrote:
-> That core_pwrdm shows only up on dra7. However with both drivers (mine
-> and the current omap serial) the UART went down after three secs (as
-> expected) and didn't accept any characters while writing on the
-> console. If I wrote something on it via network (like echo a >
-> /dev/ttyO0) it came back and was working as long as I kept it busy. The
-> thing is that RX does not wake it up. Any idea?
-
-To wakeup from UART you need:
-1) Append no_console_suspend to bootargs
-2) echo enabled > /sys/devices/ocp.3/4806a000.serial/tty/ttyO0/power/wakeup
-
-
+On Thu, Jul 10, 2014 at 11:03 AM, Carlos Hernandez <ceh@ti.com> wrote:
+> 1) Append no_console_suspend to bootargs
+Not needed. ideally with pinctrl wakeup capability, this should work.
+if you do no_console_suspend, the module is not powered down.
