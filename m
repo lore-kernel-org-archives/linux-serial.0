@@ -1,50 +1,41 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH tty-next 14/22] tty: Remove
- tty_wait_until_sent_from_close()
-Date: Thu, 10 Jul 2014 16:09:36 -0700
-Message-ID: <20140710230936.GA31181@kroah.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
- <1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] serial: 8250_dw: support high baudrates if possible
+Date: Thu, 10 Jul 2014 16:13:42 -0700
+Message-ID: <20140710231342.GA9557@kroah.com>
+References: <1404227734-14180-1-git-send-email-elder@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:60337 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751474AbaGJXFJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Jul 2014 19:05:09 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1404227734-14180-1-git-send-email-elder@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Elder <elder@linaro.org>
+Cc: heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, linuxppc-dev@lists.ozlabs.org
 
-On Mon, Jun 16, 2014 at 09:17:11AM -0400, Peter Hurley wrote:
-> tty_wait_until_sent_from_close() drops the tty lock while waiting
-> for the tty driver to finish sending previously accepted data (ie.,
-> data remaining in its write buffer and transmit fifo).
+On Tue, Jul 01, 2014 at 10:15:34AM -0500, Alex Elder wrote:
+> Currently the Synopsys DesignWare 8250 driver assumes its UART clock
+> runs at a fixed rate.  If a "real" clock was set up using the common
+> clock framework, and that clock's rate is adjustable, it may be
+> possible to support a wider range of baud rates by changing the
+> UART clock rate.
 > 
-> However, dropping the tty lock is a hold-over from when the tty
-> lock was system-wide; ie., one lock for all ttys.
+> This is done by setting up a uart_port->set_termios method that
+> requests a clock rate change if a different rate might make it
+> more likely to achieve a specified baud.  A new function
+> dw8250_adjustable_clk() determines whether such clock rate
+> adjustment is an option.
 > 
-> Since commit 89c8d91e31f267703e365593f6bfebb9f6d2ad01,
-> 'tty: localise the lock', dropping the tty lock has not been necessary.
-> 
-> CC: Karsten Keil <isdn@linux-pingi.de>
-> CC: linuxppc-dev@lists.ozlabs.org
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Alex Elder <elder@linaro.org>
 > ---
->  drivers/isdn/i4l/isdn_tty.c   |  2 +-
->  drivers/tty/hvc/hvc_console.c |  2 +-
->  drivers/tty/hvc/hvcs.c        |  2 +-
->  drivers/tty/tty_port.c        | 11 ++---------
->  include/linux/tty.h           | 18 ------------------
->  5 files changed, 5 insertions(+), 30 deletions(-)
+> v2: Limit clock changing to specific compatible devices.
+> 
+>  drivers/tty/serial/8250/8250_dw.c | 57 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 57 insertions(+)
 
-I've applied the first 13 patches in this series, as it looks like you
-were going to split things up from here, right?  Can you refresh these
-and resend when you have that done?
+This no longer applies due to other changes in this driver.  Can you
+please refresh it against my tty-next branch of the tty.git tree and
+resend?
 
 thanks,
 
