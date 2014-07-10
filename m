@@ -1,60 +1,48 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH 0/2] fixes for empty tx buffer breakage
-Date: Thu, 10 Jul 2014 16:12:05 -0700 (PDT)
-Message-ID: <20140710.161205.2079073830695357277.davem@davemloft.net>
-References: <20140609205917.GA913@drone.musicnaut.iki.fi>
-	<1404660593-12172-1-git-send-email-peter@hurleysoftware.com>
-	<20140710231432.GA9423@kroah.com>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from shards.monkeyblade.net ([149.20.54.216]:45851 "EHLO
-	shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750857AbaGJXMG (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Jul 2014 19:12:06 -0400
-In-Reply-To: <20140710231432.GA9423@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: peter@hurleysoftware.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sethb@digi.com, aaro.koskinen@iki.fi, sam@ravnborg.org, tsbogend@alpha.franken.de
-
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Thu, 10 Jul 2014 16:14:32 -0700
+Subject: Re: [PATCH V8 2/2] serial/uart/8250: Add tunable RX interrupt
+ trigger I/F of FIFO buffers
+Date: Thu, 10 Jul 2014 16:16:37 -0700
+Message-ID: <20140710231637.GB9423@kroah.com>
+References: <20140530061617.21929.25777.stgit@yunodevel>
+ <20140530061622.21929.82083.stgit@yunodevel>
+ <20140710002837.GA5429@kroah.com>
+ <20140710153157.57902972@alan.etchedpixels.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140710153157.57902972@alan.etchedpixels.co.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Stephen Warren <swarren@nvidia.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+List-Id: linux-serial@vger.kernel.org
 
-> On Sun, Jul 06, 2014 at 11:29:51AM -0400, Peter Hurley wrote:
->> Cc: Seth Bollinger <sethb@digi.com>
->> Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
->> Cc: Sam Ravnborg <sam@ravnborg.org>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
->> 
->> Greg,
->> 
->> I completed the audit of serial drivers after reports that
->> several Sun serial drivers were broken by
->> commit 717f3bbab3c7628736ef738fdbf3d9a28578c26c,
->> 'serial_core: Fix conditional start_tx on ring buffer not empty'.
->> 
->> I apologize for not submitting this sooner. The delay was due to
->> an ongoing analysis of serial flow control prompted by Sam Ravnborg's
->> question:
->> 
->> On 06/10/2014 03:24 PM, Sam Ravnborg wrote:
->> > I also noticed the typical pattern is:
->> > 
->> >      if (uart_circ_empty(xmit) || uart_tx_stopped(port))
->> > 
->> > Should you use this pattern also in sunsab.c?
->> 
->> Unfortunately, that analysis revealed that tx flow control is
->> largely SMP-unsafe, and it's fairly easy to corrupt the hardware
->> state wrt. the tty flow control state.
->> 
->> I'm still working on the solutions to that; they're too
->> extensive to submit for 3.16 anyway.
+On Thu, Jul 10, 2014 at 03:31:57PM +0100, One Thousand Gnomes wrote:
+> > I really don't like the way that the tty core has been changed to handle
+> > multiple attribute groups, as I feel tty drivers shouldn't be creating
+> > "special" sysfs files, depending on what driver is bound to them.
 > 
-> So these should go into 3.16-final?  Or 3.17?
+> The intent isn't that it is "special" but that it can be propogated to
+> others as and when they wish to provide it.
+>  
+> > Usually we have handled this using tools like 'stty' and ioctls, right?
+> > Surely there is an ioctl to control the interrupt level, right?  Hasn't
+> > this been covered before somehow?
+> 
+> No, and the direction when this started was to use sysfs as we have also
+> been moving all the other attributes towards sysfs and has been since
+> 2012.
+> 
+> TTY devices do have lots of strange attributes and right now many of them
+> are only programmable by using device tree and rebooting.
 
-Definitely 3.16, this regression is several releases old.
+Ok.  Hm, there has to be a better way to do the group sysfs file
+handling...
+
+Let me work on this tomorrow and see what I can come up with.  We should
+be able to use the is_visable() attribute to create/notcreate the
+attribute where needed...
+
+thanks,
+
+greg k-h
