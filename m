@@ -1,56 +1,58 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH v2 repost] serial: sh-sci: Add device tree support for
- r8a7{778,740,3a4} and sh73a0
-Date: Fri, 11 Jul 2014 11:11:08 +0200
-Message-ID: <20140711091107.GA25710@verge.net.au>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH tty-next 14/22] tty: Remove tty_wait_until_sent_from_close()
+Date: Fri, 11 Jul 2014 11:03:12 -0400
+Message-ID: <53BFFCB0.5020400@hurleysoftware.com>
+References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-15-git-send-email-peter@hurleysoftware.com> <20140710230936.GA31181@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53205 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752427AbaGKPDU (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 11 Jul 2014 11:03:20 -0400
+In-Reply-To: <20140710230936.GA31181@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, linuxppc-dev@lists.ozlabs.org
 
-Simply document new compat strings.
-There appears to be no need for a driver updates.
+On 07/10/2014 07:09 PM, Greg Kroah-Hartman wrote:
+> On Mon, Jun 16, 2014 at 09:17:11AM -0400, Peter Hurley wrote:
+>> tty_wait_until_sent_from_close() drops the tty lock while waiting
+>> for the tty driver to finish sending previously accepted data (ie.,
+>> data remaining in its write buffer and transmit fifo).
+>>
+>> However, dropping the tty lock is a hold-over from when the tty
+>> lock was system-wide; ie., one lock for all ttys.
+>>
+>> Since commit 89c8d91e31f267703e365593f6bfebb9f6d2ad01,
+>> 'tty: localise the lock', dropping the tty lock has not been necessary.
+>>
+>> CC: Karsten Keil <isdn@linux-pingi.de>
+>> CC: linuxppc-dev@lists.ozlabs.org
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>   drivers/isdn/i4l/isdn_tty.c   |  2 +-
+>>   drivers/tty/hvc/hvc_console.c |  2 +-
+>>   drivers/tty/hvc/hvcs.c        |  2 +-
+>>   drivers/tty/tty_port.c        | 11 ++---------
+>>   include/linux/tty.h           | 18 ------------------
+>>   5 files changed, 5 insertions(+), 30 deletions(-)
+>
+> I've applied the first 13 patches in this series, as it looks like you
+> were going to split things up from here, right?
 
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+Yes, thanks for doing that.
 
---
-v2
-* Added r8a73a4, r8a7740 and sh73a0 support
+> Can you refresh these and resend when you have that done?
 
-Repost to Greg KH.
+Unfortunately, that probably won't be until after the 3.17 merge window,
+for 3.18. The tty_open() rework is not trivial and there is an issue
+with the ldisc flush removal patch.
 
-Greg, I am hoping to get the platform side of this change included in v3.16.
-As there are no code changes I think it should be safe enough. But I am
-wondering if you could either merge this patch or give an Ack so that I'm
-not using bindings in dts files that have not been accepted by the driver
-maintainer.
+I'm hoping to include the tty flow control fixes with that stuff as well.
 
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 64fd7de..b355660 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -4,6 +4,13 @@ Required properties:
- 
-   - compatible: Must contain one of the following:
- 
-+    - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-+    - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
-+    - "renesas,scifa-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFA compatible UART.
-+    - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
-+    - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
-+    - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
-     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
-     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
--- 
-2.0.0.rc2
-
+Regards,
+Peter Hurley
