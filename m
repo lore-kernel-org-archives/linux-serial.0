@@ -1,58 +1,42 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH tty-next 14/22] tty: Remove tty_wait_until_sent_from_close()
-Date: Fri, 11 Jul 2014 11:03:12 -0400
-Message-ID: <53BFFCB0.5020400@hurleysoftware.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-15-git-send-email-peter@hurleysoftware.com> <20140710230936.GA31181@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53205 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752427AbaGKPDU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 11:03:20 -0400
-In-Reply-To: <20140710230936.GA31181@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 trivial 4/6] serial: pch_uart: Update error message for dmaengine_prep_slave_sg() API
+Date: Fri, 11 Jul 2014 18:13:26 +0200
+Message-ID: <1405095208-14642-4-git-send-email-geert+renesas@glider.be>
+References: <1405095208-14642-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1405095208-14642-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>
+Cc: dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Kosina <trivial@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Karsten Keil <isdn@linux-pingi.de>, linuxppc-dev@lists.ozlabs.org
 
-On 07/10/2014 07:09 PM, Greg Kroah-Hartman wrote:
-> On Mon, Jun 16, 2014 at 09:17:11AM -0400, Peter Hurley wrote:
->> tty_wait_until_sent_from_close() drops the tty lock while waiting
->> for the tty driver to finish sending previously accepted data (ie.,
->> data remaining in its write buffer and transmit fifo).
->>
->> However, dropping the tty lock is a hold-over from when the tty
->> lock was system-wide; ie., one lock for all ttys.
->>
->> Since commit 89c8d91e31f267703e365593f6bfebb9f6d2ad01,
->> 'tty: localise the lock', dropping the tty lock has not been necessary.
->>
->> CC: Karsten Keil <isdn@linux-pingi.de>
->> CC: linuxppc-dev@lists.ozlabs.org
->> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->> ---
->>   drivers/isdn/i4l/isdn_tty.c   |  2 +-
->>   drivers/tty/hvc/hvc_console.c |  2 +-
->>   drivers/tty/hvc/hvcs.c        |  2 +-
->>   drivers/tty/tty_port.c        | 11 ++---------
->>   include/linux/tty.h           | 18 ------------------
->>   5 files changed, 5 insertions(+), 30 deletions(-)
->
-> I've applied the first 13 patches in this series, as it looks like you
-> were going to split things up from here, right?
+Commit 16052827d98fbc13c31ebad560af4bd53e2b4dd5 ("dmaengine/dma_slave:
+introduce inline wrappers") changed the code to use the new API, but forgot
+to update an error message.
 
-Yes, thanks for doing that.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Kosina <trivial@kernel.org>
+Cc: linux-serial@vger.kernel.org
+--
+v2:
+  - New
+---
+ drivers/tty/serial/pch_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Can you refresh these and resend when you have that done?
-
-Unfortunately, that probably won't be until after the 3.17 merge window,
-for 3.18. The tty_open() rework is not trivial and there is an issue
-with the ldisc flush removal patch.
-
-I'm hoping to include the tty flow control fixes with that stuff as well.
-
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 0cb6a8e52bd0..2f06e5a71396 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1047,7 +1047,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+ 					priv->sg_tx_p, nent, DMA_MEM_TO_DEV,
+ 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	if (!desc) {
+-		dev_err(priv->port.dev, "%s:device_prep_slave_sg Failed\n",
++		dev_err(priv->port.dev, "%s:dmaengine_prep_slave_sg Failed\n",
+ 			__func__);
+ 		return 0;
+ 	}
+-- 
+1.9.1
