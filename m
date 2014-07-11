@@ -1,39 +1,54 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: add 32-bit register interface
- support
-Date: Fri, 11 Jul 2014 02:38:00 +0000
-Message-ID: <d2f73b90bc714108a9aa14824633b375@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1404204226-24452-1-git-send-email-jingchang.lu@freescale.com>
- <20140710230353.GA25661@kroah.com>
+From: Alex Elder <elder@linaro.org>
+Subject: Re: [PATCH v2] serial: 8250_dw: support high baudrates if possible
+Date: Thu, 10 Jul 2014 22:11:58 -0500
+Message-ID: <53BF55FE.9090500@linaro.org>
+References: <1404227734-14180-1-git-send-email-elder@linaro.org> <20140710231342.GA9557@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1lp0141.outbound.protection.outlook.com ([207.46.163.141]:34494
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751867AbaGKCiE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 10 Jul 2014 22:38:04 -0400
-In-Reply-To: <20140710230353.GA25661@kroah.com>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140710231342.GA9557@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogR3JlZyBLSCBbbWFpbHRvOmdyZWdr
-aEBsaW51eGZvdW5kYXRpb24ub3JnXQ0KPlNlbnQ6IEZyaWRheSwgSnVseSAxMSwgMjAxNCA3OjA0
-IEFNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODMNCj5DYzogbGludXgtc2VyaWFsQHZnZXIua2Vy
-bmVsLm9yZzsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnDQo+U3ViamVjdDog
-UmU6IFtQQVRDSF0gdHR5OiBzZXJpYWw6IGZzbF9scHVhcnQ6IGFkZCAzMi1iaXQgcmVnaXN0ZXIN
-Cj5pbnRlcmZhY2Ugc3VwcG9ydA0KPg0KPk9uIFR1ZSwgSnVsIDAxLCAyMDE0IGF0IDA0OjQzOjQ2
-UE0gKzA4MDAsIEppbmdjaGFuZyBMdSB3cm90ZToNCj4+IFRoaXMgYWRkIHRoZSBiaWctZW5kaWFu
-IDMyLWJpdCByZWdpc3RlciB2ZXJzaW9uIExQVUFSVCBzdXBwb3J0Lg0KPj4NCj4+IFNpZ25lZC1v
-ZmYtYnk6IEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+PiAtLS0N
-Cj4+ICBkcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jIHwgNjUyDQo+PiArKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKystDQo+PiAgMSBmaWxlIGNoYW5nZWQsIDY0MyBp
-bnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQ0KPg0KPlRoaXMgcGF0Y2ggZmFpbHMgdG8gYXBw
-bHkgdG8gbXkgdHJlZSA6KA0KPg0KPkNhbiB5b3UgcmVmcmVzaCBpdCBhZ2FpbnN0IHRoZSB0dHkt
-bmV4dCBicmFuY2ggb2YgdGhlIHR0eS5naXQgdHJlZSBvbg0KPmdpdC5rZXJuZWwub3JnIGFuZCBy
-ZXNlbmQ/DQpZZXMsIEkgd2lsbCBkbyB0aGF0IGFuZCByZXNlbmQgdGhlIHBhdGNoLiBUaGFua3Mu
-DQoNCg0KDQpCZXN0IFJlZ2FyZHMsDQpKaW5nY2hhbmcNCg0KDQoNCg0KDQo=
+On 07/10/2014 06:13 PM, Greg KH wrote:
+> On Tue, Jul 01, 2014 at 10:15:34AM -0500, Alex Elder wrote:
+>> Currently the Synopsys DesignWare 8250 driver assumes its UART clock
+>> runs at a fixed rate.  If a "real" clock was set up using the common
+>> clock framework, and that clock's rate is adjustable, it may be
+>> possible to support a wider range of baud rates by changing the
+>> UART clock rate.
+>>
+>> This is done by setting up a uart_port->set_termios method that
+>> requests a clock rate change if a different rate might make it
+>> more likely to achieve a specified baud.  A new function
+>> dw8250_adjustable_clk() determines whether such clock rate
+>> adjustment is an option.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+>> ---
+>> v2: Limit clock changing to specific compatible devices.
+>>
+>>  drivers/tty/serial/8250/8250_dw.c | 57 +++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 57 insertions(+)
+> 
+> This no longer applies due to other changes in this driver.  Can you
+> please refresh it against my tty-next branch of the tty.git tree and
+> resend?
+
+Interesting.  Heikki seems to have generalized
+byt_set_termios() into dw8250_set_termios(), such
+that it's almost the same as what I did.
+
+I think I can just reuse it and simplify my patch
+considerably.  But I'll do that in the morning...
+
+					-Alex
+
+
+> thanks,
+> 
+> greg k-h
+> 
