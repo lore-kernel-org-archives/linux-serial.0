@@ -1,62 +1,92 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH] serial: altera: Adopt uart_console_write()
-Date: Fri, 11 Jul 2014 14:00:11 +0100
-Message-ID: <1405083611-13828-1-git-send-email-daniel.thompson@linaro.org>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
+Date: Fri, 11 Jul 2014 18:31:37 +0530
+Message-ID: <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
+References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f170.google.com ([209.85.212.170]:34100 "EHLO
-	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753373AbaGKNCP (ORCPT
+Received: from smtprelay4.synopsys.com ([198.182.44.111]:36760 "EHLO
+	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753778AbaGKNDz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 09:02:15 -0400
-Received: by mail-wi0-f170.google.com with SMTP id cc10so773539wib.5
-        for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2014 06:02:12 -0700 (PDT)
+	Fri, 11 Jul 2014 09:03:55 -0400
+In-Reply-To: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Tobias Klauser <tklauser@distanz.ch>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 
-This driver does not currently use uart_console_write() and instead
-provides is own LF to LFCR conversion in it's console_write() method.
-We should use the library function instead.
+| drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
 
-Cmopile tested only (with ARCH=arm).
+This partially undoes "serial/arc: use uart_console_write() helper" by
+restoring the prototpye of poll helper and use a different one in
+uart_console_write()
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Tobias Klauser <tklauser@distanz.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Cc: nios2-dev@lists.rocketboards.org
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- drivers/tty/serial/altera_uart.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/tty/serial/arc_uart.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index 3233766..554e2fa 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -435,7 +435,7 @@ static struct altera_uart altera_uart_ports[CONFIG_SERIAL_ALTERA_UART_MAXPORTS];
- 
- #if defined(CONFIG_SERIAL_ALTERA_UART_CONSOLE)
- 
--static void altera_uart_console_putc(struct uart_port *port, const char c)
-+static void altera_uart_console_putc(struct uart_port *port, int c)
- {
- 	while (!(altera_uart_readl(port, ALTERA_UART_STATUS_REG) &
- 		 ALTERA_UART_STATUS_TRDY_MSK))
-@@ -449,11 +449,7 @@ static void altera_uart_console_write(struct console *co, const char *s,
- {
- 	struct uart_port *port = &(altera_uart_ports + co->index)->port;
- 
--	for (; count; count--, s++) {
--		altera_uart_console_putc(port, *s);
--		if (*s == '\n')
--			altera_uart_console_putc(port, '\r');
--	}
-+	uart_console_write(port, s, count, altera_uart_console_putc);
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index d9900cb3e7b6..750638fc8a4a 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -449,18 +449,16 @@ static void arc_serial_config_port(struct uart_port *port, int flags)
+ 		port->type = PORT_ARC;
  }
  
- static int __init altera_uart_console_setup(struct console *co, char *options)
+-#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_ARC_CONSOLE)
++#ifdef CONFIG_CONSOLE_POLL
+ 
+-static void arc_serial_poll_putchar(struct uart_port *port, int chr)
++static void arc_serial_poll_putchar(struct uart_port *port, unsigned char chr)
+ {
+ 	while (!(UART_GET_STATUS(port) & TXEMPTY))
+ 		cpu_relax();
+ 
+-	UART_SET_DATA(port, (unsigned char)chr);
++	UART_SET_DATA(port, chr);
+ }
+-#endif
+ 
+-#ifdef CONFIG_CONSOLE_POLL
+ static int arc_serial_poll_getchar(struct uart_port *port)
+ {
+ 	unsigned char chr;
+@@ -527,6 +525,14 @@ static int arc_serial_console_setup(struct console *co, char *options)
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
++static void arc_serial_console_putchar(struct uart_port *port, int ch)
++{
++	while (!(UART_GET_STATUS(port) & TXEMPTY))
++		cpu_relax();
++
++	UART_SET_DATA(port, (unsigned char)ch);
++}
++
+ /*
+  * Interrupts are disabled on entering
+  */
+@@ -537,7 +543,7 @@ static void arc_serial_console_write(struct console *co, const char *s,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	uart_console_write(port, s, count, arc_serial_poll_putchar);
++	uart_console_write(port, s, count, arc_serial_console_putchar);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+@@ -556,7 +562,7 @@ static __init void arc_early_serial_write(struct console *con, const char *s,
+ {
+ 	struct earlycon_device *dev = con->data;
+ 
+-	uart_console_write(&dev->port, s, n, arc_serial_poll_putchar);
++	uart_console_write(&dev->port, s, n, arc_serial_console_putchar);
+ }
+ 
+ static int __init arc_early_console_setup(struct earlycon_device *dev,
 -- 
-1.9.3
+1.8.3.2
 
