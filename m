@@ -1,92 +1,56 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
-Date: Fri, 11 Jul 2014 18:31:37 +0530
-Message-ID: <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
-References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH v2 repost] serial: sh-sci: Add device tree support for
+ r8a7{778,740,3a4} and sh73a0
+Date: Fri, 11 Jul 2014 11:11:08 +0200
+Message-ID: <20140711091107.GA25710@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay4.synopsys.com ([198.182.44.111]:36760 "EHLO
-	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753778AbaGKNDz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 09:03:55 -0400
-In-Reply-To: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>
 
-| drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
+Simply document new compat strings.
+There appears to be no need for a driver updates.
 
-This partially undoes "serial/arc: use uart_console_write() helper" by
-restoring the prototpye of poll helper and use a different one in
-uart_console_write()
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+--
+v2
+* Added r8a73a4, r8a7740 and sh73a0 support
+
+Repost to Greg KH.
+
+Greg, I am hoping to get the platform side of this change included in v3.16.
+As there are no code changes I think it should be safe enough. But I am
+wondering if you could either merge this patch or give an Ack so that I'm
+not using bindings in dts files that have not been accepted by the driver
+maintainer.
+
 ---
- drivers/tty/serial/arc_uart.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index d9900cb3e7b6..750638fc8a4a 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -449,18 +449,16 @@ static void arc_serial_config_port(struct uart_port *port, int flags)
- 		port->type = PORT_ARC;
- }
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 64fd7de..b355660 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -4,6 +4,13 @@ Required properties:
  
--#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_ARC_CONSOLE)
-+#ifdef CONFIG_CONSOLE_POLL
+   - compatible: Must contain one of the following:
  
--static void arc_serial_poll_putchar(struct uart_port *port, int chr)
-+static void arc_serial_poll_putchar(struct uart_port *port, unsigned char chr)
- {
- 	while (!(UART_GET_STATUS(port) & TXEMPTY))
- 		cpu_relax();
- 
--	UART_SET_DATA(port, (unsigned char)chr);
-+	UART_SET_DATA(port, chr);
- }
--#endif
- 
--#ifdef CONFIG_CONSOLE_POLL
- static int arc_serial_poll_getchar(struct uart_port *port)
- {
- 	unsigned char chr;
-@@ -527,6 +525,14 @@ static int arc_serial_console_setup(struct console *co, char *options)
- 	return uart_set_options(port, co, baud, parity, bits, flow);
- }
- 
-+static void arc_serial_console_putchar(struct uart_port *port, int ch)
-+{
-+	while (!(UART_GET_STATUS(port) & TXEMPTY))
-+		cpu_relax();
-+
-+	UART_SET_DATA(port, (unsigned char)ch);
-+}
-+
- /*
-  * Interrupts are disabled on entering
-  */
-@@ -537,7 +543,7 @@ static void arc_serial_console_write(struct console *co, const char *s,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	uart_console_write(port, s, count, arc_serial_poll_putchar);
-+	uart_console_write(port, s, count, arc_serial_console_putchar);
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -556,7 +562,7 @@ static __init void arc_early_serial_write(struct console *con, const char *s,
- {
- 	struct earlycon_device *dev = con->data;
- 
--	uart_console_write(&dev->port, s, n, arc_serial_poll_putchar);
-+	uart_console_write(&dev->port, s, n, arc_serial_console_putchar);
- }
- 
- static int __init arc_early_console_setup(struct earlycon_device *dev,
++    - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
++    - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
++    - "renesas,scifa-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFA compatible UART.
++    - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
++    - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
++    - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
++    - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
+     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
 -- 
-1.8.3.2
+2.0.0.rc2
 
