@@ -1,86 +1,52 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] serial: efm32: correct namespacing of location property
-Date: Fri, 11 Jul 2014 10:16:45 +0200
-Message-ID: <1405066605-12801-1-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <CAOesGMjgX5PWBSD2YP7mTGMWafxBjeMDmzZoPCXb27YPUHEcyw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH] tty: kgdb_nmi: Convert kgdb_nmi_tty_enabled into a module parameter
+Date: Fri, 11 Jul 2014 13:30:11 +0100
+Message-ID: <1405081811-15254-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:33584 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750767AbaGKIRA (ORCPT
+Received: from mail-we0-f171.google.com ([74.125.82.171]:47050 "EHLO
+	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752863AbaGKMek (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 04:17:00 -0400
-In-Reply-To: <CAOesGMjgX5PWBSD2YP7mTGMWafxBjeMDmzZoPCXb27YPUHEcyw@mail.gmail.com>
+	Fri, 11 Jul 2014 08:34:40 -0400
+Received: by mail-we0-f171.google.com with SMTP id q58so1019932wes.30
+        for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2014 05:34:39 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Olof Johansson <olof@lixom.net>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-Olof Johansson pointed out that usually the company name is picked as
-namespace prefix to specific properties. So expect "energymicro,locatio=
-n"
-but fall back to the previously introduced name "efm32,location".
+At present it is not possible to boot with the ttyNMI0 console treating
+character input normally. To use the console requires that kdb be
+entered and the nmi_console command be used to enable the console (or if
+only kgdb is present then gdb must directly manipulate the value of
+kgdb_nmi_tty_enabled).
 
-Cc: Olof Johansson <olof@lixom.net>
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Introducing a module parameter makes the console much more usable.
+
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
 ---
- Documentation/devicetree/bindings/serial/efm32-uart.txt | 4 ++--
- drivers/tty/serial/efm32-uart.c                         | 8 +++++++-
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/tty/serial/kgdb_nmi.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/efm32-uart.txt b/=
-Documentation/devicetree/bindings/serial/efm32-uart.txt
-index 3ca01336b837..8adbab268ca3 100644
---- a/Documentation/devicetree/bindings/serial/efm32-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/efm32-uart.txt
-@@ -6,7 +6,7 @@ Required properties:
- - interrupts : Should contain uart interrupt
-=20
- Optional properties:
--- efm32,location : Decides the location of the USART I/O pins.
-+- energymicro,location : Decides the location of the USART I/O pins.
-   Allowed range : [0 .. 5]
-   Default: 0
-=20
-@@ -16,5 +16,5 @@ uart@0x4000c400 {
- 	compatible =3D "energymicro,efm32-uart";
- 	reg =3D <0x4000c400 0x400>;
- 	interrupts =3D <15>;
--	efm32,location =3D <0>;
-+	energymicro,location =3D <0>;
- };
-diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32=
--uart.c
-index 3b0ee9afd76f..cb007a4f4d15 100644
---- a/drivers/tty/serial/efm32-uart.c
-+++ b/drivers/tty/serial/efm32-uart.c
-@@ -671,10 +671,16 @@ static int efm32_uart_probe_dt(struct platform_de=
-vice *pdev,
- 	if (!np)
- 		return 1;
-=20
--	ret =3D of_property_read_u32(np, "efm32,location", &location);
-+	ret =3D of_property_read_u32(np, "energymicro,location", &location);
-+
-+	if (ret)
-+		/* fall back to wrongly namespaced property */
-+		ret =3D of_property_read_u32(np, "efm32,location", &location);
-+
- 	if (ret)
- 		/* fall back to old and (wrongly) generic property "location" */
- 		ret =3D of_property_read_u32(np, "location", &location);
-+
- 	if (!ret) {
- 		if (location > 5) {
- 			dev_err(&pdev->dev, "invalid location\n");
---=20
-2.0.0
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+index cfadf29..9361d69 100644
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ b/drivers/tty/serial/kgdb_nmi.c
+@@ -43,6 +43,11 @@ module_param_named(magic, kgdb_nmi_magic, charp, 0600);
+ MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
+ 
+ static bool kgdb_nmi_tty_enabled;
++module_param_named(tty, kgdb_nmi_tty_enabled, bool, 0600);
++MODULE_PARM_DESC(tty, "if set to false (default), characters received from "
++		      "the UART will be passed exclusively to the knock "
++		      "detector; when set to true characters will be passed "
++		      "both to the knock detector and to the TTY layer");
+ 
+ static int kgdb_nmi_console_setup(struct console *co, char *options)
+ {
+-- 
+1.9.3
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
