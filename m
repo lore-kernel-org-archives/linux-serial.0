@@ -1,54 +1,47 @@
-From: Alex Elder <elder@linaro.org>
-Subject: Re: [PATCH v2] serial: 8250_dw: support high baudrates if possible
-Date: Thu, 10 Jul 2014 22:11:58 -0500
-Message-ID: <53BF55FE.9090500@linaro.org>
-References: <1404227734-14180-1-git-send-email-elder@linaro.org> <20140710231342.GA9557@kroah.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: [PATCH 1/2] dt-binding: fsl-lpuart: use exact SoC revision to document binding
+Date: Fri, 11 Jul 2014 13:41:41 +0800
+Message-ID: <1405057302-26041-2-git-send-email-jingchang.lu@freescale.com>
+References: <1405057302-26041-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140710231342.GA9557@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: heikki.krogerus@linux.intel.com, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [207.46.163.241] ([207.46.163.241]:15535 "EHLO
+	na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751650AbaGKG2k (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 11 Jul 2014 02:28:40 -0400
+In-Reply-To: <1405057302-26041-1-git-send-email-jingchang.lu@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jingchang Lu <jingchang.lu@freescale.com>
 
-On 07/10/2014 06:13 PM, Greg KH wrote:
-> On Tue, Jul 01, 2014 at 10:15:34AM -0500, Alex Elder wrote:
->> Currently the Synopsys DesignWare 8250 driver assumes its UART clock
->> runs at a fixed rate.  If a "real" clock was set up using the common
->> clock framework, and that clock's rate is adjustable, it may be
->> possible to support a wider range of baud rates by changing the
->> UART clock rate.
->>
->> This is done by setting up a uart_port->set_termios method that
->> requests a clock rate change if a different rate might make it
->> more likely to achieve a specified baud.  A new function
->> dw8250_adjustable_clk() determines whether such clock rate
->> adjustment is an option.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->> v2: Limit clock changing to specific compatible devices.
->>
->>  drivers/tty/serial/8250/8250_dw.c | 57 +++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 57 insertions(+)
-> 
-> This no longer applies due to other changes in this driver.  Can you
-> please refresh it against my tty-next branch of the tty.git tree and
-> resend?
+use exact SoC revision instead of wildcard describing
+to make the binding more clearer.
 
-Interesting.  Heikki seems to have generalized
-byt_set_termios() into dw8250_set_termios(), such
-that it's almost the same as what I did.
+Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+---
+ Documentation/devicetree/bindings/serial/fsl-lpuart.txt | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-I think I can just reuse it and simplify my patch
-considerably.  But I'll do that in the morning...
+diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+index a1d1205..c95005e 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+@@ -1,7 +1,11 @@
+ * Freescale low power universal asynchronous receiver/transmitter (lpuart)
+ 
+ Required properties:
+-- compatible : Should be "fsl,<soc>-lpuart"
++- compatible :
++  - "fsl,vf610-lpuart" for lpuart compatible with the one integrated
++    on Vybrid vf610 SoC with 8-bit register organization
++  - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
++    on LS1021A SoC with 32-bit big-endian register organization
+ - reg : Address and length of the register set for the device
+ - interrupts : Should contain uart interrupt
+ - clocks : phandle + clock specifier pairs, one for each entry in clock-names
+-- 
+1.8.0
 
-					-Alex
-
-
-> thanks,
-> 
-> greg k-h
-> 
