@@ -1,52 +1,61 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH] tty: kgdb_nmi: Convert kgdb_nmi_tty_enabled into a module parameter
-Date: Fri, 11 Jul 2014 13:30:11 +0100
-Message-ID: <1405081811-15254-1-git-send-email-daniel.thompson@linaro.org>
+From: Alex Elder <elder@linaro.org>
+Subject: dw8250_set_termios() questions
+Date: Fri, 11 Jul 2014 07:57:06 -0500
+Message-ID: <53BFDF22.1020302@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f171.google.com ([74.125.82.171]:47050 "EHLO
-	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752863AbaGKMek (ORCPT
+Received: from mail-ig0-f171.google.com ([209.85.213.171]:54080 "EHLO
+	mail-ig0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753160AbaGKM5C (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 08:34:40 -0400
-Received: by mail-we0-f171.google.com with SMTP id q58so1019932wes.30
-        for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2014 05:34:39 -0700 (PDT)
+	Fri, 11 Jul 2014 08:57:02 -0400
+Received: by mail-ig0-f171.google.com with SMTP id l13so3821624iga.16
+        for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2014 05:57:01 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: heikki.krogerus@linux.intel.com
+Cc: Greg KH <gregkh@linuxfoundation.org>, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-At present it is not possible to boot with the ttyNMI0 console treating
-character input normally. To use the console requires that kdb be
-entered and the nmi_console command be used to enable the console (or if
-only kgdb is present then gdb must directly manipulate the value of
-kgdb_nmi_tty_enabled).
+Heikki, I have not been a subscriber of the linux-serial
+mailing list and didn't see this patch go by:
+    serial: 8250_dw: clock rate handling for all ACPI platforms
+    http://www.spinics.net/lists/linux-serial/msg12861.html
 
-Introducing a module parameter makes the console much more usable.
+I had been working on doing something very similar for some
+Broadcom device tree based devices and it might have been
+helpful for me to have seen it.  What I ended up with was
+*very* similar to what you did.  Here is the last version
+of the patch I posted:
+    https://lkml.org/lkml/2014/7/1/323
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/kgdb_nmi.c | 5 +++++
- 1 file changed, 5 insertions(+)
+There *are* some differences, and I'd like to inquire about
+them before I simply use the code you have for my purpose.
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index cfadf29..9361d69 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -43,6 +43,11 @@ module_param_named(magic, kgdb_nmi_magic, charp, 0600);
- MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
- 
- static bool kgdb_nmi_tty_enabled;
-+module_param_named(tty, kgdb_nmi_tty_enabled, bool, 0600);
-+MODULE_PARM_DESC(tty, "if set to false (default), characters received from "
-+		      "the UART will be passed exclusively to the knock "
-+		      "detector; when set to true characters will be passed "
-+		      "both to the knock detector and to the TTY layer");
- 
- static int kgdb_nmi_console_setup(struct console *co, char *options)
- {
--- 
-1.9.3
+These first two relate to whether I can use your
+code as-is:
+- Why do you skip setting the clock if a null "old"
+  pointer is supplied?
+- I don't believe it's necessary to surround the clock
+  rate change with clk_disable_unprepare() and
+  clk_prepare_enable().  Do you believe otherwise?
 
+This one is addressed to how your code is used now:
+- Alan Cox had this question about my patch, and
+  it seems to apply to your code as well:
+    "This assumes an arbitarily configurable clock,
+    which is not I think the usual case."
+    https://lkml.org/lkml/2014/6/28/91
+  His point is that the clock, if adjustable, may
+  not support a rate that produces an acceptable
+  signal rate.  Put another way, there may be a
+  better frequency than what the clock framework
+  selects that (in combination with the UART
+  divisor latch registers) produces the best--or
+  even a good--signal.  Is there any chance any
+  ACPI platforms will suffer this problem?
+
+Thanks.
+
+					-Alex
