@@ -1,38 +1,58 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
-Date: Sat, 12 Jul 2014 07:45:56 +0000
-Message-ID: <C2D7FE5348E1B147BCA15975FBA230753C4B1DBA@IN01WEMBXA.internal.synopsys.com>
-References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
- <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
- <20140712004821.GB13893@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 3.16-rc5
+Date: Sat, 12 Jul 2014 13:47:32 -0700
+Message-ID: <20140712204732.GA27346@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtprelay2.synopsys.com ([198.182.60.111]:54695 "EHLO
-	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751762AbaGLHqA convert rfc822-to-8bit (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:48433 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752948AbaGLUnD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 12 Jul 2014 03:46:00 -0400
-Content-Language: en-US
+	Sat, 12 Jul 2014 16:43:03 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Saturday 12 July 2014 06:13 AM, Greg KH wrote:
-> On Fri, Jul 11, 2014 at 06:31:37PM +0530, Vineet Gupta wrote:
->> | drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
->>
->> This partially undoes "serial/arc: use uart_console_write() helper" by
->> restoring the prototpye of poll helper and use a different one in
->> uart_console_write()
->>
->> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
-> You forgot a "Reported-by:" line here.
->
-> I'll go add it...
+The following changes since commit cd3de83f147601356395b57a8673e9c5ff1e59d1:
 
-Sorry my bad - thx for taking care of this.
+  Linux 3.16-rc4 (2014-07-06 12:37:51 -0700)
 
--Vineet
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.16-rc5
+
+for you to fetch changes up to 34c4eda809e1efb16c554c07bb5df4c8ace9424e:
+
+  serial: sh-sci: Add device tree support for r8a7{778,740,3a4} and sh73a0 (2014-07-11 17:45:12 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.16-rc5
+
+Here are some small serial fixes that resolve some reported problems
+that started in 3.15 with some serial drivers.  And there's a new dt
+binding for a serial driver, which was all that was needed for the
+renesas serial driver.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Peter Hurley (3):
+      serial: Test for no tx data on tx restart
+      serial: arc_uart: Use uart_circ_empty() for open-coded comparison
+      serial: imx: Fix build breakage
+
+Simon Horman (1):
+      serial: sh-sci: Add device tree support for r8a7{778,740,3a4} and sh73a0
+
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 7 +++++++
+ drivers/tty/serial/arc_uart.c                                   | 2 +-
+ drivers/tty/serial/imx.c                                        | 3 +++
+ drivers/tty/serial/ip22zilog.c                                  | 2 ++
+ drivers/tty/serial/m32r_sio.c                                   | 8 +++++---
+ drivers/tty/serial/pmac_zilog.c                                 | 3 +++
+ drivers/tty/serial/sunsab.c                                     | 3 +++
+ drivers/tty/serial/sunzilog.c                                   | 2 ++
+ 8 files changed, 26 insertions(+), 4 deletions(-)
