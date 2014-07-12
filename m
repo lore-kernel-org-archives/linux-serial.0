@@ -1,34 +1,53 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
-Date: Fri, 11 Jul 2014 17:48:21 -0700
-Message-ID: <20140712004821.GB13893@kroah.com>
-References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
- <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
+Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: add 32-bit register
+ interface support
+Date: Fri, 11 Jul 2014 17:51:22 -0700
+Message-ID: <20140712005122.GA31974@kroah.com>
+References: <1405057302-26041-1-git-send-email-jingchang.lu@freescale.com>
+ <1405057302-26041-3-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42729 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:42748 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754677AbaGLAnw (ORCPT
+	with ESMTP id S1751416AbaGLAqx (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 20:43:52 -0400
+	Fri, 11 Jul 2014 20:46:53 -0400
 Content-Disposition: inline
-In-Reply-To: <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
+In-Reply-To: <1405057302-26041-3-git-send-email-jingchang.lu@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: linux-serial@vger.kernel.org
+To: Jingchang Lu <jingchang.lu@freescale.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Fri, Jul 11, 2014 at 06:31:37PM +0530, Vineet Gupta wrote:
-> | drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
-> 
-> This partially undoes "serial/arc: use uart_console_write() helper" by
-> restoring the prototpye of poll helper and use a different one in
-> uart_console_write()
-> 
-> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+On Fri, Jul 11, 2014 at 01:41:42PM +0800, Jingchang Lu wrote:
+> This add the 32-bit register version LPUART support with big-endian
+> byte order.
+>=20
+> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 653 ++++++++++++++++++++++++++++++=
++++++++++-
+>  1 file changed, 643 insertions(+), 10 deletions(-)
 
-You forgot a "Reported-by:" line here.
+You didn't even test build this patch:
 
-I'll go add it...
+  CC [M]  drivers/tty/serial/fsl_lpuart.o
+drivers/tty/serial/fsl_lpuart.c: In function =E2=80=98lpuart_suspend=E2=
+=80=99:
+drivers/tty/serial/fsl_lpuart.c:1856:22: error: =E2=80=98lpuart32_reg=E2=
+=80=99 undeclared (first use in this function)
+   uart_suspend_port(&lpuart32_reg, &sport->port);
+                      ^
 
+No quicker way to make me grumpy...
+
+Please take some time to do this right.
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
