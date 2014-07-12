@@ -1,60 +1,34 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: kgdb_nmi: Convert kgdb_nmi_tty_enabled into a
- module parameter
-Date: Fri, 11 Jul 2014 17:47:39 -0700
-Message-ID: <20140712004739.GA13893@kroah.com>
-References: <1405081811-15254-1-git-send-email-daniel.thompson@linaro.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
+Date: Fri, 11 Jul 2014 17:48:21 -0700
+Message-ID: <20140712004821.GB13893@kroah.com>
+References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
+ <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42726 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:42729 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751416AbaGLAnL (ORCPT
+	with ESMTP id S1754677AbaGLAnw (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 20:43:11 -0400
+	Fri, 11 Jul 2014 20:43:52 -0400
 Content-Disposition: inline
-In-Reply-To: <1405081811-15254-1-git-send-email-daniel.thompson@linaro.org>
+In-Reply-To: <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: linux-serial@vger.kernel.org
 
-On Fri, Jul 11, 2014 at 01:30:11PM +0100, Daniel Thompson wrote:
-> At present it is not possible to boot with the ttyNMI0 console treating
-> character input normally. To use the console requires that kdb be
-> entered and the nmi_console command be used to enable the console (or if
-> only kgdb is present then gdb must directly manipulate the value of
-> kgdb_nmi_tty_enabled).
+On Fri, Jul 11, 2014 at 06:31:37PM +0530, Vineet Gupta wrote:
+> | drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
 > 
-> Introducing a module parameter makes the console much more usable.
+> This partially undoes "serial/arc: use uart_console_write() helper" by
+> restoring the prototpye of poll helper and use a different one in
+> uart_console_write()
 > 
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/kgdb_nmi.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-> index cfadf29..9361d69 100644
-> --- a/drivers/tty/serial/kgdb_nmi.c
-> +++ b/drivers/tty/serial/kgdb_nmi.c
-> @@ -43,6 +43,11 @@ module_param_named(magic, kgdb_nmi_magic, charp, 0600);
->  MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
->  
->  static bool kgdb_nmi_tty_enabled;
-> +module_param_named(tty, kgdb_nmi_tty_enabled, bool, 0600);
-> +MODULE_PARM_DESC(tty, "if set to false (default), characters received from "
-> +		      "the UART will be passed exclusively to the knock "
-> +		      "detector; when set to true characters will be passed "
-> +		      "both to the knock detector and to the TTY layer");
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 
-Module options suck rocks through straws.
+You forgot a "Reported-by:" line here.
 
-Isn't there _any_ other way to determine this "dynamically"?  How will
-someone know to set this option?
+I'll go add it...
 
-Yeah, there are other options in this module, but please, why add more?
-
-greg k-h
