@@ -1,39 +1,38 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v2 repost] serial: sh-sci: Add device tree support for
- r8a7{778,740,3a4} and sh73a0
-Date: Sat, 12 Jul 2014 08:50:43 +0200
-Message-ID: <20140712065040.GB24129@verge.net.au>
-References: <20140711091107.GA25710@verge.net.au>
- <20140712004451.GA9549@kroah.com>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [PATCH] serial/arc: Fix warning with CONSOLE_POLL
+Date: Sat, 12 Jul 2014 07:45:56 +0000
+Message-ID: <C2D7FE5348E1B147BCA15975FBA230753C4B1DBA@IN01WEMBXA.internal.synopsys.com>
+References: <53bf1d9a.l51qTAII/GCO14wJ%fengguang.wu@intel.com>
+ <1405083697-10719-1-git-send-email-vgupta@synopsys.com>
+ <20140712004821.GB13893@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140712004451.GA9549@kroah.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtprelay2.synopsys.com ([198.182.60.111]:54695 "EHLO
+	smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751762AbaGLHqA convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 12 Jul 2014 03:46:00 -0400
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Fri, Jul 11, 2014 at 05:44:51PM -0700, Greg Kroah-Hartman wrote:
-> On Fri, Jul 11, 2014 at 11:11:08AM +0200, Simon Horman wrote:
-> > Simply document new compat strings.
-> > There appears to be no need for a driver updates.
-> > 
-> > Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-> > 
-> > --
-> > v2
-> > * Added r8a73a4, r8a7740 and sh73a0 support
-> > 
-> > Repost to Greg KH.
-> > 
-> > Greg, I am hoping to get the platform side of this change included in v3.16.
-> 
-> Isn't it a bit late for 3.16?  I'll go add this to my 3.16 tree, as it's
-> just a .txt file, and leave the fighting over new code to the other
-> maintainers :)
+On Saturday 12 July 2014 06:13 AM, Greg KH wrote:
+> On Fri, Jul 11, 2014 at 06:31:37PM +0530, Vineet Gupta wrote:
+>> | drivers/tty/serial/arc_uart.c:516:2: warning: (near initialization for 'arc_serial_pops.poll_put_char') [enabled by default]
+>>
+>> This partially undoes "serial/arc: use uart_console_write() helper" by
+>> restoring the prototpye of poll helper and use a different one in
+>> uart_console_write()
+>>
+>> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+> You forgot a "Reported-by:" line here.
+>
+> I'll go add it...
 
-Thanks.
+Sorry my bad - thx for taking care of this.
 
-In order to avoid fighting I'll queue up the code changes for v3.17.
+-Vineet
