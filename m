@@ -1,56 +1,37 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH tty-next 21/22] serial: core: Remove superfluous ldisc
- flush from uart_close()
-Date: Fri, 11 Jul 2014 12:15:49 -0400
-Message-ID: <53C00DB5.600@hurleysoftware.com>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com> <1402924639-5164-22-git-send-email-peter@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 repost] serial: sh-sci: Add device tree support for
+ r8a7{778,740,3a4} and sh73a0
+Date: Fri, 11 Jul 2014 17:44:51 -0700
+Message-ID: <20140712004451.GA9549@kroah.com>
+References: <20140711091107.GA25710@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:47880 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754807AbaGKQPz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 11 Jul 2014 12:15:55 -0400
-In-Reply-To: <1402924639-5164-22-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140711091107.GA25710@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms+renesas@verge.net.au>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-On 06/16/2014 09:17 AM, Peter Hurley wrote:
-> The tty_ldisc_flush() after port hardware shutdown is unnecessary;
-> the ldisc flush was just performed before the hardware shutdown
-> in tty_port_close_start() and the ldisc will be released when
-> uart_close() returns (because the last port close implies the
-> last tty close).
->
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->   drivers/tty/serial/serial_core.c | 3 ---
->   1 file changed, 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 212ee07..15212d7 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1351,9 +1351,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
->
->   	mutex_lock(&port->mutex);
->   	uart_shutdown(tty, state);
-> -
-> -	tty_ldisc_flush(tty);
-> -
+On Fri, Jul 11, 2014 at 11:11:08AM +0200, Simon Horman wrote:
+> Simply document new compat strings.
+> There appears to be no need for a driver updates.
+> 
+> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> 
+> --
+> v2
+> * Added r8a73a4, r8a7740 and sh73a0 support
+> 
+> Repost to Greg KH.
+> 
+> Greg, I am hoping to get the platform side of this change included in v3.16.
 
-This isn't exactly correct. There is a small window of time between the
-ldisc flush being performed in tty_port_close_start() and the
-subsequent stop_rx() in uart_close(). This might allow for data to be
-received, and a racing tty reopen to receive that stale data. Unlikely, but
-possible.
+Isn't it a bit late for 3.16?  I'll go add this to my 3.16 tree, as it's
+just a .txt file, and leave the fighting over new code to the other
+maintainers :)
 
->   	tty_port_tty_set(port, NULL);
->   	tty->closing = 0;
->   	spin_lock_irqsave(&port->lock, flags);
->
+thanks,
 
+greg k-h
