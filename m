@@ -1,158 +1,306 @@
-From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Subject: [PATCH 3/3] serial: sh-sci: Add calculation recive margin for HSCIF
-Date: Mon, 14 Jul 2014 16:10:00 +0900
-Message-ID: <1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
-References: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH] serial: 8250: introduce up_to_u8250p() macro
+Date: Mon, 14 Jul 2014 11:41:39 +0300
+Message-ID: <1405327299-25649-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:63154 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753140AbaGNHKW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jul 2014 03:10:22 -0400
-Received: by mail-pa0-f52.google.com with SMTP id eu11so4830323pac.25
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jul 2014 00:10:22 -0700 (PDT)
-In-Reply-To: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+Received: from mga14.intel.com ([192.55.52.115]:24244 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752702AbaGNIms (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 14 Jul 2014 04:42:48 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, horms+renesas@verge.net.au, magnus.damm@gmail.com, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-When the error of the same bit rate is detected, we will need to select
-the recive margin is large. Current code holds the minimum error, it does
-not have to check the recive margin. This adds this calculation.
+It helps to convert struct uart_port to struct uart_8250_port.
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/sh-sci.c | 77 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 59 insertions(+), 18 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 57 +++++++++++++------------------------
+ drivers/tty/serial/8250/8250_dw.c   |  8 ++++--
+ drivers/tty/serial/8250/8250_fsl.c  |  3 +-
+ drivers/tty/serial/8250/8250_pci.c  |  6 ++--
+ include/linux/serial_8250.h         |  2 ++
+ 5 files changed, 29 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7f571a8..d879c0c 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1783,13 +1783,30 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 	return ((freq + 16 * bps) / (32 * bps) - 1);
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 7a91c6d..0da0145 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -439,8 +439,7 @@ static int exar_handle_irq(struct uart_port *port);
+ 
+ static void set_io_from_upio(struct uart_port *p)
+ {
+-	struct uart_8250_port *up =
+-		container_of(p, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 
+ 	up->dl_read = default_serial_dl_read;
+ 	up->dl_write = default_serial_dl_write;
+@@ -1277,8 +1276,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 
+ static void serial8250_stop_tx(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	__stop_tx(up);
+ 
+@@ -1293,8 +1291,7 @@ static void serial8250_stop_tx(struct uart_port *port)
+ 
+ static void serial8250_start_tx(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	if (up->dma && !serial8250_tx_dma(up)) {
+ 		return;
+@@ -1322,8 +1319,7 @@ static void serial8250_start_tx(struct uart_port *port)
+ 
+ static void serial8250_stop_rx(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	up->ier &= ~UART_IER_RLSI;
+ 	up->port.read_status_mask &= ~UART_LSR_DR;
+@@ -1332,8 +1328,7 @@ static void serial8250_stop_rx(struct uart_port *port)
+ 
+ static void serial8250_enable_ms(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	/* no MSR capabilities */
+ 	if (up->bugs & UART_BUG_NOMSR)
+@@ -1499,8 +1494,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ {
+ 	unsigned char status;
+ 	unsigned long flags;
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int dma_err = 0;
+ 
+ 	if (iir & UART_IIR_NO_INT)
+@@ -1785,8 +1779,7 @@ static void serial8250_backup_timeout(unsigned long data)
+ 
+ static unsigned int serial8250_tx_empty(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned long flags;
+ 	unsigned int lsr;
+ 
+@@ -1800,8 +1793,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
+ 
+ static unsigned int serial8250_get_mctrl(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned int status;
+ 	unsigned int ret;
+ 
+@@ -1821,8 +1813,7 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
+ 
+ static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned char mcr = 0;
+ 
+ 	if (mctrl & TIOCM_RTS)
+@@ -1843,8 +1834,7 @@ static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ static void serial8250_break_ctl(struct uart_port *port, int break_state)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+@@ -1911,8 +1901,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 			 unsigned char c)
+ {
+ 	unsigned int ier;
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	/*
+ 	 *	First save the IER then disable the interrupts
+@@ -1941,8 +1930,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 
+ static int serial8250_startup(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned long flags;
+ 	unsigned char lsr, iir;
+ 	int retval;
+@@ -2194,8 +2182,7 @@ dont_test_tx_en:
+ 
+ static void serial8250_shutdown(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned long flags;
+ 
+ 	/*
+@@ -2268,8 +2255,7 @@ void
+ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		          struct ktermios *old)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned char cval, fcr = 0;
+ 	unsigned long flags;
+ 	unsigned int baud, quot;
+@@ -2498,8 +2484,7 @@ serial8250_set_ldisc(struct uart_port *port, int new)
+ void serial8250_do_pm(struct uart_port *port, unsigned int state,
+ 		      unsigned int oldstate)
+ {
+-	struct uart_8250_port *p =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *p = up_to_u8250p(port);
+ 
+ 	serial8250_set_sleep(p, state != 0);
+ }
+@@ -2630,8 +2615,7 @@ static void serial8250_release_rsa_resource(struct uart_8250_port *up)
+ 
+ static void serial8250_release_port(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	serial8250_release_std_resource(up);
+ 	if (port->type == PORT_RSA)
+@@ -2640,8 +2624,7 @@ static void serial8250_release_port(struct uart_port *port)
+ 
+ static int serial8250_request_port(struct uart_port *port)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int ret;
+ 
+ 	if (port->type == PORT_8250_CIR)
+@@ -2659,8 +2642,7 @@ static int serial8250_request_port(struct uart_port *port)
+ 
+ static void serial8250_config_port(struct uart_port *port, int flags)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int probeflags = PROBE_ANY;
+ 	int ret;
+ 
+@@ -2859,8 +2841,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ 
+ static void serial8250_console_putchar(struct uart_port *port, int ch)
+ {
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	wait_for_xmitr(up, UART_LSR_THRE);
+ 	serial_port_out(port, UART_TX, ch);
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index c531fa4..affdcb1 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -84,8 +84,9 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+ 
+ static void dw8250_force_idle(struct uart_port *p)
+ {
+-	serial8250_clear_and_reinit_fifos(container_of
+-					  (p, struct uart_8250_port, port));
++	struct uart_8250_port *up = up_to_u8250p(p);
++
++	serial8250_clear_and_reinit_fifos(up);
+ 	(void)p->serial_in(p, UART_RX);
  }
  
-+/* calculate frame length from SMR */
-+static int sci_baud_calc_frame_len(unsigned int smr_val)
-+{
-+	int len = 10;
-+
-+	if (smr_val & SCSMR_CHR)
-+		len--;
-+	if (smr_val & SCSMR_PE)
-+		len++;
-+	if (smr_val & SCSMR_STOP)
-+		len++;
-+
-+	return len;
-+}
-+
-+
- /* calculate sample rate, BRR, and clock select for HSCIF */
- static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
- 				int *brr, unsigned int *srr,
--				unsigned int *cks)
-+				unsigned int *cks, int frame_len)
+@@ -255,6 +256,7 @@ static int dw8250_probe_of(struct uart_port *p,
+ 			   struct dw8250_data *data)
  {
--	int sr, c, br, err;
-+	int sr, c, br, err, recv_margin;
- 	int min_err = 1000; /* 100% */
-+	int recv_max_margin = 0;
+ 	struct device_node	*np = p->dev->of_node;
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	u32			val;
+ 	bool has_ucv = true;
  
- 	/* Find the combination of sample rate and clock select with the
- 	   smallest deviation from the desired baud rate. */
-@@ -1802,12 +1819,35 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
- 			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
- 					       (1 << (2 * c + 1)) / 1000)) -
- 					       1000;
-+			if (err < 0)
-+				continue;
-+
-+			/* Calc recv margin
-+			 * M: Receive margin (%)
-+			 * N: Ratio of bit rate to clock (N = sampling rate)
-+			 * D: Clock duty (D = 0 to 1.0)
-+			 * L: Frame length (L = 9 to 12)
-+			 * F: Absolute value of clock frequency deviation
-+			 *
-+			 *  M = |(0.5 - 1 / 2 * N) - ((L - 0.5) * F) -
-+			 *      (|D - 0.5| / N * (1 + F))|
-+			 *  NOTE: Usually, treat D for 0.5, F is 0 by this
-+			 *        calculation.
-+			 */
-+			recv_margin = abs((500 -
-+					DIV_ROUND_CLOSEST(1000, sr << 1)) / 10);
- 			if (min_err > err) {
- 				min_err = err;
--				*brr = br;
--				*srr = sr - 1;
--				*cks = c;
--			}
-+				recv_max_margin = recv_margin;
-+			} else if ((min_err == err) &&
-+				   (recv_margin > recv_max_margin))
-+				recv_max_margin = recv_margin;
-+			else
-+				continue;
-+
-+			*brr = br;
-+			*srr = sr - 1;
-+			*cks = c;
+@@ -287,7 +289,7 @@ static int dw8250_probe_of(struct uart_port *p,
  		}
  	}
+ 	if (has_ucv)
+-		dw8250_setup_port(container_of(p, struct uart_8250_port, port));
++		dw8250_setup_port(up);
  
-@@ -1841,10 +1881,19 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (!of_property_read_u32(np, "reg-shift", &val))
+ 		p->regshift = val;
+diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
+index f4d3c47..c0533a5 100644
+--- a/drivers/tty/serial/8250/8250_fsl.c
++++ b/drivers/tty/serial/8250/8250_fsl.c
+@@ -28,8 +28,7 @@ int fsl8250_handle_irq(struct uart_port *port)
+ 	unsigned char lsr, orig_lsr;
+ 	unsigned long flags;
+ 	unsigned int iir;
+-	struct uart_8250_port *up =
+-		container_of(port, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	spin_lock_irqsave(&up->port.lock, flags);
+ 
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 33137b3..61830b1 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1581,8 +1581,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
+ 
+ static void kt_handle_break(struct uart_port *p)
  {
- 	struct sci_port *s = to_sci_port(port);
- 	struct plat_sci_reg *reg;
--	unsigned int baud, smr_val, max_baud, cks = 0;
-+	unsigned int baud, smr_val = 0, max_baud, cks = 0;
- 	int t = -1;
- 	unsigned int srr = 15;
- 
-+	if ((termios->c_cflag & CSIZE) == CS7)
-+		smr_val |= SCSMR_CHR;
-+	if (termios->c_cflag & PARENB)
-+		smr_val |= SCSMR_PE;
-+	if (termios->c_cflag & PARODD)
-+		smr_val |= SCSMR_PE | SCSMR_ODD;
-+	if (termios->c_cflag & CSTOPB)
-+		smr_val |= SCSMR_STOP;
-+
+-	struct uart_8250_port *up =
+-		container_of(p, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(p);
  	/*
- 	 * earlyprintk comes here early on with port->uartclk set to zero.
- 	 * the clock framework is not up and running at this point so here
-@@ -1858,8 +1907,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
- 	if (likely(baud && port->uartclk)) {
- 		if (s->cfg->type == PORT_HSCIF) {
-+			int frame_len = sci_baud_calc_frame_len(smr_val);
- 			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
--					    &cks);
-+					    &cks, frame_len);
- 		} else {
- 			t = sci_scbrr_calc(s, baud, port->uartclk);
- 			for (cks = 0; t >= 256 && cks <= 3; cks++)
-@@ -1871,16 +1921,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * On receipt of a BI, serial device in Intel ME (Intel
+ 	 * management engine) needs to have its fifos cleared for sane
+@@ -1593,8 +1592,7 @@ static void kt_handle_break(struct uart_port *p)
  
- 	sci_reset(port);
+ static unsigned int kt_serial_in(struct uart_port *p, int offset)
+ {
+-	struct uart_8250_port *up =
+-		container_of(p, struct uart_8250_port, port);
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned int val;
  
--	smr_val = serial_port_in(port, SCSMR) & 3;
--
--	if ((termios->c_cflag & CSIZE) == CS7)
--		smr_val |= SCSMR_CHR;
--	if (termios->c_cflag & PARENB)
--		smr_val |= SCSMR_PE;
--	if (termios->c_cflag & PARODD)
--		smr_val |= SCSMR_PE | SCSMR_ODD;
--	if (termios->c_cflag & CSTOPB)
--		smr_val |= SCSMR_STOP;
-+	smr_val |= serial_port_in(port, SCSMR) & 3;
+ 	/*
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index af47a8a..6ff0244 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -100,6 +100,8 @@ struct uart_8250_port {
+ 	void			(*dl_write)(struct uart_8250_port *, int);
+ };
  
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
++#define	up_to_u8250p(up)	container_of(up, struct uart_8250_port, port)
++
+ int serial8250_register_8250_port(struct uart_8250_port *);
+ void serial8250_unregister_port(int line);
+ void serial8250_suspend_port(int line);
 -- 
-2.0.0
+2.0.1
 
