@@ -1,47 +1,158 @@
 From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Subject: [PATCH 2/3] serial: sh-sci: Fix range check of bit-rate for HSCIF
-Date: Mon, 14 Jul 2014 16:09:59 +0900
-Message-ID: <1405321800-18114-2-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+Subject: [PATCH 3/3] serial: sh-sci: Add calculation recive margin for HSCIF
+Date: Mon, 14 Jul 2014 16:10:00 +0900
+Message-ID: <1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 References: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:60257 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752091AbaGNHKT (ORCPT
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:63154 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753140AbaGNHKW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jul 2014 03:10:19 -0400
-Received: by mail-pd0-f178.google.com with SMTP id r10so4681065pdi.23
-        for <linux-serial@vger.kernel.org>; Mon, 14 Jul 2014 00:10:18 -0700 (PDT)
+	Mon, 14 Jul 2014 03:10:22 -0400
+Received: by mail-pa0-f52.google.com with SMTP id eu11so4830323pac.25
+        for <linux-serial@vger.kernel.org>; Mon, 14 Jul 2014 00:10:22 -0700 (PDT)
 In-Reply-To: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-sh@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, horms+renesas@verge.net.au, magnus.damm@gmail.com, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-If bit-rate calculation result of HSCIF is expect 255 from 0,
-driver does not calculate error bit. However, we need to round
-the value to calculate error bit in the case of negative value.
-This rounds the value of bit-rate using clamp(), and bit-rate is the
-case of negative value, it enables the calculation of the error bit.
+When the error of the same bit rate is detected, we will need to select
+the recive margin is large. Current code holds the minimum error, it does
+not have to check the recive margin. This adds this calculation.
 
 Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 ---
- drivers/tty/serial/sh-sci.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/sh-sci.c | 77 ++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 59 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ce80137..7f571a8 100644
+index 7f571a8..d879c0c 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1798,8 +1798,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
- 			/* integerized formulas from HSCIF documentation */
- 			br = DIV_ROUND_CLOSEST(freq, (sr *
- 					      (1 << (2 * c + 1)) * bps)) - 1;
--			if (br < 0 || br > 255)
--				continue;
-+			br = clamp(br, 0, 255);
+@@ -1783,13 +1783,30 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ 	return ((freq + 16 * bps) / (32 * bps) - 1);
+ }
+ 
++/* calculate frame length from SMR */
++static int sci_baud_calc_frame_len(unsigned int smr_val)
++{
++	int len = 10;
++
++	if (smr_val & SCSMR_CHR)
++		len--;
++	if (smr_val & SCSMR_PE)
++		len++;
++	if (smr_val & SCSMR_STOP)
++		len++;
++
++	return len;
++}
++
++
+ /* calculate sample rate, BRR, and clock select for HSCIF */
+ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
+ 				int *brr, unsigned int *srr,
+-				unsigned int *cks)
++				unsigned int *cks, int frame_len)
+ {
+-	int sr, c, br, err;
++	int sr, c, br, err, recv_margin;
+ 	int min_err = 1000; /* 100% */
++	int recv_max_margin = 0;
+ 
+ 	/* Find the combination of sample rate and clock select with the
+ 	   smallest deviation from the desired baud rate. */
+@@ -1802,12 +1819,35 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
  			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
  					       (1 << (2 * c + 1)) / 1000)) -
  					       1000;
++			if (err < 0)
++				continue;
++
++			/* Calc recv margin
++			 * M: Receive margin (%)
++			 * N: Ratio of bit rate to clock (N = sampling rate)
++			 * D: Clock duty (D = 0 to 1.0)
++			 * L: Frame length (L = 9 to 12)
++			 * F: Absolute value of clock frequency deviation
++			 *
++			 *  M = |(0.5 - 1 / 2 * N) - ((L - 0.5) * F) -
++			 *      (|D - 0.5| / N * (1 + F))|
++			 *  NOTE: Usually, treat D for 0.5, F is 0 by this
++			 *        calculation.
++			 */
++			recv_margin = abs((500 -
++					DIV_ROUND_CLOSEST(1000, sr << 1)) / 10);
+ 			if (min_err > err) {
+ 				min_err = err;
+-				*brr = br;
+-				*srr = sr - 1;
+-				*cks = c;
+-			}
++				recv_max_margin = recv_margin;
++			} else if ((min_err == err) &&
++				   (recv_margin > recv_max_margin))
++				recv_max_margin = recv_margin;
++			else
++				continue;
++
++			*brr = br;
++			*srr = sr - 1;
++			*cks = c;
+ 		}
+ 	}
+ 
+@@ -1841,10 +1881,19 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ {
+ 	struct sci_port *s = to_sci_port(port);
+ 	struct plat_sci_reg *reg;
+-	unsigned int baud, smr_val, max_baud, cks = 0;
++	unsigned int baud, smr_val = 0, max_baud, cks = 0;
+ 	int t = -1;
+ 	unsigned int srr = 15;
+ 
++	if ((termios->c_cflag & CSIZE) == CS7)
++		smr_val |= SCSMR_CHR;
++	if (termios->c_cflag & PARENB)
++		smr_val |= SCSMR_PE;
++	if (termios->c_cflag & PARODD)
++		smr_val |= SCSMR_PE | SCSMR_ODD;
++	if (termios->c_cflag & CSTOPB)
++		smr_val |= SCSMR_STOP;
++
+ 	/*
+ 	 * earlyprintk comes here early on with port->uartclk set to zero.
+ 	 * the clock framework is not up and running at this point so here
+@@ -1858,8 +1907,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
+ 	if (likely(baud && port->uartclk)) {
+ 		if (s->cfg->type == PORT_HSCIF) {
++			int frame_len = sci_baud_calc_frame_len(smr_val);
+ 			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
+-					    &cks);
++					    &cks, frame_len);
+ 		} else {
+ 			t = sci_scbrr_calc(s, baud, port->uartclk);
+ 			for (cks = 0; t >= 256 && cks <= 3; cks++)
+@@ -1871,16 +1921,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	sci_reset(port);
+ 
+-	smr_val = serial_port_in(port, SCSMR) & 3;
+-
+-	if ((termios->c_cflag & CSIZE) == CS7)
+-		smr_val |= SCSMR_CHR;
+-	if (termios->c_cflag & PARENB)
+-		smr_val |= SCSMR_PE;
+-	if (termios->c_cflag & PARODD)
+-		smr_val |= SCSMR_PE | SCSMR_ODD;
+-	if (termios->c_cflag & CSTOPB)
+-		smr_val |= SCSMR_STOP;
++	smr_val |= serial_port_in(port, SCSMR) & 3;
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
 -- 
 2.0.0
 
