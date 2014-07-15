@@ -1,17 +1,17 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 2/6] clk: sunxi: sun6i-a31-apb0-gates:
- Add A23 APB0 support
-Date: Tue, 15 Jul 2014 08:53:38 +0200
-Message-ID: <20140715065338.GC3745@lukather>
+Subject: Re: [PATCH v4 6/6] ARM: sun8i: Add PRCM clock and reset
+ controller nodes to the DTSI
+Date: Tue, 15 Jul 2014 08:54:30 +0200
+Message-ID: <20140715065430.GD3745@lukather>
 References: <1404892479-12222-1-git-send-email-wens@csie.org>
- <1404892479-12222-3-git-send-email-wens@csie.org>
+ <1404892479-12222-7-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eRtJSFbw+EEWtPj3"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBSVASOPAKGQEB3BOW5A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="d01dLTUuW90fS44H"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBTFASOPAKGQEUXLMVZI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1404892479-12222-3-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1404892479-12222-7-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi
@@ -24,19 +24,19 @@ Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz 
 List-Id: linux-serial@vger.kernel.org
 
 
---eRtJSFbw+EEWtPj3
+--d01dLTUuW90fS44H
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 09, 2014 at 03:54:35PM +0800, Chen-Yu Tsai wrote:
-> This patch adds "allwinner,sun8i-a23-apb0-gates-clk", a A23 specific
-> compatible to the sun6i-a31-apb0-gates clock driver, along with the
-> gate bitmap.
+On Wed, Jul 09, 2014 at 03:54:39PM +0800, Chen-Yu Tsai wrote:
+> With sun8i PRCM support available, we can add the PRCM clock and
+> reset controller nodes to the DTSI. Also update R_UART's clock
+> phandle and add it's reset control phandle.
 >=20
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 
-Applied, thanks.
+Applied, thanks!
 
 Maxime
 
@@ -45,26 +45,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---eRtJSFbw+EEWtPj3
+--d01dLTUuW90fS44H
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJTxM/yAAoJEBx+YmzsjxAgVtUP/3ggDN/98xA+ezs3XaeKh00B
-WDYxcuDEdFB0X9QpHWYYwRhnBDeuWpVDyIqFyY4LOnX3x9SOe0ZwquYH87TxQeei
-dEQMaZshkEJVeqPPRJLWFSP0iqI5h5VW5k5Ba5GUzwyFYo5nQXaO6OFrNJ+NB5fz
-hvQxvCHlVPd/ySrybKx3v6LTXSFLLvueRbU9wiNNeRVfatIOJulVgESS/NYg6pr6
-3isnGBEwx28Uf3nNge/3kjt+9W6QZ9VQmtujgnMjiIce7ShihwDDU8xLvO4w9DNY
-0/LOFj9rM9UycLLcWEGVzyAt6wgK+KXkhTgsHqaS3Cu/jjYTLOcRaS6aLBlcr9iP
-vn72h3/VT6YDoTFUueOBls+f4RzBBvSHLlXALltxZ8I1u56dlU64QoWf4YvBl9P3
-pVxoJhYKFU69h0QzRDCzXRwKJBl34UG3UszBy9lKdwI0z0xJIGWTccC5ZT9rCEkb
-UsbG2Mq6h3mjabgojPde9mGiF5tgwJpQ3mIDa5s8kYGoPSY65fZv1ebJvr2Lqp/0
-+6TYE1UXEWuyq1bj+mkxVrJP0ptZVlYVpj7WPssu56EfsdOObWTeqwzOU5b/tbCa
-wj+CugzdWu+Ndext2JToCGcZrsM8B5ksJhl+1XTNs/85sy9SgvW4K2eb6mRDPbiI
-58nc8Q0O7EfYaVg1n3k5
-=hKCC
+iQIcBAEBAgAGBQJTxNAmAAoJEBx+YmzsjxAgdZUP/0GVy6iVbS06Xh/ZgUOLCk4v
+I+Fah2qzuc/Q+/s1ROgA29D7wBOzLkmW8lsZeTFFELTY7BQnxQJJqsmxOtIreLEz
+fMT5PkIVSG8nsypEny0UF/Hb0sZ0TCftv6CgDlDl7ypmA6p0bgpPtF+fKNaAIdxQ
+Z7WJ0EsZWYLATaqw7i+dtGczL96Sd0YFKVkpkxMDJyWkdhdiypQmPgqTzO/bPV4F
+kFO2UcYFQLgIRqLGH+LqFUAxZXICMoWBqJHva2TelyHf7HELYNT9ydL5P5ekRAYq
+1wRuZiBdDxM8Shuzn+6V/8TOWyUU11KEflbNDBYSWGPddzOaxA4X2QzmDPSzU5XU
+ORwtVD7GmUu3gj2ULeIyiIVDl3bFZtj+eJ1TQXJmOilruVSJvPHVnskJoUtmza14
+czPOPszCMioBTlHB9na200cQU1KaeLKr34RT8QZuh4OMfnRw7eneENgmq31qgT5C
+752sxYEU5b/SEqTs2dS1iC+2nmHEFk/RvyMYGN8Pqvzxb8L91j5K7HQPcUBc+DY2
+XvFypu3po/cob6BIT7OVl7rkKdCdNWCTL7GkmP834kOq4DUjHMJ2ehcXTUi02JLp
+/adNn4EsMUiDvZLEEkYaZ0FMz4LLUEA5yTgZ+Frb3iqBib+spGcUkcmrvuHc5L4d
+pEA5dLex/QLhkndkhV35
+=laAR
 -----END PGP SIGNATURE-----
 
---eRtJSFbw+EEWtPj3--
+--d01dLTUuW90fS44H--
