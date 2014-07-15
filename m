@@ -1,17 +1,17 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 1/6] clk: sunxi: sun6i-apb0-gates: use
- bitmaps for valid gate indicies
-Date: Tue, 15 Jul 2014 08:53:08 +0200
-Message-ID: <20140715065308.GB3745@lukather>
+Subject: Re: [PATCH v4 2/6] clk: sunxi: sun6i-a31-apb0-gates:
+ Add A23 APB0 support
+Date: Tue, 15 Jul 2014 08:53:38 +0200
+Message-ID: <20140715065338.GC3745@lukather>
 References: <1404892479-12222-1-git-send-email-wens@csie.org>
- <1404892479-12222-2-git-send-email-wens@csie.org>
+ <1404892479-12222-3-git-send-email-wens@csie.org>
 Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GRPZ8SYKNexpdSJ7"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBSNASOPAKGQE7U6ZGAI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="eRtJSFbw+EEWtPj3"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBSVASOPAKGQEB3BOW5A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1404892479-12222-2-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+In-Reply-To: <1404892479-12222-3-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <http://groups.google.com/group/linux-sunxi
@@ -24,27 +24,20 @@ Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz 
 List-Id: linux-serial@vger.kernel.org
 
 
---GRPZ8SYKNexpdSJ7
+--eRtJSFbw+EEWtPj3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On Wed, Jul 09, 2014 at 03:54:34PM +0800, Chen-Yu Tsai wrote:
-> sun6i-apb0-gates uses the "clock-indices" DT property to indicate
-> valid gate bits or holes in between. However, the rest of sunxi
-> clock drivers use bitmaps for this purpose.
->=20
-> This patch modifies sun6i-apb0-gates to use bitmaps as well, to be
-> consistent with the sunxi platform. Also add the missing call to
-> clk_register_clkdev, so system clock lookups will work.
+On Wed, Jul 09, 2014 at 03:54:35PM +0800, Chen-Yu Tsai wrote:
+> This patch adds "allwinner,sun8i-a23-apb0-gates-clk", a A23 specific
+> compatible to the sun6i-a31-apb0-gates clock driver, along with the
+> gate bitmap.
 >=20
 > Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 
-Applied, and fixed the typo in the title.
+Applied, thanks.
 
-Thanks!
 Maxime
 
 --=20
@@ -52,26 +45,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---GRPZ8SYKNexpdSJ7
+--eRtJSFbw+EEWtPj3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJTxM/UAAoJEBx+YmzsjxAg7FkP/i14S5yrPSNZMyCrQKZydavq
-0HI8Xoa2f9yO00KFy01tYAIzx4N2+Q/iAKJG4gumgATIDQEg/uK0r4bGFG6kBCKd
-h2UBU78KfKJKdKqlkQeF48cexOhCgYtMiuizSQUS6iBQ9koy/u9Q7QbzjEo1XwcD
-fKs7bRomwFrf38DW1jqApcqBlOMDeR/ahNJO+Ra2CK6NY5qAFo/DKpaNCWscyHQU
-tObgc+JLfDydWamiOZTezTWk1RPEc9at3I36PDFpKaKfn6qcrQ2AYtOw2ao981xk
-E2I5GDhMIHZ/uxFXKsBQpnSxrBy9zOWPqJPl0NqKiEUZyfWjd/NkV3q4wo4dCrJp
-uBGKvkwl8ZC7W0QFAeZVg6n4IjQQ8kHPC5vGqvosYWyjJ7n8jeq3clFkBlKxmtkK
-2Kd2ZiaeINzbobfux6AAElGt4TdYXSFXbbN0S0O1ngWd6gwvhqFqpMnEDhTnd7Rc
-P+sPiZbuI5hHtEGru0WB31vG5Azuz45TdSYr6xHr58HxMRC9VlqJuDTa9gdwaeOO
-5JcQ9uaqu5yN2kstxgFuKrFLE72t76s2t2iyfJGswJmSMbeSjekPYmvEltq3UsM6
-X/vN9B8n19Tl93gaaUIpg6X85xZl78Ic+7GqRjMAvwM9R5h06ptHf75ZzyLRpQHU
-jgpiKBxYvBthhuXi8jpI
-=vCMH
+iQIcBAEBAgAGBQJTxM/yAAoJEBx+YmzsjxAgVtUP/3ggDN/98xA+ezs3XaeKh00B
+WDYxcuDEdFB0X9QpHWYYwRhnBDeuWpVDyIqFyY4LOnX3x9SOe0ZwquYH87TxQeei
+dEQMaZshkEJVeqPPRJLWFSP0iqI5h5VW5k5Ba5GUzwyFYo5nQXaO6OFrNJ+NB5fz
+hvQxvCHlVPd/ySrybKx3v6LTXSFLLvueRbU9wiNNeRVfatIOJulVgESS/NYg6pr6
+3isnGBEwx28Uf3nNge/3kjt+9W6QZ9VQmtujgnMjiIce7ShihwDDU8xLvO4w9DNY
+0/LOFj9rM9UycLLcWEGVzyAt6wgK+KXkhTgsHqaS3Cu/jjYTLOcRaS6aLBlcr9iP
+vn72h3/VT6YDoTFUueOBls+f4RzBBvSHLlXALltxZ8I1u56dlU64QoWf4YvBl9P3
+pVxoJhYKFU69h0QzRDCzXRwKJBl34UG3UszBy9lKdwI0z0xJIGWTccC5ZT9rCEkb
+UsbG2Mq6h3mjabgojPde9mGiF5tgwJpQ3mIDa5s8kYGoPSY65fZv1ebJvr2Lqp/0
++6TYE1UXEWuyq1bj+mkxVrJP0ptZVlYVpj7WPssu56EfsdOObWTeqwzOU5b/tbCa
+wj+CugzdWu+Ndext2JToCGcZrsM8B5ksJhl+1XTNs/85sy9SgvW4K2eb6mRDPbiI
+58nc8Q0O7EfYaVg1n3k5
+=hKCC
 -----END PGP SIGNATURE-----
 
---GRPZ8SYKNexpdSJ7--
+--eRtJSFbw+EEWtPj3--
