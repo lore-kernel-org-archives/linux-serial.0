@@ -1,89 +1,70 @@
-From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 5/6] serial: 8250_dw: Add support for
- deferred probing
-Date: Tue, 15 Jul 2014 09:00:33 +0200
-Message-ID: <20140715070033.GF3745@lukather>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 3/6] mfd: sun6i-prcm: Add support for Allwinner A23
+ PRCM
+Date: Tue, 15 Jul 2014 08:11:30 +0100
+Message-ID: <20140715071130.GA4282@lee--X1>
 References: <1404892479-12222-1-git-send-email-wens@csie.org>
- <1404892479-12222-6-git-send-email-wens@csie.org>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+ <1404892479-12222-4-git-send-email-wens@csie.org>
+ <20140710093707.GC11948@lee--X1>
+ <20140715065515.GE3745@lukather>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QXO0/MSS4VvK6f+D"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBJNFSOPAKGQEV7JM6MQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ig0-f170.google.com ([209.85.213.170]:46311 "EHLO
+	mail-ig0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757843AbaGOHLh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 15 Jul 2014 03:11:37 -0400
+Received: by mail-ig0-f170.google.com with SMTP id h3so2524862igd.5
+        for <linux-serial@vger.kernel.org>; Tue, 15 Jul 2014 00:11:37 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1404892479-12222-6-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <http://groups.google.com/group/linux-sunxi/subscribe>
-To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20140715065515.GE3745@lukather>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Chen-Yu Tsai <wens@csie.org>, Samuel Ortiz <sameo@linux.intel.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Emilio Lopez <emilio@elopez.com.ar>, Mike Turquette <mturquette@linaro.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-sunxi@googlegroups.com
 
+On Tue, 15 Jul 2014, Maxime Ripard wrote:
 
---QXO0/MSS4VvK6f+D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jul 09, 2014 at 03:54:38PM +0800, Chen-Yu Tsai wrote:
-> The 8250_dw driver fails to probe if the specified clock isn't
-> registered at probe time. Even if a clock frequency is given,
-> the required clock might be gated because it wasn't properly
-> enabled.
+> Hi Lee,
 >=20
-> This happened to me when the device is registered through DT,
-> and the clock was part of an MFD, the PRCM found on A31 and A23
-> SoCs. Unlike core clocks that are registered with OF_CLK_DECLARE,
-> which happen almost immediately after the kernel starts, the
-> clocks are registered as sub-devices of the PRCM MFD platform
-> device. Even though devices are registered in the order they are
-> found in the DT, the drivers are registered in a different,
-> arbitrary order. It is possible that the 8250_dw driver is
-> registered, and thus associated with the device and probed, before
-> the clock driver is registered and probed.
+> On Thu, Jul 10, 2014 at 10:37:07AM +0100, Lee Jones wrote:
+> > On Wed, 09 Jul 2014, Chen-Yu Tsai wrote:
+> >=20
+> > > The Allwinner A23 SoC has a PRCM unit like the previous A31 SoC.
+> > > The differences are the AR100 clock can no longer be modified,
+> > > the APB0 clock has different divisors, and some clock gates are
+> > > gone.
+> > >=20
+> > > This patch adds a compatible with a modified subdevice list for
+> > > the A23.
+> > >=20
+> > > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+> > > Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+> > > ---
+> > >  .../devicetree/bindings/mfd/sun6i-prcm.txt         |  2 +-
+> > >  drivers/mfd/sun6i-prcm.c                           | 30 ++++++++=
+++++++++++++++
+> > >  2 files changed, 31 insertions(+), 1 deletion(-)
+> >=20
+> > Acked-by: Lee Jones <lee.jones@linaro.org>
 >=20
-> 8250_dw then reports unable to get the clock, and fails. Without
-> a working console, the kernel panics.
->=20
-> This patch adds support for deferred probe handling for the clock
-> and reset controller.
->=20
-> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> We don't have any dependency on this driver, so it would be simpler i=
+f
+> you could just take it through your tree I guess.
 
-Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Verll well, applied thanks.
 
-Thanks!
-Maxime
+
 
 --=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---QXO0/MSS4VvK6f+D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTxNGRAAoJEBx+YmzsjxAgPw8QAIN0tPNzUK9p+PH0UZ14T813
-g6BCLztYWJueJ/tCsa3ZepX/JljL3kMFHp0SSOydckg6U6grIcj09nLomiCo/kK1
-jhyoTpzBWu1qlDJF9ljURdfNcMj90R+LJmjXyg8ri7LOuLqcVNOkUk8iwGVPtAmx
-Py1zteSEX4nuEXaCl34P9JdiFxbGfGZ2q7z0/6qTpDci2ATWoqg8THnrCh7+HcSW
-as55hkJC5aMwrc3z3tGCkpf0ekNiCyhRv8ir4ULE06oc8NrPXt+PfWkwXv186J/s
-TewFmhQ1Pt+GqgQTysAJIta7ViUlFRvShOJlvFwhQsOuZH5GILvQzDOnTabzw9nc
-KVAKQoKrefKgd4IsDxK+X2P9XlPopCYKq55yXHPL8p4H/6xbravG3gIo8pHtz1bl
-+Drlsmrc9AcTx1kXDXedQchl49r33bGyaVchVnVDdHBQpZnm64x00gpj22ilxQoQ
-rFW+uf8J/Yy/PEH73hUHOklWk+Q1ga1MHS90bHth3AE3VCMm3rldjBlNBRW/pR1a
-CvYJnakKKwrTbsOamaZVshL/kfsuNkjPp6/LzOVIQmKwWCuw8NAEdrikZNIjB2+Q
-uoHpyft6vOJacAgn7037SU5J7Zs765LTmb/A+S5bipyNRIMNTcXZSDgDfQXD9HYe
-Ac+ftTj2TApLNDJYpiCx
-=HtMF
------END PGP SIGNATURE-----
-
---QXO0/MSS4VvK6f+D--
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
