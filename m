@@ -1,311 +1,77 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2] serial: 8250: introduce up_to_u8250p() helper
-Date: Mon, 14 Jul 2014 14:26:14 +0300
-Message-ID: <1405337174-18918-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:56628 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753680AbaGNL0T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 14 Jul 2014 07:26:19 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] clk: sunxi: sun6i-apb0-gates: use
+ bitmaps for valid gate indicies
+Date: Tue, 15 Jul 2014 08:53:08 +0200
+Message-ID: <20140715065308.GB3745@lukather>
+References: <1404892479-12222-1-git-send-email-wens@csie.org>
+ <1404892479-12222-2-git-send-email-wens@csie.org>
+Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GRPZ8SYKNexpdSJ7"
+Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBSNASOPAKGQE7U6ZGAI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1404892479-12222-2-git-send-email-wens-jdAy2FN1RRM@public.gmane.org>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <http://groups.google.com/group/linux-sunxi/subscribe>
+To: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Emilio Lopez <emilio-0Z03zUJReD5OxF6Tv1QG9Q@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-It helps to cast struct uart_port to struct uart_8250_port at runtime.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-Since v1:
-- use inline function instead of a macro
- drivers/tty/serial/8250/8250_core.c | 57 +++++++++++++------------------------
- drivers/tty/serial/8250/8250_dw.c   |  8 ++++--
- drivers/tty/serial/8250/8250_fsl.c  |  3 +-
- drivers/tty/serial/8250/8250_pci.c  |  6 ++--
- include/linux/serial_8250.h         |  5 ++++
- 5 files changed, 32 insertions(+), 47 deletions(-)
+--GRPZ8SYKNexpdSJ7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 7a91c6d..0da0145 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -439,8 +439,7 @@ static int exar_handle_irq(struct uart_port *port);
- 
- static void set_io_from_upio(struct uart_port *p)
- {
--	struct uart_8250_port *up =
--		container_of(p, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(p);
- 
- 	up->dl_read = default_serial_dl_read;
- 	up->dl_write = default_serial_dl_write;
-@@ -1277,8 +1276,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 
- static void serial8250_stop_tx(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	__stop_tx(up);
- 
-@@ -1293,8 +1291,7 @@ static void serial8250_stop_tx(struct uart_port *port)
- 
- static void serial8250_start_tx(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	if (up->dma && !serial8250_tx_dma(up)) {
- 		return;
-@@ -1322,8 +1319,7 @@ static void serial8250_start_tx(struct uart_port *port)
- 
- static void serial8250_stop_rx(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	up->ier &= ~UART_IER_RLSI;
- 	up->port.read_status_mask &= ~UART_LSR_DR;
-@@ -1332,8 +1328,7 @@ static void serial8250_stop_rx(struct uart_port *port)
- 
- static void serial8250_enable_ms(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	/* no MSR capabilities */
- 	if (up->bugs & UART_BUG_NOMSR)
-@@ -1499,8 +1494,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- {
- 	unsigned char status;
- 	unsigned long flags;
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	int dma_err = 0;
- 
- 	if (iir & UART_IIR_NO_INT)
-@@ -1785,8 +1779,7 @@ static void serial8250_backup_timeout(unsigned long data)
- 
- static unsigned int serial8250_tx_empty(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
- 	unsigned int lsr;
- 
-@@ -1800,8 +1793,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 
- static unsigned int serial8250_get_mctrl(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int status;
- 	unsigned int ret;
- 
-@@ -1821,8 +1813,7 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
- 
- static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned char mcr = 0;
- 
- 	if (mctrl & TIOCM_RTS)
-@@ -1843,8 +1834,7 @@ static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- static void serial8250_break_ctl(struct uart_port *port, int break_state)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
-@@ -1911,8 +1901,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 			 unsigned char c)
- {
- 	unsigned int ier;
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -1941,8 +1930,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 
- static int serial8250_startup(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
- 	unsigned char lsr, iir;
- 	int retval;
-@@ -2194,8 +2182,7 @@ dont_test_tx_en:
- 
- static void serial8250_shutdown(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
- 
- 	/*
-@@ -2268,8 +2255,7 @@ void
- serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		          struct ktermios *old)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned char cval, fcr = 0;
- 	unsigned long flags;
- 	unsigned int baud, quot;
-@@ -2498,8 +2484,7 @@ serial8250_set_ldisc(struct uart_port *port, int new)
- void serial8250_do_pm(struct uart_port *port, unsigned int state,
- 		      unsigned int oldstate)
- {
--	struct uart_8250_port *p =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *p = up_to_u8250p(port);
- 
- 	serial8250_set_sleep(p, state != 0);
- }
-@@ -2630,8 +2615,7 @@ static void serial8250_release_rsa_resource(struct uart_8250_port *up)
- 
- static void serial8250_release_port(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	serial8250_release_std_resource(up);
- 	if (port->type == PORT_RSA)
-@@ -2640,8 +2624,7 @@ static void serial8250_release_port(struct uart_port *port)
- 
- static int serial8250_request_port(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	int ret;
- 
- 	if (port->type == PORT_8250_CIR)
-@@ -2659,8 +2642,7 @@ static int serial8250_request_port(struct uart_port *port)
- 
- static void serial8250_config_port(struct uart_port *port, int flags)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	int probeflags = PROBE_ANY;
- 	int ret;
- 
-@@ -2859,8 +2841,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- static void serial8250_console_putchar(struct uart_port *port, int ch)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	wait_for_xmitr(up, UART_LSR_THRE);
- 	serial_port_out(port, UART_TX, ch);
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index c531fa4..affdcb1 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -84,8 +84,9 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
- 
- static void dw8250_force_idle(struct uart_port *p)
- {
--	serial8250_clear_and_reinit_fifos(container_of
--					  (p, struct uart_8250_port, port));
-+	struct uart_8250_port *up = up_to_u8250p(p);
-+
-+	serial8250_clear_and_reinit_fifos(up);
- 	(void)p->serial_in(p, UART_RX);
- }
- 
-@@ -255,6 +256,7 @@ static int dw8250_probe_of(struct uart_port *p,
- 			   struct dw8250_data *data)
- {
- 	struct device_node	*np = p->dev->of_node;
-+	struct uart_8250_port *up = up_to_u8250p(p);
- 	u32			val;
- 	bool has_ucv = true;
- 
-@@ -287,7 +289,7 @@ static int dw8250_probe_of(struct uart_port *p,
- 		}
- 	}
- 	if (has_ucv)
--		dw8250_setup_port(container_of(p, struct uart_8250_port, port));
-+		dw8250_setup_port(up);
- 
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift = val;
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-index f4d3c47..c0533a5 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -28,8 +28,7 @@ int fsl8250_handle_irq(struct uart_port *port)
- 	unsigned char lsr, orig_lsr;
- 	unsigned long flags;
- 	unsigned int iir;
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	spin_lock_irqsave(&up->port.lock, flags);
- 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 33137b3..61830b1 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1581,8 +1581,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 
- static void kt_handle_break(struct uart_port *p)
- {
--	struct uart_8250_port *up =
--		container_of(p, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(p);
- 	/*
- 	 * On receipt of a BI, serial device in Intel ME (Intel
- 	 * management engine) needs to have its fifos cleared for sane
-@@ -1593,8 +1592,7 @@ static void kt_handle_break(struct uart_port *p)
- 
- static unsigned int kt_serial_in(struct uart_port *p, int offset)
- {
--	struct uart_8250_port *up =
--		container_of(p, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(p);
- 	unsigned int val;
- 
- 	/*
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index af47a8a..730ab4b 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -100,6 +100,11 @@ struct uart_8250_port {
- 	void			(*dl_write)(struct uart_8250_port *, int);
- };
- 
-+static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
-+{
-+	return container_of(up, struct uart_8250_port, port);
-+}
-+
- int serial8250_register_8250_port(struct uart_8250_port *);
- void serial8250_unregister_port(int line);
- void serial8250_suspend_port(int line);
--- 
-2.0.1
+Hi,
 
+On Wed, Jul 09, 2014 at 03:54:34PM +0800, Chen-Yu Tsai wrote:
+> sun6i-apb0-gates uses the "clock-indices" DT property to indicate
+> valid gate bits or holes in between. However, the rest of sunxi
+> clock drivers use bitmaps for this purpose.
+>=20
+> This patch modifies sun6i-apb0-gates to use bitmaps as well, to be
+> consistent with the sunxi platform. Also add the missing call to
+> clk_register_clkdev, so system clock lookups will work.
+>=20
+> Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+
+Applied, and fixed the typo in the title.
+
+Thanks!
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--GRPZ8SYKNexpdSJ7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJTxM/UAAoJEBx+YmzsjxAg7FkP/i14S5yrPSNZMyCrQKZydavq
+0HI8Xoa2f9yO00KFy01tYAIzx4N2+Q/iAKJG4gumgATIDQEg/uK0r4bGFG6kBCKd
+h2UBU78KfKJKdKqlkQeF48cexOhCgYtMiuizSQUS6iBQ9koy/u9Q7QbzjEo1XwcD
+fKs7bRomwFrf38DW1jqApcqBlOMDeR/ahNJO+Ra2CK6NY5qAFo/DKpaNCWscyHQU
+tObgc+JLfDydWamiOZTezTWk1RPEc9at3I36PDFpKaKfn6qcrQ2AYtOw2ao981xk
+E2I5GDhMIHZ/uxFXKsBQpnSxrBy9zOWPqJPl0NqKiEUZyfWjd/NkV3q4wo4dCrJp
+uBGKvkwl8ZC7W0QFAeZVg6n4IjQQ8kHPC5vGqvosYWyjJ7n8jeq3clFkBlKxmtkK
+2Kd2ZiaeINzbobfux6AAElGt4TdYXSFXbbN0S0O1ngWd6gwvhqFqpMnEDhTnd7Rc
+P+sPiZbuI5hHtEGru0WB31vG5Azuz45TdSYr6xHr58HxMRC9VlqJuDTa9gdwaeOO
+5JcQ9uaqu5yN2kstxgFuKrFLE72t76s2t2iyfJGswJmSMbeSjekPYmvEltq3UsM6
+X/vN9B8n19Tl93gaaUIpg6X85xZl78Ic+7GqRjMAvwM9R5h06ptHf75ZzyLRpQHU
+jgpiKBxYvBthhuXi8jpI
+=vCMH
+-----END PGP SIGNATURE-----
+
+--GRPZ8SYKNexpdSJ7--
