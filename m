@@ -1,103 +1,37 @@
-From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Subject: [PATCH V9 1/2] Serial: allow port drivers to have a default
- attribute group
-Date: Wed, 16 Jul 2014 01:19:34 +0000
-Message-ID: <20140716011934.31474.60154.stgit@yuno-kbuild.novalocal>
-References: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 1/6] tty: serial: 8250 core: provide a function to export
+ uart_8250_port
+Date: Wed, 16 Jul 2014 10:22:26 +0200
+Message-ID: <53C63642.7080208@linutronix.de>
+References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>	<1404928177-26554-2-git-send-email-bigeasy@linutronix.de> <CAMFK0gtLHrYzWipw=9rp-cUZrKkzBAn_iXSetn016F7zvuZE0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>
-Cc: Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:53875 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751672AbaGPIWe (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 16 Jul 2014 04:22:34 -0400
+In-Reply-To: <CAMFK0gtLHrYzWipw=9rp-cUZrKkzBAn_iXSetn016F7zvuZE0w@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Olivier Galibert <galibert@pobox.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On 07/10/2014 04:30 PM, Olivier Galibert wrote:
+> On Wed, Jul 9, 2014 at 7:49 PM, Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+>> + * The lock assumption made here is none because runtime-pm suspend/resume
+>> + * callbacks should not be invoked there is any operation performed on the port.
+> 
+> I think there's a missing "if"?
 
-Some serial drivers (like 8250), want to add sysfs files.  We need to do
-so in a race-free way, so allow any port to be able to specify an
-attribute group that should be added at device creation time.
+Thanks, fixed up.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
----
- drivers/tty/serial/serial_core.c |   24 +++++++++++++++++-------
- include/linux/serial_core.h      |    2 ++
- 2 files changed, 19 insertions(+), 7 deletions(-)
+> Best,
+> 
+>   OG.
+> 
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index fbf6c5a..4af764c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2563,12 +2563,6 @@ static const struct attribute_group tty_dev_attr_group = {
- 	.attrs = tty_dev_attrs,
- 	};
- 
--static const struct attribute_group *tty_dev_attr_groups[] = {
--	&tty_dev_attr_group,
--	NULL
--	};
--
--
- /**
-  *	uart_add_one_port - attach a driver-defined port structure
-  *	@drv: pointer to the uart low level driver structure for this port
-@@ -2585,6 +2579,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	struct tty_port *port;
- 	int ret = 0;
- 	struct device *tty_dev;
-+	int num_groups;
- 
- 	BUG_ON(in_interrupt());
- 
-@@ -2618,12 +2613,26 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 	uart_configure_port(drv, state, uport);
- 
-+	num_groups = 2;
-+	if (uport->attr_group)
-+		num_groups++;
-+
-+	uport->tty_groups = kcalloc(num_groups, sizeof(**uport->tty_groups),
-+				    GFP_KERNEL);
-+	if (!uport->tty_groups) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+	uport->tty_groups[0] = &tty_dev_attr_group;
-+	if (uport->attr_group)
-+		uport->tty_groups[1] = uport->attr_group;
-+
- 	/*
- 	 * Register the port whether it's detected or not.  This allows
- 	 * setserial to be used to alter this port's parameters.
- 	 */
- 	tty_dev = tty_port_register_device_attr(port, drv->tty_driver,
--			uport->line, uport->dev, port, tty_dev_attr_groups);
-+			uport->line, uport->dev, port, uport->tty_groups);
- 	if (likely(!IS_ERR(tty_dev))) {
- 		device_set_wakeup_capable(tty_dev, 1);
- 	} else {
-@@ -2702,6 +2711,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	 */
- 	if (uport->type != PORT_UNKNOWN)
- 		uport->ops->release_port(uport);
-+	kfree(uport->tty_groups);
- 
- 	/*
- 	 * Indicate that there isn't a port here anymore.
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 5bbb809..cf3a1e7 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -199,6 +199,8 @@ struct uart_port {
- 	unsigned char		suspended;
- 	unsigned char		irq_wake;
- 	unsigned char		unused[2];
-+	struct attribute_group	*attr_group;		/* port specific attributes */
-+	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
- 	void			*private_data;		/* generic platform data pointer */
- };
- 
+Sebastian
