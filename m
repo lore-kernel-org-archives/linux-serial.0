@@ -1,105 +1,76 @@
-From: Felipe Balbi <balbi@ti.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Subject: Re: [PATCH 4/5] tty: serial: 8250 core: add runtime pm
-Date: Wed, 16 Jul 2014 10:16:04 -0500
-Message-ID: <20140716151604.GG1365@saruman.home>
-References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de>
- <1405521903-5877-5-git-send-email-bigeasy@linutronix.de>
-Reply-To: <balbi@ti.com>
+Date: Wed, 16 Jul 2014 17:54:56 +0200
+Message-ID: <53C6A050.2050409@linutronix.de>
+References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de> <1405521903-5877-5-git-send-email-bigeasy@linutronix.de> <20140716151604.GG1365@saruman.home>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/Zw+/jwnNHcBRYYu"
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:55985 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934419AbaGPPQq (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:57533 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932974AbaGPPzC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 16 Jul 2014 11:16:46 -0400
-Content-Disposition: inline
-In-Reply-To: <1405521903-5877-5-git-send-email-bigeasy@linutronix.de>
+	Wed, 16 Jul 2014 11:55:02 -0400
+In-Reply-To: <20140716151604.GG1365@saruman.home>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, mika.westerberg@linux.intel.com
+To: balbi@ti.com
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, mika.westerberg@linux.intel.com
 
---/Zw+/jwnNHcBRYYu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 07/16/2014 05:16 PM, Felipe Balbi wrote:
+> Hi,
 
-Hi,
+Hi Felipe,
 
-On Wed, Jul 16, 2014 at 04:45:02PM +0200, Sebastian Andrzej Siewior wrote:
-> @@ -1280,6 +1285,7 @@ static void serial8250_stop_tx(struct uart_port *po=
-rt)
->  	struct uart_8250_port *up =3D
->  		container_of(port, struct uart_8250_port, port);
-> =20
-> +	pm_runtime_get_sync(port->dev);
->  	__stop_tx(up);
-> =20
->  	/*
-> @@ -1289,6 +1295,8 @@ static void serial8250_stop_tx(struct uart_port *po=
-rt)
->  		up->acr |=3D UART_ACR_TXDIS;
->  		serial_icr_write(up, UART_ACR, up->acr);
->  	}
-> +	pm_runtime_mark_last_busy(port->dev);
-> +	pm_runtime_put_autosuspend(port->dev);
->  }
-> =20
->  static void serial8250_start_tx(struct uart_port *port)
-> @@ -1296,8 +1304,9 @@ static void serial8250_start_tx(struct uart_port *p=
-ort)
->  	struct uart_8250_port *up =3D
->  		container_of(port, struct uart_8250_port, port);
-> =20
-> +	pm_runtime_get_sync(port->dev);
->  	if (up->dma && !serial8250_tx_dma(up)) {
-> -		return;
-> +		goto out;
->  	} else if (!(up->ier & UART_IER_THRI)) {
->  		up->ier |=3D UART_IER_THRI;
->  		serial_port_out(port, UART_IER, up->ier);
-> @@ -1318,6 +1327,9 @@ static void serial8250_start_tx(struct uart_port *p=
-ort)
->  		up->acr &=3D ~UART_ACR_TXDIS;
->  		serial_icr_write(up, UART_ACR, up->acr);
->  	}
-> +out:
-> +	pm_runtime_mark_last_busy(port->dev);
-> +	pm_runtime_put_autosuspend(port->dev);
+> On Wed, Jul 16, 2014 at 04:45:02PM +0200, Sebastian Andrzej Siewior
+> wrote:
+>> @@ -1280,6 +1285,7 @@ static void serial8250_stop_tx(struct
+>> uart_port *port) struct uart_8250_port *up = container_of(port,
+>> struct uart_8250_port, port);
+>> 
+>> +	pm_runtime_get_sync(port->dev); __stop_tx(up);
+>> 
+>> /* @@ -1289,6 +1295,8 @@ static void serial8250_stop_tx(struct
+>> uart_port *port) up->acr |= UART_ACR_TXDIS; serial_icr_write(up,
+>> UART_ACR, up->acr); } +	pm_runtime_mark_last_busy(port->dev); +
+>> pm_runtime_put_autosuspend(port->dev); }
+>> 
+>> static void serial8250_start_tx(struct uart_port *port) @@
+>> -1296,8 +1304,9 @@ static void serial8250_start_tx(struct
+>> uart_port *port) struct uart_8250_port *up = container_of(port,
+>> struct uart_8250_port, port);
+>> 
+>> +	pm_runtime_get_sync(port->dev); if (up->dma &&
+>> !serial8250_tx_dma(up)) { -		return; +		goto out; } else if
+>> (!(up->ier & UART_IER_THRI)) { up->ier |= UART_IER_THRI; 
+>> serial_port_out(port, UART_IER, up->ier); @@ -1318,6 +1327,9 @@
+>> static void serial8250_start_tx(struct uart_port *port) up->acr
+>> &= ~UART_ACR_TXDIS; serial_icr_write(up, UART_ACR, up->acr); } 
+>> +out: +	pm_runtime_mark_last_busy(port->dev); +
+>> pm_runtime_put_autosuspend(port->dev);
+> 
+> I wonder if you should get_sync() on start_tx() and only 
+> put_autosuspend() at stop_tx(). I guess the outcome would be
+> largely the same, no ?
 
-I wonder if you should get_sync() on start_tx() and only
-put_autosuspend() at stop_tx(). I guess the outcome would be largely the
-same, no ?
+I just opened minicom on ttyS0 and gave a try. start_tx() was invoked
+each time I pressed a key (sent a character). I haven't seen stop_tx()
+even after after I closed minicom. I guess stop_tx() is invoked if you
+switch half-duplex communication.
 
-well, other than in probe and other functions which need to make sure
-clocks are on, but it seems unnecessary to enable/disable in every
-function.
+> well, other than in probe and other functions which need to make
+> sure clocks are on, but it seems unnecessary to enable/disable in
+> every function.
 
---=20
-balbi
+What do you have in mind? Do you plan to let the uart on while the
+minicom is attached but is doing nothing? In that case, ->startup() and
+->shutdown() should be enough.
+If you want to put the uart off while the port is open but idle then
+you should cover the callbacks as they are independent of each other.
+You could receive three ->set_termios() even without a single
+->start_tx(). And as far as I understand the whole situation, you need
+to make sure the UART is "up" while you touch a single register not
+only sending characters, right?
 
---/Zw+/jwnNHcBRYYu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJTxpc0AAoJEIaOsuA1yqREf6EP/RarlB1fjSzBBmlZ0sdMbB5E
-aSv+G7oGrWL0XV+9cbaw4Gf3lkv21agRLup+v4CSmpKWGawEsjrQKKfT/+GuZUbO
-IqNT6pvyafj3Z0SQI82LYPtesK4nxKIDyiAe+sj8zhH0CeLLcLPX7dt91it35npw
-hV68WxDzdmqb4rH2MYSoGCKaw2CJ7QfpqdybOtUsDgoqnnp2RnjpgNNG2MIg3j0n
-xGGeDMzJh8mU/r/GJrDblIStJjvXe49klhSEdjD3R9re2gTrekNc0xRBv+aHAx3w
-OCGIfKIvaVOgwGW9CTemaJtzSA9ByirXOOinW0XtjoLDKUs5kciYj9zddyxyowDZ
-bi2GfGOY+jWjMkqzWu8ItjQA4qvFajcZomrfnlYTzusE9IhvEFpYzzLiQyupOjt4
-cJ/Hqggvv613aqah7pg5qCBq4lmK0AN8Ga04bAMmjMBSjhf8awuTgqFuBQcDpYv2
-9gtRh6W+OyHwsjLKzm+Y1d/0n7fteIYsEf70tRbVff6rIDAfzU1kK5xK2nJYaIqS
-OiyxY17mtAP4SbS83lnTnMu3gyTEe2Hh7Fx0LVVNLG/RJ+KkVMZfgQSdnxg3fXku
-wOGfRuUsD28sKxeKIXHhoW+7PGE/VJcr9XXhQjgHvUtQ2/gGjkoKYauLDrI2eWZO
-tB3OCR3jLWuHhz0GpZxH
-=SOgw
------END PGP SIGNATURE-----
-
---/Zw+/jwnNHcBRYYu--
+Sebastian
