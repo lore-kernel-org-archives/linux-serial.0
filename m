@@ -1,77 +1,121 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] serial: altera_jtaguart: Adpot uart_console_write()
-Date: Tue, 15 Jul 2014 16:52:45 +0100
-Message-ID: <53C54E4D.70904@linaro.org>
-References: <1405438008-27020-1-git-send-email-tklauser@distanz.ch>
+From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Subject: [ PATCH V9 0/2] serial/uart/8250: Introduce tunable RX trigger I/F
+Date: Wed, 16 Jul 2014 01:19:31 +0000
+Message-ID: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:59539 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752103AbaGOPxD (ORCPT
+Received: from mail7.hitachi.co.jp ([133.145.228.42]:44923 "EHLO
+	mail7.hitachi.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751882AbaGPBTi (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 15 Jul 2014 11:53:03 -0400
-Received: by mail-wi0-f171.google.com with SMTP id hi2so4651521wib.4
-        for <linux-serial@vger.kernel.org>; Tue, 15 Jul 2014 08:53:01 -0700 (PDT)
-In-Reply-To: <1405438008-27020-1-git-send-email-tklauser@distanz.ch>
+	Tue, 15 Jul 2014 21:19:38 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Warren <swarren@nvidia.com>
+Cc: Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On 15/07/14 16:26, Tobias Klauser wrote:
-> Follow commit 2970b7f5ea3c ("serial: altera: Adopt
-> uart_console_write()") and don't open code the LF to LFCR conversion in
-> altera_jtaguart either. Use uart_console_write() instead.
+Hi Greg,
 
-Cool. I just wish I'd remembered to check the other altera drivers myself.
+This patch set introduces tunable RX interrupt trigger I/F for 8250 serials.
+I used Greg's patch(*1) as 1st patch in this version, and applied 2nd patch
+of previous version.
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Would you review this patch set?
+
+Thanks!
+
+Note:
+I cleaned up Greg's patch as follows:
+ - Delete extra line break
+ - Use kcalloc instead of kmalloc
+ - sizeof(struct attribute_group *) => sizeof(**uport->tty_groups)
+
+*1: https://lkml.org/lkml/2014/7/12/177
+
+<Change log>
+
+Changes in V9:
+ [2/2]
+ -  Use attr_group instead of dev_spec_attr_group of uart_port structure
+
+Changes in V8:
+ - Split V7's patch up into 2 patches
+
+Changes in V7:
+ - Add Documentation
+ - Change I/F name from rx_int_trig to rx_trig_bytes because the name
+   rx_int_trig is hard to understand how users specify the value
+
+Changes in V6:
+ - Move FCR_RX_TRIG_* definition in 8250.h to include/uapi/linux/serial_reg.h,
+   rename those to UART_FCR_R_TRIG_*, and use UART_FCR_TRIGGER_MASK to
+   UART_FCR_R_TRIG_BITS()
+ - Change following function names:
+    convert_fcr2val() => fcr_get_rxtrig_bytes()
+    convert_val2rxtrig() => bytes_to_fcr_rxtrig()
+ - Fix typo in serial8250_do_set_termios()
+ - Delete the verbose error message pr_info() in bytes_to_fcr_rxtrig()
+ - Rename *rx_int_trig/rx_trig* to *rxtrig* for several functions or variables
+   (but UI remains rx_int_trig)
+ - Change the meaningless variable name 'val' to 'bytes' following functions:
+    fcr_get_rxtrig_bytes(), bytes_to_fcr_rxtrig(), do_set_rxtrig(),
+    do_serial8250_set_rxtrig(), and serial8250_set_attr_rxtrig()
+ - Use up->fcr in order to get rxtrig_bytes instead of rx_trig_raw in
+   fcr_get_rxtrig_bytes()
+ - Use conf_type->rxtrig_bytes[0] instead of switch statement for support check
+   in register_dev_spec_attr_grp()
+ - Delete the checking whether a user changed FCR or not when minimum buffer
+   is needed in serial8250_do_set_termios()
+
+Changes in V5.1:
+ - Fix FCR_RX_TRIG_MAX_STATE definition
+
+Changes in V5:
+ - Support Tegra, 16650V2, 16654, and 16750
+ - Store default FCR value to up->fcr when the port is first created
+ - Add rx_trig_byte[] in uart_config[] for each device and use rx_trig_byte[]
+   in convert_fcr2val() and convert_val2rxtrig()
+
+Changes in V4:
+ - Introduce fifo_bug flag in uart_8250_port structure
+   This is enabled only when parity is enabled and UART_BUG_PARITY is enabled
+   for up->bugs. If this flag is enabled, user cannot set RX trigger.
+ - Return -EOPNOTSUPP when it does not support device at convert_fcr2val() and
+   at convert_val2rxtrig()
+ - Set the nearest lower RX trigger when users input a meaningless value at
+   convert_val2rxtrig()
+ - Check whether p->fcr is existing at serial8250_clear_and_reinit_fifos()
+ - Set fcr = up->fcr in the begging of serial8250_do_set_termios()
+
+Changes in V3:
+ - Change I/F from ioctl(2) to sysfs(rx_int_trig)
+
+Changed in V2:
+ - Use _IOW for TIOCSFIFORTRIG definition
+ - Pass the interrupt trigger value itself
+
+---
+
+Greg Kroah-Hartman (1):
+      Serial: allow port drivers to have a default attribute group
+
+Yoshihiro YUNOMAE (1):
+      serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers
 
 
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-> ---
->  drivers/tty/serial/altera_jtaguart.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-> index e7d1aaf..afe2e75 100644
-> --- a/drivers/tty/serial/altera_jtaguart.c
-> +++ b/drivers/tty/serial/altera_jtaguart.c
-> @@ -304,7 +304,7 @@ static struct altera_jtaguart altera_jtaguart_ports[ALTERA_JTAGUART_MAXPORTS];
->  #if defined(CONFIG_SERIAL_ALTERA_JTAGUART_CONSOLE)
->  
->  #if defined(CONFIG_SERIAL_ALTERA_JTAGUART_CONSOLE_BYPASS)
-> -static void altera_jtaguart_console_putc(struct console *co, const char c)
-> +static void altera_jtaguart_console_putc(struct console *co, int c)
->  {
->  	struct uart_port *port = &(altera_jtaguart_ports + co->index)->port;
->  	unsigned long status;
-> @@ -325,7 +325,7 @@ static void altera_jtaguart_console_putc(struct console *co, const char c)
->  	spin_unlock_irqrestore(&port->lock, flags);
->  }
->  #else
-> -static void altera_jtaguart_console_putc(struct console *co, const char c)
-> +static void altera_jtaguart_console_putc(struct console *co, int c)
->  {
->  	struct uart_port *port = &(altera_jtaguart_ports + co->index)->port;
->  	unsigned long flags;
-> @@ -345,11 +345,9 @@ static void altera_jtaguart_console_putc(struct console *co, const char c)
->  static void altera_jtaguart_console_write(struct console *co, const char *s,
->  					  unsigned int count)
->  {
-> -	for (; count; count--, s++) {
-> -		altera_jtaguart_console_putc(co, *s);
-> -		if (*s == '\n')
-> -			altera_jtaguart_console_putc(co, '\r');
-> -	}
-> +	struct uart_port *port = &(altera_jtaguart_ports + co->index)->port;
-> +
-> +	uart_console_write(port, s, count, altera_jtaguart_console_putc);
->  }
->  
->  static int __init altera_jtaguart_console_setup(struct console *co,
-> 
+ Documentation/ABI/testing/sysfs-tty |   16 +++
+ drivers/tty/serial/8250/8250.h      |    2 
+ drivers/tty/serial/8250/8250_core.c |  173 ++++++++++++++++++++++++++++++++---
+ drivers/tty/serial/serial_core.c    |   24 +++--
+ include/linux/serial_8250.h         |    2 
+ include/linux/serial_core.h         |    2 
+ include/uapi/linux/serial_reg.h     |    5 +
+ 7 files changed, 202 insertions(+), 22 deletions(-)
 
+-- 
+Yoshihiro YUNOMAE
+Software Platform Research Dept. Linux Technology Center
+Hitachi, Ltd., Yokohama Research Laboratory
+E-mail: yoshihiro.yunomae.ez@hitachi.com
