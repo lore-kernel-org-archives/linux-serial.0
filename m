@@ -1,60 +1,58 @@
-From: Tony Lindgren <tony@atomide.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Subject: Re: [PATCH 5/5] tty: serial: Add 8250-core based omap driver
-Date: Thu, 17 Jul 2014 01:12:32 -0700
-Message-ID: <20140717081232.GH18374@atomide.com>
-References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de>
- <1405521903-5877-6-git-send-email-bigeasy@linutronix.de>
- <20140717070859.GD18374@atomide.com>
- <20140717074219.GA29193@linutronix.de>
+Date: Thu, 17 Jul 2014 12:06:20 +0200
+Message-ID: <53C7A01C.50107@linutronix.de>
+References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de> <1405521903-5877-6-git-send-email-bigeasy@linutronix.de> <20140717070859.GD18374@atomide.com> <20140717074219.GA29193@linutronix.de> <20140717081232.GH18374@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:19463 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754635AbaGQIN5 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jul 2014 04:13:57 -0400
-Content-Disposition: inline
-In-Reply-To: <20140717074219.GA29193@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140717081232.GH18374@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
 Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+List-Id: linux-serial@vger.kernel.org
 
-* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140717 00:44]:
-> * Tony Lindgren | 2014-07-17 00:09:00 [-0700]:
-> 
-> >Seems to boot a bit further now with output from serial console
-> >initially, then I'm getting the following error again that's probably
-> >related to clocks not enabled when the registers are accessed:
-> 
-> It is (mostly) the same thing as before. We have additionally 
-> omap_8250_startup() in the backtrace but it is the same thing.
-> So you  say I miss a clock? Looking through serial8250_do_startup() I see:
-> - pm_runtime_get_sync(port->dev); which should get the clocks up
-> - serial8250_clear_fifos() which does a write at address + 8. Seems to 
->   work. 
-> - serial_port_in(port, UART_LSR); does a read at address + 0x14, seems 
->   to work.
-> - serial_port_in(port, UART_RX); does a read at address + 0. This is 
->   probably the bad one.
+On 07/17/2014 10:12 AM, Tony Lindgren wrote:
+> Hmm it could be that it works for a while because the clocks are on
+> from the bootloader and pm_runtime calls won't do anything. This
+> could happen if the interconnect data based on the ti,hwmods entry
+> is not getting matched to the new driver. This gets initialized when
+> the device entry gets created in omap_device_build_from_dt().
+>=20
+> Or maybe something now affects the clock aliases? It seems that we
+> are still missing the clocks entries in the .dtsi files, see the
+> mappings with $ git grep uart drivers/clk/ti/
 
-Hmm it could be that it works for a while because the clocks are on
-from the bootloader and pm_runtime calls won't do anything. This
-could happen if the interconnect data based on the ti,hwmods entry
-is not getting matched to the new driver. This gets initialized when
-the device entry gets created in omap_device_build_from_dt().
+I've been looking for something completely different while I noticed
+this:
 
-Or maybe something now affects the clock aliases? It seems that we
-are still missing the clocks entries in the .dtsi files, see the
-mappings with $ git grep uart drivers/clk/ti/
- 
-> Now comparing with omap-serial I noticed that I do a 32bit access
-> instead a 16bit.
-> Could you please try the following hack:
+in drivers/tty/serial/omap-serial.c
+| static struct platform_driver serial_omap_driver =3D {
+|         .driver         =3D {
+|                 .name   =3D DRIVER_NAME,
+|         },
+| };
+|
 
-No change with that :) 
- 
-Regards,
+and DRIVER_NAME should come from include/linux/platform_data/serial-oma=
+p.h
+Looking further, I've found arch/arm/mach-omap2/serial.c:
+| void __init omap_serial_init_port(struct omap_board_data *bdata,
+|                         struct omap_uart_port_info *info)
+| {
+|         char *name
+=85
+|	name =3D DRIVER_NAME;
+=85
+|	pdev =3D omap_device_build(name, uart->num, oh, pdata, pdata_size);
+=85
+|
 
-Tony
+Would this explain it?
+
+> Regards,
+>=20
+> Tony
+
+Sebastian
