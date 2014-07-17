@@ -1,60 +1,82 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: tcflow(TCOON/TCOOFF) vs. received XON/XOFF characters
-Date: Thu, 17 Jul 2014 14:03:17 +0000 (UTC)
-Message-ID: <lq8l35$cfa$1@ger.gmane.org>
-References: <lq6c9q$isi$1@ger.gmane.org> <53C7CB1B.3010804@hurleysoftware.com>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 5/5] tty: serial: Add 8250-core based omap driver
+Date: Thu, 17 Jul 2014 09:54:30 -0500
+Message-ID: <20140717145430.GF10459@saruman.home>
+References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de>
+ <1405521903-5877-6-git-send-email-bigeasy@linutronix.de>
+Reply-To: <balbi@ti.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cpvLTH7QU4gwfq3S"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:48127 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755170AbaGQODh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jul 2014 10:03:37 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <lnx-linux-serial@m.gmane.org>)
-	id 1X7mHW-0003Bl-1E
-	for linux-serial@vger.kernel.org; Thu, 17 Jul 2014 16:03:34 +0200
-Received: from dsl.comtrol.com ([64.122.56.22])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2014 16:03:34 +0200
-Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2014 16:03:34 +0200
+Received: from devils.ext.ti.com ([198.47.26.153]:57740 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932865AbaGQOzK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 17 Jul 2014 10:55:10 -0400
+Content-Disposition: inline
+In-Reply-To: <1405521903-5877-6-git-send-email-bigeasy@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On 2014-07-17, Peter Hurley <peter@hurleysoftware.com> wrote:
+--cpvLTH7QU4gwfq3S
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> tcflow(TCOxxx) flow control is independent of IXON flow control.
-> The union of both flow states determines if the tty can output;
->
->                       IXON = true        IXON = false
->                    START       STOP
-> tcflow(TCOON)      on         off          on
-> tcflow(TCOOFF)     off        off          off
+Hi,
 
-Thanks, that's pretty much what I had decided based on tests and
-browsing the source code.
+On Wed, Jul 16, 2014 at 04:45:03PM +0200, Sebastian Andrzej Siewior wrote:
+> +static int omap_8250_startup(struct uart_port *port)
+> +{
+> +	struct uart_8250_port *up =3D
+> +		container_of(port, struct uart_8250_port, port);
+> +	struct omap8250_priv *priv =3D port->private_data;
+> +
+> +	int ret;
+> +
+> +	if (priv->wakeirq) {
+> +		ret =3D request_irq(priv->wakeirq, omap_wake_irq,
+> +				port->irqflags, "wakeup irq", port);
+> +		if (ret)
+> +			return ret;
+> +		disable_irq(priv->wakeirq);
+> +	}
+> +
+> +	ret =3D serial8250_do_startup(port);
+> +	if (ret)
+> +		goto err;
+> +
+> +	pm_runtime_get_sync(port->dev);
 
-Just to confirm:
+should this pm_runtime_get_sync() be placed above
+serial8250_do_startup() call ?
 
-  tcflow(TCION/TCIOFF): overrides the "input" side of xon/xoff flow
-                        control and forces the sending of XON/XOFF.
+--=20
+balbi
 
-  tcflow(TCOON/TCOOFF): does not have anything to do with the "output"
-                        side of xon/xoff flow control, but controls
-                        something completely orthogonal.
+--cpvLTH7QU4gwfq3S
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-That rather counter-intuitive (not that counter-intuitive is exactly a
-novel thing when it comes to Unix serial ports).
-                        
-That rasies this question: what does an application use to control the
-"output" side of xon/xoff flow control?  There is a Windows API for
-doing that, and I get asked how to do it in Linux.  I always tell them
-they can't.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
--- 
-Grant Edwards               grant.b.edwards        Yow! Oh, I get it!!
-                                  at               "The BEACH goes on", huh,
-                              gmail.com            SONNY??
+iQIcBAEBAgAGBQJTx+OmAAoJEIaOsuA1yqREXvUP/2yCby14pHxqFB5UG35KRJrW
+hKSm6gOymTnc/6Mj5CLs0/gSLqbwUfa4DaHAlAFfVLqVtHc5LTgxvkYqwMSs0xyM
+RFSt3jDAYerQmX/DR2o6NQc2HdKZ2atlHxvTi8Eh5FMvymBaXp0o+9KamZ/HKDv3
+XBMTZFpiq/gXdY5Bxv4CWe3tqymb8TKXHI1Qwo9bN7dcEt/sATIf3YGAEllJ+NTU
+/kzMs/n87ToxvPSnSnC23iBrfMjZH8tHRs/xVKQuBIJdl5neyrtm8opOCdchbx3H
+xpkfI1ppEnIjv82WwvbpIwFdrSlxJrPQ/TVcWKVLkpTfcyB0fFOFCabdyFK+gKzX
+04/geMGV3CQO0wJbJAkX+zvPi5aSyisea+q8gMitiJpcHwjr/B/aVXab1G5xUuos
+MfKt+B7CuA+4WXJ4glar643FVvLCbOoTYdn0cqLhdGMo1mzYnZWI+iP0ay7F3sHR
+Lb/mx2KddwwuSRciZysH+n5fSTGKxO1X+SqHWV4okGLAasDCJu3rizTqKDd8cMpQ
+BYaYFHSjmEWGPzvtgU0/cLrN51QsilD5eFZs4MnzfR8HnnQYd9UHFidj36gA9lP2
+MUsGUzvOJ4uTqygV0PQraUyqFg9lY4TxqZiZ+0kFiitKcH2FXoHnGfdc5CMmHkpl
+wLW3LMhzmZvFrMgPnK8c
+=l83T
+-----END PGP SIGNATURE-----
 
+--cpvLTH7QU4gwfq3S--
