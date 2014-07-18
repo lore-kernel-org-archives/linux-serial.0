@@ -1,95 +1,41 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: tcflow(TCOON/TCOOFF) vs. received XON/XOFF characters
-Date: Thu, 17 Jul 2014 14:18:32 -0400
-Message-ID: <53C81378.60606@hurleysoftware.com>
-References: <lq6c9q$isi$1@ger.gmane.org> <53C7CB1B.3010804@hurleysoftware.com> <lq8l35$cfa$1@ger.gmane.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [ PATCH V9 0/2] serial/uart/8250: Introduce tunable RX trigger
+ I/F
+Date: Thu, 17 Jul 2014 18:20:32 -0700
+Message-ID: <20140718012032.GA29919@kroah.com>
+References: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:56945 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751339AbaGQSSe (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37345 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753184AbaGRBUd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jul 2014 14:18:34 -0400
-In-Reply-To: <lq8l35$cfa$1@ger.gmane.org>
+	Thu, 17 Jul 2014 21:20:33 -0400
+Content-Disposition: inline
+In-Reply-To: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>, linux-serial@vger.kernel.org
+To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
 
-On 07/17/2014 10:03 AM, Grant Edwards wrote:
-> On 2014-07-17, Peter Hurley <peter@hurleysoftware.com> wrote:
->
->> tcflow(TCOxxx) flow control is independent of IXON flow control.
->> The union of both flow states determines if the tty can output;
->>
->>                        IXON = true        IXON = false
->>                     START       STOP
->> tcflow(TCOON)      on         off          on
->> tcflow(TCOOFF)     off        off          off
->
-> Thanks, that's pretty much what I had decided based on tests and
-> browsing the source code.
->
-> Just to confirm:
->
->    tcflow(TCION/TCIOFF): overrides the "input" side of xon/xoff flow
->                          control and forces the sending of XON/XOFF.
->
->    tcflow(TCOON/TCOOFF): does not have anything to do with the "output"
->                          side of xon/xoff flow control, but controls
->                          something completely orthogonal.
->
-> That rather counter-intuitive (not that counter-intuitive is exactly a
-> novel thing when it comes to Unix serial ports).
->
-> That rasies this question: what does an application use to control the
-> "output" side of xon/xoff flow control?  There is a Windows API for
-> doing that, and I get asked how to do it in Linux.  I always tell them
-> they can't.
+On Wed, Jul 16, 2014 at 01:19:31AM +0000, Yoshihiro YUNOMAE wrote:
+> Hi Greg,
+> 
+> This patch set introduces tunable RX interrupt trigger I/F for 8250 serials.
+> I used Greg's patch(*1) as 1st patch in this version, and applied 2nd patch
+> of previous version.
+> 
+> Would you review this patch set?
 
-I didn't explain this properly.
+Looks good.
 
-Both tcflow(TCOxxx) and receiving START/STOP when IXON == true control
-the output flow.
+> Note:
+> I cleaned up Greg's patch as follows:
+>  - Delete extra line break
+>  - Use kcalloc instead of kmalloc
+>  - sizeof(struct attribute_group *) => sizeof(**uport->tty_groups)
 
-For example,
+thanks, for doing that, nice job :)
 
-     ttyS0 = open("/dev/ttyS0", O_RDWR);
-
-     /* Disable ttyS0 output */
-     tcflow(ttyS0, TCOOFF);
-
-     /* writes to ttyS0 will now be buffered but not sent */
-
-     /* remote terminal sends START which is received, however sending is
-      * still disabled by tcflow()
-      */
-
-     /* Enable ttyS0 output */
-     tcflow(ttyS0, TCOON);
-
-     /* ttyS0 output enabled, previously buffered writes are now sent */
-
-     /* remote terminal sends STOP which is received and ttyS0 output
-      * is now disabled (writes to ttyS0 will be buffered but not sent)
-      */
-
-     tcflow(ttyS0, TCOON);  <--- has no effect because flow was not previously
-                                 disabled by tcflow()
-
-     /* remote terminal sends START which is received and ttyS0 output
-      * is now enabled, previously buffered writes are now sent
-      */
-
-
-I did gloss over one special case:  tcflow(TCOON) will re-enable output
-_even if the remote terminal last sent STOP_ but only if output is also
-disabled by tcflow(TCOOFF).
-
-To me, the separate state tracking of tcflow() and START/STOP makes sense.
-
-Regards,
-Peter Hurley
-
-
+greg k-h
