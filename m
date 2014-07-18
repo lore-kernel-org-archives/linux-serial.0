@@ -1,41 +1,77 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [ PATCH V9 0/2] serial/uart/8250: Introduce tunable RX trigger
- I/F
-Date: Thu, 17 Jul 2014 18:20:32 -0700
-Message-ID: <20140718012032.GA29919@kroah.com>
-References: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 5/5] tty: serial: Add 8250-core based omap driver
+Date: Thu, 17 Jul 2014 23:24:56 -0700
+Message-ID: <20140718062456.GJ18374@atomide.com>
+References: <1405521903-5877-1-git-send-email-bigeasy@linutronix.de>
+ <1405521903-5877-6-git-send-email-bigeasy@linutronix.de>
+ <20140717070859.GD18374@atomide.com>
+ <20140717074219.GA29193@linutronix.de>
+ <20140717081232.GH18374@atomide.com>
+ <53C7A01C.50107@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37345 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753184AbaGRBUd (ORCPT
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:31945 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754154AbaGRG0X (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 17 Jul 2014 21:20:33 -0400
+	Fri, 18 Jul 2014 02:26:23 -0400
 Content-Disposition: inline
-In-Reply-To: <20140716011931.31474.68825.stgit@yuno-kbuild.novalocal>
+In-Reply-To: <53C7A01C.50107@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Cc: Stephen Warren <swarren@nvidia.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jingoo Han <jg1.han@samsung.com>, Hans-Christian Koch <hc.koch@scheerkoch.de>, linux-kernel@vger.kernel.org, Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com, Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>, Aaron Sierra <asierra@xes-inc.com>, Jiri Slaby <jslaby@suse.cz>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Wed, Jul 16, 2014 at 01:19:31AM +0000, Yoshihiro YUNOMAE wrote:
-> Hi Greg,
-> 
-> This patch set introduces tunable RX interrupt trigger I/F for 8250 serials.
-> I used Greg's patch(*1) as 1st patch in this version, and applied 2nd patch
-> of previous version.
-> 
-> Would you review this patch set?
+* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140717 03:09]:
+> On 07/17/2014 10:12 AM, Tony Lindgren wrote:
+> > Hmm it could be that it works for a while because the clocks are on
+> > from the bootloader and pm_runtime calls won't do anything. This
+> > could happen if the interconnect data based on the ti,hwmods entry
+> > is not getting matched to the new driver. This gets initialized whe=
+n
+> > the device entry gets created in omap_device_build_from_dt().
+> >=20
+> > Or maybe something now affects the clock aliases? It seems that we
+> > are still missing the clocks entries in the .dtsi files, see the
+> > mappings with $ git grep uart drivers/clk/ti/
+>=20
+> I've been looking for something completely different while I noticed
+> this:
+>=20
+> in drivers/tty/serial/omap-serial.c
+> | static struct platform_driver serial_omap_driver =3D {
+> |         .driver         =3D {
+> |                 .name   =3D DRIVER_NAME,
+> |         },
+> | };
+> |
+>=20
+> and DRIVER_NAME should come from include/linux/platform_data/serial-o=
+map.h
+> Looking further, I've found arch/arm/mach-omap2/serial.c:
+> | void __init omap_serial_init_port(struct omap_board_data *bdata,
+> |                         struct omap_uart_port_info *info)
+> | {
+> |         char *name
+> =E2=80=A6
+> |	name =3D DRIVER_NAME;
+> =E2=80=A6
+> |	pdev =3D omap_device_build(name, uart->num, oh, pdata, pdata_size);
+> =E2=80=A6
+> |
+>=20
+> Would this explain it?
 
-Looks good.
+That would explain it for legacy booting, but not for device tree
+based booting. I can try to debug it further on Monday.
 
-> Note:
-> I cleaned up Greg's patch as follows:
->  - Delete extra line break
->  - Use kcalloc instead of kmalloc
->  - sizeof(struct attribute_group *) => sizeof(**uport->tty_groups)
+Regards,
 
-thanks, for doing that, nice job :)
-
-greg k-h
+Tony
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
