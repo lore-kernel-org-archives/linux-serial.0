@@ -1,33 +1,32 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] serial/core: Fix too big allocation for attribute member
-Date: Wed, 23 Jul 2014 09:10:17 +0100
-Message-ID: <53CF6DE9.3090505@linaro.org>
-References: <20140723060622.2647.96316.stgit@yuno-kbuild.novalocal>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:48346 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757092AbaGWIKi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jul 2014 04:10:38 -0400
-Received: by mail-wg0-f49.google.com with SMTP id k14so765933wgh.20
-        for <linux-serial@vger.kernel.org>; Wed, 23 Jul 2014 01:10:37 -0700 (PDT)
-In-Reply-To: <20140723060622.2647.96316.stgit@yuno-kbuild.novalocal>
-Sender: linux-serial-owner@vger.kernel.org
+From: Kiran Padwal <kiran.padwal21@gmail.com>
+Subject: [PATCH] tty: serial: msm: Make of_device_id array const
+Date: Wed, 23 Jul 2014 15:56:26 +0530
+Message-ID: <1406111186-16627-1-git-send-email-kiran.padwal@smartplayin.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: davidb@codeaurora.org, gregkh@linuxfoundation.org
+Cc: dwalker@fifo99.com, bryanh@codeaurora.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, kiran.padwal@smartplayin.com
 List-Id: linux-serial@vger.kernel.org
-To: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dan Carpenter <dan.carpenter@oracle.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, yrl.pp-manager.tt@hitachi.com
 
-On 23/07/14 07:06, Yoshihiro YUNOMAE wrote:
-> Current code allocates too much data for tty_groups member of uart_port struct,
-> so fix it.
-> 
-> Signed-off-by: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Dan Carpenter <dan.carpenter@oracle.com>
+Make of_device_id array const, because all OF functions handle it as const.
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
+---
+ drivers/tty/serial/msm_serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-(using linux-next tree for context).
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 6baf2ad..f4a85b8 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1073,7 +1073,7 @@ static int msm_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static struct of_device_id msm_match_table[] = {
++static const struct of_device_id msm_match_table[] = {
+ 	{ .compatible = "qcom,msm-uart" },
+ 	{ .compatible = "qcom,msm-uartdm" },
+ 	{}
+-- 
+1.7.9.5
