@@ -1,68 +1,137 @@
-From: Alex Elder <elder@linaro.org>
-Subject: Re: dw8250_set_termios() questions
-Date: Wed, 23 Jul 2014 08:34:11 -0500
-Message-ID: <53CFB9D3.8030403@linaro.org>
-References: <53BFDF22.1020302@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: [PATCH v5 2/2] serial: 8250_dw: Add support for deferred probing
+Date: Wed, 23 Jul 2014 23:33:07 +0800
+Message-ID: <1406129587-24668-3-git-send-email-wens@csie.org>
+References: <1406129587-24668-1-git-send-email-wens@csie.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ig0-f182.google.com ([209.85.213.182]:48563 "EHLO
-	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751689AbaGWNeN (ORCPT
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:36457 "EHLO
+	smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757640AbaGWPdN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jul 2014 09:34:13 -0400
-Received: by mail-ig0-f182.google.com with SMTP id c1so1424980igq.3
-        for <linux-serial@vger.kernel.org>; Wed, 23 Jul 2014 06:34:12 -0700 (PDT)
-In-Reply-To: <53BFDF22.1020302@linaro.org>
+	Wed, 23 Jul 2014 11:33:13 -0400
+In-Reply-To: <1406129587-24668-1-git-send-email-wens@csie.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: heikki.krogerus@linux.intel.com
-Cc: Greg KH <gregkh@linuxfoundation.org>, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Heikki, ping.
+The 8250_dw driver fails to probe if the specified clock isn't
+registered at probe time. Even if a clock frequency is given,
+the required clock might be gated because it wasn't properly
+enabled.
 
-On 07/11/2014 07:57 AM, Alex Elder wrote:
-> Heikki, I have not been a subscriber of the linux-serial
-> mailing list and didn't see this patch go by:
->     serial: 8250_dw: clock rate handling for all ACPI platforms
->     http://www.spinics.net/lists/linux-serial/msg12861.html
-> 
-> I had been working on doing something very similar for some
-> Broadcom device tree based devices and it might have been
-> helpful for me to have seen it.  What I ended up with was
-> *very* similar to what you did.  Here is the last version
-> of the patch I posted:
->     https://lkml.org/lkml/2014/7/1/323
-> 
-> There *are* some differences, and I'd like to inquire about
-> them before I simply use the code you have for my purpose.
-> 
-> These first two relate to whether I can use your
-> code as-is:
-> - Why do you skip setting the clock if a null "old"
->   pointer is supplied?
-> - I don't believe it's necessary to surround the clock
->   rate change with clk_disable_unprepare() and
->   clk_prepare_enable().  Do you believe otherwise?
-> 
-> This one is addressed to how your code is used now:
-> - Alan Cox had this question about my patch, and
->   it seems to apply to your code as well:
->     "This assumes an arbitarily configurable clock,
->     which is not I think the usual case."
->     https://lkml.org/lkml/2014/6/28/91
->   His point is that the clock, if adjustable, may
->   not support a rate that produces an acceptable
->   signal rate.  Put another way, there may be a
->   better frequency than what the clock framework
->   selects that (in combination with the UART
->   divisor latch registers) produces the best--or
->   even a good--signal.  Is there any chance any
->   ACPI platforms will suffer this problem?
-> 
-> Thanks.
-> 
-> 					-Alex
-> 
+This happened to me when the device is registered through DT,
+and the clock was part of an MFD, the PRCM found on A31 and A23
+SoCs. Unlike core clocks that are registered with OF_CLK_DECLARE,
+which happen almost immediately after the kernel starts, the
+clocks are registered as sub-devices of the PRCM MFD platform
+device. Even though devices are registered in the order they are
+found in the DT, the drivers are registered in a different,
+arbitrary order. It is possible that the 8250_dw driver is
+registered, and thus associated with the device and probed, before
+the clock driver is registered and probed.
+
+8250_dw then reports unable to get the clock, and fails. Without
+a working console, the kernel panics.
+
+This patch adds support for deferred probe handling for the clock
+and reset controller. It also fixes the cleanup path if
+serial8250_register_8250_port fails.
+
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+---
+ drivers/tty/serial/8250/8250_dw.c | 41 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 34 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 501db2f..4db7987 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -365,8 +365,10 @@ static int dw8250_probe(struct platform_device *pdev)
+ 
+ 	data->usr_reg = DW_UART_USR;
+ 	data->clk = devm_clk_get(&pdev->dev, "baudclk");
+-	if (IS_ERR(data->clk))
++	if (IS_ERR(data->clk) && PTR_ERR(data->clk) != -EPROBE_DEFER)
+ 		data->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
+ 	if (!IS_ERR(data->clk)) {
+ 		err = clk_prepare_enable(data->clk);
+ 		if (err)
+@@ -377,15 +379,23 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	data->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
++	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER) {
++		err = -EPROBE_DEFER;
++		goto err_clk;
++	}
+ 	if (!IS_ERR(data->pclk)) {
+ 		err = clk_prepare_enable(data->pclk);
+ 		if (err) {
+ 			dev_err(&pdev->dev, "could not enable apb_pclk\n");
+-			return err;
++			goto err_clk;
+ 		}
+ 	}
+ 
+ 	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
++	if (IS_ERR(data->rst) && PTR_ERR(data->rst) == -EPROBE_DEFER) {
++		err = -EPROBE_DEFER;
++		goto err_pclk;
++	}
+ 	if (!IS_ERR(data->rst))
+ 		reset_control_deassert(data->rst);
+ 
+@@ -403,18 +413,21 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	if (pdev->dev.of_node) {
+ 		err = dw8250_probe_of(&uart.port, data);
+ 		if (err)
+-			return err;
++			goto err_reset;
+ 	} else if (ACPI_HANDLE(&pdev->dev)) {
+ 		err = dw8250_probe_acpi(&uart, data);
+ 		if (err)
+-			return err;
++			goto err_reset;
+ 	} else {
+-		return -ENODEV;
++		err = -ENODEV;
++		goto err_reset;
+ 	}
+ 
+ 	data->line = serial8250_register_8250_port(&uart);
+-	if (data->line < 0)
+-		return data->line;
++	if (data->line < 0) {
++		err = data->line;
++		goto err_reset;
++	}
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+@@ -422,6 +435,20 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 
+ 	return 0;
++
++err_reset:
++	if (!IS_ERR(data->rst))
++		reset_control_assert(data->rst);
++
++err_pclk:
++	if (!IS_ERR(data->pclk))
++		clk_disable_unprepare(data->pclk);
++
++err_clk:
++	if (!IS_ERR(data->clk))
++		clk_disable_unprepare(data->clk);
++
++	return err;
+ }
+ 
+ static int dw8250_remove(struct platform_device *pdev)
+-- 
+2.0.1
 
