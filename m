@@ -1,137 +1,63 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH v5 2/2] serial: 8250_dw: Add support for deferred probing
-Date: Wed, 23 Jul 2014 23:33:07 +0800
-Message-ID: <1406129587-24668-3-git-send-email-wens@csie.org>
-References: <1406129587-24668-1-git-send-email-wens@csie.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:36457 "EHLO
-	smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757640AbaGWPdN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 23 Jul 2014 11:33:13 -0400
-In-Reply-To: <1406129587-24668-1-git-send-email-wens@csie.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Subject: [PATCH v5 0/2] serial: 8250_dw: optional reset control and deferred probe support
+Date: Wed, 23 Jul 2014 23:33:05 +0800
+Message-ID: <1406129587-24668-1-git-send-email-wens@csie.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The 8250_dw driver fails to probe if the specified clock isn't
-registered at probe time. Even if a clock frequency is given,
-the required clock might be gated because it wasn't properly
-enabled.
+Hi Greg,
 
-This happened to me when the device is registered through DT,
-and the clock was part of an MFD, the PRCM found on A31 and A23
-SoCs. Unlike core clocks that are registered with OF_CLK_DECLARE,
-which happen almost immediately after the kernel starts, the
-clocks are registered as sub-devices of the PRCM MFD platform
-device. Even though devices are registered in the order they are
-found in the DT, the drivers are registered in a different,
-arbitrary order. It is possible that the 8250_dw driver is
-registered, and thus associated with the device and probed, before
-the clock driver is registered and probed.
+This series adds optional reset control and deferred probing support
+to 8250_dw. These are required to support the UARTs on sun6i/sun8i.
+They were originally part of my sun8i PRCM series. The other parts
+of that series have been merged already. It would be really nice
+if we could get these 2 in as well.
 
-8250_dw then reports unable to get the clock, and fails. Without
-a working console, the kernel panics.
+Patch 1 adds optional reset control support to the 8250_dw, which
+is used by sun6i and sun8i platforms. Till now, this wasn't needed
+from a working standpoint, as the bootloader de-asserts the reset
+control on the console UART for us. However, during the development
+of the sun8i patches, I noticed other UARTs wouldn't work. Also the
+new sun6i A31 Hummingbird has multiple UARTs available, which would
+require this patch.
 
-This patch adds support for deferred probe handling for the clock
-and reset controller. It also fixes the cleanup path if
-serial8250_register_8250_port fails.
+Patch 2 adds deferred probing to 8250_dw. In my case, even though
+the clocks and reset controller "devices" were registered before
+the UART, the 8250_dw driver binded with the UART devices before
+the clocks and resets were available. This resulted in the 8250_dw
+driver failing. I only tested the R_UART device.
 
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
----
- drivers/tty/serial/8250/8250_dw.c | 41 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 34 insertions(+), 7 deletions(-)
+Patch 2 also does proper cleanup in the event that probing failed.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 501db2f..4db7987 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -365,8 +365,10 @@ static int dw8250_probe(struct platform_device *pdev)
- 
- 	data->usr_reg = DW_UART_USR;
- 	data->clk = devm_clk_get(&pdev->dev, "baudclk");
--	if (IS_ERR(data->clk))
-+	if (IS_ERR(data->clk) && PTR_ERR(data->clk) != -EPROBE_DEFER)
- 		data->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER)
-+		return -EPROBE_DEFER;
- 	if (!IS_ERR(data->clk)) {
- 		err = clk_prepare_enable(data->clk);
- 		if (err)
-@@ -377,15 +379,23 @@ static int dw8250_probe(struct platform_device *pdev)
- 	}
- 
- 	data->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
-+	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER) {
-+		err = -EPROBE_DEFER;
-+		goto err_clk;
-+	}
- 	if (!IS_ERR(data->pclk)) {
- 		err = clk_prepare_enable(data->pclk);
- 		if (err) {
- 			dev_err(&pdev->dev, "could not enable apb_pclk\n");
--			return err;
-+			goto err_clk;
- 		}
- 	}
- 
- 	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(data->rst) && PTR_ERR(data->rst) == -EPROBE_DEFER) {
-+		err = -EPROBE_DEFER;
-+		goto err_pclk;
-+	}
- 	if (!IS_ERR(data->rst))
- 		reset_control_deassert(data->rst);
- 
-@@ -403,18 +413,21 @@ static int dw8250_probe(struct platform_device *pdev)
- 	if (pdev->dev.of_node) {
- 		err = dw8250_probe_of(&uart.port, data);
- 		if (err)
--			return err;
-+			goto err_reset;
- 	} else if (ACPI_HANDLE(&pdev->dev)) {
- 		err = dw8250_probe_acpi(&uart, data);
- 		if (err)
--			return err;
-+			goto err_reset;
- 	} else {
--		return -ENODEV;
-+		err = -ENODEV;
-+		goto err_reset;
- 	}
- 
- 	data->line = serial8250_register_8250_port(&uart);
--	if (data->line < 0)
--		return data->line;
-+	if (data->line < 0) {
-+		err = data->line;
-+		goto err_reset;
-+	}
- 
- 	platform_set_drvdata(pdev, data);
- 
-@@ -422,6 +435,20 @@ static int dw8250_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 
- 	return 0;
-+
-+err_reset:
-+	if (!IS_ERR(data->rst))
-+		reset_control_assert(data->rst);
-+
-+err_pclk:
-+	if (!IS_ERR(data->pclk))
-+		clk_disable_unprepare(data->pclk);
-+
-+err_clk:
-+	if (!IS_ERR(data->clk))
-+		clk_disable_unprepare(data->clk);
-+
-+	return err;
- }
- 
- static int dw8250_remove(struct platform_device *pdev)
+Maxime, I dropped your Acked-by because I added the cleanup code
+path.
+
+Changes since v4:
+  - Rebased onto tty-next (4847914)
+  - Do proper cleanup in the probe function if errors are encountered.
+
+No changes before v4.
+
+
+Cheers
+ChenYu
+
+
+Chen-Yu Tsai (2):
+  serial: 8250_dw: Add optional reset control support
+  serial: 8250_dw: Add support for deferred probing
+
+ .../bindings/serial/snps-dw-apb-uart.txt           |  1 +
+ drivers/tty/serial/8250/8250_dw.c                  | 50 +++++++++++++++++++---
+ 2 files changed, 44 insertions(+), 7 deletions(-)
+
 -- 
 2.0.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
