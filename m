@@ -1,79 +1,56 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH v5 1/2] serial: 8250_dw: Add optional reset control support
-Date: Wed, 23 Jul 2014 23:33:06 +0800
-Message-ID: <1406129587-24668-2-git-send-email-wens@csie.org>
-References: <1406129587-24668-1-git-send-email-wens@csie.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1406129587-24668-1-git-send-email-wens@csie.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
+ correct for i.MX6?
+Date: Wed, 23 Jul 2014 12:32:14 -0400
+Message-ID: <53CFE38E.6070302@hurleysoftware.com>
+References: <53CF3599.6040509@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:45107 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1758220AbaGWQcT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 23 Jul 2014 12:32:19 -0400
+In-Reply-To: <53CF3599.6040509@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wang, Jiada" <Jiada_Wang@mentor.com>, Dirk Behme <dirk.behme@de.bosch.com>
 
-The Allwinner A31 and A23 SoCs have a reset controller
-maintaining the UART in reset by default.
+Hi Dirk,
 
-This patch adds optional reset support to the driver.
+On 07/23/2014 12:10 AM, Dirk Behme wrote:
+> Hi,
+> 
+> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
+> 
+> serial: Test for no tx data on tx restart
+> 
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
+> 
+> Talking with some i.MX6 experts about this, I've got the comment
+> 
+> -- cut --
+> The imx serial driver part of this commit isn't correct
+> as imx.c sends x_char in irq handler, not in imx_start_tx(),
+> -- cut --
+> 
+> What do you think?
 
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt | 1 +
- drivers/tty/serial/8250/8250_dw.c                             | 9 +++++++++
- 2 files changed, 10 insertions(+)
+Thanks for the comment.
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-index 095ac71..7f76214 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-@@ -15,6 +15,7 @@ The supplying peripheral clock can also be handled, needing a second property
- 	Required elements: "baudclk", "apb_pclk"
- 
- Optional properties:
-+- resets : phandle to the parent reset controller.
- - reg-shift : quantity to shift the register offsets by.  If this property is
-   not present then the register offsets are not shifted.
- - reg-io-width : the size (in bytes) of the IO accesses that should be
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index affdcb1..501db2f 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -26,6 +26,7 @@
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/clk.h>
-+#include <linux/reset.h>
- #include <linux/pm_runtime.h>
- 
- #include <asm/byteorder.h>
-@@ -60,6 +61,7 @@ struct dw8250_data {
- 	int			line;
- 	struct clk		*clk;
- 	struct clk		*pclk;
-+	struct reset_control	*rst;
- 	struct uart_8250_dma	dma;
- };
- 
-@@ -383,6 +385,10 @@ static int dw8250_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	data->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
-+	if (!IS_ERR(data->rst))
-+		reset_control_deassert(data->rst);
-+
- 	data->dma.rx_chan_id = -1;
- 	data->dma.tx_chan_id = -1;
- 	data->dma.rx_param = data;
-@@ -426,6 +432,9 @@ static int dw8250_remove(struct platform_device *pdev)
- 
- 	serial8250_unregister_port(data->line);
- 
-+	if (!IS_ERR(data->rst))
-+		reset_control_assert(data->rst);
-+
- 	if (!IS_ERR(data->pclk))
- 		clk_disable_unprepare(data->pclk);
- 
--- 
-2.0.1
+Yeah, I missed that the imx driver handled x_char _at all_,
+because how the imx driver is handling x_char looks broken.
+
+For example, if data is already in the tx ring buffer,
+imx_start_tx() will send that data before the x_char, and if
+all the tx ring buffer data is sent successfully, the tx
+interrupt is switched back off, so the x_char won't be sent.
+
+Also, the imx driver doesn't send x_char in dma mode?
+
+Regards,
+Peter Hurley
+
