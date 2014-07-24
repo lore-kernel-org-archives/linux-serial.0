@@ -1,92 +1,56 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
- correct for i.MX6?
-Date: Thu, 24 Jul 2014 07:58:52 -0400
-Message-ID: <53D0F4FC.1000302@hurleysoftware.com>
-References: <53CF3599.6040509@gmail.com> <53CFE38E.6070302@hurleysoftware.com> <53D0BFF1.30204@mentor.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Maxime COQUELIN <maxime.coquelin@st.com>
+Subject: [PATCH 2/2] serial: st-asc: Fix overflow in baudrate calculation
+Date: Thu, 24 Jul 2014 14:02:56 +0200
+Message-ID: <1406203376-18203-3-git-send-email-maxime.coquelin@st.com>
+References: <1406203376-18203-1-git-send-email-maxime.coquelin@st.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:39253 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750817AbaGXL64 (ORCPT
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:34630 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751084AbaGXMDy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 24 Jul 2014 07:58:56 -0400
-In-Reply-To: <53D0BFF1.30204@mentor.com>
+	Thu, 24 Jul 2014 08:03:54 -0400
+In-Reply-To: <1406203376-18203-1-git-send-email-maxime.coquelin@st.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: jiwang <jiada_wang@mentor.com>, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
-Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dirk Behme <dirk.behme@de.bosch.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Srinivas Kandagatla <srinivas.kandagatla@linaro.com>, Patrice Chotard <patrice.chotard@st.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: kernel@stlinux.com, maxime.coquelin@st.com
 
-Hi Jiada,
+In the current calculation, if the required baud rate is above 262143,
+we get an overflow.
 
-On 07/24/2014 04:12 AM, jiwang wrote:
-> Hi Peter
-> 
-> On 07/24/2014 01:32 AM, Peter Hurley wrote:
->> Hi Dirk,
->>
->> On 07/23/2014 12:10 AM, Dirk Behme wrote:
->>> Hi,
->>>
->>> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
->>>
->>> serial: Test for no tx data on tx restart
->>>
->>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
->>>
->>> Talking with some i.MX6 experts about this, I've got the comment
->>>
->>> -- cut --
->>> The imx serial driver part of this commit isn't correct
->>> as imx.c sends x_char in irq handler, not in imx_start_tx(),
->>> -- cut --
->>>
->>> What do you think?
->> Thanks for the comment.
->>
->> Yeah, I missed that the imx driver handled x_char _at all_,
->> because how the imx driver is handling x_char looks broken.
->>
->> For example, if data is already in the tx ring buffer,
->> imx_start_tx() will send that data before the x_char, and if
->> all the tx ring buffer data is sent successfully, the tx
->> interrupt is switched back off, so the x_char won't be sent.
->
-> imx_start_tx() doesn't do any actual data transfer
+This patch uses a 64bits variable to do the maths.
+Also, we remove the '+1' to avoid a divide by zero if the input clock
+rate is something unexpected.
+Indeed, if the input clock rate is zero, it is preferable to be notified,
+since the UART won't work anyway.
 
-???
+Signed-off-by: Maxime Coquelin <maxime.coquelin@st.com>
+---
+ drivers/tty/serial/st-asc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-   565	static void imx_start_tx(struct uart_port *port)
-   566	{
-   ...
-   610	
-   611		if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
-   612			imx_transmit_buffer(sport);
-   613	}
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 2369bc0..7ac9902 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -533,12 +533,12 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		 * ASCBaudRate =   ------------------------
+ 		 *                          inputclock
+ 		 *
+-		 * However to keep the maths inside 32bits we divide top and
+-		 * bottom by 64. The +1 is to avoid a divide by zero if the
+-		 * input clock rate is something unexpected.
++		 * To keep maths inside 64bits, we divide inputclock by 16.
+ 		 */
+-		u32 counter = (baud * 16384) / ((port->uartclk / 64) + 1);
+-		asc_out(port, ASC_BAUDRATE, counter);
++		u64 dividend = (u64)baud * (1 << 16);
++
++		do_div(dividend, port->uartclk / 16);
++		asc_out(port, ASC_BAUDRATE, dividend);
+ 		ctrl_val |= ASC_CTL_BAUDMODE;
+ 	}
+ 
+-- 
+1.9.1
 
-
-   463	static inline void imx_transmit_buffer(struct imx_port *sport)
-   464	{
-   465		struct circ_buf *xmit = &sport->port.state->xmit;
-   466	
-   467		while (!uart_circ_empty(xmit) &&
-   468				!(readl(sport->port.membase + uts_reg(sport))
-   469					& UTS_TXFULL)) {
-   470			/* send xmit->buf[xmit->tail]
-   471			 * out the port here */
-   472			writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
-   473			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-   474			sport->port.icount.tx++;
-   475		}
-   476	
-   477		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-   478			uart_write_wakeup(&sport->port);
-   479	
-   480		if (uart_circ_empty(xmit))
-   481			imx_stop_tx(&sport->port);
-   482	}
-
-Regards,
-Peter Hurley
