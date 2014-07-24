@@ -1,49 +1,92 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 3/3] driver:gpio remove all usage of
-	gpio_remove retval in driver
-Date: Thu, 24 Jul 2014 10:29:22 +0200
-Message-ID: <CACRpkdaEF14cB+=SjTHgwGH0z88v82Q_UNPvjzDAbpOb_2ec5Q@mail.gmail.com>
-References: <CACRpkda6mzVdaN0cvOxpbsxWyCv2nGyDXOjZg_5aT8u7SSQeUw@mail.gmail.com>
- <1405197014-25225-1-git-send-email-berthe.ab@gmail.com>
- <1405197014-25225-4-git-send-email-berthe.ab@gmail.com>
- <CACRpkdasp9bLULT7NJM9nYX58rRSsQKXFddOLz9Ah6kp-j-3=Q@mail.gmail.com>
- <20140722151125.GS17528@sirena.org.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
+ correct for i.MX6?
+Date: Thu, 24 Jul 2014 07:58:52 -0400
+Message-ID: <53D0F4FC.1000302@hurleysoftware.com>
+References: <53CF3599.6040509@gmail.com> <53CFE38E.6070302@hurleysoftware.com> <53D0BFF1.30204@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <20140722151125.GS17528@sirena.org.uk>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: Mark Brown <broonie@kernel.org>
-Cc: linux-mips@linux-mips.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>, Matthew Garrett <matthew.garrett@nebula.com>, Samuel Ortiz <sameo@linux.intel.com>, =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Input <linux-input@vger.kernel.org>, abdoulaye berthe <berthe.ab@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Bryan Wu <cooloney@gmail.com>, "arm@kernel.org" <arm@kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Michael Buesch <m@bues.ch>, Greg KH <gregkh>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:39253 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750817AbaGXL64 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 24 Jul 2014 07:58:56 -0400
+In-Reply-To: <53D0BFF1.30204@mentor.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: jiwang <jiada_wang@mentor.com>, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dirk Behme <dirk.behme@de.bosch.com>
 
-On Tue, Jul 22, 2014 at 5:11 PM, Mark Brown <broonie@kernel.org> wrote:
-> On Tue, Jul 22, 2014 at 05:08:13PM +0200, Linus Walleij wrote:
+Hi Jiada,
+
+On 07/24/2014 04:12 AM, jiwang wrote:
+> Hi Peter
+> 
+> On 07/24/2014 01:32 AM, Peter Hurley wrote:
+>> Hi Dirk,
+>>
+>> On 07/23/2014 12:10 AM, Dirk Behme wrote:
+>>> Hi,
+>>>
+>>> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
+>>>
+>>> serial: Test for no tx data on tx restart
+>>>
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
+>>>
+>>> Talking with some i.MX6 experts about this, I've got the comment
+>>>
+>>> -- cut --
+>>> The imx serial driver part of this commit isn't correct
+>>> as imx.c sends x_char in irq handler, not in imx_start_tx(),
+>>> -- cut --
+>>>
+>>> What do you think?
+>> Thanks for the comment.
+>>
+>> Yeah, I missed that the imx driver handled x_char _at all_,
+>> because how the imx driver is handling x_char looks broken.
+>>
+>> For example, if data is already in the tx ring buffer,
+>> imx_start_tx() will send that data before the x_char, and if
+>> all the tx ring buffer data is sent successfully, the tx
+>> interrupt is switched back off, so the x_char won't be sent.
 >
->> Heads up. Requesting ACKs for this patch or I'm atleast warning that it will be
->> applied. We're getting rid of the return value from gpiochip_remove().
->
-> Can someone send the patch please?  Splitting it up per-subsystem would
-> probably be easier...
+> imx_start_tx() doesn't do any actual data transfer
 
-OK Abdoulaye maybe we can do it a piece at a time?
+???
 
-I have removed the __must_check attribute from gpiochip_remove()
-in the gpiolib, so the compiler won't complain about this being missing
-anymore as of kernel v3.17. I also dropped the check in the GPIO
-and pin control subsystem, and other subsystems can start
-dropping the checks too if they are OK with the build warnings
-from the kautobuild until the __must_check removal has propagated
-upstream.
+   565	static void imx_start_tx(struct uart_port *port)
+   566	{
+   ...
+   610	
+   611		if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
+   612			imx_transmit_buffer(sport);
+   613	}
 
-Yours,
-Linus Walleij
+
+   463	static inline void imx_transmit_buffer(struct imx_port *sport)
+   464	{
+   465		struct circ_buf *xmit = &sport->port.state->xmit;
+   466	
+   467		while (!uart_circ_empty(xmit) &&
+   468				!(readl(sport->port.membase + uts_reg(sport))
+   469					& UTS_TXFULL)) {
+   470			/* send xmit->buf[xmit->tail]
+   471			 * out the port here */
+   472			writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
+   473			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+   474			sport->port.icount.tx++;
+   475		}
+   476	
+   477		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+   478			uart_write_wakeup(&sport->port);
+   479	
+   480		if (uart_circ_empty(xmit))
+   481			imx_stop_tx(&sport->port);
+   482	}
+
+Regards,
+Peter Hurley
