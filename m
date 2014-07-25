@@ -1,54 +1,85 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: ARC fails to boot on linux-next of 20140711
-Date: Fri, 25 Jul 2014 09:15:22 -0500
-Message-ID: <CAL_JsqJ2q0RSvXQW03RqwwBi_TKQ7Zt6DsUbsUruzh5oqYi5Cg@mail.gmail.com>
-References: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
+From: Jon Ringle <jon@ringle.org>
+Subject: re: serial: sc16is7xx
+Date: Fri, 25 Jul 2014 12:54:50 -0400 (EDT)
+Message-ID: <alpine.DEB.2.02.1407251157450.20117@jringle-ubuntu>
+References: <20140725122047.GB528@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, linux-next <linux-next@vger.kernel.org>, Anton Kolesov <Anton.Kolesov@synopsys.com>, lkml <linux-kernel@vger.kernel.org>, greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qg0-f52.google.com ([209.85.192.52]:55991 "EHLO
+	mail-qg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932120AbaGYQzA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jul 2014 12:55:00 -0400
+Received: by mail-qg0-f52.google.com with SMTP id f51so5336064qge.11
+        for <linux-serial@vger.kernel.org>; Fri, 25 Jul 2014 09:54:58 -0700 (PDT)
+In-Reply-To: <20140725122047.GB528@mwanda>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: "Ringle, Jonathan" <Jonathan.Ringle@gridpoint.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Fri, Jul 25, 2014 at 6:02 AM, Vineet Gupta
-<Vineet.Gupta1@synopsys.com> wrote:
-> Hi Grant,
->
-> linux-next has a series for arc_uart (via tty tree) which converts it to generic
-> earlycon and specifies console via /chosen/stdout-path vs.  an explicit param in
-> /chose/bootargs
->
-> 2014-06-24 9da433c0a0b5 ARC: [arcfpga] stdout-path now suffices for earlycon/console
->
-> This relied on prev commit of yours (from linux next of 20140711), which seem to
-> have disappeared now.
->
-> 2014-03-27 a9296cf2d0b6 of: Create of_console_check() for selecting a console
-> specified in /chosen
-> 2014-03-27 cfa9cacc5dd3 of: Enable console on serial ports specified by
-> /chosen/stdout-path
->
-> Is there a specific reason for dropping these patches (or perhaps a merge to be
-> merged). I cherry-picked both but still doesn't work.
->
-> Can you please advise next step forward, before I go off debugging with those
-> patches in.
 
-There's an issue that if you have stdout-path and "earlycon" on the
-command line, the kernel will switch to tty0 and disable the earlycon.
 
-This is the "fix", but I don't like adding the DT dependency into generic code:
+On Fri, 25 Jul 2014, Dan Carpenter wrote:
 
-@@ -2382,7 +2386,7 @@ void register_console(struct console *newcon)
-                if (newcon->setup == NULL ||
-                    newcon->setup(newcon, NULL) == 0) {
-                        newcon->flags |= CON_ENABLED;
--                       if (newcon->device) {
-+                       if (newcon->device  && !of_stdout) {
-                                newcon->flags |= CON_CONSDEV;
-                                preferred_console = 0;
-                        }
+> Hello Jon Ringle,
+> 
+> The patch dfeae619d781: "serial: sc16is7xx" from Apr 24, 2014, leads
+> to the following static checker warning:
+> 
+> 	drivers/tty/serial/sc16is7xx.c:1168 sc16is7xx_probe()
+> 	warn: 's->clk' isn't an ERR_PTR
+> 
+> drivers/tty/serial/sc16is7xx.c
+>   1167  out_clk:
+>   1168          if (!IS_ERR(s->clk))
+>                      ^^^^^^^^^^^^^
+> This check isn't needed because we return directly but also I don't
+> think we ever set s->clk so it is leaked on the remove() path as well.
+> 
+>   1169                  clk_disable_unprepare(s->clk);
+>   1170  
+>   1171          return ret;
+>   1172  }
 
-Rob
+I'm not too familiar with the clk interface, but we have this code:
+
+| static int sc16is7xx_probe(struct device *dev,
+| 			   struct sc16is7xx_devtype *devtype,
+| 			   struct regmap *regmap, int irq, unsigned long flags)
+| {
+| 	unsigned long freq, *pfreq = dev_get_platdata(dev);
+| 	struct clk *clk;
+| 	int i, ret;
+| 	struct sc16is7xx_port *s;
+| 
+| 	if (IS_ERR(regmap))
+| 		return PTR_ERR(regmap);
+| 
+| 	/* Alloc port structure */
+| 	s = devm_kzalloc(dev, sizeof(*s) +
+| 			 sizeof(struct sc16is7xx_one) * devtype->nr_uart,
+| 			 GFP_KERNEL);
+| 	if (!s) {
+| 		dev_err(dev, "Error allocating port structure\n");
+| 		return -ENOMEM;
+| 	}
+| 
+| 	clk = devm_clk_get(dev, NULL);
+
+should this be s->clk = devm_clk_get(dev, NULL); ??
+
+| 	if (IS_ERR(clk)) {
+| 		if (pfreq)
+| 			freq = *pfreq;
+| 		else
+| 			return PTR_ERR(clk);
+| 	} else {
+| 		freq = clk_get_rate(clk);
+| 	}
+
+Would the above change make the clk_disable_unprepare(s->clk) then 
+correct? Or should the clk member of struct sc16is7xx_port be removed?
+
+Jon
