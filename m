@@ -1,41 +1,54 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/3] spi: topcliff-pch: use pci_get_dma_device() helper
-Date: Fri, 25 Jul 2014 16:31:44 +0300
-Message-ID: <1406295104-20082-3-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:36683 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752599AbaGYNcM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jul 2014 09:32:12 -0400
-In-Reply-To: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: ARC fails to boot on linux-next of 20140711
+Date: Fri, 25 Jul 2014 09:15:22 -0500
+Message-ID: <CAL_JsqJ2q0RSvXQW03RqwwBi_TKQ7Zt6DsUbsUruzh5oqYi5Cg@mail.gmail.com>
+References: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-next-owner@vger.kernel.org>
+In-Reply-To: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
+Sender: linux-next-owner@vger.kernel.org
+To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>, linux-next <linux-next@vger.kernel.org>, Anton Kolesov <Anton.Kolesov@synopsys.com>, lkml <linux-kernel@vger.kernel.org>, greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Since we have pci_get_dma_device() public we may use it in the drivers. It
-considers the function 0 as a DMA controller.
+On Fri, Jul 25, 2014 at 6:02 AM, Vineet Gupta
+<Vineet.Gupta1@synopsys.com> wrote:
+> Hi Grant,
+>
+> linux-next has a series for arc_uart (via tty tree) which converts it to generic
+> earlycon and specifies console via /chosen/stdout-path vs.  an explicit param in
+> /chose/bootargs
+>
+> 2014-06-24 9da433c0a0b5 ARC: [arcfpga] stdout-path now suffices for earlycon/console
+>
+> This relied on prev commit of yours (from linux next of 20140711), which seem to
+> have disappeared now.
+>
+> 2014-03-27 a9296cf2d0b6 of: Create of_console_check() for selecting a console
+> specified in /chosen
+> 2014-03-27 cfa9cacc5dd3 of: Enable console on serial ports specified by
+> /chosen/stdout-path
+>
+> Is there a specific reason for dropping these patches (or perhaps a merge to be
+> merged). I cherry-picked both but still doesn't work.
+>
+> Can you please advise next step forward, before I go off debugging with those
+> patches in.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/spi/spi-topcliff-pch.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+There's an issue that if you have stdout-path and "earlycon" on the
+command line, the kernel will switch to tty0 and disable the earlycon.
 
-diff --git a/drivers/spi/spi-topcliff-pch.c b/drivers/spi/spi-topcliff-pch.c
-index af51d6a..fe868ce 100644
---- a/drivers/spi/spi-topcliff-pch.c
-+++ b/drivers/spi/spi-topcliff-pch.c
-@@ -874,8 +874,7 @@ static void pch_spi_request_dma(struct pch_spi_data *data, int bpw)
- 	dma_cap_set(DMA_SLAVE, mask);
- 
- 	/* Get DMA's dev information */
--	dma_dev = pci_get_bus_and_slot(data->board_dat->pdev->bus->number,
--				       PCI_DEVFN(12, 0));
-+	dma_dev = pci_get_dma_device(data->board_dat->pdev);
- 
- 	/* Set Tx DMA */
- 	param = &dma->param_tx;
--- 
-2.0.1
+This is the "fix", but I don't like adding the DT dependency into generic code:
 
+@@ -2382,7 +2386,7 @@ void register_console(struct console *newcon)
+                if (newcon->setup == NULL ||
+                    newcon->setup(newcon, NULL) == 0) {
+                        newcon->flags |= CON_ENABLED;
+-                       if (newcon->device) {
++                       if (newcon->device  && !of_stdout) {
+                                newcon->flags |= CON_CONSDEV;
+                                preferred_console = 0;
+                        }
+
+Rob
