@@ -1,28 +1,40 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: ARC fails to boot on linux-next of 20140711
-Date: Fri, 25 Jul 2014 16:56:14 +0530
-Message-ID: <53D23ED6.9010502@synopsys.com>
-References: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: re: serial: sc16is7xx
+Date: Fri, 25 Jul 2014 15:20:47 +0300
+Message-ID: <20140725122047.GB528@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: linux-next <linux-next@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Anton Kolesov <Anton.Kolesov@synopsys.com>, lkml <linux-kernel@vger.kernel.org>, greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from userp1040.oracle.com ([156.151.31.81]:35713 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760134AbaGYMVL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jul 2014 08:21:11 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: jringle@gridpoint.com
+Cc: linux-serial@vger.kernel.org
 
-On Friday 25 July 2014 04:32 PM, Vineet Gupta wrote:
-> 2014-03-27 a9296cf2d0b6 of: Create of_console_check() for selecting a console
-> specified in /chosen 
-> 2014-03-27 cfa9cacc5dd3 of: Enable console on serial ports specified by
-> /chosen/stdout-path 
-> 
-> Is there a specific reason for dropping these patches (or perhaps a merge to be
-> merged). I cherry-picked both but still doesn't work.
+Hello Jon Ringle,
 
-Correction - with these two, ARC boots again.
+The patch dfeae619d781: "serial: sc16is7xx" from Apr 24, 2014, leads
+to the following static checker warning:
 
-Thx,
--Vineet
+	drivers/tty/serial/sc16is7xx.c:1168 sc16is7xx_probe()
+	warn: 's->clk' isn't an ERR_PTR
+
+drivers/tty/serial/sc16is7xx.c
+  1167  out_clk:
+  1168          if (!IS_ERR(s->clk))
+                     ^^^^^^^^^^^^^
+This check isn't needed because we return directly but also I don't
+think we ever set s->clk so it is leaked on the remove() path as well.
+
+  1169                  clk_disable_unprepare(s->clk);
+  1170  
+  1171          return ret;
+  1172  }
+
+regards,
+dan carpenter
