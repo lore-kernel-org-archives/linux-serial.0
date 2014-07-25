@@ -1,70 +1,43 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] gpio: extend gpiod_get*() with flags
-	parameter
-Date: Fri, 25 Jul 2014 07:52:50 +0100
-Message-ID: <20140725065250.GF7063@lee--X1>
-References: <1406214298-20062-1-git-send-email-acourbot@nvidia.com>
- <20140724161052.GA15615@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <alsa-devel-bounces@alsa-project.org>
-Content-Disposition: inline
-In-Reply-To: <20140724161052.GA15615@kroah.com>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-wireless@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Takashi Iwai <tiwai@suse.de>, linux-mmc@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Chris Ball <chris@printf.net>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Pavel Machek <pavel@ucw.cz>, Jiri Slaby <jslaby@suse.cz>, gnurou@gmail.com, Florian Fainelli <f.fainelli@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexander Shiyan <shc_work@mail.ru>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Paul Handrigan <Paul.Handrigan@cirrus.com>, linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Tomi Valkeinen <tomi.valkeinen@ti.com>, Hans Verkuil <hans.verkuil@ci>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v1 2/3] pch_uart: use pci_get_dma_device() helper
+Date: Fri, 25 Jul 2014 16:31:43 +0300
+Message-ID: <1406295104-20082-2-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1406295104-20082-1-git-send-email-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gVGh1LCAyNCBKdWwgMjAxNCwgR3JlZyBLcm9haC1IYXJ0bWFuIHdyb3RlOgoKPiBPbiBGcmks
-IEp1bCAyNSwgMjAxNCBhdCAxMjowNDo1OEFNICswOTAwLCBBbGV4YW5kcmUgQ291cmJvdCB3cm90
-ZToKPiA+IFRoZSBodWdlIG1ham9yaXR5IG9mIEdQSU9zIGhhdmUgdGhlaXIgZGlyZWN0aW9uIGFu
-ZCBpbml0aWFsIHZhbHVlIHNldAo+ID4gcmlnaHQgYWZ0ZXIgYmVpbmcgb2J0YWluZWQgYnkgb25l
-IG9mIHRoZSBncGlvZF9nZXQoKSBmdW5jdGlvbnMuIFRoZQo+ID4gaW50ZWdlciBHUElPIEFQSSBo
-YWQgZ3Bpb19yZXF1ZXN0X29uZSgpIHRoYXQgdG9vayBhIGNvbnZlbmllbmNlIGZsYWdzCj4gPiBw
-YXJhbWV0ZXIgYWxsb3dpbmcgdG8gc3BlY2lmeSBhbiBkaXJlY3Rpb24gYW5kIHZhbHVlIGFwcGxp
-ZWQgdG8gdGhlCj4gPiByZXR1cm5lZCBHUElPLiBUaGlzIGZlYXR1cmUgZ3JlYXRseSBzaW1wbGlm
-aWVzIGNsaWVudCBjb2RlIGFuZCBlbnN1cmVzCj4gPiBlcnJvcnMgYXJlIGFsd2F5cyBoYW5kbGVk
-IHByb3Blcmx5Lgo+ID4gCj4gPiBBIHNpbWlsYXIgZmVhdHVyZSBoYXMgYmVlbiByZXF1ZXN0ZWQg
-Zm9yIHRoZSBncGlvZCBBUEkuIFNpbmNlIEdQSU9zIG5lZWQKPiA+IGEgZGlyZWN0aW9uIHRvIGJl
-IHVzZWQgYW55d2F5LCB3ZSBwcmVmZXIgdG8gZXh0ZW5kIHRoZSBleGlzdGluZwo+ID4gZnVuY3Rp
-b25zIGluc3RlYWQgb2YgaW50cm9kdWNpbmcgbmV3IGZ1bmN0aW9ucyB0aGF0IHdvdWxkIHJhaXNl
-IHRoZQo+ID4gbnVtYmVyIG9mIGdwaW9kIGdldHRlcnMgdG8gMTYgKCEpLgo+ID4gCj4gPiBUaGUg
-ZHJhd2JhY2sgb2YgdGhpcyBhcHByb2FjaCBpcyB0aGF0IGFsbCBncGlvZCBjbGllbnRzIG5lZWQg
-dG8gYmUKPiA+IHVwZGF0ZWQsIGJ1dCB0aGVyZSBhcmVuJ3QgdGhhdCBtYW55IGFuZCB0aGUgbW9t
-ZW50IGFuZCB0aGlzIHJlc3VsdHMgaW4KPiA+IHNtYWxsZXIgKGFuZCBob3BlZnVsbHkgc2FmZXIp
-IGNvZGUuCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRyZSBDb3VyYm90IDxhY291cmJv
-dEBudmlkaWEuY29tPgo+ID4gLS0tCj4gPiBUaGlzIGNoYW5nZSB3aWxsIGJlIGRpZmZpY3VsdCB0
-byBhcHBseSB3aXRob3V0IGJyZWFraW5nIHRoaW5ncywgYnV0Cj4gPiBsZXQncyB0cnkgdG8gZG8g
-aXQgcmlnaHQuIEhvcGVmdWxseSB0aGUgYmVuZWZpdCB3aWxsIG91dHdlaWdodCB0aGUKPiA+IGRp
-c3R1cmJhbmNlLgo+ID4gCj4gPiBUaGlzIGlzIGEgcGF0Y2ggYWdhaW5zdCAtbmV4dCB0byBsaXN0
-IGFuZCB1cGRhdGUgYWxsIGN1cnJlbnQgZ3Bpb2QKPiA+IGNvbnN1bWVycy4gVXBkYXRlcyBhcmUg
-dHJpdmlhbCBhdCBmaXJzdCBzaWdodCwgYnV0IGl0IHdvdWxkIGJlIG5pY2UgdG8KPiA+IGdldCBh
-cyBtYW55IGFja3MgYXMgcG9zc2libGUgZnJvbSB0aGUgcmVzcGVjdGl2ZSBzdWJzeXN0ZW0gbWFp
-bnRhaW5lcnMuCj4gPiAKPiA+IEknbSBub3Qgc3VyZSBob3cgdGhpcyBjb3VsZCBiZSBhcHBsaWVk
-IGhhcm1sZXNzbHkgdGhvdWdoIC0gbWF5YmUgdGhyb3VnaAo+ID4gYSBkZWRpY2F0ZWQgYnJhbmNo
-IGZvciAtbmV4dD8gUHJvYmxlbSBpcyB0aGF0IGEgbG90IG9mIG5ldyBjb2RlIGlzIG5vdAo+ID4g
-eWV0IG1lcmdlZCBpbnRvIG1haW5saW5lLCBhbmQgY29uZmxpY3RzIGFyZSB2ZXJ5IGxpa2VseSB0
-byBvY2N1ci4gTGludXMsCj4gPiBkbyB5b3UgaGF2ZSBhbnkgc3VnZ2VzdGlvbiBhcyB0byBob3cg
-dGhpcyBjYW4gYmUgZG9uZSB3aXRob3V0IGJsb29kIGJlaW5nCj4gPiBzcGlsbGVkPwo+IAo+IERv
-IHRoaXMgaW4gMyBzdGVwcywgbm90IGFsbCBhdCBvbmNlLgo+IAo+IE1ha2UgYSBuZXcgZnVuY3Rp
-b24gdGhhdCB0YWtlcyB0aGUgbmV3IGFyZ3VtZW50LCBnZXQgdGhhdCBtZXJnZWQKPiAKPiBTdWJt
-aXQgcGF0Y2hlcyB0aGF0IGNvbnZlcnQgZHJpdmVycyBvdmVyIHRvIHVzZSB0aGUgbmV3IGZ1bmN0
-aW9uLgo+IAo+IE9uY2UgYWxsIG9mIHRob3NlIGFyZSBtZXJnZWQsIHJlbW92ZSB0aGUgb2xkIGZ1
-bmN0aW9uLgo+IAo+IFRoYXQgd2F5IHRoZXJlIGFyZSBubyAiZmxhZyBkYXlzIiBuZWVkZWQsIGFu
-ZCBldmVyeW9uZSBpcyBoYXBweSB5b3UKPiBkb24ndCBzZW5kIG91dCBlbWFpbHMgd2l0aCA0MCsg
-cGVvcGxlIGluIHRoZSBUbzogYW5kIENjOiBsaW5lcyA6KQoKKzk5OTk5CgotLSAKTGVlIEpvbmVz
-CkxpbmFybyBTVE1pY3JvZWxlY3Ryb25pY3MgTGFuZGluZyBUZWFtIExlYWQKTGluYXJvLm9yZyDi
-lIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzCkZvbGxvdyBMaW5hcm86IEZhY2Vi
-b29rIHwgVHdpdHRlciB8IEJsb2cKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KQWxzYS1kZXZlbCBtYWlsaW5nIGxpc3QKQWxzYS1kZXZlbEBhbHNhLXByb2pl
-Y3Qub3JnCmh0dHA6Ly9tYWlsbWFuLmFsc2EtcHJvamVjdC5vcmcvbWFpbG1hbi9saXN0aW5mby9h
-bHNhLWRldmVsCg==
+Since we have pci_get_dma_device() public we may use it in the drivers. It
+considers the function 0 as a DMA controller.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/tty/serial/pch_uart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 2f06e5a..c38fdee 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -736,9 +736,8 @@ static void pch_request_dma(struct uart_port *port)
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
+ 
+-	dma_dev = pci_get_bus_and_slot(priv->pdev->bus->number,
+-				       PCI_DEVFN(0xa, 0)); /* Get DMA's dev
+-								information */
++	dma_dev = pci_get_dma_device(priv->pdev); /* Get DMA's dev information */
++
+ 	/* Set Tx DMA */
+ 	param = &priv->param_tx;
+ 	param->dma_dev = &dma_dev->dev;
+-- 
+2.0.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
