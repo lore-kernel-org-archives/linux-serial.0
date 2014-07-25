@@ -1,85 +1,78 @@
-From: Jon Ringle <jon@ringle.org>
-Subject: re: serial: sc16is7xx
-Date: Fri, 25 Jul 2014 12:54:50 -0400 (EDT)
-Message-ID: <alpine.DEB.2.02.1407251157450.20117@jringle-ubuntu>
-References: <20140725122047.GB528@mwanda>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v1 1/3] PCI: export pci_get_dma_device() helper to other
+ users
+Date: Fri, 25 Jul 2014 10:58:36 -0600
+Message-ID: <1406307516.1011.21.camel@ul30vt.home>
+References: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f52.google.com ([209.85.192.52]:55991 "EHLO
-	mail-qg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932120AbaGYQzA (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jul 2014 12:55:00 -0400
-Received: by mail-qg0-f52.google.com with SMTP id f51so5336064qge.11
-        for <linux-serial@vger.kernel.org>; Fri, 25 Jul 2014 09:54:58 -0700 (PDT)
-In-Reply-To: <20140725122047.GB528@mwanda>
+Received: from mx1.redhat.com ([209.132.183.28]:34916 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932508AbaGYQ6o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 25 Jul 2014 12:58:44 -0400
+In-Reply-To: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: "Ringle, Jonathan" <Jonathan.Ringle@gridpoint.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
 
-
-
-On Fri, 25 Jul 2014, Dan Carpenter wrote:
-
-> Hello Jon Ringle,
+On Fri, 2014-07-25 at 16:31 +0300, Andy Shevchenko wrote:
+> Some chipsets use the function 0 for DMA on other functions of a
+> multifunctional device. One of the example is Intel EG20T PCH. This is also
+> applicable to Lynxpoint PCH when LPSS devices are switched to PCI mode.
 > 
-> The patch dfeae619d781: "serial: sc16is7xx" from Apr 24, 2014, leads
-> to the following static checker warning:
+> This patch exports a useful helper to get a device of the DMA. This device is
+> needed to request a DMA channel from a proper controller.
 > 
-> 	drivers/tty/serial/sc16is7xx.c:1168 sc16is7xx_probe()
-> 	warn: 's->clk' isn't an ERR_PTR
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/pci/quirks.c | 2 +-
+>  include/linux/pci.h  | 9 +++++++++
+>  2 files changed, 10 insertions(+), 1 deletion(-)
 > 
-> drivers/tty/serial/sc16is7xx.c
->   1167  out_clk:
->   1168          if (!IS_ERR(s->clk))
->                      ^^^^^^^^^^^^^
-> This check isn't needed because we return directly but also I don't
-> think we ever set s->clk so it is leaked on the remove() path as well.
-> 
->   1169                  clk_disable_unprepare(s->clk);
->   1170  
->   1171          return ret;
->   1172  }
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 80c2d01..8352e5b 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3517,7 +3517,7 @@ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+>  	if (!PCI_FUNC(dev->devfn))
+>  		return pci_dev_get(dev);
+>  
+> -	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+> +	return pci_get_dma_device(dev);
+>  }
+>  
+>  static const struct pci_dev_dma_source {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 61978a4..86caab7 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1575,6 +1575,15 @@ static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+>  static inline void pci_dev_specific_enable_acs(struct pci_dev *dev) { }
+>  #endif
+>  
+> +/*
+> + * Some chipsets use the function 0 for DMA on other functions of a
+> + * multifunctional device.
+> + */
+> +static inline struct pci_dev *pci_get_dma_device(struct pci_dev *dev)
+> +{
+> +	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+> +}
+> +
+>  void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
+>  void pcim_iounmap(struct pci_dev *pdev, void __iomem *addr);
+>  void __iomem * const *pcim_iomap_table(struct pci_dev *pdev);
 
-I'm not too familiar with the clk interface, but we have this code:
+You've created a very generic function for a very specific problem.  I
+can't just call this on any random device and expect it to work
+correctly.  What about all the other device which use function 1 for
+their DMA alias.  We've just added infrastructure in PCI to support DMA
+aliases, see pci_for_each_dma_alias().  Please use this instead.  Quirks
+can be added to set the dma_alias_devfn and
+PCI_DEV_FLAGS_DMA_ALIAS_DEVFN to indicate that it's valid.  Thanks,
 
-| static int sc16is7xx_probe(struct device *dev,
-| 			   struct sc16is7xx_devtype *devtype,
-| 			   struct regmap *regmap, int irq, unsigned long flags)
-| {
-| 	unsigned long freq, *pfreq = dev_get_platdata(dev);
-| 	struct clk *clk;
-| 	int i, ret;
-| 	struct sc16is7xx_port *s;
-| 
-| 	if (IS_ERR(regmap))
-| 		return PTR_ERR(regmap);
-| 
-| 	/* Alloc port structure */
-| 	s = devm_kzalloc(dev, sizeof(*s) +
-| 			 sizeof(struct sc16is7xx_one) * devtype->nr_uart,
-| 			 GFP_KERNEL);
-| 	if (!s) {
-| 		dev_err(dev, "Error allocating port structure\n");
-| 		return -ENOMEM;
-| 	}
-| 
-| 	clk = devm_clk_get(dev, NULL);
+Alex
 
-should this be s->clk = devm_clk_get(dev, NULL); ??
-
-| 	if (IS_ERR(clk)) {
-| 		if (pfreq)
-| 			freq = *pfreq;
-| 		else
-| 			return PTR_ERR(clk);
-| 	} else {
-| 		freq = clk_get_rate(clk);
-| 	}
-
-Would the above change make the clk_disable_unprepare(s->clk) then 
-correct? Or should the clk member of struct sc16is7xx_port be removed?
-
-Jon
