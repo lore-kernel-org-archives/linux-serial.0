@@ -1,83 +1,62 @@
-From: Bill Pringlemeir <bpringlemeir@nbsps.com>
-Subject: Re: fsl_lpuart/VF610: Division by zero.
-Date: Fri, 25 Jul 2014 18:36:28 -0400
-Message-ID: <87d2ct6p77.fsf@nbsps.com>
-References: <87ha256q8l.fsf@nbsps.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 71-19-161-253.dedicated.allstream.net ([71.19.161.253]:55603
-	"EHLO nsa.nbspaymentsolutions.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S933471AbaGYWsk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 25 Jul 2014 18:48:40 -0400
-In-Reply-To: <87ha256q8l.fsf@nbsps.com> (Bill Pringlemeir's message of "Fri,
-	25 Jul 2014 18:14:02 -0400")
-Sender: linux-serial-owner@vger.kernel.org
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: ARC fails to boot on linux-next of 20140711
+Date: Fri, 25 Jul 2014 23:33:44 -0600
+Message-ID: <20140726053344.95800C40C93@trevor.secretlab.ca>
+References: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
+	<CAL_JsqJ2q0RSvXQW03RqwwBi_TKQ7Zt6DsUbsUruzh5oqYi5Cg@mail.gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqJ2q0RSvXQW03RqwwBi_TKQ7Zt6DsUbsUruzh5oqYi5Cg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc: linux-next <linux-next@vger.kernel.org>, Anton Kolesov <Anton.Kolesov@synopsys.com>, lkml <linux-kernel@vger.kernel.org>, greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Yuan Yao <yao.yuan@freescale.com>, linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On 25 Jul 2014, bpringlemeir@nbsps.com wrote:
+On Fri, 25 Jul 2014 09:15:22 -0500, Rob Herring <robherring2@gmail.com> wrote:
+> On Fri, Jul 25, 2014 at 6:02 AM, Vineet Gupta
+> <Vineet.Gupta1@synopsys.com> wrote:
+> > Hi Grant,
+> >
+> > linux-next has a series for arc_uart (via tty tree) which converts it to generic
+> > earlycon and specifies console via /chosen/stdout-path vs.  an explicit param in
+> > /chose/bootargs
+> >
+> > 2014-06-24 9da433c0a0b5 ARC: [arcfpga] stdout-path now suffices for earlycon/console
+> >
+> > This relied on prev commit of yours (from linux next of 20140711), which seem to
+> > have disappeared now.
+> >
+> > 2014-03-27 a9296cf2d0b6 of: Create of_console_check() for selecting a console
+> > specified in /chosen
+> > 2014-03-27 cfa9cacc5dd3 of: Enable console on serial ports specified by
+> > /chosen/stdout-path
+> >
+> > Is there a specific reason for dropping these patches (or perhaps a merge to be
+> > merged). I cherry-picked both but still doesn't work.
+> >
+> > Can you please advise next step forward, before I go off debugging with those
+> > patches in.
+> 
+> There's an issue that if you have stdout-path and "earlycon" on the
+> command line, the kernel will switch to tty0 and disable the earlycon.
+> 
+> This is the "fix", but I don't like adding the DT dependency into generic code:
 
-> I have this 'dmesg' with ttyLP1,
->
-> Division by zero in kernel.  CPU: 0 PID: 187 Comm: getty Not tainted
-> 3.15.0-rc8-04600-ge74a685-dirty #465 [<80013b18>] (unwind_backtrace)
-> from [<80011e3c>] (show_stack+0x10/0x14) [<80011e3c>] (show_stack)
-> from [<8019a11c>] (Ldiv0+0x8/0x10) [<8019a11c>] (Ldiv0) from
-> [<801f0ad4>] (lpuart_startup+0x1e4/0x398) [<801f0ad4>]
-> (lpuart_startup) from [<801ef2e8>] (uart_startup.part.18+0x84/0x1e8)
-> [<801ef2e8>] (uart_startup.part.18) from [<801efd40>]
-> (uart_open+0xe4/0x14c) [<801efd40>] (uart_open) from [<801d586c>]
-> (tty_open+0x1a0/0x5d0) [<801d586c>] (tty_open) from [<800a1008>]
-> (chrdev_open+0x9c/0x160) [<800a1008>] (chrdev_open) from [<8009bd0c>]
-> (do_dentry_open.isra.15+0x1b4/0x270) [<8009bd0c>]
-> (do_dentry_open.isra.15) from [<8009be98>] (finish_open+0x20/0x3c)
-> [<8009be98>] (finish_open) from [<800a8bfc>]
-> (do_last.isra.66+0x404/0xc60) [<800a8bfc>] (do_last.isra.66) from
-> [<800a950c>] (path_openat+0xb4/0x5b0) [<800a950c>] (path_openat) from
-> [<800aa900>] (do_filp_open+0x2c/0x80) [<800aa900>] (do_filp_open) from
-> [<8009ce50>] (do_sys_open+0x120/0x1e0) [<8009ce50>] (do_sys_open) from
-> [<8000ed80>] (ret_fast_syscall+0x0/0x30) random: nonblocking pool is
-> initialized
->
-> I looked at the vmlinux objdump and it is here,
->
-> static int lpuart_dma_rx_request(struct uart_port *port)
-> {
-> ...
-> 	sport->dma_rx_timeout = (sport->port.timeout - HZ / 50) *
-> 				FSL_UART_RX_DMA_BUFFER_SIZE * 3 /
-> 				sport->rxfifo_size / 2;
->
-> The variable 'sport->rxfifo_size' is set in lpuart_setup_watermark()
-> and this is called after lpuart_dma_rx_request() in lpuart_startup().
->
-> It looks the same in the 'tty/serial' tree?
->
-> https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git/tree/drivers/tty/serial/fsl_lpuart.c#n768
->
-> I tried some simple changes but then I get no serial output, so I
-> thought it might be better to see if I am using the wrong git trees or
-> if the fix is more obvious to someone familiar with the code.
->
-> I think that normally everyone runs the console on this port and
-> 'lpuart_console_setup()' is setting 'sport->rxfifo_size' before hand?
-> Or I don't understand why no one else is seeing this?
+Yes, I'm not fond of it either. I've not been able to test it though and
+work out a proper bug fix. As far as I can understand, the earlycon code
+only works on aarch64, correct? I haven't been able to get an aarch64
+boot working in QEMU yet.
 
-I failed to add,
+g.
 
-   &uart1 {
-           pinctrl-names = "default";
-           pinctrl-0 = <&pinctrl_uart1>;
-           status = "okay";
-   };
-
-to my device tree and then this condition triggered.  I can see the
-'dmesg' by telneting to the device.  So maybe it is not so interesting.
-
-If I put the proper initialization as above, then it is fine.
-
-Thanks,
-Bill Pringlemeir.
+> 
+> @@ -2382,7 +2386,7 @@ void register_console(struct console *newcon)
+>                 if (newcon->setup == NULL ||
+>                     newcon->setup(newcon, NULL) == 0) {
+>                         newcon->flags |= CON_ENABLED;
+> -                       if (newcon->device) {
+> +                       if (newcon->device  && !of_stdout) {
+>                                 newcon->flags |= CON_CONSDEV;
+>                                 preferred_console = 0;
+>                         }
+> 
+> Rob
