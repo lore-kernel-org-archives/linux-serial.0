@@ -1,81 +1,99 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: REVERT request for  patch "ARC: [arcfpga] stdout-path now
- suffices for earlycon/console" added to tty tree
-Date: Sun, 27 Jul 2014 23:09:13 -0700
-Message-ID: <20140728060913.GA27827@kroah.com>
-References: <14050323662165@kroah.com>
- <53D5D527.30501@synopsys.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v1 1/3] PCI: export pci_get_dma_device() helper to other
+ users
+Date: Mon, 28 Jul 2014 12:26:35 +0300
+Message-ID: <1406539595.8530.20.camel@smile.fi.intel.com>
+References: <1406295104-20082-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1406307516.1011.21.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42817 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750902AbaG1GJj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 28 Jul 2014 02:09:39 -0400
-Content-Disposition: inline
-In-Reply-To: <53D5D527.30501@synopsys.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1406307516.1011.21.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>, robh@kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>
 
-On Mon, Jul 28, 2014 at 10:14:23AM +0530, Vineet Gupta wrote:
-> Hi Greg,
-> 
-> On Friday 11 July 2014 04:11 AM, gregkh@linuxfoundation.org wrote:
+On Fri, 2014-07-25 at 10:58 -0600, Alex Williamson wrote:
+> On Fri, 2014-07-25 at 16:31 +0300, Andy Shevchenko wrote:
+> > Some chipsets use the function 0 for DMA on other functions of a
+> > multifunctional device. One of the example is Intel EG20T PCH. This is also
+> > applicable to Lynxpoint PCH when LPSS devices are switched to PCI mode.
 > > 
-> > This is a note to let you know that I've just added the patch titled
+> > This patch exports a useful helper to get a device of the DMA. This device is
+> > needed to request a DMA channel from a proper controller.
 > > 
-> >     ARC: [arcfpga] stdout-path now suffices for earlycon/console
-> > 
-> > to my tty git tree which can be found at
-> >     git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-> > in the tty-next branch.
-> > 
-> > The patch will show up in the next release of the linux-next tree
-> > (usually sometime within the next 24 hours during the week.)
-> > 
-> > The patch will also be merged in the next major kernel release
-> > during the merge window.
-> > 
-> > If you have any questions about this process, please let me know.
-> > 
-> > 
-> >>From 9da433c0a0b5f71ac92dc9dca778295649675f08 Mon Sep 17 00:00:00 2001
-> > From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-> > Date: Tue, 24 Jun 2014 13:55:15 +0530
-> > Subject: ARC: [arcfpga] stdout-path now suffices for earlycon/console
-> > 
-> > With recent improvements to serial/of core from Grant and Rob,
-> > stdout-path alone suffices for setting up earlycon/console.
-> > 
-> > arc_uart driver is already equipped to handle that, switch the DT now.
-> > 
-> > Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > > ---
-> >  arch/arc/boot/dts/angel4.dts | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >  drivers/pci/quirks.c | 2 +-
+> >  include/linux/pci.h  | 9 +++++++++
+> >  2 files changed, 10 insertions(+), 1 deletion(-)
 > > 
-> > diff --git a/arch/arc/boot/dts/angel4.dts b/arch/arc/boot/dts/angel4.dts
-> > index 6b57475967a6..298a46daa633 100644
-> > --- a/arch/arc/boot/dts/angel4.dts
-> > +++ b/arch/arc/boot/dts/angel4.dts
-> > @@ -17,7 +17,8 @@
-> >  	interrupt-parent = <&intc>;
+> > diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> > index 80c2d01..8352e5b 100644
+> > --- a/drivers/pci/quirks.c
+> > +++ b/drivers/pci/quirks.c
+> > @@ -3517,7 +3517,7 @@ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+> >  	if (!PCI_FUNC(dev->devfn))
+> >  		return pci_dev_get(dev);
 > >  
-> >  	chosen {
-> > -		bootargs = "earlycon=arc_uart,mmio32,0xc0fc1000,115200n8 console=ttyARC0,115200n8";
-> > +		bootargs = "earlycon";
-> > +		stdout-path = &arcuart0;
-> >  	};
+> > -	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+> > +	return pci_get_dma_device(dev);
+> >  }
 > >  
-> >  	aliases {
-> > 
+> >  static const struct pci_dev_dma_source {
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index 61978a4..86caab7 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -1575,6 +1575,15 @@ static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+> >  static inline void pci_dev_specific_enable_acs(struct pci_dev *dev) { }
+> >  #endif
+> >  
+> > +/*
+> > + * Some chipsets use the function 0 for DMA on other functions of a
+> > + * multifunctional device.
+> > + */
+> > +static inline struct pci_dev *pci_get_dma_device(struct pci_dev *dev)
+> > +{
+> > +	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+> > +}
+> > +
+> >  void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
+> >  void pcim_iounmap(struct pci_dev *pdev, void __iomem *addr);
+> >  void __iomem * const *pcim_iomap_table(struct pci_dev *pdev);
 > 
-> Could you please revert this single patch from tty-next for 3.17 as the needed
-> core changes are not yet finalized.
+> You've created a very generic function for a very specific problem.  I
+> can't just call this on any random device and expect it to work
+> correctly.
 
-Now reverted.
+Right.
+
+>   What about all the other device which use function 1 for
+> their DMA alias.
+
+Hmm... I would like to understand what the difference between DMA alias
+and the case when we have MFD where function 0 is real DMA controller
+which serves the other devices in that block is?
+
+Another (probably minor) question, why do you still have
+pci_get_dma_source() function in quirks.c?
+
+>   We've just added infrastructure in PCI to support DMA
+> aliases, see pci_for_each_dma_alias().  Please use this instead.  Quirks
+> can be added to set the dma_alias_devfn and
+> PCI_DEV_FLAGS_DMA_ALIAS_DEVFN to indicate that it's valid.  Thanks,
+
+Do you mean I have to list all devices that, for example, are listed in
+the spi-topcliff-pch.c?
+
+
+-- 
+Andy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Intel Finland Oy
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
