@@ -1,80 +1,40 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] tty: serial: serial_core.c: printk replacement
-Date: Mon, 28 Jul 2014 20:28:01 +0530
-Message-ID: <1406559481-14084-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Support for RS485 on 8250 clone
+Date: Mon, 28 Jul 2014 17:19:56 +0200
+Message-ID: <CAPybu_2XurwztXTo+KwqKw1NpKFTLgPQ5AHyuO-z7-=65oAGqw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-oa0-f42.google.com ([209.85.219.42]:58558 "EHLO
+	mail-oa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750915AbaG1PUR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 28 Jul 2014 11:20:17 -0400
+Received: by mail-oa0-f42.google.com with SMTP id n16so8828433oag.15
+        for <linux-serial@vger.kernel.org>; Mon, 28 Jul 2014 08:20:16 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-printk replaced with corresponding pr_* 
-fixed two broken user-visible strings used by the printk
+Hello
+
+I have a device with a Fintek F81216A  LPC to 4 Uart device.
+
+One of the uarts is used as half duplex rs485 serial port. This means
+that it needs to be configured properly (logical level of rts, delays,
+etc...)
+
+I see that there is an API on the kernel to do this (TIOCGRS485),
+unfortunately the 8250 driver does not support it.
+
+1) Is there any interest on supporting this kind of hardware on the kernel?
+
+2) Some driver that I could use for inspiration?
+
+Thanks and best regards!
 
 
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
----
- drivers/tty/serial/serial_core.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 8bb19da..eb6e663 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -891,10 +891,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 			 */
- 			if (uport->flags & UPF_SPD_MASK) {
- 				char buf[64];
--				printk(KERN_NOTICE
--				       "%s sets custom speed on %s. This "
--				       "is deprecated.\n", current->comm,
--				       tty_name(port->tty, buf));
-+
-+				pr_notice(
-+					"%s sets custom speed on %s. This is deprecated.\n",
-+					current->comm,
-+					tty_name(port->tty, buf));
- 			}
- 			uart_change_speed(tty, state, NULL);
- 		}
-@@ -1974,8 +1975,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
- 			msleep(10);
- 		if (!tries)
--			printk(KERN_ERR "%s%s%s%d: Unable to drain "
--					"transmitter\n",
-+			pr_err("%s%s%s%d: Unable to drain transmitter\n",
- 			       uport->dev ? dev_name(uport->dev) : "",
- 			       uport->dev ? ": " : "",
- 			       drv->dev_name,
-@@ -2108,7 +2108,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 		break;
- 	}
- 
--	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-+	pr_info("%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
- 	       port->dev ? dev_name(port->dev) : "",
- 	       port->dev ? ": " : "",
- 	       drv->dev_name,
-@@ -2637,7 +2637,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	if (likely(!IS_ERR(tty_dev))) {
- 		device_set_wakeup_capable(tty_dev, 1);
- 	} else {
--		printk(KERN_ERR "Cannot register tty device on line %d\n",
-+		pr_err("Cannot register tty device on line %d\n",
- 		       uport->line);
- 	}
- 
-@@ -2672,7 +2672,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	BUG_ON(in_interrupt());
- 
- 	if (state->uart_port != uport)
--		printk(KERN_ALERT "Removing wrong port: %p != %p\n",
-+		pr_alert("Removing wrong port: %p != %p\n",
- 			state->uart_port, uport);
- 
- 	mutex_lock(&port_mutex);
+
 -- 
-1.8.1.2
-
-build tested on x86_64 and arm (mini2440 board)
+Ricardo Ribalda
