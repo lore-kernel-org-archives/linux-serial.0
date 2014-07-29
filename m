@@ -1,47 +1,101 @@
-From: =?UTF-8?B?SmnFmcOtIFByY2hhbA==?= <jiri.prchal@aksignal.cz>
-Subject: Re: Support for RS485 on 8250 clone
-Date: Tue, 29 Jul 2014 08:10:21 +0200
-Message-ID: <53D73ACD.4010602@aksignal.cz>
-References: <CAPybu_2XurwztXTo+KwqKw1NpKFTLgPQ5AHyuO-z7-=65oAGqw@mail.gmail.com>
-Reply-To: jiri.prchal@aksignal.cz
+From: jiwang <jiada_wang@mentor.com>
+Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
+ correct for i.MX6?
+Date: Tue, 29 Jul 2014 16:18:02 +0900
+Message-ID: <53D74AAA.7090103@mentor.com>
+References: <53CF3599.6040509@gmail.com> <53CFE38E.6070302@hurleysoftware.com> <53D0BFF1.30204@mentor.com> <53D0F4FC.1000302@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from router.aksignal.cz ([188.175.113.102]:60706 "EHLO
-	router.aksignal.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750988AbaG2GK0 (ORCPT
+Received: from relay1.mentorg.com ([192.94.38.131]:56723 "EHLO
+	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751223AbaG2HSI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jul 2014 02:10:26 -0400
-In-Reply-To: <CAPybu_2XurwztXTo+KwqKw1NpKFTLgPQ5AHyuO-z7-=65oAGqw@mail.gmail.com>
+	Tue, 29 Jul 2014 03:18:08 -0400
+In-Reply-To: <53D0F4FC.1000302@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dirk Behme <dirk.behme@de.bosch.com>
 
-Hi,
-as I know, the 8250 chip does not support RS485 rx/tx hw switching. You can do sw switching on some gpio.
-HW switching suports 16550 or higher.
+Hi Peter
 
-Dne 28.7.2014 v 17:19 Ricardo Ribalda Delgado napsal(a):
-> Hello
+On 07/24/2014 08:58 PM, Peter Hurley wrote:
+> Hi Jiada,
 >
-> I have a device with a Fintek F81216A  LPC to 4 Uart device.
+> On 07/24/2014 04:12 AM, jiwang wrote:
+>> Hi Peter
+>>
+>> On 07/24/2014 01:32 AM, Peter Hurley wrote:
+>>> Hi Dirk,
+>>>
+>>> On 07/23/2014 12:10 AM, Dirk Behme wrote:
+>>>> Hi,
+>>>>
+>>>> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
+>>>>
+>>>> serial: Test for no tx data on tx restart
+>>>>
+>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
+>>>>
+>>>> Talking with some i.MX6 experts about this, I've got the comment
+>>>>
+>>>> -- cut --
+>>>> The imx serial driver part of this commit isn't correct
+>>>> as imx.c sends x_char in irq handler, not in imx_start_tx(),
+>>>> -- cut --
+>>>>
+>>>> What do you think?
+>>> Thanks for the comment.
+>>>
+>>> Yeah, I missed that the imx driver handled x_char _at all_,
+>>> because how the imx driver is handling x_char looks broken.
+>>>
+>>> For example, if data is already in the tx ring buffer,
+>>> imx_start_tx() will send that data before the x_char, and if
+>>> all the tx ring buffer data is sent successfully, the tx
+>>> interrupt is switched back off, so the x_char won't be sent.
+>> imx_start_tx() doesn't do any actual data transfer
+> ???
 >
-> One of the uarts is used as half duplex rs485 serial port. This means
-> that it needs to be configured properly (logical level of rts, delays,
-> etc...)
->
-> I see that there is an API on the kernel to do this (TIOCGRS485),
-> unfortunately the 8250 driver does not support it.
->
-> 1) Is there any interest on supporting this kind of hardware on the kernel?
-It would be nice.
->
-> 2) Some driver that I could use for inspiration?
-Try Advantech web site, they have some, but not GPL.
->
-> Thanks and best regards!
+>     565	static void imx_start_tx(struct uart_port *port)
+>     566	{
+>     ...
+>     610	
+>     611		if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
+>     612			imx_transmit_buffer(sport);
+>     613	}
 >
 >
->
->
+>     463	static inline void imx_transmit_buffer(struct imx_port *sport)
+>     464	{
+>     465		struct circ_buf *xmit = &sport->port.state->xmit;
+>     466	
+>     467		while (!uart_circ_empty(xmit) &&
+>     468				!(readl(sport->port.membase + uts_reg(sport))
+>     469					& UTS_TXFULL)) {
+>     470			/* send xmit->buf[xmit->tail]
+>     471			 * out the port here */
+>     472			writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
+>     473			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+>     474			sport->port.icount.tx++;
+>     475		}
+>     476	
+>     477		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>     478			uart_write_wakeup(&sport->port);
+>     479	
+>     480		if (uart_circ_empty(xmit))
+>     481			imx_stop_tx(&sport->port);
+>     482	}
+sorry,  our imx driver has been modified differently,
+yes, you are right, mainline imx driver's handling of x_char looks broken
+
+@Shijie,
+do you have any comment?
+
+Thanks,
+Jiada
+> Regards,
+> Peter Hurley
+
