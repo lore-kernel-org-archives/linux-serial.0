@@ -1,101 +1,68 @@
-From: jiwang <jiada_wang@mentor.com>
-Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
- correct for i.MX6?
-Date: Tue, 29 Jul 2014 16:18:02 +0900
-Message-ID: <53D74AAA.7090103@mentor.com>
-References: <53CF3599.6040509@gmail.com> <53CFE38E.6070302@hurleysoftware.com> <53D0BFF1.30204@mentor.com> <53D0F4FC.1000302@hurleysoftware.com>
+From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Subject: Re: [PATCH 3/3] driver:gpio remove all usage of gpio_remove retval
+ in driver
+Date: Tue, 29 Jul 2014 14:30:56 +0300
+Message-ID: <53D785F0.1000309@ti.com>
+References: <CACRpkda6mzVdaN0cvOxpbsxWyCv2nGyDXOjZg_5aT8u7SSQeUw@mail.gmail.com>	<1405197014-25225-1-git-send-email-berthe.ab@gmail.com>	<1405197014-25225-4-git-send-email-berthe.ab@gmail.com> <CACRpkdasp9bLULT7NJM9nYX58rRSsQKXFddOLz9Ah6kp-j-3=Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="nDvig6w1IaO5idwNJGff6KXjnBUdsJGt1"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:56723 "EHLO
-	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751223AbaG2HSI (ORCPT
+Received: from devils.ext.ti.com ([198.47.26.153]:36485 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752947AbaG2Lby (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jul 2014 03:18:08 -0400
-In-Reply-To: <53D0F4FC.1000302@hurleysoftware.com>
+	Tue, 29 Jul 2014 07:31:54 -0400
+In-Reply-To: <CACRpkdasp9bLULT7NJM9nYX58rRSsQKXFddOLz9Ah6kp-j-3=Q@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Dirk Behme <dirk.behme@gmail.com>, linux-serial@vger.kernel.org, Huang Shijie <b32955@freescale.com>
-Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dirk Behme <dirk.behme@de.bosch.com>
+To: Linus Walleij <linus.walleij@linaro.org>, abdoulaye berthe <berthe.ab@gmail.com>, "arm@kernel.org" <arm@kernel.org>, Ralf Baechle <ralf@linux-mips.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>, Jiri Kosina <jkosina@suse.cz>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Bryan Wu <cooloney@gmail.com>, Mauro Carvalho Chehab <m.chehab@samsung.com>, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Matthew Garrett <matthew.garrett@nebula.com>, Michael Buesch <m@bues.ch>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-mips@linux-mips.org, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Linux Input <linux-input@vger.kernel.org>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
 
-Hi Peter
+--nDvig6w1IaO5idwNJGff6KXjnBUdsJGt1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 07/24/2014 08:58 PM, Peter Hurley wrote:
-> Hi Jiada,
->
-> On 07/24/2014 04:12 AM, jiwang wrote:
->> Hi Peter
->>
->> On 07/24/2014 01:32 AM, Peter Hurley wrote:
->>> Hi Dirk,
->>>
->>> On 07/23/2014 12:10 AM, Dirk Behme wrote:
->>>> Hi,
->>>>
->>>> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
->>>>
->>>> serial: Test for no tx data on tx restart
->>>>
->>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
->>>>
->>>> Talking with some i.MX6 experts about this, I've got the comment
->>>>
->>>> -- cut --
->>>> The imx serial driver part of this commit isn't correct
->>>> as imx.c sends x_char in irq handler, not in imx_start_tx(),
->>>> -- cut --
->>>>
->>>> What do you think?
->>> Thanks for the comment.
->>>
->>> Yeah, I missed that the imx driver handled x_char _at all_,
->>> because how the imx driver is handling x_char looks broken.
->>>
->>> For example, if data is already in the tx ring buffer,
->>> imx_start_tx() will send that data before the x_char, and if
->>> all the tx ring buffer data is sent successfully, the tx
->>> interrupt is switched back off, so the x_char won't be sent.
->> imx_start_tx() doesn't do any actual data transfer
-> ???
->
->     565	static void imx_start_tx(struct uart_port *port)
->     566	{
->     ...
->     610	
->     611		if (readl(sport->port.membase + uts_reg(sport)) & UTS_TXEMPTY)
->     612			imx_transmit_buffer(sport);
->     613	}
->
->
->     463	static inline void imx_transmit_buffer(struct imx_port *sport)
->     464	{
->     465		struct circ_buf *xmit = &sport->port.state->xmit;
->     466	
->     467		while (!uart_circ_empty(xmit) &&
->     468				!(readl(sport->port.membase + uts_reg(sport))
->     469					& UTS_TXFULL)) {
->     470			/* send xmit->buf[xmit->tail]
->     471			 * out the port here */
->     472			writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
->     473			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
->     474			sport->port.icount.tx++;
->     475		}
->     476	
->     477		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->     478			uart_write_wakeup(&sport->port);
->     479	
->     480		if (uart_circ_empty(xmit))
->     481			imx_stop_tx(&sport->port);
->     482	}
-sorry,  our imx driver has been modified differently,
-yes, you are right, mainline imx driver's handling of x_char looks broken
+On 22/07/14 18:08, Linus Walleij wrote:
+> On Sat, Jul 12, 2014 at 10:30 PM, abdoulaye berthe <berthe.ab@gmail.com=
+> wrote:
+>=20
+> Heads up. Requesting ACKs for this patch or I'm atleast warning that it=
+ will be
+> applied. We're getting rid of the return value from gpiochip_remove().
 
-@Shijie,
-do you have any comment?
+>>  drivers/video/fbdev/via/via-gpio.c             | 10 +++-------
+>=20
+> Tomi can you ACK this?
 
-Thanks,
-Jiada
-> Regards,
-> Peter Hurley
+Acked-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
 
+ Tomi
+
+
+
+--nDvig6w1IaO5idwNJGff6KXjnBUdsJGt1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJT14X1AAoJEPo9qoy8lh71gvsP/iJDf8dcnv2JZFloH/noIb3s
+DCXfxyTW2zDeWEEH7rLW+fP5JKu5TutqOCF2Y85HaPa/DV1iMI4S+IUeEwNiw0wd
+JTwMqUbS2ua22J87F1Oc5kXshDk+uqLRfpxO7xs0Pd/JcsrOgA7zqJN67jeDwQo/
+XsiRTBmJ3CNR/qur7AKN8toHdZp+KaHZ/4cazUxxp/cu71eFuRfFJMjE/cGk8cva
+fsIrugCAFjYIy3z88VtW4VPj1rcNDYUlxcklbpNtosOKUuPfNoDwToLUCdjE22G9
+v93XHZKlv0iWso5fo9HA2BTDK7N37WMsyktqF1ULEUiKIyoWs6a0WG9eREVLKlpi
+ugiCLH6c4jQYycmSTmFGZnzuhz5hN5oirXpKtba6hVHh6ZNkIkGtFElGTZYjVhKn
+k06HXBVTTYwf4pg2PGSGPsl2dIx0Zyl8pG+iFn10LSxELxbNU6N/wYzf6LquPLok
+cnnfX2riaFV6DgQHhHlTqr0tN6NFb8smYeH9rq37+4GyVYnokXuBMJ+qQ5In8BDZ
+9ZgW2N1PH2aRO2RZERVwll4otqtZgJcmWdAgeZzjkl0nBpWH8X78c41O3T3LUscq
+3cDDyXHCLDGabHGuab5JPofNnN1GW8xM/wN8jLmH/abZICdjfGqRVzaQh7FJjc97
+PbSJaJG3ZaHHHc6LWcil
+=W85Y
+-----END PGP SIGNATURE-----
+
+--nDvig6w1IaO5idwNJGff6KXjnBUdsJGt1--
