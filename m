@@ -1,125 +1,114 @@
-From: Frans Klaver <frans.klaver@xsens.com>
-Subject: [PATCH 2/3] tty: omap-serial: use threaded interrupt handler
-Date: Tue, 29 Jul 2014 16:52:56 +0200
-Message-ID: <1406645577-18620-3-git-send-email-frans.klaver@xsens.com>
-References: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH 1/2] serial/8250: Add support for RS485 IOCTLs
+Date: Tue, 29 Jul 2014 18:27:21 +0200
+Message-ID: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from filter1.ibarracuda.nl ([83.247.7.10]:33642 "EHLO
-	filter1.ibarracuda.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754008AbaG2PFY (ORCPT
+Received: from mail-la0-f50.google.com ([209.85.215.50]:42212 "EHLO
+	mail-la0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751282AbaG2Q13 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 29 Jul 2014 11:05:24 -0400
-Received: from XSMCASSVR01.xsens-tech.local (rev-215.116.249.87.virtu.nl [87.249.116.215]) by filter1.ibarracuda.nl with ESMTP id GyqqfjEBGEwIOSOj (version=TLSv1 cipher=AES128-SHA bits=128 verify=NO) for <linux-serial@vger.kernel.org>; Tue, 29 Jul 2014 16:53:31 +0200 (CEST)
-In-Reply-To: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
+	Tue, 29 Jul 2014 12:27:29 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Frans Klaver <frans.klaver@xsens.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Murali Karicheri <m-karicheri2@ti.com>, Jingoo Han <jg1.han@samsung.com>, Michael Welling <mwelling@ieee.org>, Peter Hurley <peter@hurleysoftware.com>, Joe Schultz <jschultz@xes-inc.com>, Ingo Molnar <mingo@elte.hu>, Doug Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-At 3.6Mbaud, with slightly over 2Mbit/s data coming in, we see 1600 uart
-rx buffer overflows within 30 seconds. Threading the interrupt handling reduces
-this to about 170 overflows in 10 minutes.
+This patch allow the users of the 8250 infrastructure to define a
+handler for RS485 configration.
 
-In practice this therefore reduces the need for hardware flow control,
-meaning the sending side doesn't have to buffer as much either.
+If no handler is defined the 8250 driver will work as usual.
 
-Signed-off-by: Frans Klaver <frans.klaver@xsens.com>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serial/omap-serial.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 39 +++++++++++++++++++++++++++++++++++++
+ include/linux/serial_8250.h         |  3 +++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index e454b7c..ff2d931 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -569,6 +569,21 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 1d42dba..b28ed1b 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -2843,6 +2843,42 @@ serial8250_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	return 0;
  }
  
- /**
-+ * serial_omap_fast_irq() - schedule interrupt handling
-+ */
-+static irqreturn_t serial_omap_fast_irq(int irq, void *dev_id)
++static int serial8250_ioctl(struct uart_port *port, unsigned int cmd,
++			   unsigned long arg)
 +{
-+	struct uart_omap_port *up = dev_id;
-+	unsigned int iir = serial_in(up, UART_IIR);
-+	if (iir & UART_IIR_NO_INT) {
-+		return IRQ_NONE;
++	struct uart_8250_port *up =
++		container_of(port, struct uart_8250_port, port);
++	int ret;
++	struct serial_rs485 rs485_config;
++
++	if (!up->rs485_config)
++		return -ENOIOCTLCMD;
++
++	switch (cmd) {
++	case TIOCSRS485:
++		if (copy_from_user(&rs485_config, (void __user *)arg,
++				   sizeof(rs485_config)))
++			return -EFAULT;
++
++		ret = up->rs485_config(up, &rs485_config);
++		if (ret)
++			return ret;
++
++		memcpy(&up->rs485, &rs485_config, sizeof(rs485_config));
++
++		return 0;
++	case TIOCGRS485:
++		if (copy_to_user((void __user *)arg, &up->rs485,
++				 sizeof(up->rs485)))
++			return -EFAULT;
++		return 0;
++	default:
++		break;
 +	}
 +
-+	disable_irq_nosync(up->port.irq);
-+	return IRQ_WAKE_THREAD;
++	return -ENOIOCTLCMD;
 +}
 +
-+/**
-  * serial_omap_irq() - This handles the interrupt from one port
-  * @irq: uart port irq number
-  * @dev_id: uart port info
-@@ -578,18 +593,12 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 	struct uart_omap_port *up = dev_id;
- 	unsigned int iir, lsr;
- 	unsigned int type;
--	irqreturn_t ret = IRQ_NONE;
- 	int max_count = 256;
+ static const char *
+ serial8250_type(struct uart_port *port)
+ {
+@@ -2872,6 +2908,7 @@ static struct uart_ops serial8250_pops = {
+ 	.request_port	= serial8250_request_port,
+ 	.config_port	= serial8250_config_port,
+ 	.verify_port	= serial8250_verify_port,
++	.ioctl		= serial8250_ioctl,
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_get_char = serial8250_get_poll_char,
+ 	.poll_put_char = serial8250_put_poll_char,
+@@ -3388,6 +3425,8 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		uart->port.fifosize	= up->port.fifosize;
+ 		uart->tx_loadsz		= up->tx_loadsz;
+ 		uart->capabilities	= up->capabilities;
++		uart->rs485_config	= up->rs485_config;
++		uart->rs485		= up->rs485;
  
- 	spin_lock(&up->port.lock);
- 	pm_runtime_get_sync(up->dev);
+ 		/* Take tx_loadsz from fifosize if it wasn't set separately */
+ 		if (uart->port.fifosize && !uart->tx_loadsz)
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index f93649e..c022370 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -70,6 +70,7 @@ struct uart_8250_dma;
  
- 	do {
--		iir = serial_in(up, UART_IIR);
--		if (iir & UART_IIR_NO_INT)
--			break;
--
--		ret = IRQ_HANDLED;
- 		lsr = serial_in(up, UART_LSR);
+ struct uart_8250_port {
+ 	struct uart_port	port;
++	struct serial_rs485     rs485;
+ 	struct timer_list	timer;		/* "no irq" timer */
+ 	struct list_head	list;		/* ports on this IRQ */
+ 	unsigned short		capabilities;	/* port capabilities */
+@@ -100,6 +101,8 @@ struct uart_8250_port {
+ 	/* 8250 specific callbacks */
+ 	int			(*dl_read)(struct uart_8250_port *);
+ 	void			(*dl_write)(struct uart_8250_port *, int);
++	int			(*rs485_config)(struct uart_8250_port *,
++						struct serial_rs485 *rs485);
+ };
  
- 		/* extract IRQ type from IIR register */
-@@ -618,17 +627,21 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
- 		default:
- 			break;
- 		}
-+
-+		iir = serial_in(up, UART_IIR);
- 	} while (!(iir & UART_IIR_NO_INT) && max_count--);
- 
- 	spin_unlock(&up->port.lock);
- 
- 	tty_flip_buffer_push(&up->port.state->port);
- 
-+	enable_irq(up->port.irq);
-+
- 	pm_runtime_mark_last_busy(up->dev);
- 	pm_runtime_put_autosuspend(up->dev);
- 	up->port_activity = jiffies;
- 
--	return ret;
-+	return IRQ_HANDLED;
- }
- 
- static unsigned int serial_omap_tx_empty(struct uart_port *port)
-@@ -725,15 +738,17 @@ static int serial_omap_startup(struct uart_port *port)
- 	/*
- 	 * Allocate the IRQ
- 	 */
--	retval = request_irq(up->port.irq, serial_omap_irq, up->port.irqflags,
--				up->name, up);
-+	retval = request_threaded_irq(up->port.irq, serial_omap_fast_irq,
-+					serial_omap_irq, up->port.irqflags,
-+					up->name, up);
- 	if (retval)
- 		return retval;
- 
- 	/* Optional wake-up IRQ */
- 	if (up->wakeirq) {
--		retval = request_irq(up->wakeirq, serial_omap_irq,
--				     up->port.irqflags, up->name, up);
-+		retval = request_threaded_irq(up->wakeirq, serial_omap_fast_irq,
-+					serial_omap_irq, up->port.irqflags,
-+					up->name, up);
- 		if (retval) {
- 			free_irq(up->port.irq, up);
- 			return retval;
+ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
 -- 
-1.9.3
+2.0.1
 
