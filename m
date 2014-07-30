@@ -1,39 +1,89 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 2/7] dmaengine: omap-dma: complete the transfer on terminate_all
-Date: Tue, 29 Jul 2014 21:06:12 +0200
-Message-ID: <53D7F0A4.2050301@linutronix.de>
-References: <1406660344-25307-1-git-send-email-bigeasy@linutronix.de> <1406660344-25307-3-git-send-email-bigeasy@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1406660344-25307-3-git-send-email-bigeasy@linutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Russell King <rmk+kernel@arm.linux.org.uk>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH] tty: serial: serial_core.c: printk replacement
+Date: Wed, 30 Jul 2014 19:37:16 +0530
+Message-ID: <1406729236-19887-1-git-send-email-sudipm.mukherjee@gmail.com>
+References: <[PATCH] tty: serial: serial_core.c: printk replacement>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:57163 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752645AbaG3OH4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Jul 2014 10:07:56 -0400
+In-Reply-To: <[PATCH] tty: serial: serial_core.c: printk replacement>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 07/29/2014 08:58 PM, Sebastian Andrzej Siewior wrote:
-> diff --git a/drivers/dma/omap-dma.c b/drivers/dma/omap-dma.c
-> index b19f04f..81ede01 100644
-> --- a/drivers/dma/omap-dma.c
-> +++ b/drivers/dma/omap-dma.c
-> @@ -970,6 +970,12 @@ static int omap_dma_terminate_all(struct omap_chan *c)
->  
->  	/* Prevent this channel being scheduled */
->  	spin_lock(&d->lock);
-> +	if (!c->desc && !list_empty(&c->node)) {
-> +		struct virt_dma_desc *vd = vchan_next_desc(&c->vc);
-> +
-> +		if (vd)
-> +			dma_cookie_complete(&vd->tx);
-> +	}
 
-Why is start of the transfer deferred to the tasklet unless it is a
-periodic transfer? Couldn't it be started right away?
+printk replaced with corresponding dev_* 
+fixed two broken user-visible strings used by the corresponding printk
 
->  	list_del_init(&c->node);
->  	spin_unlock(&d->lock);
->  
 
-Sebastian
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 8bb19da..ef48d0f 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -891,10 +891,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 			 */
+ 			if (uport->flags & UPF_SPD_MASK) {
+ 				char buf[64];
+-				printk(KERN_NOTICE
+-				       "%s sets custom speed on %s. This "
+-				       "is deprecated.\n", current->comm,
+-				       tty_name(port->tty, buf));
++
++				dev_notice(uport->dev,
++				"%s sets custom speed on %s. This is deprecated.\n",
++				current->comm, tty_name(port->tty, buf));
+ 			}
+ 			uart_change_speed(tty, state, NULL);
+ 		}
+@@ -1974,8 +1974,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
+ 			msleep(10);
+ 		if (!tries)
+-			printk(KERN_ERR "%s%s%s%d: Unable to drain "
+-					"transmitter\n",
++			dev_err(uport->dev,
++				"%s%s%s%d: Unable to drain transmitter\n",
+ 			       uport->dev ? dev_name(uport->dev) : "",
+ 			       uport->dev ? ": " : "",
+ 			       drv->dev_name,
+@@ -2108,7 +2108,8 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 		break;
+ 	}
+ 
+-	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
++	dev_info(port->dev,
++		       "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
+ 	       port->dev ? dev_name(port->dev) : "",
+ 	       port->dev ? ": " : "",
+ 	       drv->dev_name,
+@@ -2637,7 +2638,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	if (likely(!IS_ERR(tty_dev))) {
+ 		device_set_wakeup_capable(tty_dev, 1);
+ 	} else {
+-		printk(KERN_ERR "Cannot register tty device on line %d\n",
++		dev_err(uport->dev, "Cannot register tty device on line %d\n",
+ 		       uport->line);
+ 	}
+ 
+@@ -2672,7 +2673,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	BUG_ON(in_interrupt());
+ 
+ 	if (state->uart_port != uport)
+-		printk(KERN_ALERT "Removing wrong port: %p != %p\n",
++		dev_alert(uport->dev, "Removing wrong port: %p != %p\n",
+ 			state->uart_port, uport);
+ 
+ 	mutex_lock(&port_mutex);
+-- 
+1.8.1.2
+
+build tested on x86_64 and arm (mini2440 board)
