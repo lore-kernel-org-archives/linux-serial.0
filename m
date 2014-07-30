@@ -1,64 +1,43 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH] tty: serial: serial_core.c: printk replacement
-Date: Wed, 30 Jul 2014 20:22:14 +0530
-Message-ID: <CADVatmOooxEKJ26i9nED2OKmBghOwuz6fjGJmYO0tuopTEoLDw@mail.gmail.com>
-References: <1406729236-19887-1-git-send-email-sudipm.mukherjee@gmail.com>
-	<53D90340.3010000@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH] pch_uart: don't hardcode PCI slot to get DMA device
+Date: Wed, 30 Jul 2014 18:59:52 +0300
+Message-ID: <1406735992-7477-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f54.google.com ([209.85.192.54]:49120 "EHLO
-	mail-qg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753477AbaG3OwP (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 30 Jul 2014 10:52:15 -0400
-In-Reply-To: <53D90340.3010000@suse.cz>
+Received: from mga14.intel.com ([192.55.52.115]:47903 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754405AbaG3QAj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 30 Jul 2014 12:00:39 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Wed, Jul 30, 2014 at 8:07 PM, Jiri Slaby <jslaby@suse.cz> wrote:
-> On 07/30/2014, 04:07 PM, Sudip Mukherjee wrote:
->> printk replaced with corresponding dev_*
->> fixed two broken user-visible strings used by the corresponding printk
->>
->>
->> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
->> ---
->>  drivers/tty/serial/serial_core.c | 19 ++++++++++---------
->>  1 file changed, 10 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->> index 8bb19da..ef48d0f 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
-> ...
->> @@ -1974,8 +1974,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
->>               for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
->>                       msleep(10);
->>               if (!tries)
->> -                     printk(KERN_ERR "%s%s%s%d: Unable to drain "
->> -                                     "transmitter\n",
->> +                     dev_err(uport->dev,
->> +                             "%s%s%s%d: Unable to drain transmitter\n",
->>                              uport->dev ? dev_name(uport->dev) : "",
->
-> Hi, this does not look correct. You use uport->dev, but there is a test
-> whether it is NULL in the parameters.
->
-> You would have to investigate if and when uport->dev can be NULL and
-> document it in the commit log above.
+The DMA is a function 0 of the multifunction device where SPI host is attached.
+Thus, we may avoid to hardcode PCI slot number.
 
-HI
-Thanks for reviewing it . I am checking out all the cases in which
-uport can be null and will resend the patch.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/pch_uart.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Thanks
-Sudip
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 2f06e5a..ea4ffc2 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -736,9 +736,10 @@ static void pch_request_dma(struct uart_port *port)
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
+ 
+-	dma_dev = pci_get_bus_and_slot(priv->pdev->bus->number,
+-				       PCI_DEVFN(0xa, 0)); /* Get DMA's dev
+-								information */
++	/* Get DMA's dev information */
++	dma_dev = pci_get_slot(priv->pdev->bus,
++			PCI_DEVFN(PCI_SLOT(priv->pdev->devfn), 0));
++
+ 	/* Set Tx DMA */
+ 	param = &priv->param_tx;
+ 	param->dma_dev = &dma_dev->dev;
+-- 
+2.0.1
 
->
-> thanks,
-> --
-> js
-> suse labs
