@@ -1,129 +1,89 @@
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: ARC fails to boot on linux-next of 20140711
-Date: Wed, 30 Jul 2014 21:25:27 -0600
-Message-ID: <20140731032527.D2C5AC40A02@trevor.secretlab.ca>
-References: <C2D7FE5348E1B147BCA15975FBA230753C4B67CF@IN01WEMBXA.internal.synopsys.com>
-	<CAL_JsqJ2q0RSvXQW03RqwwBi_TKQ7Zt6DsUbsUruzh5oqYi5Cg@mail.gmail.com>
-	<C2D7FE5348E1B147BCA15975FBA230753C4B7DD5@IN01WEMBXA.internal.synopsys.com>
-	<20140726165055.D3E64C43E0B@trevor.secretlab.ca>
-	<CAL_JsqLR65PcLhoQR6VaQvrLLbPOR1tLx9oLEinYkkATSKxbKQ@mail.gmail.com>
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqLR65PcLhoQR6VaQvrLLbPOR1tLx9oLEinYkkATSKxbKQ@mail.gmail.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, linux-next <linux-next@vger.kernel.org>, Anton Kolesov <Anton.Kolesov@synopsys.com>, lkml <linux-kernel@vger.kernel.org>, greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 1/7] dmaengine: edma: fix two faults which happen with
+ the 8250_dma user
+Date: Thu, 31 Jul 2014 17:47:02 +0530
+Message-ID: <20140731121702.GU8181@intel.com>
+References: <1406660344-25307-1-git-send-email-bigeasy@linutronix.de>
+ <1406660344-25307-2-git-send-email-bigeasy@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:29670 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750702AbaGaM0I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jul 2014 08:26:08 -0400
+Content-Disposition: inline
+In-Reply-To: <1406660344-25307-2-git-send-email-bigeasy@linutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Joel Fernandes <joelf@ti.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org
 
-On Sat, 26 Jul 2014 15:10:28 -0500, Rob Herring <robherring2@gmail.com> wrote:
-> On Sat, Jul 26, 2014 at 11:50 AM, Grant Likely
-> <grant.likely@secretlab.ca> wrote:
-> > On Sat, 26 Jul 2014 06:52:36 +0000, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
-> >> Hi Rob,
-> >>
-> >> On Friday 25 July 2014 07:45 PM, Rob Herring wrote:
-> >> > On Fri, Jul 25, 2014 at 6:02 AM, Vineet Gupta
-> >> > <Vineet.Gupta1@synopsys.com> wrote:
-> >> >> > Hi Grant,
-> >> >> >
-> >> >> > linux-next has a series for arc_uart (via tty tree) which converts it to generic
-> >> >> > earlycon and specifies console via /chosen/stdout-path vs.  an explicit param in
-> >> >> > /chose/bootargs
-> >> >> >
-> >> >> > 2014-06-24 9da433c0a0b5 ARC: [arcfpga] stdout-path now suffices for earlycon/console
-> >> >> >
-> >> >> > This relied on prev commit of yours (from linux next of 20140711), which seem to
-> >> >> > have disappeared now.
-> >> >> >
-> >> >> > 2014-03-27 a9296cf2d0b6 of: Create of_console_check() for selecting a console
-> >> >> > specified in /chosen
-> >> >> > 2014-03-27 cfa9cacc5dd3 of: Enable console on serial ports specified by
-> >> >> > /chosen/stdout-path
-> >> >> >
-> >> >> > Is there a specific reason for dropping these patches (or perhaps a merge to be
-> >> >> > merged). I cherry-picked both but still doesn't work.
-> >> >> >
-> >> >> > Can you please advise next step forward, before I go off debugging with those
-> >> >> > patches in.
-> >> > There's an issue that if you have stdout-path and "earlycon" on the
-> >> > command line, the kernel will switch to tty0 and disable the earlycon.
-> >> >
-> >> > This is the "fix", but I don't like adding the DT dependency into generic code:
-> >> >
-> >> > @@ -2382,7 +2386,7 @@ void register_console(struct console *newcon)
-> >> >                 if (newcon->setup == NULL ||
-> >> >                     newcon->setup(newcon, NULL) == 0) {
-> >> >                         newcon->flags |= CON_ENABLED;
-> >> > -                       if (newcon->device) {
-> >> > +                       if (newcon->device  && !of_stdout) {
-> >> >                                 newcon->flags |= CON_CONSDEV;
-> >> >                                 preferred_console = 0;
-> >> >                         }
-> >>
-> >> The DT settings relevant for ARC, which enable generic-earlycon and
-> >> console-with-stdout-path are as follows
-> >>
-> >>         chosen {
-> >>                 bootargs = "earlycon";
-> >>                 stdout-path = &arcuart0;
-> >>         };
-> >>
-> >> ....
-> >>                 arcuart0: serial@c0fc1000 {
-> >>                         compatible = "snps,arc-uart";
-> >>
-> >> And it works w/o above hunk, provided the 2 patches from Grant exist in linux-next
-> >> which they don't at the moment. I'm pretty confused how the hunk above comes into
-> >> picture.
-> >>
-> >> And if not then I will have to get the ARC std-out patch reverted in tty-next as
-> >> it is broken.
-> >
-> > You need to revert it anyway, the dependency chain is broken. Just
-> > because something is in linux-next doesn't mean it will be merged.
-> > Dependencies must always be in the branch to which you commit.
-> >
-> > If that doesn't happen (like here) then bisecting is broken and the
-> > dependencies may not actually get merged.
-> >
-> > When this happens, what you're supposed to do is tell the maintainers
-> > what commits the patch depends on so that it can be applied to the
-> > correct tree. In this case I could take it through my devicetree branch
-> > that contains the console patches.
-> >
-> > If a patch depends on commits in several branches then it is a bit more
-> > complex. What we usually do is create a new branch that merges in each
-> > branch that is depended on, and then apply the commit on top of that.
-> >
-> > As for the console patches, I'm only going to be putting them back if I
-> > can devise a good fix for the earlycon duplication issue.
+On Tue, Jul 29, 2014 at 08:58:58PM +0200, Sebastian Andrzej Siewior wrote:
+> The rx path of the 8250_dma user in the RX-timeout case:
+> - it starts the RX transfer
+> - if the rx-timeout interrupt occures, it dmaengine_pause() the transfer
+> - step two is dmaengine_terminate_all() on this channel.
+Okay after this whole channel needs to be reset, which means all the
+descriptors are discared.
+> - based on dmaengine_tx_status() it learns the number of transfered
+>   bytes.
+> - the rx interrupt occures,
+why, channel is terminated, so existing txn needs to be aborted too
+
+>   it does not start the RX-transfer because
+>   according to dmaengine_tx_status() the status of the current transfer
+>   is still DMA_IN_PROGRESS because the earlier dmaengine_terminate_all()
+>   did not reset this.
+there is no current transfer anymore
+
+> - on rx-timeout it invokes dmaengine_pause() again. This time, it
+>   segfaults because the channel has no descriptor yet.
 > 
-> There is also a simple work-around. You have to specify the console
-> when you use earlycon. For example, you can add "earlycon
-> console=ttyAMA0" instead of just earlycon. To summarize, this is the
-> state of combinations of console params:
+> To make the upper case work better, this patch adds dma_cookie_complete()
+> to complete the cookie. Also it adds is an additional check for echan->edesc
+> in case the channel has no descriptor assigned.
+I think we are fixing the behvaiour rather than cause. terminate_all(()
+needs to do a proper cleanup of the channel
+
+And this looks a series, without cover letter sent to all. Which makes it a
+bit hard to see what is getting done
+
+-- 
+~Vinod
 > 
-> Working:
-> stdout-path
-> console=blah
-> stdout-path + console=blah
-> earlycon=blah
+> Cc: Joel Fernandes <joelf@ti.com>
+> Cc: Vinod Koul <vinod.koul@intel.com>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: dmaengine@vger.kernel.org
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/dma/edma.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> Not working:
-> stdout-path + earlycon
+> diff --git a/drivers/dma/edma.c b/drivers/dma/edma.c
+> index d08c4de..ff05dd4 100644
+> --- a/drivers/dma/edma.c
+> +++ b/drivers/dma/edma.c
+> @@ -256,6 +256,7 @@ static int edma_terminate_all(struct edma_chan *echan)
+>  	 * echan->edesc is NULL and exit.)
+>  	 */
+>  	if (echan->edesc) {
+> +		dma_cookie_complete(&echan->edesc->vdesc.tx);
+>  		echan->edesc = NULL;
+>  		edma_stop(echan->ch_num);
+>  	}
+> @@ -282,7 +283,7 @@ static int edma_slave_config(struct edma_chan *echan,
+>  static int edma_dma_pause(struct edma_chan *echan)
+>  {
+>  	/* Pause/Resume only allowed with cyclic mode */
+> -	if (!echan->edesc->cyclic)
+> +	if (!echan->edesc || !echan->edesc->cyclic)
+>  		return -EINVAL;
+>  
+>  	edma_pause(echan->ch_num);
+> -- 
+> 2.0.1
 > 
-> Also, it is a developer only feature which is new. You will be aware
-> of an issue because the earlycon starts output and then stops on
-> switching to tty0 versus complete silence which could be anything.
 
-Fair enough. Okay, I'm going to put it back into linux-next. The proper
-fix can come later.
-
-> There are other landmines in this area already. For example, setting
-> earlycon on ARM will break the boot because an ioremap is attempted
-> before paging_init. This is nothing new, but has always been the case
-> if the 8250 driver was enabled.
-
-We should not allow earlycon to be selectable on ARM until this is
-fixed. Can you do a patch for this?
-
-g.
+-- 
