@@ -1,18 +1,17 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 2/2] serial: Add support for Fintek F81216A LPC to 4 UART
-Date: Thu, 31 Jul 2014 18:07:55 +0200
-Message-ID: <CAPybu_1Ma+7nGaS0e17HpPcM1vk6ANSFN3C8MNR=JxWrBBmMOA@mail.gmail.com>
-References: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
- <1406651242-20689-2-git-send-email-ricardo.ribalda@gmail.com> <20140731151941.244fd508@alan.etchedpixels.co.uk>
+Subject: Re: [PATCH 1/2] serial/8250: Add support for RS485 IOCTLs
+Date: Thu, 31 Jul 2014 18:13:10 +0200
+Message-ID: <CAPybu_3-Ve2cy3e8Az521cT_v0zfeNnnCoB_hy83=L17pUi9GA@mail.gmail.com>
+References: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com> <20140731150753.3f12fc2f@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oi0-f46.google.com ([209.85.218.46]:44098 "EHLO
-	mail-oi0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750911AbaGaQIR (ORCPT
+Received: from mail-oa0-f43.google.com ([209.85.219.43]:58509 "EHLO
+	mail-oa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751255AbaGaQS6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jul 2014 12:08:17 -0400
-In-Reply-To: <20140731151941.244fd508@alan.etchedpixels.co.uk>
+	Thu, 31 Jul 2014 12:18:58 -0400
+In-Reply-To: <20140731150753.3f12fc2f@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
@@ -20,25 +19,27 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
 Hello Alan
 
-> Less than ideal in some ways because the base may well be remapped by
-> other hardware or on non x86 devices. No obvious ideas how to fix it
-> though and PnP kind of implies x86.
+> Is there any reasons we can't have uart_ops.rs485_config and the RS485
+> ioctl logic in the serial_core, or even push rs485_get/put into the tty
+> ioctl handler and tty ops so it's not duplicated everywhere ?
 
-If I extend the driver to consider other hw than x86 and PnP I will
-definitely  look into this.
+What about a step by step approach. First we add this code to the
+8250_core, and then I remove all the specific driver
+TIOCSRS485 handling and manage it through serial_core.c
 
->
-> On the bright side you can then make the resource layer do your locking
-> work for you. We have an IORESOURCE_MUXED flag for these little horrors
-> so you can request the resource with IORESOURCE_MUXED. If the resource is
-> busy then you will get a failure back, if it is idle you will get the
-> resource, if it is busy but held by another driver using IORESOURCE_MUXED
-> then the request will block until they finish with it.
+Right now these are the drivers using it:
 
-I was not aware of request_mutex, thanks for your help!. I am
-preparing v2 with no mutex and requtest_mutex_region.
+drivers/tty/serial/8250/8250_core.c:    case TIOCSRS485:
+drivers/tty/serial/atmel_serial.c:      case TIOCSRS485:
+drivers/tty/serial/crisv10.c:   case TIOCSRS485:
+drivers/tty/serial/max310x.c:   case TIOCSRS485:
+drivers/tty/serial/mcf.c:       case TIOCSRS485: {
+drivers/tty/serial/omap-serial.c:       case TIOCSRS485:
+rivers/tty/serial/sc16is7xx.c: case TIOCSRS485:
 
-Thanks!
+Regards!
+
+
 
 -- 
 Ricardo Ribalda
