@@ -1,89 +1,54 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH] tty: serial: serial_core.c: printk replacement
-Date: Thu, 31 Jul 2014 19:20:01 +0530
-Message-ID: <CADVatmNyxzz5aborjsBGj6nE_u7jVyWss26gFQV7EPWXSGjZGQ@mail.gmail.com>
-References: <1406729236-19887-1-git-send-email-sudipm.mukherjee@gmail.com>
-	<53D90340.3010000@suse.cz>
-	<CADVatmOooxEKJ26i9nED2OKmBghOwuz6fjGJmYO0tuopTEoLDw@mail.gmail.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] serial/8250: Add support for RS485 IOCTLs
+Date: Thu, 31 Jul 2014 15:07:53 +0100
+Message-ID: <20140731150753.3f12fc2f@alan.etchedpixels.co.uk>
+References: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CADVatmOooxEKJ26i9nED2OKmBghOwuz6fjGJmYO0tuopTEoLDw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40523 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750876AbaGaOJz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 31 Jul 2014 10:09:55 -0400
+In-Reply-To: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Murali Karicheri <m-karicheri2@ti.com>, Jingoo Han <jg1.han@samsung.com>, Michael Welling <mwelling@ieee.org>, Peter Hurley <peter@hurleysoftware.com>, Joe Schultz <jschultz@xes-inc.com>, Ingo Molnar <mingo@elte.hu>, Doug Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, Jul 30, 2014 at 8:22 PM, Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
-> On Wed, Jul 30, 2014 at 8:07 PM, Jiri Slaby <jslaby@suse.cz> wrote:
->> On 07/30/2014, 04:07 PM, Sudip Mukherjee wrote:
->>> printk replaced with corresponding dev_*
->>> fixed two broken user-visible strings used by the corresponding printk
->>>
->>>
->>> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
->>> ---
->>>  drivers/tty/serial/serial_core.c | 19 ++++++++++---------
->>>  1 file changed, 10 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->>> index 8bb19da..ef48d0f 100644
->>> --- a/drivers/tty/serial/serial_core.c
->>> +++ b/drivers/tty/serial/serial_core.c
->> ...
->>> @@ -1974,8 +1974,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
->>>               for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
->>>                       msleep(10);
->>>               if (!tries)
->>> -                     printk(KERN_ERR "%s%s%s%d: Unable to drain "
->>> -                                     "transmitter\n",
->>> +                     dev_err(uport->dev,
->>> +                             "%s%s%s%d: Unable to drain transmitter\n",
->>>                              uport->dev ? dev_name(uport->dev) : "",
->>
->> Hi, this does not look correct. You use uport->dev, but there is a test
->> whether it is NULL in the parameters.
->>
->> You would have to investigate if and when uport->dev can be NULL and
->> document it in the commit log above.
->
-> HI
-> Thanks for reviewing it . I am checking out all the cases in which
-> uport can be null and will resend the patch.
->
-> Thanks
-> Sudip
->
->>
->> thanks,
->> --
->> js
->> suse labs
+> This patch allow the users of the 8250 infrastructure to define a
+> handler for RS485 configration.
 
-Hi
-All the investigations has made me even more confused , and I am
-looking for a bit of guidance from you now.
+This feels to me like the right code in the wrong place.
+ 
+> If no handler is defined the 8250 driver will work as usual.
 
-uport->dev can only be null if it is a virtual device and no real
-device is attached to the driver , but that again should not be the
-case with a serial port . And , for the function uart_suspend_port ,
-if i use dev_err , then i feel it wllll be much more better to use
-tty_dev instead of uport->dev . ( in that function we have tty_dev =
-device_find_child(uport->dev, &match, serial_match_port); ) - using
-tty_dev as the device in the dev_err is giving better device
-description.
+Is there any reasons we can't have uart_ops.rs485_config and the RS485
+ioctl logic in the serial_core, or even push rs485_get/put into the tty
+ioctl handler and tty ops so it's not duplicated everywhere ?
+ 
+> +	switch (cmd) {
+> +	case TIOCSRS485:
+> +		if (copy_from_user(&rs485_config, (void __user *)arg,
+> +				   sizeof(rs485_config)))
+> +			return -EFAULT;
+> +
+> +		ret = up->rs485_config(up, &rs485_config);
+> +		if (ret)
+> +			return ret;
+> +
+> +		memcpy(&up->rs485, &rs485_config, sizeof(rs485_config));
+> +
+> +		return 0;
+> +	case TIOCGRS485:
+> +		if (copy_to_user((void __user *)arg, &up->rs485,
+> +				 sizeof(up->rs485)))
+> +			return -EFAULT;
+> +		return 0;
 
-Now to my confusion :
-we have  tty_dev = device_find_child(uport->dev, &match,
-serial_match_port);  - so if uport->dev is NULL , then
-device_find_child also returns NULL , making tty_dev = NULL .  But
-immediately after that statement we have : if
-(device_may_wakeup(tty_dev)) -  so if tty_dev is NULL , then
-device_may_wakeup will try to access tty_dev->power , in short it will
-try to access NULL->power . So shouldn't we have kernel panic if we
-try dereferencing a NULL pointer or then should we assume that
-uport->dev can never by NULL ....
+Possibly your mutex needs to cover parallel get an set, but then again
+anyone doing that may well deserve what they get 8)
 
-Thanks
-Sudip
+Alan
