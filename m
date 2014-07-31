@@ -1,54 +1,65 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/2] serial/8250: Add support for RS485 IOCTLs
-Date: Thu, 31 Jul 2014 15:07:53 +0100
-Message-ID: <20140731150753.3f12fc2f@alan.etchedpixels.co.uk>
+Subject: Re: [PATCH 2/2] serial: Add support for Fintek F81216A LPC to 4
+ UART
+Date: Thu, 31 Jul 2014 15:19:41 +0100
+Message-ID: <20140731151941.244fd508@alan.etchedpixels.co.uk>
 References: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
+	<1406651242-20689-2-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40523 "EHLO
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:40545 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750876AbaGaOJz (ORCPT
+	with ESMTP id S1750702AbaGaOVZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 31 Jul 2014 10:09:55 -0400
-In-Reply-To: <1406651242-20689-1-git-send-email-ricardo.ribalda@gmail.com>
+	Thu, 31 Jul 2014 10:21:25 -0400
+In-Reply-To: <1406651242-20689-2-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Murali Karicheri <m-karicheri2@ti.com>, Jingoo Han <jg1.han@samsung.com>, Michael Welling <mwelling@ieee.org>, Peter Hurley <peter@hurleysoftware.com>, Joe Schultz <jschultz@xes-inc.com>, Ingo Molnar <mingo@elte.hu>, Doug Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> This patch allow the users of the 8250 infrastructure to define a
-> handler for RS485 configration.
-
-This feels to me like the right code in the wrong place.
- 
-> If no handler is defined the 8250 driver will work as usual.
-
-Is there any reasons we can't have uart_ops.rs485_config and the RS485
-ioctl logic in the serial_core, or even push rs485_get/put into the tty
-ioctl handler and tty ops so it's not duplicated everywhere ?
- 
-> +	switch (cmd) {
-> +	case TIOCSRS485:
-> +		if (copy_from_user(&rs485_config, (void __user *)arg,
-> +				   sizeof(rs485_config)))
-> +			return -EFAULT;
+> +static int fintek_8250_get_index(resource_size_t base_addr)
+> +{
+> +	resource_size_t base[] = {0x3f8, 0x2f8, 0x3e8, 0x2e8};
+> +	int i;
 > +
-> +		ret = up->rs485_config(up, &rs485_config);
-> +		if (ret)
-> +			return ret;
+> +	for (i = 0; i < ARRAY_SIZE(base); i++)
+> +		if (base_addr == base[i])
+> +			return i;
 > +
-> +		memcpy(&up->rs485, &rs485_config, sizeof(rs485_config));
-> +
-> +		return 0;
-> +	case TIOCGRS485:
-> +		if (copy_to_user((void __user *)arg, &up->rs485,
-> +				 sizeof(up->rs485)))
-> +			return -EFAULT;
-> +		return 0;
+> +	return -ENODEV;
 
-Possibly your mutex needs to cover parallel get an set, but then again
-anyone doing that may well deserve what they get 8)
+Less than ideal in some ways because the base may well be remapped by
+other hardware or on non x86 devices. No obvious ideas how to fix it
+though and PnP kind of implies x86.
+
+> +	mutex_lock(&fintek_mutex);
+> +	outb(LDN, ADDR_PORT);
+> +	outb(index, DATA_PORT);
+> +	outb(RS485, ADDR_PORT);
+> +	outb(config, DATA_PORT);
+> +	mutex_unlock(&fintek_mutex);
+
+You really need to request that block of addresses because you may not be
+the only superIO chip or driver playing with the various mux hack
+registers that are used.
+
+On the bright side you can then make the resource layer do your locking
+work for you. We have an IORESOURCE_MUXED flag for these little horrors
+so you can request the resource with IORESOURCE_MUXED. If the resource is
+busy then you will get a failure back, if it is idle you will get the
+resource, if it is busy but held by another driver using IORESOURCE_MUXED
+then the request will block until they finish with it.
+
+So you do
+
+	request_muxed_region
+	if failed then EBUSY
+	prod stuff
+	release_region
+
 
 Alan
+
