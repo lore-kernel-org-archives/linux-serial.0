@@ -1,38 +1,43 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 2/2 v2] serial: Add support for Fintek F81216A LPC to 4 UART
-Date: Fri, 1 Aug 2014 14:28:11 +0200
-Message-ID: <CAPybu_2U2jjyY_9gji41mUc5F4N+idDVNO=LAr3F5PpJ0JzYSg@mail.gmail.com>
-References: <CAPybu_1Ma+7nGaS0e17HpPcM1vk6ANSFN3C8MNR=JxWrBBmMOA@mail.gmail.com>
- <1406834546-23033-1-git-send-email-ricardo.ribalda@gmail.com> <20140801132343.45153300@alan.etchedpixels.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH] tty: serial: omap: Remove probe error message
+Date: Mon,  4 Aug 2014 14:59:38 +0200
+Message-ID: <1407157178-17035-1-git-send-email-mpa@pengutronix.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f45.google.com ([209.85.219.45]:44703 "EHLO
-	mail-oa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754323AbaHAM2b (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:56608 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751249AbaHDNAU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 1 Aug 2014 08:28:31 -0400
-In-Reply-To: <20140801132343.45153300@alan.etchedpixels.co.uk>
+	Mon, 4 Aug 2014 09:00:20 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Murali Karicheri <m-karicheri2@ti.com>, Jingoo Han <jg1.han@samsung.com>, Michael Welling <mwelling@ieee.org>, Peter Hurley <peter@hurleysoftware.com>, Joe Schultz <jschultz@xes-inc.com>, Ingo Molnar <mingo@elte.hu>, Doug Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Felipe Balbi <balbi@ti.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
 
-Hello
+This error message is not necessary. The driver core code will print all
+probe error messages. It also resolves some error codes to proper error
+messages. For example -EPROBE_DEFER will only be printed as an info message.
 
->> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
->
-> This half of things looks good to me.
+This patch removes the error message as the core prints the same
+information.
 
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+---
+ drivers/tty/serial/omap-serial.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks!, What about the other half? Would you accept a two step approach?
-
-1st: add support for 8250_core
-2nd: handle rs485 ioctl on serial_core and modify all the other
-drivers to use that? (to avoid code duplication)
-
-Thanks
-
-
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d017cec8a34a..a153bad142c8 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1733,8 +1733,6 @@ err_add_port:
+ 	pm_runtime_disable(&pdev->dev);
+ err_rs485:
+ err_port_line:
+-	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+-				pdev->id, __func__, ret);
+ 	return ret;
+ }
+ 
 -- 
-Ricardo Ribalda
+2.0.1
+
