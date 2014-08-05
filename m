@@ -1,42 +1,38 @@
 From: Kiran Padwal <kiran.padwal@smartplayin.com>
-Subject: [PATCH 5/5] tty: serial: msm: Fix 'void function return statements are not generally useful' warning
-Date: Tue,  5 Aug 2014 13:22:03 +0530
-Message-ID: <1407225124-25074-6-git-send-email-kiran.padwal@smartplayin.com>
+Subject: [PATCH 4/5] tty: serial: msm: Fix 'else is not generally useful after a break or return' warning
+Date: Tue,  5 Aug 2014 13:22:02 +0530
+Message-ID: <1407225124-25074-5-git-send-email-kiran.padwal@smartplayin.com>
 References: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from smtp96.ord1c.emailsrvr.com ([108.166.43.96]:52746 "EHLO
-	smtp96.ord1c.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932401AbaHEH4d (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2014 03:56:33 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: davidb@codeaurora.org
 Cc: dwalker@fifo99.com, bryanh@codeaurora.org, sboyd@codeaurora.org, gregkh@linuxfoundation.org, jslaby@suse.cz, kiran.padwal@smartplayin.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
 fixed below checkpatch.pl warning:
 
-WARNING: void function return statements are not generally useful
+WARNING: else is not generally useful after a break or return
 
 Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
 ---
- drivers/tty/serial/msm_serial.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/serial/msm_serial.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index dfebbaf..26df038 100644
+index e70d4e8..dfebbaf 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -787,8 +787,6 @@ static void msm_poll_put_char(struct uart_port *port, unsigned char c)
+@@ -700,8 +700,8 @@ static int msm_poll_get_char_single(struct uart_port *port)
  
- 	/* Enable interrupts */
- 	msm_write(port, imr, UART_IMR);
--
--	return;
+ 	if (!(msm_read(port, UART_SR) & UART_SR_RX_READY))
+ 		return NO_POLL_CHAR;
+-	else
+-		return msm_read(port, rf_reg) & 0xff;
++
++	return msm_read(port, rf_reg) & 0xff;
  }
- #endif
  
+ static int msm_poll_get_char_dm_1p3(struct uart_port *port)
 -- 
 1.7.9.5
-
