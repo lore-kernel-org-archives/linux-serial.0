@@ -1,267 +1,247 @@
 From: Frank Rowand <frowand.list@gmail.com>
-Subject: [test patch 3/4] use poll_post_exception in msm_serial
-Date: Mon, 04 Aug 2014 18:06:32 -0700
-Message-ID: <53E02E18.60602@gmail.com>
+Subject: [test patch 4/4] debug hackery to trace msm_serial receive interrupts
+Date: Mon, 04 Aug 2014 18:08:15 -0700
+Message-ID: <53E02E7F.90804@gmail.com>
 References: <53E02C7C.4090206@gmail.com>
 Reply-To: frowand.list@gmail.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:38561 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753157AbaHEBIT (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 4 Aug 2014 21:08:19 -0400
 In-Reply-To: <53E02C7C.4090206@gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-Cc: Stephen Boyd <sboyd@codeaurora.org>, David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+Cc: Stephen Boyd <sboyd@codeaurora.org>, David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net
 
 From: Frank Rowand <frank.rowand@sonymobile.com>
 
+Not intended to be applied to mainline.
 
-**********************************************************
-I need help with this patch - it does not fix the issue.
-**********************************************************
+This is debug code that captures a trace of msm_serial reads by handle_rx_dm().
 
-
-Use framework to allow msm_serial driver to fixup state after operating in
-polled mode, before returning to interrupt mode.
-
-I do not have complete documentation on the hardware, so this patch is a
-set of shots in the dark.  Each experiment can be enabled by enabling
-a #define.
-
-The issue I am trying to resolve with this patch is:
-
-   kgdb properly communicates with the dragon board, but
-   following the continue command, the serial driver does not get any stale
-   (UART_IMR_RXSTALE) interrupts until 48 characters have been read, which
-   triggers a high water interrupt.  After the high water interrupt has been
-   processed, the driver resumes properly getting stale interrupts.
-
-msm_poll_post_exception() will be called near the tail end of kgdb_cpu_enter(),
-via the path invoked by:
-
-   /* Call the I/O driver's post_exception routine */
-   if (dbg_io_ops->post_exception)
-      dbg_io_ops->post_exception();
-
-
+The trace is printed to the console when the sys_sync() system call is
+invoked (that is, when the sync user space command is executed).
 
 Not-signed-off-by-yet: Frank Rowand <frank.rowand@sonymobile.com>
 
 ---
- drivers/tty/serial/msm_serial.c |  196 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 196 insertions(+)
+ arch/arm/boot/dts/qcom-msm8974.dtsi |    1 
+ drivers/tty/serial/msm_serial.c     |  110 ++++++++++++++++++++++++++++++++++++
+ fs/sync.c                           |    5 +
+ 3 files changed, 116 insertions(+)
 
 Index: b/drivers/tty/serial/msm_serial.c
 ===================================================================
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -881,6 +881,201 @@ static void msm_poll_put_char(struct uar
- 
- 	return;
+@@ -100,6 +100,80 @@ static void msm_enable_ms(struct uart_po
+ 	msm_write(port, msm_port->imr, UART_IMR);
  }
+ 
++#define dbg_rx_c_MAX 95
++struct dbg_rx {
++	unsigned int	rx_break;
++	unsigned int	stale;
++	unsigned int	count_exhausted;
++	unsigned int	rx_total_snap;
++	unsigned int	count;
++	unsigned int	old_snap_state_1;
++	unsigned int	old_snap_state_2;
++	unsigned int	c_idx;
++	unsigned int	c[dbg_rx_c_MAX + 1];
++};
 +
-+int zzz_poll_put_char_reset;
-+static void msm_poll_post_exception(struct uart_port *port)
++#define dbg_rx_MAX 4000
++static struct dbg_rx dbg_rx[dbg_rx_MAX + 1];
++static int dbg_rx_idx = -1;
++
++#define BUF_MAX 4095
++#define BUF_SIZE (BUF_MAX + 1)
++static unsigned char buf[BUF_SIZE];
++void print_dbg_rx(void)
 +{
-+	int misr;
-+	struct msm_port *msm_port = UART_TO_MSM(port);
++	unsigned char c;
++	int k;
++	int j;
++	int i;
++	struct dbg_rx *d = &dbg_rx[0];
++	unsigned char *bufp;
 +
-+	zzz_poll_put_char_reset++;
++	pr_err(
++	       "     B S E\n"
++	       "     r t x old_\n"
++	       "     e a h snap_state\n"
++	       "     a l s ---------- tot\n"
++	       "     k t t   1    2   snap count c_idx --- data\n"
++	       "---- - - -  ---- ---- ---- ----- ----- --- --------\n");
 +
-+	msm_port->old_snap_state = 0;
-+
-+// #define ZZZ_ALT_1
-+#ifdef ZZZ_ALT_1
-+	/*
-+	 * zzz alternate 1 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        then stale total snap == 49, so count == 1    <---- good
-+	 *
-+	 *     better than alternate 2
-+	 */
-+	msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+
-+#if 0
-+	misr = msm_read(port, UART_MISR);
-+	if (misr & (UART_IMR_RXSTALE))
-+#endif
-+		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+#endif /* ZZZ_ALT_1 */
-+
-+
-+// #define ZZZ_ALT_2
-+#ifdef ZZZ_ALT_2
-+	/*
-+	 * zzz alternate 2 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        next total snap == 310
-+	 *        then stale total snap == 310, so count == 262 <---- bad
-+	 */
-+	msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+
-+	msm_write(port, UART_CR_CMD_FORCE_STALE, UART_CR);
-+#endif
-+
-+
-+// #define ZZZ_ALT_3_4
-+#ifdef ZZZ_ALT_3_4
-+	/*
-+	 * zzz alternate 3 -- never trigger after continue <---- bad
-+	 */
-+	msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+
-+	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+
-+	msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(port, UART_CR_CMD_FORCE_STALE, UART_CR);
-+
-+#if 0
-+	/*
-+	 * zzz alternate 3, #if 1 this block
-+	 * zzz alternate 4, #if 0 this block
-+	 * zzz alternate 4 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        then stale total snap == 49, so count == 1    <---- good
-+	 */
-+	misr = msm_read(port, UART_MISR);
-+	while (!(misr & (UART_IMR_RXSTALE))) {
-+		cpu_relax();
-+		misr = msm_read(port, UART_MISR);
++	for (k = 0; k <= dbg_rx_idx; k++, d++) {
++		bufp = &buf[0];
++		bufp += scnprintf(bufp, BUF_SIZE, "%4d %c %c %c  %4d %4d %4d %5d %5d --- ",
++			k,
++			d->rx_break ? 'B' : ' ',
++			d->stale ? 'S' : 'H',
++			d->count_exhausted ? 'E' : ' ',
++			d->old_snap_state_1,
++			d->old_snap_state_2,
++			d->rx_total_snap,
++			d->count,
++			d->c_idx
++			);
++		for (j = 0; j < d->c_idx; j++) {
++			bufp += scnprintf(bufp,
++				BUF_SIZE - (bufp - &buf[0]),
++				"%08x ", d->c[j]);
++		}
++		for (j = 0; j < d->c_idx; j++) {
++			for (i = 3; i >= 0; i--) {
++				c = (d->c[j] >> (8 * i)) & 0xff;
++				bufp += scnprintf(bufp,
++					BUF_SIZE - (bufp - &buf[0]),
++					"%c",
++				       ((c >= 0x20) && (c <= 0x7e)) ? c : '.');
++			}
++			bufp += scnprintf(bufp,
++				BUF_SIZE - (bufp - &buf[0]),
++				" ");
++		}
++		bufp += scnprintf(bufp,
++			BUF_SIZE - (bufp - &buf[0]),
++			"\n");
++		pr_err("%s", buf);
 +	}
-+#endif
-+
-+#endif /* ZZZ_ALT_3_4 */
-+
-+
-+// #define ZZZ_ALT_5
-+#ifdef ZZZ_ALT_5
-+	/*
-+	 * zzz alternate 5 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        then stale total snap == 49, so count == 1    <---- good
-+	 */
-+	msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+
-+#if 0
-+	misr = msm_read(port, UART_MISR);
-+	if (misr & (UART_IMR_RXSTALE))
-+#endif
-+		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+
-+	/* zzz should not have to do this, trying anyway */
-+	/* restore interrupt */
-+	msm_write(port, msm_port->imr, UART_IMR);
-+#endif /* ZZZ_ALT_5 */
-+
-+
-+// #define ZZZ_ALT_6
-+#ifdef ZZZ_ALT_6
-+	/*
-+	 * zzz alternate 6 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        then stale total snap == 49, so count == 1    <---- good
-+	 */
-+	msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+
-+	msm_write(port, 0, UART_IMR); /* disable interrupt */
-+
-+	misr = msm_read(port, UART_MISR);
-+	if (misr & (UART_IMR_RXSTALE))
-+		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+
-+	msm_write(port, UART_CR_CMD_FORCE_STALE, UART_CR);
-+
-+	/* restore interrupt */
-+	msm_write(port, msm_port->imr, UART_IMR);
-+
-+#endif /* ZZZ_ALT_6 */
-+
-+
-+#define ZZZ_ALT_7
-+#ifdef ZZZ_ALT_7
-+	/*
-+	 * Try to emulate entire interrupt driver read path....
-+	 *
-+	 * zzzzzz  what is missing that is fixed by the high water irq???
-+	 *
-+	 * same result for versions A, B, C
-+	 * zzz alternate 7 -- trigger high water after continue <---- bad
-+	 *        high water count == 48, set old_snap_state = 48
-+	 *        then stale total snap == 49, so count == 1    <---- good
-+	 */
-+
-+{
-+	int imr_rx_stale;
-+	unsigned int sr;
-+
-+	/*
-+	 * zzz Grabbing a lock here will result in a deadlock if a breakpoint
-+	 * zzz is hit while the lock is held elsewhere.  It would be best to
-+	 * zzz avoid this lock if possible.
-+	 *
-+	 * zzz It would be better to do a trylock and warn on failure to
-+	 * zzz acquire.
-+	 */
-+	spin_lock(&port->lock);
-+
-+	misr = msm_read(port, UART_MISR);
-+	imr_rx_stale = misr & UART_IMR_RXSTALE;
-+
-+	msm_write(port, 0, UART_IMR); /* disable interrupt */
-+
-+	if ((msm_read(port, UART_SR) & UART_SR_OVERRUN))
-+		msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
-+
-+
-+	/* zzz version A, read _either_ UARTDM_RX_TOTAL_SNAP or UART_RFWR */
-+	/* zzz version B, read UARTDM_RX_TOTAL_SNAP and UART_RFWR */
-+	/* zzz version C, read UART_RFWR */
-+	if (imr_rx_stale)
-+		msm_read(port, UARTDM_RX_TOTAL_SNAP);
-+	else
-+		msm_read(port, UART_RFWR);
-+
-+	sr = msm_read(port, UART_SR);
-+	/* zzz this could be: while (sr & ...) {UARTDM_RF; UART_SR;} */
-+	while ((sr & UART_SR_RX_READY) != 0) {
-+		msm_read(port, UARTDM_RF);
-+		sr = msm_read(port, UART_SR);
-+	}
-+
-+	if (imr_rx_stale)
-+		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+
-+	msm_write(port, msm_port->imr, UART_IMR); /* restore interrupt */
-+
-+	spin_unlock(&port->lock);
 +}
 +
-+#endif /* ZZZ_ALT_7 */
+ static void handle_rx_dm(struct uart_port *port, unsigned int misr)
+ {
+ 	struct tty_port *tport = &port->state->port;
+@@ -110,6 +184,13 @@ static void handle_rx_dm(struct uart_por
+ 	int res;
+ 	char *cp;
+ 
++	dbg_rx_idx++;
++	if (dbg_rx_idx > dbg_rx_MAX)
++		dbg_rx_idx = 0;
++	memset(&dbg_rx[dbg_rx_idx], 0, sizeof(dbg_rx[0]));
++	dbg_rx[dbg_rx_idx].old_snap_state_1 = msm_port->old_snap_state;
++	dbg_rx[dbg_rx_idx].stale = imr_rx_stale;
 +
+ 	if ((msm_read(port, UART_SR) & UART_SR_OVERRUN)) {
+ 		port->icount.overrun++;
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+@@ -117,8 +198,14 @@ static void handle_rx_dm(struct uart_por
+ 	}
+ 
+ 	if (imr_rx_stale) {
++#if 1
++		int rx_total_snap = msm_read(port, UARTDM_RX_TOTAL_SNAP);
++		dbg_rx[dbg_rx_idx].rx_total_snap = rx_total_snap;
++		count = rx_total_snap - msm_port->old_snap_state;
++#else
+ 		count = msm_read(port, UARTDM_RX_TOTAL_SNAP) -
+ 			msm_port->old_snap_state;
++#endif
+ 		msm_port->old_snap_state = 0;
+ 	} else {
+ 		count = msm_read(port, UART_RFWR);
+@@ -126,6 +213,7 @@ static void handle_rx_dm(struct uart_por
+ 			count = 4 * count;
+ 		msm_port->old_snap_state += count;
+ 	}
++	dbg_rx[dbg_rx_idx].count = count;
+ 
+ 	/* TODO: Precise error reporting */
+ 
+@@ -138,12 +226,15 @@ static void handle_rx_dm(struct uart_por
+ 		if ((sr & UART_SR_RX_READY) == 0) {
+ 			if (!imr_rx_stale)
+ 				msm_port->old_snap_state -= count;
++			dbg_rx[dbg_rx_idx].count_exhausted = 1;
+ 			break;
+ 		}
+ 
+ 		c = msm_read(port, UARTDM_RF);
++		dbg_rx[dbg_rx_idx].c[dbg_rx[dbg_rx_idx].c_idx++] = c;
+ 
+ 		if (sr & UART_SR_RX_BREAK) {
++			dbg_rx[dbg_rx_idx].rx_break = 1;
+ 			port->icount.brk++;
+ 			uart_handle_break(port);
+ 			if (msm_port->rx_sc_enabled)
+@@ -193,6 +284,7 @@ static void handle_rx_dm(struct uart_por
+ 		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
+ 	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
+ 	msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
++	dbg_rx[dbg_rx_idx].old_snap_state_2 = msm_port->old_snap_state;
+ }
+ 
+ static void handle_rx(struct uart_port *port)
+@@ -771,6 +863,9 @@ static int msm_poll_init(struct uart_por
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+ 	unsigned int watermark;
+ 
++	pr_err("enter msm_poll_init()\n");
++	pr_err("msm_port->is_uartdm %d\n", msm_port->is_uartdm);
 +
+ 	/* Enable single character mode on RX FIFO */
+ 	if (msm_port->is_uartdm >= UARTDM_1P4) {
+ 		msm_write(port, UARTDM_DMEN_RX_SC_ENABLE, UARTDM_DMEN);
+@@ -1273,6 +1368,21 @@ static int __init msm_console_setup(stru
+ 
+ 	printk(KERN_INFO "msm_serial: console setup on port #%d\n", port->line);
+ 
++#if 1
++{
++	/* zzz debug info */
 +
-+	return;
++	unsigned int version;
++
++	version = msm_read(port, 0xd8);
++	pr_err("msm_serial: HW_VERSION %d.%d.%d\n",
++	       (version >> 28) & 0xf,
++	       (version >> 16) & 0xfff,
++	       (version      ) & 0xffff);
++
 +}
++#endif
 +
-+
-+
- #endif
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
  
- static struct uart_ops msm_uart_pops = {
-@@ -905,6 +1100,7 @@ static struct uart_ops msm_uart_pops = {
- 	.poll_init = msm_poll_init,
- 	.poll_get_char	= msm_poll_get_char,
- 	.poll_put_char	= msm_poll_put_char,
-+	.poll_post_exception = msm_poll_post_exception,
- #endif
- };
+Index: b/fs/sync.c
+===================================================================
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -99,10 +99,15 @@ static void fdatawait_one_bdev(struct bl
+  * just write metadata (such as inodes or bitmaps) to block device page cache
+  * and do not sync it on their own in ->sync_fs().
+  */
++void print_dbg_rx(void);
++int zzz_print_dbg_rx = 1;
+ SYSCALL_DEFINE0(sync)
+ {
+ 	int nowait = 0, wait = 1;
  
++	if (zzz_print_dbg_rx)
++		print_dbg_rx();
++
+ 	wakeup_flusher_threads(0, WB_REASON_SYNC);
+ 	iterate_supers(sync_inodes_one_sb, NULL);
+ 	iterate_supers(sync_fs_one_sb, &nowait);
+Index: b/arch/arm/boot/dts/qcom-msm8974.dtsi
+===================================================================
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -227,6 +227,7 @@
+ 
+ 		serial@f991e000 {
+ 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
++			/* compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm"; */
+ 			reg = <0xf991e000 0x1000>;
+ 			interrupts = <0 108 0x0>;
+ 			clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
