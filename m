@@ -1,75 +1,84 @@
-From: Kiran Padwal <kiran.padwal@smartplayin.com>
-Subject: [PATCH 3/5] tty: serial: msm: Fix style warnings relating to printk()
-Date: Tue,  5 Aug 2014 13:22:01 +0530
-Message-ID: <1407225124-25074-4-git-send-email-kiran.padwal@smartplayin.com>
-References: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: davidb@codeaurora.org
-Cc: dwalker@fifo99.com, bryanh@codeaurora.org, sboyd@codeaurora.org, gregkh@linuxfoundation.org, jslaby@suse.cz, kiran.padwal@smartplayin.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: dw8250_set_termios() questions
+Date: Tue, 5 Aug 2014 11:40:11 +0300
+Message-ID: <20140805084011.GA14504@xps8300>
+References: <53BFDF22.1020302@linaro.org>
+ <53CFB9D3.8030403@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:14660 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757245AbaHEIkQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Aug 2014 04:40:16 -0400
+Content-Disposition: inline
+In-Reply-To: <53CFB9D3.8030403@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Alex Elder <elder@linaro.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-fixed below checkpatch.pl warning:
+Hi Alex,
 
-WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+On Wed, Jul 23, 2014 at 08:34:11AM -0500, Alex Elder wrote:
+> Heikki, ping.
 
-WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
+Sorry for the delay, just came back from vacation.
 
-Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
----
- drivers/tty/serial/msm_serial.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+> On 07/11/2014 07:57 AM, Alex Elder wrote:
+> > Heikki, I have not been a subscriber of the linux-serial
+> > mailing list and didn't see this patch go by:
+> >     serial: 8250_dw: clock rate handling for all ACPI platforms
+> >     http://www.spinics.net/lists/linux-serial/msg12861.html
+> > 
+> > I had been working on doing something very similar for some
+> > Broadcom device tree based devices and it might have been
+> > helpful for me to have seen it.  What I ended up with was
+> > *very* similar to what you did.  Here is the last version
+> > of the patch I posted:
+> >     https://lkml.org/lkml/2014/7/1/323
+> > 
+> > There *are* some differences, and I'd like to inquire about
+> > them before I simply use the code you have for my purpose.
+> > 
+> > These first two relate to whether I can use your
+> > code as-is:
+> > - Why do you skip setting the clock if a null "old"
+> >   pointer is supplied?
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 0295493..e70d4e8 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -677,7 +677,7 @@ static void msm_power(struct uart_port *port, unsigned int state,
- 		clk_disable_unprepare(msm_port->pclk);
- 		break;
- 	default:
--		printk(KERN_ERR "msm_serial: Unknown PM state %d\n", state);
-+		pr_err("msm_serial: Unknown PM state %d\n", state);
- 	}
- }
- 
-@@ -957,7 +957,7 @@ static int __init msm_console_setup(struct console *co, char *options)
- 		msm_write(port, UART_CR_TX_ENABLE, UART_CR);
- 	}
- 
--	printk(KERN_INFO "msm_serial: console setup on port #%d\n", port->line);
-+	pr_info("msm_serial: console setup on port #%d\n", port->line);
- 
- 	return uart_set_options(port, co, baud, parity, bits, flow);
- }
-@@ -1012,7 +1012,7 @@ static int msm_serial_probe(struct platform_device *pdev)
- 	if (unlikely(pdev->id < 0 || pdev->id >= UART_NR))
- 		return -ENXIO;
- 
--	printk(KERN_INFO "msm_serial: detected port #%d\n", pdev->id);
-+	dev_info(&pdev->dev, "msm_serial: detected port #%d\n", pdev->id);
- 
- 	port = get_port_from_line(pdev->id);
- 	port->dev = &pdev->dev;
-@@ -1037,8 +1037,7 @@ static int msm_serial_probe(struct platform_device *pdev)
- 	}
- 
- 	port->uartclk = clk_get_rate(msm_port->clk);
--	printk(KERN_INFO "uartclk = %d\n", port->uartclk);
--
-+	dev_info(&pdev->dev, "uartclk = %d\n", port->uartclk);
- 
- 	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (unlikely(!resource))
-@@ -1092,7 +1091,7 @@ static int __init msm_serial_init(void)
- 	if (unlikely(ret))
- 		uart_unregister_driver(&msm_uart_driver);
- 
--	printk(KERN_INFO "msm_serial: driver initialized\n");
-+	pr_info("msm_serial: driver initialized\n");
- 
- 	return ret;
- }
+If there is no "old" the baud rate is not being changed.
+
+> > - I don't believe it's necessary to surround the clock
+> >   rate change with clk_disable_unprepare() and
+> >   clk_prepare_enable().  Do you believe otherwise?
+
+My clock has CLK_SET_RATE_GATE flag set, so I do need them.
+
+> > This one is addressed to how your code is used now:
+> > - Alan Cox had this question about my patch, and
+> >   it seems to apply to your code as well:
+> >     "This assumes an arbitarily configurable clock,
+> >     which is not I think the usual case."
+> >     https://lkml.org/lkml/2014/6/28/91
+> >   His point is that the clock, if adjustable, may
+> >   not support a rate that produces an acceptable
+> >   signal rate.  Put another way, there may be a
+> >   better frequency than what the clock framework
+> >   selects that (in combination with the UART
+> >   divisor latch registers) produces the best--or
+> >   even a good--signal.  Is there any chance any
+> >   ACPI platforms will suffer this problem?
+
+No there is no such problems on any ACPI platforms. On all platforms
+where the Designware UART is enumerated from ACPI we have adjustable
+fractional divider generating the clock for it.
+
+I understand the problem, but I think for now we can just limit this
+solution to the platforms that we know it works with, like I do by
+only using it with ACPI.
+
+
+Thanks,
+
 -- 
-1.7.9.5
+heikki
