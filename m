@@ -1,48 +1,144 @@
-From: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 2/3] tty: serial: 8250: Add Mediatek UART driver
-Date: Tue, 05 Aug 2014 14:38:34 +0100
-Message-ID: <1407245914.30675.31.camel@acox1-desk.ger.corp.intel.com>
-References: <1407236054-30994-1-git-send-email-matthias.bgg@gmail.com>
-		 <1407236054-30994-3-git-send-email-matthias.bgg@gmail.com>
-		 <53E0C633.7060600@gmail.com>
-	 <1407240147.30675.29.camel@acox1-desk.ger.corp.intel.com>
-	 <53E0C839.3000808@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <53E0C839.3000808-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Varka Bhadram <varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org, asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org, mwelling-EkmVulN54Sk@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, m-karicheri2-l0cyMroinI0@public.gmane.org, jschultz-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org, mingo-X9Un+BFzKDI@public.gmane.org, balbi-l0cyMroinI0@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] serial: clps711x: Use mctrl_gpio helpers for handling modem signals
+Date: Tue,  5 Aug 2014 22:37:21 +0400
+Message-ID: <1407263841-14692-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback4.mail.ru ([94.100.181.169]:36521 "EHLO
+	fallback4.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755727AbaHESlD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Aug 2014 14:41:03 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
 
-On Tue, 2014-08-05 at 17:34 +0530, Varka Bhadram wrote:
-> On 08/05/2014 05:32 PM, Alan Cox wrote:
-> > On Tue, 2014-08-05 at 17:25 +0530, Varka Bhadram wrote:
-> >> On 08/05/2014 04:24 PM, Matthias Brugger wrote:
-> >>
-> >> (...)
-> >>
-> >>> +#include <linux/io.h>
-> >>> +#include <linux/module.h>
-> >>> +#include <linux/serial_8250.h>
-> >>> +#include <linux/of_irq.h>
-> >>> +#include <linux/of_platform.h>
-> >>> +#include <linux/platform_device.h>
-> >>> +#include <linux/clk.h>
-> >>> +#include <linux/pm_runtime.h>
-> >>> +#include "8250.h"
-> >>> +
-> >> Better if we have includes in alphabetical order..
-> >
-> > So 8250.h would be first and it wouldn't compile ???
-> >
-> > Can we stick to serious critiques ?
-> 
-> The local headers should be at the end of all includes
+This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
+signals.
 
-Which is not alaphetical order
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ .../bindings/serial/cirrus,clps711x-uart.txt       |  7 +++--
+ drivers/tty/serial/Kconfig                         |  1 +
+ drivers/tty/serial/clps711x.c                      | 32 +++++++---------------
+ 3 files changed, 16 insertions(+), 24 deletions(-)
 
-The include ordering does not matter, please stick to actual things that
-matter.
+diff --git a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+index 12f3cf8..caaeb25 100644
+--- a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
++++ b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+@@ -8,7 +8,8 @@ Required properties:
+ - syscon: Phandle to SYSCON node, which contain UART control bits.
+ 
+ Optional properties:
+-- uart-use-ms: Indicate the UART has modem signal (DCD, DSR, CTS).
++- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
++  line respectively.
+ 
+ Note: Each UART port should have an alias correctly numbered
+ in "aliases" node.
+@@ -24,5 +25,7 @@ Example:
+ 		interrupts = <12 13>;
+ 		clocks = <&clks 11>;
+ 		syscon = <&syscon1>;
+-		uart-use-ms;
++		cts-gpios = <&sysgpio 0 GPIO_ACTIVE_LOW>;
++		dsr-gpios = <&sysgpio 1 GPIO_ACTIVE_LOW>;
++		dcd-gpios = <&sysgpio 2 GPIO_ACTIVE_LOW>;
+ 	};
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 26cec64..75cc59f 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -204,6 +204,7 @@ config SERIAL_CLPS711X
+ 	tristate "CLPS711X serial port support"
+ 	depends on ARCH_CLPS711X || COMPILE_TEST
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO
+ 	help
+ 	  This enables the driver for the on-chip UARTs of the Cirrus
+ 	  Logic EP711x/EP721x/EP731x processors.
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index f5b4c3d..acfe317 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -33,6 +33,8 @@
+ #include <linux/mfd/syscon.h>
+ #include <linux/mfd/syscon/clps711x.h>
+ 
++#include "serial_mctrl_gpio.h"
++
+ #define UART_CLPS711X_DEVNAME	"ttyCL"
+ #define UART_CLPS711X_NR	2
+ #define UART_CLPS711X_MAJOR	204
+@@ -62,7 +64,7 @@ struct clps711x_port {
+ 	unsigned int		tx_enabled;
+ 	int			rx_irq;
+ 	struct regmap		*syscon;
+-	bool			use_ms;
++	struct mctrl_gpios	*gpios;
+ };
+ 
+ static struct uart_driver clps711x_uart = {
+@@ -198,28 +200,17 @@ static unsigned int uart_clps711x_tx_empty(struct uart_port *port)
+ 
+ static unsigned int uart_clps711x_get_mctrl(struct uart_port *port)
+ {
++	unsigned int result = TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
+ 	struct clps711x_port *s = dev_get_drvdata(port->dev);
+-	unsigned int result = 0;
+-
+-	if (s->use_ms) {
+-		u32 sysflg = 0;
+-
+-		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
+-		if (sysflg & SYSFLG1_DCD)
+-			result |= TIOCM_CAR;
+-		if (sysflg & SYSFLG1_DSR)
+-			result |= TIOCM_DSR;
+-		if (sysflg & SYSFLG1_CTS)
+-			result |= TIOCM_CTS;
+-	} else
+-		result = TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
+ 
+-	return result;
++	return mctrl_gpio_get(s->gpios, &result);
+ }
+ 
+ static void uart_clps711x_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	/* Do nothing */
++	struct clps711x_port *s = dev_get_drvdata(port->dev);
++
++	mctrl_gpio_set(s->gpios, mctrl);
+ }
+ 
+ static void uart_clps711x_break_ctl(struct uart_port *port, int break_state)
+@@ -490,15 +481,10 @@ static int uart_clps711x_probe(struct platform_device *pdev)
+ 		s->syscon = syscon_regmap_lookup_by_pdevname(syscon_name);
+ 		if (IS_ERR(s->syscon))
+ 			return PTR_ERR(s->syscon);
+-
+-		s->use_ms = !index;
+ 	} else {
+ 		s->syscon = syscon_regmap_lookup_by_phandle(np, "syscon");
+ 		if (IS_ERR(s->syscon))
+ 			return PTR_ERR(s->syscon);
+-
+-		if (!index)
+-			s->use_ms = of_property_read_bool(np, "uart-use-ms");
+ 	}
+ 
+ 	s->port.line		= index;
+@@ -513,6 +499,8 @@ static int uart_clps711x_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, s);
+ 
++	s->gpios = mctrl_gpio_init(&pdev->dev, 0);
++
+ 	ret = uart_add_one_port(&clps711x_uart, &s->port);
+ 	if (ret)
+ 		return ret;
+-- 
+1.8.5.5
+
