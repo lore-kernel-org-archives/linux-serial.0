@@ -1,97 +1,48 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] tty: serial: serial_core.c: printk replacement
-Date: Tue,  5 Aug 2014 18:05:45 +0530
-Message-ID: <1407242145-3132-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:40315 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752136AbaHEMgT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2014 08:36:19 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 2/3] tty: serial: 8250: Add Mediatek UART driver
+Date: Tue, 05 Aug 2014 14:38:34 +0100
+Message-ID: <1407245914.30675.31.camel@acox1-desk.ger.corp.intel.com>
+References: <1407236054-30994-1-git-send-email-matthias.bgg@gmail.com>
+		 <1407236054-30994-3-git-send-email-matthias.bgg@gmail.com>
+		 <53E0C633.7060600@gmail.com>
+	 <1407240147.30675.29.camel@acox1-desk.ger.corp.intel.com>
+	 <53E0C839.3000808@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <53E0C839.3000808-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Varka Bhadram <varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org, asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org, mwelling-EkmVulN54Sk@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, m-karicheri2-l0cyMroinI0@public.gmane.org, jschultz-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org, mingo-X9Un+BFzKDI@public.gmane.org, balbi-l0cyMroinI0@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-printk replaced with corresponding dev_err, dev_alert, dev_notice and pr_info.
-pr_info has been used instead of dev_info as there is a check for port->dev being NULL or not.
-fixed two broken user-visible strings used by the corresponding printk
+On Tue, 2014-08-05 at 17:34 +0530, Varka Bhadram wrote:
+> On 08/05/2014 05:32 PM, Alan Cox wrote:
+> > On Tue, 2014-08-05 at 17:25 +0530, Varka Bhadram wrote:
+> >> On 08/05/2014 04:24 PM, Matthias Brugger wrote:
+> >>
+> >> (...)
+> >>
+> >>> +#include <linux/io.h>
+> >>> +#include <linux/module.h>
+> >>> +#include <linux/serial_8250.h>
+> >>> +#include <linux/of_irq.h>
+> >>> +#include <linux/of_platform.h>
+> >>> +#include <linux/platform_device.h>
+> >>> +#include <linux/clk.h>
+> >>> +#include <linux/pm_runtime.h>
+> >>> +#include "8250.h"
+> >>> +
+> >> Better if we have includes in alphabetical order..
+> >
+> > So 8250.h would be first and it wouldn't compile ???
+> >
+> > Can we stick to serious critiques ?
+> 
+> The local headers should be at the end of all includes
 
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
----
+Which is not alaphetical order
 
-For my previous patch ,Jiri Slaby told to investigate further as I have used uport->dev and there was a check for whether it is NULL. 
-For this patch instead of uport->dev , i have used tty_dev as that one gave a better desciption of the device than uport->dev.
-
-
- drivers/tty/serial/serial_core.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 29a7be4..78aa38d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -892,10 +892,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 			 */
- 			if (uport->flags & UPF_SPD_MASK) {
- 				char buf[64];
--				printk(KERN_NOTICE
--				       "%s sets custom speed on %s. This "
--				       "is deprecated.\n", current->comm,
--				       tty_name(port->tty, buf));
-+
-+				dev_notice(uport->dev,
-+				       "%s sets custom speed on %s. This is deprecated.\n",
-+				      current->comm,
-+				      tty_name(port->tty, buf));
- 			}
- 			uart_change_speed(tty, state, NULL);
- 		}
-@@ -1975,12 +1976,11 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
- 			msleep(10);
- 		if (!tries)
--			printk(KERN_ERR "%s%s%s%d: Unable to drain "
--					"transmitter\n",
--			       uport->dev ? dev_name(uport->dev) : "",
--			       uport->dev ? ": " : "",
--			       drv->dev_name,
--			       drv->tty_driver->name_base + uport->line);
-+			dev_err(tty_dev, "%s%s%s%d: Unable to drain transmitter\n",
-+				uport->dev ? dev_name(uport->dev) : "",
-+				uport->dev ? ": " : "",
-+				drv->dev_name,
-+				drv->tty_driver->name_base + uport->line);
- 
- 		if (console_suspend_enabled || !uart_console(uport))
- 			ops->shutdown(uport);
-@@ -2109,7 +2109,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 		break;
- 	}
- 
--	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-+	pr_info("%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
- 	       port->dev ? dev_name(port->dev) : "",
- 	       port->dev ? ": " : "",
- 	       drv->dev_name,
-@@ -2640,7 +2640,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	if (likely(!IS_ERR(tty_dev))) {
- 		device_set_wakeup_capable(tty_dev, 1);
- 	} else {
--		printk(KERN_ERR "Cannot register tty device on line %d\n",
-+		dev_err(uport->dev, "Cannot register tty device on line %d\n",
- 		       uport->line);
- 	}
- 
-@@ -2675,7 +2675,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	BUG_ON(in_interrupt());
- 
- 	if (state->uart_port != uport)
--		printk(KERN_ALERT "Removing wrong port: %p != %p\n",
-+		dev_alert(uport->dev, "Removing wrong port: %p != %p\n",
- 			state->uart_port, uport);
- 
- 	mutex_lock(&port_mutex);
--- 
-1.8.1.2
-
+The include ordering does not matter, please stick to actual things that
+matter.
