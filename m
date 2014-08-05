@@ -1,41 +1,65 @@
 From: Kiran Padwal <kiran.padwal@smartplayin.com>
-Subject: [PATCH 1/5] tty: serial: msm: remove braces {} in msm_serial.c
-Date: Tue,  5 Aug 2014 13:21:59 +0530
-Message-ID: <1407225124-25074-2-git-send-email-kiran.padwal@smartplayin.com>
+Subject: [PATCH 2/5] tty: serial: msm: Fix 'Missing a blank line after declarations' warning
+Date: Tue,  5 Aug 2014 13:22:00 +0530
+Message-ID: <1407225124-25074-3-git-send-email-kiran.padwal@smartplayin.com>
 References: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp96.ord1c.emailsrvr.com ([108.166.43.96]:53316 "EHLO
+	smtp96.ord1c.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932323AbaHEH4U (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Aug 2014 03:56:20 -0400
 In-Reply-To: <1407225124-25074-1-git-send-email-kiran.padwal@smartplayin.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: davidb@codeaurora.org
 Cc: dwalker@fifo99.com, bryanh@codeaurora.org, sboyd@codeaurora.org, gregkh@linuxfoundation.org, jslaby@suse.cz, kiran.padwal@smartplayin.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
 
-fixed below checkpatch.pl warning:
+This patch fixes below checkpatch.pl warning and it remove extra blank lines:
 
-WARNING: braces {} are not necessary for any arm of this statement
+WARNING: Missing a blank line after declarations
 
 Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
 ---
- drivers/tty/serial/msm_serial.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/serial/msm_serial.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 0da0b54..6c7300b 100644
+index 6c7300b..0295493 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -190,11 +190,10 @@ static void handle_rx(struct uart_port *port)
- 		/* Mask conditions we're ignorning. */
- 		sr &= port->read_status_mask;
+@@ -314,7 +314,6 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
+ 	return TIOCM_CAR | TIOCM_CTS | TIOCM_DSR | TIOCM_RTS;
+ }
  
--		if (sr & UART_SR_RX_BREAK) {
-+		if (sr & UART_SR_RX_BREAK)
- 			flag = TTY_BREAK;
--		} else if (sr & UART_SR_PAR_FRAME_ERR) {
-+		else if (sr & UART_SR_PAR_FRAME_ERR)
- 			flag = TTY_FRAME;
--		}
+-
+ static void msm_reset(struct uart_port *port)
+ {
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+@@ -335,6 +334,7 @@ static void msm_reset(struct uart_port *port)
+ static void msm_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	unsigned int mr;
++
+ 	mr = msm_read(port, UART_MR1);
  
- 		if (!uart_handle_sysrq_char(port, c))
- 			tty_insert_flip_char(tport, c, flag);
+ 	if (!(mctrl & TIOCM_RTS)) {
+@@ -430,7 +430,6 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
+ 	return baud;
+ }
+ 
+-
+ static void msm_init_clock(struct uart_port *port)
+ {
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+@@ -645,6 +644,7 @@ fail_release_port:
+ static void msm_config_port(struct uart_port *port, int flags)
+ {
+ 	int ret;
++
+ 	if (flags & UART_CONFIG_TYPE) {
+ 		port->type = PORT_MSM;
+ 		ret = msm_request_port(port);
 -- 
 1.7.9.5
+
