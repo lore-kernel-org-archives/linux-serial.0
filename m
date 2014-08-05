@@ -1,84 +1,50 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: dw8250_set_termios() questions
-Date: Tue, 5 Aug 2014 11:40:11 +0300
-Message-ID: <20140805084011.GA14504@xps8300>
-References: <53BFDF22.1020302@linaro.org>
- <53CFB9D3.8030403@linaro.org>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 2/2 v2] serial: Add support for Fintek F81216A LPC to 4
+ UART
+Date: Tue, 5 Aug 2014 10:34:09 +0100
+Message-ID: <20140805103409.33afef2a@alan.etchedpixels.co.uk>
+References: <CAPybu_1Ma+7nGaS0e17HpPcM1vk6ANSFN3C8MNR=JxWrBBmMOA@mail.gmail.com>
+	<1406834546-23033-1-git-send-email-ricardo.ribalda@gmail.com>
+	<20140801132343.45153300@alan.etchedpixels.co.uk>
+	<CAPybu_2U2jjyY_9gji41mUc5F4N+idDVNO=LAr3F5PpJ0JzYSg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:14660 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757245AbaHEIkQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 5 Aug 2014 04:40:16 -0400
-Content-Disposition: inline
-In-Reply-To: <53CFB9D3.8030403@linaro.org>
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:48373 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754689AbaHEJew (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 5 Aug 2014 05:34:52 -0400
+In-Reply-To: <CAPybu_2U2jjyY_9gji41mUc5F4N+idDVNO=LAr3F5PpJ0JzYSg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alex Elder <elder@linaro.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, david.daney@cavium.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Murali Karicheri <m-karicheri2@ti.com>, Jingoo Han <jg1.han@samsung.com>, Michael Welling <mwelling@ieee.org>, Peter Hurley <peter@hurleysoftware.com>, Joe Schultz <jschultz@xes-inc.com>, Ingo Molnar <mingo@elte.hu>, Doug Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-Hi Alex,
+On Fri, 1 Aug 2014 14:28:11 +0200
+Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com> wrote:
 
-On Wed, Jul 23, 2014 at 08:34:11AM -0500, Alex Elder wrote:
-> Heikki, ping.
+> Hello
+> 
+> >> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> >
+> > This half of things looks good to me.
+> 
+> 
+> Thanks!, What about the other half? Would you accept a two step approach?
+> 
+> 1st: add support for 8250_core
+> 2nd: handle rs485 ioctl on serial_core and modify all the other
+> drivers to use that? (to avoid code duplication)
 
-Sorry for the delay, just came back from vacation.
+We really want to handle it at the tty layer I think not at serial_core.
+I have a patch for that and I'm playing with it but it's taking longer
+than I hoped.
 
-> On 07/11/2014 07:57 AM, Alex Elder wrote:
-> > Heikki, I have not been a subscriber of the linux-serial
-> > mailing list and didn't see this patch go by:
-> >     serial: 8250_dw: clock rate handling for all ACPI platforms
-> >     http://www.spinics.net/lists/linux-serial/msg12861.html
-> > 
-> > I had been working on doing something very similar for some
-> > Broadcom device tree based devices and it might have been
-> > helpful for me to have seen it.  What I ended up with was
-> > *very* similar to what you did.  Here is the last version
-> > of the patch I posted:
-> >     https://lkml.org/lkml/2014/7/1/323
-> > 
-> > There *are* some differences, and I'd like to inquire about
-> > them before I simply use the code you have for my purpose.
-> > 
-> > These first two relate to whether I can use your
-> > code as-is:
-> > - Why do you skip setting the clock if a null "old"
-> >   pointer is supplied?
+In the mean time I think your patch #1 is ok except for the trivial
+item that I'd prefer the struct serial_rs485 was further down the struct
+uart_8250_port. It's packed so that the bits you need most are in the
+first cache line or two.
 
-If there is no "old" the baud rate is not being changed.
-
-> > - I don't believe it's necessary to surround the clock
-> >   rate change with clk_disable_unprepare() and
-> >   clk_prepare_enable().  Do you believe otherwise?
-
-My clock has CLK_SET_RATE_GATE flag set, so I do need them.
-
-> > This one is addressed to how your code is used now:
-> > - Alan Cox had this question about my patch, and
-> >   it seems to apply to your code as well:
-> >     "This assumes an arbitarily configurable clock,
-> >     which is not I think the usual case."
-> >     https://lkml.org/lkml/2014/6/28/91
-> >   His point is that the clock, if adjustable, may
-> >   not support a rate that produces an acceptable
-> >   signal rate.  Put another way, there may be a
-> >   better frequency than what the clock framework
-> >   selects that (in combination with the UART
-> >   divisor latch registers) produces the best--or
-> >   even a good--signal.  Is there any chance any
-> >   ACPI platforms will suffer this problem?
-
-No there is no such problems on any ACPI platforms. On all platforms
-where the Designware UART is enumerated from ACPI we have adjustable
-fractional divider generating the clock for it.
-
-I understand the problem, but I think for now we can just limit this
-solution to the platforms that we know it works with, like I do by
-only using it with ACPI.
-
-
-Thanks,
-
--- 
-heikki
+Alan
