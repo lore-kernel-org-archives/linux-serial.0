@@ -1,163 +1,161 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH] serial: clps711x: Use mctrl_gpio helpers for handling
- modem signals
-Date: Wed, 6 Aug 2014 10:07:27 +0100
-Message-ID: <20140806090726.GA5727@leverpostej>
-References: <1407263841-14692-1-git-send-email-shc_work@mail.ru>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: Mainline commit "serial: Test for no tx data on tx restart" not
+ correct for i.MX6?
+Date: Wed, 06 Aug 2014 19:53:53 -0400
+Message-ID: <53E2C011.4070404@hurleysoftware.com>
+References: <53CF3599.6040509@gmail.com> <53CFE38E.6070302@hurleysoftware.com> <53D0BFF1.30204@mentor.com> <53D0F4FC.1000302@hurleysoftware.com> <53D74AAA.7090103@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:56008 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750773AbaHFJHl (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:59997 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753556AbaHFXyA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 6 Aug 2014 05:07:41 -0400
-Content-Disposition: inline
-In-Reply-To: <1407263841-14692-1-git-send-email-shc_work@mail.ru>
+	Wed, 6 Aug 2014 19:54:00 -0400
+In-Reply-To: <53D74AAA.7090103@mentor.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: jiwang <jiada_wang@mentor.com>, Dirk Behme <dirk.behme@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Huang Shijie <b32955@freescale.com>, Dirk Behme <dirk.behme@de.bosch.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Tue, Aug 05, 2014 at 07:37:21PM +0100, Alexander Shiyan wrote:
-> This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
-> signals.
-> 
-> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
-> ---
->  .../bindings/serial/cirrus,clps711x-uart.txt       |  7 +++--
->  drivers/tty/serial/Kconfig                         |  1 +
->  drivers/tty/serial/clps711x.c                      | 32 +++++++---------------
->  3 files changed, 16 insertions(+), 24 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
-> index 12f3cf8..caaeb25 100644
-> --- a/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
-> @@ -8,7 +8,8 @@ Required properties:
->  - syscon: Phandle to SYSCON node, which contain UART control bits.
->  
->  Optional properties:
-> -- uart-use-ms: Indicate the UART has modem signal (DCD, DSR, CTS).
-> +- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
-> +  line respectively.
+On 07/29/2014 03:18 AM, jiwang wrote:
+> On 07/24/2014 08:58 PM, Peter Hurley wrote:
+>> On 07/24/2014 04:12 AM, jiwang wrote:
+>>> On 07/24/2014 01:32 AM, Peter Hurley wrote:
+>>>> On 07/23/2014 12:10 AM, Dirk Behme wrote:
+>>>>> Hi,
+>>>>>
+>>>>> this is a question regarding the i.MX6 part (drivers/tty/serial/imx.c) of the commit
+>>>>>
+>>>>> serial: Test for no tx data on tx restart
+>>>>>
+>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=c557d392fbf5badd693ea1946a4317c87a26a716
+>>>>>
+>>>>> Talking with some i.MX6 experts about this, I've got the comment
+>>>>>
+>>>>> -- cut --
+>>>>> The imx serial driver part of this commit isn't correct
+>>>>> as imx.c sends x_char in irq handler, not in imx_start_tx(),
+>>>>> -- cut --
+>>>>>
+>>>>> What do you think?
+>>>>
+>>>> Yeah, I missed that the imx driver handled x_char _at all_,
+>>>> because how the imx driver is handling x_char looks broken.
 
-The commit message states you are adding a capability to the driver, but
-you are removing portions of the driver and binding. Please come up with
-a better commit message explaining why this is necessary.
+[...]
 
-Mark.
+> sorry,  our imx driver has been modified differently,
+> yes, you are right, mainline imx driver's handling of x_char looks broken
 
->  
->  Note: Each UART port should have an alias correctly numbered
->  in "aliases" node.
-> @@ -24,5 +25,7 @@ Example:
->  		interrupts = <12 13>;
->  		clocks = <&clks 11>;
->  		syscon = <&syscon1>;
-> -		uart-use-ms;
-> +		cts-gpios = <&sysgpio 0 GPIO_ACTIVE_LOW>;
-> +		dsr-gpios = <&sysgpio 1 GPIO_ACTIVE_LOW>;
-> +		dcd-gpios = <&sysgpio 2 GPIO_ACTIVE_LOW>;
->  	};
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 26cec64..75cc59f 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -204,6 +204,7 @@ config SERIAL_CLPS711X
->  	tristate "CLPS711X serial port support"
->  	depends on ARCH_CLPS711X || COMPILE_TEST
->  	select SERIAL_CORE
-> +	select SERIAL_MCTRL_GPIO
->  	help
->  	  This enables the driver for the on-chip UARTs of the Cirrus
->  	  Logic EP711x/EP721x/EP731x processors.
-> diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-> index f5b4c3d..acfe317 100644
-> --- a/drivers/tty/serial/clps711x.c
-> +++ b/drivers/tty/serial/clps711x.c
-> @@ -33,6 +33,8 @@
->  #include <linux/mfd/syscon.h>
->  #include <linux/mfd/syscon/clps711x.h>
->  
-> +#include "serial_mctrl_gpio.h"
-> +
->  #define UART_CLPS711X_DEVNAME	"ttyCL"
->  #define UART_CLPS711X_NR	2
->  #define UART_CLPS711X_MAJOR	204
-> @@ -62,7 +64,7 @@ struct clps711x_port {
->  	unsigned int		tx_enabled;
->  	int			rx_irq;
->  	struct regmap		*syscon;
-> -	bool			use_ms;
-> +	struct mctrl_gpios	*gpios;
->  };
->  
->  static struct uart_driver clps711x_uart = {
-> @@ -198,28 +200,17 @@ static unsigned int uart_clps711x_tx_empty(struct uart_port *port)
->  
->  static unsigned int uart_clps711x_get_mctrl(struct uart_port *port)
->  {
-> +	unsigned int result = TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
->  	struct clps711x_port *s = dev_get_drvdata(port->dev);
-> -	unsigned int result = 0;
-> -
-> -	if (s->use_ms) {
-> -		u32 sysflg = 0;
-> -
-> -		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
-> -		if (sysflg & SYSFLG1_DCD)
-> -			result |= TIOCM_CAR;
-> -		if (sysflg & SYSFLG1_DSR)
-> -			result |= TIOCM_DSR;
-> -		if (sysflg & SYSFLG1_CTS)
-> -			result |= TIOCM_CTS;
-> -	} else
-> -		result = TIOCM_DSR | TIOCM_CTS | TIOCM_CAR;
->  
-> -	return result;
-> +	return mctrl_gpio_get(s->gpios, &result);
->  }
->  
->  static void uart_clps711x_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  {
-> -	/* Do nothing */
-> +	struct clps711x_port *s = dev_get_drvdata(port->dev);
-> +
-> +	mctrl_gpio_set(s->gpios, mctrl);
->  }
->  
->  static void uart_clps711x_break_ctl(struct uart_port *port, int break_state)
-> @@ -490,15 +481,10 @@ static int uart_clps711x_probe(struct platform_device *pdev)
->  		s->syscon = syscon_regmap_lookup_by_pdevname(syscon_name);
->  		if (IS_ERR(s->syscon))
->  			return PTR_ERR(s->syscon);
-> -
-> -		s->use_ms = !index;
->  	} else {
->  		s->syscon = syscon_regmap_lookup_by_phandle(np, "syscon");
->  		if (IS_ERR(s->syscon))
->  			return PTR_ERR(s->syscon);
-> -
-> -		if (!index)
-> -			s->use_ms = of_property_read_bool(np, "uart-use-ms");
->  	}
->  
->  	s->port.line		= index;
-> @@ -513,6 +499,8 @@ static int uart_clps711x_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, s);
->  
-> +	s->gpios = mctrl_gpio_init(&pdev->dev, 0);
-> +
->  	ret = uart_add_one_port(&clps711x_uart, &s->port);
->  	if (ret)
->  		return ret;
-> -- 
-> 1.8.5.5
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Jiada or Dirk or whomever,
+
+Would someone please test the patch below on actual imx hardware?
+
+You can download a standalone x_char unit test from
+http://blog.hurleysoftware.com/uploads/tty_xchar.c
+
+Instructions for building, setting up and testing are included in the file.
+
+--- >% ---
+Subject: [PATCH] serial: imx: Fix x_char handling and tx flow control
+
+The serial core expects the UART driver to transmit x_char
+(START/STOP chars) even if tx is stopped and before data already
+in the tx ring buffer if possible. Also, sending x_char must
+not cause additional data in the tx ring buffer to transmit
+if tx is stopped.
+
+Cause x_char to be transmitted before any other data is sent.
+Auto-stop tx if the tx ring buffer is empty or tx should be stopped.
+Only perform one write wakeup if tx ring buffer space is below
+threshold.
+
+x_char handling in DMA mode is still broken; add FIXME.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/imx.c | 39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index be1c842..00a37e9 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -460,9 +460,19 @@ static inline void imx_transmit_buffer(struct imx_port *sport)
+ {
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+ 
++	if (sport->port.x_char) {
++		/* Send next char */
++		writel(sport->port.x_char, sport->port.membase + URTX0);
++		return;
++	}
++
++	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
++		imx_stop_tx(&sport->port);
++		return;
++	}
++
+ 	while (!uart_circ_empty(xmit) &&
+-			!(readl(sport->port.membase + uts_reg(sport))
+-				& UTS_TXFULL)) {
++	       !(readl(sport->port.membase + uts_reg(sport)) & UTS_TXFULL)) {
+ 		/* send xmit->buf[xmit->tail]
+ 		 * out the port here */
+ 		writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
+@@ -563,9 +573,6 @@ static void imx_start_tx(struct uart_port *port)
+ 	struct imx_port *sport = (struct imx_port *)port;
+ 	unsigned long temp;
+ 
+-	if (uart_circ_empty(&port->state->xmit))
+-		return;
+-
+ 	if (USE_IRDA(sport)) {
+ 		/* half duplex in IrDA mode; have to disable receive mode */
+ 		temp = readl(sport->port.membase + UCR4);
+@@ -600,7 +607,10 @@ static void imx_start_tx(struct uart_port *port)
+ 	}
+ 
+ 	if (sport->dma_is_enabled) {
+-		imx_dma_tx(sport);
++		/* FIXME: port->x_char must be transmitted if != 0 */
++		if (!uart_circ_empty(&port->state->xmit) &&
++		    !uart_tx_stopped(port))
++			imx_dma_tx(sport);
+ 		return;
+ 	}
+ 
+@@ -628,27 +638,10 @@ static irqreturn_t imx_rtsint(int irq, void *dev_id)
+ static irqreturn_t imx_txint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+-	struct circ_buf *xmit = &sport->port.state->xmit;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+-	if (sport->port.x_char) {
+-		/* Send next char */
+-		writel(sport->port.x_char, sport->port.membase + URTX0);
+-		goto out;
+-	}
+-
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
+-		imx_stop_tx(&sport->port);
+-		goto out;
+-	}
+-
+ 	imx_transmit_buffer(sport);
+-
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(&sport->port);
+-
+-out:
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.0.4
+
+
