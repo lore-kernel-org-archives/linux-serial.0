@@ -1,51 +1,93 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2 1/2] tty: serial: 8250: Add Mediatek UART driver
-Date: Thu, 7 Aug 2014 16:07:41 +0200
-Message-ID: <CABuKBeKJ=KFc1DfvyHgD+iAC1=yLqYjjDUc0CH+1zbRQzw_DJw@mail.gmail.com>
-References: <1407394292-26317-1-git-send-email-matthias.bgg@gmail.com>
-	<1407394292-26317-2-git-send-email-matthias.bgg@gmail.com>
-	<1407417714.8334.8.camel@acox1-desk.ger.corp.intel.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2] serial: uart: add hw flow control support configuration
+Date: Thu, 07 Aug 2014 11:29:08 -0400
+Message-ID: <53E39B44.60406@hurleysoftware.com>
+References: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1407417714.8334.8.camel@acox1-desk.ger.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Varka Bhadram <varkabhadram@gmail.com>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:43181 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932071AbaHGP3Z (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 7 Aug 2014 11:29:25 -0400
+In-Reply-To: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Murali Karicheri <m-karicheri2@ti.com>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 
-2014-08-07 15:21 GMT+02:00 Alan Cox <alan@linux.intel.com>:
->
->> +      * Some baudrates are not supported by the chip, so we use the next
->> +      * lower rate supported and update termios c_flag.
->
-> I don't see the termios updating being done now ?
+On 05/01/2014 03:04 PM, Murali Karicheri wrote:
+> 8250 uart driver currently supports only software assisted hw flow
+> control. The software assisted hw flow control maintains a hw_stopped
+> flag in the tty structure to stop and start transmission and use modem
+> status interrupt for the event to drive the handshake signals. This is
+> not needed if hw has flow control capabilities. This patch adds a
+> DT attribute for enabling hw flow control for a uart port. Also skip
+> stop and start if this flag is present in flag field of the port
+> structure.
+> 
+> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+> 
+> CC: Rob Herring <robh+dt@kernel.org>
+> CC: Pawel Moll <pawel.moll@arm.com>
+> CC: Mark Rutland <mark.rutland@arm.com>
+> CC: Ian Campbell <ijc+devicetree@hellion.org.uk>
+> CC: Kumar Gala <galak@codeaurora.org>
+> CC: Randy Dunlap <rdunlap@infradead.org>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Jiri Slaby <jslaby@suse.cz>
+> CC: Santosh Shilimkar <santosh.shilimkar@ti.com>
+> ---
+>  .../devicetree/bindings/serial/of-serial.txt       |    1 +
+>  drivers/tty/serial/8250/8250_core.c                |    6 ++++--
+>  drivers/tty/serial/of_serial.c                     |    4 ++++
+>  drivers/tty/serial/serial_core.c                   |   12 +++++++++---
+>  4 files changed, 18 insertions(+), 5 deletions(-)
+> 
 
-Please have a look on the usage of the SET_CFLAG_BAUD macro in the patch.
-I'm not sure if it is the way to go though.
+[...]
 
->
->> +     data->clk = of_clk_get(np, 0);
->> +     if (IS_ERR(data->clk)) {
->> +             pr_warn("Can't get timer clock");
->> +             return PTR_ERR(data->clk);
->> +     }
->> +
->> +     err = clk_prepare_enable(data->clk);
->> +     if (err) {
->> +             pr_warn("Can't prepare clock");
->
-> and these do need a newline on them. They are also not very useful as
-> they don't indicate what device was involved. If you passed pdev from
-> mtk8250_probe you'd be able to use dev_warn instead
->
-> Otherwise looks great and exactly as 8250_core is intended to be used.
->
-> Alan
->
->
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index b68550d..851707a 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -174,8 +174,12 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>  			if (tty->termios.c_cflag & CBAUD)
+>  				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
+>  		}
+> -
+> -		if (tty_port_cts_enabled(port)) {
+> +		/*
+> +		 * if hw support flow control without software intervention,
+> +		 * then skip the below check
+> +		 */
+> +		if (tty_port_cts_enabled(port) &&
+> +		    !(uport->flags & UPF_HARD_FLOW)) {
+>  			spin_lock_irq(&uport->lock);
+>  			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
+>  				tty->hw_stopped = 1;
+> @@ -2772,7 +2776,9 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
+>  
+>  	uport->icount.cts++;
+>  
+> -	if (tty_port_cts_enabled(port)) {
+> +	/* skip below code if the hw flow control is supported */
+> +	if (tty_port_cts_enabled(port) &&
+> +	    !(uport->flags & UPF_HARD_FLOW)) {
 
+Why is a modem status interrupt being generated for DCTS
+if autoflow control is enabled?
 
+This should be:
 
--- 
-motzblog.wordpress.com
+	WARN_ON_ONCE(uport->flags & UPF_HARD_FLOW);
+
+to indicate a mis-configured driver/device.
+
+>  		if (tty->hw_stopped) {
+>  			if (status) {
+>  				tty->hw_stopped = 0;
+> 
+
