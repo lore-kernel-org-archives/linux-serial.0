@@ -1,54 +1,47 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 6/6] tty: serial: Add 8250-core based omap driver
-Date: Fri, 8 Aug 2014 14:05:37 +0300
-Message-ID: <20140808110537.GA29184@xps8300>
-References: <1404928177-26554-1-git-send-email-bigeasy@linutronix.de>
- <1404928177-26554-7-git-send-email-bigeasy@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:41968 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756635AbaHHLFn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Aug 2014 07:05:43 -0400
-Content-Disposition: inline
-In-Reply-To: <1404928177-26554-7-git-send-email-bigeasy@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH v3 0/2] tty: serial: Add mediatek UART driver
+Date: Fri,  8 Aug 2014 13:32:02 +0200
+Message-ID: <1407497524-26535-1-git-send-email-matthias.bgg@gmail.com>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, matthias.bgg@gmail.com, alan@linux.intel.com, varkabhadram@gmail.com, heiko@sntech.de, yingjoe.chen@gmail.com, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On Wed, Jul 09, 2014 at 07:49:37PM +0200, Sebastian Andrzej Siewior wrote:
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index bf06a4c..1cbfc8c 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -263,6 +263,12 @@ static const struct serial8250_config uart_config[] = {
->  		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
->  		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
->  	},
-> +	[PORT_OMAP_16750] = {
-> +		.name		= "OMAP",
-> +		.fifo_size	= 64,
-> +		.tx_loadsz	= 64,
-> +		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
-> +	},
->  	[PORT_TEGRA] = {
->  		.name		= "Tegra",
->  		.fifo_size	= 32,
-> @@ -1340,6 +1346,8 @@ static void serial8250_stop_rx(struct uart_port *port)
->  	pm_runtime_get_sync(port->dev);
->  
->  	up->ier &= ~UART_IER_RLSI;
-> +	if (port->type == PORT_OMAP_16750)
-> +		up->ier &= ~UART_IER_RDI;
->  	up->port.read_status_mask &= ~UART_LSR_DR;
->  	serial_port_out(port, UART_IER, up->ier);
+This patch set adds support for the UART found in Mediatek SoCs.
+The chip is a changed version of a 8250 controller.
+Especially it introduces a new register called highspeed. The value
+in this register has to be set depending on the baudrate. The value
+in the register influences the way the divisor has to be calculated.
 
-Alan couldn't UART_IER_RDI be always cleared here with all port types?
-Actually, shouldn't it be?
+The patch series is build against v3.16-rc1 and tested on mt6589. Should
+work as well on mt6577 and mt6582.
 
-Then the custom port type PORT_OMAP_16750 would not be needed.
+Thanks,
+Matthias
+
+Changes for v3:
+- use dev_warn instead of pr_warn
+- use 8250_core function to update termios
+
+Changes for v2:
+- drop 8250_core capability extension for the chip
+- encapsulate set_termios in the driver method
+
+---
+
+Matthias Brugger (2):
+  tty: serial: 8250: Add Mediatek UART driver
+  DTS: serial: Add bindings documention for the Mediatek UARTs
+
+ .../devicetree/bindings/serial/mtk-uart.txt        |   19 ++
+ drivers/tty/serial/8250/8250_mtk.c                 |  296 ++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig                    |    7 +
+ drivers/tty/serial/8250/Makefile                   |    1 +
+ 4 files changed, 323 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_mtk.c
 
 -- 
-heikki
+1.7.9.5
+
