@@ -1,48 +1,46 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_hp300: trivial: fix symbol name in #warning
- message
-Date: Fri, 8 Aug 2014 08:29:38 -0700
-Message-ID: <20140808152938.GA16594@kroah.com>
-References: <1407510872-18057-1-git-send-email-dforsi@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Daniele Forsi <dforsi@gmail.com>
+Subject: [PATCH v2] serial: 8250_hp300: trivial: fix symbol name in #warning message
+Date: Fri,  8 Aug 2014 17:56:30 +0200
+Message-ID: <1407513390-18261-1-git-send-email-dforsi@gmail.com>
+References: <20140808152938.GA16594@kroah.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:54696 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756545AbaHHP3j (ORCPT
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:36150 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755887AbaHHP6G (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Aug 2014 11:29:39 -0400
-Content-Disposition: inline
-In-Reply-To: <1407510872-18057-1-git-send-email-dforsi@gmail.com>
+	Fri, 8 Aug 2014 11:58:06 -0400
+Received: by mail-wg0-f44.google.com with SMTP id m15so5776220wgh.15
+        for <linux-serial@vger.kernel.org>; Fri, 08 Aug 2014 08:58:04 -0700 (PDT)
+In-Reply-To: <20140808152938.GA16594@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniele Forsi <dforsi@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Jiri Kosina <trivial@kernel.org>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Jiri Kosina <trivial@kernel.org>, linux-serial@vger.kernel.org
+Cc: Daniele Forsi <dforsi@gmail.com>
 
-On Fri, Aug 08, 2014 at 05:14:32PM +0200, Daniele Forsi wrote:
-> The symbol is defined in drivers/tty/serial/8250/Kconfig as
-> "SERIAL_8250", not just "8250".
-> 
-> Signed-off-by: Daniele Forsi <dforsi@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_hp300.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
-> index 5bdaf27..f155328 100644
-> --- a/drivers/tty/serial/8250/8250_hp300.c
-> +++ b/drivers/tty/serial/8250/8250_hp300.c
-> @@ -24,6 +24,10 @@
->  #warning CONFIG_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
->  #endif
->  
-> +#if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI)
-> +#warning CONFIG_SERIAL_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
-> +#endif
+The symbol is defined in drivers/tty/serial/8250/Kconfig as
+"SERIAL_8250", not just "8250".
 
-Shouldn't you just change the line before this one with the proper
-config option?
+Signed-off-by: Daniele Forsi <dforsi@gmail.com>
+---
+Changes in v2:
+ - fix the original message and do not duplicate the whole check
 
-thanks,
+ drivers/tty/serial/8250/8250_hp300.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
+index 5bdaf27..afffe4d 100644
+--- a/drivers/tty/serial/8250/8250_hp300.c
++++ b/drivers/tty/serial/8250/8250_hp300.c
+@@ -21,7 +21,7 @@
+ #include "8250.h"
+ 
+ #if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI)
+-#warning CONFIG_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
++#warning CONFIG_SERIAL_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
+ #endif
+ 
+ #ifdef CONFIG_HPAPCI
+-- 
+2.0.1
+
