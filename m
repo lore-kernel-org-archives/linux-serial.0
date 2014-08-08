@@ -1,46 +1,75 @@
-From: Daniele Forsi <dforsi@gmail.com>
-Subject: [PATCH v2] serial: 8250_hp300: trivial: fix symbol name in #warning message
-Date: Fri,  8 Aug 2014 17:56:30 +0200
-Message-ID: <1407513390-18261-1-git-send-email-dforsi@gmail.com>
-References: <20140808152938.GA16594@kroah.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 1/7] dmaengine: edma: fix two faults which happen with
+ the 8250_dma user
+Date: Fri, 8 Aug 2014 18:29:50 +0200
+Message-ID: <20140808162950.GA12080@linutronix.de>
+References: <1406660344-25307-1-git-send-email-bigeasy@linutronix.de>
+ <1406660344-25307-2-git-send-email-bigeasy@linutronix.de>
+ <20140731121702.GU8181@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:36150 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755887AbaHHP6G (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:54033 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756641AbaHHQaC convert rfc822-to-8bit (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Aug 2014 11:58:06 -0400
-Received: by mail-wg0-f44.google.com with SMTP id m15so5776220wgh.15
-        for <linux-serial@vger.kernel.org>; Fri, 08 Aug 2014 08:58:04 -0700 (PDT)
-In-Reply-To: <20140808152938.GA16594@kroah.com>
+	Fri, 8 Aug 2014 12:30:02 -0400
+Content-Disposition: inline
+In-Reply-To: <20140731121702.GU8181@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Jiri Kosina <trivial@kernel.org>, linux-serial@vger.kernel.org
-Cc: Daniele Forsi <dforsi@gmail.com>
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Joel Fernandes <joelf@ti.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org
 
-The symbol is defined in drivers/tty/serial/8250/Kconfig as
-"SERIAL_8250", not just "8250".
+* Vinod Koul | 2014-07-31 17:47:02 [+0530]:
 
-Signed-off-by: Daniele Forsi <dforsi@gmail.com>
----
-Changes in v2:
- - fix the original message and do not duplicate the whole check
+>On Tue, Jul 29, 2014 at 08:58:58PM +0200, Sebastian Andrzej Siewior wr=
+ote:
+>> The rx path of the 8250_dma user in the RX-timeout case:
+>> - it starts the RX transfer
+>> - if the rx-timeout interrupt occures, it dmaengine_pause() the tran=
+sfer
+>> - step two is dmaengine_terminate_all() on this channel.
+>Okay after this whole channel needs to be reset, which means all the
+>descriptors are discared.
 
- drivers/tty/serial/8250/8250_hp300.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>> To make the upper case work better, this patch adds dma_cookie_compl=
+ete()
+>> to complete the cookie. Also it adds is an additional check for echa=
+n->edesc
+>> in case the channel has no descriptor assigned.
+>I think we are fixing the behvaiour rather than cause. terminate_all((=
+)
+>needs to do a proper cleanup of the channel
 
-diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
-index 5bdaf27..afffe4d 100644
---- a/drivers/tty/serial/8250/8250_hp300.c
-+++ b/drivers/tty/serial/8250/8250_hp300.c
-@@ -21,7 +21,7 @@
- #include "8250.h"
- 
- #if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI)
--#warning CONFIG_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
-+#warning CONFIG_SERIAL_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
- #endif
- 
- #ifdef CONFIG_HPAPCI
--- 
-2.0.1
+In case you are not ignoring me but $reason here is an example that doe=
+s
+not work (with both drivers);
 
+    desc =3D dmaengine_prep_slave_single(rxchan, =E2=80=A6);
+    rx_cookie =3D dmaengine_submit(desc);
+    dma_async_issue_pending(rxchan);
+
+    ssleep(2);
+    /* Now assume that the transfer did not start */
+    st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
+    /* st is now DMA_IN_PROGRESS as expected */
+
+    dmaengine_terminate_all(rxchan);
+    st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
+    /* st is still DMA_IN_PROGRESS but _I_ expect DMA_COMPLETE because
+     * it has been terminated / canceled
+     */
+
+Both dma driver clean up all / terminate all descriptors as required bu=
+t
+_none_ of them completes the cookie. As a result dma_cookie_status()
+still thinks that the transfer is in progress.
+
+Sebastian
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
