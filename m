@@ -1,75 +1,228 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 1/7] dmaengine: edma: fix two faults which happen with
- the 8250_dma user
-Date: Fri, 8 Aug 2014 18:29:50 +0200
-Message-ID: <20140808162950.GA12080@linutronix.de>
-References: <1406660344-25307-1-git-send-email-bigeasy@linutronix.de>
- <1406660344-25307-2-git-send-email-bigeasy@linutronix.de>
- <20140731121702.GU8181@intel.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH v2] serial: uart: add hw flow control support configuration
+Date: Fri, 8 Aug 2014 15:36:43 -0400
+Message-ID: <53E526CB.6060504@ti.com>
+References: <1398971093-17164-1-git-send-email-m-karicheri2@ti.com> <53E39B44.60406@hurleysoftware.com> <53E3A67B.6070709@ti.com> <20140807171254.GA13097@kroah.com> <53E3B67E.80705@hurleysoftware.com> <53E3B88C.2000209@ti.com> <53E3C685.5010600@hurleysoftware.com> <53E3E597.7070305@ti.com> <53E405B6.7030602@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:54033 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756641AbaHHQaC convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 8 Aug 2014 12:30:02 -0400
-Content-Disposition: inline
-In-Reply-To: <20140731121702.GU8181@intel.com>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:32909 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751733AbaHHTht (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 8 Aug 2014 15:37:49 -0400
+In-Reply-To: <53E405B6.7030602@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Joel Fernandes <joelf@ti.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Jiri Slaby <jslaby@suse.cz>, Santosh Shilimkar <santosh.shilimkar@ti.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-* Vinod Koul | 2014-07-31 17:47:02 [+0530]:
+On 08/07/2014 07:03 PM, Peter Hurley wrote:
 
->On Tue, Jul 29, 2014 at 08:58:58PM +0200, Sebastian Andrzej Siewior wr=
-ote:
->> The rx path of the 8250_dma user in the RX-timeout case:
->> - it starts the RX transfer
->> - if the rx-timeout interrupt occures, it dmaengine_pause() the tran=
-sfer
->> - step two is dmaengine_terminate_all() on this channel.
->Okay after this whole channel needs to be reset, which means all the
->descriptors are discared.
+----Cut-------------
+>>>>
+>>>>>
+>>>>> 1. The patch enables UPF_HARD_FLOW, but provides no throttle() and unthrottle()
+>>>>> methods for 8250, which is guaranteed to blow-up when either uart_throttle() or
+>>>>> uart_unthrottle() is called.
+>>>>>
+>>>>> 2. The patch adds capabilities which already exist, namely UART_CAP_AFE.
+>>>
+>>>> AFAIK, UART_CAP_AFE is a software assisted hw flow control and it was described in my commit log as well where as this patch add support for pure h/w controlled flow  control and no software intervention is needed. Do you think uart_throttle() or  uart_unthrottle() is applicable
+>>>> in this case?
+>>>
+>>> UART_CAP_AFE is used to indicate 16750-compatible hw flow control, which is
+>>> auto-CTS and auto-RTS flow control as described in the TI datasheet at
+>>> http://www.ti.com/lit/ds/symlink/tl16c750.pdf
+>>
+>> Peter,
+>>
+>> This patch was added to support hw flow control on boards based on Keystone SoCs that has UART with h/w flow control capability. Keystone SoCs UART spec is at http://www.ti.com/lit/ug/sprugp1/sprugp1.pdf
+>> and it uses tl16550c as per the document. The equivalent spec seems to be http://www.ti.com/lit/ds/symlink/tl16c550c.pdf. Only difference between tl16c750 and tl16c550 seems to be 16 byte FIFO available instead of 16 or 64 byte FIFO in 16c750.
+>
+> So this is just a way to avoid the fifo size check.
+> Then I'd rather see a capability that only overrides the fifo size check
+> and does not enable UPF_HARD_FLOW.
+>
+> Or show that the fifo size check is not actually required for AFE.
+>
+>
+>> And about your original question
+>>>>>>>> Why is a modem status interrupt being generated for DCTS
+>>>>>>>> if autoflow control is enabled?
+>>
+>> Are you asking why this patch didn't disable generating CTS interrupt when h/w flow control is enable?
+>
+> No. I was asking what chip had AFE on but still generated modem status
+> interrupts for delta CTS.
+>
+> But I realize now that a different question needs asking:
+> Is the MSR read showing delta CTS set when AFE is on, ever?
 
->> To make the upper case work better, this patch adds dma_cookie_compl=
-ete()
->> to complete the cookie. Also it adds is an additional check for echa=
-n->edesc
->> in case the channel has no descriptor assigned.
->I think we are fixing the behvaiour rather than cause. terminate_all((=
-)
->needs to do a proper cleanup of the channel
+Unfortunately this was tested on a customer board that I don't have 
+access to and can't check this out right away. I am trying to findout 
+if I can get some hardware to test the patch to address the issue being 
+discussed. Customer board is currently using RTS and CTS lines and the 
+same works fine for them with this patch.
 
-In case you are not ignoring me but $reason here is an example that doe=
-s
-not work (with both drivers);
+>
+> Because serial8250_modem_status() assumes the answer is no for
+> _all_ AFE-capable devices, and if yes, would mean that serial8250_modem_status()
+> is broken if AFE is on.
 
-    desc =3D dmaengine_prep_slave_single(rxchan, =E2=80=A6);
-    rx_cookie =3D dmaengine_submit(desc);
-    dma_async_issue_pending(rxchan);
+As per Keystone UART spec
 
-    ssleep(2);
-    /* Now assume that the transfer did not start */
-    st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
-    /* st is now DMA_IN_PROGRESS as expected */
+bit 0 in MSR: DCTS: Change in CTS indicator bit. DCTS indicates that the 
+CTS input has changed state since the last time it was read by the CPU. 
+When DCTS is set (autoflow control is not enabled and the modem status 
+interrupt is enabled), a modem status interrupt is generated. When 
+autoflow control is enabled, no interrupt is generated
 
-    dmaengine_terminate_all(rxchan);
-    st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
-    /* st is still DMA_IN_PROGRESS but _I_ expect DMA_COMPLETE because
-     * it has been terminated / canceled
-     */
+So based on this, there shouldn't be any CTS change if AFE is enabled 
+and will indicate change if AFE is disabled. Probably add WARN_ON_ONCE() 
+as you suggested to detect any offending h/w.
 
-Both dma driver clean up all / terminate all descriptors as required bu=
-t
-_none_ of them completes the cookie. As a result dma_cookie_status()
-still thinks that the transfer is in progress.
+>
+>
+>> If so,
+>>
+>> unsigned int serial8250_modem_status(struct uart_8250_port *up)
+>> {
+>>    ...
+>>            if (status&  UART_MSR_DCTS)
+>>              uart_handle_cts_change(port, status&  UART_MSR_CTS);
+>> }
+>>
+>> Probably in the above check if UPF_HARD_FLOW is set, we can avoid calling
+ >> uart_handle_cts_change() and undo the current code change in 
+uart_handle_cts_change()
+ >> and just add a WARN_ON_ONCE() as you have suggested.
+>
+> Let's come back to this question after determining the answer for the
+> above question.
+>
+>
+>>>
+>>> uart_throttle() and uart_unthrottle() are used indirectly by line disciplines
+>>> for high-level rx flow control, such as when a read buffer fills up because
+>>> there is no userspace reader. The 8250 core doesn't define a throttle/unthrottle
+>>> method because writing MCR to drop RTS is sufficient to disable auto-RTS.
+>>
+>> As per spec. hardware has rx threshold levels set to trigger an RTS level change to tell
+ >> the remote from sending more bytes. So if h/w flow control is 
+enabled, then not sure why
+ >> uart_throttle() is to be doing anything when h/w flow control is 
+supported? A dummy
+ >> function required to satisfy the line discipline?
+>
+> I understand how auto-RTS works.
+>
+> Let's pretend for a moment that uart_throttle() does nothing when
+> auto-RTS is enabled:
+>
+> 1. tty buffers start to fill up because no process is reading the data.
+> 2. The throttle threshold is reached.
+> 3. uart_throttle() is called but does nothing.
+> 4. more data arrives and the DR interrupt is triggered
+> 5. serial8250_rx_chars() reads in the new data.
+> 6. tty buffers keep filling up even though the driver was told to throttle
+> 7. eventually the tty buffers will cap at about 64KB and start counting
+>     buf_overrun errors
+>
+Ok.
 
-Sebastian
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Couple of observation on the AFE implementation in 8250 driver prior to 
+my patch.
+
+ From the discussion so far, AFE is actually hardware assisted 
+hardware flow control. Auto CTS is sw assisted hardware flow control
+where sw uses RTS line for recieve side flow control and I assume it 
+uses MCR RTS bit for this where AFE does this automatically. From
+the 16550 or Keystone UART spec, I can't find how RTS line can be 
+asserted to do this through sw instead of hardware doing it 
+automatically. Spec says
+
+MCR RTS bit: RTS control. When AFE = 1, the RTS bit determines th
+e autoflow control enabled. Note that all UARTs do not support this 
+feature. See the device-specific data manual for supported features. If 
+this feature is not available, this bit is reserved and should be 
+cleared to 0.
+0 = UARTn_RTS is disabled, only UARTn_CTS is enabled.
+1 = UARTn_RTS and UARTn_CTS are enabled.
+
+Then since AFE was already supported before my patch for FIFO size 
+32bytes or higher, I am wondering why there was no implementation of 
+throttle()/unthrottle() to begin with and why UPF_HARD_FLOW flag is not 
+set at all if AFE implemented in 8250 driver is hw assisted, hw flow 
+control. Also what do these API supposed to do?
+
+in serial_core.c, uart_throttle() function
+
+  if CRTSCTS is set
+      port->ops->throttle(port);
+  Also call at the end
+      uart_clear_mctrl(port, TIOCM_RTS);
+  and this go an clear the MCR RTS bit.
+
+So what does uart_throttle() API expected to do since MCR is updated 
+using uart_clear_mctrl().
+
+I searched who sets the UPF_HARD_FLOW in port->flags and only driver 
+that does set this flag is omap-serial.c. The check was introduced by 
+commit from Ruessel King to support h/w assisted h/w flow control.
+
+======================================================================
+commit dba05832cbe4f305dfd998fb26d7c685d91fbbd8
+Author: Russell King <rmk+kernel@arm.linux.org.uk>
+Date:   Tue Apr 17 16:41:10 2012 +0100
+
+     SERIAL: core: add hardware assisted h/w flow control support
+
+     Ports which are handling h/w flow control in hardware must not have
+     their RTS state altered depending on the tty's hardware-stopped state.
+     Avoid this additional logic when setting the termios state.
+
+     Acked-by: Alan Cox <alan@linux.intel.com>
+     Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
+======================================================================
+
+This flag is checked in uart_set_termios() and the reason is in the 
+commit log above.
+
+So shouldn't AFE support in 8250 make use of this flag? My patch uses DT 
+attribute to set this flag so above uart_set_termios() function behave 
+as expected. But as you have rightly pointed out throttle()/unthrottle() 
+is missing that needs to be added. Only driver that I can find that has 
+implemented this is omap_serial.c. It does disable RDI and RLSI as part 
+of throttle() interrupt and re-enable it as part of unthrottle(). 
+Probably I can add this in this driver as well if this is what is 
+expected. I will post a patch for this anyways, with some basic testing, 
+but testing on customer h/w for this was initialially implemented has to 
+wait until my return from vacation  (on vacation from 08/11-08/16).
+
+>
+>> Also 8250.c support other port types that doesn't have AFE. So shoudl this
+ >> be driving RTS line to stop the sender and resume when 
+uart_unthrottle() is called?
+>
+> Yes, because that's how sw-assisted CTS flow control works, and the
+> default behavior of uart_throttle/uart_unthrottle.
+>
+> IOW, with no extra code or special-casing, AFE just works.
+>
+
+Based on my above discussion, there are few things required to be done 
+on top of AFE and some of it is done by my patch and the remaining thing 
+to be addressed in another patch.
+
+>> I want to work to fix this rather than revert this change as our customer is already using this feature.
+>
+> 3.16 was released 4 days ago.
+
+As I said, I will work to address this with priority.
+
+>
+> Regards,
+> Peter Hurley
+>
+
