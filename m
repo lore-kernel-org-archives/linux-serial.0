@@ -1,94 +1,57 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH v3 1/2] tty: serial: 8250: Add Mediatek UART driver
-Date: Tue, 12 Aug 2014 15:57:34 +0200
-Message-ID: <20140812135734.GD512@distanz.ch>
-References: <1407497524-26535-1-git-send-email-matthias.bgg@gmail.com>
- <1407497524-26535-2-git-send-email-matthias.bgg@gmail.com>
- <20140808122820.GF29832@distanz.ch>
- <CABuKBeK8shJWD5rT3diYReWQyBbCUmDfeT-oT2uF9ZrJAAf+eg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from sym2.noone.org ([178.63.92.236]:40863 "EHLO sym2.noone.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752260AbaHLN5i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Aug 2014 09:57:38 -0400
-Content-Disposition: inline
-In-Reply-To: <CABuKBeK8shJWD5rT3diYReWQyBbCUmDfeT-oT2uF9ZrJAAf+eg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 0/2] tty: serial: Add mediatek UART driver
+Date: Tue, 12 Aug 2014 16:12:15 +0200
+Message-ID: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, yingjoe.chen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Alan Cox <alan@linux.intel.com>, Varka Bhadram <varkabhadram@gmail.com>, Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
 
-On 2014-08-12 at 15:31:51 +0200, Matthias Brugger <matthias.bgg@gmail.com> wrote:
-> 2014-08-08 14:28 GMT+02:00 Tobias Klauser <tklauser@distanz.ch>:
-> > On 2014-08-08 at 13:32:03 +0200, Matthias Brugger <matthias.bgg@gmail.com> wrote:
-> >> This patch adds support for the UART block found on Mediatek SoCs.
-> >> The device has a highspeed register which influences the calcualtion of the
-> >> divisor. The chip lacks support for some baudrates. When requested, we set the
-> >> divisor to the next smaller baudrate and adjust the c_cflag accordingly.
-> >>
-> >> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
-> >> ---
-> >>  drivers/tty/serial/8250/8250_mtk.c |  296 ++++++++++++++++++++++++++++++++++++
-> >>  drivers/tty/serial/8250/Kconfig    |    7 +
-> >>  drivers/tty/serial/8250/Makefile   |    1 +
-> >>  3 files changed, 304 insertions(+)
-> >>  create mode 100644 drivers/tty/serial/8250/8250_mtk.c
-> >>
-> >> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> >> new file mode 100644
-> >> index 0000000..d63080b
-> >> --- /dev/null
-> >> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> >> @@ -0,0 +1,296 @@
-> >
-> > [...]
-> >
-> >> +static int mtk8250_probe(struct platform_device *pdev)
-> >> +{
-> >> +     struct uart_8250_port uart = {};
-> >> +     struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >> +     struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> >> +     struct mtk8250_data *data;
-> >> +     int err;
-> >> +
-> >> +     if (!regs || !irq) {
-> >> +             dev_err(&pdev->dev, "no registers/irq defined\n");
-> >> +             return -EINVAL;
-> >> +     }
-> >> +
-> >> +     spin_lock_init(&uart.port.lock);
-> >> +     uart.port.mapbase = regs->start;
-> >> +     uart.port.irq = irq->start;
-> >> +     uart.port.pm = mtk8250_do_pm;
-> >> +     uart.port.type = PORT_16550;
-> >> +     uart.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
-> >> +     uart.port.dev = &pdev->dev;
-> >> +
-> >> +     uart.port.membase = devm_ioremap(&pdev->dev, regs->start,
-> >> +                                      resource_size(regs));
-> >> +     if (!uart.port.membase)
-> >> +             return -ENOMEM;
-> >
-> > You can use devm_ioremap_resource here and get rid of the check for
-> > !regs above, since devm_ioremap_resource already does that.
-> >
-> >         regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >
-> >         ...
-> >
-> >         uart.port.membase = devm_ioremap_resource(&pdev->dev, regs);
-> >         if (IS_ERR(uart.port.membase))
-> >                 return PTR_ERR(uart.port.membase);
-> >
-> 
-> devm_ioremap_resource creates a busy resource region in the
-> iomem_resource. This leads the UART to silently fail.
-> I suppose that's why 8250_dw.c uses devm_ioremap instead of
-> devm_ioremap_resource. The 8250_dw has the same issue.
+This patch set adds support for the UART found in Mediatek SoCs.
+The chip is a changed version of a 8250 controller.
+Especially it introduces a new register called highspeed. The value
+in this register has to be set depending on the baudrate. The value
+in the register influences the way the divisor has to be calculated.
 
-Ah yes, of course. Sorry about that.
+The patch series is build against v3.16-rc1 and tested on mt6589. Should
+work as well on mt6577 and mt6582.
 
-Thanks
-Tobias
+Thanks,
+Matthias
+
+Changes for v4:
+- delete owner in platform driver instance
+- pass plattform_device to mtk8250_probe_of
+- reorganise probe function to error out early
+- Fix DTS documentation
+
+Changes for v3:
+- use dev_warn instead of pr_warn
+- use 8250_core function to update termios
+
+Changes for v2:
+- drop 8250_core capability extension for the chip
+- encapsulate set_termios in the driver method
+
+---
+
+Matthias Brugger (2):
+  tty: serial: 8250: Add Mediatek UART driver
+  DTS: serial: Add bindings documention for the Mediatek UARTs
+
+ .../devicetree/bindings/serial/mtk-uart.txt        |   20 ++
+ drivers/tty/serial/8250/8250_mtk.c                 |  294 ++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig                    |    7 +
+ drivers/tty/serial/8250/Makefile                   |    1 +
+ 4 files changed, 322 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_mtk.c
+
+-- 
+1.7.9.5
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
