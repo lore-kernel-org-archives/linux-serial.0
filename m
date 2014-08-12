@@ -1,274 +1,152 @@
 From: Alan Cox <alan@linux.intel.com>
-Subject: [PATCH] Specify PCI based UART for earlyprintk
-Date: Tue, 12 Aug 2014 15:57:47 +0100
-Message-ID: <20140812145712.13191.82861.stgit@acox1-desk.ger.corp.intel.com>
+Subject: [RFC 1/3] tty: Add RS485 helper functions
+Date: Tue, 12 Aug 2014 16:01:20 +0100
+Message-ID: <20140812150104.13378.24152.stgit@acox1-desk.ger.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:62781 "EHLO mga02.intel.com"
+Received: from mga14.intel.com ([192.55.52.115]:28294 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753042AbaHLO5y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Aug 2014 10:57:54 -0400
+	id S1753203AbaHLPCI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 12 Aug 2014 11:02:08 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: x86@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-From: Stuart R. Anderson <stuart.r.anderson@intel.com>
+From: Alan <gnomes@lxorguk.ukuu.org.uk>
 
-Add support for specifying PCI based UARTs for earlyprintk
-using a syntax like "earlyprintk=pciserial,00:18.1,115200",
-where 00:18.1 is the BDF of a UART device.
+This follows the pattern of moving repeatedly occuring ioctl helpers into
+common code where possible. We want things like user space copies to be done
+in one place.
 
-[Slightly tidied from Stuart's original patch]
+We allow the existing ioctl fall through to continue working. Old drivers
+will not be affected and can be cleaned up in later patches.
+
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
- arch/x86/kernel/early_printk.c |  182 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 166 insertions(+), 16 deletions(-)
+ drivers/tty/tty_ioctl.c    |   46 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/tty.h        |    1 +
+ include/linux/tty_driver.h |   11 +++++++++++
+ 3 files changed, 58 insertions(+)
 
-diff --git a/arch/x86/kernel/early_printk.c b/arch/x86/kernel/early_printk.c
-index 01d1c18..49e071e 100644
---- a/arch/x86/kernel/early_printk.c
-+++ b/arch/x86/kernel/early_printk.c
-@@ -19,6 +19,7 @@
- #include <linux/usb/ehci_def.h>
- #include <linux/efi.h>
- #include <asm/efi.h>
-+#include <asm/pci_x86.h>
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 6fd60fe..7f50d6e 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -20,6 +20,7 @@
+ #include <linux/bitops.h>
+ #include <linux/mutex.h>
+ #include <linux/compat.h>
++#include <linux/serial.h>
  
- /* Simple VGA output */
- #define VGABASE		(__ISA_IO_base + 0xb8000)
-@@ -76,7 +77,7 @@ static struct console early_vga_console = {
- 
- /* Serial functions loosely based on a similar package from Klaus P. Gerlicher */
- 
--static int early_serial_base = 0x3f8;  /* ttyS0 */
-+static unsigned long early_serial_base = 0x3f8;  /* ttyS0 */
- 
- #define XMTRDY          0x20
- 
-@@ -94,13 +95,40 @@ static int early_serial_base = 0x3f8;  /* ttyS0 */
- #define DLL             0       /*  Divisor Latch Low         */
- #define DLH             1       /*  Divisor latch High        */
- 
-+static void mem32_serial_out(unsigned long addr, int offset, int value)
-+{
-+	uint32_t *vaddr = (uint32_t *)addr;
-+	/* shift implied by pointer type */
-+	writel(value, vaddr + offset);
-+}
-+
-+static unsigned int mem32_serial_in(unsigned long addr, int offset)
-+{
-+	uint32_t *vaddr = (uint32_t *)addr;
-+	/* shift implied by pointer type */
-+	return readl(vaddr + offset);
-+}
-+
-+static unsigned int io_serial_in(unsigned long addr, int offset)
-+{
-+	return inb(addr + offset);
-+}
-+
-+static void io_serial_out(unsigned long addr, int offset, int value)
-+{
-+	outb(value, addr + offset);
-+}
-+
-+static unsigned int (*serial_in)(unsigned long addr, int offset) = io_serial_in;
-+static void (*serial_out)(unsigned long addr, int offset, int value) = io_serial_out;
-+
- static int early_serial_putc(unsigned char ch)
- {
- 	unsigned timeout = 0xffff;
- 
--	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
-+	while ((serial_in(early_serial_base, LSR) & XMTRDY) == 0 && --timeout)
- 		cpu_relax();
--	outb(ch, early_serial_base + TXR);
-+	serial_out(early_serial_base, TXR, ch);
- 	return timeout ? 0 : -1;
+ #include <asm/io.h>
+ #include <asm/uaccess.h>
+@@ -968,6 +969,26 @@ static int tty_change_softcar(struct tty_struct *tty, int arg)
  }
  
-@@ -114,13 +142,28 @@ static void early_serial_write(struct console *con, const char *s, unsigned n)
- 	}
- }
- 
-+static __init void early_serial_hw_init(unsigned divisor)
-+{
-+	unsigned char c;
-+
-+	serial_out(early_serial_base, LCR, 0x3);	/* 8n1 */
-+	serial_out(early_serial_base, IER, 0);	/* no interrupt */
-+	serial_out(early_serial_base, FCR, 0);	/* no fifo */
-+	serial_out(early_serial_base, MCR, 0x3);	/* DTR + RTS */
-+
-+	c = serial_in(early_serial_base, LCR);
-+	serial_out(early_serial_base, LCR, c | DLAB);
-+	serial_out(early_serial_base, DLL, divisor & 0xff);
-+	serial_out(early_serial_base, DLH, (divisor >> 8) & 0xff);
-+	serial_out(early_serial_base, LCR, c & ~DLAB);
-+}
-+
- #define DEFAULT_BAUD 9600
- 
- static __init void early_serial_init(char *s)
- {
--	unsigned char c;
- 	unsigned divisor;
--	unsigned baud = DEFAULT_BAUD;
-+	unsigned long baud = DEFAULT_BAUD;
- 	char *e;
- 
- 	if (*s == ',')
-@@ -145,24 +188,124 @@ static __init void early_serial_init(char *s)
- 			s++;
- 	}
- 
--	outb(0x3, early_serial_base + LCR);	/* 8n1 */
--	outb(0, early_serial_base + IER);	/* no interrupt */
--	outb(0, early_serial_base + FCR);	/* no fifo */
--	outb(0x3, early_serial_base + MCR);	/* DTR + RTS */
-+	if (*s) {
-+		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
-+			baud = DEFAULT_BAUD;
-+	}
-+
-+	/* Convert from baud to divisor value */
-+	divisor = 115200 / baud;
-+
-+	/* These will always be IO based ports */
-+	serial_in = io_serial_in;
-+	serial_out = io_serial_out;
-+
-+	/* Set up the HW */
-+	early_serial_hw_init(divisor);
-+}
-+
-+#ifdef CONFIG_PCI
-+/*
-+ * early_pci_serial_init()
+ /**
++ *	tty_set_rs485		-	set RS485 related parameters
++ *	@tty: tty for the ioctl
++ *	@rs485: rs485 parameter block
 + *
-+ * This function is invoked when the early_printk param starts with "pciserial"
-+ * The rest of the param should be ",B:D.F,baud" where B, D & F describe the
-+ * location of a PCI device that must be a UART device.
++ *	Perform a change to the RS485 settings. This uses the termios
++ *	sem as often termios and rs485 interact
 + */
-+static __init void early_pci_serial_init(char *s)
++
++static int tty_set_rs485(struct tty_struct *tty, struct serial_rs485 *rs485)
 +{
-+	unsigned divisor;
-+	unsigned long baud = DEFAULT_BAUD;
-+	u8 bus, slot, func;
-+	uint32_t classcode, bar0;
-+	uint16_t cmdreg;
-+	char *e;
++	int ret = -EOPNOTSUPP;
 +
++	down_write(&tty->termios_rwsem);
++	if (tty->rs485 && tty->ops->set_rs485)
++		ret = tty->ops->set_rs485(tty, rs485);
++	up_write(&tty->termios_rwsem);
++	return ret;
++}
 +
-+	/*
-+	 * First, part the param to get the BDF values
-+	 */
-+	if (*s == ',')
-+		++s;
++/**
+  *	tty_mode_ioctl		-	mode related ioctls
+  *	@tty: tty for the ioctl
+  *	@file: file pointer for the tty
+@@ -1116,6 +1137,31 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
+ 		if (get_user(arg, (unsigned int __user *) arg))
+ 			return -EFAULT;
+ 		return tty_change_softcar(real_tty, arg);
++	case TIOCGRS485: {
++		struct serial_rs485 rs485;
 +
-+	if (*s == 0)
-+		return;
-+
-+	bus = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
-+	if (*s != ':')
-+		return;
-+	++s;
-+	slot = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
-+	if (*s != '.')
-+		return;
-+	++s;
-+	func = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
- 
-+	/* A baud might be following */
-+	if (*s == ',')
-+		s++;
-+
-+	/*
-+	 * Second, find the device from the BDF
-+	 */
-+	cmdreg = read_pci_config(bus, slot, func, PCI_COMMAND);
-+	classcode = read_pci_config(bus, slot, func, PCI_CLASS_REVISION);
-+	bar0 = read_pci_config(bus, slot, func, PCI_BASE_ADDRESS_0);
-+
-+	/*
-+	 * Verify it is a UART type device
-+	 */
-+	if (((classcode >> 16 != PCI_CLASS_COMMUNICATION_MODEM) &&
-+	     (classcode >> 16 != PCI_CLASS_COMMUNICATION_SERIAL)) ||
-+	   (((classcode >> 8) & 0xff) != 0x02)) /* 16550 I/F at BAR0 */
-+		return;
-+
-+	/*
-+	 * Determine if it is IO or memory mapped
-+	 */
-+	if (bar0 & 0x01) {
-+		/* it is IO mapped */
-+		serial_in = io_serial_in;
-+		serial_out = io_serial_out;
-+		early_serial_base = bar0&0xfffffffc;
-+		write_pci_config(bus, slot, func, PCI_COMMAND,
-+						cmdreg|PCI_COMMAND_IO);
-+	} else {
-+		/* It is memory mapped - assume 32-bit alignment */
-+		serial_in = mem32_serial_in;
-+		serial_out = mem32_serial_out;
-+		/* WARNING! assuming the address is always in the first 4G */
-+		early_serial_base =
-+			(unsigned long)early_ioremap(bar0 & 0xfffffff0, 0x10);
-+		write_pci_config(bus, slot, func, PCI_COMMAND,
-+						cmdreg|PCI_COMMAND_MEMORY);
-+	}
-+
-+	/*
-+	 * Lastly, initalize the hardware
-+	 */
- 	if (*s) {
--		baud = simple_strtoul(s, &e, 0);
--		if (baud == 0 || s == e)
-+		if (strcmp(s, "nocfg") == 0)
-+			/* Sometimes, we want to leave the UART alone
-+			 * and assume the BIOS has set it up correctly.
-+			 * "nocfg" tells us this is the case, and we
-+			 * should do no more setup.
-+			 */
-+			return;
-+		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
- 			baud = DEFAULT_BAUD;
- 	}
- 
-+	/* Convert from baud to divisor value */
- 	divisor = 115200 / baud;
--	c = inb(early_serial_base + LCR);
--	outb(c | DLAB, early_serial_base + LCR);
--	outb(divisor & 0xff, early_serial_base + DLL);
--	outb((divisor >> 8) & 0xff, early_serial_base + DLH);
--	outb(c & ~DLAB, early_serial_base + LCR);
-+
-+	/* Set up the HW */
-+	early_serial_hw_init(divisor);
- }
-+#endif
- 
- static struct console early_serial_console = {
- 	.name =		"earlyser",
-@@ -210,6 +353,13 @@ static int __init setup_early_printk(char *buf)
- 			early_serial_init(buf + 4);
- 			early_console_register(&early_serial_console, keep);
- 		}
-+#ifdef CONFIG_PCI
-+		if (!strncmp(buf, "pciserial", 9)) {
-+			early_pci_serial_init(buf + 9);
-+			early_console_register(&early_serial_console, keep);
-+			buf += 9; /* Keep from match the above "serial" */
++		if (tty->rs485) {
++			down_read(&real_tty->termios_rwsem);
++			memcpy(&rs485, tty->rs485, sizeof(rs485));
++			up_read(&real_tty->termios_rwsem);
++			if (copy_to_user(p, &rs485, sizeof(rs485)))
++				ret = -EFAULT;
++			return ret;
 +		}
-+#endif
- 		if (!strncmp(buf, "vga", 3) &&
- 		    boot_params.screen_info.orig_video_isVGA == 1) {
- 			max_xpos = boot_params.screen_info.orig_video_cols;
++		/* For now fall through to legacy handling */
++		return -ENOIOCTLCMD;
++	}
++	case TIOCSRS485: {
++		struct serial_rs485 rs485;
++
++		if (tty->rs485) {
++			if (copy_from_user(&rs485, p, sizeof(rs485)))
++				return -EFAULT;
++			return tty_set_rs485(tty, &rs485);
++		}
++		/* For now fall through to legacy handling */
++		return -ENOIOCTLCMD;
++	}
+ 	default:
+ 		return -ENOIOCTLCMD;
+ 	}
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 8413294..310831f 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -255,6 +255,7 @@ struct tty_struct {
+ 	/* Termios values are protected by the termios rwsem */
+ 	struct ktermios termios, termios_locked;
+ 	struct termiox *termiox;	/* May be NULL for unsupported */
++	struct serial_rs485 *rs485;	/* May be NULL for unsupported */
+ 	char name[64];
+ 	struct pid *pgrp;		/* Protected by ctrl lock */
+ 	struct pid *session;
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index e48c608..5a8a566 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -232,6 +232,15 @@
+  *	Called when the device receives a TIOCGICOUNT ioctl. Passed a kernel
+  *	structure to complete. This method is optional and will only be called
+  *	if provided (otherwise EINVAL will be returned).
++ *
++ * int (*set_rs485)(struct tty_struct *tty, serial_rs485 *new);
++ *
++ *	Called when the device receives an RS485 ioctl. Passes down
++ *	the requested data from user space. This method will not be invoked
++ *	unless the tty also has a valid tty->rs485 pointer.
++ *
++ *	Optional: Called under the termios lock
++ *
+  */
+ 
+ #include <linux/export.h>
+@@ -243,6 +252,7 @@
+ struct tty_struct;
+ struct tty_driver;
+ struct serial_icounter_struct;
++struct serial_rs485;
+ 
+ struct tty_operations {
+ 	struct tty_struct * (*lookup)(struct tty_driver *driver,
+@@ -279,6 +289,7 @@ struct tty_operations {
+ 			unsigned int set, unsigned int clear);
+ 	int (*resize)(struct tty_struct *tty, struct winsize *ws);
+ 	int (*set_termiox)(struct tty_struct *tty, struct termiox *tnew);
++	int (*set_rs485)(struct tty_struct *tty, struct serial_rs485 *rs485);
+ 	int (*get_icount)(struct tty_struct *tty,
+ 				struct serial_icounter_struct *icount);
+ #ifdef CONFIG_CONSOLE_POLL
 
