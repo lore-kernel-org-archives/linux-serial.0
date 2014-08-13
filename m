@@ -1,274 +1,95 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: [RFC PATCH 3/3] serial: switch to the new RS485 helpers
-Date: Tue, 12 Aug 2014 16:02:47 +0100
-Message-ID: <20140812150150.13378.93278.stgit@acox1-desk.ger.corp.intel.com>
-References: <20140812150104.13378.24152.stgit@acox1-desk.ger.corp.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:29249 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752787AbaHLPDZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 12 Aug 2014 11:03:25 -0400
-In-Reply-To: <20140812150104.13378.24152.stgit@acox1-desk.ger.corp.intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH v4 0/8] asm-generic/io.h overhaul
+Date: Wed, 13 Aug 2014 12:28:50 +0200
+Message-ID: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Stephen Boyd <sboyd@codeaurora.org>, Sam Ravnborg <sam@ravnborg.org>, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
 
-From: Alan <gnomes@lxorguk.ukuu.org.uk>
+From: Thierry Reding <treding@nvidia.com>
 
-Example switch for evaluation (untested)
----
- drivers/tty/serial/atmel_serial.c |   32 +++---------------------------
- drivers/tty/serial/mcf.c          |   28 +++-----------------------
- drivers/tty/serial/omap-serial.c  |   31 ++---------------------------
- drivers/tty/serial/sc16is7xx.c    |   40 +++++++------------------------------
- 4 files changed, 16 insertions(+), 115 deletions(-)
+Hi,
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 7b63677..d441fad 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2059,8 +2059,10 @@ static int atmel_request_port(struct uart_port *port)
-  */
- static void atmel_config_port(struct uart_port *port, int flags)
- {
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	if (flags & UART_CONFIG_TYPE) {
- 		port->type = PORT_ATMEL;
-+		port->rs485 = &atmel_port->rs485;
- 		atmel_request_port(port);
- 	}
- }
-@@ -2106,34 +2108,6 @@ static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
- }
- #endif
- 
--static int
--atmel_ioctl(struct uart_port *port, unsigned int cmd, unsigned long arg)
--{
--	struct serial_rs485 rs485conf;
--
--	switch (cmd) {
--	case TIOCSRS485:
--		if (copy_from_user(&rs485conf, (struct serial_rs485 *) arg,
--					sizeof(rs485conf)))
--			return -EFAULT;
--
--		atmel_config_rs485(port, &rs485conf);
--		break;
--
--	case TIOCGRS485:
--		if (copy_to_user((struct serial_rs485 *) arg,
--					&(to_atmel_uart_port(port)->rs485),
--					sizeof(rs485conf)))
--			return -EFAULT;
--		break;
--
--	default:
--		return -ENOIOCTLCMD;
--	}
--	return 0;
--}
--
--
- 
- static struct uart_ops atmel_pops = {
- 	.tx_empty	= atmel_tx_empty,
-@@ -2155,7 +2129,7 @@ static struct uart_ops atmel_pops = {
- 	.config_port	= atmel_config_port,
- 	.verify_port	= atmel_verify_port,
- 	.pm		= atmel_serial_pm,
--	.ioctl		= atmel_ioctl,
-+	.set_rs485	= atmel_config_rs485,
- #ifdef CONFIG_CONSOLE_POLL
- 	.poll_get_char	= atmel_poll_get_char,
- 	.poll_put_char	= atmel_poll_put_char,
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index bc896dc..4260381 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -395,8 +395,10 @@ static irqreturn_t mcf_interrupt(int irq, void *data)
- 
- static void mcf_config_port(struct uart_port *port, int flags)
- {
-+	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
- 	port->type = PORT_MCF;
- 	port->fifosize = MCFUART_TXFIFOSIZE;
-+	port->rs485 = &pp->rs485;
- 
- 	/* Clear mask, so no surprise interrupts. */
- 	writeb(0, port->membase + MCFUART_UIMR);
-@@ -464,30 +466,6 @@ static void mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
--static int mcf_ioctl(struct uart_port *port, unsigned int cmd,
--		unsigned long arg)
--{
--	switch (cmd) {
--	case TIOCSRS485: {
--		struct serial_rs485 rs485;
--		if (copy_from_user(&rs485, (struct serial_rs485 *)arg,
--				sizeof(struct serial_rs485)))
--			return -EFAULT;
--		mcf_config_rs485(port, &rs485);
--		break;
--	}
--	case TIOCGRS485: {
--		struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--		if (copy_to_user((struct serial_rs485 *)arg, &pp->rs485,
--				sizeof(struct serial_rs485)))
--			return -EFAULT;
--		break;
--	}
--	default:
--		return -ENOIOCTLCMD;
--	}
--	return 0;
--}
- 
- /****************************************************************************/
- 
-@@ -510,7 +488,7 @@ static const struct uart_ops mcf_uart_ops = {
- 	.release_port	= mcf_release_port,
- 	.config_port	= mcf_config_port,
- 	.verify_port	= mcf_verify_port,
--	.ioctl		= mcf_ioctl,
-+	.set_rs485	= mcf_config_rs485
- };
- 
- static struct mcf_uart mcf_ports[4];
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index d017cec..43aa91d 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1143,6 +1143,7 @@ static void serial_omap_config_port(struct uart_port *port, int flags)
- 							up->port.line);
- 	up->port.type = PORT_OMAP;
- 	up->port.flags |= UPF_SOFT_FLOW | UPF_HARD_FLOW;
-+	up->port.rs485 = &up->rs485;
- }
- 
- static int
-@@ -1391,34 +1392,6 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
- 	pm_runtime_put_autosuspend(up->dev);
- }
- 
--static int
--serial_omap_ioctl(struct uart_port *port, unsigned int cmd, unsigned long arg)
--{
--	struct serial_rs485 rs485conf;
--
--	switch (cmd) {
--	case TIOCSRS485:
--		if (copy_from_user(&rs485conf, (void __user *) arg,
--					sizeof(rs485conf)))
--			return -EFAULT;
--
--		serial_omap_config_rs485(port, &rs485conf);
--		break;
--
--	case TIOCGRS485:
--		if (copy_to_user((void __user *) arg,
--					&(to_uart_omap_port(port)->rs485),
--					sizeof(rs485conf)))
--			return -EFAULT;
--		break;
--
--	default:
--		return -ENOIOCTLCMD;
--	}
--	return 0;
--}
--
--
- static struct uart_ops serial_omap_pops = {
- 	.tx_empty	= serial_omap_tx_empty,
- 	.set_mctrl	= serial_omap_set_mctrl,
-@@ -1439,7 +1412,7 @@ static struct uart_ops serial_omap_pops = {
- 	.request_port	= serial_omap_request_port,
- 	.config_port	= serial_omap_config_port,
- 	.verify_port	= serial_omap_verify_port,
--	.ioctl		= serial_omap_ioctl,
-+	.set_rs485	= serial_omap_config_rs485,
- #ifdef CONFIG_CONSOLE_POLL
- 	.poll_put_char  = serial_omap_poll_put_char,
- 	.poll_get_char  = serial_omap_poll_get_char,
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 3284c31..bc136aa 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -830,10 +830,10 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	uart_update_timeout(port, termios->c_cflag, baud);
- }
- 
--#if defined(TIOCSRS485) && defined(TIOCGRS485)
--static void sc16is7xx_config_rs485(struct uart_port *port,
-+static int sc16is7xx_config_rs485(struct uart_port *port,
- 				   struct serial_rs485 *rs485)
- {
-+	/* FIXME: really we should not copy the unimplemented bits here */
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
- 
- 	one->rs485 = *rs485;
-@@ -847,34 +847,7 @@ static void sc16is7xx_config_rs485(struct uart_port *port,
- 				      SC16IS7XX_EFCR_AUTO_RS485_BIT,
- 				      0);
- 	}
--}
--#endif
--
--static int sc16is7xx_ioctl(struct uart_port *port, unsigned int cmd,
--			   unsigned long arg)
--{
--#if defined(TIOCSRS485) && defined(TIOCGRS485)
--	struct serial_rs485 rs485;
--
--	switch (cmd) {
--	case TIOCSRS485:
--		if (copy_from_user(&rs485, (void __user *)arg, sizeof(rs485)))
--			return -EFAULT;
--
--		sc16is7xx_config_rs485(port, &rs485);
--		return 0;
--	case TIOCGRS485:
--		if (copy_to_user((void __user *)arg,
--				 &(to_sc16is7xx_one(port, port)->rs485),
--				 sizeof(rs485)))
--			return -EFAULT;
--		return 0;
--	default:
--		break;
--	}
--#endif
--
--	return -ENOIOCTLCMD;
-+	return 0;
- }
- 
- static int sc16is7xx_startup(struct uart_port *port)
-@@ -958,8 +931,11 @@ static int sc16is7xx_request_port(struct uart_port *port)
- 
- static void sc16is7xx_config_port(struct uart_port *port, int flags)
- {
--	if (flags & UART_CONFIG_TYPE)
-+	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-+	if (flags & UART_CONFIG_TYPE) {
- 		port->type = PORT_SC16IS7XX;
-+		port->rs485 = &one->rs485;
-+        }
- }
- 
- static int sc16is7xx_verify_port(struct uart_port *port,
-@@ -1000,7 +976,7 @@ static const struct uart_ops sc16is7xx_ops = {
- 	.release_port	= sc16is7xx_null_void,
- 	.config_port	= sc16is7xx_config_port,
- 	.verify_port	= sc16is7xx_verify_port,
--	.ioctl		= sc16is7xx_ioctl,
-+	.set_rs485	= sc16is7xx_config_rs485,
- 	.pm		= sc16is7xx_pm,
- };
- 
+Here is the fourth version of a series that started out as an attempt to
+provide string versions of the read*() and write*() accessors to more
+architectures so that drivers can use them portably. The series has
+since evolved into a more general cleanup of asm-generic/io.h and the
+functions defined therein.
 
+Patch 1 is trivial and removes a redundant redefinition of PCI_IOBASE
+from the asm/io.h header on ARC. Patches 2 and 3 remove unnecessary
+volatile keywoards from some functions, which is a prerequisite to clean
+up some of the functions in subsequent patches.
+
+The xlate_dev_{kmem,mem}_ptr() functions are used to map memory when the
+/dev/mem device is accessed. Patches 4 and 5 use more consistent data
+types for these functions, which will get a "standard" prototype in the
+asm-generic/io.h header in a subsequent patch.
+
+Patch 6 is the bulk of this series. It implements the string variants of
+the read*() and write*() accessors and cleans up various other parts of
+the asm-generic/io.h header file. Macros are converted to static inline
+functions for better type checking. Overriding generic implementations
+in architectures is handled more consistently.
+
+Patches 7 and 8, finally, make use of the asm-generic/io.h header on the
+32-bit and 64-bit ARM architectures.
+
+This is compile- and runtime-tested on 32-bit and 64-bit ARM and compile
+tested on IA64, Microblaze, s390, SPARC, x86 and Xtensa. For ARC,
+Blackfin, Metag, OpenRISC, Score and Unicore32 which also use
+asm-generic/io.h I couldn't find or build a cross-compiler that would
+run on my system. But by code inspection they shouldn't break with this
+patch.
+
+To ensure bisectability I built multi_v7_defconfig on 32-bit ARM and the
+defconfig for 64-bit ARM, IA64, Microblaze, s390, SPARC, x86 and Xtensa
+after each commit and verified that the series does not introduce any
+build errors or warnings.
+
+Provided there are no objections to the patches there's still the matter
+of how to merge them. Patch 6 depends on patches 1-5 to avoid warnings
+and/or errors during the build. Patches 7 and 8 depend on patch 6. In my
+opinion it doesn't make much sense to split them up, so I guess we'll
+need a volunteer to take them all into one tree. Ideally that tree would
+feed into linux-next so that we can get as much build and test-coverage
+as possible during the 3.17 release cycle so that these patches can go
+into 3.18.
+
+Arnd, I'm opportunistically sending this To: you in the hopes that you
+can take it into your asm-generic tree which seems like the best fit for
+this.
+
+Thierry
+
+Thierry Reding (8):
+  ARC: Remove redundant PCI_IOBASE declaration
+  serial: sunzilog: Remove unnecessary volatile keyword
+  sparc: Remove unnecessary volatile usage
+  [IA64] Change xlate_dev_{kmem,mem}_ptr() prototypes
+  /dev/mem: Use more consistent data types
+  asm-generic/io.h: Implement generic {read,write}s*()
+  ARM: Use include/asm-generic/io.h
+  arm64: Use include/asm-generic/io.h
+
+ arch/arc/include/asm/io.h       |   2 -
+ arch/arm/include/asm/io.h       |  75 ++---
+ arch/arm/include/asm/memory.h   |   2 +
+ arch/arm64/Kconfig              |   1 -
+ arch/arm64/include/asm/io.h     | 122 ++-----
+ arch/arm64/include/asm/memory.h |   2 +
+ arch/ia64/include/asm/uaccess.h |  16 +-
+ arch/s390/include/asm/io.h      |   5 +-
+ arch/s390/mm/maccess.c          |   4 +-
+ arch/sparc/include/asm/io_32.h  |  18 +-
+ arch/x86/include/asm/io.h       |   4 +-
+ arch/x86/mm/ioremap.c           |   4 +-
+ drivers/char/mem.c              |  13 +-
+ drivers/tty/serial/sunzilog.h   |   8 +-
+ include/asm-generic/io.h        | 683 ++++++++++++++++++++++++++++++++--------
+ 15 files changed, 647 insertions(+), 312 deletions(-)
+
+-- 
+2.0.4
