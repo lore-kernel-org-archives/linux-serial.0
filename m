@@ -1,78 +1,75 @@
-From: "Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: DTR gpio handling removed by 985bfd54c826c0ba873ca0adfd5589263e0c6ee2
-Date: Fri, 15 Aug 2014 08:08:44 +0200
-Message-ID: <B18DC75F-EA0E-456F-996E-2F4BF496B68B@goldelico.com>
-References: <CAAfyv36aMkE5e6Bo1hy1md+Z5EjrZjP+foZTyncp5GFtnaL_sg@mail.gmail.com> <20140814225802.GA12109@saruman.home>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Oleksij Rempel <linux@rempel-privat.de>
+Subject: [SOLVED] Re: one char delay
+Date: Fri, 15 Aug 2014 15:05:55 +0200
+Message-ID: <53EE05B3.9080504@rempel-privat.de>
+References: <53EC7839.7060507@rempel-privat.de>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="3XGapBcqs4A4iUoe4DFkRk88SH1dfT1aw"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.217]:9065 "EHLO
-	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932078AbaHOGIx convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 15 Aug 2014 02:08:53 -0400
-In-Reply-To: <20140814225802.GA12109@saruman.home>
+Received: from mout.gmx.net ([212.227.17.20]:64836 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751276AbaHONGT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 15 Aug 2014 09:06:19 -0400
+Received: from [192.168.1.221] ([80.136.201.211]) by mail.gmx.com (mrgmx102)
+ with ESMTPSA (Nemesis) id 0Lxu7U-1WMEWL1NVU-015LFi for
+ <linux-serial@vger.kernel.org>; Fri, 15 Aug 2014 15:06:17 +0200
+In-Reply-To: <53EC7839.7060507@rempel-privat.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: balbi@ti.com
-Cc: Belisko Marek <marek.belisko@gmail.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, NeilBrown <neilb@suse.de>
+To: linux-serial@vger.kernel.org
 
-Hi Felipe,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--3XGapBcqs4A4iUoe4DFkRk88SH1dfT1aw
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Am 15.08.2014 um 00:58 schrieb Felipe Balbi <balbi@ti.com>:
-
-> Hi,
+Am 14.08.2014 um 10:50 schrieb Oleksij Rempel:
+> Hello all,
 >=20
-> On Thu, Aug 14, 2014 at 11:04:58PM +0200, Belisko Marek wrote:
->> during 3.15 release was removed by commit
->> 985bfd54c826c0ba873ca0adfd5589263e0c6ee2 code which was added by
->> 9574f36fb801035f6ab0fbb1b53ce2c12c17d100 by Neil Brown. We're using
->> DTR gpio in gta04 device. I plan to post DT binding for DTR gpio +
->> documentation and find out that Neil's code was removed by Felipe.
->> Greg can you please revert mentioned commit? We're using DTR gpio in
->> gta04 device. Or is there other way how to proceed? Thanks.
+> i do some hobby work on porting linux to Alpscale asm9260 SoC and have
+> fallowing problem with serial driver. May be you can help me.
 >=20
-> there are *NO* users of that in tree, if you're using it, then please
-> add a proper DTS for your device and figure out a way of passing DTR
-> gpio through DT.
+> - each RX char will be send to the console only after next chart is
+> entered. For example:
+> Typed: dmesg
+> Displ:  dmesg
+> - all chars are immediately send with uart_insert_char() and
+> tty_flip_buffer_push() to the core. So this delay is not insight of
+> driver. I assume, i miss some flag or initialization.
+>=20
+> The driver was initially based on atmel_serial.c and ported by Alpscale=
 
-In fact we are in the middle of preparing DT and driver patches for ups=
-treaming
-the out of tree drivers Neil is mentioning. So there are no users *yet*=
- and
-maybe we are the first one.
+> to 2.4.28.
+> I reused this code.. which is working with this issue. Here is the driv=
+er:
+> https://github.com/olerem/linux-2.6/blob/arm_9260-2014.07.29/drivers/tt=
+y/serial/asm9260_serial.c
+>=20
 
-Neil has already completely argued and commented on that topic:
+Never mind.
+Problem is solved.
 
-https://lkml.org/lkml/2014/4/23/736
+It was buggy driver code. Insight of start_tx some faulty check was not
+allowing transmit buffers.
 
-Unfortunately he acked the removal with a completely non-technical argu=
-ment:
+--=20
+Regards,
+Oleksij
 
-> Just at the moment I'm finding it hard to care.
-> So
->  Acked-by: NeilBrown <neilb@suse.de>
 
-Now we have the problem that it got kicked out while we were preparing
-the other parts :(
+--3XGapBcqs4A4iUoe4DFkRk88SH1dfT1aw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-On the other hand, please consider that we don=92t have the manpower an=
-d knowledge
-to modify bigger parts of Linux besides plumbing together parts that al=
-ready
-exist and add drivers and DT nodes.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-So please consider again to re-add 9574f36fb801035f6ab0fbb1b53ce2c12c17=
-d100.
+iF4EAREIAAYFAlPuBcEACgkQHwImuRkmbWkTpwD+I6SVJn4x8GuD3HJna6k1LhMN
+tvPCvzUlzsGXpPax7RkA/Rxd0XyPu3+GEoVWPFXAsCQ6QSnZfQYOZsB16T6rrssG
+=wbuZ
+-----END PGP SIGNATURE-----
 
-Or should we resubmit it together with our DT/drivers where we use it?
-
-BR,
-Nikolaus
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--3XGapBcqs4A4iUoe4DFkRk88SH1dfT1aw--
