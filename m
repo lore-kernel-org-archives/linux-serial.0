@@ -1,253 +1,213 @@
 From: Carlo Caione <carlo@caione.org>
-Subject: [PATCH 3/7] ARM: meson6: clocksource: add Meson6 timer support
-Date: Sun, 17 Aug 2014 12:49:50 +0200
-Message-ID: <1408272594-10814-4-git-send-email-carlo@caione.org>
+Subject: [PATCH 5/7] ARM: meson: dts: add basic Meson/Meson6/Meson6-atv1200 DTSI/DTS
+Date: Sun, 17 Aug 2014 12:49:52 +0200
+Message-ID: <1408272594-10814-6-git-send-email-carlo@caione.org>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f171.google.com ([74.125.82.171]:41319 "EHLO
-	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751665AbaHQKuc (ORCPT
+Received: from mail-we0-f177.google.com ([74.125.82.177]:64243 "EHLO
+	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751243AbaHQKui (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Aug 2014 06:50:32 -0400
+	Sun, 17 Aug 2014 06:50:38 -0400
 In-Reply-To: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 Cc: Carlo Caione <carlo@caione.org>
 
-Meson6 SoCs are equipped with 5 32-bit timers, called TIMER_A, TIMER_B,
-TIMER_C, TIMER_D and TIMER_E.
-
-The driver is providing clocksource support for the 32-bit counter using
-TIMER_E. Clockevents are also supported using TIMER_A.
+The Meson6 SoC is produced by Amlogic inc. and it is based on 2 Cortex A9
+and an ARM Mali-400 GPU.
+This patch adds two basic DTSI for the preliminary support of Meson and
+Meson6 SoCs. Another DTS is also added for supporting the atv1200 board,
+produced by Geniatech inc.
 
 Signed-off-by: Carlo Caione <carlo@caione.org>
 ---
- drivers/clocksource/Kconfig        |   3 +
- drivers/clocksource/Makefile       |   1 +
- drivers/clocksource/meson6_timer.c | 187 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 191 insertions(+)
- create mode 100644 drivers/clocksource/meson6_timer.c
+ arch/arm/boot/dts/Makefile           |  1 +
+ arch/arm/boot/dts/meson.dtsi         | 75 ++++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/meson6-atv1200.dts | 27 +++++++++++++
+ arch/arm/boot/dts/meson6.dtsi        | 44 +++++++++++++++++++++
+ 4 files changed, 147 insertions(+)
+ create mode 100644 arch/arm/boot/dts/meson.dtsi
+ create mode 100644 arch/arm/boot/dts/meson6-atv1200.dts
+ create mode 100644 arch/arm/boot/dts/meson6.dtsi
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index cfd6519..38029ca 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -30,6 +30,9 @@ config ARMADA_370_XP_TIMER
- 	bool
- 	select CLKSRC_OF
- 
-+config MESON6_TIMER
-+	bool
-+
- config ORION_TIMER
- 	select CLKSRC_OF
- 	select CLKSRC_MMIO
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index 7fd9fd1..e4ae987 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_ARCH_PRIMA2)	+= timer-prima2.o
- obj-$(CONFIG_ARCH_U300)		+= timer-u300.o
- obj-$(CONFIG_SUN4I_TIMER)	+= sun4i_timer.o
- obj-$(CONFIG_SUN5I_HSTIMER)	+= timer-sun5i.o
-+obj-$(CONFIG_MESON6_TIMER)	+= meson6_timer.o
- obj-$(CONFIG_ARCH_TEGRA)	+= tegra20_timer.o
- obj-$(CONFIG_VT8500_TIMER)	+= vt8500_timer.o
- obj-$(CONFIG_ARCH_NSPIRE)	+= zevio-timer.o
-diff --git a/drivers/clocksource/meson6_timer.c b/drivers/clocksource/meson6_timer.c
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b8c5cd3..604acce 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -159,6 +159,7 @@ dtb-$(CONFIG_MACH_KIRKWOOD) += kirkwood-b3.dtb \
+ 	kirkwood-ts419-6282.dtb
+ dtb-$(CONFIG_ARCH_LPC32XX) += ea3250.dtb phy3250.dtb
+ dtb-$(CONFIG_ARCH_MARCO) += marco-evb.dtb
++dtb-$(CONFIG_MACH_MESON6) += meson6-atv1200.dtb
+ dtb-$(CONFIG_ARCH_MOXART) += moxart-uc7112lx.dtb
+ dtb-$(CONFIG_ARCH_MXC) += \
+ 	imx25-eukrea-mbimxsd25-baseboard.dtb \
+diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
 new file mode 100644
-index 0000000..1ef1095
+index 0000000..934bb2c
 --- /dev/null
-+++ b/drivers/clocksource/meson6_timer.c
-@@ -0,0 +1,187 @@
++++ b/arch/arm/boot/dts/meson.dtsi
+@@ -0,0 +1,75 @@
 +/*
-+ * Amlogic Meson6 SoCs timer handling.
++ * Copyright 2014 Carlo Caione <carlo@caione.org>
 + *
-+ * Copyright (C) 2014 Carlo Caione
-+ *
-+ * Carlo Caione <carlo@caione.org>
-+ *
-+ * Based on code from Amlogic, Inc
-+ *
-+ * This file is licensed under the terms of the GNU General Public
-+ * License version 2.  This program is licensed "as is" without any
-+ * warranty of any kind, whether express or implied.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
 + */
 +
-+#include <linux/clk.h>
-+#include <linux/clockchips.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/irqreturn.h>
-+#include <linux/sched_clock.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
++/include/ "skeleton.dtsi"
 +
-+enum {
-+	A = 0,
-+	B,
-+	C,
-+	D,
-+};
++/ {
++	interrupt-parent = <&gic>;
 +
-+#define TIMER_ISA_MUX		0
-+#define TIMER_ISA_E_VAL		0x14
-+#define TIMER_ISA_t_VAL(t)	((t + 1) << 2)
++	aliases {
++		serial0 = &uart_AO;
++		serial1 = &uart_A;
++		serial2 = &uart_B;
++		serial3 = &uart_C;
++	};
 +
-+#define TIMER_t_INPUT_BIT(t)	(2 * t)
-+#define TIMER_E_INPUT_BIT	8
-+#define TIMER_t_INPUT_MASK(t)	(3UL << TIMER_t_INPUT_BIT(t))
-+#define TIMER_E_INPUT_MASK	(7UL << TIMER_E_INPUT_BIT)
-+#define TIMER_t_ENABLE_BIT(t)	(16 + t)
-+#define TIMER_E_ENABLE_BIT	20
-+#define TIMER_t_PERIODIC_BIT(t)	(12 + t)
++	gic: interrupt-controller@c4301000 {
++		compatible = "arm,cortex-a9-gic";
++		reg = <0xc4301000 0x1000>,
++		      <0xc4300100 0x0100>;
++		interrupt-controller;
++		#interrupt-cells = <3>;
++	};
 +
-+#define TIMER_UNIT_1us		0
-+#define TIMER_E_UNIT_1us	1
++	timer@c1109940 {
++		compatible = "amlogic,meson6-timer";
++		reg = <0xc1109940 0x14>;
++		interrupts = <0 10 1>;
++	};
 +
-+static void __iomem *timer_base;
++	soc@c8100000 {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
 +
-+static cycle_t cycle_read_timer_e(struct clocksource *cs)
-+{
-+	return (cycle_t)readl(timer_base + TIMER_ISA_E_VAL);
-+}
++		uart_AO: serial@c81004c0 {
++			compatible = "amlogic,meson-uart";
++			reg = <0xc81004c0 0x14>;
++			interrupts = <0 90 1>;
++			clocks = <&clk81>;
++			status = "disabled";
++		};
 +
-+static struct clocksource clocksource_timer_e = {
-+	.name	= "meson6_timerE",
-+	.rating	= 300,
-+	.read	= cycle_read_timer_e,
-+	.mask	= CLOCKSOURCE_MASK(32),
-+	.flags  = CLOCK_SOURCE_IS_CONTINUOUS,
-+};
++		uart_A: serial@c81084c0 {
++			compatible = "amlogic,meson-uart";
++			reg = <0xc81084c0 0x14>;
++			interrupts = <0 90 1>;
++			clocks = <&clk81>;
++			status = "disabled";
++		};
 +
-+static u64 notrace meson6_timer_sched_read(void)
-+{
-+	return (u64)readl(timer_base + TIMER_ISA_E_VAL);
-+}
++		uart_B: serial@c81084dc {
++			compatible = "amlogic,meson-uart";
++			reg = <0xc81084dc 0x14>;
++			interrupts = <0 90 1>;
++			clocks = <&clk81>;
++			status = "disabled";
++		};
 +
-+static void meson6_clkevt_time_stop(unsigned char timer)
-+{
-+	u32 val = readl(timer_base + TIMER_ISA_MUX);
++		uart_C: serial@c8108700 {
++			compatible = "amlogic,meson-uart";
++			reg = <0xc8108700 0x14>;
++			interrupts = <0 90 1>;
++			clocks = <&clk81>;
++			status = "disabled";
++		};
++	};
++}; /* end of / */
 +
-+	writel(val & ~TIMER_t_ENABLE_BIT(timer), timer_base + TIMER_ISA_MUX);
-+}
+diff --git a/arch/arm/boot/dts/meson6-atv1200.dts b/arch/arm/boot/dts/meson6-atv1200.dts
+new file mode 100644
+index 0000000..b358402
+--- /dev/null
++++ b/arch/arm/boot/dts/meson6-atv1200.dts
+@@ -0,0 +1,27 @@
++/*
++ * Copyright 2014 Carlo Caione <carlo@caione.org>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ */
 +
-+static void meson6_clkevt_time_setup(unsigned char timer, unsigned long delay)
-+{
-+	writel(delay, timer_base + TIMER_ISA_t_VAL(timer));
-+}
++/dts-v1/;
++/include/ "meson6.dtsi"
 +
-+static void meson6_clkevt_time_start(unsigned char timer, bool periodic)
-+{
-+	u32 val = readl(timer_base + TIMER_ISA_MUX);
++/ {
++	model = "Geniatech ATV1200";
++	compatible = "geniatech,atv1200";
 +
-+	if (periodic)
-+		val |= TIMER_t_PERIODIC_BIT(timer);
-+	else
-+		val &= ~TIMER_t_PERIODIC_BIT(timer);
++	memory {
++		reg = <0x40000000 0x80000000>;
++	};
 +
-+	writel(val | TIMER_t_ENABLE_BIT(timer), timer_base + TIMER_ISA_MUX);
-+}
++	soc@c8100000 {
++		uart_AO: serial@c81004c0 {
++			status = "okay";
++		};
++	};
++}; /* end of / */
 +
-+static void meson6_clkevt_mode(enum clock_event_mode mode,
-+			       struct clock_event_device *clk)
-+{
-+	switch (mode) {
-+	case CLOCK_EVT_MODE_PERIODIC:
-+		meson6_clkevt_time_stop(A);
-+		meson6_clkevt_time_setup(A, USEC_PER_SEC/HZ - 1);
-+		meson6_clkevt_time_start(A, true);
-+		break;
-+	case CLOCK_EVT_MODE_ONESHOT:
-+		meson6_clkevt_time_stop(A);
-+		meson6_clkevt_time_start(A, false);
-+		break;
-+	case CLOCK_EVT_MODE_UNUSED:
-+	case CLOCK_EVT_MODE_SHUTDOWN:
-+	default:
-+		meson6_clkevt_time_stop(A);
-+		break;
-+	}
-+}
+diff --git a/arch/arm/boot/dts/meson6.dtsi b/arch/arm/boot/dts/meson6.dtsi
+new file mode 100644
+index 0000000..d62add4
+--- /dev/null
++++ b/arch/arm/boot/dts/meson6.dtsi
+@@ -0,0 +1,44 @@
++/*
++ * Copyright 2014 Carlo Caione <carlo@caione.org>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ */
 +
-+static int meson6_clkevt_next_event(unsigned long evt,
-+				    struct clock_event_device *unused)
-+{
-+	meson6_clkevt_time_stop(A);
-+	meson6_clkevt_time_setup(A, evt);
-+	meson6_clkevt_time_start(A, false);
++/include/ "meson.dtsi"
 +
-+	return 0;
-+}
++/ {
++	model = "Amlogic Meson6 SoC";
++	compatible = "amlogic,meson6", "amlogic,8726_mx";
 +
-+static struct clock_event_device meson6_clockevent = {
-+	.name		= "meson6_tick",
-+	.rating		= 400,
-+	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
-+	.set_mode	= meson6_clkevt_mode,
-+	.set_next_event	= meson6_clkevt_next_event,
-+};
++	interrupt-parent = <&gic>;
 +
-+static irqreturn_t meson6_timer_interrupt(int irq, void *dev_id)
-+{
-+	struct clock_event_device *evt = (struct clock_event_device *)dev_id;
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+	evt->event_handler(evt);
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a9";
++			reg = <0x200>;
++		};
 +
-+	return IRQ_HANDLED;
-+}
++		cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a9";
++			reg = <0x1>;
++		};
++	};
 +
-+static struct irqaction meson6_timer_irq = {
-+	.name		= "meson6_timerA",
-+	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
-+	.handler	= meson6_timer_interrupt,
-+	.dev_id		= &meson6_clockevent,
-+};
++	clocks {
++		#address-cells = <1>;
 +
-+static void __init meson6_timer_init(struct device_node *node)
-+{
-+	u32 val;
-+	int ret, irq;
-+
-+	timer_base = of_iomap(node, 0);
-+	if (!timer_base)
-+		panic("Can't map registers");
-+
-+	irq = irq_of_parse_and_map(node, 0);
-+	if (irq <= 0)
-+		panic("Can't parse IRQ");
-+
-+	/* Set 1us for timer E */
-+	val = readl(timer_base + TIMER_ISA_MUX);
-+	val &= ~TIMER_E_INPUT_MASK;
-+	val |= TIMER_E_UNIT_1us << TIMER_E_INPUT_BIT;
-+	writel(val, timer_base + TIMER_ISA_MUX);
-+
-+	sched_clock_register(meson6_timer_sched_read, 32, USEC_PER_SEC);
-+	clocksource_register_khz(&clocksource_timer_e, 1000);
-+
-+	/* Timer A base 1us */
-+	val &= ~TIMER_t_INPUT_MASK(A);
-+	val |= TIMER_UNIT_1us << TIMER_t_INPUT_BIT(A);
-+	writel(val, timer_base + TIMER_ISA_MUX);
-+
-+	/* Stop the timer A */
-+	meson6_clkevt_time_stop(A);
-+
-+	ret = setup_irq(irq, &meson6_timer_irq);
-+	if (ret)
-+		pr_warn("failed to setup irq %d\n", irq);
-+
-+	meson6_clockevent.cpumask = cpu_possible_mask;
-+	meson6_clockevent.irq = irq;
-+
-+	clockevents_config_and_register(&meson6_clockevent, USEC_PER_SEC,
-+					1, 0xfffe);
-+}
-+CLOCKSOURCE_OF_DECLARE(meson6, "amlogic,meson6-timer",
-+		       meson6_timer_init);
++		clk81: clk@0 {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++			clock-frequency = <200000000>;
++		};
++	};
++}; /* end of / */
 -- 
 1.9.1
 
