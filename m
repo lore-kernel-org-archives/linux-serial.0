@@ -1,60 +1,78 @@
-From: Peter Korsgaard <peter@korsgaard.com>
-Subject: Re: [PATCH 2/2] tty: serial: uartlite: Remove .owner field for driver
-Date: Sun, 17 Aug 2014 00:23:06 +0200
-Message-ID: <87mwb4ysz9.fsf@dell.be.48ers.dk>
-References: <54c1e2bd13d6a6e679e1481818d6e068d352ba18.1407930818.git.michal.simek@xilinx.com>
-	<54c1e2bd13d6a6e679e1481818d6e068d352ba18.1407930818.git.michal.simek@xilinx.com>
-	<4af7dab0dcc8e681b14a5167826e65fb146c5040.1407930818.git.michal.simek@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Carlo Caione <carlo@caione.org>
+Subject: [PATCH 0/7] ARM: meson: add preliminary support for MesonX/Meson6 SoCs
+Date: Sun, 17 Aug 2014 12:49:47 +0200
+Message-ID: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f182.google.com ([209.85.212.182]:54305 "EHLO
-	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751714AbaHPWXN (ORCPT
+Received: from mail-we0-f171.google.com ([74.125.82.171]:47410 "EHLO
+	mail-we0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751286AbaHQKuX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 16 Aug 2014 18:23:13 -0400
-In-Reply-To: <4af7dab0dcc8e681b14a5167826e65fb146c5040.1407930818.git.michal.simek@xilinx.com>
-	(Michal Simek's message of "Wed, 13 Aug 2014 13:53:43 +0200")
+	Sun, 17 Aug 2014 06:50:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, arnd@arndb.de, Peter Korsgaard <jacmet@sunsite.dk>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, Jiri Slaby <jslaby@suse.cz>
+To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
+Cc: Carlo Caione <carlo@caione.org>
 
->>>>> "Michal" == Michal Simek <michal.simek@xilinx.com> writes:
+Amlogic AML8726-MX (codename Meson6) is a highly integrated multimedia
+application processor SoC for Multimedia Internet Device (MID), tablet
+and Set Top Box (STB). It integrates a powerful CPU, a 2D/3D graphics
+subsystem and a state-of-the-art video decoding engine together with
+all major peripherals. It is manufactured by Amlogic, inc.
 
- > There is no need to init .owner field.
- > Based on the patch from Peter Griffin <peter.griffin@linaro.org>
- > "mmc: remove .owner field for drivers using module_platform_driver"
+This patchset introduces preliminary support for Meson6-based SoCs but
+several IPs and drivers are common among all the MesonX SoCs.
 
- > This patch removes the superflous .owner field for drivers which
- > use the module_platform_driver API, as this is overriden in
- > platform_driver_register anyway."
+Amlogic doesn't release any documentation about their SoCs, so the code
+has been reverse-engineered from the messy source code released at:
 
- > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+http://openlinux.amlogic.com:8000/download/
 
-It would be good with a reference to the commit adding this to
-platform_driver_register (9447057eaff8) - But Ok.
+Carlo Caione (7):
+  ARM: meson: debug: add debug UART for earlyprintk support
+  ARM: meson: serial: add MesonX SoC on-chip uart driver
+  ARM: meson6: clocksource: add Meson6 timer support
+  ARM: meson: add basic support for MesonX SoCs
+  ARM: meson: dts: add basic Meson/Meson6/Meson6-atv1200 DTSI/DTS
+  ARM: meson: update defconfigs
+  ARM: meson: update documentation (uart, timer and vendors)
 
-Acked-by: Peter Korsgaard <peter@korsgaard.com>
-
- >  drivers/tty/serial/uartlite.c | 1 -
- >  1 file changed, 1 deletion(-)
-
- > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
- > index 9fc22f40796e..189f52e3111f 100644
- > --- a/drivers/tty/serial/uartlite.c
- > +++ b/drivers/tty/serial/uartlite.c
- > @@ -665,7 +665,6 @@ static struct platform_driver ulite_platform_driver = {
- >  	.probe = ulite_probe,
- >  	.remove = ulite_remove,
- >  	.driver = {
- > -		.owner = THIS_MODULE,
- >  		.name  = "uartlite",
- >  		.of_match_table = of_match_ptr(ulite_of_match),
- >  	},
- > --
- > 1.8.2.3
-
+ .../bindings/serial/amlogic,meson-uart.txt         |  17 +
+ .../bindings/timer/amlogic,meson6-timer.txt        |  16 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ arch/arm/Kconfig                                   |   2 +
+ arch/arm/Kconfig.debug                             |  14 +-
+ arch/arm/Makefile                                  |   1 +
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/meson.dtsi                       |  75 +++
+ arch/arm/boot/dts/meson6-atv1200.dts               |  27 +
+ arch/arm/boot/dts/meson6.dtsi                      |  44 ++
+ arch/arm/configs/meson_defconfig                   |  99 ++++
+ arch/arm/configs/multi_v7_defconfig                |   3 +
+ arch/arm/include/debug/meson.S                     |  35 ++
+ arch/arm/mach-meson/Kconfig                        |  13 +
+ arch/arm/mach-meson/Makefile                       |   1 +
+ arch/arm/mach-meson/meson.c                        |  36 ++
+ drivers/clocksource/Kconfig                        |   3 +
+ drivers/clocksource/Makefile                       |   1 +
+ drivers/clocksource/meson6_timer.c                 | 187 ++++++
+ drivers/tty/serial/Kconfig                         |  18 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/meson_uart.c                    | 634 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 23 files changed, 1230 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+ create mode 100644 arch/arm/boot/dts/meson.dtsi
+ create mode 100644 arch/arm/boot/dts/meson6-atv1200.dts
+ create mode 100644 arch/arm/boot/dts/meson6.dtsi
+ create mode 100644 arch/arm/configs/meson_defconfig
+ create mode 100644 arch/arm/include/debug/meson.S
+ create mode 100644 arch/arm/mach-meson/Kconfig
+ create mode 100644 arch/arm/mach-meson/Makefile
+ create mode 100644 arch/arm/mach-meson/meson.c
+ create mode 100644 drivers/clocksource/meson6_timer.c
+ create mode 100644 drivers/tty/serial/meson_uart.c
 
 -- 
-Bye, Peter Korsgaard
+1.9.1
+
