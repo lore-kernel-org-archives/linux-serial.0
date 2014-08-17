@@ -1,157 +1,125 @@
 From: Carlo Caione <carlo@caione.org>
-Subject: [PATCH 6/7] ARM: meson: update defconfigs
-Date: Sun, 17 Aug 2014 12:49:53 +0200
-Message-ID: <1408272594-10814-7-git-send-email-carlo@caione.org>
+Subject: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
+Date: Sun, 17 Aug 2014 12:49:51 +0200
+Message-ID: <1408272594-10814-5-git-send-email-carlo@caione.org>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f177.google.com ([209.85.212.177]:51004 "EHLO
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:54749 "EHLO
 	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751715AbaHQKul (ORCPT
+	with ESMTP id S1751692AbaHQKuf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Aug 2014 06:50:41 -0400
+	Sun, 17 Aug 2014 06:50:35 -0400
 In-Reply-To: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 Cc: Carlo Caione <carlo@caione.org>
 
-This patch updates the multi_v7_defconfig with the CONFIG_* needed by
-the just added Meson anch. It also adds a new defconfig specifically for
-the Meson SoCs.
-
 Signed-off-by: Carlo Caione <carlo@caione.org>
 ---
- arch/arm/configs/meson_defconfig    | 99 +++++++++++++++++++++++++++++++++++++
- arch/arm/configs/multi_v7_defconfig |  3 ++
- 2 files changed, 102 insertions(+)
- create mode 100644 arch/arm/configs/meson_defconfig
+ arch/arm/Kconfig             |  2 ++
+ arch/arm/Makefile            |  1 +
+ arch/arm/mach-meson/Kconfig  | 13 +++++++++++++
+ arch/arm/mach-meson/Makefile |  1 +
+ arch/arm/mach-meson/meson.c  | 36 ++++++++++++++++++++++++++++++++++++
+ 5 files changed, 53 insertions(+)
+ create mode 100644 arch/arm/mach-meson/Kconfig
+ create mode 100644 arch/arm/mach-meson/Makefile
+ create mode 100644 arch/arm/mach-meson/meson.c
 
-diff --git a/arch/arm/configs/meson_defconfig b/arch/arm/configs/meson_defconfig
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index c49a775..cc52a8f 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -888,6 +888,8 @@ source "arch/arm/mach-keystone/Kconfig"
+ 
+ source "arch/arm/mach-ks8695/Kconfig"
+ 
++source "arch/arm/mach-meson/Kconfig"
++
+ source "arch/arm/mach-msm/Kconfig"
+ 
+ source "arch/arm/mach-moxart/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 0ce9d0f..320aa57 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -168,6 +168,7 @@ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+ machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
+ machine-$(CONFIG_ARCH_KS8695)		+= ks8695
+ machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
++machine-$(CONFIG_ARCH_MESON)		+= meson
+ machine-$(CONFIG_ARCH_MMP)		+= mmp
+ machine-$(CONFIG_ARCH_MOXART)		+= moxart
+ machine-$(CONFIG_ARCH_MSM)		+= msm
+diff --git a/arch/arm/mach-meson/Kconfig b/arch/arm/mach-meson/Kconfig
 new file mode 100644
-index 0000000..3c9d976
+index 0000000..2c1154e
 --- /dev/null
-+++ b/arch/arm/configs/meson_defconfig
-@@ -0,0 +1,99 @@
-+CONFIG_NO_HZ=y
-+CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BLK_DEV_INITRD=y
-+CONFIG_PERF_EVENTS=y
-+CONFIG_ARCH_MESON=y
-+CONFIG_SMP=y
-+CONFIG_HAVE_ARM_ARCH_TIMER=y
-+CONFIG_ARM_PSCI=y
-+CONFIG_AEABI=y
-+CONFIG_HIGHMEM=y
-+CONFIG_HIGHPTE=y
-+CONFIG_ARM_APPENDED_DTB=y
-+CONFIG_ARM_ATAG_DTB_COMPAT=y
-+CONFIG_VFP=y
-+CONFIG_NEON=y
-+CONFIG_PM_RUNTIME=y
-+CONFIG_NET=y
-+CONFIG_PACKET=y
-+CONFIG_UNIX=y
-+CONFIG_INET=y
-+CONFIG_IP_PNP=y
-+CONFIG_IP_PNP_DHCP=y
-+CONFIG_IP_PNP_BOOTP=y
-+# CONFIG_INET_XFRM_MODE_TRANSPORT is not set
-+# CONFIG_INET_XFRM_MODE_TUNNEL is not set
-+# CONFIG_INET_XFRM_MODE_BEET is not set
-+# CONFIG_INET_LRO is not set
-+# CONFIG_INET_DIAG is not set
-+# CONFIG_IPV6 is not set
-+# CONFIG_WIRELESS is not set
-+CONFIG_DEVTMPFS=y
-+CONFIG_DEVTMPFS_MOUNT=y
-+CONFIG_BLK_DEV_SD=y
-+CONFIG_ATA=y
-+CONFIG_NETDEVICES=y
-+# CONFIG_NET_VENDOR_ARC is not set
-+# CONFIG_NET_CADENCE is not set
-+# CONFIG_NET_VENDOR_BROADCOM is not set
-+# CONFIG_NET_VENDOR_CIRRUS is not set
-+# CONFIG_NET_VENDOR_FARADAY is not set
-+# CONFIG_NET_VENDOR_INTEL is not set
-+# CONFIG_NET_VENDOR_MARVELL is not set
-+# CONFIG_NET_VENDOR_MICREL is not set
-+# CONFIG_NET_VENDOR_MICROCHIP is not set
-+# CONFIG_NET_VENDOR_NATSEMI is not set
-+# CONFIG_NET_VENDOR_SAMSUNG is not set
-+# CONFIG_NET_VENDOR_SEEQ is not set
-+# CONFIG_NET_VENDOR_SMSC is not set
-+CONFIG_STMMAC_ETH=y
-+# CONFIG_NET_VENDOR_VIA is not set
-+# CONFIG_NET_VENDOR_WIZNET is not set
-+# CONFIG_WLAN is not set
-+# CONFIG_INPUT_MOUSEDEV is not set
-+# CONFIG_INPUT_KEYBOARD is not set
-+# CONFIG_INPUT_MOUSE is not set
-+CONFIG_SERIAL_MESON=y
-+CONFIG_SERIAL_MESON_CONSOLE=y
-+# CONFIG_HW_RANDOM is not set
-+CONFIG_I2C=y
-+CONFIG_I2C_CHARDEV=y
-+CONFIG_SPI=y
-+CONFIG_GPIOLIB=y
-+CONFIG_GPIO_SYSFS=y
-+CONFIG_POWER_SUPPLY=y
-+CONFIG_POWER_RESET=y
-+# CONFIG_HWMON is not set
-+CONFIG_WATCHDOG=y
-+CONFIG_WATCHDOG_CORE=y
-+CONFIG_MFD_AXP20X=y
-+CONFIG_REGULATOR=y
-+CONFIG_REGULATOR_FIXED_VOLTAGE=y
-+CONFIG_REGULATOR_VIRTUAL_CONSUMER=y
-+CONFIG_REGULATOR_GPIO=y
-+CONFIG_USB=y
-+CONFIG_USB_EHCI_HCD=y
-+CONFIG_USB_EHCI_HCD_PLATFORM=y
-+CONFIG_USB_OHCI_HCD=y
-+CONFIG_USB_OHCI_HCD_PLATFORM=y
-+CONFIG_MMC=y
-+CONFIG_NEW_LEDS=y
-+CONFIG_LEDS_CLASS=y
-+CONFIG_LEDS_GPIO=y
-+CONFIG_LEDS_TRIGGERS=y
-+CONFIG_LEDS_TRIGGER_HEARTBEAT=y
-+CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
-+CONFIG_RTC_CLASS=y
-+# CONFIG_RTC_INTF_SYSFS is not set
-+# CONFIG_RTC_INTF_PROC is not set
-+# CONFIG_IOMMU_SUPPORT is not set
-+CONFIG_GENERIC_PHY=y
-+CONFIG_EXT4_FS=y
-+CONFIG_VFAT_FS=y
-+CONFIG_TMPFS=y
-+CONFIG_NFS_FS=y
-+CONFIG_NFS_V3_ACL=y
-+CONFIG_NFS_V4=y
-+CONFIG_ROOT_NFS=y
-+CONFIG_PRINTK_TIME=y
-+CONFIG_DEBUG_FS=y
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 5fb95fb..5b44796 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -29,6 +29,7 @@ CONFIG_ARCH_HISI=y
- CONFIG_ARCH_HI3xxx=y
- CONFIG_ARCH_HIX5HD2=y
- CONFIG_ARCH_KEYSTONE=y
-+CONFIG_ARCH_MESON=y
- CONFIG_ARCH_MXC=y
- CONFIG_SOC_IMX51=y
- CONFIG_SOC_IMX53=y
-@@ -173,6 +174,8 @@ CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
-+CONFIG_SERIAL_MESON=y
-+CONFIG_SERIAL_MESON_CONSOLE=y
- CONFIG_SERIAL_SAMSUNG=y
- CONFIG_SERIAL_SAMSUNG_CONSOLE=y
- CONFIG_SERIAL_SIRFSOC=y
++++ b/arch/arm/mach-meson/Kconfig
+@@ -0,0 +1,13 @@
++menuconfig ARCH_MESON
++	bool "Amlogic Meson SoCs" if ARCH_MULTI_V7
++	select GENERIC_IRQ_CHIP
++	select ARM_GIC
++
++if ARCH_MESON
++
++config MACH_MESON6
++	bool "Amlogic Meson6 (8726MX) SoCs support"
++	default ARCH_MESON
++	select MESON6_TIMER
++
++endif
+diff --git a/arch/arm/mach-meson/Makefile b/arch/arm/mach-meson/Makefile
+new file mode 100644
+index 0000000..9d7380e
+--- /dev/null
++++ b/arch/arm/mach-meson/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_ARCH_MESON) += meson.o
+diff --git a/arch/arm/mach-meson/meson.c b/arch/arm/mach-meson/meson.c
+new file mode 100644
+index 0000000..4528312
+--- /dev/null
++++ b/arch/arm/mach-meson/meson.c
+@@ -0,0 +1,36 @@
++/*
++ * Copyright (C) 2014 Carlo Caione <carlo@caione.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ */
++
++#include <linux/of_platform.h>
++#include <asm/mach/arch.h>
++
++static __init void meson_init_machine_devicetree(void)
++{
++	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
++}
++
++static const char * const m6_common_board_compat[] = {
++	"amlogic,8726_mx",
++	"amlogic,8726_mxs",
++	"amlogic,8726_mxl",
++	"amlogic,meson6",
++	NULL,
++};
++
++DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
++	.init_machine	= meson_init_machine_devicetree,
++	.dt_compat	= m6_common_board_compat,
++MACHINE_END
++
 -- 
 1.9.1
 
