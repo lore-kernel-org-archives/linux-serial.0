@@ -1,213 +1,157 @@
 From: Carlo Caione <carlo@caione.org>
-Subject: [PATCH 5/7] ARM: meson: dts: add basic Meson/Meson6/Meson6-atv1200 DTSI/DTS
-Date: Sun, 17 Aug 2014 12:49:52 +0200
-Message-ID: <1408272594-10814-6-git-send-email-carlo@caione.org>
+Subject: [PATCH 6/7] ARM: meson: update defconfigs
+Date: Sun, 17 Aug 2014 12:49:53 +0200
+Message-ID: <1408272594-10814-7-git-send-email-carlo@caione.org>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f177.google.com ([74.125.82.177]:64243 "EHLO
-	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751243AbaHQKui (ORCPT
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:51004 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751715AbaHQKul (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Aug 2014 06:50:38 -0400
+	Sun, 17 Aug 2014 06:50:41 -0400
 In-Reply-To: <1408272594-10814-1-git-send-email-carlo@caione.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 Cc: Carlo Caione <carlo@caione.org>
 
-The Meson6 SoC is produced by Amlogic inc. and it is based on 2 Cortex A9
-and an ARM Mali-400 GPU.
-This patch adds two basic DTSI for the preliminary support of Meson and
-Meson6 SoCs. Another DTS is also added for supporting the atv1200 board,
-produced by Geniatech inc.
+This patch updates the multi_v7_defconfig with the CONFIG_* needed by
+the just added Meson anch. It also adds a new defconfig specifically for
+the Meson SoCs.
 
 Signed-off-by: Carlo Caione <carlo@caione.org>
 ---
- arch/arm/boot/dts/Makefile           |  1 +
- arch/arm/boot/dts/meson.dtsi         | 75 ++++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/meson6-atv1200.dts | 27 +++++++++++++
- arch/arm/boot/dts/meson6.dtsi        | 44 +++++++++++++++++++++
- 4 files changed, 147 insertions(+)
- create mode 100644 arch/arm/boot/dts/meson.dtsi
- create mode 100644 arch/arm/boot/dts/meson6-atv1200.dts
- create mode 100644 arch/arm/boot/dts/meson6.dtsi
+ arch/arm/configs/meson_defconfig    | 99 +++++++++++++++++++++++++++++++++++++
+ arch/arm/configs/multi_v7_defconfig |  3 ++
+ 2 files changed, 102 insertions(+)
+ create mode 100644 arch/arm/configs/meson_defconfig
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index b8c5cd3..604acce 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -159,6 +159,7 @@ dtb-$(CONFIG_MACH_KIRKWOOD) += kirkwood-b3.dtb \
- 	kirkwood-ts419-6282.dtb
- dtb-$(CONFIG_ARCH_LPC32XX) += ea3250.dtb phy3250.dtb
- dtb-$(CONFIG_ARCH_MARCO) += marco-evb.dtb
-+dtb-$(CONFIG_MACH_MESON6) += meson6-atv1200.dtb
- dtb-$(CONFIG_ARCH_MOXART) += moxart-uc7112lx.dtb
- dtb-$(CONFIG_ARCH_MXC) += \
- 	imx25-eukrea-mbimxsd25-baseboard.dtb \
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
+diff --git a/arch/arm/configs/meson_defconfig b/arch/arm/configs/meson_defconfig
 new file mode 100644
-index 0000000..934bb2c
+index 0000000..3c9d976
 --- /dev/null
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -0,0 +1,75 @@
-+/*
-+ * Copyright 2014 Carlo Caione <carlo@caione.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by the
-+ * Free Software Foundation; either version 2 of the License, or (at your
-+ * option) any later version.
-+ */
-+
-+/include/ "skeleton.dtsi"
-+
-+/ {
-+	interrupt-parent = <&gic>;
-+
-+	aliases {
-+		serial0 = &uart_AO;
-+		serial1 = &uart_A;
-+		serial2 = &uart_B;
-+		serial3 = &uart_C;
-+	};
-+
-+	gic: interrupt-controller@c4301000 {
-+		compatible = "arm,cortex-a9-gic";
-+		reg = <0xc4301000 0x1000>,
-+		      <0xc4300100 0x0100>;
-+		interrupt-controller;
-+		#interrupt-cells = <3>;
-+	};
-+
-+	timer@c1109940 {
-+		compatible = "amlogic,meson6-timer";
-+		reg = <0xc1109940 0x14>;
-+		interrupts = <0 10 1>;
-+	};
-+
-+	soc@c8100000 {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		uart_AO: serial@c81004c0 {
-+			compatible = "amlogic,meson-uart";
-+			reg = <0xc81004c0 0x14>;
-+			interrupts = <0 90 1>;
-+			clocks = <&clk81>;
-+			status = "disabled";
-+		};
-+
-+		uart_A: serial@c81084c0 {
-+			compatible = "amlogic,meson-uart";
-+			reg = <0xc81084c0 0x14>;
-+			interrupts = <0 90 1>;
-+			clocks = <&clk81>;
-+			status = "disabled";
-+		};
-+
-+		uart_B: serial@c81084dc {
-+			compatible = "amlogic,meson-uart";
-+			reg = <0xc81084dc 0x14>;
-+			interrupts = <0 90 1>;
-+			clocks = <&clk81>;
-+			status = "disabled";
-+		};
-+
-+		uart_C: serial@c8108700 {
-+			compatible = "amlogic,meson-uart";
-+			reg = <0xc8108700 0x14>;
-+			interrupts = <0 90 1>;
-+			clocks = <&clk81>;
-+			status = "disabled";
-+		};
-+	};
-+}; /* end of / */
-+
-diff --git a/arch/arm/boot/dts/meson6-atv1200.dts b/arch/arm/boot/dts/meson6-atv1200.dts
-new file mode 100644
-index 0000000..b358402
---- /dev/null
-+++ b/arch/arm/boot/dts/meson6-atv1200.dts
-@@ -0,0 +1,27 @@
-+/*
-+ * Copyright 2014 Carlo Caione <carlo@caione.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by the
-+ * Free Software Foundation; either version 2 of the License, or (at your
-+ * option) any later version.
-+ */
-+
-+/dts-v1/;
-+/include/ "meson6.dtsi"
-+
-+/ {
-+	model = "Geniatech ATV1200";
-+	compatible = "geniatech,atv1200";
-+
-+	memory {
-+		reg = <0x40000000 0x80000000>;
-+	};
-+
-+	soc@c8100000 {
-+		uart_AO: serial@c81004c0 {
-+			status = "okay";
-+		};
-+	};
-+}; /* end of / */
-+
-diff --git a/arch/arm/boot/dts/meson6.dtsi b/arch/arm/boot/dts/meson6.dtsi
-new file mode 100644
-index 0000000..d62add4
---- /dev/null
-+++ b/arch/arm/boot/dts/meson6.dtsi
-@@ -0,0 +1,44 @@
-+/*
-+ * Copyright 2014 Carlo Caione <carlo@caione.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by the
-+ * Free Software Foundation; either version 2 of the License, or (at your
-+ * option) any later version.
-+ */
-+
-+/include/ "meson.dtsi"
-+
-+/ {
-+	model = "Amlogic Meson6 SoC";
-+	compatible = "amlogic,meson6", "amlogic,8726_mx";
-+
-+	interrupt-parent = <&gic>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a9";
-+			reg = <0x200>;
-+		};
-+
-+		cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a9";
-+			reg = <0x1>;
-+		};
-+	};
-+
-+	clocks {
-+		#address-cells = <1>;
-+
-+		clk81: clk@0 {
-+			#clock-cells = <0>;
-+			compatible = "fixed-clock";
-+			clock-frequency = <200000000>;
-+		};
-+	};
-+}; /* end of / */
++++ b/arch/arm/configs/meson_defconfig
+@@ -0,0 +1,99 @@
++CONFIG_NO_HZ=y
++CONFIG_HIGH_RES_TIMERS=y
++CONFIG_BLK_DEV_INITRD=y
++CONFIG_PERF_EVENTS=y
++CONFIG_ARCH_MESON=y
++CONFIG_SMP=y
++CONFIG_HAVE_ARM_ARCH_TIMER=y
++CONFIG_ARM_PSCI=y
++CONFIG_AEABI=y
++CONFIG_HIGHMEM=y
++CONFIG_HIGHPTE=y
++CONFIG_ARM_APPENDED_DTB=y
++CONFIG_ARM_ATAG_DTB_COMPAT=y
++CONFIG_VFP=y
++CONFIG_NEON=y
++CONFIG_PM_RUNTIME=y
++CONFIG_NET=y
++CONFIG_PACKET=y
++CONFIG_UNIX=y
++CONFIG_INET=y
++CONFIG_IP_PNP=y
++CONFIG_IP_PNP_DHCP=y
++CONFIG_IP_PNP_BOOTP=y
++# CONFIG_INET_XFRM_MODE_TRANSPORT is not set
++# CONFIG_INET_XFRM_MODE_TUNNEL is not set
++# CONFIG_INET_XFRM_MODE_BEET is not set
++# CONFIG_INET_LRO is not set
++# CONFIG_INET_DIAG is not set
++# CONFIG_IPV6 is not set
++# CONFIG_WIRELESS is not set
++CONFIG_DEVTMPFS=y
++CONFIG_DEVTMPFS_MOUNT=y
++CONFIG_BLK_DEV_SD=y
++CONFIG_ATA=y
++CONFIG_NETDEVICES=y
++# CONFIG_NET_VENDOR_ARC is not set
++# CONFIG_NET_CADENCE is not set
++# CONFIG_NET_VENDOR_BROADCOM is not set
++# CONFIG_NET_VENDOR_CIRRUS is not set
++# CONFIG_NET_VENDOR_FARADAY is not set
++# CONFIG_NET_VENDOR_INTEL is not set
++# CONFIG_NET_VENDOR_MARVELL is not set
++# CONFIG_NET_VENDOR_MICREL is not set
++# CONFIG_NET_VENDOR_MICROCHIP is not set
++# CONFIG_NET_VENDOR_NATSEMI is not set
++# CONFIG_NET_VENDOR_SAMSUNG is not set
++# CONFIG_NET_VENDOR_SEEQ is not set
++# CONFIG_NET_VENDOR_SMSC is not set
++CONFIG_STMMAC_ETH=y
++# CONFIG_NET_VENDOR_VIA is not set
++# CONFIG_NET_VENDOR_WIZNET is not set
++# CONFIG_WLAN is not set
++# CONFIG_INPUT_MOUSEDEV is not set
++# CONFIG_INPUT_KEYBOARD is not set
++# CONFIG_INPUT_MOUSE is not set
++CONFIG_SERIAL_MESON=y
++CONFIG_SERIAL_MESON_CONSOLE=y
++# CONFIG_HW_RANDOM is not set
++CONFIG_I2C=y
++CONFIG_I2C_CHARDEV=y
++CONFIG_SPI=y
++CONFIG_GPIOLIB=y
++CONFIG_GPIO_SYSFS=y
++CONFIG_POWER_SUPPLY=y
++CONFIG_POWER_RESET=y
++# CONFIG_HWMON is not set
++CONFIG_WATCHDOG=y
++CONFIG_WATCHDOG_CORE=y
++CONFIG_MFD_AXP20X=y
++CONFIG_REGULATOR=y
++CONFIG_REGULATOR_FIXED_VOLTAGE=y
++CONFIG_REGULATOR_VIRTUAL_CONSUMER=y
++CONFIG_REGULATOR_GPIO=y
++CONFIG_USB=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_HCD_PLATFORM=y
++CONFIG_USB_OHCI_HCD=y
++CONFIG_USB_OHCI_HCD_PLATFORM=y
++CONFIG_MMC=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_HEARTBEAT=y
++CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
++CONFIG_RTC_CLASS=y
++# CONFIG_RTC_INTF_SYSFS is not set
++# CONFIG_RTC_INTF_PROC is not set
++# CONFIG_IOMMU_SUPPORT is not set
++CONFIG_GENERIC_PHY=y
++CONFIG_EXT4_FS=y
++CONFIG_VFAT_FS=y
++CONFIG_TMPFS=y
++CONFIG_NFS_FS=y
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=y
++CONFIG_ROOT_NFS=y
++CONFIG_PRINTK_TIME=y
++CONFIG_DEBUG_FS=y
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index 5fb95fb..5b44796 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -29,6 +29,7 @@ CONFIG_ARCH_HISI=y
+ CONFIG_ARCH_HI3xxx=y
+ CONFIG_ARCH_HIX5HD2=y
+ CONFIG_ARCH_KEYSTONE=y
++CONFIG_ARCH_MESON=y
+ CONFIG_ARCH_MXC=y
+ CONFIG_SOC_IMX51=y
+ CONFIG_SOC_IMX53=y
+@@ -173,6 +174,8 @@ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_8250_DW=y
+ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
++CONFIG_SERIAL_MESON=y
++CONFIG_SERIAL_MESON_CONSOLE=y
+ CONFIG_SERIAL_SAMSUNG=y
+ CONFIG_SERIAL_SAMSUNG_CONSOLE=y
+ CONFIG_SERIAL_SIRFSOC=y
 -- 
 1.9.1
 
