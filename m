@@ -1,125 +1,88 @@
-From: Carlo Caione <carlo@caione.org>
-Subject: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
-Date: Sun, 17 Aug 2014 12:49:51 +0200
-Message-ID: <1408272594-10814-5-git-send-email-carlo@caione.org>
+From: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 7/7] ARM: meson: update documentation (uart, timer and vendors)
+Date: Sun, 17 Aug 2014 12:49:54 +0200
+Message-ID: <1408272594-10814-8-git-send-email-carlo@caione.org>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f177.google.com ([209.85.212.177]:54749 "EHLO
-	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751692AbaHQKuf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 17 Aug 2014 06:50:35 -0400
-In-Reply-To: <1408272594-10814-1-git-send-email-carlo@caione.org>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1408272594-10814-1-git-send-email-carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, b.galvani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
-Cc: Carlo Caione <carlo@caione.org>
 
-Signed-off-by: Carlo Caione <carlo@caione.org>
+New UART and timer bindings are documented. A new vendor is added to the
+vendors list.
+
+Signed-off-by: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
 ---
- arch/arm/Kconfig             |  2 ++
- arch/arm/Makefile            |  1 +
- arch/arm/mach-meson/Kconfig  | 13 +++++++++++++
- arch/arm/mach-meson/Makefile |  1 +
- arch/arm/mach-meson/meson.c  | 36 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 53 insertions(+)
- create mode 100644 arch/arm/mach-meson/Kconfig
- create mode 100644 arch/arm/mach-meson/Makefile
- create mode 100644 arch/arm/mach-meson/meson.c
+ .../devicetree/bindings/serial/amlogic,meson-uart.txt   | 17 +++++++++++++++++
+ .../devicetree/bindings/timer/amlogic,meson6-timer.txt  | 16 ++++++++++++++++
+ Documentation/devicetree/bindings/vendor-prefixes.txt   |  1 +
+ 3 files changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c49a775..cc52a8f 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -888,6 +888,8 @@ source "arch/arm/mach-keystone/Kconfig"
- 
- source "arch/arm/mach-ks8695/Kconfig"
- 
-+source "arch/arm/mach-meson/Kconfig"
-+
- source "arch/arm/mach-msm/Kconfig"
- 
- source "arch/arm/mach-moxart/Kconfig"
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 0ce9d0f..320aa57 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -168,6 +168,7 @@ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
- machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
- machine-$(CONFIG_ARCH_KS8695)		+= ks8695
- machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
-+machine-$(CONFIG_ARCH_MESON)		+= meson
- machine-$(CONFIG_ARCH_MMP)		+= mmp
- machine-$(CONFIG_ARCH_MOXART)		+= moxart
- machine-$(CONFIG_ARCH_MSM)		+= msm
-diff --git a/arch/arm/mach-meson/Kconfig b/arch/arm/mach-meson/Kconfig
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
 new file mode 100644
-index 0000000..2c1154e
+index 0000000..fa1935a
 --- /dev/null
-+++ b/arch/arm/mach-meson/Kconfig
-@@ -0,0 +1,13 @@
-+menuconfig ARCH_MESON
-+	bool "Amlogic Meson SoCs" if ARCH_MULTI_V7
-+	select GENERIC_IRQ_CHIP
-+	select ARM_GIC
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+@@ -0,0 +1,17 @@
++Amlogic Meson UART
 +
-+if ARCH_MESON
++Required properties:
++- compatible : Should be "amlogic,meson-uart"
++- reg : Address and length of the register set
++- interrupts : Should contain uart interrupt
++- clocks: phandle to the source clock
 +
-+config MACH_MESON6
-+	bool "Amlogic Meson6 (8726MX) SoCs support"
-+	default ARCH_MESON
-+	select MESON6_TIMER
++Example:
 +
-+endif
-diff --git a/arch/arm/mach-meson/Makefile b/arch/arm/mach-meson/Makefile
-new file mode 100644
-index 0000000..9d7380e
---- /dev/null
-+++ b/arch/arm/mach-meson/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_ARCH_MESON) += meson.o
-diff --git a/arch/arm/mach-meson/meson.c b/arch/arm/mach-meson/meson.c
-new file mode 100644
-index 0000000..4528312
---- /dev/null
-+++ b/arch/arm/mach-meson/meson.c
-@@ -0,0 +1,36 @@
-+/*
-+ * Copyright (C) 2014 Carlo Caione <carlo@caione.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ */
-+
-+#include <linux/of_platform.h>
-+#include <asm/mach/arch.h>
-+
-+static __init void meson_init_machine_devicetree(void)
-+{
-+	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
-+}
-+
-+static const char * const m6_common_board_compat[] = {
-+	"amlogic,8726_mx",
-+	"amlogic,8726_mxs",
-+	"amlogic,8726_mxl",
-+	"amlogic,meson6",
-+	NULL,
++uart0: serial@c81004c0 {
++	compatible = "amlogic,meson-uart";
++	reg = <0xc81004c0 0x14>;
++	interrupts = <0 90 1>;
++	clocks = <&clk81>;
 +};
 +
-+DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
-+	.init_machine	= meson_init_machine_devicetree,
-+	.dt_compat	= m6_common_board_compat,
-+MACHINE_END
+diff --git a/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+new file mode 100644
+index 0000000..cf89894
+--- /dev/null
++++ b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+@@ -0,0 +1,16 @@
++Amlogic Meson6 SoCs Timer Controller
 +
++Required properties:
++
++- compatible : should be "amlogic,meson6-timer.txt"
++- reg : Specifies base physical address and size of the registers.
++- interrupts : The interrupt of the first timer
++
++Example:
++
++timer@c1109940 {
++	compatible = "amlogic,meson6-timer";
++	reg = <0xc1109940 0x14>;
++	interrupts = <0 10 1>;
++};
++
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index ac7269f..5cf0618 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -14,6 +14,7 @@ allwinner	Allwinner Technology Co., Ltd.
+ altr	Altera Corp.
+ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+ amd	Advanced Micro Devices (AMD), Inc.
++amlogic	Amlogic, Inc.
+ ams	AMS AG
+ amstaos	AMS-Taos Inc.
+ apm	Applied Micro Circuits Corporation (APM)
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
