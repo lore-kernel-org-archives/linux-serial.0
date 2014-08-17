@@ -1,88 +1,93 @@
-From: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 7/7] ARM: meson: update documentation (uart, timer and vendors)
-Date: Sun, 17 Aug 2014 12:49:54 +0200
-Message-ID: <1408272594-10814-8-git-send-email-carlo@caione.org>
+From: Beniamino Galvani <b.galvani@gmail.com>
+Subject: Re: [PATCH 0/7] ARM: meson: add preliminary support for
+ MesonX/Meson6 SoCs
+Date: Sun, 17 Aug 2014 16:29:13 +0200
+Message-ID: <20140817142912.GA29963@gmail.com>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1408272594-10814-1-git-send-email-carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, b.galvani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:49340 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751256AbaHQO3d (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 17 Aug 2014 10:29:33 -0400
+Content-Disposition: inline
+In-Reply-To: <1408272594-10814-1-git-send-email-carlo@caione.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Carlo Caione <carlo@caione.org>
+Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org
 
-New UART and timer bindings are documented. A new vendor is added to the
-vendors list.
+On Sun, Aug 17, 2014 at 12:49:47PM +0200, Carlo Caione wrote:
+> Amlogic AML8726-MX (codename Meson6) is a highly integrated multimedia
+> application processor SoC for Multimedia Internet Device (MID), tablet
+> and Set Top Box (STB). It integrates a powerful CPU, a 2D/3D graphics
+> subsystem and a state-of-the-art video decoding engine together with
+> all major peripherals. It is manufactured by Amlogic, inc.
+> 
+> This patchset introduces preliminary support for Meson6-based SoCs but
+> several IPs and drivers are common among all the MesonX SoCs.
 
-Signed-off-by: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
----
- .../devicetree/bindings/serial/amlogic,meson-uart.txt   | 17 +++++++++++++++++
- .../devicetree/bindings/timer/amlogic,meson6-timer.txt  | 16 ++++++++++++++++
- Documentation/devicetree/bindings/vendor-prefixes.txt   |  1 +
- 3 files changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
- create mode 100644 Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+Hi Carlo,
 
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
-new file mode 100644
-index 0000000..fa1935a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
-@@ -0,0 +1,17 @@
-+Amlogic Meson UART
-+
-+Required properties:
-+- compatible : Should be "amlogic,meson-uart"
-+- reg : Address and length of the register set
-+- interrupts : Should contain uart interrupt
-+- clocks: phandle to the source clock
-+
-+Example:
-+
-+uart0: serial@c81004c0 {
-+	compatible = "amlogic,meson-uart";
-+	reg = <0xc81004c0 0x14>;
-+	interrupts = <0 90 1>;
-+	clocks = <&clk81>;
-+};
-+
-diff --git a/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
-new file mode 100644
-index 0000000..cf89894
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
-@@ -0,0 +1,16 @@
-+Amlogic Meson6 SoCs Timer Controller
-+
-+Required properties:
-+
-+- compatible : should be "amlogic,meson6-timer.txt"
-+- reg : Specifies base physical address and size of the registers.
-+- interrupts : The interrupt of the first timer
-+
-+Example:
-+
-+timer@c1109940 {
-+	compatible = "amlogic,meson6-timer";
-+	reg = <0xc1109940 0x14>;
-+	interrupts = <0 10 1>;
-+};
-+
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index ac7269f..5cf0618 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -14,6 +14,7 @@ allwinner	Allwinner Technology Co., Ltd.
- altr	Altera Corp.
- amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
- amd	Advanced Micro Devices (AMD), Inc.
-+amlogic	Amlogic, Inc.
- ams	AMS AG
- amstaos	AMS-Taos Inc.
- apm	Applied Micro Circuits Corporation (APM)
--- 
-1.9.1
+nice job! The patches work fine on a Tronsmart Vega S89 Elite TV box
+(Meson8 S802 SoC) just changing the fixed-clock frequency in the dts.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Beniamino
+
+> 
+> Amlogic doesn't release any documentation about their SoCs, so the code
+> has been reverse-engineered from the messy source code released at:
+> 
+> http://openlinux.amlogic.com:8000/download/
+> 
+> Carlo Caione (7):
+>   ARM: meson: debug: add debug UART for earlyprintk support
+>   ARM: meson: serial: add MesonX SoC on-chip uart driver
+>   ARM: meson6: clocksource: add Meson6 timer support
+>   ARM: meson: add basic support for MesonX SoCs
+>   ARM: meson: dts: add basic Meson/Meson6/Meson6-atv1200 DTSI/DTS
+>   ARM: meson: update defconfigs
+>   ARM: meson: update documentation (uart, timer and vendors)
+> 
+>  .../bindings/serial/amlogic,meson-uart.txt         |  17 +
+>  .../bindings/timer/amlogic,meson6-timer.txt        |  16 +
+>  .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+>  arch/arm/Kconfig                                   |   2 +
+>  arch/arm/Kconfig.debug                             |  14 +-
+>  arch/arm/Makefile                                  |   1 +
+>  arch/arm/boot/dts/Makefile                         |   1 +
+>  arch/arm/boot/dts/meson.dtsi                       |  75 +++
+>  arch/arm/boot/dts/meson6-atv1200.dts               |  27 +
+>  arch/arm/boot/dts/meson6.dtsi                      |  44 ++
+>  arch/arm/configs/meson_defconfig                   |  99 ++++
+>  arch/arm/configs/multi_v7_defconfig                |   3 +
+>  arch/arm/include/debug/meson.S                     |  35 ++
+>  arch/arm/mach-meson/Kconfig                        |  13 +
+>  arch/arm/mach-meson/Makefile                       |   1 +
+>  arch/arm/mach-meson/meson.c                        |  36 ++
+>  drivers/clocksource/Kconfig                        |   3 +
+>  drivers/clocksource/Makefile                       |   1 +
+>  drivers/clocksource/meson6_timer.c                 | 187 ++++++
+>  drivers/tty/serial/Kconfig                         |  18 +
+>  drivers/tty/serial/Makefile                        |   1 +
+>  drivers/tty/serial/meson_uart.c                    | 634 +++++++++++++++++++++
+>  include/uapi/linux/serial_core.h                   |   3 +
+>  23 files changed, 1230 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+>  create mode 100644 arch/arm/boot/dts/meson.dtsi
+>  create mode 100644 arch/arm/boot/dts/meson6-atv1200.dts
+>  create mode 100644 arch/arm/boot/dts/meson6.dtsi
+>  create mode 100644 arch/arm/configs/meson_defconfig
+>  create mode 100644 arch/arm/include/debug/meson.S
+>  create mode 100644 arch/arm/mach-meson/Kconfig
+>  create mode 100644 arch/arm/mach-meson/Makefile
+>  create mode 100644 arch/arm/mach-meson/meson.c
+>  create mode 100644 drivers/clocksource/meson6_timer.c
+>  create mode 100644 drivers/tty/serial/meson_uart.c
+> 
+> -- 
+> 1.9.1
+> 
