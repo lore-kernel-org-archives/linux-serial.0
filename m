@@ -1,44 +1,59 @@
-From: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH 0/3] omap-serial high-speed fixes/improvements
-Date: Mon, 18 Aug 2014 16:45:21 +0200
-Message-ID: <20140818144521.GB9319@ci00147.xsens-tech.local>
-References: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
- <20140818134507.GC9662@saruman.home>
+From: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
+Subject: Re: is there a struct  uart_driver like struct i2c_driver
+Date: Mon, 18 Aug 2014 16:56:24 +0200
+Message-ID: <53F21418.80307@ts.fujitsu.com>
+References: <53F1CD68.9080901@ts.fujitsu.com> <20140818105307.GA5811@kroah.com> <53F1DF48.8000007@ts.fujitsu.com> <53F1E14D.7000408@ts.fujitsu.com> <53F202FF.5020809@ts.fujitsu.com> <20140818135046.GA927@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140818134507.GC9662-HgARHv6XitL9zxVx7UNMDg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from dgate10.ts.fujitsu.com ([80.70.172.49]:8030 "EHLO
+	dgate10.ts.fujitsu.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751353AbaHROzc (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Aug 2014 10:55:32 -0400
+In-Reply-To: <20140818135046.GA927@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Mon, Aug 18, 2014 at 08:45:08AM -0500, Felipe Balbi wrote:
-> Hi,
-> 
-> On Tue, Jul 29, 2014 at 04:52:54PM +0200, Frans Klaver wrote:
-> > Hi,
-> > 
-> > Here's a couple of patches that should improve the behavior of the omap serial
-> > driver at high data rates and baud rates.
-> > 
-> > I was actually surprised to see that proper dma support isn't there yet, but
-> > there you go. Anyone got news on that, by the way?
-> 
-> please resend these patches and make sure you get the right Cc list.
-> 
-> You're missing linux-omap, Tony Lingren, linux-arm-kernel...
-> scripts/get_maintainer.pl would give you a more exaustive list of
-> people to Cc.
+On 18.08.2014 15:50, Greg KH wrote:
+> On Mon, Aug 18, 2014 at 03:43:27PM +0200, Cestonaro Thilo wrote:
+>> Hey,
+>>
+>> do I need to do something like:
+>> ----
+>> f = filp_open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY, 0600);
+>> fs=get_fs();
+>> set_fs(KERNEL_DS);
+>> ---
+>> Is there really no API for a uart attached device to communicate with it?
+>>
+>> That would be the last thing I thought of :(.
+> Wait, you want to talk to a serial port from within the kernel?  No,
+> don't open the device node, just talk directly to the tty layer.  An
+> example of code that does this is some of the bluetooth layer.
+>
+> good luck,
+>
+> greg k-h
+>
 
-This CC list is what I got from get_maintainer.pl. I should have at
-least remembered to add linux-omap, though. I take it everyone gets all
-patches for consistency?
+ From the hci_uart stuff I got to the conclusion that I need to implement
+a tty line discipline driver and change the corresponding tty's line 
+discipline
+to my own one.
 
-Thanks,
-Frans
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Is this the best way or did I miss something? I ask again, cause writing 
+a tty line discipline
+looks rather complicate then straight forward and before I start doing it,
+I want to be sure to not run against a wall :).
+
+Cheers,
+Thilo
+
+
+
+
+
