@@ -1,42 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v7] 8250-core based serial driver for OMAP + DMA
-Date: Mon, 18 Aug 2014 11:15:17 -0400
-Message-ID: <53F21885.605@hurleysoftware.com>
-References: <1408124563-31541-1-git-send-email-bigeasy@linutronix.de> <20140815181704.GH17769@csclub.uwaterloo.ca> <53EE5BF8.3010007@linutronix.de> <20140815202826.GC9239@atomide.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 5/7] ARM: meson: dts: add basic
+ Meson/Meson6/Meson6-atv1200 DTSI/DTS
+Date: Mon, 18 Aug 2014 17:15:07 +0100
+Message-ID: <20140818161507.GC3302@leverpostej>
+References: <1408272594-10814-1-git-send-email-carlo@caione.org>
+ <1408272594-10814-6-git-send-email-carlo@caione.org>
+ <20140817144201.GB29963@gmail.com>
+ <CAOQ7t2Ye2FjB-+YYQJg6xnFyfj4VNpdm9NFqjE2A+inTZ1=BkQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140815202826.GC9239@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:49388 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751091AbaHRQQh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Aug 2014 12:16:37 -0400
+Content-Disposition: inline
+In-Reply-To: <CAOQ7t2Ye2FjB-+YYQJg6xnFyfj4VNpdm9NFqjE2A+inTZ1=BkQ@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Carlo Caione <carlo@caione.org>
+Cc: Beniamino Galvani <b.galvani@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "grant.likely@linaro.org" <grant.likely@linaro.org>
 
-On 08/15/2014 04:28 PM, Tony Lindgren wrote:
-> * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140815 12:16]:
->> On 08/15/2014 08:17 PM, Lennart Sorensen wrote:
->>
->>> Are you saying that with the new driver you have to respond to the RX
->>> irq faster than before to avoid overflows?  It is not quite clear.
->>
->> Yes. The irq fires 46 bytes giving you 16 bytes buffer before overflow
->> vs 63 bytes buffer the old one had.
->>
->>> I do think 40000 interrupts to handle 40000 bytes of date does seem a
->>> tad inefficient, so dropping to 854 looks a lot nicer.  Was the omap
->>> driver not using the fifo trigger levels at all?
->>
->> It configured the trigger levels to 1 for RX and 16 for TX.
+On Sun, Aug 17, 2014 at 04:21:23PM +0100, Carlo Caione wrote:
+> On Sun, Aug 17, 2014 at 4:42 PM, Beniamino Galvani <b.galvani@gmail.com> wrote:
+> > Hi,
 > 
-> Hmm that weird RX trigger level is a workaround for lost characters.
-> 
-> See commit 0ba5f66836 (tty: serial: OMAP: use a 1-byte RX FIFO
-> threshold in PIO mode :)
+> >> +/include/ "meson.dtsi"
+> >> +
+> >> +/ {
+> >> +     model = "Amlogic Meson6 SoC";
+> >> +     compatible = "amlogic,meson6", "amlogic,8726_mx";
+> >> +
+> >> +     interrupt-parent = <&gic>;
+> >> +
+> >> +     cpus {
+> >> +             #address-cells = <1>;
+> >> +             #size-cells = <0>;
+> >> +
+> >> +             cpu@0 {
+> >
+> > The address after the @ should match the value of the 'reg' property.
 
-That commit looks like it should have been specific to the silicon
-exhibiting the rx timeout bug.
+Just remember to strip the leading "0x" (this should be "cpu@200").
 
-Regards,
-Peter Hurley
-
+Cheers,
+Mark.
