@@ -1,80 +1,44 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v9 14/16] serial: asc: Adopt readl_/writel_relaxed()
-Date: Mon, 18 Aug 2014 15:28:09 +0100
-Message-ID: <1408372091-12689-15-git-send-email-daniel.thompson@linaro.org>
-References: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f47.google.com ([74.125.82.47]:60438 "EHLO
-	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752086AbaHRO2b (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 10:28:31 -0400
-Received: by mail-wg0-f47.google.com with SMTP id b13so5023004wgh.18
-        for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2014 07:28:30 -0700 (PDT)
-In-Reply-To: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+From: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 0/3] omap-serial high-speed fixes/improvements
+Date: Mon, 18 Aug 2014 16:45:21 +0200
+Message-ID: <20140818144521.GB9319@ci00147.xsens-tech.local>
+References: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
+ <20140818134507.GC9662@saruman.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140818134507.GC9662-HgARHv6XitL9zxVx7UNMDg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, kernel@s
 
-The architectures where this peripheral exists (ARM and SH) have expensive
-implementations of writel(), reliant on spin locks and explicit L2 cache
-management. These architectures provide a cheaper writel_relaxed() which
-is much better suited to peripherals that do not perform DMA. The
-situation with readl()/readl_relaxed()is similar although less acute.
+On Mon, Aug 18, 2014 at 08:45:08AM -0500, Felipe Balbi wrote:
+> Hi,
+> 
+> On Tue, Jul 29, 2014 at 04:52:54PM +0200, Frans Klaver wrote:
+> > Hi,
+> > 
+> > Here's a couple of patches that should improve the behavior of the omap serial
+> > driver at high data rates and baud rates.
+> > 
+> > I was actually surprised to see that proper dma support isn't there yet, but
+> > there you go. Anyone got news on that, by the way?
+> 
+> please resend these patches and make sure you get the right Cc list.
+> 
+> You're missing linux-omap, Tony Lingren, linux-arm-kernel...
+> scripts/get_maintainer.pl would give you a more exaustive list of
+> people to Cc.
 
-This driver does not use DMA and will be more power efficient and more
-robust (due to absense of spin locks during console I/O) if it uses the
-relaxed variants.
+This CC list is what I got from get_maintainer.pl. I should have at
+least remembered to add linux-omap, though. I take it everyone gets all
+patches for consistency?
 
-This change means the driver is no longer portable and therefore no
-longer suitable for compile testing.
-
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
-Cc: Maxime Coquelin <maxime.coquelin@st.com>
-Cc: Patrice Chotard <patrice.chotard@st.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: kernel@stlinux.com
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/Kconfig  | 2 +-
- drivers/tty/serial/st-asc.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 26cec64..e9b1735 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
- config SERIAL_ST_ASC
- 	tristate "ST ASC serial port support"
- 	select SERIAL_CORE
--	depends on ARM || COMPILE_TEST
-+	depends on ARM
- 	help
- 	  This driver is for the on-chip Asychronous Serial Controller on
- 	  STMicroelectronics STi SoCs.
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 2b5eb6e..df709ee 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -152,12 +152,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
- 
- static inline u32 asc_in(struct uart_port *port, u32 offset)
- {
--	return readl(port->membase + offset);
-+	return readl_relaxed(port->membase + offset);
- }
- 
- static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
- {
--	writel(value, port->membase + offset);
-+	writel_relaxed(value, port->membase + offset);
- }
- 
- /*
--- 
-1.9.3
-
+Thanks,
+Frans
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
