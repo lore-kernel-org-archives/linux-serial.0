@@ -1,92 +1,73 @@
-From: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
-Subject: Re: is there a struct  uart_driver like struct i2c_driver
-Date: Mon, 18 Aug 2014 15:43:27 +0200
-Message-ID: <53F202FF.5020809@ts.fujitsu.com>
-References: <53F1CD68.9080901@ts.fujitsu.com> <20140818105307.GA5811@kroah.com> <53F1DF48.8000007@ts.fujitsu.com> <53F1E14D.7000408@ts.fujitsu.com>
+From: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+Subject: Re: [RFC PATCH 0/3] omap-serial high-speed fixes/improvements
+Date: Mon, 18 Aug 2014 08:45:08 -0500
+Message-ID: <20140818134507.GC9662@saruman.home>
+References: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
+Reply-To: <balbi-l0cyMroinI0@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dgate20.ts.fujitsu.com ([80.70.172.51]:62533 "EHLO
-	dgate20.ts.fujitsu.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751120AbaHRNmb (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 09:42:31 -0400
-In-Reply-To: <53F1E14D.7000408@ts.fujitsu.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qjNfmADvan18RZcF"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1406645577-18620-1-git-send-email-frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-Hey,
+--qjNfmADvan18RZcF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-do I need to do something like:
-----
-f = filp_open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY, 0600);
-fs=get_fs();
-set_fs(KERNEL_DS);
----
-Is there really no API for a uart attached device to communicate with it?
+Hi,
 
-That would be the last thing I thought of :(.
+On Tue, Jul 29, 2014 at 04:52:54PM +0200, Frans Klaver wrote:
+> Hi,
+>=20
+> Here's a couple of patches that should improve the behavior of the omap s=
+erial
+> driver at high data rates and baud rates.
+>=20
+> I was actually surprised to see that proper dma support isn't there yet, =
+but
+> there you go. Anyone got news on that, by the way?
 
-Cheers,
-Thilo
+please resend these patches and make sure you get the right Cc list.
 
+You're missing linux-omap, Tony Lingren, linux-arm-kernel...
+scripts/get_maintainer.pl would give you a more exaustive list of
+people to Cc.
 
-On 18.08.2014 13:19, Cestonaro Thilo wrote:
-> Hmm or not :( ... at a first glance it was.
->
-> But this is for a driver which implements the UART support but I want 
-> to use the UART but not implement it's hw support.
->
-> As a i2c_module doesn't implement the i2c controller support but uses it.
->
-> Or do I miss something?
->
-> Cheers,
-> Thilo
->
-> On 18.08.2014 13:11, Cestonaro Thilo wrote:
->> Thx Greg. This one I missed!
->>
->> But it's what I searched for.
->>
->> Cheers,
->> Thilo
->>
->> On 18.08.2014 12:53, Greg KH wrote:
->>> On Mon, Aug 18, 2014 at 11:54:48AM +0200, Cestonaro Thilo wrote:
->>>> Hey,
->>>>
->>>> I need to write a driver which communicates with it's chip via uart.
->>>> So I was wondering which the best way is to do this.
->>>>
->>>> For a i2c device there is the i2c subsystem with it's
->>>> "module_i2c_driver(foo_driver);" and so on.
->>>> But I couldn't find any equivalent for a uart device.
->>> Did you see include/linux/serial_core.h ?
->>>
->>
->>
->
->
+cheers
 
+--=20
+balbi
 
--- 
-With best regards
-Thilo Cestonaro
+--qjNfmADvan18RZcF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-FTS PSO PM&D CCD E EPC
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Fujitsu Technology Solutions GmbH
-Buergermeister-Ulrich-Str. 100
-86199 Augsburg
-Germany
+iQIcBAEBAgAGBQJT8gNjAAoJEIaOsuA1yqREXOkP/1Ntc/AGvt3iY4eiBRwfeTSs
++0n8iYZoO71BbenarsCVFZWE8Ri2NnACskVJ9LtOuAbNAr8pkbjuMnUSRoZZUTNf
+3kM3CSnPFEYfUan6imURF9vbsivsjE99gej3AvQe0CsYKe1CXQ6DgkCrvOvPtHnA
+QC9Utdo8j+J+gDyqvEOzXR8GI8aePdd+gbvmpDhLTB30+gteNZMVTx48VFu5wuYp
+kzTeioeCNoieyvSkpTj2/rx0q7w5CwoPtKKUwCYG6IFR4u4R8Paanl8/i4kkYStS
+QpHMZzgC1lNka7fA1/nZxEDBlR68YLoPbCgSsw7SFSVlo9XEWJm0LDJ1qZZZG9hB
+f6MUiwjHR3Ze1nEObthzlDpZqHOAo6pTLEdFINwufvlzUGQPrb1rtA3w0I5orW6i
+2FSjc8ANHZ4DQzUaexEDifmx/cOlI5euPsl3D1nZ5BwdRk5NLexmMGyY5K1WVP1Z
+yrjo+vKqedb6YkEFZ7YMt+ghnocqiSAQgZqdkn1CzulBTs//FShrl6aRYl+tJMm2
+nvgmZE6hQt3eOvEl5TqSNr8hWGW90ELvFmNfKHCfDn0dQNIR+msBLDXcmjONAzyC
+xYT4X7X3aTC2XK0P7ZQ+JV75Et5nCbmQa0G4SK2xv7OiT1a/c0Tu5BoHC6fSABs6
+/OkPhiVzPaGJtkw6bkFr
+=rHAe
+-----END PGP SIGNATURE-----
 
-Tel.: +49 (0)821 804 2328
-Fax: +49 (0)821 804 82328
-E-mail: thilo.cestonaro@ts.fujitsu.com
-
-Web: http://ts.fujitsu.com
-Company details: http://ts.fujitsu.com/imprint
-
+--qjNfmADvan18RZcF--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
