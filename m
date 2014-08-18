@@ -1,100 +1,168 @@
-From: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
-Subject: is there a struct  uart_driver like struct i2c_driver
-Date: Mon, 18 Aug 2014 11:54:48 +0200
-Message-ID: <53F1CD68.9080901@ts.fujitsu.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 6/7] ARM: meson: update defconfigs
+Date: Mon, 18 Aug 2014 12:31:22 +0200
+Message-ID: <53F1D5FA.1040803@gmail.com>
+References: <1408272594-10814-1-git-send-email-carlo@caione.org>
+ <1408272594-10814-7-git-send-email-carlo@caione.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1; boundary="------------ms090107010800000408050903"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from dgate10.ts.fujitsu.com ([80.70.172.49]:11617 "EHLO
-	dgate10.ts.fujitsu.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754233AbaHRJy7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 05:54:59 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1408272594-10814-7-git-send-email-carlo@caione.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Carlo Caione <carlo@caione.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-
-This is a cryptographically signed message in MIME format.
-
---------------ms090107010800000408050903
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-
-Hey,
-
-I need to write a driver which communicates with it's chip via uart.
-So I was wondering which the best way is to do this.
-
-For a i2c device there is the i2c subsystem with it's=20
-"module_i2c_driver(foo_driver);" and so on.
-But I couldn't find any equivalent for a uart device.
-
-So what is the desired way to implement such a driver? Is there one or=20
-do I need to "struct file * f =3D filp_open("/dev/ttyS4", FLAGS, MODE);" =
-?
-
-Thanks any hint!
-
-Cheers,
-Thilo
 
 
---------------ms090107010800000408050903
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIIYDCC
-A9QwggK8oAMCAQICEDTNElfINoNG4L/3PTADbgUwDQYJKoZIhvcNAQEFBQAwLzEtMCsGA1UE
-AxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9ucyBSb290IENBMB4XDTA5MDMxMjEyMjQ1
-OVoXDTE5MDMxMTEyMjQ1OVowLzEtMCsGA1UEAxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0
-aW9ucyBVc2VyIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsBtNf0fN8EkW
-9y6QqoQGS6LUwezenV2BnDzORdGanukRtpGzYMAPdyiwtlp0/zONa+jCJGzkX4iYCjTsiJvx
-01SPRNZ24fHaFGXpJBX599q6ZF0isu+h1aIas1tfyCBalAbKKLvNgIuQjnXhdffVk4vSuByt
-O3OGcULtJ2+lYVSEvxzGt9iTSwT5RnEvKpR0iOC+9/UNVOiPK9XCz5u7bg3iehP5gD+v5uu3
-YIRwV/5gyd7AZPcckTfYP/GZcybcAXfEl5nb/bZiSLHeZEjxMMM8YZqFKhH9xymIdjkcRK7N
-J2j8OD708QFv4b4bme1mHGfTjSbxb1nOoUTsNtshZwIDAQABo4HrMIHoMB0GA1UdDgQWBBQI
-9chqv4Dje1DEOfQHmEbobX6XqDALBgNVHQ8EBAMCAYYwHwYDVR0jBBgwFoAUFHXiV7YVNxWA
-KpflUUhlrM+GkMswEgYDVR0TAQH/BAgwBgEB/wIBADBHBggrBgEFBQcBAQQ7MDkwNwYIKwYB
-BQUHMAKGK2h0dHA6Ly9haWEudHMuZnVqaXRzdS5jb20vYWlhL2Z0czAxcm9vdC5jZXIwPAYD
-VR0fBDUwMzAxoC+gLYYraHR0cDovL2NkcC50cy5mdWppdHN1LmNvbS9jZHAvZnRzMDFyb290
-LmNybDANBgkqhkiG9w0BAQUFAAOCAQEAQ7pQP9Lw9bcnt1DhvV5UWb1zmnACSo6n6x+bupck
-Qzlrf3aJ7HQZigZuaCak+dexL18I86iNDDOJBBsrz0DcD4XPszcLTUezqqGlAyIbviBq5mwD
-HAWBA9F11GRx6LdrHMKNdHPwAWyC3r6qv4GO6A+z16KUZFSP4kvuaN5YHI481T7FFxEmntky
-lphndX+6mQ1NABApMMhX0aN5dVhPAMAP8nENJ1hGk81IG8gzkoHDPSoLCtffAnNhYAqhvrDO
-2ybXb/9x+Sf3DQuzBg3hpB1yJM3K8foQaS3uTpFITfdMprcQyrIdl4Jw26s/6vpIs0siLVTp
-3yAwgNaqQSgxSTCCBIQwggNsoAMCAQICCiWUlIAAAAACJH0wDQYJKoZIhvcNAQEFBQAwLzEt
-MCsGA1UEAxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9ucyBVc2VyIENBMB4XDTE0MDMy
-MTEyMTM1M1oXDTE3MDMyMDEyMTM1M1owQjEZMBcGA1UEAwwQQ2VzdG9uYXJvLCBUaGlsbzEl
-MCMGA1UECgwcRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9uczCBnzANBgkqhkiG9w0BAQEF
-AAOBjQAwgYkCgYEAqP3ld/ylkJOTj2rXQ+VrRf/+YMgZS5CGDnMWk+sMoS5f6JqtwfGcfBU/
-DhfnLsePut2q+ex/RDZFM6yCraPS0vdnTKm2O3Q7/UhhAV1Mi4XzzGeY1Y0qm+85EgMBISPw
-B5mThLYPsun5UIFs6e8tvlwZRzp/jrv/AzAfsSbHGXcCAwEAAaOCAhEwggINMAsGA1UdDwQE
-AwIFoDByBgNVHREEazBpgR50aGlsby5jZXN0b25hcm9AdHMuZnVqaXRzdS5jb22BI1RoaWxv
-LkNlc3RvbmFyb0BmdWppdHN1LXNpZW1lbnMuY29tgSIrNDk4MjE4MDQ4MjMyOEBpbmNvbWlu
-Z2ZheC5mc2MubmV0MB0GA1UdDgQWBBSiHLgIjjo+7KxLJ4t1+YZxgBSn8TAfBgNVHSMEGDAW
-gBQI9chqv4Dje1DEOfQHmEbobX6XqDA8BgNVHR8ENTAzMDGgL6AthitodHRwOi8vY2RwLnRz
-LmZ1aml0c3UuY29tL2NkcC9mdHMwMXVzZXIuY3JsMEcGCCsGAQUFBwEBBDswOTA3BggrBgEF
-BQcwAoYraHR0cDovL2FpYS50cy5mdWppdHN1LmNvbS9haWEvZnRzMDF1c2VyLmNlcjAMBgNV
-HRMBAf8EAjAAMD0GCSsGAQQBgjcVBwQwMC4GJisGAQQBgjcVCIWFxDKBh/9hgYWBBIbsgiCB
-x4EaeYOIoHGH0vEvAgFkAgEIMBMGA1UdJQQMMAoGCCsGAQUFBwMEMBsGCSsGAQQBgjcVCgQO
-MAwwCgYIKwYBBQUHAwQwRAYJKoZIhvcNAQkPBDcwNTAOBggqhkiG9w0DAgICAIAwDgYIKoZI
-hvcNAwQCAgCAMAcGBSsOAwIHMAoGCCqGSIb3DQMHMA0GCSqGSIb3DQEBBQUAA4IBAQAEGTAy
-HPmTyCR029H+P/u9xRezlfA2OVvV97Ls/oLCXGGr6EkMvpHodTc6n4EWSb2ul3VPSRQfuSmB
-gIcHQJykHdSChisaqkeOpHG0rjM9GXh2eQ7ECovpQIfdIbRZKNxlJihSDsDWHyZldBlPVbDh
-xMeT6xJ/ylF8UQ8FXKUir6W/BSPZF5kLdsmCeOpWC4jOGNPEMUAcuiHZPyqAhjlWk750I4oJ
-JKvDbwO8/mkxmzOjpOsk8O3CdljCjYPoYtJPI/oNVsYdmiokzne4FusPYKDzv5i0dN74KLR4
-8maXvi3/WsTFqwks45QeBJT/z+1sYy+dYWpv9XGN+jR1o4ImMYICUDCCAkwCAQEwPTAvMS0w
-KwYDVQQDEyRGdWppdHN1IFRlY2hub2xvZ3kgU29sdXRpb25zIFVzZXIgQ0ECCiWUlIAAAAAC
-JH0wCQYFKw4DAhoFAKCCAWkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTQwODE4MDk1NDQ4WjAjBgkqhkiG9w0BCQQxFgQUhK8ZljDPpGVbcH3Nt5trRkdq
-/88wTAYJKwYBBAGCNxAEMT8wPTAvMS0wKwYDVQQDEyRGdWppdHN1IFRlY2hub2xvZ3kgU29s
-dXRpb25zIFVzZXIgQ0ECCiWUlIAAAAACJH0wTgYLKoZIhvcNAQkQAgsxP6A9MC8xLTArBgNV
-BAMTJEZ1aml0c3UgVGVjaG5vbG9neSBTb2x1dGlvbnMgVXNlciBDQQIKJZSUgAAAAAIkfTBs
-BgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcw
-DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEo
-MA0GCSqGSIb3DQEBAQUABIGAffbmtSgHyTDxxfYWxtOnltWegBhRaEjiLpzJqDSu4bhEHxq9
-TCqTLfxkKtDUymlocG1J1ju16lYcIPDa15AAKC69w1YhEIJ/WDRIFU3Ilz5vgOux+vbqXaWn
-BVzp/UNdq63X/qsMdJzQaZkfGdr1MHoklzk2lEcX/4xZhP1LYI0AAAAAAAA=
---------------ms090107010800000408050903--
+On 17/08/14 12:49, Carlo Caione wrote:
+> This patch updates the multi_v7_defconfig with the CONFIG_* needed by
+> the just added Meson anch. It also adds a new defconfig specifically for
+> the Meson SoCs.
+>
+> Signed-off-by: Carlo Caione <carlo@caione.org>
+> ---
+>   arch/arm/configs/meson_defconfig    | 99 +++++++++++++++++++++++++++++++++++++
+>   arch/arm/configs/multi_v7_defconfig |  3 ++
+>   2 files changed, 102 insertions(+)
+>   create mode 100644 arch/arm/configs/meson_defconfig
+>
+> diff --git a/arch/arm/configs/meson_defconfig b/arch/arm/configs/meson_defconfig
+> new file mode 100644
+> index 0000000..3c9d976
+> --- /dev/null
+> +++ b/arch/arm/configs/meson_defconfig
+
+I doubt that we need a meson_defconfig when we can get the SoC up and 
+running using multi_v7_defconfig.
+
+> @@ -0,0 +1,99 @@
+> +CONFIG_NO_HZ=y
+> +CONFIG_HIGH_RES_TIMERS=y
+> +CONFIG_BLK_DEV_INITRD=y
+> +CONFIG_PERF_EVENTS=y
+> +CONFIG_ARCH_MESON=y
+> +CONFIG_SMP=y
+> +CONFIG_HAVE_ARM_ARCH_TIMER=y
+> +CONFIG_ARM_PSCI=y
+> +CONFIG_AEABI=y
+> +CONFIG_HIGHMEM=y
+> +CONFIG_HIGHPTE=y
+> +CONFIG_ARM_APPENDED_DTB=y
+> +CONFIG_ARM_ATAG_DTB_COMPAT=y
+> +CONFIG_VFP=y
+> +CONFIG_NEON=y
+> +CONFIG_PM_RUNTIME=y
+> +CONFIG_NET=y
+> +CONFIG_PACKET=y
+> +CONFIG_UNIX=y
+> +CONFIG_INET=y
+> +CONFIG_IP_PNP=y
+> +CONFIG_IP_PNP_DHCP=y
+> +CONFIG_IP_PNP_BOOTP=y
+> +# CONFIG_INET_XFRM_MODE_TRANSPORT is not set
+> +# CONFIG_INET_XFRM_MODE_TUNNEL is not set
+> +# CONFIG_INET_XFRM_MODE_BEET is not set
+> +# CONFIG_INET_LRO is not set
+> +# CONFIG_INET_DIAG is not set
+> +# CONFIG_IPV6 is not set
+> +# CONFIG_WIRELESS is not set
+> +CONFIG_DEVTMPFS=y
+> +CONFIG_DEVTMPFS_MOUNT=y
+> +CONFIG_BLK_DEV_SD=y
+> +CONFIG_ATA=y
+> +CONFIG_NETDEVICES=y
+> +# CONFIG_NET_VENDOR_ARC is not set
+> +# CONFIG_NET_CADENCE is not set
+> +# CONFIG_NET_VENDOR_BROADCOM is not set
+> +# CONFIG_NET_VENDOR_CIRRUS is not set
+> +# CONFIG_NET_VENDOR_FARADAY is not set
+> +# CONFIG_NET_VENDOR_INTEL is not set
+> +# CONFIG_NET_VENDOR_MARVELL is not set
+> +# CONFIG_NET_VENDOR_MICREL is not set
+> +# CONFIG_NET_VENDOR_MICROCHIP is not set
+> +# CONFIG_NET_VENDOR_NATSEMI is not set
+> +# CONFIG_NET_VENDOR_SAMSUNG is not set
+> +# CONFIG_NET_VENDOR_SEEQ is not set
+> +# CONFIG_NET_VENDOR_SMSC is not set
+> +CONFIG_STMMAC_ETH=y
+> +# CONFIG_NET_VENDOR_VIA is not set
+> +# CONFIG_NET_VENDOR_WIZNET is not set
+> +# CONFIG_WLAN is not set
+> +# CONFIG_INPUT_MOUSEDEV is not set
+> +# CONFIG_INPUT_KEYBOARD is not set
+> +# CONFIG_INPUT_MOUSE is not set
+> +CONFIG_SERIAL_MESON=y
+> +CONFIG_SERIAL_MESON_CONSOLE=y
+> +# CONFIG_HW_RANDOM is not set
+> +CONFIG_I2C=y
+> +CONFIG_I2C_CHARDEV=y
+> +CONFIG_SPI=y
+> +CONFIG_GPIOLIB=y
+> +CONFIG_GPIO_SYSFS=y
+> +CONFIG_POWER_SUPPLY=y
+> +CONFIG_POWER_RESET=y
+> +# CONFIG_HWMON is not set
+> +CONFIG_WATCHDOG=y
+> +CONFIG_WATCHDOG_CORE=y
+> +CONFIG_MFD_AXP20X=y
+> +CONFIG_REGULATOR=y
+> +CONFIG_REGULATOR_FIXED_VOLTAGE=y
+> +CONFIG_REGULATOR_VIRTUAL_CONSUMER=y
+> +CONFIG_REGULATOR_GPIO=y
+> +CONFIG_USB=y
+> +CONFIG_USB_EHCI_HCD=y
+> +CONFIG_USB_EHCI_HCD_PLATFORM=y
+> +CONFIG_USB_OHCI_HCD=y
+> +CONFIG_USB_OHCI_HCD_PLATFORM=y
+> +CONFIG_MMC=y
+> +CONFIG_NEW_LEDS=y
+> +CONFIG_LEDS_CLASS=y
+> +CONFIG_LEDS_GPIO=y
+> +CONFIG_LEDS_TRIGGERS=y
+> +CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+> +CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
+> +CONFIG_RTC_CLASS=y
+> +# CONFIG_RTC_INTF_SYSFS is not set
+> +# CONFIG_RTC_INTF_PROC is not set
+> +# CONFIG_IOMMU_SUPPORT is not set
+> +CONFIG_GENERIC_PHY=y
+> +CONFIG_EXT4_FS=y
+> +CONFIG_VFAT_FS=y
+> +CONFIG_TMPFS=y
+> +CONFIG_NFS_FS=y
+> +CONFIG_NFS_V3_ACL=y
+> +CONFIG_NFS_V4=y
+> +CONFIG_ROOT_NFS=y
+> +CONFIG_PRINTK_TIME=y
+> +CONFIG_DEBUG_FS=y
+> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+> index 5fb95fb..5b44796 100644
+> --- a/arch/arm/configs/multi_v7_defconfig
+> +++ b/arch/arm/configs/multi_v7_defconfig
+> @@ -29,6 +29,7 @@ CONFIG_ARCH_HISI=y
+>   CONFIG_ARCH_HI3xxx=y
+>   CONFIG_ARCH_HIX5HD2=y
+>   CONFIG_ARCH_KEYSTONE=y
+> +CONFIG_ARCH_MESON=y
+>   CONFIG_ARCH_MXC=y
+>   CONFIG_SOC_IMX51=y
+>   CONFIG_SOC_IMX53=y
+> @@ -173,6 +174,8 @@ CONFIG_SERIAL_8250_CONSOLE=y
+>   CONFIG_SERIAL_8250_DW=y
+>   CONFIG_SERIAL_AMBA_PL011=y
+>   CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+> +CONFIG_SERIAL_MESON=y
+> +CONFIG_SERIAL_MESON_CONSOLE=y
+>   CONFIG_SERIAL_SAMSUNG=y
+>   CONFIG_SERIAL_SAMSUNG_CONSOLE=y
+>   CONFIG_SERIAL_SIRFSOC=y
+>
