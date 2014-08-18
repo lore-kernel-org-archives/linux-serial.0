@@ -1,14 +1,15 @@
 From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 6/7] ARM: meson: update defconfigs
-Date: Mon, 18 Aug 2014 12:31:22 +0200
-Message-ID: <53F1D5FA.1040803@gmail.com>
+Subject: Re: [PATCH 7/7] ARM: meson: update documentation (uart, timer and
+ vendors)
+Date: Mon, 18 Aug 2014 12:36:47 +0200
+Message-ID: <53F1D73F.8010204@gmail.com>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-7-git-send-email-carlo@caione.org>
+ <1408272594-10814-8-git-send-email-carlo@caione.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1408272594-10814-7-git-send-email-carlo@caione.org>
+In-Reply-To: <1408272594-10814-8-git-send-email-carlo@caione.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -24,145 +25,79 @@ List-Id: linux-serial@vger.kernel.org
 
 
 On 17/08/14 12:49, Carlo Caione wrote:
-> This patch updates the multi_v7_defconfig with the CONFIG_* needed by
-> the just added Meson anch. It also adds a new defconfig specifically for
-> the Meson SoCs.
+> New UART and timer bindings are documented. A new vendor is added to the
+> vendors list.
 >
 > Signed-off-by: Carlo Caione <carlo@caione.org>
 > ---
->   arch/arm/configs/meson_defconfig    | 99 +++++++++++++++++++++++++++++++++++++
->   arch/arm/configs/multi_v7_defconfig |  3 ++
->   2 files changed, 102 insertions(+)
->   create mode 100644 arch/arm/configs/meson_defconfig
+>   .../devicetree/bindings/serial/amlogic,meson-uart.txt   | 17 +++++++++++++++++
+>   .../devicetree/bindings/timer/amlogic,meson6-timer.txt  | 16 ++++++++++++++++
+>   Documentation/devicetree/bindings/vendor-prefixes.txt   |  1 +
+>   3 files changed, 34 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+>   create mode 100644 Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+
+This should be three patches for the different files. It might happen, 
+that for example your timer driver get merged through a different tree 
+then arm-soc. For the merge, the driver and the documentation should go 
+togehter.
+
 >
-> diff --git a/arch/arm/configs/meson_defconfig b/arch/arm/configs/meson_defconfig
+> diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
 > new file mode 100644
-> index 0000000..3c9d976
+> index 0000000..fa1935a
 > --- /dev/null
-> +++ b/arch/arm/configs/meson_defconfig
-
-I doubt that we need a meson_defconfig when we can get the SoC up and 
-running using multi_v7_defconfig.
-
-> @@ -0,0 +1,99 @@
-> +CONFIG_NO_HZ=y
-> +CONFIG_HIGH_RES_TIMERS=y
-> +CONFIG_BLK_DEV_INITRD=y
-> +CONFIG_PERF_EVENTS=y
-> +CONFIG_ARCH_MESON=y
-> +CONFIG_SMP=y
-> +CONFIG_HAVE_ARM_ARCH_TIMER=y
-> +CONFIG_ARM_PSCI=y
-> +CONFIG_AEABI=y
-> +CONFIG_HIGHMEM=y
-> +CONFIG_HIGHPTE=y
-> +CONFIG_ARM_APPENDED_DTB=y
-> +CONFIG_ARM_ATAG_DTB_COMPAT=y
-> +CONFIG_VFP=y
-> +CONFIG_NEON=y
-> +CONFIG_PM_RUNTIME=y
-> +CONFIG_NET=y
-> +CONFIG_PACKET=y
-> +CONFIG_UNIX=y
-> +CONFIG_INET=y
-> +CONFIG_IP_PNP=y
-> +CONFIG_IP_PNP_DHCP=y
-> +CONFIG_IP_PNP_BOOTP=y
-> +# CONFIG_INET_XFRM_MODE_TRANSPORT is not set
-> +# CONFIG_INET_XFRM_MODE_TUNNEL is not set
-> +# CONFIG_INET_XFRM_MODE_BEET is not set
-> +# CONFIG_INET_LRO is not set
-> +# CONFIG_INET_DIAG is not set
-> +# CONFIG_IPV6 is not set
-> +# CONFIG_WIRELESS is not set
-> +CONFIG_DEVTMPFS=y
-> +CONFIG_DEVTMPFS_MOUNT=y
-> +CONFIG_BLK_DEV_SD=y
-> +CONFIG_ATA=y
-> +CONFIG_NETDEVICES=y
-> +# CONFIG_NET_VENDOR_ARC is not set
-> +# CONFIG_NET_CADENCE is not set
-> +# CONFIG_NET_VENDOR_BROADCOM is not set
-> +# CONFIG_NET_VENDOR_CIRRUS is not set
-> +# CONFIG_NET_VENDOR_FARADAY is not set
-> +# CONFIG_NET_VENDOR_INTEL is not set
-> +# CONFIG_NET_VENDOR_MARVELL is not set
-> +# CONFIG_NET_VENDOR_MICREL is not set
-> +# CONFIG_NET_VENDOR_MICROCHIP is not set
-> +# CONFIG_NET_VENDOR_NATSEMI is not set
-> +# CONFIG_NET_VENDOR_SAMSUNG is not set
-> +# CONFIG_NET_VENDOR_SEEQ is not set
-> +# CONFIG_NET_VENDOR_SMSC is not set
-> +CONFIG_STMMAC_ETH=y
-> +# CONFIG_NET_VENDOR_VIA is not set
-> +# CONFIG_NET_VENDOR_WIZNET is not set
-> +# CONFIG_WLAN is not set
-> +# CONFIG_INPUT_MOUSEDEV is not set
-> +# CONFIG_INPUT_KEYBOARD is not set
-> +# CONFIG_INPUT_MOUSE is not set
-> +CONFIG_SERIAL_MESON=y
-> +CONFIG_SERIAL_MESON_CONSOLE=y
-> +# CONFIG_HW_RANDOM is not set
-> +CONFIG_I2C=y
-> +CONFIG_I2C_CHARDEV=y
-> +CONFIG_SPI=y
-> +CONFIG_GPIOLIB=y
-> +CONFIG_GPIO_SYSFS=y
-> +CONFIG_POWER_SUPPLY=y
-> +CONFIG_POWER_RESET=y
-> +# CONFIG_HWMON is not set
-> +CONFIG_WATCHDOG=y
-> +CONFIG_WATCHDOG_CORE=y
-> +CONFIG_MFD_AXP20X=y
-> +CONFIG_REGULATOR=y
-> +CONFIG_REGULATOR_FIXED_VOLTAGE=y
-> +CONFIG_REGULATOR_VIRTUAL_CONSUMER=y
-> +CONFIG_REGULATOR_GPIO=y
-> +CONFIG_USB=y
-> +CONFIG_USB_EHCI_HCD=y
-> +CONFIG_USB_EHCI_HCD_PLATFORM=y
-> +CONFIG_USB_OHCI_HCD=y
-> +CONFIG_USB_OHCI_HCD_PLATFORM=y
-> +CONFIG_MMC=y
-> +CONFIG_NEW_LEDS=y
-> +CONFIG_LEDS_CLASS=y
-> +CONFIG_LEDS_GPIO=y
-> +CONFIG_LEDS_TRIGGERS=y
-> +CONFIG_LEDS_TRIGGER_HEARTBEAT=y
-> +CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
-> +CONFIG_RTC_CLASS=y
-> +# CONFIG_RTC_INTF_SYSFS is not set
-> +# CONFIG_RTC_INTF_PROC is not set
-> +# CONFIG_IOMMU_SUPPORT is not set
-> +CONFIG_GENERIC_PHY=y
-> +CONFIG_EXT4_FS=y
-> +CONFIG_VFAT_FS=y
-> +CONFIG_TMPFS=y
-> +CONFIG_NFS_FS=y
-> +CONFIG_NFS_V3_ACL=y
-> +CONFIG_NFS_V4=y
-> +CONFIG_ROOT_NFS=y
-> +CONFIG_PRINTK_TIME=y
-> +CONFIG_DEBUG_FS=y
-> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-> index 5fb95fb..5b44796 100644
-> --- a/arch/arm/configs/multi_v7_defconfig
-> +++ b/arch/arm/configs/multi_v7_defconfig
-> @@ -29,6 +29,7 @@ CONFIG_ARCH_HISI=y
->   CONFIG_ARCH_HI3xxx=y
->   CONFIG_ARCH_HIX5HD2=y
->   CONFIG_ARCH_KEYSTONE=y
-> +CONFIG_ARCH_MESON=y
->   CONFIG_ARCH_MXC=y
->   CONFIG_SOC_IMX51=y
->   CONFIG_SOC_IMX53=y
-> @@ -173,6 +174,8 @@ CONFIG_SERIAL_8250_CONSOLE=y
->   CONFIG_SERIAL_8250_DW=y
->   CONFIG_SERIAL_AMBA_PL011=y
->   CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
-> +CONFIG_SERIAL_MESON=y
-> +CONFIG_SERIAL_MESON_CONSOLE=y
->   CONFIG_SERIAL_SAMSUNG=y
->   CONFIG_SERIAL_SAMSUNG_CONSOLE=y
->   CONFIG_SERIAL_SIRFSOC=y
+> +++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+> @@ -0,0 +1,17 @@
+> +Amlogic Meson UART
+> +
+> +Required properties:
+> +- compatible : Should be "amlogic,meson-uart"
+> +- reg : Address and length of the register set
+> +- interrupts : Should contain uart interrupt
+> +- clocks: phandle to the source clock
+> +
+> +Example:
+> +
+> +uart0: serial@c81004c0 {
+> +	compatible = "amlogic,meson-uart";
+> +	reg = <0xc81004c0 0x14>;
+> +	interrupts = <0 90 1>;
+> +	clocks = <&clk81>;
+> +};
+> +
+> diff --git a/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+> new file mode 100644
+> index 0000000..cf89894
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/timer/amlogic,meson6-timer.txt
+> @@ -0,0 +1,16 @@
+> +Amlogic Meson6 SoCs Timer Controller
+> +
+> +Required properties:
+> +
+> +- compatible : should be "amlogic,meson6-timer.txt"
+> +- reg : Specifies base physical address and size of the registers.
+> +- interrupts : The interrupt of the first timer
+> +
+> +Example:
+> +
+> +timer@c1109940 {
+> +	compatible = "amlogic,meson6-timer";
+> +	reg = <0xc1109940 0x14>;
+> +	interrupts = <0 10 1>;
+> +};
+> +
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index ac7269f..5cf0618 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -14,6 +14,7 @@ allwinner	Allwinner Technology Co., Ltd.
+>   altr	Altera Corp.
+>   amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+>   amd	Advanced Micro Devices (AMD), Inc.
+> +amlogic	Amlogic, Inc.
+>   ams	AMS AG
+>   amstaos	AMS-Taos Inc.
+>   apm	Applied Micro Circuits Corporation (APM)
 >
