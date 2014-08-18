@@ -1,68 +1,53 @@
 From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
-Date: Mon, 18 Aug 2014 15:27:13 +0200
-Message-ID: <20140818132713.GA28819@carlo-MacBookPro>
+Subject: Re: [PATCH 6/7] ARM: meson: update defconfigs
+Date: Mon, 18 Aug 2014 15:31:35 +0200
+Message-ID: <20140818133135.GB28819@carlo-MacBookPro>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-5-git-send-email-carlo@caione.org>
- <20140817142115.GB15297@lukather>
+ <1408272594-10814-7-git-send-email-carlo@caione.org>
+ <53F1D5FA.1040803@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f48.google.com ([74.125.82.48]:40010 "EHLO
-	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750709AbaHRN1T (ORCPT
+Received: from mail-we0-f173.google.com ([74.125.82.173]:57473 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751423AbaHRNbk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 09:27:19 -0400
+	Mon, 18 Aug 2014 09:31:40 -0400
 Content-Disposition: inline
-In-Reply-To: <20140817142115.GB15297@lukather>
+In-Reply-To: <53F1D5FA.1040803@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
 Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 
-On Sun, Aug 17, 2014 at 04:21:15PM +0200, Maxime Ripard wrote:
-> Hi Carlo,
-
-Hi Maxime,
-thank you for reviewing also these patches, I'll keep you in CC for the
-next revisions if you are interested.
-
-> > +static __init void meson_init_machine_devicetree(void)
-> > +{
-> > +	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
-> > +}
+On Mon, Aug 18, 2014 at 12:31:22PM +0200, Matthias Brugger wrote:
 > 
-> This is the default, you can just remove it
-
-Agree
-
-> > +static const char * const m6_common_board_compat[] = {
-> > +	"amlogic,8726_mx",
-> > +	"amlogic,8726_mxs",
-> > +	"amlogic,8726_mxl",
-> > +	"amlogic,meson6",
 > 
-> Why are all those compatibles needed? Usually, you add a single one
-> per SoC (which would be the last in your case I guess.
-
-They are taken from the weird DTS in the original Amlogic sources but I
-guess you are right. I am actually more inclined to just leave "8726_mx"
-and "meson6" since online you can find equally both the versions for
-exactly the same SoCs.
-
-> > +	NULL,
-> > +};
-> > +
-> > +DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
-> > +	.init_machine	= meson_init_machine_devicetree,
+> On 17/08/14 12:49, Carlo Caione wrote:
+> >This patch updates the multi_v7_defconfig with the CONFIG_* needed by
+> >the just added Meson anch. It also adds a new defconfig specifically for
+> >the Meson SoCs.
+> >
+> >Signed-off-by: Carlo Caione <carlo@caione.org>
+> >---
+> >  arch/arm/configs/meson_defconfig    | 99 +++++++++++++++++++++++++++++++++++++
+> >  arch/arm/configs/multi_v7_defconfig |  3 ++
+> >  2 files changed, 102 insertions(+)
+> >  create mode 100644 arch/arm/configs/meson_defconfig
+> >
+> >diff --git a/arch/arm/configs/meson_defconfig b/arch/arm/configs/meson_defconfig
+> >new file mode 100644
+> >index 0000000..3c9d976
+> >--- /dev/null
+> >+++ b/arch/arm/configs/meson_defconfig
 > 
-> And since you don't need the init machine, you can just use the
-> generic machine support. I'm not sure what's been decided on this,
-> should we remove such empty machines?
+> I doubt that we need a meson_defconfig when we can get the SoC up
+> and running using multi_v7_defconfig.
 
-I can get rid of the .init_machine but what about the .dt_compat field?
+It was because multi_v7_defconfig is becoming a bit too crowded. But
+I'll get rid of it in v2.
 
-Thanks,
+Thank you,
 
 -- 
 Carlo Caione
