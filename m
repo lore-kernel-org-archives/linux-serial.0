@@ -1,190 +1,106 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v9 12/16] serial: amba-pl011: Pass FIQ information to
- KGDB.
-Date: Mon, 18 Aug 2014 14:30:56 -0400
-Message-ID: <53F24660.2030404@hurleysoftware.com>
-References: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org> <1408372091-12689-13-git-send-email-daniel.thompson@linaro.org>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
+Date: Mon, 18 Aug 2014 21:11:03 +0200
+Message-ID: <20140818191103.GI15297@lukather>
+References: <1408272594-10814-1-git-send-email-carlo@caione.org>
+ <1408272594-10814-5-git-send-email-carlo@caione.org>
+ <20140817142115.GB15297@lukather>
+ <20140818132713.GA28819@carlo-MacBookPro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6yxL3IctpgIvrN+d"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:37256 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751852AbaHRSbj (ORCPT
+Received: from top.free-electrons.com ([176.31.233.9]:55064 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751705AbaHRTPE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 14:31:39 -0400
-In-Reply-To: <1408372091-12689-13-git-send-email-daniel.thompson@linaro.org>
+	Mon, 18 Aug 2014 15:15:04 -0400
+Content-Disposition: inline
+In-Reply-To: <20140818132713.GA28819@carlo-MacBookPro>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>, Russell King <linux@arm.linux.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Carlo Caione <carlo@caione.org>
+Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 
-Hi Daniel,
 
-On 08/18/2014 10:28 AM, Daniel Thompson wrote:
-> Speculatively register a FIQ resource with KGDB. KGDB will only
-> accept it if the kgdb/fiq feature is enabled (both with compile time and
-> runtime switches) and the interrupt controller supports FIQ.
-> 
-> By providing this information to KGDB the serial driver offers
-> "permission" for KGDB to route the UART interrupt signal from the
-> drivers own handler to KGDBs FIQ handler (which will eventually use the
-> UART's polled I/O callbacks to interact with the user). This permission
-> also implies the amba-pl011 driver has already unmasked RX interrupts
-> (otherwise the FIQ handler will never trigger).
-> 
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Russell King <linux@arm.linux.org.uk>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/amba-pl011.c | 94 ++++++++++++++++++++++++-----------------
->  1 file changed, 55 insertions(+), 39 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 8572f2a..ec8ddc7 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -58,6 +58,7 @@
->  #include <linux/pinctrl/consumer.h>
->  #include <linux/sizes.h>
->  #include <linux/io.h>
-> +#include <linux/kgdb.h>
->  
->  #define UART_NR			14
->  
-> @@ -1416,8 +1417,61 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
->  	spin_unlock_irqrestore(&uap->port.lock, flags);
->  }
->  
+--6yxL3IctpgIvrN+d
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Is pl011_hwinit() just being relocated in source to avoid the forward
-declaration? If so, this is usually split into its own commit.
+Hi,
 
-> +static int pl011_hwinit(struct uart_port *port)
-> +{
-> +	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-> +	int retval;
-> +
-> +	/* Optionaly enable pins to be muxed in and configured */
-> +	pinctrl_pm_select_default_state(port->dev);
-> +
-> +	/*
-> +	 * Try to enable the clock producer.
-> +	 */
-> +	retval = clk_prepare_enable(uap->clk);
-> +	if (retval)
-> +		return retval;
-> +
-> +	uap->port.uartclk = clk_get_rate(uap->clk);
-> +
-> +	/* Clear pending error and receive interrupts */
-> +	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
-> +	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
-> +
-> +	/*
-> +	 * Save interrupts enable mask, and enable RX interrupts in case if
-> +	 * the interrupt is used for NMI entry.
-> +	 */
-> +	uap->im = readw(uap->port.membase + UART011_IMSC);
-> +	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
-> +
-> +	if (dev_get_platdata(uap->port.dev)) {
-> +		struct amba_pl011_data *plat;
-> +
-> +		plat = dev_get_platdata(uap->port.dev);
-> +		if (plat->init)
-> +			plat->init();
-> +	}
-> +	return 0;
-> +}
-> +
->  #ifdef CONFIG_CONSOLE_POLL
->  
-> +static int pl011_poll_init(struct uart_port *port)
-> +{
-> +	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+On Mon, Aug 18, 2014 at 03:27:13PM +0200, Carlo Caione wrote:
+> On Sun, Aug 17, 2014 at 04:21:15PM +0200, Maxime Ripard wrote:
+> > Hi Carlo,
+>=20
+> Hi Maxime,
+> thank you for reviewing also these patches, I'll keep you in CC for the
+> next revisions if you are interested.
 
-Please use container_of() in new code.
+Yep, sure.
 
-> +	int retval;
-> +
-> +	retval = pl011_hwinit(port);
-> +
-> +#ifdef CONFIG_KGDB_FIQ
-> +	if (retval == 0)
-> +		kgdb_register_fiq(uap->port.irq);
+> > > +static const char * const m6_common_board_compat[] =3D {
+> > > +	"amlogic,8726_mx",
+> > > +	"amlogic,8726_mxs",
+> > > +	"amlogic,8726_mxl",
+> > > +	"amlogic,meson6",
+> >=20
+> > Why are all those compatibles needed? Usually, you add a single one
+> > per SoC (which would be the last in your case I guess.
+>=20
+> They are taken from the weird DTS in the original Amlogic sources but I
+> guess you are right. I am actually more inclined to just leave "8726_mx"
+> and "meson6" since online you can find equally both the versions for
+> exactly the same SoCs.
 
-The uap->port dereference is unnecessary since the port parameter
-is the same thing.
+I don't really know what's the best option here, but you should really
+choose one name and stick to it. Since the mach directory is called
+meson, I guess meson6 would make more sense, but it's your call.
 
-		kgdb_register_fiq(port->irq);
+> > > +	NULL,
+> > > +};
+> > > +
+> > > +DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
+> > > +	.init_machine	=3D meson_init_machine_devicetree,
+> >=20
+> > And since you don't need the init machine, you can just use the
+> > generic machine support. I'm not sure what's been decided on this,
+> > should we remove such empty machines?
+>=20
+> I can get rid of the .init_machine but what about the .dt_compat field?
 
-Regards,
-Peter Hurley
+Technically, it would work. The only drawbacks are that you don't get
+the machine name in /proc/cpuinfo, and that you'll probably have to
+add this file at some point in the future anyway.
 
-> +#endif
-> +
-> +	return retval;
-> +}
-> +
->  static void pl011_quiesce_irqs(struct uart_port *port)
->  {
->  	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-> @@ -1471,44 +1525,6 @@ static void pl011_put_poll_char(struct uart_port *port,
->  
->  #endif /* CONFIG_CONSOLE_POLL */
->  
-> -static int pl011_hwinit(struct uart_port *port)
-> -{
-> -	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-> -	int retval;
-> -
-> -	/* Optionaly enable pins to be muxed in and configured */
-> -	pinctrl_pm_select_default_state(port->dev);
-> -
-> -	/*
-> -	 * Try to enable the clock producer.
-> -	 */
-> -	retval = clk_prepare_enable(uap->clk);
-> -	if (retval)
-> -		return retval;
-> -
-> -	uap->port.uartclk = clk_get_rate(uap->clk);
-> -
-> -	/* Clear pending error and receive interrupts */
-> -	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
-> -	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
-> -
-> -	/*
-> -	 * Save interrupts enable mask, and enable RX interrupts in case if
-> -	 * the interrupt is used for NMI entry.
-> -	 */
-> -	uap->im = readw(uap->port.membase + UART011_IMSC);
-> -	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
-> -
-> -	if (dev_get_platdata(uap->port.dev)) {
-> -		struct amba_pl011_data *plat;
-> -
-> -		plat = dev_get_platdata(uap->port.dev);
-> -		if (plat->init)
-> -			plat->init();
-> -	}
-> -	return 0;
-> -}
-> -
->  static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
->  {
->  	writew(lcr_h, uap->port.membase + uap->lcrh_rx);
-> @@ -1888,7 +1904,7 @@ static struct uart_ops amba_pl011_pops = {
->  	.config_port	= pl011_config_port,
->  	.verify_port	= pl011_verify_port,
->  #ifdef CONFIG_CONSOLE_POLL
-> -	.poll_init     = pl011_hwinit,
-> +	.poll_init     = pl011_poll_init,
->  	.poll_get_char = pl011_get_poll_char,
->  	.poll_put_char = pl011_put_poll_char,
->  #endif
-> 
+Maxime
 
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--6yxL3IctpgIvrN+d
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJT8k/HAAoJEBx+YmzsjxAgB1IP/RUJNxF4+i2pNFrh4MQNIpwe
+6jLJroMh1BtWntqJsZ5HHn+osBLDJwLWEjC+5sM6tTU0JntFjVOCD9AduhE8hgIg
+LxSZPWN0xPZK2c4DR1MZKzkfki8oYIOadSfIswjHsHQb82cIaUYeGmznyp5tGfS8
+llQX2Hy43Z+KsIgBcYTcssTTWJbYbijAQI0c+utKKA2FkmrZvL9i7Cb6EH3QtJeK
+CiLSmOYxGomg8krnW/XtNLGWgLBtAYGSZFHEpiwooKD+r8prT4rvGhoSKheIoYGF
+pH9lHaQykCPnGT+sF93aWbsm8HS0U8OthloWUse/WGyIUnoVxpJozdL+BAKWqMJa
+ts2tJ/bKNnvGezjvMu5+yurRZQDFLL4pGZvGuV37fYs9Uoy8oXfHIqP1gtSQTDgx
+ydU54zPUCoeo/6aycJYyTbxz2Ew4LTKXIVOD/YFb4skX+6qVbD9FfOXGHDbSWXlY
++38aodUtO3Hjt+WkIBlTwAFAEr1JcfiDmKfrA6NfzDhoJ+Z4FL7IMp87gumjrj3I
+b6MSfEWOAn2s8LegwmRoZFdgGPD1ays+igMkvuo+5W4yRKlF0qAzeTd1tkQaId7+
+9DwqmWrnkOQcnh6Q8FRM2c4cR1GUqBMziXBUIligKV+jXlLwcSKf1M/bs1AtuKg2
+x9QHL+to6S3DEZrseWx6
+=ut7G
+-----END PGP SIGNATURE-----
+
+--6yxL3IctpgIvrN+d--
