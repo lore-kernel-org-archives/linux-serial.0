@@ -1,47 +1,35 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: is there a struct  uart_driver like struct i2c_driver
-Date: Mon, 18 Aug 2014 08:50:46 -0500
-Message-ID: <20140818135046.GA927@kroah.com>
-References: <53F1CD68.9080901@ts.fujitsu.com>
- <20140818105307.GA5811@kroah.com>
- <53F1DF48.8000007@ts.fujitsu.com>
- <53F1E14D.7000408@ts.fujitsu.com>
- <53F202FF.5020809@ts.fujitsu.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 06/15] tty: serial: 8250_dma: handle error on TX submit
+Date: Mon, 18 Aug 2014 16:57:37 +0300
+Message-ID: <20140818135737.GB32400@xps8300>
+References: <1408124563-31541-1-git-send-email-bigeasy@linutronix.de>
+ <1408124563-31541-7-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48203 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750768AbaHRNvw (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 09:51:52 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-	by gateway1.nyi.internal (Postfix) with ESMTP id C538422FB5
-	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2014 09:51:48 -0400 (EDT)
+Received: from mga11.intel.com ([192.55.52.93]:26167 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750709AbaHRN5q (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 18 Aug 2014 09:57:46 -0400
 Content-Disposition: inline
-In-Reply-To: <53F202FF.5020809@ts.fujitsu.com>
+In-Reply-To: <1408124563-31541-7-git-send-email-bigeasy@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Mon, Aug 18, 2014 at 03:43:27PM +0200, Cestonaro Thilo wrote:
-> Hey,
-> 
-> do I need to do something like:
-> ----
-> f = filp_open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY, 0600);
-> fs=get_fs();
-> set_fs(KERNEL_DS);
-> ---
-> Is there really no API for a uart attached device to communicate with it?
-> 
-> That would be the last thing I thought of :(.
+On Fri, Aug 15, 2014 at 07:42:34PM +0200, Sebastian Andrzej Siewior wrote:
+> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+> index b161eee..02e82dc 100644
+> --- a/include/linux/serial_8250.h
+> +++ b/include/linux/serial_8250.h
+> @@ -85,6 +85,7 @@ struct uart_8250_port {
+>  	unsigned char		mcr_force;	/* mask of forced bits */
+>  	unsigned char		cur_iotype;	/* Running I/O type */
+>  	unsigned char		rpm_tx_active;
+> +	unsigned char		dma_tx_err;
 
-Wait, you want to talk to a serial port from within the kernel?  No,
-don't open the device node, just talk directly to the tty layer.  An
-example of code that does this is some of the bluetooth layer.
+Why not make this member of uart_8250_dma instead?
 
-good luck,
-
-greg k-h
+-- 
+heikki
