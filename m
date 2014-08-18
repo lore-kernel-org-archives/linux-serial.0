@@ -1,68 +1,90 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: is there a struct  uart_driver like struct i2c_driver
-Date: Mon, 18 Aug 2014 10:07:08 -0500
-Message-ID: <20140818150708.GA31497@kroah.com>
-References: <53F1CD68.9080901@ts.fujitsu.com>
- <20140818105307.GA5811@kroah.com>
- <53F1DF48.8000007@ts.fujitsu.com>
- <53F1E14D.7000408@ts.fujitsu.com>
- <53F202FF.5020809@ts.fujitsu.com>
- <20140818135046.GA927@kroah.com>
- <53F21418.80307@ts.fujitsu.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
+Date: Mon, 18 Aug 2014 17:10:39 +0200
+Message-ID: <CABuKBeLSJkxPM_gyhGXN5pft0R4-+RrdiURuPwH9VxA-cSzQNQ@mail.gmail.com>
+References: <1408272594-10814-1-git-send-email-carlo@caione.org>
+	<1408272594-10814-5-git-send-email-carlo@caione.org>
+	<20140817142115.GB15297@lukather>
+	<20140818132713.GA28819@carlo-MacBookPro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:45810 "EHLO
-	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750977AbaHRPHu (ORCPT
+Received: from mail-oi0-f44.google.com ([209.85.218.44]:43441 "EHLO
+	mail-oi0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751665AbaHRPKk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 11:07:50 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-	by gateway1.nyi.internal (Postfix) with ESMTP id 19D8024057
-	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2014 11:07:48 -0400 (EDT)
-Content-Disposition: inline
-In-Reply-To: <53F21418.80307@ts.fujitsu.com>
+	Mon, 18 Aug 2014 11:10:40 -0400
+In-Reply-To: <20140818132713.GA28819@carlo-MacBookPro>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Carlo Caione <carlo@caione.org>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Beniamino Galvani <b.galvani@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, jslaby@suse.cz, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Mon, Aug 18, 2014 at 04:56:24PM +0200, Cestonaro Thilo wrote:
-> On 18.08.2014 15:50, Greg KH wrote:
-> >On Mon, Aug 18, 2014 at 03:43:27PM +0200, Cestonaro Thilo wrote:
-> >>Hey,
-> >>
-> >>do I need to do something like:
-> >>----
-> >>f = filp_open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY, 0600);
-> >>fs=get_fs();
-> >>set_fs(KERNEL_DS);
-> >>---
-> >>Is there really no API for a uart attached device to communicate with it?
-> >>
-> >>That would be the last thing I thought of :(.
-> >Wait, you want to talk to a serial port from within the kernel?  No,
-> >don't open the device node, just talk directly to the tty layer.  An
-> >example of code that does this is some of the bluetooth layer.
-> >
-> >good luck,
-> >
-> >greg k-h
-> >
-> 
-> From the hci_uart stuff I got to the conclusion that I need to implement
-> a tty line discipline driver and change the corresponding tty's line
-> discipline
-> to my own one.
-> 
-> Is this the best way or did I miss something? I ask again, cause writing a
-> tty line discipline
-> looks rather complicate then straight forward and before I start doing it,
-> I want to be sure to not run against a wall :).
+2014-08-18 15:27 GMT+02:00 Carlo Caione <carlo@caione.org>:
+> On Sun, Aug 17, 2014 at 04:21:15PM +0200, Maxime Ripard wrote:
+>> Hi Carlo,
+>
+> Hi Maxime,
+> thank you for reviewing also these patches, I'll keep you in CC for the
+> next revisions if you are interested.
+>
+>> > +static __init void meson_init_machine_devicetree(void)
+>> > +{
+>> > +   of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+>> > +}
+>>
+>> This is the default, you can just remove it
+>
+> Agree
+>
+>> > +static const char * const m6_common_board_compat[] = {
+>> > +   "amlogic,8726_mx",
+>> > +   "amlogic,8726_mxs",
+>> > +   "amlogic,8726_mxl",
+>> > +   "amlogic,meson6",
+>>
+>> Why are all those compatibles needed? Usually, you add a single one
+>> per SoC (which would be the last in your case I guess.
+>
+> They are taken from the weird DTS in the original Amlogic sources but I
+> guess you are right. I am actually more inclined to just leave "8726_mx"
+> and "meson6" since online you can find equally both the versions for
+> exactly the same SoCs.
+>
+>> > +   NULL,
+>> > +};
+>> > +
+>> > +DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
+>> > +   .init_machine   = meson_init_machine_devicetree,
+>>
+>> And since you don't need the init machine, you can just use the
+>> generic machine support. I'm not sure what's been decided on this,
+>> should we remove such empty machines?
+>
+> I can get rid of the .init_machine but what about the .dt_compat field?
 
-You might want to step back and describe what you are wanting to do in
-the first place before wanting to add a new line discipline.
+AFIAK there is no consensus about that.
+For now I would leave the .dt_compat field. There are proposals which
+try to get rid of the name_str
+in the DT_MACHINE_START [0], but from what I know they are not yet merged.
 
-thanks,
+Cheers,
+Matthias
 
-greg k-h
+[0] http://lists.infradead.org/pipermail/linux-arm-kernel/2013-November/208878.html
+
+>
+> Thanks,
+>
+> --
+> Carlo Caione
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+
+
+-- 
+motzblog.wordpress.com
