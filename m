@@ -1,163 +1,80 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v9 16/16] serial: imx: Add support for KGDB's FIQ/NMI mode
-Date: Mon, 18 Aug 2014 15:28:11 +0100
-Message-ID: <1408372091-12689-17-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH v9 14/16] serial: asc: Adopt readl_/writel_relaxed()
+Date: Mon, 18 Aug 2014 15:28:09 +0100
+Message-ID: <1408372091-12689-15-git-send-email-daniel.thompson@linaro.org>
 References: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f180.google.com ([74.125.82.180]:34001 "EHLO
-	mail-we0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752124AbaHRO2g (ORCPT
+Received: from mail-wg0-f47.google.com ([74.125.82.47]:60438 "EHLO
+	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752086AbaHRO2b (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 10:28:36 -0400
-Received: by mail-we0-f180.google.com with SMTP id w61so5068134wes.25
-        for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2014 07:28:35 -0700 (PDT)
+	Mon, 18 Aug 2014 10:28:31 -0400
+Received: by mail-wg0-f47.google.com with SMTP id b13so5023004wgh.18
+        for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2014 07:28:30 -0700 (PDT)
 In-Reply-To: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Russell King <linux@arm.linux.org.uk>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, kernel@s
 
-This patch makes it possible to use the imx uart with KGDB's FIQ/NMI
-mode.
+The architectures where this peripheral exists (ARM and SH) have expensive
+implementations of writel(), reliant on spin locks and explicit L2 cache
+management. These architectures provide a cheaper writel_relaxed() which
+is much better suited to peripherals that do not perform DMA. The
+situation with readl()/readl_relaxed()is similar although less acute.
 
-Main changes are:
+This driver does not use DMA and will be more power efficient and more
+robust (due to absense of spin locks during console I/O) if it uses the
+relaxed variants.
 
-.poll_init() will, if KGDB+FIQ are enabled, perform deeper hardware
-initialization to ensure the serial port is always active (required
-otherwise FIQ is not triggered by UART activity). This has an impact on
-power usage so it is conservatively enabled.
-
-imx_put_poll_char() has been simplified to remove the code to disable
-interrupts. The present code can corrupt register state when re-entered
-from FIQ handler.
-
-Both imx_put_poll_char() and imx_get_poll_char() adopt _relaxed()
-MMIO functions (which are safe for polled I/O and needed to avoid taking
-spin locks).
+This change means the driver is no longer portable and therefore no
+longer suitable for compile testing.
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+Cc: Maxime Coquelin <maxime.coquelin@st.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: kernel@stlinux.com
 Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/imx.c | 71 +++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 52 insertions(+), 19 deletions(-)
+ drivers/tty/serial/Kconfig  | 2 +-
+ drivers/tty/serial/st-asc.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 983668a..a201c61 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -49,6 +49,7 @@
- #include <linux/of_device.h>
- #include <linux/io.h>
- #include <linux/dma-mapping.h>
-+#include <linux/kgdb.h>
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 26cec64..e9b1735 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
+ config SERIAL_ST_ASC
+ 	tristate "ST ASC serial port support"
+ 	select SERIAL_CORE
+-	depends on ARM || COMPILE_TEST
++	depends on ARM
+ 	help
+ 	  This driver is for the on-chip Asychronous Serial Controller on
+ 	  STMicroelectronics STi SoCs.
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 2b5eb6e..df709ee 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -152,12 +152,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
  
- #include <asm/irq.h>
- #include <linux/platform_data/serial-imx.h>
-@@ -1505,44 +1506,73 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
- }
- 
- #if defined(CONFIG_CONSOLE_POLL)
-+
-+#if defined(CONFIG_KGDB_FIQ)
-+/*
-+ * Prepare the UART to be used from kgdb's NMI support.
-+ */
-+static int imx_poll_init(struct uart_port *port)
-+{
-+	struct imx_port *sport = (struct imx_port *)port;
-+	unsigned long flags;
-+	unsigned long temp;
-+	int retval;
-+
-+	retval = clk_prepare_enable(sport->clk_ipg);
-+	if (retval)
-+		return retval;
-+	retval = clk_prepare_enable(sport->clk_per);
-+	if (retval)
-+		clk_disable_unprepare(sport->clk_ipg);
-+
-+	imx_setup_ufcr(sport, 0);
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
-+	temp = readl(sport->port.membase + UCR1);
-+	if (is_imx1_uart(sport))
-+		temp |= IMX1_UCR1_UARTCLKEN;
-+	temp |= UCR1_UARTEN | UCR1_RRDYEN;
-+	temp &= ~(UCR1_TXMPTYEN | UCR1_RTSDEN);
-+	writel(temp, sport->port.membase + UCR1);
-+
-+	temp = readl(sport->port.membase + UCR2);
-+	temp |= UCR2_RXEN;
-+	writel(temp, sport->port.membase + UCR2);
-+
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
-+
-+	/* register the FIQ with kgdb */
-+	kgdb_register_fiq(sport->port.irq);
-+
-+	return 0;
-+}
-+#endif /* CONFIG_KGDB_FIQ */
-+
- static int imx_poll_get_char(struct uart_port *port)
+ static inline u32 asc_in(struct uart_port *port, u32 offset)
  {
--	if (!(readl(port->membase + USR2) & USR2_RDR))
-+	if (!(readl_relaxed(port->membase + USR2) & USR2_RDR))
- 		return NO_POLL_CHAR;
- 
--	return readl(port->membase + URXD0) & URXD_RX_DATA;
-+	return readl_relaxed(port->membase + URXD0) & URXD_RX_DATA;
+-	return readl(port->membase + offset);
++	return readl_relaxed(port->membase + offset);
  }
  
- static void imx_poll_put_char(struct uart_port *port, unsigned char c)
+ static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
  {
--	struct imx_port_ucrs old_ucr;
- 	unsigned int status;
- 
--	/* save control registers */
--	imx_port_ucrs_save(port, &old_ucr);
--
--	/* disable interrupts */
--	writel(UCR1_UARTEN, port->membase + UCR1);
--	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
--	       port->membase + UCR2);
--	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
--	       port->membase + UCR3);
--
- 	/* drain */
- 	do {
--		status = readl(port->membase + USR1);
-+		status = readl_relaxed(port->membase + USR1);
- 	} while (~status & USR1_TRDY);
- 
- 	/* write */
--	writel(c, port->membase + URTX0);
-+	writel_relaxed(c, port->membase + URTX0);
- 
- 	/* flush */
- 	do {
--		status = readl(port->membase + USR2);
-+		status = readl_relaxed(port->membase + USR2);
- 	} while (~status & USR2_TXDC);
--
--	/* restore control registers */
--	imx_port_ucrs_restore(port, &old_ucr);
+-	writel(value, port->membase + offset);
++	writel_relaxed(value, port->membase + offset);
  }
- #endif
  
-@@ -1563,6 +1593,9 @@ static struct uart_ops imx_pops = {
- 	.config_port	= imx_config_port,
- 	.verify_port	= imx_verify_port,
- #if defined(CONFIG_CONSOLE_POLL)
-+#if defined(CONFIG_KGDB_FIQ)
-+	.poll_init      = imx_poll_init,
-+#endif
- 	.poll_get_char  = imx_poll_get_char,
- 	.poll_put_char  = imx_poll_put_char,
- #endif
+ /*
 -- 
 1.9.3
 
