@@ -1,85 +1,100 @@
-From: Barry Song <Barry.Song@csr.com>
-Subject: [PATCH] serial: sirf: fix line over 80 characters style issue
-Date: Mon, 18 Aug 2014 17:32:52 +0800
-Message-ID: <1408354372-18601-1-git-send-email-Barry.Song@csr.com>
+From: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
+Subject: is there a struct  uart_driver like struct i2c_driver
+Date: Mon, 18 Aug 2014 11:54:48 +0200
+Message-ID: <53F1CD68.9080901@ts.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1; boundary="------------ms090107010800000408050903"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cluster-g.mailcontrol.com ([208.87.233.190]:55397 "EHLO
-	cluster-g.mailcontrol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750762AbaHRJdP (ORCPT
+Received: from dgate10.ts.fujitsu.com ([80.70.172.49]:11617 "EHLO
+	dgate10.ts.fujitsu.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754233AbaHRJy7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 05:33:15 -0400
+	Mon, 18 Aug 2014 05:54:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-From: Qipan Li <Qipan.Li@csr.com>
+This is a cryptographically signed message in MIME format.
 
-According to key customer's requirement, fix "line over 80
-characters".
+--------------ms090107010800000408050903
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Qipan Li <Qipan.Li@csr.com>
-Signed-off-by: Barry Song <Baohua.Song@csr.com>
----
- drivers/tty/serial/sirfsoc_uart.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Hey,
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 4102192..89f1e59 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -525,7 +525,8 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 	while (DMA_COMPLETE == dmaengine_tx_status(sirfport->rx_dma_chan,
--		sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)) {
-+		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
-+		&tx_state)) {
- 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
- 					SIRFSOC_RX_DMA_BUF_SIZE);
- 		sirfport->rx_completed++;
-@@ -707,7 +708,8 @@ static void sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
- 	struct dma_tx_state tx_state;
- 	spin_lock_irqsave(&port->lock, flags);
- 	while (DMA_COMPLETE == dmaengine_tx_status(sirfport->rx_dma_chan,
--			sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)) {
-+		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
-+		&tx_state)) {
- 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
- 					SIRFSOC_RX_DMA_BUF_SIZE);
- 		if (rd_regl(port, ureg->sirfsoc_int_en_reg) &
-@@ -1303,7 +1305,8 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
- 		"sirf,uart-has-rtscts");
- 	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-uart"))
- 		sirfport->uart_reg->uart_type = SIRF_REAL_UART;
--	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-usp-uart")) {
-+	if (of_device_is_compatible(pdev->dev.of_node,
-+		"sirf,prima2-usp-uart")) {
- 		sirfport->uart_reg->uart_type =	SIRF_USP_UART;
- 		if (!sirfport->hw_flow_ctrl)
- 			goto usp_no_flow_control;
-@@ -1360,11 +1363,12 @@ usp_no_flow_control:
- 		goto err;
- 	}
- 	tasklet_init(&sirfport->rx_dma_complete_tasklet,
--			sirfsoc_uart_rx_dma_complete_tl, (unsigned long)sirfport);
-+		sirfsoc_uart_rx_dma_complete_tl, (unsigned long)sirfport);
- 	tasklet_init(&sirfport->rx_tmo_process_tasklet,
- 			sirfsoc_rx_tmo_process_tl, (unsigned long)sirfport);
- 	port->mapbase = res->start;
--	port->membase = devm_ioremap(&pdev->dev, res->start, resource_size(res));
-+	port->membase = devm_ioremap(&pdev->dev,
-+			res->start, resource_size(res));
- 	if (!port->membase) {
- 		dev_err(&pdev->dev, "Cannot remap resource.\n");
- 		ret = -ENOMEM;
--- 
-2.0.4
+I need to write a driver which communicates with it's chip via uart.
+So I was wondering which the best way is to do this.
+
+For a i2c device there is the i2c subsystem with it's=20
+"module_i2c_driver(foo_driver);" and so on.
+But I couldn't find any equivalent for a uart device.
+
+So what is the desired way to implement such a driver? Is there one or=20
+do I need to "struct file * f =3D filp_open("/dev/ttyS4", FLAGS, MODE);" =
+?
+
+Thanks any hint!
+
+Cheers,
+Thilo
 
 
+--------------ms090107010800000408050903
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-Member of the CSR plc group of companies. CSR plc registered in England and Wales, registered number 4187346, registered office Churchill House, Cambridge Business Park, Cowley Road, Cambridge, CB4 0WZ, United Kingdom
-More information can be found at www.csr.com. Keep up to date with CSR on our technical blog, www.csr.com/blog, CSR people blog, www.csr.com/people, YouTube, www.youtube.com/user/CSRplc, Facebook, www.facebook.com/pages/CSR/191038434253534, or follow us on Twitter at www.twitter.com/CSR_plc.
-New for 2014, you can now access the wide range of products powered by aptX at www.aptx.com.
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIIYDCC
+A9QwggK8oAMCAQICEDTNElfINoNG4L/3PTADbgUwDQYJKoZIhvcNAQEFBQAwLzEtMCsGA1UE
+AxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9ucyBSb290IENBMB4XDTA5MDMxMjEyMjQ1
+OVoXDTE5MDMxMTEyMjQ1OVowLzEtMCsGA1UEAxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0
+aW9ucyBVc2VyIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsBtNf0fN8EkW
+9y6QqoQGS6LUwezenV2BnDzORdGanukRtpGzYMAPdyiwtlp0/zONa+jCJGzkX4iYCjTsiJvx
+01SPRNZ24fHaFGXpJBX599q6ZF0isu+h1aIas1tfyCBalAbKKLvNgIuQjnXhdffVk4vSuByt
+O3OGcULtJ2+lYVSEvxzGt9iTSwT5RnEvKpR0iOC+9/UNVOiPK9XCz5u7bg3iehP5gD+v5uu3
+YIRwV/5gyd7AZPcckTfYP/GZcybcAXfEl5nb/bZiSLHeZEjxMMM8YZqFKhH9xymIdjkcRK7N
+J2j8OD708QFv4b4bme1mHGfTjSbxb1nOoUTsNtshZwIDAQABo4HrMIHoMB0GA1UdDgQWBBQI
+9chqv4Dje1DEOfQHmEbobX6XqDALBgNVHQ8EBAMCAYYwHwYDVR0jBBgwFoAUFHXiV7YVNxWA
+KpflUUhlrM+GkMswEgYDVR0TAQH/BAgwBgEB/wIBADBHBggrBgEFBQcBAQQ7MDkwNwYIKwYB
+BQUHMAKGK2h0dHA6Ly9haWEudHMuZnVqaXRzdS5jb20vYWlhL2Z0czAxcm9vdC5jZXIwPAYD
+VR0fBDUwMzAxoC+gLYYraHR0cDovL2NkcC50cy5mdWppdHN1LmNvbS9jZHAvZnRzMDFyb290
+LmNybDANBgkqhkiG9w0BAQUFAAOCAQEAQ7pQP9Lw9bcnt1DhvV5UWb1zmnACSo6n6x+bupck
+Qzlrf3aJ7HQZigZuaCak+dexL18I86iNDDOJBBsrz0DcD4XPszcLTUezqqGlAyIbviBq5mwD
+HAWBA9F11GRx6LdrHMKNdHPwAWyC3r6qv4GO6A+z16KUZFSP4kvuaN5YHI481T7FFxEmntky
+lphndX+6mQ1NABApMMhX0aN5dVhPAMAP8nENJ1hGk81IG8gzkoHDPSoLCtffAnNhYAqhvrDO
+2ybXb/9x+Sf3DQuzBg3hpB1yJM3K8foQaS3uTpFITfdMprcQyrIdl4Jw26s/6vpIs0siLVTp
+3yAwgNaqQSgxSTCCBIQwggNsoAMCAQICCiWUlIAAAAACJH0wDQYJKoZIhvcNAQEFBQAwLzEt
+MCsGA1UEAxMkRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9ucyBVc2VyIENBMB4XDTE0MDMy
+MTEyMTM1M1oXDTE3MDMyMDEyMTM1M1owQjEZMBcGA1UEAwwQQ2VzdG9uYXJvLCBUaGlsbzEl
+MCMGA1UECgwcRnVqaXRzdSBUZWNobm9sb2d5IFNvbHV0aW9uczCBnzANBgkqhkiG9w0BAQEF
+AAOBjQAwgYkCgYEAqP3ld/ylkJOTj2rXQ+VrRf/+YMgZS5CGDnMWk+sMoS5f6JqtwfGcfBU/
+DhfnLsePut2q+ex/RDZFM6yCraPS0vdnTKm2O3Q7/UhhAV1Mi4XzzGeY1Y0qm+85EgMBISPw
+B5mThLYPsun5UIFs6e8tvlwZRzp/jrv/AzAfsSbHGXcCAwEAAaOCAhEwggINMAsGA1UdDwQE
+AwIFoDByBgNVHREEazBpgR50aGlsby5jZXN0b25hcm9AdHMuZnVqaXRzdS5jb22BI1RoaWxv
+LkNlc3RvbmFyb0BmdWppdHN1LXNpZW1lbnMuY29tgSIrNDk4MjE4MDQ4MjMyOEBpbmNvbWlu
+Z2ZheC5mc2MubmV0MB0GA1UdDgQWBBSiHLgIjjo+7KxLJ4t1+YZxgBSn8TAfBgNVHSMEGDAW
+gBQI9chqv4Dje1DEOfQHmEbobX6XqDA8BgNVHR8ENTAzMDGgL6AthitodHRwOi8vY2RwLnRz
+LmZ1aml0c3UuY29tL2NkcC9mdHMwMXVzZXIuY3JsMEcGCCsGAQUFBwEBBDswOTA3BggrBgEF
+BQcwAoYraHR0cDovL2FpYS50cy5mdWppdHN1LmNvbS9haWEvZnRzMDF1c2VyLmNlcjAMBgNV
+HRMBAf8EAjAAMD0GCSsGAQQBgjcVBwQwMC4GJisGAQQBgjcVCIWFxDKBh/9hgYWBBIbsgiCB
+x4EaeYOIoHGH0vEvAgFkAgEIMBMGA1UdJQQMMAoGCCsGAQUFBwMEMBsGCSsGAQQBgjcVCgQO
+MAwwCgYIKwYBBQUHAwQwRAYJKoZIhvcNAQkPBDcwNTAOBggqhkiG9w0DAgICAIAwDgYIKoZI
+hvcNAwQCAgCAMAcGBSsOAwIHMAoGCCqGSIb3DQMHMA0GCSqGSIb3DQEBBQUAA4IBAQAEGTAy
+HPmTyCR029H+P/u9xRezlfA2OVvV97Ls/oLCXGGr6EkMvpHodTc6n4EWSb2ul3VPSRQfuSmB
+gIcHQJykHdSChisaqkeOpHG0rjM9GXh2eQ7ECovpQIfdIbRZKNxlJihSDsDWHyZldBlPVbDh
+xMeT6xJ/ylF8UQ8FXKUir6W/BSPZF5kLdsmCeOpWC4jOGNPEMUAcuiHZPyqAhjlWk750I4oJ
+JKvDbwO8/mkxmzOjpOsk8O3CdljCjYPoYtJPI/oNVsYdmiokzne4FusPYKDzv5i0dN74KLR4
+8maXvi3/WsTFqwks45QeBJT/z+1sYy+dYWpv9XGN+jR1o4ImMYICUDCCAkwCAQEwPTAvMS0w
+KwYDVQQDEyRGdWppdHN1IFRlY2hub2xvZ3kgU29sdXRpb25zIFVzZXIgQ0ECCiWUlIAAAAAC
+JH0wCQYFKw4DAhoFAKCCAWkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
+CQUxDxcNMTQwODE4MDk1NDQ4WjAjBgkqhkiG9w0BCQQxFgQUhK8ZljDPpGVbcH3Nt5trRkdq
+/88wTAYJKwYBBAGCNxAEMT8wPTAvMS0wKwYDVQQDEyRGdWppdHN1IFRlY2hub2xvZ3kgU29s
+dXRpb25zIFVzZXIgQ0ECCiWUlIAAAAACJH0wTgYLKoZIhvcNAQkQAgsxP6A9MC8xLTArBgNV
+BAMTJEZ1aml0c3UgVGVjaG5vbG9neSBTb2x1dGlvbnMgVXNlciBDQQIKJZSUgAAAAAIkfTBs
+BgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcw
+DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEo
+MA0GCSqGSIb3DQEBAQUABIGAffbmtSgHyTDxxfYWxtOnltWegBhRaEjiLpzJqDSu4bhEHxq9
+TCqTLfxkKtDUymlocG1J1ju16lYcIPDa15AAKC69w1YhEIJ/WDRIFU3Ilz5vgOux+vbqXaWn
+BVzp/UNdq63X/qsMdJzQaZkfGdr1MHoklzk2lEcX/4xZhP1LYI0AAAAAAAA=
+--------------ms090107010800000408050903--
