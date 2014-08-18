@@ -1,173 +1,190 @@
-From: Dirk Behme <dirk.behme@gmail.com>
-Subject: Re: [PATCH v9 16/16] serial: imx: Add support for KGDB's FIQ/NMI
- mode
-Date: Mon, 18 Aug 2014 19:32:59 +0200
-Message-ID: <53F238CB.3080007@gmail.com>
-References: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org> <1408372091-12689-17-git-send-email-daniel.thompson@linaro.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v9 12/16] serial: amba-pl011: Pass FIQ information to
+ KGDB.
+Date: Mon, 18 Aug 2014 14:30:56 -0400
+Message-ID: <53F24660.2030404@hurleysoftware.com>
+References: <1404979427-12943-1-git-send-email-daniel.thompson@linaro.org> <1408372091-12689-13-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f172.google.com ([209.85.212.172]:41507 "EHLO
-	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751767AbaHRRdI (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:37256 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751852AbaHRSbj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 13:33:08 -0400
-In-Reply-To: <1408372091-12689-17-git-send-email-daniel.thompson@linaro.org>
+	Mon, 18 Aug 2014 14:31:39 -0400
+In-Reply-To: <1408372091-12689-13-git-send-email-daniel.thompson@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Daniel Thompson <daniel.thompson@linaro.org>, Russell King <linux@arm.linux.org.uk>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On 18.08.2014 16:28, Daniel Thompson wrote:
-> This patch makes it possible to use the imx uart with KGDB's FIQ/NMI
-> mode.
->
-> Main changes are:
->
-> .poll_init() will, if KGDB+FIQ are enabled, perform deeper hardware
-> initialization to ensure the serial port is always active (required
-> otherwise FIQ is not triggered by UART activity). This has an impact on
-> power usage so it is conservatively enabled.
->
-> imx_put_poll_char() has been simplified to remove the code to disable
-> interrupts. The present code can corrupt register state when re-entered
-> from FIQ handler.
->
-> Both imx_put_poll_char() and imx_get_poll_char() adopt _relaxed()
-> MMIO functions (which are safe for polled I/O and needed to avoid taking
-> spin locks).
->
+Hi Daniel,
+
+On 08/18/2014 10:28 AM, Daniel Thompson wrote:
+> Speculatively register a FIQ resource with KGDB. KGDB will only
+> accept it if the kgdb/fiq feature is enabled (both with compile time and
+> runtime switches) and the interrupt controller supports FIQ.
+> 
+> By providing this information to KGDB the serial driver offers
+> "permission" for KGDB to route the UART interrupt signal from the
+> drivers own handler to KGDBs FIQ handler (which will eventually use the
+> UART's polled I/O callbacks to interact with the user). This permission
+> also implies the amba-pl011 driver has already unmasked RX interrupts
+> (otherwise the FIQ handler will never trigger).
+> 
 > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Russell King <linux@arm.linux.org.uk>
 > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Cc: Jiri Slaby <jslaby@suse.cz>
 > Cc: linux-serial@vger.kernel.org
-
-Acked-by: Dirk Behme <dirk.behme@de.bosch.com>
-
-Thanks
-
-Dirk
-
-
 > ---
->   drivers/tty/serial/imx.c | 71 +++++++++++++++++++++++++++++++++++-------------
->   1 file changed, 52 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 983668a..a201c61 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -49,6 +49,7 @@
->   #include <linux/of_device.h>
->   #include <linux/io.h>
->   #include <linux/dma-mapping.h>
+>  drivers/tty/serial/amba-pl011.c | 94 ++++++++++++++++++++++++-----------------
+>  1 file changed, 55 insertions(+), 39 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 8572f2a..ec8ddc7 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -58,6 +58,7 @@
+>  #include <linux/pinctrl/consumer.h>
+>  #include <linux/sizes.h>
+>  #include <linux/io.h>
 > +#include <linux/kgdb.h>
->
->   #include <asm/irq.h>
->   #include <linux/platform_data/serial-imx.h>
-> @@ -1505,44 +1506,73 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
->   }
->
->   #if defined(CONFIG_CONSOLE_POLL)
-> +
-> +#if defined(CONFIG_KGDB_FIQ)
-> +/*
-> + * Prepare the UART to be used from kgdb's NMI support.
-> + */
-> +static int imx_poll_init(struct uart_port *port)
+>  
+>  #define UART_NR			14
+>  
+> @@ -1416,8 +1417,61 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
+>  	spin_unlock_irqrestore(&uap->port.lock, flags);
+>  }
+>  
+
+Is pl011_hwinit() just being relocated in source to avoid the forward
+declaration? If so, this is usually split into its own commit.
+
+> +static int pl011_hwinit(struct uart_port *port)
 > +{
-> +	struct imx_port *sport = (struct imx_port *)port;
-> +	unsigned long flags;
-> +	unsigned long temp;
+> +	struct uart_amba_port *uap = (struct uart_amba_port *)port;
 > +	int retval;
 > +
-> +	retval = clk_prepare_enable(sport->clk_ipg);
+> +	/* Optionaly enable pins to be muxed in and configured */
+> +	pinctrl_pm_select_default_state(port->dev);
+> +
+> +	/*
+> +	 * Try to enable the clock producer.
+> +	 */
+> +	retval = clk_prepare_enable(uap->clk);
 > +	if (retval)
 > +		return retval;
-> +	retval = clk_prepare_enable(sport->clk_per);
-> +	if (retval)
-> +		clk_disable_unprepare(sport->clk_ipg);
 > +
-> +	imx_setup_ufcr(sport, 0);
+> +	uap->port.uartclk = clk_get_rate(uap->clk);
 > +
-> +	spin_lock_irqsave(&sport->port.lock, flags);
+> +	/* Clear pending error and receive interrupts */
+> +	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+> +	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
 > +
-> +	temp = readl(sport->port.membase + UCR1);
-> +	if (is_imx1_uart(sport))
-> +		temp |= IMX1_UCR1_UARTCLKEN;
-> +	temp |= UCR1_UARTEN | UCR1_RRDYEN;
-> +	temp &= ~(UCR1_TXMPTYEN | UCR1_RTSDEN);
-> +	writel(temp, sport->port.membase + UCR1);
+> +	/*
+> +	 * Save interrupts enable mask, and enable RX interrupts in case if
+> +	 * the interrupt is used for NMI entry.
+> +	 */
+> +	uap->im = readw(uap->port.membase + UART011_IMSC);
+> +	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
 > +
-> +	temp = readl(sport->port.membase + UCR2);
-> +	temp |= UCR2_RXEN;
-> +	writel(temp, sport->port.membase + UCR2);
+> +	if (dev_get_platdata(uap->port.dev)) {
+> +		struct amba_pl011_data *plat;
 > +
-> +	spin_unlock_irqrestore(&sport->port.lock, flags);
-> +
-> +	/* register the FIQ with kgdb */
-> +	kgdb_register_fiq(sport->port.irq);
-> +
+> +		plat = dev_get_platdata(uap->port.dev);
+> +		if (plat->init)
+> +			plat->init();
+> +	}
 > +	return 0;
 > +}
-> +#endif /* CONFIG_KGDB_FIQ */
 > +
->   static int imx_poll_get_char(struct uart_port *port)
->   {
-> -	if (!(readl(port->membase + USR2) & USR2_RDR))
-> +	if (!(readl_relaxed(port->membase + USR2) & USR2_RDR))
->   		return NO_POLL_CHAR;
->
-> -	return readl(port->membase + URXD0) & URXD_RX_DATA;
-> +	return readl_relaxed(port->membase + URXD0) & URXD_RX_DATA;
->   }
->
->   static void imx_poll_put_char(struct uart_port *port, unsigned char c)
->   {
-> -	struct imx_port_ucrs old_ucr;
->   	unsigned int status;
->
-> -	/* save control registers */
-> -	imx_port_ucrs_save(port, &old_ucr);
-> -
-> -	/* disable interrupts */
-> -	writel(UCR1_UARTEN, port->membase + UCR1);
-> -	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
-> -	       port->membase + UCR2);
-> -	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
-> -	       port->membase + UCR3);
-> -
->   	/* drain */
->   	do {
-> -		status = readl(port->membase + USR1);
-> +		status = readl_relaxed(port->membase + USR1);
->   	} while (~status & USR1_TRDY);
->
->   	/* write */
-> -	writel(c, port->membase + URTX0);
-> +	writel_relaxed(c, port->membase + URTX0);
->
->   	/* flush */
->   	do {
-> -		status = readl(port->membase + USR2);
-> +		status = readl_relaxed(port->membase + USR2);
->   	} while (~status & USR2_TXDC);
-> -
-> -	/* restore control registers */
-> -	imx_port_ucrs_restore(port, &old_ucr);
->   }
->   #endif
->
-> @@ -1563,6 +1593,9 @@ static struct uart_ops imx_pops = {
->   	.config_port	= imx_config_port,
->   	.verify_port	= imx_verify_port,
->   #if defined(CONFIG_CONSOLE_POLL)
-> +#if defined(CONFIG_KGDB_FIQ)
-> +	.poll_init      = imx_poll_init,
+>  #ifdef CONFIG_CONSOLE_POLL
+>  
+> +static int pl011_poll_init(struct uart_port *port)
+> +{
+> +	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+
+Please use container_of() in new code.
+
+> +	int retval;
+> +
+> +	retval = pl011_hwinit(port);
+> +
+> +#ifdef CONFIG_KGDB_FIQ
+> +	if (retval == 0)
+> +		kgdb_register_fiq(uap->port.irq);
+
+The uap->port dereference is unnecessary since the port parameter
+is the same thing.
+
+		kgdb_register_fiq(port->irq);
+
+Regards,
+Peter Hurley
+
 > +#endif
->   	.poll_get_char  = imx_poll_get_char,
->   	.poll_put_char  = imx_poll_put_char,
->   #endif
->
+> +
+> +	return retval;
+> +}
+> +
+>  static void pl011_quiesce_irqs(struct uart_port *port)
+>  {
+>  	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+> @@ -1471,44 +1525,6 @@ static void pl011_put_poll_char(struct uart_port *port,
+>  
+>  #endif /* CONFIG_CONSOLE_POLL */
+>  
+> -static int pl011_hwinit(struct uart_port *port)
+> -{
+> -	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+> -	int retval;
+> -
+> -	/* Optionaly enable pins to be muxed in and configured */
+> -	pinctrl_pm_select_default_state(port->dev);
+> -
+> -	/*
+> -	 * Try to enable the clock producer.
+> -	 */
+> -	retval = clk_prepare_enable(uap->clk);
+> -	if (retval)
+> -		return retval;
+> -
+> -	uap->port.uartclk = clk_get_rate(uap->clk);
+> -
+> -	/* Clear pending error and receive interrupts */
+> -	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+> -	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+> -
+> -	/*
+> -	 * Save interrupts enable mask, and enable RX interrupts in case if
+> -	 * the interrupt is used for NMI entry.
+> -	 */
+> -	uap->im = readw(uap->port.membase + UART011_IMSC);
+> -	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
+> -
+> -	if (dev_get_platdata(uap->port.dev)) {
+> -		struct amba_pl011_data *plat;
+> -
+> -		plat = dev_get_platdata(uap->port.dev);
+> -		if (plat->init)
+> -			plat->init();
+> -	}
+> -	return 0;
+> -}
+> -
+>  static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+>  {
+>  	writew(lcr_h, uap->port.membase + uap->lcrh_rx);
+> @@ -1888,7 +1904,7 @@ static struct uart_ops amba_pl011_pops = {
+>  	.config_port	= pl011_config_port,
+>  	.verify_port	= pl011_verify_port,
+>  #ifdef CONFIG_CONSOLE_POLL
+> -	.poll_init     = pl011_hwinit,
+> +	.poll_init     = pl011_poll_init,
+>  	.poll_get_char = pl011_get_poll_char,
+>  	.poll_put_char = pl011_put_poll_char,
+>  #endif
+> 
 
