@@ -1,90 +1,42 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 4/7] ARM: meson: add basic support for MesonX SoCs
-Date: Mon, 18 Aug 2014 17:10:39 +0200
-Message-ID: <CABuKBeLSJkxPM_gyhGXN5pft0R4-+RrdiURuPwH9VxA-cSzQNQ@mail.gmail.com>
-References: <1408272594-10814-1-git-send-email-carlo@caione.org>
-	<1408272594-10814-5-git-send-email-carlo@caione.org>
-	<20140817142115.GB15297@lukather>
-	<20140818132713.GA28819@carlo-MacBookPro>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v7] 8250-core based serial driver for OMAP + DMA
+Date: Mon, 18 Aug 2014 11:15:17 -0400
+Message-ID: <53F21885.605@hurleysoftware.com>
+References: <1408124563-31541-1-git-send-email-bigeasy@linutronix.de> <20140815181704.GH17769@csclub.uwaterloo.ca> <53EE5BF8.3010007@linutronix.de> <20140815202826.GC9239@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oi0-f44.google.com ([209.85.218.44]:43441 "EHLO
-	mail-oi0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751665AbaHRPKk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 18 Aug 2014 11:10:40 -0400
-In-Reply-To: <20140818132713.GA28819@carlo-MacBookPro>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20140815202826.GC9239@atomide.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Carlo Caione <carlo@caione.org>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Beniamino Galvani <b.galvani@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, jslaby@suse.cz, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-2014-08-18 15:27 GMT+02:00 Carlo Caione <carlo@caione.org>:
-> On Sun, Aug 17, 2014 at 04:21:15PM +0200, Maxime Ripard wrote:
->> Hi Carlo,
->
-> Hi Maxime,
-> thank you for reviewing also these patches, I'll keep you in CC for the
-> next revisions if you are interested.
->
->> > +static __init void meson_init_machine_devicetree(void)
->> > +{
->> > +   of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
->> > +}
+On 08/15/2014 04:28 PM, Tony Lindgren wrote:
+> * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140815 12:16]:
+>> On 08/15/2014 08:17 PM, Lennart Sorensen wrote:
 >>
->> This is the default, you can just remove it
->
-> Agree
->
->> > +static const char * const m6_common_board_compat[] = {
->> > +   "amlogic,8726_mx",
->> > +   "amlogic,8726_mxs",
->> > +   "amlogic,8726_mxl",
->> > +   "amlogic,meson6",
+>>> Are you saying that with the new driver you have to respond to the RX
+>>> irq faster than before to avoid overflows?  It is not quite clear.
 >>
->> Why are all those compatibles needed? Usually, you add a single one
->> per SoC (which would be the last in your case I guess.
->
-> They are taken from the weird DTS in the original Amlogic sources but I
-> guess you are right. I am actually more inclined to just leave "8726_mx"
-> and "meson6" since online you can find equally both the versions for
-> exactly the same SoCs.
->
->> > +   NULL,
->> > +};
->> > +
->> > +DT_MACHINE_START(AML8726_MX, "Amlogic Meson6 platform")
->> > +   .init_machine   = meson_init_machine_devicetree,
+>> Yes. The irq fires 46 bytes giving you 16 bytes buffer before overflow
+>> vs 63 bytes buffer the old one had.
 >>
->> And since you don't need the init machine, you can just use the
->> generic machine support. I'm not sure what's been decided on this,
->> should we remove such empty machines?
->
-> I can get rid of the .init_machine but what about the .dt_compat field?
+>>> I do think 40000 interrupts to handle 40000 bytes of date does seem a
+>>> tad inefficient, so dropping to 854 looks a lot nicer.  Was the omap
+>>> driver not using the fifo trigger levels at all?
+>>
+>> It configured the trigger levels to 1 for RX and 16 for TX.
+> 
+> Hmm that weird RX trigger level is a workaround for lost characters.
+> 
+> See commit 0ba5f66836 (tty: serial: OMAP: use a 1-byte RX FIFO
+> threshold in PIO mode :)
 
-AFIAK there is no consensus about that.
-For now I would leave the .dt_compat field. There are proposals which
-try to get rid of the name_str
-in the DT_MACHINE_START [0], but from what I know they are not yet merged.
+That commit looks like it should have been specific to the silicon
+exhibiting the rx timeout bug.
 
-Cheers,
-Matthias
+Regards,
+Peter Hurley
 
-[0] http://lists.infradead.org/pipermail/linux-arm-kernel/2013-November/208878.html
-
->
-> Thanks,
->
-> --
-> Carlo Caione
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
-
-
--- 
-motzblog.wordpress.com
