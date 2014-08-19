@@ -1,94 +1,124 @@
-From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH 5/7] ARM: meson: dts: add basic
- Meson/Meson6/Meson6-atv1200 DTSI/DTS
-Date: Tue, 19 Aug 2014 18:16:52 +0200
-Message-ID: <20140819161652.GB869@carlo-MacBookPro>
-References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-6-git-send-email-carlo@caione.org>
- <20140818161744.GD3302@leverpostej>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f174.google.com ([209.85.212.174]:40895 "EHLO
-	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752756AbaHSQQ6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Aug 2014 12:16:58 -0400
-Content-Disposition: inline
-In-Reply-To: <20140818161744.GD3302@leverpostej>
-Sender: linux-serial-owner@vger.kernel.org
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH v10 14/19] serial: amba-pl011: Move pl011_hwinit()
+Date: Tue, 19 Aug 2014 17:46:04 +0100
+Message-ID: <1408466769-20004-15-git-send-email-daniel.thompson@linaro.org>
+References: <1408369264-14242-1-git-send-email-daniel.thompson@linaro.org>
+ <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "b.galvani@gmail.com" <b.galvani@gmail.com>
 
-On Mon, Aug 18, 2014 at 05:17:44PM +0100, Mark Rutland wrote:
-> On Sun, Aug 17, 2014 at 11:49:52AM +0100, Carlo Caione wrote:
+This patch hoists pl011_hwinit() further up within the driver. This
+permits a later patch to introduce an extended .poll_init callback
+that does more than pure hardware initialization.
 
-<cut>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/amba-pl011.c | 78 ++++++++++++++++++++---------------------
+ 1 file changed, 39 insertions(+), 39 deletions(-)
 
-> > +	soc@c8100000 {
-> 
-> What's the unit-address for? This node doesn't have a reg or compatible.
-
-I used it to indicate the starting address of the memory mapped region.
-
-> > +		compatible = "simple-bus";
-> > +		#address-cells = <1>;
-> > +		#size-cells = <1>;
-> > +		ranges;
-> > +
-> > +		uart_AO: serial@c81004c0 {
-> > +			compatible = "amlogic,meson-uart";
-> > +			reg = <0xc81004c0 0x14>;
-> > +			interrupts = <0 90 1>;
-> > +			clocks = <&clk81>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart_A: serial@c81084c0 {
-> > +			compatible = "amlogic,meson-uart";
-> > +			reg = <0xc81084c0 0x14>;
-> > +			interrupts = <0 90 1>;
-> > +			clocks = <&clk81>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart_B: serial@c81084dc {
-> > +			compatible = "amlogic,meson-uart";
-> > +			reg = <0xc81084dc 0x14>;
-> > +			interrupts = <0 90 1>;
-> > +			clocks = <&clk81>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart_C: serial@c8108700 {
-> > +			compatible = "amlogic,meson-uart";
-> > +			reg = <0xc8108700 0x14>;
-> > +			interrupts = <0 90 1>;
-> > +			clocks = <&clk81>;
-> > +			status = "disabled";
-> 
-> I guess these are disabled because they aren't always wired up?
-
-Yes
-
-<cut>
-
-> > +	clocks {
-> > +		#address-cells = <1>;
-> > +
-> > +		clk81: clk@0 {
-> > +			#clock-cells = <0>;
-> > +			compatible = "fixed-clock";
-> > +			clock-frequency = <200000000>;
-> > +		};
-> > +	};
-> 
-> There is really no need to put clocks in a container.
-> 
-> Just put them under the root, and drop the unit-address.
-
-I'll do, thanks.
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 02016fc..0b06dcf 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1425,6 +1425,45 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
+ 	spin_unlock_irqrestore(&uap->port.lock, flags);
+ }
+ 
++static int pl011_hwinit(struct uart_port *port)
++{
++	struct uart_amba_port *uap =
++	    container_of(port, struct uart_amba_port, port);
++	int retval;
++
++	/* Optionaly enable pins to be muxed in and configured */
++	pinctrl_pm_select_default_state(port->dev);
++
++	/*
++	 * Try to enable the clock producer.
++	 */
++	retval = clk_prepare_enable(uap->clk);
++	if (retval)
++		return retval;
++
++	uap->port.uartclk = clk_get_rate(uap->clk);
++
++	/* Clear pending error and receive interrupts */
++	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
++	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
++
++	/*
++	 * Save interrupts enable mask, and enable RX interrupts in case if
++	 * the interrupt is used for NMI entry.
++	 */
++	uap->im = readw(uap->port.membase + UART011_IMSC);
++	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
++
++	if (dev_get_platdata(uap->port.dev)) {
++		struct amba_pl011_data *plat;
++
++		plat = dev_get_platdata(uap->port.dev);
++		if (plat->init)
++			plat->init();
++	}
++	return 0;
++}
++
+ #ifdef CONFIG_CONSOLE_POLL
+ 
+ static void pl011_quiesce_irqs(struct uart_port *port)
+@@ -1483,45 +1522,6 @@ static void pl011_put_poll_char(struct uart_port *port,
+ 
+ #endif /* CONFIG_CONSOLE_POLL */
+ 
+-static int pl011_hwinit(struct uart_port *port)
+-{
+-	struct uart_amba_port *uap =
+-	    container_of(port, struct uart_amba_port, port);
+-	int retval;
+-
+-	/* Optionaly enable pins to be muxed in and configured */
+-	pinctrl_pm_select_default_state(port->dev);
+-
+-	/*
+-	 * Try to enable the clock producer.
+-	 */
+-	retval = clk_prepare_enable(uap->clk);
+-	if (retval)
+-		return retval;
+-
+-	uap->port.uartclk = clk_get_rate(uap->clk);
+-
+-	/* Clear pending error and receive interrupts */
+-	writew(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS |
+-	       UART011_RTIS | UART011_RXIS, uap->port.membase + UART011_ICR);
+-
+-	/*
+-	 * Save interrupts enable mask, and enable RX interrupts in case if
+-	 * the interrupt is used for NMI entry.
+-	 */
+-	uap->im = readw(uap->port.membase + UART011_IMSC);
+-	writew(UART011_RTIM | UART011_RXIM, uap->port.membase + UART011_IMSC);
+-
+-	if (dev_get_platdata(uap->port.dev)) {
+-		struct amba_pl011_data *plat;
+-
+-		plat = dev_get_platdata(uap->port.dev);
+-		if (plat->init)
+-			plat->init();
+-	}
+-	return 0;
+-}
+-
+ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+ {
+ 	writew(lcr_h, uap->port.membase + uap->lcrh_rx);
 -- 
-Carlo Caione
+1.9.3
