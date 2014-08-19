@@ -1,50 +1,68 @@
-From: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 2/4] tty: omap-serial: prevent division by zero
-Date: Tue, 19 Aug 2014 14:14:46 +0200
-Message-ID: <1408450488-4083-3-git-send-email-frans.klaver@xsens.com>
-References: <1406645577-18620-1-git-send-email-frans.klaver@xsens.com>
- <1408450488-4083-1-git-send-email-frans.klaver@xsens.com>
+From: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
+Subject: Re: is there a struct  uart_driver like struct i2c_driver
+Date: Tue, 19 Aug 2014 14:25:57 +0200
+Message-ID: <53F34255.8050600@ts.fujitsu.com>
+References: <53F1CD68.9080901@ts.fujitsu.com> <20140818105307.GA5811@kroah.com> <53F1DF48.8000007@ts.fujitsu.com> <53F1E14D.7000408@ts.fujitsu.com> <53F202FF.5020809@ts.fujitsu.com> <20140818135046.GA927@kroah.com> <53F21418.80307@ts.fujitsu.com> <20140818150708.GA31497@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1408450488-4083-1-git-send-email-frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-Cc: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alexey Pelykh <alexey.pelykh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Frans Klaver <fransklaver-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from dgate20.ts.fujitsu.com ([80.70.172.51]:5701 "EHLO
+	dgate20.ts.fujitsu.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750806AbaHSMZB convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 19 Aug 2014 08:25:01 -0400
+In-Reply-To: <20140818150708.GA31497@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-If the chosen baud rate is large enough (e.g. 3.5 megabaud), the
-calculated n values in calculate_baud_abs_diff may become 0. This causes
-a division by zero when calculating the difference between calculated
-and desired baud rates. To prevent this, cap n on 1.
+> You might want to step back and describe what you are wanting to do in
+> the first place before wanting to add a new line discipline.
+>
+>
+Ok.
+Imagine you have two chips, one is the cpu and the other one is a device
+which needs to be configured, accessed, talked to via uart.
+The both chips are hardwired via uart.
+Now I want to communicate from the kernel module with the device.
+let the device be a RTC Device which has a UART interface.
 
-Signed-off-by: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
----
- drivers/tty/serial/omap-serial.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+And I don't want to rewrite all the uart device stuff of the cpu uart
+device.
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index ae935ce..14a0167 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -246,8 +246,12 @@ static inline int calculate_baud_abs_diff(struct uart_port *port,
- 				unsigned int baud, unsigned int mode)
- {
- 	unsigned int n = port->uartclk / (mode * baud);
--	int abs_diff = baud - (port->uartclk / (mode * n));
-+	int abs_diff;
- 
-+	if (n == 0)
-+		n = 1;
-+
-+	abs_diff = baud - (uartclk / (mode * n));
- 	if (abs_diff < 0)
- 		abs_diff = -abs_diff;
- 
+As a i2c client doesn't implement master_xfer or whatever the transfer
+methods are called in the i2c controller module.
+It just does a i2c->write(reg, value) and I need something equivalent
+like uart->send(data, len); and uart->handle_recieved =
+my_recieved_data_handler;
+
+Something like that.
+Hope this explains it better!
+
+As far as I currently understood, this would be a line discipline.
+
+Cheers,
+Thilo
+
+
 -- 
-1.9.3
+With best regards
+Thilo Cestonaro
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+FTS PSO PM&D CCD E EPC
+
+Fujitsu Technology Solutions GmbH
+Buergermeister-Ulrich-Str. 100
+86199 Augsburg
+Germany
+
+Tel.: +49 (0)821 804 2328
+Fax: +49 (0)821 804 82328
+E-mail: thilo.cestonaro@ts.fujitsu.com
+
+Web: http://ts.fujitsu.com
+Company details: http://ts.fujitsu.com/imprint
+
+
