@@ -1,105 +1,73 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v10 18/19] serial: imx: clean up imx_poll_get_char()
-Date: Tue, 19 Aug 2014 17:46:08 +0100
-Message-ID: <1408466769-20004-19-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH v10 17/19] serial: asc: Adopt readl_/writel_relaxed()
+Date: Tue, 19 Aug 2014 17:46:07 +0100
+Message-ID: <1408466769-20004-18-git-send-email-daniel.thompson@linaro.org>
 References: <1408369264-14242-1-git-send-email-daniel.thompson@linaro.org>
  <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f48.google.com ([74.125.82.48]:38160 "EHLO
-	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753738AbaHSQ5s (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Aug 2014 12:57:48 -0400
-Received: by mail-wg0-f48.google.com with SMTP id x13so6727562wgg.7
-        for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2014 09:57:47 -0700 (PDT)
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Russell King <linux@arm.linux.org.uk>
-Cc: Dirk Behme <dirk.behme@de.bosch.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, kernel@s
+List-Id: linux-serial@vger.kernel.org
 
-From: Dirk Behme <dirk.behme@de.bosch.com>
+The architectures where this peripheral exists (ARM and SH) have expensive
+implementations of writel(), reliant on spin locks and explicit L2 cache
+management. These architectures provide a cheaper writel_relaxed() which
+is much better suited to peripherals that do not perform DMA. The
+situation with readl()/readl_relaxed()is similar although less acute.
 
-Looking at the get_poll_char() function of the 8250.c serial driver,
-we learn:
+This driver does not use DMA and will be more power efficient and more
+robust (due to absense of spin locks during console I/O) if it uses the
+relaxed variants.
 
-* poll_get_char() doesn't have to save/disable/restore the interrupt
-  registers. No interrupt handling is needed in this function at all.
-  Remove it.
+This change means the driver is no longer portable and therefore no
+longer suitable for compile testing.
 
-* Don't block in case there is no data available. So instead blocking
-  in the do {} while loop, just return with NO_POLL_CHAR, immediately .
-
-Additionally, while the i.MX6 register URXD[7-0] contain the RX_DATA,
-the upper bits of this register (URXD[15-10]) might contain some
-control flags. To ensure that these are not returned with the data
-read, just mask out URXD[7-0].
-
-These changes fix the 'hang' working with kdb:
-
-$ echo ttymxc3 > /sys/module/kgdboc/parameters/kgdboc
-$ echo g >/proc/sysrq-trigger
-[0]kdb> help
-...
-<hang>
-
-Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+Cc: Maxime Coquelin <maxime.coquelin@st.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: kernel@stlinux.com
 Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/imx.c | 29 ++++-------------------------
- 1 file changed, 4 insertions(+), 25 deletions(-)
+ drivers/tty/serial/Kconfig  | 2 +-
+ drivers/tty/serial/st-asc.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 044e86d..983668a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -80,6 +80,7 @@
- #define URXD_FRMERR	(1<<12)
- #define URXD_BRK	(1<<11)
- #define URXD_PRERR	(1<<10)
-+#define URXD_RX_DATA	(0xFF<<0)
- #define UCR1_ADEN	(1<<15) /* Auto detect interrupt */
- #define UCR1_ADBR	(1<<14) /* Auto detect baud rate */
- #define UCR1_TRDYEN	(1<<13) /* Transmitter ready interrupt enable */
-@@ -1506,32 +1507,10 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
- #if defined(CONFIG_CONSOLE_POLL)
- static int imx_poll_get_char(struct uart_port *port)
- {
--	struct imx_port_ucrs old_ucr;
--	unsigned int status;
--	unsigned char c;
--
--	/* save control registers */
--	imx_port_ucrs_save(port, &old_ucr);
--
--	/* disable interrupts */
--	writel(UCR1_UARTEN, port->membase + UCR1);
--	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
--	       port->membase + UCR2);
--	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
--	       port->membase + UCR3);
--
--	/* poll */
--	do {
--		status = readl(port->membase + USR2);
--	} while (~status & USR2_RDR);
--
--	/* read */
--	c = readl(port->membase + URXD0);
--
--	/* restore control registers */
--	imx_port_ucrs_restore(port, &old_ucr);
-+	if (!(readl(port->membase + USR2) & USR2_RDR))
-+		return NO_POLL_CHAR;
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 26cec64..e9b1735 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
+ config SERIAL_ST_ASC
+ 	tristate "ST ASC serial port support"
+ 	select SERIAL_CORE
+-	depends on ARM || COMPILE_TEST
++	depends on ARM
+ 	help
+ 	  This driver is for the on-chip Asychronous Serial Controller on
+ 	  STMicroelectronics STi SoCs.
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 2b5eb6e..df709ee 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -152,12 +152,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
  
--	return c;
-+	return readl(port->membase + URXD0) & URXD_RX_DATA;
+ static inline u32 asc_in(struct uart_port *port, u32 offset)
+ {
+-	return readl(port->membase + offset);
++	return readl_relaxed(port->membase + offset);
  }
  
- static void imx_poll_put_char(struct uart_port *port, unsigned char c)
+ static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
+ {
+-	writel(value, port->membase + offset);
++	writel_relaxed(value, port->membase + offset);
+ }
+ 
+ /*
 -- 
 1.9.3
-
