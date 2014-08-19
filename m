@@ -1,110 +1,94 @@
 From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH 3/7] ARM: meson6: clocksource: add Meson6 timer support
-Date: Tue, 19 Aug 2014 18:01:53 +0200
-Message-ID: <20140819160153.GA869@carlo-MacBookPro>
+Subject: Re: [PATCH 5/7] ARM: meson: dts: add basic
+ Meson/Meson6/Meson6-atv1200 DTSI/DTS
+Date: Tue, 19 Aug 2014 18:16:52 +0200
+Message-ID: <20140819161652.GB869@carlo-MacBookPro>
 References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-4-git-send-email-carlo@caione.org>
- <20140818162726.GE3302@leverpostej>
+ <1408272594-10814-6-git-send-email-carlo@caione.org>
+ <20140818161744.GD3302@leverpostej>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:50829 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751890AbaHSQB7 (ORCPT
+Received: from mail-wi0-f174.google.com ([209.85.212.174]:40895 "EHLO
+	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752756AbaHSQQ6 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 19 Aug 2014 12:01:59 -0400
+	Tue, 19 Aug 2014 12:16:58 -0400
 Content-Disposition: inline
-In-Reply-To: <20140818162726.GE3302@leverpostej>
+In-Reply-To: <20140818161744.GD3302@leverpostej>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Mark Rutland <mark.rutland@arm.com>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "b.galvani@gmail.com" <b.galvani@gmail.com>
 
-On lun, ago 18, 2014 at 05:27:26 +0100, Mark Rutland wrote:
-> On Sun, Aug 17, 2014 at 11:49:50AM +0100, Carlo Caione wrote:
-> > +enum {
-> > +	A = 0,
-> > +	B,
-> > +	C,
-> > +	D,
-> > +};
-> 
-> That's a very terse set of enum names. I would recomment something a
-> little longer.
-> 
-> Any reason for missing E?
+On Mon, Aug 18, 2014 at 05:17:44PM +0100, Mark Rutland wrote:
+> On Sun, Aug 17, 2014 at 11:49:52AM +0100, Carlo Caione wrote:
 
-TIMER_E is a slightly different timer so I preferred to leave it apart.
+<cut>
 
-> > +#define TIMER_ISA_MUX		0
-> > +#define TIMER_ISA_E_VAL		0x14
-> > +#define TIMER_ISA_t_VAL(t)	((t + 1) << 2)
-> > +
-> > +#define TIMER_t_INPUT_BIT(t)	(2 * t)
-> > +#define TIMER_E_INPUT_BIT	8
-> > +#define TIMER_t_INPUT_MASK(t)	(3UL << TIMER_t_INPUT_BIT(t))
-> > +#define TIMER_E_INPUT_MASK	(7UL << TIMER_E_INPUT_BIT)
-> > +#define TIMER_t_ENABLE_BIT(t)	(16 + t)
-> > +#define TIMER_E_ENABLE_BIT	20
-> > +#define TIMER_t_PERIODIC_BIT(t)	(12 + t)
+> > +	soc@c8100000 {
 > 
-> While I don't think it matters for any of these, it's usually good
-> practice to add parentheses around arguments, e.g.
-> 
-> #define FOO(x)		((x) * 2)
-> 
-> So you can avoid bad expansions in cases like:
-> 
-> FOO(reg + 4)
+> What's the unit-address for? This node doesn't have a reg or compatible.
 
-Agree. I'll change it.
+I used it to indicate the starting address of the memory mapped region.
 
+> > +		compatible = "simple-bus";
+> > +		#address-cells = <1>;
+> > +		#size-cells = <1>;
+> > +		ranges;
 > > +
-> > +#define TIMER_UNIT_1us		0
-> > +#define TIMER_E_UNIT_1us	1
+> > +		uart_AO: serial@c81004c0 {
+> > +			compatible = "amlogic,meson-uart";
+> > +			reg = <0xc81004c0 0x14>;
+> > +			interrupts = <0 90 1>;
+> > +			clocks = <&clk81>;
+> > +			status = "disabled";
+> > +		};
 > > +
-> > +static void __iomem *timer_base;
+> > +		uart_A: serial@c81084c0 {
+> > +			compatible = "amlogic,meson-uart";
+> > +			reg = <0xc81084c0 0x14>;
+> > +			interrupts = <0 90 1>;
+> > +			clocks = <&clk81>;
+> > +			status = "disabled";
+> > +		};
 > > +
-> > +static cycle_t cycle_read_timer_e(struct clocksource *cs)
-> > +{
-> > +	return (cycle_t)readl(timer_base + TIMER_ISA_E_VAL);
-> > +}
+> > +		uart_B: serial@c81084dc {
+> > +			compatible = "amlogic,meson-uart";
+> > +			reg = <0xc81084dc 0x14>;
+> > +			interrupts = <0 90 1>;
+> > +			clocks = <&clk81>;
+> > +			status = "disabled";
+> > +		};
 > > +
-> > +static struct clocksource clocksource_timer_e = {
-> > +	.name	= "meson6_timerE",
+> > +		uart_C: serial@c8108700 {
+> > +			compatible = "amlogic,meson-uart";
+> > +			reg = <0xc8108700 0x14>;
+> > +			interrupts = <0 90 1>;
+> > +			clocks = <&clk81>;
+> > +			status = "disabled";
 > 
-> Do we really care which specific timer we're using within the block?
-> 
-> Why not just "meson6_clocksource"?
+> I guess these are disabled because they aren't always wired up?
 
-Just a reminder of which timer we are using. I'll fix it.
+Yes
 
-> > +	.rating	= 300,
-> > +	.read	= cycle_read_timer_e,
-> > +	.mask	= CLOCKSOURCE_MASK(32),
-> > +	.flags  = CLOCK_SOURCE_IS_CONTINUOUS,
-> > +};
-> 
-> [...]
-> 
-> > +static irqreturn_t meson6_timer_interrupt(int irq, void *dev_id)
-> > +{
-> > +	struct clock_event_device *evt = (struct clock_event_device *)dev_id;
-> > +
-> > +	evt->event_handler(evt);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static struct irqaction meson6_timer_irq = {
-> > +	.name		= "meson6_timerA",
-> 
-> Similarly to the clocksource naming, this might be better as
-> "meson6_timer", without the 'A'.
+<cut>
 
-Yep.
+> > +	clocks {
+> > +		#address-cells = <1>;
+> > +
+> > +		clk81: clk@0 {
+> > +			#clock-cells = <0>;
+> > +			compatible = "fixed-clock";
+> > +			clock-frequency = <200000000>;
+> > +		};
+> > +	};
+> 
+> There is really no need to put clocks in a container.
+> 
+> Just put them under the root, and drop the unit-address.
 
-Thanks for the review,
+I'll do, thanks.
 
 -- 
 Carlo Caione
