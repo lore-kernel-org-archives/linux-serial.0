@@ -1,94 +1,35 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [resend PATCH] tty: serial: serial_core.c: printk replacement
-Date: Wed, 20 Aug 2014 22:21:28 +0530
-Message-ID: <1408553489-2996-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:56674 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751867AbaHTQwL (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 20 Aug 2014 12:52:11 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Pranith Kumar <bobby.prani@gmail.com>
+Subject: [PATCH] serial: Fix build failure caused by missing header file
+Date: Wed, 20 Aug 2014 12:55:45 -0400
+Message-ID: <1408553745-3536-2-git-send-email-bobby.prani@gmail.com>
+References: <1408553745-3536-1-git-send-email-bobby.prani@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1408553745-3536-1-git-send-email-bobby.prani@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-printk replaced with corresponding pr_err, dev_alert, dev_notice and pr_info.
-fixed two broken user-visible strings used by the corresponding printk
+Fix build failure caused by missing header file:
 
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+drivers/tty/serial/nwpserial.c: In function 'wait_for_bits':
+drivers/tty/serial/nwpserial.c:53:3: error: implicit declaration of function 'udelay' [-Werror=implicit-function-declaration]
+
+Signed-off-by: Pranith Kumar <bobby.prani@gmail.com>
 ---
+ drivers/tty/serial/nwpserial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-In the first patch i sent Greg suggested to use dev_err instead of pr_err , but as later Jiri pointed out in my later patches that uport->dev is having a null check so can not be used , tty_dev is also having a put_device , so back to pr_err. Any other suggestion ?
-
- drivers/tty/serial/serial_core.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 29a7be4..0e03c31 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -892,10 +892,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 			 */
- 			if (uport->flags & UPF_SPD_MASK) {
- 				char buf[64];
--				printk(KERN_NOTICE
--				       "%s sets custom speed on %s. This "
--				       "is deprecated.\n", current->comm,
--				       tty_name(port->tty, buf));
-+
-+				dev_notice(uport->dev,
-+				       "%s sets custom speed on %s. This is deprecated.\n",
-+				      current->comm,
-+				      tty_name(port->tty, buf));
- 			}
- 			uart_change_speed(tty, state, NULL);
- 		}
-@@ -1975,12 +1976,11 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
- 			msleep(10);
- 		if (!tries)
--			printk(KERN_ERR "%s%s%s%d: Unable to drain "
--					"transmitter\n",
--			       uport->dev ? dev_name(uport->dev) : "",
--			       uport->dev ? ": " : "",
--			       drv->dev_name,
--			       drv->tty_driver->name_base + uport->line);
-+			pr_err("%s%s%s%d: Unable to drain transmitter\n",
-+				uport->dev ? dev_name(uport->dev) : "",
-+				uport->dev ? ": " : "",
-+				drv->dev_name,
-+				drv->tty_driver->name_base + uport->line);
+diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
+index c06366b..5da7622 100644
+--- a/drivers/tty/serial/nwpserial.c
++++ b/drivers/tty/serial/nwpserial.c
+@@ -22,6 +22,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/of_device.h>
+ #include <linux/nwpserial.h>
++#include <linux/delay.h>
+ #include <asm/prom.h>
+ #include <asm/dcr.h>
  
- 		if (console_suspend_enabled || !uart_console(uport))
- 			ops->shutdown(uport);
-@@ -2109,7 +2109,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 		break;
- 	}
- 
--	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-+	pr_info("%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
- 	       port->dev ? dev_name(port->dev) : "",
- 	       port->dev ? ": " : "",
- 	       drv->dev_name,
-@@ -2640,7 +2640,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	if (likely(!IS_ERR(tty_dev))) {
- 		device_set_wakeup_capable(tty_dev, 1);
- 	} else {
--		printk(KERN_ERR "Cannot register tty device on line %d\n",
-+		dev_err(uport->dev, "Cannot register tty device on line %d\n",
- 		       uport->line);
- 	}
- 
-@@ -2675,7 +2675,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	BUG_ON(in_interrupt());
- 
- 	if (state->uart_port != uport)
--		printk(KERN_ALERT "Removing wrong port: %p != %p\n",
-+		dev_alert(uport->dev, "Removing wrong port: %p != %p\n",
- 			state->uart_port, uport);
- 
- 	mutex_lock(&port_mutex);
 -- 
-1.8.1.2
-
+1.9.1
