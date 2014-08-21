@@ -1,35 +1,71 @@
-From: Pranith Kumar <bobby.prani@gmail.com>
-Subject: [PATCH] serial: Fix build failure caused by missing header file
-Date: Wed, 20 Aug 2014 12:55:45 -0400
-Message-ID: <1408553745-3536-2-git-send-email-bobby.prani@gmail.com>
-References: <1408553745-3536-1-git-send-email-bobby.prani@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1408553745-3536-1-git-send-email-bobby.prani@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
+Date: Thu, 21 Aug 2014 10:34:21 +0200
+Message-ID: <53F5AF0D.5060409@linutronix.de>
+References: <1408124563-31541-1-git-send-email-bigeasy@linutronix.de> <1408124563-31541-16-git-send-email-bigeasy@linutronix.de> <20140815210211.GD9239@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:56474 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753468AbaHUIe2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 21 Aug 2014 04:34:28 -0400
+In-Reply-To: <20140815210211.GD9239@atomide.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Fix build failure caused by missing header file:
+On 08/15/2014 11:02 PM, Tony Lindgren wrote:
+> * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140815 11:13]:
+>> +#ifdef CONFIG_SERIAL_8250_DMA
+>> +	if (pdev->dev.of_node) {
+>> +		/*
+>> +		 * Oh DMA support. If there are no DMA properties in the DT then
+>> +		 * we will fall back to a generic DMA channel which does not
+>> +		 * really work here. To ensure that we do not get a generic DMA
+>> +		 * channel assigned, we have the the_no_dma_filter_fn() here.
+>> +		 * To avoid "failed to request DMA" messages we check for DMA
+>> +		 * properties in DT.
+>> +		 */
+>> +		ret = of_property_count_strings(pdev->dev.of_node, "dma-names");
+>> +		if (ret == 2) {
+>> +			up.dma = &priv->omap8250_dma;
+>> +			priv->omap8250_dma.fn = the_no_dma_filter_fn;
+>> +			priv->omap8250_dma.rx_size = RX_TRIGGER;
+>> +			priv->omap8250_dma.rxconf.src_maxburst = RX_TRIGGER;
+>> +			priv->omap8250_dma.txconf.dst_maxburst = TX_TRIGGER;
+>> +
+>> +			if (of_machine_is_compatible("ti,am33xx"))
+>> +				up.bugs |= UART_BUG_DMATX;
+>> +		}
+>> +	}
+>> +#endif
+> 
+> Hmm I wonder if there's a more generic solution to this?
 
-drivers/tty/serial/nwpserial.c: In function 'wait_for_bits':
-drivers/tty/serial/nwpserial.c:53:3: error: implicit declaration of function 'udelay' [-Werror=implicit-function-declaration]
+To what exactly? The trigger level, the TX-bug or using DMA in the
+first place?
 
-Signed-off-by: Pranith Kumar <bobby.prani@gmail.com>
----
- drivers/tty/serial/nwpserial.c | 1 +
- 1 file changed, 1 insertion(+)
+> It would be also nice to be able to specify the use of DMA from
+> the board specific .dts file.
 
-diff --git a/drivers/tty/serial/nwpserial.c b/drivers/tty/serial/nwpserial.c
-index c06366b..5da7622 100644
---- a/drivers/tty/serial/nwpserial.c
-+++ b/drivers/tty/serial/nwpserial.c
-@@ -22,6 +22,7 @@
- #include <linux/of_platform.h>
- #include <linux/of_device.h>
- #include <linux/nwpserial.h>
-+#include <linux/delay.h>
- #include <asm/prom.h>
- #include <asm/dcr.h>
- 
--- 
-1.9.1
+Really? I don't see this requirement for MMC for instance. However you
+still could provide an empty "dma-names" property in your board .dts
+file if you do not want use DMA. Would this work?
+
+> Also, with DMA enabled, looks like omap deeper idle states are
+> blocked as the DMA stays reserved. After I commented out the
+> DMA info for my console UART, PM started working.
+
+Hmm. This would explain something. This would mean that I should cancel
+the RX DMA transfer in the PM-suspend routine. Let me see how that
+works.
+
+> Regards,
+> 
+> Tony
+
+Sebastian
