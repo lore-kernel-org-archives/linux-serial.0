@@ -1,29 +1,33 @@
-From: "mr.tomcoulibaly" <mr.tomcoulibaly@gmail.com>
-Subject: Dear friend
-Date: Sat, 23 Aug 2014 07:40:19 -0500
-Message-ID: <CAEBduhcXh6h3SgtuPxqGQ8RJV8+L_Y6RfRava9FiSNzGBzTLyg@mail.gmail.com>
+From: Abdul Nasser Sokariah <abdulsokariah10@gmail.com>
+Subject: Urgent Assistance from Syria
+Date: Sat, 23 Aug 2014 07:09:12 -0700
+Message-ID: <CAOCHuvyNqP37GXQ1LNG8ymOtMHtay_svVh3J-6NCa+xJSiH07A__5553.40653886578$1408804606$gmane$org@mail.gmail.com>
+Reply-To: nabdul247@gmail.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f67.google.com ([74.125.82.67]:56328 "EHLO
-	mail-wg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750726AbaHWMkU (ORCPT
+Received: from mail-lb0-f196.google.com ([209.85.217.196]:33755 "EHLO
+	mail-lb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751473AbaHWOgg (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Aug 2014 08:40:20 -0400
-Received: by mail-wg0-f67.google.com with SMTP id l18so3723812wgh.2
-        for <linux-serial@vger.kernel.org>; Sat, 23 Aug 2014 05:40:19 -0700 (PDT)
+	Sat, 23 Aug 2014 10:36:36 -0400
+Received: by mail-lb0-f196.google.com with SMTP id 10so3612564lbg.11
+        for <linux-serial@vger.kernel.org>; Sat, 23 Aug 2014 07:36:35 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Dear friend
+-- 
+Good Day From Syria,
 
-I am contacting you on a business deal of $17.5 Million US Dollars, ready for
-transfer into your account The depositor of the said fund died with
-his entire family during the Iraq war in 2006, unfortunately leaving
-nobody for the claim. if we make this claim, we will share it
-60%/40%.100% risk free and it will be legally backed up with
-government approved If you are interested reply for more details.Reply
-to alternative email address. (mr.tomcoulibaly@gmail.com) Waiting for
-your reply
+My name is Abdul Nasser Sokariah and I am writing you from Syria, I
+choose to contact you directly as I need a reliable person to trust
+who can help me make claims to my huge deposit with a vault company in
+AFRICA, and based on my present situation in Syria, I need you
+urgently to take  possession of everything and further
+modalities/directives will follow.
 
-Best regard, Mr.Tom Coulibaly
+Contact me  only on my private Email:nabdul247@gmail.com for
+clarifications,I await your response.
+
+Yours truly, Abdul Nasser Sokariah
+Contact Email:nabdul247@gmail.com
