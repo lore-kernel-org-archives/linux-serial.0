@@ -1,33 +1,98 @@
-From: Abdul Nasser Sokariah <abdulsokariah10@gmail.com>
-Subject: Urgent Assistance from Syria
-Date: Sat, 23 Aug 2014 07:09:12 -0700
-Message-ID: <CAOCHuvyNqP37GXQ1LNG8ymOtMHtay_svVh3J-6NCa+xJSiH07A__5553.40653886578$1408804606$gmane$org@mail.gmail.com>
-Reply-To: nabdul247@gmail.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f196.google.com ([209.85.217.196]:33755 "EHLO
-	mail-lb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751473AbaHWOgg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 23 Aug 2014 10:36:36 -0400
-Received: by mail-lb0-f196.google.com with SMTP id 10so3612564lbg.11
-        for <linux-serial@vger.kernel.org>; Sat, 23 Aug 2014 07:36:35 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 0/7] delete double assignment
+Date: Sat, 23 Aug 2014 20:33:21 +0200
+Message-ID: <1408818808-18850-1-git-send-email-Julia.Lawall@lip6.fr>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-mips@linux-mips.org
+Cc: joe@perches.com, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
--- 
-Good Day From Syria,
+These patches fix cases where there are two adjacent assignments to the
+same location.  In practice, many such occurrences appear to be
+intentional, eg to initialize volatile memory, but these cases do not seem
+to fall into that category.
 
-My name is Abdul Nasser Sokariah and I am writing you from Syria, I
-choose to contact you directly as I need a reliable person to trust
-who can help me make claims to my huge deposit with a vault company in
-AFRICA, and based on my present situation in Syria, I need you
-urgently to take  possession of everything and further
-modalities/directives will follow.
+The complete semantic match that finds these problems is as follows:
 
-Contact me  only on my private Email:nabdul247@gmail.com for
-clarifications,I await your response.
+// <smpl>
+@r@
+expression i,f;
+position p1,p2;
+@@
 
-Yours truly, Abdul Nasser Sokariah
-Contact Email:nabdul247@gmail.com
+(
+ i = <+...f(...)...+>;
+|
+ i |= <+...f(...)...+>;
+|
+ i &= <+...f(...)...+>;
+|
+ i += <+...f(...)...+>;
+|
+ i -= <+...f(...)...+>;
+|
+ i *= <+...f(...)...+>;
+|
+ i /= <+...f(...)...+>;
+|
+ i %= <+...f(...)...+>;
+|
+ i ^= <+...f(...)...+>;
+|
+ i <<= <+...f(...)...+>;
+|
+ i >>= <+...f(...)...+>;
+|
+ i@p1 = ...;
+|
+ i@p1 |= ...;
+|
+ i@p1 &= ...;
+|
+ i@p1 += ...;
+|
+ i@p1 -= ...;
+|
+ i@p1 *= ...;
+|
+ i@p1 /= ...;
+|
+ i@p1 %= ...;
+|
+ i@p1 ^= ...;
+|
+ i@p1 <<= ...;
+|
+ i@p1 >>= ...;
+|
+ i@p1 ++;
+|
+ ++i@p1;
+|
+ i@p1 --;
+|
+ --i@p1;
+)
+(
+ i = <+...i...+>;
+|
+ i = <+...f(...)...+>;
+|
+ i@p2 = ...;
+)
+
+@@
+expression i,j,f;
+position r.p1,r.p2;
+@@
+
+(
+ (<+...i@p1...+>);
+)
+(
+ (<+...\(j++\|++j\|j--\|--j\|f(...)\)...+>) = ...;
+|
+*i@p2 = ...;
+)
+// </smpl>
