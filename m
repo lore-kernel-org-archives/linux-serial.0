@@ -1,48 +1,67 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250: serial device file is out of order
-Date: Mon, 25 Aug 2014 07:46:14 -0700
-Message-ID: <20140825144614.GA14325@kroah.com>
-References: <53FB2033.5010101@gmail.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: is there a struct  uart_driver like struct i2c_driver
+Date: Mon, 25 Aug 2014 07:57:10 -0700
+Message-ID: <20140825145710.GA14725@kroah.com>
+References: <20140818105307.GA5811@kroah.com>
+ <53F1DF48.8000007@ts.fujitsu.com>
+ <53F1E14D.7000408@ts.fujitsu.com>
+ <53F202FF.5020809@ts.fujitsu.com>
+ <20140818135046.GA927@kroah.com>
+ <53F21418.80307@ts.fujitsu.com>
+ <20140818150708.GA31497@kroah.com>
+ <53F34255.8050600@ts.fujitsu.com>
+ <20140819123923.GA7791@kroah.com>
+ <53F346FB.5020101@ts.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:58531 "EHLO
+	out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932328AbaHYO5y (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 25 Aug 2014 10:57:54 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by gateway2.nyi.internal (Postfix) with ESMTP id D33AD207B0
+	for <linux-serial@vger.kernel.org>; Mon, 25 Aug 2014 10:57:53 -0400 (EDT)
 Content-Disposition: inline
-In-Reply-To: <53FB2033.5010101@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Scott Yuan <scottzero0@gmail.com>
-Cc: robh@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <53F346FB.5020101@ts.fujitsu.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Cestonaro Thilo <thilo.cestonaro@ts.fujitsu.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-On Mon, Aug 25, 2014 at 07:38:27PM +0800, Scott Yuan wrote:
-> From ebb85a61456bf25f87aeb8a31c92c74540bdf306 Mon Sep 17 00:00:00 2001
-> From: Scott Yuan <scottzero0@gmail.com>
-> Date: Sun, 24 Aug 2014 13:46:56 +0800
-> Subject: [PATCH] 8250: serial device file is out of order
-
-Why is this here in the email?  Please use git send-email to not send
-this.
-
-> On x86 architecture, the configuration of serial device maybe get from ACPI
-> DSDT, but the order of DSDT is not mandatory, result as array
-> serial8250_ports
-> is out of order. This situation is more obvious in multiple serial port
-> mainboard. Sort it by unique id that in DSDT will fix it.
+On Tue, Aug 19, 2014 at 02:45:47PM +0200, Cestonaro Thilo wrote:
+> On 19.08.2014 14:39, Greg KH wrote:
+> > On Tue, Aug 19, 2014 at 02:25:57PM +0200, Cestonaro Thilo wrote:
+> >>> You might want to step back and describe what you are wanting to do in
+> >>> the first place before wanting to add a new line discipline.
+> >>>
+> >>>
+> >> Ok.
+> >> Imagine you have two chips, one is the cpu and the other one is a device
+> >> which needs to be configured, accessed, talked to via uart.
+> >> The both chips are hardwired via uart.
+> >> Now I want to communicate from the kernel module with the device.
+> > Why within the kernel?  Why not do the communication from userspace?
+> Cause it's a rtc, and I don't know of a way to have a /dev/rtc from
+> userspace
 > 
-> Signed-off-by: Scott Yuan <scottzero0@gmail.com>
-> ---
->  drivers/pnp/pnpacpi/core.c          |  1 +
->  drivers/tty/serial/8250/8250_core.c | 40
-> ++++++++++++++++++++++++++++++++++++-
->  drivers/tty/serial/8250/8250_pnp.c  | 12 +++++++++++
->  include/linux/pnp.h                 |  1 +
->  include/linux/serial_8250.h         |  2 ++
->  5 files changed, 55 insertions(+), 1 deletion(-)
+> >
+> >> let the device be a RTC Device which has a UART interface.
+> > How do you talk to this UART?  Through a "normal" serial chip that the
+> > kernel already has a driver for, or through some other hardware control
+> > interface?
+> Jup, via normal serial chip.
 > 
-> diff --git a/drivers/pnp/pnpacpi/core.c b/drivers/pnp/pnpacpi/core.c
-> index a5c6cb7..84b518e 100644
-> --- a/drivers/pnp/pnpacpi/core.c
-> +++ b/drivers/pnp/pnpacpi/core.c
-> @@ -254,6 +254,7 @@ static int __init pnpacpi_add_device(struct acpi_device
-> *device)
+> >
+> >> And I don't want to rewrite all the uart device stuff of the cpu uart
+> >> device.
+> > What do you mean by this?
+> As it is via a normal serial chip, one option would be to write a
+> sperate driver which includes all the register stuff from the original
+> serial chip module.
+> But this, I don't want to do.
 
-Your patch is line-wrapped and can not be applied :(
+Try using the serio interface, it should do this all for you.
+
+greg k-h
