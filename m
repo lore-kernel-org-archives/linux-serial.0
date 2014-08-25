@@ -1,134 +1,173 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 0/8] asm-generic/io.h overhaul
-Date: Mon, 25 Aug 2014 13:26:33 +0200
-Message-ID: <20140825112630.GA4163@ulmo.nvidia.com>
-References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
+From: Scott Yuan <scottzero0@gmail.com>
+Subject: [PATCH] 8250: serial device file is out of order
+Date: Mon, 25 Aug 2014 19:38:27 +0800
+Message-ID: <53FB2033.5010101@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Stephen Boyd <sboyd@codeaurora.org>, Sam Ravnborg <sam@ravnborg.org>, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:34083 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753795AbaHYLis (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 25 Aug 2014 07:38:48 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, robh@kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+ From ebb85a61456bf25f87aeb8a31c92c74540bdf306 Mon Sep 17 00:00:00 2001
+From: Scott Yuan <scottzero0@gmail.com>
+Date: Sun, 24 Aug 2014 13:46:56 +0800
+Subject: [PATCH] 8250: serial device file is out of order
 
---3V7upXqbjpZ4EhLz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On x86 architecture, the configuration of serial device maybe get from ACPI
+DSDT, but the order of DSDT is not mandatory, result as array 
+serial8250_ports
+is out of order. This situation is more obvious in multiple serial port
+mainboard. Sort it by unique id that in DSDT will fix it.
 
-On Wed, Aug 13, 2014 at 12:28:50PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
->=20
-> Hi,
->=20
-> Here is the fourth version of a series that started out as an attempt to
-> provide string versions of the read*() and write*() accessors to more
-> architectures so that drivers can use them portably. The series has
-> since evolved into a more general cleanup of asm-generic/io.h and the
-> functions defined therein.
->=20
-> Patch 1 is trivial and removes a redundant redefinition of PCI_IOBASE
-> from the asm/io.h header on ARC. Patches 2 and 3 remove unnecessary
-> volatile keywoards from some functions, which is a prerequisite to clean
-> up some of the functions in subsequent patches.
->=20
-> The xlate_dev_{kmem,mem}_ptr() functions are used to map memory when the
-> /dev/mem device is accessed. Patches 4 and 5 use more consistent data
-> types for these functions, which will get a "standard" prototype in the
-> asm-generic/io.h header in a subsequent patch.
->=20
-> Patch 6 is the bulk of this series. It implements the string variants of
-> the read*() and write*() accessors and cleans up various other parts of
-> the asm-generic/io.h header file. Macros are converted to static inline
-> functions for better type checking. Overriding generic implementations
-> in architectures is handled more consistently.
->=20
-> Patches 7 and 8, finally, make use of the asm-generic/io.h header on the
-> 32-bit and 64-bit ARM architectures.
->=20
-> This is compile- and runtime-tested on 32-bit and 64-bit ARM and compile
-> tested on IA64, Microblaze, s390, SPARC, x86 and Xtensa. For ARC,
-> Blackfin, Metag, OpenRISC, Score and Unicore32 which also use
-> asm-generic/io.h I couldn't find or build a cross-compiler that would
-> run on my system. But by code inspection they shouldn't break with this
-> patch.
->=20
-> To ensure bisectability I built multi_v7_defconfig on 32-bit ARM and the
-> defconfig for 64-bit ARM, IA64, Microblaze, s390, SPARC, x86 and Xtensa
-> after each commit and verified that the series does not introduce any
-> build errors or warnings.
->=20
-> Provided there are no objections to the patches there's still the matter
-> of how to merge them. Patch 6 depends on patches 1-5 to avoid warnings
-> and/or errors during the build. Patches 7 and 8 depend on patch 6. In my
-> opinion it doesn't make much sense to split them up, so I guess we'll
-> need a volunteer to take them all into one tree. Ideally that tree would
-> feed into linux-next so that we can get as much build and test-coverage
-> as possible during the 3.17 release cycle so that these patches can go
-> into 3.18.
->=20
-> Arnd, I'm opportunistically sending this To: you in the hopes that you
-> can take it into your asm-generic tree which seems like the best fit for
-> this.
->=20
-> Thierry
->=20
-> Thierry Reding (8):
->   ARC: Remove redundant PCI_IOBASE declaration
->   serial: sunzilog: Remove unnecessary volatile keyword
->   sparc: Remove unnecessary volatile usage
->   [IA64] Change xlate_dev_{kmem,mem}_ptr() prototypes
->   /dev/mem: Use more consistent data types
->   asm-generic/io.h: Implement generic {read,write}s*()
->   ARM: Use include/asm-generic/io.h
->   arm64: Use include/asm-generic/io.h
->=20
->  arch/arc/include/asm/io.h       |   2 -
->  arch/arm/include/asm/io.h       |  75 ++---
->  arch/arm/include/asm/memory.h   |   2 +
->  arch/arm64/Kconfig              |   1 -
->  arch/arm64/include/asm/io.h     | 122 ++-----
->  arch/arm64/include/asm/memory.h |   2 +
->  arch/ia64/include/asm/uaccess.h |  16 +-
->  arch/s390/include/asm/io.h      |   5 +-
->  arch/s390/mm/maccess.c          |   4 +-
->  arch/sparc/include/asm/io_32.h  |  18 +-
->  arch/x86/include/asm/io.h       |   4 +-
->  arch/x86/mm/ioremap.c           |   4 +-
->  drivers/char/mem.c              |  13 +-
->  drivers/tty/serial/sunzilog.h   |   8 +-
->  include/asm-generic/io.h        | 683 ++++++++++++++++++++++++++++++++--=
-------
->  15 files changed, 647 insertions(+), 312 deletions(-)
+Signed-off-by: Scott Yuan <scottzero0@gmail.com>
+---
+  drivers/pnp/pnpacpi/core.c          |  1 +
+  drivers/tty/serial/8250/8250_core.c | 40 
+++++++++++++++++++++++++++++++++++++-
+  drivers/tty/serial/8250/8250_pnp.c  | 12 +++++++++++
+  include/linux/pnp.h                 |  1 +
+  include/linux/serial_8250.h         |  2 ++
+  5 files changed, 55 insertions(+), 1 deletion(-)
 
-Arnd, do you think this looks good to take for test-driving in
-linux-next?
-
-Thierry
-
---3V7upXqbjpZ4EhLz
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT+x1mAAoJEN0jrNd/PrOhB6cP/3hBN9312AUPTbkDv6xnddM7
-Z519rK6er4jx7i1+fwNgZIzpZ36XlgFavja3Gj12Md/tPi/p/GtRFbZTm62QkOs8
-AqMX4b/2/S8iWeCmCBM8Cp/GOQmpRDqv7lbDZHpNGeQE4bL36cLpFi47+MklEUug
-cUydGG9BrNVN0Y4bMlvBNbiq7vzZPbM0YTGyJ2VjeKduuJYkIA1nVM4QW2e9cJ/4
-HbLSKFU5OKkHCuXSYAE6wd+xlYxz6pZMb6NQTtQnw4VPFBYaQf/89vsXGIAh7T/i
-LbiyJH7nGZRFUmGIwtq8FTgNayydZJBfP8Oqxcb3gh0sSG25L3Mc3a2d0JqbTYJF
-jjX8O2KGKFWLolhOWEAOmEkvsSx6j8CchPfInRF7GD70Fy7Kclo5VV/XMIJMED46
-kQ/PyCxokdRmJERlPaIIuUItBIQ5GHrNeeUtUjetQoFI45js9Lkm+s71MBFeNAzh
-xzxin7A3IRbH4zFXTtm4NrQLxL9PS9VPCubK9cGYETKDCFjrO6CnD52ZuilTNrrK
-dktw7vcBGUX0nVcVEAceweCLOVutQVGSxvasGT3aYdMHqp6yIvIzUdtiwpi3njsp
-XlYBj7DhrT7IK4IF/foZDulcfn4M7ULkuswVMwJG2FLczrG7RjinEQfsezqF47ta
-i/k8tEowx0DE21ZTa6a1
-=6o5v
------END PGP SIGNATURE-----
-
---3V7upXqbjpZ4EhLz--
+diff --git a/drivers/pnp/pnpacpi/core.c b/drivers/pnp/pnpacpi/core.c
+index a5c6cb7..84b518e 100644
+--- a/drivers/pnp/pnpacpi/core.c
++++ b/drivers/pnp/pnpacpi/core.c
+@@ -254,6 +254,7 @@ static int __init pnpacpi_add_device(struct 
+acpi_device *device)
+  		return -ENOMEM;
+   	dev->data = device;
++	dev->is_acpi = 1;
+  	/* .enabled means the device can decode the resources */
+  	dev->active = device->status.enabled;
+  	if (acpi_has_method(device->handle, "_SRS"))
+diff --git a/drivers/tty/serial/8250/8250_core.c 
+b/drivers/tty/serial/8250/8250_core.c
+index 7a91c6d..0e5ece5 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -3221,6 +3221,41 @@ static struct uart_8250_port 
+*serial8250_find_match_or_unused(struct uart_port *
+  	return NULL;
+  }
+  +static struct uart_8250_port *
++serial8250_find_match_sorted_port(struct uart_port *port)
++{
++	int i, j;
++	struct uart_8250_port *uart;
++
++	uart = container_of(port, struct uart_8250_port, port);
++
++	/*
++	 * We need sorted array serial8250_ports, it is sort by ACPI
++	 * device unique id, so find an apropriate position to insert.
++	 */
++	for (i = 0; i < nr_uarts; i++) {
++		if (serial8250_ports[i].uid == 0 ||
++			uart->uid < serial8250_ports[i].uid)
++			break;
++	}
++
++	/*
++	 * If current uid that in serial8250_ports is big than port uid,
++	 * then move 8250 port data.
++	 */
++	if (i < nr_uarts - 1 &&
++		uart->uid < serial8250_ports[i].uid) {
++		memmove(&serial8250_ports[i+1], &serial8250_ports[i],
++			(nr_uarts - i - 1) * sizeof(struct uart_8250_port));
++
++		/* modify port.line, since data moved */
++		for (j = i + 1; j < nr_uarts; j++)
++			serial8250_ports[j].port.line += 1;
++	}
++	serial8250_ports[i].uid = uart->uid;
++	return &serial8250_ports[i];
++}
++
+  /**
+   *	serial8250_register_8250_port - register a serial port
+   *	@up: serial port template
+@@ -3244,7 +3279,10 @@ int serial8250_register_8250_port(struct 
+uart_8250_port *up)
+   	mutex_lock(&serial_mutex);
+  -	uart = serial8250_find_match_or_unused(&up->port);
++	if (up->is_acpi)
++		uart = serial8250_find_match_sorted_port(&up->port);
++	else
++		uart = serial8250_find_match_or_unused(&up->port);
+  	if (uart && uart->port.type != PORT_8250_CIR) {
+  		if (uart->port.dev)
+  			uart_remove_one_port(&serial8250_reg, &uart->port);
+diff --git a/drivers/tty/serial/8250/8250_pnp.c 
+b/drivers/tty/serial/8250/8250_pnp.c
+index 682a2fb..c880ed3 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -15,6 +15,8 @@
+  #include <linux/pci.h>
+  #include <linux/pnp.h>
+  #include <linux/string.h>
++#include <acpi/acpi.h>
++#include <acpi/acpi_bus.h>
+  #include <linux/kernel.h>
+  #include <linux/serial_core.h>
+  #include <linux/bitops.h>
+@@ -427,6 +429,8 @@ static int
+  serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+  {
+  	struct uart_8250_port uart;
++	struct acpi_device *acpi_dev;
++	char *serial_uid;
+  	int ret, line, flags = dev_id->driver_data;
+   	if (flags & UNKNOWN_DEV) {
+@@ -451,6 +455,14 @@ serial_pnp_probe(struct pnp_dev *dev, const struct 
+pnp_device_id *dev_id)
+  	} else
+  		return -ENODEV;
+  +	if (dev->is_acpi) {
++		acpi_dev = dev->data;
++		serial_uid = acpi_dev->pnp.unique_id;
++		uart.is_acpi = 1;
++		if (kstrtoint(serial_uid, 10, &uart.uid))
++			return -EINVAL;
++	}
++
+  #ifdef SERIAL_DEBUG_PNP
+  	printk(KERN_DEBUG
+  		"Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
+diff --git a/include/linux/pnp.h b/include/linux/pnp.h
+index 195aafc..d745f14 100644
+--- a/include/linux/pnp.h
++++ b/include/linux/pnp.h
+@@ -245,6 +245,7 @@ struct pnp_dev {
+  	u64 dma_mask;
+  	unsigned int number;		/* used as an index, must be unique */
+  	int status;
++	unsigned char is_acpi;		/* is acpi device */
+   	struct list_head global_list;	/* node in global list of devices */
+  	struct list_head protocol_list;	/* node in list of device's protocol */
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index af47a8a..8f1e1bd 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -74,7 +74,9 @@ struct uart_8250_port {
+  	struct list_head	list;		/* ports on this IRQ */
+  	unsigned short		capabilities;	/* port capabilities */
+  	unsigned short		bugs;		/* port bugs */
++	int			uid;		/* ACPI device unique id */
+  	unsigned int		tx_loadsz;	/* transmit fifo load size */
++	unsigned char		is_acpi;	/* is acpi device */
+  	unsigned char		acr;
+  	unsigned char		ier;
+  	unsigned char		lcr;
+-- 
+1.9.1
