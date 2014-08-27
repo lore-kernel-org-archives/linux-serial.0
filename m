@@ -1,104 +1,67 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250: serial device file is out of order
-Date: Mon, 25 Aug 2014 21:19:02 -0700
-Message-ID: <20140826041902.GA27596@kroah.com>
-References: <1409022297-15555-1-git-send-email-scottzero0@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:35954 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750716AbaHZETn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 26 Aug 2014 00:19:43 -0400
-Content-Disposition: inline
-In-Reply-To: <1409022297-15555-1-git-send-email-scottzero0@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Subject: [PATCH 14/14] tty/serial: samsung: add support for exynos7
+Date: Wed, 27 Aug 2014 15:16:35 +0530
+Message-ID: <1409132795-1991-1-git-send-email-ch.naveen@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: naveenkrishna.ch@gmail.com, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, cpgs@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Scott Yuan <scottzero0@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Aug 26, 2014 at 11:04:57AM +0800, Scott Yuan wrote:
-> On x86 architecture, the configuration of serial device maybe get from ACPI
-> DSDT, but the order of DSDT is not mandatory, result as array serial8250_ports
-> is out of order. This situation is more obvious in multiple serial port
-> mainboard. Sort it by unique id that in DSDT will fix it.
+From: Alim Akhtar <alim.akhtar@samsung.com>
 
-Who cares about the order, you should use the "persistant" names in
-/dev/serial/ to connect to things that you really care about which is
-which.
+This patch enables upcoming exynos7 SoCs serial driver.
+This also modifies various dependencies for Kconfig
 
-> 
-> Signed-off-by: Scott Yuan <scottzero0@gmail.com>
-> ---
->  drivers/pnp/pnpacpi/core.c          |  1 +
->  drivers/tty/serial/8250/8250_core.c | 40 ++++++++++++++++++++++++++++++++++++-
->  drivers/tty/serial/8250/8250_pnp.c  | 12 +++++++++++
->  include/linux/pnp.h                 |  1 +
->  include/linux/serial_8250.h         |  2 ++
->  5 files changed, 55 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pnp/pnpacpi/core.c b/drivers/pnp/pnpacpi/core.c
-> index a5c6cb7..84b518e 100644
-> --- a/drivers/pnp/pnpacpi/core.c
-> +++ b/drivers/pnp/pnpacpi/core.c
-> @@ -254,6 +254,7 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
->  		return -ENOMEM;
->  
->  	dev->data = device;
-> +	dev->is_acpi = 1;
->  	/* .enabled means the device can decode the resources */
->  	dev->active = device->status.enabled;
->  	if (acpi_has_method(device->handle, "_SRS"))
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 7a91c6d..0e5ece5 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -3221,6 +3221,41 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
->  	return NULL;
->  }
->  
-> +static struct uart_8250_port *
-> +serial8250_find_match_sorted_port(struct uart_port *port)
-> +{
-> +	int i, j;
-> +	struct uart_8250_port *uart;
-> +
-> +	uart = container_of(port, struct uart_8250_port, port);
-> +
-> +	/*
-> +	 * We need sorted array serial8250_ports, it is sort by ACPI
-> +	 * device unique id, so find an apropriate position to insert.
-> +	 */
-> +	for (i = 0; i < nr_uarts; i++) {
-> +		if (serial8250_ports[i].uid == 0 ||
-> +			uart->uid < serial8250_ports[i].uid)
-> +			break;
-> +	}
-> +
-> +	/*
-> +	 * If current uid that in serial8250_ports is big than port uid,
-> +	 * then move 8250 port data.
-> +	 */
-> +	if (i < nr_uarts - 1 &&
-> +		uart->uid < serial8250_ports[i].uid) {
-> +		memmove(&serial8250_ports[i+1], &serial8250_ports[i],
-> +			(nr_uarts - i - 1) * sizeof(struct uart_8250_port));
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/Kconfig   |    6 +++---
+ drivers/tty/serial/samsung.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Heh, no, that's crazy...
-
-> +
-> +		/* modify port.line, since data moved */
-> +		for (j = i + 1; j < nr_uarts; j++)
-> +			serial8250_ports[j].port.line += 1;
-> +	}
-> +	serial8250_ports[i].uid = uart->uid;
-> +	return &serial8250_ports[i];
-> +}
-
-I really don't understand what you are trying to "solve" here.  What is
-wrong with the current kernel code?  What does this patch change?
-
-Why is acpi "special"?
-
-greg k-h
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 26cec64..f858d57 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -220,7 +220,7 @@ config SERIAL_CLPS711X_CONSOLE
+ 
+ config SERIAL_SAMSUNG
+ 	tristate "Samsung SoC serial support"
+-	depends on PLAT_SAMSUNG
++	depends on PLAT_SAMSUNG || ARCH_EXYNOS7
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+@@ -230,14 +230,14 @@ config SERIAL_SAMSUNG
+ 
+ config SERIAL_SAMSUNG_UARTS_4
+ 	bool
+-	depends on PLAT_SAMSUNG
++	depends on SERIAL_SAMSUNG
+ 	default y if !(CPU_S3C2410 || CPU_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
+ 	help
+ 	  Internal node for the common case of 4 Samsung compatible UARTs
+ 
+ config SERIAL_SAMSUNG_UARTS
+ 	int
+-	depends on PLAT_SAMSUNG
++	depends on SERIAL_SAMSUNG
+ 	default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
+ 	default 3
+ 	help
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index c78f43a..31be983 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1770,7 +1770,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #define S5PV210_SERIAL_DRV_DATA	(kernel_ulong_t)NULL
+ #endif
+ 
+-#if defined(CONFIG_ARCH_EXYNOS)
++#if defined(CONFIG_ARCH_EXYNOS) || defined(CONFIG_ARCH_EXYNOS7)
+ static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+ 	.info = &(struct s3c24xx_uart_info) {
+ 		.name		= "Samsung Exynos4 UART",
+-- 
+1.7.9.5
