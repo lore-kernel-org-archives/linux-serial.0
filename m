@@ -1,64 +1,145 @@
-From: Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH 14/14] tty/serial: samsung: add support for exynos7
-Date: Wed, 27 Aug 2014 21:04:09 -0700
-Message-ID: <20140828040409.GE4972@localhost>
-References: <1409132795-1991-1-git-send-email-ch.naveen@samsung.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 1/7] dmaengine: edma: fix two faults which happen with
+ the 8250_dma user
+Date: Thu, 28 Aug 2014 12:36:11 +0530
+Message-ID: <20140828070611.GI13288@intel.com>
+References: <1406660344-25307-1-git-send-email-bigeasy@linutronix.de>
+ <1406660344-25307-2-git-send-email-bigeasy@linutronix.de>
+ <20140731121702.GU8181@intel.com>
+ <20140808162950.GA12080@linutronix.de>
+ <20140819151216.GO13288@intel.com>
+ <53F5EF78.2050800@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:59354 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750904AbaH1EFo (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Aug 2014 00:05:44 -0400
-Received: by mail-pa0-f54.google.com with SMTP id fb1so798875pad.41
-        for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2014 21:05:44 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1409132795-1991-1-git-send-email-ch.naveen@samsung.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <53F5EF78.2050800@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, Joel Fernandes <joelf@ti.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: linux-serial@vger.kernel.org, naveenkrishna.ch@gmail.com, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, cpgs@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Wed, Aug 27, 2014 at 03:16:35PM +0530, Naveen Krishna Chatradhi wrote:
-> From: Alim Akhtar <alim.akhtar@samsung.com>
-> 
-> This patch enables upcoming exynos7 SoCs serial driver.
-> This also modifies various dependencies for Kconfig
-> 
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/tty/serial/Kconfig   |    6 +++---
->  drivers/tty/serial/samsung.c |    2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 26cec64..f858d57 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -220,7 +220,7 @@ config SERIAL_CLPS711X_CONSOLE
->  
->  config SERIAL_SAMSUNG
->  	tristate "Samsung SoC serial support"
-> -	depends on PLAT_SAMSUNG
-> +	depends on PLAT_SAMSUNG || ARCH_EXYNOS7
+On Thu, Aug 21, 2014 at 03:09:12PM +0200, Sebastian Andrzej Siewior wro=
+te:
+> On 08/19/2014 05:12 PM, Vinod Koul wrote:
+> >>
+> >>     desc =3D dmaengine_prep_slave_single(rxchan, =E2=80=A6);
+> >>     rx_cookie =3D dmaengine_submit(desc);
+> >>     dma_async_issue_pending(rxchan);
+> >>
+> >>     ssleep(2);
+> >>     /* Now assume that the transfer did not start */
+> >>     st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
+> >>     /* st is now DMA_IN_PROGRESS as expected */
+> >>
+> >>     dmaengine_terminate_all(rxchan);
+> >>     st =3D dmaengine_tx_status(rxchan, rx_cookie, NULL);
+> > and here is the culprit. You have terminated the channel. This mean=
+s that
+> > dmaengine driver is free to clean up all the allocated descriptors =
+on the
+> > channels and do whatever it decides to do with them.
+>=20
+> descriptors, yes.
+and by that logic when you query the driver would have freed up!
 
-Same here, PLAT_SAMSUNG || ARCH_EXYNOS please.
+> > You have already terminated the channel so what is the point in que=
+rying the
+> > status of the cookie, which you shouldn't use anyway after invoking
+> > terminate_all() as its result is not correct.
+>=20
+> The point is to check (later, after terminate_all()) if there is an
+> outstanding DMA transfer or not _and_ how much data was really
+> transfered. Looking at edma it does not really support the latter if
+> the transfer is already completed. On the plus side the HW does not
+> support partly transfers :)
+well that can be achieved properly and differently!
+Why don't we pause the channel, get the residue, status and then
+terminate.
 
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1770,7 +1770,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
->  #define S5PV210_SERIAL_DRV_DATA	(kernel_ulong_t)NULL
->  #endif
->  
-> -#if defined(CONFIG_ARCH_EXYNOS)
-> +#if defined(CONFIG_ARCH_EXYNOS) || defined(CONFIG_ARCH_EXYNOS7)
+> But where is it written that the life time of the cookie is limited?
+> Looking at the "cooking check" code there is no such thing. It is
+> simply compare of completed vs passed number but okay, this is an
+> implementation detail.
+> From [0] it says under "4. Submit the transaction":
+>=20
+> | This returns a cookie can be used to check the progress of DMA engi=
+ne
+> | activity via other DMA engine calls not covered in this document.
+>=20
+> no life time limit mentioned here. Which brings to the question: Why =
+is
+> it okay to use the cookie after the transaction "terminated" normally
+> but not if it has been canceled?
+Due to the special nature of terminate. The point here is that you don'=
+t
+terminate a transaction but channel operation
 
-And then this change won't be needed either.
+> And from [0] the API explanation  "4. =E2=80=A6 dma_async_is_tx_compl=
+ete()":
 
->  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
->  	.info = &(struct s3c24xx_uart_info) {
->  		.name		= "Samsung Exynos4 UART",
 
--Olof
+>=20
+> |Note:
+> |    Not all DMA engine drivers can return reliable information for
+> |    a running DMA channel.  It is recommended that DMA engine users
+> |    pause or stop (via dmaengine_terminate_all) the channel before
+> |    using this API.
+>=20
+> So the documentation says to use the cookie with
+> dma_async_is_tx_complete() and before doing so it is recommended that
+> the transfer should be paused or stopped. _Exactly_ what is done here=
+=2E
+>=20
+> >>     /* st is still DMA_IN_PROGRESS but _I_ expect DMA_COMPLETE bec=
+ause
+> >>      * it has been terminated / canceled
+> >>      */
+> >>
+> >> Both dma driver clean up all / terminate all descriptors as requir=
+ed but
+> >> _none_ of them completes the cookie. As a result dma_cookie_status=
+()
+> >> still thinks that the transfer is in progress.
+> >=20
+> > Btw how does it matter in the driver here if the transaction comple=
+ted or
+> > not after terminate_all() was invoked. What is the purpose of query=
+ing
+> > status.
+>=20
+> In the RX interrupt (of the 8250 unit), the code checks if the transf=
+er
+> has been already started or not via querying the status. So if it
+> returns DMA_COMPLETE then a new transfer will be started. If it retur=
+ns
+> DMA_IN_PROGRESS then the code returns doing nothing because the DMA
+> engine should start moving data anytime now so the RX interrupt goes
+> away.
+>=20
+> That means: If the transfer is canceled then it won't be started agai=
+n.
+>=20
+> Btw: the current (probably only) dma driver that is used by 8250-dma =
+is
+> dw/core.c. That one does cookie complete on terminate:
+>  dwc_control(DMA_TERMINATE_ALL) -> dwc_descriptor_complete() ->
+>  dma_cookie_complete().
+Yes but would above flow work for you :)
+
+--=20
+~Vinod
+
+>=20
+> That is why it works for them=E2=80=A6
+>=20
+> [0] Documentation/dmaengine.txt
+>=20
+> >=20
+> > Thanks
+> >=20
+>=20
+> Sebastian
+
+--=20
