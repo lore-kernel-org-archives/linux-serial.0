@@ -1,39 +1,127 @@
-From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH 2/7] ARM: meson: serial: add MesonX SoC on-chip uart
- driver
-Date: Thu, 28 Aug 2014 09:51:15 +0200
-Message-ID: <20140828075115.GA2601@carlo-MacBookPro>
-References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-3-git-send-email-carlo@caione.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
+Date: Thu, 28 Aug 2014 10:23:48 +0200
+Message-ID: <20140828082348.GA5413@linutronix.de>
+References: <1408124563-31541-1-git-send-email-bigeasy@linutronix.de>
+ <1408124563-31541-16-git-send-email-bigeasy@linutronix.de>
+ <20140815210211.GD9239@atomide.com>
+ <53F5AF0D.5060409@linutronix.de>
+ <20140821184416.GF10066@atomide.com>
+ <53FE3779.5090908@linutronix.de>
+ <20140827202313.GF16006@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:41927 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757129AbaH1HvU (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Aug 2014 03:51:20 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1408272594-10814-3-git-send-email-carlo@caione.org>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20140827202313.GF16006@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, balbi@ti.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com, maxime.ripard@free-electrons.com
 
-On Sun, Aug 17, 2014 at 12:49:49PM +0200, Carlo Caione wrote:
-> The SoC has four fully functional UARTs which use the same programming
-> model. They are named UART_A, UART_B, UART_C and UART_AO (Always-On)
-> which cannot be powered off.
-> 
-> Signed-off-by: Carlo Caione <carlo@caione.org>
-> ---
+* Tony Lindgren | 2014-08-27 13:23:14 [-0700]:
 
-<cut>
+>> which means I just enable DMA mode in UART and disable it. No DMA
+>> operations were performed.
+>> With this change I see a lost character now and then which means the
+>> UART-IP goes into off and loses its context. Good. However I don't see
+>> core off anymore. This looks like a bug beyond my responsibilities :)
+>
+>OK, that sounds like a bug still lurking around somewhere. The core
+>domain won't hit idle if there are any hardware pieces blocking.
 
-Hi,
-Any feedback on this patch before submitting v2?
+Yes.
 
-Thanks,
+>> I added code to cancel & and start DMA transfers in runtime suspend
+>> callbacks.
+>
+>Do you mean just the OMAP_UART_SCR_DMAMODE_CTL related code, or
+>also the dmaengine calls?
 
--- 
-Carlo Caione
+dmaengine calls are unused because up.dma is not assigned. It is 
+basically like you wouldn't have the dma properties in the devicetree.
+And while in that non-DMA mode I just set and unset the DMAMODE_CTL + 
+DMAMODE_1 bits in the SCR register. Nothing else. Based on some testing
+I just did, DMAMODE_CTL does not make the difference. DMAMODE_CTL +
+DMAMODE_1 does.
+
+>> However core-off with DMA won't work. I think we could document this in
+>> the binding document. What do you think?
+>
+>There should not be such a limitation though. Maybe dump out the values
+>of cm_idlest_per and cm_idlest1_core for working and failing off idle
+>cases and see what the difference is?
+
+I can't follow here. This is the working case:
+
+usbhost_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+sgx_pwrdm (OFF),OFF:1,RET:0,INA:0,ON:1,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+core_pwrdm (ON),OFF:109,RET:22,INA:71,ON:203,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0,RET-MEMBANK2-OFF:0
+per_pwrdm (ON),OFF:137,RET:126,INA:0,ON:264,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+dss_pwrdm (ON),OFF:383,RET:861,INA:0,ON:1245,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+cam_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+neon_pwrdm (ON),OFF:311,RET:889,INA:44,ON:1245,RET-LOGIC-OFF:0
+mpu_pwrdm (ON),OFF:311,RET:889,INA:44,ON:1245,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+iva2_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0,RET-MEMBANK2-OFF:0,RET-MEMBANK3-OFF:0,RET-MEMBANK4-OFF:0
+usbhost_clkdm->usbhost_pwrdm (0)
+sgx_clkdm->sgx_pwrdm (0)
+per_clkdm->per_pwrdm (15)
+cam_clkdm->cam_pwrdm (0)
+dss_clkdm->dss_pwrdm (1)
+d2d_clkdm->core_pwrdm (0)
+iva2_clkdm->iva2_pwrdm (0)
+mpu_clkdm->mpu_pwrdm (0)
+core_l4_clkdm->core_pwrdm (20)
+core_l3_clkdm->core_pwrdm (1)
+neon_clkdm->neon_pwrdm (0)
+
+non-working:
+
+usbhost_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+sgx_pwrdm (OFF),OFF:1,RET:0,INA:0,ON:1,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+core_pwrdm (ON),OFF:0,RET:0,INA:0,ON:1,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0,RET-MEMBANK2-OFF:0
+per_pwrdm (ON),OFF:0,RET:0,INA:0,ON:1,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+dss_pwrdm (ON),OFF:253,RET:159,INA:0,ON:413,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+cam_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+neon_pwrdm (ON),OFF:135,RET:242,INA:35,ON:413,RET-LOGIC-OFF:0
+mpu_pwrdm (ON),OFF:135,RET:242,INA:35,ON:413,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0
+iva2_pwrdm (OFF),OFF:1,RET:1,INA:0,ON:2,RET-LOGIC-OFF:0,RET-MEMBANK1-OFF:0,RET-MEMBANK2-OFF:0,RET-MEMBANK3-OFF:0,RET-MEMBANK4-OFF:0
+usbhost_clkdm->usbhost_pwrdm (0)
+sgx_clkdm->sgx_pwrdm (0)
+per_clkdm->per_pwrdm (15)
+cam_clkdm->cam_pwrdm (0)
+dss_clkdm->dss_pwrdm (1)
+d2d_clkdm->core_pwrdm (0)
+iva2_clkdm->iva2_pwrdm (0)
+mpu_clkdm->mpu_pwrdm (0)
+core_l4_clkdm->core_pwrdm (21)
+core_l3_clkdm->core_pwrdm (1)
+neon_clkdm->neon_pwrdm (0)
+
+so per_pwrdm and core_pwrdm remain on and I guess the former is where
+the UART sits.
+
+>It could be the either the dma or the uart hardware blocking. I guess
+>it could be also an issue with runtime pm use somewhere.
+
+So I just toggle the two DMA bits in SCR and the UART seems to block
+since the DMA hw is not involved. Reading SCR back says that those bits
+are not set.
+To use DMA you don't have to enable it in SCR register you can also use
+the FCR register. The manual says that you can only write this DMA
+enable bit in the FCR register if the baud clock is not running. And
+guess what: same thing: I only *toggle* the DMA enable bit here (it
+remains 0 later) and the core won't hit idle.
+Same effect if I toggle this bit while the baud clock is running (the
+manual says that this bit can only be written if the baud clock is not
+running). Seems like the UART is following its own specification and it
+remains blocking once the DMA was enabled.
+It would be nice if someone from the UART-IP team could ACK this.
+
+Bah. Does it make sense to use runtime-PM if we can't hit core-off? I'm
+thinking to add a printk once dma is enabled says that runtime-pm is
+switched off.
+
+>Tony
+
+Sebastian
