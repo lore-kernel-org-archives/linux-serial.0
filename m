@@ -1,199 +1,94 @@
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: [PATCH] tty: serial: men_z135_uart: Fix driver for changes in hardware
-Date: Thu, 28 Aug 2014 14:32:20 +0200
-Message-ID: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH v2] serial: serial_core.c: printk replacement
+Date: Thu, 28 Aug 2014 19:45:28 +0530
+Message-ID: <1409235328-24648-1-git-send-email-sudipm.mukherjee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.109]:20207 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751029AbaH1Mgp (ORCPT
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:57571 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750801AbaH1OPp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 28 Aug 2014 08:36:45 -0400
+	Thu, 28 Aug 2014 10:15:45 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-16z135 IP Core has changed so the driver needs to be updated to respect
-these changes. The following changes have been made:
+printk replaced with corresponding pr_err, dev_alert, dev_notice and pr_info.
+fixed two broken user-visible strings used by the corresponding printk
 
-* Don't invert the 16z135 modem status register when reading.
-* Add module parameter to configure the (baud rate dependent) RX timeout.
-  Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-* Enable the handling of UART core's automatic flow control feature.
-  When AFE is active disable generation of modem status IRQs.
-* Rework the handling of IRQs to be conform with newer FPGA versions and
-  take precautions not to miss an interrupt because of the destructive read
-  of the IIR register.
-
-Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
 ---
- drivers/tty/serial/men_z135_uart.c | 87 +++++++++++++++++++++++---------------
- 1 file changed, 53 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 30e9e60..d31b8a4 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -34,12 +34,11 @@
- #define MEN_Z135_CONF_REG		0x808
- #define MEN_Z135_UART_FREQ		0x80c
- #define MEN_Z135_BAUD_REG		0x810
--#define MENZ135_TIMEOUT			0x814
-+#define MEN_Z135_TIMEOUT		0x814
- 
- #define MEN_Z135_MEM_SIZE		0x818
- 
--#define IS_IRQ(x) ((x) & 1)
--#define IRQ_ID(x) (((x) >> 1) & 7)
-+#define IRQ_ID(x) ((x) & 0x1f)
- 
- #define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
- #define MEN_Z135_IER_TXCIEN BIT(1)		/* TX Space IRQ */
-@@ -94,11 +93,11 @@
- #define MEN_Z135_LSR_TEXP BIT(6)
- #define MEN_Z135_LSR_RXFIFOERR BIT(7)
- 
--#define MEN_Z135_IRQ_ID_MST 0
--#define MEN_Z135_IRQ_ID_TSA 1
--#define MEN_Z135_IRQ_ID_RDA 2
--#define MEN_Z135_IRQ_ID_RLS 3
--#define MEN_Z135_IRQ_ID_CTI 6
-+#define MEN_Z135_IRQ_ID_RLS BIT(0)
-+#define MEN_Z135_IRQ_ID_RDA BIT(1)
-+#define MEN_Z135_IRQ_ID_CTI BIT(2)
-+#define MEN_Z135_IRQ_ID_TSA BIT(3)
-+#define MEN_Z135_IRQ_ID_MST BIT(4)
- 
- #define LCR(x) (((x) >> MEN_Z135_LCR_SHIFT) & 0xff)
- 
-@@ -118,6 +117,10 @@ static int align;
- module_param(align, int, S_IRUGO);
- MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
- 
-+static int rx_timeout;
-+module_param(rx_timeout, uint, S_IRUGO);
-+MODULE_PARM_DESC(rx_timeout, "RX timeout");
+In the first patch i sent Greg suggested to use dev_err instead of pr_err , but as later Jiri pointed out in my later patches that uport->dev is having a null check so can not be used , tty_dev is also having a put_device , so back to pr_err. 
+
+ drivers/tty/serial/serial_core.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 29a7be4..0e03c31 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -892,10 +892,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 			 */
+ 			if (uport->flags & UPF_SPD_MASK) {
+ 				char buf[64];
+-				printk(KERN_NOTICE
+-				       "%s sets custom speed on %s. This "
+-				       "is deprecated.\n", current->comm,
+-				       tty_name(port->tty, buf));
 +
- struct men_z135_port {
- 	struct uart_port port;
- 	struct mcb_device *mdev;
-@@ -373,43 +376,47 @@ out:
-  * @irq: The IRQ number
-  * @data: Pointer to UART port
-  *
-- * Check IIR register to see which tasklet to start.
-+ * Check IIR register to find the cause of the interrupt and handle it.
-+ * It is possible that multiple interrupts reason bits are set and reading
-+ * the IIR is a destructive read, so we always need to check for all possible
-+ * interrupts and handle them.
-  */
- static irqreturn_t men_z135_intr(int irq, void *data)
- {
- 	struct men_z135_port *uart = (struct men_z135_port *)data;
- 	struct uart_port *port = &uart->port;
-+	int handled = 0;
- 	int irq_id;
++				dev_notice(uport->dev,
++				       "%s sets custom speed on %s. This is deprecated.\n",
++				      current->comm,
++				      tty_name(port->tty, buf));
+ 			}
+ 			uart_change_speed(tty, state, NULL);
+ 		}
+@@ -1975,12 +1976,11 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
+ 			msleep(10);
+ 		if (!tries)
+-			printk(KERN_ERR "%s%s%s%d: Unable to drain "
+-					"transmitter\n",
+-			       uport->dev ? dev_name(uport->dev) : "",
+-			       uport->dev ? ": " : "",
+-			       drv->dev_name,
+-			       drv->tty_driver->name_base + uport->line);
++			pr_err("%s%s%s%d: Unable to drain transmitter\n",
++				uport->dev ? dev_name(uport->dev) : "",
++				uport->dev ? ": " : "",
++				drv->dev_name,
++				drv->tty_driver->name_base + uport->line);
  
- 	uart->stat_reg = ioread32(port->membase + MEN_Z135_STAT_REG);
--	/* IRQ pending is low active */
--	if (IS_IRQ(uart->stat_reg))
--		return IRQ_NONE;
--
- 	irq_id = IRQ_ID(uart->stat_reg);
--	switch (irq_id) {
--	case MEN_Z135_IRQ_ID_MST:
--		men_z135_handle_modem_status(uart);
--		break;
--	case MEN_Z135_IRQ_ID_TSA:
--		men_z135_handle_tx(uart);
--		break;
--	case MEN_Z135_IRQ_ID_CTI:
--		dev_dbg(&uart->mdev->dev, "Character Timeout Indication\n");
--		/* Fallthrough */
--	case MEN_Z135_IRQ_ID_RDA:
--		/* Reading data clears RX IRQ */
--		men_z135_handle_rx(uart);
--		break;
--	case MEN_Z135_IRQ_ID_RLS:
-+
-+	if (!irq_id)
-+		goto out;
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_RLS) {
- 		men_z135_handle_lsr(uart);
--		break;
--	default:
--		dev_warn(&uart->mdev->dev, "Unknown IRQ id %d\n", irq_id);
--		return IRQ_NONE;
-+		handled = 1;
+ 		if (console_suspend_enabled || !uart_console(uport))
+ 			ops->shutdown(uport);
+@@ -2109,7 +2109,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 		break;
  	}
  
--	return IRQ_HANDLED;
-+	if (irq_id & MEN_Z135_IRQ_ID_RDA || irq_id & MEN_Z135_IRQ_ID_CTI) {
-+		if (irq_id & MEN_Z135_IRQ_ID_CTI)
-+			dev_dbg(&uart->mdev->dev, "Character Timeout Indication\n");
-+		men_z135_handle_rx(uart);
-+		handled = 1;
-+	}
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_TSA) {
-+		men_z135_handle_tx(uart);
-+		handled = 1;
-+	}
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_MST) {
-+		men_z135_handle_modem_status(uart);
-+		handled = 1;
-+	}
-+out:
-+	return IRQ_RETVAL(handled);
- }
+-	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
++	pr_info("%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
+ 	       port->dev ? dev_name(port->dev) : "",
+ 	       port->dev ? ": " : "",
+ 	       drv->dev_name,
+@@ -2640,7 +2640,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	if (likely(!IS_ERR(tty_dev))) {
+ 		device_set_wakeup_capable(tty_dev, 1);
+ 	} else {
+-		printk(KERN_ERR "Cannot register tty device on line %d\n",
++		dev_err(uport->dev, "Cannot register tty device on line %d\n",
+ 		       uport->line);
+ 	}
  
- /**
-@@ -495,7 +502,7 @@ static unsigned int men_z135_get_mctrl(struct uart_port *port)
+@@ -2675,7 +2675,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	BUG_ON(in_interrupt());
  
- 	stat_reg = ioread32(port->membase + MEN_Z135_STAT_REG);
+ 	if (state->uart_port != uport)
+-		printk(KERN_ALERT "Removing wrong port: %p != %p\n",
++		dev_alert(uport->dev, "Removing wrong port: %p != %p\n",
+ 			state->uart_port, uport);
  
--	msr = ~((stat_reg >> 8) & 0xff);
-+	msr = (stat_reg >> 8) & 0xff;
- 
- 	if (msr & MEN_Z135_MSR_CTS)
- 		mctrl |= TIOCM_CTS;
-@@ -584,6 +591,9 @@ static int men_z135_startup(struct uart_port *port)
- 
- 	iowrite32(conf_reg, port->membase + MEN_Z135_CONF_REG);
- 
-+	if (rx_timeout)
-+		iowrite32(rx_timeout, port->membase + MEN_Z135_TIMEOUT);
-+
- 	return 0;
- }
- 
-@@ -603,6 +613,7 @@ static void men_z135_set_termios(struct uart_port *port,
- 				struct ktermios *termios,
- 				struct ktermios *old)
- {
-+	struct men_z135_port *uart = to_men_z135(port);
- 	unsigned int baud;
- 	u32 conf_reg;
- 	u32 bd_reg;
-@@ -643,6 +654,14 @@ static void men_z135_set_termios(struct uart_port *port,
- 	} else
- 		lcr |= MEN_Z135_PAR_DIS << MEN_Z135_PEN_SHIFT;
- 
-+	if (termios->c_cflag & CRTSCTS) {
-+		conf_reg |= MEN_Z135_MCR_RCFC;
-+		men_z135_reg_clr(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_MSIEN);
-+	} else {
-+		conf_reg &= ~MEN_Z135_MCR_RCFC;
-+		men_z135_reg_set(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_MSIEN);
-+	}
-+
- 	termios->c_cflag &= ~CMSPAR; /* Mark/Space parity is not supported */
- 
- 	conf_reg |= lcr << MEN_Z135_LCR_SHIFT;
+ 	mutex_lock(&port_mutex);
 -- 
-1.9.1
+1.8.1.2
 
