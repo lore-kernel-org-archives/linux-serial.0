@@ -1,130 +1,123 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
-Date: Sat, 30 Aug 2014 00:10:39 +0100
-Message-ID: <5401086F.1050601@arm.com>
-References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com> <1409328803-1953-2-git-send-email-andre.przywara@arm.com> <8453809.d9xRztN9Sq@wuerfel>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] jsm: add support for additional Neo cards
+Date: Sat, 30 Aug 2014 11:59:14 -0700
+Message-ID: <20140830185914.GA17371@kroah.com>
+References: <1409424877-2304-1-git-send-email-wfp5p@worldbroken.com>
+ <1409424877-2304-2-git-send-email-wfp5p@worldbroken.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:60557 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750909AbaH2XNO (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:52927 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751640AbaH3S7P (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 29 Aug 2014 19:13:14 -0400
-In-Reply-To: <8453809.d9xRztN9Sq@wuerfel>
+	Sat, 30 Aug 2014 14:59:15 -0400
+Content-Disposition: inline
+In-Reply-To: <1409424877-2304-2-git-send-email-wfp5p@worldbroken.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, "linux@vger.kernel.org" <linux@vger.kernel.org>
+To: wfp5p@worldbroken.com
+Cc: cascardo@linux.vnet.ibm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, lidza.louina@gmail.com, devel@driverdev.osuosl.org
 
-On 08/29/2014 07:59 PM, Arnd Bergmann wrote:
-
-Arnd,
-
-thanks for looking at the patch.
-
-> On Friday 29 August 2014 17:13:23 Andre Przywara wrote:
->> The ARM Server Base System Architecture (SBSA) describes a generic
->> UART which all compliant level 1 systems should implement. This is
->> actually a PL011 subset, so a full PL011 implementation will satisfy
->> this requirement.
->> However if a system does not have a PL011, a very stripped down
->> implementation complying to the SBSA defined specification will
->> suffice. The Linux PL011 driver is not guaranteed to drive this
->> limited device (and indeed the fast model implentation hangs the
->> kernel if driven by the PL011 driver).
->> So introduce a new driver just implementing the part specified by the
->> SBSA (which lacks DMA, the modem control signals and many of the
->> registers including baud rate control). This driver has been derived
->> by the actual PL011 one, removing all unnecessary code.
->>
->> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+On Sat, Aug 30, 2014 at 02:54:36PM -0400, wfp5p@worldbroken.com wrote:
+> From: Bill Pemberton <wfp5p@worldbroken.com>
 > 
+> Add device ids for additional Neo cards.  The ids come from the dgnc
+> driver.
 > 
-> Hi Andre,
+> Signed-off-by: Bill Pemberton <wfp5p@worldbroken.com>
+> ---
+>  drivers/tty/serial/jsm/jsm_driver.c | 38 +++++++++++++++++++++++++++++++++----
+>  include/linux/pci_ids.h             |  8 ++++++++
+>  2 files changed, 42 insertions(+), 4 deletions(-)
 > 
-> Thanks for getting this driver ready. There is one high-level comment
-> I have: As mentioned in the discussion in
-> https://lkml.org/lkml/2014/7/28/386 , I think this should really be
-> a tty driver using tty_port, not a serial driver using uart_port.
-> 
-> What is the reason you chose to do a uart_port driver?
+> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+> index a47d882d6743..d2885a7bb090 100644
+> --- a/drivers/tty/serial/jsm/jsm_driver.c
+> +++ b/drivers/tty/serial/jsm/jsm_driver.c
+> @@ -93,12 +93,34 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	/* store the info for the board we've found */
+>  	brd->boardnum = adapter_count++;
+>  	brd->pci_dev = pdev;
+> -	if (pdev->device == PCIE_DEVICE_ID_NEO_4_IBM)
+> +
+> +	switch (pdev->device) {
+> +
+> +	case PCI_DEVICE_ID_NEO_2DB9:
+> +	case PCI_DEVICE_ID_NEO_2DB9PRI:
+> +	case PCI_DEVICE_ID_NEO_2RJ45:
+> +	case PCI_DEVICE_ID_NEO_2RJ45PRI:
+> +	case PCI_DEVICE_ID_NEO_2_422_485:
+> +		brd->maxports = 2;
+> +		break;
+> +
+> +	case PCI_DEVICE_ID_NEO_4:
+> +	case PCIE_DEVICE_ID_NEO_4:
+> +	case PCIE_DEVICE_ID_NEO_4RJ45:
+> +	case PCIE_DEVICE_ID_NEO_4_IBM:
+>  		brd->maxports = 4;
+> -	else if (pdev->device == PCI_DEVICE_ID_DIGI_NEO_8)
+> +		break;
+> +
+> +	case PCI_DEVICE_ID_DIGI_NEO_8:
+> +	case PCIE_DEVICE_ID_NEO_8:
+> +	case PCIE_DEVICE_ID_NEO_8RJ45:
+>  		brd->maxports = 8;
+> -	else
+> -		brd->maxports = 2;
+> +		break;
+> +
+> +	default:
+> +		brd->maxports = 1;
+> +		break;
+> +	}
+>  
+>  	spin_lock_init(&brd->bd_intr_lock);
+>  
+> @@ -209,6 +231,14 @@ static struct pci_device_id jsm_pci_tbl[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45PRI), 0, 0, 3 },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4_IBM), 0, 0, 4 },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_DIGI_NEO_8), 0, 0, 5 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_4), 0, 0, 6 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422), 0, 0, 7 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422_485), 0, 0, 8 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2_422_485), 0, 0, 9 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8), 0, 0, 10 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4), 0, 0, 11 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4RJ45), 0, 0, 12 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8RJ45), 0, 0, 13 },
+>  	{ 0, }
+>  };
+>  MODULE_DEVICE_TABLE(pci, jsm_pci_tbl);
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index 6ed0bb73a864..f0f610c94bb2 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -1516,11 +1516,19 @@
+>  #define PCI_DEVICE_ID_DIGI_DF_M_E	0x0071
+>  #define PCI_DEVICE_ID_DIGI_DF_M_IOM2_A	0x0072
+>  #define PCI_DEVICE_ID_DIGI_DF_M_A	0x0073
+> +#define PCI_DEVICE_ID_NEO_4             0x00B0
+>  #define PCI_DEVICE_ID_DIGI_NEO_8	0x00B1
+>  #define PCI_DEVICE_ID_NEO_2DB9          0x00C8
+>  #define PCI_DEVICE_ID_NEO_2DB9PRI       0x00C9
+>  #define PCI_DEVICE_ID_NEO_2RJ45         0x00CA
+>  #define PCI_DEVICE_ID_NEO_2RJ45PRI      0x00CB
+> +#define PCI_DEVICE_ID_NEO_1_422         0x00CC
+> +#define PCI_DEVICE_ID_NEO_1_422_485     0x00CD
+> +#define PCI_DEVICE_ID_NEO_2_422_485     0x00CE
+> +#define PCIE_DEVICE_ID_NEO_8            0x00F0
+> +#define PCIE_DEVICE_ID_NEO_4            0x00F1
+> +#define PCIE_DEVICE_ID_NEO_4RJ45        0x00F2
+> +#define PCIE_DEVICE_ID_NEO_8RJ45        0x00F3
+>  #define PCIE_DEVICE_ID_NEO_4_IBM        0x00F4
 
-Mainly because the SBSA is more of an UART than I originally
-anticipated. It's intention may be more for debugging only, but it's
-implementation is that of a real UART.
-So the goldfish driver for instance seems to be tailored for a virtual
-device, where TX/RX actually does not cost much. Also it supports
-transmitting large chunks of data at once, an UART cannot do that. I
-didn't find an obvious or easy way of implementing IRQ based
-transmission. So if someone throws 10 KB at the driver, it will hog the
-CPU for a second :-(
+As per the information in the top of this file, we only add new ids when
+they cross multiple files.  Right now these values you are adding are
+only for a single driver, so they don't need to be added here.
 
-Also there is this console line ending issue. The UART layer takes care
-about changing LF into CR/LF, but in a pure TTY driver this needs to be
-done explicitly. Hooking this into the code was a real nightmare.
+Can you redo this series without touching the pci_ids.h file?
 
-Also the error conditions the UART supports (frame error, break) are
-hard to model in a pure TTY driver.
+thanks,
 
-So after having coded it based on goldfish I decided to go for a real
-UART driver instead, and the result is much better.
-
-> 
-> A few more details below:
-> 
->> +}
->> +EARLYCON_DECLARE(pl011, sbsa_uart_early_console_setup);
->> +OF_EARLYCON_DECLARE(pl011, "arm,sbsa-uart", sbsa_uart_early_console_setup);
-> 
-> Stray 'pl011' left from copying the code?
-
-Actually left in deliberately (to reuse existing kernel command lines),
-but I know see that this was silly.
-The earlycon routines of PL011 are actually the same as for the SBSA
-UART, so both can use one implementation. And registering them twice
-under the same name triggers a warning during boot.
-I have to check how this can be shared if only one driver is compiled in.
-
->> +static struct uart_driver sbsa_uart_reg = {
->> +	.owner			= THIS_MODULE,
->> +	.driver_name		= "sbsa_uart",
->> +	.dev_name		= "ttyAMA",
->> +	.nr			= UART_NR,
->> +	.cons			= SBSA_UART_CONSOLE,
->> +};
-> 
-> I don't think we should overload the ttyAMA name.
-
-That triggered a lot of discussion here. Actually most people don't want
-to introduce yet another serial prefix. Also since the both devices are
-so similar and this driver can drive a full PL011 also, I decided to
-reuse it.
-This still has issues if both drivers are active, but I consider this
-saner for the user this way.
-
-> 
->> +#ifdef CONFIG_OF
->> +
->> +static int dt_probe_serial_alias(int index, struct device *dev)
->> +{
->> +	struct device_node *np;
->> +	static bool seen_dev_with_alias;
->> +	static bool seen_dev_without_alias;
->> +	int ret = index;
->> +
->> +	if (!IS_ENABLED(CONFIG_OF))
->> +		return ret;
-> 
-> The #ifdef should go away since you already have the if
-> (!IS_ENABLED(CONFIG_OF)) logic here.
-
-Right, this is redundant, but I'd rather remove the IS_ENABLED() line,
-since I provide a non-DT implementation of that routine below.
-
-Cheers,
-Andre.
-
-
-
+greg k-h
