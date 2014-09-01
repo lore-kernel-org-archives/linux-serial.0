@@ -1,45 +1,75 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
-Date: Mon, 01 Sep 2014 19:47:53 +0200
-Message-ID: <5404B149.6010400@linutronix.de>
-References: <20140815210211.GD9239@atomide.com> <53F5AF0D.5060409@linutronix.de> <20140821184416.GF10066@atomide.com> <53FE3779.5090908@linutronix.de> <20140827202313.GF16006@atomide.com> <20140828082348.GA5413@linutronix.de> <20140828164645.GG16006@atomide.com> <53FF84DF.7080406@linutronix.de> <20140828225454.GM16006@atomide.com> <540048B4.7010807@linutronix.de> <20140829161221.GO16006@atomide.com>
+From: Mike Turquette <mturquette@linaro.org>
+Subject: Re: [PATCH v2 5/6] ARM: shmobile: r8a7794: document SCIF clock support
+Date: Mon, 01 Sep 2014 14:59:46 -0700
+Message-ID: <20140901215946.5251.96347@quantum>
+References: <1409336110-32734-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1409336110-32734-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <20140901013042.GH32075@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140829161221.GO16006@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: balbi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Walmsley <paul@pwsan.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f176.google.com ([209.85.192.176]:53915 "EHLO
+	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752157AbaIAV75 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 1 Sep 2014 17:59:57 -0400
+Received: by mail-pd0-f176.google.com with SMTP id g10so6937649pdj.35
+        for <linux-serial@vger.kernel.org>; Mon, 01 Sep 2014 14:59:57 -0700 (PDT)
+In-Reply-To: <20140901013042.GH32075@verge.net.au>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-sh@vger.kernel.org, magnus.damm@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-On 08/29/2014 06:12 PM, Tony Lindgren wrote:
-> Looks like the paste bug is there for sure, doing off idle and pasting
-> 240 characters to the console can hang the UART RX after few attempts,
-> and pasting 16 charactes won't show up at all if the system is idling.
-> So you may want to play with that too a bit :)
+Quoting Simon Horman (2014-08-31 18:30:42)
+> Hi Ulrich,
+> 
+> please repost this patch with the following recipients added
+> (both CCed on this email):
+> 
+> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> 
+> I am also sure that Mike Turquette would not mind being dropped from
+> the CC list.
 
-One character wakes it up. After that you can send 16, 64 and you see
-them. Right away. No delay.
+Yeah, I don't really care about DT binding updates ;-)
 
-If you send "a lot" data in one-go it takes approx 152 characters until
-the first one is displayed properly at 115200,8N1. That is approx 13ms.
-Could it take that long to get up and be ready?
-
-Comparing it with serial-omap I see the same thing: I takes approx the
-same amount of data until the first one is displayed. After a lot of
-"long" writes which wake the chip up from idle I manage to freeze both,
-the serial-omap driver and mine driver.
-
-One thing that is probably a dumb idea is that printk in
-omap_8250_mdr1_errataset().
-Would it be possible that when I hit a printk in the resume path that I
-may deadlock and box will freeze?
+Regards,
+Mike
 
 > 
-> Regards,
+> Please also include:
 > 
-> Tony
+> Acked-by: Simon Horman <horms+renesas@verge.net.au>
 > 
-
-Sebastian
+> On Fri, Aug 29, 2014 at 08:15:09PM +0200, Ulrich Hecht wrote:
+> > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> > index b355660..7b87eb2 100644
+> > --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> > @@ -20,6 +20,10 @@ Required properties:
+> >      - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
+> >      - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
+> >      - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
+> > +    - "renesas,scif-r8a7794" for R8A7794 (R-Car E2) SCIF compatible UART.
+> > +    - "renesas,scifa-r8a7794" for R8A7794 (R-Car E2) SCIFA compatible UART.
+> > +    - "renesas,scifb-r8a7794" for R8A7794 (R-Car E2) SCIFB compatible UART.
+> > +    - "renesas,hscif-r8a7794" for R8A7794 (R-Car E2) HSCIF compatible UART.
+> >      - "renesas,scif" for generic SCIF compatible UART.
+> >      - "renesas,scifa" for generic SCIFA compatible UART.
+> >      - "renesas,scifb" for generic SCIFB compatible UART.
+> > -- 
+> > 1.8.4.5
+> > 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > 
