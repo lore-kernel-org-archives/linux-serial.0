@@ -1,78 +1,61 @@
-From: Ryan Mallon <rmallon@gmail.com>
-Subject: Re: [PATCH v2] serial: serial_core.c: printk replacement
-Date: Mon, 01 Sep 2014 10:11:29 +1000
-Message-ID: <5403B9B1.4010407@gmail.com>
-References: <1409235328-24648-1-git-send-email-sudipm.mukherjee@gmail.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v2 5/6] ARM: shmobile: r8a7794: document SCIF clock
+ support
+Date: Mon, 1 Sep 2014 10:30:42 +0900
+Message-ID: <20140901013042.GH32075@verge.net.au>
+References: <1409336110-32734-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1409336110-32734-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:32840 "EHLO
-	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751429AbaIAALe (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 31 Aug 2014 20:11:34 -0400
-In-Reply-To: <1409235328-24648-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1409336110-32734-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-sh@vger.kernel.org, mturquette@linaro.org, magnus.damm@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+Hi Ulrich,
 
+please repost this patch with the following recipients added
+(both CCed on this email):
 
-On 29/08/14 00:15, Sudip Mukherjee wrote:
-> printk replaced with corresponding pr_err, dev_alert, dev_notice and pr_info.
-> fixed two broken user-visible strings used by the corresponding printk
-> 
-> Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+
+I am also sure that Mike Turquette would not mind being dropped from
+the CC list.
+
+Please also include:
+
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
+
+On Fri, Aug 29, 2014 at 08:15:09PM +0200, Ulrich Hecht wrote:
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 > ---
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> In the first patch i sent Greg suggested to use dev_err instead of pr_err , but as later Jiri pointed out in my later patches that uport->dev is having a null check so can not be used , tty_dev is also having a put_device , so back to pr_err. 
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> index b355660..7b87eb2 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> @@ -20,6 +20,10 @@ Required properties:
+>      - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
+>      - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
+>      - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
+> +    - "renesas,scif-r8a7794" for R8A7794 (R-Car E2) SCIF compatible UART.
+> +    - "renesas,scifa-r8a7794" for R8A7794 (R-Car E2) SCIFA compatible UART.
+> +    - "renesas,scifb-r8a7794" for R8A7794 (R-Car E2) SCIFB compatible UART.
+> +    - "renesas,hscif-r8a7794" for R8A7794 (R-Car E2) HSCIF compatible UART.
+>      - "renesas,scif" for generic SCIF compatible UART.
+>      - "renesas,scifa" for generic SCIFA compatible UART.
+>      - "renesas,scifb" for generic SCIFB compatible UART.
+> -- 
+> 1.8.4.5
 > 
->  drivers/tty/serial/serial_core.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-
-> @@ -1975,12 +1976,11 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
->  		for (tries = 3; !ops->tx_empty(uport) && tries; tries--)
->  			msleep(10);
->  		if (!tries)
-> -			printk(KERN_ERR "%s%s%s%d: Unable to drain "
-> -					"transmitter\n",
-> -			       uport->dev ? dev_name(uport->dev) : "",
-> -			       uport->dev ? ": " : "",
-> -			       drv->dev_name,
-> -			       drv->tty_driver->name_base + uport->line);
-> +			pr_err("%s%s%s%d: Unable to drain transmitter\n",
-> +				uport->dev ? dev_name(uport->dev) : "",
-> +				uport->dev ? ": " : "",
-> +				drv->dev_name,
-> +				drv->tty_driver->name_base + uport->line);
-
-dev_printk() prints the value of dev_name() and handles the NULL case,
-so this could be changed to:
-
-	dev_err(uport->dev, "%s%d: Unable to drain transmitter\n",
-		drv->dev_name,
-		drv->tty_driver->name_base + uport->line);
-
-It might also be possible to remove drv->dev_name since dev_printk()
-also prints the driver string, but I don't know if they are equivalent
-in this case.
-
->  
->  		if (console_suspend_enabled || !uart_console(uport))
->  			ops->shutdown(uport);
-> @@ -2109,7 +2109,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
->  		break;
->  	}
->  
-> -	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-> +	pr_info("%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
->  	       port->dev ? dev_name(port->dev) : "",
->  	       port->dev ? ": " : "",
->  	       drv->dev_name,
-
-Same here.
-
-~Ryan
