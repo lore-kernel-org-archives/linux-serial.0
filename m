@@ -1,51 +1,59 @@
-From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH v11 17/19] serial: asc: Adopt
- readl_/writel_relaxed()
-Date: Tue, 2 Sep 2014 14:42:58 +0100
-Message-ID: <20140902134257.GA10125@griffinp-ThinkPad-X1-Carbon-2nd>
-References: <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
- <1409662853-29313-1-git-send-email-daniel.thompson@linaro.org>
- <1409662853-29313-18-git-send-email-daniel.thompson@linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
+Date: Tue, 02 Sep 2014 15:48:06 +0200
+Message-ID: <3749748.k4a1nSHDdj@wuerfel>
+References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com> <540596A6.8000608@arm.com> <CAL_Jsq+Rs5MXC7s7EeWAEAPxxqaShAVGt=cdQxud5Us+-Zp6jw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:55299 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753774AbaIBNnD (ORCPT
+Received: from mout.kundenserver.de ([212.227.17.10]:58927 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752121AbaIBNsP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 09:43:03 -0400
-Received: by mail-wg0-f45.google.com with SMTP id k14so6818045wgh.4
-        for <linux-serial@vger.kernel.org>; Tue, 02 Sep 2014 06:43:01 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1409662853-29313-18-git-send-email-daniel.thompson@linaro.org>
+	Tue, 2 Sep 2014 09:48:15 -0400
+In-Reply-To: <CAL_Jsq+Rs5MXC7s7EeWAEAPxxqaShAVGt=cdQxud5Us+-Zp6jw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Russell King <linux@arm.linux.org.uk>, kernel@stlinux.com, Catalin Marinas <catalin.marinas@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Fabio Estevam <festevam@gmail.com>, Nicolas Pitre <nico@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Anton Vorontsov <anton.vorontsov@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Rob Herring <robherring2@gmail.com>, linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, kernel-team@android.com, Dave Martin <Dave.Martin@arm.com>, linaro-kernel@lists.linaro.org, patches@linaro.org, John Stultz <john.stultz@linaro.org>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Colin Cross <ccross@android.com>, Frederic Weisbecker <fweisbec@gmail.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Rob Herring <robherring2@gmail.com>, Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
-On Tue, 02 Sep 2014, Daniel Thompson wrote:
-
-> The architectures where this peripheral exists (ARM and SH) have expensive
-> implementations of writel(), reliant on spin locks and explicit L2 cache
-> management. These architectures provide a cheaper writel_relaxed() which
-> is much better suited to peripherals that do not perform DMA. The
-> situation with readl()/readl_relaxed()is similar although less acute.
+On Tuesday 02 September 2014 08:20:53 Rob Herring wrote:
+> >>
+> >> This alone is not okay. There is no such implementation of hardware.
+> >
+> > But the SBSA explicitly allows this. I don't know of any vendor who just
+> > implements the subset, but I've been told that this has been asked for.
 > 
-> This driver does not use DMA and will be more power efficient and more
-> robust (due to absense of spin locks during console I/O) if it uses the
-> relaxed variants.
-> 
-> This change means the driver is no longer portable and therefore no
-> longer suitable for compile testing.
-> 
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
-> Cc: Maxime Coquelin <maxime.coquelin@st.com>
-> Cc: Patrice Chotard <patrice.chotard@st.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: kernel@stlinux.com
-> Cc: linux-serial@vger.kernel.org
+> To use baudrate as an example, that must be configurable somehow
+> either with pl011 registers or in a vendor specific way. I suppose you
+> could do an actual implementation with all those things hardcoded in
+> the design, but that seems unlikely.
 
-Acked-by: Peter Griffin <peter.griffin@linaro.org>
+Why does the baudrate need to be configurable? I think it's completely
+reasonable to specify a console port that has a fixed (as in the
+OS must not care) rate, and that can be implemented either as a UART
+with a programmable rate or as a set of registers that directly talks
+to a remote system management device over whatever hardware protocol
+they choose.
 
+> >> The DT must specify the implementation such as pl011.
+> >
+> > If it is a full featured PL011: sure. Then we don't need this driver at
+> > all and just use the SBSA UART spec as a guideline for our earlycon
+> > implementation.
+> > I will try to learn if there is someone actually implementing only the
+> > subset.
+> 
+> I would have assumed you knew someone is. Otherwise, I don't really
+> think anything should be implemented at this point. Perhaps adding
+> SBSA uart as an explicit earlycon option would be worthwhile. Also, we
+> should consider using ttySx instead of ttyAMAx for SBSA compliant
+> systems (including ones with pl011).
+
+What about systems that have both a SBSA debug port and a 8250
+compatible UART? That sounds like a very realistic hardware design
+choice for someone coming from an older x86/powerpc/mips/... chip
+that has 8250 and adds the extra port for SBSA compliance.
+
+	Arnd
