@@ -1,42 +1,124 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v4 1/2] tty: serial: 8250: Add Mediatek UART driver
-Date: Tue, 2 Sep 2014 12:35:30 +0100
-Message-ID: <20140902113530.GC7241@leverpostej>
-References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
- <1407852737-17265-2-git-send-email-matthias.bgg@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH RESEND 5/5] tty/serial: at91: add interrupts for modem
+ control lines
+Date: Tue, 02 Sep 2014 07:40:18 -0400
+Message-ID: <5405ACA2.5010308@hurleysoftware.com>
+References: <1400005245-11943-1-git-send-email-richard.genoud@gmail.com> <1400005245-11943-6-git-send-email-richard.genoud@gmail.com> <53E7C8F8.1080507@hurleysoftware.com> <CACQ1gAguMJM3iBSh9RN9Sbq8c-DfQUhzFPOXav2CASVHA6Rxdw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:44442 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752461AbaIBLfc (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53410 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752461AbaIBLk3 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 07:35:32 -0400
-Content-Disposition: inline
-In-Reply-To: <1407852737-17265-2-git-send-email-matthias.bgg@gmail.com>
-Content-Language: en-US
+	Tue, 2 Sep 2014 07:40:29 -0400
+In-Reply-To: <CACQ1gAguMJM3iBSh9RN9Sbq8c-DfQUhzFPOXav2CASVHA6Rxdw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "rdunlap@infradead.org" <rdunlap@infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "alan@linux.intel.com" <alan@linux.intel.com>, "varkabhadram@gmail.com" <varkabhadram@gmail.com>, "tklauser@distanz.ch" <tklauser@distanz.ch>, "heiko@sntech.de" <heiko@sntech.de>, "yingjoe.chen@gmail.com" <yingjoe.chen@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yegor Yefremov <yegor_sub1@visionsystems.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-[...]
+On 09/01/2014 05:26 AM, Richard Genoud wrote:
+> 2014-08-10 21:33 GMT+02:00 Peter Hurley <peter@hurleysoftware.com>:
+>> Hi Richard,
+> 
+> Hi !
+> Sorry for the delay !
+> 
+>> On 05/13/2014 02:20 PM, Richard Genoud wrote:
+>>> Handle CTS/DSR/RI/DCD GPIO interrupts in atmel_serial.
+>>>
+>>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>>> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+>>> ---
+>>>  drivers/tty/serial/atmel_serial.c |  125 ++++++++++++++++++++++++++++++++++++-
+>>>  1 file changed, 122 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+>>> index 43ca659..3fceae0 100644
+>>> --- a/drivers/tty/serial/atmel_serial.c
+>>> +++ b/drivers/tty/serial/atmel_serial.c
+>>> @@ -45,6 +45,7 @@
+>>>  #include <linux/gpio.h>
+>>>  #include <linux/gpio/consumer.h>
+>>>  #include <linux/err.h>
+>>> +#include <linux/irq.h>
+>>>
+>>>  #include <asm/io.h>
+>>>  #include <asm/ioctls.h>
+>>> @@ -167,7 +168,9 @@ struct atmel_uart_port {
+>>>
+>>>       struct serial_rs485     rs485;          /* rs485 settings */
+>>>       struct mctrl_gpios      *gpios;
+>>> +     int                     gpio_irq[UART_GPIO_MAX];
+>>>       unsigned int            tx_done_mask;
+>>> +     bool                    ms_irq_enabled;
+>>>       bool                    is_usart;       /* usart or uart */
+>>>       struct timer_list       uart_timer;     /* uart timer */
+>>>       int (*prepare_rx)(struct uart_port *port);
+>>> @@ -489,8 +492,38 @@ static void atmel_stop_rx(struct uart_port *port)
+>>>   */
+>>>  static void atmel_enable_ms(struct uart_port *port)
+>>>  {
+>>> -     UART_PUT_IER(port, ATMEL_US_RIIC | ATMEL_US_DSRIC
+>>> -                     | ATMEL_US_DCDIC | ATMEL_US_CTSIC);
+>>> +     struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+>>> +     uint32_t ier = 0;
+>>> +
+>>> +     /*
+>>> +      * Interrupt should not be enabled twice
+>>> +      */
+>>> +     if (atmel_port->ms_irq_enabled)
+>>> +             return;
+>>> +
+>>> +     atmel_port->ms_irq_enabled = true;
+>>> +
+>>> +     if (atmel_port->gpio_irq[UART_GPIO_CTS] >= 0)
+>>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_CTS]);
+>>> +     else
+>>> +             ier |= ATMEL_US_CTSIC;
+>>> +
+>>> +     if (atmel_port->gpio_irq[UART_GPIO_DSR] >= 0)
+>>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_DSR]);
+>>> +     else
+>>> +             ier |= ATMEL_US_DSRIC;
+>>> +
+>>> +     if (atmel_port->gpio_irq[UART_GPIO_RI] >= 0)
+>>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_RI]);
+>>> +     else
+>>> +             ier |= ATMEL_US_RIIC;
+>>> +
+>>> +     if (atmel_port->gpio_irq[UART_GPIO_DCD] >= 0)
+>>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_DCD]);
+>>> +     else
+>>> +             ier |= ATMEL_US_DCDIC;
+>>
+>> Where are these gpio irqs disabled if !UART_ENABLE_MS()?
+> They are disabled in atmel_shutdown()/atmel_free_gpio_irq().
+> Like the doc says in Documentation/serial/driver
+>   enable_ms(port)
+>     Enable the modem status interrupts.
+> 
+>     This method may be called multiple times.  Modem status
+>     interrupts should be disabled when the shutdown method is
+>     called.
 
-> +static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
-> +			   struct mtk8250_data *data)
-> +{
-> +	int err;
-> +	struct device_node *np = pdev->dev.of_node;
-> +
-> +	data->clk = of_clk_get(np, 0);
-> +	if (IS_ERR(data->clk)) {
-> +		dev_warn(&pdev->dev, "Can't get timer clock\n");
-> +		return PTR_ERR(data->clk);
-> +	}
+Thanks for replying.
 
-Elsewhere you use devm_ interfaces. Can we not use devm_clk_get?
+The point of the UART_ENABLE_MS() macro is to allow the UART driver
+to determine if modem status interrupts need to be enabled when
+handling the .set_termios() method.
 
-You might need to give the clock a name, but that's generally a good
-thing -- it helps if a future revision has multiple clocks.
+When handling set_termios(), if UART_ENABLE_MS is false (ie., the
+serial core does not require modem status interrupts), the UART
+driver can and should turn modem status interrupts off.
 
-Mark.
+It is _also_ true that "modem status interrupts should be disabled
+when the shutdown method is called"; in fact, _all_ UART-sourced
+interrupts should be disabled when the shutdown method is called.
+
+Regards,
+Peter Hurley
+
