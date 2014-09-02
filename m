@@ -1,114 +1,122 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 03/26] serial: imx: Fix x_char handling and tx flow control
-Date: Tue,  2 Sep 2014 17:39:12 -0400
-Message-ID: <1409693975-1028-4-git-send-email-peter@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH 01/26] Revert "serial: uart: add hw flow control support
+ configuration"
+Date: Tue, 2 Sep 2014 17:50:25 -0400
+Message-ID: <54063BA1.2030206@ti.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-2-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:59343 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754897AbaIBVkF (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 17:40:05 -0400
-In-Reply-To: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+Received: from bear.ext.ti.com ([192.94.94.41]:47167 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751383AbaIBVuT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 2 Sep 2014 17:50:19 -0400
+In-Reply-To: <1409693975-1028-2-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 
-The serial core expects the UART driver to transmit x_char
-(START/STOP chars) even if tx is stopped and before data already
-in the tx ring buffer if possible. Also, sending x_char must
-not cause additional data in the tx ring buffer to transmit
-if tx is stopped.
+Peter,
 
-Cause x_char to be transmitted before any other data is sent.
-Auto-stop tx if the tx ring buffer is empty or tx should be stopped.
-Only perform one write wakeup if tx ring buffer space is below
-threshold.
+On 09/02/2014 05:39 PM, Peter Hurley wrote:
+>  Finally, this patch
+> supposes to fix existing bugs in the serial core for auto CTS-enabled
+> hardware, but does not include the class of hardware for which these
+> bugs exist.
 
-x_char handling in DMA mode is still broken; add FIXME.
+What is this? What class of hardware are you referring to?
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/imx.c | 39 ++++++++++++++++-----------------------
- 1 file changed, 16 insertions(+), 23 deletions(-)
+As discussed, I will send an updated patch for this as discussed..
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 044e86d..c86f153 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -464,9 +464,19 @@ static inline void imx_transmit_buffer(struct imx_port *sport)
- {
- 	struct circ_buf *xmit = &sport->port.state->xmit;
- 
-+	if (sport->port.x_char) {
-+		/* Send next char */
-+		writel(sport->port.x_char, sport->port.membase + URTX0);
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+		imx_stop_tx(&sport->port);
-+		return;
-+	}
-+
- 	while (!uart_circ_empty(xmit) &&
--			!(readl(sport->port.membase + uts_reg(sport))
--				& UTS_TXFULL)) {
-+	       !(readl(sport->port.membase + uts_reg(sport)) & UTS_TXFULL)) {
- 		/* send xmit->buf[xmit->tail]
- 		 * out the port here */
- 		writel(xmit->buf[xmit->tail], sport->port.membase + URTX0);
-@@ -567,9 +577,6 @@ static void imx_start_tx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
- 	unsigned long temp;
- 
--	if (uart_circ_empty(&port->state->xmit))
--		return;
--
- 	if (USE_IRDA(sport)) {
- 		/* half duplex in IrDA mode; have to disable receive mode */
- 		temp = readl(sport->port.membase + UCR4);
-@@ -604,7 +611,10 @@ static void imx_start_tx(struct uart_port *port)
- 	}
- 
- 	if (sport->dma_is_enabled) {
--		imx_dma_tx(sport);
-+		/* FIXME: port->x_char must be transmitted if != 0 */
-+		if (!uart_circ_empty(&port->state->xmit) &&
-+		    !uart_tx_stopped(port))
-+			imx_dma_tx(sport);
- 		return;
- 	}
- 
-@@ -632,27 +642,10 @@ static irqreturn_t imx_rtsint(int irq, void *dev_id)
- static irqreturn_t imx_txint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
--	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
--	if (sport->port.x_char) {
--		/* Send next char */
--		writel(sport->port.x_char, sport->port.membase + URTX0);
--		goto out;
--	}
--
--	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
--		imx_stop_tx(&sport->port);
--		goto out;
--	}
--
- 	imx_transmit_buffer(sport);
--
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
--		uart_write_wakeup(&sport->port);
--
--out:
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 	return IRQ_HANDLED;
- }
--- 
-2.1.0
+Regards,
+
+Murali
+>
+> CC: Murali Karicheri<m-karicheri2@ti.com>
+> CC: Rob Herring<robh+dt@kernel.org>
+> Signed-off-by: Peter Hurley<peter@hurleysoftware.com>
+> ---
+>   Documentation/devicetree/bindings/serial/of-serial.txt |  1 -
+>   drivers/tty/serial/8250/8250_core.c                    |  6 ++----
+>   drivers/tty/serial/of_serial.c                         |  4 ----
+>   drivers/tty/serial/serial_core.c                       | 12 +++---------
+>   4 files changed, 5 insertions(+), 18 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/of-serial.txt
+> index 7705477..1928a3e 100644
+> --- a/Documentation/devicetree/bindings/serial/of-serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/of-serial.txt
+> @@ -37,7 +37,6 @@ Optional properties:
+>   - auto-flow-control: one way to enable automatic flow control support. The
+>     driver is allowed to detect support for the capability even without this
+>     property.
+> -- has-hw-flow-control: the hardware has flow control capability.
+>
+>   Example:
+>
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 7a91c6d..109da60 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -2333,11 +2333,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+>   	 * the trigger, or the MCR RTS bit is cleared.  In the case where
+>   	 * the remote UART is not using CTS auto flow control, we must
+>   	 * have sufficient FIFO entries for the latency of the remote
+> -	 * UART to respond.  IOW, at least 32 bytes of FIFO. Also enable
+> -	 * AFE if hw flow control is supported
+> +	 * UART to respond.  IOW, at least 32 bytes of FIFO.
+>   	 */
+> -	if ((up->capabilities&  UART_CAP_AFE&&  (port->fifosize>= 32)) ||
+> -	    (port->flags&  UPF_HARD_FLOW)) {
+> +	if (up->capabilities&  UART_CAP_AFE&&  port->fifosize>= 32) {
+>   		up->mcr&= ~UART_MCR_AFE;
+>   		if (termios->c_cflag&  CRTSCTS)
+>   			up->mcr |= UART_MCR_AFE;
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index 68d4455..27981e2 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -183,10 +183,6 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+>   					  "auto-flow-control"))
+>   			port8250.capabilities |= UART_CAP_AFE;
+>
+> -		if (of_property_read_bool(ofdev->dev.of_node,
+> -					  "has-hw-flow-control"))
+> -			port8250.port.flags |= UPF_HARD_FLOW;
+> -
+>   		ret = serial8250_register_8250_port(&port8250);
+>   		break;
+>   	}
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index c2f90ec..261e49e 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -174,12 +174,8 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>   			if (tty->termios.c_cflag&  CBAUD)
+>   				uart_set_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
+>   		}
+> -		/*
+> -		 * if hw support flow control without software intervention,
+> -		 * then skip the below check
+> -		 */
+> -		if (tty_port_cts_enabled(port)&&
+> -		    !(uport->flags&  UPF_HARD_FLOW)) {
+> +
+> +		if (tty_port_cts_enabled(port)) {
+>   			spin_lock_irq(&uport->lock);
+>   			if (!(uport->ops->get_mctrl(uport)&  TIOCM_CTS))
+>   				tty->hw_stopped = 1;
+> @@ -2777,9 +2773,7 @@ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
+>
+>   	uport->icount.cts++;
+>
+> -	/* skip below code if the hw flow control is supported */
+> -	if (tty_port_cts_enabled(port)&&
+> -	    !(uport->flags&  UPF_HARD_FLOW)) {
+> +	if (tty_port_cts_enabled(port)) {
+>   		if (tty->hw_stopped) {
+>   			if (status) {
+>   				tty->hw_stopped = 0;
 
