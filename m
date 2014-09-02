@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 12/26] serial: core: Unwrap tertiary assignment in uart_handle_dcd_change()
-Date: Tue,  2 Sep 2014 17:39:21 -0400
-Message-ID: <1409693975-1028-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 10/26] serial: core: Document lock requirement for UPF_* flags updates
+Date: Tue,  2 Sep 2014 17:39:19 -0400
+Message-ID: <1409693975-1028-11-git-send-email-peter@hurleysoftware.com>
 References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
@@ -10,38 +10,26 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Prepare for spin lock assertion; move non-trivial assignment into
-function body.
+The flags field of struct uart_port can only be safely modified
+if the port mutex is held; no other lock prevents concurrent
+changes from corrupting the field.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/serial_core.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ include/linux/serial_core.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 11c8fe6..732d386 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2736,12 +2736,15 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
- {
- 	struct tty_port *port = &uport->state->port;
- 	struct tty_struct *tty = port->tty;
--	struct tty_ldisc *ld = tty ? tty_ldisc_ref(tty) : NULL;
-+	struct tty_ldisc *ld;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 5bbb809..4a43292 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -152,6 +152,7 @@ struct uart_port {
+ 	unsigned long		sysrq;			/* sysrq timeout */
+ #endif
  
--	if (ld) {
--		if (ld->ops->dcd_change)
--			ld->ops->dcd_change(tty, status);
--		tty_ldisc_deref(ld);
-+	if (tty) {
-+		ld = tty_ldisc_ref(tty);
-+		if (ld) {
-+			if (ld->ops->dcd_change)
-+				ld->ops->dcd_change(tty, status);
-+			tty_ldisc_deref(ld);
-+		}
- 	}
++	/* flags must be updated while holding port mutex */
+ 	upf_t			flags;
  
- 	uport->icount.dcd++;
+ #define UPF_FOURPORT		((__force upf_t) (1 << 1))
 -- 
 2.1.0
