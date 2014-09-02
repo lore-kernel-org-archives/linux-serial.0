@@ -1,54 +1,106 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 11/26] serial: 8250: Document serial8250_modem_status() locking
-Date: Tue,  2 Sep 2014 17:39:20 -0400
-Message-ID: <1409693975-1028-12-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 18/26] usb: serial: Remove unused tty->hw_stopped
+Date: Tue,  2 Sep 2014 17:39:27 -0400
+Message-ID: <1409693975-1028-19-git-send-email-peter@hurleysoftware.com>
 References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Existing callers of serial8250_modem_status() [1] hold the uart port
-lock; document.
+The tty core does not test tty->hw_stopped; remove from drivers
+which don't test it themselves.
 
-[1] In-tree callers of serial8250_modem_status()
-
-drivers/tty/serial/8250/8250_fsl.c
-  fsl8250_handle_irq()
-
-drivers/tty/serial/8250/8250_core.c
-  serial8250_handle_irq()
-  serial8250_console_write()
-  serial8250_get_mctrl() *
-
-* Call graphs for callers of serial8250_get_mctrl() from the function
-  which acquires the uart port lock
-
-drivers/tty/serial/serial_core.c
-  uart_port_startup()
-  uart_tiocmget()
-  uart_set_termios()
-  uart_carrier_raised()
-    ops->get_mctrl() ---> serial8250_get_mctrl()
-
+cc: Johan Hovold <johan@kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/digi_acceleport.c  | 7 +------
+ drivers/usb/serial/io_ti.c            | 7 +------
+ drivers/usb/serial/ti_usb_3410_5052.c | 7 +------
+ 3 files changed, 3 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 109da60..d2615e3b 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1467,6 +1467,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
- }
- EXPORT_SYMBOL_GPL(serial8250_tx_chars);
+diff --git a/drivers/usb/serial/digi_acceleport.c b/drivers/usb/serial/digi_acceleport.c
+index 8a23c53..12b0e67 100644
+--- a/drivers/usb/serial/digi_acceleport.c
++++ b/drivers/usb/serial/digi_acceleport.c
+@@ -834,7 +834,6 @@ static void digi_set_termios(struct tty_struct *tty,
+ 			arg |= DIGI_OUTPUT_FLOW_CONTROL_CTS;
+ 		} else {
+ 			arg &= ~DIGI_OUTPUT_FLOW_CONTROL_CTS;
+-			tty->hw_stopped = 0;
+ 		}
  
-+/* Caller holds uart port lock */
- unsigned int serial8250_modem_status(struct uart_8250_port *up)
- {
- 	struct uart_port *port = &up->port;
+ 		buf[i++] = DIGI_CMD_SET_OUTPUT_FLOW_CONTROL;
+@@ -1500,15 +1499,11 @@ static int digi_read_oob_callback(struct urb *urb)
+ 			if (val & DIGI_READ_INPUT_SIGNALS_CTS) {
+ 				priv->dp_modem_signals |= TIOCM_CTS;
+ 				/* port must be open to use tty struct */
+-				if (rts) {
+-					tty->hw_stopped = 0;
++				if (rts)
+ 					tty_port_tty_wakeup(&port->port);
+-				}
+ 			} else {
+ 				priv->dp_modem_signals &= ~TIOCM_CTS;
+ 				/* port must be open to use tty struct */
+-				if (rts)
+-					tty->hw_stopped = 1;
+ 			}
+ 			if (val & DIGI_READ_INPUT_SIGNALS_DSR)
+ 				priv->dp_modem_signals |= TIOCM_DSR;
+diff --git a/drivers/usb/serial/io_ti.c b/drivers/usb/serial/io_ti.c
+index c0a42e9..ddbb8fe 100644
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -1456,12 +1456,8 @@ static void handle_new_msr(struct edgeport_port *edge_port, __u8 msr)
+ 	tty = tty_port_tty_get(&edge_port->port->port);
+ 	/* handle CTS flow control */
+ 	if (tty && C_CRTSCTS(tty)) {
+-		if (msr & EDGEPORT_MSR_CTS) {
+-			tty->hw_stopped = 0;
++		if (msr & EDGEPORT_MSR_CTS)
+ 			tty_wakeup(tty);
+-		} else {
+-			tty->hw_stopped = 1;
+-		}
+ 	}
+ 	tty_kref_put(tty);
+ }
+@@ -2177,7 +2173,6 @@ static void change_port_settings(struct tty_struct *tty,
+ 		dev_dbg(dev, "%s - RTS/CTS is enabled\n", __func__);
+ 	} else {
+ 		dev_dbg(dev, "%s - RTS/CTS is disabled\n", __func__);
+-		tty->hw_stopped = 0;
+ 		restart_read(edge_port);
+ 	}
+ 
+diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
+index 3dd3ff8..e9da41d 100644
+--- a/drivers/usb/serial/ti_usb_3410_5052.c
++++ b/drivers/usb/serial/ti_usb_3410_5052.c
+@@ -773,7 +773,6 @@ static void ti_set_termios(struct tty_struct *tty,
+ 			config->wFlags |= TI_UART_ENABLE_RTS_IN;
+ 		config->wFlags |= TI_UART_ENABLE_CTS_OUT;
+ 	} else {
+-		tty->hw_stopped = 0;
+ 		ti_restart_read(tport, tty);
+ 	}
+ 
+@@ -1291,12 +1290,8 @@ static void ti_handle_new_msr(struct ti_port *tport, __u8 msr)
+ 	/* handle CTS flow control */
+ 	tty = tty_port_tty_get(&tport->tp_port->port);
+ 	if (tty && C_CRTSCTS(tty)) {
+-		if (msr & TI_MSR_CTS) {
+-			tty->hw_stopped = 0;
++		if (msr & TI_MSR_CTS)
+ 			tty_wakeup(tty);
+-		} else {
+-			tty->hw_stopped = 1;
+-		}
+ 	}
+ 	tty_kref_put(tty);
+ }
 -- 
 2.1.0
