@@ -1,113 +1,71 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
-Date: Tue, 02 Sep 2014 11:06:30 +0100
-Message-ID: <540596A6.8000608@arm.com>
-References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com> <1409328803-1953-2-git-send-email-andre.przywara@arm.com> <CAL_JsqJbAWRhduzMwdQMh8sDdVqTWVK2Ej9LQjx4gp2ifwxe6Q@mail.gmail.com>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 0/2] tty: serial: Add mediatek UART driver
+Date: Tue, 2 Sep 2014 12:08:40 +0200
+Message-ID: <CABuKBeKBr_-riVqDzhepE9goosuaNocHH0K=5XsONEEvSXPi_w@mail.gmail.com>
+References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:42920 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750722AbaIBKHI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 06:07:08 -0400
-In-Reply-To: <CAL_JsqJbAWRhduzMwdQMh8sDdVqTWVK2Ej9LQjx4gp2ifwxe6Q@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1407852737-17265-1-git-send-email-matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, jslaby-AlSwsSmVLrQ@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Varka Bhadram <varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Yingjoe Chen <yingjoe.chen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Russell King <linux@arm.linux.org.uk>, LKML <linux-kernel@vger.kernel.org>
 
-Hi Rob,
+2014-08-12 16:12 GMT+02:00 Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
+> This patch set adds support for the UART found in Mediatek SoCs.
+> The chip is a changed version of a 8250 controller.
+> Especially it introduces a new register called highspeed. The value
+> in this register has to be set depending on the baudrate. The value
+> in the register influences the way the divisor has to be calculated.
+>
+> The patch series is build against v3.16-rc1 and tested on mt6589. Should
+> work as well on mt6577 and mt6582.
+>
+> Thanks,
+> Matthias
 
-thanks for looking at this.
+Ping: Does anyone has any comment on this series?
+Sorry, last mail was HTML by accident.
 
-On 02/09/14 04:06, Rob Herring wrote:
-> On Fri, Aug 29, 2014 at 11:13 AM, Andre Przywara <andre.przywara@arm.com> wrote:
->> The ARM Server Base System Architecture (SBSA) describes a generic
->> UART which all compliant level 1 systems should implement. This is
->> actually a PL011 subset, so a full PL011 implementation will satisfy
->> this requirement.
->> However if a system does not have a PL011, a very stripped down
->> implementation complying to the SBSA defined specification will
->> suffice. The Linux PL011 driver is not guaranteed to drive this
->> limited device (and indeed the fast model implentation hangs the
->> kernel if driven by the PL011 driver).
->> So introduce a new driver just implementing the part specified by the
->> SBSA (which lacks DMA, the modem control signals and many of the
->> registers including baud rate control). This driver has been derived
->> by the actual PL011 one, removing all unnecessary code.
->>
->> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
->> ---
->>  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |    6 +
->>  drivers/tty/serial/Kconfig                         |   28 +
->>  drivers/tty/serial/Makefile                        |    1 +
->>  drivers/tty/serial/sbsa_uart.c                     |  793 ++++++++++++++++++++
->>  include/uapi/linux/serial_core.h                   |    1 +
-> 
-> Sorry, but I think this is all wrong. We've now just duplicated some
-> subset of the pl011 driver leaving out the parts like setting baudrate
-> which can never be added since those things could be different for
-> every vendor.
-> 
-> The original intent of the SBSA uart was to provide a common early
-> debug uart. It was not to have a full fledged driver. I think the SBSA
-> has failed in this area and created the potential to create a mess of
-> serial drivers different for every vendor. Reality will hopefully not
-> be that extreme and most vendors will just use the pl011 and create
-> their value add somewhere besides the uart. For the purpose of debug
-> output, we already support that as the pl011 earlycon only touches
-> SBSA compatible registers.
+>
+> Changes for v4:
+> - delete owner in platform driver instance
+> - pass plattform_device to mtk8250_probe_of
+> - reorganise probe function to error out early
+> - Fix DTS documentation
+>
+> Changes for v3:
+> - use dev_warn instead of pr_warn
+> - use 8250_core function to update termios
+>
+> Changes for v2:
+> - drop 8250_core capability extension for the chip
+> - encapsulate set_termios in the driver method
+>
+> ---
+>
+> Matthias Brugger (2):
+>   tty: serial: 8250: Add Mediatek UART driver
+>   DTS: serial: Add bindings documention for the Mediatek UARTs
+>
+>  .../devicetree/bindings/serial/mtk-uart.txt        |   20 ++
+>  drivers/tty/serial/8250/8250_mtk.c                 |  294 ++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig                    |    7 +
+>  drivers/tty/serial/8250/Makefile                   |    1 +
+>  4 files changed, 322 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
+>  create mode 100644 drivers/tty/serial/8250/8250_mtk.c
+>
+> --
+> 1.7.9.5
+>
 
-I see your point (and was actually looking for those kind of comments
-when posting this).
-I agree to that debug aspect and understand that earlycon already does
-this, but I think we need some support beyond earlycon, to be able to
-login and use it as a console (which is not possible with earlycon,
-right?) This is probably still for debugging or emergency access to the
-system only, but maybe also for logging - actually quite similar to how
-UARTs are used on today's x86 servers.
-So after having written three incarnations of this driver (goldfish
-based, PL010 based, PL011 based) I wonder if supporting the SBSA subset
-in the real PL011 driver is an option. Either this would be enabled by a
-new explicit DT property or preferably by a clever compatible string.
-Ideally we would just provide a different set of "struct uart_ops"
-members, with some pointing to generic PL011 routines, some to SBSA UART
-specific ones.
-Maybe we make the full featured PL011 support a config option
-(defaulting to y), allowing people to only use the SBSA subset in their
-kernel?
 
-Does that make more sense? (for a general SBSA h/w rationale see below)
 
->>  5 files changed, 829 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
->>  create mode 100644 drivers/tty/serial/sbsa_uart.c
->>
->> diff --git a/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
->> new file mode 100644
->> index 0000000..8e2c5d6
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
->> @@ -0,0 +1,6 @@
->> +* ARM SBSA defined generic UART
->> +
->> +Required properties:
->> +- compatible: must be "arm,sbsa-uart"
-> 
-> This alone is not okay. There is no such implementation of hardware.
-
-But the SBSA explicitly allows this. I don't know of any vendor who just
-implements the subset, but I've been told that this has been asked for.
-
-> The DT must specify the implementation such as pl011.
-
-If it is a full featured PL011: sure. Then we don't need this driver at
-all and just use the SBSA UART spec as a guideline for our earlycon
-implementation.
-I will try to learn if there is someone actually implementing only the
-subset.
-
-Cheers,
-Andre.
+-- 
+motzblog.wordpress.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
