@@ -1,64 +1,60 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
-Date: Tue, 02 Sep 2014 20:39:22 +0200
-Message-ID: <54060EDA.6060204@linutronix.de>
-References: <20140815210211.GD9239@atomide.com> <53F5AF0D.5060409@linutronix.de> <20140821184416.GF10066@atomide.com> <53FE3779.5090908@linutronix.de> <20140827202313.GF16006@atomide.com> <20140828082348.GA5413@linutronix.de> <20140828164645.GG16006@atomide.com> <53FF84DF.7080406@linutronix.de> <20140828225454.GM16006@atomide.com> <540048B4.7010807@linutronix.de> <20140829161221.GO16006@atomide.com> <5404B149.6010400@linutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
+Date: Tue, 02 Sep 2014 21:34:43 +0200
+Message-ID: <2856634.LN9gbfSP9v@wuerfel>
+References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com> <3749748.k4a1nSHDdj@wuerfel> <CAL_JsqKGbSd5BymnFhT8KBjbBCPO8wsrHhG9Qn20c7mrrxTDDA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:38925 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751850AbaIBSjg (ORCPT
+Received: from mout.kundenserver.de ([212.227.17.13]:62457 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754692AbaIBTew (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 14:39:36 -0400
-In-Reply-To: <5404B149.6010400@linutronix.de>
+	Tue, 2 Sep 2014 15:34:52 -0400
+In-Reply-To: <CAL_JsqKGbSd5BymnFhT8KBjbBCPO8wsrHhG9Qn20c7mrrxTDDA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: balbi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Walmsley <paul@pwsan.com>
+To: Rob Herring <robherring2@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 
-On 09/01/2014 07:47 PM, Sebastian Andrzej Siewior wrote:
-> Comparing it with serial-omap I see the same thing: I takes approx the
-> same amount of data until the first one is displayed. After a lot of
-> "long" writes which wake the chip up from idle I manage to freeze both,
-> the serial-omap driver and mine driver.
-
-So after some testing:
-- it happens with omap-serial as well. Especially after disabling the
-  LED trigger for both LEDs.
-
-- it seemed that disabling the MDR1 check whether or not we lost
-  context made the problem appear less often but it was a trick. Even
-  with restoring the context each time I see the same problem.
-
-- it seems to be easier to trigger with the LED trigger switched off.
-  However sometimes it works for 10 minutes, sometimes it triggers
-  after one.
-
-- I see to face two kind of "deaths":
-  - the LED still goes on and off and the uart just does not respond
-    even if I tell the button print something on the screen (the button
-    also changes the frequency of the LED so I know that the button is
-    doing something).
-    Also from dumping the content of /proc/interrupts it seems that a
-    wake up is made, the uart should have restored the registers.
-
-  - one where the system is dead and the LED does not blink anymore.
-    Also my button is dead.
-
-- disabling DMA makes the problem not go away.
-
-- mdelay(25) in omap8250_lost_context() is long enough to drop the 403
-  bytes I send in my testcase. That means I see only "good" characters.
-  With this the box remained alive for 2h. However the uart died anyway.
-
->>
->> Regards,
->>
->> Tony
->>
+On Tuesday 02 September 2014 12:38:23 Rob Herring wrote:
+> On Tue, Sep 2, 2014 at 8:48 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Tuesday 02 September 2014 08:20:53 Rob Herring wrote:
+> >> >>
+> >> >> This alone is not okay. There is no such implementation of hardware.
+> >> >
+> >> > But the SBSA explicitly allows this. I don't know of any vendor who just
+> >> > implements the subset, but I've been told that this has been asked for.
+> >>
+> >> To use baudrate as an example, that must be configurable somehow
+> >> either with pl011 registers or in a vendor specific way. I suppose you
+> >> could do an actual implementation with all those things hardcoded in
+> >> the design, but that seems unlikely.
+> >
+> > Why does the baudrate need to be configurable? I think it's completely
+> > reasonable to specify a console port that has a fixed (as in the
+> > OS must not care) rate, and that can be implemented either as a UART
+> > with a programmable rate or as a set of registers that directly talks
+> > to a remote system management device over whatever hardware protocol
+> > they choose.
 > 
+> Sure. It is also completely reasonable that baudrate is configurable
+> and vendors can implement it however they choose since the SBSA does
+> not specify it. IIRC, the enabling and disabling bits are not
+> specified either.
+> 
+> Not having configurability is simply one variation on possible
+> implementations.
 
-Sebastian
+It's not obvious to me though that we are served better by a
+pl011 driver that allows any possible subset of the features,
+rather than having the existing driver for pl011, and a new driver
+for the sbsa subset, which then won't allow any of the optional
+features.
 
+Yes, there is some duplication, but a driver for this kind of
+dumb console port should be doable in very little code, at
+least less than the proposed implementation.
+
+	Arnd
