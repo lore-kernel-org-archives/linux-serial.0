@@ -1,124 +1,157 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH RESEND 5/5] tty/serial: at91: add interrupts for modem
- control lines
-Date: Tue, 02 Sep 2014 07:40:18 -0400
-Message-ID: <5405ACA2.5010308@hurleysoftware.com>
-References: <1400005245-11943-1-git-send-email-richard.genoud@gmail.com> <1400005245-11943-6-git-send-email-richard.genoud@gmail.com> <53E7C8F8.1080507@hurleysoftware.com> <CACQ1gAguMJM3iBSh9RN9Sbq8c-DfQUhzFPOXav2CASVHA6Rxdw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53410 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752461AbaIBLk3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 2 Sep 2014 07:40:29 -0400
-In-Reply-To: <CACQ1gAguMJM3iBSh9RN9Sbq8c-DfQUhzFPOXav2CASVHA6Rxdw@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH v11 19/19] serial: imx: Add support for KGDB's FIQ/NMI mode
+Date: Tue,  2 Sep 2014 14:00:53 +0100
+Message-ID: <1409662853-29313-20-git-send-email-daniel.thompson@linaro.org>
+References: <1408466769-20004-1-git-send-email-daniel.thompson@linaro.org>
+ <1409662853-29313-1-git-send-email-daniel.thompson@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1409662853-29313-1-git-send-email-daniel.thompson@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kgdb-bugreport@lists.sourceforge.net, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Anton Vorontsov <anton.vorontsov@linaro.org>, Colin Cross <ccross@android.com>, kernel-team@android.com, Rob Herring <robherring2@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Ben Dooks <ben.dooks@codethink.co.uk>, Catalin Marinas <catalin.marinas@arm.com>, Dave Martin <Dave.Martin@arm.com>, Fabio Estevam <festevam@gmail.com>, Frederic Weisbecker <fweisbec@gmail.com>, Nicolas Pitre <nico@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yegor Yefremov <yegor_sub1@visionsystems.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On 09/01/2014 05:26 AM, Richard Genoud wrote:
-> 2014-08-10 21:33 GMT+02:00 Peter Hurley <peter@hurleysoftware.com>:
->> Hi Richard,
-> 
-> Hi !
-> Sorry for the delay !
-> 
->> On 05/13/2014 02:20 PM, Richard Genoud wrote:
->>> Handle CTS/DSR/RI/DCD GPIO interrupts in atmel_serial.
->>>
->>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
->>> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
->>> ---
->>>  drivers/tty/serial/atmel_serial.c |  125 ++++++++++++++++++++++++++++++++++++-
->>>  1 file changed, 122 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->>> index 43ca659..3fceae0 100644
->>> --- a/drivers/tty/serial/atmel_serial.c
->>> +++ b/drivers/tty/serial/atmel_serial.c
->>> @@ -45,6 +45,7 @@
->>>  #include <linux/gpio.h>
->>>  #include <linux/gpio/consumer.h>
->>>  #include <linux/err.h>
->>> +#include <linux/irq.h>
->>>
->>>  #include <asm/io.h>
->>>  #include <asm/ioctls.h>
->>> @@ -167,7 +168,9 @@ struct atmel_uart_port {
->>>
->>>       struct serial_rs485     rs485;          /* rs485 settings */
->>>       struct mctrl_gpios      *gpios;
->>> +     int                     gpio_irq[UART_GPIO_MAX];
->>>       unsigned int            tx_done_mask;
->>> +     bool                    ms_irq_enabled;
->>>       bool                    is_usart;       /* usart or uart */
->>>       struct timer_list       uart_timer;     /* uart timer */
->>>       int (*prepare_rx)(struct uart_port *port);
->>> @@ -489,8 +492,38 @@ static void atmel_stop_rx(struct uart_port *port)
->>>   */
->>>  static void atmel_enable_ms(struct uart_port *port)
->>>  {
->>> -     UART_PUT_IER(port, ATMEL_US_RIIC | ATMEL_US_DSRIC
->>> -                     | ATMEL_US_DCDIC | ATMEL_US_CTSIC);
->>> +     struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->>> +     uint32_t ier = 0;
->>> +
->>> +     /*
->>> +      * Interrupt should not be enabled twice
->>> +      */
->>> +     if (atmel_port->ms_irq_enabled)
->>> +             return;
->>> +
->>> +     atmel_port->ms_irq_enabled = true;
->>> +
->>> +     if (atmel_port->gpio_irq[UART_GPIO_CTS] >= 0)
->>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_CTS]);
->>> +     else
->>> +             ier |= ATMEL_US_CTSIC;
->>> +
->>> +     if (atmel_port->gpio_irq[UART_GPIO_DSR] >= 0)
->>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_DSR]);
->>> +     else
->>> +             ier |= ATMEL_US_DSRIC;
->>> +
->>> +     if (atmel_port->gpio_irq[UART_GPIO_RI] >= 0)
->>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_RI]);
->>> +     else
->>> +             ier |= ATMEL_US_RIIC;
->>> +
->>> +     if (atmel_port->gpio_irq[UART_GPIO_DCD] >= 0)
->>> +             enable_irq(atmel_port->gpio_irq[UART_GPIO_DCD]);
->>> +     else
->>> +             ier |= ATMEL_US_DCDIC;
->>
->> Where are these gpio irqs disabled if !UART_ENABLE_MS()?
-> They are disabled in atmel_shutdown()/atmel_free_gpio_irq().
-> Like the doc says in Documentation/serial/driver
->   enable_ms(port)
->     Enable the modem status interrupts.
-> 
->     This method may be called multiple times.  Modem status
->     interrupts should be disabled when the shutdown method is
->     called.
+This patch makes it possible to use the imx uart with KGDB's FIQ/NMI
+mode.
 
-Thanks for replying.
+Main changes are:
 
-The point of the UART_ENABLE_MS() macro is to allow the UART driver
-to determine if modem status interrupts need to be enabled when
-handling the .set_termios() method.
+.poll_init() will, if KGDB+FIQ are enabled, perform deeper hardware
+initialization to ensure the serial port is always active (required
+otherwise FIQ is not triggered by UART activity). This has an impact on
+power usage so it is conservatively enabled.
 
-When handling set_termios(), if UART_ENABLE_MS is false (ie., the
-serial core does not require modem status interrupts), the UART
-driver can and should turn modem status interrupts off.
+imx_put_poll_char() has been simplified to remove the code to disable
+interrupts. The present code can corrupt register state when re-entered
+from FIQ handler.
 
-It is _also_ true that "modem status interrupts should be disabled
-when the shutdown method is called"; in fact, _all_ UART-sourced
-interrupts should be disabled when the shutdown method is called.
+Both imx_put_poll_char() and imx_get_poll_char() adopt _relaxed()
+MMIO functions (which are safe for polled I/O and needed to avoid taking
+spin locks).
 
-Regards,
-Peter Hurley
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Acked-by: Dirk Behme <dirk.behme@de.bosch.com>
+---
+ drivers/tty/serial/imx.c | 71 +++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 52 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 983668a..a201c61 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -49,6 +49,7 @@
+ #include <linux/of_device.h>
+ #include <linux/io.h>
+ #include <linux/dma-mapping.h>
++#include <linux/kgdb.h>
+ 
+ #include <asm/irq.h>
+ #include <linux/platform_data/serial-imx.h>
+@@ -1505,44 +1506,73 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
+ }
+ 
+ #if defined(CONFIG_CONSOLE_POLL)
++
++#if defined(CONFIG_KGDB_FIQ)
++/*
++ * Prepare the UART to be used from kgdb's NMI support.
++ */
++static int imx_poll_init(struct uart_port *port)
++{
++	struct imx_port *sport = (struct imx_port *)port;
++	unsigned long flags;
++	unsigned long temp;
++	int retval;
++
++	retval = clk_prepare_enable(sport->clk_ipg);
++	if (retval)
++		return retval;
++	retval = clk_prepare_enable(sport->clk_per);
++	if (retval)
++		clk_disable_unprepare(sport->clk_ipg);
++
++	imx_setup_ufcr(sport, 0);
++
++	spin_lock_irqsave(&sport->port.lock, flags);
++
++	temp = readl(sport->port.membase + UCR1);
++	if (is_imx1_uart(sport))
++		temp |= IMX1_UCR1_UARTCLKEN;
++	temp |= UCR1_UARTEN | UCR1_RRDYEN;
++	temp &= ~(UCR1_TXMPTYEN | UCR1_RTSDEN);
++	writel(temp, sport->port.membase + UCR1);
++
++	temp = readl(sport->port.membase + UCR2);
++	temp |= UCR2_RXEN;
++	writel(temp, sport->port.membase + UCR2);
++
++	spin_unlock_irqrestore(&sport->port.lock, flags);
++
++	/* register the FIQ with kgdb */
++	kgdb_register_fiq(sport->port.irq);
++
++	return 0;
++}
++#endif /* CONFIG_KGDB_FIQ */
++
+ static int imx_poll_get_char(struct uart_port *port)
+ {
+-	if (!(readl(port->membase + USR2) & USR2_RDR))
++	if (!(readl_relaxed(port->membase + USR2) & USR2_RDR))
+ 		return NO_POLL_CHAR;
+ 
+-	return readl(port->membase + URXD0) & URXD_RX_DATA;
++	return readl_relaxed(port->membase + URXD0) & URXD_RX_DATA;
+ }
+ 
+ static void imx_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	struct imx_port_ucrs old_ucr;
+ 	unsigned int status;
+ 
+-	/* save control registers */
+-	imx_port_ucrs_save(port, &old_ucr);
+-
+-	/* disable interrupts */
+-	writel(UCR1_UARTEN, port->membase + UCR1);
+-	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
+-	       port->membase + UCR2);
+-	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
+-	       port->membase + UCR3);
+-
+ 	/* drain */
+ 	do {
+-		status = readl(port->membase + USR1);
++		status = readl_relaxed(port->membase + USR1);
+ 	} while (~status & USR1_TRDY);
+ 
+ 	/* write */
+-	writel(c, port->membase + URTX0);
++	writel_relaxed(c, port->membase + URTX0);
+ 
+ 	/* flush */
+ 	do {
+-		status = readl(port->membase + USR2);
++		status = readl_relaxed(port->membase + USR2);
+ 	} while (~status & USR2_TXDC);
+-
+-	/* restore control registers */
+-	imx_port_ucrs_restore(port, &old_ucr);
+ }
+ #endif
+ 
+@@ -1563,6 +1593,9 @@ static struct uart_ops imx_pops = {
+ 	.config_port	= imx_config_port,
+ 	.verify_port	= imx_verify_port,
+ #if defined(CONFIG_CONSOLE_POLL)
++#if defined(CONFIG_KGDB_FIQ)
++	.poll_init      = imx_poll_init,
++#endif
+ 	.poll_get_char  = imx_poll_get_char,
+ 	.poll_put_char  = imx_poll_put_char,
+ #endif
+-- 
+1.9.3
