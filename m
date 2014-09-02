@@ -1,124 +1,77 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
-Date: Tue, 2 Sep 2014 11:46:55 +0100
-Message-ID: <20140902104654.GB6725@leverpostej>
-References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com>
- <1409328803-1953-2-git-send-email-andre.przywara@arm.com>
- <CAL_JsqJbAWRhduzMwdQMh8sDdVqTWVK2Ej9LQjx4gp2ifwxe6Q@mail.gmail.com>
- <540596A6.8000608@arm.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 2/2] DTS: serial: Add bindings documention for the
+ Mediatek UARTs
+Date: Tue, 2 Sep 2014 12:31:44 +0100
+Message-ID: <20140902113144.GB7241@leverpostej>
+References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
+ <1407852737-17265-3-git-send-email-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <540596A6.8000608@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <1407852737-17265-3-git-send-email-matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <varkabhadram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org" <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org" <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "yingjoe.chen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <yingjoe.chen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 02, 2014 at 11:06:30AM +0100, Andre Przywara wrote:
-> Hi Rob,
+On Tue, Aug 12, 2014 at 03:12:17PM +0100, Matthias Brugger wrote:
+> This patch adds the devicetree documentation for the Mediatek UART.
 > 
-> thanks for looking at this.
+> Signed-off-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  .../devicetree/bindings/serial/mtk-uart.txt        |   20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
 > 
-> On 02/09/14 04:06, Rob Herring wrote:
-> > On Fri, Aug 29, 2014 at 11:13 AM, Andre Przywara <andre.przywara@arm.com> wrote:
-> >> The ARM Server Base System Architecture (SBSA) describes a generic
-> >> UART which all compliant level 1 systems should implement. This is
-> >> actually a PL011 subset, so a full PL011 implementation will satisfy
-> >> this requirement.
-> >> However if a system does not have a PL011, a very stripped down
-> >> implementation complying to the SBSA defined specification will
-> >> suffice. The Linux PL011 driver is not guaranteed to drive this
-> >> limited device (and indeed the fast model implentation hangs the
-> >> kernel if driven by the PL011 driver).
-> >> So introduce a new driver just implementing the part specified by the
-> >> SBSA (which lacks DMA, the modem control signals and many of the
-> >> registers including baud rate control). This driver has been derived
-> >> by the actual PL011 one, removing all unnecessary code.
-> >>
-> >> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> >> ---
-> >>  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |    6 +
-> >>  drivers/tty/serial/Kconfig                         |   28 +
-> >>  drivers/tty/serial/Makefile                        |    1 +
-> >>  drivers/tty/serial/sbsa_uart.c                     |  793 ++++++++++++++++++++
-> >>  include/uapi/linux/serial_core.h                   |    1 +
-> > 
-> > Sorry, but I think this is all wrong. We've now just duplicated some
-> > subset of the pl011 driver leaving out the parts like setting baudrate
-> > which can never be added since those things could be different for
-> > every vendor.
-> > 
-> > The original intent of the SBSA uart was to provide a common early
-> > debug uart. It was not to have a full fledged driver. I think the SBSA
-> > has failed in this area and created the potential to create a mess of
-> > serial drivers different for every vendor. Reality will hopefully not
-> > be that extreme and most vendors will just use the pl011 and create
-> > their value add somewhere besides the uart. For the purpose of debug
-> > output, we already support that as the pl011 earlycon only touches
-> > SBSA compatible registers.
+> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> new file mode 100644
+> index 0000000..6ca0e15
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> @@ -0,0 +1,20 @@
+> +* Mediatek Universal Asynchronous Receiver/Transmitter (UART)
+> +
+> +Required properties:
+> +- compatible: "mediatek,mt6577-uart"
+> +  Compatibility with mt6577, mt6589, mt6582
+> +
+> +- reg: The base address of the UART register bank.
+> +
+> +- interrupts: A single interrupt specifier.
+> +
+> +- clocks: Clock driving the hardware.
+> +
+> +Example:
+> +
+> +	uart0: serial@11006000 {
+> +		compatible = "mediatek,mt6577-uart";
+> +		reg = <0x11006000 0x400>;
+> +		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+> +		clocks = <&uart_clk>;
+> +	};
 
-I agree that we don't want a proliferation of not-quite-pl011 devices
-that we end up having to drive differently.
+This looks generally sane to me. It's simple and doesn't seem to have
+any of the usual problems bindings have.
 
-If we do have such devices I wouldn't want to call them a pl011s for the
-sake of earlycon if they aren't actually pl011s.
+For the mt6577, mt6589, and mt6582, Do you expect to have specific
+strings like:
 
-> I see your point (and was actually looking for those kind of comments
-> when posting this).
-> I agree to that debug aspect and understand that earlycon already does
-> this, but I think we need some support beyond earlycon, to be able to
-> login and use it as a console (which is not possible with earlycon,
-> right?) This is probably still for debugging or emergency access to the
-> system only, but maybe also for logging - actually quite similar to how
-> UARTs are used on today's x86 servers.
-> So after having written three incarnations of this driver (goldfish
-> based, PL010 based, PL011 based) I wonder if supporting the SBSA subset
-> in the real PL011 driver is an option. Either this would be enabled by a
-> new explicit DT property or preferably by a clever compatible string.
-> Ideally we would just provide a different set of "struct uart_ops"
-> members, with some pointing to generic PL011 routines, some to SBSA UART
-> specific ones.
-> Maybe we make the full featured PL011 support a config option
-> (defaulting to y), allowing people to only use the SBSA subset in their
-> kernel?
-> 
-> Does that make more sense? (for a general SBSA h/w rationale see below)
-> 
-> >>  5 files changed, 829 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-> >>  create mode 100644 drivers/tty/serial/sbsa_uart.c
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-> >> new file mode 100644
-> >> index 0000000..8e2c5d6
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-> >> @@ -0,0 +1,6 @@
-> >> +* ARM SBSA defined generic UART
-> >> +
-> >> +Required properties:
-> >> +- compatible: must be "arm,sbsa-uart"
-> > 
-> > This alone is not okay. There is no such implementation of hardware.
+compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
 
-Do you want something like:
+If so, could you update the compatible description to something like:
 
-- compatible: must contain an "arm,sbsa-uart" following a more specific
-  entry from the following list:
+- compatible: should contain:
+  * "mediatek,mt6589-uart" for ...
+  * "mediatek,mt6582-uart" for ...
+  * "mediatek,mt6577-uart" for all compatible UARTS (mt6589,mt6582,mt6577)
 
-  * "arm,pl011"
+That way the driver just needs to recognise "mediatek,mt6577-uart" for
+now but can have quirks later if we discover integration differences.
 
-Or do we need to restructure the pl011 docs entirely?
-
+Cheers,
 Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
