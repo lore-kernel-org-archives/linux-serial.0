@@ -1,41 +1,58 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 16/26] isdn: i4l: Remove ASYNC_CTS_FLOW
-Date: Tue,  2 Sep 2014 17:39:25 -0400
-Message-ID: <1409693975-1028-17-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 20/26] serial: core: Use spin_lock_irq() in uart_set_termios()
+Date: Tue,  2 Sep 2014 17:39:29 -0400
+Message-ID: <1409693975-1028-21-git-send-email-peter@hurleysoftware.com>
 References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Karsten Keil <isdn@linux-pingi.de>, netdev@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-ISDN4Linux always enables CTS flow control and does not use the
-tty_port_cts_enabled() helper function; remove ASYNC_CTS_FLOW
-state enable/disable.
+uart_set_termios() is called with interrupts enabled; no need to
+save and restore the interrupt state when taking the uart port lock.
 
-cc: Karsten Keil <isdn@linux-pingi.de>
-cc: <netdev@vger.kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/isdn/i4l/isdn_tty.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/tty/serial/serial_core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index 3c5f249..bc91261 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1043,11 +1043,6 @@ isdn_tty_change_speed(modem_info *info)
- 	if (!(cflag & PARODD))
- 		cval |= UART_LCR_EPAR;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 95277a2..200fa8c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1244,7 +1244,6 @@ static void uart_set_termios(struct tty_struct *tty,
+ {
+ 	struct uart_state *state = tty->driver_data;
+ 	struct uart_port *uport = state->uart_port;
+-	unsigned long flags;
+ 	unsigned int cflag = tty->termios.c_cflag;
+ 	unsigned int iflag_mask = IGNBRK|BRKINT|IGNPAR|PARMRK|INPCK;
+ 	bool sw_changed = false;
+@@ -1298,19 +1297,19 @@ static void uart_set_termios(struct tty_struct *tty,
  
--	/* CTS flow control flag and modem status interrupts */
--	if (cflag & CRTSCTS) {
--		port->flags |= ASYNC_CTS_FLOW;
--	} else
--		port->flags &= ~ASYNC_CTS_FLOW;
- 	if (cflag & CLOCAL)
- 		port->flags &= ~ASYNC_CHECK_CD;
- 	else {
+ 	/* Handle turning off CRTSCTS */
+ 	if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
+-		spin_lock_irqsave(&uport->lock, flags);
++		spin_lock_irq(&uport->lock);
+ 		uport->hw_stopped = 0;
+ 		__uart_start(tty);
+-		spin_unlock_irqrestore(&uport->lock, flags);
++		spin_unlock_irq(&uport->lock);
+ 	}
+ 	/* Handle turning on CRTSCTS */
+ 	else if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
+-		spin_lock_irqsave(&uport->lock, flags);
++		spin_lock_irq(&uport->lock);
+ 		if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS)) {
+ 			uport->hw_stopped = 1;
+ 			uport->ops->stop_tx(uport);
+ 		}
+-		spin_unlock_irqrestore(&uport->lock, flags);
++		spin_unlock_irq(&uport->lock);
+ 	}
+ }
+ 
 -- 
 2.1.0
