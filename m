@@ -1,64 +1,71 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] tty/serial: fix config dependencies for samsung serial
-Date: Wed, 03 Sep 2014 12:56:02 +0200
-Message-ID: <10202237.9vbtDF9MIQ@wuerfel>
-References: <1409671320-7604-1-git-send-email-ch.naveen@samsung.com> <3749760.naNt3fHoTI@wuerfel> <CAHfPSqAn5gHjDA75Zf1W5=GH9_W+X6+4oc9rDK7CqeSoF3DURw@mail.gmail.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 21/26] tty: Convert tty_struct bitfield to bools
+Date: Wed, 3 Sep 2014 11:58:52 +0100
+Message-ID: <20140903115852.5a720754@alan.etchedpixels.co.uk>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+	<1409693975-1028-22-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:57675 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932067AbaICK4n (ORCPT
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:51820 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932129AbaICK7H (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 06:56:43 -0400
-In-Reply-To: <CAHfPSqAn5gHjDA75Zf1W5=GH9_W+X6+4oc9rDK7CqeSoF3DURw@mail.gmail.com>
+	Wed, 3 Sep 2014 06:59:07 -0400
+In-Reply-To: <1409693975-1028-22-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Naveen Krishna Chatradhi <ch.naveen@samsung.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Pankaj Dubey <pankaj.dubey@samsung.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wednesday 03 September 2014 13:51:56 Naveen Krishna Ch wrote:
-> On 2 September 2014 21:16, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Tuesday 02 September 2014 20:52:00 Naveen Krishna Chatradhi wrote:
-> >> Make the config symbols SERIAL_SAMSUNG_UARTS_4 and
-> >> SERIAL_SAMSUNG_UARTS depend on SERIAL_SAMSUNG rather than
-> >> PLAT_SAMSUNG.
-> >
-> > Please always describe why you are doing a change. This patch
-> > seems really pointless.
+On Tue,  2 Sep 2014 17:39:30 -0400
+Peter Hurley <peter@hurleysoftware.com> wrote:
+
+> The stopped, hw_stopped, flow_stopped and packet bits are smp-unsafe
+> and interrupt-unsafe. For example,
 > 
-> The SERIAL_SAMSUNG_UARTS_4 and SERIAL_SAMSUNG_UARTS config options are
-> meaningful only if SERIAL_SAMSUNG is enabled. Hence the dependency
-> rules were changed. I will repost this patch with better description.
-
-My point is that the options are used by both the uart driver and
-the platform code, e.g. for the purpose of PM debugging which can
-be enabled even when the serial-samsung driver is turned off.
-
-> >>  config SERIAL_SAMSUNG_UARTS_4
-> >>         bool
-> >> -       depends on PLAT_SAMSUNG
-> >> +       depends on SERIAL_SAMSUNG
-> >>         default y if !(CPU_S3C2410 || CPU_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
-> >>         help
-> >>           Internal node for the common case of 4 Samsung compatible UARTs
-> >>
-> >>  config SERIAL_SAMSUNG_UARTS
-> >>         int
-> >> -       depends on PLAT_SAMSUNG
-> >> +       depends on SERIAL_SAMSUNG
-> >>         default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
-> >>         default 3
-> >>         help
-> >>
-> >
-> > Have you checked that it still builds on all samsung platforms when
-> > SERIAL_SAMSUNG is disabled? We have had build errors in this area
-> > in the past.
+> CPU 0                         | CPU 1
+>                               |
+> tty->flow_stopped = 1         | tty->hw_stopped = 0
 > 
-> Yes, it builds for other Samsung platforms.
+> One of these updates will be corrupted, as the bitwise operation
+> on the bitfield is non-atomic.
+> 
+> Ensure each flag has a separate memory location, so concurrent
+> updates do not corrupt orthogonal states.
 
-Ok.
+Ouch....
 
-	Arnd
+Alas the fix is not sufficient on some platforms. gcc will happily use
+32bit operations on those fields if it thinks its a performance win.
+
+It needs to use set_bit and friends.
+
+x86 is generally ok, but ia64 gcc will do things like load all four
+bytes, mask and write the dword back. I believe ARM gcc may also
+sometimes generate similar results.
+
+
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  include/linux/tty.h | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 1c3316a..7cf61cb 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -261,7 +261,10 @@ struct tty_struct {
+>  	unsigned long flags;
+>  	int count;
+>  	struct winsize winsize;		/* winsize_mutex */
+> -	unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
+> +	bool stopped;
+> +	bool hw_stopped;
+> +	bool flow_stopped;
+> +	bool packet;
+>  	unsigned char ctrl_status;	/* ctrl_lock */
+>  	unsigned int receive_room;	/* Bytes free for queue */
+>  	int flow_change;
