@@ -1,70 +1,102 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
-Date: Wed, 03 Sep 2014 07:20:04 -0400
-Message-ID: <5406F964.6060900@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-14-git-send-email-peter@hurleysoftware.com> <20140903092723.GA4783@worktop.ger.corp.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH 3.17-rc3] serial: imx: clean up imx_poll_get_char()
+Date: Wed,  3 Sep 2014 12:33:53 +0100
+Message-ID: <1409744033-32741-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:46215 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755651AbaICLUP (ORCPT
+Received: from mail-we0-f178.google.com ([74.125.82.178]:62410 "EHLO
+	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756425AbaICLeK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 07:20:15 -0400
-In-Reply-To: <20140903092723.GA4783@worktop.ger.corp.intel.com>
+	Wed, 3 Sep 2014 07:34:10 -0400
+Received: by mail-we0-f178.google.com with SMTP id u57so8354730wes.23
+        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 04:34:08 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dirk Behme <dirk.behme@de.bosch.com>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Daniel Thompson <daniel.thompson@linaro.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-Hi Peter,
+From: Dirk Behme <dirk.behme@de.bosch.com>
 
-On 09/03/2014 05:27 AM, Peter Zijlstra wrote:
-> On Tue, Sep 02, 2014 at 05:39:22PM -0400, Peter Hurley wrote:
->> Provide method for non-essential or non-critical code to warn of
->> invariant errors.
->>
->> CC: Ingo Molnar <mingo@kernel.org>
->> CC: Peter Zijlstra <peterz@infradead.org>
->> CC: Thomas Gleixner <tglx@linutronix.de>
->> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->> ---
->>  include/linux/spinlock.h         | 1 +
->>  include/linux/spinlock_api_smp.h | 1 +
->>  include/linux/spinlock_api_up.h  | 1 +
->>  3 files changed, 3 insertions(+)
->>
->> diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
->> index 3f2867f..8a9aaf1 100644
->> --- a/include/linux/spinlock.h
->> +++ b/include/linux/spinlock.h
->> @@ -394,6 +394,7 @@ static inline int spin_can_lock(spinlock_t *lock)
->>  }
->>  
->>  #define assert_spin_locked(lock)	assert_raw_spin_locked(&(lock)->rlock)
->> +#define warn_not_spin_locked(lock)	warn_not_raw_spin_locked(&(lock)->rlock)
->>  
->>  /*
->>   * Pull the atomic_t declaration:
->> diff --git a/include/linux/spinlock_api_smp.h b/include/linux/spinlock_api_smp.h
->> index 42dfab8..0ddd499 100644
->> --- a/include/linux/spinlock_api_smp.h
->> +++ b/include/linux/spinlock_api_smp.h
->> @@ -18,6 +18,7 @@
->>  int in_lock_functions(unsigned long addr);
->>  
->>  #define assert_raw_spin_locked(x)	BUG_ON(!raw_spin_is_locked(x))
->> +#define warn_not_raw_spin_locked(x)	WARN_ON_ONCE(!raw_spin_is_locked(x))
-> 
-> No we should remove assert_spin_locked() not add to it. Use
-> lockdep_assert_held() instead.
+Looking at the get_poll_char() function of the 8250.c serial driver,
+we learn:
 
-I probably should have been more descriptive in the changelog: this
-is not for a test configuration, but rather, an assertion in an
-exported api.
+* poll_get_char() doesn't have to save/disable/restore the interrupt
+  registers. No interrupt handling is needed in this function at all.
+  Remove it.
 
-Regards,
-Peter Hurley
+* Don't block in case there is no data available. So instead blocking
+  in the do {} while loop, just return with NO_POLL_CHAR, immediately .
 
+Additionally, while the i.MX6 register URXD[7-0] contain the RX_DATA,
+the upper bits of this register (URXD[15-10]) might contain some
+control flags. To ensure that these are not returned with the data
+read, just mask out URXD[7-0].
+
+These changes fix the 'hang' working with kdb:
+
+$ echo ttymxc3 > /sys/module/kgdboc/parameters/kgdboc
+$ echo g >/proc/sysrq-trigger
+[0]kdb> help
+...
+<hang>
+
+Signed-off-by: Dirk Behme <dirk.behme@de.bosch.com>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/imx.c | 29 ++++-------------------------
+ 1 file changed, 4 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 044e86d..983668a 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -80,6 +80,7 @@
+ #define URXD_FRMERR	(1<<12)
+ #define URXD_BRK	(1<<11)
+ #define URXD_PRERR	(1<<10)
++#define URXD_RX_DATA	(0xFF<<0)
+ #define UCR1_ADEN	(1<<15) /* Auto detect interrupt */
+ #define UCR1_ADBR	(1<<14) /* Auto detect baud rate */
+ #define UCR1_TRDYEN	(1<<13) /* Transmitter ready interrupt enable */
+@@ -1506,32 +1507,10 @@ imx_verify_port(struct uart_port *port, struct serial_struct *ser)
+ #if defined(CONFIG_CONSOLE_POLL)
+ static int imx_poll_get_char(struct uart_port *port)
+ {
+-	struct imx_port_ucrs old_ucr;
+-	unsigned int status;
+-	unsigned char c;
+-
+-	/* save control registers */
+-	imx_port_ucrs_save(port, &old_ucr);
+-
+-	/* disable interrupts */
+-	writel(UCR1_UARTEN, port->membase + UCR1);
+-	writel(old_ucr.ucr2 & ~(UCR2_ATEN | UCR2_RTSEN | UCR2_ESCI),
+-	       port->membase + UCR2);
+-	writel(old_ucr.ucr3 & ~(UCR3_DCD | UCR3_RI | UCR3_DTREN),
+-	       port->membase + UCR3);
+-
+-	/* poll */
+-	do {
+-		status = readl(port->membase + USR2);
+-	} while (~status & USR2_RDR);
+-
+-	/* read */
+-	c = readl(port->membase + URXD0);
+-
+-	/* restore control registers */
+-	imx_port_ucrs_restore(port, &old_ucr);
++	if (!(readl(port->membase + USR2) & USR2_RDR))
++		return NO_POLL_CHAR;
+
+-	return c;
++	return readl(port->membase + URXD0) & URXD_RX_DATA;
+ }
+
+ static void imx_poll_put_char(struct uart_port *port, unsigned char c)
+--
+1.9.3
 
