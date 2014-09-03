@@ -1,224 +1,66 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH 3.17-rc3] serial: amba-pl011: Use container_of() to get uart_amba_port
-Date: Wed,  3 Sep 2014 12:51:55 +0100
-Message-ID: <1409745115-1423-1-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH 3.17-rc3] serial: kgdb_nmi: No CON_ENABLED by default
+Date: Wed,  3 Sep 2014 12:57:52 +0100
+Message-ID: <1409745472-2830-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:32909 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932213AbaICLwL (ORCPT
+Received: from mail-wi0-f174.google.com ([209.85.212.174]:55927 "EHLO
+	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932081AbaICL6T (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 07:52:11 -0400
-Received: by mail-wi0-f175.google.com with SMTP id ho1so746268wib.2
-        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 04:52:10 -0700 (PDT)
+	Wed, 3 Sep 2014 07:58:19 -0400
+Received: by mail-wi0-f174.google.com with SMTP id d1so748116wiv.7
+        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 04:58:18 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-Universally adopt container_of() for all pointer conversion from
-uart_port to uart_amba_port.
+At present this console is optionally registered by NULL checking
+arch_kgdb_ops.enable_nmi. In practice this requires the architecture
+dependant code to implement some kind of control (e.g. module arguments)
+to enable/disable this feature.
+
+The kernel already provides us the perfectly adequate console= argument
+to enable/disable consoles. Let's use that instead!
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Russell King <linux@arm.linux.org.uk>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org
 ---
+ drivers/tty/serial/kgdb_nmi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Notes:
-    This patch was written after a review comment made by Peter Hurley in
-    response to code that is no longer needed.  However I'd already written
-    it before I realized the code was no longer needed and it still appears
-    to be a sensible, if rather minor, bit of modernization.
-    
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+index 6ec7501..129dc5b 100644
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ b/drivers/tty/serial/kgdb_nmi.c
+@@ -46,6 +46,8 @@ static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
 
- drivers/tty/serial/amba-pl011.c | 54 +++++++++++++++++++++++++++--------------
- 1 file changed, 36 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8572f2a..02016fc 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -678,7 +678,8 @@ static void pl011_dma_flush_buffer(struct uart_port *port)
- __releases(&uap->port.lock)
- __acquires(&uap->port.lock)
+ static int kgdb_nmi_console_setup(struct console *co, char *options)
  {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
++	arch_kgdb_ops.enable_nmi(1);
++
+ 	/* The NMI console uses the dbg_io_ops to issue console messages. To
+ 	 * avoid duplicate messages during kdb sessions we must inform kdb's
+ 	 * I/O utilities that messages sent to the console will automatically
+@@ -77,7 +79,7 @@ static struct console kgdb_nmi_console = {
+ 	.setup  = kgdb_nmi_console_setup,
+ 	.write	= kgdb_nmi_console_write,
+ 	.device	= kgdb_nmi_console_device,
+-	.flags	= CON_PRINTBUFFER | CON_ANYTIME | CON_ENABLED,
++	.flags	= CON_PRINTBUFFER | CON_ANYTIME,
+ 	.index	= -1,
+ };
 
- 	if (!uap->using_tx_dma)
- 		return;
-@@ -1163,7 +1164,8 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
+@@ -354,7 +356,6 @@ int kgdb_register_nmi_console(void)
+ 	}
 
- static void pl011_stop_tx(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
+ 	register_console(&kgdb_nmi_console);
+-	arch_kgdb_ops.enable_nmi(1);
 
- 	uap->im &= ~UART011_TXIM;
- 	writew(uap->im, uap->port.membase + UART011_IMSC);
-@@ -1172,7 +1174,8 @@ static void pl011_stop_tx(struct uart_port *port)
-
- static void pl011_start_tx(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-
- 	if (!pl011_dma_tx_start(uap)) {
- 		uap->im |= UART011_TXIM;
-@@ -1182,7 +1185,8 @@ static void pl011_start_tx(struct uart_port *port)
-
- static void pl011_stop_rx(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-
- 	uap->im &= ~(UART011_RXIM|UART011_RTIM|UART011_FEIM|
- 		     UART011_PEIM|UART011_BEIM|UART011_OEIM);
-@@ -1193,7 +1197,8 @@ static void pl011_stop_rx(struct uart_port *port)
-
- static void pl011_enable_ms(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-
- 	uap->im |= UART011_RIMIM|UART011_CTSMIM|UART011_DCDMIM|UART011_DSRMIM;
- 	writew(uap->im, uap->port.membase + UART011_IMSC);
-@@ -1349,14 +1354,16 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
-
- static unsigned int pl011_tx_empty(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int status = readw(uap->port.membase + UART01x_FR);
- 	return status & (UART01x_FR_BUSY|UART01x_FR_TXFF) ? 0 : TIOCSER_TEMT;
- }
-
- static unsigned int pl011_get_mctrl(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int result = 0;
- 	unsigned int status = readw(uap->port.membase + UART01x_FR);
-
-@@ -1374,7 +1381,8 @@ static unsigned int pl011_get_mctrl(struct uart_port *port)
-
- static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr;
-
- 	cr = readw(uap->port.membase + UART011_CR);
-@@ -1402,7 +1410,8 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
-
- static void pl011_break_ctl(struct uart_port *port, int break_state)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned long flags;
- 	unsigned int lcr_h;
-
-@@ -1420,7 +1429,8 @@ static void pl011_break_ctl(struct uart_port *port, int break_state)
-
- static void pl011_quiesce_irqs(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned char __iomem *regs = uap->port.membase;
-
- 	writew(readw(regs + UART011_MIS), regs + UART011_ICR);
-@@ -1442,7 +1452,8 @@ static void pl011_quiesce_irqs(struct uart_port *port)
-
- static int pl011_get_poll_char(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int status;
-
- 	/*
-@@ -1461,7 +1472,8 @@ static int pl011_get_poll_char(struct uart_port *port)
- static void pl011_put_poll_char(struct uart_port *port,
- 			 unsigned char ch)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-
- 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
- 		barrier();
-@@ -1473,7 +1485,8 @@ static void pl011_put_poll_char(struct uart_port *port,
-
- static int pl011_hwinit(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	int retval;
-
- 	/* Optionaly enable pins to be muxed in and configured */
-@@ -1526,7 +1539,8 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
-
- static int pl011_startup(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr, lcr_h, fbrd, ibrd;
- 	int retval;
-
-@@ -1618,7 +1632,8 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
-
- static void pl011_shutdown(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr;
-
- 	/*
-@@ -1680,7 +1695,8 @@ static void
- pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 		     struct ktermios *old)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	unsigned int lcr_h, old_cr;
- 	unsigned long flags;
- 	unsigned int baud, quot, clkdiv;
-@@ -1822,7 +1838,8 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
-
- static const char *pl011_type(struct uart_port *port)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
- 	return uap->port.type == PORT_AMBA ? uap->type : NULL;
- }
-
-@@ -1900,7 +1917,8 @@ static struct uart_amba_port *amba_ports[UART_NR];
-
- static void pl011_console_putchar(struct uart_port *port, int ch)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-
- 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
- 		barrier();
+ 	return 0;
+ err_drv_reg:
 --
 1.9.3
 
