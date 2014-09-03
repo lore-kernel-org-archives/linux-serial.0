@@ -1,79 +1,105 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH 3.17-rc3] serial: asc: Adopt readl_/writel_relaxed()
-Date: Wed,  3 Sep 2014 13:00:51 +0100
-Message-ID: <1409745651-3247-1-git-send-email-daniel.thompson@linaro.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 21/26] tty: Convert tty_struct bitfield to bools
+Date: Wed, 03 Sep 2014 08:14:59 -0400
+Message-ID: <54070643.9080903@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>	<1409693975-1028-22-git-send-email-peter@hurleysoftware.com> <20140903115852.5a720754@alan.etchedpixels.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f170.google.com ([209.85.212.170]:38472 "EHLO
-	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755836AbaICMBH (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:48254 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755924AbaICMPJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 08:01:07 -0400
-Received: by mail-wi0-f170.google.com with SMTP id cc10so5734097wib.3
-        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 05:01:06 -0700 (PDT)
+	Wed, 3 Sep 2014 08:15:09 -0400
+In-Reply-To: <20140903115852.5a720754@alan.etchedpixels.co.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, kernel@stlinux.com, linux-serial@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The architectures where this peripheral exists (ARM and SH) have expensive
-implementations of writel(), reliant on spin locks and explicit L2 cache
-management. These architectures provide a cheaper writel_relaxed() which
-is much better suited to peripherals that do not perform DMA. The
-situation with readl()/readl_relaxed()is similar although less acute.
+On 09/03/2014 06:58 AM, One Thousand Gnomes wrote:
+> On Tue,  2 Sep 2014 17:39:30 -0400
+> Peter Hurley <peter@hurleysoftware.com> wrote:
+> 
+>> The stopped, hw_stopped, flow_stopped and packet bits are smp-unsafe
+>> and interrupt-unsafe. For example,
+>>
+>> CPU 0                         | CPU 1
+>>                               |
+>> tty->flow_stopped = 1         | tty->hw_stopped = 0
+>>
+>> One of these updates will be corrupted, as the bitwise operation
+>> on the bitfield is non-atomic.
+>>
+>> Ensure each flag has a separate memory location, so concurrent
+>> updates do not corrupt orthogonal states.
+> 
+> Ouch....
+> 
+> Alas the fix is not sufficient on some platforms. gcc will happily use
+> 32bit operations on those fields if it thinks its a performance win.
+> 
+> It needs to use set_bit and friends.
+> 
+> x86 is generally ok, but ia64 gcc will do things like load all four
+> bytes, mask and write the dword back. I believe ARM gcc may also
+> sometimes generate similar results.
 
-This driver does not use DMA and will be more power efficient and more
-robust (due to absense of spin locks during console I/O) if it uses the
-relaxed variants.
+Ahh. Thanks for the insight, Alan.
 
-This change means the driver is no longer portable and therefore no
-longer suitable for compile testing.
+But set_bit() et. al. will generate an incredible amount of churn;
+what if I split the fields up to prevent false-sharing?
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
-Cc: Patrice Chotard <patrice.chotard@st.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: kernel@stlinux.com
-Cc: linux-serial@vger.kernel.org
-Acked-by: Maxime Coquelin <maxime.coquelin@st.com>
-Acked-by: Peter Griffin <peter.griffin@linaro.org>
----
- drivers/tty/serial/Kconfig  | 2 +-
- drivers/tty/serial/st-asc.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+--- >% ---
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 26cec64d..e9b1735 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
- config SERIAL_ST_ASC
- 	tristate "ST ASC serial port support"
- 	select SERIAL_CORE
--	depends on ARM || COMPILE_TEST
-+	depends on ARM
- 	help
- 	  This driver is for the on-chip Asychronous Serial Controller on
- 	  STMicroelectronics STi SoCs.
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 8b2d735..adadbc1 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -151,12 +151,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 1c3316a..36d3cf7 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -252,6 +252,11 @@ struct tty_struct {
+ 	struct rw_semaphore termios_rwsem;
+ 	struct mutex winsize_mutex;
+ 	spinlock_t ctrl_lock;
++	unsigned char ctrl_status;	/* ctrl_lock fields */
++	bool packet;
+ 	spinlock_t flow_lock;
++	unsigned char stopped:1,	/* flow_lock fields */
++		      flow_stopped:1;
+ 	/* Termios values are protected by the termios rwsem */
+ 	struct ktermios termios, termios_locked;
+ 	struct termiox *termiox;	/* May be NULL for unsupported */
+@@ -261,8 +266,7 @@ struct tty_struct {
+ 	unsigned long flags;
+ 	int count;
+ 	struct winsize winsize;		/* winsize_mutex */
+-	unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
+-	unsigned char ctrl_status;	/* ctrl_lock */
++	bool hw_stopped;
+ 	unsigned int receive_room;	/* Bytes free for queue */
+ 	int flow_change;
 
- static inline u32 asc_in(struct uart_port *port, u32 offset)
- {
--	return readl(port->membase + offset);
-+	return readl_relaxed(port->membase + offset);
- }
 
- static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
- {
--	writel(value, port->membase + offset);
-+	writel_relaxed(value, port->membase + offset);
- }
-
- /*
---
-1.9.3
+>>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>  include/linux/tty.h | 5 ++++-
+>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/tty.h b/include/linux/tty.h
+>> index 1c3316a..7cf61cb 100644
+>> --- a/include/linux/tty.h
+>> +++ b/include/linux/tty.h
+>> @@ -261,7 +261,10 @@ struct tty_struct {
+>>  	unsigned long flags;
+>>  	int count;
+>>  	struct winsize winsize;		/* winsize_mutex */
+>> -	unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
+>> +	bool stopped;
+>> +	bool hw_stopped;
+>> +	bool flow_stopped;
+>> +	bool packet;
+>>  	unsigned char ctrl_status;	/* ctrl_lock */
+>>  	unsigned int receive_room;	/* Bytes free for queue */
+>>  	int flow_change;
 
