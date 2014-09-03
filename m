@@ -1,93 +1,102 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH] tty/serial: at91: BUG: disable interrupts when !UART_ENABLE_MS()
-Date: Wed,  3 Sep 2014 18:09:26 +0200
-Message-ID: <1409760567-13186-1-git-send-email-richard.genoud@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f179.google.com ([74.125.82.179]:47930 "EHLO
-	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752006AbaICQJj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 12:09:39 -0400
-Received: by mail-we0-f179.google.com with SMTP id t60so8743778wes.24
-        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 09:09:38 -0700 (PDT)
-Sender: linux-serial-owner@vger.kernel.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
+Date: Wed, 03 Sep 2014 18:46:04 +0200
+Message-ID: <540745CC.2090901@linutronix.de>
+References: <53FE3779.5090908@linutronix.de> <20140827202313.GF16006@atomide.com> <20140828082348.GA5413@linutronix.de> <20140828164645.GG16006@atomide.com> <53FF84DF.7080406@linutronix.de> <20140828225454.GM16006@atomide.com> <540048B4.7010807@linutronix.de> <20140829161221.GO16006@atomide.com> <5404B149.6010400@linutronix.de> <54060EDA.6060204@linutronix.de> <20140902201536.GC11766@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140902201536.GC11766@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: balbi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Yegor Yefremov <yegor_sub1@visionsystems.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 
-In set_termios(), interrupts where not disabled if UART_ENABLE_MS() was
-false.
+On 09/02/2014 10:15 PM, Tony Lindgren wrote:
+>> - I see to face two kind of "deaths":
+>>   - the LED still goes on and off and the uart just does not respond
+>>     even if I tell the button print something on the screen (the button
+>>     also changes the frequency of the LED so I know that the button is
+>>     doing something).
+>>     Also from dumping the content of /proc/interrupts it seems that a
+>>     wake up is made, the uart should have restored the registers.
+> 
+> OK yeah this is the case I was seeing too. So do you just set the
+> LED triggers to none in sysfs to make it easier to reproduce?
 
-Tested on at91sam9g35.
+Yes.
 
-CC: stable@vger.kernel.org # >= 3.16
+>>   - one where the system is dead and the LED does not blink anymore.
+>>     Also my button is dead.
+> 
+> This I don't think I've seen. This could also be the errata issue on
+> your earlier rev beagleboard-xm with off-idle.
 
-Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
----
- drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+might be.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 7b63677475c1..d7d4584549a5 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -527,6 +527,45 @@ static void atmel_enable_ms(struct uart_port *port)
- }
- 
- /*
-+ * Disable modem status interrupts
-+ */
-+static void atmel_disable_ms(struct uart_port *port)
-+{
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	uint32_t idr = 0;
-+
-+	/*
-+	 * Interrupt should not be disabled twice
-+	 */
-+	if (!atmel_port->ms_irq_enabled)
-+		return;
-+
-+	atmel_port->ms_irq_enabled = false;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_CTS] >= 0)
-+		disable_irq(atmel_port->gpio_irq[UART_GPIO_CTS]);
-+	else
-+		idr |= ATMEL_US_CTSIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_DSR] >= 0)
-+		disable_irq(atmel_port->gpio_irq[UART_GPIO_DSR]);
-+	else
-+		idr |= ATMEL_US_DSRIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_RI] >= 0)
-+		disable_irq(atmel_port->gpio_irq[UART_GPIO_RI]);
-+	else
-+		idr |= ATMEL_US_RIIC;
-+
-+	if (atmel_port->gpio_irq[UART_GPIO_DCD] >= 0)
-+		disable_irq(atmel_port->gpio_irq[UART_GPIO_DCD]);
-+	else
-+		idr |= ATMEL_US_DCDIC;
-+
-+	UART_PUT_IDR(port, idr);
-+}
-+
-+/*
-  * Control the transmission of a break signal
-  */
- static void atmel_break_ctl(struct uart_port *port, int break_state)
-@@ -1993,7 +2032,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* CTS flow-control and modem-status interrupts */
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
--		port->ops->enable_ms(port);
-+		atmel_enable_ms(port);
-+	else
-+		atmel_disable_ms(port);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
--- 
-2.0.0
+Your pstore hint gave me something. I tried that earlier but somehow
+assumed that dram content was killed on init. But the content is even
+there are pressing the reset button :)
 
+However, I was able to capture the case where the LED was not blinking:
+The IIR register says 0xc6 (=> line status error). That is okay. At the
+same time LSR register says 0xe0. This is not okay. It means that there
+is some kind of error and at least one error bit is set in this
+register which is not the case. Also those bits are cleared on read
+which does not happen here. And we loop forever so the LED does blink
+anymore.
+
+The RX-count register says that it is empty which sense because bit 0
+is not set (in LSR). However I can read multiple times from the RX FIFO
+until I get the "unhandled bus access" error which usually happens
+right away if the empty FIFO is read on omap3 HW. In the last test I
+mange to read 91 times before the crash. I hoped that this FIFO read
+would make the interrupt go away but it did not.
+
+The HW seems to be in a strange state. It might be either the errata
+or something else. I even took the resume routine from omap-serial in
+case I did something wrong. In my last test it worked for 10minues
+before the interrupt storm came.
+
+This is probably the same thing I see on the omap-serial driver where I
+got from pstore:
+
+[   32.659271] random: nonblocking pool is initialized
+[  212.170623] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+[swapper:0]
+
+So I *guess* the interrupt routine is looping. This is problem one, no
+idea what is going on (the register status captured on 8250-omap makes
+no sense).
+
+Problem two, where the UART does not wakeup:
+What I observed is that sometimes the UART does not wake up properly
+i.e. it does not write anything on the console, even where it should. I
+can't tell if the read is working properly, the write does not.
+>From my capture I see that the resume routine was running and the
+register should have been written. That means the UART should be up and
+running but nothing happens.
+It often works again after the system comes out of resume again (i.e.
+RPM suspens and resumes the UART). So it is okay on the next wakeup. Or
+the wakeup after next.
+>From the script:
+
+| while ((1))
+| do
+|
+|         echo -n 409-chars >/dev/ttyUSB0
+|
+|         sleep 1
+|         a=$(date)
+|         echo -e "\n#$a" >/dev/ttyUSB0
+|         echo $a
+|         sleep 13;
+| done
+
+I see that sometimes one or two sequential timestamps are missing. And
+the it continues like nothing happened.
+
+> Tony
+
+Sebastian
