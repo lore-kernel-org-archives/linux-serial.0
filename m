@@ -1,66 +1,54 @@
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Subject: Re: [PATCH] tty/serial: fix config dependencies for samsung serial
-Date: Wed, 3 Sep 2014 13:51:56 +0530
-Message-ID: <CAHfPSqAn5gHjDA75Zf1W5=GH9_W+X6+4oc9rDK7CqeSoF3DURw@mail.gmail.com>
-References: <1409671320-7604-1-git-send-email-ch.naveen@samsung.com> <3749760.naNt3fHoTI@wuerfel>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 3 Sep 2014 11:27:23 +0200
+Message-ID: <20140903092723.GA4783@worktop.ger.corp.intel.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+ <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f44.google.com ([209.85.192.44]:46383 "EHLO
-	mail-qg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751662AbaICIWT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 04:22:19 -0400
-In-Reply-To: <3749760.naNt3fHoTI@wuerfel>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Naveen Krishna Chatradhi <ch.naveen@samsung.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Pankaj Dubey <pankaj.dubey@samsung.com>
 
-Hi Arnd,
+On Tue, Sep 02, 2014 at 05:39:22PM -0400, Peter Hurley wrote:
+> Provide method for non-essential or non-critical code to warn of
+> invariant errors.
+> 
+> CC: Ingo Molnar <mingo@kernel.org>
+> CC: Peter Zijlstra <peterz@infradead.org>
+> CC: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  include/linux/spinlock.h         | 1 +
+>  include/linux/spinlock_api_smp.h | 1 +
+>  include/linux/spinlock_api_up.h  | 1 +
+>  3 files changed, 3 insertions(+)
+> 
+> diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
+> index 3f2867f..8a9aaf1 100644
+> --- a/include/linux/spinlock.h
+> +++ b/include/linux/spinlock.h
+> @@ -394,6 +394,7 @@ static inline int spin_can_lock(spinlock_t *lock)
+>  }
+>  
+>  #define assert_spin_locked(lock)	assert_raw_spin_locked(&(lock)->rlock)
+> +#define warn_not_spin_locked(lock)	warn_not_raw_spin_locked(&(lock)->rlock)
+>  
+>  /*
+>   * Pull the atomic_t declaration:
+> diff --git a/include/linux/spinlock_api_smp.h b/include/linux/spinlock_api_smp.h
+> index 42dfab8..0ddd499 100644
+> --- a/include/linux/spinlock_api_smp.h
+> +++ b/include/linux/spinlock_api_smp.h
+> @@ -18,6 +18,7 @@
+>  int in_lock_functions(unsigned long addr);
+>  
+>  #define assert_raw_spin_locked(x)	BUG_ON(!raw_spin_is_locked(x))
+> +#define warn_not_raw_spin_locked(x)	WARN_ON_ONCE(!raw_spin_is_locked(x))
 
-On 2 September 2014 21:16, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Tuesday 02 September 2014 20:52:00 Naveen Krishna Chatradhi wrote:
->> Make the config symbols SERIAL_SAMSUNG_UARTS_4 and
->> SERIAL_SAMSUNG_UARTS depend on SERIAL_SAMSUNG rather than
->> PLAT_SAMSUNG.
->
-> Please always describe why you are doing a change. This patch
-> seems really pointless.
-
-The SERIAL_SAMSUNG_UARTS_4 and SERIAL_SAMSUNG_UARTS config options are
-meaningful only if SERIAL_SAMSUNG is enabled. Hence the dependency
-rules were changed. I will repost this patch with better description.
-
->
->>  config SERIAL_SAMSUNG_UARTS_4
->>         bool
->> -       depends on PLAT_SAMSUNG
->> +       depends on SERIAL_SAMSUNG
->>         default y if !(CPU_S3C2410 || CPU_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
->>         help
->>           Internal node for the common case of 4 Samsung compatible UARTs
->>
->>  config SERIAL_SAMSUNG_UARTS
->>         int
->> -       depends on PLAT_SAMSUNG
->> +       depends on SERIAL_SAMSUNG
->>         default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
->>         default 3
->>         help
->>
->
-> Have you checked that it still builds on all samsung platforms when
-> SERIAL_SAMSUNG is disabled? We have had build errors in this area
-> in the past.
-
-Yes, it builds for other Samsung platforms.
-
->
->         Arnd
-
-Thanks.
-
--- 
-Shine bright,
-(: Nav :)
+No we should remove assert_spin_locked() not add to it. Use
+lockdep_assert_held() instead.
