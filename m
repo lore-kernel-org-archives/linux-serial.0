@@ -1,66 +1,79 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH 3.17-rc3] serial: kgdb_nmi: No CON_ENABLED by default
-Date: Wed,  3 Sep 2014 12:57:52 +0100
-Message-ID: <1409745472-2830-1-git-send-email-daniel.thompson@linaro.org>
+Subject: [PATCH 3.17-rc3] serial: asc: Adopt readl_/writel_relaxed()
+Date: Wed,  3 Sep 2014 13:00:51 +0100
+Message-ID: <1409745651-3247-1-git-send-email-daniel.thompson@linaro.org>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f174.google.com ([209.85.212.174]:55927 "EHLO
-	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932081AbaICL6T (ORCPT
+Received: from mail-wi0-f170.google.com ([209.85.212.170]:38472 "EHLO
+	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755836AbaICMBH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 07:58:19 -0400
-Received: by mail-wi0-f174.google.com with SMTP id d1so748116wiv.7
-        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 04:58:18 -0700 (PDT)
+	Wed, 3 Sep 2014 08:01:07 -0400
+Received: by mail-wi0-f170.google.com with SMTP id cc10so5734097wib.3
+        for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2014 05:01:06 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, kernel@stlinux.com, linux-serial@vger.kernel.org
 
-At present this console is optionally registered by NULL checking
-arch_kgdb_ops.enable_nmi. In practice this requires the architecture
-dependant code to implement some kind of control (e.g. module arguments)
-to enable/disable this feature.
+The architectures where this peripheral exists (ARM and SH) have expensive
+implementations of writel(), reliant on spin locks and explicit L2 cache
+management. These architectures provide a cheaper writel_relaxed() which
+is much better suited to peripherals that do not perform DMA. The
+situation with readl()/readl_relaxed()is similar although less acute.
 
-The kernel already provides us the perfectly adequate console= argument
-to enable/disable consoles. Let's use that instead!
+This driver does not use DMA and will be more power efficient and more
+robust (due to absense of spin locks during console I/O) if it uses the
+relaxed variants.
+
+This change means the driver is no longer portable and therefore no
+longer suitable for compile testing.
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: kernel@stlinux.com
 Cc: linux-serial@vger.kernel.org
+Acked-by: Maxime Coquelin <maxime.coquelin@st.com>
+Acked-by: Peter Griffin <peter.griffin@linaro.org>
 ---
- drivers/tty/serial/kgdb_nmi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/Kconfig  | 2 +-
+ drivers/tty/serial/st-asc.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 6ec7501..129dc5b 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -46,6 +46,8 @@ static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 26cec64d..e9b1735 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
+ config SERIAL_ST_ASC
+ 	tristate "ST ASC serial port support"
+ 	select SERIAL_CORE
+-	depends on ARM || COMPILE_TEST
++	depends on ARM
+ 	help
+ 	  This driver is for the on-chip Asychronous Serial Controller on
+ 	  STMicroelectronics STi SoCs.
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 8b2d735..adadbc1 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -151,12 +151,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
 
- static int kgdb_nmi_console_setup(struct console *co, char *options)
+ static inline u32 asc_in(struct uart_port *port, u32 offset)
  {
-+	arch_kgdb_ops.enable_nmi(1);
-+
- 	/* The NMI console uses the dbg_io_ops to issue console messages. To
- 	 * avoid duplicate messages during kdb sessions we must inform kdb's
- 	 * I/O utilities that messages sent to the console will automatically
-@@ -77,7 +79,7 @@ static struct console kgdb_nmi_console = {
- 	.setup  = kgdb_nmi_console_setup,
- 	.write	= kgdb_nmi_console_write,
- 	.device	= kgdb_nmi_console_device,
--	.flags	= CON_PRINTBUFFER | CON_ANYTIME | CON_ENABLED,
-+	.flags	= CON_PRINTBUFFER | CON_ANYTIME,
- 	.index	= -1,
- };
+-	return readl(port->membase + offset);
++	return readl_relaxed(port->membase + offset);
+ }
 
-@@ -354,7 +356,6 @@ int kgdb_register_nmi_console(void)
- 	}
+ static inline void asc_out(struct uart_port *port, u32 offset, u32 value)
+ {
+-	writel(value, port->membase + offset);
++	writel_relaxed(value, port->membase + offset);
+ }
 
- 	register_console(&kgdb_nmi_console);
--	arch_kgdb_ops.enable_nmi(1);
-
- 	return 0;
- err_drv_reg:
+ /*
 --
 1.9.3
 
