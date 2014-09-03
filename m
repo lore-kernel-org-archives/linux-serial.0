@@ -1,71 +1,70 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 21/26] tty: Convert tty_struct bitfield to bools
-Date: Wed, 3 Sep 2014 11:58:52 +0100
-Message-ID: <20140903115852.5a720754@alan.etchedpixels.co.uk>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
-	<1409693975-1028-22-git-send-email-peter@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 03 Sep 2014 07:20:04 -0400
+Message-ID: <5406F964.6060900@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-14-git-send-email-peter@hurleysoftware.com> <20140903092723.GA4783@worktop.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:51820 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932129AbaICK7H (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:46215 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755651AbaICLUP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 3 Sep 2014 06:59:07 -0400
-In-Reply-To: <1409693975-1028-22-git-send-email-peter@hurleysoftware.com>
+	Wed, 3 Sep 2014 07:20:15 -0400
+In-Reply-To: <20140903092723.GA4783@worktop.ger.corp.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
 
-On Tue,  2 Sep 2014 17:39:30 -0400
-Peter Hurley <peter@hurleysoftware.com> wrote:
+Hi Peter,
 
-> The stopped, hw_stopped, flow_stopped and packet bits are smp-unsafe
-> and interrupt-unsafe. For example,
+On 09/03/2014 05:27 AM, Peter Zijlstra wrote:
+> On Tue, Sep 02, 2014 at 05:39:22PM -0400, Peter Hurley wrote:
+>> Provide method for non-essential or non-critical code to warn of
+>> invariant errors.
+>>
+>> CC: Ingo Molnar <mingo@kernel.org>
+>> CC: Peter Zijlstra <peterz@infradead.org>
+>> CC: Thomas Gleixner <tglx@linutronix.de>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>  include/linux/spinlock.h         | 1 +
+>>  include/linux/spinlock_api_smp.h | 1 +
+>>  include/linux/spinlock_api_up.h  | 1 +
+>>  3 files changed, 3 insertions(+)
+>>
+>> diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
+>> index 3f2867f..8a9aaf1 100644
+>> --- a/include/linux/spinlock.h
+>> +++ b/include/linux/spinlock.h
+>> @@ -394,6 +394,7 @@ static inline int spin_can_lock(spinlock_t *lock)
+>>  }
+>>  
+>>  #define assert_spin_locked(lock)	assert_raw_spin_locked(&(lock)->rlock)
+>> +#define warn_not_spin_locked(lock)	warn_not_raw_spin_locked(&(lock)->rlock)
+>>  
+>>  /*
+>>   * Pull the atomic_t declaration:
+>> diff --git a/include/linux/spinlock_api_smp.h b/include/linux/spinlock_api_smp.h
+>> index 42dfab8..0ddd499 100644
+>> --- a/include/linux/spinlock_api_smp.h
+>> +++ b/include/linux/spinlock_api_smp.h
+>> @@ -18,6 +18,7 @@
+>>  int in_lock_functions(unsigned long addr);
+>>  
+>>  #define assert_raw_spin_locked(x)	BUG_ON(!raw_spin_is_locked(x))
+>> +#define warn_not_raw_spin_locked(x)	WARN_ON_ONCE(!raw_spin_is_locked(x))
 > 
-> CPU 0                         | CPU 1
->                               |
-> tty->flow_stopped = 1         | tty->hw_stopped = 0
-> 
-> One of these updates will be corrupted, as the bitwise operation
-> on the bitfield is non-atomic.
-> 
-> Ensure each flag has a separate memory location, so concurrent
-> updates do not corrupt orthogonal states.
+> No we should remove assert_spin_locked() not add to it. Use
+> lockdep_assert_held() instead.
 
-Ouch....
+I probably should have been more descriptive in the changelog: this
+is not for a test configuration, but rather, an assertion in an
+exported api.
 
-Alas the fix is not sufficient on some platforms. gcc will happily use
-32bit operations on those fields if it thinks its a performance win.
-
-It needs to use set_bit and friends.
-
-x86 is generally ok, but ia64 gcc will do things like load all four
-bytes, mask and write the dword back. I believe ARM gcc may also
-sometimes generate similar results.
+Regards,
+Peter Hurley
 
 
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  include/linux/tty.h | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/tty.h b/include/linux/tty.h
-> index 1c3316a..7cf61cb 100644
-> --- a/include/linux/tty.h
-> +++ b/include/linux/tty.h
-> @@ -261,7 +261,10 @@ struct tty_struct {
->  	unsigned long flags;
->  	int count;
->  	struct winsize winsize;		/* winsize_mutex */
-> -	unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
-> +	bool stopped;
-> +	bool hw_stopped;
-> +	bool flow_stopped;
-> +	bool packet;
->  	unsigned char ctrl_status;	/* ctrl_lock */
->  	unsigned int receive_room;	/* Bytes free for queue */
->  	int flow_change;
