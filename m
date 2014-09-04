@@ -1,52 +1,43 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
-Date: Thu, 4 Sep 2014 07:14:11 +0200
-Message-ID: <20140904051411.GA27350@gmail.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
- <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
- <20140903092723.GA4783@worktop.ger.corp.intel.com>
- <5406F964.6060900@hurleysoftware.com>
- <20140903144029.GA7083@twins.programming.kicks-ass.net>
- <54072A99.1080306@hurleysoftware.com>
- <20140903150729.GA7436@twins.programming.kicks-ass.net>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
+Date: Thu, 04 Sep 2014 15:44:07 +0200
+Message-ID: <54086CA7.8020507@linutronix.de>
+References: <20140828082348.GA5413@linutronix.de> <20140828164645.GG16006@atomide.com> <53FF84DF.7080406@linutronix.de> <20140828225454.GM16006@atomide.com> <540048B4.7010807@linutronix.de> <20140829161221.GO16006@atomide.com> <5404B149.6010400@linutronix.de> <54060EDA.6060204@linutronix.de> <20140902201536.GC11766@atomide.com> <540745CC.2090901@linutronix.de> <20140903174845.GE11766@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-we0-f170.google.com ([74.125.82.170]:62125 "EHLO
-	mail-we0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751332AbaIDFOQ (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:52159 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750901AbaIDNoR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Sep 2014 01:14:16 -0400
-Content-Disposition: inline
-In-Reply-To: <20140903150729.GA7436@twins.programming.kicks-ass.net>
+	Thu, 4 Sep 2014 09:44:17 -0400
+In-Reply-To: <20140903174845.GE11766@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+To: Tony Lindgren <tony@atomide.com>
+Cc: balbi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Walmsley <paul@pwsan.com>
 
+On 09/03/2014 07:48 PM, Tony Lindgren wrote:
 
-* Peter Zijlstra <peterz@infradead.org> wrote:
+I will check this upper part of this email soon=85
 
-> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
-> > So a lockdep-only assert is unlikely to draw attention to existing bugs,
-> > especially in established drivers.
-> 
-> By the same logic lockdep will not find locking errors in established
-> drivers.
+> OK. At least it's starting to now sound that the bugs are pretty much
+> the same with 8250 and serial-omap :)
 
-Indeed, this patch is ill-advised in several ways:
+Do you see a reason for not posting the entire series again since now I
+am bug compatible in the pm-runtime part? We have -rc3 and I would like
+to get this merge the series I have now and this seems to be the only
+problem I am aware of.
 
-  - it extends an API variant that we want to phase
+>=20
+> Regards,
+>=20
+> Tony
 
-  - emits a warning even if say lockdep has already emitted a
-    warning and locking state is not guaranteed to be consistent. 
-
-  - makes the kernel more expensive once fully debugged, in that
-    non-fatal checks are unconditional.
-
-Also please submit locking related patches as standalone series 
-to the locking subsystem, not embedded in an unrelated series.
-
-Thanks,
-
-	Ingo
+Sebastian
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
