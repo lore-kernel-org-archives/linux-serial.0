@@ -1,38 +1,52 @@
-From: Husam Al Sayed <oscar55@post.sk>
-Subject: FROM: Husam Al Sayed.
-Date: Wed, 3 Sep 2014 20:57:21 +0200 (CEST)
-Message-ID: <1457604116.347310.1409770641577.JavaMail.root@mbox05>
-Reply-To: "alsayedhusa@hotmail.com" <alsayedhusa@hotmail.com>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Thu, 4 Sep 2014 07:14:11 +0200
+Message-ID: <20140904051411.GA27350@gmail.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+ <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
+ <20140903092723.GA4783@worktop.ger.corp.intel.com>
+ <5406F964.6060900@hurleysoftware.com>
+ <20140903144029.GA7083@twins.programming.kicks-ass.net>
+ <54072A99.1080306@hurleysoftware.com>
+ <20140903150729.GA7436@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <netdev-owner@vger.kernel.org>
-Sender: netdev-owner@vger.kernel.org
-Cc: bp@alien8.de, linux-edac@vger.kernel.org, m.chehab@samsung.com, boris.ostrovsky@oracle.com, david.vrabel@citrix.com, stefano.stabellini@eu.citrix.com, ian.campbell@citrix.com, wei.liu2@citrix.com, netdev@vger.kernel.org, konrad.wilk@oracle.com, xen-devel@lists.xenproject.org, david@fromorbit.com, bpm@sgi.com, xfs@oss.sgi.com, anirudh@xilinx.com, John.Linn@xilinx.com, jacmet@sunsite.dk, linux-serial@vger.kernel.org, jpr@f6fbb.org, Henk.Vergonet@gmail.com, usbb2k-api-dev@nongnu.org, jreuter@yaina.de, linux-hams@vger.kernel.org, dsd@gentoo.org, kune@deine-taler.de, linux-wireless@vger.kernel.org, zd1211-devs@lists.sourceforge.net, mjpeg-users@lists.sourceforge.net, linux-media@vger.kernel.org, macro@linux-mips.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-we0-f170.google.com ([74.125.82.170]:62125 "EHLO
+	mail-we0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751332AbaIDFOQ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 4 Sep 2014 01:14:16 -0400
+Content-Disposition: inline
+In-Reply-To: <20140903150729.GA7436@twins.programming.kicks-ass.net>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-FROM: Husam Al Sayed.
 
-EMAIL:alsayedhusa@hotmail.com
- 
-Hello,
- 
-I decided to write you this proposal in good faith, believing that you will
-not betray me. I am Mr. Husam Al Sayed, a Bank officer here in U.A.E.
- 
-One Mr. Peter Adams, a citizen of your country and Crude Oil dealer made a fixed deposit with my bank in 2005 for 108 calendar months, valued at US$30,000,000.00 (Thirty Million United State Dollars) the due date for this deposit contract was last 22nd of January 2014. Sadly Peter was among the death victims in the May 27 2006 Earthquake disaster in Java, Indonesia that killed over 5,000 people. He was in Indonesia on a business trip and that was how he met his untimely end. My bank management is yet to know about his death, I knew about it because he was my friend and I am his Account Officer. Peter did not mention any Next of Kin/ Heir when the account was opened, he was not married and no children. Last week my Bank Management requested that Peter should give instructions on what to do 
- about his funds, if to renew the contract.
- 
-I know this will happen and that is why I have been looking for a means to handle the situation, because if my Bank Directors happens to know that Peter is dead and do not have any Heir, they will take the funds for their personal use, so I don't want such to happen. That is why I am seeking your co-operation to present you as the Next of Kin/ Heir to the account, since you are a foreigner and my bank head quarters will release the account to you. There is no risk involved; the transaction will be executed under a legitimate arrangement that will protect us from any breach of law. It is better that we claim the money, than allowing the Bank Directors to take it, they are rich already. I am not a greedy person, so I am suggesting we share the funds in this ratio, 50/50%, equal sharing. Let 
- me know your mind on this and please do treat this information highly confidential. We shall go over the details once I receive your urgent response. Please Urgently get back to me through this email address as soon as possible:
- 
- 
- 
-Have a nice day and God bless. Anticipating your communication.
- 
-Regards,
-FROM: Husam Al Sayed.
-EMAIL: alsayedhusa@hotmail.com
-_____________________________________________________________________
+* Peter Zijlstra <peterz@infradead.org> wrote:
 
-Vsetko podstatne z vedy, pocitacov,  mobilov aj hier - http://www.TECHsme.sk
+> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
+> > So a lockdep-only assert is unlikely to draw attention to existing bugs,
+> > especially in established drivers.
+> 
+> By the same logic lockdep will not find locking errors in established
+> drivers.
+
+Indeed, this patch is ill-advised in several ways:
+
+  - it extends an API variant that we want to phase
+
+  - emits a warning even if say lockdep has already emitted a
+    warning and locking state is not guaranteed to be consistent. 
+
+  - makes the kernel more expensive once fully debugged, in that
+    non-fatal checks are unconditional.
+
+Also please submit locking related patches as standalone series 
+to the locking subsystem, not embedded in an unrelated series.
+
+Thanks,
+
+	Ingo
