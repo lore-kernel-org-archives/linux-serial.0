@@ -1,80 +1,55 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 21/26] tty: Convert tty_struct bitfield to bools
-Date: Thu, 04 Sep 2014 12:08:12 -0400
-Message-ID: <54088E6C.2020209@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-22-git-send-email-peter@hurleysoftware.com> <20140903115852.5a720754@alan.etchedpixels.co.uk> <54070643.9080903@hurleysoftware.com> <20140903131919.0d970b6f@alan.etchedpixels.co.uk> <54072F75.70107@hurleysoftware.com> <20140903175606.GA9740@kroah.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 15/15] tty: serial: 8250: omap: add dma support
+Date: Thu, 4 Sep 2014 09:25:43 -0700
+Message-ID: <20140904162542.GS11766@atomide.com>
+References: <540048B4.7010807@linutronix.de>
+ <20140829161221.GO16006@atomide.com>
+ <5404B149.6010400@linutronix.de>
+ <54060EDA.6060204@linutronix.de>
+ <20140902201536.GC11766@atomide.com>
+ <540745CC.2090901@linutronix.de>
+ <20140903174845.GE11766@atomide.com>
+ <54086CA7.8020507@linutronix.de>
+ <20140904145203.GR11766@atomide.com>
+ <54087D94.7000208@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:42668 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751228AbaIDQIT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Sep 2014 12:08:19 -0400
-In-Reply-To: <20140903175606.GA9740@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <54087D94.7000208@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, balbi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 09/03/2014 01:56 PM, Greg Kroah-Hartman wrote:
-> On Wed, Sep 03, 2014 at 11:10:45AM -0400, Peter Hurley wrote:
->> On 09/03/2014 08:19 AM, One Thousand Gnomes wrote:
->>>> Ahh. Thanks for the insight, Alan.
->>>>
->>>> But set_bit() et. al. will generate an incredible amount of churn;
->>>> what if I split the fields up to prevent false-sharing?
->>>
->>> Do you feel lucky ;-)
->>
->> Hahaha  :)
->>
->>> I'd rather set_bit and friends were used. They exist largely for this
->>> kind of reason and they also have atomic test/set methods which may in
->>> the longer term be very useful.
->>>
->>> Yes it is churn can't argue with that.
->>
->> Yuck. There should be a better way. IXANY mode is suddenly going to
->> have a ton of unnecessary bus locks on x86.
-> 
-> True, but at least it will be correct, which I'm guessing today it isn't
-> :(
-> 
->> Note the ctrl_status field is a byte as well, which can't be RMW'ed by
->> the bit-locked primitives, and definitely should not be aggregated with
->> any adjacent field.
-> 
-> Never trust what an ia64 compiler can, and will, do...
+* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140904 07:56]:
+> On 09/04/2014 04:52 PM, Tony Lindgren wrote:
+> > Yeah makes sense to me. Thanks for ensuring the bug
+> > compability :)
+>=20
+> Thanks. What about the ttyOx vs ttySx. Do you want me to add kernel
+> line fixup somewhere arch/arm or we ignore this for now? Greg didn't
+> say anything=E2=80=A6
 
-I could not get the ia64 compiler to merge adjacent reads or writes on
-bools or chars, at all.
+I suggest we have both drivers just available first and then attempt
+to deal with the removal of most of omap-serial later on.
 
-However, Alan's point applies anyway --
-because the Alpha is not byte-addressable.
+If both drivers are present, we should try to ensure 8250 gets probed
+first which I believe it already does based on the Makefile order.
 
-This means that smaller-than-int storage is _always_ read-modify-write.
+Once the 8250 based driver is known to work, it might make sense to
+remove most of the functions in omap-serial and have it use the 8250
+functions too to remove duplicate code.
 
-So my plan is now to take this patch out of this series and submit
-a new series on top of this one that will:
-1) merge the ctrl_status field and packet field into an int size, which
-   will guarantee atomicity to those fields on all arches when accessed
-   holding the ->ctrl_lock.
-2) make tty->hw_stopped an int. This way legacy drivers -- synclink,
-   cyclades, nozomi, isdn4linux, et. al. -- will not need changes.
-   UART drivers should use uport->hw_stopped (added in this series).
-   New, non-UART drivers should use their own hw_stopped mechanism.
-3) keep tty->stopped and tty->flow_stopped as bitfield members of the
-   same bitfield, but size that bitfield to unsigned long [note 1 below].
-   This should guarantee atomicity on all arches when accessed while
-   holding the ->flow_lock, without requiring further code changes and
-   without impacting other arches.
+That might be already enough and no proxying is needed and we get
+rid of the duplicate code :)
 
 Regards,
-Peter Hurley
 
-[Note 1] gcc pre-4.7.2 corrupts data adjacent to a smaller-than-8-byte
-bitfield on sparc64, ia64, ppc64 and alpha.
-
-
+Tony
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
