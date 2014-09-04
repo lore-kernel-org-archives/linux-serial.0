@@ -1,100 +1,80 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty/serial: at91: BUG: disable interrupts when !UART_ENABLE_MS()
-Date: Thu, 04 Sep 2014 11:47:17 -0400
-Message-ID: <54088985.80102@hurleysoftware.com>
-References: <1409760567-13186-1-git-send-email-richard.genoud@gmail.com>
+Subject: Re: [PATCH 21/26] tty: Convert tty_struct bitfield to bools
+Date: Thu, 04 Sep 2014 12:08:12 -0400
+Message-ID: <54088E6C.2020209@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-22-git-send-email-peter@hurleysoftware.com> <20140903115852.5a720754@alan.etchedpixels.co.uk> <54070643.9080903@hurleysoftware.com> <20140903131919.0d970b6f@alan.etchedpixels.co.uk> <54072F75.70107@hurleysoftware.com> <20140903175606.GA9740@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:39821 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:42668 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752840AbaIDPr0 (ORCPT
+	with ESMTP id S1751228AbaIDQIT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 4 Sep 2014 11:47:26 -0400
-In-Reply-To: <1409760567-13186-1-git-send-email-richard.genoud@gmail.com>
+	Thu, 4 Sep 2014 12:08:19 -0400
+In-Reply-To: <20140903175606.GA9740@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Yegor Yefremov <yegor_sub1@visionsystems.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 09/03/2014 12:09 PM, Richard Genoud wrote:
-> In set_termios(), interrupts where not disabled if UART_ENABLE_MS() was
-> false.
+On 09/03/2014 01:56 PM, Greg Kroah-Hartman wrote:
+> On Wed, Sep 03, 2014 at 11:10:45AM -0400, Peter Hurley wrote:
+>> On 09/03/2014 08:19 AM, One Thousand Gnomes wrote:
+>>>> Ahh. Thanks for the insight, Alan.
+>>>>
+>>>> But set_bit() et. al. will generate an incredible amount of churn;
+>>>> what if I split the fields up to prevent false-sharing?
+>>>
+>>> Do you feel lucky ;-)
+>>
+>> Hahaha  :)
+>>
+>>> I'd rather set_bit and friends were used. They exist largely for this
+>>> kind of reason and they also have atomic test/set methods which may in
+>>> the longer term be very useful.
+>>>
+>>> Yes it is churn can't argue with that.
+>>
+>> Yuck. There should be a better way. IXANY mode is suddenly going to
+>> have a ton of unnecessary bus locks on x86.
 > 
-> Tested on at91sam9g35.
+> True, but at least it will be correct, which I'm guessing today it isn't
+> :(
 > 
-> CC: stable@vger.kernel.org # >= 3.16
+>> Note the ctrl_status field is a byte as well, which can't be RMW'ed by
+>> the bit-locked primitives, and definitely should not be aggregated with
+>> any adjacent field.
+> 
+> Never trust what an ia64 compiler can, and will, do...
 
-Awesome, thank you.
+I could not get the ia64 compiler to merge adjacent reads or writes on
+bools or chars, at all.
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+However, Alan's point applies anyway --
+because the Alpha is not byte-addressable.
 
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 42 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 7b63677475c1..d7d4584549a5 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -527,6 +527,45 @@ static void atmel_enable_ms(struct uart_port *port)
->  }
->  
->  /*
-> + * Disable modem status interrupts
-> + */
-> +static void atmel_disable_ms(struct uart_port *port)
-> +{
-> +	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	uint32_t idr = 0;
-> +
-> +	/*
-> +	 * Interrupt should not be disabled twice
-> +	 */
-> +	if (!atmel_port->ms_irq_enabled)
-> +		return;
-> +
-> +	atmel_port->ms_irq_enabled = false;
-> +
-> +	if (atmel_port->gpio_irq[UART_GPIO_CTS] >= 0)
-> +		disable_irq(atmel_port->gpio_irq[UART_GPIO_CTS]);
-> +	else
-> +		idr |= ATMEL_US_CTSIC;
-> +
-> +	if (atmel_port->gpio_irq[UART_GPIO_DSR] >= 0)
-> +		disable_irq(atmel_port->gpio_irq[UART_GPIO_DSR]);
-> +	else
-> +		idr |= ATMEL_US_DSRIC;
-> +
-> +	if (atmel_port->gpio_irq[UART_GPIO_RI] >= 0)
-> +		disable_irq(atmel_port->gpio_irq[UART_GPIO_RI]);
-> +	else
-> +		idr |= ATMEL_US_RIIC;
-> +
-> +	if (atmel_port->gpio_irq[UART_GPIO_DCD] >= 0)
-> +		disable_irq(atmel_port->gpio_irq[UART_GPIO_DCD]);
-> +	else
-> +		idr |= ATMEL_US_DCDIC;
-> +
-> +	UART_PUT_IDR(port, idr);
-> +}
-> +
-> +/*
->   * Control the transmission of a break signal
->   */
->  static void atmel_break_ctl(struct uart_port *port, int break_state)
-> @@ -1993,7 +2032,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->  
->  	/* CTS flow-control and modem-status interrupts */
->  	if (UART_ENABLE_MS(port, termios->c_cflag))
-> -		port->ops->enable_ms(port);
-> +		atmel_enable_ms(port);
-> +	else
-> +		atmel_disable_ms(port);
->  
->  	spin_unlock_irqrestore(&port->lock, flags);
->  }
-> 
+This means that smaller-than-int storage is _always_ read-modify-write.
+
+So my plan is now to take this patch out of this series and submit
+a new series on top of this one that will:
+1) merge the ctrl_status field and packet field into an int size, which
+   will guarantee atomicity to those fields on all arches when accessed
+   holding the ->ctrl_lock.
+2) make tty->hw_stopped an int. This way legacy drivers -- synclink,
+   cyclades, nozomi, isdn4linux, et. al. -- will not need changes.
+   UART drivers should use uport->hw_stopped (added in this series).
+   New, non-UART drivers should use their own hw_stopped mechanism.
+3) keep tty->stopped and tty->flow_stopped as bitfield members of the
+   same bitfield, but size that bitfield to unsigned long [note 1 below].
+   This should guarantee atomicity on all arches when accessed while
+   holding the ->flow_lock, without requiring further code changes and
+   without impacting other arches.
+
+Regards,
+Peter Hurley
+
+[Note 1] gcc pre-4.7.2 corrupts data adjacent to a smaller-than-8-byte
+bitfield on sparc64, ia64, ppc64 and alpha.
+
 
