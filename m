@@ -1,49 +1,45 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC PATCH 1/1] drivers: introduce ARM SBSA generic UART driver
-Date: Fri, 05 Sep 2014 11:24:52 -0400
-Message-ID: <5409D5C4.5000905@hurleysoftware.com>
-References: <1409328803-1953-1-git-send-email-andre.przywara@arm.com> <1409328803-1953-2-git-send-email-andre.przywara@arm.com> <54060A4B.2050504@hurleysoftware.com> <5409CC61.1040709@arm.com>
+From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
+Subject: Re: [PATCH] tty: xuartps: Fix tx_emtpy() callback
+Date: Fri, 5 Sep 2014 08:52:03 -0700
+Message-ID: <25273d4b-b1dd-4bff-af60-376c6019d308@BN1AFFO11FD023.protection.gbl>
+References: <1409903117-22021-1-git-send-email-lars@metafoo.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:52591 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751289AbaIEPZD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 5 Sep 2014 11:25:03 -0400
-In-Reply-To: <5409CC61.1040709@arm.com>
+Received: from mail-bl2lp0211.outbound.protection.outlook.com ([207.46.163.211]:29704
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750772AbaIEPw1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 5 Sep 2014 11:52:27 -0400
+Content-Disposition: inline
+In-Reply-To: <1409903117-22021-1-git-send-email-lars@metafoo.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andre Przywara <andre.przywara@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: "linux@vger.kernel.org" <linux@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org
 
-On 09/05/2014 10:44 AM, Andre Przywara wrote:
-> On 02/09/14 19:19, Peter Hurley wrote:
->> On 08/29/2014 12:13 PM, Andre Przywara wrote:
->>> +static void
->>> +sbsa_uart_set_termios(struct uart_port *port, struct ktermios *termios,
->>> +               struct ktermios *old)
->>> +{
->>> +     unsigned long flags;
->>> +     unsigned int baud = 115200;
->>> +
->>> +     spin_lock_irqsave(&port->lock, flags);
->>         ^^^^^^^^^^^^^^^^^
->>
->> Can be spin_lock_irq(&port->lock) here.
-> 
-> Why is this? Because this code cannot be called with interrupts already
-> off?
+On Fri, 2014-09-05 at 09:45AM +0200, Lars-Peter Clausen wrote:
+> The tx_empty() callback currently checks the TXEMPTY bit in the inter=
+rupt
+> status register to decided whether the FIFO should be reported as emp=
+ty or
+> not. The bit in this register gets set when the FIFO state transition=
+s from
+> non-empty to empty but is cleared again in the interrupt handler. Thi=
+s means
+> it is not suitable to be used to decided whether the FIFO is currentl=
+y empty
+> or not. Instead use the TXEMPTY bit from the status register which wi=
+ll be
+> set as long as the FIFO is empty.
+>=20
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 
-Yes.
-
-> This would apply to the original PL011 driver also then?
-
-Also, yes.
-
-I mentioned it because new code should use the spin_lock_irq() flavor
-[primarily as a visual aid for driver authors].
-
-Regards,
-Peter Hurley
+	S=C3=B6ren
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
