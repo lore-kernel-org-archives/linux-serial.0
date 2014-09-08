@@ -1,91 +1,48 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: men_z135_uart: Fix driver for changes in
- hardware
-Date: Mon, 8 Sep 2014 16:17:33 -0700
-Message-ID: <20140908231733.GB23907@kroah.com>
-References: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
+Subject: Re: [PATCH 00/26] tty/serial flow control fixes
+Date: Mon, 8 Sep 2014 16:24:45 -0700
+Message-ID: <20140908232445.GA28204@kroah.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:36376 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:36423 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755345AbaIHXRe (ORCPT
+	with ESMTP id S1755079AbaIHXYq (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 19:17:34 -0400
+	Mon, 8 Sep 2014 19:24:46 -0400
 Content-Disposition: inline
-In-Reply-To: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
+In-Reply-To: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Aug 28, 2014 at 02:32:20PM +0200, Johannes Thumshirn wrote:
-> 16z135 IP Core has changed so the driver needs to be updated to respect
-> these changes. The following changes have been made:
+On Tue, Sep 02, 2014 at 05:39:09PM -0400, Peter Hurley wrote:
+> Hi Greg,
 > 
-> * Don't invert the 16z135 modem status register when reading.
-> * Add module parameter to configure the (baud rate dependent) RX timeout.
->   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-> * Enable the handling of UART core's automatic flow control feature.
->   When AFE is active disable generation of modem status IRQs.
-> * Rework the handling of IRQs to be conform with newer FPGA versions and
->   take precautions not to miss an interrupt because of the destructive read
->   of the IIR register.
+> This patch series reworks the internals of tty and serial flow control to
+> fix multiple races in both START/STOP flow control and RTS/CTS flow control.
 > 
-> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
-> ---
->  drivers/tty/serial/men_z135_uart.c | 87 +++++++++++++++++++++++---------------
->  1 file changed, 53 insertions(+), 34 deletions(-)
+> The main changes in this series are:
+> Patch 1
+>    Backs out the UPF_HARD_FLOW kludge for 8250. This revert should be
+>    for mainline and -next
 > 
-> diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-> index 30e9e60..d31b8a4 100644
-> --- a/drivers/tty/serial/men_z135_uart.c
-> +++ b/drivers/tty/serial/men_z135_uart.c
-> @@ -34,12 +34,11 @@
->  #define MEN_Z135_CONF_REG		0x808
->  #define MEN_Z135_UART_FREQ		0x80c
->  #define MEN_Z135_BAUD_REG		0x810
-> -#define MENZ135_TIMEOUT			0x814
-> +#define MEN_Z135_TIMEOUT		0x814
->  
->  #define MEN_Z135_MEM_SIZE		0x818
->  
-> -#define IS_IRQ(x) ((x) & 1)
-> -#define IRQ_ID(x) (((x) >> 1) & 7)
-> +#define IRQ_ID(x) ((x) & 0x1f)
->  
->  #define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
->  #define MEN_Z135_IER_TXCIEN BIT(1)		/* TX Space IRQ */
-> @@ -94,11 +93,11 @@
->  #define MEN_Z135_LSR_TEXP BIT(6)
->  #define MEN_Z135_LSR_RXFIFOERR BIT(7)
->  
-> -#define MEN_Z135_IRQ_ID_MST 0
-> -#define MEN_Z135_IRQ_ID_TSA 1
-> -#define MEN_Z135_IRQ_ID_RDA 2
-> -#define MEN_Z135_IRQ_ID_RLS 3
-> -#define MEN_Z135_IRQ_ID_CTI 6
-> +#define MEN_Z135_IRQ_ID_RLS BIT(0)
-> +#define MEN_Z135_IRQ_ID_RDA BIT(1)
-> +#define MEN_Z135_IRQ_ID_CTI BIT(2)
-> +#define MEN_Z135_IRQ_ID_TSA BIT(3)
-> +#define MEN_Z135_IRQ_ID_MST BIT(4)
->  
->  #define LCR(x) (((x) >> MEN_Z135_LCR_SHIFT) & 0xff)
->  
-> @@ -118,6 +117,10 @@ static int align;
->  module_param(align, int, S_IRUGO);
->  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
->  
-> +static int rx_timeout;
-> +module_param(rx_timeout, uint, S_IRUGO);
-> +MODULE_PARM_DESC(rx_timeout, "RX timeout");
+> Patches 3-7
+>    Fixes to x_char handling (ie., sending START/STOP) both in the serial
+>    core and to several UART drivers
+> 
+> Patches 10-15
+>    Rename and move ASYNC_CTS_FLOW and ASYNC_CHECK_CD statuses into
+>    a private field for the serial core, and add helper functions to test
+>    those statuses for UART drivers.
+> 
+>    This is a necessary step toward making tty port->flags SMP-safe, without
+>    introducing a new lock.
 
-Why add a module parameter?  Who will know to set this?  And to what
-value?
-
-And what about this driver working on old hardware, didn't you just
-break this?
+I stopped applying at patch 13, due to the objections to that patch.
+Please redo the rest of the series and resend.
 
 thanks,
 
