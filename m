@@ -1,43 +1,46 @@
-From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH 2/7] ARM: meson: serial: add MesonX SoC on-chip uart
- driver
-Date: Sat, 6 Sep 2014 20:51:12 +0200
-Message-ID: <20140906185112.GB14240@nuc>
-References: <1408272594-10814-1-git-send-email-carlo@caione.org>
- <1408272594-10814-3-git-send-email-carlo@caione.org>
- <20140906182804.GA14240@nuc>
- <20140906183834.GA28645@kroah.com>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
+Date: Mon, 8 Sep 2014 16:46:18 +0200
+Message-ID: <20140908144616.GA22315@ci00147.xsens-tech.local>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:52609 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751354AbaIFSvT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 6 Sep 2014 14:51:19 -0400
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140906183834.GA28645@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, tony@atomide.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux@arm.linux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, jslaby@suse.cz, grant.likely@linaro.org, b.galvani@gmail.com
 
-On sab, set 06, 2014 at 11:38:34 -0700, Greg KH wrote:
-> On Sat, Sep 06, 2014 at 08:28:04PM +0200, Carlo Caione wrote:
-> > On dom, ago 17, 2014 at 12:49:49 +0200, Carlo Caione wrote:
-> > > The SoC has four fully functional UARTs which use the same programming
-> > > model. They are named UART_A, UART_B, UART_C and UART_AO (Always-On)
-> > > which cannot be powered off.
-> > > 
-> > > Signed-off-by: Carlo Caione <carlo@caione.org>
-> > > ---
-> > 
-> > Ping
-> 
-> It's still in my queue, sorry, been busy with conferences and the like,
-> should get to everything next week...
+Hi,
 
-No prob. I'll wait, thanks.
+On Fri, Sep 05, 2014 at 09:02:35PM +0200, Sebastian Andrzej Siewior wrote:
+> This is my complete queue fo the omap serial driver based on the 8250 core
+> code. I played with it on beagle bone, am335x-evm and dra7xx including DMA.
+> The runtime-pm pieces look now bug-compatible with the omap-serial driver.
+> Besides the runtime-om improvement I also fixed a few corner cases for the
+> TX-DMA problem. The DMA fixes (in edma and omap-dma) were dropped and the
+> problem has been in 8250-dma via patch #13.
 
--- 
-Carlo Caione
+Thanks for the respin. I've just tested the series a bit. Here's some
+things I ran into.
+
+- Basic console use is better than the previous series. It behaves
+  pretty much like the omap-serial implementation.
+
+- ncurses based applications (vi, less) don't play nice for me on the
+  console with this series. less doesn't show me anything. vi doesn't
+  return to console properly.
+
+- I seem seem to get stuck in a "serial8250: too much work for irq%d"
+  loop somewhat reliably. We have a rather demanding application with
+  typically somewhere between 600 and 1000 byte packets being sent at
+  240Hz (roughly somewhere between 1.5 and 2 Mb/s). We run at baudrate
+  3500k. I get into this "too much work" thing already when running at
+  300 bytes per packet.
+
+I hope this is of some use to you. I'll do more testing later.
+
+Thanks,
+Frans
