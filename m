@@ -1,46 +1,71 @@
-From: Frans Klaver <frans.klaver@xsens.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
-Date: Mon, 8 Sep 2014 16:46:18 +0200
-Message-ID: <20140908144616.GA22315@ci00147.xsens-tech.local>
+Date: Mon, 8 Sep 2014 17:15:01 +0200
+Message-ID: <20140908151501.GA22584@linutronix.de>
 References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
+ <20140908144616.GA22315@ci00147.xsens-tech.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+In-Reply-To: <20140908144616.GA22315@ci00147.xsens-tech.local>
+Sender: linux-omap-owner@vger.kernel.org
+To: Frans Klaver <frans.klaver@xsens.com>
 Cc: linux-serial@vger.kernel.org, tony@atomide.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+* Frans Klaver | 2014-09-08 16:46:18 [+0200]:
 
-On Fri, Sep 05, 2014 at 09:02:35PM +0200, Sebastian Andrzej Siewior wrote:
-> This is my complete queue fo the omap serial driver based on the 8250 core
-> code. I played with it on beagle bone, am335x-evm and dra7xx including DMA.
-> The runtime-pm pieces look now bug-compatible with the omap-serial driver.
-> Besides the runtime-om improvement I also fixed a few corner cases for the
-> TX-DMA problem. The DMA fixes (in edma and omap-dma) were dropped and the
-> problem has been in 8250-dma via patch #13.
+>- ncurses based applications (vi, less) don't play nice for me on the
+>  console with this series. less doesn't show me anything. vi doesn't
+>  return to console properly.
 
-Thanks for the respin. I've just tested the series a bit. Here's some
-things I ran into.
+Can you give a test case 
 
-- Basic console use is better than the previous series. It behaves
-  pretty much like the omap-serial implementation.
+>- I seem seem to get stuck in a "serial8250: too much work for irq%d"
+>  loop somewhat reliably. We have a rather demanding application with
+>  typically somewhere between 600 and 1000 byte packets being sent at
+>  240Hz (roughly somewhere between 1.5 and 2 Mb/s). We run at baudrate
+>  3500k. I get into this "too much work" thing already when running at
+>  300 bytes per packet.
 
-- ncurses based applications (vi, less) don't play nice for me on the
-  console with this series. less doesn't show me anything. vi doesn't
-  return to console properly.
+Do you get this message also at lower baud rates, say 115200?
 
-- I seem seem to get stuck in a "serial8250: too much work for irq%d"
-  loop somewhat reliably. We have a rather demanding application with
-  typically somewhere between 600 and 1000 byte packets being sent at
-  240Hz (roughly somewhere between 1.5 and 2 Mb/s). We run at baudrate
-  3500k. I get into this "too much work" thing already when running at
-  300 bytes per packet.
+What I am trying to understand is why you are spinning in the handler. 
+_With_ DMA you should hardly get into the serial handler under normal 
+conditions. Running at 3.5MB/sec should give one byte every 2.8us and
+48 Bytes every ~137us. This looks like plenty of time to get  out of
+the handler. My *guess* is that serial8250_handle_irq() has IIR often
+set to timeout and you end up fetching byte after byte. 
 
-I hope this is of some use to you. I'll do more testing later.
+This patch should protocol when and why you got into the handler.
 
-Thanks,
-Frans
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 7111b22de000..59852069e4a0 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1583,6 +1583,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	status = serial_port_in(port, UART_LSR);
+ 
+ 	DEBUG_INTR("status = %x...", status);
++	trace_printk("l%d IIR %x LSR %x\n", port->line, iir, status);
+ 
+ 	if (status & (UART_LSR_DR | UART_LSR_BI)) {
+ 		if (up->dma)
+@@ -1707,6 +1708,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 
+ 	spin_unlock(&i->lock);
+ 
++	trace_printk("%d e\n", irq);
+ 	DEBUG_INTR("end.\n");
+ 
+ 	return IRQ_RETVAL(handled);
+
+>I hope this is of some use to you. I'll do more testing later.
+
+Which SoC do you use and do you have DMA enabled?
+
+>Thanks,
+>Frans
+
+Sebastian
