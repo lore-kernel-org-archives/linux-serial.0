@@ -1,81 +1,34 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 3.17-rc3] serial: asc: Adopt readl_/writel_relaxed()
-Date: Mon, 8 Sep 2014 16:27:27 -0700
-Message-ID: <20140908232727.GA8970@kroah.com>
-References: <1409745651-3247-1-git-send-email-daniel.thompson@linaro.org>
+Subject: Re: [PATCH 03/18] tty: serial: 8250_core: allow to set ->throttle /
+ ->unthrottle callbacks
+Date: Mon, 8 Sep 2014 16:33:29 -0700
+Message-ID: <20140908233329.GA32144@kroah.com>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
+ <1409943773-7874-4-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:36430 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755213AbaIHX12 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 19:27:28 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1409745651-3247-1-git-send-email-daniel.thompson@linaro.org>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1409943773-7874-4-git-send-email-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, kernel@stlinux.com, linux-serial@vger.kernel.org
 
-On Wed, Sep 03, 2014 at 01:00:51PM +0100, Daniel Thompson wrote:
-> The architectures where this peripheral exists (ARM and SH) have expensive
-> implementations of writel(), reliant on spin locks and explicit L2 cache
-> management. These architectures provide a cheaper writel_relaxed() which
-> is much better suited to peripherals that do not perform DMA. The
-> situation with readl()/readl_relaxed()is similar although less acute.
+On Fri, Sep 05, 2014 at 09:02:38PM +0200, Sebastian Andrzej Siewior wrote:
+> The OMAP UART provides support for HW assisted flow control. What is
+> missing is the support to throttle / unthrottle callbacks which are used
+> by the omap-serial driver at the moment.
+> This patch adds the callbacks. It should be safe to add them since they
+> are only invoked from the serial_core (uart_throttle()) if the feature
+> flags are set.
 > 
-> This driver does not use DMA and will be more power efficient and more
-> robust (due to absense of spin locks during console I/O) if it uses the
-> relaxed variants.
-> 
-> This change means the driver is no longer portable and therefore no
-> longer suitable for compile testing.
-> 
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@st.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: kernel@stlinux.com
-> Cc: linux-serial@vger.kernel.org
-> Acked-by: Maxime Coquelin <maxime.coquelin@st.com>
-> Acked-by: Peter Griffin <peter.griffin@linaro.org>
-> ---
->  drivers/tty/serial/Kconfig  | 2 +-
->  drivers/tty/serial/st-asc.c | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 26cec64d..e9b1735 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
->  config SERIAL_ST_ASC
->  	tristate "ST ASC serial port support"
->  	select SERIAL_CORE
-> -	depends on ARM || COMPILE_TEST
-> +	depends on ARM
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-I really don't like stuff that does this, sorry.  I want to test build
-as many drivers as I can.  COMPILE_TEST does not mean that the driver is
-"portable", only that it builds properly on all platforms.
+Due to other recent changes, this patch fails to apply :(
 
->  	help
->  	  This driver is for the on-chip Asychronous Serial Controller on
->  	  STMicroelectronics STi SoCs.
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index 8b2d735..adadbc1 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -151,12 +151,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
-> 
->  static inline u32 asc_in(struct uart_port *port, u32 offset)
->  {
-> -	return readl(port->membase + offset);
-> +	return readl_relaxed(port->membase + offset);
-
-What plaforms do not provide readl_relaxed()?
+I've applied your first two, can you respin the rest and resend as a new
+series?
 
 thanks,
 
