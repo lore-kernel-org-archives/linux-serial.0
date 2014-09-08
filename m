@@ -1,61 +1,35 @@
-From: Bill Pemberton <wfp5p@worldbroken.com>
-Subject: Re: [Patch v2 0/2] Move Digi Neo card support from dgnc to jsm
-Date: Mon, 08 Sep 2014 16:25:39 -0400
-Message-ID: <540E10C3.2080805@worldbroken.com>
-References: <1409430958-2692-1-git-send-email-wfp5p@worldbroken.com> <20140908201700.GA28282@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 1/2] tty: serial: 8250: Add Mediatek UART driver
+Date: Mon, 8 Sep 2014 15:32:49 -0700
+Message-ID: <20140908223249.GA26114@kroah.com>
+References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
+ <1407852737-17265-2-git-send-email-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cthulhu.worldbroken.com ([173.230.133.178]:57390 "EHLO
-	cthulhu.worldbroken.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754195AbaIHUZm (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 16:25:42 -0400
-In-Reply-To: <20140908201700.GA28282@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1407852737-17265-2-git-send-email-matthias.bgg@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org, jslaby@suse.cz, grant.likely@linaro.org, alan@linux.intel.com, varkabhadram@gmail.com, tklauser@distanz.ch, heiko@sntech.de, yingjoe.chen@gmail.com, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: cascardo@linux.vnet.ibm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, lidza.louina@gmail.com, devel@driverdev.osuosl.org
 
-On 09/08/2014 04:17 PM, Greg KH wrote:
-> On Sat, Aug 30, 2014 at 04:35:56PM -0400, wfp5p@worldbroken.com wrote:
->> From: Bill Pemberton <wfp5p@worldbroken.com>
->>
->> The jsm driver (drivers/tty/serial/jsm) already supports the Digi Neo
->> cards that dgnc (staging) supports.  In fact, it appears that jsm was
->> based on dgnc.  The dgnc driver has PCI ids for more cards than jsm,
->> this patch moves support for all the Neo cards to jsm.
->>
->> The result of this will be that dgnc will only support the Classic
->> cards since the jsm driver doesn't support those cards yet.
->>
->>
->> Bill Pemberton (2):
->>    jsm: add support for additional Neo cards
->>    staging: dgnc: remove Neo card ids from device table
->>
->>   drivers/staging/dgnc/dgnc_driver.c  | 13 -------------
->>   drivers/tty/serial/jsm/jsm.h        | 10 ++++++++++
->>   drivers/tty/serial/jsm/jsm_driver.c | 38 +++++++++++++++++++++++++++++++++----
->>   3 files changed, 44 insertions(+), 17 deletions(-)
->
-> These are now applied, thanks.
->
-> Do you think we can delete the dgnc driver now, or are there still some
-> odd cards out there that it only supports?  What would it take to move
-> that support to the jsm driver instead?
->
+On Tue, Aug 12, 2014 at 04:12:16PM +0200, Matthias Brugger wrote:
+> The device has a highspeed register which influences the calcualtion of the
+> divisor. The chip lacks support for some baudrates. When requested, we set the
+> divisor to the next smaller baudrate and adjust the c_cflag accordingly.
+> 
+> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c |  294 ++++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig    |    7 +
+>  drivers/tty/serial/8250/Makefile   |    1 +
+>  3 files changed, 302 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_mtk.c
 
-The jsm driver still doesn't support the Classic cards, just the Neo 
-cards so dgnc would still be needed to support those cards.
+This doesn't apply to my tree, care to refresh it against linux-next and
+resend?
 
-I think the right thing would be to put the Classic support into jsm. 
-I've started looking at that.  Dgnc and jsm are obviously from the same 
-base, so dgnc can be used as guide on what to do.  However, I don't have 
-a Classic card so I wouldn't be able to test any of the Classic support.
+thanks,
 
--- 
-Bill
-
-
+greg k-h
