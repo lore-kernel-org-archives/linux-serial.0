@@ -1,45 +1,122 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
-Date: Tue, 09 Sep 2014 09:33:42 +0200
-Message-ID: <540EAD56.8090304@linutronix.de>
-References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de> <20140908174020.GI3238@atomide.com> <20140908175510.GK3238@atomide.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 3.17-rc3] serial: asc: Adopt readl_/writel_relaxed()
+Date: Tue, 09 Sep 2014 10:38:44 +0100
+Message-ID: <540ECAA4.70801@linaro.org>
+References: <1409745651-3247-1-git-send-email-daniel.thompson@linaro.org> <20140908232727.GA8970@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140908175510.GK3238@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f45.google.com ([74.125.82.45]:32793 "EHLO
+	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756084AbaIIJin (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 9 Sep 2014 05:38:43 -0400
+Received: by mail-wg0-f45.google.com with SMTP id z12so2421545wgg.16
+        for <linux-serial@vger.kernel.org>; Tue, 09 Sep 2014 02:38:41 -0700 (PDT)
+In-Reply-To: <20140908232727.GA8970@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, patches@linaro.org, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Patrice Chotard <patrice.chotard@st.com>, Jiri Slaby <jslaby@suse.cz>, kernel@stlinux.com, linux-serial@vger.kernel.org, Maxime COQUELIN <maxime.coquelin@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
 
-On 09/08/2014 07:55 PM, Tony Lindgren wrote:
-> * Tony Lindgren <tony@atomide.com> [140908 10:41]:
->> * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140905 12:03]:
->>> This is my complete queue fo the omap serial driver based on the 8250 core
->>> code. I played with it on beagle bone, am335x-evm and dra7xx including DMA.
->>> The runtime-pm pieces look now bug-compatible with the omap-serial driver.
->>> Besides the runtime-om improvement I also fixed a few corner cases for the
->>> TX-DMA problem. The DMA fixes (in edma and omap-dma) were dropped and the
->>> problem has been in 8250-dma via patch #13.
->>>
->>> The whole queue is available at
->>>   git://git.breakpoint.cc/bigeasy/linux.git uart_v8
+On 09/09/14 00:27, Greg Kroah-Hartman wrote:
+> On Wed, Sep 03, 2014 at 01:00:51PM +0100, Daniel Thompson wrote:
+>> The architectures where this peripheral exists (ARM and SH) have expensive
+>> implementations of writel(), reliant on spin locks and explicit L2 cache
+>> management. These architectures provide a cheaper writel_relaxed() which
+>> is much better suited to peripherals that do not perform DMA. The
+>> situation with readl()/readl_relaxed()is similar although less acute.
 >>
->> Gave the above branch a quick try, but it again does not idle for
->> my omap3 test cases. It seems that now the cm_idlest1_core sdma
->> bit is blocking deeper idle states. Is that the correct branch
->> to use?
+>> This driver does not use DMA and will be more power efficient and more
+>> robust (due to absense of spin locks during console I/O) if it uses the
+>> relaxed variants.
+>>
+>> This change means the driver is no longer portable and therefore no
+>> longer suitable for compile testing.
+>>
+>> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+>> Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+>> Cc: Patrice Chotard <patrice.chotard@st.com>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jslaby@suse.cz>
+>> Cc: kernel@stlinux.com
+>> Cc: linux-serial@vger.kernel.org
+>> Acked-by: Maxime Coquelin <maxime.coquelin@st.com>
+>> Acked-by: Peter Griffin <peter.griffin@linaro.org>
+>> ---
+>>  drivers/tty/serial/Kconfig  | 2 +-
+>>  drivers/tty/serial/st-asc.c | 4 ++--
+>>  2 files changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>> index 26cec64d..e9b1735 100644
+>> --- a/drivers/tty/serial/Kconfig
+>> +++ b/drivers/tty/serial/Kconfig
+>> @@ -1527,7 +1527,7 @@ config SERIAL_FSL_LPUART_CONSOLE
+>>  config SERIAL_ST_ASC
+>>  	tristate "ST ASC serial port support"
+>>  	select SERIAL_CORE
+>> -	depends on ARM || COMPILE_TEST
+>> +	depends on ARM
 > 
-> Never mind. User error. I forgot to apply my own patch for force
-> idling the UARTs for the omap hwmod. And the sdma bit clears if
-> I do sleep 5 before attempting to read the sysfs entry..
+> I really don't like stuff that does this, sorry.  I want to test build
+> as many drivers as I can.  COMPILE_TEST does not mean that the driver is
+> "portable", only that it builds properly on all platforms.
 
-Okay. There is also this "uart_v8_hacks" branch where I splitted out
-the hacks I had like the pstore one or the force idle for instance.
+I originally made this change compilable (and portable) but was asked to
+change it during review:
+http://thread.gmane.org/gmane.linux.ports.arm.kernel/331027/focus=333911
 
-> Regards,
+It sounds like I gave in too quickly. I'll re-post the original version
+shortly.
+
+
+>>  	help
+>>  	  This driver is for the on-chip Asychronous Serial Controller on
+>>  	  STMicroelectronics STi SoCs.
+>> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+>> index 8b2d735..adadbc1 100644
+>> --- a/drivers/tty/serial/st-asc.c
+>> +++ b/drivers/tty/serial/st-asc.c
+>> @@ -151,12 +151,12 @@ static inline struct asc_port *to_asc_port(struct uart_port *port)
+>>
+>>  static inline u32 asc_in(struct uart_port *port, u32 offset)
+>>  {
+>> -	return readl(port->membase + offset);
+>> +	return readl_relaxed(port->membase + offset);
 > 
-> Tony
+> What plaforms do not provide readl_relaxed()?
 
-Sebastian
+I'd never thought to ask that. However I think the answer is "only those
+that use asm-generic/io.h" meaning: blackfin, m68k, metag, openrisc,
+score and sparc. I'll look into a patch to fix that...
+
+The reason I never thought much about readl_relaxed() is that the
+compilability concerns centre around writel_relaxed() instead. This is
+much less widely implemented. It appears mostly on architectures where
+writel() is both expensive and (sometimes) overkill. It is currently
+found only on: alpha, arm, arm64, avr32, hexagon, microblaze, mips and sh.
+
+My original code to conceal the difference between the two looked like
+this (and the change is to a single accessor function, not littered
+though the code):
+--- cut here ---
+ static inline void asc_out(struct uart_port *port, u32 offset,
+ 			    u32 value)
+{
++#ifdef writel_relaxed
++	writel_relaxed(value, port->membase + offset);
++	barrier();
++#else
+ 	writel(value, port->membase + offset);
++#endif
+ }
+--- cut here ---
+
+Note that barrier() is not needed if our only goal is for the driver to
+pass the COMPILE_TEST but was included because different architectures
+have different rules about inclusion of barrier() within the _relaxed()
+macros making explicit barriers useful if this code were consumed by a
+copy 'n paste operation...
+
