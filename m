@@ -1,149 +1,190 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH] serial: sirf: fix line over 80 characters style issue
-Date: Tue, 09 Sep 2014 08:16:47 +0800
-Message-ID: <D034651C.21637%21cnbao@gmail.com>
-References: <20140908231527.GA23907@kroah.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 17/26] serial: core: Privatize tty->hw_stopped
+Date: Mon, 08 Sep 2014 20:29:38 -0400
+Message-ID: <540E49F2.5010909@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-18-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f173.google.com ([209.85.192.173]:34548 "EHLO
-	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754449AbaIIARY convert rfc822-to-8bit (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:33964 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754940AbaIIA3o (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 20:17:24 -0400
-Received: by mail-pd0-f173.google.com with SMTP id ft15so5724068pdb.18
-        for <linux-serial@vger.kernel.org>; Mon, 08 Sep 2014 17:17:23 -0700 (PDT)
-In-Reply-To: <20140908231527.GA23907@kroah.com>
+	Mon, 8 Sep 2014 20:29:44 -0400
+In-Reply-To: <1409693975-1028-18-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, Barry Song <Barry.Song@csr.com>
-Cc: linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
+On 09/02/2014 05:39 PM, Peter Hurley wrote:
+> tty->hw_stopped is not used by the tty core and is thread-unsafe;
+> hw_stopped is a member of a bitfield whose fields are updated
+> non-atomically and no lock is suitable for serializing updates.
+> 
+> Replace serial core usage of tty->hw_stopped with uport->hw_stopped.
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/serial/bfin_uart.c   | 14 +++++++-------
+>  drivers/tty/serial/serial_core.c | 28 +++++++++++++---------------
+>  include/linux/serial_core.h      |  3 ++-
+>  3 files changed, 22 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+> index dec0fd7..fc9fbf3 100644
+> --- a/drivers/tty/serial/bfin_uart.c
+> +++ b/drivers/tty/serial/bfin_uart.c
+> @@ -108,22 +108,22 @@ static void bfin_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
+>  {
+>  	struct bfin_serial_port *uart = dev_id;
+> -	unsigned int status = bfin_serial_get_mctrl(&uart->port);
+> +	struct uart_port *uport = &uart->port;
+> +	unsigned int status = bfin_serial_get_mctrl(uport);
+>  #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+> -	struct tty_struct *tty = uart->port.state->port.tty;
+>  
+>  	UART_CLEAR_SCTS(uart);
+> -	if (tty->hw_stopped) {
+> +	if (uport->hw_stopped) {
+>  		if (status) {
+> -			tty->hw_stopped = 0;
+> -			uart_write_wakeup(&uart->port);
+> +			uport->hw_stopped = 0;
+> +			uart_write_wakeup(uport);
+>  		}
+>  	} else {
+>  		if (!status)
+> -			tty->hw_stopped = 1;
+> +			uport->hw_stopped = 1;
+>  	}
+>  #endif
+> -	uart_handle_cts_change(&uart->port, status & TIOCM_CTS);
+> +	uart_handle_cts_change(uport, status & TIOCM_CTS);
+>  
+>  	return IRQ_HANDLED;
+>  }
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 288dc2e..95277a2 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -94,7 +94,7 @@ static void __uart_start(struct tty_struct *tty)
+>  	struct uart_state *state = tty->driver_data;
+>  	struct uart_port *port = state->uart_port;
+>  
+> -	if (!tty->stopped && !tty->hw_stopped)
+> +	if (!uart_tx_stopped(port))
+>  		port->ops->start_tx(port);
+>  }
+>  
+> @@ -180,10 +180,11 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>  		}
+>  
+>  		spin_lock_irq(&uport->lock);
+> -		if (uart_cts_enabled(uport)) {
+> -			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
+> -				tty->hw_stopped = 1;
+> -		}
+> +		if (uart_cts_enabled(uport) &&
+> +		    !(uport->ops->get_mctrl(uport) & TIOCM_CTS))
+> +			uport->hw_stopped = 1;
+> +		else
+> +			uport->hw_stopped = 0;
+>  		spin_unlock_irq(&uport->lock);
+>  	}
+>  
+> @@ -944,7 +945,7 @@ static int uart_get_lsr_info(struct tty_struct *tty,
+>  	 */
+>  	if (uport->x_char ||
+>  	    ((uart_circ_chars_pending(&state->xmit) > 0) &&
+> -	     !tty->stopped && !tty->hw_stopped))
+> +	     !uart_tx_stopped(uport)))
+>  		result &= ~TIOCSER_TEMT;
+>  
+>  	return put_user(result, value);
+> @@ -1290,7 +1291,7 @@ static void uart_set_termios(struct tty_struct *tty,
+>  
+>  	/*
+>  	 * If the port is doing h/w assisted flow control, do nothing.
+> -	 * We assume that tty->hw_stopped has never been set.
+> +	 * We assume that port->hw_stopped has never been set.
+>  	 */
+>  	if (uport->flags & UPF_HARD_FLOW)
+>  		return;
+> @@ -1298,7 +1299,7 @@ static void uart_set_termios(struct tty_struct *tty,
+>  	/* Handle turning off CRTSCTS */
+>  	if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
+>  		spin_lock_irqsave(&uport->lock, flags);
+> -		tty->hw_stopped = 0;
+> +		uport->hw_stopped = 0;
+>  		__uart_start(tty);
+>  		spin_unlock_irqrestore(&uport->lock, flags);
+>  	}
+> @@ -1306,7 +1307,7 @@ static void uart_set_termios(struct tty_struct *tty,
+>  	else if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
+>  		spin_lock_irqsave(&uport->lock, flags);
+>  		if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS)) {
+> -			tty->hw_stopped = 1;
+> +			uport->hw_stopped = 1;
+>  			uport->ops->stop_tx(uport);
+>  		}
+>  		spin_unlock_irqrestore(&uport->lock, flags);
+> @@ -2776,23 +2777,20 @@ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
+>   */
+>  void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
+>  {
+> -	struct tty_port *port = &uport->state->port;
+> -	struct tty_struct *tty = port->tty;
+> -
+>  	warn_not_spin_locked(&uport->lock);
+>  
+>  	uport->icount.cts++;
+>  
+>  	if (uart_cts_enabled(uport)) {
+> -		if (tty->hw_stopped) {
+> +		if (uport->hw_stopped) {
+>  			if (status) {
+> -				tty->hw_stopped = 0;
+> +				uport->hw_stopped = 0;
+>  				uport->ops->start_tx(uport);
+>  				uart_write_wakeup(uport);
+>  			}
+>  		} else {
+>  			if (!status) {
+> -				tty->hw_stopped = 1;
+> +				uport->hw_stopped = 1;
+>  				uport->ops->stop_tx(uport);
+>  			}
+>  		}
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index bc70048..c87aaf8 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -195,6 +195,7 @@ struct uart_port {
+>  #define UPSTAT_CTS_ENABLE	((__force upstat_t) (1 << 0))
+>  #define UPSTAT_DCD_ENABLE	((__force upstat_t) (1 << 1))
+>  
+> +	bool			hw_stopped;		/* sw-assisted CTS flow state */
 
+This is fragile on Alpha as well (byte storage) in structure with
+mixed cpu contexts.
 
-On 14-9-9 =C9=CF=CE=E77:15, "Greg KH" <gregkh@linuxfoundation.org> wrot=
-e:
+Regards,
+Peter Hurley
 
->On Mon, Aug 18, 2014 at 05:32:52PM +0800, Barry Song wrote:
->> From: Qipan Li <Qipan.Li@csr.com>
->>=20
->> According to key customer's requirement, fix "line over 80
->> characters".
->
->Someone is forcing you to fix all upstream kernel.org code for 80
->columns?  Who?
+>  	unsigned int		mctrl;			/* current modem ctrl settings */
+>  	unsigned int		timeout;		/* character-based timeout */
+>  	unsigned int		type;			/* port type */
+> @@ -353,7 +354,7 @@ int uart_resume_port(struct uart_driver *reg, struct uart_port *port);
+>  static inline int uart_tx_stopped(struct uart_port *port)
+>  {
+>  	struct tty_struct *tty = port->state->port.tty;
+> -	if(tty->stopped || tty->hw_stopped)
+> +	if (tty->stopped || port->hw_stopped)
+>  		return 1;
+>  	return 0;
+>  }
+> 
 
-we were asked to fix csr platform codes some days ago. They have been
-fixed locally.=20
-You know, the difficulty is maintaining the difference between mainline
-and local codes.
-So I thought this is better if you can merge it.
-
->
->> Signed-off-by: Qipan Li <Qipan.Li@csr.com>
->> Signed-off-by: Barry Song <Baohua.Song@csr.com>
->> ---
->>  drivers/tty/serial/sirfsoc_uart.c | 14 +++++++++-----
->>  1 file changed, 9 insertions(+), 5 deletions(-)
->>=20
->> diff --git a/drivers/tty/serial/sirfsoc_uart.c
->>b/drivers/tty/serial/sirfsoc_uart.c
->> index 4102192..89f1e59 100644
->> --- a/drivers/tty/serial/sirfsoc_uart.c
->> +++ b/drivers/tty/serial/sirfsoc_uart.c
->> @@ -525,7 +525,8 @@ static void sirfsoc_rx_tmo_process_tl(unsigned l=
-ong
->>param)
->> =20
->>  	spin_lock_irqsave(&port->lock, flags);
->>  	while (DMA_COMPLETE =3D=3D dmaengine_tx_status(sirfport->rx_dma_ch=
-an,
->> -		sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)=
-) {
->> +		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
->> +		&tx_state)) {
->
->Isn't that now harder to read?
->
->>  		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
->>  					SIRFSOC_RX_DMA_BUF_SIZE);
->>  		sirfport->rx_completed++;
->> @@ -707,7 +708,8 @@ static void
->>sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
->>  	struct dma_tx_state tx_state;
->>  	spin_lock_irqsave(&port->lock, flags);
->>  	while (DMA_COMPLETE =3D=3D dmaengine_tx_status(sirfport->rx_dma_ch=
-an,
->> -			sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state=
-)) {
->> +		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
->> +		&tx_state)) {
->
->Same here.
->
->>  		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
->>  					SIRFSOC_RX_DMA_BUF_SIZE);
->>  		if (rd_regl(port, ureg->sirfsoc_int_en_reg) &
->> @@ -1303,7 +1305,8 @@ static int sirfsoc_uart_probe(struct
->>platform_device *pdev)
->>  		"sirf,uart-has-rtscts");
->>  	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-uart")=
-)
->>  		sirfport->uart_reg->uart_type =3D SIRF_REAL_UART;
->> -	if (of_device_is_compatible(pdev->dev.of_node,
->>"sirf,prima2-usp-uart")) {
->> +	if (of_device_is_compatible(pdev->dev.of_node,
->> +		"sirf,prima2-usp-uart")) {
->
->Same.
->
->>  		sirfport->uart_reg->uart_type =3D	SIRF_USP_UART;
->>  		if (!sirfport->hw_flow_ctrl)
->>  			goto usp_no_flow_control;
->> @@ -1360,11 +1363,12 @@ usp_no_flow_control:
->>  		goto err;
->>  	}
->>  	tasklet_init(&sirfport->rx_dma_complete_tasklet,
->> -			sirfsoc_uart_rx_dma_complete_tl, (unsigned long)sirfport);
->> +		sirfsoc_uart_rx_dma_complete_tl, (unsigned long)sirfport);
->
->Same.
->
->You can break this line at the last variable instead.
->
->>  	tasklet_init(&sirfport->rx_tmo_process_tasklet,
->>  			sirfsoc_rx_tmo_process_tl, (unsigned long)sirfport);
->>  	port->mapbase =3D res->start;
->> -	port->membase =3D devm_ioremap(&pdev->dev, res->start,
->>resource_size(res));
->> +	port->membase =3D devm_ioremap(&pdev->dev,
->> +			res->start, resource_size(res));
->
->same here, it could be made to look better.
->
->Sorry, not going to take this, if your customer blames you, point them
->at me.
-
-I understand you are very helpful. But pointing them to you will actual=
-ly
-make things worse as I think we have no chance to convince them as we h=
-ave
-tried our best to do that.
-The benefit of this patch is making people happy. But if you are not
-happy, I can make myself unhappy to maintain two versions.
-=20
->
->seriously.
->
->greg k-h
->
-
--barry
-
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
