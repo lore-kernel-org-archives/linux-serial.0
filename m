@@ -1,50 +1,45 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 3/3] sparc/uapi: Add definition of TIOC[SG]RS485
-Date: Tue, 9 Sep 2014 20:39:34 +0200
-Message-ID: <CAPybu_0CLYp25+UXUSbQJck7ChAzBTTpQpZOhB8pK2B4pBP6sA@mail.gmail.com>
-References: <1410286110-24956-1-git-send-email-ricardo.ribalda@gmail.com> <20140909.112640.131028033967197328.davem@davemloft.net>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 1/3] parisc/uapi: Add definition of TIOC[SG]RS485
+Date: Tue, 9 Sep 2014 11:43:18 -0700
+Message-ID: <20140909184318.GA6231@kroah.com>
+References: <1410285991-24833-1-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <sparclinux-owner@vger.kernel.org>
-In-Reply-To: <20140909.112640.131028033967197328.davem@davemloft.net>
-Sender: sparclinux-owner@vger.kernel.org
-To: David Miller <davem@davemloft.net>
-Cc: sparclinux@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1410285991-24833-1-git-send-email-ricardo.ribalda@gmail.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello David
+On Tue, Sep 09, 2014 at 08:06:31PM +0200, Ricardo Ribalda Delgado wrote:
+> Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 (serial/8250: Add
+> support for RS485 IOCTLs), adds support for RS485 ioctls for 825_core on
+> all the archs. Unfortunaltely the definition of TIOCSRS485 and
+> TIOCGRS485 was missing on the ioctls.h file
+> 
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+>  arch/parisc/include/uapi/asm/ioctls.h | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/parisc/include/uapi/asm/ioctls.h b/arch/parisc/include/uapi/asm/ioctls.h
+> index 66719c3..3af2d02 100644
+> --- a/arch/parisc/include/uapi/asm/ioctls.h
+> +++ b/arch/parisc/include/uapi/asm/ioctls.h
+> @@ -50,6 +50,8 @@
+>  #define TCSETS2		_IOW('T',0x2B, struct termios2)
+>  #define TCSETSW2	_IOW('T',0x2C, struct termios2)
+>  #define TCSETSF2	_IOW('T',0x2D, struct termios2)
+> +#define TIOCGRS485	0x542E
+> +#define TIOCSRS485	0x542F
 
-Thanks for you comments, I thought it was a good idea that the same
-ioctl had the same value on all the arch, sorry to make a mess on your
-file :)
+As David pointed out with the sparc patch, please use the proper ioctl
+macros for these numbers.
 
-I have just resend a v2 of the patch.
+Please redo all of these patches and resend.
 
-Regards!
+thanks,
 
-On Tue, Sep 9, 2014 at 8:26 PM, David Miller <davem@davemloft.net> wrote:
-> From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> Date: Tue,  9 Sep 2014 20:08:30 +0200
->
->> diff --git a/arch/sparc/include/uapi/asm/ioctls.h b/arch/sparc/include/uapi/asm/ioctls.h
->> index 897d172..4e1c5da 100644
->> --- a/arch/sparc/include/uapi/asm/ioctls.h
->> +++ b/arch/sparc/include/uapi/asm/ioctls.h
->> @@ -24,6 +24,8 @@
->>  #define TIOCGPKT     _IOR('T', 0x38, int) /* Get packet mode state */
->>  #define TIOCGPTLCK   _IOR('T', 0x39, int) /* Get Pty lock state */
->>  #define TIOCGEXCL    _IOR('T', 0x40, int) /* Get exclusive mode state */
->> +#define TIOCGRS485   0x542E
->> +#define TIOCSRS485   0x542F
->
-> Please follow the ioctl numbering scheme used by the particular
-> architecture UAPI file you are editing.
->
-> Since Sparc here is using incrementing _IO*() values, including the type
-> for the object passed in/out of the ioctl, you should do similarly for
-> TIOC{G,S}RS485.
-
-
-
--- 
-Ricardo Ribalda
+greg k-h
