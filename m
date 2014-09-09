@@ -1,48 +1,24 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 1/3 v2] parisc/uapi: Add definition of TIOC[SG]RS485
-Date: Tue,  9 Sep 2014 20:58:15 +0200
-Message-ID: <1410289095-3809-1-git-send-email-ricardo.ribalda@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f173.google.com ([209.85.217.173]:61792 "EHLO
-	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751004AbaIIS6T (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Sep 2014 14:58:19 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Greg KH <greg@kroah.com>
+Subject: Re: [PATCH 1/3] parisc/uapi: Add definition of TIOC[SG]RS485
+Date: Tue, 9 Sep 2014 11:58:52 -0700
+Message-ID: <20140909185852.GA7037@kroah.com>
+References: <1410285991-24833-1-git-send-email-ricardo.ribalda@gmail.com>
+ <20140909184318.GA6231@kroah.com>
+ <CAPybu_3wJ+UPbnkWPFLJdne6Rz8ouUap3E1GeA9NqX=gP4fPug@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAPybu_3wJ+UPbnkWPFLJdne6Rz8ouUap3E1GeA9NqX=gP4fPug@mail.gmail.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 (serial/8250: Add
-support for RS485 IOCTLs), adds support for RS485 ioctls for 825_core on
-all the archs. Unfortunaltely the definition of TIOCSRS485 and
-TIOCGRS485 was missing on the ioctls.h file
+On Tue, Sep 09, 2014 at 08:46:48PM +0200, Ricardo Ribalda Delgado wrote:
+> Hello Greg.
+> 
+>  I have just resend one for sparc. Are we sure that we prefer the
+> macros instead of using the same value on all arches?
 
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
-Changelog:
-
-v2: By GregKH
-
-Follow the ioctl numbering scheme used by the particular
-architecture UAPI file you are editing.
-
- arch/parisc/include/uapi/asm/ioctls.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/parisc/include/uapi/asm/ioctls.h b/arch/parisc/include/uapi/asm/ioctls.h
-index 66719c3..b6572f0 100644
---- a/arch/parisc/include/uapi/asm/ioctls.h
-+++ b/arch/parisc/include/uapi/asm/ioctls.h
-@@ -50,6 +50,8 @@
- #define TCSETS2		_IOW('T',0x2B, struct termios2)
- #define TCSETSW2	_IOW('T',0x2C, struct termios2)
- #define TCSETSF2	_IOW('T',0x2D, struct termios2)
-+#define TIOCGRS485	_IOR('T', 0x2E, struct serial_rs485)
-+#define TIOCSRS485	_IOWR('T', 0x2F, struct serial_rs485)
- #define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
- #define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */
- #define TIOCGDEV	_IOR('T',0x32, int)  /* Get primary device node of /dev/console */
--- 
-2.1.0
-
+Why would using a macro preclude the value being the same on all arches?
