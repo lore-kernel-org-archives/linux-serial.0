@@ -1,46 +1,77 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 03/18] tty: serial: 8250_core: allow to set ->throttle /
- ->unthrottle callbacks
-Date: Mon, 8 Sep 2014 17:41:46 -0700
-Message-ID: <20140909004146.GF10785@atomide.com>
-References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
- <1409943773-7874-4-git-send-email-bigeasy@linutronix.de>
- <20140908233329.GA32144@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: sirf: fix line over 80 characters style issue
+Date: Mon, 8 Sep 2014 18:33:08 -0700
+Message-ID: <20140909013308.GB16363@kroah.com>
+References: <20140908231527.GA23907@kroah.com>
+ <D034651C.21637%21cnbao@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:55395 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754506AbaIIAly (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37137 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752911AbaIIBdJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 20:41:54 -0400
+	Mon, 8 Sep 2014 21:33:09 -0400
 Content-Disposition: inline
-In-Reply-To: <20140908233329.GA32144@kroah.com>
+In-Reply-To: <D034651C.21637%21cnbao@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com
+To: Barry Song <21cnbao@gmail.com>
+Cc: Barry Song <Barry.Song@csr.com>, linux-serial@vger.kernel.org, workgroup.linux@csr.com, Qipan Li <Qipan.Li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [140908 16:33]:
-> On Fri, Sep 05, 2014 at 09:02:38PM +0200, Sebastian Andrzej Siewior wrote:
-> > The OMAP UART provides support for HW assisted flow control. What is
-> > missing is the support to throttle / unthrottle callbacks which are used
-> > by the omap-serial driver at the moment.
-> > This patch adds the callbacks. It should be safe to add them since they
-> > are only invoked from the serial_core (uart_throttle()) if the feature
-> > flags are set.
-> > 
-> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> 
-> Due to other recent changes, this patch fails to apply :(
-> 
-> I've applied your first two, can you respin the rest and resend as a new
-> series?
+On Tue, Sep 09, 2014 at 08:16:47AM +0800, Barry Song wrote:
+>=20
+>=20
+> On 14-9-9 =E4=B8=8A=E5=8D=887:15, "Greg KH" <gregkh@linuxfoundation.o=
+rg> wrote:
+>=20
+> >On Mon, Aug 18, 2014 at 05:32:52PM +0800, Barry Song wrote:
+> >> From: Qipan Li <Qipan.Li@csr.com>
+> >>=20
+> >> According to key customer's requirement, fix "line over 80
+> >> characters".
+> >
+> >Someone is forcing you to fix all upstream kernel.org code for 80
+> >columns?  Who?
+>=20
+> we were asked to fix csr platform codes some days ago. They have been
+> fixed locally.=20
 
-It seems that we've reached pretty much omap-serial compability and
-the remaining bugs are either already there with omap-serial or are
-SoC specific and/or DMA related. So Sebastian, please feel also free
-to add this when reposting:
+What is "locally"?
 
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
+And you really are forced to do foolish cleanups for no reason in
+mainline kernel code for no reason?
+
+> You know, the difficulty is maintaining the difference between
+> mainline and local codes.
+> So I thought this is better if you can merge it.
+
+I'm not taking stuff that isn't correct.  Or is foolish.  Neither shoul=
+d
+you.
+
+> >Sorry, not going to take this, if your customer blames you, point th=
+em
+> >at me.
+>=20
+> I understand you are very helpful. But pointing them to you will actu=
+ally
+> make things worse as I think we have no chance to convince them as we=
+ have
+> tried our best to do that.
+> The benefit of this patch is making people happy. But if you are not
+> happy, I can make myself unhappy to maintain two versions.
+
+Try fixing the code to look better, your changes were not valid ones,
+you are quieting some automatic tool checker, you aren't doing the
+correct thing and following the "spirit" of the rule here.
+
+Make the code look cleaner, and I'll be glad to take the change.
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
