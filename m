@@ -1,55 +1,45 @@
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: Re: [PATCH] tty: serial: men_z135_uart: Fix driver for changes in
- hardware
-Date: Tue, 9 Sep 2014 07:56:15 +0200
-Message-ID: <20140909055615.GA10306@jtlinux>
-References: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
- <20140908231733.GB23907@kroah.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
+Date: Tue, 09 Sep 2014 09:33:42 +0200
+Message-ID: <540EAD56.8090304@linutronix.de>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de> <20140908174020.GI3238@atomide.com> <20140908175510.GK3238@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.106]:24460 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755350AbaIIFwn (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Sep 2014 01:52:43 -0400
-Content-Disposition: inline
-In-Reply-To: <20140908231733.GB23907@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20140908175510.GK3238@atomide.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Johannes Thumshirn <johannes.thumshirn@men.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Sep 08, 2014 at 04:17:33PM -0700, Greg Kroah-Hartman wrote:
-> >
-> > @@ -118,6 +117,10 @@ static int align;
-> >  module_param(align, int, S_IRUGO);
-> >  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
-> >
-> > +static int rx_timeout;
-> > +module_param(rx_timeout, uint, S_IRUGO);
-> > +MODULE_PARM_DESC(rx_timeout, "RX timeout");
->
-> Why add a module parameter?  Who will know to set this?  And to what
-> value?
->
+On 09/08/2014 07:55 PM, Tony Lindgren wrote:
+> * Tony Lindgren <tony@atomide.com> [140908 10:41]:
+>> * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140905 12:03]:
+>>> This is my complete queue fo the omap serial driver based on the 8250 core
+>>> code. I played with it on beagle bone, am335x-evm and dra7xx including DMA.
+>>> The runtime-pm pieces look now bug-compatible with the omap-serial driver.
+>>> Besides the runtime-om improvement I also fixed a few corner cases for the
+>>> TX-DMA problem. The DMA fixes (in edma and omap-dma) were dropped and the
+>>> problem has been in 8250-dma via patch #13.
+>>>
+>>> The whole queue is available at
+>>>   git://git.breakpoint.cc/bigeasy/linux.git uart_v8
+>>
+>> Gave the above branch a quick try, but it again does not idle for
+>> my omap3 test cases. It seems that now the cm_idlest1_core sdma
+>> bit is blocking deeper idle states. Is that the correct branch
+>> to use?
+> 
+> Never mind. User error. I forgot to apply my own patch for force
+> idling the UARTs for the omap hwmod. And the sdma bit clears if
+> I do sleep 5 before attempting to read the sysfs entry..
 
-There will be a user manual describing the parameter. It's like the rxlvl and
-txlvl parameters, you'll have to read the manual if you need other values than
-the default ones.
+Okay. There is also this "uart_v8_hacks" branch where I splitted out
+the hacks I had like the pstore one or the force idle for instance.
 
+> Regards,
+> 
+> Tony
 
-> And what about this driver working on old hardware, didn't you just
-> break this?
->
-
-No. Currently the hardware is in a testing stage at only one customer and it is
-an IP-Core inside a FPGA, so it can be (and already is) updated. So we can be
-save to assume this is O.K.
-
-> thanks,
->
-> greg k-h
-
-Hope that helped.
-Johannes
+Sebastian
