@@ -1,48 +1,69 @@
-From: Markos Chandras <markos.chandras@imgtec.com>
-Subject: [PATCH linux-next] MIPS: ioctls: Add missing TIOC{S,G}RS485 definitions
-Date: Tue, 9 Sep 2014 12:52:55 +0100
-Message-ID: <1410263575-26720-1-git-send-email-markos.chandras@imgtec.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v4 2/2] DTS: serial: Add bindings documention for the
+ Mediatek UARTs
+Date: Tue, 9 Sep 2014 16:55:06 +0200
+Message-ID: <CABuKBe+nkR+HvQm-pacg5cJeYey-Nj+uqqLpzi1FAvzbxtJuew@mail.gmail.com>
+References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
+	<1407852737-17265-3-git-send-email-matthias.bgg@gmail.com>
+	<20140908223314.GA26151@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140908223314.GA26151@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-mips@linux-mips.org
-Cc: Markos Chandras <markos.chandras@imgtec.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Alan Cox <alan@linux.intel.com>, Varka Bhadram <varkabhadram@gmail.com>, Tobias Klauser <tklauser@distanz.ch>, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Commit e676253b19b2d269cccf67fdb1592120a0cd0676
-(serial/8250: Add support for RS485 IOCTLs) added cases for the
-TIOC{S,G}RS485 commands but this broke the build for MIPS:
+2014-09-09 0:33 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
+> On Tue, Aug 12, 2014 at 04:12:17PM +0200, Matthias Brugger wrote:
+>> This patch adds the devicetree documentation for the Mediatek UART.
+>>
+>> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+>> ---
+>>  .../devicetree/bindings/serial/mtk-uart.txt        |   20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+>> new file mode 100644
+>> index 0000000..6ca0e15
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+>> @@ -0,0 +1,20 @@
+>> +* Mediatek Universal Asynchronous Receiver/Transmitter (UART)
+>> +
+>> +Required properties:
+>> +- compatible: "mediatek,mt6577-uart"
+>> +  Compatibility with mt6577, mt6589, mt6582
+>> +
+>> +- reg: The base address of the UART register bank.
+>> +
+>> +- interrupts: A single interrupt specifier.
+>> +
+>> +- clocks: Clock driving the hardware.
+>> +
+>> +Example:
+>> +
+>> +     uart0: serial@11006000 {
+>> +             compatible = "mediatek,mt6577-uart";
+>> +             reg = <0x11006000 0x400>;
+>> +             interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+>> +             clocks = <&uart_clk>;
+>> +     };
+>> --
+>> 1.7.9.5
+>
+> Resend this one as well with the 1/2 patch please.
 
-drivers/tty/serial/8250/8250_core.c: In function 'serial8250_ioctl':
-drivers/tty/serial/8250/8250_core.c:2874:7: error: 'TIOCSRS485' undeclared
-(first use in this function)
-drivers/tty/serial/8250/8250_core.c:2886:7: error: 'TIOCGRS485' undeclared
-(first use in this function)
+Ok, I will send v5 with the comments from Mark added.
 
-This patch adds these missing definitions
+>
+> thanks,
+>
+> greg k-h
 
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: <linux-next@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Signed-off-by: Markos Chandras <markos.chandras@imgtec.com>
----
- arch/mips/include/uapi/asm/ioctls.h | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/arch/mips/include/uapi/asm/ioctls.h b/arch/mips/include/uapi/asm/ioctls.h
-index b1e637757fe3..34050cb6b631 100644
---- a/arch/mips/include/uapi/asm/ioctls.h
-+++ b/arch/mips/include/uapi/asm/ioctls.h
-@@ -76,6 +76,8 @@
- 
- #define TIOCSBRK	0x5427	/* BSD compatibility */
- #define TIOCCBRK	0x5428	/* BSD compatibility */
-+#define TIOCGRS485	0x542E
-+#define TIOCSRS485	0x542F
- #define TIOCGSID	0x7416	/* Return the session ID of FD */
- #define TCGETS2		_IOR('T', 0x2A, struct termios2)
- #define TCSETS2		_IOW('T', 0x2B, struct termios2)
+
 -- 
-2.1.0
+motzblog.wordpress.com
