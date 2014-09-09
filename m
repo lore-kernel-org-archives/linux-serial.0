@@ -1,69 +1,35 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v4 2/2] DTS: serial: Add bindings documention for the
- Mediatek UARTs
-Date: Tue, 9 Sep 2014 16:55:06 +0200
-Message-ID: <CABuKBe+nkR+HvQm-pacg5cJeYey-Nj+uqqLpzi1FAvzbxtJuew@mail.gmail.com>
-References: <1407852737-17265-1-git-send-email-matthias.bgg@gmail.com>
-	<1407852737-17265-3-git-send-email-matthias.bgg@gmail.com>
-	<20140908223314.GA26151@kroah.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH 2/2] xtensa/uapi: Add definition of TIOC[SG]RS485
+Date: Tue, 9 Sep 2014 08:24:02 -0700
+Message-ID: <CAMo8BfJRO+dwMVDJiQ4KH0PdJN604YrrZZUdSK35KumE574uyg@mail.gmail.com>
+References: <1410240056-22786-1-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140908223314.GA26151@kroah.com>
+In-Reply-To: <1410240056-22786-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Alan Cox <alan@linux.intel.com>, Varka Bhadram <varkabhadram@gmail.com>, Tobias Klauser <tklauser@distanz.ch>, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Chris Zankel <chris@zankel.net>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2014-09-09 0:33 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
-> On Tue, Aug 12, 2014 at 04:12:17PM +0200, Matthias Brugger wrote:
->> This patch adds the devicetree documentation for the Mediatek UART.
->>
->> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
->> ---
->>  .../devicetree/bindings/serial/mtk-uart.txt        |   20 ++++++++++++++++++++
->>  1 file changed, 20 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
->>
->> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
->> new file mode 100644
->> index 0000000..6ca0e15
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
->> @@ -0,0 +1,20 @@
->> +* Mediatek Universal Asynchronous Receiver/Transmitter (UART)
->> +
->> +Required properties:
->> +- compatible: "mediatek,mt6577-uart"
->> +  Compatibility with mt6577, mt6589, mt6582
->> +
->> +- reg: The base address of the UART register bank.
->> +
->> +- interrupts: A single interrupt specifier.
->> +
->> +- clocks: Clock driving the hardware.
->> +
->> +Example:
->> +
->> +     uart0: serial@11006000 {
->> +             compatible = "mediatek,mt6577-uart";
->> +             reg = <0x11006000 0x400>;
->> +             interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
->> +             clocks = <&uart_clk>;
->> +     };
->> --
->> 1.7.9.5
+On Mon, Sep 8, 2014 at 10:20 PM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 [3/21] serial/8250: Add
+> support for RS485 IOCTLs, adds support for RS485 ioctls for 825_core on
+> all the archs. Unfortunaltely the definition of TIOCSRS485 and
+> TIOCGRS485 was missing on the ioctls.h file
 >
-> Resend this one as well with the 1/2 patch please.
+> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+>  arch/xtensa/include/uapi/asm/ioctls.h | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Ok, I will send v5 with the comments from Mark added.
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
->
-> thanks,
->
-> greg k-h
-
-
+If you want this patch to go through the xtensa tree please let me know,
+I'll include it to my fixes branch then.
 
 -- 
-motzblog.wordpress.com
+Thanks.
+-- Max
