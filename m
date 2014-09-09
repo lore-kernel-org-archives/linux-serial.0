@@ -1,190 +1,46 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 17/26] serial: core: Privatize tty->hw_stopped
-Date: Mon, 08 Sep 2014 20:29:38 -0400
-Message-ID: <540E49F2.5010909@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-18-git-send-email-peter@hurleysoftware.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 03/18] tty: serial: 8250_core: allow to set ->throttle /
+ ->unthrottle callbacks
+Date: Mon, 8 Sep 2014 17:41:46 -0700
+Message-ID: <20140909004146.GF10785@atomide.com>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
+ <1409943773-7874-4-git-send-email-bigeasy@linutronix.de>
+ <20140908233329.GA32144@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:33964 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754940AbaIIA3o (ORCPT
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:55395 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754506AbaIIAly (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 8 Sep 2014 20:29:44 -0400
-In-Reply-To: <1409693975-1028-18-git-send-email-peter@hurleysoftware.com>
+	Mon, 8 Sep 2014 20:41:54 -0400
+Content-Disposition: inline
+In-Reply-To: <20140908233329.GA32144@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com
 
-On 09/02/2014 05:39 PM, Peter Hurley wrote:
-> tty->hw_stopped is not used by the tty core and is thread-unsafe;
-> hw_stopped is a member of a bitfield whose fields are updated
-> non-atomically and no lock is suitable for serializing updates.
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [140908 16:33]:
+> On Fri, Sep 05, 2014 at 09:02:38PM +0200, Sebastian Andrzej Siewior wrote:
+> > The OMAP UART provides support for HW assisted flow control. What is
+> > missing is the support to throttle / unthrottle callbacks which are used
+> > by the omap-serial driver at the moment.
+> > This patch adds the callbacks. It should be safe to add them since they
+> > are only invoked from the serial_core (uart_throttle()) if the feature
+> > flags are set.
+> > 
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 > 
-> Replace serial core usage of tty->hw_stopped with uport->hw_stopped.
+> Due to other recent changes, this patch fails to apply :(
 > 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/serial/bfin_uart.c   | 14 +++++++-------
->  drivers/tty/serial/serial_core.c | 28 +++++++++++++---------------
->  include/linux/serial_core.h      |  3 ++-
->  3 files changed, 22 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-> index dec0fd7..fc9fbf3 100644
-> --- a/drivers/tty/serial/bfin_uart.c
-> +++ b/drivers/tty/serial/bfin_uart.c
-> @@ -108,22 +108,22 @@ static void bfin_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
->  {
->  	struct bfin_serial_port *uart = dev_id;
-> -	unsigned int status = bfin_serial_get_mctrl(&uart->port);
-> +	struct uart_port *uport = &uart->port;
-> +	unsigned int status = bfin_serial_get_mctrl(uport);
->  #ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
-> -	struct tty_struct *tty = uart->port.state->port.tty;
->  
->  	UART_CLEAR_SCTS(uart);
-> -	if (tty->hw_stopped) {
-> +	if (uport->hw_stopped) {
->  		if (status) {
-> -			tty->hw_stopped = 0;
-> -			uart_write_wakeup(&uart->port);
-> +			uport->hw_stopped = 0;
-> +			uart_write_wakeup(uport);
->  		}
->  	} else {
->  		if (!status)
-> -			tty->hw_stopped = 1;
-> +			uport->hw_stopped = 1;
->  	}
->  #endif
-> -	uart_handle_cts_change(&uart->port, status & TIOCM_CTS);
-> +	uart_handle_cts_change(uport, status & TIOCM_CTS);
->  
->  	return IRQ_HANDLED;
->  }
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 288dc2e..95277a2 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -94,7 +94,7 @@ static void __uart_start(struct tty_struct *tty)
->  	struct uart_state *state = tty->driver_data;
->  	struct uart_port *port = state->uart_port;
->  
-> -	if (!tty->stopped && !tty->hw_stopped)
-> +	if (!uart_tx_stopped(port))
->  		port->ops->start_tx(port);
->  }
->  
-> @@ -180,10 +180,11 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->  		}
->  
->  		spin_lock_irq(&uport->lock);
-> -		if (uart_cts_enabled(uport)) {
-> -			if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS))
-> -				tty->hw_stopped = 1;
-> -		}
-> +		if (uart_cts_enabled(uport) &&
-> +		    !(uport->ops->get_mctrl(uport) & TIOCM_CTS))
-> +			uport->hw_stopped = 1;
-> +		else
-> +			uport->hw_stopped = 0;
->  		spin_unlock_irq(&uport->lock);
->  	}
->  
-> @@ -944,7 +945,7 @@ static int uart_get_lsr_info(struct tty_struct *tty,
->  	 */
->  	if (uport->x_char ||
->  	    ((uart_circ_chars_pending(&state->xmit) > 0) &&
-> -	     !tty->stopped && !tty->hw_stopped))
-> +	     !uart_tx_stopped(uport)))
->  		result &= ~TIOCSER_TEMT;
->  
->  	return put_user(result, value);
-> @@ -1290,7 +1291,7 @@ static void uart_set_termios(struct tty_struct *tty,
->  
->  	/*
->  	 * If the port is doing h/w assisted flow control, do nothing.
-> -	 * We assume that tty->hw_stopped has never been set.
-> +	 * We assume that port->hw_stopped has never been set.
->  	 */
->  	if (uport->flags & UPF_HARD_FLOW)
->  		return;
-> @@ -1298,7 +1299,7 @@ static void uart_set_termios(struct tty_struct *tty,
->  	/* Handle turning off CRTSCTS */
->  	if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
->  		spin_lock_irqsave(&uport->lock, flags);
-> -		tty->hw_stopped = 0;
-> +		uport->hw_stopped = 0;
->  		__uart_start(tty);
->  		spin_unlock_irqrestore(&uport->lock, flags);
->  	}
-> @@ -1306,7 +1307,7 @@ static void uart_set_termios(struct tty_struct *tty,
->  	else if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
->  		spin_lock_irqsave(&uport->lock, flags);
->  		if (!(uport->ops->get_mctrl(uport) & TIOCM_CTS)) {
-> -			tty->hw_stopped = 1;
-> +			uport->hw_stopped = 1;
->  			uport->ops->stop_tx(uport);
->  		}
->  		spin_unlock_irqrestore(&uport->lock, flags);
-> @@ -2776,23 +2777,20 @@ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
->   */
->  void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
->  {
-> -	struct tty_port *port = &uport->state->port;
-> -	struct tty_struct *tty = port->tty;
-> -
->  	warn_not_spin_locked(&uport->lock);
->  
->  	uport->icount.cts++;
->  
->  	if (uart_cts_enabled(uport)) {
-> -		if (tty->hw_stopped) {
-> +		if (uport->hw_stopped) {
->  			if (status) {
-> -				tty->hw_stopped = 0;
-> +				uport->hw_stopped = 0;
->  				uport->ops->start_tx(uport);
->  				uart_write_wakeup(uport);
->  			}
->  		} else {
->  			if (!status) {
-> -				tty->hw_stopped = 1;
-> +				uport->hw_stopped = 1;
->  				uport->ops->stop_tx(uport);
->  			}
->  		}
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bc70048..c87aaf8 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -195,6 +195,7 @@ struct uart_port {
->  #define UPSTAT_CTS_ENABLE	((__force upstat_t) (1 << 0))
->  #define UPSTAT_DCD_ENABLE	((__force upstat_t) (1 << 1))
->  
-> +	bool			hw_stopped;		/* sw-assisted CTS flow state */
+> I've applied your first two, can you respin the rest and resend as a new
+> series?
 
-This is fragile on Alpha as well (byte storage) in structure with
-mixed cpu contexts.
+It seems that we've reached pretty much omap-serial compability and
+the remaining bugs are either already there with omap-serial or are
+SoC specific and/or DMA related. So Sebastian, please feel also free
+to add this when reposting:
 
-Regards,
-Peter Hurley
-
->  	unsigned int		mctrl;			/* current modem ctrl settings */
->  	unsigned int		timeout;		/* character-based timeout */
->  	unsigned int		type;			/* port type */
-> @@ -353,7 +354,7 @@ int uart_resume_port(struct uart_driver *reg, struct uart_port *port);
->  static inline int uart_tx_stopped(struct uart_port *port)
->  {
->  	struct tty_struct *tty = port->state->port.tty;
-> -	if(tty->stopped || tty->hw_stopped)
-> +	if (tty->stopped || port->hw_stopped)
->  		return 1;
->  	return 0;
->  }
-> 
-
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Tony Lindgren <tony@atomide.com>
