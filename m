@@ -1,50 +1,53 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 2/2 v2] xtensa/uapi: Add definition of TIOC[SG]RS485
-Date: Tue,  9 Sep 2014 21:39:24 +0200
-Message-ID: <1410291564-5433-1-git-send-email-ricardo.ribalda@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f171.google.com ([209.85.217.171]:60097 "EHLO
-	mail-lb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751715AbaIITja (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 9 Sep 2014 15:39:30 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH 2/2] xtensa/uapi: Add definition of TIOC[SG]RS485
+Date: Tue, 9 Sep 2014 21:40:00 +0200
+Message-ID: <CAPybu_2Ru64=fL3o7Vs3Fdf+rkREw-faqtRBev3BiXiQEJ_7aw@mail.gmail.com>
+References: <1410240056-22786-1-git-send-email-ricardo.ribalda@gmail.com> <20140909191824.GB7467@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140909191824.GB7467@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Chris Zankel <chris@zankel.net>, "Max Filippov linux-xtensa @ linux-xtensa . org" <jcmvbkbc@gmail.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>, Chris Zankel <chris@zankel.net>, linux-xtensa@linux-xtensa.org, jcmvbkbc@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 [3/21] serial/8250: Add
-support for RS485 IOCTLs, adds support for RS485 ioctls for 825_core on
-all the archs. Unfortunaltely the definition of TIOCSRS485 and
-TIOCGRS485 was missing on the ioctls.h file
+Done
 
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
+Thanks :)
 
-Changelog:
+On Tue, Sep 9, 2014 at 9:18 PM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Tue, Sep 09, 2014 at 07:20:56AM +0200, Ricardo Ribalda Delgado wrote:
+>> Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 [3/21] serial/8250: Add
+>> support for RS485 IOCTLs, adds support for RS485 ioctls for 825_core on
+>> all the archs. Unfortunaltely the definition of TIOCSRS485 and
+>> TIOCGRS485 was missing on the ioctls.h file
+>>
+>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+>> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+>> ---
+>>  arch/xtensa/include/uapi/asm/ioctls.h | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/arch/xtensa/include/uapi/asm/ioctls.h b/arch/xtensa/include/uapi/asm/ioctls.h
+>> index a47909f..accda82 100644
+>> --- a/arch/xtensa/include/uapi/asm/ioctls.h
+>> +++ b/arch/xtensa/include/uapi/asm/ioctls.h
+>> @@ -95,6 +95,8 @@
+>>  #define TCSETS2              _IOW('T', 43, struct termios2)
+>>  #define TCSETSW2     _IOW('T', 44, struct termios2)
+>>  #define TCSETSF2     _IOW('T', 45, struct termios2)
+>> +#define TIOCGRS485   0x542E
+>> +#define TIOCSRS485   0x542F
+>
+> Like your patches for other arches, please use a _IOW() macro here, not a "number".
+>
+> thanks,
+>
+> greg k-h
 
-v2: By GregKH
 
-Follow the ioctl numbering scheme used by the particular
-architecture UAPI file you are editing.
 
- arch/xtensa/include/uapi/asm/ioctls.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/xtensa/include/uapi/asm/ioctls.h b/arch/xtensa/include/uapi/asm/ioctls.h
-index a47909f..518954e 100644
---- a/arch/xtensa/include/uapi/asm/ioctls.h
-+++ b/arch/xtensa/include/uapi/asm/ioctls.h
-@@ -95,6 +95,8 @@
- #define TCSETS2		_IOW('T', 43, struct termios2)
- #define TCSETSW2	_IOW('T', 44, struct termios2)
- #define TCSETSF2	_IOW('T', 45, struct termios2)
-+#define TIOCGRS485	_IOR('T', 46, struct serial_rs485)
-+#define TIOCSRS485	_IOWR('T', 47, struct serial_rs485)
- #define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
- #define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */
- #define TIOCGDEV	_IOR('T',0x32, unsigned int) /* Get primary device node of /dev/console */
 -- 
-2.1.0
-
+Ricardo Ribalda
