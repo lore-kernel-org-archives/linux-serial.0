@@ -1,119 +1,49 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] serial: cadence: Add generic earlycon support
-Date: Wed, 10 Sep 2014 12:43:02 +0200
-Message-ID: <58f2c9cf267e64f5d7566920844fb2db251e77d2.1410345777.git.michal.simek@xilinx.com>
-Content-Type: multipart/signed;
-    boundary="=_mimegpg-monstr-desktop-31784-1410345782-0001";
-    micalg=pgp-sha1; protocol="application/pgp-signature"
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 10 Sep 2014 07:02:10 -0400
+Message-ID: <54102FB2.1020808@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-14-git-send-email-peter@hurleysoftware.com> <20140903092723.GA4783@worktop.ger.corp.intel.com> <5406F964.6060900@hurleysoftware.com> <20140903144029.GA7083@twins.programming.kicks-ass.net> <54072A99.1080306@hurleysoftware.com> <20140903150729.GA7436@twins.programming.kicks-ass.net> <20140904051411.GA27350@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f52.google.com ([74.125.82.52]:49587 "EHLO
-	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751048AbaIJKnK (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40804 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751817AbaIJLCY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 06:43:10 -0400
-Received: by mail-wg0-f52.google.com with SMTP id x13so4691537wgg.35
-        for <linux-serial@vger.kernel.org>; Wed, 10 Sep 2014 03:43:09 -0700 (PDT)
+	Wed, 10 Sep 2014 07:02:24 -0400
+In-Reply-To: <20140904051411.GA27350@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>, Jiri Slaby <jslaby@suse.cz>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-This is a MIME GnuPG-signed message.  If you see this text, it means that
-your E-mail or Usenet software does not support MIME signed messages.
-The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
-To open this message correctly you will need to install E-mail or Usenet
-software that supports modern Internet standards.
+On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+> 
+> * Peter Zijlstra <peterz@infradead.org> wrote:
+> 
+>> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
+>>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
+>>> especially in established drivers.
+>>
+>> By the same logic lockdep will not find locking errors in established
+>> drivers.
+> 
+> Indeed, this patch is ill-advised in several ways:
+> 
+>   - it extends an API variant that we want to phase
+> 
+>   - emits a warning even if say lockdep has already emitted a
+>     warning and locking state is not guaranteed to be consistent. 
+> 
+>   - makes the kernel more expensive once fully debugged, in that
+>     non-fatal checks are unconditional.
 
---=_mimegpg-monstr-desktop-31784-1410345782-0001
+Ok.
 
-Add earlycon support for the cadence serial port.
-This is based on recent patches:
-"tty/serial: pl011: add generic earlycon support"
-(sha1: 0d3c673e7881e691991b2a4745bd4f149603baa2)
-"tty/serial: add arm/arm64 semihosting earlycon"
-(sha1: d50d7269ebcb438afa346cdffce0f4e2a1b9e831)
+One thing: I'm not seeing how lockdep_assert_held() switches off once
+the warning has been emitted? Is the caller expected to construct their
+own _ONCE tags?
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
-
- Documentation/kernel-parameters.txt |  6 ++++++
- drivers/tty/serial/Kconfig          |  1 +
- drivers/tty/serial/xilinx_uartps.c  | 19 +++++++++++++++++++
- 3 files changed, 26 insertions(+)
-
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index a8eb6afce6a4..97055dc43167 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -921,6 +921,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
-
- 	earlycon=	[KNL] Output early console device and options.
-
-+		cdns,<addr>
-+			Start an early, polled-mode console on a cadence serial
-+			port at the specified address. The cadence serial port
-+			must already be setup and configured. Options are not
-+			yet supported.
-+
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
- 		uart[8250],mmio32,<addr>[,options]
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index b4d61e6bf28c..72fd2b6e2241 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1411,6 +1411,7 @@ config SERIAL_XILINX_PS_UART_CONSOLE
- 	bool "Cadence UART console support"
- 	depends on SERIAL_XILINX_PS_UART=y
- 	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
- 	help
- 	  Enable a Cadence UART port to be the system console.
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 01951d27cc03..675f3fe068f6 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1051,6 +1051,25 @@ static void cdns_uart_console_putchar(struct uart_port *port, int ch)
- 	cdns_uart_writel(ch, CDNS_UART_FIFO_OFFSET);
- }
-
-+static void cdns_early_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, cdns_uart_console_putchar);
-+}
-+
-+static int __init cdns_early_console_setup(struct earlycon_device *device,
-+					   const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = cdns_early_write;
-+
-+	return 0;
-+}
-+EARLYCON_DECLARE(cdns, cdns_early_console_setup);
-+
- /**
-  * cdns_uart_console_write - perform write operation
-  * @co: Console handle
---
-1.8.2.3
-
-
---=_mimegpg-monstr-desktop-31784-1410345782-0001
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEABECAAYFAlQQKzYACgkQykllyylKDCECkgCfYxCzp3PEnbcZmUsiO5CbYwc0
-glYAn0rlvcH11wHrHqNpoWhB7l5SCp24
-=DLG1
------END PGP SIGNATURE-----
-
---=_mimegpg-monstr-desktop-31784-1410345782-0001--
+Regards,
+Peter Hurley
