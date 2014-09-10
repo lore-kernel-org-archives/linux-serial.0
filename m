@@ -1,49 +1,70 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
-Date: Wed, 10 Sep 2014 07:02:10 -0400
-Message-ID: <54102FB2.1020808@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-14-git-send-email-peter@hurleysoftware.com> <20140903092723.GA4783@worktop.ger.corp.intel.com> <5406F964.6060900@hurleysoftware.com> <20140903144029.GA7083@twins.programming.kicks-ass.net> <54072A99.1080306@hurleysoftware.com> <20140903150729.GA7436@twins.programming.kicks-ass.net> <20140904051411.GA27350@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH RESEND] tty: serial: men_z135_uart: Fix driver for changes
+ in hardware
+Date: Wed, 10 Sep 2014 14:15:41 +0200
+Message-ID: <541040ED.1020800@suse.cz>
+References: <1410329329-4327-1-git-send-email-johannes.thumshirn@men.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:40804 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751817AbaIJLCY (ORCPT
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:34547 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750850AbaIJMPp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 07:02:24 -0400
-In-Reply-To: <20140904051411.GA27350@gmail.com>
+	Wed, 10 Sep 2014 08:15:45 -0400
+In-Reply-To: <1410329329-4327-1-git-send-email-johannes.thumshirn@men.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+To: Johannes Thumshirn <johannes.thumshirn@men.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 09/04/2014 01:14 AM, Ingo Molnar wrote:
-> 
-> * Peter Zijlstra <peterz@infradead.org> wrote:
-> 
->> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
->>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
->>> especially in established drivers.
->>
->> By the same logic lockdep will not find locking errors in established
->> drivers.
-> 
-> Indeed, this patch is ill-advised in several ways:
-> 
->   - it extends an API variant that we want to phase
-> 
->   - emits a warning even if say lockdep has already emitted a
->     warning and locking state is not guaranteed to be consistent. 
-> 
->   - makes the kernel more expensive once fully debugged, in that
->     non-fatal checks are unconditional.
+On 09/10/2014, 08:08 AM, Johannes Thumshirn wrote:
+> * Add module parameter to configure the (baud rate dependent) RX timeout.
+>   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
 
-Ok.
+Buried in the log. Instead, it would be nice to have this in
+MODULE_PARM_DESC.
 
-One thing: I'm not seeing how lockdep_assert_held() switches off once
-the warning has been emitted? Is the caller expected to construct their
-own _ONCE tags?
+> --- a/drivers/tty/serial/men_z135_uart.c
+> +++ b/drivers/tty/serial/men_z135_uart.c
+...
+> @@ -118,6 +117,10 @@ static int align;
+>  module_param(align, int, S_IRUGO);
+>  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
+> 
+> +static int rx_timeout;
+> +module_param(rx_timeout, uint, S_IRUGO);
 
-Regards,
-Peter Hurley
+int variable vs. uint handler.
+
+> @@ -373,43 +376,47 @@ out:
+>   * @irq: The IRQ number
+>   * @data: Pointer to UART port
+>   *
+> - * Check IIR register to see which tasklet to start.
+> + * Check IIR register to find the cause of the interrupt and handle it.
+> + * It is possible that multiple interrupts reason bits are set and reading
+> + * the IIR is a destructive read, so we always need to check for all possible
+> + * interrupts and handle them.
+>   */
+>  static irqreturn_t men_z135_intr(int irq, void *data)
+>  {
+>  	struct men_z135_port *uart = (struct men_z135_port *)data;
+>  	struct uart_port *port = &uart->port;
+> +	int handled = 0;
+
+This can be bool or use IRQ_NONE directly.
+
+...
+> -	return IRQ_HANDLED;
+> +	if (irq_id & MEN_Z135_IRQ_ID_RDA || irq_id & MEN_Z135_IRQ_ID_CTI) {
+
+A matter of taste, but
+ irq_id & (MEN_Z135_IRQ_ID_RDA | MEN_Z135_IRQ_ID_CTI)
+looks and works better.
+
+thanks,
+-- 
+js
+suse labs
