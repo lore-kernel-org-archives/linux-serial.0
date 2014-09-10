@@ -1,90 +1,42 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: serial_mctrl_gpio: Fix build error for
- !GPIOLIB
-Date: Wed, 10 Sep 2014 06:57:16 -0700
-Message-ID: <20140910135716.GA23074@kroah.com>
-References: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
- <20140910080657.GC14260@distanz.ch>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
+Date: Wed, 10 Sep 2014 16:15:55 +0200
+Message-ID: <20140910141554.GC22315@ci00147.xsens-tech.local>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de>
+ <20140908144616.GA22315@ci00147.xsens-tech.local>
+ <20140908151501.GA22584@linutronix.de>
+ <20140908183353.GB4686@ci00147.xsens-tech.local>
+ <540F57E0.8030404@linutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="OgqxwSJOaUobr8KG"
-Return-path: <linux-next-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140910080657.GC14260@distanz.ch>
-Sender: linux-next-owner@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>, Alexander Shiyan <shc_work@mail.ru>
-Cc: Jim Davis <jim.epost@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next <linux-next@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, jslaby@suse.cz, linux-serial@vger.kernel.org
+In-Reply-To: <540F57E0.8030404@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, tony@atomide.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-
---OgqxwSJOaUobr8KG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Wed, Sep 10, 2014 at 10:06:58AM +0200, Tobias Klauser wrote:
-> If SERIAL_MCTRL_GPIO is selected but GPIOLIB is not, the noop functions
-> from serial_mctrl_gpio.h are pulled in. However, serial_mctrl_gpio.c is
-> still compiled, leading to function redefinition build errors. Since all
-> drivers that include serial_mctrl_gpio.h also depend on
-> SERIAL_MCTRL_GPIO, let it depend on GPIOLIB as well remove the noop
-> functions alltogether.
+On Tue, Sep 09, 2014 at 09:41:20PM +0200, Sebastian Andrzej Siewior wrote:
+> On 09/08/2014 08:33 PM, Frans Klaver wrote:
+> > Thanks. I'll give it a spin on Wednesday.
 > 
-> Reported-by: Jim Davis <jim.epost@gmail.com>
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-> ---
->  drivers/tty/serial/Kconfig             |  1 +
->  drivers/tty/serial/serial_mctrl_gpio.h | 35 ----------------------------------
->  2 files changed, 1 insertion(+), 35 deletions(-)
+> Could you please pull the upcoming v9 first?
+> 
+>  git://git.breakpoint.cc/bigeasy/linux.git uart_v9_pre1
+> 
+> This solves a few of my am335x related issues.
 
-I fixed this yesterday with commit below from Alexander, which does
-things a bit differently than you.  Any objections to it?
+Using v9_pre1, I get a kernel panic in edma_dma_pause() on echan->edesc
+being NULL. I do get data before this happens. This is at high speed,
+high rate. No mention of the irq having too much to do, though. The more
+data I transmit, the more likely this is to occur.
 
-thanks,
+I don't currently have the setup to lower the baudrate. I would probably
+need to reproduce this on a beaglebone, instead of our custom board.
+I'll see if I can do that.
 
-greg k-h
+If you need more info, just let me know.
 
---OgqxwSJOaUobr8KG
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="0004-serial-clps711x-Fix-COMPILE_TEST-build-for-target-wi.patch"
-
->From efb089517d2f34a58aceb600ab58b0ca3db1fa07 Mon Sep 17 00:00:00 2001
-From: Alexander Shiyan <shc_work@mail.ru>
-Date: Tue, 9 Sep 2014 08:14:36 +0400
-Subject: serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB
- support
-
-The patch fixes the following build error of CLPS711X serial driver for
-targets without GPIOLIB support:
-
->> drivers/tty/serial/serial_mctrl_gpio.c:44:6: error: redefinition of 'mctrl_gpio_set'
-  void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
-      ^
-  In file included from drivers/tty/serial/serial_mctrl_gpio.c:23:0:
-  drivers/tty/serial/serial_mctrl_gpio.h:80:6: note: previous definition of 'mctrl_gpio_set' was here
-  void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
-      ^
-
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8079f5225575..81f6ee7d4223 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -222,7 +222,7 @@ config SERIAL_CLPS711X
- 	tristate "CLPS711X serial port support"
- 	depends on ARCH_CLPS711X || COMPILE_TEST
- 	select SERIAL_CORE
--	select SERIAL_MCTRL_GPIO
-+	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	help
- 	  This enables the driver for the on-chip UARTs of the Cirrus
- 	  Logic EP711x/EP721x/EP731x processors.
--- 
-2.1.0
-
-
---OgqxwSJOaUobr8KG--
+Thanks,
+Frans
