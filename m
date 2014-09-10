@@ -1,59 +1,90 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
-Date: Wed, 10 Sep 2014 15:08:32 +0200
-Message-ID: <20140910130832.GY4783@worktop.ger.corp.intel.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
- <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
- <20140903092723.GA4783@worktop.ger.corp.intel.com>
- <5406F964.6060900@hurleysoftware.com>
- <20140903144029.GA7083@twins.programming.kicks-ass.net>
- <54072A99.1080306@hurleysoftware.com>
- <20140903150729.GA7436@twins.programming.kicks-ass.net>
- <20140904051411.GA27350@gmail.com>
- <54102FB2.1020808@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial: serial_mctrl_gpio: Fix build error for
+ !GPIOLIB
+Date: Wed, 10 Sep 2014 06:57:16 -0700
+Message-ID: <20140910135716.GA23074@kroah.com>
+References: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
+ <20140910080657.GC14260@distanz.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bombadil.infradead.org ([198.137.202.9]:53797 "EHLO
-	bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750770AbaIJNIz (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 09:08:55 -0400
+Content-Type: multipart/mixed; boundary="OgqxwSJOaUobr8KG"
+Return-path: <linux-next-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <54102FB2.1020808@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20140910080657.GC14260@distanz.ch>
+Sender: linux-next-owner@vger.kernel.org
+To: Tobias Klauser <tklauser@distanz.ch>, Alexander Shiyan <shc_work@mail.ru>
+Cc: Jim Davis <jim.epost@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next <linux-next@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, jslaby@suse.cz, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Ingo Molnar <mingo@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-On Wed, Sep 10, 2014 at 07:02:10AM -0400, Peter Hurley wrote:
-> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
-> > 
-> > * Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> >> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
-> >>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
-> >>> especially in established drivers.
-> >>
-> >> By the same logic lockdep will not find locking errors in established
-> >> drivers.
-> > 
-> > Indeed, this patch is ill-advised in several ways:
-> > 
-> >   - it extends an API variant that we want to phase
-> > 
-> >   - emits a warning even if say lockdep has already emitted a
-> >     warning and locking state is not guaranteed to be consistent. 
-> > 
-> >   - makes the kernel more expensive once fully debugged, in that
-> >     non-fatal checks are unconditional.
-> 
-> Ok.
-> 
-> One thing: I'm not seeing how lockdep_assert_held() switches off once
-> the warning has been emitted? Is the caller expected to construct their
-> own _ONCE tags?
 
-Indeed, it does not do that. I suppose you can add
-lockdep_assert_held_once() or somesuch if you think the once thing is
-important.
+--OgqxwSJOaUobr8KG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Sep 10, 2014 at 10:06:58AM +0200, Tobias Klauser wrote:
+> If SERIAL_MCTRL_GPIO is selected but GPIOLIB is not, the noop functions
+> from serial_mctrl_gpio.h are pulled in. However, serial_mctrl_gpio.c is
+> still compiled, leading to function redefinition build errors. Since all
+> drivers that include serial_mctrl_gpio.h also depend on
+> SERIAL_MCTRL_GPIO, let it depend on GPIOLIB as well remove the noop
+> functions alltogether.
+> 
+> Reported-by: Jim Davis <jim.epost@gmail.com>
+> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+> ---
+>  drivers/tty/serial/Kconfig             |  1 +
+>  drivers/tty/serial/serial_mctrl_gpio.h | 35 ----------------------------------
+>  2 files changed, 1 insertion(+), 35 deletions(-)
+
+I fixed this yesterday with commit below from Alexander, which does
+things a bit differently than you.  Any objections to it?
+
+thanks,
+
+greg k-h
+
+--OgqxwSJOaUobr8KG
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="0004-serial-clps711x-Fix-COMPILE_TEST-build-for-target-wi.patch"
+
+>From efb089517d2f34a58aceb600ab58b0ca3db1fa07 Mon Sep 17 00:00:00 2001
+From: Alexander Shiyan <shc_work@mail.ru>
+Date: Tue, 9 Sep 2014 08:14:36 +0400
+Subject: serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB
+ support
+
+The patch fixes the following build error of CLPS711X serial driver for
+targets without GPIOLIB support:
+
+>> drivers/tty/serial/serial_mctrl_gpio.c:44:6: error: redefinition of 'mctrl_gpio_set'
+  void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+      ^
+  In file included from drivers/tty/serial/serial_mctrl_gpio.c:23:0:
+  drivers/tty/serial/serial_mctrl_gpio.h:80:6: note: previous definition of 'mctrl_gpio_set' was here
+  void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+      ^
+
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 8079f5225575..81f6ee7d4223 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -222,7 +222,7 @@ config SERIAL_CLPS711X
+ 	tristate "CLPS711X serial port support"
+ 	depends on ARCH_CLPS711X || COMPILE_TEST
+ 	select SERIAL_CORE
+-	select SERIAL_MCTRL_GPIO
++	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+ 	  This enables the driver for the on-chip UARTs of the Cirrus
+ 	  Logic EP711x/EP721x/EP731x processors.
+-- 
+2.1.0
+
+
+--OgqxwSJOaUobr8KG--
