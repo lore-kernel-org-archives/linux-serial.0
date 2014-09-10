@@ -1,139 +1,167 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 11/16] tty: serial: 8250_dma: keep own book keeping about RX transfers
-Date: Wed, 10 Sep 2014 21:30:06 +0200
-Message-ID: <1410377411-26656-12-git-send-email-bigeasy@linutronix.de>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [RFC] tty: Override and virtualize flow control for tty_send_xchar()
+Date: Wed, 10 Sep 2014 17:10:31 -0400
+Message-ID: <1410383431-4578-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:35682 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752714AbaIJT5t (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:54385 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752282AbaIJVKn (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 15:57:49 -0400
-In-Reply-To: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
+	Wed, 10 Sep 2014 17:10:43 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, vinod.koul@intel.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-After dmaengine_terminate_all() has been invoked then both DMA drivers
-(edma and omap-dma) do not invoke dma_cookie_complete() to mark the
-transfer as complete. This dma_cookie_complete() is performed by the
-Synopsys DesignWare driver which is probably the only one that is used
-by omap8250-dma and hence don't see following problem=E2=80=A6
-=E2=80=A6which is that once a RX transfer has been terminated then foll=
-owing
-query of channel status reports DMA_IN_PROGRESS (again: the actual
-transfer has been canceled, there is nothing going on anymore).
+I'm offering this patch as an RFC rather than a PATCH because I think
+it's added complexity is not worth the hassle, given that it is only
+needed for drivers which don't support the send_xchar() method.
 
-This means that serial8250_rx_dma() never enqueues another DMA transfer
-because it (wrongly) assumes that there is a transer already pending.
+But it does complete the flow control patch series, by fixing a
+problem with flow control where a driver that does not support the
+send_xchar() method can accidentally restore a stopped terminal,
+even though other flow control has restarted the terminal.
 
-Vinod Koul refuses to accept a patch which adds this
-dma_cookie_complete() to both drivers and so dmaengine_tx_status() woul=
-d
-report DMA_COMPLETE instead (and behave like the Synopsys DesignWare
-driver already does). He argues that I am not allowed to use the cookie
-to query the status and that the driver already cleaned everything up a=
-fter
-the invokation of dmaengine_terminate_all().
+Regards,
+Peter Hurley
 
-To end this I add a bookkeeping whether or not a RX-transfer has been
-started to the 8250-dma code. It has already been done for the TX side.
-*Now* we learn about the RX status based on our bookkeeping and don't
-need dmaengine_tx_status() for this anymore.
+--- >% ---
+Subject: [RFC] tty: Override and virtualize flow control for
+ tty_send_xchar()
 
-Cc: vinod.koul@intel.com
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+When sending START/STOP from tcflow(TCIxxx), if the tty driver does
+not support the send_xchar() method, tty_send_xchar() uses the
+normal driver write() routine. Because the tty may stopped,
+tty_send_xchar() must override the flow control state and restore
+it after START/STOP has been written.
+
+Add file-scope helper, force_start_tty(), which saves the current
+flow control state, and starts the tty if necessary (but not if
+the output flow has been stopped by tcflow(TCOOFF)). While the
+flow control state is overridden, stop_tty() and start_tty()
+continue to track the virtual flow control state without notifying
+the driver (so the actual flow state does not change).
+
+If, while the override is on, tcflow(TCOOFF) turns off flow control,
+the override is ended and the actual flow control is stopped.
+
+Also, add file-scope helper, restore_tty_stopped(), which restores
+the actual flow control state to the tracked virtual flow control
+state, stopping the tty if necessary.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250.h     |  1 +
- drivers/tty/serial/8250/8250_dma.c | 14 ++++++++------
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ drivers/tty/tty_io.c | 52 ++++++++++++++++++++++++++++++++++++++++++++++------
+ include/linux/tty.h  |  4 +++-
+ 2 files changed, 49 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8=
-250.h
-index 09489b391568..a7581b37f264 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -42,6 +42,7 @@ struct uart_8250_dma {
-=20
- 	unsigned char		tx_running:1;
- 	unsigned char		tx_err: 1;
-+	unsigned char		rx_running:1;
- };
-=20
- struct old_serial_port {
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/82=
-50/8250_dma.c
-index e836d128e63a..fa1dc966f394 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -60,6 +60,7 @@ static void __dma_rx_do_complete(struct uart_8250_por=
-t *p, bool error)
- 	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
- 				dma->rx_size, DMA_FROM_DEVICE);
-=20
-+	dma->rx_running =3D 0;
- 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
- 	dmaengine_terminate_all(dma->rxchan);
-=20
-@@ -173,21 +174,21 @@ int serial8250_rx_dma(struct uart_8250_port *p, u=
-nsigned int iir)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 54e359b..11461ba 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -937,6 +937,13 @@ void no_tty(void)
+ 
+ void __stop_tty(struct tty_struct *tty)
  {
- 	struct uart_8250_dma		*dma =3D p->dma;
- 	struct dma_async_tx_descriptor	*desc;
--	struct dma_tx_state		state;
--	int				dma_status;
--
--	dma_status =3D dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &stat=
-e);
-=20
- 	switch (iir & 0x3f) {
- 	case UART_IIR_RLSI:
- 		/* 8250_core handles errors and break interrupts */
-+		if (dma->rx_running) {
-+			dmaengine_pause(dma->rxchan);
-+			__dma_rx_do_complete(p, true);
++	if (tty->override_stopped) {
++		if (!tty->flow_stopped) {
++			tty->virt_stopped = 1;
++			return;
 +		}
- 		return -EIO;
- 	case UART_IIR_RX_TIMEOUT:
- 		/*
- 		 * If RCVR FIFO trigger level was not reached, complete the
- 		 * transfer and let 8250_core copy the remaining data.
- 		 */
--		if (dma_status =3D=3D DMA_IN_PROGRESS) {
-+		if (dma->rx_running) {
- 			dmaengine_pause(dma->rxchan);
- 			__dma_rx_do_complete(p, true);
- 		}
-@@ -196,7 +197,7 @@ int serial8250_rx_dma(struct uart_8250_port *p, uns=
-igned int iir)
- 		break;
- 	}
-=20
--	if (dma_status)
-+	if (dma->rx_running)
++		tty->override_stopped = 0;
++	}
+ 	if (tty->stopped)
+ 		return;
+ 	tty->stopped = 1;
+@@ -968,6 +975,13 @@ EXPORT_SYMBOL(stop_tty);
+ 
+ void __start_tty(struct tty_struct *tty)
+ {
++	if (tty->override_stopped) {
++		if (!tty->flow_stopped) {
++			tty->virt_stopped = 0;
++			return;
++		}
++		tty->override_stopped = 0;
++	}
+ 	if (!tty->stopped || tty->flow_stopped)
+ 		return;
+ 	tty->stopped = 0;
+@@ -986,6 +1000,35 @@ void start_tty(struct tty_struct *tty)
+ }
+ EXPORT_SYMBOL(start_tty);
+ 
++/* Used by tty_send_xchar() to force the tty to start */
++static void force_start_tty(struct tty_struct *tty)
++{
++	spin_lock_irq(&tty->flow_lock);
++	if (!tty->flow_stopped) {
++		tty->override_stopped = 1;
++		tty->virt_stopped = tty->stopped;
++		if (tty->stopped) {
++			tty->stopped = 0;
++			if (tty->ops->start)
++				tty->ops->start(tty);
++			tty_wakeup(tty);
++		}
++	}
++	spin_unlock_irq(&tty->flow_lock);
++}
++
++static void restore_tty_stopped(struct tty_struct *tty)
++{
++	spin_lock_irq(&tty->flow_lock);
++	if (tty->override_stopped) {
++		tty->override_stopped = 0;
++		tty->stopped = tty->virt_stopped;
++		if (tty->stopped && tty->ops->stop)
++			tty->ops->stop(tty);
++	}
++	spin_unlock_irq(&tty->flow_lock);
++}
++
+ /* We limit tty time update visibility to every 8 seconds or so. */
+ static void tty_update_time(struct timespec *time)
+ {
+@@ -1241,8 +1284,6 @@ ssize_t redirected_tty_write(struct file *file, const char __user *buf,
+ 
+ int tty_send_xchar(struct tty_struct *tty, char ch)
+ {
+-	int	was_stopped = tty->stopped;
+-
+ 	if (tty->ops->send_xchar) {
+ 		tty->ops->send_xchar(tty, ch);
  		return 0;
-=20
- 	desc =3D dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
-@@ -205,6 +206,7 @@ int serial8250_rx_dma(struct uart_8250_port *p, uns=
-igned int iir)
- 	if (!desc)
- 		return -EBUSY;
-=20
-+	dma->rx_running =3D 1;
- 	desc->callback =3D __dma_rx_complete;
- 	desc->callback_param =3D p;
-=20
---=20
+@@ -1251,11 +1292,10 @@ int tty_send_xchar(struct tty_struct *tty, char ch)
+ 	if (tty_write_lock(tty, 0) < 0)
+ 		return -ERESTARTSYS;
+ 
+-	if (was_stopped)
+-		start_tty(tty);
++	force_start_tty(tty);
+ 	tty->ops->write(tty, &ch, 1);
+-	if (was_stopped)
+-		stop_tty(tty);
++	restore_tty_stopped(tty);
++
+ 	tty_write_unlock(tty);
+ 	return 0;
+ }
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 7a0a796..9c79497 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -264,7 +264,9 @@ struct tty_struct {
+ 	struct winsize winsize;		/* winsize_mutex */
+ 	unsigned long stopped:1,	/* flow_lock */
+ 		      flow_stopped:1,
+-		      unused:62;
++		      virt_stopped:1,
++		      override_stopped:1,
++		      unused:60;
+ 	int hw_stopped;
+ 	unsigned long ctrl_status:8,	/* ctrl_lock */
+ 		      packet:1,
+-- 
 2.1.0
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
