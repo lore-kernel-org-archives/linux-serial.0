@@ -1,61 +1,66 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
-Date: Wed, 10 Sep 2014 18:56:37 +0200
-Message-ID: <541082C5.7040608@linutronix.de>
-References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de> <20140908144616.GA22315@ci00147.xsens-tech.local> <20140908151501.GA22584@linutronix.de> <20140908183353.GB4686@ci00147.xsens-tech.local> <540F57E0.8030404@linutronix.de> <20140910141554.GC22315@ci00147.xsens-tech.local>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial: men_z135_uart: Fix driver for changes in
+ hardware
+Date: Wed, 10 Sep 2014 11:33:41 -0700
+Message-ID: <20140910183341.GB15117@kroah.com>
+References: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
+ <20140908231733.GB23907@kroah.com>
+ <20140909055615.GA10306@jtlinux>
+ <20140910002635.GA2189@kroah.com>
+ <20140910060723.GA3525@jtlinux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:34360 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751077AbaIJQ4s (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:57125 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751222AbaIJSfr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 12:56:48 -0400
-In-Reply-To: <20140910141554.GC22315@ci00147.xsens-tech.local>
+	Wed, 10 Sep 2014 14:35:47 -0400
+Content-Disposition: inline
+In-Reply-To: <20140910060723.GA3525@jtlinux>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Frans Klaver <frans.klaver@xsens.com>
-Cc: linux-serial@vger.kernel.org, tony@atomide.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 09/10/2014 04:15 PM, Frans Klaver wrote:
-> On Tue, Sep 09, 2014 at 09:41:20PM +0200, Sebastian Andrzej Siewior wrote:
->> On 09/08/2014 08:33 PM, Frans Klaver wrote:
->>> Thanks. I'll give it a spin on Wednesday.
->>
->> Could you please pull the upcoming v9 first?
->>
->>  git://git.breakpoint.cc/bigeasy/linux.git uart_v9_pre1
->>
->> This solves a few of my am335x related issues.
+On Wed, Sep 10, 2014 at 08:07:24AM +0200, Johannes Thumshirn wrote:
+> On Tue, Sep 09, 2014 at 05:26:35PM -0700, Greg Kroah-Hartman wrote:
+> > On Tue, Sep 09, 2014 at 07:56:15AM +0200, Johannes Thumshirn wrote:
+> > > On Mon, Sep 08, 2014 at 04:17:33PM -0700, Greg Kroah-Hartman wrote:
+> > > > >
+> > > > > @@ -118,6 +117,10 @@ static int align;
+> > > > >  module_param(align, int, S_IRUGO);
+> > > > >  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
+> > > > >
+> > > > > +static int rx_timeout;
+> > > > > +module_param(rx_timeout, uint, S_IRUGO);
+> > > > > +MODULE_PARM_DESC(rx_timeout, "RX timeout");
+> > > >
+> > > > Why add a module parameter?  Who will know to set this?  And to what
+> > > > value?
+> > > >
+> > >
+> > > There will be a user manual describing the parameter. It's like the rxlvl and
+> > > txlvl parameters, you'll have to read the manual if you need other values than
+> > > the default ones.
+> >
+> > Ugh, but module parameters are for all devices in the system of this
+> > type, which is why we try not to have them at all anymore.
+> >
+> > And I don't like the other module parameters either :(
+> >
+> > But it's an odd-one-off driver, I guess we can live...
 > 
-> Using v9_pre1, I get a kernel panic in edma_dma_pause() on echan->edesc
-> being NULL. I do get data before this happens. This is at high speed,
-> high rate. No mention of the irq having too much to do, though. The more
-> data I transmit, the more likely this is to occur.
+> Just for my information, what would be the correct way to do these kinds of
+> hardware specific settings? Sysfs? Debugfs? Custom ioctl()s (no struct file_operations,
+> so probably not)?
 
-Hmm. This shouldn't happen because if dma->rx_running is set, then
-there should be a descriptor to pause.
-Could check how this could happen? (and which event tries to do so)
+For serial ports, odds are there is already some other way to do this
+through a common interface...
 
-In the meantime, the lower part of [0] should fix the NULL bug.
+But sysfs is a good way to go if you really need it, just document it
+properly in Documentation/ABI/
 
-[0] https://lkml.org/lkml/2014/7/29/506
+thanks,
 
-> I don't currently have the setup to lower the baudrate. I would probably
-> need to reproduce this on a beaglebone, instead of our custom board.
-> I'll see if I can do that.
-> 
-> If you need more info, just let me know.
-
-I just pushed uart_v9_pre2 and I will post it once I rebased it on top
-Greg's latest.
-There was a bug where THRE could be active longer than needed caused a
-few not needed interrupts until the FIFO was empty again.
-
-My "less on file" test case did not fail anymore with this.
-
-> Thanks,
-> Frans
-
-Sebastian
+greg k-h
