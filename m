@@ -1,65 +1,79 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: men_z135_uart: Fix driver for changes in
- hardware
-Date: Wed, 10 Sep 2014 11:33:41 -0700
-Message-ID: <20140910183341.GB15117@kroah.com>
-References: <1409229140-14407-1-git-send-email-johannes.thumshirn@men.de>
- <20140908231733.GB23907@kroah.com>
- <20140909055615.GA10306@jtlinux>
- <20140910002635.GA2189@kroah.com>
- <20140910060723.GA3525@jtlinux>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 10 Sep 2014 11:34:52 -0700
+Message-ID: <20140910183452.GA15250@kroah.com>
+References: <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
+ <20140903092723.GA4783@worktop.ger.corp.intel.com>
+ <5406F964.6060900@hurleysoftware.com>
+ <20140903144029.GA7083@twins.programming.kicks-ass.net>
+ <54072A99.1080306@hurleysoftware.com>
+ <20140903150729.GA7436@twins.programming.kicks-ass.net>
+ <20140904051411.GA27350@gmail.com>
+ <54102FB2.1020808@hurleysoftware.com>
+ <20140910130832.GY4783@worktop.ger.corp.intel.com>
+ <5410640D.8010903@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:57125 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:57138 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751222AbaIJSfr (ORCPT
+	with ESMTP id S1751064AbaIJShb (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 14:35:47 -0400
+	Wed, 10 Sep 2014 14:37:31 -0400
 Content-Disposition: inline
-In-Reply-To: <20140910060723.GA3525@jtlinux>
+In-Reply-To: <5410640D.8010903@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-On Wed, Sep 10, 2014 at 08:07:24AM +0200, Johannes Thumshirn wrote:
-> On Tue, Sep 09, 2014 at 05:26:35PM -0700, Greg Kroah-Hartman wrote:
-> > On Tue, Sep 09, 2014 at 07:56:15AM +0200, Johannes Thumshirn wrote:
-> > > On Mon, Sep 08, 2014 at 04:17:33PM -0700, Greg Kroah-Hartman wrote:
-> > > > >
-> > > > > @@ -118,6 +117,10 @@ static int align;
-> > > > >  module_param(align, int, S_IRUGO);
-> > > > >  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
-> > > > >
-> > > > > +static int rx_timeout;
-> > > > > +module_param(rx_timeout, uint, S_IRUGO);
-> > > > > +MODULE_PARM_DESC(rx_timeout, "RX timeout");
-> > > >
-> > > > Why add a module parameter?  Who will know to set this?  And to what
-> > > > value?
-> > > >
-> > >
-> > > There will be a user manual describing the parameter. It's like the rxlvl and
-> > > txlvl parameters, you'll have to read the manual if you need other values than
-> > > the default ones.
-> >
-> > Ugh, but module parameters are for all devices in the system of this
-> > type, which is why we try not to have them at all anymore.
-> >
-> > And I don't like the other module parameters either :(
-> >
-> > But it's an odd-one-off driver, I guess we can live...
+On Wed, Sep 10, 2014 at 10:45:33AM -0400, Peter Hurley wrote:
+> On 09/10/2014 09:08 AM, Peter Zijlstra wrote:
+> > On Wed, Sep 10, 2014 at 07:02:10AM -0400, Peter Hurley wrote:
+> >> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+> >>>
+> >>> * Peter Zijlstra <peterz@infradead.org> wrote:
+> >>>
+> >>>> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
+> >>>>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
+> >>>>> especially in established drivers.
+> >>>>
+> >>>> By the same logic lockdep will not find locking errors in established
+> >>>> drivers.
+> >>>
+> >>> Indeed, this patch is ill-advised in several ways:
+> >>>
+> >>>   - it extends an API variant that we want to phase
+> >>>
+> >>>   - emits a warning even if say lockdep has already emitted a
+> >>>     warning and locking state is not guaranteed to be consistent. 
+> >>>
+> >>>   - makes the kernel more expensive once fully debugged, in that
+> >>>     non-fatal checks are unconditional.
+> >>
+> >> Ok.
+> >>
+> >> One thing: I'm not seeing how lockdep_assert_held() switches off once
+> >> the warning has been emitted? Is the caller expected to construct their
+> >> own _ONCE tags?
+> > 
+> > Indeed, it does not do that. I suppose you can add
+> > lockdep_assert_held_once() or somesuch if you think the once thing is
+> > important.
 > 
-> Just for my information, what would be the correct way to do these kinds of
-> hardware specific settings? Sysfs? Debugfs? Custom ioctl()s (no struct file_operations,
-> so probably not)?
+> Ok, will do.
+> 
+> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+> > Also please submit locking related patches as standalone series 
+> > to the locking subsystem, not embedded in an unrelated series.
+> 
+> Ok, but how will Greg know when to take the series that depends on
+> this change, if the locking change is submitted separately?
 
-For serial ports, odds are there is already some other way to do this
-through a common interface...
+ Cc: me on those changes, and I can track what happens with the tip tree
+ where these would show up.
 
-But sysfs is a good way to go if you really need it, just document it
-properly in Documentation/ABI/
+Or wait a release cycle, that also is an easy way.
 
 thanks,
 
