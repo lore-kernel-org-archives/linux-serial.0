@@ -1,42 +1,129 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH] mips/uapi: Add definition of TIOC[SG]RS485
-Date: Wed, 10 Sep 2014 10:57:08 +0200
-Message-ID: <1410339428-2825-1-git-send-email-ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH linux-next] MIPS: ioctls: Add missing TIOC{S,G}RS485 definitions
+Date: Wed, 10 Sep 2014 11:05:07 +0200
+Message-ID: <CAPybu_03BDC5+d5-Wmwz+x==5sbKHgU8Rr0JimK16yRnN65x8Q@mail.gmail.com>
+References: <1410263575-26720-1-git-send-email-markos.chandras@imgtec.com>
+ <20140909191736.GA7467@kroah.com> <54100AE5.6050401@imgtec.com>
+ <CAPybu_128PsDN7wywntyTuCCfenBWTiS60P2g6_Hk68EMQc1CQ@mail.gmail.com> <54100FB0.1000308@imgtec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f42.google.com ([209.85.215.42]:34784 "EHLO
-	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751865AbaIJI5T (ORCPT
+Received: from mail-oa0-f44.google.com ([209.85.219.44]:45579 "EHLO
+	mail-oa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751337AbaIJJF2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 04:57:19 -0400
+	Wed, 10 Sep 2014 05:05:28 -0400
+In-Reply-To: <54100FB0.1000308@imgtec.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Markos Chandras <Markos.Chandras@imgtec.com>, Greg KH <greg@kroah.com>, linux-mips@linux-mips.org, linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+To: Markos Chandras <Markos.Chandras@imgtec.com>
+Cc: Greg KH <greg@kroah.com>, linux-mips@linux-mips.org, linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 
-Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 (serial/8250: Add
-support for RS485 IOCTLs), adds support for RS485 ioctls for 825_core on
-all the archs. Unfortunaltely the definition of TIOCSRS485 and
-TIOCGRS485 was missing on the ioctls.h file
+Hello Markos
 
-Reported-by: Markos Chandras <markos.chandras@imgtec.com>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
- arch/mips/include/uapi/asm/ioctls.h | 2 ++
- 1 file changed, 2 insertions(+)
+Sorry for the mess. I have already send a new patch for mips using the
+_IO* macros
 
-diff --git a/arch/mips/include/uapi/asm/ioctls.h b/arch/mips/include/uapi/asm/ioctls.h
-index b1e6377..740219c 100644
---- a/arch/mips/include/uapi/asm/ioctls.h
-+++ b/arch/mips/include/uapi/asm/ioctls.h
-@@ -81,6 +81,8 @@
- #define TCSETS2		_IOW('T', 0x2B, struct termios2)
- #define TCSETSW2	_IOW('T', 0x2C, struct termios2)
- #define TCSETSF2	_IOW('T', 0x2D, struct termios2)
-+#define TIOCGRS485	_IOR('T', 0x2E, struct serial_rs485)
-+#define TIOCSRS485	_IOWR('T', 0x2F, struct serial_rs485)
- #define TIOCGPTN	_IOR('T', 0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
- #define TIOCSPTLCK	_IOW('T', 0x31, int)  /* Lock/unlock Pty */
- #define TIOCGDEV	_IOR('T', 0x32, unsigned int) /* Get primary device node of /dev/console */
+Just to put things a bit into context:
+
+I did made the patch for serial and tested it only in x86. I wrongly
+infer that the IOCTLS were defined for all the arches (sorry :S)
+
+Then when the patch was applied on tty-next the build-bot throw some
+errors for xtensa, that I fixed without using the IO_ macros
+
+Then you came with your patch,
+
+I realized that this could be wrong for mor arches, so I check the
+rest and make patches for them.
+
+Greg then pointed out that I should use _IO instead of numbers, so I
+remade my patches using the _IO macros. I did not want to step into
+your patch so I did not prepare a new one for mips
+
+All the _IO patches (except mips) are now merged into tty-next.
+
+Hopefully that one also get merged soon :)
+
+
+Thanks for your help and sorry for any disturbance.
+
+
+On Wed, Sep 10, 2014 at 10:45 AM, Markos Chandras
+<Markos.Chandras@imgtec.com> wrote:
+> On 09/10/2014 09:39 AM, Ricardo Ribalda Delgado wrote:
+>> Hello Greg
+>>
+>> Sorry, Probably my bad :). I did resend a new patch using the _IO*
+>> macros, that has been now merged to tty-next
+>>
+>> Regards!
+>>
+>> On Wed, Sep 10, 2014 at 10:25 AM, Markos Chandras
+>> <Markos.Chandras@imgtec.com> wrote:
+>>> On 09/09/2014 08:17 PM, Greg KH wrote:
+>>>> On Tue, Sep 09, 2014 at 12:52:55PM +0100, Markos Chandras wrote:
+>>>>> Commit e676253b19b2d269cccf67fdb1592120a0cd0676
+>>>>> (serial/8250: Add support for RS485 IOCTLs) added cases for the
+>>>>> TIOC{S,G}RS485 commands but this broke the build for MIPS:
+>>>>>
+>>>>> drivers/tty/serial/8250/8250_core.c: In function 'serial8250_ioctl':
+>>>>> drivers/tty/serial/8250/8250_core.c:2874:7: error: 'TIOCSRS485' undeclared
+>>>>> (first use in this function)
+>>>>> drivers/tty/serial/8250/8250_core.c:2886:7: error: 'TIOCGRS485' undeclared
+>>>>> (first use in this function)
+>>>>>
+>>>>> This patch adds these missing definitions
+>>>>>
+>>>>> Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+>>>>> Cc: <linux-next@vger.kernel.org>
+>>>>> Cc: <linux-kernel@vger.kernel.org>
+>>>>> Cc: <linux-serial@vger.kernel.org>
+>>>>> Signed-off-by: Markos Chandras <markos.chandras@imgtec.com>
+>>>>> ---
+>>>>>  arch/mips/include/uapi/asm/ioctls.h | 2 ++
+>>>>>  1 file changed, 2 insertions(+)
+>>>>>
+>>>>> diff --git a/arch/mips/include/uapi/asm/ioctls.h b/arch/mips/include/uapi/asm/ioctls.h
+>>>>> index b1e637757fe3..34050cb6b631 100644
+>>>>> --- a/arch/mips/include/uapi/asm/ioctls.h
+>>>>> +++ b/arch/mips/include/uapi/asm/ioctls.h
+>>>>> @@ -76,6 +76,8 @@
+>>>>>
+>>>>>  #define TIOCSBRK    0x5427  /* BSD compatibility */
+>>>>>  #define TIOCCBRK    0x5428  /* BSD compatibility */
+>>>>> +#define TIOCGRS485  0x542E
+>>>>> +#define TIOCSRS485  0x542F
+>>>>
+>>>> Any reason you aren't using the _IOR() type macros here?
+>>>>
+>>>> thanks,
+>>>>
+>>>> greg k-h
+>>>>
+>>> Hi Greg,
+>>>
+>>> Not really. I am being consistent with what
+>>> include/uapi/asm-generic/ioctls.h is using, and with the xtensa patch
+>>> that was posted yesterday
+>>>
+>>> https://lkml.org/lkml/2014/9/9/27
+>>>
+>>> --
+>>> markos
+>>
+>>
+>>
+> Hi Ricardo,
+>
+> Since you are taking care of the same problem on the other
+> architectures, could you also make a similar patch for MIPS so they can
+> all get merged via the same tree? Because, right now, MIPS is still broken.
+>
+> --
+> markos
+
+
+
 -- 
-2.1.0
-
+Ricardo Ribalda
