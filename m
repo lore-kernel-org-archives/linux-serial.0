@@ -1,53 +1,61 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gdHR5OiBzZXJpYWw6IHNlcmlhbF9tY3RybF9ncGlvOiBG?=
- =?UTF-8?B?aXggYnVpbGQgZXJyb3IgZm9yICFHUElPTElC?=
-Date: Wed, 10 Sep 2014 18:36:09 +0400
-Message-ID: <1410359769.646202267@f334.i.mail.ru>
-References: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
- <20140910135716.GA23074@kroah.com>
- <20140910141621.GA4636@distanz.ch>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v8 00/18] 8250-core based serial driver for OMAP + DMA
+Date: Wed, 10 Sep 2014 18:56:37 +0200
+Message-ID: <541082C5.7040608@linutronix.de>
+References: <1409943773-7874-1-git-send-email-bigeasy@linutronix.de> <20140908144616.GA22315@ci00147.xsens-tech.local> <20140908151501.GA22584@linutronix.de> <20140908183353.GB4686@ci00147.xsens-tech.local> <540F57E0.8030404@linutronix.de> <20140910141554.GC22315@ci00147.xsens-tech.local>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from fallback2.mail.ru ([94.100.179.22]:33354 "EHLO
-	fallback2.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751471AbaIJPfD (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:34360 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751077AbaIJQ4s (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 11:35:03 -0400
-In-Reply-To: <20140910141621.GA4636@distanz.ch>
+	Wed, 10 Sep 2014 12:56:48 -0400
+In-Reply-To: <20140910141554.GC22315@ci00147.xsens-tech.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?VG9iaWFzIEtsYXVzZXI=?= <tklauser@distanz.ch>
-Cc: =?UTF-8?B?SmltIERhdmlz?= <jim.epost@gmail.com>, =?UTF-8?B?U3RlcGhlbiBSb3Rod2VsbA==?= <sfr@canb.auug.org.au>, =?UTF-8?B?bGludXgtbmV4dA==?= <linux-next@vger.kernel.org>, =?UTF-8?B?bGludXgta2VybmVs?= <linux-kernel@vger.kernel.org>, jslaby@suse.cz, linux-serial@vger.kernel.org, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
+To: Frans Klaver <frans.klaver@xsens.com>
+Cc: linux-serial@vger.kernel.org, tony@atomide.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-V2VkLCAxMCBTZXAgMjAxNCAxNjoxNjoyMSArMDIwMCDQvtGCIFRvYmlhcyBLbGF1c2VyIDx0a2xh
-dXNlckBkaXN0YW56LmNoPjoKPiBPbiAyMDE0LTA5LTEwIGF0IDE1OjU3OjE2ICswMjAwLCBHcmVn
-IEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPiB3cm90ZToKPiA+IE9u
-IFdlZCwgU2VwIDEwLCAyMDE0IGF0IDEwOjA2OjU4QU0gKzAyMDAsIFRvYmlhcyBLbGF1c2VyIHdy
-b3RlOgo+ID4gPiBJZiBTRVJJQUxfTUNUUkxfR1BJTyBpcyBzZWxlY3RlZCBidXQgR1BJT0xJQiBp
-cyBub3QsIHRoZSBub29wIGZ1bmN0aW9ucwo+ID4gPiBmcm9tIHNlcmlhbF9tY3RybF9ncGlvLmgg
-YXJlIHB1bGxlZCBpbi4gSG93ZXZlciwgc2VyaWFsX21jdHJsX2dwaW8uYyBpcwo+ID4gPiBzdGls
-bCBjb21waWxlZCwgbGVhZGluZyB0byBmdW5jdGlvbiByZWRlZmluaXRpb24gYnVpbGQgZXJyb3Jz
-LiBTaW5jZSBhbGwKPiA+ID4gZHJpdmVycyB0aGF0IGluY2x1ZGUgc2VyaWFsX21jdHJsX2dwaW8u
-aCBhbHNvIGRlcGVuZCBvbgo+ID4gPiBTRVJJQUxfTUNUUkxfR1BJTywgbGV0IGl0IGRlcGVuZCBv
-biBHUElPTElCIGFzIHdlbGwgcmVtb3ZlIHRoZSBub29wCj4gPiA+IGZ1bmN0aW9ucyBhbGx0b2dl
-dGhlci4KPiA+ID4gCj4gPiA+IFJlcG9ydGVkLWJ5OiBKaW0gRGF2aXMgPGppbS5lcG9zdEBnbWFp
-bC5jb20+Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IFRvYmlhcyBLbGF1c2VyIDx0a2xhdXNlckBkaXN0
-YW56LmNoPgo+ID4gPiAtLS0KPiA+ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnICAgICAg
-ICAgICAgIHwgIDEgKwo+ID4gPiAgZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9tY3RybF9ncGlv
-LmggfCAzNSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiA+ICAyIGZpbGVz
-IGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAzNSBkZWxldGlvbnMoLSkKPiA+IAo+ID4gSSBmaXhl
-ZCB0aGlzIHllc3RlcmRheSB3aXRoIGNvbW1pdCBiZWxvdyBmcm9tIEFsZXhhbmRlciwgd2hpY2gg
-ZG9lcwo+ID4gdGhpbmdzIGEgYml0IGRpZmZlcmVudGx5IHRoYW4geW91LiAgQW55IG9iamVjdGlv
-bnMgdG8gaXQ/Cj4gCj4gVGhpcyBpcyBuaWNlciBpbiB0ZXJtcyBvZiBiZWluZyBhYmxlIHRvIGNv
-bXBpbGUgdGhlIGRyaXZlciB3aXRob3V0Cj4gR1BJT0xJQi4gSG93ZXZlciwgaXQgd29udCBmaXgg
-aXQgZm9yIHRoZSBvdGhlciB1c2VyIG9mCj4gU0VSSUFMX01DVFJMX0dQSU8sIG5hbWVseSBTRVJJ
-QUxfQVRNRUwuIEFuZCBmb3IgYW55IGZ1dHVyZSB1c2VycyBvZgo+IFNFUklBTF9NQ1RSTF9HUElP
-LCB3ZSBuZWVkIHRvIG1ha2Ugc3VyZSB0byB1c2UgdGhlIHNhbWUgc2VsZWN0Cj4gZGlyZWN0aXZl
-LiBUbyBmaXggaXQgZm9yIGF0bWVsX3NlcmlhbCwgSSdkIHN1Z2dlc3QgdGhlIHBhdGNoIGJlbG93
-LgoKQXRtZWwgc2VyaWFsIGRyaXZlciBpcyBhbHJlYWR5IHByb3RlY3RlZCBieSBBUkNIX1JFUVVJ
-UkVfR1BJT0xJQgppbiB0aGUgYXJjaGl0ZWN0dXJlIGNvbmZpZ3VyYXRpb24uIFRoZSBlcnJvciBp
-cyBoYXBwZW4gb25seSBmb3IgQ09NUElMRV9URVNULApidXQgZm9yIEF0bWVsIGRyaXZlciB0aGlz
-IG9wdGlvbiBpcyBkaXNhYmxlZC4KCi0tLQoK
+On 09/10/2014 04:15 PM, Frans Klaver wrote:
+> On Tue, Sep 09, 2014 at 09:41:20PM +0200, Sebastian Andrzej Siewior wrote:
+>> On 09/08/2014 08:33 PM, Frans Klaver wrote:
+>>> Thanks. I'll give it a spin on Wednesday.
+>>
+>> Could you please pull the upcoming v9 first?
+>>
+>>  git://git.breakpoint.cc/bigeasy/linux.git uart_v9_pre1
+>>
+>> This solves a few of my am335x related issues.
+> 
+> Using v9_pre1, I get a kernel panic in edma_dma_pause() on echan->edesc
+> being NULL. I do get data before this happens. This is at high speed,
+> high rate. No mention of the irq having too much to do, though. The more
+> data I transmit, the more likely this is to occur.
+
+Hmm. This shouldn't happen because if dma->rx_running is set, then
+there should be a descriptor to pause.
+Could check how this could happen? (and which event tries to do so)
+
+In the meantime, the lower part of [0] should fix the NULL bug.
+
+[0] https://lkml.org/lkml/2014/7/29/506
+
+> I don't currently have the setup to lower the baudrate. I would probably
+> need to reproduce this on a beaglebone, instead of our custom board.
+> I'll see if I can do that.
+> 
+> If you need more info, just let me know.
+
+I just pushed uart_v9_pre2 and I will post it once I rebased it on top
+Greg's latest.
+There was a bug where THRE could be active longer than needed caused a
+few not needed interrupts until the FIFO was empty again.
+
+My "less on file" test case did not fail anymore with this.
+
+> Thanks,
+> Frans
+
+Sebastian
