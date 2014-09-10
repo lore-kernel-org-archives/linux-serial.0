@@ -1,82 +1,80 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 11/14] tty: Serialize tcflow() with other tty flow control changes
-Date: Wed, 10 Sep 2014 15:06:33 -0400
-Message-ID: <1410375996-4693-12-git-send-email-peter@hurleysoftware.com>
-References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
- <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [RFC PATCH] tty: serial: core: Only invoke ->start_tx() if there
+ is data to send
+Date: Wed, 10 Sep 2014 15:52:59 -0400
+Message-ID: <5410AC1B.9000700@hurleysoftware.com>
+References: <1410377601-26794-1-git-send-email-bigeasy@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:38140 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751044AbaIJTxD (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Sep 2014 15:53:03 -0400
+In-Reply-To: <1410377601-26794-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Use newly-introduced tty->flow_lock to serialize updates to
-tty->flow_stopped (via tcflow()) and with concurrent tty flow
-control changes from other sources.
+On 09/10/2014 03:33 PM, Sebastian Andrzej Siewior wrote:
+> I noticed that the serial8250_tx_dma() is invoked sometimes while
+> uart_circ_empty() says that the buffer is empty.
+> 
+> I tracked one occuring down to:
+> 
+> n_tty_write()
+> 	 => O_OPOST(tty))
+> 	   => the while loop did something but neither tty's ->write()
+> 	      nor its ->uart_put_char() callback was invoked().
+> 	   => tty->ops->flush_chars() is invoked with an empty buffer.
+> 
+> For the 8250 uart driver we end up with:
+> - DMA enabled
+>   nothing, just return (except there is DMA_TX bug or runtime-PM then we
+>   behave like in the no DMA case)
+> 
+> - no DMA
+>   enable THRI interrupt, wait for it, disable THRI interrupt again
+>   because there is nothing to be done.
+> 
+> While I don't know if it safe to drop that flush in n_tty if the buffer
+> is empty, it should not do any harm in serial's core part to not invoke
+> ->start_tx() if the buffer is empty.
 
-Merge the storage for ->stopped and ->flow_stopped, now that both
-flags are serialized by ->flow_lock.
+The serial core can't assume that start_tx() does not need invoking
+because hardware that can stop_tx() with data in the transmitter
+won't restart if the ring buffer is empty but data is still in the
+transmitter. [Note that the 16C950 port type does this in the 8250 driver.]
 
-The padding bits are necessary to force the compiler to allocate the
-type specified; otherwise, gcc will ignore the type specifier and
-allocate the minimum number of bytes necessary to store the bitfield.
-In turn, this would allow Alpha EV4 and EV5 cpus to corrupt adjacent
-byte storage because those cpus use RMW to store byte and short data.
+So this has to be handled in the 8250 driver.
 
-gcc versions < 4.7.2 will also corrupt storage adjacent to bitfields
-smaller than unsigned long on ia64, ppc64, hppa64 and sparc64, thus
-requiring more than unsigned int storage (which would otherwise be
-sufficient to workaround the Alpha non-atomic byte/short storage problem).
+What is the actual issue? Are you trying not to unnecessarily wake
+the omap hardware if runtime-PM is on?
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_ioctl.c | 8 ++++++--
- include/linux/tty.h     | 5 +++--
- 2 files changed, 9 insertions(+), 4 deletions(-)
+Regards,
+Peter Hurley
 
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 6fd60fe..ffed466 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -1177,16 +1177,20 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
- 			return retval;
- 		switch (arg) {
- 		case TCOOFF:
-+			spin_lock_irq(&tty->flow_lock);
- 			if (!tty->flow_stopped) {
- 				tty->flow_stopped = 1;
--				stop_tty(tty);
-+				__stop_tty(tty);
- 			}
-+			spin_unlock_irq(&tty->flow_lock);
- 			break;
- 		case TCOON:
-+			spin_lock_irq(&tty->flow_lock);
- 			if (tty->flow_stopped) {
- 				tty->flow_stopped = 0;
--				start_tty(tty);
-+				__start_tty(tty);
- 			}
-+			spin_unlock_irq(&tty->flow_lock);
- 			break;
- 		case TCIOFF:
- 			if (STOP_CHAR(tty) != __DISABLED_CHAR)
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index af26171..377896d 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -262,8 +262,9 @@ struct tty_struct {
- 	unsigned long flags;
- 	int count;
- 	struct winsize winsize;		/* winsize_mutex */
--	int stopped;			/* flow_lock */
--	int flow_stopped;
-+	unsigned long stopped:1,	/* flow_lock */
-+		      flow_stopped:1,
-+		      unused:62;
- 	int hw_stopped;
- 	int packet;
- 	unsigned char ctrl_status;	/* ctrl_lock */
--- 
-2.1.0
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 5a78f6940760..e55724a911d5 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -90,7 +90,8 @@ static void __uart_start(struct tty_struct *tty)
+>  	struct uart_state *state = tty->driver_data;
+>  	struct uart_port *port = state->uart_port;
+>  
+> -	if (!tty->stopped && !tty->hw_stopped)
+> +	if (!tty->stopped && !tty->hw_stopped &&
+> +			!uart_circ_empty(&port->state->xmit))
+>  		port->ops->start_tx(port);
+>  }
+>  
+> 
+
