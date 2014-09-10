@@ -1,55 +1,62 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [RFC PATCH] tty: serial: core: Only invoke ->start_tx() if there is data to send
-Date: Wed, 10 Sep 2014 21:33:21 +0200
-Message-ID: <1410377601-26794-1-git-send-email-bigeasy@linutronix.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 14/14] tty: Workaround Alpha non-atomic byte storage in tty_struct
+Date: Wed, 10 Sep 2014 15:06:36 -0400
+Message-ID: <1410375996-4693-15-git-send-email-peter@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+ <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:47642 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751701AbaIJToz (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Sep 2014 15:44:55 -0400
+In-Reply-To: <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-I noticed that the serial8250_tx_dma() is invoked sometimes while
-uart_circ_empty() says that the buffer is empty.
+The Alpha EV4/EV5 cpus can corrupt adjacent byte and short data because
+those cpus use RMW to store byte and short data. Thus, concurrent adjacent
+byte stores could become corrupted, if serialized by a different lock.
+tty_struct uses different locks to protect certain fields within the
+structure, and thus is vulnerable to byte stores which are not atomic.
 
-I tracked one occuring down to:
+Merge the ->ctrl_status byte and packet mode bit, both protected by the
+->ctrl_lock, into an unsigned long.
 
-n_tty_write()
-	 => O_OPOST(tty))
-	   => the while loop did something but neither tty's ->write()
-	      nor its ->uart_put_char() callback was invoked().
-	   => tty->ops->flush_chars() is invoked with an empty buffer.
+The padding bits are necessary to force the compiler to allocate the
+type specified; otherwise, gcc will ignore the type specifier and
+allocate the minimum number of bytes required to store the bitfield.
+In turn, this would allow Alpha EV4/EV5 cpus to corrupt adjacent byte
+or short storage (because those cpus use RMW to store byte and short data).
 
-For the 8250 uart driver we end up with:
-- DMA enabled
-  nothing, just return (except there is DMA_TX bug or runtime-PM then we
-  behave like in the no DMA case)
+gcc versions < 4.7.2 will also corrupt storage adjacent to bitfields
+smaller than unsigned long on ia64, ppc64, hppa64, and sparc64, thus
+requiring more than unsigned int storage (which would otherwise be
+sufficient to fix the Alpha non-atomic storage problem).
 
-- no DMA
-  enable THRI interrupt, wait for it, disable THRI interrupt again
-  because there is nothing to be done.
-
-While I don't know if it safe to drop that flush in n_tty if the buffer
-is empty, it should not do any harm in serial's core part to not invoke
-->start_tx() if the buffer is empty.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/tty.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5a78f6940760..e55724a911d5 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -90,7 +90,8 @@ static void __uart_start(struct tty_struct *tty)
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port = state->uart_port;
- 
--	if (!tty->stopped && !tty->hw_stopped)
-+	if (!tty->stopped && !tty->hw_stopped &&
-+			!uart_circ_empty(&port->state->xmit))
- 		port->ops->start_tx(port);
- }
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 3c1276b..7a0a796 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -266,8 +266,9 @@ struct tty_struct {
+ 		      flow_stopped:1,
+ 		      unused:62;
+ 	int hw_stopped;
+-	int packet;
+-	unsigned char ctrl_status;	/* ctrl_lock */
++	unsigned long ctrl_status:8,	/* ctrl_lock */
++		      packet:1,
++		      unused_ctrl:55;
+ 	unsigned int receive_room;	/* Bytes free for queue */
+ 	int flow_change;
  
 -- 
 2.1.0
+
