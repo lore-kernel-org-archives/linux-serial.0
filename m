@@ -1,93 +1,65 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH] tty: serial: serial_mctrl_gpio: Fix build error for !GPIOLIB
-Date: Wed, 10 Sep 2014 10:06:58 +0200
-Message-ID: <20140910080657.GC14260@distanz.ch>
-References: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
+From: Markos Chandras <Markos.Chandras@imgtec.com>
+Subject: Re: [PATCH linux-next] MIPS: ioctls: Add missing TIOC{S,G}RS485 definitions
+Date: Wed, 10 Sep 2014 09:25:09 +0100
+Message-ID: <54100AE5.6050401@imgtec.com>
+References: <1410263575-26720-1-git-send-email-markos.chandras@imgtec.com> <20140909191736.GA7467@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jim Davis <jim.epost@gmail.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next <linux-next@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.cz, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-next-owner@vger.kernel.org>
+In-Reply-To: <20140909191736.GA7467@kroah.com>
+Sender: linux-next-owner@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: linux-mips@linux-mips.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-If SERIAL_MCTRL_GPIO is selected but GPIOLIB is not, the noop functions
-from serial_mctrl_gpio.h are pulled in. However, serial_mctrl_gpio.c is
-still compiled, leading to function redefinition build errors. Since all
-drivers that include serial_mctrl_gpio.h also depend on
-SERIAL_MCTRL_GPIO, let it depend on GPIOLIB as well remove the noop
-functions alltogether.
+On 09/09/2014 08:17 PM, Greg KH wrote:
+> On Tue, Sep 09, 2014 at 12:52:55PM +0100, Markos Chandras wrote:
+>> Commit e676253b19b2d269cccf67fdb1592120a0cd0676
+>> (serial/8250: Add support for RS485 IOCTLs) added cases for the
+>> TIOC{S,G}RS485 commands but this broke the build for MIPS:
+>>
+>> drivers/tty/serial/8250/8250_core.c: In function 'serial8250_ioctl':
+>> drivers/tty/serial/8250/8250_core.c:2874:7: error: 'TIOCSRS485' undeclared
+>> (first use in this function)
+>> drivers/tty/serial/8250/8250_core.c:2886:7: error: 'TIOCGRS485' undeclared
+>> (first use in this function)
+>>
+>> This patch adds these missing definitions
+>>
+>> Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+>> Cc: <linux-next@vger.kernel.org>
+>> Cc: <linux-kernel@vger.kernel.org>
+>> Cc: <linux-serial@vger.kernel.org>
+>> Signed-off-by: Markos Chandras <markos.chandras@imgtec.com>
+>> ---
+>>  arch/mips/include/uapi/asm/ioctls.h | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/arch/mips/include/uapi/asm/ioctls.h b/arch/mips/include/uapi/asm/ioctls.h
+>> index b1e637757fe3..34050cb6b631 100644
+>> --- a/arch/mips/include/uapi/asm/ioctls.h
+>> +++ b/arch/mips/include/uapi/asm/ioctls.h
+>> @@ -76,6 +76,8 @@
+>>  
+>>  #define TIOCSBRK	0x5427	/* BSD compatibility */
+>>  #define TIOCCBRK	0x5428	/* BSD compatibility */
+>> +#define TIOCGRS485	0x542E
+>> +#define TIOCSRS485	0x542F
+> 
+> Any reason you aren't using the _IOR() type macros here?
+> 
+> thanks,
+> 
+> greg k-h
+> 
+Hi Greg,
 
-Reported-by: Jim Davis <jim.epost@gmail.com>
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
----
- drivers/tty/serial/Kconfig             |  1 +
- drivers/tty/serial/serial_mctrl_gpio.h | 35 ----------------------------------
- 2 files changed, 1 insertion(+), 35 deletions(-)
+Not really. I am being consistent with what
+include/uapi/asm-generic/ioctls.h is using, and with the xtensa patch
+that was posted yesterday
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8079f52..5f1ea62 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1575,5 +1575,6 @@ endmenu
- 
- config SERIAL_MCTRL_GPIO
- 	tristate
-+	select GPIOLIB
- 
- endif # TTY
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-index 400ba04..5e4c96a 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.h
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -40,8 +40,6 @@ enum mctrl_gpio_idx {
-  */
- struct mctrl_gpios;
- 
--#ifdef CONFIG_GPIOLIB
--
- /*
-  * Set state of the modem control output lines via GPIOs.
-  */
-@@ -74,37 +72,4 @@ struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx);
-  */
- void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios);
- 
--#else /* GPIOLIB */
--
--static inline
--void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
--{
--}
--
--static inline
--unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
--{
--	return *mctrl;
--}
--
--static inline
--struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
--				      enum mctrl_gpio_idx gidx)
--{
--	return ERR_PTR(-ENOSYS);
--}
--
--static inline
--struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
--{
--	return ERR_PTR(-ENOSYS);
--}
--
--static inline
--void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
--{
--}
--
--#endif /* GPIOLIB */
--
- #endif
+https://lkml.org/lkml/2014/9/9/27
+
 -- 
-2.0.1
+markos
