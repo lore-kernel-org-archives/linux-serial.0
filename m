@@ -1,80 +1,73 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
-Date: Wed, 10 Sep 2014 11:34:52 -0700
-Message-ID: <20140910183452.GA15250@kroah.com>
-References: <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
- <20140903092723.GA4783@worktop.ger.corp.intel.com>
- <5406F964.6060900@hurleysoftware.com>
- <20140903144029.GA7083@twins.programming.kicks-ass.net>
- <54072A99.1080306@hurleysoftware.com>
- <20140903150729.GA7436@twins.programming.kicks-ass.net>
- <20140904051411.GA27350@gmail.com>
- <54102FB2.1020808@hurleysoftware.com>
- <20140910130832.GY4783@worktop.ger.corp.intel.com>
- <5410640D.8010903@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 01/14] serial: core: Document and assert lock requirements for irq helpers
+Date: Wed, 10 Sep 2014 15:06:23 -0400
+Message-ID: <1410375996-4693-2-git-send-email-peter@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+ <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:57138 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751064AbaIJShb (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:51709 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753177AbaIJTGz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 14:37:31 -0400
-Content-Disposition: inline
-In-Reply-To: <5410640D.8010903@hurleysoftware.com>
+	Wed, 10 Sep 2014 15:06:55 -0400
+In-Reply-To: <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On Wed, Sep 10, 2014 at 10:45:33AM -0400, Peter Hurley wrote:
-> On 09/10/2014 09:08 AM, Peter Zijlstra wrote:
-> > On Wed, Sep 10, 2014 at 07:02:10AM -0400, Peter Hurley wrote:
-> >> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
-> >>>
-> >>> * Peter Zijlstra <peterz@infradead.org> wrote:
-> >>>
-> >>>> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
-> >>>>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
-> >>>>> especially in established drivers.
-> >>>>
-> >>>> By the same logic lockdep will not find locking errors in established
-> >>>> drivers.
-> >>>
-> >>> Indeed, this patch is ill-advised in several ways:
-> >>>
-> >>>   - it extends an API variant that we want to phase
-> >>>
-> >>>   - emits a warning even if say lockdep has already emitted a
-> >>>     warning and locking state is not guaranteed to be consistent. 
-> >>>
-> >>>   - makes the kernel more expensive once fully debugged, in that
-> >>>     non-fatal checks are unconditional.
-> >>
-> >> Ok.
-> >>
-> >> One thing: I'm not seeing how lockdep_assert_held() switches off once
-> >> the warning has been emitted? Is the caller expected to construct their
-> >> own _ONCE tags?
-> > 
-> > Indeed, it does not do that. I suppose you can add
-> > lockdep_assert_held_once() or somesuch if you think the once thing is
-> > important.
-> 
-> Ok, will do.
-> 
-> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
-> > Also please submit locking related patches as standalone series 
-> > to the locking subsystem, not embedded in an unrelated series.
-> 
-> Ok, but how will Greg know when to take the series that depends on
-> this change, if the locking change is submitted separately?
+The serial core provides two helper functions, uart_handle_dcd_change()
+and uart_handle_cts_change(), for UART drivers to use at interrupt
+time. The serial core expects the UART driver to hold the uart port lock
+when calling these helpers to prevent state corruption.
 
- Cc: me on those changes, and I can track what happens with the tip tree
- where these would show up.
+If lockdep enabled, trigger a warning if the uart port lock is not held
+when calling these helper functions.
 
-Or wait a release cycle, that also is an easy way.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/serial_core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-thanks,
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 732d386..0567b65 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2731,6 +2731,8 @@ EXPORT_SYMBOL(uart_match_port);
+  *	uart_handle_dcd_change - handle a change of carrier detect state
+  *	@uport: uart_port structure for the open port
+  *	@status: new carrier detect status, nonzero if active
++ *
++ *	Caller must hold uport->lock
+  */
+ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+ {
+@@ -2738,6 +2740,8 @@ void uart_handle_dcd_change(struct uart_port *uport, unsigned int status)
+ 	struct tty_struct *tty = port->tty;
+ 	struct tty_ldisc *ld;
+ 
++	lockdep_assert_held_once(&uport->lock);
++
+ 	if (tty) {
+ 		ld = tty_ldisc_ref(tty);
+ 		if (ld) {
+@@ -2762,12 +2766,16 @@ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
+  *	uart_handle_cts_change - handle a change of clear-to-send state
+  *	@uport: uart_port structure for the open port
+  *	@status: new clear to send status, nonzero if active
++ *
++ *	Caller must hold uport->lock
+  */
+ void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
+ {
+ 	struct tty_port *port = &uport->state->port;
+ 	struct tty_struct *tty = port->tty;
+ 
++	lockdep_assert_held_once(&uport->lock);
++
+ 	uport->icount.cts++;
+ 
+ 	if (tty_port_cts_enabled(port)) {
+-- 
+2.1.0
 
-greg k-h
