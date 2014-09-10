@@ -1,70 +1,59 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH RESEND] tty: serial: men_z135_uart: Fix driver for changes
- in hardware
-Date: Wed, 10 Sep 2014 14:15:41 +0200
-Message-ID: <541040ED.1020800@suse.cz>
-References: <1410329329-4327-1-git-send-email-johannes.thumshirn@men.de>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 10 Sep 2014 15:08:32 +0200
+Message-ID: <20140910130832.GY4783@worktop.ger.corp.intel.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
+ <1409693975-1028-14-git-send-email-peter@hurleysoftware.com>
+ <20140903092723.GA4783@worktop.ger.corp.intel.com>
+ <5406F964.6060900@hurleysoftware.com>
+ <20140903144029.GA7083@twins.programming.kicks-ass.net>
+ <54072A99.1080306@hurleysoftware.com>
+ <20140903150729.GA7436@twins.programming.kicks-ass.net>
+ <20140904051411.GA27350@gmail.com>
+ <54102FB2.1020808@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f182.google.com ([209.85.212.182]:34547 "EHLO
-	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750850AbaIJMPp (ORCPT
+Received: from bombadil.infradead.org ([198.137.202.9]:53797 "EHLO
+	bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750770AbaIJNIz (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 10 Sep 2014 08:15:45 -0400
-In-Reply-To: <1410329329-4327-1-git-send-email-johannes.thumshirn@men.de>
+	Wed, 10 Sep 2014 09:08:55 -0400
+Content-Disposition: inline
+In-Reply-To: <54102FB2.1020808@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Ingo Molnar <mingo@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-On 09/10/2014, 08:08 AM, Johannes Thumshirn wrote:
-> * Add module parameter to configure the (baud rate dependent) RX timeout.
->   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-
-Buried in the log. Instead, it would be nice to have this in
-MODULE_PARM_DESC.
-
-> --- a/drivers/tty/serial/men_z135_uart.c
-> +++ b/drivers/tty/serial/men_z135_uart.c
-...
-> @@ -118,6 +117,10 @@ static int align;
->  module_param(align, int, S_IRUGO);
->  MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
+On Wed, Sep 10, 2014 at 07:02:10AM -0400, Peter Hurley wrote:
+> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+> > 
+> > * Peter Zijlstra <peterz@infradead.org> wrote:
+> > 
+> >> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
+> >>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
+> >>> especially in established drivers.
+> >>
+> >> By the same logic lockdep will not find locking errors in established
+> >> drivers.
+> > 
+> > Indeed, this patch is ill-advised in several ways:
+> > 
+> >   - it extends an API variant that we want to phase
+> > 
+> >   - emits a warning even if say lockdep has already emitted a
+> >     warning and locking state is not guaranteed to be consistent. 
+> > 
+> >   - makes the kernel more expensive once fully debugged, in that
+> >     non-fatal checks are unconditional.
 > 
-> +static int rx_timeout;
-> +module_param(rx_timeout, uint, S_IRUGO);
+> Ok.
+> 
+> One thing: I'm not seeing how lockdep_assert_held() switches off once
+> the warning has been emitted? Is the caller expected to construct their
+> own _ONCE tags?
 
-int variable vs. uint handler.
-
-> @@ -373,43 +376,47 @@ out:
->   * @irq: The IRQ number
->   * @data: Pointer to UART port
->   *
-> - * Check IIR register to see which tasklet to start.
-> + * Check IIR register to find the cause of the interrupt and handle it.
-> + * It is possible that multiple interrupts reason bits are set and reading
-> + * the IIR is a destructive read, so we always need to check for all possible
-> + * interrupts and handle them.
->   */
->  static irqreturn_t men_z135_intr(int irq, void *data)
->  {
->  	struct men_z135_port *uart = (struct men_z135_port *)data;
->  	struct uart_port *port = &uart->port;
-> +	int handled = 0;
-
-This can be bool or use IRQ_NONE directly.
-
-...
-> -	return IRQ_HANDLED;
-> +	if (irq_id & MEN_Z135_IRQ_ID_RDA || irq_id & MEN_Z135_IRQ_ID_CTI) {
-
-A matter of taste, but
- irq_id & (MEN_Z135_IRQ_ID_RDA | MEN_Z135_IRQ_ID_CTI)
-looks and works better.
-
-thanks,
--- 
-js
-suse labs
+Indeed, it does not do that. I suppose you can add
+lockdep_assert_held_once() or somesuch if you think the once thing is
+important.
