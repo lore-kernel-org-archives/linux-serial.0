@@ -1,75 +1,64 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH] tty: serial: serial_mctrl_gpio: Fix build error for
- !GPIOLIB
-Date: Wed, 10 Sep 2014 16:16:21 +0200
-Message-ID: <20140910141621.GA4636@distanz.ch>
-References: <CA+r1ZhjCZBWjkxjoJz=PO-YZg6LbghQV75tGnpiSOrHM9CaygA@mail.gmail.com>
- <20140910080657.GC14260@distanz.ch>
- <20140910135716.GA23074@kroah.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 13/26] locking: Add non-fatal spin lock assert
+Date: Wed, 10 Sep 2014 10:45:33 -0400
+Message-ID: <5410640D.8010903@hurleysoftware.com>
+References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com> <1409693975-1028-14-git-send-email-peter@hurleysoftware.com> <20140903092723.GA4783@worktop.ger.corp.intel.com> <5406F964.6060900@hurleysoftware.com> <20140903144029.GA7083@twins.programming.kicks-ass.net> <54072A99.1080306@hurleysoftware.com> <20140903150729.GA7436@twins.programming.kicks-ass.net> <20140904051411.GA27350@gmail.com> <54102FB2.1020808@hurleysoftware.com> <20140910130832.GY4783@worktop.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140910135716.GA23074@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexander Shiyan <shc_work@mail.ru>, Jim Davis <jim.epost@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next <linux-next@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, jslaby@suse.cz, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:50557 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751117AbaIJOpq (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 10 Sep 2014 10:45:46 -0400
+In-Reply-To: <20140910130832.GY4783@worktop.ger.corp.intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
 
-On 2014-09-10 at 15:57:16 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> On Wed, Sep 10, 2014 at 10:06:58AM +0200, Tobias Klauser wrote:
-> > If SERIAL_MCTRL_GPIO is selected but GPIOLIB is not, the noop functions
-> > from serial_mctrl_gpio.h are pulled in. However, serial_mctrl_gpio.c is
-> > still compiled, leading to function redefinition build errors. Since all
-> > drivers that include serial_mctrl_gpio.h also depend on
-> > SERIAL_MCTRL_GPIO, let it depend on GPIOLIB as well remove the noop
-> > functions alltogether.
-> > 
-> > Reported-by: Jim Davis <jim.epost@gmail.com>
-> > Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-> > ---
-> >  drivers/tty/serial/Kconfig             |  1 +
-> >  drivers/tty/serial/serial_mctrl_gpio.h | 35 ----------------------------------
-> >  2 files changed, 1 insertion(+), 35 deletions(-)
+On 09/10/2014 09:08 AM, Peter Zijlstra wrote:
+> On Wed, Sep 10, 2014 at 07:02:10AM -0400, Peter Hurley wrote:
+>> On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+>>>
+>>> * Peter Zijlstra <peterz@infradead.org> wrote:
+>>>
+>>>> On Wed, Sep 03, 2014 at 10:50:01AM -0400, Peter Hurley wrote:
+>>>>> So a lockdep-only assert is unlikely to draw attention to existing bugs,
+>>>>> especially in established drivers.
+>>>>
+>>>> By the same logic lockdep will not find locking errors in established
+>>>> drivers.
+>>>
+>>> Indeed, this patch is ill-advised in several ways:
+>>>
+>>>   - it extends an API variant that we want to phase
+>>>
+>>>   - emits a warning even if say lockdep has already emitted a
+>>>     warning and locking state is not guaranteed to be consistent. 
+>>>
+>>>   - makes the kernel more expensive once fully debugged, in that
+>>>     non-fatal checks are unconditional.
+>>
+>> Ok.
+>>
+>> One thing: I'm not seeing how lockdep_assert_held() switches off once
+>> the warning has been emitted? Is the caller expected to construct their
+>> own _ONCE tags?
 > 
-> I fixed this yesterday with commit below from Alexander, which does
-> things a bit differently than you.  Any objections to it?
+> Indeed, it does not do that. I suppose you can add
+> lockdep_assert_held_once() or somesuch if you think the once thing is
+> important.
 
-This is nicer in terms of being able to compile the driver without
-GPIOLIB. However, it wont fix it for the other user of
-SERIAL_MCTRL_GPIO, namely SERIAL_ATMEL. And for any future users of
-SERIAL_MCTRL_GPIO, we need to make sure to use the same select
-directive. To fix it for atmel_serial, I'd suggest the patch below.
+Ok, will do.
 
-Thanks
-Tobias
+On 09/04/2014 01:14 AM, Ingo Molnar wrote:
+> Also please submit locking related patches as standalone series 
+> to the locking subsystem, not embedded in an unrelated series.
 
->From d2435dbee5b3597536deffde4865d25b10548d91 Mon Sep 17 00:00:00 2001
-From: Tobias Klauser <tklauser@distanz.ch>
-Date: Wed, 10 Sep 2014 16:08:52 +0200
-Subject: [PATCH] serial: atmel_serial: Fix build for target without GPIOLIB
+Ok, but how will Greg know when to take the series that depends on
+this change, if the locking change is submitted separately?
 
-If SERIAL_MCTRL_GPIO is selected but GPIOLIB is not, the noop functions
-from serial_mctrl_gpio.h are pulled in. However, serial_mctrl_gpio.c is
-still compiled, leading to function redefinition build errors.
-
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8079f52..8c43d11 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -117,7 +117,7 @@ config SERIAL_ATMEL
- 	bool "AT91 / AT32 on-chip serial port support"
- 	depends on ARCH_AT91 || AVR32
- 	select SERIAL_CORE
--	select SERIAL_MCTRL_GPIO
-+	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	help
- 	  This enables the driver for the on-chip UARTs of the Atmel
- 	  AT91 and AT32 processors.
--- 
-2.0.1
+Regards,
+Peter Hurley
