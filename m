@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 12/14] tty: Move and rename send_prio_char() as tty_send_xchar()
-Date: Wed, 10 Sep 2014 15:06:34 -0400
-Message-ID: <1410375996-4693-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 10/14] tty: Move packet mode flow control notifications to pty driver
+Date: Wed, 10 Sep 2014 15:06:32 -0400
+Message-ID: <1410375996-4693-11-git-send-email-peter@hurleysoftware.com>
 References: <1409693975-1028-1-git-send-email-peter@hurleysoftware.com>
  <1410375996-4693-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,148 +11,170 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Relocate the file-scope function, send_prio_char(), as a global
-helper tty_send_xchar(). Remove the global declarations for
-tty_write_lock()/tty_write_unlock(), as these are file-scope only now.
+When a master pty is set to packet mode, flow control changes to
+the slave pty cause notifications to the master pty via reads and
+polls. However, these tests are occurring for all ttys, not
+just ptys.
+
+Implement flow control packet mode notifications in the pty driver.
+Only the slave side implements the flow control handlers since
+packet mode is asymmetric; the master pty receives notifications
+for slave-side changes, but not vice versa.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c    | 33 +++++++++++++++++++++++++++++++--
- drivers/tty/tty_ioctl.c | 33 ++-------------------------------
- include/linux/tty.h     |  3 +--
- 3 files changed, 34 insertions(+), 35 deletions(-)
+ drivers/tty/pty.c    | 41 +++++++++++++++++++++++++++++++++++++++++
+ drivers/tty/tty_io.c | 31 ++++---------------------------
+ 2 files changed, 45 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 55b9103..54e359b 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1037,14 +1037,14 @@ static ssize_t tty_read(struct file *file, char __user *buf, size_t count,
- 	return i;
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 25c9bc7..c344de0 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -24,6 +24,7 @@
+ #include <linux/devpts_fs.h>
+ #include <linux/slab.h>
+ #include <linux/mutex.h>
++#include <linux/poll.h>
+ 
+ 
+ #ifdef CONFIG_UNIX98_PTYS
+@@ -313,6 +314,42 @@ done:
  }
  
--void tty_write_unlock(struct tty_struct *tty)
-+static void tty_write_unlock(struct tty_struct *tty)
- 	__releases(&tty->atomic_write_lock)
- {
- 	mutex_unlock(&tty->atomic_write_lock);
- 	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
- }
- 
--int tty_write_lock(struct tty_struct *tty, int ndelay)
-+static int tty_write_lock(struct tty_struct *tty, int ndelay)
- 	__acquires(&tty->atomic_write_lock)
- {
- 	if (!mutex_trylock(&tty->atomic_write_lock)) {
-@@ -1231,6 +1231,35 @@ ssize_t redirected_tty_write(struct file *file, const char __user *buf,
- 	return tty_write(file, buf, count, ppos);
- }
- 
-+/**
-+ *	tty_send_xchar	-	send priority character
+ /**
++ *	pty_start - start() handler
++ *	pty_stop  - stop() handler
++ *	@tty: tty being flow-controlled
 + *
-+ *	Send a high priority character to the tty even if stopped
++ *	Propagates the TIOCPKT status to the master pty.
 + *
-+ *	Locking: none for xchar method, write ordering for write method.
++ *	NB: only the master pty can be in packet mode so only the slave
++ *	    needs start()/stop() handlers
 + */
-+
-+int tty_send_xchar(struct tty_struct *tty, char ch)
++static void pty_start(struct tty_struct *tty)
 +{
-+	int	was_stopped = tty->stopped;
++	unsigned long flags;
 +
-+	if (tty->ops->send_xchar) {
-+		tty->ops->send_xchar(tty, ch);
-+		return 0;
++	spin_lock_irqsave(&tty->ctrl_lock, flags);
++	if (tty->link && tty->link->packet) {
++		tty->ctrl_status &= ~TIOCPKT_STOP;
++		tty->ctrl_status |= TIOCPKT_START;
++		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
 +	}
-+
-+	if (tty_write_lock(tty, 0) < 0)
-+		return -ERESTARTSYS;
-+
-+	if (was_stopped)
-+		start_tty(tty);
-+	tty->ops->write(tty, &ch, 1);
-+	if (was_stopped)
-+		stop_tty(tty);
-+	tty_write_unlock(tty);
-+	return 0;
++	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
 +}
 +
- static char ptychar[] = "pqrstuvwxyzabcde";
++static void pty_stop(struct tty_struct *tty)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&tty->ctrl_lock, flags);
++	if (tty->link && tty->link->packet) {
++		tty->ctrl_status &= ~TIOCPKT_START;
++		tty->ctrl_status |= TIOCPKT_STOP;
++		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
++	}
++	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
++}
++
++/**
+  *	pty_common_install		-	set up the pty pair
+  *	@driver: the pty driver
+  *	@tty: the tty being instantiated
+@@ -472,6 +509,8 @@ static const struct tty_operations slave_pty_ops_bsd = {
+ 	.set_termios = pty_set_termios,
+ 	.cleanup = pty_cleanup,
+ 	.resize = pty_resize,
++	.start = pty_start,
++	.stop = pty_stop,
+ 	.remove = pty_remove
+ };
  
- /**
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index ffed466..14d9002 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -912,35 +912,6 @@ static int set_ltchars(struct tty_struct *tty, struct ltchars __user *ltchars)
- #endif
+@@ -647,6 +686,8 @@ static const struct tty_operations pty_unix98_ops = {
+ 	.chars_in_buffer = pty_chars_in_buffer,
+ 	.unthrottle = pty_unthrottle,
+ 	.set_termios = pty_set_termios,
++	.start = pty_start,
++	.stop = pty_stop,
+ 	.shutdown = pty_unix98_shutdown,
+ 	.cleanup = pty_cleanup,
+ };
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index b898e29..55b9103 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -922,8 +922,7 @@ void no_tty(void)
+  *	stop_tty	-	propagate flow control
+  *	@tty: tty to stop
+  *
+- *	Perform flow control to the driver. For PTY/TTY pairs we
+- *	must also propagate the TIOCKPKT status. May be called
++ *	Perform flow control to the driver. May be called
+  *	on an already stopped device and will not re-call the driver
+  *	method.
+  *
+@@ -933,24 +932,14 @@ void no_tty(void)
+  *	but not always.
+  *
+  *	Locking:
+- *		ctrl_lock
+  *		flow_lock
+  */
  
- /**
-- *	send_prio_char		-	send priority character
-- *
-- *	Send a high priority character to the tty even if stopped
-- *
-- *	Locking: none for xchar method, write ordering for write method.
-- */
+ void __stop_tty(struct tty_struct *tty)
+ {
+-	unsigned long flags;
 -
--static int send_prio_char(struct tty_struct *tty, char ch)
--{
--	int	was_stopped = tty->stopped;
--
--	if (tty->ops->send_xchar) {
--		tty->ops->send_xchar(tty, ch);
--		return 0;
+ 	if (tty->stopped)
+ 		return;
+ 	tty->stopped = 1;
+-	spin_lock_irqsave(&tty->ctrl_lock, flags);
+-	if (tty->link && tty->link->packet) {
+-		tty->ctrl_status &= ~TIOCPKT_START;
+-		tty->ctrl_status |= TIOCPKT_STOP;
+-		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
 -	}
--
--	if (tty_write_lock(tty, 0) < 0)
--		return -ERESTARTSYS;
--
--	if (was_stopped)
--		start_tty(tty);
--	tty->ops->write(tty, &ch, 1);
--	if (was_stopped)
--		stop_tty(tty);
--	tty_write_unlock(tty);
--	return 0;
--}
--
--/**
-  *	tty_change_softcar	-	carrier change ioctl helper
-  *	@tty: tty to update
-  *	@arg: enable/disable CLOCAL
-@@ -1194,11 +1165,11 @@ int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
- 			break;
- 		case TCIOFF:
- 			if (STOP_CHAR(tty) != __DISABLED_CHAR)
--				return send_prio_char(tty, STOP_CHAR(tty));
-+				return tty_send_xchar(tty, STOP_CHAR(tty));
- 			break;
- 		case TCION:
- 			if (START_CHAR(tty) != __DISABLED_CHAR)
--				return send_prio_char(tty, START_CHAR(tty));
-+				return tty_send_xchar(tty, START_CHAR(tty));
- 			break;
- 		default:
- 			return -EINVAL;
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 377896d..3c1276b 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -418,6 +418,7 @@ extern void tty_unregister_device(struct tty_driver *driver, unsigned index);
- extern int tty_read_raw_data(struct tty_struct *tty, unsigned char *bufp,
- 			     int buflen);
- extern void tty_write_message(struct tty_struct *tty, char *msg);
-+extern int tty_send_xchar(struct tty_struct *tty, char ch);
- extern int tty_put_char(struct tty_struct *tty, unsigned char c);
- extern int tty_chars_in_buffer(struct tty_struct *tty);
- extern int tty_write_room(struct tty_struct *tty);
-@@ -504,8 +505,6 @@ extern struct tty_struct *tty_pair_get_pty(struct tty_struct *tty);
- extern struct mutex tty_mutex;
- extern spinlock_t tty_files_lock;
+-	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+ 	if (tty->ops->stop)
+ 		(tty->ops->stop)(tty);
+ }
+@@ -969,33 +958,21 @@ EXPORT_SYMBOL(stop_tty);
+  *	start_tty	-	propagate flow control
+  *	@tty: tty to start
+  *
+- *	Start a tty that has been stopped if at all possible. Perform
+- *	any necessary wakeups and propagate the TIOCPKT status. If this
+- *	is the tty was previous stopped and is being started then the
+- *	driver start method is invoked and the line discipline woken.
++ *	Start a tty that has been stopped if at all possible. If this
++ *	tty was previous stopped and is now being started, the driver
++ *	start method is invoked and the line discipline woken.
+  *
+  *	Locking:
+- *		ctrl_lock
+  *		flow_lock
+  */
  
--extern void tty_write_unlock(struct tty_struct *tty);
--extern int tty_write_lock(struct tty_struct *tty, int ndelay);
- #define tty_is_writelocked(tty)  (mutex_is_locked(&tty->atomic_write_lock))
+ void __start_tty(struct tty_struct *tty)
+ {
+-	unsigned long flags;
+-
+ 	if (!tty->stopped || tty->flow_stopped)
+ 		return;
+ 	tty->stopped = 0;
+-	spin_lock_irqsave(&tty->ctrl_lock, flags);
+-	if (tty->link && tty->link->packet) {
+-		tty->ctrl_status &= ~TIOCPKT_STOP;
+-		tty->ctrl_status |= TIOCPKT_START;
+-		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
+-	}
+-	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+ 	if (tty->ops->start)
+ 		(tty->ops->start)(tty);
+-	/* If we have a running line discipline it may need kicking */
+ 	tty_wakeup(tty);
+ }
  
- extern void tty_port_init(struct tty_port *port);
 -- 
 2.1.0
