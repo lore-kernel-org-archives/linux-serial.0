@@ -1,56 +1,41 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] serial: 8250_pci: remove rts_n override from Baytrail quirk
-Date: Thu, 11 Sep 2014 15:26:12 +0300
-Message-ID: <1410438372-25204-1-git-send-email-heikki.krogerus@linux.intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:25889 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754600AbaIKM0r (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Sep 2014 08:26:47 -0400
-Sender: linux-serial-owner@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Thu, 11 Sep 2014 08:32:58 -0400
+Message-ID: <5411967A.6090406@hurleysoftware.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-10-git-send-email-bigeasy@linutronix.de> <20140911111721.GB17476@xps8300> <54118AAB.2010205@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54118AAB.2010205@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-It should not be used together with Auto Flow Control, and
-Auto Flow Control is always enabled on Baytrail.
+On 09/11/2014 07:42 AM, Sebastian Andrzej Siewior wrote:
+> I also need a watchdog timer for TX since it seems that on omap3 the
+> DMA engine suddenly forgets to continue with DMA=E2=80=A6
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/tty/serial/8250/8250_pci.c | 13 -------------
- 1 file changed, 13 deletions(-)
+One difference I noticed between the omap driver and the 8250 driver is
+the way modem status interrupts are handled.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 61830b1..f236c75 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1355,9 +1355,6 @@ ce4100_serial_setup(struct serial_private *priv,
- #define BYT_PRV_CLK_N_VAL_SHIFT		16
- #define BYT_PRV_CLK_UPDATE		(1 << 31)
- 
--#define BYT_GENERAL_REG			0x808
--#define BYT_GENERAL_DIS_RTS_N_OVERRIDE	(1 << 3)
--
- #define BYT_TX_OVF_INT			0x820
- #define BYT_TX_OVF_INT_MASK		(1 << 1)
- 
-@@ -1412,16 +1409,6 @@ byt_set_termios(struct uart_port *p, struct ktermios *termios,
- 	reg |= BYT_PRV_CLK_EN | BYT_PRV_CLK_UPDATE;
- 	writel(reg, p->membase + BYT_PRV_CLK);
- 
--	/*
--	 * If auto-handshake mechanism is not enabled,
--	 * disable rts_n override
--	 */
--	reg = readl(p->membase + BYT_GENERAL_REG);
--	reg &= ~BYT_GENERAL_DIS_RTS_N_OVERRIDE;
--	if (termios->c_cflag & CRTSCTS)
--		reg |= BYT_GENERAL_DIS_RTS_N_OVERRIDE;
--	writel(reg, p->membase + BYT_GENERAL_REG);
--
- 	serial8250_do_set_termios(p, termios, old);
- }
- 
--- 
-2.1.0
+The omap driver only checks modem status for the UART_IIR_MSI interrupt=
+ type.
+The 8250 driver checks modem status at every interrupt (other than NO_I=
+NT).
 
+I think the UART_MSR_DCTS bit always reflects that the CTS input has ch=
+anged
+between reads of the MSR _even if auto CTS is on_. So perhaps the hardw=
+are
+is being stopped by uart_handle_cts_change() when auto CTS is on?
+
+Regards,
+Peter Hurley
+
+[The UPF_HARD_FLOW thing was pretty much just done for omap even though
+8250 already had auto CTS/auto RTS. Serial core hardware flow control s=
+upport
+needs a redo as drivers have pretty much tacked stuff on randomly.]
