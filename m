@@ -1,41 +1,28 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Thu, 11 Sep 2014 08:32:58 -0400
-Message-ID: <5411967A.6090406@hurleysoftware.com>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-10-git-send-email-bigeasy@linutronix.de> <20140911111721.GB17476@xps8300> <54118AAB.2010205@linutronix.de>
+Subject: Re: [RFC] tty: Always allow tcflow(TCOON) to unwedge terminal
+Date: Thu, 11 Sep 2014 08:34:03 -0400
+Message-ID: <541196BB.60407@hurleysoftware.com>
+References: <1410384499-4982-1-git-send-email-peter@hurleysoftware.com>	<20140911000343.GA5328@kroah.com>	<5410E8A2.5030802@hurleysoftware.com> <20140911111930.7227abbf@alan.etchedpixels.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54118AAB.2010205@linutronix.de>
+In-Reply-To: <20140911111930.7227abbf@alan.etchedpixels.co.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/11/2014 07:42 AM, Sebastian Andrzej Siewior wrote:
-> I also need a watchdog timer for TX since it seems that on omap3 the
-> DMA engine suddenly forgets to continue with DMA=E2=80=A6
+On 09/11/2014 06:19 AM, One Thousand Gnomes wrote:
+>> It's not common knowledge (and its certainly counterintuitive) that
+>> turning off output when output is already turned off (ie., tcflow(TCOOFF))
+>> is the required trickery to unwedge a terminal.
+>>
+>> Unwedging directly seems the straightforward approach.
+> 
+> Putting the off/on in the man page might be safer still ?
 
-One difference I noticed between the omap driver and the 8250 driver is
-the way modem status interrupts are handled.
-
-The omap driver only checks modem status for the UART_IIR_MSI interrupt=
- type.
-The 8250 driver checks modem status at every interrupt (other than NO_I=
-NT).
-
-I think the UART_MSR_DCTS bit always reflects that the CTS input has ch=
-anged
-between reads of the MSR _even if auto CTS is on_. So perhaps the hardw=
-are
-is being stopped by uart_handle_cts_change() when auto CTS is on?
+That's my plan if this patch fails to launch.
 
 Regards,
 Peter Hurley
-
-[The UPF_HARD_FLOW thing was pretty much just done for omap even though
-8250 already had auto CTS/auto RTS. Serial core hardware flow control s=
-upport
-needs a redo as drivers have pretty much tacked stuff on randomly.]
