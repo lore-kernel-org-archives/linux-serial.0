@@ -1,56 +1,113 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [RFC] tty: Always allow tcflow(TCOON) to unwedge terminal
-Date: Thu, 11 Sep 2014 09:56:10 -0400
-Message-ID: <20140911135610.GD15632@thunk.org>
-References: <1410384499-4982-1-git-send-email-peter@hurleysoftware.com>
- <20140911000343.GA5328@kroah.com>
- <5410E8A2.5030802@hurleysoftware.com>
- <20140911002410.GA11732@kroah.com>
- <5410F08D.10707@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Thu, 11 Sep 2014 10:35:43 -0400
+Message-ID: <5411B33F.10405@hurleysoftware.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-10-git-send-email-bigeasy@linutronix.de> <20140911111721.GB17476@xps8300> <54118AAB.2010205@linutronix.de> <5411967A.6090406@hurleysoftware.com> <54119AAA.9080907@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from imap.thunk.org ([74.207.234.97]:50897 "EHLO imap.thunk.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751057AbaIKN4R (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Sep 2014 09:56:17 -0400
-Content-Disposition: inline
-In-Reply-To: <5410F08D.10707@hurleysoftware.com>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:43982 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753143AbaIKOfu (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 11 Sep 2014 10:35:50 -0400
+In-Reply-To: <54119AAA.9080907@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
 
-On Wed, Sep 10, 2014 at 08:45:01PM -0400, Peter Hurley wrote:
-> > I'm all for working around broken hardware in the kernel, but this seems
-> > like a very old issue, if it's even one at all, that we would be
-> > changing for no one who has reported it (that I know of...)
-> 
-> How to unwedge a terminal comes up from time to time.
+On 09/11/2014 08:50 AM, Sebastian Andrzej Siewior wrote:
+> On 09/11/2014 02:32 PM, Peter Hurley wrote:
+>> On 09/11/2014 07:42 AM, Sebastian Andrzej Siewior wrote:
+>>> I also need a watchdog timer for TX since it seems that on omap3 th=
+e
+>>> DMA engine suddenly forgets to continue with DMA=E2=80=A6
+>>
+>> One difference I noticed between the omap driver and the 8250 driver=
+ is
+>> the way modem status interrupts are handled.
+>>
+>> The omap driver only checks modem status for the UART_IIR_MSI interr=
+upt type.
+>> The 8250 driver checks modem status at every interrupt (other than N=
+O_INT).
+>>
+>> I think the UART_MSR_DCTS bit always reflects that the CTS input has=
+ changed
+>> between reads of the MSR _even if auto CTS is on_. So perhaps the ha=
+rdware
+>> is being stopped by uart_handle_cts_change() when auto CTS is on?
+>=20
+> I doubt that. What I see from a timer debug is that the TX-FIFO level
+> is at 0, the DMA transfer for say 1024 bytes start.
+> The FIFO is filled to 64bytes and refilled so it doesn't drop below 5=
+0.
+> At the time of the stall I see that the DMA engine has outstanding
+> bytes which it should transfer and the TX FIFO is empty. If hardware
+> flow control stops the transfer, I would expect that the DMA engine
+> still fills the TX-FIFO until 64 and then waits. But it doesn't.
+> Writing bytes into the FIFO leads to bytes beeing sent (and I see the=
+m
+> on the other side) but the DMA transfer is still on hold. Canceling t=
+he
+> DMA transfer and re-programming the remaining bytes transfers the
+> remaining bytes.
+>=20
+> The odd thing is that I only triggered it with "less file". It doesn'=
+t
+> happen on regular console interaction or "cat large-file". And it onl=
+y
+> triggers on beagle board xm (omap34xx) and I wasn't able to reproduce
+> it on am335x or dra7. The latter shares the same DMA engine as beagle
+> board xm.
+>=20
+> I remember also that I disabled the HW/SW float control just to make
+> sure it is not it.
 
-Are you trying to unwedge a terminal using hardware flow control, or
-software flow control?
+Ok.
 
-For software flow control, this is a guarantee that we can make wrt to
-the behavior of tcflow().  For hardware flow control, we can't make
-any guarantees, whether it's with tcflow(TCOON) or tcflow(TCOOF);
-tcflow(TCOON). 
+I do need to find out if omap hardware sets UART_MSR_DCTS when auto CTS
+is on. Would you mind running the debug patch below with HW flow contro=
+l on?
 
-> It's possible that this may cause userspace breakage. Some app
-> may call tcflow(TCOON) thus accidently overriding the flow control
-> state when it would have had no effect before.
+Regards,
+Peter Hurley
 
-It's very likely that an application that would be using tcflow() at
-all would first be sending a TCOOFF, and then sending a TCOON.  So
-this doesn't worry me that much.
+--- >% ---
+Subject: [DEBUG] serial: does OMAP set UART_LSR_DCTS while autoCTS is o=
+n?
 
-Indeed, given that the definition of how TCION and TCIOFF is worded
-(send a START or STOP command), it's completely reasonable to
-interpret TCOON and TCOOFF as emulating what would happen if the
-system received a START or STOP command.  (Note though that part of
-this is that Posix doesn't define CRTSCTS, so POSIX is entirely silent
-on the subject of hardware flow control).
+** debug patch only **
 
-Cheers,
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/serial_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-					- Ted
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+index 5a78f69..1579a20 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2783,6 +2783,9 @@ void uart_handle_cts_change(struct uart_port *upo=
+rt, unsigned int status)
+ 	uport->icount.cts++;
+=20
+ 	if (tty_port_cts_enabled(port)) {
++
++		WARN_ON_ONCE(uport->flags & UPF_HARD_FLOW);
++
+ 		if (tty->hw_stopped) {
+ 			if (status) {
+ 				tty->hw_stopped =3D 0;
+--=20
+2.1.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
