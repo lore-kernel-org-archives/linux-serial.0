@@ -1,68 +1,201 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Thu, 11 Sep 2014 14:50:50 +0200
-Message-ID: <54119AAA.9080907@linutronix.de>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-10-git-send-email-bigeasy@linutronix.de> <20140911111721.GB17476@xps8300> <54118AAB.2010205@linutronix.de> <5411967A.6090406@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5411967A.6090406@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [RFC PATCH] serial: Emulate break using control characters
+Date: Thu, 11 Sep 2014 14:37:43 +0100
+Message-ID: <1410442663-10068-1-git-send-email-daniel.thompson@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f180.google.com ([209.85.212.180]:46212 "EHLO
+	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751774AbaIKNiE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 11 Sep 2014 09:38:04 -0400
+Received: by mail-wi0-f180.google.com with SMTP id ex7so2243173wid.1
+        for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2014 06:37:58 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On 09/11/2014 02:32 PM, Peter Hurley wrote:
-> On 09/11/2014 07:42 AM, Sebastian Andrzej Siewior wrote:
->> I also need a watchdog timer for TX since it seems that on omap3 the
->> DMA engine suddenly forgets to continue with DMA=E2=80=A6
->=20
-> One difference I noticed between the omap driver and the 8250 driver =
-is
-> the way modem status interrupts are handled.
->=20
-> The omap driver only checks modem status for the UART_IIR_MSI interru=
-pt type.
-> The 8250 driver checks modem status at every interrupt (other than NO=
-_INT).
->=20
-> I think the UART_MSR_DCTS bit always reflects that the CTS input has =
-changed
-> between reads of the MSR _even if auto CTS is on_. So perhaps the har=
-dware
-> is being stopped by uart_handle_cts_change() when auto CTS is on?
+Currently the magic SysRq functions can accessed by sending a break on
+the serial port. Unfortunately some networked serial proxies make it
+difficult to send a break meaning SysRq functions cannot be used. This
+patch provides a workaround by allowing the (fairly unlikely) sequence
+of ^B^R^K characters to emulate a real break.
 
-I doubt that. What I see from a timer debug is that the TX-FIFO level
-is at 0, the DMA transfer for say 1024 bytes start.
-The FIFO is filled to 64bytes and refilled so it doesn't drop below 50.
-At the time of the stall I see that the DMA engine has outstanding
-bytes which it should transfer and the TX FIFO is empty. If hardware
-flow control stops the transfer, I would expect that the DMA engine
-still fills the TX-FIFO until 64 and then waits. But it doesn't.
-Writing bytes into the FIFO leads to bytes beeing sent (and I see them
-on the other side) but the DMA transfer is still on hold. Canceling the
-DMA transfer and re-programming the remaining bytes transfers the
-remaining bytes.
+This approach is very nearly as robust as normal sysrq/break handling
+because all trigger recognition happens during interrupt handling. Only
+major difference is that to emulate a break we must enter the ISR four
+times (instead of twice) and manage an extra byte of state.
 
-The odd thing is that I only triggered it with "less file". It doesn't
-happen on regular console interaction or "cat large-file". And it only
-triggers on beagle board xm (omap34xx) and I wasn't able to reproduce
-it on am335x or dra7. The latter shares the same DMA engine as beagle
-board xm.
+No means is provided to escape the trigger sequence (and pass ^B^R^K to
+the underlying process) however the sequence is proved reasonably pretty
+collision resistant in practice. The most significant consequence is
+that ^B and ^B^R are delayed until a new character is observed.
 
-I remember also that I disabled the HW/SW float control just to make
-sure it is not it.
+The most significant collision I am aware of is with emacs-like
+backward-char bindings (^B) because the character movement will become
+lumpy (two characters every two key presses rather than one character
+per key press). Arrow keys or ^B^B^F provide workarounds.
 
->=20
-> Regards,
-> Peter Hurley
->=20
-> [The UPF_HARD_FLOW thing was pretty much just done for omap even thou=
-gh
-> 8250 already had auto CTS/auto RTS. Serial core hardware flow control=
- support
-> needs a redo as drivers have pretty much tacked stuff on randomly.]
+Special note for tmux users:
+  tmux defaults to using ^B as its escape character but does not have a
+  default binding for ^B^R. Likewise tmux had no visual indicator
+  showing the beginning of break sequence meaning delayed the delivery
+  of ^B is not observable. Thus serial break emulation does not interfere
+  with the use of tmux's default key bindings.
 
-Sebastian
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+---
+
+Notes:
+    I've been sitting on this patch for a long time. However I realized
+    today just how frequently I end up using this and wondered if perhaps I
+    am not alone.
+    
+    Yes! How did you guess? As it happens I do have quite a few broken
+    network to UART interfaces.
+    
+
+ include/linux/serial_core.h | 83 +++++++++++++++++++++++++++++++++++----------
+ lib/Kconfig.debug           | 15 ++++++++
+ 2 files changed, 80 insertions(+), 18 deletions(-)
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index cf3a1e7..dffb188 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -150,6 +150,9 @@ struct uart_port {
+ 	struct console		*cons;			/* struct console, if any */
+ #if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
+ 	unsigned long		sysrq;			/* sysrq timeout */
++#ifdef CONFIG_MAGIC_SYSRQ_BREAK_EMULATION
++	char                    sysrq_emul;             /* sysrq break emulation */
++#endif
+ #endif
+
+ 	upf_t			flags;
+@@ -364,24 +367,6 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+
+-#ifdef SUPPORT_SYSRQ
+-static inline int
+-uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+-{
+-	if (port->sysrq) {
+-		if (ch && time_before(jiffies, port->sysrq)) {
+-			handle_sysrq(ch);
+-			port->sysrq = 0;
+-			return 1;
+-		}
+-		port->sysrq = 0;
+-	}
+-	return 0;
+-}
+-#else
+-#define uart_handle_sysrq_char(port,ch) ({ (void)port; 0; })
+-#endif
+-
+ /*
+  * We do the SysRQ and SAK checking like this...
+  */
+@@ -406,6 +391,68 @@ static inline int uart_handle_break(struct uart_port *port)
+ 	return 0;
+ }
+
++#if defined(SUPPORT_SYSRQ) && defined(CONFIG_MAGIC_SYSRQ_BREAK_EMULATION)
++/*
++ * Emulate a break if we are the serial console and receive ^B, ^R, ^K.
++ */
++static inline int
++uart_handle_sysrq_break_emulation(struct uart_port *port, unsigned int ch)
++{
++	const unsigned int ctrlb = 'B' & 31;
++	const unsigned int ctrlr = 'R' & 31;
++	const unsigned int ctrlk = 'K' & 31;
++
++	if (uart_console(port)) {
++		if ((port->sysrq_emul == 0 && ch == ctrlb) ||
++		    (port->sysrq_emul == ctrlb && ch == ctrlr)) {
++			/* for either of the first two trigger characters
++			 * update the state variable and move on.
++			 */
++			port->sysrq_emul = ch;
++			return 1;
++		} else if (port->sysrq_emul == ctrlr && ch == ctrlk &&
++			   uart_handle_break(port)) {
++			/* the break has already been emulated whilst
++			 * evaluating the condition, tidy up and move on
++			 */
++			port->sysrq_emul = 0;
++			return 1;
++		}
++	}
++
++	if (port->sysrq_emul) {
++		/* received a partial (false) trigger, tidy up and move on */
++		uart_insert_char(port, 0, 0, ctrlb, TTY_NORMAL);
++		if (port->sysrq_emul == ctrlr)
++			uart_insert_char(port, 0, 0, ctrlr, TTY_NORMAL);
++		port->sysrq_emul = 0;
++	}
++
++	return 0;
++}
++#else
++#define uart_handle_sysrq_break_emulation(port, ch) ({ (void)port; 0; })
++#endif
++
++#ifdef SUPPORT_SYSRQ
++static inline int
++uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
++{
++	if (port->sysrq) {
++		if (ch && time_before(jiffies, port->sysrq)) {
++			handle_sysrq(ch);
++			port->sysrq = 0;
++			return 1;
++		}
++		port->sysrq = 0;
++	}
++
++	return uart_handle_sysrq_break_emulation(port, ch);
++}
++#else
++#define uart_handle_sysrq_char(port,ch) ({ (void)port; 0; })
++#endif
++
+ /*
+  *	UART_ENABLE_MS - determine if port should enable modem status irqs
+  */
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index a285900..bcd9cf5 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -345,6 +345,21 @@ config MAGIC_SYSRQ_DEFAULT_ENABLE
+ 	  This may be set to 1 or 0 to enable or disable them all, or
+ 	  to a bitmask as described in Documentation/sysrq.txt.
+
++config MAGIC_SYSRQ_BREAK_EMULATION
++	bool "Enable magic SysRq serial break emulation"
++	depends on MAGIC_SYSRQ && SERIAL_CORE_CONSOLE
++	default n
++	help
++	  If you say Y here, then you can use the character sequence ^B^R^K
++	  to simulate a BREAK on the serial console. This is useful if for
++	  some reason you cannot send a BREAK to your console's serial port.
++	  For example, if you have a serial device server that cannot
++	  send a BREAK. Enabling this feature can delay the delivery of
++	  characters to the TTY because the ^B and a subsequent ^R will be
++	  delayed until we know what the next character is.
++
++	  If unsure, say N.
++
+ config DEBUG_KERNEL
+ 	bool "Kernel debugging"
+ 	help
+--
+1.9.3
+
