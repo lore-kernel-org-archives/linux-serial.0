@@ -1,60 +1,41 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 05/16] tty: serial: 8250_core: remove UART_IER_RDI in
- serial8250_stop_rx()
-Date: Thu, 11 Sep 2014 14:19:31 +0300
-Message-ID: <20140911111931.GC17476@xps8300>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
- <1410377411-26656-6-git-send-email-bigeasy@linutronix.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 3.17-rc3] serial: amba-pl011: Use container_of() to get
+ uart_amba_port
+Date: Thu, 11 Sep 2014 07:25:29 -0400
+Message-ID: <541186A9.902@hurleysoftware.com>
+References: <1409745115-1423-1-git-send-email-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:22352 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754413AbaIKLTf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 11 Sep 2014 07:19:35 -0400
-Content-Disposition: inline
-In-Reply-To: <1410377411-26656-6-git-send-email-bigeasy@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1409745115-1423-1-git-send-email-daniel.thompson@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org
 
-On Wed, Sep 10, 2014 at 09:30:00PM +0200, Sebastian Andrzej Siewior wrote:
-> serial8250_do_startup() adds UART_IER_RDI and UART_IER_RLSI to ier.
-> serial8250_stop_rx() should remove both.
-> This is what the serial-omap driver has been doing and is now moved to
-> the 8250-core since it does no look to be *that* omap specific.
-> 
-> Cc: heikki.krogerus@linux.intel.com
+On 09/03/2014 07:51 AM, Daniel Thompson wrote:
+> Universally adopt container_of() for all pointer conversion from
+> uart_port to uart_amba_port.
 
-Looks good to me. FWIW...
+Thanks.
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
-> Tested-by: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Cc: Russell King <linux@arm.linux.org.uk>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: linux-serial@vger.kernel.org
 > ---
->  drivers/tty/serial/8250/8250_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index ac88e66df65d..139f3d2b8aa9 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1390,7 +1390,7 @@ static void serial8250_stop_rx(struct uart_port *port)
->  
->  	serial8250_rpm_get(up);
->  
-> -	up->ier &= ~UART_IER_RLSI;
-> +	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
->  	up->port.read_status_mask &= ~UART_LSR_DR;
->  	serial_port_out(port, UART_IER, up->ier);
->  
-> -- 
-> 2.1.0
-
-Thanks,
-
--- 
-heikki
+> Notes:
+>     This patch was written after a review comment made by Peter Hurley in
+>     response to code that is no longer needed.  However I'd already written
+>     it before I realized the code was no longer needed and it still appears
+>     to be a sensible, if rather minor, bit of modernization.
+>     
+> 
+>  drivers/tty/serial/amba-pl011.c | 54 +++++++++++++++++++++++++++--------------
+>  1 file changed, 36 insertions(+), 18 deletions(-)
