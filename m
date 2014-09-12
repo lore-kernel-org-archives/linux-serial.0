@@ -1,34 +1,54 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH] serial: mxs-auart: use mctrl_gpio helpers for handling
- modem signals (v2)
-Date: Fri, 12 Sep 2014 20:16:15 +0200
-Message-ID: <5413386F.3050903@elproma.com.pl>
-References: <1410540563-24789-1-git-send-email-j.uzycki@elproma.com.pl> <CAOMZO5B7EXoJSCxdW4XN7e1iGbY-Jd-z6VCEB2i-CAJyXh-Lrw@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 3.17-rc5
+Date: Fri, 12 Sep 2014 11:21:00 -0700
+Message-ID: <20140912182100.GA2015@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:57842 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751611AbaILSQT (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53604 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750925AbaILSVA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Sep 2014 14:16:19 -0400
-In-Reply-To: <CAOMZO5B7EXoJSCxdW4XN7e1iGbY-Jd-z6VCEB2i-CAJyXh-Lrw@mail.gmail.com>
+	Fri, 12 Sep 2014 14:21:00 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
+The following changes since commit 69e273c0b0a3c337a521d083374c918dc52c666f:
 
-> On Fri, Sep 12, 2014 at 1:49 PM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
->> Dedicated CTS and RTS pins are unusable together with a lot of other
->> peripherals because they share the same line. Pinctrl is limited.
->>
->> Moreover, the USART controller doesn't handle DTR/DSR/DCD/RI signals,
-> You meant "AUART controller"
-Thanks Fabio. I wait for more comments, especially to comments-questions 
-in the code.
+  Linux 3.17-rc3 (2014-08-31 18:23:04 -0700)
 
-best regards
-Janusz
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.17-rc5
+
+for you to fetch changes up to 6731af573ac28de2297002992f38caa760e3dadf:
+
+  tty: xuartps: Fix tx_emtpy() callback (2014-09-08 16:33:56 -0700)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 3.17-rc5
+
+Here are 3 patches for 3.17-rc5.  Two serial driver fixes that resolve
+some reported issues, and one new device id.
+
+All have been in linux-next just fine.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alan Cox (1):
+      serial: 8250_dw: Add ACPI ID for Intel Braswell
+
+Lars-Peter Clausen (1):
+      tty: xuartps: Fix tx_emtpy() callback
+
+Richard Genoud (1):
+      tty/serial: at91: BUG: disable interrupts when !UART_ENABLE_MS()
+
+ drivers/tty/serial/8250/8250_dw.c  |  1 +
+ drivers/tty/serial/atmel_serial.c  | 43 +++++++++++++++++++++++++++++++++++++-
+ drivers/tty/serial/xilinx_uartps.c |  2 +-
+ 3 files changed, 44 insertions(+), 2 deletions(-)
